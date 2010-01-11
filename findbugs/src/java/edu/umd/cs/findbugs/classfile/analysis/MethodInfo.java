@@ -62,6 +62,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		boolean isUnsupported;
 		boolean usesConcurrency;
 		boolean isStub;
+		int methodCallCount;
 
 		final Map<ClassDescriptor, AnnotationValue> methodAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(4);
 
@@ -111,7 +112,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
 		public MethodInfo build() {
 			return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, null, accessFlags, isUnconditionalThrower, isUnsupported, usesConcurrency, 
-				 isStub, exceptions, methodAnnotations, methodParameterAnnotations);
+				 isStub, methodCallCount, exceptions, methodAnnotations, methodParameterAnnotations);
 		}
 
         public void setIsUnconditionalThrower() {
@@ -122,9 +123,18 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
  	       isUnsupported = true;
  	        
          }
+
+		/**
+         * @param methodCallCount
+         */
+        public void setNumberMethodCalls(int methodCallCount) {
+	        this.methodCallCount = methodCallCount;
+	        
+        }
 	}
 
 	final int accessFlags;
+	final int methodCallCount;
 	
 	final boolean usesConcurrency;
 	final boolean isStub;
@@ -149,13 +159,14 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	 * @param isUnsupported 
 	 * @param usesConcurrency TODO
 	 * @param isStub TODO
+	 * @param methodCallCount TODO
 	 * @param isStatic
 	 */
 	 MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature, 
 			 @CheckForNull String bridgeMethodSignature,
 	        int accessFlags, boolean isUnconditionalThrower,
-	        boolean isUnsupported, boolean usesConcurrency, boolean isStub, @CheckForNull String[] exceptions,
-	        Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
+	        boolean isUnsupported, boolean usesConcurrency, boolean isStub, int methodCallCount,
+	        @CheckForNull String[] exceptions, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
 		super(className, methodName, methodSignature, bridgeMethodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
 		this.accessFlags = accessFlags;
 		this.exceptions = exceptions;
@@ -169,6 +180,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		if (isUnsupported) unsupportedMethods.put(this, null);
 		this.usesConcurrency = usesConcurrency;
 		this.isStub = isStub;
+		this.methodCallCount = methodCallCount;
 	}
 	 
 	 public @CheckForNull String [] getThrownExceptions() {
@@ -183,6 +195,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
 	public int getNumParams() {
 		return new SignatureParser(getSignature()).getNumParameters();
+	}
+	
+	public int getMethodCallCount() {
+		return methodCallCount;
 	}
 
 	private boolean checkFlag(int flag) {
@@ -405,6 +421,6 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
 	final MethodInfo copyAndSetBridgeSignature(String bridgeSignature) {
 		return new MethodInfo(getSlashedClassName(), getName(), getSignature(), methodSourceSignature, bridgeSignature,
-		        accessFlags, false, false, usesConcurrency, isStub, exceptions, methodAnnotations, methodParameterAnnotations);
+		        accessFlags, false, false, usesConcurrency, isStub, methodCallCount, exceptions, methodAnnotations, methodParameterAnnotations);
 	}
 }

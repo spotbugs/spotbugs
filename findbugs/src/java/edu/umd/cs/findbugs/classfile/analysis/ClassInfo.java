@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.classfile.analysis;
 import java.lang.annotation.ElementType;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +44,7 @@ import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.TopologicalSort;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
+import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges2;
 
 /**
  * ClassInfo represents important metadata about a loaded class, such as its
@@ -180,11 +182,15 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 			}
 			final MultiMap<MethodInfo, MethodInfo> multiMap =
 				SelfMethodCalls.getSelfCalls(getClassDescriptor(), map);
-			OutEdges<MethodInfo> edges1 = new OutEdges<MethodInfo>() {
+			OutEdges2<MethodInfo> edges1 = new OutEdges2<MethodInfo>() {
 
 				public Collection<MethodInfo> getOutEdges(MethodInfo method) {
 					return multiMap.get(method);
 				}
+
+				public int score(MethodInfo e) {
+	                return e.getMethodCallCount();
+                }
 			};
 			List<MethodInfo> result = TopologicalSort.sortByCallGraph(Arrays.asList(xMethods), edges1);
 			assert xMethods.length == result.size();
@@ -232,6 +238,13 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		this.usesConcurrency = usesConcurrency;
 		this.hasStubs = hasStubs;
 		this.methodsInCallOrder = computeMethodsInCallOrder();
+		if (false) {
+			System.out.println("Methods in call order for " + classDescriptor);
+			for (MethodInfo m : methodsInCallOrder) {
+				System.out.println("  " + m);
+			}
+			System.out.println();
+		}
 	}
 
 	/**

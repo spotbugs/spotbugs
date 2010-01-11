@@ -44,6 +44,9 @@ public class TopologicalSort {
 	public interface OutEdges<E> {
 		Collection<E> getOutEdges(E e);
 	}
+	public interface OutEdges2<E>  extends OutEdges<E> {
+		int score(E e);
+	}
 
 	public static class OutEdgesCache<E> implements OutEdges<E> {
 
@@ -191,6 +194,8 @@ public class TopologicalSort {
 						} else {
 							// Higher score: more likely to choose
 							int myScore = score(e);
+							if (outEdges instanceof OutEdges2) 
+								myScore = 10*myScore + ((OutEdges2<E>)outEdges).score(e);
 							
 							// myScore -= oEdges.get(e).size(); // more needs, more reluctant
 							// myScore += iEdges.get(e).size(); // needed more, more eager
@@ -203,19 +208,10 @@ public class TopologicalSort {
 					} // iterator
 					if (!foundSomething) {
 						if (DEBUG) {
-							if (best.toString().equals("org/eclipse/jdt/internal/core/JavaModel")) {
-								System.out.println("Full dump for org/eclipse/jdt/internal/core/JavaModel {");
-								for(E e : remaining) {
-									System.out.printf(" %4d %s\n", score(e), e);
-									System.out.println("  needs: " + oEdges.get(e));
-									System.out.println("  needed by: " + iEdges.get(e));
-									}
-								System.out.println("} Full dump for org/eclipse/jdt/internal/core/JavaModel");
-								
-							}
-						System.out.println("do " + best + " first, reluctantly");
-						System.out.println("  needs: " + oEdges.get(best));
-						System.out.println("  needed by: " + iEdges.get(best));
+							System.out.println("do " + best + " first, reluctantly");
+							System.out.println("  score: " + bestScore);
+							System.out.println("  needs: " + oEdges.get(best));
+							System.out.println("  needed by: " + iEdges.get(best));
 						}
 						doFirst.add(best);
 						removeVertex(best);

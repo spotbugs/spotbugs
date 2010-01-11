@@ -183,6 +183,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						boolean sawUnsupportedThrow = false;
 						boolean sawSystemExit = false;
 						boolean sawBranch = false;
+						int methodCallCount = 0;
 						boolean sawStubThrow = false;
 						boolean justSawInitializationOfUnsupportedOperationException;
 						boolean isBridge = (access & Opcodes.ACC_SYNTHETIC) != 0 &&  (access & Opcodes.ACC_BRIDGE) != 0;
@@ -244,6 +245,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
 						@Override
 						public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+							methodCallCount++;
 							if (stubState == StubState.LOADED_STUB 
 									&& opcode == Opcodes.INVOKESPECIAL && owner.equals("java/lang/RuntimeException")
 									&& name.equals("<init>"))
@@ -302,6 +304,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 								}									
 								// else System.out.println(slashedClassName+"."+methodName+methodDesc + " is thrower");
 							}
+							mBuilder.setNumberMethodCalls(methodCallCount);
 							MethodInfo methodInfo = mBuilder.build();
 							Builder classBuilder = (ClassInfo.Builder)cBuilder;
 							if (isBridge && !bridgedMethodSignature.equals(methodDesc))
