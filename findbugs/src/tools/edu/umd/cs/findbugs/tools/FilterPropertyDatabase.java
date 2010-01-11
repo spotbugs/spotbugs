@@ -52,25 +52,31 @@ public class FilterPropertyDatabase {
 	}
 
 	/**
-     * @param inSource
-     * @throws UnsupportedEncodingException
-     * @throws IOException
-     */
-    private static void process(InputStream inSource) throws UnsupportedEncodingException, IOException {
-	    BufferedReader in = new BufferedReader(Util.getReader(inSource));
-		Pattern p = Pattern.compile(",([0-9]+)\\|");
-		while (true) {
-			String s = in.readLine();
-			if (s == null)
-				break;
-			Matcher m = p.matcher(s);
-			if (m.find()) {
-				int value = Integer.parseInt(m.group(1));
-				if ((value & FLAGS) != 0)
-					System.out.println(s);
-			}
+	 * @param inSource
+	 * @throws UnsupportedEncodingException
+	 * @throws IOException
+	 */
+	private static void process(InputStream inSource) throws UnsupportedEncodingException, IOException {
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(Util.getReader(inSource));
 
+			Pattern p = Pattern.compile(",([0-9]+)\\|");
+			while (true) {
+				String s = in.readLine();
+				if (s == null)
+					break;
+				Matcher m = p.matcher(s);
+				if (m.find()) {
+					int value = Integer.parseInt(m.group(1));
+					if ((value & FLAGS) != 0)
+						System.out.println(s);
+				}
+
+			}
+		} finally {
+			Util.closeSilently(in);
 		}
-    }
+	}
 
 }
