@@ -193,9 +193,7 @@ public class TopologicalSort {
 							foundSomething = true;
 						} else {
 							// Higher score: more likely to choose
-							int myScore = score(e);
-							if (outEdges instanceof OutEdges2) 
-								myScore = 10*myScore + ((OutEdges2<E>)outEdges).score(e);
+							int myScore = getScore(e);
 							
 							// myScore -= oEdges.get(e).size(); // more needs, more reluctant
 							// myScore += iEdges.get(e).size(); // needed more, more eager
@@ -223,6 +221,20 @@ public class TopologicalSort {
 
 				return doFirst;
 		}
+		/**
+         * @param e
+         * @return
+         */
+        private int getScore(E e) {
+	        int myScore = score(e);
+	        if (outEdges instanceof OutEdges2) {
+	        	int score2 =  ((OutEdges2<E>)outEdges).score(e);
+	        	if (score2 > 1)
+	        		score2 += 11;
+	        	myScore = 5*myScore + score2;
+	        }
+	        return myScore;
+        }
 		/**
          * @param e
          * @return
