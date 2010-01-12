@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba;
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReturnInstruction;
 
@@ -103,17 +104,33 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 		if (opcode == Constants.MONITORENTER || opcode == Constants.MONITOREXIT) {
 			ValueNumberFrame frame = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
 
-			// NOTE: if the CFG is pruned, there may be unreachable instructions,
-			// so make sure frame is valid.
-			if (frame.isValid()) {
-				int lockNumber = frame.getTopValue().getNumber();
-				lockOp(fact, lockNumber, opcode == Constants.MONITORENTER ? 1 : -1);
-			}
-		} else if ((ins instanceof ReturnInstruction) && isSynchronized && !isStatic) {
+			modifyLock(frame, fact,  opcode == Constants.MONITORENTER ? 1 : -1);
+			
+		} else if (opcode == Constants.INVOKEVIRTUAL || opcode == Constants.INVOKEINTERFACE) {
+			
+			InvokeInstruction inv = (InvokeInstruction) ins;
+			String name = inv.getMethodName(methodGen.getConstantPool());
+			String sig = inv.getSignature(methodGen.getConstantPool());
+			ValueNumberFrame frame = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
+
+			
+			if (sig.equals("()V") && ( name.equals("lock") || name.equals("lockInterruptibly"))) 
+				modifyLock(frame, fact,  1);
+			else if (sig.equals("()V") && ( name.equals("unlock") )) 
+				modifyLock(frame, fact,  -1);
+			
+		}	else if ((ins instanceof ReturnInstruction) && isSynchronized && !isStatic) {
+		
 			lockOp(fact, vna.getThisValue().getNumber(), -1);
 		}
 	}
 
+	private void modifyLock(ValueNumberFrame frame, LockSet fact, int delta) throws DataflowAnalysisException {
+		if (frame.isValid()) {
+			int lockNumber = frame.getTopValue().getNumber();
+			lockOp(fact, lockNumber, delta);
+		}
+	}
 	private  void lockOp(LockSet fact, int lockNumber, int delta) {
 		int value = fact.getLockCount(lockNumber);
 		if (value < 0) // can't modify TOP or BOTTOM value
