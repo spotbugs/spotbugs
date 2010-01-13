@@ -767,6 +767,11 @@ public  class DBCloud extends AbstractCloud {
 	            
             }});
 	}
+	
+	public BugDesignation getPrimaryDesignation(BugInstance b) {
+		return getBugData(b).getPrimaryDesignation();
+	}
+
 	public void storeUserAnnotation(BugData data, BugDesignation bd) {
 		checkForShutdown();
 		queue.add(new StoreUserAnnotation(data, bd));
@@ -1184,90 +1189,7 @@ public  class DBCloud extends AbstractCloud {
     		return notAProblem > isAProblem;
  	  
      }
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#getUser()
-     */
-
-    public UserDesignation getUserDesignation(BugInstance b) {
-    	BugDesignation bd =  getBugData(b).getPrimaryDesignation();
-    	if (bd == null) 
-    		return UserDesignation.UNCLASSIFIED;
-    	return UserDesignation.valueOf(bd.getDesignationKey());
-    }
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#getUserEvaluation(edu.umd.cs.findbugs.BugInstance)
-     */
-    public String getUserEvaluation(BugInstance b) {
-    	BugDesignation bd =  getBugData(b).getPrimaryDesignation();
-    	if (bd == null) return "";
-    	String result =  bd.getAnnotationText();
-    	if (result == null)
-    		return "";
-    	return result;
-    }
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#getUserTimestamp(edu.umd.cs.findbugs.BugInstance)
-     */
-    public long getUserTimestamp(BugInstance b) {
-    	BugDesignation bd =  getBugData(b).getPrimaryDesignation();
-    	if (bd == null) return Long.MAX_VALUE;
-    	return bd.getTimestamp();
-    	
-    }
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#setUserDesignation(edu.umd.cs.findbugs.BugInstance, edu.umd.cs.findbugs.cloud.UserDesignation, long)
-     */
-    public void setUserDesignation(BugInstance b, UserDesignation u, long timestamp) {
-    	if (u == UserDesignation.UNCLASSIFIED)
-    		   return;
-    	BugData data = getBugData(b);
-    	
-	    BugDesignation bd = data.getUserDesignation();
-	    if (bd == null) {
-	    	bd = data.getNonnullUserDesignation();
-	    }
-	    bd.setDesignationKey(u.name());
-	    if (bd.isDirty()) {
-	    	bd.setTimestamp(timestamp);
-	    	storeUserAnnotation(data, bd);
-	    }
-	    	
 	    
-    }
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#setUserEvaluation(edu.umd.cs.findbugs.BugInstance, java.lang.String, long)
-     */
-    public void setUserEvaluation(BugInstance b, String e, long timestamp) {
-    	BugData data = getBugData(b);
-    	
-	    BugDesignation bd = data.getUserDesignation();
-	    if (bd == null) {
-	    	if (e.length() == 0) 
-	    		return;
-	    	bd = data.getNonnullUserDesignation();
-	    }
-	    bd.setAnnotationText(e);
-	    if (bd.isDirty()) {
-	    	bd.setTimestamp(timestamp);
-	    	storeUserAnnotation(data, bd);
-	    }
-	    
-    }
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#setUserTimestamp(edu.umd.cs.findbugs.BugInstance, long)
-     */
-    public void setUserTimestamp(BugInstance b, long timestamp) {
-    	BugData data = getBugData(b);
-    	
-    	if (data == null)
-    		return;
-	    BugDesignation bd = data.getNonnullUserDesignation();
-
-	    bd.setTimestamp(timestamp);
-	    storeUserAnnotation(data, bd);
-	    
-    }
-    
     static final String BUG_NOTE = SystemProperties.getProperty("findbugs.bugnote");
 	
     String getBugReportHead(BugInstance b) {

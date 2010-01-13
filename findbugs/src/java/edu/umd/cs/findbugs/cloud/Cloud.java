@@ -28,6 +28,7 @@ import java.util.SortedSet;
 import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SystemProperties;
 
@@ -219,8 +220,8 @@ public interface Cloud {
 	String claimedBy(BugInstance b);
 
 	/**
-	 * Claim the bug; true if no one else has already done so */
-	
+	 * Claim the bug; true if no one else has already done so 
+	 */
 	boolean claim(BugInstance b);
 
 	
@@ -229,21 +230,15 @@ public interface Cloud {
 	long getUserTimestamp(BugInstance b);
 	Date getUserDate(BugInstance b);
 
-	/** Set the time the user last changed their evaluation of this bug */
-	void setUserTimestamp(BugInstance b, long timestamp);
-
+	/** Get the most recent BugDesignation from the current user */
+	BugDesignation getPrimaryDesignation(BugInstance b);
+	
 	/** Get the user's designation for the bug */
 	UserDesignation getUserDesignation(BugInstance b);
 
-	/** Set the user's designation for the bug */
-	void setUserDesignation(BugInstance b, UserDesignation u, long timestamp);
-
 	/** Get free text evaluation of the bug */
 	String getUserEvaluation(BugInstance b);
-
-	/** Set free text evaluation of the bug */
-	void setUserEvaluation(BugInstance b, String e, long timestamp);
-
+	
 	
 	double getClassificationScore(BugInstance b);
 

@@ -25,8 +25,10 @@ import java.util.Date;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.cloud.Cloud.Mode;
+import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 
 
 /**
@@ -176,4 +178,36 @@ public abstract class AbstractCloud implements Cloud {
     public double getClassificationDisagreement(BugInstance b) {
 	    return 0;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#getUser()
+     */
+
+    public UserDesignation getUserDesignation(BugInstance b) {
+    	BugDesignation bd = getPrimaryDesignation(b);
+    	if (bd == null) 
+    		return UserDesignation.UNCLASSIFIED;
+    	return UserDesignation.valueOf(bd.getDesignationKey());
+    }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#getUserEvaluation(edu.umd.cs.findbugs.BugInstance)
+     */
+    public String getUserEvaluation(BugInstance b) {
+    	BugDesignation bd = getPrimaryDesignation(b);
+    	if (bd == null) return "";
+    	String result =  bd.getAnnotationText();
+    	if (result == null)
+    		return "";
+    	return result;
+    }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#getUserTimestamp(edu.umd.cs.findbugs.BugInstance)
+     */
+    public long getUserTimestamp(BugInstance b) {
+    	BugDesignation bd = getPrimaryDesignation(b);
+    	if (bd == null) return Long.MAX_VALUE;
+    	return bd.getTimestamp();
+    	
+    }
+
 }

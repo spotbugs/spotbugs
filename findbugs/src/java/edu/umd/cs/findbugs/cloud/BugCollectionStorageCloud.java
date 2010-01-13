@@ -132,6 +132,13 @@ import edu.umd.cs.findbugs.BugInstance;
 	    
     }
 
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#getPrimaryDesignation(edu.umd.cs.findbugs.BugInstance)
+     */
+    public BugDesignation getPrimaryDesignation(BugInstance b) {
+    	return  b.getUserDesignation();
+    }
+
 
 
 	
