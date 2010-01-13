@@ -10,10 +10,10 @@ Bundle-ClassPath: findbugs-plugin.jar,
  lib/dom4j-1.6.1.jar,
  lib/jaxen-1.1.1.jar,
  lib/jFormatString.jar,
- lib/asm-tree-3.1.jar,
- lib/asm-3.1.jar,
- lib/asm-commons-3.1.jar,
- lib/commons-lang-2.4.jar
+ lib/commons-lang-2.4.jar,
+ lib/asm-3.2.jar,
+ lib/asm-commons-3.2.jar,
+ lib/asm-tree-3.2.jar
 Bundle-Activator: de.tobject.findbugs.FindbugsPlugin
 Bundle-Vendor: FindBugs Project
 Bundle-Localization: plugin
