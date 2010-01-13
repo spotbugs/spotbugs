@@ -48,8 +48,8 @@ message Issue {
 message Evaluation {
   // who is ignored during evaluation upload
   optional string who = 1;
-  required string designation = 2;
-  required string comment = 3;
+  optional string designation = 2;
+  optional string comment = 3;
   required int64 when = 4;
 }
 

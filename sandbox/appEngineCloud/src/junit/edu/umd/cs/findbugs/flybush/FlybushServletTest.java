@@ -164,7 +164,10 @@ public class FlybushServletTest extends TestCase {
 		// exception when attempting to persist the eval with the issue.
 		persistenceManager.makePersistent(foundIssue);
 
-		LogIn hashesToFind = createAuthenticatedLogInMsg().addMyIssueHashes("NEW_BUG").addMyIssueHashes("OLD_BUG").build();
+		LogIn hashesToFind = createAuthenticatedLogInMsg()
+				.addMyIssueHashes("NEW_BUG")
+				.addMyIssueHashes("OLD_BUG")
+				.build();
 		executePost("/find-issues", hashesToFind.toByteArray());
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getFoundIssuesCount());
@@ -244,7 +247,7 @@ public class FlybushServletTest extends TestCase {
 	}
 
 	public void testUploadIssueWithoutAuthenticating() throws IOException {
-		Issue issue = createProtoIssue();
+		Issue issue = createProtoIssue("MY_BUG");
 		UploadIssues issuesToUpload = UploadIssues.newBuilder().setSessionId(555).addNewIssues(issue).build();
 		executePost("/upload-issues", issuesToUpload.toByteArray());
 		checkResponse(403);
@@ -253,7 +256,7 @@ public class FlybushServletTest extends TestCase {
 	@SuppressWarnings("unchecked")
 	public void testUploadIssue() throws IOException {
     	createCloudSession(555);
-		Issue issue = createProtoIssue();
+		Issue issue = createProtoIssue("MY_BUG");
 		UploadIssues issuesToUpload = UploadIssues.newBuilder().setSessionId(555).addNewIssues(issue).build();
 		executePost("/upload-issues", issuesToUpload.toByteArray());
 		checkResponse(200, "");
@@ -262,6 +265,24 @@ public class FlybushServletTest extends TestCase {
 		assertEquals(1, dbIssues.size());
 
 		checkIssuesEqual(dbIssues.get(0), issue);
+	}
+
+	@SuppressWarnings("unchecked")
+	public void testUploadMultipleIssues() throws IOException {
+    	createCloudSession(555);
+		Issue issue1 = createProtoIssue("MY_BUG_1");
+		Issue issue2 = createProtoIssue("MY_BUG_2");
+		UploadIssues issuesToUpload = UploadIssues.newBuilder()
+				.setSessionId(555).addNewIssues(issue1).addNewIssues(issue2)
+				.build();
+		executePost("/upload-issues", issuesToUpload.toByteArray());
+		checkResponse(200, "");
+		List<DbIssue> dbIssues = (List<DbIssue>) persistenceManager
+				.newQuery("select from " + DbIssue.class.getName()).execute();
+		assertEquals(2, dbIssues.size());
+
+		checkIssuesEqual(dbIssues.get(0), issue1);
+		checkIssuesEqual(dbIssues.get(1), issue2);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -363,7 +384,6 @@ public class FlybushServletTest extends TestCase {
 
 	// ========================= end of tests ================================
 
-
 	private Evaluation createProtoEvaluation() {
 		Evaluation protoEval = Evaluation.newBuilder()
 				.setDesignation("MUST_FIX")
@@ -451,10 +471,6 @@ public class FlybushServletTest extends TestCase {
 		foundIssue.setFirstSeen(100);
 		foundIssue.setLastSeen(200);
 		return foundIssue;
-	}
-
-	private Issue createProtoIssue() {
-		return createProtoIssue("MY_BUG");
 	}
 
 	private Issue createProtoIssue(String hashAndPattern) {

@@ -2623,14 +2623,14 @@ public final class ProtoClasses {
     public boolean hasWho() { return hasWho; }
     public java.lang.String getWho() { return who_; }
     
-    // required string designation = 2;
+    // optional string designation = 2;
     public static final int DESIGNATION_FIELD_NUMBER = 2;
     private boolean hasDesignation;
     private java.lang.String designation_ = "";
     public boolean hasDesignation() { return hasDesignation; }
     public java.lang.String getDesignation() { return designation_; }
     
-    // required string comment = 3;
+    // optional string comment = 3;
     public static final int COMMENT_FIELD_NUMBER = 3;
     private boolean hasComment;
     private java.lang.String comment_ = "";
@@ -2645,8 +2645,6 @@ public final class ProtoClasses {
     public long getWhen() { return when_; }
     
     public final boolean isInitialized() {
-      if (!hasDesignation) return false;
-      if (!hasComment) return false;
       if (!hasWhen) return false;
       return true;
     }
@@ -2918,7 +2916,7 @@ public final class ProtoClasses {
         return this;
       }
       
-      // required string designation = 2;
+      // optional string designation = 2;
       public boolean hasDesignation() {
         return result.hasDesignation();
       }
@@ -2939,7 +2937,7 @@ public final class ProtoClasses {
         return this;
       }
       
-      // required string comment = 3;
+      // optional string comment = 3;
       public boolean hasComment() {
         return result.hasComment();
       }
@@ -3057,8 +3055,8 @@ public final class ProtoClasses {
       "\tfirstSeen\030\005 \001(\003\022\020\n\010lastSeen\030\006 \001(\003\022M\n\013ev" +
       "aluations\030\007 \003(\01328.edu.umd.cs.findbugs.cl" +
       "oud.appEngine.protobuf.Evaluation\"M\n\nEva",
-      "luation\022\013\n\003who\030\001 \001(\t\022\023\n\013designation\030\002 \002(" +
-      "\t\022\017\n\007comment\030\003 \002(\t\022\014\n\004when\030\004 \002(\003"
+      "luation\022\013\n\003who\030\001 \001(\t\022\023\n\013designation\030\002 \001(" +
+      "\t\022\017\n\007comment\030\003 \001(\t\022\014\n\004when\030\004 \002(\003"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

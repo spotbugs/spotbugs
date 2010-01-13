@@ -120,8 +120,8 @@ public class FlybushServlet extends HttpServlet {
 			long id = Long.parseLong(req.getPathInfo().substring("/browser-auth/".length()));
 		    Date date = new Date();
 		    SqlCloudSession session = new SqlCloudSession(user, id, date);
-		    
-		    Transaction tx = persistenceManager.currentTransaction();
+
+		    Transaction tx = pm.currentTransaction();
 		    tx.begin();
 		    try {
 				pm.makePersistent(session);
@@ -132,6 +132,7 @@ public class FlybushServlet extends HttpServlet {
 			resp.setStatus(200);
 		    resp.setContentType("text/html");
 		    PrintWriter writer = resp.getWriter();
+		    writer.println("<title>FindBugs Cloud</title>");
 			writer.println("<h1>You are now signed in</h1>");
 		    writer.println("<p style='font-size: large; font-weight: bold'>"
 		    		+ "Please return to the FindBugs application window to continue.</p>");
@@ -192,7 +193,7 @@ public class FlybushServlet extends HttpServlet {
 		DbInvocation invocation = new DbInvocation();
 		invocation.setWho(session.getUser().getNickname());
 		invocation.setStartTime(loginMsg.getAnalysisTimestamp());
-		
+
 		Transaction tx = pm.currentTransaction();
 		tx.begin();
 		try {
@@ -229,7 +230,6 @@ public class FlybushServlet extends HttpServlet {
 			hashes.add(issue.getHash());
 		}
 		HashSet<String> existingIssueHashes = lookupHashes(hashes, pm);
-		List<DbIssue> newDbIssues = new ArrayList<DbIssue>();
 		for (Issue issue : issues.getNewIssuesList()) {
 			if (!existingIssueHashes.contains(issue.getHash())) {
 				DbIssue dbIssue = new DbIssue();
@@ -239,17 +239,17 @@ public class FlybushServlet extends HttpServlet {
 				dbIssue.setPrimaryClass(issue.getPrimaryClass());
 				dbIssue.setFirstSeen(issue.getFirstSeen());
 				dbIssue.setLastSeen(issue.getLastSeen());
-				newDbIssues.add(dbIssue);
+				Transaction tx = pm.currentTransaction();
+				tx.begin();
+				try {
+					pm.makePersistent(dbIssue);
+					tx.commit();
+				} finally {
+					if (tx.isActive()) tx.rollback();
+				}
 			}
 		}
-		Transaction tx = pm.currentTransaction();
-		tx.begin();
-		try {
-			pm.makePersistentAll(newDbIssues);
-			tx.commit();
-		} finally {
-			if (tx.isActive()) tx.rollback();
-		}
+
 		setResponse(resp, 200, "");
 	}
 
