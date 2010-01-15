@@ -176,7 +176,8 @@ public class LoadOfKnownNullValue implements Detector {
 				if (startLine > 0 && lineMentionedMultipleTimes.get(startLine) && linesWithLoadsOfNotDefinitelyNullValues.get(startLine))
 					continue;
 
-				if (startLine > prevSourceLineAnnotation.getEndLine()) {
+				int previousLine = prevSourceLineAnnotation.getEndLine();
+				if (startLine < previousLine) {
 					// probably stored for duration of finally block
 					// System.out.println("Inverted line");
 					continue;
