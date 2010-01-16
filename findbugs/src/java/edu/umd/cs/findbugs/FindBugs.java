@@ -338,18 +338,24 @@ public abstract class FindBugs  {
 	 * 
 	 * @param findBugs    a fully-configured IFindBugsEngine
 	 * @param commandLine the TextUICommandLine used to configure the IFindBugsEngine
-	 * @throws java.io.IOException
-	 * @throws java.lang.RuntimeException
 	 */
 	@SuppressWarnings("DM_EXIT")
-	public static void runMain(IFindBugsEngine findBugs, TextUICommandLine commandLine)
-			throws java.io.IOException, RuntimeException {
+	public static void runMain(IFindBugsEngine findBugs, TextUICommandLine commandLine) 
+		throws IOException {
 		try {
 			findBugs.execute();
 		} catch (InterruptedException e) {
-			// Not possible when running from the command line
+			assert false; // should not occur
+			checkExitCodeFail(commandLine, e);
+			throw new RuntimeException(e); 
+		} catch (RuntimeException e) {
+			checkExitCodeFail(commandLine, e);
+			throw e;
+		} catch (IOException e) {
+			checkExitCodeFail(commandLine, e);
+			throw e;
 		}
-
+		
 		int bugCount = findBugs.getBugCount();
 		int missingClassCount = findBugs.getMissingClassCount();
 		int errorCount = findBugs.getErrorCount();
@@ -389,6 +395,17 @@ public abstract class FindBugs  {
 			System.exit(exitCode);
 		}
 	}
+
+	/**
+     * @param commandLine
+     * @param e
+     */
+    private static void checkExitCodeFail(TextUICommandLine commandLine, Exception e) {
+	    if ( commandLine.setExitCode()) {
+	    	e.printStackTrace(System.err);
+	    	System.exit(ExitCodes.ERROR_FLAG);
+	    }
+    }
 
 	/**
 	 * Print command line options synopses to stdout.
