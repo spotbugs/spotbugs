@@ -27,6 +27,7 @@ import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
@@ -66,7 +67,7 @@ public class FlybushServlet extends HttpServlet {
 			} else if (uri.startsWith("/check-auth/")) {
 				checkAuth(req, resp, pm);
 
-			} else if (uri.startsWith("/get-evaluations/")) {
+			} else if (uri.equals("/get-evaluations")) {
 				getEvaluations(req, resp, pm);
 
 			} else {
@@ -162,7 +163,13 @@ public class FlybushServlet extends HttpServlet {
 	@SuppressWarnings("unchecked")
 	private void getEvaluations(HttpServletRequest req,
 			HttpServletResponse resp, PersistenceManager pm) throws IOException {
-		long startTime = Long.parseLong(req.getPathInfo().substring("/get-evaluations/".length()));
+		GetRecentEvaluations recentEvalsRequest = GetRecentEvaluations.parseFrom(req.getInputStream());
+		SqlCloudSession sqlCloudSession = lookupCloudSessionById(recentEvalsRequest.getSessionId(), pm);
+		if (sqlCloudSession == null) {
+			setResponse(resp, 403, "not authenticated");
+			return;
+		}
+		long startTime = recentEvalsRequest.getTimestamp();
 		Query query = pm.newQuery(
 				"select from " + DbEvaluation.class.getName()
 				+ " where when > " + startTime + " order by when"

@@ -8,6 +8,9 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.protobuf.GeneratedMessage;
 
@@ -18,9 +21,11 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.Builder;
@@ -28,10 +33,16 @@ import edu.umd.cs.findbugs.cloud.db.AppEngineNameLookup;
 
 public class AppEngineCloud extends AbstractCloud {
 
-	private Map<String, Issue> issuesByHash = new HashMap<String, Issue>();
+	private static final int EVALUATION_CHECK_MINS = 5;
+
+	private Map<String, Issue> issuesByHash = new ConcurrentHashMap<String, Issue>();
 
 	private long sessionId;
 	private String user;
+
+	private Timer timer;
+
+	private long mostRecentEvaluationMillis = 0;
 
 	public AppEngineCloud(BugCollection bugs) {
 		super(bugs);
@@ -51,6 +62,15 @@ public class AppEngineCloud extends AbstractCloud {
 		sessionId = lookerupper.getSessionId();
 		user = lookerupper.getUsername();
 
+		if (timer != null) timer.cancel();
+		timer = new Timer(true);
+		int periodMillis = EVALUATION_CHECK_MINS*60*1000;
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				updateEvaluationsFromServer();
+			}
+		}, periodMillis, periodMillis);
 		bugsPopulated();
 		return true;
 	}
@@ -63,7 +83,7 @@ public class AppEngineCloud extends AbstractCloud {
 
 	public BugDesignation getPrimaryDesignation(BugInstance b) {
 		Evaluation e = getMostRecentEvaluation(b);
-		return new BugDesignation(e.getDesignation(), e.getWhen(),
+		return e == null ? null : new BugDesignation(e.getDesignation(), e.getWhen(),
 								  e.getComment(), e.getWho());
 	}
 
@@ -77,7 +97,6 @@ public class AppEngineCloud extends AbstractCloud {
 
 	// ================== mutators ================
 
-	@SuppressWarnings("deprecation")
 	public void bugsPopulated() {
 		Map<String, BugInstance> bugsByHash = new HashMap<String, BugInstance>();
 
@@ -89,12 +108,10 @@ public class AppEngineCloud extends AbstractCloud {
 		try {
 			LogInResponse response = submitHashes(bugsByHash);
 			for (Issue issue : response.getFoundIssuesList()) {
-				issuesByHash.put(issue.getHash(), issue);
+				storeProtoIssue(issue);
 				BugInstance bugInstance = bugsByHash.remove(issue.getHash());
 				if (bugInstance != null) {
-					BugDesignation primaryDesignation = getPrimaryDesignation(bugInstance);
-					bugInstance.setUserDesignation(primaryDesignation);
-					updatedIssue(bugInstance);
+					updateBugInstanceAndNotify(bugInstance);
 				}
 			}
 			Collection<BugInstance> newBugs = bugsByHash.values();
@@ -128,6 +145,37 @@ public class AppEngineCloud extends AbstractCloud {
 				.build();
 
 		openUrl(uploadMsg, "/upload-evaluation");
+	}
+
+	/** package-private for testing */
+	void updateEvaluationsFromServer() {
+		RecentEvaluations evals;
+		try {
+			evals = getRecentEvaluationsFromServer();
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
+		for (Issue issue : evals.getIssuesList()) {
+			Issue existingIssue = issuesByHash.get(issue.getHash());
+			if (existingIssue != null) {
+				Issue newIssue = mergeIssues(existingIssue, issue);
+				assert newIssue.getHash().equals(issue.getHash());
+				storeProtoIssue(newIssue);
+				BugInstance bugInstance = findBugInstance(issue.getHash());
+				if (bugInstance != null) {
+					updateBugInstanceAndNotify(bugInstance);
+				}
+			}
+		}
+	}
+
+	private void storeProtoIssue(Issue newIssue) {
+		for (Evaluation eval : newIssue.getEvaluationsList()) {
+			if (eval.getWhen() > mostRecentEvaluationMillis) {
+				mostRecentEvaluationMillis = eval.getWhen();
+			}
+		}
+		issuesByHash.put(newIssue.getHash(), newIssue);
 	}
 
 	// ==================== for testing ===========================
@@ -192,6 +240,53 @@ public class AppEngineCloud extends AbstractCloud {
 		return (HttpURLConnection) u.openConnection();
 	}
 
+	private @CheckForNull BugInstance findBugInstance(String hash) {
+		for (BugInstance instance : bugCollection.getCollection()) {
+			if (instance.getInstanceHash().equals(hash)) {
+				return instance;
+			}
+		}
+		return null;
+	}
+
+	@SuppressWarnings("deprecation")
+	private void updateBugInstanceAndNotify(BugInstance bugInstance) {
+		BugDesignation primaryDesignation = getPrimaryDesignation(bugInstance);
+		if (primaryDesignation != null) {
+			bugInstance.setUserDesignation(primaryDesignation);
+			updatedIssue(bugInstance);
+		}
+	}
+
+	private Issue mergeIssues(Issue existingIssue, Issue updatedIssue) {
+		Issue newIssue = Issue.newBuilder(existingIssue)
+				.addAllEvaluations(updatedIssue.getEvaluationsList())
+				.build();
+		return newIssue;
+	}
+
+	private RecentEvaluations getRecentEvaluationsFromServer() throws IOException {
+		HttpURLConnection conn = openConnection("/get-evaluations/");
+		conn.setDoOutput(true);
+		conn.connect();
+		try {
+			GetRecentEvaluations.newBuilder()
+					.setSessionId(sessionId)
+					.setTimestamp(mostRecentEvaluationMillis)
+					.build()
+					.writeTo(conn.getOutputStream());
+			if (conn.getResponseCode() != 200) {
+				throw new IllegalStateException(
+						"server returned error code "
+								+ conn.getResponseCode() + " "
+								+ conn.getResponseMessage());
+			}
+			return RecentEvaluations.parseFrom(conn.getInputStream());
+		} finally {
+			conn.disconnect();
+		}
+	}
+
 	private Evaluation getMostRecentEvaluation(BugInstance b) {
 		Issue issue = issuesByHash.get(b.getInstanceHash());
 		if (issue == null)
@@ -213,9 +308,11 @@ public class AppEngineCloud extends AbstractCloud {
 			conn.setDoOutput(true);
 			conn.connect();
 			try {
-				OutputStream stream = conn.getOutputStream();
-				uploadMsg.writeTo(stream);
-				stream.close();
+				if (uploadMsg != null) {
+					OutputStream stream = conn.getOutputStream();
+					uploadMsg.writeTo(stream);
+					stream.close();
+				}
 				if (conn.getResponseCode() != 200) {
 					throw new IllegalStateException(
 							"server returned error code "

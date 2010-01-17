@@ -37,6 +37,7 @@ import com.google.appengine.tools.development.ApiProxyLocalImpl;
 import com.google.apphosting.api.ApiProxy;
 
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
@@ -207,7 +208,14 @@ public class FlybushServletTest extends TestCase {
 		assertFalse(queries.get(1).contains("\"19\""));
 	}
 
+	public void testGetRecentEvaluationsNoAuth() throws IOException {
+		executeGet("/get-evaluations", createRecentEvalsRequest(100).toByteArray());
+		checkResponse(403, "not authenticated");
+	}
+
 	public void testGetRecentEvaluations() throws IOException {
+		createCloudSession(555);
+
 		DbIssue issue = createDbIssue("OLD_BUG");
 		DbEvaluation eval1 = createEvaluation(issue, 100);
 		DbEvaluation eval2 = createEvaluation(issue, 200);
@@ -216,7 +224,7 @@ public class FlybushServletTest extends TestCase {
 
 		persistenceManager.makePersistent(issue);
 
-		executeGet("/get-evaluations/100");
+		executeGet("/get-evaluations", createRecentEvalsRequest(150).toByteArray());
 		checkResponse(200);
 		RecentEvaluations result = RecentEvaluations.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getIssuesCount());
@@ -232,6 +240,8 @@ public class FlybushServletTest extends TestCase {
 	}
 
 	public void testGetRecentEvaluationsNoneFound() throws IOException {
+		createCloudSession(555);
+
 		DbIssue issue = createDbIssue("OLD_BUG");
 		DbEvaluation eval1 = createEvaluation(issue, 100);
 		DbEvaluation eval2 = createEvaluation(issue, 200);
@@ -240,7 +250,7 @@ public class FlybushServletTest extends TestCase {
 
 		persistenceManager.makePersistent(issue);
 
-		executeGet("/get-evaluations/300");
+		executeGet("/get-evaluations", createRecentEvalsRequest(300).toByteArray());
 		checkResponse(200);
 		RecentEvaluations result = RecentEvaluations.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getIssuesCount());
@@ -383,6 +393,13 @@ public class FlybushServletTest extends TestCase {
 	}
 
 	// ========================= end of tests ================================
+
+	private GetRecentEvaluations createRecentEvalsRequest(int timestamp) {
+		return GetRecentEvaluations.newBuilder()
+				.setSessionId(555)
+				.setTimestamp(timestamp)
+				.build();
+	}
 
 	private Evaluation createProtoEvaluation() {
 		Evaluation protoEval = Evaluation.newBuilder()
