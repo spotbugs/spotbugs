@@ -192,7 +192,7 @@ public class AppEngineCloud extends AbstractCloud {
 
 	// ================== private methods ======================
 
-	private @CheckForNull LogInResponse submitHashes(Map<String, BugInstance> bugsByHash)
+	private LogInResponse submitHashes(Map<String, BugInstance> bugsByHash)
 			throws IOException, MalformedURLException {
 		HttpURLConnection conn = openConnection("/find-issues");
 		conn.setDoOutput(true);
