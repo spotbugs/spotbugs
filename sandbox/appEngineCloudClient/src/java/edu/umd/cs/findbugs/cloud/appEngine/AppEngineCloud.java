@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs.cloud.appEngine;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -92,10 +93,34 @@ public class AppEngineCloud extends AbstractCloud {
 		if (issue == null)
 			return Long.MAX_VALUE;
 		return issue.getFirstSeen();
-
 	}
 
 	// ================== mutators ================
+
+	@Override
+	public void printCloudReport(Iterable<BugInstance> bugs, PrintWriter w) {
+		// TODO Auto-generated method stub
+		super.printCloudReport(bugs, w);
+	}
+
+	@Override
+	public void printCloudSummary(PrintWriter w, Iterable<BugInstance> bugs,
+			String[] packagePrefixes) {
+		// TODO Auto-generated method stub
+		super.printCloudSummary(w, bugs, packagePrefixes);
+	}
+
+	@Override
+	public boolean supportsCloudReports() {
+		// TODO Auto-generated method stub
+		return super.supportsCloudReports();
+	}
+
+	@Override
+	public boolean supportsCloudSummaries() {
+		// TODO Auto-generated method stub
+		return super.supportsCloudSummaries();
+	}
 
 	public void bugsPopulated() {
 		Map<String, BugInstance> bugsByHash = new HashMap<String, BugInstance>();
@@ -169,15 +194,6 @@ public class AppEngineCloud extends AbstractCloud {
 		}
 	}
 
-	private void storeProtoIssue(Issue newIssue) {
-		for (Evaluation eval : newIssue.getEvaluationsList()) {
-			if (eval.getWhen() > mostRecentEvaluationMillis) {
-				mostRecentEvaluationMillis = eval.getWhen();
-			}
-		}
-		issuesByHash.put(newIssue.getHash(), newIssue);
-	}
-
 	// ==================== for testing ===========================
 
 	/** package-private for testing */
@@ -191,6 +207,15 @@ public class AppEngineCloud extends AbstractCloud {
 	}
 
 	// ================== private methods ======================
+
+	private void storeProtoIssue(Issue newIssue) {
+		for (Evaluation eval : newIssue.getEvaluationsList()) {
+			if (eval.getWhen() > mostRecentEvaluationMillis) {
+				mostRecentEvaluationMillis = eval.getWhen();
+			}
+		}
+		issuesByHash.put(newIssue.getHash(), newIssue);
+	}
 
 	private LogInResponse submitHashes(Map<String, BugInstance> bugsByHash)
 			throws IOException, MalformedURLException {
@@ -268,7 +293,7 @@ public class AppEngineCloud extends AbstractCloud {
 	}
 
 	private RecentEvaluations getRecentEvaluationsFromServer() throws IOException {
-		HttpURLConnection conn = openConnection("/get-evaluations");
+		HttpURLConnection conn = openConnection("/get-recent-evaluations");
 		conn.setDoOutput(true);
 		try {
 			OutputStream outputStream = conn.getOutputStream();
