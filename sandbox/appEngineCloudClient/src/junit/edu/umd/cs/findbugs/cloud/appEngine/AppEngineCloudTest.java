@@ -97,7 +97,7 @@ public class AppEngineCloudTest extends TestCase {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void testGetRecentsEvaluations() throws Exception {
+	public void testGetRecentEvaluations() throws Exception {
 		// set up mocks
 		foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", 200, "my eval", "claimer"));
 		
@@ -108,7 +108,7 @@ public class AppEngineCloudTest extends TestCase {
 		setupResponseCodeAndOutputStream(findConnection);
 
 		final HttpURLConnection recentEvalConnection = mock(HttpURLConnection.class);
-		when(recentEvalConnection.getResponseCode()).thenReturn(200);
+		setupResponseCodeAndOutputStream(recentEvalConnection);
 		RecentEvaluations recentEvalResponse = RecentEvaluations.newBuilder()
 				.addIssues(addEvaluationsToIssue(issue))
 				.build();
