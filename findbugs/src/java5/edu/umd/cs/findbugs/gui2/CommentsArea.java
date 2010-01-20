@@ -30,6 +30,8 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -79,6 +81,8 @@ public class CommentsArea {
 
 	private boolean changed;
 	final MainFrame frame;
+	
+	private Executor backgroundExecutor = Executors.newSingleThreadExecutor();
 
 	CommentsArea(MainFrame frame) {
 		this.frame = frame;
@@ -371,15 +375,20 @@ public class CommentsArea {
 		if (node == null)
 			return;
 
-		String comments = getCurrentUserCommentsText();
+		final String comments = getCurrentUserCommentsText();
 		final BugInstance bug = node.getBug();
 		if (bug.getAnnotationText().equals(comments))
 			return;
 
-		bug.setAnnotationText(comments, MainFrame.getInstance().bugCollection);
-		setProjectChanged(true);
-		changed = false;
-		addToPrevComments(comments);
+		// may talk to server - should run in background
+		backgroundExecutor.execute(new Runnable() {
+	        public void run() {
+		        bug.setAnnotationText(comments, MainFrame.getInstance().bugCollection);
+		        setProjectChanged(true);
+		        changed = false;
+		        addToPrevComments(comments);
+	        }
+        });
 	}
 
 	private boolean confirmAnnotation() {
@@ -628,13 +637,17 @@ public class CommentsArea {
 		setDesignationComboBox(designationKey);
 	}
 
-	protected boolean changeDesignationOfBug(BugLeafNode theNode, String selection) {
+	protected boolean changeDesignationOfBug(BugLeafNode theNode, final String selection) {
 		saveComments();
-		BugInstance bug = theNode.getBug();
+		final BugInstance bug = theNode.getBug();
 		String oldValue = bug.getUserDesignationKey();
 		if (selection.equals(oldValue))
 			return false;
-		bug.setUserDesignationKey(selection, MainFrame.getInstance().bugCollection);
+		backgroundExecutor.execute(new Runnable() {
+	        public void run() {
+		        bug.setUserDesignationKey(selection, MainFrame.getInstance().bugCollection);
+	        }
+        });
 		return true;
 	}
 

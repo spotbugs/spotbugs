@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.jdo.JDOObjectNotFoundException;
@@ -25,6 +27,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.google.apphosting.api.DeadlineExceededException;
 
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
@@ -38,6 +41,8 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 @SuppressWarnings("serial")
 public class FlybushServlet extends HttpServlet {
 	private static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile("[0-9A-Za-z_-]+");
+
+	private static final Logger LOGGER = Logger.getLogger(FlybushServlet.class.getName());
 
 	private PersistenceManager persistenceManager;
 
@@ -58,23 +63,24 @@ public class FlybushServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 
-		String uri = req.getPathInfo();
-		PersistenceManager pm = getPersistenceManager();
 		try {
-			if (uri.startsWith("/browser-auth/")) {
-				browserAuth(req, resp, pm);
+			String uri = req.getPathInfo();
+			PersistenceManager pm = getPersistenceManager();
+			try {
+				if (uri.startsWith("/browser-auth/")) {
+					browserAuth(req, resp, pm);
 
-			} else if (uri.startsWith("/check-auth/")) {
-				checkAuth(req, resp, pm);
+				} else if (uri.startsWith("/check-auth/")) {
+					checkAuth(req, resp, pm);
 
-			} else if (uri.equals("/get-evaluations")) {
-				getEvaluations(req, resp, pm);
-
-			} else {
-				show404(resp);
+				} else {
+					show404(resp);
+				}
+			} finally {
+				pm.close();
 			}
-		} finally {
-			pm.close();
+		} catch (DeadlineExceededException e) {
+			LOGGER.log(Level.SEVERE, "Timed out", e);
 		}
 	}
 
@@ -93,6 +99,10 @@ public class FlybushServlet extends HttpServlet {
 
 			} else if (uri.equals("/upload-evaluation")) {
 				uploadEvaluation(req, resp, pm);
+
+			} else if (uri.equals("/get-evaluations")) {
+				getEvaluations(req, resp, pm);
+
 			} else {
 				show404(resp);
 			}
@@ -155,7 +165,7 @@ public class FlybushServlet extends HttpServlet {
 			setResponse(resp, 200,
 					"OK\n"
 					+ sqlCloudSession.getRandomID() + "\n"
-					+ sqlCloudSession.getUser().getEmail());
+					+ sqlCloudSession.getUser().getNickname());
 		}
 		resp.flushBuffer();
 	}

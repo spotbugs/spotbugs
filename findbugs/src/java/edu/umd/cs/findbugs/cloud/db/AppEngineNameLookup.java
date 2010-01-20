@@ -34,8 +34,8 @@ import edu.umd.cs.findbugs.util.Util;
  * @author pugh
  */
 public class AppEngineNameLookup {
-	// private static final String HOST = "http://theflybush.appspot.com";
-    public static final String HOST = "http://localhost:8080";
+	public static final String HOST = "http://theflybush.appspot.com";
+    // public static final String HOST = "http://localhost:8080";
 
 	private long sessionId;
 	private String username;

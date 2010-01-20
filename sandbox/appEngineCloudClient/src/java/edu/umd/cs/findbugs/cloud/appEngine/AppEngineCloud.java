@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.cloud.db.AppEngineNameLookup;
 
 public class AppEngineCloud extends AbstractCloud {
 
-	private static final int EVALUATION_CHECK_MINS = 5;
+	private static final int EVALUATION_CHECK_SECS = 5*60;
 
 	private Map<String, Issue> issuesByHash = new ConcurrentHashMap<String, Issue>();
 
@@ -63,8 +63,8 @@ public class AppEngineCloud extends AbstractCloud {
 		user = lookerupper.getUsername();
 
 		if (timer != null) timer.cancel();
-		timer = new Timer(true);
-		int periodMillis = EVALUATION_CHECK_MINS*60*1000;
+		timer = new Timer("App Engine Cloud evaluation updater", true);
+		int periodMillis = EVALUATION_CHECK_SECS*1000;
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
@@ -144,7 +144,7 @@ public class AppEngineCloud extends AbstractCloud {
 				.setEvaluation(evalBuilder.build())
 				.build();
 
-		openUrl(uploadMsg, "/upload-evaluation");
+		openPostUrl(uploadMsg, "/upload-evaluation");
 	}
 
 	/** package-private for testing */
@@ -194,14 +194,15 @@ public class AppEngineCloud extends AbstractCloud {
 
 	private LogInResponse submitHashes(Map<String, BugInstance> bugsByHash)
 			throws IOException, MalformedURLException {
-		HttpURLConnection conn = openConnection("/find-issues");
-		conn.setDoOutput(true);
-		conn.connect();
 		LogIn hashList = LogIn.newBuilder()
 				.setAnalysisTimestamp(bugCollection.getAnalysisTimestamp())
 				.setSessionId(sessionId)
 				.addAllMyIssueHashes(bugsByHash.keySet())
 				.build();
+
+		HttpURLConnection conn = openConnection("/find-issues");
+		conn.setDoOutput(true);
+		conn.connect();
 		OutputStream stream = conn.getOutputStream();
 		hashList.writeTo(stream);
 		stream.close();
@@ -229,7 +230,7 @@ public class AppEngineCloud extends AbstractCloud {
 					.setLastSeen(bug.getLastVersion())
 					.build());
 		}
-		openUrl(issueList.build(), "/upload-issues");
+		openPostUrl(issueList.build(), "/upload-issues");
 
 	}
 
@@ -266,15 +267,16 @@ public class AppEngineCloud extends AbstractCloud {
 	}
 
 	private RecentEvaluations getRecentEvaluationsFromServer() throws IOException {
-		HttpURLConnection conn = openConnection("/get-evaluations/");
+		HttpURLConnection conn = openConnection("/get-evaluations");
 		conn.setDoOutput(true);
-		conn.connect();
 		try {
+			OutputStream outputStream = conn.getOutputStream();
 			GetRecentEvaluations.newBuilder()
 					.setSessionId(sessionId)
 					.setTimestamp(mostRecentEvaluationMillis)
 					.build()
-					.writeTo(conn.getOutputStream());
+					.writeTo(outputStream);
+			outputStream.close();
 			if (conn.getResponseCode() != 200) {
 				throw new IllegalStateException(
 						"server returned error code "
@@ -302,7 +304,7 @@ public class AppEngineCloud extends AbstractCloud {
 		return mostRecent;
 	}
 
-	private void openUrl(GeneratedMessage uploadMsg, String url) {
+	private void openPostUrl(GeneratedMessage uploadMsg, String url) {
 		try {
 			HttpURLConnection conn = openConnection(url);
 			conn.setDoOutput(true);
