@@ -113,14 +113,14 @@ public class FlybushServletTest extends TestCase {
 	}
 
 	public void testFindIssuesUnauthenticated() throws IOException {
-		executePost("/find-issues", createAuthenticatedLogInMsg()
+		executePost("/log-in", createAuthenticatedLogInMsg()
 				.addMyIssueHashes("ABC").build().toByteArray());
 		checkResponse(403, "not authenticated");
 	}
 
 	public void testFindIssuesNoneFound() throws IOException {
     	createCloudSession(555);
-		executePost("/find-issues", createAuthenticatedLogInMsg().addMyIssueHashes("ABC").build().toByteArray());
+		executePost("/log-in", createAuthenticatedLogInMsg().addMyIssueHashes("ABC").build().toByteArray());
 		checkResponse(200);
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getFoundIssuesCount());
@@ -129,7 +129,7 @@ public class FlybushServletTest extends TestCase {
 	@SuppressWarnings("unchecked")
 	public void testFindIssuesStoresInvocation() throws IOException {
     	createCloudSession(555);
-		executePost("/find-issues", createAuthenticatedLogInMsg().addMyIssueHashes("ABC").build().toByteArray());
+		executePost("/log-in", createAuthenticatedLogInMsg().addMyIssueHashes("ABC").build().toByteArray());
 		checkResponse(200);
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getFoundIssuesCount());
@@ -147,7 +147,7 @@ public class FlybushServletTest extends TestCase {
 		persistenceManager.makePersistent(foundIssue);
 
 		LogIn loginMsg = createAuthenticatedLogInMsg().addMyIssueHashes("NEW_BUG").addMyIssueHashes("OLD_BUG").build();
-		executePost("/find-issues", loginMsg.toByteArray());
+		executePost("/log-in", loginMsg.toByteArray());
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getFoundIssuesCount());
 
@@ -169,7 +169,7 @@ public class FlybushServletTest extends TestCase {
 				.addMyIssueHashes("NEW_BUG")
 				.addMyIssueHashes("OLD_BUG")
 				.build();
-		executePost("/find-issues", hashesToFind.toByteArray());
+		executePost("/log-in", hashesToFind.toByteArray());
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getFoundIssuesCount());
 
@@ -190,7 +190,7 @@ public class FlybushServletTest extends TestCase {
 		for (int i = 0; i < 15; i++) {
 			loginMsg.addMyIssueHashes(Integer.toString(i));
 		}
-		executePost("/find-issues", loginMsg.build().toByteArray());
+		executePost("/log-in", loginMsg.build().toByteArray());
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(3, result.getFoundIssuesCount());
 
@@ -209,7 +209,7 @@ public class FlybushServletTest extends TestCase {
 	}
 
 	public void testGetRecentEvaluationsNoAuth() throws IOException {
-		executeGet("/get-evaluations", createRecentEvalsRequest(100).toByteArray());
+		executePost("/get-recent-evaluations", createRecentEvalsRequest(100).toByteArray());
 		checkResponse(403, "not authenticated");
 	}
 
@@ -224,7 +224,7 @@ public class FlybushServletTest extends TestCase {
 
 		persistenceManager.makePersistent(issue);
 
-		executeGet("/get-evaluations", createRecentEvalsRequest(150).toByteArray());
+		executePost("/get-recent-evaluations", createRecentEvalsRequest(150).toByteArray());
 		checkResponse(200);
 		RecentEvaluations result = RecentEvaluations.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getIssuesCount());
@@ -250,7 +250,7 @@ public class FlybushServletTest extends TestCase {
 
 		persistenceManager.makePersistent(issue);
 
-		executeGet("/get-evaluations", createRecentEvalsRequest(300).toByteArray());
+		executePost("/get-recent-evaluations", createRecentEvalsRequest(300).toByteArray());
 		checkResponse(200);
 		RecentEvaluations result = RecentEvaluations.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getIssuesCount());
@@ -350,7 +350,7 @@ public class FlybushServletTest extends TestCase {
 
 	public void testUploadEvaluationWithFindIssuesFirst() throws IOException {
 		createCloudSession(555);
-		executePost("/find-issues", LogIn.newBuilder()
+		executePost("/log-in", LogIn.newBuilder()
 				.setSessionId(555)
 				.setAnalysisTimestamp(100)
 				.addMyIssueHashes("ABC")

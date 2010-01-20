@@ -195,6 +195,7 @@ public class AppEngineCloud extends AbstractCloud {
 	private LogInResponse submitHashes(Map<String, BugInstance> bugsByHash)
 			throws IOException, MalformedURLException {
 		LogIn hashList = LogIn.newBuilder()
+				//TODO: should the timestamp be converted to UTC?
 				.setAnalysisTimestamp(bugCollection.getAnalysisTimestamp())
 				.setSessionId(sessionId)
 				.addAllMyIssueHashes(bugsByHash.keySet())

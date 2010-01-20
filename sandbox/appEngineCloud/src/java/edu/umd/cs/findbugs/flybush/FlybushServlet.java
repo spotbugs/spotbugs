@@ -91,7 +91,7 @@ public class FlybushServlet extends HttpServlet {
 
 		PersistenceManager pm = getPersistenceManager();
 		try {
-			if (uri.equals("/find-issues")) {
+			if (uri.equals("/log-in")) {
 				findIssues(req, resp, pm);
 
 			} else if (uri.equals("/upload-issues")) {
@@ -100,7 +100,7 @@ public class FlybushServlet extends HttpServlet {
 			} else if (uri.equals("/upload-evaluation")) {
 				uploadEvaluation(req, resp, pm);
 
-			} else if (uri.equals("/get-evaluations")) {
+			} else if (uri.equals("/get-recent-evaluations")) {
 				getEvaluations(req, resp, pm);
 
 			} else {
