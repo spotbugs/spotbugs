@@ -20,9 +20,14 @@
 package edu.umd.cs.findbugs.cloud;
 
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.cloud.username.NameLookup;
+import edu.umd.cs.findbugs.cloud.username.PromptForNameLookup;
 
 
 /**
@@ -34,17 +39,55 @@ public class CloudFactory {
 	
     private static final String DEFAULT_CLOUD_CLASS = "edu.umd.cs.findbugs.cloud.db.DBCloud";
 
+    
+    public static NameLookup getNameLookup(BugCollection bc) {
+    	String cloudClassName = SystemProperties.getProperty("findbugs.namelookup.classname");
+    	Class <? extends NameLookup> c = null;
+    	if (cloudClassName != null) try {
+    		c = Class.forName(cloudClassName).asSubclass(NameLookup.class);
+    	} catch (ClassNotFoundException e) {
+	       AnalysisContext.logError("Unable to load " + cloudClassName, e);
+        }
+    	if (c == null)
+    		c = PromptForNameLookup.class;
+    	NameLookup result = null;
+        try {
+	        result = c.newInstance();
+        } catch (Exception e) {
+            AnalysisContext.logError("Unable to construct " + cloudClassName, e);
+        }
+       
+    	if (result == null || !result.init(bc)) {
+    		result = new PromptForNameLookup();
+        	if (!result.init(bc))
+        		throw new AssertionError("Can't init prompt for name lookup");
+    	}
+    	
+    	return result;
+		
+    }
 
-	public static Cloud getCloud(BugCollection bc) {
-		String cloudClassName = SystemProperties.getProperty("findbugs.cloud.classname");
+    private static Class<? extends Cloud> getCloudClass() throws ClassNotFoundException {
+    	String cloudClassName = SystemProperties.getProperty("findbugs.cloud.classname");
 		boolean cloudClassSpecified = cloudClassName != null;
 		if (!cloudClassSpecified)
 			cloudClassName = DEFAULT_CLOUD_CLASS;
+		Class<? extends Cloud> cloudClass = registeredClouds.get(cloudClassName);
+		if (cloudClass == null)
+			cloudClass = Class.forName(cloudClassName).asSubclass(Cloud.class);
+      
+		return cloudClass;
+    }
+    
+    private static Map<String, Class<? extends Cloud>> registeredClouds = new HashMap<String, Class<? extends Cloud>> ();
+    
+    public static void addCloud(Class<? extends Cloud> cloudClass) {
+    	registeredClouds.put(cloudClass.getName(), cloudClass);
+    }
+	public static Cloud getCloud(BugCollection bc) {
 		try {
-			if (DEBUG)
-				bc.getProject().getGuiCallback().showMessageDialog("Cloud: " + cloudClassName);
-	        Class<? extends Cloud> cloudClass 
-	        = Class.forName(cloudClassName).asSubclass(Cloud.class);
+			Class<? extends Cloud> cloudClass = getCloudClass();
+			String cloudClassName = cloudClass.getName();
 	        Constructor<? extends Cloud> constructor = cloudClass.getConstructor(BugCollection.class);
 			Cloud cloud = constructor.newInstance(bc);
 			if (DEBUG)
@@ -58,12 +101,9 @@ public class CloudFactory {
 				bc.getProject().getGuiCallback().showMessageDialog("Unable to connect to " + cloudClass.getSimpleName());
 				if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToDB"))
 					System.exit(1);
-			} else if (cloudClassSpecified) {
-				bc.getProject().getGuiCallback().showMessageDialog("Bad configuration for " + cloudClass.getSimpleName());
-			}
+			} 
 		} catch (ClassNotFoundException e) {
-			if (cloudClassSpecified)
-				bc.getProject().getGuiCallback().showMessageDialog("Unable to load cloud " + cloudClassName);
+			assert true;
         } catch (Exception e) {
 	      assert true;
         }

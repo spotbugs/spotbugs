@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.cloud.db;
+package edu.umd.cs.findbugs.cloud.username;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -26,22 +26,21 @@ import java.net.URL;
 import java.security.SecureRandom;
 
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.cloud.NameLookup;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
  * @author pugh
  */
-public class AppEngineNameLookup {
+public class AppEngineNameLookup implements NameLookup {
 	public static final String HOST = "http://theflybush.appspot.com";
     // public static final String HOST = "http://localhost:8080";
 
 	private long sessionId;
 	private String username;
 	
-	public boolean init() {
-		try {
+	public boolean init(BugCollection bugCollection) {
+			try {
 			
 			SecureRandom r = new SecureRandom();
 			long id = r.nextLong();

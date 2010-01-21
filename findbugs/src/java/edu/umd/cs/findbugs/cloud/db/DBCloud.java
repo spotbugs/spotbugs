@@ -84,6 +84,8 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import edu.umd.cs.findbugs.cloud.username.NameLookup;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Multiset;
@@ -102,7 +104,7 @@ public  class DBCloud extends AbstractCloud {
 	/**
      * 
      */
-    static final String USER_NAME = "user.name";
+    
 	
 	
 	class BugData {
@@ -590,11 +592,8 @@ public  class DBCloud extends AbstractCloud {
 		}
 		
 		
-		AppEngineNameLookup appEngineNameLookup = new AppEngineNameLookup();
-		if (!appEngineNameLookup.init()) {
-			return false;
-		}
-		findbugsUser = appEngineNameLookup.getUsername();
+		
+		findbugsUser = CloudFactory.getNameLookup(bugCollection).getUsername();
 		
 		if (findbugsUser == null)
 			return false;

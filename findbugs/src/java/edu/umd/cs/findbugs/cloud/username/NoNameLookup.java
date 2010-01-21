@@ -17,16 +17,24 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.cloud;
+package edu.umd.cs.findbugs.cloud.username;
+
+import java.util.prefs.Preferences;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.cloud.db.DBCloud;
 
 /**
  * @author pugh
  */
-public interface NameLookup {
+public class NoNameLookup implements NameLookup {
+
+	public String getUsername() {
+		return "no name";
+	}
 	
-	/** Return name that should be used as the user identity */
-	String getUserName(BugCollection bugCollection);
+	public boolean init(BugCollection bugCollection) {
+		return true;
+	}
 
 }
