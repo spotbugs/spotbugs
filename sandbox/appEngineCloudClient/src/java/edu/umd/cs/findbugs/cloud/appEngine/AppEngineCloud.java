@@ -2,12 +2,13 @@ package edu.umd.cs.findbugs.cloud.appEngine;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -18,7 +19,6 @@ import com.google.protobuf.GeneratedMessage;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluatio
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.Builder;
-import edu.umd.cs.findbugs.cloud.db.AppEngineNameLookup;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
 public class AppEngineCloud extends AbstractCloud {
 
@@ -57,7 +57,7 @@ public class AppEngineCloud extends AbstractCloud {
 
 	public boolean initialize() {
 		AppEngineNameLookup lookerupper = new AppEngineNameLookup();
-		if (!lookerupper.init()) {
+		if (!lookerupper.init(bugCollection)) {
 			return false;
 		}
 		sessionId = lookerupper.getSessionId();
@@ -84,8 +84,7 @@ public class AppEngineCloud extends AbstractCloud {
 
 	public BugDesignation getPrimaryDesignation(BugInstance b) {
 		Evaluation e = getMostRecentEvaluation(b);
-		return e == null ? null : new BugDesignation(e.getDesignation(), e.getWhen(),
-								  e.getComment(), e.getWho());
+		return e == null ? null : createBugDesignation(e);
 	}
 
 	public long getFirstSeen(BugInstance b) {
@@ -95,32 +94,16 @@ public class AppEngineCloud extends AbstractCloud {
 		return issue.getFirstSeen();
 	}
 
+	@Override
+	protected Iterable<BugDesignation> getAllUserDesignations(BugInstance bd) {
+		List<BugDesignation> list = new ArrayList<BugDesignation>();
+		for (Evaluation eval : issuesByHash.get(bd.getInstanceHash()).getEvaluationsList()) {
+			list.add(createBugDesignation(eval));
+		}
+		return list;
+	}
+
 	// ================== mutators ================
-
-	@Override
-	public void printCloudReport(Iterable<BugInstance> bugs, PrintWriter w) {
-		// TODO Auto-generated method stub
-		super.printCloudReport(bugs, w);
-	}
-
-	@Override
-	public void printCloudSummary(PrintWriter w, Iterable<BugInstance> bugs,
-			String[] packagePrefixes) {
-		// TODO Auto-generated method stub
-		super.printCloudSummary(w, bugs, packagePrefixes);
-	}
-
-	@Override
-	public boolean supportsCloudReports() {
-		// TODO Auto-generated method stub
-		return super.supportsCloudReports();
-	}
-
-	@Override
-	public boolean supportsCloudSummaries() {
-		// TODO Auto-generated method stub
-		return super.supportsCloudSummaries();
-	}
 
 	public void bugsPopulated() {
 		Map<String, BugInstance> bugsByHash = new HashMap<String, BugInstance>();
@@ -186,7 +169,7 @@ public class AppEngineCloud extends AbstractCloud {
 				Issue newIssue = mergeIssues(existingIssue, issue);
 				assert newIssue.getHash().equals(issue.getHash());
 				storeProtoIssue(newIssue);
-				BugInstance bugInstance = findBugInstance(issue.getHash());
+				BugInstance bugInstance = getBugByHash(issue.getHash());
 				if (bugInstance != null) {
 					updateBugInstanceAndNotify(bugInstance);
 				}
@@ -208,6 +191,11 @@ public class AppEngineCloud extends AbstractCloud {
 
 	// ================== private methods ======================
 
+	private BugDesignation createBugDesignation(Evaluation e) {
+		return new BugDesignation(e.getDesignation(), e.getWhen(),
+								  e.getComment(), e.getWho());
+	}
+
 	private void storeProtoIssue(Issue newIssue) {
 		for (Evaluation eval : newIssue.getEvaluationsList()) {
 			if (eval.getWhen() > mostRecentEvaluationMillis) {
@@ -226,7 +214,7 @@ public class AppEngineCloud extends AbstractCloud {
 				.addAllMyIssueHashes(bugsByHash.keySet())
 				.build();
 
-		HttpURLConnection conn = openConnection("/find-issues");
+		HttpURLConnection conn = openConnection("/log-in");
 		conn.setDoOutput(true);
 		conn.connect();
 		OutputStream stream = conn.getOutputStream();
@@ -265,15 +253,6 @@ public class AppEngineCloud extends AbstractCloud {
 			throws IOException, MalformedURLException {
 		URL u = new URL(AppEngineNameLookup.HOST + url);
 		return (HttpURLConnection) u.openConnection();
-	}
-
-	private @CheckForNull BugInstance findBugInstance(String hash) {
-		for (BugInstance instance : bugCollection.getCollection()) {
-			if (instance.getInstanceHash().equals(hash)) {
-				return instance;
-			}
-		}
-		return null;
 	}
 
 	@SuppressWarnings("deprecation")

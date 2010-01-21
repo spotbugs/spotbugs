@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.cloud;
 
+import java.util.Collections;
+
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
@@ -139,8 +141,8 @@ import edu.umd.cs.findbugs.BugInstance;
     	return  b.getUserDesignation();
     }
 
-
-
-	
-
+    @Override
+    protected Iterable<BugDesignation> getAllUserDesignations(BugInstance bd) {
+	    return Collections.emptyList();
+    }
 }

@@ -21,20 +21,49 @@ package edu.umd.cs.findbugs.cloud;
 
 import java.io.PrintWriter;
 import java.net.URL;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.PackageStats;
+import edu.umd.cs.findbugs.ProjectStats;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
 import edu.umd.cs.findbugs.cloud.Cloud.Mode;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
+import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.Multiset;
 
 
 /**
  * @author pwilliam
  */
 public abstract class AbstractCloud implements Cloud {
+	
+    private static final String LEADERBOARD_BLACKLIST = SystemProperties.getProperty("findbugs.leaderboard.blacklist");
+    private static final Pattern LEADERBOARD_BLACKLIST_PATTERN;
+ 	static {
+ 		Pattern p = null;
+ 		if (LEADERBOARD_BLACKLIST != null) 
+ 			try {
+ 				p = Pattern.compile(LEADERBOARD_BLACKLIST.replace(',', '|'));
+ 			} catch (Exception e) {
+ 				assert true;
+ 			}
+ 			LEADERBOARD_BLACKLIST_PATTERN = p;	
+ 			
+ 	}
 
 	protected final BugCollection bugCollection;
 	
@@ -63,7 +92,7 @@ public abstract class AbstractCloud implements Cloud {
 	}
 
 	public boolean supportsCloudReports() {
-		return false;
+		return true;
 	}
 
 	public boolean supportsSourceLinks() {
@@ -84,8 +113,55 @@ public abstract class AbstractCloud implements Cloud {
 	public BugFilingStatus getBugLinkStatus(BugInstance b) {
 		throw new UnsupportedOperationException();
 	}
-	public String getCloudReport(BugInstance b) {
-		throw new UnsupportedOperationException();
+
+    public boolean canSeeCommentsByOthers(BugInstance bug) {
+       switch(getMode()) {
+       case SECRET: return false;
+       case COMMUNAL : return true;
+       case VOTING : return hasVoted(bug);
+       }
+       throw new IllegalStateException();
+    }
+    
+    public boolean hasVoted(BugInstance bug) {
+    	for(BugDesignation bd : getAllUserDesignations(bug))
+    		if (getUser().equals(bd.getUser())) 
+    			return true;
+    	return false;
+    }
+    
+    public String getCloudReport(BugInstance b) {
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd, yyyy");
+		StringBuilder builder = new StringBuilder();
+		long firstSeen = b.getFirstVersion();
+		if (firstSeen < Long.MAX_VALUE) {
+			builder.append(String.format("First seen %s\n", format.format(new Timestamp(firstSeen))));
+		}
+		
+		I18N i18n = I18N.instance();
+		boolean canSeeCommentsByOthers = canSeeCommentsByOthers(b);
+		if (canSeeCommentsByOthers && supportsBugLinks()) {
+			BugFilingStatus bugLinkStatus = getBugLinkStatus(b);
+			if (bugLinkStatus != null && bugLinkStatus.bugIsFiled()) {
+				//if (bugLinkStatus.)
+					builder.append("\nBug status is " + bugLinkStatus.displayName);
+				//else
+				//	builder.append("\nBug assigned to " + bd.bugAssignedTo + ", status is " + bd.bugStatus);
+				
+				builder.append("\n\n");
+			}
+		}
+		for(BugDesignation d : getAllUserDesignations(b)) 
+			if (getUser().equals(d.getUser())|| canSeeCommentsByOthers ) {
+				builder.append(String.format("%s @ %s: %s\n", d.getUser(), format.format(new Timestamp(d.getTimestamp())), 
+						i18n.getUserDesignation(d.getDesignationKey())));
+				String annotationText = d.getAnnotationText();
+				if (annotationText != null && annotationText.length() > 0) {
+					builder.append(annotationText);
+					builder.append("\n\n");
+				}
+			}
+		return builder.toString();
 	}
 
 	public URL getSourceLink(BugInstance b) {
@@ -97,10 +173,6 @@ public abstract class AbstractCloud implements Cloud {
     }
 	public Date getUserDate(BugInstance b) {
 		return new Date(getUserTimestamp(b));
-	}
-
-	public boolean hasExistingBugLink(BugInstance b) {
-		throw new UnsupportedOperationException();
 	}
 
 	CopyOnWriteArraySet<CloudListener> listeners = new CopyOnWriteArraySet<CloudListener>();
@@ -130,10 +202,6 @@ public abstract class AbstractCloud implements Cloud {
     public void shutdown() {
 	    
     }
-    public void printCloudReport(Iterable<BugInstance> bugs, PrintWriter w) {
-    	w.println("No cloud report available");
-    	return;
-    }
 
     public boolean getIWillFix(BugInstance b) {
     	return getUserDesignation(b) == UserDesignation.I_WILL_FIX;
@@ -159,16 +227,167 @@ public abstract class AbstractCloud implements Cloud {
 			return 0;
 		return 1;
 	  }
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#printCloudSummary(java.lang.Iterable, java.io.PrintWriter)
-     */
+	
+    @SuppressWarnings("boxing")
     public void printCloudSummary(PrintWriter w, Iterable<BugInstance> bugs, String[] packagePrefixes) {
-	   return;
-	    
+
+    	Multiset<String> evaluations = new Multiset<String>();
+    	Multiset<String> designations = new Multiset<String>();
+    	Multiset<String> bugStatus = new Multiset<String>();
+    	
+    	int issuesWithThisManyReviews [] = new int[100];
+    	I18N i18n = I18N.instance();
+		Set<String> hashCodes = new HashSet<String>();
+		for(BugInstance b : bugs) {
+			hashCodes.add(b.getInstanceHash());
+		}
+		
+		int packageCount = 0;
+		int classCount = 0;
+		int ncss = 0;
+		ProjectStats projectStats = bugCollection.getProjectStats();
+		for(PackageStats ps : projectStats.getPackageStats()) 
+			if (ClassName.matchedPrefixes(packagePrefixes, ps.getPackageName()) &&  ps.size() > 0 && ps.getNumClasses() > 0) {
+				packageCount++;
+				 ncss += ps.size();
+				 classCount += ps.getNumClasses();
+		}
+		
+		
+		if (classCount == 0) {
+			w.println("No classes were analyzed");
+			return;
+    	} 
+		if (packagePrefixes != null && packagePrefixes.length > 0) {
+			String lst = Arrays.asList(packagePrefixes).toString();
+			w.println("Code analyzed in " + lst.substring(1, lst.length()-1));
+		} else {
+			w.println("Code analyzed");
+		}
+		w.printf("%,7d packages\n%,7d classes\n%,7d thousands of lines of non-commenting source statements\n",
+				packageCount, classCount, (ncss+999)/1000);
+		w.println();
+		int count = 0;
+		int notInCloud = 0;
+		for(String hash : hashCodes) {
+			BugInstance bd = getBugByHash(hash);
+			if (bd == null) { 
+				notInCloud++;
+				continue;
+			}
+			count++;
+    		HashSet<String> reviewers = new HashSet<String>();
+    		BugFilingStatus linkStatus = supportsBugLinks() ? getBugLinkStatus(bd) : null;
+			if (linkStatus != null)
+    			bugStatus.add(linkStatus.name());
+    		for(BugDesignation d : getAllUserDesignations(bd)) 
+    		    if (reviewers.add(d.getUser())) {
+    		    	evaluations.add(d.getUser());
+    		    	designations.add(i18n.getUserDesignation(d.getDesignationKey()));
+    		    }
+    		
+    		int numReviews = Math.min( reviewers.size(), issuesWithThisManyReviews.length -1);
+    		issuesWithThisManyReviews[numReviews]++;
+    		
+    	}
+		if (count == 0) {
+			w.printf("None of the %d issues in the current view are in the cloud\n\n", notInCloud);
+	    	return;
+		}
+		if (notInCloud == 0) {
+			w.printf("Summary for %d issues that are in the current view\n\n", count);
+		}else {
+			w.printf("Summary for %d issues that are in the current view and cloud (%d not in cloud)\n\n", count, notInCloud);
+		}
+		if (evaluations.numKeys() == 0) {
+			w.println("No evaluations found");
+		} else {
+	    	w.println("People who have performed the most reviews");
+	    	printLeaderBoard(w, evaluations, 9, getUser(), true, "reviewer");
+    	
+	    	w.println("\nDistribution of evaluations");
+	    	printLeaderBoard(w, designations, 100, " --- ", false, "designation");
+		}
+    	
+		if (bugStatus.numKeys() == 0) {
+			w.println();
+			w.println("No bugs filed");	
+		} else {
+			w.println();
+	    	w.println("Distribution of bug status");
+	    	printLeaderBoard(w, bugStatus, 100, " --- ", false, "status of filed bug");
+		}
+    	
+    	w.println("\nDistribution of number of reviews");
+    	for(int i = 0; i < issuesWithThisManyReviews.length; i++) 
+    		if (issuesWithThisManyReviews[i] > 0) {
+    		w.printf("%4d  with %3d review", issuesWithThisManyReviews[i], i);
+    		if (i != 1) w.print("s");
+    		w.println();
+    			
+    	}
+    	
+    }
+
+    protected abstract Iterable<BugDesignation> getAllUserDesignations(BugInstance bd);
+
+	protected BugInstance getBugByHash(String hash) {
+		for (BugInstance instance : bugCollection.getCollection()) {
+			if (instance.getInstanceHash().equals(hash)) {
+				return instance;
+			}
+		}
+		return null;
+	}
+    
+    private static void printLeaderBoard(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint, boolean listRank, String title) {
+    	 if (listRank)
+ 			w.printf("%3s %4s %s\n", "rnk", "num", title);
+ 		else
+ 			w.printf("%4s %s\n",  "num", title);
+    	printLeaderBoard2(w, evaluations, maxRows, alwaysPrint, listRank ? "%3d %4d %s\n" : "%2$4d %3$s\n"  , title);
     }
     
+
+    @SuppressWarnings("boxing")
+    public static void printLeaderBoard2(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint,
+             String format, String title) {
+ 	    int row = 1;
+     	int position = 0;
+     	int previousScore = -1;
+     	boolean foundAlwaysPrint = false;
+     		
+     	for(Map.Entry<String,Integer> e : evaluations.entriesInDecreasingFrequency()) {
+     		int num = e.getValue();
+     		if (num != previousScore) {
+     			position = row;
+     			previousScore = num;
+     		}
+     		String key = e.getKey();
+     		if (LEADERBOARD_BLACKLIST_PATTERN != null && LEADERBOARD_BLACKLIST_PATTERN.matcher(key).matches())
+     			continue;
+     		
+     		boolean shouldAlwaysPrint = key.equals(alwaysPrint);
+ 			if (row <= maxRows || shouldAlwaysPrint) 
+ 				w.printf(format, position, num, key);
+ 			
+ 			if (shouldAlwaysPrint)
+ 				foundAlwaysPrint = true;
+     		row++;
+     		if (row >= maxRows) {
+     			if (alwaysPrint == null) 
+     				break;
+     			if (foundAlwaysPrint) {
+         			w.printf("Total of %d %ss\n", evaluations.numKeys(), title);
+         			break;
+         		} 
+     		}
+     		
+     	}
+     }
+    
     public boolean supportsCloudSummaries() {
-    	return false;
+    	return true;
     }
     
     public boolean canStoreUserAnnotation(BugInstance bugInstance) {

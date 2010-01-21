@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PluginLoader;
+import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.util.FractionalMultiset;
 import edu.umd.cs.findbugs.util.MergeMap;
@@ -483,22 +484,22 @@ public class DBStats {
 		
 		out = new PrintWriter("bugs_filed.csv");
 		out.println("rank,bugs filed,who");
-		DBCloud.printLeaderBoard2(out, bugsFiled, 200, null, "%s,%s,%s\n", "participants per office");
+		AbstractCloud.printLeaderBoard2(out, bugsFiled, 200, null, "%s,%s,%s\n", "participants per office");
 		out.close();
 	
 		out = new PrintWriter("bug_score.csv");
 		out.println("rank,bug score,who");
-		DBCloud.printLeaderBoard2(out, bugScore, 200, null, "%s,%s,%s\n", "participants per office");
+		AbstractCloud.printLeaderBoard2(out, bugScore, 200, null, "%s,%s,%s\n", "participants per office");
 		out.close();
 
 		out = new PrintWriter("most_participants_by_office.csv");
 		out.println("rank,participants,office");
-		DBCloud.printLeaderBoard2(out, participantsPerOffice, 100, null, "%s,%s,%s\n", "participants per office");
+		AbstractCloud.printLeaderBoard2(out, participantsPerOffice, 100, null, "%s,%s,%s\n", "participants per office");
 		out.close();
 		
 		out = new PrintWriter("most_issues_reviewed_individual.csv");
 		out.println("rank,reviews,reviewers");
-		DBCloud.printLeaderBoard2(out, issueReviewedBy, 10000, null, "%s,%s,%s\n", "num issues reviewed");
+		AbstractCloud.printLeaderBoard2(out, issueReviewedBy, 10000, null, "%s,%s,%s\n", "num issues reviewed");
 		out.close();
 	
 	}
