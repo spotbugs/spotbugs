@@ -715,6 +715,9 @@ public class UnreadFields extends OpcodeStackDetector  {
 				declaredFields.add(f);
 		}
 		// Don't report anything about ejb3Fields
+		HashSet<XField> unknownAnotationAndUnwritten = new HashSet<XField>(unknownAnnotation.keySet());
+		unknownAnotationAndUnwritten.removeAll(writtenFields);
+		declaredFields.removeAll(unknownAnotationAndUnwritten);
 		declaredFields.removeAll(containerFields);
 		declaredFields.removeAll(reflectiveFields);
 		for(Iterator<XField> i = declaredFields.iterator(); i.hasNext(); ) {
