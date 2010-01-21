@@ -35,19 +35,39 @@ import edu.umd.cs.findbugs.cloud.username.PromptForNameLookup;
  */
 public class CloudFactory {
 	
+
+    
+    private static final String FINDBUGS_NAMELOOKUP_CLASSNAME = "findbugs.namelookup.classname";
+    private static final String FINDBUGS_NAMELOOKUP_REQUIRED = "findbugs.namelookup.required";
+
 	public static boolean DEBUG = false;
 	
     private static final String DEFAULT_CLOUD_CLASS = "edu.umd.cs.findbugs.cloud.db.DBCloud";
 
     
     public static NameLookup getNameLookup(BugCollection bc) {
-    	String cloudClassName = SystemProperties.getProperty("findbugs.namelookup.classname");
+    	String cloudClassName = SystemProperties.getProperty(FINDBUGS_NAMELOOKUP_CLASSNAME);
     	Class <? extends NameLookup> c = null;
     	if (cloudClassName != null) try {
     		c = Class.forName(cloudClassName).asSubclass(NameLookup.class);
     	} catch (ClassNotFoundException e) {
 	       AnalysisContext.logError("Unable to load " + cloudClassName, e);
         }
+    	String required = SystemProperties.getProperty(FINDBUGS_NAMELOOKUP_REQUIRED);
+    	if (required != null && Boolean.parseBoolean(required)) {
+    		if (c == null)
+    			throw new RuntimeException("Unable to load " + cloudClassName);
+    		NameLookup result;
+            try {
+	            result = c.newInstance();
+            } catch (Exception e) {
+            	throw new RuntimeException("Unable to construct " + cloudClassName, e);
+	        }
+    		if (!result.login(bc)) 
+    			throw new RuntimeException("Unable to log in via " + cloudClassName);
+    		return result;
+    	}
+    	
     	if (c == null)
     		c = PromptForNameLookup.class;
     	NameLookup result = null;
@@ -57,9 +77,9 @@ public class CloudFactory {
             AnalysisContext.logError("Unable to construct " + cloudClassName, e);
         }
        
-    	if (result == null || !result.init(bc)) {
+    	if (result == null || !result.login(bc)) {
     		result = new PromptForNameLookup();
-        	if (!result.init(bc))
+        	if (!result.login(bc))
         		throw new AssertionError("Can't init prompt for name lookup");
     	}
     	
@@ -84,6 +104,7 @@ public class CloudFactory {
     public static void addCloud(Class<? extends Cloud> cloudClass) {
     	registeredClouds.put(cloudClass.getName(), cloudClass);
     }
+    
 	public static Cloud getCloud(BugCollection bc) {
 		try {
 			Class<? extends Cloud> cloudClass = getCloudClass();

@@ -35,7 +35,7 @@ public interface NameLookup {
 	 * May prompt the user and/or perform network activity.
 	 * 
 	 * @param bugCollection
-	 * @return true if sucessful
+	 * @return true if successful
 	 */
-	boolean init(BugCollection bugCollection);
+	boolean login(BugCollection bugCollection);
 }

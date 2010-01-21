@@ -39,7 +39,7 @@ public class AppEngineNameLookup implements NameLookup {
 	private long sessionId;
 	private String username;
 	
-	public boolean init(BugCollection bugCollection) {
+	public boolean login(BugCollection bugCollection) {
 			try {
 			
 			SecureRandom r = new SecureRandom();
@@ -48,11 +48,9 @@ public class AppEngineNameLookup implements NameLookup {
 			LaunchBrowser.showDocument(u);
 			URL response = new URL(HOST + "/check-auth/" + id);
 			for (int i = 0; i < 60; i++) {
-				System.out.println("Connecting");
 				HttpURLConnection connection = (HttpURLConnection) response.openConnection();
 	
 				int responseCode = connection.getResponseCode();
-				System.out.println(responseCode);
 				if (responseCode == 200) {
 					BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 					String status = in.readLine();

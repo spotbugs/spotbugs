@@ -33,7 +33,7 @@ public class NoNameLookup implements NameLookup {
 		return "no name";
 	}
 	
-	public boolean init(BugCollection bugCollection) {
+	public boolean login(BugCollection bugCollection) {
 		return true;
 	}
 

@@ -57,7 +57,7 @@ public class PromptForNameLookup implements NameLookup {
 	
 
 
-	public boolean init(BugCollection bugCollection) {
+	public boolean login(BugCollection bugCollection) {
 		this.bugCollection = bugCollection;
 		return true;
 	}
