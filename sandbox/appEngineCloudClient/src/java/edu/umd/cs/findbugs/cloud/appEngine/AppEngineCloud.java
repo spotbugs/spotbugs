@@ -57,7 +57,7 @@ public class AppEngineCloud extends AbstractCloud {
 
 	public boolean initialize() {
 		AppEngineNameLookup lookerupper = new AppEngineNameLookup();
-		if (!lookerupper.init(bugCollection)) {
+		if (!lookerupper.login(bugCollection)) {
 			return false;
 		}
 		sessionId = lookerupper.getSessionId();
