@@ -187,7 +187,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						boolean sawStubThrow = false;
 						boolean justSawInitializationOfUnsupportedOperationException;
 						boolean isBridge = (access & Opcodes.ACC_SYNTHETIC) != 0 &&  (access & Opcodes.ACC_BRIDGE) != 0;
-						String bridgedMethodSignature;
+						String bridgedMethodSignature = "";
 						State state = State.INITIAL;
 						StubState stubState = StubState.INITIAL;
 						
@@ -271,7 +271,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
 								case Opcodes.INVOKESPECIAL:
 								case Opcodes.INVOKESTATIC:
 								case Opcodes.INVOKEINTERFACE:
-									bridgedMethodSignature = desc;
+									if (desc != null)
+		                                bridgedMethodSignature = desc;
 								}
 							
 							// System.out.println("Call from " + ClassParserUsingASM.this.slashedClassName + " to " + owner + " : " + desc);
