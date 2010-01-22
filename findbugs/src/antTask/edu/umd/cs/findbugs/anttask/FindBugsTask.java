@@ -61,6 +61,8 @@ import java.util.List;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.DirectoryScanner;
 
 import edu.umd.cs.findbugs.ExitCodes;
 
@@ -152,6 +154,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	private List<ClassLocation> classLocations = new ArrayList<ClassLocation>();
 	private String onlyAnalyze ;
 	private boolean noClassOk ;
+	private List<FileSet> filesets = new ArrayList<FileSet>();
 
 	public FindBugsTask() {
 		super("edu.umd.cs.findbugs.FindBugs2");
@@ -485,14 +488,21 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	}
 
 	/**
+	   Add a nested fileset of classes or jar files.
+	*/
+	public void addFileset(FileSet fs) {
+		filesets.add(fs);
+	}
+
+	/**
 	 * Check that all required attributes have been set
 	 */
 	@Override
     protected void checkParameters() {
 		super.checkParameters();
 		
-		if ( projectFile == null && classLocations.size() == 0 && auxAnalyzepath == null) {
-			throw new BuildException( "either projectfile, <class/> or <auxAnalyzepath/> child " +
+		if ( projectFile == null && classLocations.size() == 0 && filesets.size() == 0 && auxAnalyzepath == null) {
+			throw new BuildException( "either projectfile, <class/>, <fileset/> or <auxAnalyzepath/> child " +
 									  "elements must be defined for task <"
 										+ getTaskName() + "/>",
 									  getLocation() );
@@ -643,7 +653,8 @@ public class FindBugsTask extends AbstractFindBugsTask {
 				// If it throws an exception, we know it
 				// has an invalid path entry, so we complain
 				// and tolerate it.
-				String unreadReference = auxClasspath.toString();
+				@SuppressWarnings("unused")
+                String unreadReference = auxClasspath.toString();
 				String auxClasspathString = auxClasspath.toString();
 				if (auxClasspathString.length() > 100) {
 					addArg("-auxclasspathFromInput");
@@ -680,6 +691,14 @@ public class FindBugsTask extends AbstractFindBugsTask {
 		for (ClassLocation classLocation : classLocations) {
 			addArg(classLocation.toString());
 		} 
+
+		for (FileSet fs : filesets) {
+			DirectoryScanner ds = fs.getDirectoryScanner();
+			for (String fileName : ds.getIncludedFiles()) {
+				File file = new File(ds.getBasedir(), fileName);
+				addArg(file.toString());
+			}
+		}
 
 		if (auxAnalyzepath != null) {
 			String[] result = auxAnalyzepath.toString().split(java.io.File.pathSeparator);
