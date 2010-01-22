@@ -104,9 +104,9 @@ public class UnionResults {
 					project.add(more.getProject());
 					results = union(results, more);
 				} else {
-					project = more.getProject();
 					results = more;
 				}
+				project = results.getProject();
 			} catch (IOException e) {
 				System.err.println("Trouble reading/parsing " + argv[i]);
 			} catch (DocumentException e) {
