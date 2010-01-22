@@ -140,7 +140,7 @@ public class GenericObjectType extends ObjectType {
 			throw new IndexOutOfBoundsException("The index " + index + " is too large for " + this);
 	}
 
-	public List<? extends ReferenceType> getParameters() {
+	public @CheckForNull List<? extends ReferenceType> getParameters() {
 		if (parameters == null) return null;
 		return Collections.unmodifiableList(parameters);
 	}

@@ -511,7 +511,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			if (argType instanceof GenericObjectType) {
 				GenericObjectType genericArgType = (GenericObjectType) argType;
 				List<? extends ReferenceType> parameters = genericArgType.getParameters();
-				if (parameters.size() == 2)
+				if (parameters != null && parameters.size() == 2)
 					mapType = GenericUtilities.getType("java.util.Map$Entry", parameters);
 			}
 			GenericObjectType entrySetType = GenericUtilities.getType("java.util.Set", Collections.singletonList(mapType));
