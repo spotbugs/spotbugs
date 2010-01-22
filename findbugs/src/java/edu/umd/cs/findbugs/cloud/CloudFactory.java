@@ -40,7 +40,7 @@ public class CloudFactory {
     private static final String FINDBUGS_NAMELOOKUP_CLASSNAME = "findbugs.namelookup.classname";
     private static final String FINDBUGS_NAMELOOKUP_REQUIRED = "findbugs.namelookup.required";
 
-	public static boolean DEBUG = false;
+	public static boolean DEBUG = SystemProperties.getBoolean("findbugs.cloud.debug",false);
 	
     private static final String DEFAULT_CLOUD_CLASS = "edu.umd.cs.findbugs.cloud.db.DBCloud";
 
@@ -117,8 +117,12 @@ public class CloudFactory {
 				if (DEBUG)
 					bc.getProject().getGuiCallback().showMessageDialog("attempting to initialize " + cloudClassName);
 				
-				if (cloud.initialize())
+				if (cloud.initialize()) {
+					if (DEBUG)
+						bc.getProject().getGuiCallback().showMessageDialog("initialized " + cloudClassName);
+					
 					return cloud;
+				}
 				bc.getProject().getGuiCallback().showMessageDialog("Unable to connect to " + cloudClass.getSimpleName());
 				if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToDB"))
 					System.exit(1);
