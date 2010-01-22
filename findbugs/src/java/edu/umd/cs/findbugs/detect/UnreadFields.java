@@ -271,10 +271,6 @@ public class UnreadFields extends OpcodeStackDetector  {
 			unknownAnnotation.add(XFactory.createXField(this), annotationClass);
 
 	}
-	/**
-	 * @param annotationClass
-	 * @return
-	 */
 	public static boolean isInjectionAttribute(@DottedClassName String annotationClass) {
 		if ( annotationClass.startsWith("javax.annotation.") 
 				|| annotationClass.startsWith("javax.ejb")
@@ -285,7 +281,8 @@ public class UnreadFields extends OpcodeStackDetector  {
 				|| annotationClass.startsWith("com.google.") 
 				   && annotationClass.endsWith(".Bind") && annotationClass.hashCode() == -243168318
 				|| annotationClass.startsWith("org.nuxeo.common.xmap.annotation")
-				|| annotationClass.startsWith("com.google.gwt.uibinder.client"))
+				|| annotationClass.startsWith("com.google.gwt.uibinder.client")
+				|| annotationClass.startsWith("org.springframework.beans.factory.annotation"))
 			return true;
 		int lastDot = annotationClass.lastIndexOf('.');
 		String lastPart = annotationClass.substring(lastDot+1);
