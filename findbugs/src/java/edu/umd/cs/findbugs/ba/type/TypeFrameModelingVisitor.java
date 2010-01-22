@@ -506,12 +506,14 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				AnalysisContext.logError("oops", e);
 				return;
 			}
-			ObjectType mapType;
+			ObjectType mapType = (ObjectType) Type.getType("Ljava/util/Map$Entry;");
+			
 			if (argType instanceof GenericObjectType) {
 				GenericObjectType genericArgType = (GenericObjectType) argType;
-				mapType = GenericUtilities.getType("java.util.Map$Entry", genericArgType.getParameters());
-			} else
-				mapType = (ObjectType) Type.getType("Ljava/util/Map$Entry;");
+				List<? extends ReferenceType> parameters = genericArgType.getParameters();
+				if (parameters.size() == 2)
+					mapType = GenericUtilities.getType("java.util.Map$Entry", parameters);
+			}
 			GenericObjectType entrySetType = GenericUtilities.getType("java.util.Set", Collections.singletonList(mapType));
 			frame.pushValue(entrySetType);
 			return;

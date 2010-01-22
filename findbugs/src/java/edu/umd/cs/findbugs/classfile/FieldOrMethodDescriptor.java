@@ -144,8 +144,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName, Comp
 	 */
 	@Override
 	public String toString() {
-		// FIXME: format more nicely
-		return (isStatic ? "static " : "") + getClassDescriptor().getDottedClassName() + "." + name + ":" + signature;
+		return (isStatic ? "static " : "") + getClassDescriptor().getDottedClassName() + "." + name + signature;
 	}
 	
 	public int compareTo(Object o) {

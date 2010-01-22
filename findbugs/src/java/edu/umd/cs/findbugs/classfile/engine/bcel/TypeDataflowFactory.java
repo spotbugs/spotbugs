@@ -79,7 +79,12 @@ public class TypeDataflowFactory extends AnalysisFactory<TypeDataflow> {
 		typeAnalysis.setFieldStoreTypeDatabase(AnalysisContext.currentAnalysisContext().getFieldStoreTypeDatabase());
 
 		TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
+		try {
 		typeDataflow.execute();
+		} catch (CheckedAnalysisException e) {
+			AnalysisContext.logError("Error performing type dataflow analysis of "  + descriptor, e);
+			throw e;
+		}
 		if (TypeAnalysis.DEBUG || ClassContext.DUMP_DATAFLOW_ANALYSIS) {
 			ClassContext.dumpTypeDataflow(method, cfg, typeDataflow);
 		}
