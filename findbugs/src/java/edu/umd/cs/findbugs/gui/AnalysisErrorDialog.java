@@ -210,7 +210,14 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
 
 	public void addLine(String line) {
 		//System.out.println("Appending: " + line);
-		buf.append(line);
+		int start = 0;
+		int end = line.length() - 1;
+		while(line.substring(start, end).length() - 100 > 50) {
+			buf.append(line.substring(start, start + 99) + "-");
+			buf.append('\n');
+			start += 99;
+		}
+		buf.append(line.substring(start, end));
 		buf.append('\n');
 	}
 
