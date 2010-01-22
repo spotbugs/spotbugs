@@ -22,14 +22,18 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.classfile.Code;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 public class VolatileUsage extends BytecodeScanningDetector {
+	enum IncrementState { START, GETFIELD, LOADCONSTANT, ADD };
 	private BugReporter bugReporter;
 
 	public VolatileUsage(BugReporter bugReporter) {
@@ -44,13 +48,53 @@ public class VolatileUsage extends BytecodeScanningDetector {
 	Set<XField> initializationWrites = new HashSet<XField>();
 
 	Set<XField> otherWrites = new HashSet<XField>();
+	
+	
+	IncrementState state = IncrementState.START;
+	XField incrementField;
 
 	@Override
+	public void visit(Code obj) {
+		resetIncrementState();
+		super.visit(obj);
+	}
+	
+	@Override
 	public void sawOpcode(int seen) {
+		switch(state) {
+		case START:
+			if (seen == GETFIELD) {
+				XField f = getXFieldOperand();
+				if (isVolatile(f)) {
+					incrementField = f;
+					state = IncrementState.GETFIELD;
+				}
+			}
+			break;
+		case GETFIELD:
+			if (seen == ICONST_1 || seen == LCONST_1)
+				state = IncrementState.LOADCONSTANT;
+			else 
+				resetIncrementState();
+			
+			break;
+		case LOADCONSTANT:
+			if (seen == IADD || seen == ISUB || seen == LADD || seen == LSUB) {
+				state = IncrementState.ADD;
+			} else
+				resetIncrementState();
+			break;
+		case ADD:
+			if (seen == PUTFIELD && incrementField.equals(getXFieldOperand()))
+				bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY)
+					.addClassAndMethod(this).addField(incrementField).addSourceLine(this));
+			resetIncrementState();
+			break;
+		}
 		switch (seen) {
 		case PUTSTATIC: {
 			XField f = getXFieldOperand();
-			if (!interesting(f))
+			if (!isVolatileArray(f))
 				return;
 			if (getMethodName().equals("<clinit>"))
 				initializationWrites.add(f);
@@ -60,7 +104,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
 		}
 		case PUTFIELD: {
 			XField f = getXFieldOperand();
-			if (!interesting(f))
+			if (!isVolatileArray(f))
 				return;
 
 			if (getMethodName().equals("<init>"))
@@ -72,11 +116,19 @@ public class VolatileUsage extends BytecodeScanningDetector {
 		}
 	}
 
+	/**
+     * 
+     */
+    private void resetIncrementState() {
+	    state = IncrementState.START;
+	    incrementField = null;
+    }
+
 	@Override
 	public void report() {
 
 		for (XField f : AnalysisContext.currentXFactory().allFields())
-			if (interesting(f)) {
+			if (isVolatileArray(f)) {
 				int priority = LOW_PRIORITY;
 				if (initializationWrites.contains(f) && !otherWrites.contains(f))
 					priority = NORMAL_PRIORITY;
@@ -89,7 +141,11 @@ public class VolatileUsage extends BytecodeScanningDetector {
 	 * @param f
 	 * @return
 	 */
-	private boolean interesting(XField f) {
-		return f != null && f.isVolatile() && f.getSignature().charAt(0) == '[';
+	private boolean isVolatile(XField f) {
+		return f != null && f.isVolatile() ;
 	}
+	 
+		private boolean isVolatileArray(XField f) {
+			return isVolatile(f) && f.getSignature().charAt(0) == '[';
+		}
 }
