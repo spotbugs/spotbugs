@@ -493,7 +493,7 @@ public abstract class FindBugs  {
 		}
 	}
 
-	public final static long MINIMUM_TIMESTAMP = java.util.Date.parse("Oct 1, 1992");
+	public final static long MINIMUM_TIMESTAMP = 1000000000000L;
 
 	/**
      * @param timestamp

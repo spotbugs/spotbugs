@@ -99,6 +99,10 @@ public  class DBCloud extends AbstractCloud {
      */
     public static final String FINDBUGS_USER_PROPERTY = "findbugsUser";
 	static final boolean THROW_EXCEPTION_IF_CANT_CONNECT = false;
+	
+	static final long FIRST_LIGHT = FindBugs.MINIMUM_TIMESTAMP;
+	static final long ONE_DAY = 24L * 60 * 60 * 1000;
+	
 	/**
      * 
      */
@@ -228,6 +232,8 @@ public  class DBCloud extends AbstractCloud {
 
 	void loadDatabaseInfo(String hash, int id, long firstSeen, long lastSeen) {
 		BugData bd = instanceMap.get(hash);
+		firstSeen = sanityCheckFirstSeen(firstSeen);
+		lastSeen = sanityCheckLastSeen(lastSeen);
 		if (bd == null)
 			return;
 		if (idMap.containsKey(id)) {
@@ -244,6 +250,7 @@ public  class DBCloud extends AbstractCloud {
 		}
 	}
 
+	final long now;
 	
 	public DBCloud(BugCollection bugs) {
 		super(bugs);
@@ -255,6 +262,18 @@ public  class DBCloud extends AbstractCloud {
 		findbugsUser = getCloudProperty(FINDBUGS_USER_PROPERTY);
 		if (PROMPT_FOR_USER_NAME)
 			ipAddressLookup = new IPAddressLookup();
+		this.now = System.currentTimeMillis();
+	}
+	
+	long sanityCheckFirstSeen(long time) {
+		if (time < FIRST_LIGHT)
+			return now;
+		return time;	
+	}
+	long sanityCheckLastSeen(long time) {
+		if (time > now + ONE_DAY)
+			return now;
+		return time;	
 	}
 	
 	public boolean availableForInitialization() {
@@ -927,7 +946,10 @@ public  class DBCloud extends AbstractCloud {
 
 		}
 		public void storeFirstSeen(BugData bug) {
+			if (bug.firstSeen <= FIRST_LIGHT)
+				return;
 			try {
+				
 				
 				PreparedStatement insertBugData =  
 				        c.prepareStatement("UPDATE  findbugs_issue SET firstSeen = ? WHERE id = ?");
@@ -944,6 +966,9 @@ public  class DBCloud extends AbstractCloud {
 
 		}
 		public void storeLastSeen(BugData bug, long timestamp) {
+			if (bug.lastSeen >= now + ONE_DAY)
+				return;
+			
 			try {
 				
 				PreparedStatement insertBugData =  
@@ -1095,6 +1120,7 @@ public  class DBCloud extends AbstractCloud {
         public StoreNewBug(BugInstance bug, long analysisTime) {
 	        this.bug = bug;
 	        this.analysisTime = analysisTime;
+	        
         }
 		final BugInstance bug;
 		final long analysisTime;
@@ -1104,6 +1130,9 @@ public  class DBCloud extends AbstractCloud {
 	        	data.lastSeen = analysisTime;
 	       
 	         long timestamp = bugCollection.getAppVersionFromSequenceNumber(bug.getFirstVersion()).getTimestamp();
+	         if (timestamp < FIRST_LIGHT)
+	        	 timestamp = analysisTime;
+	         timestamp = sanityCheckFirstSeen(sanityCheckLastSeen(timestamp));
 	        data.firstSeen = timestamp;
 	        if (data.inDatabase) 
 	        	return;
