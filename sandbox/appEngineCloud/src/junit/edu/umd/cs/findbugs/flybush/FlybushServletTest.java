@@ -37,6 +37,7 @@ import com.google.appengine.tools.development.ApiProxyLocalImpl;
 import com.google.apphosting.api.ApiProxy;
 
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
@@ -110,6 +111,30 @@ public class FlybushServletTest extends TestCase {
 		executeGet("/check-auth/100");
 
 		checkResponse(418, "FAIL\n");
+	}
+
+	public void testLogOut() throws IOException {
+		// authenticate
+    	createCloudSession(555);
+
+    	// make sure login works
+		executePost("/log-in", createAuthenticatedLogInMsg().addMyIssueHashes("ABC").build().toByteArray());
+		checkResponse(200);
+		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
+		assertEquals(0, result.getFoundIssuesCount());
+
+		initServletAndMocks();
+
+		// log out
+		executePost("/log-out/555", new byte[0]);
+		checkResponse(200);
+
+		initServletAndMocks();
+
+		// make sure login no longer works
+		executePost("/log-in", createAuthenticatedLogInMsg()
+				.addMyIssueHashes("ABC").build().toByteArray());
+		checkResponse(403, "not authenticated");
 	}
 
 	public void testFindIssuesUnauthenticated() throws IOException {
@@ -390,6 +415,86 @@ public class FlybushServletTest extends TestCase {
 				.setEvaluation(protoEval)
 				.build().toByteArray());
 		checkResponse(404, "no such issue NONEXISTENT\n");
+	}
+
+	public void testGetEvaluationsNotAuthenticated() throws IOException {
+		executePost("/get-evaluations", GetEvaluations.newBuilder()
+				.setSessionId(555)
+				.addHashes("BUG_1")
+				.build().toByteArray());
+		checkResponse(403, "not authenticated");
+	}
+
+	public void testGetEvaluationsForNonexistentIssue() throws IOException {
+		createCloudSession(555);
+
+		executePost("/get-evaluations", GetEvaluations.newBuilder()
+				.setSessionId(555)
+				.addHashes("BUG_1")
+				.build().toByteArray());
+		checkResponse(200);
+		RecentEvaluations evals = RecentEvaluations.parseFrom(outputCollector.toByteArray());
+		assertEquals(0, evals.getIssuesCount());
+	}
+
+	public void testGetEvaluationsForSomeNonexistentIssues() throws IOException {
+		createCloudSession(555);
+
+		DbIssue issue1 = createDbIssue("BUG_1");
+		issue1.addEvaluations(createEvaluation(issue1, 100),
+							 createEvaluation(issue1, 200),
+							 createEvaluation(issue1, 300));
+
+		persistenceManager.makePersistentAll(issue1);
+
+		executePost("/get-evaluations", GetEvaluations.newBuilder()
+				.setSessionId(555)
+				.addHashes("BUG_1").addHashes("BUG_2")
+				.build().toByteArray());
+		checkResponse(200);
+		RecentEvaluations evals = RecentEvaluations.parseFrom(outputCollector.toByteArray());
+		assertEquals(1, evals.getIssuesCount());
+		Issue protoIssue1 = evals.getIssues(0);
+		assertEquals(3, protoIssue1.getEvaluationsCount());
+		assertEquals(100, protoIssue1.getEvaluations(0).getWhen());
+		assertEquals(200, protoIssue1.getEvaluations(1).getWhen());
+		assertEquals(300, protoIssue1.getEvaluations(2).getWhen());
+	}
+
+	public void testGetEvaluations() throws IOException {
+		createCloudSession(555);
+
+		DbIssue issue1 = createDbIssue("BUG_1");
+		issue1.addEvaluations(createEvaluation(issue1, 100),
+							 createEvaluation(issue1, 200),
+							 createEvaluation(issue1, 300));
+
+		DbIssue issue2 = createDbIssue("BUG_2");
+		issue2.addEvaluations(createEvaluation(issue2, 2100),
+							 createEvaluation(issue2, 2200),
+							 createEvaluation(issue2, 2300));
+
+		persistenceManager.makePersistentAll(issue1, issue2);
+
+		executePost("/get-evaluations", GetEvaluations.newBuilder()
+				.setSessionId(555)
+				.addHashes("BUG_1").addHashes("BUG_2")
+				.build().toByteArray());
+		checkResponse(200);
+		RecentEvaluations evals = RecentEvaluations.parseFrom(outputCollector.toByteArray());
+		assertEquals(2, evals.getIssuesCount());
+		Issue protoIssue1 = evals.getIssues(0);
+		assertEquals(3, protoIssue1.getEvaluationsCount());
+		assertEquals(100, protoIssue1.getEvaluations(0).getWhen());
+		assertEquals(200, protoIssue1.getEvaluations(1).getWhen());
+		assertEquals(300, protoIssue1.getEvaluations(2).getWhen());
+
+		Issue protoIssue2 = evals.getIssues(1);
+		assertEquals(3, protoIssue2.getEvaluationsCount());
+		assertEquals(2100, protoIssue2.getEvaluations(0).getWhen());
+		assertEquals(2200, protoIssue2.getEvaluations(1).getWhen());
+		assertEquals(2300, protoIssue2.getEvaluations(2).getWhen());
+
 	}
 
 	// ========================= end of tests ================================

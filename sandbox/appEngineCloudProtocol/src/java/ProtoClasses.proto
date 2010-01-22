@@ -35,8 +35,9 @@ message RecentEvaluations {
 	repeated Issue issues = 1;
 }
 
-message LogOff {
-  required int64 sessionId = 1;
+message GetEvaluations {
+	required int64 sessionId = 1;
+	repeated string hashes = 2;
 }
 
 message Issue {

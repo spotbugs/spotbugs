@@ -17,6 +17,7 @@ import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.jdo.Transaction;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 import com.google.apphosting.api.DeadlineExceededException;
 
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
@@ -94,14 +96,20 @@ public class FlybushServlet extends HttpServlet {
 			if (uri.equals("/log-in")) {
 				findIssues(req, resp, pm);
 
+			} else if (uri.startsWith("/log-out/")) {
+				logOut(req, resp, pm);
+
 			} else if (uri.equals("/upload-issues")) {
 				uploadIssues(req, resp, pm);
 
 			} else if (uri.equals("/upload-evaluation")) {
 				uploadEvaluation(req, resp, pm);
 
-			} else if (uri.equals("/get-recent-evaluations")) {
+			} else if (uri.equals("/get-evaluations")) {
 				getEvaluations(req, resp, pm);
+
+			} else if (uri.equals("/get-recent-evaluations")) {
+				getRecentEvaluations(req, resp, pm);
 
 			} else {
 				show404(resp);
@@ -170,32 +178,27 @@ public class FlybushServlet extends HttpServlet {
 		resp.flushBuffer();
 	}
 
-	@SuppressWarnings("unchecked")
-	private void getEvaluations(HttpServletRequest req,
-			HttpServletResponse resp, PersistenceManager pm) throws IOException {
-		GetRecentEvaluations recentEvalsRequest = GetRecentEvaluations.parseFrom(req.getInputStream());
-		SqlCloudSession sqlCloudSession = lookupCloudSessionById(recentEvalsRequest.getSessionId(), pm);
-		if (sqlCloudSession == null) {
-			setResponse(resp, 403, "not authenticated");
-			return;
-		}
-		long startTime = recentEvalsRequest.getTimestamp();
+	private void logOut(HttpServletRequest req, HttpServletResponse resp,
+			PersistenceManager pm) throws IOException {
+		long id = Long.parseLong(req.getPathInfo().substring("/log-out/".length()));
 		Query query = pm.newQuery(
-				"select from " + DbEvaluation.class.getName()
-				+ " where when > " + startTime + " order by when"
-				);
-		List<DbEvaluation> evaluations = (List<DbEvaluation>) query.execute();
-		RecentEvaluations.Builder issueProtos = RecentEvaluations.newBuilder();
-		Map<String, List<DbEvaluation>> issues = groupEvaluationsByIssue(evaluations);
-		for (List<DbEvaluation> evaluationsForIssue : issues.values()) {
-			DbIssue issue = evaluations.get(0).getIssue();
-			Issue issueProto = buildIssueProto(issue, evaluationsForIssue);
-			issueProtos.addIssues(issueProto);
+				"select from " + SqlCloudSession.class.getName() +
+				" where randomID == " + id + "");
+		Transaction tx = pm.currentTransaction();
+		tx.begin();
+		long deleted = 0;
+		try {
+			deleted = query.deletePersistentAll();
+			query.execute();
+			tx.commit();
+		} finally {
+			if (tx.isActive()) tx.rollback();
 		}
-		query.closeAll();
-
-		resp.setStatus(200);
-		issueProtos.build().writeTo(resp.getOutputStream());
+		if (deleted == 1) {
+			resp.setStatus(200);
+		} else {
+			setResponse(resp, 404, "no such session");
+		}
 	}
 
 	private void findIssues(HttpServletRequest req, HttpServletResponse resp,
@@ -206,11 +209,11 @@ public class FlybushServlet extends HttpServlet {
 			setResponse(resp, 403, "not authenticated");
 			return;
 		}
-
+	
 		DbInvocation invocation = new DbInvocation();
 		invocation.setWho(session.getUser().getNickname());
 		invocation.setStartTime(loginMsg.getAnalysisTimestamp());
-
+	
 		Transaction tx = pm.currentTransaction();
 		tx.begin();
 		try {
@@ -224,7 +227,7 @@ public class FlybushServlet extends HttpServlet {
 				tx.rollback();
 			}
 		}
-
+	
 		LogInResponse.Builder issueProtos = LogInResponse.newBuilder();
 		for (DbIssue issue : lookupIssues(loginMsg.getMyIssueHashesList(), pm)) {
 			Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
@@ -321,6 +324,55 @@ public class FlybushServlet extends HttpServlet {
 		}
 
 		resp.setStatus(200);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void getRecentEvaluations(HttpServletRequest req,
+			HttpServletResponse resp, PersistenceManager pm) throws IOException {
+		GetRecentEvaluations recentEvalsRequest = GetRecentEvaluations.parseFrom(req.getInputStream());
+		SqlCloudSession sqlCloudSession = lookupCloudSessionById(recentEvalsRequest.getSessionId(), pm);
+		if (sqlCloudSession == null) {
+			setResponse(resp, 403, "not authenticated");
+			return;
+		}
+		long startTime = recentEvalsRequest.getTimestamp();
+		Query query = pm.newQuery(
+				"select from " + DbEvaluation.class.getName()
+				+ " where when > " + startTime + " order by when"
+				);
+		List<DbEvaluation> evaluations = (List<DbEvaluation>) query.execute();
+		RecentEvaluations.Builder issueProtos = RecentEvaluations.newBuilder();
+		Map<String, List<DbEvaluation>> issues = groupEvaluationsByIssue(evaluations);
+		for (List<DbEvaluation> evaluationsForIssue : issues.values()) {
+			DbIssue issue = evaluations.get(0).getIssue();
+			Issue issueProto = buildIssueProto(issue, evaluationsForIssue);
+			issueProtos.addIssues(issueProto);
+		}
+		query.closeAll();
+	
+		resp.setStatus(200);
+		issueProtos.build().writeTo(resp.getOutputStream());
+	}
+
+	private void getEvaluations(HttpServletRequest req,
+			HttpServletResponse resp, PersistenceManager pm) throws IOException {
+		GetEvaluations evalsRequest = GetEvaluations.parseFrom(req.getInputStream());
+		SqlCloudSession sqlCloudSession = lookupCloudSessionById(evalsRequest.getSessionId(), pm);
+		if (sqlCloudSession == null) {
+			setResponse(resp, 403, "not authenticated");
+			return;
+		}
+	
+		RecentEvaluations.Builder response = RecentEvaluations.newBuilder();
+		for (DbIssue issue : lookupIssues(evalsRequest.getHashesList(), pm)) {
+			Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
+			response.addIssues(issueProto);
+		}
+	
+		resp.setStatus(200);
+		ServletOutputStream output = resp.getOutputStream();
+		response.build().writeTo(output);
+		output.close();
 	}
 
 	private DbEvaluation createDbEvaluation(Evaluation protoEvaluation) {
