@@ -133,10 +133,9 @@ public abstract class AbstractCloud implements Cloud {
     public String getCloudReport(BugInstance b) {
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd, yyyy");
 		StringBuilder builder = new StringBuilder();
-		long firstSeen = b.getFirstVersion();
-		if (firstSeen < Long.MAX_VALUE) {
-			builder.append(String.format("First seen %s\n", format.format(new Timestamp(firstSeen))));
-		}
+		long firstSeen = getFirstSeen(b);
+		builder.append(String.format("First seen %s\n", format.format(new Date(firstSeen))));
+		
 		
 		I18N i18n = I18N.instance();
 		boolean canSeeCommentsByOthers = canSeeCommentsByOthers(b);
@@ -153,7 +152,7 @@ public abstract class AbstractCloud implements Cloud {
 		}
 		for(BugDesignation d : getAllUserDesignations(b)) 
 			if (getUser().equals(d.getUser())|| canSeeCommentsByOthers ) {
-				builder.append(String.format("%s @ %s: %s\n", d.getUser(), format.format(new Timestamp(d.getTimestamp())), 
+				builder.append(String.format("%s @ %s: %s\n", d.getUser(), format.format(new Date(d.getTimestamp())), 
 						i18n.getUserDesignation(d.getDesignationKey())));
 				String annotationText = d.getAnnotationText();
 				if (annotationText != null && annotationText.length() > 0) {
