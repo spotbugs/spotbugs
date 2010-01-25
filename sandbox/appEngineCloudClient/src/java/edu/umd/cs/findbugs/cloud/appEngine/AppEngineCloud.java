@@ -20,6 +20,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
@@ -45,8 +46,10 @@ public class AppEngineCloud extends AbstractCloud {
 
 	private long mostRecentEvaluationMillis = 0;
 
-	public AppEngineCloud(BugCollection bugs) {
-		super(bugs);
+	private final String host;
+	public AppEngineCloud(CloudPlugin plugin, BugCollection bugs) {
+		super(plugin, bugs);
+		host = plugin.getProperties().getProperty(AppEngineNameLookup.APPENGINE_HOST_PROPERTY_NAME);
 	}
 
 	// ====================== initialization =====================
@@ -57,7 +60,7 @@ public class AppEngineCloud extends AbstractCloud {
 
 	public boolean initialize() {
 		AppEngineNameLookup lookerupper = new AppEngineNameLookup();
-		if (!lookerupper.login(bugCollection)) {
+		if (!lookerupper.initialize(plugin, bugCollection)) {
 			return false;
 		}
 		sessionId = lookerupper.getSessionId();
@@ -251,7 +254,7 @@ public class AppEngineCloud extends AbstractCloud {
 	/** package-private for testing */
 	HttpURLConnection openConnection(String url)
 			throws IOException, MalformedURLException {
-		URL u = new URL(AppEngineNameLookup.HOST + url);
+		URL u = new URL(host + url);
 		return (HttpURLConnection) u.openConnection();
 	}
 

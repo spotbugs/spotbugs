@@ -16,7 +16,9 @@ import java.util.List;
 import junit.framework.TestCase;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
@@ -25,6 +27,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
 public class AppEngineCloudTest extends TestCase {
 	private BugInstance missingIssue;
@@ -100,9 +103,9 @@ public class AppEngineCloudTest extends TestCase {
 	public void testGetRecentEvaluations() throws Exception {
 		// set up mocks
 		foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", 200, "my eval", "claimer"));
-		
+
 		Issue issue = createFoundIssueWithOneEvaluation();
-		
+
 		final HttpURLConnection findConnection = mock(HttpURLConnection.class);
 		when(findConnection.getInputStream()).thenReturn(createLogInResponseInputStream(issue));
 		setupResponseCodeAndOutputStream(findConnection);
@@ -187,7 +190,9 @@ public class AppEngineCloudTest extends TestCase {
 		if (addMissingIssue) bugs.add(missingIssue);
 		bugs.add(foundIssue);
 		final Iterator<HttpURLConnection> mockConnections = Arrays.asList(connections).iterator();
-		return new AppEngineCloud(bugs) {
+		CloudPlugin plugin = new CloudPlugin("AppEngineCloudTest", AppEngineCloud.class.getClassLoader(),
+				AppEngineCloud.class, AppEngineNameLookup.class, new PropertyBundle(), "none", "none");
+		return new AppEngineCloud(plugin, bugs) {
 			HttpURLConnection openConnection(String url) {
 				return mockConnections.next();
 			}
