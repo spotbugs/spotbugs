@@ -649,7 +649,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 
 				if (isConstructor) {
 					writtenInConstructorFields.add(f);
-					if (f.getSignature().equals("Ljava/lang/ThreadLocal;") && item.isNewlyAllocated())
+					if (f.getSignature().equals("Ljava/lang/ThreadLocal;") && item != null && item.isNewlyAllocated())
 						threadLocalAssignedInConstructor.put(f, new ProgramPoint(this));
 				} else
 					writtenInInitializationFields.add(f);

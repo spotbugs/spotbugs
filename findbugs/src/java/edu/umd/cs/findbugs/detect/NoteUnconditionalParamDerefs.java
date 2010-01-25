@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.SystemProperties;
  * @author David Hovemeyer
  */
 public class NoteUnconditionalParamDerefs extends
-		BuildUnconditionalParamDerefDatabase implements Detector, NonReportingDetector, InterproceduralFirstPassDetector {
+		BuildUnconditionalParamDerefDatabase implements NonReportingDetector, InterproceduralFirstPassDetector {
 
 	final BugReporter reporter;
 	public NoteUnconditionalParamDerefs(BugReporter bugReporter) {
