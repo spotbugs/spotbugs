@@ -25,17 +25,27 @@ import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 
 
 /**
  * @author pwilliam
  */
  class BugCollectionStorageCloud extends AbstractCloud {
-
-	BugCollectionStorageCloud(BugCollection bc) {
-			super(bc);
+	
+	BugCollectionStorageCloud(CloudPlugin plugin, BugCollection bc) {
+			super(plugin, bc);
 	}
 	
+	BugCollectionStorageCloud(BugCollection bc) {
+		this(getFallbackPlugin(), bc);
+	}
+
+	private  static CloudPlugin getFallbackPlugin() {
+		 return new CloudPlugin("fallback local cloud", BugCollectionStorageCloud.class.getClassLoader(),
+				 BugCollectionStorageCloud.class, NoNameLookup.class, new PropertyBundle(), "no description", "no details");
+	 }
 	public Mode getMode() {
 	    return Mode.COMMUNAL;
     }

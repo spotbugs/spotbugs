@@ -28,6 +28,13 @@
 	</xsd:simpleType>
 	
 	
+	<xsd:complexType name="CloudType">
+		<xsd:attribute name="id" type="ClassType"/>
+		<xsd:attribute name="cloudClass" type="ClassType"/>
+		<xsd:attribute name="usernameClass" type="ClassType"/>
+		<xsd:attribute name="properties" type="xsd:string"  use="optional"/>
+	</xsd:complexType>
+
 	<xsd:complexType name="DetectorType">
 		<xsd:attribute name="class" type="ClassType"/>
 		<xsd:attribute name="speed" type="SpeedType" use="optional"/>
@@ -103,18 +110,19 @@
 	
 	<xsd:complexType name="FindBugsPluginType" mixed="true">
 		<xsd:sequence>
+			<xsd:element name="Cloud" type="CloudType" minOccurs="0" maxOccurs="unbounded"/>			
 			<xsd:element
 				name="OrderingConstraints"
 				type="OrderingConstraintListType"
 				minOccurs="0"
 				maxOccurs="1"/>
-			<xsd:element name="Detector" type="DetectorType" minOccurs="1" maxOccurs="unbounded"/>
+			<xsd:element name="Detector" type="DetectorType" minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:element name="EngineRegistrar" type="EngineRegistrarType" minOccurs="0" maxOccurs="1"/>
 			<xsd:element name="BugCode" type="BugCodeType" minOccurs="0" maxOccurs="unbounded"/>
-			<xsd:element name="BugPattern" type="BugPatternType" minOccurs="1" maxOccurs="unbounded"/>
+			<xsd:element name="BugPattern" type="BugPatternType" minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:sequence>
 		<xsd:attribute name="pluginid" type="xsd:string"/>
-		<xsd:attribute name="defaultenabled" type="xsd:boolean"/>
+		<xsd:attribute name="defaultenabled" type="xsd:boolean" use="optional" />
 		<xsd:attribute name="provider" type="xsd:string"/>
 		<xsd:attribute name="website" type="xsd:anyURI" use="optional"/>
 	</xsd:complexType>

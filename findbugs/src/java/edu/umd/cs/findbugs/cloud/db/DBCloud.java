@@ -26,7 +26,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -39,7 +38,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -70,11 +68,8 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
-import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StartTime;
@@ -84,9 +79,8 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.util.Multiset;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -248,12 +242,14 @@ public  class DBCloud extends AbstractCloud {
 			bd.inDatabase = true;
 			idMap.put(id, bd);
 		}
+		if (bd.firstSeen < FIRST_LIGHT)
+			throw new IllegalStateException("Bug has first seen of " + new Date(bd.firstSeen));
 	}
 
 	final long now;
 	
-	public DBCloud(BugCollection bugs) {
-		super(bugs);
+	public DBCloud(CloudPlugin plugin, BugCollection bugs) {
+		super(plugin, bugs);
 		sqlDriver = getJDBCProperty("dbDriver");
 		url = getJDBCProperty("dbUrl");
 		dbName = getJDBCProperty("dbName");
@@ -287,8 +283,8 @@ public  class DBCloud extends AbstractCloud {
 		}
 		return true;
 	}
-	static final Pattern FORBIDDEN_PACKAGE_PREFIXES = Pattern.compile(SystemProperties.getProperty("findbugs.forbiddenPackagePrefixes", " none ").replace(',','|'));
-	static final boolean PROMPT_FOR_USER_NAME = SystemProperties.getBoolean("findbugs.cloud.promptForUserName", false);
+	 final Pattern FORBIDDEN_PACKAGE_PREFIXES = Pattern.compile(properties.getProperty("findbugs.forbiddenPackagePrefixes", " none ").replace(',','|'));
+	 final boolean PROMPT_FOR_USER_NAME = properties.getBoolean("findbugs.cloud.promptForUserName", false);
 	int sessionId = -1;
 	final CountDownLatch initialSyncDone = new CountDownLatch(1);
 	public void bugsPopulated() {
@@ -554,18 +550,18 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 
-	 static String getCloudProperty(String propertyName) {
-		return SystemProperties.getProperty("findbugs.cloud." + propertyName);
+	  String getCloudProperty(String propertyName) {
+		return properties.getProperty("findbugs.cloud." + propertyName);
 	}
 
-	public static void setCloudProperty(String propertyName, String value) {
-		SystemProperties.setProperty("findbugs.cloud." + propertyName, value);
+	public  void setCloudProperty(String propertyName, String value) {
+		properties.setProperty("findbugs.cloud." + propertyName, value);
 	}
-	private static String getJDBCProperty(String propertyName) {
-		return SystemProperties.getProperty("findbugs.jdbc." + propertyName);
+	private  String getJDBCProperty(String propertyName) {
+		return properties.getProperty("findbugs.jdbc." + propertyName);
 	}
 
-	final static int MAX_DB_RANK = SystemProperties.getInt("findbugs.db.maxrank", 12);
+	final  int MAX_DB_RANK = properties.getInt("findbugs.db.maxrank", 12);
 	final String url, dbUser, dbPassword, dbName;
 	String findbugsUser;
 	@CheckForNull Pattern sourceFileLinkPattern;
@@ -590,11 +586,11 @@ public  class DBCloud extends AbstractCloud {
 		if (mode != null)
 			setMode(Mode.valueOf(mode.toUpperCase()));
 		
-		String sp = SystemProperties.getProperty("findbugs.sourcelink.pattern");
-		String sf = SystemProperties.getProperty("findbugs.sourcelink.format");
-		String sfwl = SystemProperties.getProperty("findbugs.sourcelink.formatWithLine");
+		String sp = properties.getProperty("findbugs.sourcelink.pattern");
+		String sf = properties.getProperty("findbugs.sourcelink.format");
+		String sfwl = properties.getProperty("findbugs.sourcelink.formatWithLine");
 		
-		String stt  = SystemProperties.getProperty("findbugs.sourcelink.tooltip");
+		String stt  = properties.getProperty("findbugs.sourcelink.tooltip");
 		if (sp != null && sf != null) {
 			try {
 			this.sourceFileLinkPattern = Pattern.compile(sp);
@@ -610,7 +606,7 @@ public  class DBCloud extends AbstractCloud {
 		
 		
 		
-		findbugsUser = CloudFactory.getNameLookup(bugCollection).getUsername();
+		findbugsUser = getUsernameLookup().getUsername();
 		
 		if (findbugsUser == null)
 			return false;
@@ -618,7 +614,7 @@ public  class DBCloud extends AbstractCloud {
 		loadBugComponents();
 		Connection c = null;
 		try {
-			Class.forName(sqlDriver);
+			plugin.getClassLoader().loadClass(sqlDriver);
 			c = getConnection();
 			Statement stmt = c.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) from  findbugs_issue");
@@ -1039,8 +1035,8 @@ public  class DBCloud extends AbstractCloud {
 			AnalysisContext.logError(msg, e);
 			return;
 		} finally {
-			rs.close();
-			query.close();
+			Util.closeSilently(rs);
+			Util.closeSilently(query);
 		}
 
 		if (pendingId == -1) {
@@ -1216,7 +1212,7 @@ public  class DBCloud extends AbstractCloud {
  	  
      }
 	    
-    static final String BUG_NOTE = SystemProperties.getProperty("findbugs.bugnote");
+    final  String BUG_NOTE = properties.getProperty("findbugs.bugnote");
 	
     String getBugReportHead(BugInstance b) {
 		StringWriter stringWriter = new StringWriter();
@@ -1329,9 +1325,9 @@ public  class DBCloud extends AbstractCloud {
 				out.println("\nRelevant source code:");
 				for(SourceLine s : source) {
 					if (s.text.length() == 0)
-							out.printf("%5d: \n", s.line);
+							out.printf("%5d: %n", s.line);
 					else 
-						out.printf("%5d:   %s\n", s.line, s.text.substring(commonWhiteSpace.length()));
+						out.printf("%5d:   %s%n", s.line, s.text.substring(commonWhiteSpace.length()));
 				}
 				
 				
@@ -1507,13 +1503,13 @@ public  class DBCloud extends AbstractCloud {
 		prefs.putBoolean(activity, true);
 	}
     private boolean firstBugRequest = true;
-    static final String POSTMORTEM_NOTE = SystemProperties.getProperty("findbugs.postmortem.note");
-	static final int POSTMORTEM_RANK = SystemProperties.getInt("findbugs.postmortem.maxRank", 4);
-	static final String BUG_LINK_FORMAT = SystemProperties.getProperty("findbugs.filebug.link");
-	static final String BUG_LOGIN_LINK = SystemProperties.getProperty("findbugs.filebug.login");
-	static final String BUG_LOGIN_MSG = SystemProperties.getProperty("findbugs.filebug.loginMsg");
+    final  String POSTMORTEM_NOTE = properties.getProperty("findbugs.postmortem.note");
+    final  int POSTMORTEM_RANK = properties.getInt("findbugs.postmortem.maxRank", 4);
+    final  String BUG_LINK_FORMAT = properties.getProperty("findbugs.filebug.link");
+    final  String BUG_LOGIN_LINK = properties.getProperty("findbugs.filebug.login");
+    final  String BUG_LOGIN_MSG = properties.getProperty("findbugs.filebug.loginMsg");
 	
-	static final String COMPONENT_FOR_BAD_ANALYSIS = SystemProperties.getProperty("findbugs.filebug.badAnalysisComponent");
+	 final String COMPONENT_FOR_BAD_ANALYSIS = properties.getProperty("findbugs.filebug.badAnalysisComponent");
 	
     @Override
     @CheckForNull
@@ -1585,7 +1581,7 @@ public  class DBCloud extends AbstractCloud {
 
 				URL u = getBugFilingLink(b);
 				if (u != null && firstTimeDoing(HAS_FILED_BUGS)) {
-					String bugFilingNote = String.format(SystemProperties.getProperty("findbugs.filebug.note", ""));
+					String bugFilingNote = String.format(properties.getProperty("findbugs.filebug.note", ""));
 					int response = bugCollection.getProject().getGuiCallback().showConfirmDialog(
 					        "This looks like the first time you've filed a bug from this machine. Please:\n"
 					                + " * Please check the component the issue is assigned to; we sometimes get it wrong.\n"
@@ -1625,7 +1621,7 @@ public  class DBCloud extends AbstractCloud {
      * @throws MalformedURLException
      */
     private @CheckForNull URL getBugViewLink(String bugNumber)  {
-	    String viewLinkPattern = SystemProperties.getProperty("findbugs.viewbug.link");
+	    String viewLinkPattern = properties.getProperty("findbugs.viewbug.link");
 	    if (viewLinkPattern == null)
 	    	return null;
 	    firstBugRequest = false;

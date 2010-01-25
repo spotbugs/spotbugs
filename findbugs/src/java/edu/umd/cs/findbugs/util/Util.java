@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.util;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -33,6 +34,8 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.AbstractSet;
 import java.util.ArrayList;
@@ -219,7 +222,22 @@ public class Util {
 			assert true;
 		}
 	}
-
+	public static void closeSilently(@WillClose PreparedStatement c) {
+		try {
+			if (c != null)
+				c.close();
+		} catch (SQLException e) {
+			assert true;
+		}
+	}
+	public static void closeSilently(@WillClose ResultSet c) {
+		try {
+			if (c != null)
+				c.close();
+		} catch (SQLException e) {
+			assert true;
+		}
+	}
 	public static void closeSilently(@WillClose InputStream in) {
 		try {
 			if (in != null)
@@ -239,6 +257,14 @@ public class Util {
 	}
 
 	public static void closeSilently(@WillClose OutputStream out) {
+		try {
+			if (out != null)
+				out.close();
+		} catch (IOException e) {
+			assert true;
+		}
+	}
+	public static void closeSilently(@WillClose Closeable out) {
 		try {
 			if (out != null)
 				out.close();

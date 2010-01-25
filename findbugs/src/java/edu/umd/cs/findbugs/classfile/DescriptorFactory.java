@@ -175,7 +175,7 @@ public class DescriptorFactory {
 				System.out.println(e.getKey());
 			if (e.getValue() instanceof MethodInfo) values++;
 		}
-		System.out.printf("Descriptor factory: %d/%d/%d\n", keys, values, total);
+		System.out.printf("Descriptor factory: %d/%d/%d%n", keys, values, total);
 
 	}
 	public void canonicalize(MethodDescriptor m) {

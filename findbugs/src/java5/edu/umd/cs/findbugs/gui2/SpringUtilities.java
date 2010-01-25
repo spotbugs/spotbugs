@@ -95,6 +95,7 @@ public class SpringUtilities {
 				lastRowCons = lastCons;
 				cons.setX(initialXSpring);
 			} else { //x position depends on previous component
+				assert lastCons != null;
 				cons.setX(Spring.sum(lastCons.getConstraint(SpringLayout.EAST),
 									 xPadSpring));
 			}

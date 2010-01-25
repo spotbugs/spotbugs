@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.cloud.username.NameLookup;
@@ -34,8 +35,6 @@ import edu.umd.cs.findbugs.cloud.username.PromptForNameLookup;
  * @author pwilliam
  */
 public class CloudFactory {
-	
-
     
     private static final String FINDBUGS_NAMELOOKUP_CLASSNAME = "findbugs.namelookup.classname";
     private static final String FINDBUGS_NAMELOOKUP_REQUIRED = "findbugs.namelookup.required";
@@ -45,72 +44,15 @@ public class CloudFactory {
     private static final String DEFAULT_CLOUD_CLASS = "edu.umd.cs.findbugs.cloud.db.DBCloud";
 
     
-    public static NameLookup getNameLookup(BugCollection bc) {
-    	String cloudClassName = SystemProperties.getProperty(FINDBUGS_NAMELOOKUP_CLASSNAME);
-    	Class <? extends NameLookup> c = null;
-    	if (cloudClassName != null) try {
-    		c = Class.forName(cloudClassName).asSubclass(NameLookup.class);
-    	} catch (ClassNotFoundException e) {
-	       AnalysisContext.logError("Unable to load " + cloudClassName, e);
-        }
-    	String required = SystemProperties.getProperty(FINDBUGS_NAMELOOKUP_REQUIRED);
-    	if (required != null && Boolean.parseBoolean(required)) {
-    		if (c == null)
-    			throw new RuntimeException("Unable to load " + cloudClassName);
-    		NameLookup result;
-            try {
-	            result = c.newInstance();
-            } catch (Exception e) {
-            	throw new RuntimeException("Unable to construct " + cloudClassName, e);
-	        }
-    		if (!result.login(bc)) 
-    			throw new RuntimeException("Unable to log in via " + cloudClassName);
-    		return result;
-    	}
-    	
-    	if (c == null)
-    		c = PromptForNameLookup.class;
-    	NameLookup result = null;
-        try {
-	        result = c.newInstance();
-        } catch (Exception e) {
-            AnalysisContext.logError("Unable to construct " + cloudClassName, e);
-        }
        
-    	if (result == null || !result.login(bc)) {
-    		result = new PromptForNameLookup();
-        	if (!result.login(bc))
-        		throw new AssertionError("Can't init prompt for name lookup");
-    	}
-    	
-    	return result;
-		
-    }
-
-    private static Class<? extends Cloud> getCloudClass() throws ClassNotFoundException {
-    	String cloudClassName = SystemProperties.getProperty("findbugs.cloud.classname");
-		boolean cloudClassSpecified = cloudClassName != null;
-		if (!cloudClassSpecified)
-			cloudClassName = DEFAULT_CLOUD_CLASS;
-		Class<? extends Cloud> cloudClass = registeredClouds.get(cloudClassName);
-		if (cloudClass == null)
-			cloudClass = Class.forName(cloudClassName).asSubclass(Cloud.class);
-      
-		return cloudClass;
-    }
-    
-    private static Map<String, Class<? extends Cloud>> registeredClouds = new HashMap<String, Class<? extends Cloud>> ();
-    
-    public static void addCloud(Class<? extends Cloud> cloudClass) {
-    	registeredClouds.put(cloudClass.getName(), cloudClass);
-    }
-    
 	public static Cloud getCloud(BugCollection bc) {
+		CloudPlugin plugin = defaultPlugin;
+		
 		try {
-			Class<? extends Cloud> cloudClass = getCloudClass();
+			Class<? extends Cloud> cloudClass = plugin.getCloudClass();
 			String cloudClassName = cloudClass.getName();
-	        Constructor<? extends Cloud> constructor = cloudClass.getConstructor(BugCollection.class);
-			Cloud cloud = constructor.newInstance(bc);
+	        Constructor<? extends Cloud> constructor = cloudClass.getConstructor(CloudPlugin.class, BugCollection.class);
+			Cloud cloud = constructor.newInstance(plugin, bc);
 			if (DEBUG)
 				bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloudClassName);
 			if (cloud.availableForInitialization()) {
@@ -124,23 +66,33 @@ public class CloudFactory {
 					return cloud;
 				}
 				bc.getProject().getGuiCallback().showMessageDialog("Unable to connect to " + cloudClass.getSimpleName());
-				if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToDB"))
-					System.exit(1);
+				
 			} 
-		} catch (ClassNotFoundException e) {
-			assert true;
-        } catch (Exception e) {
+		} catch (Exception e) {
 	      assert true;
         }
-        
-        return getPlainCloud(bc);
+		if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToDB"))
+			System.exit(1);
+        return getPlainCloud( bc);
 	}
 
 
     public static Cloud getPlainCloud(BugCollection bc) {
 	    Cloud cloud = new BugCollectionStorageCloud(bc);
-        cloud.initialize();
-        return cloud;
+        if (cloud.initialize())
+        	return cloud;
+        throw new IllegalStateException("Unable to initialize plain cloud");
+    }
+
+    static  Map<String, CloudPlugin> registeredClouds = new HashMap<String, CloudPlugin>();
+    static CloudPlugin defaultPlugin;
+	/**
+     * @param cloudPlugin
+     */
+    public static void registerCloud(CloudPlugin cloudPlugin) {
+    	registeredClouds.put(cloudPlugin.getId(), cloudPlugin);
+    	defaultPlugin = cloudPlugin;
+	    
     }
 	
 }

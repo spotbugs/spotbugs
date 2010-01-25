@@ -38,7 +38,7 @@ public class SystemProperties {
 
 	private static Properties properties = new Properties();
 	public final static boolean ASSERTIONS_ENABLED;
-	private final static String OS_NAME;
+	final static String OS_NAME;
 	static {
 		boolean tmp = false;
 		assert tmp = true; // set tmp to true if assertions are enabled
@@ -226,7 +226,6 @@ public class SystemProperties {
 		if (!m.matches())
 			return u;
 		String result = String.format(URL_REWRITE_FORMAT, m.group(1));
-		System.out.println("Rewriting " + u + " as " +result);
 		return result;
 	}
 

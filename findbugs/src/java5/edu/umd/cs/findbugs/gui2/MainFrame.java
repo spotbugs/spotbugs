@@ -1507,6 +1507,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				return false;
 			}
 		}
+		assert f != null;
 
 //		saveProjectMenuItem.setEnabled(false);
 		saveMenuItem.setEnabled(false);

@@ -26,6 +26,7 @@ import java.net.URL;
 import java.security.SecureRandom;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -33,20 +34,22 @@ import edu.umd.cs.findbugs.util.Util;
  * @author pugh
  */
 public class AppEngineNameLookup implements NameLookup {
-	public static final String HOST = "http://theflybush.appspot.com";
-    // public static final String HOST = "http://localhost:8080";
-
+	
+	/**
+     * 
+     */
+    public static final String APPENGINE_HOST_PROPERTY_NAME = "appengine.host";
 	private long sessionId;
 	private String username;
 	
-	public boolean login(BugCollection bugCollection) {
+	public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) {
 			try {
-			
+			String host = plugin.getProperties().getProperty(APPENGINE_HOST_PROPERTY_NAME);
 			SecureRandom r = new SecureRandom();
 			long id = r.nextLong();
-			URL u = new URL(HOST + "/browser-auth/" + id);
+			URL u = new URL(host + "/browser-auth/" + id);
 			LaunchBrowser.showDocument(u);
-			URL response = new URL(HOST + "/check-auth/" + id);
+			URL response = new URL(host + "/check-auth/" + id);
 			for (int i = 0; i < 60; i++) {
 				HttpURLConnection connection = (HttpURLConnection) response.openConnection();
 	

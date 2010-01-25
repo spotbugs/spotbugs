@@ -212,8 +212,9 @@ public class DBStats {
 		}
 		I18N i18n = I18N.instance();
 		
+		// TODO: this this
 		
-		DBCloud cloud = new DBCloud(null);
+		DBCloud cloud = new DBCloud(null, null);
 		cloud.initialize();
 		Connection c = cloud.getConnection();
 		
@@ -384,9 +385,9 @@ public class DBStats {
 			if (assignedTo != null && !"NEW".equals(status) 
 					&& (rank != null && rank <= 4 || postmortem != null)) {
 				if (postmortem != null) 
-				      scariestBugs.printf("%s,%s,%s,%d,POSTMORTEM\n", assignedTo, id, status, rank);
+				      scariestBugs.printf("%s,%s,%s,%d,POSTMORTEM%n", assignedTo, id, status, rank);
 				else 
-					scariestBugs.printf("%s,%s,%s,%d\n", assignedTo, id, status, rank);
+					scariestBugs.printf("%s,%s,%s,%d%n", assignedTo, id, status, rank);
 			} 
 			
 			if (!id.equals(DBCloud.PENDING) && !id.equals(DBCloud.NONE)) {
@@ -421,7 +422,7 @@ public class DBStats {
 			issueScore.add(issue, average);
 
 			
-			// System.out.printf("%s %2d %2d\n", score, value, num);
+			// System.out.printf("%s %2d %2d%n", score, value, num);
 			overallEvaluation.add(
 					getDesignationTitle(i18n, getDesignationFromScore(score)));
 			
@@ -442,14 +443,14 @@ public class DBStats {
             int elementCount = reviewsForIssue.getCount(key);
             Double v = e1.getValue();
             if (elementCount >= 3 && v >= 0.5) 
-                out1.printf("%3.1f,%3.1f,%d,%d,%s\n",  v, issueScore.getValue(key), elementCount, key, bugPattern.get(key));
+                out1.printf("%3.1f,%3.1f,%d,%d,%s%n",  v, issueScore.getValue(key), elementCount, key, bugPattern.get(key));
             
         }
         out1.close();
 		
-		System.out.printf("%6d invocations\n", invocationCount);
-		System.out.printf("%6d invocations time (secs)\n", invocationTotal/invocationCount/1000);
-		System.out.printf("%6d load time (secs)\n", loadTotal/invocationCount/1000);
+		System.out.printf("%6d invocations%n", invocationCount);
+		System.out.printf("%6d invocations time (secs)%n", invocationTotal/invocationCount/1000);
+		System.out.printf("%6d load time (secs)%n", loadTotal/invocationCount/1000);
 		System.out.println();
 		
 			
@@ -512,7 +513,7 @@ public class DBStats {
 	        String key = e.getKey();
 	        BugPattern pattern = i18n.lookupBugPattern(key);
 			if (pattern != null) 
-	          out.printf("%1.1f,%1.1f,%d,%d,%s\n", e.getValue(), variance.getValue(key),  BugRanker.findRank(pattern, 1), count.getCount(key), key);
+	          out.printf("%1.1f,%1.1f,%d,%d,%s%n", e.getValue(), variance.getValue(key),  BugRanker.findRank(pattern, 1), count.getCount(key), key);
         }
 		out.close();
 	}
@@ -574,7 +575,7 @@ public class DBStats {
      */
     private static void printMultisetContents(PrintWriter out, String prefix, Multiset<String> allIssues) {
 	    for(Map.Entry<String, Integer> e : allIssues.entrySet())
-			out.printf("%s%s,%d\n", prefix, e.getKey(), e.getValue());
+			out.printf("%s%s,%d%n", prefix, e.getKey(), e.getValue());
     }
 
     
@@ -600,7 +601,7 @@ public class DBStats {
 			Timestamp time = e.getKey();
 			total += e.getValue();
 			if (time.after(fixitStart))
-			  out.printf("%d,%s,%s\n", total, format.format(time), defaultFormat.format(time));
+			  out.printf("%d,%s,%s%n", total, format.format(time), defaultFormat.format(time));
 		}
 		out.close();
 		

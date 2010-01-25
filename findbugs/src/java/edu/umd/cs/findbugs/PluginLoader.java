@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -43,6 +42,10 @@ import org.dom4j.io.SAXReader;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.CloudFactory;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.username.NameLookup;
 import edu.umd.cs.findbugs.plan.ByInterfaceDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.DetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
@@ -215,6 +218,17 @@ public class PluginLoader {
 
 		return null;
     }
+	
+	private static <T> Class<? extends T> getClass(ClassLoader loader, String className, Class<T> type) throws PluginException {
+		try {
+	        return  loader.loadClass(className).asSubclass(type);
+        } catch (ClassNotFoundException e) {
+	        throw new PluginException("Unable to load " + className, e);
+        } catch (ClassCastException e) {
+        	 throw new PluginException("Cannot cast " + className + " to " + type.getName(), e);
+        }
+		
+	}
 
 	@SuppressWarnings("unchecked")
     private void init() throws PluginException {
@@ -305,6 +319,35 @@ public class PluginLoader {
 			plugin.setShortDescription(pluginShortDesc.getText());
 		}
 
+		List<Node> cloudNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Cloud");
+		int cloudCount = 0;
+		for(Node cloudNode : cloudNodeList) {
+			
+			String cloudClassname = cloudNode.valueOf("@cloudClass");
+			String cloudid = cloudNode.valueOf("@id");
+			String usernameClassname =  cloudNode.valueOf("@usernameClass");
+			String propertiesLocation = cloudNode.valueOf("@properties");
+			Class<? extends Cloud> cloudClass = getClass(classLoader, cloudClassname, Cloud.class);
+			
+			Class<? extends NameLookup> usernameClass = getClass(classLoader, usernameClassname, NameLookup.class);
+			Node cloudMessageNode = findMessageNode(messageCollectionList,
+					"/MessageCollection/Cloud[@id='" + cloudid + "']",
+					"Missing Cloud description for cloud " + cloudid);
+			String description = getChildText(cloudMessageNode, "Description");
+			String details = getChildText(cloudMessageNode, "Details");
+			PropertyBundle properties = new PropertyBundle();
+			if (propertiesLocation != null && propertiesLocation.length() > 0) {
+				URL properiesURL = classLoader.getResource(propertiesLocation);
+				if (properiesURL == null)
+					continue;
+				properties.loadPropertiesFromURL(properiesURL);
+			}
+			CloudPlugin cloudPlugin = new CloudPlugin(cloudid, classLoader, cloudClass, usernameClass, properties, description, details);
+
+			CloudFactory.registerCloud(cloudPlugin);
+			
+		}
+		
 		// Create a DetectorFactory for all Detector nodes
 		if (!FindBugs.noAnalysis) try {
 			List<Node> detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");

@@ -21,10 +21,8 @@ package edu.umd.cs.findbugs.cloud;
 
 import java.io.PrintWriter;
 import java.net.URL;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
@@ -38,10 +36,11 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.ProjectStats;
+import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
-import edu.umd.cs.findbugs.cloud.Cloud.Mode;
-import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.cloud.username.NameLookup;
+import edu.umd.cs.findbugs.cloud.username.PromptForNameLookup;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Multiset;
 
@@ -65,7 +64,10 @@ public abstract class AbstractCloud implements Cloud {
  			
  	}
 
+ 	protected final CloudPlugin plugin;
 	protected final BugCollection bugCollection;
+	protected final PropertyBundle properties;
+	
 	
 	Mode mode = Mode.COMMUNAL;
 	
@@ -75,8 +77,10 @@ public abstract class AbstractCloud implements Cloud {
 	public void setMode(Mode mode) {
 		this.mode = mode;
 	}
-	protected AbstractCloud(BugCollection bugs) {
+	protected AbstractCloud(CloudPlugin plugin, BugCollection bugs) {
+		this.plugin = plugin;
 		this.bugCollection = bugs;
+		this.properties = plugin.getProperties();
 	}
 	
 	public BugCollection getBugCollection() {
@@ -134,7 +138,7 @@ public abstract class AbstractCloud implements Cloud {
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd, yyyy");
 		StringBuilder builder = new StringBuilder();
 		long firstSeen = getFirstSeen(b);
-		builder.append(String.format("First seen %s\n", format.format(new Date(firstSeen))));
+		builder.append(String.format("First seen %s%n", format.format(new Date(firstSeen))));
 		
 		
 		I18N i18n = I18N.instance();
@@ -263,7 +267,7 @@ public abstract class AbstractCloud implements Cloud {
 		} else {
 			w.println("Code analyzed");
 		}
-		w.printf("%,7d packages\n%,7d classes\n%,7d thousands of lines of non-commenting source statements\n",
+		w.printf("%,7d packages%n%,7d classes%n%,7d thousands of lines of non-commenting source statements%n",
 				packageCount, classCount, (ncss+999)/1000);
 		w.println();
 		int count = 0;
@@ -290,21 +294,21 @@ public abstract class AbstractCloud implements Cloud {
     		
     	}
 		if (count == 0) {
-			w.printf("None of the %d issues in the current view are in the cloud\n\n", notInCloud);
+			w.printf("None of the %d issues in the current view are in the cloud%n%n", notInCloud);
 	    	return;
 		}
 		if (notInCloud == 0) {
-			w.printf("Summary for %d issues that are in the current view\n\n", count);
+			w.printf("Summary for %d issues that are in the current view%n%n", count);
 		}else {
-			w.printf("Summary for %d issues that are in the current view and cloud (%d not in cloud)\n\n", count, notInCloud);
+			w.printf("Summary for %d issues that are in the current view and cloud (%d not in cloud)%n%n", count, notInCloud);
 		}
 		if (evaluations.numKeys() == 0) {
 			w.println("No evaluations found");
 		} else {
 	    	w.println("People who have performed the most reviews");
 	    	printLeaderBoard(w, evaluations, 9, getUser(), true, "reviewer");
-    	
-	    	w.println("\nDistribution of evaluations");
+	    	w.println();
+	    	w.println("Distribution of evaluations");
 	    	printLeaderBoard(w, designations, 100, " --- ", false, "designation");
 		}
     	
@@ -316,8 +320,8 @@ public abstract class AbstractCloud implements Cloud {
 	    	w.println("Distribution of bug status");
 	    	printLeaderBoard(w, bugStatus, 100, " --- ", false, "status of filed bug");
 		}
-    	
-    	w.println("\nDistribution of number of reviews");
+    	w.println();
+    	w.println("Distribution of number of reviews");
     	for(int i = 0; i < issuesWithThisManyReviews.length; i++) 
     		if (issuesWithThisManyReviews[i] > 0) {
     		w.printf("%4d  with %3d review", issuesWithThisManyReviews[i], i);
@@ -341,10 +345,10 @@ public abstract class AbstractCloud implements Cloud {
     
     private static void printLeaderBoard(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint, boolean listRank, String title) {
     	 if (listRank)
- 			w.printf("%3s %4s %s\n", "rnk", "num", title);
+ 			w.printf("%3s %4s %s%n", "rnk", "num", title);
  		else
- 			w.printf("%4s %s\n",  "num", title);
-    	printLeaderBoard2(w, evaluations, maxRows, alwaysPrint, listRank ? "%3d %4d %s\n" : "%2$4d %3$s\n"  , title);
+ 			w.printf("%4s %s%n",  "num", title);
+    	printLeaderBoard2(w, evaluations, maxRows, alwaysPrint, listRank ? "%3d %4d %s%n" : "%2$4d %3$s%n"  , title);
     }
     
 
@@ -377,7 +381,7 @@ public abstract class AbstractCloud implements Cloud {
      			if (alwaysPrint == null) 
      				break;
      			if (foundAlwaysPrint) {
-         			w.printf("Total of %d %ss\n", evaluations.numKeys(), title);
+         			w.printf("Total of %d %ss%n", evaluations.numKeys(), title);
          			break;
          		} 
      		}
@@ -427,5 +431,20 @@ public abstract class AbstractCloud implements Cloud {
     	return bd.getTimestamp();
     	
     }
+    
+    protected NameLookup getUsernameLookup() {
+    	NameLookup lookup;
+        try {
+	        lookup = plugin.getUsernameClass().newInstance();
+        } catch (Exception e) {
+        	throw new RuntimeException("Unable to obtain username", e);
+        }
+     	if (!lookup.initialize(plugin, bugCollection)) {
+     		throw new RuntimeException("Unable to obtain username");
+     	}
+    	return lookup;
+		
+    }    
+
 
 }

@@ -15,7 +15,9 @@ import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.ProjectStats;
+import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 
 public class AbstractCloudTest extends TestCase {
 
@@ -29,7 +31,9 @@ public class AbstractCloudTest extends TestCase {
     public void setUp() {
 		projectStats = new ProjectStats();
 		bugCollection = new SortedBugCollection(projectStats);
-		cloud = new MyAbstractCloud(bugCollection);
+		CloudPlugin plugin = new CloudPlugin("myAbstractCloud", this.getClass().getClassLoader(), MyAbstractCloud.class, 
+				NoNameLookup.class	, new PropertyBundle()	, "no description", "no details");
+		cloud = new MyAbstractCloud(plugin, bugCollection);
 		summary = new StringWriter();
 		timestampCounter = 0;
 	}
@@ -220,8 +224,8 @@ public class AbstractCloudTest extends TestCase {
     private final class MyAbstractCloud extends AbstractCloud {
 	    private final Map<BugInstance, List<BugDesignation>> designations = new HashMap<BugInstance, List<BugDesignation>>();
 
-	    private MyAbstractCloud(BugCollection bugs) {
-		    super(bugs);
+	    private MyAbstractCloud(CloudPlugin plugin, BugCollection bugs) {
+		    super(plugin, bugs);
 	    }
 
 	    public void storeUserAnnotation(BugInstance bugInstance) {

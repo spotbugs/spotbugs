@@ -11,7 +11,18 @@
                 provider="FindBugs project" 
                 website="http://findbugs.sourceforge.net"
                 >
-				
+
+  <Cloud id="edu.umd.cs.findbugs.cloud.Local"				
+	 cloudClass="edu.umd.cs.findbugs.cloud.BugCollectionStorageCloud"
+	 usernameClass="edu.umd.cs.findbugs.cloud.username.NoNameLookup"
+	/>
+  <Cloud id="edu.umd.cs.findbugs.cloud.JDBC.UMD"				
+	 cloudClass="edu.umd.cs.findbugs.cloud.db.DBCloud"
+	 usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup"
+	 properties="systemProperties.properties"
+	/>
+
+	
   <OrderingConstraints>
 	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.FieldItemSummary"/>

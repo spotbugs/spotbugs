@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.cloud.username;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 
 /**
  * @author pugh
@@ -33,9 +34,10 @@ public interface NameLookup {
 
 	/** tries to obtain a user name.
 	 * May prompt the user and/or perform network activity.
-	 * 
+	 * @param plugin TODO
 	 * @param bugCollection
+	 * 
 	 * @return true if successful
 	 */
-	boolean login(BugCollection bugCollection);
+	boolean initialize(CloudPlugin plugin, BugCollection bugCollection);
 }

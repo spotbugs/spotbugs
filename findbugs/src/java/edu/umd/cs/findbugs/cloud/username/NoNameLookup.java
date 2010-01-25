@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.cloud.username;
 import java.util.prefs.Preferences;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.db.DBCloud;
 
 /**
@@ -33,7 +34,7 @@ public class NoNameLookup implements NameLookup {
 		return "no name";
 	}
 	
-	public boolean login(BugCollection bugCollection) {
+	public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) {
 		return true;
 	}
 

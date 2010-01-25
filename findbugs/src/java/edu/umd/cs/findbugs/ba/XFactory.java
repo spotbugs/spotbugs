@@ -316,7 +316,7 @@ public class XFactory {
 			if (m instanceof MethodInfo)
 				count++;
 		}
-		System.out.printf("XFactory cached methods: %d/%d\n", count, xFactory.methods.size());
+		System.out.printf("XFactory cached methods: %d/%d%n", count, xFactory.methods.size());
 		DescriptorFactory.instance().profile();
 		
 	}
