@@ -86,7 +86,7 @@ public class RebornIssues {
 						if (!aI.hasNext()) break loop;
 						a = aI.next();
 					}
-					System.out.printf("%5d %5d %s\n", removed, a, bugPattern);
+					System.out.printf("%5d %5d %s%n", removed, a, bugPattern);
 				}
 						
 			}

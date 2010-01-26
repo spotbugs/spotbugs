@@ -331,14 +331,14 @@ public class Profiler implements XMLWriteable {
 			TreeSet<Class<?>> treeSet = new TreeSet<Class<?>>(reportComparator);
 			treeSet.addAll(profile.keySet());
 
-			stream.printf("%8s  %8s %9s %s\n", "msecs", "#calls", "usecs/call", "Class");
+			stream.printf("%8s  %8s %9s %s%n", "msecs", "#calls", "usecs/call", "Class");
 
 			for (Class<?> c : treeSet) {
 				Profile p = getProfile(c);
 				long time = p.totalTime.get();
 				int callCount = p.totalCalls.get();
 				if (filter.accepts(p)) {
-					stream.printf("%8d  %8d  %8d %s\n", 
+					stream.printf("%8d  %8d  %8d %s%n", 
 						Long.valueOf(TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS)), 
 						Integer.valueOf(callCount),
 						Long.valueOf(TimeUnit.MICROSECONDS.convert(time / callCount, TimeUnit.NANOSECONDS)), 

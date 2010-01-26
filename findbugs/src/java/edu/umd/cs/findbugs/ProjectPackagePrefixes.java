@@ -133,14 +133,14 @@ public class ProjectPackagePrefixes {
 		for (Map.Entry<String, Integer> e : rawPackageCount.entrySet()) {
 			String packageName = e.getKey();
 			if (e.getValue() > 5)
-			System.out.printf("%5d %s\n", e.getValue(), packageName);
+			System.out.printf("%5d %s%n", e.getValue(), packageName);
 		}
 		System.out.println("Count by project");
 		
 		for (Map.Entry<Set<String>, Integer> e : count.entrySet()) {
 			Set<String> projects = e.getKey();
 			if (e.getValue() > 5)
-			System.out.printf("%5d %s\n", e.getValue(), projects);
+			System.out.printf("%5d %s%n", e.getValue(), projects);
 		}
 		System.out.println("Count by package for items not associated with a project");
 		
@@ -181,7 +181,7 @@ public class ProjectPackagePrefixes {
 		System.out.println("Count of missing files in packages not associated with a project");
 		for (Map.Entry<String, Integer> e : missingProjectCount.entrySet()) {
 			if (e.getValue() > 5)
-				System.out.printf("%5d %s\n", e.getValue(), e.getKey());
+				System.out.printf("%5d %s%n", e.getValue(), e.getKey());
 		}
 	}
 

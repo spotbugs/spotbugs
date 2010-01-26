@@ -949,7 +949,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 				Global.getAnalysisCache().purgeClassAnalysis(FBClassReader.class);
 				for (ClassDescriptor classDescriptor : classCollection) {
 					if (PROGRESS) {
-						System.out.printf("%d/%d  %d/%d %s\n", passCount, executionPlan.getNumPasses(), count,  classCollection.size(),  classDescriptor);
+						System.out.printf("%d/%d  %d/%d %s%n", passCount, executionPlan.getNumPasses(), count,  classCollection.size(),  classDescriptor);
 						count++;
 					}
 

@@ -37,7 +37,7 @@ public class ProfilingMapCache<K,V> extends MapCache<K,V> {
             public void run() {
 				System.out.println("Profile for map cache " + ProfilingMapCache.this.name);
 				for(int i = 0; i < count.length; i++)
-					System.out.printf("%4d %5d\n", i, count[i]);
+					System.out.printf("%4d %5d%n", i, count[i]);
 			}
 		});
 	}

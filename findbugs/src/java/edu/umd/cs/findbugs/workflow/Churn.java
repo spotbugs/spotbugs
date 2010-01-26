@@ -111,13 +111,13 @@ public class Churn {
 			long last = bugInstance.getLastVersion();
 			
 			if (last != -1) {
-				System.out.printf("%3d #fixed %s\n", last, key);
+				System.out.printf("%3d #fixed %s%n", last, key);
 			}
 			if (first != 0 && last != -1) {
 				int lifespan = (int)(last-first+1);
 				
-				System.out.printf("%3d #age %s\n", lifespan, key);
-				System.out.printf("%3d %3d #spread %s\n", first, last, key);
+				System.out.printf("%3d #age %s%n", lifespan, key);
+				System.out.printf("%3d %3d #spread %s%n", first, last, key);
 				diedAfter[lifespan]++;
 				for (int t = 1; t < lifespan; t++)
 					aliveAt[t]++;
@@ -133,9 +133,9 @@ public class Churn {
 	public void dump(PrintStream out) {
 		for(int t = 1; t < aliveAt.length; t++) {
 			if (aliveAt[t] != 0)
-			System.out.printf("%3d%% %4d %5d %3d #decay\n", diedAfter[t] * 100 / aliveAt[t], diedAfter[t], aliveAt[t], t);
+			System.out.printf("%3d%% %4d %5d %3d #decay%n", diedAfter[t] * 100 / aliveAt[t], diedAfter[t], aliveAt[t], t);
 		}
-		System.out.printf("%7s %3s %5s %5s %5s  %s\n", "chi", "%", "const", "fix", "max", "kind");
+		System.out.printf("%7s %3s %5s %5s %5s  %s%n", "chi", "%", "const", "fix", "max", "kind");
 		double fixRate;
 		if (this.fixRate == -1)
 			fixRate = ((double) all.fixed)/(all.fixed+all.persist);
@@ -152,7 +152,7 @@ public class Churn {
 							+ (d.persist - expectedPersist)*(d.persist - expectedPersist)/expectedPersist;
 			if (expectedFixed > d.fixed)
 				chiValue = -chiValue;
-			System.out.printf("%7.1f %3d %5d %5d %5d %s\n", chiValue, d.fixed * 100 / total, d.persist, d.fixed, 
+			System.out.printf("%7.1f %3d %5d %5d %5d %s%n", chiValue, d.fixed * 100 / total, d.persist, d.fixed, 
 					d.maxRemovedAtOnce(), e.getKey());
 		}
 

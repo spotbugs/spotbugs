@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
@@ -210,17 +211,12 @@ public class DetectorFactoryCollection {
 	private void determinePlugins() {
 		if (pluginList != null)
 			return;
-			
+		ArrayList<URL> plugins = new ArrayList<URL>();
+		
 		String homeDir = getFindBugsHome();
 		
-		if (homeDir == null) {
-			
-			// Since findbugs.home isn't set, we won't attempt
-			// to look for third-party plugins.
-			pluginList = new URL[0];
-			return;
-		}
-
+		if (homeDir != null) {
+	
 		//
 		// See what plugins are available in the ${findbugs.home}/plugin directory
 		//
@@ -232,21 +228,32 @@ public class DetectorFactoryCollection {
 			return;
 		}
 
-		ArrayList<URL> arr = new ArrayList<URL>();
-		for (File aContentList : contentList) {
-			if (aContentList.getName().endsWith(".jar")) {
+		for (File file : contentList) {
+			if (file.getName().endsWith(".jar")) {
 
 				try {
-					arr.add(aContentList.toURL());
+					plugins.add(file.toURI().toURL());
 					if (FindBugs.DEBUG)
-						System.out.println("Found plugin: " + aContentList.toString());
+						System.out.println("Found plugin: " + file.toString());
 				} catch (MalformedURLException e) {
 
 				}
 
 			}
 		}
-		pluginList = arr.toArray(new URL[arr.size()]);
+		}
+		for(Map.Entry<?,?> e : SystemProperties.getProperties().entrySet()) {
+			if (e.getKey() instanceof String && e.getValue() instanceof String && ((String)e.getKey()).startsWith("findbugs.plugin.")) {
+				try {
+	                URL u = new URL((String) e.getValue());
+	                plugins.add(u);
+                } catch (MalformedURLException e1) {
+	                AnalysisContext.logError(String.format("Bad URL for plugin: %s=%s", e.getKey(), e.getValue()), e1);
+                }
+				
+			}
+		}
+		pluginList = plugins.toArray(new URL[plugins.size()]);
 
 	}
 	

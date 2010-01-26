@@ -344,20 +344,21 @@ public class MergeSummarizeAndView {
 
 		boolean hasScaryBugs = !scaryBugs.getCollection().isEmpty();
 		if (hasScaryBugs) {
-			System.out.printf("%4s\n", "days");
-			System.out.printf("%4s %4s %s\n", "old", "rank", "issue");
+			System.out.printf("%4s%n", "days");
+			System.out.printf("%4s %4s %s%n", "old", "rank", "issue");
 			for (BugInstance warning : scaryBugs) {
 				int rank = BugRanker.findRank(warning);
 
 				long firstSeen = cloud.getFirstSeen(warning);
 
-				System.out.printf("%4d %4d %s\n", ageInDays(firstSeen), rank, warning.getMessageWithoutPrefix());
+				System.out.printf("%4d %4d %s%n", ageInDays(firstSeen), rank, warning.getMessageWithoutPrefix());
 			}
 		}
 
 		if (numLowConfidence > 0 || tooOld > 0) {
 			if (hasScaryBugs) {
-				System.out.print("\nplus ");
+				System.out.println();
+				System.out.print("plus ");
 				if (numLowConfidence > 0)
 					System.out.printf("%d less scary recent issues", numLowConfidence);
 				if (numLowConfidence > 0 && tooOld > 0)

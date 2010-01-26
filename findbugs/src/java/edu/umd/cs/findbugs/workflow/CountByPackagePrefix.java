@@ -93,9 +93,9 @@ public class CountByPackagePrefix {
 
 			int density = warnings * 1000000 / v;
 			if (warnings < 3 || v < 2000)
-				System.out.printf("%4s %4d %4d %s\n"," ", warnings, v/1000, prefix);
+				System.out.printf("%4s %4d %4d %s%n"," ", warnings, v/1000, prefix);
 			else
-				System.out.printf("%4d %4d %4d %s\n",density, warnings, v/1000, prefix);
+				System.out.printf("%4d %4d %4d %s%n",density, warnings, v/1000, prefix);
 		}
 		
 

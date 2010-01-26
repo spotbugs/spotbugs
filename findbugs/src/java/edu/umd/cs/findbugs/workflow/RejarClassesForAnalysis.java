@@ -328,14 +328,14 @@ public class RejarClassesForAnalysis {
 				auxZipFiles.add(f);
 		}
 
-		System.out.printf("    # Zip/jar files: %2d\n",  inputZipFiles.size());
-		System.out.printf("# aux Zip/jar files: %2d\n", auxZipFiles.size());
-		System.out.printf("Unique class files: %6d\n",  copied.size());
+		System.out.printf("    # Zip/jar files: %2d%n",  inputZipFiles.size());
+		System.out.printf("# aux Zip/jar files: %2d%n", auxZipFiles.size());
+		System.out.printf("Unique class files: %6d%n",  copied.size());
 		if (numFilesToAnalyze != copied.size())
-			System.out.printf("  files to analyze: %6d\n",  numFilesToAnalyze);
+			System.out.printf("  files to analyze: %6d%n",  numFilesToAnalyze);
 
 		if (!excluded.isEmpty()) 
-			System.out.printf("   excluded  files: %6d\n",  excluded.size());
+			System.out.printf("   excluded  files: %6d%n",  excluded.size());
 		if (numFilesToAnalyze < copied.size() || numFilesToAnalyze > commandLine.maxClasses)
 			auxilaryOut = createZipFile(getNextAuxilaryFileOutput());
 
@@ -364,7 +364,7 @@ public class RejarClassesForAnalysis {
 				// advance
 				String zipFileName = getNextAnalyzeFileOutput();
 				analysisOutputFiles.put(path,  createZipFile(zipFileName));
-				System.out.printf("%s\n -> %s\n", path, zipFileName);
+				System.out.printf("%s%n -> %s%n", path, zipFileName);
 				count = 0;
 			}
 			count++;

@@ -103,7 +103,7 @@ public class TreemapVisualization {
 			System.out.println();
 		}
 		for(Map.Entry<String, Integer> e : goodCodeSize.entrySet())	{
-			System.out.printf("%d\t%d\t%d\t%d\t%g\t\t%s\n", e.getValue(),goodCodeCount.getCount(e.getKey()), 0,0,
+			System.out.printf("%d\t%d\t%d\t%d\t%g\t\t%s%n", e.getValue(),goodCodeCount.getCount(e.getKey()), 0,0,
 					0.0,
 					e.getKey().substring(11).replace('.','\t'));
 			

@@ -1161,7 +1161,7 @@ public  class DBCloud extends AbstractCloud {
                   PrintWriter printWriter = new PrintWriter(stackTraceWriter);
                   e.printStackTrace(printWriter);
                   bugCollection.getProject().getGuiCallback().showMessageDialog(
-                      String.format("%s - %s\n%s", msg, e.getMessage(), stackTraceWriter.toString()));
+                      String.format("%s - %s%n%s", msg, e.getMessage(), stackTraceWriter.toString()));
 		} else {
 			System.err.println(msg);
 			e.printStackTrace(System.err);

@@ -123,6 +123,14 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							|| cl.endsWith("Writer") && "printf".equals(nm))
 							|| cl.endsWith("Logger") && nm.endsWith("fmt")) {
 
+				if (formatString.indexOf('\n') >= 0)
+					bugReporter.reportBug(
+							new BugInstance(this, "TESTING", HIGH_PRIORITY)
+							.addClassAndMethod(this)
+							.addCalledMethod(this)
+							.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
+							.addSourceLine(this)
+						);
 				try {
 					String[] signatures = new String[arguments.length];
 					for(int i = 0; i < signatures.length; i++)

@@ -51,7 +51,7 @@ public class CommandLineUiCallback implements IGuiCallback {
         confirmStr = "Press Y to continue.";
         break;
     }
-    System.out.println(String.format("Confirmation required: %s\n\t%s\n\t%s", title, message, confirmStr));
+    System.out.println(String.format("Confirmation required: %s%n\t%s%n\t%s", title, message, confirmStr));
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     String answer = null;
     while (true) {
@@ -97,7 +97,7 @@ public class CommandLineUiCallback implements IGuiCallback {
   }
 
   public void displayNonmodelMessage(String title, String message) {
-    System.out.println(String.format("Message: %s\n%s", title, message));
+    System.out.println(String.format("Message: %s%n%s", title, message));
   }
 
 /* (non-Javadoc)
