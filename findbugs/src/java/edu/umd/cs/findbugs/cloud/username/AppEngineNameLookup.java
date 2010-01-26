@@ -35,16 +35,26 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class AppEngineNameLookup implements NameLookup {
 	
-	/**
-     * 
-     */
+
+	public static final String LOCAL_APPENGINE = "appengine.local";
+	
+    public static final String APPENGINE_LOCALHOST_PROPERTY_NAME = "appengine.host.local";
+    public static final String APPENGINE_LOCALHOST_DEFAULT = "http://localhost:8080";
     public static final String APPENGINE_HOST_PROPERTY_NAME = "appengine.host";
+	
 	private long sessionId;
 	private String username;
+	private String host;
 	
 	public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) {
 			try {
-			String host = plugin.getProperties().getProperty(APPENGINE_HOST_PROPERTY_NAME);
+			boolean localAppengine = plugin.getProperties().getBoolean(LOCAL_APPENGINE);
+			String h;
+			if (localAppengine)
+				h =plugin.getProperties().getProperty(APPENGINE_LOCALHOST_PROPERTY_NAME, APPENGINE_LOCALHOST_DEFAULT);
+			else 
+				h = plugin.getProperties().getProperty(APPENGINE_HOST_PROPERTY_NAME);
+			host = h;
 			SecureRandom r = new SecureRandom();
 			long id = r.nextLong();
 			URL u = new URL(host + "/browser-auth/" + id);
@@ -81,5 +91,9 @@ public class AppEngineNameLookup implements NameLookup {
 	public String getUsername() {
     	return username;
     }
+	
+	public String getHost() {
+		return host;
+	}
 
 }

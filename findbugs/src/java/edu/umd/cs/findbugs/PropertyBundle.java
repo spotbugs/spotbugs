@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,14 +63,23 @@ public class PropertyBundle {
 		return properties;
 	}
 
-	/**
-	 * This method is public to allow clients to set system properties via any
-	 * {@link URL}
-	 * 
-	 * @param url
-	 *            an url to load system properties from, may be null
-	 */
+	public void loadPropertiesFromString(String contents) {
+		if (contents == null) {
+			return;
+		}
+		InputStream in = null;
+		try {
+			in = new ByteArrayInputStream(contents.getBytes("ISO-8859-1"));
+			properties.load(in);
+		} catch (IOException e) {
+			AnalysisContext.logError("Unable to load properties from " + contents, e);
+		} finally {
+			IO.close(in);
+		}
+	}
+
 	public void loadPropertiesFromURL(URL url) {
+
 		if (url == null) {
 			return;
 		}
@@ -83,7 +93,6 @@ public class PropertyBundle {
 			IO.close(in);
 		}
 	}
-
 	/**
 	 * Get boolean property, returning false if a security manager prevents us
 	 * from accessing system properties

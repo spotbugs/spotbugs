@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
@@ -242,7 +244,8 @@ public class DetectorFactoryCollection {
 			}
 		}
 		}
-		for(Map.Entry<?,?> e : SystemProperties.getProperties().entrySet()) {
+		Set<Entry<Object, Object>> entrySet = SystemProperties.getAllProperties().entrySet();
+		for(Map.Entry<?,?> e : entrySet) {
 			if (e.getKey() instanceof String && e.getValue() instanceof String && ((String)e.getKey()).startsWith("findbugs.plugin.")) {
 				try {
 	                URL u = new URL((String) e.getValue());

@@ -29,6 +29,9 @@
 	
 	
 	<xsd:complexType name="CloudType">
+		<xsd:sequence>
+			<xsd:element name="Properties" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
 		<xsd:attribute name="id" type="ClassType"/>
 		<xsd:attribute name="cloudClass" type="ClassType"/>
 		<xsd:attribute name="usernameClass" type="ClassType"/>

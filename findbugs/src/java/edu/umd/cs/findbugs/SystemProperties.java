@@ -80,8 +80,13 @@ public class SystemProperties {
             }
 		}
 	
-	public static Properties getProperties() {
+	public static Properties getLocalProperties() {
 		return properties;
+	}
+	public static Properties getAllProperties() {
+		Properties result = System.getProperties();
+		result.putAll(properties);
+		return result;
 	}
 	/**
 	 * This method is public to allow clients to set system properties via any {@link URL}

@@ -342,6 +342,10 @@ public class PluginLoader {
 					continue;
 				properties.loadPropertiesFromURL(properiesURL);
 			}
+			String inlineProperties = getOptionalChildText(cloudNode, "Properties");
+			if (inlineProperties != null)
+				properties.loadPropertiesFromString(inlineProperties);
+			
 			CloudPlugin cloudPlugin = new CloudPlugin(cloudid, classLoader, cloudClass, usernameClass, properties, description, details);
 
 			CloudFactory.registerCloud(cloudPlugin);
@@ -686,7 +690,12 @@ public class PluginLoader {
 			throw new PluginException("Could not find child \"" + childName + "\" for node");
 		return child.getText();
 	}
-
+	private static @CheckForNull String getOptionalChildText(Node node, String childName)  {
+		Node child = node.selectSingleNode(childName);
+		if (child == null)
+			return null;
+		return child.getText();
+	}
 	public boolean isCorePlugin() {
 		return corePlugin;
 	}
