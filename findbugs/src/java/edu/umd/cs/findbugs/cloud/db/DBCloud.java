@@ -78,6 +78,7 @@ import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.BugFilingHelper;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
@@ -224,7 +225,8 @@ public  class DBCloud extends AbstractCloud {
 
 	}
 
-	void loadDatabaseInfo(String hash, int id, long firstSeen, long lastSeen) {
+	@SuppressWarnings("boxing")
+    void loadDatabaseInfo(String hash, int id, long firstSeen, long lastSeen) {
 		BugData bd = instanceMap.get(hash);
 		firstSeen = sanityCheckFirstSeen(firstSeen);
 		lastSeen = sanityCheckLastSeen(lastSeen);
@@ -246,6 +248,7 @@ public  class DBCloud extends AbstractCloud {
 			throw new IllegalStateException("Bug has first seen of " + new Date(bd.firstSeen));
 	}
 
+	private BugFilingHelper bugFilingHelper = new BugFilingHelper(this);
 	final long now;
 	
 	public DBCloud(CloudPlugin plugin, BugCollection bugs) {
@@ -311,7 +314,8 @@ public  class DBCloud extends AbstractCloud {
 		PopulateBugs(boolean performFullLoad) {
 			this.performFullLoad = performFullLoad;
 		}
-	    public void execute(DatabaseSyncTask t) throws SQLException {
+	    @SuppressWarnings("boxing")
+        public void execute(DatabaseSyncTask t) throws SQLException {
 
 	    	if (startShutdown) return;
 	    	String commonPrefix = null;
@@ -433,7 +437,7 @@ public  class DBCloud extends AbstractCloud {
 					String loadURL = findbugsURL == null ? "" : findbugsURL.toString();
 
 					long initialLoadTime = sbc.getTimeFinishedLoading() - sbc.getTimeStartedLoading();
-					long lostTime = startTime - sbc.getTimeStartedLoading();
+					//long lostTime = startTime - sbc.getTimeStartedLoading();
 
 					long initialSyncTime = System.currentTimeMillis() - sbc.getTimeFinishedLoading();
 					
@@ -449,7 +453,8 @@ public  class DBCloud extends AbstractCloud {
 					        .prepareStatement(
 					                "INSERT INTO findbugs_invocation (who, ipAddress, entryPoint, dataSource, fbVersion, os, jvmVersion, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix)"
 					                        + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-					Timestamp now = new Timestamp(startTime);
+					@SuppressWarnings("hiding")
+                    Timestamp now = new Timestamp(startTime);
 					int col = 1;
 					insertSession.setString(col++, findbugsUser);
 					String ipAddress = PROMPT_FOR_USER_NAME ? ipAddressLookup.get() : "self-authenticated";
@@ -466,7 +471,7 @@ public  class DBCloud extends AbstractCloud {
 					insertSession.setInt(col++, bugCollection.getCollection().size());
 					insertSession.setTimestamp(col++, now);
 					insertSession.setString(col++, commonPrefix);
-					int rowCount = insertSession.executeUpdate();
+					insertSession.executeUpdate();
 					rs = insertSession.getGeneratedKeys();
 					if (rs.next()) {
 						sessionId = rs.getInt(1);
@@ -806,7 +811,8 @@ public  class DBCloud extends AbstractCloud {
 	  
 		
 	private boolean skipBug(BugInstance bug) {
-		boolean result = bug.getBugPattern().getCategory().equals("NOISE") || bug.isDead() || BugRanker.findRank(bug) > MAX_DB_RANK;
+		boolean result = bug.getBugPattern().getCategory().equals("NOISE") || bug.isDead() 
+				|| BugRanker.findRank(bug) > MAX_DB_RANK;
 		if (result && firstTimeDoing(HAS_SKIPPED_BUG)) {
 			bugCollection.getProject().getGuiCallback().showMessageDialog(
 						    "To limit database load, some issues are not persisted to database.\n"
@@ -872,7 +878,8 @@ public  class DBCloud extends AbstractCloud {
 			}
 
 		}
-		public void newEvaluation(BugData data, BugDesignation bd) {
+		@SuppressWarnings("boxing")
+        public void newEvaluation(BugData data, BugDesignation bd) {
 			if (!data.inDatabase)
 				return;
 			try {
@@ -1167,21 +1174,10 @@ public  class DBCloud extends AbstractCloud {
 			e.printStackTrace(System.err);
 		}
 	}
-
-	private void displayMessage(String msg) {
-		if (!GraphicsEnvironment.isHeadless() && bugCollection.getProject().isGuiAvaliable()) {
-			bugCollection.getProject().getGuiCallback().showMessageDialog(msg);
-		} else {
-			System.err.println(msg);
-		}
-	}
 	
     public String getUser() {
 	   return findbugsUser;
     }
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#getFirstSeen(edu.umd.cs.findbugs.BugInstance)
-     */
     public long getFirstSeen(BugInstance b) {
 	   return getBugData(b).firstSeen;
     }
@@ -1211,167 +1207,8 @@ public  class DBCloud extends AbstractCloud {
     		return notAProblem > isAProblem;
  	  
      }
-	    
-    final  String BUG_NOTE = properties.getProperty("findbugs.bugnote");
 	
-    String getBugReportHead(BugInstance b) {
-		StringWriter stringWriter = new StringWriter();
-		PrintWriter out = new PrintWriter(stringWriter);
-		out.println("Bug report generated from FindBugs");
-		out.println(b.getMessageWithoutPrefix());
-		out.println();
-		ClassAnnotation primaryClass = b.getPrimaryClass();
 
-		for (BugAnnotation a : b.getAnnotations()) {
-			if (a == primaryClass)
-				out.println(a);
-			else
-				out.println("  " + a.toString(primaryClass));
-		}
-		URL link = getSourceLink(b);
-
-		if (link != null) {
-			out.println();
-			out.println(sourceFileLinkToolTip + ": " + link);
-			out.println();
-		}
-
-		if (BUG_NOTE != null) {
-			out.println(BUG_NOTE);
-			if (POSTMORTEM_NOTE != null && BugRanker.findRank(b) <= POSTMORTEM_RANK && !overallClassificationIsNotAProblem(b))
-				out.println(POSTMORTEM_NOTE);
-			out.println();
-		}
-
-		Collection<String> projects = projectMapping.getProjects(primaryClass.getClassName());
-		if (projects != null && !projects.isEmpty()) {
-			String projectList = projects.toString();
-			projectList = projectList.substring(1, projectList.length() - 1);
-			out.println("Possibly part of: " + projectList);
-			out.println();
-		}
-		out.close();
-		return stringWriter.toString();
-	}
-
-	String getBugPatternExplanation(BugInstance b) {
-		String detailPlainText = b.getBugPattern().getDetailPlainText();
-		return "Bug pattern explanation:\n" + detailPlainText + "\n\n";
-	}
-
-	private String getLineTerminatedUserEvaluation(BugInstance b) {
-		UserDesignation designation = getUserDesignation(b);
-		
-		String result;
-		if (designation != UserDesignation.UNCLASSIFIED)
-			result = "Classified as: " +  designation.toString() + "\n";
-		else 
-			result = "";
-		String eval = getUserEvaluation(b).trim();
-		if (eval.length() > 0) 
-			result = result +  eval + "\n";
-		return result;
-	}
-	String getBugReport(BugInstance b) {
-		return getBugReportHead(b) + getBugReportSourceCode(b) + getLineTerminatedUserEvaluation(b) + getBugPatternExplanation(b) + getBugReportTail(b);
-	}
-
-	String getBugReportSourceCode(BugInstance b) {
-		StringWriter stringWriter = new StringWriter();
-		PrintWriter out = new PrintWriter(stringWriter);
-		ClassAnnotation primaryClass = b.getPrimaryClass();
-
-		int firstLine = Integer.MAX_VALUE;
-		int lastLine = Integer.MIN_VALUE;
-		for (BugAnnotation a : b.getAnnotations())
-			if (a instanceof SourceLineAnnotation) {
-				SourceLineAnnotation s = (SourceLineAnnotation) a;
-				if (s.getClassName().equals(primaryClass.getClassName()) && s.getStartLine() > 0) {
-					firstLine = Math.min(firstLine, s.getStartLine());
-					lastLine = Math.max(lastLine, s.getEndLine());
-
-				}
-
-			}
-
-		SourceLineAnnotation primarySource = primaryClass.getSourceLines();
-		if (primarySource.isSourceFileKnown() && firstLine >= 1 && firstLine <= lastLine && lastLine - firstLine < 50) {
-			try {
-				SourceFile sourceFile = getBugCollection().getProject().getSourceFinder().findSourceFile(primarySource);
-				BufferedReader in = new BufferedReader(new InputStreamReader(sourceFile.getInputStream()));
-				int lineNumber = 1;
-				String commonWhiteSpace = null;
-				List<SourceLine> source = new ArrayList<SourceLine>();
-				while (lineNumber <= lastLine + 4) {
-					String txt = in.readLine();
-					if (txt == null)
-						break;
-					if (lineNumber >= firstLine - 4) {
-						String trimmed = txt.trim();
-						if (trimmed.length() == 0) {
-							if (lineNumber > lastLine)
-								break;
-							txt = trimmed;
-							
-						}
-						source.add(new SourceLine(lineNumber, txt));
-						commonWhiteSpace = commonLeadingWhitespace(commonWhiteSpace, txt);
-					}
-					lineNumber++;
-				}
-				in.close();
-				if (commonWhiteSpace == null)
-					commonWhiteSpace = "";
-				out.println("\nRelevant source code:");
-				for(SourceLine s : source) {
-					if (s.text.length() == 0)
-							out.printf("%5d: %n", s.line);
-					else 
-						out.printf("%5d:   %s%n", s.line, s.text.substring(commonWhiteSpace.length()));
-				}
-				
-				
-				out.println();
-			} catch (IOException e) {
-				assert true;
-			}
-			out.close();
-			String result = stringWriter.toString();
-			return result;
-
-		}
-		return "";
-
-	}
-
-	String commonLeadingWhitespace(String soFar, String txt) {
-		if (txt.length() == 0)
-			return soFar;
-		if (soFar == null) 
-			return txt;
-		soFar = Util.commonPrefix(soFar, txt);
-		for(int i = 0; i < soFar.length(); i++) {
-			if (!Character.isWhitespace(soFar.charAt(i)))
-					return soFar.substring(0,i);
-		}
-		return soFar;
-		
-		
-	}
-	static class SourceLine {
-        public SourceLine(int line, String text) {
-	        this.line = line;
-	        this.text = text;
-        }
-		final int line;
-		final String text;
-	}
-	String getBugReportTail(BugInstance b) {
-		return "\nFindBugs issue identifier (do not modify or remove): " + b.getInstanceHash();
-	}
-
-    
-    
     static String urlEncode(String s) {
     	try {
 	        return URLEncoder.encode(s, "UTF-8");
@@ -1503,8 +1340,7 @@ public  class DBCloud extends AbstractCloud {
 		prefs.putBoolean(activity, true);
 	}
     private boolean firstBugRequest = true;
-    final  String POSTMORTEM_NOTE = properties.getProperty("findbugs.postmortem.note");
-    final  int POSTMORTEM_RANK = properties.getInt("findbugs.postmortem.maxRank", 4);
+    
     final  String BUG_LINK_FORMAT = properties.getProperty("findbugs.filebug.link");
     final  String BUG_LOGIN_LINK = properties.getProperty("findbugs.filebug.login");
     final  String BUG_LOGIN_MSG = properties.getProperty("findbugs.filebug.loginMsg");
@@ -1642,11 +1478,6 @@ public  class DBCloud extends AbstractCloud {
         supplemental);
   }
 
-	/**
-     * @param b
-     * @return
-     * @throws MalformedURLException
-     */
     private URL getBugFilingLink(BugInstance b) throws MalformedURLException {
       if (BUG_LINK_FORMAT == null)
         return null;
@@ -1657,7 +1488,8 @@ public  class DBCloud extends AbstractCloud {
           URL u = new URL(String.format(BUG_LOGIN_LINK));
           if (!bugCollection.getProject().getGuiCallback().showDocument(u))
             return null;
-          int r = bugCollection.getProject().getGuiCallback().showConfirmDialog(BUG_LOGIN_MSG, "Logging into bug tracker...", JOptionPane.OK_CANCEL_OPTION);
+          int r = bugCollection.getProject().getGuiCallback().showConfirmDialog(
+        		  BUG_LOGIN_MSG, "Logging into bug tracker...", JOptionPane.OK_CANCEL_OPTION);
           if (r == JOptionPane.CANCEL_OPTION)
             return null;
         }
@@ -1673,20 +1505,25 @@ public  class DBCloud extends AbstractCloud {
       else
         component = getBugComponent(b.getPrimaryClass().getClassName().replace('.', '/'));
       String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
-      String report = getBugReport(b);
+      String report = bugFilingHelper.getBugReport(b);
       String u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
       if (u.length() > maxURLLength) {
-        report = getBugReportHead(b) + getBugReportSourceCode(b) + getBugReportTail(b);
-        String supplemental = getLineTerminatedUserEvaluation(b) + getBugPatternExplanation(b);
+        String head = bugFilingHelper.getBugReportHead(b);
+		String sourceCode = bugFilingHelper.getBugReportSourceCode(b);
+		String tail = bugFilingHelper.getBugReportTail(b);
+		report = head + sourceCode + tail;
+        String lineTerminatedUserEvaluation = bugFilingHelper.getLineTerminatedUserEvaluation(b);
+		String explanation = bugFilingHelper.getBugPatternExplanation(b);
+		String supplemental = lineTerminatedUserEvaluation + explanation;
         u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
         if (u.length() > maxURLLength) {
-          report = getBugReportHead(b) + getBugReportTail(b);
-          supplemental = getBugReportSourceCode(b) + getLineTerminatedUserEvaluation(b) + getBugPatternExplanation(b);
+          report = head + tail;
+          supplemental = sourceCode + lineTerminatedUserEvaluation + explanation;
           u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
           if (u.length() > maxURLLength) {
             // Last resort: Just make the link work with a minimal report and by shortening the summary
-            supplemental = getBugReportHead(b) + getBugReportSourceCode(b) + getLineTerminatedUserEvaluation(b) + getBugPatternExplanation(b);
-            report = getBugReportTail(b);
+            supplemental = head + sourceCode + lineTerminatedUserEvaluation + explanation;
+            report = tail;
             // (assuming BUG_URL_FORMAT + component + report tail is always < maxUrlLength)
             String urlEncodedSummary = urlEncode(summary);
             String urlEncodedReport = urlEncode(report);
@@ -1725,9 +1562,6 @@ public  class DBCloud extends AbstractCloud {
 		return BUG_LINK_FORMAT != null;
 	}
 
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#storeUserAnnotation(edu.umd.cs.findbugs.BugInstance)
-     */
     public void storeUserAnnotation(BugInstance bugInstance) {
     	
 	    storeUserAnnotation(getBugData(bugInstance), bugInstance.getNonnullUserDesignation());
@@ -1741,9 +1575,9 @@ public  class DBCloud extends AbstractCloud {
     	
     }
     
-	@Override
-    public @CheckForNull
-	URL getSourceLink(BugInstance b) {
+	@SuppressWarnings("boxing")
+    @Override
+    public @CheckForNull URL getSourceLink(BugInstance b) {
 		if (sourceFileLinkPattern == null)
 			return null;
 
@@ -1802,16 +1636,11 @@ public  class DBCloud extends AbstractCloud {
     	
     	return  BugFilingStatus.NA;
     }
-	/**
-     * @param whenFiled
-     * @return
-     */
+
     private boolean pendingStatusHasExpired(long whenFiled) {
 	    return System.currentTimeMillis() - whenFiled > 60*60*1000L;
     }
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#bugFiled(edu.umd.cs.findbugs.BugInstance, java.lang.Object)
-     */
+
     public void bugFiled(BugInstance b, Object bugLink) {
     	checkForShutdown();
 		
@@ -1850,6 +1679,7 @@ public  class DBCloud extends AbstractCloud {
     }
 
     
+    @SuppressWarnings("boxing")
     public String getStatusMsg0() {
     	SimpleDateFormat format = new SimpleDateFormat("h:mm a");
     	int numToSync = queue.size();
@@ -1867,10 +1697,6 @@ public  class DBCloud extends AbstractCloud {
     		
     }
     
-    
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#getIWillFix(edu.umd.cs.findbugs.BugInstance)
-     */
     @Override
     public boolean getIWillFix(BugInstance b) {
     	if (super.getIWillFix(b))
@@ -1878,8 +1704,6 @@ public  class DBCloud extends AbstractCloud {
 	   BugData bd =  getBugData(b);
 	   return bd != null && findbugsUser.equals(bd.bugAssignedTo);
     }
-    
-    
     
     public boolean getBugIsUnassigned(BugInstance b) {
 		BugData bd = getBugData(b);
@@ -1892,16 +1716,12 @@ public  class DBCloud extends AbstractCloud {
 		return bd != null && bd.inDatabase && getBugLinkStatus(b) == BugFilingStatus.VIEW_BUG
 		        && "WILL_NOT_FIX".equals(bd.bugStatus);
 	}
-		/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#supportsCloudSummaries()
-     */
+
     @Override
     public boolean supportsCloudSummaries() {
 	   return true;
     }
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#canStoreUserAnnotation(edu.umd.cs.findbugs.BugInstance)
-     */
+
     @Override
     public boolean canStoreUserAnnotation(BugInstance bugInstance) {
 	   return !skipBug(bugInstance);
@@ -1930,5 +1750,8 @@ public  class DBCloud extends AbstractCloud {
     	Collection<BugInstance> bugs = instanceMap.get(hash).bugs;
     	return bugs.isEmpty() ? null : bugs.iterator().next();
     }
-	
+
+    public Collection<String> getProjects(String className) {
+	    return projectMapping.getProjects(className);
+    }
 }

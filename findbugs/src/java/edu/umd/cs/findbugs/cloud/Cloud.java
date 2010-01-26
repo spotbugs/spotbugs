@@ -135,6 +135,8 @@ public interface Cloud {
 		}
 
 	}
+	
+	CloudPlugin getPlugin();
 
 	BugCollection getBugCollection();
 
@@ -266,4 +268,6 @@ public interface Cloud {
 	public void printCloudSummary(PrintWriter w, Iterable<BugInstance> bugs, String[] packagePrefixes);
 
 	public boolean supportsCloudSummaries();
+
+    Collection<String> getProjects(String className);
 }

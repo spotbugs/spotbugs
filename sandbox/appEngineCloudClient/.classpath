@@ -7,5 +7,23 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="lib/mockito-all-1.8.2.jar"/>
+	<classpathentry kind="lib" path="lib/gdata-client-1.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:C:/Users/Keith/Projects/Libraries/gdata/java/doc"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/gdata-client-meta-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/gdata-core-1.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:C:/Users/Keith/Projects/Libraries/gdata/java/doc"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/gdata-projecthosting-2.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:C:/Users/Keith/Projects/Libraries/gdata/java/doc"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/gdata-projecthosting-meta-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/google-collect-1.0-rc1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

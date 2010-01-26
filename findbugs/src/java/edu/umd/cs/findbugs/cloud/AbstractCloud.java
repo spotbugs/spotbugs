@@ -83,6 +83,10 @@ public abstract class AbstractCloud implements Cloud {
 		this.properties = plugin.getProperties();
 	}
 	
+	public CloudPlugin getPlugin() {
+	    return plugin;
+    }
+	
 	public BugCollection getBugCollection() {
 		return bugCollection;
 	}

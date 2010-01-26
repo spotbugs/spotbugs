@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -138,8 +139,27 @@ public class AppEngineCloud extends AbstractCloud {
 		}
 	}
 
+	@Override
+	public URL getBugLink(BugInstance b) {
+		try {
+			return new URL(new GoogleCodeBugFiler(this, "findbugs").file(b));
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	@Override
+	public BugFilingStatus getBugLinkStatus(BugInstance b) {
+		return BugFilingStatus.FILE_BUG;
+	}
+
+	@Override
+	public boolean supportsBugLinks() {
+		return true;
+	}
+
 	public void bugFiled(BugInstance b, Object bugLink) {
-		throw new UnsupportedOperationException();
+		System.out.println("bug filed: " + b + ": " + bugLink);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -352,6 +372,10 @@ public class AppEngineCloud extends AbstractCloud {
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
+	}
+
+	public Collection<String> getProjects(String className) {
+		return Collections.emptyList();
 	}
 
 }

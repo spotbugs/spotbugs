@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.cloud;
 
+import java.util.Collection;
 import java.util.Collections;
 
 import edu.umd.cs.findbugs.AppVersion;
@@ -153,6 +154,13 @@ import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 
     @Override
     protected Iterable<BugDesignation> getAllUserDesignations(BugInstance bd) {
+	    return Collections.emptyList();
+    }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#getProjects(java.lang.String)
+     */
+    public Collection<String> getProjects(String className) {
 	    return Collections.emptyList();
     }
 }
