@@ -1,10 +1,23 @@
 
 <project name="AppEngineCloudClient" default="plugin">
 
+<property name="classes.dir" value="build/classes"/>
+        
 
- <target name="plugin" >
+ <target name="copyXML" >
+ <copy todir="${classes.dir}">
+	<fileset dir="etc">
+		<include name="*.xml"/>
+	</fileset>
+	</copy>
+</target>
+
+ <target name="plugin" depends="copyXML" >
         <jar destfile="plugin.jar">
-        <fileset dir="build/classes">
+        <fileset dir="etc">
+		<include name="*.xml"/>
+	</fileset>
+        <fileset dir="${classes.dir}">
 			<include name="**/*.class"/>
 		</fileset>
         <fileset dir="../AppEngineCloudProtocol/build">

@@ -42,7 +42,7 @@ public class AppEngineCloud extends AbstractCloud {
 
 	private Map<String, Issue> issuesByHash = new ConcurrentHashMap<String, Issue>();
 
-	private final String host;
+	private  String host;
 	private long sessionId;
 	private String user;
 
@@ -52,7 +52,6 @@ public class AppEngineCloud extends AbstractCloud {
 
 	public AppEngineCloud(CloudPlugin plugin, BugCollection bugs) {
 		super(plugin, bugs);
-		host = plugin.getProperties().getProperty(AppEngineNameLookup.APPENGINE_HOST_PROPERTY_NAME);
 	}
 
 	// ====================== initialization =====================
@@ -68,6 +67,7 @@ public class AppEngineCloud extends AbstractCloud {
 		}
 		sessionId = lookerupper.getSessionId();
 		user = lookerupper.getUsername();
+		host = lookerupper.getHost();
 
 		if (timer != null) timer.cancel();
 		timer = new Timer("App Engine Cloud evaluation updater", true);
