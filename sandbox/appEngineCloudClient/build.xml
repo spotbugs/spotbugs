@@ -1,0 +1,18 @@
+
+<project name="AppEngineCloudClient" default="plugin">
+
+
+ <target name="plugin" >
+        <jar destfile="plugin.jar">
+        <fileset dir="build/classes">
+			<include name="**/*.class"/>
+		</fileset>
+        <fileset dir="../AppEngineCloudProtocol/build">
+			<include name="**/*.class"/>
+		</fileset>
+	 <zipfileset src="../AppEngineCloudProtocol/lib/protobuf-java-2.2.0.jar"/>
+	</jar>
+</target>
+</project>
+
+      
