@@ -7,8 +7,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -209,11 +212,11 @@ public class FlybushServlet extends HttpServlet {
 			setResponse(resp, 403, "not authenticated");
 			return;
 		}
-	
+
 		DbInvocation invocation = new DbInvocation();
 		invocation.setWho(session.getUser().getNickname());
 		invocation.setStartTime(loginMsg.getAnalysisTimestamp());
-	
+
 		Transaction tx = pm.currentTransaction();
 		tx.begin();
 		try {
@@ -227,7 +230,7 @@ public class FlybushServlet extends HttpServlet {
 				tx.rollback();
 			}
 		}
-	
+
 		LogInResponse.Builder issueProtos = LogInResponse.newBuilder();
 		for (DbIssue issue : lookupIssues(loginMsg.getMyIssueHashesList(), pm)) {
 			Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
@@ -342,14 +345,14 @@ public class FlybushServlet extends HttpServlet {
 				);
 		List<DbEvaluation> evaluations = (List<DbEvaluation>) query.execute();
 		RecentEvaluations.Builder issueProtos = RecentEvaluations.newBuilder();
-		Map<String, List<DbEvaluation>> issues = groupEvaluationsByIssue(evaluations);
+		Map<String, List<DbEvaluation>> issues = groupUniqueEvaluationsByIssue(evaluations);
 		for (List<DbEvaluation> evaluationsForIssue : issues.values()) {
 			DbIssue issue = evaluations.get(0).getIssue();
 			Issue issueProto = buildIssueProto(issue, evaluationsForIssue);
 			issueProtos.addIssues(issueProto);
 		}
 		query.closeAll();
-	
+
 		resp.setStatus(200);
 		issueProtos.build().writeTo(resp.getOutputStream());
 	}
@@ -362,13 +365,13 @@ public class FlybushServlet extends HttpServlet {
 			setResponse(resp, 403, "not authenticated");
 			return;
 		}
-	
+
 		RecentEvaluations.Builder response = RecentEvaluations.newBuilder();
 		for (DbIssue issue : lookupIssues(evalsRequest.getHashesList(), pm)) {
 			Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
 			response.addIssues(issueProto);
 		}
-	
+
 		resp.setStatus(200);
 		ServletOutputStream output = resp.getOutputStream();
 		response.build().writeTo(output);
@@ -401,8 +404,7 @@ public class FlybushServlet extends HttpServlet {
 		Query query = pm.newQuery(DbIssue.class, "hash == hashParam");
 		try {
 			query.declareParameters("String hashParam");
-			Iterator<DbIssue> it = ((QueryResult) query.execute(hash))
-					.iterator();
+			Iterator<DbIssue> it = ((QueryResult) query.execute(hash)).iterator();
 			if (!it.hasNext()) {
 				return null;
 			}
@@ -412,7 +414,7 @@ public class FlybushServlet extends HttpServlet {
 		}
 	}
 
-	private Issue buildIssueProto(DbIssue issue, List<DbEvaluation> evaluations) {
+	private Issue buildIssueProto(DbIssue issue, List<DbEvaluation> evaluationsOrig) {
 		Issue.Builder issueBuilder = Issue.newBuilder()
 				.setBugPattern(issue.getBugPattern())
 				.setPriority(issue.getPriority())
@@ -420,6 +422,16 @@ public class FlybushServlet extends HttpServlet {
 				.setFirstSeen(issue.getFirstSeen())
 				.setLastSeen(issue.getLastSeen())
 				.setPrimaryClass(issue.getPrimaryClass());
+		LinkedList<DbEvaluation> evaluations = new LinkedList<DbEvaluation>();
+		Set<String> seenUsernames = new HashSet<String>();
+		ListIterator<DbEvaluation> it = evaluationsOrig.listIterator(evaluationsOrig.size());
+		while (it.hasPrevious()) {
+			DbEvaluation dbEvaluation = it.previous();
+			boolean userIsNew = seenUsernames.add(dbEvaluation.getWho());
+			if (userIsNew) {
+				evaluations.add(0, dbEvaluation);
+			}
+		}
 		for (DbEvaluation dbEval : evaluations) {
 			issueBuilder.addEvaluations(Evaluation.newBuilder()
 					.setComment(dbEval.getComment())
@@ -427,12 +439,10 @@ public class FlybushServlet extends HttpServlet {
 					.setWhen(dbEval.getWhen())
 					.setWho(dbEval.getWho()).build());
 		}
-		Issue issueProto = issueBuilder.build();
-		return issueProto;
+		return issueBuilder.build();
 	}
 
-	private Map<String, List<DbEvaluation>> groupEvaluationsByIssue(
-			List<DbEvaluation> evaluations) {
+	private Map<String, List<DbEvaluation>> groupUniqueEvaluationsByIssue(List<DbEvaluation> evaluations) {
 		Map<String,List<DbEvaluation>> issues = new HashMap<String, List<DbEvaluation>>();
 		for (DbEvaluation dbEvaluation : evaluations) {
 			String issueHash = dbEvaluation.getIssue().getHash();
@@ -440,6 +450,12 @@ public class FlybushServlet extends HttpServlet {
 			if (evaluationsForIssue == null) {
 				evaluationsForIssue = new ArrayList<DbEvaluation>();
 				issues.put(issueHash, evaluationsForIssue);
+			}
+			// only include the latest evaluation for each user
+			for (Iterator<DbEvaluation> it = evaluationsForIssue.iterator(); it.hasNext();) {
+				DbEvaluation eval = it.next();
+				if (eval.getWho().equals(dbEvaluation.getWho()))
+					it.remove();
 			}
 			evaluationsForIssue.add(dbEvaluation);
 		}

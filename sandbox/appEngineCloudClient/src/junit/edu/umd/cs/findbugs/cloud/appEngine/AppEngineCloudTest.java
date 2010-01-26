@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -113,7 +114,19 @@ public class AppEngineCloudTest extends TestCase {
 		final HttpURLConnection recentEvalConnection = mock(HttpURLConnection.class);
 		setupResponseCodeAndOutputStream(recentEvalConnection);
 		RecentEvaluations recentEvalResponse = RecentEvaluations.newBuilder()
-				.addIssues(addEvaluationsToIssue(issue))
+				.addIssues(addEvaluationsToIssue(issue, Arrays.asList(
+								Evaluation.newBuilder()
+									.setWhen(250)
+									.setDesignation("MUST_FIX")
+									.setComment("middle comment")
+									.setWho("claimer")
+									.build(),
+								Evaluation.newBuilder()
+									.setWhen(300)
+									.setDesignation("MOSTLY_HARMLESS")
+									.setComment("new comment")
+									.setWho("claimer")
+									.build())))
 				.build();
 		when(recentEvalConnection.getInputStream()).thenReturn(
 				new ByteArrayInputStream(recentEvalResponse.toByteArray()));
@@ -135,39 +148,88 @@ public class AppEngineCloudTest extends TestCase {
 		assertEquals(300, primaryDesignationAfter.getTimestamp());
 	}
 
+	public void testGetRecentEvaluationsOverwritesOldEvaluationsFromSamePerson()
+			throws Exception {
+		Issue responseIssue = createFoundIssue(Arrays.asList(
+				Evaluation.newBuilder()
+					.setWhen(100)
+					.setDesignation("NOT_A_BUG")
+					.setComment("comment")
+					.setWho("first")
+					.build()));
+
+
+		final HttpURLConnection findConnection = mock(HttpURLConnection.class);
+		when(findConnection.getInputStream()).thenReturn(createLogInResponseInputStream(responseIssue));
+		setupResponseCodeAndOutputStream(findConnection);
+
+		final HttpURLConnection recentEvalConnection = mock(HttpURLConnection.class);
+		setupResponseCodeAndOutputStream(recentEvalConnection);
+		RecentEvaluations recentEvalResponse = RecentEvaluations.newBuilder()
+				.addIssues(addEvaluationsToIssue(responseIssue, Arrays.asList(
+						Evaluation.newBuilder()
+							.setWhen(200)
+							.setDesignation("NOT_A_BUG")
+							.setComment("comment2")
+							.setWho("second")
+							.build(),
+
+						Evaluation.newBuilder()
+							.setWhen(300)
+							.setDesignation("NOT_A_BUG")
+							.setComment("comment3")
+							.setWho("first")
+							.build())))
+				.build();
+		when(recentEvalConnection.getInputStream()).thenReturn(
+				new ByteArrayInputStream(recentEvalResponse.toByteArray()));
+
+
+		// setup & execute
+		AppEngineCloud cloud = createAppEngineCloud(false, findConnection, recentEvalConnection);
+		cloud.setUsername("claimer");
+		cloud.setSessionId(100);
+		cloud.bugsPopulated();
+		cloud.updateEvaluationsFromServer();
+
+		// verify
+		List<BugDesignation> allUserDesignations = newList(cloud.getAllUserDesignations(foundIssue));
+		assertEquals(2, allUserDesignations.size());
+	}
+
+	// =================================== end of tests ===========================================
+
+	private <E> List<E> newList(Iterable<E> iterable) {
+		List<E> result = new ArrayList<E>();
+		for (E item : iterable) {
+			result.add(item);
+		}
+		return result;
+	}
+
 	private Issue createFoundIssueWithOneEvaluation() {
-		Issue issue = Issue.newBuilder()
+		return createFoundIssue(Arrays.asList(Evaluation.newBuilder()
+						.setWhen(200)
+						.setDesignation("NOT_A_BUG")
+						.setComment("first comment")
+						.setWho("claimer")
+						.build()));
+	}
+
+	private Issue createFoundIssue(Iterable<Evaluation> evaluations) {
+		return Issue.newBuilder()
 				.setBugPattern(foundIssue.getAbbrev())
 				.setHash(foundIssue.getInstanceHash())
 				.setFirstSeen(100)
 				.setLastSeen(300)
 				.setPrimaryClass(foundIssue.getPrimaryClass().getClassName())
 				.setPriority(1)
-				.addEvaluations(Evaluation.newBuilder()
-						.setWhen(200)
-						.setDesignation("NOT_A_BUG")
-						.setComment("first comment")
-						.setWho("claimer")
-						.build())
+				.addAllEvaluations(evaluations )
 				.build();
-		return issue;
 	}
 
-	private Issue addEvaluationsToIssue(Issue issue) {
-		return Issue.newBuilder(issue)
-				.addEvaluations(Evaluation.newBuilder()
-					.setWhen(250)
-					.setDesignation("MUST_FIX")
-					.setComment("middle comment")
-					.setWho("claimer")
-					.build())
-				.addEvaluations(Evaluation.newBuilder()
-						.setWhen(300)
-						.setDesignation("MOSTLY_HARMLESS")
-						.setComment("new comment")
-						.setWho("claimer")
-						.build())
-				.build();
+	private Issue addEvaluationsToIssue(Issue issue, List<Evaluation> evalsToAdd) {
+		return Issue.newBuilder(issue).addAllEvaluations(evalsToAdd).build();
 	}
 
 	private void checkUploadedEvaluation(UploadEvaluation uploadMsg) {

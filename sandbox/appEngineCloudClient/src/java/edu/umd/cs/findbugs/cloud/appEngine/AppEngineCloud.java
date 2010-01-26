@@ -8,8 +8,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,6 +42,7 @@ public class AppEngineCloud extends AbstractCloud {
 
 	private Map<String, Issue> issuesByHash = new ConcurrentHashMap<String, Issue>();
 
+	private final String host;
 	private long sessionId;
 	private String user;
 
@@ -46,7 +50,6 @@ public class AppEngineCloud extends AbstractCloud {
 
 	private long mostRecentEvaluationMillis = 0;
 
-	private final String host;
 	public AppEngineCloud(CloudPlugin plugin, BugCollection bugs) {
 		super(plugin, bugs);
 		host = plugin.getProperties().getProperty(AppEngineNameLookup.APPENGINE_HOST_PROPERTY_NAME);
@@ -252,8 +255,7 @@ public class AppEngineCloud extends AbstractCloud {
 	}
 
 	/** package-private for testing */
-	HttpURLConnection openConnection(String url)
-			throws IOException, MalformedURLException {
+	HttpURLConnection openConnection(String url) throws IOException {
 		URL u = new URL(host + url);
 		return (HttpURLConnection) u.openConnection();
 	}
@@ -268,10 +270,25 @@ public class AppEngineCloud extends AbstractCloud {
 	}
 
 	private Issue mergeIssues(Issue existingIssue, Issue updatedIssue) {
-		Issue newIssue = Issue.newBuilder(existingIssue)
-				.addAllEvaluations(updatedIssue.getEvaluationsList())
+		List<Evaluation> allEvaluations = new ArrayList<Evaluation>();
+		allEvaluations.addAll(existingIssue.getEvaluationsList());
+		allEvaluations.addAll(updatedIssue.getEvaluationsList());
+		removeAllButLatestEvaluationPerUser(allEvaluations);
+
+		return Issue.newBuilder(existingIssue)
+				.clearEvaluations()
+				.addAllEvaluations(allEvaluations)
 				.build();
-		return newIssue;
+	}
+
+	private void removeAllButLatestEvaluationPerUser(List<Evaluation> allEvaluations) {
+		Set<String> seenUsernames = new HashSet<String>();
+		for (ListIterator<Evaluation> it = allEvaluations.listIterator(allEvaluations.size()); it.hasPrevious();) {
+			Evaluation evaluation = it.previous();
+			boolean isNewUsername = seenUsernames.add(evaluation.getWho());
+			if (!isNewUsername)
+				it.remove();
+		}
 	}
 
 	private RecentEvaluations getRecentEvaluationsFromServer() throws IOException {
