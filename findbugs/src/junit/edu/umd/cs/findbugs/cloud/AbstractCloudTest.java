@@ -2,12 +2,7 @@ package edu.umd.cs.findbugs.cloud;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import junit.framework.TestCase;
 import edu.umd.cs.findbugs.BugCollection;
@@ -265,5 +260,9 @@ public class AbstractCloudTest extends TestCase {
 	    	List<BugDesignation> designationList = designations.get(bd);
 			return designationList != null ? designationList : Collections.<BugDesignation>emptyList();
 	    }
+
+        public Collection<String> getProjects(String className) {
+            return Collections.emptyList();
+        }
     }
 }
