@@ -66,13 +66,13 @@ public class AppEngineCloudTest extends TestCase {
 		assertEquals(500, cloud.getUserTimestamp(foundIssue));
 		assertEquals("latest comment", cloud.getUserEvaluation(foundIssue));
 		assertEquals(UserDesignation.MUST_FIX, cloud.getUserDesignation(foundIssue));
+
 		BugDesignation primaryDesignation = cloud.getPrimaryDesignation(foundIssue);
 		assertNotNull(primaryDesignation);
 		assertEquals("latest comment", primaryDesignation.getAnnotationText());
 		assertEquals(500, primaryDesignation.getTimestamp());
 		assertEquals("MUST_FIX", primaryDesignation.getDesignationKey());
 		assertEquals("claimer", primaryDesignation.getUser());
-
 
 		// verify uploaded issues
 		UploadIssues uploadedIssues = UploadIssues.parseFrom(uploadIssuesBuffer.toByteArray());
@@ -114,19 +114,9 @@ public class AppEngineCloudTest extends TestCase {
 		final HttpURLConnection recentEvalConnection = mock(HttpURLConnection.class);
 		setupResponseCodeAndOutputStream(recentEvalConnection);
 		RecentEvaluations recentEvalResponse = RecentEvaluations.newBuilder()
-				.addIssues(addEvaluationsToIssue(issue, Arrays.asList(
-								Evaluation.newBuilder()
-									.setWhen(250)
-									.setDesignation("MUST_FIX")
-									.setComment("middle comment")
-									.setWho("claimer")
-									.build(),
-								Evaluation.newBuilder()
-									.setWhen(300)
-									.setDesignation("MOSTLY_HARMLESS")
-									.setComment("new comment")
-									.setWho("claimer")
-									.build())))
+				.addIssues(addEvaluationsToIssue(issue,
+                        createEvaluation("MUST_FIX", 250, "comment", "claimer"),
+                        createEvaluation("MOSTLY_HARMLESS", 300, "new comment", "claimer")))
 				.build();
 		when(recentEvalConnection.getInputStream()).thenReturn(
 				new ByteArrayInputStream(recentEvalResponse.toByteArray()));
@@ -148,15 +138,19 @@ public class AppEngineCloudTest extends TestCase {
 		assertEquals(300, primaryDesignationAfter.getTimestamp());
 	}
 
-	public void testGetRecentEvaluationsOverwritesOldEvaluationsFromSamePerson()
+    private Evaluation createEvaluation(String designation, long when, String comment, String who) {
+        return Evaluation.newBuilder()
+            .setWhen(when)
+            .setDesignation(designation)
+            .setComment(comment)
+            .setWho(who)
+            .build();
+    }
+
+    public void testGetRecentEvaluationsOverwritesOldEvaluationsFromSamePerson()
 			throws Exception {
 		Issue responseIssue = createFoundIssue(Arrays.asList(
-				Evaluation.newBuilder()
-					.setWhen(100)
-					.setDesignation("NOT_A_BUG")
-					.setComment("comment")
-					.setWho("first")
-					.build()));
+                createEvaluation("NOT_A_BUG", 100, "comment", "first")));
 
 
 		final HttpURLConnection findConnection = mock(HttpURLConnection.class);
@@ -166,20 +160,10 @@ public class AppEngineCloudTest extends TestCase {
 		final HttpURLConnection recentEvalConnection = mock(HttpURLConnection.class);
 		setupResponseCodeAndOutputStream(recentEvalConnection);
 		RecentEvaluations recentEvalResponse = RecentEvaluations.newBuilder()
-				.addIssues(addEvaluationsToIssue(responseIssue, Arrays.asList(
-						Evaluation.newBuilder()
-							.setWhen(200)
-							.setDesignation("NOT_A_BUG")
-							.setComment("comment2")
-							.setWho("second")
-							.build(),
+				.addIssues(addEvaluationsToIssue(responseIssue,
+                        createEvaluation("NOT_A_BUG", 200, "comment2", "second"),
 
-						Evaluation.newBuilder()
-							.setWhen(300)
-							.setDesignation("NOT_A_BUG")
-							.setComment("comment3")
-							.setWho("first")
-							.build())))
+                        createEvaluation("NOT_A_BUG", 300, "comment3", "first")))
 				.build();
 		when(recentEvalConnection.getInputStream()).thenReturn(
 				new ByteArrayInputStream(recentEvalResponse.toByteArray()));
@@ -208,12 +192,7 @@ public class AppEngineCloudTest extends TestCase {
 	}
 
 	private Issue createFoundIssueWithOneEvaluation() {
-		return createFoundIssue(Arrays.asList(Evaluation.newBuilder()
-						.setWhen(200)
-						.setDesignation("NOT_A_BUG")
-						.setComment("first comment")
-						.setWho("claimer")
-						.build()));
+		return createFoundIssue(Arrays.asList(createEvaluation("NOT_A_BUG", 200, "first comment", "claimer")));
 	}
 
 	private Issue createFoundIssue(Iterable<Evaluation> evaluations) {
@@ -228,8 +207,8 @@ public class AppEngineCloudTest extends TestCase {
 				.build();
 	}
 
-	private Issue addEvaluationsToIssue(Issue issue, List<Evaluation> evalsToAdd) {
-		return Issue.newBuilder(issue).addAllEvaluations(evalsToAdd).build();
+	private Issue addEvaluationsToIssue(Issue issue, Evaluation... evalsToAdd) {
+		return Issue.newBuilder(issue).addAllEvaluations(Arrays.asList(evalsToAdd)).build();
 	}
 
 	private void checkUploadedEvaluation(UploadEvaluation uploadMsg) {
@@ -265,8 +244,8 @@ public class AppEngineCloudTest extends TestCase {
 		assertEquals(issue.getInstanceHash(), uploadedIssue.getHash());
 		assertEquals(issue.getType(), uploadedIssue.getBugPattern());
 		assertEquals(issue.getPriority(), uploadedIssue.getPriority());
-		assertEquals(issue.getFirstVersion(), uploadedIssue.getFirstSeen());
-		assertEquals(issue.getLastVersion(), uploadedIssue.getLastSeen());
+		//assertEquals(cloud.getFirstSeen(issue), uploadedIssue.getFirstSeen());
+		assertEquals(0, uploadedIssue.getLastSeen());
 		assertEquals(issue.getPrimaryClass().getClassName(), uploadedIssue.getPrimaryClass());
 	}
 

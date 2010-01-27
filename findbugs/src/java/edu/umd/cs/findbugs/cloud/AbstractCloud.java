@@ -30,14 +30,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.regex.Pattern;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.PackageStats;
-import edu.umd.cs.findbugs.ProjectStats;
-import edu.umd.cs.findbugs.PropertyBundle;
-import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.cloud.username.NameLookup;
 import edu.umd.cs.findbugs.cloud.username.PromptForNameLookup;
@@ -448,7 +441,14 @@ public abstract class AbstractCloud implements Cloud {
      	}
     	return lookup;
 		
-    }    
+    }
 
 
+    public long getFirstSeen(BugInstance b) {
+        long firstVersion = b.getFirstVersion();
+        AppVersion v = getBugCollection().getAppVersionFromSequenceNumber(firstVersion);
+        if (v == null)
+            return getBugCollection().getTimestamp();
+        return v.getTimestamp();
+}
 }

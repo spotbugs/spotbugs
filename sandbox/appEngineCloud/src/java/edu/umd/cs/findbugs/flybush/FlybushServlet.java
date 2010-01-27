@@ -261,7 +261,8 @@ public class FlybushServlet extends HttpServlet {
 				dbIssue.setPriority(issue.getPriority());
 				dbIssue.setPrimaryClass(issue.getPrimaryClass());
 				dbIssue.setFirstSeen(issue.getFirstSeen());
-				dbIssue.setLastSeen(issue.getLastSeen());
+				dbIssue.setLastSeen(issue.getFirstSeen()); // ignore last seen
+                
 				Transaction tx = pm.currentTransaction();
 				tx.begin();
 				try {

@@ -78,37 +78,6 @@ import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 	    // TODO Auto-generated method stub
     }
 
-	public void setUserDesignation(BugInstance b, UserDesignation u, long timestamp) {
-    	BugDesignation bd = b.getNonnullUserDesignation();
-    	bd.setDesignationKey(u.name());
-    	bd.setTimestamp(timestamp);
-    }
-
-
-	 public void setUserEvaluation(BugInstance b, String e, long timestamp) {
-       	BugDesignation bd = b.getNonnullUserDesignation();
-    	bd.setAnnotationText(e);
-    	bd.setTimestamp(timestamp);
-    	bd.setUser(getUser());
-    }
-
-	public void setUserTimestamp(BugInstance b, long timestamp) {
-     	BugDesignation bd = b.getNonnullUserDesignation();
-    	bd.setTimestamp(timestamp);
-    	bd.setUser(getUser()); 
-    }
-
-	public long getFirstSeen(BugInstance b) {
-	    long firstVersion = b.getFirstVersion();
-	    AppVersion v = bugCollection.getAppVersionFromSequenceNumber(firstVersion);
-	    if (v == null)
-	    	return bugCollection.getTimestamp();
-	    return v.getTimestamp();
-    }
-
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#bugsPopulated()
-     */
     public void bugsPopulated() {
 	    assert true;
 	    
@@ -122,32 +91,16 @@ import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 	    
     }
 
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#storeUserAnnotation(edu.umd.cs.findbugs.BugInstance)
-     */
     public void storeUserAnnotation(BugInstance bugInstance) {
 	    // TODO Auto-generated method stub
 	    
     }
 
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#enableBugLink(java.lang.String)
-     */
-    public boolean bugLinkEnabled(String label) {
-	    throw new UnsupportedOperationException();
-    }
-
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#bugFiled(edu.umd.cs.findbugs.BugInstance, java.lang.Object)
-     */
     public void bugFiled(BugInstance b, Object bugLink) {
     	 throw new UnsupportedOperationException();
 	    
     }
 
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#getPrimaryDesignation(edu.umd.cs.findbugs.BugInstance)
-     */
     public BugDesignation getPrimaryDesignation(BugInstance b) {
     	return  b.getUserDesignation();
     }
@@ -157,9 +110,6 @@ import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 	    return Collections.emptyList();
     }
 
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#getProjects(java.lang.String)
-     */
     public Collection<String> getProjects(String className) {
 	    return Collections.emptyList();
     }

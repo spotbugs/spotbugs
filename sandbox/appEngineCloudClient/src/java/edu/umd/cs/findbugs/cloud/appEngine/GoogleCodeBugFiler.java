@@ -39,7 +39,8 @@ public class GoogleCodeBugFiler {
 	private BugFilingHelper bugFilingHelper;
 
 	public GoogleCodeBugFiler(Cloud cloud, String project) throws MalformedURLException {
-		issuesBaseUri = FEED_URI_BASE + "/p/" + project + "/issues";
+        this.cloud = cloud;
+        issuesBaseUri = FEED_URI_BASE + "/p/" + project + "/issues";
 		issuesFeedUrl = makeIssuesFeedUrl(project);
 		bugFilingHelper = new BugFilingHelper(cloud);
 	}
@@ -92,9 +93,8 @@ public class GoogleCodeBugFiler {
 
 		IssuesEntry entry = new IssuesEntry();
 		entry.getAuthors().add(author);
-		String messageWithPriorityTypeAbbreviation = bug.getMessageWithPriorityTypeAbbreviation();
-		entry.setTitle(new PlainTextConstruct(messageWithPriorityTypeAbbreviation));
-		entry.setContent(new HtmlTextConstruct(bugFilingHelper.getBugReport(bug)));
+        entry.setTitle(new PlainTextConstruct(bugFilingHelper.getBugReportSummary(bug)));
+		entry.setContent(new HtmlTextConstruct(bugFilingHelper.getBugReportText(bug)));
 		entry.setStatus(new Status(defaultStatus));
 		for (String label : defaultLabels.split(" ")) {
 			entry.addLabel(new Label(label));

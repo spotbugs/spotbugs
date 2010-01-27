@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.cloud.db;
 
-import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -45,7 +44,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -61,12 +59,10 @@ import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
 import javax.swing.JOptionPane;
 
-import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
-import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
@@ -76,7 +72,6 @@ import edu.umd.cs.findbugs.StartTime;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.BugFilingHelper;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
@@ -1504,8 +1499,8 @@ public  class DBCloud extends AbstractCloud {
         component = COMPONENT_FOR_BAD_ANALYSIS;
       else
         component = getBugComponent(b.getPrimaryClass().getClassName().replace('.', '/'));
-      String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
-      String report = bugFilingHelper.getBugReport(b);
+      String summary = bugFilingHelper.getBugReportSummary(b);
+      String report = bugFilingHelper.getBugReportText(b);
       String u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
       if (u.length() > maxURLLength) {
         String head = bugFilingHelper.getBugReportHead(b);

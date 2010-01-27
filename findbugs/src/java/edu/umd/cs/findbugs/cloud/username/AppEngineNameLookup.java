@@ -47,7 +47,7 @@ public class AppEngineNameLookup implements NameLookup {
 	private String host;
 	
 	public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) {
-			try {
+		try {
 			boolean localAppengine = plugin.getProperties().getBoolean(LOCAL_APPENGINE);
 			String h;
 			if (localAppengine)

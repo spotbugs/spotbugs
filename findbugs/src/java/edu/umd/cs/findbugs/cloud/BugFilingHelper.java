@@ -46,20 +46,26 @@ public class BugFilingHelper {
 
     
 
-	private Cloud cloud;
+	private final Cloud cloud;
     private final String BUG_NOTE;
-    private final  String POSTMORTEM_NOTE;
-    private final  int POSTMORTEM_RANK;
+    private final String POSTMORTEM_NOTE;
+    private final int POSTMORTEM_RANK;
     
     public BugFilingHelper(Cloud cloud) {
-    	PropertyBundle properties = cloud.getPlugin().getProperties();
+        this.cloud = cloud;
+        PropertyBundle properties = cloud.getPlugin().getProperties();
 		BUG_NOTE = properties.getProperty("findbugs.bugnote");
     	POSTMORTEM_NOTE = properties.getProperty("findbugs.postmortem.note");
         POSTMORTEM_RANK = properties.getInt("findbugs.postmortem.maxRank", 4);
     }
 
-	public String getBugReport(BugInstance b) {
-		return getBugReportHead(b) + getBugReportSourceCode(b) + getLineTerminatedUserEvaluation(b) + getBugPatternExplanation(b) + getBugReportTail(b);
+    public String getBugReportSummary(BugInstance b) {
+        return b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
+    }
+
+	public String getBugReportText(BugInstance b) {
+		return getBugReportHead(b) + getBugReportSourceCode(b) + getLineTerminatedUserEvaluation(b)
+                + getBugPatternExplanation(b) + getBugReportTail(b);
 	}
 
 	@SuppressWarnings("boxing")
@@ -123,8 +129,7 @@ public class BugFilingHelper {
 				assert true;
 			}
 			out.close();
-			String result = stringWriter.toString();
-			return result;
+            return stringWriter.toString();
 
 		}
 		return "";
@@ -157,15 +162,17 @@ public class BugFilingHelper {
 			else
 				out.println("  " + a.toString(primaryClass));
 		}
-		URL link = cloud.getSourceLink(b);
+        if (cloud.supportsSourceLinks()) {
+            URL link = cloud.getSourceLink(b);
 
-		if (link != null) {
-			out.println();
-			out.println(cloud.getSourceLinkToolTip(b) + ": " + link);
-			out.println();
-		}
+            if (link != null) {
+                out.println();
+                out.println(cloud.getSourceLinkToolTip(b) + ": " + link);
+                out.println();
+            }
+        }
 
-		if (BUG_NOTE != null) {
+        if (BUG_NOTE != null) {
 			out.println(BUG_NOTE);
 			if (POSTMORTEM_NOTE != null && BugRanker.findRank(b) <= POSTMORTEM_RANK && !cloud.overallClassificationIsNotAProblem(b))
 				out.println(POSTMORTEM_NOTE);
@@ -207,7 +214,7 @@ public class BugFilingHelper {
 	}
 
 
-	public static class SourceLine {
+    public static class SourceLine {
         public SourceLine(int line, String text) {
 	        this.line = line;
 	        this.text = text;

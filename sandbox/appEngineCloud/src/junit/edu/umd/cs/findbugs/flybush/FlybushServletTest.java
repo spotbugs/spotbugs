@@ -49,8 +49,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn.Builder;
 
 public class FlybushServletTest extends TestCase {
 
-	private PersistenceManagerFactory pmf;
-	private FlybushServlet servlet;
+    private FlybushServlet servlet;
 	private HttpServletRequest mockRequest;
 	private HttpServletResponse mockResponse;
 	private ByteArrayOutputStream outputCollector;
@@ -176,7 +175,7 @@ public class FlybushServletTest extends TestCase {
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getFoundIssuesCount());
 
-		checkIssuesEqual(foundIssue, result.getFoundIssues(0));
+		checkIssuesEqualExceptTimestamps(foundIssue, result.getFoundIssues(0));
 	}
 
 	public void testFindIssuesWithEvaluations() throws IOException {
@@ -200,7 +199,7 @@ public class FlybushServletTest extends TestCase {
 
 		// check issues
 		Issue foundissueProto = result.getFoundIssues(0);
-		checkIssuesEqual(foundIssue, foundissueProto);
+		checkIssuesEqualExceptTimestamps(foundIssue, foundissueProto);
 
 		// check evaluations
 		assertEquals(1, foundissueProto.getEvaluationsCount());
@@ -232,7 +231,7 @@ public class FlybushServletTest extends TestCase {
 
 		// check issues
 		Issue foundissueProto = result.getFoundIssues(0);
-		checkIssuesEqual(foundIssue, foundissueProto);
+		checkIssuesEqualExceptTimestamps(foundIssue, foundissueProto);
 
 		// check evaluations
 		assertEquals(2, foundissueProto.getEvaluationsCount());
@@ -289,7 +288,7 @@ public class FlybushServletTest extends TestCase {
 
 		// check issues
 		Issue foundissueProto = result.getIssues(0);
-		checkIssuesEqual(issue, foundissueProto);
+		checkIssuesEqualExceptTimestamps(issue, foundissueProto);
 
 		// check evaluations
 		assertEquals(2, foundissueProto.getEvaluationsCount());
@@ -317,7 +316,7 @@ public class FlybushServletTest extends TestCase {
 
 		// check issues
 		Issue foundissueProto = result.getIssues(0);
-		checkIssuesEqual(issue, foundissueProto);
+		checkIssuesEqualExceptTimestamps(issue, foundissueProto);
 
 		// check evaluations
 		assertEquals(2, foundissueProto.getEvaluationsCount());
@@ -360,7 +359,10 @@ public class FlybushServletTest extends TestCase {
 				.newQuery("select from " + DbIssue.class.getName()).execute();
 		assertEquals(1, dbIssues.size());
 
-		checkIssuesEqual(dbIssues.get(0), issue);
+        DbIssue dbIssue = dbIssues.get(0);
+        checkIssuesEqualExceptTimestamps(dbIssue, issue);
+        assertEquals(issue.getFirstSeen(), dbIssue.getFirstSeen());
+        assertEquals(issue.getFirstSeen(), dbIssue.getLastSeen()); // upon initial upload, should be identical
 	}
 
 	@SuppressWarnings("unchecked")
@@ -377,8 +379,8 @@ public class FlybushServletTest extends TestCase {
 				.newQuery("select from " + DbIssue.class.getName()).execute();
 		assertEquals(2, dbIssues.size());
 
-		checkIssuesEqual(dbIssues.get(0), issue1);
-		checkIssuesEqual(dbIssues.get(1), issue2);
+		checkIssuesEqualExceptTimestamps(dbIssues.get(0), issue1);
+		checkIssuesEqualExceptTimestamps(dbIssues.get(1), issue2);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -461,7 +463,7 @@ public class FlybushServletTest extends TestCase {
 		assertEquals("my@email.com", dbEval.getWho());
 		Key invocationId = dbEval.getInvocation();
 		assertNotNull(invocationId);
-		DbInvocation invocation = (DbInvocation) persistenceManager.getObjectById(DbInvocation.class, invocationId);
+		DbInvocation invocation = persistenceManager.getObjectById(DbInvocation.class, invocationId);
 		assertEquals("my@email.com", invocation.getWho());
 		assertEquals(100, invocation.getStartTime());
 	}
@@ -591,12 +593,11 @@ public class FlybushServletTest extends TestCase {
 	}
 
 	private Evaluation createProtoEvaluation() {
-		Evaluation protoEval = Evaluation.newBuilder()
-				.setDesignation("MUST_FIX")
-				.setComment("my comment")
-				.setWhen(100)
-				.build();
-		return protoEval;
+        return Evaluation.newBuilder()
+                .setDesignation("MUST_FIX")
+                .setComment("my comment")
+                .setWhen(100)
+                .build();
 	}
 
 	private Builder createAuthenticatedLogInMsg() {
@@ -691,13 +692,11 @@ public class FlybushServletTest extends TestCase {
 		return issueBuilder.build();
 	}
 
-	private void checkIssuesEqual(DbIssue dbIssue, Issue protoIssue) {
+	private void checkIssuesEqualExceptTimestamps(DbIssue dbIssue, Issue protoIssue) {
 		assertEquals(dbIssue.getHash(), protoIssue.getHash());
 		assertEquals(dbIssue.getBugPattern(), protoIssue.getBugPattern());
 		assertEquals(dbIssue.getPriority(), protoIssue.getPriority());
 		assertEquals(dbIssue.getPrimaryClass(), protoIssue.getPrimaryClass());
-		assertEquals(dbIssue.getFirstSeen(), protoIssue.getFirstSeen());
-		assertEquals(dbIssue.getLastSeen(), protoIssue.getLastSeen());
 	}
 
 	/**
@@ -713,7 +712,7 @@ public class FlybushServletTest extends TestCase {
         newProperties.put("javax.jdo.option.NontransactionalWrite", "true");
         newProperties.put("javax.jdo.option.RetainValues", "true");
         newProperties.put("datanucleus.appengine.autoCreateDatastoreTxns", "true");
-        pmf = JDOHelper.getPersistenceManagerFactory(newProperties);
+        PersistenceManagerFactory pmf = JDOHelper.getPersistenceManagerFactory(newProperties);
 		actualPersistenceManager = pmf.getPersistenceManager();
 		persistenceManager = spy(actualPersistenceManager);
 

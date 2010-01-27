@@ -3,7 +3,6 @@ package edu.umd.cs.findbugs.cloud.appEngine;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +26,7 @@ import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.Builder;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
@@ -34,7 +34,6 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.Builder;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
 public class AppEngineCloud extends AbstractCloud {
@@ -95,19 +94,37 @@ public class AppEngineCloud extends AbstractCloud {
 	}
 
 	public long getFirstSeen(BugInstance b) {
-		Issue issue = issuesByHash.get(b.getInstanceHash());
-		if (issue == null)
-			return Long.MAX_VALUE;
-		return issue.getFirstSeen();
+        long firstSeenFromCloud = getFirstSeenFromCloud(b);
+        long firstSeenLocally = super.getFirstSeen(b);
+        return Math.min(firstSeenFromCloud, firstSeenLocally);
 	}
 
-	@Override
+    @Override
 	protected Iterable<BugDesignation> getAllUserDesignations(BugInstance bd) {
 		List<BugDesignation> list = new ArrayList<BugDesignation>();
 		for (Evaluation eval : issuesByHash.get(bd.getInstanceHash()).getEvaluationsList()) {
 			list.add(createBugDesignation(eval));
 		}
 		return list;
+	}
+
+	@Override
+	public URL getBugLink(BugInstance b) {
+		try {
+			return new URL(new GoogleCodeBugFiler(this, "findbugs").file(b));
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	@Override
+	public BugFilingStatus getBugLinkStatus(BugInstance b) {
+		return BugFilingStatus.FILE_BUG;
+	}
+
+	@Override
+	public boolean supportsBugLinks() {
+		return true;
 	}
 
 	// ================== mutators ================
@@ -137,25 +154,6 @@ public class AppEngineCloud extends AbstractCloud {
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
-	}
-
-	@Override
-	public URL getBugLink(BugInstance b) {
-		try {
-			return new URL(new GoogleCodeBugFiler(this, "findbugs").file(b));
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
-	@Override
-	public BugFilingStatus getBugLinkStatus(BugInstance b) {
-		return BugFilingStatus.FILE_BUG;
-	}
-
-	@Override
-	public boolean supportsBugLinks() {
-		return true;
 	}
 
 	public void bugFiled(BugInstance b, Object bugLink) {
@@ -217,6 +215,13 @@ public class AppEngineCloud extends AbstractCloud {
 
 	// ================== private methods ======================
 
+    private long getFirstSeenFromCloud(BugInstance b) {
+        Issue issue = issuesByHash.get(b.getInstanceHash());
+        if (issue == null)
+            return Long.MAX_VALUE;
+        return issue.getFirstSeen();
+    }
+
 	private BugDesignation createBugDesignation(Evaluation e) {
 		return new BugDesignation(e.getDesignation(), e.getWhen(),
 								  e.getComment(), e.getWho());
@@ -232,7 +237,7 @@ public class AppEngineCloud extends AbstractCloud {
 	}
 
 	private LogInResponse submitHashes(Map<String, BugInstance> bugsByHash)
-			throws IOException, MalformedURLException {
+			throws IOException {
 		LogIn hashList = LogIn.newBuilder()
 				//TODO: should the timestamp be converted to UTC?
 				.setAnalysisTimestamp(bugCollection.getAnalysisTimestamp())
@@ -257,7 +262,7 @@ public class AppEngineCloud extends AbstractCloud {
 
 	/** package-private for testing */
 	void uploadIssues(Collection<BugInstance> bugsToSend)
-			throws MalformedURLException, IOException {
+			throws IOException {
 		UploadIssues.Builder issueList = UploadIssues.newBuilder();
 		issueList.setSessionId(sessionId);
 		for (BugInstance bug: bugsToSend) {
@@ -266,8 +271,7 @@ public class AppEngineCloud extends AbstractCloud {
 					.setBugPattern(bug.getType())
 					.setPriority(bug.getPriority())
 					.setPrimaryClass(bug.getPrimaryClass().getClassName())
-					.setFirstSeen(bug.getFirstVersion())
-					.setLastSeen(bug.getLastVersion())
+					.setFirstSeen(getFirstSeen(bug))
 					.build());
 		}
 		openPostUrl(issueList.build(), "/upload-issues");
