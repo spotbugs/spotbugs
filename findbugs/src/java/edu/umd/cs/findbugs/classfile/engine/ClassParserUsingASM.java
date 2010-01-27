@@ -276,7 +276,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 								}
 							
 							// System.out.println("Call from " + ClassParserUsingASM.this.slashedClassName + " to " + owner + " : " + desc);
-							if (desc.indexOf('[') == -1 && desc.indexOf('L') == -1) return;
+							if (desc == null || desc.indexOf('[') == -1 && desc.indexOf('L') == -1) return;
 							if (ClassParserUsingASM.this.slashedClassName.equals(owner)) return;
 							ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(owner);
 							calledClassSet.add(classDescriptor);

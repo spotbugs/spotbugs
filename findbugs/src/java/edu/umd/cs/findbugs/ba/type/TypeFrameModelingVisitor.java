@@ -408,7 +408,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			if (mapType instanceof GenericObjectType) {
 				GenericObjectType genericMapType = (GenericObjectType) mapType;
 				List<? extends ReferenceType> parameters = genericMapType.getParameters();
-				if (parameters.size() == expectedParameters) {
+				if (parameters != null && parameters.size() == expectedParameters) {
 					ReferenceType resultType = parameters.get(index);
 					if (resultType instanceof GenericObjectType)
 						resultType = ((GenericObjectType)resultType).produce();
@@ -478,7 +478,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				if (mapType instanceof GenericObjectType) {
 					GenericObjectType genericMapType = (GenericObjectType) mapType;
 					List<? extends ReferenceType> parameters = genericMapType.getParameters();
-					if (parameters.size() == 2) {
+					if (parameters != null && parameters.size() == 2) {
 						ReferenceType valueType = parameters.get(1);
 						consumeStack(obj);
 						frame.pushValue(valueType);

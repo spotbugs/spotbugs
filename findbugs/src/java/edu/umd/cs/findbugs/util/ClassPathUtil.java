@@ -82,4 +82,8 @@ public class ClassPathUtil {
 	
 		return null;
 	}
+	
+	public static String[] getJavaClassPath() {
+		return System.getProperty("java.class.path").split(":");
+	}
 }

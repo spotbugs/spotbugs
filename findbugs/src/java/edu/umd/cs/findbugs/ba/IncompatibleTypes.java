@@ -103,7 +103,8 @@ public class IncompatibleTypes {
 	static public @NonNull
 	IncompatibleTypes getPriorityForAssumingCompatible(GenericObjectType genericType, Type plainType) {
 		IncompatibleTypes result =  IncompatibleTypes.getPriorityForAssumingCompatible(genericType.getObjectType(), plainType);
-		if (result.getPriority() == Priorities.NORMAL_PRIORITY && genericType.getParameters().contains(plainType)) {
+		List<? extends ReferenceType> parameters = genericType.getParameters();
+		if (result.getPriority() == Priorities.NORMAL_PRIORITY && parameters != null && parameters.contains(plainType)) {
 			result = UNRELATED_TYPES_BUT_MATCHES_TYPE_PARAMETER;
 		}
 		return result;
