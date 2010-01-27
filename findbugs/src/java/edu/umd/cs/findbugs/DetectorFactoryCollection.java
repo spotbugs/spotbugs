@@ -248,7 +248,10 @@ public class DetectorFactoryCollection {
 		for(Map.Entry<?,?> e : entrySet) {
 			if (e.getKey() instanceof String && e.getValue() instanceof String && ((String)e.getKey()).startsWith("findbugs.plugin.")) {
 				try {
-	                URL u = new URL((String) e.getValue());
+	                String value = (String) e.getValue();
+	                if (value.startsWith("file:") && !value.endsWith("/"))
+	                	value += "/";
+					URL u = new URL(value);
 	                plugins.add(u);
                 } catch (MalformedURLException e1) {
 	                AnalysisContext.logError(String.format("Bad URL for plugin: %s=%s", e.getKey(), e.getValue()), e1);
