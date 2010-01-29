@@ -47,7 +47,8 @@ import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 		 return new CloudPlugin("fallback local cloud", BugCollectionStorageCloud.class.getClassLoader(),
 				 BugCollectionStorageCloud.class, NoNameLookup.class, new PropertyBundle(), "no description", "no details");
 	 }
-	public Mode getMode() {
+	@Override
+    public Mode getMode() {
 	    return Mode.COMMUNAL;
     }
 
@@ -56,25 +57,29 @@ import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 	    return null;
     }
 
-	public UserDesignation getUserDesignation(BugInstance b) {
+	@Override
+    public UserDesignation getUserDesignation(BugInstance b) {
 	    BugDesignation bd = b.getUserDesignation();
 	    if (bd == null) return UserDesignation.UNCLASSIFIED;
 	    return UserDesignation.valueOf(bd.getDesignationKey());
     }
 
-	public String getUserEvaluation(BugInstance b) {
+	@Override
+    public String getUserEvaluation(BugInstance b) {
     	BugDesignation bd = b.getUserDesignation();
   	    if (bd == null) return "";
   	    return bd.getAnnotationText();
     }
 
-	public long getUserTimestamp(BugInstance b) {
+	@Override
+    public long getUserTimestamp(BugInstance b) {
     	BugDesignation bd = b.getUserDesignation();
   	    if (bd == null) return Long.MAX_VALUE;
   	    return bd.getTimestamp();
     }
 
-	public void setMode(Mode m) {
+	@Override
+    public void setMode(Mode m) {
 	    // TODO Auto-generated method stub
     }
 
