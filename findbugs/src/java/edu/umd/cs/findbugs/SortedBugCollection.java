@@ -749,6 +749,16 @@ public class SortedBugCollection implements BugCollection {
 		}
 	}
 
+	/**
+     * @author pugh
+     */
+    private static final class BoundedLinkedHashSet extends LinkedHashSet<AnalysisError> {
+	    @Override public boolean add(AnalysisError a) {
+	    	if (this.size() > 1000) return false;
+	    	return super.add(a);
+	    }
+    }
+
 	public static class BugInstanceComparator implements Comparator<BugInstance> {
 		private BugInstanceComparator() {}
 		public int compare(BugInstance lhs, BugInstance rhs) {
@@ -859,12 +869,7 @@ public class SortedBugCollection implements BugCollection {
 		this.comparator = comparator;
 		this.project = project;
 		bugSet = new TreeSet<BugInstance>(comparator);
-		errorList = new LinkedHashSet<AnalysisError>() { 
-			@Override public boolean add(AnalysisError a) {
-				if (this.size() > 1000) return false;
-				return super.add(a);
-			}
-		};
+		errorList = new BoundedLinkedHashSet();
 		missingClassSet = new TreeSet<String>();
 		summaryHTML = null;
 		classFeatureSetMap = new TreeMap<String, ClassFeatureSet>();
