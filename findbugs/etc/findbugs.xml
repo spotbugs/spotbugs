@@ -14,7 +14,7 @@
 	 cloudClass="edu.umd.cs.findbugs.cloud.BugCollectionStorageCloud"
 	 usernameClass="edu.umd.cs.findbugs.cloud.username.NoNameLookup"
 	/>
-  <Cloud id="edu.umd.cs.findbugs.cloud.db.default"				
+  <Cloud id="edu.umd.cs.findbugs.cloud.db.Default"				
 	 cloudClass="edu.umd.cs.findbugs.cloud.db.DBCloud"
 	 usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup"
 	 properties="db.properties"
