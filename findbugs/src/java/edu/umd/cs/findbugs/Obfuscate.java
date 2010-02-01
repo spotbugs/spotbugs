@@ -234,6 +234,7 @@ public class Obfuscate {
 		};
 		for(BugAnnotation a : b.getAnnotations()) 
 			a.accept(visitor);
+		result.setOldInstanceHash(hashData(b.getInstanceHash()));
 		return result;
 	}
 
