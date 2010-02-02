@@ -20,6 +20,8 @@ package edu.umd.cs.findbugs;
 
 import javax.swing.JOptionPane;
 
+import edu.umd.cs.findbugs.cloud.Cloud;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -112,5 +114,8 @@ public String showQuestionDialog(String message, String title, String defaultVal
  */
 public boolean showDocument(URL u) {
 	return false;
+}
+
+public void registerCloud(Project project, BugCollection collection, Cloud cloud) {
 }
 }

@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -58,12 +59,14 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -175,6 +178,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		edu.umd.cs.findbugs.L10N.localiseButton(m, key, string, true);
 		return m;
 	}
+	
+	private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(MainFrame.class.getName());
+	
 	JTree tree;
 	private BasicTreeUI treeUI;
 	boolean userInputEnabled;
@@ -460,6 +466,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	
 	CloudListener userAnnotationListener = null;
 	
+	public void registerCloud(Project project, BugCollection collection, Cloud plugin) {
+		setProjectAndBugCollectionInSwingThread(project, collection);
+    }
+	
 	@SwingThread
 	void setProjectWithNoBugCollection(Project project) {
 		setProjectAndBugCollection(project, null);
@@ -484,7 +494,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				plugin.shutdown();
 			}
 			
-			}
+		}
 		// setRebuilding(false);
 		if (bugCollection == null) {
 			showTreeCard();
@@ -493,32 +503,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			this.bugCollection = bugCollection;
 			bugCollection.setRequestDatabaseCloud(true);
 			displayer.clearCache();
-
-			BugTreeModel model = (BugTreeModel) getTree().getModel();     
-			BugSet bs = new BugSet(bugCollection);
-			model.getOffListenerList();
-			model.changeSet(bs);
-			if (bs.size() == 0 && bs.sizeUnfiltered() > 0) {
-				warnUserOfFilters();
-			}
-			
-			
-			updateStatusBar();
-		}
-		PreferencesFrame.getInstance().updateFilterPanel();
-		setProjectChanged(false);
-		reconfigMenuItem.setEnabled(true);
-		comments.configureForCurrentCloud();
-		setViewMenu();
-		newProject();
-		clearSourcePane();
-		clearSummaryTab();
-
-		/* This is here due to a threading issue. It can only be called after
-		 * curProject has been changed. Since this method is called by both open methods
-		 * it is put here.*/
-		changeTitle();
-		if (bugCollection != null) {
 			Cloud plugin = bugCollection.getCloud();
 			if (plugin != null) {
 				userAnnotationListener = new CloudListener() {
@@ -536,7 +520,41 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				plugin.addListener(userAnnotationListener);
 			}
 		}
+		setProjectChanged(false);
+		Runnable runnable = new Runnable() {
+	    	public void run() {
+	    		PreferencesFrame.getInstance().updateFilterPanel();
+	    		reconfigMenuItem.setEnabled(true);
+	    		comments.configureForCurrentCloud();
+	    		setViewMenu();
+	    		newProject();
+	    		clearSourcePane();
+	    		clearSummaryTab();
+
+	    		/* This is here due to a threading issue. It can only be called after
+	    		 * curProject has been changed. Since this method is called by both open methods
+	    		 * it is put here.*/
+	    		changeTitle();
+	    	}};
+    	if (SwingUtilities.isEventDispatchThread()) 
+    		runnable.run();
+    	else
+    		SwingUtilities.invokeLater(runnable);
+		
+		
 	}
+	private void updateBugTree() {
+	    BugTreeModel model = (BugTreeModel) getTree().getModel();     
+	    BugSet bs = new BugSet(bugCollection);
+	    model.getOffListenerList();
+	    model.changeSet(bs);
+	    if (bs.size() == 0 && bs.sizeUnfiltered() > 0) {
+	    	warnUserOfFilters();
+	    }
+	    
+	    
+	    updateStatusBar();
+    }
 
 	void resetViewCache() {
 		 ((BugTreeModel) getTree().getModel()).clearViewCache();
@@ -1770,7 +1788,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
     	JPanel topPanel = makeNavigationPanel("Class search strings:", textFieldForPackagesToDisplay, tableheader, treePanel);
     	cardPanel = new JPanel(new CardLayout());
     	waitPanel = new JPanel();
+    	waitPanel.setLayout(new BoxLayout(waitPanel, BoxLayout.Y_AXIS));
     	waitPanel.add(new JLabel("Please wait..."));
+    	waitStatusLabel = new JLabel();
+		waitPanel.add(waitStatusLabel);
     	cardPanel.add(topPanel, TREECARD);
     	cardPanel.add(waitPanel, WAITCARD);
     	return cardPanel;
@@ -1998,9 +2019,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		}
 		if (errorMsg != null && errorMsg.length() > 0)
 			msg = join(msg, errorMsg);
+        waitStatusLabel.setText(msg); // should not be the URL
 		if (msg.length() == 0)
 			msg = "http://findbugs.sourceforge.net";
-		statusBarLabel.setText(msg);
+        statusBarLabel.setText(msg);
 	}
 
 	volatile String errorMsg = "";
@@ -2850,12 +2872,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 				Project project = new Project();
 				project.setGuiCallback(MainFrame.this);
-				SortedBugCollection bc;
-
 				project.setCurrentWorkingDirectory(file.getParentFile());
-				bc = BugLoader.loadBugs(MainFrame.this, project, file);
+				BugLoader.loadBugs(MainFrame.this, project, file);
 
-				setProjectAndBugCollectionInSwingThread(project, bc);
+				updateBugTree();
 			}
 		};
 		if (EventQueue.isDispatchThread())
@@ -2869,7 +2889,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 		Runnable runnable = new Runnable() {
 			public void run() {
-
 				Project project = new Project();
 				project.setGuiCallback(MainFrame.this);
 				SortedBugCollection bc;
@@ -2968,13 +2987,18 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		new Thread(new Runnable(){
 			public void run()
 			{
-				BugTreeModel.pleaseWait();
-				MainFrame.this.setRebuilding(true);
-				Project project = new Project();
-				SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, project, extraFinalReferenceToXmlFile);
-				setProjectAndBugCollection(project, bc);
+				try {
+	                BugTreeModel.pleaseWait();
+	                MainFrame.this.setRebuilding(true);
+	                Project project = new Project();
+	                project.setGuiCallback(MainFrame.this); // for status msg callbacks during init
+	                BugLoader.loadBugs(MainFrame.this, project, extraFinalReferenceToXmlFile);
+	                updateBugTree();
+                } catch (Exception e) {
+                	LOGGER.log(Level.SEVERE, "Error loading project", e);
+                }
 			}
-		}).start();
+		}, "GUI analysis loader thread").start();
 
 //		addFileToRecent(xmlFile, SaveType.PROJECT);
 		addFileToRecent(dir, SaveType.PROJECT);
@@ -3062,20 +3086,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
      * @param bc
      */
     private void setProjectAndBugCollectionInSwingThread(final Project project, final BugCollection bc) {
-	    SwingUtilities.invokeLater(new Runnable() {
-	    	public void run() {
-	    		project.setGuiCallback(MainFrame.this);
-	    		if (bc == null)
-	    			setProjectWithNoBugCollection(project);
-	    		else {
-	    			assert project == bc.getProject();
-	    			setBugCollection(bc);
-	    		}
-	    		changeTitle();
-	    	}});
+	    setProjectAndBugCollection(project, bc);
     }
     
     Sortables[] sortables;
+	private JLabel waitStatusLabel;
     {
     	ArrayList<Sortables> a = new ArrayList<Sortables>(Sortables.values().length);
     	for(Sortables s : Sortables.values()) 

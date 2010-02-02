@@ -128,9 +128,14 @@ public class SortedBugCollection implements BugCollection {
 			return null;
 		}
 		if (userAnnotationPlugin == null) {
-			userAnnotationPlugin = useDatabaseCloud ? CloudFactory.getCloud(this) : CloudFactory.getPlainCloud(this);
+			if (useDatabaseCloud) {
+	            userAnnotationPlugin = CloudFactory.createCloudWithoutInitializing(this);
+				getProject().getGuiCallback().registerCloud(getProject(), this, userAnnotationPlugin);
+				CloudFactory.initializeCloud(this, userAnnotationPlugin);
+			} else {
+	            userAnnotationPlugin = CloudFactory.getPlainCloud(this);
+			}
 			shouldNotUsePlugin = userAnnotationPlugin == null;
-
 		}
 		return userAnnotationPlugin;
 	}
@@ -265,6 +270,8 @@ public class SortedBugCollection implements BugCollection {
 
 	private void doReadXML(@WillClose InputStream in, File base) throws IOException, DocumentException {
 		timeStartedLoading = System.currentTimeMillis();
+
+		Cloud plugin = getCloud(); // initialize cloud to allow listener to be registered
 		SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, base);
 		Profiler profiler = getProjectStats().getProfiler();
 		profiler.start(handler.getClass());
@@ -295,7 +302,6 @@ public class SortedBugCollection implements BugCollection {
 		}
 		timeFinishedLoading = System.currentTimeMillis();
 		
-		Cloud plugin = getCloud();
 		if (plugin != null)
 			plugin.bugsPopulated();
 		// Presumably, project is now up-to-date

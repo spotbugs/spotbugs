@@ -60,20 +60,22 @@ public abstract class AbstractCloud implements Cloud {
  	protected final CloudPlugin plugin;
 	protected final BugCollection bugCollection;
 	protected final PropertyBundle properties;
-	
+
+	CopyOnWriteArraySet<CloudListener> listeners = new CopyOnWriteArraySet<CloudListener>();
 	
 	Mode mode = Mode.COMMUNAL;
+	private String statusMsg;
+	protected AbstractCloud(CloudPlugin plugin, BugCollection bugs) {
+		this.plugin = plugin;
+		this.bugCollection = bugs;
+		this.properties = plugin.getProperties();
+	}
 	
 	public Mode getMode() {
 		return mode;
 	}
 	public void setMode(Mode mode) {
 		this.mode = mode;
-	}
-	protected AbstractCloud(CloudPlugin plugin, BugCollection bugs) {
-		this.plugin = plugin;
-		this.bugCollection = bugs;
-		this.properties = plugin.getProperties();
 	}
 	
 	public CloudPlugin getPlugin() {
@@ -175,8 +177,6 @@ public abstract class AbstractCloud implements Cloud {
 		return new Date(getUserTimestamp(b));
 	}
 
-	CopyOnWriteArraySet<CloudListener> listeners = new CopyOnWriteArraySet<CloudListener>();
-
 	public void addListener(CloudListener listener) {
 		listeners.add(listener);
 	}
@@ -184,19 +184,9 @@ public abstract class AbstractCloud implements Cloud {
 	public void removeListener(CloudListener listener) {
 		listeners.remove(listener);
 	}
-
-	protected void updatedStatus() {
-		for (CloudListener listener : listeners)
-			listener.statusUpdated();
-	}
-
-	protected void updatedIssue(BugInstance bug) {
-		for (CloudListener listener : listeners)
-			listener.issueUpdated(bug);
-	}
 	
     public String getStatusMsg() {
-	   return "";
+	   return statusMsg;
     }
 
     public void shutdown() {
@@ -296,7 +286,7 @@ public abstract class AbstractCloud implements Cloud {
 		}
 		if (notInCloud == 0) {
 			w.printf("Summary for %d issues that are in the current view%n%n", count);
-		}else {
+		} else {
 			w.printf("Summary for %d issues that are in the current view and cloud (%d not in cloud)%n%n", count, notInCloud);
 		}
 		if (evaluations.numKeys() == 0) {
@@ -325,29 +315,8 @@ public abstract class AbstractCloud implements Cloud {
     		if (i != 1) w.print("s");
     		w.println();
     			
-    	}
-    	
+    	}	
     }
-
-    protected abstract Iterable<BugDesignation> getAllUserDesignations(BugInstance bd);
-
-	protected BugInstance getBugByHash(String hash) {
-		for (BugInstance instance : bugCollection.getCollection()) {
-			if (instance.getInstanceHash().equals(hash)) {
-				return instance;
-			}
-		}
-		return null;
-	}
-    
-    private static void printLeaderBoard(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint, boolean listRank, String title) {
-    	 if (listRank)
- 			w.printf("%3s %4s %s%n", "rnk", "num", title);
- 		else
- 			w.printf("%4s %s%n",  "num", title);
-    	printLeaderBoard2(w, evaluations, maxRows, alwaysPrint, listRank ? "%3d %4d %s%n" : "%2$4d %3$s%n"  , title);
-    }
-    
 
     @SuppressWarnings("boxing")
     public static void printLeaderBoard2(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint,
@@ -397,10 +366,6 @@ public abstract class AbstractCloud implements Cloud {
     public double getClassificationDisagreement(BugInstance b) {
 	    return 0;
     }
-    
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#getUser()
-     */
 
     public UserDesignation getUserDesignation(BugInstance b) {
     	BugDesignation bd = getPrimaryDesignation(b);
@@ -408,9 +373,7 @@ public abstract class AbstractCloud implements Cloud {
     		return UserDesignation.UNCLASSIFIED;
     	return UserDesignation.valueOf(bd.getDesignationKey());
     }
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#getUserEvaluation(edu.umd.cs.findbugs.BugInstance)
-     */
+
     public String getUserEvaluation(BugInstance b) {
     	BugDesignation bd = getPrimaryDesignation(b);
     	if (bd == null) return "";
@@ -419,15 +382,44 @@ public abstract class AbstractCloud implements Cloud {
     		return "";
     	return result;
     }
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#getUserTimestamp(edu.umd.cs.findbugs.BugInstance)
-     */
+
     public long getUserTimestamp(BugInstance b) {
     	BugDesignation bd = getPrimaryDesignation(b);
     	if (bd == null) return Long.MAX_VALUE;
     	return bd.getTimestamp();
     	
     }
+
+    public long getFirstSeen(BugInstance b) {
+        long firstVersion = b.getFirstVersion();
+        AppVersion v = getBugCollection().getAppVersionFromSequenceNumber(firstVersion);
+        if (v == null)
+            return getBugCollection().getTimestamp();
+        return v.getTimestamp();
+    }
+    
+    // ==================== end of public methods ==================
+
+	protected void updatedStatus() {
+		for (CloudListener listener : listeners)
+			listener.statusUpdated();
+	}
+
+	protected void updatedIssue(BugInstance bug) {
+		for (CloudListener listener : listeners)
+			listener.issueUpdated(bug);
+	}
+
+    protected abstract Iterable<BugDesignation> getAllUserDesignations(BugInstance bd);
+
+	protected BugInstance getBugByHash(String hash) {
+		for (BugInstance instance : bugCollection.getCollection()) {
+			if (instance.getInstanceHash().equals(hash)) {
+				return instance;
+			}
+		}
+		return null;
+	}
     
     protected NameLookup getUsernameLookup() {
     	NameLookup lookup;
@@ -442,13 +434,17 @@ public abstract class AbstractCloud implements Cloud {
     	return lookup;
 		
     }
-
-
-    public long getFirstSeen(BugInstance b) {
-        long firstVersion = b.getFirstVersion();
-        AppVersion v = getBugCollection().getAppVersionFromSequenceNumber(firstVersion);
-        if (v == null)
-            return getBugCollection().getTimestamp();
-        return v.getTimestamp();
-}
+    
+	protected void setStatusMsg(String newMsg) {
+		this.statusMsg = newMsg;
+		updatedStatus();
+	}
+    
+    private static void printLeaderBoard(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint, boolean listRank, String title) {
+    	 if (listRank)
+ 			w.printf("%3s %4s %s%n", "rnk", "num", title);
+ 		else
+ 			w.printf("%4s %s%n",  "num", title);
+    	printLeaderBoard2(w, evaluations, maxRows, alwaysPrint, listRank ? "%3d %4d %s%n" : "%2$4d %3$s%n"  , title);
+    }
 }

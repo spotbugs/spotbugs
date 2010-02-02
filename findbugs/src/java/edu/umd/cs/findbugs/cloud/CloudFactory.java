@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -44,36 +45,45 @@ public class CloudFactory {
     private static final String DEFAULT_CLOUD_CLASS = "edu.umd.cs.findbugs.cloud.db.DBCloud";
 
     
-       
-	public static Cloud getCloud(BugCollection bc) {
+
+	public static Cloud createCloudWithoutInitializing(BugCollection bc) {
 		CloudPlugin plugin = defaultPlugin;
 		
 		try {
 			Class<? extends Cloud> cloudClass = plugin.getCloudClass();
-			String cloudClassName = cloudClass.getName();
 	        Constructor<? extends Cloud> constructor = cloudClass.getConstructor(CloudPlugin.class, BugCollection.class);
 			Cloud cloud = constructor.newInstance(plugin, bc);
 			if (DEBUG)
-				bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloudClassName);
+				bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloud.getClass().getName());
+			return cloud;
+		} catch (Exception e) {
+			assert true;
+        }
+		if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToDB"))
+			System.exit(1);
+        return getPlainCloud(bc);
+	}
+	
+	public static void initializeCloud(BugCollection bc, Cloud cloud) {
+		try {
+			IGuiCallback callback = bc.getProject().getGuiCallback();
+
 			if (cloud.availableForInitialization()) {
 				if (DEBUG)
-					bc.getProject().getGuiCallback().showMessageDialog("attempting to initialize " + cloudClassName);
+					callback.showMessageDialog("attempting to initialize " + cloud.getClass().getName());
 				
 				if (cloud.initialize()) {
 					if (DEBUG)
-						bc.getProject().getGuiCallback().showMessageDialog("initialized " + cloudClassName);
+						callback.showMessageDialog("initialized " + cloud.getClass().getName());
 					
-					return cloud;
+					return;
 				}
-				bc.getProject().getGuiCallback().showMessageDialog("Unable to connect to " + cloudClass.getSimpleName());
+				callback.showMessageDialog("Unable to connect to " + cloud.getClass().getSimpleName());
 				
 			} 
 		} catch (Exception e) {
 	      assert true;
         }
-		if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToDB"))
-			System.exit(1);
-        return getPlainCloud( bc);
 	}
 
 

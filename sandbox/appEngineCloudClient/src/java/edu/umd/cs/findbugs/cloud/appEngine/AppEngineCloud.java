@@ -16,6 +16,12 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import com.google.protobuf.GeneratedMessage;
 
@@ -40,12 +46,15 @@ public class AppEngineCloud extends AbstractCloud {
 
 	private static final int EVALUATION_CHECK_SECS = 5*60;
 
+	private static final Logger LOGGER = Logger.getLogger(AppEngineCloud.class.getName());
+
 	private Map<String, Issue> issuesByHash = new ConcurrentHashMap<String, Issue>();
 
-	private  String host;
+	private String host;
 	private long sessionId;
 	private String user;
 
+	private ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
 	private Timer timer;
 
 	private long mostRecentEvaluationMillis = 0;
@@ -61,6 +70,7 @@ public class AppEngineCloud extends AbstractCloud {
 	}
 
 	public boolean initialize() {
+		setStatusMsg("Signing into FindBugs Cloud");
 		AppEngineNameLookup lookerupper = new AppEngineNameLookup();
 		if (!lookerupper.initialize(plugin, bugCollection)) {
 			return false;
@@ -69,7 +79,8 @@ public class AppEngineCloud extends AbstractCloud {
 		user = lookerupper.getUsername();
 		host = lookerupper.getHost();
 
-		if (timer != null) timer.cancel();
+		if (timer != null)
+			timer.cancel();
 		timer = new Timer("App Engine Cloud evaluation updater", true);
 		int periodMillis = EVALUATION_CHECK_SECS*1000;
 		timer.schedule(new TimerTask() {
@@ -78,8 +89,15 @@ public class AppEngineCloud extends AbstractCloud {
 				updateEvaluationsFromServer();
 			}
 		}, periodMillis, periodMillis);
-		bugsPopulated();
+		//bugsPopulated();
 		return true;
+	}
+
+	@Override
+	public void shutdown() {
+		super.shutdown();
+		timer.cancel();
+		backgroundExecutor.shutdownNow();
 	}
 
 	// =============== accessors ===================
@@ -136,23 +154,52 @@ public class AppEngineCloud extends AbstractCloud {
 			bugsByHash.put(b.getInstanceHash(), b);
 		}
 
+		int numBugs = bugsByHash.size();
+		setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud...");
+
 		// send all instance hashes to server
 		try {
 			LogInResponse response = submitHashes(bugsByHash);
+			setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud...processing");
 			for (Issue issue : response.getFoundIssuesList()) {
 				storeProtoIssue(issue);
-				BugInstance bugInstance = bugsByHash.remove(issue.getHash());
+				//BugInstance bugInstance = bugsByHash.remove(issue.getHash());
+				BugInstance bugInstance = bugsByHash.get(issue.getHash());
 				if (bugInstance != null) {
 					updateBugInstanceAndNotify(bugInstance);
 				}
 			}
-			Collection<BugInstance> newBugs = bugsByHash.values();
-			if (!newBugs.isEmpty()) {
-				uploadIssues(newBugs);
+
+			if (!bugsByHash.values().isEmpty()) {
+				final List<BugInstance> newBugs = new ArrayList<BugInstance>(bugsByHash.values());
+				backgroundExecutor.execute(new Runnable() {
+					public void run() {
+						try {
+							uploadNewBugs(newBugs);
+						} catch (IOException e) {
+							LOGGER.log(Level.WARNING, "Error while uploading new bugs", e);
+						}
+					}
+				});
+			} else {
+				setStatusMsg("All " + numBugs + " bugs are already stored in the FindBugs Cloud");
 			}
 
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
+		}
+	}
+
+	private void uploadNewBugs(List<BugInstance> newBugs) throws IOException {
+		try {
+			for (int i = 0; i < newBugs.size(); i += 50) {
+				setStatusMsg("Uploading " + newBugs.size()
+						+ " new bugs to the FindBugs Cloud..." + i * 100
+						/ newBugs.size() + "%");
+				uploadIssues(newBugs.subList(i, Math.min(newBugs.size(), i + 10)));
+			}
+		} finally {
+			setStatusMsg("");
 		}
 	}
 
@@ -176,17 +223,23 @@ public class AppEngineCloud extends AbstractCloud {
 				.setEvaluation(evalBuilder.build())
 				.build();
 
-		openPostUrl(uploadMsg, "/upload-evaluation");
+		openPostUrl(uploadMsg, "/upload-evaluation", 1);
 	}
 
 	/** package-private for testing */
 	void updateEvaluationsFromServer() {
+		setStatusMsg("Checking FindBugs Cloud for updates");
+
 		RecentEvaluations evals;
 		try {
 			evals = getRecentEvaluationsFromServer();
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
+		if (evals.getIssuesCount() > 0)
+			setStatusMsg("Checking FindBugs Cloud for updates...found " + evals.getIssuesCount());
+		else
+			setStatusMsg("");
 		for (Issue issue : evals.getIssuesList()) {
 			Issue existingIssue = issuesByHash.get(issue.getHash());
 			if (existingIssue != null) {
@@ -238,6 +291,7 @@ public class AppEngineCloud extends AbstractCloud {
 
 	private LogInResponse submitHashes(Map<String, BugInstance> bugsByHash)
 			throws IOException {
+		LOGGER.info("Checking " + bugsByHash.size() + " bugs against App Engine Cloud");
 		LogIn hashList = LogIn.newBuilder()
 				//TODO: should the timestamp be converted to UTC?
 				.setAnalysisTimestamp(bugCollection.getAnalysisTimestamp())
@@ -245,24 +299,41 @@ public class AppEngineCloud extends AbstractCloud {
 				.addAllMyIssueHashes(bugsByHash.keySet())
 				.build();
 
+		long start = System.currentTimeMillis();
 		HttpURLConnection conn = openConnection("/log-in");
 		conn.setDoOutput(true);
 		conn.connect();
+		LOGGER.info("Connected in " + (System.currentTimeMillis() - start) + "ms");
+
+		start = System.currentTimeMillis();
 		OutputStream stream = conn.getOutputStream();
 		hashList.writeTo(stream);
 		stream.close();
-		if (conn.getResponseCode() != 200) {
-			throw new IOException("Response code " + conn.getResponseCode()
-					+ " : " + conn.getResponseMessage());
+		long elapsed = System.currentTimeMillis() - start;
+		LOGGER.info("Submitted hashes (" + hashList.getSerializedSize()/1024 + " KB) in " + elapsed + "ms ("
+				+ (elapsed/bugsByHash.size()) + "ms per hash)");
+
+
+		setStatusMsg("Checking " + bugsByHash.size() + " bugs against the FindBugs Cloud...waiting for response");
+		start = System.currentTimeMillis();
+		int responseCode = conn.getResponseCode();
+		if (responseCode != 200) {
+			LOGGER.info("Error " + responseCode + ", took " + (System.currentTimeMillis() - start) + "ms");
+			throw new IOException("Response code " + responseCode + " : " + conn.getResponseMessage());
 		}
 		LogInResponse response = LogInResponse.parseFrom(conn.getInputStream());
 		conn.disconnect();
+		int foundIssues = response.getFoundIssuesCount();
+		elapsed = System.currentTimeMillis()-start;
+		LOGGER.info("Received " + foundIssues + " bugs from server in " + elapsed + "ms ("
+				+ (elapsed/(foundIssues+1)) + "ms per bug)");
 		return response;
 	}
 
 	/** package-private for testing */
 	void uploadIssues(Collection<BugInstance> bugsToSend)
 			throws IOException {
+		LOGGER.info("Uploading " + bugsToSend.size() + " bugs to App Engine Cloud");
 		UploadIssues.Builder issueList = UploadIssues.newBuilder();
 		issueList.setSessionId(sessionId);
 		for (BugInstance bug: bugsToSend) {
@@ -274,7 +345,7 @@ public class AppEngineCloud extends AbstractCloud {
 					.setFirstSeen(getFirstSeen(bug))
 					.build());
 		}
-		openPostUrl(issueList.build(), "/upload-issues");
+		openPostUrl(issueList.build(), "/upload-issues", bugsToSend.size());
 
 	}
 
@@ -353,18 +424,26 @@ public class AppEngineCloud extends AbstractCloud {
 		return mostRecent;
 	}
 
-	private void openPostUrl(GeneratedMessage uploadMsg, String url) {
+	private void openPostUrl(GeneratedMessage uploadMsg, String url, int items) {
 		try {
+			long start = System.currentTimeMillis();
 			HttpURLConnection conn = openConnection(url);
 			conn.setDoOutput(true);
 			conn.connect();
+			LOGGER.info("Connected in " + (System.currentTimeMillis() - start) + "ms");
 			try {
 				if (uploadMsg != null) {
+					start = System.currentTimeMillis();
 					OutputStream stream = conn.getOutputStream();
 					uploadMsg.writeTo(stream);
 					stream.close();
+					long elapsed = System.currentTimeMillis() - start;
+					conn.getResponseCode(); // wait for response
+					LOGGER.info("Uploaded " + uploadMsg.getSerializedSize()/1024 + " KB in "
+							+ elapsed + "ms (" + (elapsed/(items+1)) + " per item)");
 				}
-				if (conn.getResponseCode() != 200) {
+				int responseCode = conn.getResponseCode();
+				if (responseCode != 200) {
 					throw new IllegalStateException(
 							"server returned error code "
 									+ conn.getResponseCode() + " "
