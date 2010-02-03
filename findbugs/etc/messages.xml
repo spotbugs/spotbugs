@@ -2584,6 +2584,9 @@ want to multiple the random value by something else before coercing it to an int
   <p>If <code>r</code> is a <code>java.util.Random</code>, you can generate a random number from <code>0</code> to <code>n-1</code>
 using <code>r.nextInt(n)</code>, rather than using <code>(int)(r.nextDouble() * n)</code>.
 </p>
+<p>The argument to nextInt must be positive. If, for example, you want to generate a random
+value from -99 to 0, use <code>-r.nextInt(100)</code>.
+</p>
 ]]>
     </Details>
   </BugPattern>
