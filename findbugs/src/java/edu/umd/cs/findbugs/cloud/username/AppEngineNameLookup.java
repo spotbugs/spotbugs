@@ -20,12 +20,15 @@
 package edu.umd.cs.findbugs.cloud.username;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.SecureRandom;
+import java.util.prefs.Preferences;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 import edu.umd.cs.findbugs.util.Util;
@@ -35,12 +38,14 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class AppEngineNameLookup implements NameLookup {
 	
-
 	public static final String LOCAL_APPENGINE = "appengine.local";
 	
     public static final String APPENGINE_LOCALHOST_PROPERTY_NAME = "appengine.host.local";
     public static final String APPENGINE_LOCALHOST_DEFAULT = "http://localhost:8080";
     public static final String APPENGINE_HOST_PROPERTY_NAME = "appengine.host";
+    
+    private static final int USER_SIGNIN_TIMEOUT_SECS = 60;
+    private static final String KEY_APPENGINECLOUD_SESSION_ID = "appenginecloud_session_id";
 	
 	private long sessionId;
 	private String username;
@@ -48,33 +53,28 @@ public class AppEngineNameLookup implements NameLookup {
 	
 	public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) {
 		try {
-			boolean localAppengine = plugin.getProperties().getBoolean(LOCAL_APPENGINE);
-			String h;
-			if (localAppengine)
-				h =plugin.getProperties().getProperty(APPENGINE_LOCALHOST_PROPERTY_NAME, APPENGINE_LOCALHOST_DEFAULT);
+			PropertyBundle pluginProps = plugin.getProperties();
+			if (pluginProps.getBoolean(LOCAL_APPENGINE))
+				host = pluginProps.getProperty(APPENGINE_LOCALHOST_PROPERTY_NAME, APPENGINE_LOCALHOST_DEFAULT);
 			else 
-				h = plugin.getProperties().getProperty(APPENGINE_HOST_PROPERTY_NAME);
-			host = h;
-			SecureRandom r = new SecureRandom();
-			long id = r.nextLong();
+				host = pluginProps.getProperty(APPENGINE_HOST_PROPERTY_NAME);
+			
+			// check the previously used session ID 
+			long id = getOrCreateSessionId();
+			URL authCheckUrl = new URL(host + "/check-auth/" + id);
+			if (checkAuthorized(authCheckUrl)) {
+				return true;
+			}
+			
+			// open web browser to register new session ID 
 			URL u = new URL(host + "/browser-auth/" + id);
 			LaunchBrowser.showDocument(u);
-			URL response = new URL(host + "/check-auth/" + id);
-			for (int i = 0; i < 60; i++) {
-				HttpURLConnection connection = (HttpURLConnection) response.openConnection();
-	
-				int responseCode = connection.getResponseCode();
-				if (responseCode == 200) {
-					BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-					String status = in.readLine();
-					sessionId = Long.parseLong(in.readLine());
-					username = in.readLine();
-					Util.closeSilently(in);
-					if ("OK".equals(status))
-						return true;
-	
+			
+			// wait 1 minute for the user to sign in
+			for (int i = 0; i < USER_SIGNIN_TIMEOUT_SECS; i++) {
+				if (checkAuthorized(authCheckUrl)) {
+					return true;
 				}
-				connection.disconnect();
 				Thread.sleep(1000);
 			}
 			return false;
@@ -83,6 +83,38 @@ public class AppEngineNameLookup implements NameLookup {
 			throw new IllegalStateException(e);
 		}
 	}
+	
+	// ======================= end of public methods =======================
+
+	private long getOrCreateSessionId() {
+	    Preferences prefs = Preferences.userNodeForPackage(AppEngineNameLookup.class);
+	    long id = prefs.getLong(KEY_APPENGINECLOUD_SESSION_ID, 0);
+	    if (id == 0) {
+	    	SecureRandom r = new SecureRandom();
+	    	while (id == 0) 
+	    		id = r.nextLong();
+	    	prefs.putLong(KEY_APPENGINECLOUD_SESSION_ID, id);
+	    }
+	    return id;
+    }
+
+	private boolean checkAuthorized(URL response) throws IOException {
+	    HttpURLConnection connection = (HttpURLConnection) response.openConnection();
+
+	    int responseCode = connection.getResponseCode();
+	    if (responseCode == 200) {
+	    	BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+	    	String status = in.readLine();
+	    	sessionId = Long.parseLong(in.readLine());
+	    	username = in.readLine();
+	    	Util.closeSilently(in);
+	    	if ("OK".equals(status))
+	    		return true;
+
+	    }
+	    connection.disconnect();
+	    return false;
+    }
 
 	public long getSessionId() {
     	return sessionId;
@@ -95,5 +127,4 @@ public class AppEngineNameLookup implements NameLookup {
 	public String getHost() {
 		return host;
 	}
-
 }

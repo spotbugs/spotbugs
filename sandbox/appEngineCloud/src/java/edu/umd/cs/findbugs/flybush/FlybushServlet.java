@@ -33,6 +33,7 @@ import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.apphosting.api.DeadlineExceededException;
 
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
@@ -232,7 +233,7 @@ public class FlybushServlet extends HttpServlet {
 		}
 
 		LogInResponse.Builder issueProtos = LogInResponse.newBuilder();
-		for (DbIssue issue : lookupIssues(loginMsg.getMyIssueHashesList(), pm)) {
+		for (DbIssue issue : lookupIssues(AppEngineProtoUtil.decodeHashes(loginMsg.getMyIssueHashesList()), pm)) {
 			Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
 			issueProtos.addFoundIssues(issueProto);
 		}
@@ -250,19 +251,19 @@ public class FlybushServlet extends HttpServlet {
 		}
 		List<String> hashes = new ArrayList<String>();
 		for (Issue issue : issues.getNewIssuesList()) {
-			hashes.add(issue.getHash());
+			hashes.add(AppEngineProtoUtil.decodeHash(issue.getHash()));
 		}
 		HashSet<String> existingIssueHashes = lookupHashes(hashes, pm);
 		for (Issue issue : issues.getNewIssuesList()) {
-			if (!existingIssueHashes.contains(issue.getHash())) {
+			if (!existingIssueHashes.contains(AppEngineProtoUtil.decodeHash(issue.getHash()))) {
 				DbIssue dbIssue = new DbIssue();
-				dbIssue.setHash(issue.getHash());
+				dbIssue.setHash(AppEngineProtoUtil.decodeHash(issue.getHash()));
 				dbIssue.setBugPattern(issue.getBugPattern());
 				dbIssue.setPriority(issue.getPriority());
 				dbIssue.setPrimaryClass(issue.getPrimaryClass());
 				dbIssue.setFirstSeen(issue.getFirstSeen());
 				dbIssue.setLastSeen(issue.getFirstSeen()); // ignore last seen
-                
+
 				Transaction tx = pm.currentTransaction();
 				tx.begin();
 				try {
@@ -305,10 +306,10 @@ public class FlybushServlet extends HttpServlet {
 		try {
 		    tx.begin();
 
-			String hash = uploadEvalMsg.getHash();
+			String hash = AppEngineProtoUtil.decodeHash(uploadEvalMsg.getHash());
 			DbIssue issue = findIssue(pm, hash);
 			if (issue == null) {
-				setResponse(resp, 404, "no such issue " + uploadEvalMsg.getHash());
+				setResponse(resp, 404, "no such issue " + AppEngineProtoUtil.decodeHash(uploadEvalMsg.getHash()));
 				setStatusAlready  = true;
 				return;
 			}
@@ -368,7 +369,7 @@ public class FlybushServlet extends HttpServlet {
 		}
 
 		RecentEvaluations.Builder response = RecentEvaluations.newBuilder();
-		for (DbIssue issue : lookupIssues(evalsRequest.getHashesList(), pm)) {
+		for (DbIssue issue : lookupIssues(AppEngineProtoUtil.decodeHashes(evalsRequest.getHashesList()), pm)) {
 			Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
 			response.addIssues(issueProto);
 		}
@@ -419,7 +420,7 @@ public class FlybushServlet extends HttpServlet {
 		Issue.Builder issueBuilder = Issue.newBuilder()
 				.setBugPattern(issue.getBugPattern())
 				.setPriority(issue.getPriority())
-				.setHash(issue.getHash())
+				.setHash(AppEngineProtoUtil.encodeHash(issue.getHash()))
 				.setFirstSeen(issue.getFirstSeen())
 				.setLastSeen(issue.getLastSeen())
 				.setPrimaryClass(issue.getPrimaryClass());
@@ -466,7 +467,7 @@ public class FlybushServlet extends HttpServlet {
 	@SuppressWarnings("unchecked")
 	private List<DbIssue> lookupIssues(Iterable<String> hashes, PersistenceManager pm) {
 		List<DbIssue> allIssues = new ArrayList<DbIssue>();
-		for (List<String> partition : partition(hashes, 10)) {
+		for (List<String> partition : partition(hashes, 30)) {
 			Query query = pm.newQuery("select from " + DbIssue.class.getName()
 					+ " where " + makeSqlHashList("hash", partition));
 			allIssues.addAll((List<DbIssue>) query.execute());

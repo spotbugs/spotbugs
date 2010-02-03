@@ -1,5 +1,8 @@
 package edu.umd.cs.findbugs.flybush;
 
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHashes;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -10,6 +13,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +40,7 @@ import com.google.appengine.api.users.User;
 import com.google.appengine.tools.development.ApiProxyLocalImpl;
 import com.google.apphosting.api.ApiProxy;
 
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
@@ -116,8 +121,7 @@ public class FlybushServletTest extends TestCase {
 		// authenticate
     	createCloudSession(555);
 
-    	// make sure login works
-		executePost("/log-in", createAuthenticatedLogInMsg().addMyIssueHashes("ABC").build().toByteArray());
+    	executePost("/log-in", createAuthenticatedLogInMsg2("ABC").build().toByteArray());
 		checkResponse(200);
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getFoundIssuesCount());
@@ -131,20 +135,22 @@ public class FlybushServletTest extends TestCase {
 		initServletAndMocks();
 
 		// make sure login no longer works
-		executePost("/log-in", createAuthenticatedLogInMsg()
-				.addMyIssueHashes("ABC").build().toByteArray());
+		executePost("/log-in", createAuthenticatedLogInMsg2("ABC").build().toByteArray());
 		checkResponse(403, "not authenticated");
 	}
 
+	private LogIn.Builder createAuthenticatedLogInMsg2(String... hashes) {
+		return createAuthenticatedLogInMsg().addAllMyIssueHashes(encodeHashes(Arrays.asList(hashes)));
+	}
+
 	public void testFindIssuesUnauthenticated() throws IOException {
-		executePost("/log-in", createAuthenticatedLogInMsg()
-				.addMyIssueHashes("ABC").build().toByteArray());
+		executePost("/log-in", createAuthenticatedLogInMsg2("ABC").build().toByteArray());
 		checkResponse(403, "not authenticated");
 	}
 
 	public void testFindIssuesNoneFound() throws IOException {
     	createCloudSession(555);
-		executePost("/log-in", createAuthenticatedLogInMsg().addMyIssueHashes("ABC").build().toByteArray());
+		executePost("/log-in", createAuthenticatedLogInMsg2("ABC").build().toByteArray());
 		checkResponse(200);
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getFoundIssuesCount());
@@ -153,7 +159,7 @@ public class FlybushServletTest extends TestCase {
 	@SuppressWarnings("unchecked")
 	public void testFindIssuesStoresInvocation() throws IOException {
     	createCloudSession(555);
-		executePost("/log-in", createAuthenticatedLogInMsg().addMyIssueHashes("ABC").build().toByteArray());
+		executePost("/log-in", createAuthenticatedLogInMsg2("ABC").build().toByteArray());
 		checkResponse(200);
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getFoundIssuesCount());
@@ -167,10 +173,10 @@ public class FlybushServletTest extends TestCase {
 	public void testFindIssuesSomeFound() throws IOException {
     	createCloudSession(555);
 
-		DbIssue foundIssue = createDbIssue("OLD_BUG");
+		DbIssue foundIssue = createDbIssue("FAD1");
 		persistenceManager.makePersistent(foundIssue);
 
-		LogIn loginMsg = createAuthenticatedLogInMsg().addMyIssueHashes("NEW_BUG").addMyIssueHashes("OLD_BUG").build();
+		LogIn loginMsg = createAuthenticatedLogInMsg2("FAD1", "FAD2").build();
 		executePost("/log-in", loginMsg.toByteArray());
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getFoundIssuesCount());
@@ -181,7 +187,7 @@ public class FlybushServletTest extends TestCase {
 	public void testFindIssuesWithEvaluations() throws IOException {
     	createCloudSession(555);
 
-		DbIssue foundIssue = createDbIssue("OLD_BUG");
+		DbIssue foundIssue = createDbIssue("fad2");
 		DbEvaluation eval = createEvaluation(foundIssue, "someone");
 		foundIssue.addEvaluation(eval);
 
@@ -189,10 +195,7 @@ public class FlybushServletTest extends TestCase {
 		// exception when attempting to persist the eval with the issue.
 		persistenceManager.makePersistent(foundIssue);
 
-		LogIn hashesToFind = createAuthenticatedLogInMsg()
-				.addMyIssueHashes("NEW_BUG")
-				.addMyIssueHashes("OLD_BUG")
-				.build();
+		LogIn hashesToFind = createAuthenticatedLogInMsg2("fad1", "fad2").build();
 		executePost("/log-in", hashesToFind.toByteArray());
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getFoundIssuesCount());
@@ -209,7 +212,7 @@ public class FlybushServletTest extends TestCase {
 	public void testFindIssuesWithEvaluationsOnlyShowsLatestEvaluationFromEachPerson() throws Exception {
     	createCloudSession(555);
 
-		DbIssue foundIssue = createDbIssue("OLD_BUG");
+		DbIssue foundIssue = createDbIssue("fad1");
 		DbEvaluation eval1 = createEvaluation(foundIssue, "first");
 		DbEvaluation eval2 = createEvaluation(foundIssue, "second");
 		DbEvaluation eval3 = createEvaluation(foundIssue, "first");
@@ -221,10 +224,7 @@ public class FlybushServletTest extends TestCase {
 		// exception when attempting to persist the eval with the issue.
 		persistenceManager.makePersistent(foundIssue);
 
-		LogIn hashesToFind = createAuthenticatedLogInMsg()
-				.addMyIssueHashes("NEW_BUG")
-				.addMyIssueHashes("OLD_BUG")
-				.build();
+		LogIn hashesToFind = createAuthenticatedLogInMsg2("fad2", "fad1").build();
 		executePost("/log-in", hashesToFind.toByteArray());
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getFoundIssuesCount());
@@ -239,30 +239,35 @@ public class FlybushServletTest extends TestCase {
 		checkEvaluationsEqual(eval3, foundissueProto.getEvaluations(1));
 	}
 
-	public void testFindLotsOfIssues() throws IOException {
+	public void testFindLotsOfIssuesPartitionsHashesInQuery() throws IOException {
 		createCloudSession(555);
 		List<String> queries = installQueryCollector(DbIssue.class.getName());
 
 		LogIn.Builder loginMsg = createAuthenticatedLogInMsg();
-		for (int i = 0; i < 15; i++) {
-			loginMsg.addMyIssueHashes(Integer.toString(i));
+		for (int i = 1; i <= 40; i++) {
+			loginMsg.addMyIssueHashes(encodeHash(Integer.toString(i)));
 		}
 		executePost("/log-in", loginMsg.build().toByteArray());
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(3, result.getFoundIssuesCount());
 
 		assertEquals(2, queries.size());
-		assertTrue(queries.get(0).contains("\"1\""));
-		assertTrue(queries.get(0).contains("\"2\""));
-		assertTrue(queries.get(0).contains("\"9\""));
-		assertFalse(queries.get(0).contains("\"10\""));
-		assertFalse(queries.get(0).contains("\"15\""));
 
-		assertTrue(queries.get(1).contains("\"10\""));
-		assertTrue(queries.get(1).contains("\"11\""));
-		assertTrue(queries.get(1).contains("\"14\""));
-		assertFalse(queries.get(1).contains("\"1\""));
-		assertFalse(queries.get(1).contains("\"19\""));
+		// first query
+		assertTrue(queries.get(0).contains("\"00000000000000000000000000000001\""));
+		assertTrue(queries.get(0).contains("\"00000000000000000000000000000002\""));
+		assertTrue(queries.get(0).contains("\"00000000000000000000000000000030\""));
+
+		assertFalse(queries.get(0).contains("\"00000000000000000000000000000031\""));
+		assertFalse(queries.get(0).contains("\"00000000000000000000000000000035\""));
+
+		// second query
+		assertTrue(queries.get(1).contains("\"00000000000000000000000000000031\""));
+		assertTrue(queries.get(1).contains("\"00000000000000000000000000000032\""));
+		assertTrue(queries.get(1).contains("\"00000000000000000000000000000040\""));
+
+		assertFalse(queries.get(1).contains("\"00000000000000000000000000000001\""));
+		assertFalse(queries.get(1).contains("\"00000000000000000000000000000029\""));
 	}
 
 	public void testGetRecentEvaluationsNoAuth() throws IOException {
@@ -273,7 +278,7 @@ public class FlybushServletTest extends TestCase {
 	public void testGetRecentEvaluations() throws IOException {
 		createCloudSession(555);
 
-		DbIssue issue = createDbIssue("OLD_BUG");
+		DbIssue issue = createDbIssue("fad");
 		DbEvaluation eval1 = createEvaluation(issue, "someone1", 100);
 		DbEvaluation eval2 = createEvaluation(issue, "someone2", 200);
 		DbEvaluation eval3 = createEvaluation(issue, "someone3", 300);
@@ -299,7 +304,7 @@ public class FlybushServletTest extends TestCase {
 	public void testGetRecentEvaluationsOnlyShowsLatestFromEachPerson() throws IOException {
 		createCloudSession(555);
 
-		DbIssue issue = createDbIssue("OLD_BUG");
+		DbIssue issue = createDbIssue("fad");
 		DbEvaluation eval1 = createEvaluation(issue, "first",  100);
 		DbEvaluation eval2 = createEvaluation(issue, "second", 200);
 		DbEvaluation eval3 = createEvaluation(issue, "first",  300);
@@ -327,7 +332,7 @@ public class FlybushServletTest extends TestCase {
 	public void testGetRecentEvaluationsNoneFound() throws IOException {
 		createCloudSession(555);
 
-		DbIssue issue = createDbIssue("OLD_BUG");
+		DbIssue issue = createDbIssue("fad");
 		DbEvaluation eval1 = createEvaluation(issue, "someone", 100);
 		DbEvaluation eval2 = createEvaluation(issue, "someone", 200);
 		DbEvaluation eval3 = createEvaluation(issue, "someone", 300);
@@ -342,7 +347,7 @@ public class FlybushServletTest extends TestCase {
 	}
 
 	public void testUploadIssueWithoutAuthenticating() throws IOException {
-		Issue issue = createProtoIssue("MY_BUG");
+		Issue issue = createProtoIssue("fad");
 		UploadIssues issuesToUpload = UploadIssues.newBuilder().setSessionId(555).addNewIssues(issue).build();
 		executePost("/upload-issues", issuesToUpload.toByteArray());
 		checkResponse(403);
@@ -351,7 +356,7 @@ public class FlybushServletTest extends TestCase {
 	@SuppressWarnings("unchecked")
 	public void testUploadIssue() throws IOException {
     	createCloudSession(555);
-		Issue issue = createProtoIssue("MY_BUG");
+		Issue issue = createProtoIssue("fad");
 		UploadIssues issuesToUpload = UploadIssues.newBuilder().setSessionId(555).addNewIssues(issue).build();
 		executePost("/upload-issues", issuesToUpload.toByteArray());
 		checkResponse(200, "");
@@ -368,8 +373,8 @@ public class FlybushServletTest extends TestCase {
 	@SuppressWarnings("unchecked")
 	public void testUploadMultipleIssues() throws IOException {
     	createCloudSession(555);
-		Issue issue1 = createProtoIssue("MY_BUG_1");
-		Issue issue2 = createProtoIssue("MY_BUG_2");
+		Issue issue1 = createProtoIssue("fad1");
+		Issue issue2 = createProtoIssue("fad2");
 		UploadIssues issuesToUpload = UploadIssues.newBuilder()
 				.setSessionId(555).addNewIssues(issue1).addNewIssues(issue2)
 				.build();
@@ -386,10 +391,10 @@ public class FlybushServletTest extends TestCase {
 	@SuppressWarnings("unchecked")
 	public void testUploadIssuesWhichAlreadyExist() throws IOException {
     	createCloudSession(555);
-		DbIssue oldDbIssue = createDbIssue("OLD_BUG");
+		DbIssue oldDbIssue = createDbIssue("fad1");
 		persistenceManager.makePersistent(oldDbIssue);
-		Issue oldIssue = createProtoIssue("OLD_BUG");
-		Issue newIssue = createProtoIssue("NEW_BUG");
+		Issue oldIssue = createProtoIssue("fad1");
+		Issue newIssue = createProtoIssue("fad2");
 		UploadIssues issuesToUpload = UploadIssues.newBuilder()
 				.setSessionId(555)
 				.addNewIssues(oldIssue)
@@ -401,14 +406,14 @@ public class FlybushServletTest extends TestCase {
 				.newQuery("select from " + DbIssue.class.getName() + " order by hash").execute();
 		assertEquals(2, dbIssues.size());
 
-		assertEquals("NEW_BUG", dbIssues.get(0).getHash());
-		assertEquals("OLD_BUG", dbIssues.get(1).getHash());
+		assertEquals("0000000000000000000000000000fad1", dbIssues.get(0).getHash());
+		assertEquals("0000000000000000000000000000fad2", dbIssues.get(1).getHash());
 	}
 
 	public void testUploadEvaluationNoAuth() throws IOException {
 		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
 				.setSessionId(555)
-				.setHash("MY_HASH")
+				.setHash(encodeHash("fad"))
 				.setEvaluation(createProtoEvaluation())
 				.build().toByteArray());
 		checkResponse(403, "not authenticated");
@@ -417,12 +422,12 @@ public class FlybushServletTest extends TestCase {
 	public void testUploadEvaluationWithoutFindIssuesFirst() throws IOException {
 		createCloudSession(555);
 
-		DbIssue dbIssue = createDbIssue("MY_HASH");
+		DbIssue dbIssue = createDbIssue("fad");
 		persistenceManager.makePersistent(dbIssue);
 		Evaluation protoEval = createProtoEvaluation();
 		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
 				.setSessionId(555)
-				.setHash("MY_HASH")
+				.setHash(encodeHash("fad"))
 				.setEvaluation(protoEval)
 				.build().toByteArray());
 		checkResponse(200);
@@ -441,17 +446,17 @@ public class FlybushServletTest extends TestCase {
 		executePost("/log-in", LogIn.newBuilder()
 				.setSessionId(555)
 				.setAnalysisTimestamp(100)
-				.addMyIssueHashes("ABC")
+				.addMyIssueHashes(encodeHash("abc"))
 				.build().toByteArray());
 		checkResponse(200);
 		initServletAndMocks();
 
-		DbIssue dbIssue = createDbIssue("MY_HASH");
+		DbIssue dbIssue = createDbIssue("fad");
 		persistenceManager.makePersistent(dbIssue);
 		Evaluation protoEval = createProtoEvaluation();
 		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
 				.setSessionId(555)
-				.setHash("MY_HASH")
+				.setHash(encodeHash("fad"))
 				.setEvaluation(protoEval)
 				.build().toByteArray());
 		checkResponse(200);
@@ -474,16 +479,16 @@ public class FlybushServletTest extends TestCase {
 		Evaluation protoEval = createProtoEvaluation();
 		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
 				.setSessionId(555)
-				.setHash("NONEXISTENT")
+				.setHash(encodeHash("faf"))
 				.setEvaluation(protoEval)
 				.build().toByteArray());
-		checkResponse(404, "no such issue NONEXISTENT\n");
+		checkResponse(404, "no such issue 00000000000000000000000000000faf\n");
 	}
 
 	public void testGetEvaluationsNotAuthenticated() throws IOException {
 		executePost("/get-evaluations", GetEvaluations.newBuilder()
 				.setSessionId(555)
-				.addHashes("BUG_1")
+				.addHashes(encodeHash("fad"))
 				.build().toByteArray());
 		checkResponse(403, "not authenticated");
 	}
@@ -493,7 +498,7 @@ public class FlybushServletTest extends TestCase {
 
 		executePost("/get-evaluations", GetEvaluations.newBuilder()
 				.setSessionId(555)
-				.addHashes("BUG_1")
+				.addHashes(encodeHash("fad"))
 				.build().toByteArray());
 		checkResponse(200);
 		RecentEvaluations evals = RecentEvaluations.parseFrom(outputCollector.toByteArray());
@@ -503,7 +508,7 @@ public class FlybushServletTest extends TestCase {
 	public void testGetEvaluationsForSomeNonexistentIssues() throws IOException {
 		createCloudSession(555);
 
-		DbIssue issue1 = createDbIssue("BUG_1");
+		DbIssue issue1 = createDbIssue("fad1");
 		issue1.addEvaluations(createEvaluation(issue1, "someone1", 100),
 							 createEvaluation(issue1, "someone2", 200),
 							 createEvaluation(issue1, "someone3", 300));
@@ -512,7 +517,8 @@ public class FlybushServletTest extends TestCase {
 
 		executePost("/get-evaluations", GetEvaluations.newBuilder()
 				.setSessionId(555)
-				.addHashes("BUG_1").addHashes("BUG_2")
+				.addHashes(encodeHash("fad1"))
+				.addHashes(encodeHash("fad2"))
 				.build().toByteArray());
 		checkResponse(200);
 		RecentEvaluations evals = RecentEvaluations.parseFrom(outputCollector.toByteArray());
@@ -527,12 +533,12 @@ public class FlybushServletTest extends TestCase {
 	public void testGetEvaluations() throws Exception {
 		createCloudSession(555);
 
-		DbIssue issue1 = createDbIssue("BUG_1");
+		DbIssue issue1 = createDbIssue("fad1");
 		issue1.addEvaluations(createEvaluation(issue1, "someone1", 100),
 							 createEvaluation(issue1, "someone2", 200),
 							 createEvaluation(issue1, "someone3", 300));
 
-		DbIssue issue2 = createDbIssue("BUG_2");
+		DbIssue issue2 = createDbIssue("fad2");
 		issue2.addEvaluations(createEvaluation(issue2, "someone1", 2100),
 							 createEvaluation(issue2, "someone2", 2200),
 							 createEvaluation(issue2, "someone3", 2300));
@@ -541,7 +547,8 @@ public class FlybushServletTest extends TestCase {
 
 		executePost("/get-evaluations", GetEvaluations.newBuilder()
 				.setSessionId(555)
-				.addHashes("BUG_1").addHashes("BUG_2")
+				.addHashes(encodeHash("fad1"))
+				.addHashes(encodeHash("fad2"))
 				.build().toByteArray());
 		checkResponse(200);
 		RecentEvaluations evals = RecentEvaluations.parseFrom(outputCollector.toByteArray());
@@ -563,7 +570,7 @@ public class FlybushServletTest extends TestCase {
 			throws Exception {
 		createCloudSession(555);
 
-		DbIssue issue = createDbIssue("BUG_1");
+		DbIssue issue = createDbIssue("fad1");
 		issue.addEvaluations(createEvaluation(issue, "first", 100),
 							 createEvaluation(issue, "second", 200),
 							 createEvaluation(issue, "first", 300));
@@ -572,7 +579,7 @@ public class FlybushServletTest extends TestCase {
 
 		executePost("/get-evaluations", GetEvaluations.newBuilder()
 				.setSessionId(555)
-				.addHashes("BUG_1")
+				.addHashes(encodeHash("fad1"))
 				.build().toByteArray());
 		checkResponse(200);
 		RecentEvaluations evals = RecentEvaluations.parseFrom(outputCollector.toByteArray());
@@ -670,6 +677,7 @@ public class FlybushServletTest extends TestCase {
 	}
 
 	private DbIssue createDbIssue(String patternAndHash) {
+		patternAndHash = AppEngineProtoUtil.normalizeHash(patternAndHash);
 		DbIssue foundIssue = new DbIssue();
 		foundIssue.setHash(patternAndHash);
 		foundIssue.setBugPattern(patternAndHash);
@@ -680,10 +688,11 @@ public class FlybushServletTest extends TestCase {
 		return foundIssue;
 	}
 
-	private Issue createProtoIssue(String hashAndPattern) {
+	private Issue createProtoIssue(String patternAndHash) {
+		patternAndHash = AppEngineProtoUtil.normalizeHash(patternAndHash);
 		Issue.Builder issueBuilder = Issue.newBuilder();
-		issueBuilder.setHash(hashAndPattern);
-		issueBuilder.setBugPattern(hashAndPattern);
+		issueBuilder.setHash(encodeHash(patternAndHash));
+		issueBuilder.setBugPattern(patternAndHash);
 		issueBuilder.setPriority(2);
 		issueBuilder.setPrimaryClass("my.class");
 		issueBuilder.setFirstSeen(100);
@@ -693,7 +702,7 @@ public class FlybushServletTest extends TestCase {
 	}
 
 	private void checkIssuesEqualExceptTimestamps(DbIssue dbIssue, Issue protoIssue) {
-		assertEquals(dbIssue.getHash(), protoIssue.getHash());
+		assertEquals(dbIssue.getHash(), decodeHash(protoIssue.getHash()));
 		assertEquals(dbIssue.getBugPattern(), protoIssue.getBugPattern());
 		assertEquals(dbIssue.getPriority(), protoIssue.getPriority());
 		assertEquals(dbIssue.getPrimaryClass(), protoIssue.getPrimaryClass());

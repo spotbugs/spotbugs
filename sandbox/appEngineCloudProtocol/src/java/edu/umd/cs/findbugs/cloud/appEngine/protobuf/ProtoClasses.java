@@ -45,15 +45,15 @@ public final class ProtoClasses {
     public boolean hasAnalysisTimestamp() { return hasAnalysisTimestamp; }
     public long getAnalysisTimestamp() { return analysisTimestamp_; }
     
-    // repeated string myIssueHashes = 4;
+    // repeated bytes myIssueHashes = 4;
     public static final int MYISSUEHASHES_FIELD_NUMBER = 4;
-    private java.util.List<java.lang.String> myIssueHashes_ =
+    private java.util.List<com.google.protobuf.ByteString> myIssueHashes_ =
       java.util.Collections.emptyList();
-    public java.util.List<java.lang.String> getMyIssueHashesList() {
+    public java.util.List<com.google.protobuf.ByteString> getMyIssueHashesList() {
       return myIssueHashes_;
     }
     public int getMyIssueHashesCount() { return myIssueHashes_.size(); }
-    public java.lang.String getMyIssueHashes(int index) {
+    public com.google.protobuf.ByteString getMyIssueHashes(int index) {
       return myIssueHashes_.get(index);
     }
     
@@ -71,8 +71,8 @@ public final class ProtoClasses {
       if (hasAnalysisTimestamp()) {
         output.writeInt64(3, getAnalysisTimestamp());
       }
-      for (java.lang.String element : getMyIssueHashesList()) {
-        output.writeString(4, element);
+      for (com.google.protobuf.ByteString element : getMyIssueHashesList()) {
+        output.writeBytes(4, element);
       }
       getUnknownFields().writeTo(output);
     }
@@ -93,9 +93,9 @@ public final class ProtoClasses {
       }
       {
         int dataSize = 0;
-        for (java.lang.String element : getMyIssueHashesList()) {
+        for (com.google.protobuf.ByteString element : getMyIssueHashesList()) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeStringSizeNoTag(element);
+            .computeBytesSizeNoTag(element);
         }
         size += dataSize;
         size += 1 * getMyIssueHashesList().size();
@@ -261,7 +261,7 @@ public final class ProtoClasses {
         }
         if (!other.myIssueHashes_.isEmpty()) {
           if (result.myIssueHashes_.isEmpty()) {
-            result.myIssueHashes_ = new java.util.ArrayList<java.lang.String>();
+            result.myIssueHashes_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
           }
           result.myIssueHashes_.addAll(other.myIssueHashes_);
         }
@@ -299,7 +299,7 @@ public final class ProtoClasses {
               break;
             }
             case 34: {
-              addMyIssueHashes(input.readString());
+              addMyIssueHashes(input.readBytes());
               break;
             }
           }
@@ -343,37 +343,37 @@ public final class ProtoClasses {
         return this;
       }
       
-      // repeated string myIssueHashes = 4;
-      public java.util.List<java.lang.String> getMyIssueHashesList() {
+      // repeated bytes myIssueHashes = 4;
+      public java.util.List<com.google.protobuf.ByteString> getMyIssueHashesList() {
         return java.util.Collections.unmodifiableList(result.myIssueHashes_);
       }
       public int getMyIssueHashesCount() {
         return result.getMyIssueHashesCount();
       }
-      public java.lang.String getMyIssueHashes(int index) {
+      public com.google.protobuf.ByteString getMyIssueHashes(int index) {
         return result.getMyIssueHashes(index);
       }
-      public Builder setMyIssueHashes(int index, java.lang.String value) {
+      public Builder setMyIssueHashes(int index, com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   result.myIssueHashes_.set(index, value);
         return this;
       }
-      public Builder addMyIssueHashes(java.lang.String value) {
+      public Builder addMyIssueHashes(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   if (result.myIssueHashes_.isEmpty()) {
-          result.myIssueHashes_ = new java.util.ArrayList<java.lang.String>();
+          result.myIssueHashes_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
         }
         result.myIssueHashes_.add(value);
         return this;
       }
       public Builder addAllMyIssueHashes(
-          java.lang.Iterable<? extends java.lang.String> values) {
+          java.lang.Iterable<? extends com.google.protobuf.ByteString> values) {
         if (result.myIssueHashes_.isEmpty()) {
-          result.myIssueHashes_ = new java.util.ArrayList<java.lang.String>();
+          result.myIssueHashes_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
         }
         super.addAll(values, result.myIssueHashes_);
         return this;
@@ -430,9 +430,6 @@ public final class ProtoClasses {
     }
     
     public final boolean isInitialized() {
-      for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue element : getFoundIssuesList()) {
-        if (!element.isInitialized()) return false;
-      }
       return true;
     }
     
@@ -755,9 +752,6 @@ public final class ProtoClasses {
     
     public final boolean isInitialized() {
       if (!hasSessionId) return false;
-      for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue element : getNewIssuesList()) {
-        if (!element.isInitialized()) return false;
-      }
       return true;
     }
     
@@ -1098,12 +1092,12 @@ public final class ProtoClasses {
     public boolean hasSessionId() { return hasSessionId; }
     public long getSessionId() { return sessionId_; }
     
-    // required string hash = 2;
+    // required bytes hash = 2;
     public static final int HASH_FIELD_NUMBER = 2;
     private boolean hasHash;
-    private java.lang.String hash_ = "";
+    private com.google.protobuf.ByteString hash_ = com.google.protobuf.ByteString.EMPTY;
     public boolean hasHash() { return hasHash; }
-    public java.lang.String getHash() { return hash_; }
+    public com.google.protobuf.ByteString getHash() { return hash_; }
     
     // required .edu.umd.cs.findbugs.cloud.appEngine.protobuf.Evaluation evaluation = 3;
     public static final int EVALUATION_FIELD_NUMBER = 3;
@@ -1116,7 +1110,6 @@ public final class ProtoClasses {
       if (!hasSessionId) return false;
       if (!hasHash) return false;
       if (!hasEvaluation) return false;
-      if (!getEvaluation().isInitialized()) return false;
       return true;
     }
     
@@ -1126,7 +1119,7 @@ public final class ProtoClasses {
         output.writeInt64(1, getSessionId());
       }
       if (hasHash()) {
-        output.writeString(2, getHash());
+        output.writeBytes(2, getHash());
       }
       if (hasEvaluation()) {
         output.writeMessage(3, getEvaluation());
@@ -1146,7 +1139,7 @@ public final class ProtoClasses {
       }
       if (hasHash()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeStringSize(2, getHash());
+          .computeBytesSize(2, getHash());
       }
       if (hasEvaluation()) {
         size += com.google.protobuf.CodedOutputStream
@@ -1340,7 +1333,7 @@ public final class ProtoClasses {
               break;
             }
             case 18: {
-              setHash(input.readString());
+              setHash(input.readBytes());
               break;
             }
             case 26: {
@@ -1375,14 +1368,14 @@ public final class ProtoClasses {
         return this;
       }
       
-      // required string hash = 2;
+      // required bytes hash = 2;
       public boolean hasHash() {
         return result.hasHash();
       }
-      public java.lang.String getHash() {
+      public com.google.protobuf.ByteString getHash() {
         return result.getHash();
       }
-      public Builder setHash(java.lang.String value) {
+      public Builder setHash(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -1788,9 +1781,6 @@ public final class ProtoClasses {
     }
     
     public final boolean isInitialized() {
-      for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue element : getIssuesList()) {
-        if (!element.isInitialized()) return false;
-      }
       return true;
     }
     
@@ -2099,15 +2089,15 @@ public final class ProtoClasses {
     public boolean hasSessionId() { return hasSessionId; }
     public long getSessionId() { return sessionId_; }
     
-    // repeated string hashes = 2;
+    // repeated bytes hashes = 2;
     public static final int HASHES_FIELD_NUMBER = 2;
-    private java.util.List<java.lang.String> hashes_ =
+    private java.util.List<com.google.protobuf.ByteString> hashes_ =
       java.util.Collections.emptyList();
-    public java.util.List<java.lang.String> getHashesList() {
+    public java.util.List<com.google.protobuf.ByteString> getHashesList() {
       return hashes_;
     }
     public int getHashesCount() { return hashes_.size(); }
-    public java.lang.String getHashes(int index) {
+    public com.google.protobuf.ByteString getHashes(int index) {
       return hashes_.get(index);
     }
     
@@ -2121,8 +2111,8 @@ public final class ProtoClasses {
       if (hasSessionId()) {
         output.writeInt64(1, getSessionId());
       }
-      for (java.lang.String element : getHashesList()) {
-        output.writeString(2, element);
+      for (com.google.protobuf.ByteString element : getHashesList()) {
+        output.writeBytes(2, element);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2139,9 +2129,9 @@ public final class ProtoClasses {
       }
       {
         int dataSize = 0;
-        for (java.lang.String element : getHashesList()) {
+        for (com.google.protobuf.ByteString element : getHashesList()) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeStringSizeNoTag(element);
+            .computeBytesSizeNoTag(element);
         }
         size += dataSize;
         size += 1 * getHashesList().size();
@@ -2304,7 +2294,7 @@ public final class ProtoClasses {
         }
         if (!other.hashes_.isEmpty()) {
           if (result.hashes_.isEmpty()) {
-            result.hashes_ = new java.util.ArrayList<java.lang.String>();
+            result.hashes_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
           }
           result.hashes_.addAll(other.hashes_);
         }
@@ -2338,7 +2328,7 @@ public final class ProtoClasses {
               break;
             }
             case 18: {
-              addHashes(input.readString());
+              addHashes(input.readBytes());
               break;
             }
           }
@@ -2364,37 +2354,37 @@ public final class ProtoClasses {
         return this;
       }
       
-      // repeated string hashes = 2;
-      public java.util.List<java.lang.String> getHashesList() {
+      // repeated bytes hashes = 2;
+      public java.util.List<com.google.protobuf.ByteString> getHashesList() {
         return java.util.Collections.unmodifiableList(result.hashes_);
       }
       public int getHashesCount() {
         return result.getHashesCount();
       }
-      public java.lang.String getHashes(int index) {
+      public com.google.protobuf.ByteString getHashes(int index) {
         return result.getHashes(index);
       }
-      public Builder setHashes(int index, java.lang.String value) {
+      public Builder setHashes(int index, com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   result.hashes_.set(index, value);
         return this;
       }
-      public Builder addHashes(java.lang.String value) {
+      public Builder addHashes(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   if (result.hashes_.isEmpty()) {
-          result.hashes_ = new java.util.ArrayList<java.lang.String>();
+          result.hashes_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
         }
         result.hashes_.add(value);
         return this;
       }
       public Builder addAllHashes(
-          java.lang.Iterable<? extends java.lang.String> values) {
+          java.lang.Iterable<? extends com.google.protobuf.ByteString> values) {
         if (result.hashes_.isEmpty()) {
-          result.hashes_ = new java.util.ArrayList<java.lang.String>();
+          result.hashes_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
         }
         super.addAll(values, result.hashes_);
         return this;
@@ -2438,28 +2428,28 @@ public final class ProtoClasses {
       return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Issue_fieldAccessorTable;
     }
     
-    // required string hash = 1;
+    // optional bytes hash = 1;
     public static final int HASH_FIELD_NUMBER = 1;
     private boolean hasHash;
-    private java.lang.String hash_ = "";
+    private com.google.protobuf.ByteString hash_ = com.google.protobuf.ByteString.EMPTY;
     public boolean hasHash() { return hasHash; }
-    public java.lang.String getHash() { return hash_; }
+    public com.google.protobuf.ByteString getHash() { return hash_; }
     
-    // required string bugPattern = 2;
+    // optional string bugPattern = 2;
     public static final int BUGPATTERN_FIELD_NUMBER = 2;
     private boolean hasBugPattern;
     private java.lang.String bugPattern_ = "";
     public boolean hasBugPattern() { return hasBugPattern; }
     public java.lang.String getBugPattern() { return bugPattern_; }
     
-    // required int32 priority = 3;
+    // optional int32 priority = 3;
     public static final int PRIORITY_FIELD_NUMBER = 3;
     private boolean hasPriority;
     private int priority_ = 0;
     public boolean hasPriority() { return hasPriority; }
     public int getPriority() { return priority_; }
     
-    // required string primaryClass = 4;
+    // optional string primaryClass = 4;
     public static final int PRIMARYCLASS_FIELD_NUMBER = 4;
     private boolean hasPrimaryClass;
     private java.lang.String primaryClass_ = "";
@@ -2493,20 +2483,13 @@ public final class ProtoClasses {
     }
     
     public final boolean isInitialized() {
-      if (!hasHash) return false;
-      if (!hasBugPattern) return false;
-      if (!hasPriority) return false;
-      if (!hasPrimaryClass) return false;
-      for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation element : getEvaluationsList()) {
-        if (!element.isInitialized()) return false;
-      }
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (hasHash()) {
-        output.writeString(1, getHash());
+        output.writeBytes(1, getHash());
       }
       if (hasBugPattern()) {
         output.writeString(2, getBugPattern());
@@ -2537,7 +2520,7 @@ public final class ProtoClasses {
       size = 0;
       if (hasHash()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeStringSize(1, getHash());
+          .computeBytesSize(1, getHash());
       }
       if (hasBugPattern()) {
         size += com.google.protobuf.CodedOutputStream
@@ -2766,7 +2749,7 @@ public final class ProtoClasses {
               break;
             }
             case 10: {
-              setHash(input.readString());
+              setHash(input.readBytes());
               break;
             }
             case 18: {
@@ -2800,14 +2783,14 @@ public final class ProtoClasses {
       }
       
       
-      // required string hash = 1;
+      // optional bytes hash = 1;
       public boolean hasHash() {
         return result.hasHash();
       }
-      public java.lang.String getHash() {
+      public com.google.protobuf.ByteString getHash() {
         return result.getHash();
       }
-      public Builder setHash(java.lang.String value) {
+      public Builder setHash(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -2821,7 +2804,7 @@ public final class ProtoClasses {
         return this;
       }
       
-      // required string bugPattern = 2;
+      // optional string bugPattern = 2;
       public boolean hasBugPattern() {
         return result.hasBugPattern();
       }
@@ -2842,7 +2825,7 @@ public final class ProtoClasses {
         return this;
       }
       
-      // required int32 priority = 3;
+      // optional int32 priority = 3;
       public boolean hasPriority() {
         return result.hasPriority();
       }
@@ -2860,7 +2843,7 @@ public final class ProtoClasses {
         return this;
       }
       
-      // required string primaryClass = 4;
+      // optional string primaryClass = 4;
       public boolean hasPrimaryClass() {
         return result.hasPrimaryClass();
       }
@@ -3023,7 +3006,7 @@ public final class ProtoClasses {
     public boolean hasComment() { return hasComment; }
     public java.lang.String getComment() { return comment_; }
     
-    // required int64 when = 4;
+    // optional int64 when = 4;
     public static final int WHEN_FIELD_NUMBER = 4;
     private boolean hasWhen;
     private long when_ = 0L;
@@ -3031,7 +3014,6 @@ public final class ProtoClasses {
     public long getWhen() { return when_; }
     
     public final boolean isInitialized() {
-      if (!hasWhen) return false;
       return true;
     }
     
@@ -3344,7 +3326,7 @@ public final class ProtoClasses {
         return this;
       }
       
-      // required int64 when = 4;
+      // optional int64 when = 4;
       public boolean hasWhen() {
         return result.hasWhen();
       }
@@ -3429,27 +3411,27 @@ public final class ProtoClasses {
       "\n\022ProtoClasses.proto\022,edu.umd.cs.findbug" +
       "s.cloud.appEngine.protobuf\"L\n\005LogIn\022\021\n\ts" +
       "essionId\030\001 \002(\003\022\031\n\021analysisTimestamp\030\003 \002(" +
-      "\003\022\025\n\rmyIssueHashes\030\004 \003(\t\"Y\n\rLogInRespons" +
+      "\003\022\025\n\rmyIssueHashes\030\004 \003(\014\"Y\n\rLogInRespons" +
       "e\022H\n\013foundIssues\030\001 \003(\01323.edu.umd.cs.find" +
       "bugs.cloud.appEngine.protobuf.Issue\"i\n\014U" +
       "ploadIssues\022\021\n\tsessionId\030\001 \002(\003\022F\n\tnewIss" +
       "ues\030\002 \003(\01323.edu.umd.cs.findbugs.cloud.ap" +
       "pEngine.protobuf.Issue\"\201\001\n\020UploadEvaluat" +
-      "ion\022\021\n\tsessionId\030\001 \002(\003\022\014\n\004hash\030\002 \002(\t\022L\n\n",
+      "ion\022\021\n\tsessionId\030\001 \002(\003\022\014\n\004hash\030\002 \002(\014\022L\n\n",
       "evaluation\030\003 \002(\01328.edu.umd.cs.findbugs.c" +
       "loud.appEngine.protobuf.Evaluation\"<\n\024Ge" +
       "tRecentEvaluations\022\021\n\tsessionId\030\001 \002(\003\022\021\n" +
       "\ttimestamp\030\002 \002(\003\"X\n\021RecentEvaluations\022C\n" +
       "\006issues\030\001 \003(\01323.edu.umd.cs.findbugs.clou" +
       "d.appEngine.protobuf.Issue\"3\n\016GetEvaluat" +
-      "ions\022\021\n\tsessionId\030\001 \002(\003\022\016\n\006hashes\030\002 \003(\t\"" +
-      "\305\001\n\005Issue\022\014\n\004hash\030\001 \002(\t\022\022\n\nbugPattern\030\002 " +
-      "\002(\t\022\020\n\010priority\030\003 \002(\005\022\024\n\014primaryClass\030\004 " +
-      "\002(\t\022\021\n\tfirstSeen\030\005 \001(\003\022\020\n\010lastSeen\030\006 \001(\003",
+      "ions\022\021\n\tsessionId\030\001 \002(\003\022\016\n\006hashes\030\002 \003(\014\"" +
+      "\305\001\n\005Issue\022\014\n\004hash\030\001 \001(\014\022\022\n\nbugPattern\030\002 " +
+      "\001(\t\022\020\n\010priority\030\003 \001(\005\022\024\n\014primaryClass\030\004 " +
+      "\001(\t\022\021\n\tfirstSeen\030\005 \001(\003\022\020\n\010lastSeen\030\006 \001(\003",
       "\022M\n\013evaluations\030\007 \003(\01328.edu.umd.cs.findb" +
       "ugs.cloud.appEngine.protobuf.Evaluation\"" +
       "M\n\nEvaluation\022\013\n\003who\030\001 \001(\t\022\023\n\013designatio" +
-      "n\030\002 \001(\t\022\017\n\007comment\030\003 \001(\t\022\014\n\004when\030\004 \002(\003"
+      "n\030\002 \001(\t\022\017\n\007comment\030\003 \001(\t\022\014\n\004when\030\004 \001(\003"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

@@ -3,26 +3,23 @@ package edu.umd.cs.findbugs.cloud.appEngine.protobuf;
 // sent to server on login
 message LogIn {
   required int64 sessionId = 1;
-  //required string who = 2;
   required int64 analysisTimestamp = 3;
-  repeated string myIssueHashes = 4;
+  repeated bytes myIssueHashes = 4;
 }
 
 // response from login
 message LogInResponse {
-    // all issues that match provided hashes
 	repeated Issue foundIssues = 1;
 }
 
 message UploadIssues {
     required int64 sessionId = 1;
-    // all issues that match provided hashes
 	repeated Issue newIssues = 2;
 }
 
 message UploadEvaluation {
     required int64 sessionId = 1;
-    required string hash = 2;
+    required bytes hash = 2;
 	required Evaluation evaluation = 3;
 }
 
@@ -37,14 +34,14 @@ message RecentEvaluations {
 
 message GetEvaluations {
 	required int64 sessionId = 1;
-	repeated string hashes = 2;
+	repeated bytes hashes = 2;
 }
 
 message Issue {
-  required string hash = 1;
-  required string bugPattern = 2;
-  required int32 priority = 3;
-  required string primaryClass = 4;
+  optional bytes hash = 1;
+  optional string bugPattern = 2;
+  optional int32 priority = 3;
+  optional string primaryClass = 4;
   optional int64 firstSeen = 5;
   optional int64 lastSeen = 6;
   repeated Evaluation evaluations = 7;
@@ -56,7 +53,7 @@ message Evaluation {
   optional string who = 1;
   optional string designation = 2;
   optional string comment = 3;
-  required int64 when = 4;
+  optional int64 when = 4;
 }
 
 

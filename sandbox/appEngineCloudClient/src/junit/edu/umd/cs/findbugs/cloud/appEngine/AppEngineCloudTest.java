@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import junit.framework.TestCase;
 import edu.umd.cs.findbugs.BugDesignation;
@@ -21,6 +22,7 @@ import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
@@ -40,6 +42,22 @@ public class AppEngineCloudTest extends TestCase {
 		foundIssue = new BugInstance("FOUND", 2).addClass("FoundClass");
 	}
 
+	public void testEncodeDecodeHash() {
+		checkHashEncodeRoundtrip("9e107d9d372bb6826bd81d3542a419d6");
+		checkHashEncodeRoundtrip("00000000000000000000000000000000");
+		checkHashEncodeRoundtrip("ffffffffffffffffffffffffffffffff");
+	}
+
+	public void testNormalizeHash() {
+		assertEquals("00000000000000000000000000000000", AppEngineProtoUtil.normalizeHash("0"));
+		assertEquals("0fffffffffffffffffffffffffffffff", AppEngineProtoUtil.normalizeHash("fffffffffffffffffffffffffffffff"));
+	}
+
+	public void testNormalizeHashMakesLowercase() {
+		assertEquals("0fffffffffffffffffffffffffffffff", AppEngineProtoUtil.normalizeHash("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
+		assertEquals("ffffffffffffffffffffffffffffffff", AppEngineProtoUtil.normalizeHash("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
+	}
+
 	public void testFindAndUploadIssues() throws IOException {
 		// set up mocks
 		final HttpURLConnection findConnection = mock(HttpURLConnection.class);
@@ -57,7 +75,7 @@ public class AppEngineCloudTest extends TestCase {
 		verify(findConnection).connect();
 		LogIn hashes = LogIn.parseFrom(outputCollector.toByteArray());
 		assertEquals(2, hashes.getMyIssueHashesCount());
-		List<String> hashesFromLogIn = hashes.getMyIssueHashesList();
+		List<String> hashesFromLogIn = AppEngineProtoUtil.decodeHashes(hashes.getMyIssueHashesList());
 		assertTrue(hashesFromLogIn.contains(foundIssue.getInstanceHash()));
 		assertTrue(hashesFromLogIn.contains(missingIssue.getInstanceHash()));
 
@@ -183,6 +201,10 @@ public class AppEngineCloudTest extends TestCase {
 
 	// =================================== end of tests ===========================================
 
+	private void checkHashEncodeRoundtrip(String hash) {
+		assertEquals(hash, AppEngineProtoUtil.decodeHash(AppEngineProtoUtil.encodeHash(hash)));
+	}
+
 	private <E> List<E> newList(Iterable<E> iterable) {
 		List<E> result = new ArrayList<E>();
 		for (E item : iterable) {
@@ -198,7 +220,7 @@ public class AppEngineCloudTest extends TestCase {
 	private Issue createFoundIssue(Iterable<Evaluation> evaluations) {
 		return Issue.newBuilder()
 				.setBugPattern(foundIssue.getAbbrev())
-				.setHash(foundIssue.getInstanceHash())
+				.setHash(AppEngineProtoUtil.encodeHash(foundIssue.getInstanceHash()))
 				.setFirstSeen(100)
 				.setLastSeen(300)
 				.setPrimaryClass(foundIssue.getPrimaryClass().getClassName())
@@ -213,7 +235,7 @@ public class AppEngineCloudTest extends TestCase {
 
 	private void checkUploadedEvaluation(UploadEvaluation uploadMsg) {
 		assertEquals(100, uploadMsg.getSessionId());
-		assertEquals(foundIssue.getInstanceHash(), uploadMsg.getHash());
+		assertEquals(foundIssue.getInstanceHash(), AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));
 		assertEquals(foundIssue.getUserDesignationKey(), uploadMsg.getEvaluation().getDesignation());
 		assertEquals(foundIssue.getAnnotationText(), uploadMsg.getEvaluation().getComment());
 	}
@@ -233,7 +255,12 @@ public class AppEngineCloudTest extends TestCase {
 		final Iterator<HttpURLConnection> mockConnections = Arrays.asList(connections).iterator();
 		CloudPlugin plugin = new CloudPlugin("AppEngineCloudTest", AppEngineCloud.class.getClassLoader(),
 				AppEngineCloud.class, AppEngineNameLookup.class, new PropertyBundle(), "none", "none");
-		return new AppEngineCloud(plugin, bugs) {
+		Executor runImmediatelyExecutor = new Executor() {
+			public void execute(Runnable command) {
+				command.run();
+			}
+		};
+		return new AppEngineCloud(plugin, bugs, runImmediatelyExecutor) {
 			HttpURLConnection openConnection(String url) {
 				return mockConnections.next();
 			}
@@ -241,7 +268,7 @@ public class AppEngineCloudTest extends TestCase {
 	}
 
 	private void checkIssuesEqual(BugInstance issue, Issue uploadedIssue) {
-		assertEquals(issue.getInstanceHash(), uploadedIssue.getHash());
+		assertEquals(issue.getInstanceHash(), AppEngineProtoUtil.decodeHash(uploadedIssue.getHash()));
 		assertEquals(issue.getType(), uploadedIssue.getBugPattern());
 		assertEquals(issue.getPriority(), uploadedIssue.getPriority());
 		//assertEquals(cloud.getFirstSeen(issue), uploadedIssue.getFirstSeen());
@@ -262,7 +289,7 @@ public class AppEngineCloudTest extends TestCase {
 				.setPriority(2)
 				.setFirstSeen(100)
 				.setLastSeen(200)
-				.setHash(foundIssue.getInstanceHash())
+				.setHash(AppEngineProtoUtil.encodeHash(foundIssue.getInstanceHash()))
 				.setPrimaryClass("MyClass")
 				.addEvaluations(Evaluation.newBuilder()
 						.setWho("commenter")

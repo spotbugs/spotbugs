@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,8 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import com.google.protobuf.GeneratedMessage;
@@ -28,11 +29,12 @@ import com.google.protobuf.GeneratedMessage;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.Builder;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
@@ -40,6 +42,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.Builder;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
 public class AppEngineCloud extends AbstractCloud {
@@ -48,19 +51,35 @@ public class AppEngineCloud extends AbstractCloud {
 
 	private static final Logger LOGGER = Logger.getLogger(AppEngineCloud.class.getName());
 
+	/** For debugging */
+	private static final boolean FORCE_UPLOAD_ALL_ISSUES = false;
+
 	private Map<String, Issue> issuesByHash = new ConcurrentHashMap<String, Issue>();
 
 	private String host;
 	private long sessionId;
 	private String user;
 
-	private ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
+	private Executor backgroundExecutor;
+	private @CheckForNull ExecutorService backgroundExecutorService;
 	private Timer timer;
 
 	private long mostRecentEvaluationMillis = 0;
 
 	public AppEngineCloud(CloudPlugin plugin, BugCollection bugs) {
+		this(plugin, bugs, null);
+	}
+
+	/** for testing */
+	AppEngineCloud(CloudPlugin plugin, BugCollection bugs, @CheckForNull Executor executor) {
 		super(plugin, bugs);
+		if (executor == null) {
+			backgroundExecutorService = Executors.newCachedThreadPool();
+			backgroundExecutor = backgroundExecutorService;
+		} else {
+			backgroundExecutorService = null;
+			backgroundExecutor = executor;
+		}
 	}
 
 	// ====================== initialization =====================
@@ -89,7 +108,6 @@ public class AppEngineCloud extends AbstractCloud {
 				updateEvaluationsFromServer();
 			}
 		}, periodMillis, periodMillis);
-		//bugsPopulated();
 		return true;
 	}
 
@@ -97,7 +115,9 @@ public class AppEngineCloud extends AbstractCloud {
 	public void shutdown() {
 		super.shutdown();
 		timer.cancel();
-		backgroundExecutor.shutdownNow();
+		if (backgroundExecutorService != null) {
+			backgroundExecutorService.shutdownNow();
+		}
 	}
 
 	// =============== accessors ===================
@@ -149,9 +169,11 @@ public class AppEngineCloud extends AbstractCloud {
 
 	public void bugsPopulated() {
 		Map<String, BugInstance> bugsByHash = new HashMap<String, BugInstance>();
+		List<String> allHashes = new ArrayList<String>();
 
 		for(BugInstance b : bugCollection.getCollection()) {
 			bugsByHash.put(b.getInstanceHash(), b);
+			allHashes.add(b.getInstanceHash());
 		}
 
 		int numBugs = bugsByHash.size();
@@ -159,17 +181,24 @@ public class AppEngineCloud extends AbstractCloud {
 
 		// send all instance hashes to server
 		try {
-			LogInResponse response = submitHashes(bugsByHash);
-			setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud...processing");
-			for (Issue issue : response.getFoundIssuesList()) {
-				storeProtoIssue(issue);
-				//BugInstance bugInstance = bugsByHash.remove(issue.getHash());
-				BugInstance bugInstance = bugsByHash.get(issue.getHash());
-				if (bugInstance != null) {
-					updateBugInstanceAndNotify(bugInstance);
+			for (int i = 0; i < numBugs; i += 30) {
+				setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud..."
+						+ (i * 100 / numBugs) + "%");
+				LogInResponse response = submitHashes(allHashes.subList(i, Math.min(i+10, numBugs)));
+				for (Issue issue : response.getFoundIssuesList()) {
+					storeProtoIssue(issue);
+
+					BugInstance bugInstance;
+					if (FORCE_UPLOAD_ALL_ISSUES)
+						bugInstance = bugsByHash.get(AppEngineProtoUtil.decodeHash(issue.getHash()));
+					else
+						bugInstance = bugsByHash.remove(AppEngineProtoUtil.decodeHash(issue.getHash()));
+
+					if (bugInstance != null) {
+						updateBugInstanceAndNotify(bugInstance);
+					}
 				}
 			}
-
 			if (!bugsByHash.values().isEmpty()) {
 				final List<BugInstance> newBugs = new ArrayList<BugInstance>(bugsByHash.values());
 				backgroundExecutor.execute(new Runnable() {
@@ -219,7 +248,7 @@ public class AppEngineCloud extends AbstractCloud {
 		}
 		UploadEvaluation uploadMsg = UploadEvaluation.newBuilder()
 				.setSessionId(sessionId)
-				.setHash(bugInstance.getInstanceHash())
+				.setHash(AppEngineProtoUtil.encodeHash(bugInstance.getInstanceHash()))
 				.setEvaluation(evalBuilder.build())
 				.build();
 
@@ -241,12 +270,12 @@ public class AppEngineCloud extends AbstractCloud {
 		else
 			setStatusMsg("");
 		for (Issue issue : evals.getIssuesList()) {
-			Issue existingIssue = issuesByHash.get(issue.getHash());
+			Issue existingIssue = issuesByHash.get(AppEngineProtoUtil.decodeHash(issue.getHash()));
 			if (existingIssue != null) {
 				Issue newIssue = mergeIssues(existingIssue, issue);
 				assert newIssue.getHash().equals(issue.getHash());
 				storeProtoIssue(newIssue);
-				BugInstance bugInstance = getBugByHash(issue.getHash());
+				BugInstance bugInstance = getBugByHash(AppEngineProtoUtil.decodeHash(issue.getHash()));
 				if (bugInstance != null) {
 					updateBugInstanceAndNotify(bugInstance);
 				}
@@ -268,7 +297,7 @@ public class AppEngineCloud extends AbstractCloud {
 
 	// ================== private methods ======================
 
-    private long getFirstSeenFromCloud(BugInstance b) {
+	private long getFirstSeenFromCloud(BugInstance b) {
         Issue issue = issuesByHash.get(b.getInstanceHash());
         if (issue == null)
             return Long.MAX_VALUE;
@@ -286,17 +315,17 @@ public class AppEngineCloud extends AbstractCloud {
 				mostRecentEvaluationMillis = eval.getWhen();
 			}
 		}
-		issuesByHash.put(newIssue.getHash(), newIssue);
+		issuesByHash.put(AppEngineProtoUtil.decodeHash(newIssue.getHash()), newIssue);
 	}
 
-	private LogInResponse submitHashes(Map<String, BugInstance> bugsByHash)
+	private LogInResponse submitHashes(List<String> bugsByHash)
 			throws IOException {
 		LOGGER.info("Checking " + bugsByHash.size() + " bugs against App Engine Cloud");
 		LogIn hashList = LogIn.newBuilder()
 				//TODO: should the timestamp be converted to UTC?
 				.setAnalysisTimestamp(bugCollection.getAnalysisTimestamp())
 				.setSessionId(sessionId)
-				.addAllMyIssueHashes(bugsByHash.keySet())
+				.addAllMyIssueHashes(AppEngineProtoUtil.encodeHashes(bugsByHash))
 				.build();
 
 		long start = System.currentTimeMillis();
@@ -313,8 +342,6 @@ public class AppEngineCloud extends AbstractCloud {
 		LOGGER.info("Submitted hashes (" + hashList.getSerializedSize()/1024 + " KB) in " + elapsed + "ms ("
 				+ (elapsed/bugsByHash.size()) + "ms per hash)");
 
-
-		setStatusMsg("Checking " + bugsByHash.size() + " bugs against the FindBugs Cloud...waiting for response");
 		start = System.currentTimeMillis();
 		int responseCode = conn.getResponseCode();
 		if (responseCode != 200) {
@@ -338,7 +365,7 @@ public class AppEngineCloud extends AbstractCloud {
 		issueList.setSessionId(sessionId);
 		for (BugInstance bug: bugsToSend) {
 			issueList.addNewIssues(ProtoClasses.Issue.newBuilder()
-					.setHash(bug.getInstanceHash())
+					.setHash(AppEngineProtoUtil.encodeHash(bug.getInstanceHash()))
 					.setBugPattern(bug.getType())
 					.setPriority(bug.getPriority())
 					.setPrimaryClass(bug.getPrimaryClass().getClassName())
