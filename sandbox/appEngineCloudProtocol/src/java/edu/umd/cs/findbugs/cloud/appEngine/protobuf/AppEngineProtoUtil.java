@@ -11,7 +11,9 @@ public final class AppEngineProtoUtil {
 	private AppEngineProtoUtil() { }
 
 	public static ByteString encodeHash(String hash) {
-		return ByteString.copyFrom(new BigInteger(hash, 16).toByteArray());
+		ByteString result = ByteString.copyFrom(new BigInteger(hash, 16).toByteArray());
+		assert hash.equals(decodeHash(result));
+		return result;
 	}
 
 	public static String decodeHash(ByteString hash) {
