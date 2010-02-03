@@ -1,37 +1,24 @@
 package edu.umd.cs.findbugs.flybush;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import javax.jdo.annotations.Unique;
-
-import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class DbIssue {
-	@PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    private Key key;
+	@Persistent @PrimaryKey private String hash;
 
-	@Persistent @Unique private String hash;
     @Persistent private String bugPattern;
     @Persistent private int priority;
     @Persistent private String primaryClass;
     @Persistent private long firstSeen;
     @Persistent private long lastSeen;
-    @Persistent(mappedBy = "issue") private List<DbEvaluation> evaluations;
+    @Persistent(mappedBy = "issue") private SortedSet<DbEvaluation> evaluations;
 
-	public Key getKey() {
-		return key;
-	}
-	public void setKey(Key key) {
-		this.key = key;
-	}
 	public String getHash() {
 		return hash;
 	}
@@ -68,15 +55,15 @@ public class DbIssue {
 	public void setLastSeen(long lastSeen) {
 		this.lastSeen = lastSeen;
 	}
-	public List<DbEvaluation> getEvaluations() {
+	public SortedSet<DbEvaluation> getEvaluations() {
 		return evaluations;
 	}
-	public void setEvaluations(List<DbEvaluation> evaluations) {
+	public void setEvaluations(SortedSet<DbEvaluation> evaluations) {
 		this.evaluations = evaluations;
 	}
 	public void addEvaluation(DbEvaluation eval) {
 		if (evaluations == null) {
-			evaluations = new ArrayList<DbEvaluation>();
+			evaluations = new TreeSet<DbEvaluation>();
 		}
 		evaluations.add(eval);
 	}

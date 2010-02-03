@@ -1,10 +1,15 @@
 package edu.umd.cs.findbugs.flybush;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHashes;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,9 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import junit.framework.TestCase;
-
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.dev.LocalDatastoreService;
@@ -188,7 +189,7 @@ public class FlybushServletTest extends TestCase {
     	createCloudSession(555);
 
 		DbIssue foundIssue = createDbIssue("fad2");
-		DbEvaluation eval = createEvaluation(foundIssue, "someone");
+		DbEvaluation eval = createEvaluation(foundIssue, "someone", 100);
 		foundIssue.addEvaluation(eval);
 
 		// apparently the evaluation is automatically persisted. throws
@@ -213,9 +214,9 @@ public class FlybushServletTest extends TestCase {
     	createCloudSession(555);
 
 		DbIssue foundIssue = createDbIssue("fad1");
-		DbEvaluation eval1 = createEvaluation(foundIssue, "first");
-		DbEvaluation eval2 = createEvaluation(foundIssue, "second");
-		DbEvaluation eval3 = createEvaluation(foundIssue, "first");
+		DbEvaluation eval1 = createEvaluation(foundIssue, "first", 100);
+		DbEvaluation eval2 = createEvaluation(foundIssue, "second", 200);
+		DbEvaluation eval3 = createEvaluation(foundIssue, "first", 300);
 		foundIssue.addEvaluation(eval1);
 		foundIssue.addEvaluation(eval2);
 		foundIssue.addEvaluation(eval3);
@@ -237,37 +238,6 @@ public class FlybushServletTest extends TestCase {
 		assertEquals(2, foundissueProto.getEvaluationsCount());
 		checkEvaluationsEqual(eval2, foundissueProto.getEvaluations(0));
 		checkEvaluationsEqual(eval3, foundissueProto.getEvaluations(1));
-	}
-
-	public void testFindLotsOfIssuesPartitionsHashesInQuery() throws IOException {
-		createCloudSession(555);
-		List<String> queries = installQueryCollector(DbIssue.class.getName());
-
-		LogIn.Builder loginMsg = createAuthenticatedLogInMsg();
-		for (int i = 1; i <= 40; i++) {
-			loginMsg.addMyIssueHashes(encodeHash(Integer.toString(i)));
-		}
-		executePost("/log-in", loginMsg.build().toByteArray());
-		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
-		assertEquals(3, result.getFoundIssuesCount());
-
-		assertEquals(2, queries.size());
-
-		// first query
-		assertTrue(queries.get(0).contains("\"00000000000000000000000000000001\""));
-		assertTrue(queries.get(0).contains("\"00000000000000000000000000000002\""));
-		assertTrue(queries.get(0).contains("\"00000000000000000000000000000030\""));
-
-		assertFalse(queries.get(0).contains("\"00000000000000000000000000000031\""));
-		assertFalse(queries.get(0).contains("\"00000000000000000000000000000035\""));
-
-		// second query
-		assertTrue(queries.get(1).contains("\"00000000000000000000000000000031\""));
-		assertTrue(queries.get(1).contains("\"00000000000000000000000000000032\""));
-		assertTrue(queries.get(1).contains("\"00000000000000000000000000000040\""));
-
-		assertFalse(queries.get(1).contains("\"00000000000000000000000000000001\""));
-		assertFalse(queries.get(1).contains("\"00000000000000000000000000000029\""));
 	}
 
 	public void testGetRecentEvaluationsNoAuth() throws IOException {
@@ -433,7 +403,7 @@ public class FlybushServletTest extends TestCase {
 		checkResponse(200);
 		persistenceManager.refresh(dbIssue);
 		assertEquals(1, dbIssue.getEvaluations().size());
-		DbEvaluation dbEval = dbIssue.getEvaluations().get(0);
+		DbEvaluation dbEval = dbIssue.getEvaluations().iterator().next();
 		assertEquals(protoEval.getComment(), dbEval.getComment());
 		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
 		assertEquals(protoEval.getWhen(), dbEval.getWhen());
@@ -461,7 +431,7 @@ public class FlybushServletTest extends TestCase {
 				.build().toByteArray());
 		checkResponse(200);
 		assertEquals(1, dbIssue.getEvaluations().size());
-		DbEvaluation dbEval = dbIssue.getEvaluations().get(0);
+		DbEvaluation dbEval = dbIssue.getEvaluations().iterator().next();
 		assertEquals(protoEval.getComment(), dbEval.getComment());
 		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
 		assertEquals(protoEval.getWhen(), dbEval.getWhen());
@@ -545,21 +515,25 @@ public class FlybushServletTest extends TestCase {
 
 		persistenceManager.makePersistentAll(issue1, issue2);
 
-		executePost("/get-evaluations", GetEvaluations.newBuilder()
-				.setSessionId(555)
-				.addHashes(encodeHash("fad1"))
-				.addHashes(encodeHash("fad2"))
-				.build().toByteArray());
+		executePost("/get-evaluations",
+				GetEvaluations.newBuilder()
+					.setSessionId(555)
+					.addHashes(encodeHash("fad1"))
+					.addHashes(encodeHash("fad2"))
+					.build()
+				.toByteArray());
 		checkResponse(200);
 		RecentEvaluations evals = RecentEvaluations.parseFrom(outputCollector.toByteArray());
 		assertEquals(2, evals.getIssuesCount());
-		Issue protoIssue1 = evals.getIssues(0);
+		Issue protoIssue1 = evals.getIssues(1);
+		assertEquals("0000000000000000000000000000fad1", decodeHash(protoIssue1.getHash()));
 		assertEquals(3, protoIssue1.getEvaluationsCount());
 		assertEquals(100, protoIssue1.getEvaluations(0).getWhen());
 		assertEquals(200, protoIssue1.getEvaluations(1).getWhen());
 		assertEquals(300, protoIssue1.getEvaluations(2).getWhen());
 
-		Issue protoIssue2 = evals.getIssues(1);
+		Issue protoIssue2 = evals.getIssues(0);
+		assertEquals("0000000000000000000000000000fad2", decodeHash(protoIssue2.getHash()));
 		assertEquals(3, protoIssue2.getEvaluationsCount());
 		assertEquals(2100, protoIssue2.getEvaluations(0).getWhen());
 		assertEquals(2200, protoIssue2.getEvaluations(1).getWhen());
@@ -611,30 +585,6 @@ public class FlybushServletTest extends TestCase {
 		return LogIn.newBuilder().setSessionId(555).setAnalysisTimestamp(100);
 	}
 
-	/**
-	 * Intercepts database queries made during the servlet execution, adding
-	 * adds all query strings to the returned list.
-	 *
-	 * @param regex a regular expression to filter the collected queries
-	 * @return a list which will be populated with query strings as the
-	 * 		   servlet runs
-	 */
-	private List<String> installQueryCollector(final String regex) {
-		persistenceManager.makePersistentAll(createDbIssue("2"), createDbIssue("5"), createDbIssue("12"));
-		final List<String> queries = new ArrayList<String>();
-		when(persistenceManager.newQuery(anyString())).thenAnswer(new Answer<Query>() {
-			public Query answer(InvocationOnMock invocation) throws Throwable {
-				String query = (String) invocation.getArguments()[0];
-				if (query.matches(".*" + regex + ".*")) {
-					queries.add(query);
-				}
-				return (Query) invocation.callRealMethod();
-			}
-		});
-		servlet.setPersistenceManager(persistenceManager);
-		return queries;
-	}
-
 	private void initServletAndMocks() throws IOException {
 		servlet = new FlybushServlet(persistenceManager);
 		mockRequest = mock(HttpServletRequest.class);
@@ -660,10 +610,6 @@ public class FlybushServletTest extends TestCase {
 		assertEquals(dbEval.getDesignation(), protoEval.getDesignation());
 		assertEquals(dbEval.getWhen(), protoEval.getWhen());
 		assertEquals(dbEval.getWho(), protoEval.getWho());
-	}
-
-	private DbEvaluation createEvaluation(DbIssue issue, String who) {
-		return createEvaluation(issue, who, 100);
 	}
 
 	private DbEvaluation createEvaluation(DbIssue issue, String who, int when) {

@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,6 +44,8 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.Buil
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
 public class AppEngineCloud extends AbstractCloud {
+
+	private static final int HASH_CHECK_PARTITION_SIZE = 50;
 
 	private static final int EVALUATION_CHECK_SECS = 5*60;
 
@@ -181,18 +181,19 @@ public class AppEngineCloud extends AbstractCloud {
 
 		// send all instance hashes to server
 		try {
-			for (int i = 0; i < numBugs; i += 30) {
+			for (int i = 0; i < numBugs; i += HASH_CHECK_PARTITION_SIZE) {
 				setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud..."
 						+ (i * 100 / numBugs) + "%");
-				LogInResponse response = submitHashes(allHashes.subList(i, Math.min(i+10, numBugs)));
+				LogInResponse response = submitHashes(allHashes.subList(i, Math.min(i+HASH_CHECK_PARTITION_SIZE, numBugs)));
 				for (Issue issue : response.getFoundIssuesList()) {
 					storeProtoIssue(issue);
 
 					BugInstance bugInstance;
-					if (FORCE_UPLOAD_ALL_ISSUES)
-						bugInstance = bugsByHash.get(AppEngineProtoUtil.decodeHash(issue.getHash()));
+					String hash = AppEngineProtoUtil.decodeHash(issue.getHash());
+					if (FORCE_UPLOAD_ALL_ISSUES) // don't remove anything from bugsByHash
+						bugInstance = bugsByHash.get(hash);
 					else
-						bugInstance = bugsByHash.remove(AppEngineProtoUtil.decodeHash(issue.getHash()));
+						bugInstance = bugsByHash.remove(hash);
 
 					if (bugInstance != null) {
 						updateBugInstanceAndNotify(bugInstance);

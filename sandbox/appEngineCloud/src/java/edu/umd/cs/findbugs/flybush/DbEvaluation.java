@@ -9,7 +9,7 @@ import javax.jdo.annotations.PrimaryKey;
 import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class DbEvaluation {
+public class DbEvaluation implements Comparable<DbEvaluation> {
 	@PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
@@ -62,6 +62,25 @@ public class DbEvaluation {
 	}
 	public void setInvocation(Key invocation) {
 		this.invocation = invocation;
+	}
+
+	public int compareTo(DbEvaluation o) {
+		if (getWhen() < o.getWhen()) return -1;
+		if (getWhen() > o.getWhen()) return 1;
+
+		int whoCompare = comparePossiblyNull(getWho(), o.getWho());
+		if (whoCompare != 0)
+			return whoCompare;
+
+		int commentCompare = comparePossiblyNull(getComment(), o.getComment());
+		if (commentCompare != 0)
+			return commentCompare;
+
+		return comparePossiblyNull(getDesignation(), o.getDesignation());
+	}
+
+	private int comparePossiblyNull(String a, String b) {
+		return a == null ? -1 : (b == null ? 1 : a.compareTo(b));
 	}
 
 }

@@ -12,9 +12,10 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
@@ -46,7 +47,6 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 
 @SuppressWarnings("serial")
 public class FlybushServlet extends HttpServlet {
-	private static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile("[0-9A-Za-z_-]+");
 
 	private static final Logger LOGGER = Logger.getLogger(FlybushServlet.class.getName());
 
@@ -98,7 +98,7 @@ public class FlybushServlet extends HttpServlet {
 		PersistenceManager pm = getPersistenceManager();
 		try {
 			if (uri.equals("/log-in")) {
-				findIssues(req, resp, pm);
+				logIn(req, resp, pm);
 
 			} else if (uri.startsWith("/log-out/")) {
 				logOut(req, resp, pm);
@@ -205,7 +205,7 @@ public class FlybushServlet extends HttpServlet {
 		}
 	}
 
-	private void findIssues(HttpServletRequest req, HttpServletResponse resp,
+	private void logIn(HttpServletRequest req, HttpServletResponse resp,
 			PersistenceManager pm) throws IOException {
 		LogIn loginMsg = LogIn.parseFrom(req.getInputStream());
 		SqlCloudSession session = lookupCloudSessionById(loginMsg.getSessionId(), pm);
@@ -345,11 +345,11 @@ public class FlybushServlet extends HttpServlet {
 				"select from " + DbEvaluation.class.getName()
 				+ " where when > " + startTime + " order by when"
 				);
-		List<DbEvaluation> evaluations = (List<DbEvaluation>) query.execute();
+		SortedSet<DbEvaluation> evaluations = new TreeSet((List<DbEvaluation>) query.execute());
 		RecentEvaluations.Builder issueProtos = RecentEvaluations.newBuilder();
-		Map<String, List<DbEvaluation>> issues = groupUniqueEvaluationsByIssue(evaluations);
-		for (List<DbEvaluation> evaluationsForIssue : issues.values()) {
-			DbIssue issue = evaluations.get(0).getIssue();
+		Map<String, SortedSet<DbEvaluation>> issues = groupUniqueEvaluationsByIssue(evaluations);
+		for (SortedSet<DbEvaluation> evaluationsForIssue : issues.values()) {
+			DbIssue issue = evaluations.iterator().next().getIssue();
 			Issue issueProto = buildIssueProto(issue, evaluationsForIssue);
 			issueProtos.addIssues(issueProto);
 		}
@@ -403,9 +403,8 @@ public class FlybushServlet extends HttpServlet {
 
 	@SuppressWarnings("unchecked")
 	private DbIssue findIssue(PersistenceManager pm, String hash) {
-		Query query = pm.newQuery(DbIssue.class, "hash == hashParam");
+		Query query = pm.newQuery(DbIssue.class, "hash == :hashParam");
 		try {
-			query.declareParameters("String hashParam");
 			Iterator<DbIssue> it = ((QueryResult) query.execute(hash)).iterator();
 			if (!it.hasNext()) {
 				return null;
@@ -416,7 +415,7 @@ public class FlybushServlet extends HttpServlet {
 		}
 	}
 
-	private Issue buildIssueProto(DbIssue issue, List<DbEvaluation> evaluationsOrig) {
+	private Issue buildIssueProto(DbIssue issue, SortedSet<DbEvaluation> evaluationsOrig2) {
 		Issue.Builder issueBuilder = Issue.newBuilder()
 				.setBugPattern(issue.getBugPattern())
 				.setPriority(issue.getPriority())
@@ -426,6 +425,7 @@ public class FlybushServlet extends HttpServlet {
 				.setPrimaryClass(issue.getPrimaryClass());
 		LinkedList<DbEvaluation> evaluations = new LinkedList<DbEvaluation>();
 		Set<String> seenUsernames = new HashSet<String>();
+		List<DbEvaluation> evaluationsOrig = new ArrayList<DbEvaluation>(evaluationsOrig2);
 		ListIterator<DbEvaluation> it = evaluationsOrig.listIterator(evaluationsOrig.size());
 		while (it.hasPrevious()) {
 			DbEvaluation dbEvaluation = it.previous();
@@ -444,13 +444,13 @@ public class FlybushServlet extends HttpServlet {
 		return issueBuilder.build();
 	}
 
-	private Map<String, List<DbEvaluation>> groupUniqueEvaluationsByIssue(List<DbEvaluation> evaluations) {
-		Map<String,List<DbEvaluation>> issues = new HashMap<String, List<DbEvaluation>>();
+	private Map<String, SortedSet<DbEvaluation>> groupUniqueEvaluationsByIssue(SortedSet<DbEvaluation> evaluations) {
+		Map<String,SortedSet<DbEvaluation>> issues = new HashMap<String, SortedSet<DbEvaluation>>();
 		for (DbEvaluation dbEvaluation : evaluations) {
 			String issueHash = dbEvaluation.getIssue().getHash();
-			List<DbEvaluation> evaluationsForIssue = issues.get(issueHash);
+			SortedSet<DbEvaluation> evaluationsForIssue = issues.get(issueHash);
 			if (evaluationsForIssue == null) {
-				evaluationsForIssue = new ArrayList<DbEvaluation>();
+				evaluationsForIssue = new TreeSet<DbEvaluation>();
 				issues.put(issueHash, evaluationsForIssue);
 			}
 			// only include the latest evaluation for each user
@@ -466,61 +466,20 @@ public class FlybushServlet extends HttpServlet {
 
 	@SuppressWarnings("unchecked")
 	private List<DbIssue> lookupIssues(Iterable<String> hashes, PersistenceManager pm) {
-		List<DbIssue> allIssues = new ArrayList<DbIssue>();
-		for (List<String> partition : partition(hashes, 30)) {
-			Query query = pm.newQuery("select from " + DbIssue.class.getName()
-					+ " where " + makeSqlHashList("hash", partition));
-			allIssues.addAll((List<DbIssue>) query.execute());
-			query.closeAll();
-		}
-		return allIssues;
+		Query query = pm.newQuery("select from " + DbIssue.class.getName() + " where hash == :hashes");
+		List<DbIssue> result = (List<DbIssue>) query.execute(hashes);
+		query.closeAll();
+		return result;
 	}
 
 	@SuppressWarnings("unchecked")
 	private HashSet<String> lookupHashes(Iterable<String> hashes, PersistenceManager pm) {
-		HashSet<String> allHashes = new HashSet<String>();
-		for (List<String> partition : partition(hashes, 10)) {
-			Query query = pm.newQuery("select from " + DbIssue.class.getName()
-					+ " where " + makeSqlHashList("hash", partition));
-			query.setResult("hash");
-			allHashes.addAll((List<String>) query.execute());
-			query.closeAll();
-		}
-		return allHashes;
-	}
-
-	private <E> List<List<E>> partition(Iterable<E> collection, int partitionSize) {
-		List<List<E>> partitions = new ArrayList<List<E>>();
-		partitions.add(new ArrayList<E>());
-		for (E hash : collection) {
-			List<E> currentPartition = partitions.get(partitions.size()-1);
-			if (currentPartition.size() == partitionSize) {
-				currentPartition = new ArrayList<E>();
-				partitions.add(currentPartition);
-			}
-			currentPartition.add(hash);
-		}
-		return partitions;
-	}
-
-	private String makeSqlHashList(String fieldName, Iterable<String> hashesList) {
-		StringBuilder str = new StringBuilder();
-		boolean first = true;
-		for (String hash : hashesList) {
-			if (!ALPHANUMERIC_PATTERN.matcher(hash).matches()) {
-				continue;
-			}
-			if (!first) str.append(" || ");
-
-			str.append(fieldName);
-			str.append(" == ");
-			str.append('\"');
-			str.append(hash);
-			str.append('\"');
-
-			first = false;
-		}
-		return str.toString();
+		Query query = pm.newQuery("select from " + DbIssue.class.getName()
+				+ " where hash == :hashes");
+		query.setResult("hash");
+		List<String> result = (List<String>) query.execute(hashes);
+		query.closeAll();
+		return new HashSet<String>(result);
 	}
 
 	private PersistenceManager getPersistenceManager() {
