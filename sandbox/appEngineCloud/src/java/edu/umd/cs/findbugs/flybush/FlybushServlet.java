@@ -233,10 +233,14 @@ public class FlybushServlet extends HttpServlet {
 		}
 
 		LogInResponse.Builder issueProtos = LogInResponse.newBuilder();
-		for (DbIssue issue : lookupIssues(AppEngineProtoUtil.decodeHashes(loginMsg.getMyIssueHashesList()), pm)) {
+		List<String> decodedHashes = AppEngineProtoUtil.decodeHashes(loginMsg.getMyIssueHashesList());
+		System.out.println("Looking up " + decodedHashes);
+		for (DbIssue issue : lookupIssues(decodedHashes, pm)) {
 			Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
+			System.out.println("Found issue " + AppEngineProtoUtil.decodeHash(issueProto.getHash()) + " - " + issueProto.getBugPattern());
 			issueProtos.addFoundIssues(issueProto);
 		}
+		System.out.println();
 		resp.setStatus(200);
 		issueProtos.build().writeTo(resp.getOutputStream());
 	}
@@ -466,16 +470,15 @@ public class FlybushServlet extends HttpServlet {
 
 	@SuppressWarnings("unchecked")
 	private List<DbIssue> lookupIssues(Iterable<String> hashes, PersistenceManager pm) {
-		Query query = pm.newQuery("select from " + DbIssue.class.getName() + " where hash == :hashes");
+		Query query = pm.newQuery("select from " + DbIssue.class.getName() + " where :hashes.contains(hash)");
 		List<DbIssue> result = (List<DbIssue>) query.execute(hashes);
-		query.closeAll();
 		return result;
 	}
 
 	@SuppressWarnings("unchecked")
 	private HashSet<String> lookupHashes(Iterable<String> hashes, PersistenceManager pm) {
 		Query query = pm.newQuery("select from " + DbIssue.class.getName()
-				+ " where hash == :hashes");
+				+ " where :hashes.contains(hash)");
 		query.setResult("hash");
 		List<String> result = (List<String>) query.execute(hashes);
 		query.closeAll();

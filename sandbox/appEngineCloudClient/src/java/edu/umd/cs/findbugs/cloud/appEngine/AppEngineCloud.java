@@ -45,6 +45,8 @@ import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
 public class AppEngineCloud extends AbstractCloud {
 
+	private static final int BUG_UPLOAD_PARTITION_SIZE = 20;
+
 	private static final int HASH_CHECK_PARTITION_SIZE = 50;
 
 	private static final int EVALUATION_CHECK_SECS = 5*60;
@@ -169,12 +171,13 @@ public class AppEngineCloud extends AbstractCloud {
 
 	public void bugsPopulated() {
 		Map<String, BugInstance> bugsByHash = new HashMap<String, BugInstance>();
-		List<String> allHashes = new ArrayList<String>();
 
 		for(BugInstance b : bugCollection.getCollection()) {
 			bugsByHash.put(b.getInstanceHash(), b);
-			allHashes.add(b.getInstanceHash());
 		}
+		List<String> allHashes = new ArrayList<String>(bugsByHash.keySet());
+
+		assert bugsByHash.size() == allHashes.size();
 
 		int numBugs = bugsByHash.size();
 		setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud...");
@@ -184,7 +187,10 @@ public class AppEngineCloud extends AbstractCloud {
 			for (int i = 0; i < numBugs; i += HASH_CHECK_PARTITION_SIZE) {
 				setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud..."
 						+ (i * 100 / numBugs) + "%");
-				LogInResponse response = submitHashes(allHashes.subList(i, Math.min(i+HASH_CHECK_PARTITION_SIZE, numBugs)));
+				List<String> hashesToCheck = allHashes.subList(i, Math.min(i+HASH_CHECK_PARTITION_SIZE, numBugs));
+				LogInResponse response = submitHashes(hashesToCheck);
+				System.out.println("Checking " + hashesToCheck);
+				System.out.println("Found " + response.getFoundIssuesCount());
 				for (Issue issue : response.getFoundIssuesList()) {
 					storeProtoIssue(issue);
 
@@ -197,11 +203,14 @@ public class AppEngineCloud extends AbstractCloud {
 
 					if (bugInstance != null) {
 						updateBugInstanceAndNotify(bugInstance);
+					} else {
+						LOGGER.warning("Server sent back issue that we don't know about: " + hash + " - " + issue);
 					}
 				}
 			}
 			if (!bugsByHash.values().isEmpty()) {
 				final List<BugInstance> newBugs = new ArrayList<BugInstance>(bugsByHash.values());
+				System.out.println("Server didn't know " + bugsByHash);
 				backgroundExecutor.execute(new Runnable() {
 					public void run() {
 						try {
@@ -222,11 +231,11 @@ public class AppEngineCloud extends AbstractCloud {
 
 	private void uploadNewBugs(List<BugInstance> newBugs) throws IOException {
 		try {
-			for (int i = 0; i < newBugs.size(); i += 50) {
+			for (int i = 0; i < newBugs.size(); i += BUG_UPLOAD_PARTITION_SIZE) {
 				setStatusMsg("Uploading " + newBugs.size()
 						+ " new bugs to the FindBugs Cloud..." + i * 100
 						/ newBugs.size() + "%");
-				uploadIssues(newBugs.subList(i, Math.min(newBugs.size(), i + 10)));
+				uploadIssues(newBugs.subList(i, Math.min(newBugs.size(), i + BUG_UPLOAD_PARTITION_SIZE)));
 			}
 		} finally {
 			setStatusMsg("");

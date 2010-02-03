@@ -44,17 +44,27 @@ public class AppEngineCloudTest extends TestCase {
 
 	public void testEncodeDecodeHash() {
 		checkHashEncodeRoundtrip("9e107d9d372bb6826bd81d3542a419d6");
-		checkHashEncodeRoundtrip("00000000000000000000000000000000");
+		checkHashEncodeRoundtrip("83ab7e45f39c7a7a84e5e63b95beeb5");
+		checkHashEncodeRoundtrip("1fe8e2bc5f1cceae0bf5954e7b5e84ac");
+		checkHashEncodeRoundtrip("6977735a4a0f8036778b223cd9f9c1f0");
+		checkHashEncodeRoundtrip("9ba282b1a7b049fa3c5b068941c25977");
+		checkHashEncodeRoundtrip("6606a054edd331799ed567b4efd539a6");
+		checkHashEncodeRoundtrip("6f2130edc682a1cb0db9b709179593d9");
 		checkHashEncodeRoundtrip("ffffffffffffffffffffffffffffffff");
+		checkHashEncodeRoundtrip("0");
+		checkHashEncodeRoundtrip("1");
 	}
 
 	public void testNormalizeHash() {
-		assertEquals("00000000000000000000000000000000", AppEngineProtoUtil.normalizeHash("0"));
-		assertEquals("0fffffffffffffffffffffffffffffff", AppEngineProtoUtil.normalizeHash("fffffffffffffffffffffffffffffff"));
+		assertEquals("0", AppEngineProtoUtil.normalizeHash("0"));
+		assertEquals("0", AppEngineProtoUtil.normalizeHash("000000000"));
+		assertEquals("1", AppEngineProtoUtil.normalizeHash("000000000000001"));
+		assertEquals("fffffffffffffffffffffffffffffff", AppEngineProtoUtil.normalizeHash("0fffffffffffffffffffffffffffffff"));
 	}
 
 	public void testNormalizeHashMakesLowercase() {
-		assertEquals("0fffffffffffffffffffffffffffffff", AppEngineProtoUtil.normalizeHash("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
+		assertEquals("f", AppEngineProtoUtil.normalizeHash("F"));
+		assertEquals("fffffffffffffffffffffffffffffff", AppEngineProtoUtil.normalizeHash("0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
 		assertEquals("ffffffffffffffffffffffffffffffff", AppEngineProtoUtil.normalizeHash("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
 	}
 

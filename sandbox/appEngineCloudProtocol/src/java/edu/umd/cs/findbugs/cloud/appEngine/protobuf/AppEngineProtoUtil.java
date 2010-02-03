@@ -24,15 +24,10 @@ public final class AppEngineProtoUtil {
 
 	public static String normalizeHash(String hashStr) {
 		hashStr = hashStr.toLowerCase();
-		if (hashStr.length() < 32) {
-			StringBuilder builder = new StringBuilder();
-			for (int i = 0; i < (32 - hashStr.length()); i++) {
-				builder.append('0');
-			}
-			builder.append(hashStr);
-			hashStr = builder.toString();
-			assert hashStr.length() == 32;
-		}
+		int leadingZeroes;
+		for (leadingZeroes = 0; hashStr.charAt(leadingZeroes) == '0' && leadingZeroes < hashStr.length()-1; leadingZeroes++);
+		if (leadingZeroes > 0)
+			return hashStr.substring(leadingZeroes);
 		return hashStr;
 	}
 
