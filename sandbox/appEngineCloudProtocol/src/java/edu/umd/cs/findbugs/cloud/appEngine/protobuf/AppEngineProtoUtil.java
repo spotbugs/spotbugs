@@ -17,7 +17,7 @@ public final class AppEngineProtoUtil {
 	}
 
 	public static String decodeHash(ByteString hash) {
-		String hashStr = new BigInteger(hash.toByteArray()).toString(16);
+		String hashStr = new BigInteger(1, hash.toByteArray()).toString(16);
 		return normalizeHash(hashStr);
 	}
 
