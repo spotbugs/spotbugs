@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="web" name="Web">
+      <configuration>
+        <descriptors>
+          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/war/WEB-INF/web.xml" />
+        </descriptors>
+        <webroots>
+          <root url="file://$MODULE_DIR$/war" relative="/" />
+        </webroots>
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/src/java" />
+        </sourceRoots>
+        <context-artifact name="AppEngineCloud:Web" />
+      </configuration>
+      <facet type="google-app-engine" name="Google App Engine">
+        <configuration>
+          <files-to-enhance>
+            <file path="$MODULE_DIR$/src/java" />
+          </files-to-enhance>
+          <run-enhancer-on-make>true</run-enhancer-on-make>
+          <sdk-home-path>$MODULE_DIR$/../../../Libraries/appengine-java-sdk-1.3.0</sdk-home-path>
+        </configuration>
+      </facet>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/war/WEB-INF/classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/junit" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/war/WEB-INF/classes" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="jdk" jdkName="J2SE-1.5" jdkType="JavaSDK" />
+    <orderEntry type="module-library">
+      <library name="junit3">
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/junit.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="mockito-all-1.8.2.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/mockito-all-1.8.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="protobuf-java-2.2.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/war/WEB-INF/lib/protobuf-java-2.2.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-api-stubs.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/appengine-api-stubs.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-local-runtime.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/appengine-local-runtime.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="AppEngineCloudProtocol.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/war/WEB-INF/lib/AppEngineCloudProtocol.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="AppEngine 1.3.0" level="application_server_libraries" />
+  </component>
+</module>
+

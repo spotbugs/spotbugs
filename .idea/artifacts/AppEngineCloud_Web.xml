@@ -1,0 +1,17 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="AppEngineCloud:Web">
+    <output-path>$PROJECT_DIR$/out/artifacts/AppEngineCloud_Web</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="AppEngineCloudServer/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="AppEngineCloudServer" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="module" name="AppEngineCloudProtocol.jar" module-name="AppEngineCloudServer" />
+          <element id="library" level="module" name="protobuf-java-2.2.0.jar" module-name="AppEngineCloudServer" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
