@@ -19,6 +19,30 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.MissingClassException;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.CloudFactory;
+import edu.umd.cs.findbugs.log.Profiler;
+import edu.umd.cs.findbugs.model.ClassFeatureSet;
+import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutputUtil;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.WillClose;
+import javax.xml.transform.TransformerException;
 import java.awt.GraphicsEnvironment;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -48,33 +72,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.WillClose;
-import javax.xml.transform.TransformerException;
-
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.MissingClassException;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.CloudFactory;
-import edu.umd.cs.findbugs.log.Profiler;
-import edu.umd.cs.findbugs.model.ClassFeatureSet;
-import edu.umd.cs.findbugs.util.Util;
-import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
-import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
-import edu.umd.cs.findbugs.xml.XMLAttributeList;
-import edu.umd.cs.findbugs.xml.XMLOutput;
-import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 
 /**
  * An implementation of {@link BugCollection} that keeps the BugInstances
@@ -85,6 +85,8 @@ import edu.umd.cs.findbugs.xml.XMLOutputUtil;
  * @author David Hovemeyer
  */
 public class SortedBugCollection implements BugCollection {
+    private static final Logger LOGGER = Logger.getLogger(SortedBugCollection.class.getName());
+
 	long analysisTimestamp = System.currentTimeMillis();
 	String analysisVersion = Version.RELEASE;
 	private boolean withMessages = false;
@@ -95,8 +97,8 @@ public class SortedBugCollection implements BugCollection {
 	
 	long timeStartedLoading, timeFinishedLoading;
 	String dataSource = "";
-	
-	/**
+
+    /**
      * @return Returns the timeStartedLoading.
      */
     public long getTimeStartedLoading() {
@@ -129,13 +131,23 @@ public class SortedBugCollection implements BugCollection {
 		}
 		if (userAnnotationPlugin == null) {
 			if (useDatabaseCloud) {
-	            userAnnotationPlugin = CloudFactory.createCloudWithoutInitializing(this);
-				getProject().getGuiCallback().registerCloud(getProject(), this, userAnnotationPlugin);
-				CloudFactory.initializeCloud(this, userAnnotationPlugin);
-			} else {
-	            userAnnotationPlugin = CloudFactory.getPlainCloud(this);
-			}
-			shouldNotUsePlugin = userAnnotationPlugin == null;
+                IGuiCallback callback = getProject().getGuiCallback();
+                try {
+                    userAnnotationPlugin = CloudFactory.createCloudWithoutInitializing(this);
+                    callback.registerCloud(getProject(), this, userAnnotationPlugin);
+                    CloudFactory.initializeCloud(this, userAnnotationPlugin);
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Could not load cloud plugin", e);
+                    callback.showMessageDialog("Unable to connect to cloud: "
+                                               + e.getClass().getSimpleName()
+                                               + ": " + e.getMessage());
+                    userAnnotationPlugin = null;
+                }
+            }
+            if (userAnnotationPlugin == null) {
+                userAnnotationPlugin = CloudFactory.getPlainCloud(this);
+            }
+            shouldNotUsePlugin = userAnnotationPlugin == null;
 		}
 		return userAnnotationPlugin;
 	}

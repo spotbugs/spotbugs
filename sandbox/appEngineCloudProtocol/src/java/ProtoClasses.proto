@@ -4,11 +4,15 @@ package edu.umd.cs.findbugs.cloud.appEngine.protobuf;
 message LogIn {
   required int64 sessionId = 1;
   required int64 analysisTimestamp = 3;
+}
+
+message FindIssues {
+  required int64 sessionId = 1;
   repeated bytes myIssueHashes = 4;
 }
 
 // response from login
-message LogInResponse {
+message FindIssuesResponse {
 	repeated Issue foundIssues = 1;
 }
 

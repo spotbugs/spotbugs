@@ -19,6 +19,12 @@
 
 package edu.umd.cs.findbugs.cloud.username;
 
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.util.LaunchBrowser;
+import edu.umd.cs.findbugs.util.Util;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,12 +32,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.util.prefs.Preferences;
-
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.PropertyBundle;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.util.LaunchBrowser;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * @author pugh
@@ -54,7 +54,7 @@ public class AppEngineNameLookup implements NameLookup {
 	public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) {
 		try {
 			PropertyBundle pluginProps = plugin.getProperties();
-			if (pluginProps.getBoolean(LOCAL_APPENGINE))
+			if (Boolean.getBoolean("appengine.local") || pluginProps.getBoolean(LOCAL_APPENGINE))
 				host = pluginProps.getProperty(APPENGINE_LOCALHOST_PROPERTY_NAME, APPENGINE_LOCALHOST_DEFAULT);
 			else 
 				host = pluginProps.getProperty(APPENGINE_HOST_PROPERTY_NAME);

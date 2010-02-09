@@ -3,24 +3,20 @@ package edu.umd.cs.findbugs.flybush;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.users.User;
 
-import java.util.Date;
-import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import java.util.Date;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SqlCloudSession {
+    @Persistent
     @PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    private Key key;
+    private String randomID;
 
     @Persistent
     private User user;
-
-    @Persistent
-    private long randomID;
 
     @Persistent
     private Date date;
@@ -28,17 +24,17 @@ public class SqlCloudSession {
     @Persistent
     private Key invocation;
 
-    public SqlCloudSession(User author, long randomID, Date date) {
+    public SqlCloudSession(User author, String randomID, Date date) {
         this.user = author;
         this.randomID = randomID;
         this.date = date;
     }
 
-    public Key getKey() {
-        return key;
+    public SqlCloudSession(User author, long randomID, Date date) {
+        this(author, Long.toString(randomID), date);
     }
 
-    public long getRandomID() {
+    public String getRandomID() {
         return randomID;
     }
 
@@ -46,7 +42,7 @@ public class SqlCloudSession {
         return date;
     }
 
-    public void setRandomID(long randomID) {
+    public void setRandomID(String randomID) {
 		this.randomID = randomID;
 	}
 
@@ -70,14 +66,10 @@ public class SqlCloudSession {
 		this.invocation = invocation;
 	}
 
-	public void setKey(Key key) {
-		this.key = key;
-	}
-
 	@Override
 	public String toString() {
 		return "SqlCloudSession [date=" + date + ", invocation=" + invocation
-				+ ", key=" + key + ", randomID=" + randomID + ", user=" + user
+				+ ", randomID=" + randomID + ", user=" + user
 				+ "]";
 	}
 }

@@ -1,5 +1,26 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+import com.google.protobuf.GeneratedMessage;
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.Builder;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -22,33 +43,10 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.google.protobuf.GeneratedMessage;
-
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.AbstractCloud;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.Builder;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
-
 public class AppEngineCloud extends AbstractCloud {
 
 	private static final int BUG_UPLOAD_PARTITION_SIZE = 20;
-
 	private static final int HASH_CHECK_PARTITION_SIZE = 50;
-
 	private static final int EVALUATION_CHECK_SECS = 5*60;
 
 	private static final Logger LOGGER = Logger.getLogger(AppEngineCloud.class.getName());
@@ -99,6 +97,10 @@ public class AppEngineCloud extends AbstractCloud {
 		sessionId = lookerupper.getSessionId();
 		user = lookerupper.getUsername();
 		host = lookerupper.getHost();
+        if (user == null || host == null) {
+            System.err.println("No App Engine Cloud username or hostname found! Check etc/findbugs.xml");
+            return false;
+        }
 
 		if (timer != null)
 			timer.cancel();
@@ -184,11 +186,30 @@ public class AppEngineCloud extends AbstractCloud {
 
 		// send all instance hashes to server
 		try {
-			for (int i = 0; i < numBugs; i += HASH_CHECK_PARTITION_SIZE) {
-				setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud..."
+
+            HttpURLConnection conn = openConnection("/log-in");
+            conn.setDoOutput(true);
+            conn.connect();
+
+            OutputStream stream = conn.getOutputStream();
+            LogIn logIn = LogIn.newBuilder()
+                    .setSessionId(sessionId)
+                    .setAnalysisTimestamp(bugCollection.getAnalysisTimestamp())
+                    .build();
+            logIn.writeTo(stream);
+            stream.close();
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode != 200) {
+                throw new IllegalStateException("Could not log into cloud - error " 
+                                                + responseCode + conn.getResponseMessage());
+            }
+
+            for (int i = 0; i < numBugs; i += HASH_CHECK_PARTITION_SIZE) {
+                setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud..."
 						+ (i * 100 / numBugs) + "%");
 				List<String> hashesToCheck = allHashes.subList(i, Math.min(i+HASH_CHECK_PARTITION_SIZE, numBugs));
-				LogInResponse response = submitHashes(hashesToCheck);
+				FindIssuesResponse response = submitHashes(hashesToCheck);
 				System.out.println("Checking " + hashesToCheck);
 				System.out.println("Found " + response.getFoundIssuesCount());
 				for (Issue issue : response.getFoundIssuesList()) {
@@ -328,18 +349,16 @@ public class AppEngineCloud extends AbstractCloud {
 		issuesByHash.put(AppEngineProtoUtil.decodeHash(newIssue.getHash()), newIssue);
 	}
 
-	private LogInResponse submitHashes(List<String> bugsByHash)
+	private FindIssuesResponse submitHashes(List<String> bugsByHash)
 			throws IOException {
 		LOGGER.info("Checking " + bugsByHash.size() + " bugs against App Engine Cloud");
-		LogIn hashList = LogIn.newBuilder()
-				//TODO: should the timestamp be converted to UTC?
-				.setAnalysisTimestamp(bugCollection.getAnalysisTimestamp())
+		FindIssues hashList = FindIssues.newBuilder()
 				.setSessionId(sessionId)
 				.addAllMyIssueHashes(AppEngineProtoUtil.encodeHashes(bugsByHash))
 				.build();
 
 		long start = System.currentTimeMillis();
-		HttpURLConnection conn = openConnection("/log-in");
+		HttpURLConnection conn = openConnection("/find-issues");
 		conn.setDoOutput(true);
 		conn.connect();
 		LOGGER.info("Connected in " + (System.currentTimeMillis() - start) + "ms");
@@ -358,7 +377,7 @@ public class AppEngineCloud extends AbstractCloud {
 			LOGGER.info("Error " + responseCode + ", took " + (System.currentTimeMillis() - start) + "ms");
 			throw new IOException("Response code " + responseCode + " : " + conn.getResponseMessage());
 		}
-		LogInResponse response = LogInResponse.parseFrom(conn.getInputStream());
+		FindIssuesResponse response = FindIssuesResponse.parseFrom(conn.getInputStream());
 		conn.disconnect();
 		int foundIssues = response.getFoundIssuesCount();
 		elapsed = System.currentTimeMillis()-start;

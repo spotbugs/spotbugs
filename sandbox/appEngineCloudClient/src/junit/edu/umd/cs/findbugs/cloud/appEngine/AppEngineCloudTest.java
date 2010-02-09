@@ -1,8 +1,23 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import junit.framework.TestCase;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,22 +30,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-import junit.framework.TestCase;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.PropertyBundle;
-import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.normalizeHash;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class AppEngineCloudTest extends TestCase {
 	private BugInstance missingIssue;
@@ -56,38 +59,49 @@ public class AppEngineCloudTest extends TestCase {
 	}
 
 	public void testNormalizeHash() {
-		assertEquals("0", AppEngineProtoUtil.normalizeHash("0"));
-		assertEquals("0", AppEngineProtoUtil.normalizeHash("000000000"));
-		assertEquals("1", AppEngineProtoUtil.normalizeHash("000000000000001"));
-		assertEquals("fffffffffffffffffffffffffffffff", AppEngineProtoUtil.normalizeHash("0fffffffffffffffffffffffffffffff"));
+		assertEquals("0", normalizeHash("0"));
+		assertEquals("0", normalizeHash("000000000"));
+		assertEquals("1", normalizeHash("000000000000001"));
+		assertEquals("fffffffffffffffffffffffffffffff", normalizeHash("0fffffffffffffffffffffffffffffff"));
 	}
 
 	public void testNormalizeHashMakesLowercase() {
-		assertEquals("f", AppEngineProtoUtil.normalizeHash("F"));
-		assertEquals("fffffffffffffffffffffffffffffff", AppEngineProtoUtil.normalizeHash("0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
-		assertEquals("ffffffffffffffffffffffffffffffff", AppEngineProtoUtil.normalizeHash("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
+		assertEquals("f", normalizeHash("F"));
+		assertEquals("fffffffffffffffffffffffffffffff", normalizeHash("0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
+		assertEquals("ffffffffffffffffffffffffffffffff", normalizeHash("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
 	}
 
-	public void testFindAndUploadIssues() throws IOException {
+	public void testLogInAndUploadIssues() throws IOException {
 		// set up mocks
-		final HttpURLConnection findConnection = mock(HttpURLConnection.class);
-		ByteArrayOutputStream outputCollector = setupResponseCodeAndOutputStream(findConnection);
-		when(findConnection.getInputStream()).thenReturn(createLogInResponseInputStream(createFoundIssue()));
+		final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
+		ByteArrayOutputStream logInOutput = setupResponseCodeAndOutputStream(logInConnection);
+
+		final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
+        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponseInputStream(createFoundIssue()));
+        ByteArrayOutputStream findIssuesOutput = setupResponseCodeAndOutputStream(findIssuesConnection);
+
 		HttpURLConnection uploadConnection = mock(HttpURLConnection.class);
 		ByteArrayOutputStream uploadIssuesBuffer = setupResponseCodeAndOutputStream(uploadConnection);
 
 		// execution
-		AppEngineCloud cloud = createAppEngineCloud(true, findConnection, uploadConnection);
+		MyAppEngineCloud cloud = createAppEngineCloud(true, logInConnection, findIssuesConnection, uploadConnection);
 		cloud.setUsername("claimer");
 		cloud.bugsPopulated();
 
-		// verify uploaded hashes
-		verify(findConnection).connect();
-		LogIn hashes = LogIn.parseFrom(outputCollector.toByteArray());
+		// verify log-in
+        assertEquals("/log-in", cloud.urlsRequested.get(0));
+		verify(logInConnection).connect();
+		LogIn logIn = LogIn.parseFrom(logInOutput.toByteArray());
+        assertEquals(cloud.getBugCollection().getAnalysisTimestamp(), logIn.getAnalysisTimestamp());
+
+        // verify find-issues
+        assertEquals("/find-issues", cloud.urlsRequested.get(1));
+		verify(findIssuesConnection).connect();
+		FindIssues hashes = FindIssues.parseFrom(findIssuesOutput.toByteArray());
 		assertEquals(2, hashes.getMyIssueHashesCount());
-		List<String> hashesFromLogIn = AppEngineProtoUtil.decodeHashes(hashes.getMyIssueHashesList());
-		assertTrue(hashesFromLogIn.contains(foundIssue.getInstanceHash()));
-		assertTrue(hashesFromLogIn.contains(missingIssue.getInstanceHash()));
+		List<String> hashesFromFindIssues = AppEngineProtoUtil.decodeHashes(hashes.getMyIssueHashesList());
+		assertTrue(hashesFromFindIssues.contains(foundIssue.getInstanceHash()));
+		assertTrue(hashesFromFindIssues.contains(missingIssue.getInstanceHash()));
 
 		// verify processing of found issues
 		assertEquals(100, cloud.getFirstSeen(foundIssue));
@@ -103,7 +117,9 @@ public class AppEngineCloudTest extends TestCase {
 		assertEquals("claimer", primaryDesignation.getUser());
 
 		// verify uploaded issues
-		UploadIssues uploadedIssues = UploadIssues.parseFrom(uploadIssuesBuffer.toByteArray());
+
+        assertEquals("/upload-issues", cloud.urlsRequested.get(2));
+        UploadIssues uploadedIssues = UploadIssues.parseFrom(uploadIssuesBuffer.toByteArray());
 		assertEquals(1, uploadedIssues.getNewIssuesCount());
 		checkIssuesEqual(missingIssue, uploadedIssues.getNewIssues(0));
 	}
@@ -135,12 +151,11 @@ public class AppEngineCloudTest extends TestCase {
 
 		Issue issue = createFoundIssueWithOneEvaluation();
 
-		final HttpURLConnection findConnection = mock(HttpURLConnection.class);
-		when(findConnection.getInputStream()).thenReturn(createLogInResponseInputStream(issue));
-		setupResponseCodeAndOutputStream(findConnection);
+        final HttpURLConnection logInConnection = createResponselessConnection();
 
-		final HttpURLConnection recentEvalConnection = mock(HttpURLConnection.class);
-		setupResponseCodeAndOutputStream(recentEvalConnection);
+        final HttpURLConnection findConnection = createFindIssuesConnection(createFindIssuesResponseInputStream(issue));
+
+        final HttpURLConnection recentEvalConnection = createResponselessConnection();
 		RecentEvaluations recentEvalResponse = RecentEvaluations.newBuilder()
 				.addIssues(addEvaluationsToIssue(issue,
                         createEvaluation("MUST_FIX", 250, "comment", "claimer"),
@@ -151,7 +166,7 @@ public class AppEngineCloudTest extends TestCase {
 
 
 		// setup & execute
-		AppEngineCloud cloud = createAppEngineCloud(false, findConnection, recentEvalConnection);
+		MyAppEngineCloud cloud = createAppEngineCloud(false, logInConnection, findConnection, recentEvalConnection);
 		cloud.setUsername("claimer");
 		cloud.setSessionId(100);
 		cloud.bugsPopulated();
@@ -165,6 +180,12 @@ public class AppEngineCloudTest extends TestCase {
 		assertEquals("claimer", primaryDesignationAfter.getUser());
 		assertEquals(300, primaryDesignationAfter.getTimestamp());
 	}
+
+    private HttpURLConnection createResponselessConnection() throws IOException {
+        final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
+        setupResponseCodeAndOutputStream(logInConnection);
+        return logInConnection;
+    }
 
     private Evaluation createEvaluation(String designation, long when, String comment, String who) {
         return Evaluation.newBuilder()
@@ -181,12 +202,11 @@ public class AppEngineCloudTest extends TestCase {
                 createEvaluation("NOT_A_BUG", 100, "comment", "first")));
 
 
-		final HttpURLConnection findConnection = mock(HttpURLConnection.class);
-		when(findConnection.getInputStream()).thenReturn(createLogInResponseInputStream(responseIssue));
-		setupResponseCodeAndOutputStream(findConnection);
+        final HttpURLConnection logInConnection = createResponselessConnection();
 
-		final HttpURLConnection recentEvalConnection = mock(HttpURLConnection.class);
-		setupResponseCodeAndOutputStream(recentEvalConnection);
+        final HttpURLConnection findConnection = createFindIssuesConnection(createFindIssuesResponseInputStream(responseIssue));
+
+        final HttpURLConnection recentEvalConnection = createResponselessConnection();
 		RecentEvaluations recentEvalResponse = RecentEvaluations.newBuilder()
 				.addIssues(addEvaluationsToIssue(responseIssue,
                         createEvaluation("NOT_A_BUG", 200, "comment2", "second"),
@@ -198,7 +218,7 @@ public class AppEngineCloudTest extends TestCase {
 
 
 		// setup & execute
-		AppEngineCloud cloud = createAppEngineCloud(false, findConnection, recentEvalConnection);
+		AppEngineCloud cloud = createAppEngineCloud(false, logInConnection, findConnection, recentEvalConnection);
 		cloud.setUsername("claimer");
 		cloud.setSessionId(100);
 		cloud.bugsPopulated();
@@ -209,7 +229,14 @@ public class AppEngineCloudTest extends TestCase {
 		assertEquals(2, allUserDesignations.size());
 	}
 
-	// =================================== end of tests ===========================================
+    // =================================== end of tests ===========================================
+
+    private HttpURLConnection createFindIssuesConnection(InputStream response) throws IOException {
+        final HttpURLConnection findConnection = mock(HttpURLConnection.class);
+        when(findConnection.getInputStream()).thenReturn(response);
+        setupResponseCodeAndOutputStream(findConnection);
+        return findConnection;
+    }
 
 	private void checkHashEncodeRoundtrip(String hash) {
 		assertEquals(hash, AppEngineProtoUtil.decodeHash(AppEngineProtoUtil.encodeHash(hash)));
@@ -258,7 +285,7 @@ public class AppEngineCloudTest extends TestCase {
 		return outputStream;
 	}
 
-	private AppEngineCloud createAppEngineCloud(boolean addMissingIssue, HttpURLConnection... connections) {
+	private MyAppEngineCloud createAppEngineCloud(boolean addMissingIssue, HttpURLConnection... connections) {
 		SortedBugCollection bugs = new SortedBugCollection();
 		if (addMissingIssue) bugs.add(missingIssue);
 		bugs.add(foundIssue);
@@ -270,11 +297,7 @@ public class AppEngineCloudTest extends TestCase {
 				command.run();
 			}
 		};
-		return new AppEngineCloud(plugin, bugs, runImmediatelyExecutor) {
-			HttpURLConnection openConnection(String url) {
-				return mockConnections.next();
-			}
-		};
+		return new MyAppEngineCloud(plugin, bugs, runImmediatelyExecutor, mockConnections);
 	}
 
 	private void checkIssuesEqual(BugInstance issue, Issue uploadedIssue) {
@@ -286,8 +309,8 @@ public class AppEngineCloudTest extends TestCase {
 		assertEquals(issue.getPrimaryClass().getClassName(), uploadedIssue.getPrimaryClass());
 	}
 
-	private InputStream createLogInResponseInputStream(Issue foundIssue) {
-		LogInResponse issueList = LogInResponse.newBuilder()
+	private InputStream createFindIssuesResponseInputStream(Issue foundIssue) {
+		FindIssuesResponse issueList = FindIssuesResponse.newBuilder()
 				.addFoundIssues(foundIssue)
 				.build();
 		return new ByteArrayInputStream(issueList.toByteArray());
@@ -321,4 +344,20 @@ public class AppEngineCloudTest extends TestCase {
 						.build())
 				.build();
 	}
+
+    private static class MyAppEngineCloud extends AppEngineCloud {
+        public List<String> urlsRequested;
+        private final Iterator<HttpURLConnection> mockConnections;
+
+        public MyAppEngineCloud(CloudPlugin plugin, SortedBugCollection bugs, Executor runImmediatelyExecutor, Iterator<HttpURLConnection> mockConnections) {
+            super(plugin, bugs, runImmediatelyExecutor);
+            this.mockConnections = mockConnections;
+            urlsRequested = Lists.newArrayList();
+        }
+
+        HttpURLConnection openConnection(String url) {
+            urlsRequested.add(url);
+            return mockConnections.next();
+        }
+    }
 }

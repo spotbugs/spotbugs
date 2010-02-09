@@ -1,5 +1,31 @@
 package edu.umd.cs.findbugs.flybush;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
+import com.google.apphosting.api.DeadlineExceededException;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
+import org.datanucleus.store.query.QueryResult;
+
+import javax.jdo.JDOObjectNotFoundException;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.jdo.Transaction;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -16,34 +42,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.jdo.JDOObjectNotFoundException;
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-import javax.jdo.Transaction;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.datanucleus.store.query.QueryResult;
-
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
-import com.google.apphosting.api.DeadlineExceededException;
-
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetEvaluations;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 
 @SuppressWarnings("serial")
 public class FlybushServlet extends HttpServlet {
@@ -102,6 +100,9 @@ public class FlybushServlet extends HttpServlet {
 
 			} else if (uri.startsWith("/log-out/")) {
 				logOut(req, resp, pm);
+
+			} else if (uri.equals("/find-issues")) {
+				findIssues(req, resp, pm);
 
 			} else if (uri.equals("/upload-issues")) {
 				uploadIssues(req, resp, pm);
@@ -185,28 +186,26 @@ public class FlybushServlet extends HttpServlet {
 	private void logOut(HttpServletRequest req, HttpServletResponse resp,
 			PersistenceManager pm) throws IOException {
 		long id = Long.parseLong(req.getPathInfo().substring("/log-out/".length()));
-		Query query = pm.newQuery(
-				"select from " + SqlCloudSession.class.getName() +
-				" where randomID == " + id + "");
+		Query query = pm.newQuery("select from " + SqlCloudSession.class.getName()
+                                  + " where randomID == :idToDelete");
 		Transaction tx = pm.currentTransaction();
 		tx.begin();
 		long deleted = 0;
 		try {
-			deleted = query.deletePersistentAll();
+			deleted = query.deletePersistentAll(Long.toString(id));
 			query.execute();
 			tx.commit();
 		} finally {
 			if (tx.isActive()) tx.rollback();
 		}
-		if (deleted == 1) {
+		if (deleted >= 1) {
 			resp.setStatus(200);
 		} else {
 			setResponse(resp, 404, "no such session");
 		}
 	}
 
-	private void logIn(HttpServletRequest req, HttpServletResponse resp,
-			PersistenceManager pm) throws IOException {
+	private void logIn(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
 		LogIn loginMsg = LogIn.parseFrom(req.getInputStream());
 		SqlCloudSession session = lookupCloudSessionById(loginMsg.getSessionId(), pm);
 		if (session == null) {
@@ -231,13 +230,22 @@ public class FlybushServlet extends HttpServlet {
 				tx.rollback();
 			}
 		}
+		resp.setStatus(200);
+	}
 
-		LogInResponse.Builder issueProtos = LogInResponse.newBuilder();
+	private void findIssues(HttpServletRequest req, HttpServletResponse resp,
+			PersistenceManager pm) throws IOException {
+		FindIssues loginMsg = FindIssues.parseFrom(req.getInputStream());
+		SqlCloudSession session = lookupCloudSessionById(loginMsg.getSessionId(), pm);
+		if (session == null) {
+			setResponse(resp, 403, "not authenticated");
+			return;
+		}
+
+		FindIssuesResponse.Builder issueProtos = FindIssuesResponse.newBuilder();
 		List<String> decodedHashes = AppEngineProtoUtil.decodeHashes(loginMsg.getMyIssueHashesList());
-		System.out.println("Looking up " + decodedHashes);
 		for (DbIssue issue : lookupIssues(decodedHashes, pm)) {
 			Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
-			System.out.println("Found issue " + AppEngineProtoUtil.decodeHash(issueProto.getHash()) + " - " + issueProto.getBugPattern());
 			issueProtos.addFoundIssues(issueProto);
 		}
 		System.out.println();
@@ -297,7 +305,7 @@ public class FlybushServlet extends HttpServlet {
 		if (invocationKey != null) {
 			DbInvocation invocation;
 			try {
-				invocation = (DbInvocation) pm.getObjectById(DbInvocation.class, invocationKey);
+				invocation = pm.getObjectById(DbInvocation.class, invocationKey);
 			if (invocation != null) {
 				dbEvaluation.setInvocation(invocation.getKey());
 			}
@@ -396,9 +404,9 @@ public class FlybushServlet extends HttpServlet {
 	private SqlCloudSession lookupCloudSessionById(long id, PersistenceManager pm) {
 		Query query = pm.newQuery(
 					"select from " + SqlCloudSession.class.getName() +
-					" where randomID == " + id + " order by date desc range 0,1");
+					" where randomID == :randomIDquery");
 		try {
-			List<SqlCloudSession> sessions = (List<SqlCloudSession>) query.execute();
+			List<SqlCloudSession> sessions = (List<SqlCloudSession>) query.execute(Long.toString(id));
 			return sessions.isEmpty() ? null : sessions.get(0);
 		} finally {
 			query.closeAll();
@@ -471,8 +479,7 @@ public class FlybushServlet extends HttpServlet {
 	@SuppressWarnings("unchecked")
 	private List<DbIssue> lookupIssues(Iterable<String> hashes, PersistenceManager pm) {
 		Query query = pm.newQuery("select from " + DbIssue.class.getName() + " where :hashes.contains(hash)");
-		List<DbIssue> result = (List<DbIssue>) query.execute(hashes);
-		return result;
+        return (List<DbIssue>) query.execute(hashes);
 	}
 
 	@SuppressWarnings("unchecked")

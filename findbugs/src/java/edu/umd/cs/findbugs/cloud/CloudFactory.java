@@ -19,17 +19,13 @@
 
 package edu.umd.cs.findbugs.cloud;
 
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.SystemProperties;
+
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
-
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.PropertyBundle;
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.cloud.username.NameLookup;
-import edu.umd.cs.findbugs.cloud.username.PromptForNameLookup;
 
 
 /**
@@ -65,24 +61,20 @@ public class CloudFactory {
 	}
 	
 	public static void initializeCloud(BugCollection bc, Cloud cloud) {
-		try {
-			IGuiCallback callback = bc.getProject().getGuiCallback();
+        IGuiCallback callback = bc.getProject().getGuiCallback();
 
-			if (cloud.availableForInitialization()) {
-				if (DEBUG)
-					callback.showMessageDialog("attempting to initialize " + cloud.getClass().getName());
-				
-				if (cloud.initialize()) {
-					if (DEBUG)
-						callback.showMessageDialog("initialized " + cloud.getClass().getName());
-					
-					return;
-				}
-				callback.showMessageDialog("Unable to connect to " + cloud.getClass().getSimpleName());
-				
-			} 
-		} catch (Exception e) {
-	      assert true;
+        if (cloud.availableForInitialization()) {
+            if (DEBUG)
+                callback.showMessageDialog("attempting to initialize " + cloud.getClass().getName());
+
+            if (cloud.initialize()) {
+                if (DEBUG)
+                    callback.showMessageDialog("initialized " + cloud.getClass().getName());
+
+                return;
+            }
+            callback.showMessageDialog("Unable to connect to " + cloud.getClass().getSimpleName());
+
         }
 	}
 

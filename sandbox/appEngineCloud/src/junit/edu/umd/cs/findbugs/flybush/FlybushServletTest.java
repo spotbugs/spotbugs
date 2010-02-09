@@ -1,16 +1,31 @@
 package edu.umd.cs.findbugs.flybush;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHashes;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.dev.LocalDatastoreService;
+import com.google.appengine.api.users.User;
+import com.google.appengine.tools.development.ApiProxyLocalImpl;
+import com.google.apphosting.api.ApiProxy;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
+import junit.framework.TestCase;
 
+import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
+import javax.jdo.Query;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,34 +39,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.jdo.JDOHelper;
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
-import javax.jdo.Query;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import junit.framework.TestCase;
-
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.dev.LocalDatastoreService;
-import com.google.appengine.api.users.User;
-import com.google.appengine.tools.development.ApiProxyLocalImpl;
-import com.google.apphosting.api.ApiProxy;
-
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetEvaluations;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn.Builder;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHashes;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class FlybushServletTest extends TestCase {
 
@@ -122,9 +119,9 @@ public class FlybushServletTest extends TestCase {
 		// authenticate
     	createCloudSession(555);
 
-    	executePost("/log-in", createAuthenticatedLogInMsg2("ABC").build().toByteArray());
+    	executePost("/log-in", createAuthenticatedLogInMsg().build().toByteArray());
 		checkResponse(200);
-		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
+		FindIssuesResponse result = FindIssuesResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getFoundIssuesCount());
 
 		initServletAndMocks();
@@ -136,33 +133,29 @@ public class FlybushServletTest extends TestCase {
 		initServletAndMocks();
 
 		// make sure login no longer works
-		executePost("/log-in", createAuthenticatedLogInMsg2("ABC").build().toByteArray());
+		executePost("/log-in", createAuthenticatedLogInMsg().build().toByteArray());
 		checkResponse(403, "not authenticated");
 	}
 
-	private LogIn.Builder createAuthenticatedLogInMsg2(String... hashes) {
-		return createAuthenticatedLogInMsg().addAllMyIssueHashes(encodeHashes(Arrays.asList(hashes)));
-	}
-
-	public void testFindIssuesUnauthenticated() throws IOException {
-		executePost("/log-in", createAuthenticatedLogInMsg2("ABC").build().toByteArray());
+	public void testLogInUnauthenticated() throws IOException {
+		executePost("/log-in", createAuthenticatedLogInMsg().build().toByteArray());
 		checkResponse(403, "not authenticated");
 	}
 
-	public void testFindIssuesNoneFound() throws IOException {
+	public void testLogInNoneFound() throws IOException {
     	createCloudSession(555);
-		executePost("/log-in", createAuthenticatedLogInMsg2("ABC").build().toByteArray());
+		executePost("/log-in", createAuthenticatedLogInMsg().build().toByteArray());
 		checkResponse(200);
-		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
+		FindIssuesResponse result = FindIssuesResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getFoundIssuesCount());
 	}
 
 	@SuppressWarnings("unchecked")
-	public void testFindIssuesStoresInvocation() throws IOException {
+	public void testLogInStoresInvocation() throws IOException {
     	createCloudSession(555);
-		executePost("/log-in", createAuthenticatedLogInMsg2("ABC").build().toByteArray());
+		executePost("/log-in", createAuthenticatedLogInMsg().build().toByteArray());
 		checkResponse(200);
-		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
+		FindIssuesResponse result = FindIssuesResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getFoundIssuesCount());
 		Query query = persistenceManager.newQuery("select from " + DbInvocation.class.getName());
 		List<DbInvocation> invocations = (List<DbInvocation>) query.execute();
@@ -177,9 +170,9 @@ public class FlybushServletTest extends TestCase {
 		DbIssue foundIssue = createDbIssue("FAD1");
 		persistenceManager.makePersistent(foundIssue);
 
-		LogIn loginMsg = createAuthenticatedLogInMsg2("FAD1", "FAD2").build();
-		executePost("/log-in", loginMsg.toByteArray());
-		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
+		FindIssues findIssuesMsg = createAuthenticatedFindIssues("FAD1", "FAD2").build();
+		executePost("/find-issues", findIssuesMsg.toByteArray());
+		FindIssuesResponse result = FindIssuesResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getFoundIssuesCount());
 
 		checkIssuesEqualExceptTimestamps(foundIssue, result.getFoundIssues(0));
@@ -196,9 +189,9 @@ public class FlybushServletTest extends TestCase {
 		// exception when attempting to persist the eval with the issue.
 		persistenceManager.makePersistent(foundIssue);
 
-		LogIn hashesToFind = createAuthenticatedLogInMsg2("fad1", "fad2").build();
-		executePost("/log-in", hashesToFind.toByteArray());
-		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
+		FindIssues findIssues = createAuthenticatedFindIssues("fad1", "fad2").build();
+		executePost("/find-issues", findIssues.toByteArray());
+		FindIssuesResponse result = FindIssuesResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getFoundIssuesCount());
 
 		// check issues
@@ -210,7 +203,7 @@ public class FlybushServletTest extends TestCase {
 		checkEvaluationsEqual(eval, foundissueProto.getEvaluations(0));
 	}
 
-	public void testFindIssuesWithEvaluationsOnlyShowsLatestEvaluationFromEachPerson() throws Exception {
+	public void testFindIssuesOnlyShowsLatestEvaluationFromEachPerson() throws Exception {
     	createCloudSession(555);
 
 		DbIssue foundIssue = createDbIssue("fad1");
@@ -225,9 +218,9 @@ public class FlybushServletTest extends TestCase {
 		// exception when attempting to persist the eval with the issue.
 		persistenceManager.makePersistent(foundIssue);
 
-		LogIn hashesToFind = createAuthenticatedLogInMsg2("fad2", "fad1").build();
-		executePost("/log-in", hashesToFind.toByteArray());
-		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
+		FindIssues hashesToFind = createAuthenticatedFindIssues("fad2", "fad1").build();
+		executePost("/find-issues", hashesToFind.toByteArray());
+		FindIssuesResponse result = FindIssuesResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getFoundIssuesCount());
 
 		// check issues
@@ -376,8 +369,8 @@ public class FlybushServletTest extends TestCase {
 				.newQuery("select from " + DbIssue.class.getName() + " order by hash").execute();
 		assertEquals(2, dbIssues.size());
 
-		assertEquals("0000000000000000000000000000fad1", dbIssues.get(0).getHash());
-		assertEquals("0000000000000000000000000000fad2", dbIssues.get(1).getHash());
+		assertEquals("fad1", dbIssues.get(0).getHash());
+		assertEquals("fad2", dbIssues.get(1).getHash());
 	}
 
 	public void testUploadEvaluationNoAuth() throws IOException {
@@ -413,9 +406,16 @@ public class FlybushServletTest extends TestCase {
 
 	public void testUploadEvaluationWithFindIssuesFirst() throws IOException {
 		createCloudSession(555);
+
 		executePost("/log-in", LogIn.newBuilder()
 				.setSessionId(555)
-				.setAnalysisTimestamp(100)
+                .setAnalysisTimestamp(100)
+				.build().toByteArray());
+		checkResponse(200);
+		initServletAndMocks();
+
+		executePost("/find-issues", FindIssues.newBuilder()
+				.setSessionId(555)
 				.addMyIssueHashes(encodeHash("abc"))
 				.build().toByteArray());
 		checkResponse(200);
@@ -452,7 +452,7 @@ public class FlybushServletTest extends TestCase {
 				.setHash(encodeHash("faf"))
 				.setEvaluation(protoEval)
 				.build().toByteArray());
-		checkResponse(404, "no such issue 00000000000000000000000000000faf\n");
+		checkResponse(404, "no such issue faf\n");
 	}
 
 	public void testGetEvaluationsNotAuthenticated() throws IOException {
@@ -526,14 +526,14 @@ public class FlybushServletTest extends TestCase {
 		RecentEvaluations evals = RecentEvaluations.parseFrom(outputCollector.toByteArray());
 		assertEquals(2, evals.getIssuesCount());
 		Issue protoIssue1 = evals.getIssues(1);
-		assertEquals("0000000000000000000000000000fad1", decodeHash(protoIssue1.getHash()));
+		assertEquals("fad1", decodeHash(protoIssue1.getHash()));
 		assertEquals(3, protoIssue1.getEvaluationsCount());
 		assertEquals(100, protoIssue1.getEvaluations(0).getWhen());
 		assertEquals(200, protoIssue1.getEvaluations(1).getWhen());
 		assertEquals(300, protoIssue1.getEvaluations(2).getWhen());
 
 		Issue protoIssue2 = evals.getIssues(0);
-		assertEquals("0000000000000000000000000000fad2", decodeHash(protoIssue2.getHash()));
+		assertEquals("fad2", decodeHash(protoIssue2.getHash()));
 		assertEquals(3, protoIssue2.getEvaluationsCount());
 		assertEquals(2100, protoIssue2.getEvaluations(0).getWhen());
 		assertEquals(2200, protoIssue2.getEvaluations(1).getWhen());
@@ -566,6 +566,19 @@ public class FlybushServletTest extends TestCase {
 
 	// ========================= end of tests ================================
 
+
+	private FindIssues.Builder createAuthenticatedFindIssues(String... hashes) {
+		return createAuthenticatedFindIssues().addAllMyIssueHashes(encodeHashes(Arrays.asList(hashes)));
+	}
+
+	private FindIssues.Builder createAuthenticatedFindIssues() {
+		return FindIssues.newBuilder().setSessionId(555);
+	}
+
+	private LogIn.Builder createAuthenticatedLogInMsg() {
+		return LogIn.newBuilder().setSessionId(555).setAnalysisTimestamp(100);
+	}
+
 	private GetRecentEvaluations createRecentEvalsRequest(int timestamp) {
 		return GetRecentEvaluations.newBuilder()
 				.setSessionId(555)
@@ -579,10 +592,6 @@ public class FlybushServletTest extends TestCase {
                 .setComment("my comment")
                 .setWhen(100)
                 .build();
-	}
-
-	private Builder createAuthenticatedLogInMsg() {
-		return LogIn.newBuilder().setSessionId(555).setAnalysisTimestamp(100);
 	}
 
 	private void initServletAndMocks() throws IOException {
