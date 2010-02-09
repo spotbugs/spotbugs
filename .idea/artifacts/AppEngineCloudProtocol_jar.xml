@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="AppEngineCloudProtocol.jar">
+    <output-path>$PROJECT_DIR$/sandbox/appEngineCloud/war/WEB-INF/lib</output-path>
+    <root id="archive" name="AppEngineCloudProtocol.jar">
+      <element id="module-output" name="AppEngineCloudProtocol" />
+    </root>
+  </artifact>
+</component>
