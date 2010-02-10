@@ -137,6 +137,46 @@ public class FlybushServletTest extends TestCase {
 		checkResponse(403, "not authenticated");
 	}
 
+	public void testClearAllData() throws IOException {
+    	createCloudSession(555);
+
+		DbIssue foundIssue = createDbIssue("fad1");
+		DbEvaluation eval1 = createEvaluation(foundIssue, "first", 100);
+		DbEvaluation eval2 = createEvaluation(foundIssue, "second", 200);
+		DbEvaluation eval3 = createEvaluation(foundIssue, "first", 300);
+		foundIssue.addEvaluation(eval1);
+		foundIssue.addEvaluation(eval2);
+		foundIssue.addEvaluation(eval3);
+
+		// apparently the evaluation is automatically persisted. throws
+		// exception when attempting to persist the eval with the issue.
+		persistenceManager.makePersistent(foundIssue);
+
+    	executePost("/clear-all-data", new byte[0]);
+		checkResponse(200);
+
+        try {
+            assertEquals(0, ((List<DbIssue>) persistenceManager.newQuery("select from " + DbIssue.class).execute()).size());
+            fail();
+        } catch (Exception e) {
+        }
+        try {
+            assertEquals(0, ((List<DbEvaluation>) persistenceManager.newQuery("select from " + DbEvaluation.class).execute()).size());
+            fail();
+        } catch (Exception e) {
+        }
+        try {
+            assertEquals(0, ((List<DbInvocation>) persistenceManager.newQuery("select from " + DbInvocation.class).execute()).size());
+            fail();
+        } catch (Exception e) {
+        }
+        try {
+            assertEquals(0, ((List<SqlCloudSession>) persistenceManager.newQuery("select from " + SqlCloudSession.class).execute()).size());
+            fail();
+        } catch (Exception e) {
+        }
+	}
+
 	public void testLogInUnauthenticated() throws IOException {
 		executePost("/log-in", createAuthenticatedLogInMsg().build().toByteArray());
 		checkResponse(403, "not authenticated");
@@ -164,7 +204,7 @@ public class FlybushServletTest extends TestCase {
 		query.closeAll();
 	}
 
-	public void testFindIssuesSomeFound() throws IOException {
+	public void testFindIssuesOneFoundNoEvaluations() throws IOException {
     	createCloudSession(555);
 
 		DbIssue foundIssue = createDbIssue("FAD1");
@@ -173,12 +213,22 @@ public class FlybushServletTest extends TestCase {
 		FindIssues findIssuesMsg = createAuthenticatedFindIssues("FAD1", "FAD2").build();
 		executePost("/find-issues", findIssuesMsg.toByteArray());
 		FindIssuesResponse result = FindIssuesResponse.parseFrom(outputCollector.toByteArray());
-		assertEquals(1, result.getFoundIssuesCount());
+		assertEquals(2, result.getFoundIssuesCount());
 
-		checkIssuesEqualExceptTimestamps(foundIssue, result.getFoundIssues(0));
-	}
+        Issue protoIssue0 = result.getFoundIssues(0);
+        assertEquals(100, protoIssue0.getFirstSeen());
+        assertEquals(200, protoIssue0.getLastSeen());
+        assertEquals(0, protoIssue0.getEvaluationsCount());
+        assertFalse(protoIssue0.hasBugPattern());
+        assertFalse(protoIssue0.hasHash());
+        assertFalse(protoIssue0.hasPriority());
+        assertFalse(protoIssue0.hasPrimaryClass());
 
-	public void testFindIssuesWithEvaluations() throws IOException {
+        Issue protoIssue1 = result.getFoundIssues(1);
+        checkAllFieldsAreBlank(protoIssue1);
+    }
+
+    public void testFindIssuesWithEvaluations() throws IOException {
     	createCloudSession(555);
 
 		DbIssue foundIssue = createDbIssue("fad2");
@@ -192,11 +242,14 @@ public class FlybushServletTest extends TestCase {
 		FindIssues findIssues = createAuthenticatedFindIssues("fad1", "fad2").build();
 		executePost("/find-issues", findIssues.toByteArray());
 		FindIssuesResponse result = FindIssuesResponse.parseFrom(outputCollector.toByteArray());
-		assertEquals(1, result.getFoundIssuesCount());
+		assertEquals(2, result.getFoundIssuesCount());
 
 		// check issues
-		Issue foundissueProto = result.getFoundIssues(0);
-		checkIssuesEqualExceptTimestamps(foundIssue, foundissueProto);
+        checkAllFieldsAreBlank(result.getFoundIssues(0));
+
+		Issue foundissueProto = result.getFoundIssues(1);
+        assertEquals(100, foundissueProto.getFirstSeen());
+        assertEquals(200, foundissueProto.getLastSeen());
 
 		// check evaluations
 		assertEquals(1, foundissueProto.getEvaluationsCount());
@@ -221,16 +274,19 @@ public class FlybushServletTest extends TestCase {
 		FindIssues hashesToFind = createAuthenticatedFindIssues("fad2", "fad1").build();
 		executePost("/find-issues", hashesToFind.toByteArray());
 		FindIssuesResponse result = FindIssuesResponse.parseFrom(outputCollector.toByteArray());
-		assertEquals(1, result.getFoundIssuesCount());
+		assertEquals(2, result.getFoundIssuesCount());
 
 		// check issues
-		Issue foundissueProto = result.getFoundIssues(0);
-		checkIssuesEqualExceptTimestamps(foundIssue, foundissueProto);
+        checkAllFieldsAreBlank(result.getFoundIssues(0));
+        
+		Issue foundIssueProto = result.getFoundIssues(1);
+		assertEquals(100, foundIssueProto.getFirstSeen());
+		assertEquals(200, foundIssueProto.getLastSeen());
 
 		// check evaluations
-		assertEquals(2, foundissueProto.getEvaluationsCount());
-		checkEvaluationsEqual(eval2, foundissueProto.getEvaluations(0));
-		checkEvaluationsEqual(eval3, foundissueProto.getEvaluations(1));
+		assertEquals(2, foundIssueProto.getEvaluationsCount());
+		checkEvaluationsEqual(eval2, foundIssueProto.getEvaluations(0));
+		checkEvaluationsEqual(eval3, foundIssueProto.getEvaluations(1));
 	}
 
 	public void testGetRecentEvaluationsNoAuth() throws IOException {
@@ -566,6 +622,15 @@ public class FlybushServletTest extends TestCase {
 
 	// ========================= end of tests ================================
 
+    private void checkAllFieldsAreBlank(Issue protoIssue1) {
+        assertFalse(protoIssue1.hasFirstSeen());
+        assertFalse(protoIssue1.hasLastSeen());
+        assertEquals(0, protoIssue1.getEvaluationsCount());
+        assertFalse(protoIssue1.hasBugPattern());
+        assertFalse(protoIssue1.hasHash());
+        assertFalse(protoIssue1.hasPriority());
+        assertFalse(protoIssue1.hasPrimaryClass());
+    }
 
 	private FindIssues.Builder createAuthenticatedFindIssues(String... hashes) {
 		return createAuthenticatedFindIssues().addAllMyIssueHashes(encodeHashes(Arrays.asList(hashes)));

@@ -1,5 +1,8 @@
 package edu.umd.cs.findbugs.flybush;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
@@ -12,6 +15,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesRespo
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.Builder;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
@@ -59,11 +63,6 @@ public class FlybushServlet extends HttpServlet {
 		setPersistenceManager(pm);
 	}
 
-	/** for testing */
-	void setPersistenceManager(PersistenceManager persistenceManager) {
-		this.persistenceManager = persistenceManager;
-	}
-
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 
@@ -93,13 +92,19 @@ public class FlybushServlet extends HttpServlet {
 			throws IOException {
 		String uri = req.getPathInfo();
 
+        long start = System.currentTimeMillis();
 		PersistenceManager pm = getPersistenceManager();
+        LOGGER.warning("loading PM took " + (System.currentTimeMillis() - start) + "ms");
+
 		try {
 			if (uri.equals("/log-in")) {
 				logIn(req, resp, pm);
 
 			} else if (uri.startsWith("/log-out/")) {
 				logOut(req, resp, pm);
+
+            } else if (uri.equals("/clear-all-data")) {
+                clearAllData(resp, pm);
 
 			} else if (uri.equals("/find-issues")) {
 				findIssues(req, resp, pm);
@@ -122,17 +127,6 @@ public class FlybushServlet extends HttpServlet {
 		} finally {
 			pm.close();
 		}
-	}
-
-	private void show404(HttpServletResponse resp) throws IOException {
-		setResponse(resp, 404, "Not Found");
-	}
-
-	private void setResponse(HttpServletResponse resp, int statusCode, String textResponse)
-			throws IOException {
-		resp.setStatus(statusCode);
-		resp.setContentType("text/plain");
-		resp.getWriter().println(textResponse);
 	}
 
 	private void browserAuth(HttpServletRequest req, HttpServletResponse resp,
@@ -233,27 +227,67 @@ public class FlybushServlet extends HttpServlet {
 		resp.setStatus(200);
 	}
 
+	private void clearAllData(HttpServletResponse resp, PersistenceManager pm) throws IOException {
+        int deleted = 0;
+        try {
+            DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+            for (Entity entity : ds.prepare(new com.google.appengine.api.datastore.Query().setKeysOnly()).asIterable()) {
+                ds.delete(entity.getKey());
+                deleted++;
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Could not clear all data - only " + deleted + " entities", e);
+        }
+        setResponse(resp, 200, "Deleted " + deleted + " entities");
+    }
+	private void clearAllData2(HttpServletResponse resp, PersistenceManager pm) throws IOException {
+        long issues = pm.newQuery("select from " + DbIssue.class.getName()).deletePersistentAll();
+        long evaluations = pm.newQuery("select from " + DbEvaluation.class.getName()).deletePersistentAll();
+        long invocations = pm.newQuery("select from " + DbInvocation.class.getName()).deletePersistentAll();
+        long sessions = pm.newQuery("select from " + SqlCloudSession.class.getName()).deletePersistentAll();
+
+        setResponse(resp, 200, String.format("Deleted %d issues, %d evaluations, %d invocations, %d sessions",
+                                                 issues, evaluations, invocations, sessions));
+    }
+
 	private void findIssues(HttpServletRequest req, HttpServletResponse resp,
 			PersistenceManager pm) throws IOException {
+        long start = System.currentTimeMillis();
 		FindIssues loginMsg = FindIssues.parseFrom(req.getInputStream());
-		SqlCloudSession session = lookupCloudSessionById(loginMsg.getSessionId(), pm);
-		if (session == null) {
-			setResponse(resp, 403, "not authenticated");
-			return;
-		}
+        LOGGER.warning("parsing took " + (System.currentTimeMillis() - start) + "ms");
+        start = System.currentTimeMillis();
+        long sessionId = loginMsg.getSessionId();
+        if (isAuthenticated(resp, pm, sessionId))
+            return;
+        LOGGER.warning("authenticating took " + (System.currentTimeMillis() - start) + "ms");
+        start = System.currentTimeMillis();
 
+        List<String> hashes = AppEngineProtoUtil.decodeHashes(loginMsg.getMyIssueHashesList());
+        Map<String, DbIssue> issues = lookupTimesAndEvaluations(pm, hashes);
+        LOGGER.warning("looking up took " + (System.currentTimeMillis() - start) + "ms");
+        start = System.currentTimeMillis();
 		FindIssuesResponse.Builder issueProtos = FindIssuesResponse.newBuilder();
-		List<String> decodedHashes = AppEngineProtoUtil.decodeHashes(loginMsg.getMyIssueHashesList());
-		for (DbIssue issue : lookupIssues(decodedHashes, pm)) {
-			Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
-			issueProtos.addFoundIssues(issueProto);
-		}
-		System.out.println();
+        for (String hash : hashes) {
+            DbIssue issue = issues.get(hash);
+            Issue.Builder issueBuilder = Issue.newBuilder();
+            if (issue != null) {
+                issueBuilder.setFirstSeen(issue.getFirstSeen())
+                        .setLastSeen(issue.getLastSeen());
+
+                addEvaluations(issueBuilder, issue.getEvaluations());
+            }
+
+            issueProtos.addFoundIssues(issueBuilder.build());
+        }
+        
+        LOGGER.warning("building response took " + (System.currentTimeMillis() - start) + "ms");
+        start = System.currentTimeMillis();
 		resp.setStatus(200);
 		issueProtos.build().writeTo(resp.getOutputStream());
+        LOGGER.warning("sending took " + (System.currentTimeMillis() - start) + "ms");
 	}
 
-	private void uploadIssues(HttpServletRequest req, HttpServletResponse resp,
+    private void uploadIssues(HttpServletRequest req, HttpServletResponse resp,
 			PersistenceManager pm) throws IOException {
 		UploadIssues issues = UploadIssues.parseFrom(req.getInputStream());
 		SqlCloudSession session = lookupCloudSessionById(issues.getSessionId(), pm);
@@ -265,7 +299,7 @@ public class FlybushServlet extends HttpServlet {
 		for (Issue issue : issues.getNewIssuesList()) {
 			hashes.add(AppEngineProtoUtil.decodeHash(issue.getHash()));
 		}
-		HashSet<String> existingIssueHashes = lookupHashes(hashes, pm);
+		Set<String> existingIssueHashes = lookupHashes(hashes, pm);
 		for (Issue issue : issues.getNewIssuesList()) {
 			if (!existingIssueHashes.contains(AppEngineProtoUtil.decodeHash(issue.getHash()))) {
 				DbIssue dbIssue = new DbIssue();
@@ -347,11 +381,7 @@ public class FlybushServlet extends HttpServlet {
 	private void getRecentEvaluations(HttpServletRequest req,
 			HttpServletResponse resp, PersistenceManager pm) throws IOException {
 		GetRecentEvaluations recentEvalsRequest = GetRecentEvaluations.parseFrom(req.getInputStream());
-		SqlCloudSession sqlCloudSession = lookupCloudSessionById(recentEvalsRequest.getSessionId(), pm);
-		if (sqlCloudSession == null) {
-			setResponse(resp, 403, "not authenticated");
-			return;
-		}
+        if (isAuthenticated(resp, pm, recentEvalsRequest.getSessionId())) return;
 		long startTime = recentEvalsRequest.getTimestamp();
 		Query query = pm.newQuery(
 				"select from " + DbEvaluation.class.getName()
@@ -373,12 +403,10 @@ public class FlybushServlet extends HttpServlet {
 
 	private void getEvaluations(HttpServletRequest req,
 			HttpServletResponse resp, PersistenceManager pm) throws IOException {
+
 		GetEvaluations evalsRequest = GetEvaluations.parseFrom(req.getInputStream());
-		SqlCloudSession sqlCloudSession = lookupCloudSessionById(evalsRequest.getSessionId(), pm);
-		if (sqlCloudSession == null) {
-			setResponse(resp, 403, "not authenticated");
-			return;
-		}
+        if (isAuthenticated(resp, pm, evalsRequest.getSessionId()))
+            return;
 
 		RecentEvaluations.Builder response = RecentEvaluations.newBuilder();
 		for (DbIssue issue : lookupIssues(AppEngineProtoUtil.decodeHashes(evalsRequest.getHashesList()), pm)) {
@@ -391,6 +419,33 @@ public class FlybushServlet extends HttpServlet {
 		response.build().writeTo(output);
 		output.close();
 	}
+
+    // ========================= end of request handling ================================
+
+	/** for testing */
+	void setPersistenceManager(PersistenceManager persistenceManager) {
+		this.persistenceManager = persistenceManager;
+	}
+
+	private void show404(HttpServletResponse resp) throws IOException {
+		setResponse(resp, 404, "Not Found");
+	}
+
+	private void setResponse(HttpServletResponse resp, int statusCode, String textResponse)
+			throws IOException {
+		resp.setStatus(statusCode);
+		resp.setContentType("text/plain");
+		resp.getWriter().println(textResponse);
+	}
+
+    private boolean isAuthenticated(HttpServletResponse resp, PersistenceManager pm, long sessionId) throws IOException {
+        SqlCloudSession session = lookupCloudSessionById(sessionId, pm);
+        if (session == null) {
+            setResponse(resp, 403, "not authenticated");
+            return true;
+        }
+        return false;
+    }
 
 	private DbEvaluation createDbEvaluation(Evaluation protoEvaluation) {
 		DbEvaluation dbEvaluation = new DbEvaluation();
@@ -435,28 +490,36 @@ public class FlybushServlet extends HttpServlet {
 				.setFirstSeen(issue.getFirstSeen())
 				.setLastSeen(issue.getLastSeen())
 				.setPrimaryClass(issue.getPrimaryClass());
-		LinkedList<DbEvaluation> evaluations = new LinkedList<DbEvaluation>();
-		Set<String> seenUsernames = new HashSet<String>();
-		List<DbEvaluation> evaluationsOrig = new ArrayList<DbEvaluation>(evaluationsOrig2);
-		ListIterator<DbEvaluation> it = evaluationsOrig.listIterator(evaluationsOrig.size());
-		while (it.hasPrevious()) {
-			DbEvaluation dbEvaluation = it.previous();
-			boolean userIsNew = seenUsernames.add(dbEvaluation.getWho());
-			if (userIsNew) {
-				evaluations.add(0, dbEvaluation);
-			}
-		}
-		for (DbEvaluation dbEval : evaluations) {
+        addEvaluations(issueBuilder, evaluationsOrig2);
+        return issueBuilder.build();
+	}
+
+    private void addEvaluations(Builder issueBuilder, SortedSet<DbEvaluation> evaluationsOrig2) {
+        for (DbEvaluation dbEval : sortAndFilterEvaluations(evaluationsOrig2)) {
 			issueBuilder.addEvaluations(Evaluation.newBuilder()
 					.setComment(dbEval.getComment())
 					.setDesignation(dbEval.getDesignation())
 					.setWhen(dbEval.getWhen())
 					.setWho(dbEval.getWho()).build());
 		}
-		return issueBuilder.build();
-	}
+    }
 
-	private Map<String, SortedSet<DbEvaluation>> groupUniqueEvaluationsByIssue(SortedSet<DbEvaluation> evaluations) {
+    private static LinkedList<DbEvaluation> sortAndFilterEvaluations(SortedSet<DbEvaluation> origEvaluations) {
+        Set<String> seenUsernames = new HashSet<String>();
+        List<DbEvaluation> evaluationsList = new ArrayList<DbEvaluation>(origEvaluations);
+        int numEvaluations = evaluationsList.size();
+        LinkedList<DbEvaluation> result = new LinkedList<DbEvaluation>();
+        for (ListIterator<DbEvaluation> it = evaluationsList.listIterator(numEvaluations); it.hasPrevious();) {
+            DbEvaluation dbEvaluation = it.previous();
+            boolean userIsNew = seenUsernames.add(dbEvaluation.getWho());
+            if (userIsNew) {
+                result.add(0, dbEvaluation);
+            }
+        }
+        return result;
+    }
+
+    private Map<String, SortedSet<DbEvaluation>> groupUniqueEvaluationsByIssue(SortedSet<DbEvaluation> evaluations) {
 		Map<String,SortedSet<DbEvaluation>> issues = new HashMap<String, SortedSet<DbEvaluation>>();
 		for (DbEvaluation dbEvaluation : evaluations) {
 			String issueHash = dbEvaluation.getIssue().getHash();
@@ -482,8 +545,26 @@ public class FlybushServlet extends HttpServlet {
         return (List<DbIssue>) query.execute(hashes);
 	}
 
+    @SuppressWarnings("unchecked")
+    private Map<String, DbIssue> lookupTimesAndEvaluations(PersistenceManager pm, List<String> hashes) {
+        Query query = pm.newQuery("select hash, firstSeen, lastSeen, evaluations from " + DbIssue.class.getName()
+                                  + " where :hashes.contains(hash)");
+        List<Object[]> results = (List<Object[]>) query.execute(hashes);
+        Map<String,DbIssue> map = new HashMap<String, DbIssue>();
+        for (Object[] result : results) {
+            DbIssue issue = new DbIssue();
+            issue.setHash((String) result[0]);
+            issue.setFirstSeen((Long) result[1]);
+            issue.setLastSeen((Long) result[2]);
+            issue.setEvaluations((SortedSet<DbEvaluation>) result[3]);
+            map.put(issue.getHash(), issue);
+		}
+        query.closeAll();
+        return map;
+    }
+
 	@SuppressWarnings("unchecked")
-	private HashSet<String> lookupHashes(Iterable<String> hashes, PersistenceManager pm) {
+	private Set<String> lookupHashes(Iterable<String> hashes, PersistenceManager pm) {
 		Query query = pm.newQuery("select from " + DbIssue.class.getName()
 				+ " where :hashes.contains(hash)");
 		query.setResult("hash");

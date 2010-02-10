@@ -43,10 +43,12 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
+
 public class AppEngineCloud extends AbstractCloud {
 
-	private static final int BUG_UPLOAD_PARTITION_SIZE = 20;
-	private static final int HASH_CHECK_PARTITION_SIZE = 50;
+	private static final int BUG_UPLOAD_PARTITION_SIZE = 10;
+	private static final int HASH_CHECK_PARTITION_SIZE = 25;
 	private static final int EVALUATION_CHECK_SECS = 5*60;
 
 	private static final Logger LOGGER = Logger.getLogger(AppEngineCloud.class.getName());
@@ -209,15 +211,21 @@ public class AppEngineCloud extends AbstractCloud {
                 setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud..."
 						+ (i * 100 / numBugs) + "%");
 				List<String> hashesToCheck = allHashes.subList(i, Math.min(i+HASH_CHECK_PARTITION_SIZE, numBugs));
-				FindIssuesResponse response = submitHashes(hashesToCheck);
-				System.out.println("Checking " + hashesToCheck);
-				System.out.println("Found " + response.getFoundIssuesCount());
-				for (Issue issue : response.getFoundIssuesList()) {
-					storeProtoIssue(issue);
+                System.out.println("Checking " + hashesToCheck);
+                FindIssuesResponse response = submitHashes(hashesToCheck);
+                System.out.println("response was " + response.getSerializedSize() + " bytes");
+                for (int j = 0; j < hashesToCheck.size(); j++) {
+                    String hash = hashesToCheck.get(j);
+                    Issue issue = response.getFoundIssues(j);
+                    if (!issue.hasFirstSeen() && !issue.hasLastSeen() && issue.getEvaluationsCount() == 0) {
+                        // this means the issue was not found!
+                        continue;
+                    }
+                    storeProtoIssue(hash, issue);
 
 					BugInstance bugInstance;
-					String hash = AppEngineProtoUtil.decodeHash(issue.getHash());
-					if (FORCE_UPLOAD_ALL_ISSUES) // don't remove anything from bugsByHash
+					if (FORCE_UPLOAD_ALL_ISSUES) //
+                        // don't remove anything from bugsByHash so everything gets uploaded
 						bugInstance = bugsByHash.get(hash);
 					else
 						bugInstance = bugsByHash.remove(hash);
@@ -301,12 +309,12 @@ public class AppEngineCloud extends AbstractCloud {
 		else
 			setStatusMsg("");
 		for (Issue issue : evals.getIssuesList()) {
-			Issue existingIssue = issuesByHash.get(AppEngineProtoUtil.decodeHash(issue.getHash()));
+			Issue existingIssue = issuesByHash.get(decodeHash(issue.getHash()));
 			if (existingIssue != null) {
 				Issue newIssue = mergeIssues(existingIssue, issue);
 				assert newIssue.getHash().equals(issue.getHash());
-				storeProtoIssue(newIssue);
-				BugInstance bugInstance = getBugByHash(AppEngineProtoUtil.decodeHash(issue.getHash()));
+				storeProtoIssue(decodeHash(issue.getHash()), newIssue);
+				BugInstance bugInstance = getBugByHash(decodeHash(issue.getHash()));
 				if (bugInstance != null) {
 					updateBugInstanceAndNotify(bugInstance);
 				}
@@ -340,13 +348,13 @@ public class AppEngineCloud extends AbstractCloud {
 								  e.getComment(), e.getWho());
 	}
 
-	private void storeProtoIssue(Issue newIssue) {
+	private void storeProtoIssue(String hash, Issue newIssue) {
 		for (Evaluation eval : newIssue.getEvaluationsList()) {
 			if (eval.getWhen() > mostRecentEvaluationMillis) {
 				mostRecentEvaluationMillis = eval.getWhen();
 			}
 		}
-		issuesByHash.put(AppEngineProtoUtil.decodeHash(newIssue.getHash()), newIssue);
+		issuesByHash.put(hash, newIssue);
 	}
 
 	private FindIssuesResponse submitHashes(List<String> bugsByHash)
