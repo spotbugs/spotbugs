@@ -48,7 +48,7 @@ import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.de
 public class AppEngineCloud extends AbstractCloud {
 
 	private static final int BUG_UPLOAD_PARTITION_SIZE = 10;
-	private static final int HASH_CHECK_PARTITION_SIZE = 25;
+	private static final int HASH_CHECK_PARTITION_SIZE = 20;
 	private static final int EVALUATION_CHECK_SECS = 5*60;
 
 	private static final Logger LOGGER = Logger.getLogger(AppEngineCloud.class.getName());
@@ -189,67 +189,15 @@ public class AppEngineCloud extends AbstractCloud {
 		// send all instance hashes to server
 		try {
 
-            HttpURLConnection conn = openConnection("/log-in");
-            conn.setDoOutput(true);
-            conn.connect();
+            logIntoCloud();
 
-            OutputStream stream = conn.getOutputStream();
-            LogIn logIn = LogIn.newBuilder()
-                    .setSessionId(sessionId)
-                    .setAnalysisTimestamp(bugCollection.getAnalysisTimestamp())
-                    .build();
-            logIn.writeTo(stream);
-            stream.close();
+            checkHashes(allHashes, bugsByHash);
 
-            int responseCode = conn.getResponseCode();
-            if (responseCode != 200) {
-                throw new IllegalStateException("Could not log into cloud - error " 
-                                                + responseCode + conn.getResponseMessage());
-            }
-
-            for (int i = 0; i < numBugs; i += HASH_CHECK_PARTITION_SIZE) {
-                setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud..."
-						+ (i * 100 / numBugs) + "%");
-				List<String> hashesToCheck = allHashes.subList(i, Math.min(i+HASH_CHECK_PARTITION_SIZE, numBugs));
-                System.out.println("Checking " + hashesToCheck);
-                FindIssuesResponse response = submitHashes(hashesToCheck);
-                System.out.println("response was " + response.getSerializedSize() + " bytes");
-                for (int j = 0; j < hashesToCheck.size(); j++) {
-                    String hash = hashesToCheck.get(j);
-                    Issue issue = response.getFoundIssues(j);
-                    if (!issue.hasFirstSeen() && !issue.hasLastSeen() && issue.getEvaluationsCount() == 0) {
-                        // this means the issue was not found!
-                        continue;
-                    }
-                    storeProtoIssue(hash, issue);
-
-					BugInstance bugInstance;
-					if (FORCE_UPLOAD_ALL_ISSUES) //
-                        // don't remove anything from bugsByHash so everything gets uploaded
-						bugInstance = bugsByHash.get(hash);
-					else
-						bugInstance = bugsByHash.remove(hash);
-
-					if (bugInstance != null) {
-						updateBugInstanceAndNotify(bugInstance);
-					} else {
-						LOGGER.warning("Server sent back issue that we don't know about: " + hash + " - " + issue);
-					}
-				}
-			}
-			if (!bugsByHash.values().isEmpty()) {
-				final List<BugInstance> newBugs = new ArrayList<BugInstance>(bugsByHash.values());
+            if (!bugsByHash.values().isEmpty()) {
+				List<BugInstance> newBugs = new ArrayList<BugInstance>(bugsByHash.values());
 				System.out.println("Server didn't know " + bugsByHash);
-				backgroundExecutor.execute(new Runnable() {
-					public void run() {
-						try {
-							uploadNewBugs(newBugs);
-						} catch (IOException e) {
-							LOGGER.log(Level.WARNING, "Error while uploading new bugs", e);
-						}
-					}
-				});
-			} else {
+                uploadBugsInBackground(newBugs);
+            } else {
 				setStatusMsg("All " + numBugs + " bugs are already stored in the FindBugs Cloud");
 			}
 
@@ -258,7 +206,73 @@ public class AppEngineCloud extends AbstractCloud {
 		}
 	}
 
-	private void uploadNewBugs(List<BugInstance> newBugs) throws IOException {
+    private void uploadBugsInBackground(final List<BugInstance> newBugs) {
+        backgroundExecutor.execute(new Runnable() {
+            public void run() {
+                try {
+                    uploadNewBugs(newBugs);
+                } catch (IOException e) {
+                    LOGGER.log(Level.WARNING, "Error while uploading new bugs", e);
+                }
+            }
+        });
+    }
+
+    private void logIntoCloud() throws IOException {
+        HttpURLConnection conn = openConnection("/log-in");
+        conn.setDoOutput(true);
+        conn.connect();
+
+        OutputStream stream = conn.getOutputStream();
+        LogIn logIn = LogIn.newBuilder()
+                .setSessionId(sessionId)
+                .setAnalysisTimestamp(bugCollection.getAnalysisTimestamp())
+                .build();
+        logIn.writeTo(stream);
+        stream.close();
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 200) {
+            throw new IllegalStateException("Could not log into cloud - error "
+                                            + responseCode + conn.getResponseMessage());
+        }
+    }
+
+    private void checkHashes(List<String> hashes, Map<String, BugInstance> bugsByHash) throws IOException {
+        int numBugs = hashes.size();
+        for (int i = 0; i < numBugs; i += HASH_CHECK_PARTITION_SIZE) {
+            setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud..."
+                    + (i * 100 / numBugs) + "%");
+            List<String> hashesToCheck = hashes.subList(i, Math.min(i+HASH_CHECK_PARTITION_SIZE, numBugs));
+            System.out.println("Checking " + hashesToCheck);
+            FindIssuesResponse response = submitHashes(hashesToCheck);
+            System.out.println("response was " + response.getSerializedSize() + " bytes");
+            for (int j = 0; j < hashesToCheck.size(); j++) {
+                String hash = hashesToCheck.get(j);
+                Issue issue = response.getFoundIssues(j);
+                if (!issue.hasFirstSeen() && !issue.hasLastSeen() && issue.getEvaluationsCount() == 0) {
+                    // this means the issue was not found!
+                    continue;
+                }
+                storeProtoIssue(hash, issue);
+
+                BugInstance bugInstance;
+                if (FORCE_UPLOAD_ALL_ISSUES) //
+                    // don't remove anything from bugsByHash so everything gets uploaded
+                    bugInstance = bugsByHash.get(hash);
+                else
+                    bugInstance = bugsByHash.remove(hash);
+
+                if (bugInstance != null) {
+                    updateBugInstanceAndNotify(bugInstance);
+                } else {
+                    LOGGER.warning("Server sent back issue that we don't know about: " + hash + " - " + issue);
+                }
+            }
+        }
+    }
+
+    private void uploadNewBugs(List<BugInstance> newBugs) throws IOException {
 		try {
 			for (int i = 0; i < newBugs.size(); i += BUG_UPLOAD_PARTITION_SIZE) {
 				setStatusMsg("Uploading " + newBugs.size()
@@ -509,7 +523,7 @@ public class AppEngineCloud extends AbstractCloud {
 				int responseCode = conn.getResponseCode();
 				if (responseCode != 200) {
 					throw new IllegalStateException(
-							"server returned error code "
+							"server returned error code when opening " + url + ": "
 									+ conn.getResponseCode() + " "
 									+ conn.getResponseMessage());
 				}

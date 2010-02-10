@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -104,7 +105,7 @@ public class FlybushServlet extends HttpServlet {
 				logOut(req, resp, pm);
 
             } else if (uri.equals("/clear-all-data")) {
-                clearAllData(resp, pm);
+                clearAllData(resp);
 
 			} else if (uri.equals("/find-issues")) {
 				findIssues(req, resp, pm);
@@ -227,7 +228,7 @@ public class FlybushServlet extends HttpServlet {
 		resp.setStatus(200);
 	}
 
-	private void clearAllData(HttpServletResponse resp, PersistenceManager pm) throws IOException {
+	private void clearAllData(HttpServletResponse resp) throws IOException {
         int deleted = 0;
         try {
             DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
@@ -239,15 +240,6 @@ public class FlybushServlet extends HttpServlet {
             LOGGER.log(Level.SEVERE, "Could not clear all data - only " + deleted + " entities", e);
         }
         setResponse(resp, 200, "Deleted " + deleted + " entities");
-    }
-	private void clearAllData2(HttpServletResponse resp, PersistenceManager pm) throws IOException {
-        long issues = pm.newQuery("select from " + DbIssue.class.getName()).deletePersistentAll();
-        long evaluations = pm.newQuery("select from " + DbEvaluation.class.getName()).deletePersistentAll();
-        long invocations = pm.newQuery("select from " + DbInvocation.class.getName()).deletePersistentAll();
-        long sessions = pm.newQuery("select from " + SqlCloudSession.class.getName()).deletePersistentAll();
-
-        setResponse(resp, 200, String.format("Deleted %d issues, %d evaluations, %d invocations, %d sessions",
-                                                 issues, evaluations, invocations, sessions));
     }
 
 	private void findIssues(HttpServletRequest req, HttpServletResponse resp,
@@ -268,16 +260,24 @@ public class FlybushServlet extends HttpServlet {
         start = System.currentTimeMillis();
 		FindIssuesResponse.Builder issueProtos = FindIssuesResponse.newBuilder();
         for (String hash : hashes) {
+            long istart = System.currentTimeMillis();
             DbIssue issue = issues.get(hash);
             Issue.Builder issueBuilder = Issue.newBuilder();
             if (issue != null) {
                 issueBuilder.setFirstSeen(issue.getFirstSeen())
                         .setLastSeen(issue.getLastSeen());
 
-                addEvaluations(issueBuilder, issue.getEvaluations());
+                long estart = System.currentTimeMillis();
+                LOGGER.warning("* * getting evaluations took " + (System.currentTimeMillis() - estart) + "ms");
+                estart = System.currentTimeMillis();
+                if (issue.hasEvaluations()) {
+                    addEvaluations(issueBuilder, issue.getEvaluations());
+                }
+                LOGGER.warning("* *  processing evaluations took " + (System.currentTimeMillis() - estart) + "ms");
             }
 
             issueProtos.addFoundIssues(issueBuilder.build());
+            LOGGER.warning("* building issue took " + (System.currentTimeMillis() - istart) + "ms");
         }
         
         LOGGER.warning("building response took " + (System.currentTimeMillis() - start) + "ms");
@@ -460,29 +460,21 @@ public class FlybushServlet extends HttpServlet {
 		Query query = pm.newQuery(
 					"select from " + SqlCloudSession.class.getName() +
 					" where randomID == :randomIDquery");
-		try {
-			List<SqlCloudSession> sessions = (List<SqlCloudSession>) query.execute(Long.toString(id));
-			return sessions.isEmpty() ? null : sessions.get(0);
-		} finally {
-			query.closeAll();
-		}
+        List<SqlCloudSession> sessions = (List<SqlCloudSession>) query.execute(Long.toString(id));
+        return sessions.isEmpty() ? null : sessions.get(0);
 	}
 
 	@SuppressWarnings("unchecked")
 	private DbIssue findIssue(PersistenceManager pm, String hash) {
 		Query query = pm.newQuery(DbIssue.class, "hash == :hashParam");
-		try {
-			Iterator<DbIssue> it = ((QueryResult) query.execute(hash)).iterator();
-			if (!it.hasNext()) {
-				return null;
-			}
-			return it.next();
-		} finally {
-			query.closeAll();
-		}
+        Iterator<DbIssue> it = ((QueryResult) query.execute(hash)).iterator();
+        if (!it.hasNext()) {
+            return null;
+        }
+        return it.next();
 	}
 
-	private Issue buildIssueProto(DbIssue issue, SortedSet<DbEvaluation> evaluationsOrig2) {
+	private Issue buildIssueProto(DbIssue issue, Set<DbEvaluation> evaluations) {
 		Issue.Builder issueBuilder = Issue.newBuilder()
 				.setBugPattern(issue.getBugPattern())
 				.setPriority(issue.getPriority())
@@ -490,12 +482,12 @@ public class FlybushServlet extends HttpServlet {
 				.setFirstSeen(issue.getFirstSeen())
 				.setLastSeen(issue.getLastSeen())
 				.setPrimaryClass(issue.getPrimaryClass());
-        addEvaluations(issueBuilder, evaluationsOrig2);
+        addEvaluations(issueBuilder, evaluations);
         return issueBuilder.build();
 	}
 
-    private void addEvaluations(Builder issueBuilder, SortedSet<DbEvaluation> evaluationsOrig2) {
-        for (DbEvaluation dbEval : sortAndFilterEvaluations(evaluationsOrig2)) {
+    private void addEvaluations(Builder issueBuilder, Set<DbEvaluation> evaluations) {
+        for (DbEvaluation dbEval : sortAndFilterEvaluations(evaluations)) {
 			issueBuilder.addEvaluations(Evaluation.newBuilder()
 					.setComment(dbEval.getComment())
 					.setDesignation(dbEval.getDesignation())
@@ -504,9 +496,10 @@ public class FlybushServlet extends HttpServlet {
 		}
     }
 
-    private static LinkedList<DbEvaluation> sortAndFilterEvaluations(SortedSet<DbEvaluation> origEvaluations) {
+    private static LinkedList<DbEvaluation> sortAndFilterEvaluations(Set<DbEvaluation> origEvaluations) {
         Set<String> seenUsernames = new HashSet<String>();
         List<DbEvaluation> evaluationsList = new ArrayList<DbEvaluation>(origEvaluations);
+        Collections.sort(evaluationsList);
         int numEvaluations = evaluationsList.size();
         LinkedList<DbEvaluation> result = new LinkedList<DbEvaluation>();
         for (ListIterator<DbEvaluation> it = evaluationsList.listIterator(numEvaluations); it.hasPrevious();) {
@@ -547,8 +540,8 @@ public class FlybushServlet extends HttpServlet {
 
     @SuppressWarnings("unchecked")
     private Map<String, DbIssue> lookupTimesAndEvaluations(PersistenceManager pm, List<String> hashes) {
-        Query query = pm.newQuery("select hash, firstSeen, lastSeen, evaluations from " + DbIssue.class.getName()
-                                  + " where :hashes.contains(hash)");
+        Query query = pm.newQuery("select hash, firstSeen, lastSeen, hasEvaluations, evaluations from "
+                                  + DbIssue.class.getName() + " where :hashes.contains(hash)");
         List<Object[]> results = (List<Object[]>) query.execute(hashes);
         Map<String,DbIssue> map = new HashMap<String, DbIssue>();
         for (Object[] result : results) {
@@ -556,10 +549,11 @@ public class FlybushServlet extends HttpServlet {
             issue.setHash((String) result[0]);
             issue.setFirstSeen((Long) result[1]);
             issue.setLastSeen((Long) result[2]);
-            issue.setEvaluations((SortedSet<DbEvaluation>) result[3]);
+            issue.setHasEvaluations((Boolean) result[3]);
+            issue.setEvaluationsDontLook((Set<DbEvaluation>) result[4]);
             map.put(issue.getHash(), issue);
 		}
-        query.closeAll();
+//        query.closeAll();
         return map;
     }
 
@@ -568,9 +562,9 @@ public class FlybushServlet extends HttpServlet {
 		Query query = pm.newQuery("select from " + DbIssue.class.getName()
 				+ " where :hashes.contains(hash)");
 		query.setResult("hash");
-		List<String> result = (List<String>) query.execute(hashes);
+		Set<String> result = new HashSet<String>((List<String>) query.execute(hashes));
 		query.closeAll();
-		return new HashSet<String>(result);
+		return result;
 	}
 
 	private PersistenceManager getPersistenceManager() {

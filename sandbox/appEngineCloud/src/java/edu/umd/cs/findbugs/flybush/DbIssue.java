@@ -1,23 +1,25 @@
 package edu.umd.cs.findbugs.flybush;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import java.util.HashSet;
+import java.util.Set;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class DbIssue {
-	@Persistent @PrimaryKey private String hash;
+	@Persistent @PrimaryKey
+    private String hash;
 
     @Persistent private String bugPattern;
     @Persistent private int priority;
     @Persistent private String primaryClass;
     @Persistent private long firstSeen;
     @Persistent private long lastSeen;
-    @Persistent(mappedBy = "issue") private SortedSet<DbEvaluation> evaluations;
+    @Persistent private boolean hasEvaluations = false;
+    @Persistent(mappedBy = "issue") @Element(dependent="true") private Set<DbEvaluation> evaluations;
 
 	public String getHash() {
 		return hash;
@@ -55,17 +57,20 @@ public class DbIssue {
 	public void setLastSeen(long lastSeen) {
 		this.lastSeen = lastSeen;
 	}
-	public SortedSet<DbEvaluation> getEvaluations() {
+	public Set<DbEvaluation> getEvaluations() {
 		return evaluations;
 	}
-	public void setEvaluations(SortedSet<DbEvaluation> evaluations) {
+	public void setEvaluations(Set<DbEvaluation> evaluations) {
 		this.evaluations = evaluations;
-	}
-	public void addEvaluation(DbEvaluation eval) {
+        updateHasEvaluations();
+    }
+
+    public void addEvaluation(DbEvaluation eval) {
 		if (evaluations == null) {
-			evaluations = new TreeSet<DbEvaluation>();
+			evaluations = new HashSet<DbEvaluation>();
 		}
 		evaluations.add(eval);
+        updateHasEvaluations();
 	}
 	public void addEvaluations(DbEvaluation... evals) {
 		for (DbEvaluation eval : evals) {
@@ -73,4 +78,20 @@ public class DbIssue {
 		}
 	}
 
+    public boolean hasEvaluations() {
+        return hasEvaluations;
+    }
+
+    private void updateHasEvaluations() {
+        hasEvaluations = this.evaluations != null && !this.evaluations.isEmpty();
+    }
+
+    public void setHasEvaluations(boolean hasEvaluations) {
+        this.hasEvaluations = hasEvaluations;
+    }
+
+    /** Does not access the given list, only stores it. Good for lazy loaded evaluations. */
+    public void setEvaluationsDontLook(Set<DbEvaluation> evaluations) {
+        this.evaluations = evaluations;
+    }
 }
