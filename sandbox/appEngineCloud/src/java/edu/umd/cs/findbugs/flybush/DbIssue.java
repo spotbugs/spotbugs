@@ -94,4 +94,13 @@ public class DbIssue {
     public void setEvaluationsDontLook(Set<DbEvaluation> evaluations) {
         this.evaluations = evaluations;
     }
+
+    @Override
+    public String toString() {
+        return "DbIssue{" +
+               "hash='" + hash + '\'' +
+               ", bugPattern='" + bugPattern + '\'' +
+               ", evaluations=" + evaluations +
+               '}';
+    }
 }

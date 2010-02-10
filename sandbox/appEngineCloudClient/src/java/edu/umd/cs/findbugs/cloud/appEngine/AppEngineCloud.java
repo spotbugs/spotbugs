@@ -120,8 +120,10 @@ public class AppEngineCloud extends AbstractCloud {
 	@Override
 	public void shutdown() {
 		super.shutdown();
-		timer.cancel();
-		if (backgroundExecutorService != null) {
+        if (timer != null)
+            timer.cancel();
+        
+        if (backgroundExecutorService != null) {
 			backgroundExecutorService.shutdownNow();
 		}
 	}
