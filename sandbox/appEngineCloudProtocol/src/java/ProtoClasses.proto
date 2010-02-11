@@ -27,6 +27,12 @@ message UploadEvaluation {
 	required Evaluation evaluation = 3;
 }
 
+message SetBugLink {
+    required int64 sessionId = 1;
+    required bytes hash = 2;
+    optional string url = 3;
+}
+
 message GetRecentEvaluations {
 	required int64 sessionId = 1;
 	required int64 timestamp = 2;
@@ -48,6 +54,7 @@ message Issue {
   optional string primaryClass = 4;
   optional int64 firstSeen = 5;
   optional int64 lastSeen = 6;
+  optional string bugLink = 8;
   repeated Evaluation evaluations = 7;
 }
 

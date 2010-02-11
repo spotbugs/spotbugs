@@ -19,19 +19,13 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
+import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -46,14 +40,19 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.TreePath;
-
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
-import edu.umd.cs.findbugs.util.LaunchBrowser;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * @author pugh
@@ -149,14 +148,20 @@ public class CommentsArea {
 					Cloud cloud = getMainFrame().bugCollection.getCloud();
 					if (!cloud.supportsBugLinks())
 						return;
-					URL u = cloud.getBugLink(bug);
-					if (u != null) {
-						if (LaunchBrowser.showDocument(u)) {
-							cloud.bugFiled(bug, null);
-							getMainFrame().syncBugInformation();
-						}
-					}
-				}
+                    try {
+                        URL u = cloud.getBugLink(bug);
+                        if (u != null) {
+                            if (LaunchBrowser.showDocument(u)) {
+                                cloud.bugFiled(bug, null);
+                                getMainFrame().syncBugInformation();
+                            }
+                        }
+                    } catch (Exception e1) {
+                        JOptionPane.showMessageDialog(getMainFrame(),
+                                                      "Could not file bug:\n"
+                                                      + e1.getClass().getSimpleName() + ": " + e1.getMessage());
+                    }
+                }
 	            
             }});
 		
@@ -326,6 +331,7 @@ public class CommentsArea {
 				if (plugin.supportsBugLinks()) {
 					BugFilingStatus status = plugin.getBugLinkStatus(bug);
 					fileBug.setText(status.toString());
+		            fileBug.setToolTipText(status == BugFilingStatus.FILE_BUG ? "Click to file bug for this issue" : "");
 					fileBug.setEnabled(status.linkEnabled());
 				} else {
 					fileBug.setEnabled(false);

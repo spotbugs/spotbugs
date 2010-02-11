@@ -6,9 +6,13 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink.Builder;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 
+import javax.jdo.Query;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,38 +24,6 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
         return new UpdateServlet();
     }
 
-    @SuppressWarnings({"unchecked", "ConstantConditions"})
-    public void BROKEN_testClearAllData() throws Exception {
-    	createCloudSession(555);
-
-        DbIssue foundIssue = FlybushServletUtil.createDbIssue("fad1");
-        DbEvaluation eval1 = FlybushServletUtil.createEvaluation(foundIssue, "first", 100);
-        DbEvaluation eval2 = FlybushServletUtil.createEvaluation(foundIssue, "second", 200);
-        DbEvaluation eval3 = FlybushServletUtil.createEvaluation(foundIssue, "first", 300);
-		foundIssue.addEvaluation(eval1);
-		foundIssue.addEvaluation(eval2);
-		foundIssue.addEvaluation(eval3);
-
-		// apparently the evaluation is automatically persisted. throws
-		// exception when attempting to persist the eval with the issue.
-		persistenceManager.makePersistent(foundIssue);
-
-    	executePost("/clear-all-data", new byte[0]);
-		checkResponse(200);
-
-
-        persistenceManager.close();
-        initPersistenceManager();
-
-        for (Class<?> cls : Arrays.asList(DbIssue.class, DbEvaluation.class, DbInvocation.class, SqlCloudSession.class)) {
-            try {
-                List objs = (List) persistenceManager.newQuery("select from " + cls.getName()).execute();
-                fail("some entities still exist: " + cls.getSimpleName() + ": " + objs);
-            } catch (Exception e) {
-            }
-        }
-	}
-
 	public void testUploadIssueWithoutAuthenticating() throws Exception {
 		Issue issue = createProtoIssue("fad");
 		UploadIssues issuesToUpload = UploadIssues.newBuilder().setSessionId(555).addNewIssues(issue).build();
@@ -61,13 +33,17 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
 
 	@SuppressWarnings("unchecked")
 	public void testUploadIssue() throws Exception {
+        // setup
     	createCloudSession(555);
 		Issue issue = createProtoIssue("fad");
+
+        // execute
 		UploadIssues issuesToUpload = UploadIssues.newBuilder().setSessionId(555).addNewIssues(issue).build();
 		executePost("/upload-issues", issuesToUpload.toByteArray());
 		checkResponse(200, "");
-		List<DbIssue> dbIssues = (List<DbIssue>) persistenceManager
-				.newQuery("select from " + DbIssue.class.getName()).execute();
+
+        // verify
+        List<DbIssue> dbIssues = getAllIssuesFromDb();
 		assertEquals(1, dbIssues.size());
 
         DbIssue dbIssue = dbIssues.get(0);
@@ -202,7 +178,145 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
 		checkResponse(404, "no such issue faf\n");
 	}
 
+    public void testSetBugLinkNotAuthenticated() throws Exception {
+        setBugLinkExpectResponse(403, "fad", "http://my.bug/123");
+    }
+
+    public void testSetBugLinkNonexistentBug() throws Exception {
+        createCloudSession(555);
+        setBugLinkExpectResponse(404, "fad", "http://my.bug/123");
+    }
+
+    public void testSetBugLink() throws Exception {
+        createCloudSession(555);
+        uploadIssue("fad");
+        setBugLink("fad", "http://my.bug/123");
+        checkBugLinkInDb("http://my.bug/123");
+    }
+
+    public void testSetBugLinkTrimsSpace() throws Exception {
+        createCloudSession(555);
+        uploadIssue("fad");
+        setBugLink("fad", "  http://my.bug/123   ");
+        checkBugLinkInDb("http://my.bug/123");
+    }
+
+    public void testUpdateExistingBugLink() throws Exception {
+        createCloudSession(555);
+        uploadIssue("fad");
+        setBugLink("fad", "http://my.bug/123");
+        checkBugLinkInDb("http://my.bug/123");
+        setBugLink("fad", "http://my.bug/456");
+        checkBugLinkInDb("http://my.bug/456");
+    }
+
+    public void testClearBugLink() throws Exception {
+        createCloudSession(555);
+        uploadIssue("fad");
+        setBugLink("fad", "http://my.bug/123");
+        checkBugLinkInDb("http://my.bug/123");
+        setBugLink("fad", null);
+        checkBugLinkInDb(null);
+    }
+
+    public void testClearBugLinkWithEmptyString() throws Exception {
+        createCloudSession(555);
+        uploadIssue("fad");
+        setBugLink("fad", "http://my.bug/123");
+        checkBugLinkInDb("http://my.bug/123");
+        setBugLink("fad", "");
+        checkBugLinkInDb(null);
+    }
+
+    public void testClearBugLinkWithSpace() throws Exception {
+        createCloudSession(555);
+        uploadIssue("fad");
+        setBugLink("fad", "http://my.bug/123");
+        checkBugLinkInDb("http://my.bug/123");
+        setBugLink("fad", "  ");
+        checkBugLinkInDb(null);
+    }
+
+    // TODO: I suspect this doesn't work due to DatastoreService and PersistenceManager sync issues
+    @SuppressWarnings({"unchecked", "ConstantConditions", "UnusedDeclaration"})
+    public void BROKEN_testClearAllData() throws Exception {
+    	createCloudSession(555);
+
+        DbIssue foundIssue = FlybushServletUtil.createDbIssue("fad1");
+        DbEvaluation eval1 = FlybushServletUtil.createEvaluation(foundIssue, "first", 100);
+        DbEvaluation eval2 = FlybushServletUtil.createEvaluation(foundIssue, "second", 200);
+        DbEvaluation eval3 = FlybushServletUtil.createEvaluation(foundIssue, "first", 300);
+		foundIssue.addEvaluation(eval1);
+		foundIssue.addEvaluation(eval2);
+		foundIssue.addEvaluation(eval3);
+
+		// apparently the evaluation is automatically persisted. throws
+		// exception when attempting to persist the eval with the issue.
+		persistenceManager.makePersistent(foundIssue);
+
+    	executePost("/clear-all-data", new byte[0]);
+		checkResponse(200);
+
+
+        persistenceManager.close();
+        initPersistenceManager();
+
+        for (Class<?> cls : Arrays.asList(DbIssue.class, DbEvaluation.class, DbInvocation.class, SqlCloudSession.class)) {
+            try {
+                List objs = (List) persistenceManager.newQuery("select from " + cls.getName()).execute();
+                fail("some entities still exist: " + cls.getSimpleName() + ": " + objs);
+            } catch (Exception e) {
+            }
+        }
+	}
+
 	// ========================= end of tests ================================
+
+    private void checkBugLinkInDb(String bugLink) {
+        List<DbIssue> dbIssues = getAllIssuesFromDb();
+        assertEquals(1, dbIssues.size());
+        String dbBugLink = dbIssues.get(0).getBugLink();
+        if (bugLink == null)
+            assertNull(dbBugLink);
+        else
+            assertEquals(bugLink, dbBugLink);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<DbIssue> getAllIssuesFromDb() {
+        Query query = persistenceManager.newQuery("select from " + DbIssue.class.getName());
+        return (List<DbIssue>) query.execute();
+    }
+
+    private void setBugLink(String hash, String link) throws IOException {
+        setBugLinkExpectResponse(200, hash, link);
+    }
+
+    private void setBugLinkExpectResponse(int responseCode, String hash, String link) throws IOException {
+        initServletAndMocks();
+        Builder setBugLink = SetBugLink.newBuilder()
+                .setSessionId(555)
+                .setHash(encodeHash(hash));
+        if (link != null)
+            setBugLink.setUrl(link);
+
+        executePost("/set-bug-link", setBugLink.build().toByteArray());
+        checkResponse(responseCode);
+    }
+
+    private void uploadIssue(String hash) throws IOException {
+        Issue issue = createProtoIssue(hash);
+
+        // create issue
+        UploadIssues issuesToUpload = UploadIssues.newBuilder().setSessionId(555).addNewIssues(issue).build();
+        executePost("/upload-issues", issuesToUpload.toByteArray());
+        checkResponse(200);
+
+        // verify initial upload
+        List<DbIssue> dbIssues = getAllIssuesFromDb();
+        assertEquals(1, dbIssues.size());
+        assertNull(dbIssues.get(0).getBugLink());
+    }
 
 	private Evaluation createProtoEvaluation() {
         return Evaluation.newBuilder()

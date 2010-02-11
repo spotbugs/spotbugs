@@ -34,5 +34,6 @@
         <url-pattern>/clear-all-data</url-pattern>
         <url-pattern>/upload-issues</url-pattern>
         <url-pattern>/upload-evaluation</url-pattern>
+        <url-pattern>/set-bug-link</url-pattern>
     </servlet-mapping>
 </web-app>

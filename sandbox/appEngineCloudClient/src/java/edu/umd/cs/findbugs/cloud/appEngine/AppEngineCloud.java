@@ -1,9 +1,13 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+import com.google.gdata.client.authn.oauth.OAuthException;
+import com.google.gdata.data.projecthosting.IssuesEntry;
+import com.google.gdata.util.ServiceException;
 import com.google.protobuf.GeneratedMessage;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
@@ -17,6 +21,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvalua
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
@@ -24,6 +29,7 @@ import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,6 +50,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
 
 public class AppEngineCloud extends AbstractCloud {
 
@@ -156,16 +163,90 @@ public class AppEngineCloud extends AbstractCloud {
 
 	@Override
 	public URL getBugLink(BugInstance b) {
-		try {
-			return new URL(new GoogleCodeBugFiler(this, "findbugs").file(b));
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
+        if (getBugLinkStatus(b) == BugFilingStatus.FILE_BUG) {
+		    try {
+                return fileBug(b);
+
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+        } else {
+            String url = issuesByHash.get(b.getInstanceHash()).getBugLink();
+            try {
+                return new URL(url);
+            } catch (MalformedURLException e) {
+                LOGGER.log(Level.SEVERE, "Invalid bug link URL " + url, e);
+                return null;
+            }
+        }
 	}
 
-	@Override
+    private URL fileBug(BugInstance b) throws IOException, ServiceException, OAuthException, InterruptedException {
+        IssuesEntry googleCodeIssue = fileBugOnGoogleCode(b);
+        if (googleCodeIssue == null)
+            return null;
+
+        String viewUrl = googleCodeIssue.getHtmlLink().getHref();
+        if (viewUrl == null) {
+            LOGGER.warning("Filed issue on Google Code, but URL is missing!");
+            return null;
+        }
+
+        setBugLinkOnCloud(b, viewUrl);
+
+        // update local DB
+        String hash = b.getInstanceHash();
+        storeIssueDetails(hash, Issue.newBuilder(issuesByHash.get(hash)).setBugLink(viewUrl).build());
+
+        return new URL(viewUrl);
+    }
+
+    private void setBugLinkOnCloud(BugInstance b, String bugLink) throws IOException {
+        HttpURLConnection conn = openConnection("/set-bug-link");
+        conn.setDoOutput(true);
+        try {
+            OutputStream outputStream = conn.getOutputStream();
+            SetBugLink.newBuilder()
+                    .setSessionId(sessionId)
+                    .setHash(encodeHash(b.getInstanceHash()))
+                    .setUrl(bugLink)
+                    .build()
+                    .writeTo(outputStream);
+            outputStream.close();
+            if (conn.getResponseCode() != 200) {
+                throw new IllegalStateException(
+                        "server returned error code "
+                                + conn.getResponseCode() + " "
+                                + conn.getResponseMessage());
+            }
+        } finally {
+            conn.disconnect();
+        }
+    }
+
+    private IssuesEntry fileBugOnGoogleCode(BugInstance b)
+            throws IOException, ServiceException, OAuthException, InterruptedException {
+        IGuiCallback guiCallback = bugCollection.getProject().getGuiCallback();
+        String projectName = guiCallback.showQuestionDialog(
+                "Issue will be filed at Google Code.\n" +
+                "\n" +
+                "Google Code project name:", "Google Code Issue Tracker", "");
+        if (projectName == null || projectName.trim().length() == 0) {
+            return null;
+        }
+        GoogleCodeBugFiler bugFiler = new GoogleCodeBugFiler(this, projectName);
+        IssuesEntry issue = bugFiler.file(b);
+        if (issue == null)
+            return null;
+        return issue;
+    }
+
+    @Override
 	public BugFilingStatus getBugLinkStatus(BugInstance b) {
-		return BugFilingStatus.FILE_BUG;
+        Issue issue = issuesByHash.get(b.getInstanceHash());
+        if (issue == null)
+            return BugFilingStatus.NA;
+        return issue.hasBugLink() ? BugFilingStatus.VIEW_BUG : BugFilingStatus.FILE_BUG;
 	}
 
 	@Override
@@ -181,24 +262,19 @@ public class AppEngineCloud extends AbstractCloud {
 		for(BugInstance b : bugCollection.getCollection()) {
 			bugsByHash.put(b.getInstanceHash(), b);
 		}
-		List<String> allHashes = new ArrayList<String>(bugsByHash.keySet());
 
-		assert bugsByHash.size() == allHashes.size();
-
-		int numBugs = bugsByHash.size();
+        int numBugs = bugsByHash.size();
 		setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud...");
 
-		// send all instance hashes to server
 		try {
-
             logIntoCloud();
 
-            checkHashes(allHashes, bugsByHash);
+            checkHashes(new ArrayList<String>(bugsByHash.keySet()), bugsByHash);
 
-            if (!bugsByHash.values().isEmpty()) {
-				List<BugInstance> newBugs = new ArrayList<BugInstance>(bugsByHash.values());
-				System.out.println("Server didn't know " + bugsByHash);
-                uploadBugsInBackground(newBugs);
+            Collection<BugInstance> newBugs = bugsByHash.values();
+            if (!newBugs.isEmpty()) {
+                System.out.println("Server didn't know " + bugsByHash);
+                uploadBugsInBackground(new ArrayList<BugInstance>(newBugs));
             } else {
 				setStatusMsg("All " + numBugs + " bugs are already stored in the FindBugs Cloud");
 			}
@@ -207,6 +283,71 @@ public class AppEngineCloud extends AbstractCloud {
 			throw new IllegalStateException(e);
 		}
 	}
+
+	public void bugFiled(BugInstance b, Object bugLink) {
+		System.out.println("bug filed: " + b + ": " + bugLink);
+	}
+
+	@SuppressWarnings("deprecation")
+	public void storeUserAnnotation(BugInstance bugInstance) {
+		BugDesignation designation = bugInstance.getNonnullUserDesignation();
+		Builder evalBuilder = Evaluation.newBuilder()
+				.setWhen(designation.getTimestamp())
+				.setDesignation(designation.getDesignationKey());
+		String comment = designation.getAnnotationText();
+		if (comment != null) {
+			evalBuilder.setComment(comment);
+		}
+		UploadEvaluation uploadMsg = UploadEvaluation.newBuilder()
+				.setSessionId(sessionId)
+				.setHash(encodeHash(bugInstance.getInstanceHash()))
+				.setEvaluation(evalBuilder.build())
+				.build();
+
+		openPostUrl(uploadMsg, "/upload-evaluation");
+	}
+
+	/** package-private for testing */
+	void updateEvaluationsFromServer() {
+		setStatusMsg("Checking FindBugs Cloud for updates");
+
+		RecentEvaluations evals;
+		try {
+			evals = getRecentEvaluationsFromServer();
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
+		if (evals.getIssuesCount() > 0)
+			setStatusMsg("Checking FindBugs Cloud for updates...found " + evals.getIssuesCount());
+		else
+			setStatusMsg("");
+		for (Issue issue : evals.getIssuesList()) {
+			Issue existingIssue = issuesByHash.get(decodeHash(issue.getHash()));
+			if (existingIssue != null) {
+				Issue newIssue = mergeIssues(existingIssue, issue);
+				assert newIssue.getHash().equals(issue.getHash());
+				storeIssueDetails(decodeHash(issue.getHash()), newIssue);
+				BugInstance bugInstance = getBugByHash(decodeHash(issue.getHash()));
+				if (bugInstance != null) {
+					updateBugInstanceAndNotify(bugInstance);
+				}
+			}
+		}
+	}
+
+	// ==================== for testing ===========================
+
+	/** package-private for testing */
+	void setSessionId(long id) {
+		this.sessionId = id;
+	}
+
+	/** package-private for testing */
+	void setUsername(String user) {
+		this.user = user;
+	}
+
+	// ================== private methods ======================
 
     private void uploadBugsInBackground(final List<BugInstance> newBugs) {
         backgroundExecutor.execute(new Runnable() {
@@ -245,33 +386,39 @@ public class AppEngineCloud extends AbstractCloud {
         for (int i = 0; i < numBugs; i += HASH_CHECK_PARTITION_SIZE) {
             setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud..."
                     + (i * 100 / numBugs) + "%");
-            List<String> hashesToCheck = hashes.subList(i, Math.min(i+HASH_CHECK_PARTITION_SIZE, numBugs));
-            System.out.println("Checking " + hashesToCheck);
-            FindIssuesResponse response = submitHashes(hashesToCheck);
-            System.out.println("response was " + response.getSerializedSize() + " bytes");
-            for (int j = 0; j < hashesToCheck.size(); j++) {
-                String hash = hashesToCheck.get(j);
-                Issue issue = response.getFoundIssues(j);
-                if (!issue.hasFirstSeen() && !issue.hasLastSeen() && issue.getEvaluationsCount() == 0) {
-                    // this means the issue was not found!
-                    continue;
-                }
-                storeProtoIssue(hash, issue);
-
-                BugInstance bugInstance;
-                if (FORCE_UPLOAD_ALL_ISSUES) //
-                    // don't remove anything from bugsByHash so everything gets uploaded
-                    bugInstance = bugsByHash.get(hash);
-                else
-                    bugInstance = bugsByHash.remove(hash);
-
-                if (bugInstance != null) {
-                    updateBugInstanceAndNotify(bugInstance);
-                } else {
-                    LOGGER.warning("Server sent back issue that we don't know about: " + hash + " - " + issue);
-                }
-            }
+            List<String> partition = hashes.subList(i, Math.min(i+HASH_CHECK_PARTITION_SIZE, numBugs));
+            checkHashesPartition(partition, bugsByHash);
         }
+    }
+
+    private void checkHashesPartition(List<String> hashes, Map<String, BugInstance> bugsByHash) throws IOException {
+        FindIssuesResponse response = submitHashes(hashes);
+
+        for (int j = 0; j < hashes.size(); j++) {
+            String hash = hashes.get(j);
+            Issue issue = response.getFoundIssues(j);
+
+            if (isEmpty(issue))
+                // the issue was not found!
+                continue;
+
+            storeIssueDetails(hash, issue);
+
+            BugInstance bugInstance;
+            if (FORCE_UPLOAD_ALL_ISSUES) bugInstance = bugsByHash.get(hash);
+            else bugInstance = bugsByHash.remove(hash);
+
+            if (bugInstance == null) {
+                LOGGER.warning("Server sent back issue that we don't know about: " + hash + " - " + issue);
+                continue;
+            }
+
+            updateBugInstanceAndNotify(bugInstance);
+        }
+    }
+
+    private boolean isEmpty(Issue issue) {
+        return !issue.hasFirstSeen() && !issue.hasLastSeen() && issue.getEvaluationsCount() == 0;
     }
 
     private void uploadNewBugs(List<BugInstance> newBugs) throws IOException {
@@ -287,71 +434,6 @@ public class AppEngineCloud extends AbstractCloud {
 		}
 	}
 
-	public void bugFiled(BugInstance b, Object bugLink) {
-		System.out.println("bug filed: " + b + ": " + bugLink);
-	}
-
-	@SuppressWarnings("deprecation")
-	public void storeUserAnnotation(BugInstance bugInstance) {
-		BugDesignation designation = bugInstance.getNonnullUserDesignation();
-		Builder evalBuilder = Evaluation.newBuilder()
-				.setWhen(designation.getTimestamp())
-				.setDesignation(designation.getDesignationKey());
-		String comment = designation.getAnnotationText();
-		if (comment != null) {
-			evalBuilder.setComment(comment);
-		}
-		UploadEvaluation uploadMsg = UploadEvaluation.newBuilder()
-				.setSessionId(sessionId)
-				.setHash(AppEngineProtoUtil.encodeHash(bugInstance.getInstanceHash()))
-				.setEvaluation(evalBuilder.build())
-				.build();
-
-		openPostUrl(uploadMsg, "/upload-evaluation", 1);
-	}
-
-	/** package-private for testing */
-	void updateEvaluationsFromServer() {
-		setStatusMsg("Checking FindBugs Cloud for updates");
-
-		RecentEvaluations evals;
-		try {
-			evals = getRecentEvaluationsFromServer();
-		} catch (IOException e) {
-			throw new IllegalStateException(e);
-		}
-		if (evals.getIssuesCount() > 0)
-			setStatusMsg("Checking FindBugs Cloud for updates...found " + evals.getIssuesCount());
-		else
-			setStatusMsg("");
-		for (Issue issue : evals.getIssuesList()) {
-			Issue existingIssue = issuesByHash.get(decodeHash(issue.getHash()));
-			if (existingIssue != null) {
-				Issue newIssue = mergeIssues(existingIssue, issue);
-				assert newIssue.getHash().equals(issue.getHash());
-				storeProtoIssue(decodeHash(issue.getHash()), newIssue);
-				BugInstance bugInstance = getBugByHash(decodeHash(issue.getHash()));
-				if (bugInstance != null) {
-					updateBugInstanceAndNotify(bugInstance);
-				}
-			}
-		}
-	}
-
-	// ==================== for testing ===========================
-
-	/** package-private for testing */
-	void setSessionId(long id) {
-		this.sessionId = id;
-	}
-
-	/** package-private for testing */
-	void setUsername(String user) {
-		this.user = user;
-	}
-
-	// ================== private methods ======================
-
 	private long getFirstSeenFromCloud(BugInstance b) {
         Issue issue = issuesByHash.get(b.getInstanceHash());
         if (issue == null)
@@ -364,7 +446,7 @@ public class AppEngineCloud extends AbstractCloud {
 								  e.getComment(), e.getWho());
 	}
 
-	private void storeProtoIssue(String hash, Issue newIssue) {
+	private void storeIssueDetails(String hash, Issue newIssue) {
 		for (Evaluation eval : newIssue.getEvaluationsList()) {
 			if (eval.getWhen() > mostRecentEvaluationMillis) {
 				mostRecentEvaluationMillis = eval.getWhen();
@@ -418,14 +500,14 @@ public class AppEngineCloud extends AbstractCloud {
 		issueList.setSessionId(sessionId);
 		for (BugInstance bug: bugsToSend) {
 			issueList.addNewIssues(ProtoClasses.Issue.newBuilder()
-					.setHash(AppEngineProtoUtil.encodeHash(bug.getInstanceHash()))
+					.setHash(encodeHash(bug.getInstanceHash()))
 					.setBugPattern(bug.getType())
 					.setPriority(bug.getPriority())
 					.setPrimaryClass(bug.getPrimaryClass().getClassName())
 					.setFirstSeen(getFirstSeen(bug))
 					.build());
 		}
-		openPostUrl(issueList.build(), "/upload-issues", bugsToSend.size());
+		openPostUrl(issueList.build(), "/upload-issues");
 
 	}
 
@@ -458,7 +540,7 @@ public class AppEngineCloud extends AbstractCloud {
 
 	private void removeAllButLatestEvaluationPerUser(List<Evaluation> allEvaluations) {
 		Set<String> seenUsernames = new HashSet<String>();
-		for (ListIterator<Evaluation> it = allEvaluations.listIterator(allEvaluations.size()); it.hasPrevious();) {
+		for (ListIterator<Evaluation> it = reverseIterator(allEvaluations); it.hasPrevious();) {
 			Evaluation evaluation = it.previous();
 			boolean isNewUsername = seenUsernames.add(evaluation.getWho());
 			if (!isNewUsername)
@@ -466,7 +548,11 @@ public class AppEngineCloud extends AbstractCloud {
 		}
 	}
 
-	private RecentEvaluations getRecentEvaluationsFromServer() throws IOException {
+    private <E> ListIterator<E> reverseIterator(List<E> list) {
+        return list.listIterator(list.size());
+    }
+
+    private RecentEvaluations getRecentEvaluationsFromServer() throws IOException {
 		HttpURLConnection conn = openConnection("/get-recent-evaluations");
 		conn.setDoOutput(true);
 		try {
@@ -504,23 +590,17 @@ public class AppEngineCloud extends AbstractCloud {
 		return mostRecent;
 	}
 
-	private void openPostUrl(GeneratedMessage uploadMsg, String url, int items) {
+	private void openPostUrl(GeneratedMessage uploadMsg, String url) {
 		try {
-			long start = System.currentTimeMillis();
 			HttpURLConnection conn = openConnection(url);
 			conn.setDoOutput(true);
 			conn.connect();
-			LOGGER.info("Connected in " + (System.currentTimeMillis() - start) + "ms");
 			try {
 				if (uploadMsg != null) {
-					start = System.currentTimeMillis();
 					OutputStream stream = conn.getOutputStream();
 					uploadMsg.writeTo(stream);
 					stream.close();
-					long elapsed = System.currentTimeMillis() - start;
 					conn.getResponseCode(); // wait for response
-					LOGGER.info("Uploaded " + uploadMsg.getSerializedSize()/1024 + " KB in "
-							+ elapsed + "ms (" + (elapsed/(items+1)) + " per item)");
 				}
 				int responseCode = conn.getResponseCode();
 				if (responseCode != 200) {

@@ -19,6 +19,7 @@ public class DbIssue {
     @Persistent private long firstSeen;
     @Persistent private long lastSeen;
     @Persistent private boolean hasEvaluations = false;
+    @Persistent private String bugLink;
     @Persistent(mappedBy = "issue") @Element(dependent="true") private Set<DbEvaluation> evaluations;
 
 	public String getHash() {
@@ -60,10 +61,6 @@ public class DbIssue {
 	public Set<DbEvaluation> getEvaluations() {
 		return evaluations;
 	}
-	public void setEvaluations(Set<DbEvaluation> evaluations) {
-		this.evaluations = evaluations;
-        updateHasEvaluations();
-    }
 
     public void addEvaluation(DbEvaluation eval) {
 		if (evaluations == null) {
@@ -93,6 +90,14 @@ public class DbIssue {
     /** Does not access the given list, only stores it. Good for lazy loaded evaluations. */
     public void setEvaluationsDontLook(Set<DbEvaluation> evaluations) {
         this.evaluations = evaluations;
+    }
+
+    public String getBugLink() {
+        return bugLink;
+    }
+
+    public void setBugLink(String bugLink) {
+        this.bugLink = bugLink;
     }
 
     @Override

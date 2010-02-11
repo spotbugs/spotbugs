@@ -19,6 +19,17 @@
 
 package edu.umd.cs.findbugs.cloud;
 
+import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugRanker;
+import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.ba.SourceFile;
+import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
+import edu.umd.cs.findbugs.util.Util;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -29,23 +40,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import edu.umd.cs.findbugs.BugAnnotation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugRanker;
-import edu.umd.cs.findbugs.ClassAnnotation;
-import edu.umd.cs.findbugs.PropertyBundle;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.ba.SourceFile;
-import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
-import edu.umd.cs.findbugs.util.Util;
-
 /**
  * @author Keith
  */
 public class BugFilingHelper {
-
-    
-
 	private final Cloud cloud;
     private final String BUG_NOTE;
     private final String POSTMORTEM_NOTE;
@@ -88,9 +86,12 @@ public class BugFilingHelper {
 			}
 
 		SourceLineAnnotation primarySource = primaryClass.getSourceLines();
-		if (primarySource.isSourceFileKnown() && firstLine >= 1 && firstLine <= lastLine && lastLine - firstLine < 50) {
+		if (primarySource.isSourceFileKnown()
+            && firstLine >= 1 && firstLine <= lastLine
+            && lastLine - firstLine < 50) {
 			try {
-				SourceFile sourceFile = cloud.getBugCollection().getProject().getSourceFinder().findSourceFile(primarySource);
+                Project project = cloud.getBugCollection().getProject();
+                SourceFile sourceFile = project.getSourceFinder().findSourceFile(primarySource);
 				BufferedReader in = new BufferedReader(new InputStreamReader(sourceFile.getInputStream()));
 				int lineNumber = 1;
 				String commonWhiteSpace = null;
@@ -134,19 +135,6 @@ public class BugFilingHelper {
 		}
 		return "";
 	}
-	
-	private String commonLeadingWhitespace(String soFar, String txt) {
-		if (txt.length() == 0)
-			return soFar;
-		if (soFar == null) 
-			return txt;
-		soFar = Util.commonPrefix(soFar, txt);
-		for(int i = 0; i < soFar.length(); i++) {
-			if (!Character.isWhitespace(soFar.charAt(i)))
-					return soFar.substring(0,i);
-		}
-		return soFar;
-	}
     
     public String getBugReportHead(BugInstance b) {
 		StringWriter stringWriter = new StringWriter();
@@ -174,8 +162,11 @@ public class BugFilingHelper {
 
         if (BUG_NOTE != null) {
 			out.println(BUG_NOTE);
-			if (POSTMORTEM_NOTE != null && BugRanker.findRank(b) <= POSTMORTEM_RANK && !cloud.overallClassificationIsNotAProblem(b))
+			if (POSTMORTEM_NOTE != null && BugRanker.findRank(b) <= POSTMORTEM_RANK
+                && !cloud.overallClassificationIsNotAProblem(b)) {
+
 				out.println(POSTMORTEM_NOTE);
+            }
 			out.println();
 		}
 
@@ -213,13 +204,30 @@ public class BugFilingHelper {
 		return "\nFindBugs issue identifier (do not modify or remove): " + b.getInstanceHash();
 	}
 
+    // ================================= end of public methods ====================================
+
+	private String commonLeadingWhitespace(String soFar, String txt) {
+		if (txt.length() == 0)
+			return soFar;
+		if (soFar == null)
+			return txt;
+		soFar = Util.commonPrefix(soFar, txt);
+		for(int i = 0; i < soFar.length(); i++) {
+			if (!Character.isWhitespace(soFar.charAt(i)))
+					return soFar.substring(0,i);
+		}
+		return soFar;
+	}
+
+    // ==================================== inner classes =========================================
 
     public static class SourceLine {
+		public final int line;
+		public final String text;
+        
         public SourceLine(int line, String text) {
 	        this.line = line;
 	        this.text = text;
         }
-		final int line;
-		final String text;
 	}
 }

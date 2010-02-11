@@ -186,21 +186,6 @@ public class AppEngineCloudTest extends TestCase {
 		assertEquals(300, primaryDesignationAfter.getTimestamp());
 	}
 
-    private HttpURLConnection createResponselessConnection() throws IOException {
-        final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
-        setupResponseCodeAndOutputStream(logInConnection);
-        return logInConnection;
-    }
-
-    private Evaluation createEvaluation(String designation, long when, String comment, String who) {
-        return Evaluation.newBuilder()
-            .setWhen(when)
-            .setDesignation(designation)
-            .setComment(comment)
-            .setWho(who)
-            .build();
-    }
-
     public void testGetRecentEvaluationsOverwritesOldEvaluationsFromSamePerson()
 			throws Exception {
         addMissingIssue = false;
@@ -235,7 +220,45 @@ public class AppEngineCloudTest extends TestCase {
 		assertEquals(2, allUserDesignations.size());
 	}
 
+    public void testFileBug() throws Exception {
+        addMissingIssue = false;
+		Issue responseIssue = createFoundIssue(Arrays.asList(
+                createEvaluation("NOT_A_BUG", 100, "comment", "first")));
+
+        final HttpURLConnection logInConnection = createResponselessConnection();
+
+        final HttpURLConnection findConnection = createFindIssuesConnection(createFindIssuesResponseInputStream(responseIssue));
+
+        final HttpURLConnection fileBugConnection = createResponselessConnection();
+
+		// setup & execute
+		AppEngineCloud cloud = createAppEngineCloud(logInConnection, findConnection, fileBugConnection);
+		cloud.setUsername("claimer");
+		cloud.setSessionId(100);
+		cloud.bugsPopulated();
+		cloud.updateEvaluationsFromServer();
+
+		// verify
+		List<BugDesignation> allUserDesignations = newList(cloud.getAllUserDesignations(foundIssue));
+		assertEquals(2, allUserDesignations.size());
+	}
+
     // =================================== end of tests ===========================================
+
+    private HttpURLConnection createResponselessConnection() throws IOException {
+        final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
+        setupResponseCodeAndOutputStream(logInConnection);
+        return logInConnection;
+    }
+
+    private Evaluation createEvaluation(String designation, long when, String comment, String who) {
+        return Evaluation.newBuilder()
+            .setWhen(when)
+            .setDesignation(designation)
+            .setComment(comment)
+            .setWho(who)
+            .build();
+    }
 
     private HttpURLConnection createFindIssuesConnection(InputStream response) throws IOException {
         final HttpURLConnection findConnection = mock(HttpURLConnection.class);

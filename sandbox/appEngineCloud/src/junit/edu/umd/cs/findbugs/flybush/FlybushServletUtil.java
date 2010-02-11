@@ -28,6 +28,7 @@ public class FlybushServletUtil {
         foundIssue.setPrimaryClass("my.class");
         foundIssue.setFirstSeen(100);
         foundIssue.setLastSeen(200);
+        foundIssue.setBugLink("http://bug.link");
         return foundIssue;
     }
 
@@ -36,5 +37,6 @@ public class FlybushServletUtil {
         Assert.assertEquals(dbIssue.getBugPattern(), protoIssue.getBugPattern());
         Assert.assertEquals(dbIssue.getPriority(), protoIssue.getPriority());
         Assert.assertEquals(dbIssue.getPrimaryClass(), protoIssue.getPrimaryClass());
+        Assert.assertEquals(dbIssue.getBugLink(), protoIssue.hasBugLink() ? protoIssue.getBugLink() : null);
     }
 }

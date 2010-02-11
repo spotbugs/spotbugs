@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHashes;
+
 @SuppressWarnings("serial")
 public class QueryServlet extends AbstractFlybushServlet {
 
@@ -53,29 +55,20 @@ public class QueryServlet extends AbstractFlybushServlet {
         if (isAuthenticated(resp, pm, sessionId))
             return;
 
-        List<String> hashes = AppEngineProtoUtil.decodeHashes(loginMsg.getMyIssueHashesList());
+        List<String> hashes = decodeHashes(loginMsg.getMyIssueHashesList());
         Map<String, DbIssue> issues = lookupTimesAndEvaluations(pm, hashes);
 		FindIssuesResponse.Builder issueProtos = FindIssuesResponse.newBuilder();
         for (String hash : hashes) {
-            DbIssue issue = issues.get(hash);
-            Issue.Builder issueBuilder = Issue.newBuilder();
-            if (issue != null) {
-                issueBuilder.setFirstSeen(issue.getFirstSeen())
-                        .setLastSeen(issue.getLastSeen());
-
-                if (issue.hasEvaluations()) {
-                    addEvaluations(issueBuilder, issue.getEvaluations());
-                }
-            }
-
-            issueProtos.addFoundIssues(issueBuilder.build());
+            DbIssue dbIssue = issues.get(hash);
+            Issue protoIssue = buildTerseIssueProto(dbIssue);
+            issueProtos.addFoundIssues(protoIssue);
         }
         
 		resp.setStatus(200);
 		issueProtos.build().writeTo(resp.getOutputStream());
 	}
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
 	private void getRecentEvaluations(HttpServletRequest req,
 			HttpServletResponse resp, PersistenceManager pm) throws IOException {
 		GetRecentEvaluations recentEvalsRequest = GetRecentEvaluations.parseFrom(req.getInputStream());
@@ -90,7 +83,7 @@ public class QueryServlet extends AbstractFlybushServlet {
 		Map<String, SortedSet<DbEvaluation>> issues = groupUniqueEvaluationsByIssue(evaluations);
 		for (SortedSet<DbEvaluation> evaluationsForIssue : issues.values()) {
 			DbIssue issue = evaluations.iterator().next().getIssue();
-			Issue issueProto = buildIssueProto(issue, evaluationsForIssue);
+			Issue issueProto = buildFullIssueProto(issue, evaluationsForIssue);
 			issueProtos.addIssues(issueProto);
 		}
 		query.closeAll();
@@ -99,16 +92,16 @@ public class QueryServlet extends AbstractFlybushServlet {
 		issueProtos.build().writeTo(resp.getOutputStream());
 	}
 
-	private void getEvaluations(HttpServletRequest req,
-			HttpServletResponse resp, PersistenceManager pm) throws IOException {
+	private void getEvaluations(HttpServletRequest req, HttpServletResponse resp,
+                                PersistenceManager pm) throws IOException {
 
 		GetEvaluations evalsRequest = GetEvaluations.parseFrom(req.getInputStream());
         if (isAuthenticated(resp, pm, evalsRequest.getSessionId()))
             return;
 
 		RecentEvaluations.Builder response = RecentEvaluations.newBuilder();
-		for (DbIssue issue : lookupIssues(AppEngineProtoUtil.decodeHashes(evalsRequest.getHashesList()), pm)) {
-			Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
+		for (DbIssue issue : lookupIssues(decodeHashes(evalsRequest.getHashesList()), pm)) {
+			Issue issueProto = buildFullIssueProto(issue, issue.getEvaluations());
 			response.addIssues(issueProto);
 		}
 
@@ -120,14 +113,33 @@ public class QueryServlet extends AbstractFlybushServlet {
 
     // ========================= end of request handling ================================
 
-    private Issue buildIssueProto(DbIssue issue, Set<DbEvaluation> evaluations) {
+    private Issue buildTerseIssueProto(DbIssue dbIssue) {
+        Builder issueBuilder = Issue.newBuilder();
+        if (dbIssue != null) {
+            issueBuilder.setFirstSeen(dbIssue.getFirstSeen())
+                    .setLastSeen(dbIssue.getLastSeen());
+            if (dbIssue.getBugLink() != null) {
+                issueBuilder.setBugLink(dbIssue.getBugLink());
+            }
+
+            if (dbIssue.hasEvaluations()) {
+                addEvaluations(issueBuilder, dbIssue.getEvaluations());
+            }
+        }
+
+        return issueBuilder.build();
+    }
+
+    private Issue buildFullIssueProto(DbIssue dbIssue, Set<DbEvaluation> evaluations) {
 		Issue.Builder issueBuilder = Issue.newBuilder()
-				.setBugPattern(issue.getBugPattern())
-				.setPriority(issue.getPriority())
-				.setHash(AppEngineProtoUtil.encodeHash(issue.getHash()))
-				.setFirstSeen(issue.getFirstSeen())
-				.setLastSeen(issue.getLastSeen())
-				.setPrimaryClass(issue.getPrimaryClass());
+				.setBugPattern(dbIssue.getBugPattern())
+				.setPriority(dbIssue.getPriority())
+				.setHash(AppEngineProtoUtil.encodeHash(dbIssue.getHash()))
+				.setFirstSeen(dbIssue.getFirstSeen())
+				.setLastSeen(dbIssue.getLastSeen())
+				.setPrimaryClass(dbIssue.getPrimaryClass());
+        if (dbIssue.getBugLink() != null)
+            issueBuilder.setBugLink(dbIssue.getBugLink());
         addEvaluations(issueBuilder, evaluations);
         return issueBuilder.build();
 	}
@@ -186,7 +198,7 @@ public class QueryServlet extends AbstractFlybushServlet {
 
     @SuppressWarnings("unchecked")
     private Map<String, DbIssue> lookupTimesAndEvaluations(PersistenceManager pm, List<String> hashes) {
-        Query query = pm.newQuery("select hash, firstSeen, lastSeen, hasEvaluations, evaluations from "
+        Query query = pm.newQuery("select hash, firstSeen, lastSeen, bugLink, hasEvaluations, evaluations from "
                                   + DbIssue.class.getName() + " where :hashes.contains(hash)");
         List<Object[]> results = (List<Object[]>) query.execute(hashes);
         Map<String,DbIssue> map = new HashMap<String, DbIssue>();
@@ -195,8 +207,9 @@ public class QueryServlet extends AbstractFlybushServlet {
             issue.setHash((String) result[0]);
             issue.setFirstSeen((Long) result[1]);
             issue.setLastSeen((Long) result[2]);
-            issue.setHasEvaluations((Boolean) result[3]);
-            issue.setEvaluationsDontLook((Set<DbEvaluation>) result[4]);
+            issue.setBugLink((String) result[3]);
+            issue.setHasEvaluations((Boolean) result[4]);
+            issue.setEvaluationsDontLook((Set<DbEvaluation>) result[5]);
             map.put(issue.getHash(), issue);
 		}
         return map;

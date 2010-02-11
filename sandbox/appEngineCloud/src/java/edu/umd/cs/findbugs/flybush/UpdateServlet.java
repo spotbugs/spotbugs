@@ -8,6 +8,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import org.datanucleus.store.query.QueryResult;
@@ -27,6 +28,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
+
 @SuppressWarnings("serial")
 public class UpdateServlet extends AbstractFlybushServlet {
 
@@ -43,6 +46,9 @@ public class UpdateServlet extends AbstractFlybushServlet {
 
         } else if (uri.equals("/upload-evaluation")) {
             uploadEvaluation(req, resp, pm);
+            
+        } else if (uri.equals("/set-bug-link")) {
+            setBugLink(req, resp, pm);
         }
     }
 
@@ -95,15 +101,13 @@ public class UpdateServlet extends AbstractFlybushServlet {
         dbEvaluation.setWho(session.getUser().getNickname());
         copyInvocationToEvaluation(pm, session, dbEvaluation);
         Transaction tx = pm.currentTransaction();
-        boolean setStatusAlready = false;
         try {
             tx.begin();
 
             String hash = AppEngineProtoUtil.decodeHash(uploadEvalMsg.getHash());
             DbIssue issue = findIssue(pm, hash);
             if (issue == null) {
-                setResponse(resp, 404, "no such issue " + AppEngineProtoUtil.decodeHash(uploadEvalMsg.getHash()));
-                setStatusAlready = true;
+                setResponse(resp, 404, "no such issue " + decodeHash(uploadEvalMsg.getHash()));
                 return;
             }
             dbEvaluation.setIssue(issue);
@@ -113,23 +117,53 @@ public class UpdateServlet extends AbstractFlybushServlet {
             tx.commit();
 
         } finally {
-            if (tx.isActive()) {
+            if (tx.isActive())
                 tx.rollback();
-                if (!setStatusAlready) {
-                    setResponse(resp, 403, "Transaction failed");
-                }
-            }
         }
 
         resp.setStatus(200);
     }
+    
+    private void setBugLink(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) 
+            throws IOException {
+        SetBugLink setBugLinkMsg = SetBugLink.parseFrom(req.getInputStream());
+        SqlCloudSession session = lookupCloudSessionById(setBugLinkMsg.getSessionId(), pm);
+        if (session == null) {
+            setResponse(resp, 403, "not authenticated");
+            return;
+        }
 
+        Transaction tx = pm.currentTransaction();
+        tx.begin();
+        try {
+            String decodedHash = decodeHash(setBugLinkMsg.getHash());
+            DbIssue issue = findIssue(pm, decodedHash);
+            if (issue == null) {
+                setResponse(resp, 404, "no such issue " + decodedHash);
+                return;
+            }
+            String bugLink = setBugLinkMsg.hasUrl() ? setBugLinkMsg.getUrl().trim() : null;
+            if (bugLink != null && bugLink.length() == 0)
+                bugLink = null;
+            issue.setBugLink(bugLink);
+            pm.makePersistent(issue);
+
+            tx.commit();
+
+        } finally {
+            if (tx.isActive())
+                tx.rollback();
+        }
+
+        resp.setStatus(200);
+    }
+    
     // ========================= end of request handling ================================
 
     private List<String> decodeHashesForIssues(UploadIssues issues) {
         List<String> hashes = new ArrayList<String>();
         for (Issue issue : issues.getNewIssuesList()) {
-            hashes.add(AppEngineProtoUtil.decodeHash(issue.getHash()));
+            hashes.add(decodeHash(issue.getHash()));
         }
         return hashes;
     }
@@ -147,7 +181,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
 
     private DbIssue createDbIssue(Issue issue) {
         DbIssue dbIssue = new DbIssue();
-        dbIssue.setHash(AppEngineProtoUtil.decodeHash(issue.getHash()));
+        dbIssue.setHash(decodeHash(issue.getHash()));
         dbIssue.setBugPattern(issue.getBugPattern());
         dbIssue.setPriority(issue.getPriority());
         dbIssue.setPrimaryClass(issue.getPrimaryClass());
