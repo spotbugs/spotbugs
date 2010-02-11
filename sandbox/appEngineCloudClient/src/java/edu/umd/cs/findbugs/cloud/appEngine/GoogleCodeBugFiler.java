@@ -17,6 +17,7 @@ import com.google.gdata.data.projecthosting.Username;
 import com.google.gdata.util.ServiceException;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.BugFilingHelper;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
@@ -33,17 +34,15 @@ public class GoogleCodeBugFiler {
 	private static final String defaultStatus = "New";
 	private static final String defaultLabels = "FindBugsGenerated";
 
-	private Cloud cloud;
+	private final Cloud cloud;
 
-	private BugFilingHelper bugFilingHelper;
-    private ProjectHostingService projectHostingService;
+	private final BugFilingHelper bugFilingHelper;
+    private @CheckForNull ProjectHostingService projectHostingService;
 
-//	private final String issuesBaseUri;
 	private final URL issuesFeedUrl;
 
     public GoogleCodeBugFiler(Cloud cloud, String project) throws MalformedURLException {
         this.cloud = cloud;
-//        issuesBaseUri = FEED_URI_BASE + "/p/" + project + "/issues";
 		issuesFeedUrl = makeIssuesFeedUrl(project);
 		bugFilingHelper = new BugFilingHelper(cloud);
 	}
@@ -54,8 +53,7 @@ public class GoogleCodeBugFiler {
         if (projectHostingService == null)
             initProjectHostingService();
 
-        IssuesEntry issueInserted = projectHostingService.insert(issuesFeedUrl, makeNewIssue(instance));
-		return issueInserted;
+        return projectHostingService.insert(issuesFeedUrl, makeNewIssue(instance));
 	}
 
     // ============================= end of public methods =====================================
@@ -64,6 +62,7 @@ public class GoogleCodeBugFiler {
 		return new URL(FEED_URI_BASE + "/p/" + proj + "/issues" + PROJECTION);
 	}
 
+    // TODO: cache these tokens!
     private void initProjectHostingService() throws OAuthException, MalformedURLException, InterruptedException {
         GoogleOAuthParameters oauthParameters = new GoogleOAuthParameters();
         oauthParameters.setOAuthConsumerKey("kano.net");
@@ -90,10 +89,6 @@ public class GoogleCodeBugFiler {
         projectHostingService.setOAuthCredentials(oauthParameters, oauthSigner);
     }
 
-//    private URL makeIssueEntryUrl(String issueId)
-//	     throws MalformedURLException {
-//	   return new URL(issuesBaseUri + PROJECTION + "/" + issueId);
-//	 }
 
 	private IssuesEntry makeNewIssue(BugInstance bug) {
 		Person author = new Person();

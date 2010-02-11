@@ -83,6 +83,7 @@ public class QueryServletTest extends AbstractFlybushServletTest {
 		checkResponse(403, "not authenticated");
 	}
 
+    //TODO: updated bug links should be included in this list!
 	public void testGetRecentEvaluations() throws Exception {
 		createCloudSession(555);
 
