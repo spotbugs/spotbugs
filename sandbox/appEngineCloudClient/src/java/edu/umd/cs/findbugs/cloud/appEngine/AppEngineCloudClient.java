@@ -47,6 +47,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 	private Timer timer;
 
     private AppEngineCloudNetworkClient networkClient;
+    private LoggedInState loggedInState = LoggedInState.LOGGING_IN;
 
     public AppEngineCloudClient(CloudPlugin plugin, BugCollection bugs) {
 		this(plugin, bugs, null);
@@ -79,9 +80,20 @@ public class AppEngineCloudClient extends AbstractCloud {
 	}
 
 	public boolean initialize() {
-        super.initialize();
+        if (!super.initialize()) {
+            loggedInState = LoggedInState.LOGIN_FAILED;
+
+            return false;
+        }
         setStatusMsg("Signing into FindBugs Cloud");
-        if (networkClient.initialize()) return false;
+        if (!networkClient.initialize()) {
+            loggedInState = LoggedInState.LOGIN_FAILED;
+
+            setStatusMsg("");
+            return false;
+        }
+
+        loggedInState = LoggedInState.LOGGED_IN;
 
         if (timer != null)
 			timer.cancel();
@@ -130,6 +142,10 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     AppEngineCloudNetworkClient getNetworkClient() {
         return networkClient;
+    }
+
+    public LoggedInState getLoggedInState() {
+        return loggedInState;
     }
 
     public String getUser() {

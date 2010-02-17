@@ -87,7 +87,11 @@ import java.util.Collections;
 	    
     }
 
-	public boolean availableForInitialization() {
+    public LoggedInState getLoggedInState() {
+        return LoggedInState.NO_LOGIN_REQUIRED;
+    }
+
+    public boolean availableForInitialization() {
 		return true;
 	}
 

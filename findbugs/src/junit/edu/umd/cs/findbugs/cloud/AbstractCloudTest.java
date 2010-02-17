@@ -326,7 +326,11 @@ public class AbstractCloudTest extends TestCase {
 	    	return "user";
 	    }
 
-	    public BugDesignation getPrimaryDesignation(BugInstance b) {
+        public LoggedInState getLoggedInState() {
+            return LoggedInState.NO_LOGIN_REQUIRED;
+        }
+
+        public BugDesignation getPrimaryDesignation(BugInstance b) {
 	    	throw new UnsupportedOperationException();
 	    }
 
@@ -338,7 +342,7 @@ public class AbstractCloudTest extends TestCase {
 	    	throw new UnsupportedOperationException();
 	    }
 
-	    public boolean availableForInitialization() {
+        public boolean availableForInitialization() {
 	    	throw new UnsupportedOperationException();
 	    }
 

@@ -94,9 +94,10 @@ public  class DBCloud extends AbstractCloud {
      * 
      */
     static final String USER_NAME = "user.name";
-	
-	
-	class BugData {
+    private LoggedInState loggedInState = LoggedInState.LOGGING_IN;
+
+
+    class BugData {
 		final String instanceHash;
 
 		public BugData(String instanceHash) {
@@ -564,15 +565,12 @@ public  class DBCloud extends AbstractCloud {
 
 
 	public boolean initialize() {
-        if (!super.initialize())
+        if (tryInitialization()) {
+            loggedInState = LoggedInState.LOGIN_FAILED;
             return false;
-		if (!availableForInitialization())
-			return false;
+        }
 
-		findbugsUser = getUsernameLookup().getUsername();
-		
-		if (findbugsUser == null)
-			return false;
+        loggedInState = LoggedInState.LOGGED_IN;
 		
 		loadBugComponents();
 		Connection c = null;
@@ -615,6 +613,19 @@ public  class DBCloud extends AbstractCloud {
 			Util.closeSilently(c);
 		}
 	}
+
+    private boolean tryInitialization() {
+        if (!super.initialize())
+            return true;
+        if (!availableForInitialization())
+            return true;
+
+        findbugsUser = getUsernameLookup().getUsername();
+
+        if (findbugsUser == null)
+            return true;
+        return false;
+    }
 
     private String getBugComponent(@SlashedClassName String className) {
 		
@@ -1132,7 +1143,11 @@ public  class DBCloud extends AbstractCloud {
 			e.printStackTrace(System.err);
 		}
 	}
-	
+
+    public LoggedInState getLoggedInState() {
+        return loggedInState;
+    }
+
     public String getUser() {
 	   return findbugsUser;
     }

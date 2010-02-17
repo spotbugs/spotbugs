@@ -60,16 +60,16 @@ public class AppEngineCloudNetworkClient {
     public boolean initialize() {
         AppEngineNameLookup lookerupper = new AppEngineNameLookup();
         if (!lookerupper.initialize(cloudClient.getPlugin(), cloudClient.getBugCollection())) {
-            return true;
+            return false;
         }
         this.sessionId = lookerupper.getSessionId();
         this.username = lookerupper.getUsername();
         this.host = lookerupper.getHost();
         if (getUsername() == null || host == null) {
             System.err.println("No App Engine Cloud username or hostname found! Check etc/findbugs.xml");
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     public void setBugLinkOnCloud(BugInstance b, String bugLink) throws IOException {

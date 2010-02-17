@@ -45,6 +45,7 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
         assertEquals("recent", findSqlSession(101).get(0).getUser().getEmail());
     }
 
+    @SuppressWarnings({"unchecked"})
     private List<SqlCloudSession> findSqlSession(long sessionId) {
         return (List<SqlCloudSession>) persistenceManager.newQuery(
                 "select from " + SqlCloudSession.class.getName()

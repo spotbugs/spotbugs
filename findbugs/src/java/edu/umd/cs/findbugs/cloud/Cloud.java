@@ -19,18 +19,16 @@
 
 package edu.umd.cs.findbugs.cloud;
 
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.Collection;
-import java.util.Date;
-import java.util.SortedSet;
-
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SystemProperties;
+
+import javax.annotation.CheckForNull;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.Collection;
+import java.util.Date;
 
 
 /**
@@ -40,8 +38,7 @@ import edu.umd.cs.findbugs.SystemProperties;
  * Each Cloud instance is associated with a BugCollection.
  */
 public interface Cloud {
-
-	public interface CloudListener {
+    public interface CloudListener {
 		void issueUpdated(BugInstance bug);
 		void statusUpdated();
 	}
@@ -190,6 +187,8 @@ public interface Cloud {
 	/** Get user name */
 	String getUser();
 
+    LoggedInState getLoggedInState();
+
 	/* Supports links to a bug database */ 
 	boolean supportsBugLinks();
 
@@ -270,4 +269,6 @@ public interface Cloud {
 	public boolean supportsCloudSummaries();
 
     Collection<String> getProjects(String className);
+
+    enum LoggedInState { LOGGING_IN, LOGGED_IN, LOGIN_FAILED, NO_LOGIN_REQUIRED }
 }

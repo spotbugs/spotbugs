@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
+import edu.umd.cs.findbugs.cloud.Cloud.LoggedInState;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -52,6 +53,7 @@ import edu.umd.cs.findbugs.util.LaunchBrowser;
 import edu.umd.cs.findbugs.util.Multiset;
 
 import javax.annotation.Nonnull;
+import javax.imageio.ImageIO;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -72,6 +74,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -110,6 +113,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -219,7 +223,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	final CommentsArea comments;
 	private SorterTableColumnModel sorter;
 	private JTableHeader tableheader;
+    
 	private JLabel statusBarLabel = new JLabel();
+    private JLabel loggedInLabel;
+    private ImageIcon loggedInIcon;
+    private ImageIcon warningIcon;
 
 	private JPanel summaryTopPanel;
 	private final HTMLEditorKit htmlEditorKit = new HTMLEditorKit();
@@ -1988,18 +1996,42 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	 */
 	JPanel statusBar()
 	{
-		JPanel statusBar = new JPanel(); 
+		JPanel statusBar = new JPanel();
 		// statusBar.setBackground(Color.WHITE);
 
 		statusBar.setBorder(new BevelBorder(BevelBorder.LOWERED));
-		statusBar.setLayout(new BorderLayout());
-		statusBar.add(statusBarLabel,BorderLayout.WEST);
+		statusBar.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        statusBar.add(statusBarLabel, constraints.clone());
+
+        constraints.weightx = 0;
+        constraints.fill = GridBagConstraints.NONE;
+
+        try {
+            loggedInIcon = new ImageIcon(ImageIO.read(MainFrame.class.getResource("greencircle.png")).getScaledInstance(16,16, Image.SCALE_SMOOTH));
+            warningIcon = new ImageIcon(ImageIO.read(MainFrame.class.getResource("warningicon.png")).getScaledInstance(16,16, Image.SCALE_SMOOTH));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        loggedInLabel = new JLabel();
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.insets = new Insets(0,5,0,5);
+        statusBar.add(loggedInLabel, constraints.clone());
+
+        loggedInLabel.setVisible(false);
 
 		JLabel logoLabel = new JLabel();
 
+        constraints.insets = new Insets(0,0,0,0);
 		ImageIcon logoIcon = new ImageIcon(MainFrame.class.getResource("logo_umd.png"));
 		logoLabel.setIcon(logoIcon);
-		statusBar.add(logoLabel, BorderLayout.EAST);
+        logoLabel.setPreferredSize(new Dimension(logoIcon.getIconWidth(), logoIcon.getIconHeight()));
+        constraints.anchor = GridBagConstraints.WEST;
+		statusBar.add(logoLabel, constraints.clone());
 
 		return statusBar;
 	}
@@ -2019,14 +2051,29 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	    } else 	if (countFilteredBugs > 1) {
 	        msg = "  " + countFilteredBugs + " " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden by filters");
         }
+        boolean showLoggedInStatus = false;
 		if (bugCollection != null) {
 			Cloud plugin = bugCollection.getCloud();
 			if (plugin != null) {
 				String pluginMsg = plugin.getStatusMsg();
 				if (pluginMsg != null && pluginMsg.length() > 1)
 					msg = join(msg, pluginMsg);
+                if (plugin.getLoggedInState() == LoggedInState.LOGGING_IN) {
+                    loggedInLabel.setText("<html>FindBugs Cloud:<br> signing in");
+                    loggedInLabel.setIcon(null);
+                    showLoggedInStatus = true;
+                } else if (plugin.getLoggedInState() == LoggedInState.LOGGED_IN) {
+                    loggedInLabel.setText("<html>FindBugs Cloud:<br> signed in as " + plugin.getUser());
+                    loggedInLabel.setIcon(loggedInIcon);
+                    showLoggedInStatus = true;
+                } else if (plugin.getLoggedInState() == LoggedInState.LOGIN_FAILED) {
+                    loggedInLabel.setText("<html>FindBugs Cloud:<br> not signed in");
+                    loggedInLabel.setIcon(warningIcon);
+                    showLoggedInStatus = true;
+                }
 			}
 		}
+        loggedInLabel.setVisible(showLoggedInStatus);
 		if (errorMsg != null && errorMsg.length() > 0)
 			msg = join(msg, errorMsg);
         waitStatusLabel.setText(msg); // should not be the URL
@@ -2765,7 +2812,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 		BugSaver.saveBugs(f,bugCollection, getProject());
 		try {
-			ProjectSettings.getInstance().save(new FileOutputStream(filtersAndSuppressions));
+			getProjectSettings().save(new FileOutputStream(filtersAndSuppressions));
 		} catch (IOException e) {
 			Debug.println(e);
 			return SaveReturn.SAVE_IO_EXCEPTION;
@@ -2775,7 +2822,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		return SaveReturn.SAVE_SUCCESSFUL;
 	}
 
-	/**
+    /**
 	 * @param currentSelectedBugLeaf2
 	 * @param currentSelectedBugAspects2
 	 */
@@ -2861,9 +2908,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	private void prepareForFileLoad(File f, SaveType saveType) {
 	    setRebuilding(true);
 		//This creates a new filters and suppressions so don't use the previoues one.
-		ProjectSettings.newInstance();
-		
-		clearSourcePane();
+        createProjectSettings();
+
+        clearSourcePane();
 		clearSummaryTab();
 		comments.setUserCommentInputEnable(false);
 		reconfigMenuItem.setEnabled(true);
@@ -2978,20 +3025,20 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			JOptionPane.showMessageDialog(MainFrame.this, edu.umd.cs.findbugs.L10N.getLocalString(
 					"dlg.filter_settings_not_found_lbl", "Filter settings not found, using default settings."));
 
-			ProjectSettings.newInstance();
+            createProjectSettings();
 
-		} 
+        }
 		else
 		{
 			try 
 			{
-				ProjectSettings.loadInstance(new FileInputStream(fasFile));
-			} catch (FileNotFoundException e) 
+                loadProjectSettings(fasFile);
+            } catch (FileNotFoundException e)
 			{
 				//Impossible.
 				if (MainFrame.DEBUG) System.err.println(".fas file not found, using default settings");
-				ProjectSettings.newInstance();
-			}
+                createProjectSettings();
+            }
 		}
 		final File extraFinalReferenceToXmlFile=xmlFile;
 		new Thread(new Runnable(){
@@ -3023,7 +3070,22 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		changeTitle();
 	}
 
-	/**
+    @SuppressWarnings({"deprecation"})
+    private ProjectSettings getProjectSettings() {
+        return ProjectSettings.getInstance();
+    }
+
+    @SuppressWarnings({"deprecation"})
+    private void loadProjectSettings(File fasFile) throws FileNotFoundException {
+        ProjectSettings.loadInstance(new FileInputStream(fasFile));
+    }
+
+    @SuppressWarnings({"deprecation"})
+    private void createProjectSettings() {
+        ProjectSettings.newInstance();
+    }
+
+    /**
 	 * This checks if the xmlFile is in the GUISaveState. If not adds it. Then adds the file
 	 * to the recentMenuCache.
 	 * @param xmlFile
