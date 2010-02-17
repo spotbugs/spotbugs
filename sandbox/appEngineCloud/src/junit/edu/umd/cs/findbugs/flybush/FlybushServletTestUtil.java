@@ -6,8 +6,8 @@ import junit.framework.Assert;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 
-public class FlybushServletUtil {
-    private FlybushServletUtil() { }
+public class FlybushServletTestUtil {
+    private FlybushServletTestUtil() { }
 
     public static DbEvaluation createEvaluation(DbIssue issue, String who, int when) {
         DbEvaluation eval = new DbEvaluation();

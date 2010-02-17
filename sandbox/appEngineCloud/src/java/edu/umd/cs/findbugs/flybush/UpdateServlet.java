@@ -17,10 +17,12 @@ import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.jdo.Transaction;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -33,7 +35,24 @@ import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.de
 @SuppressWarnings("serial")
 public class UpdateServlet extends AbstractFlybushServlet {
 
+    static final int ONE_DAY_IN_MILLIS = 1000*60*60*24;
     private static final Logger LOGGER = Logger.getLogger(UpdateServlet.class.getName());
+
+    @Override
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        PersistenceManager pm = getPersistenceManager();
+        try {
+            if (req.getRequestURI().equals("/expire-sql-sessions")) {
+                expireSqlSessions(req, resp, pm);
+
+            } else {
+                super.doGet(req, resp);
+            }
+        } finally {
+            pm.close();
+        }
+    }
 
     @Override
     protected void handlePost(PersistenceManager pm, HttpServletRequest req, HttpServletResponse resp, String uri) 
@@ -50,6 +69,23 @@ public class UpdateServlet extends AbstractFlybushServlet {
         } else if (uri.equals("/set-bug-link")) {
             setBugLink(req, resp, pm);
         }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void expireSqlSessions(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) {
+        Query query = pm.newQuery("select from " + SqlCloudSession.class.getName() + " where date < :when");
+        for (SqlCloudSession session : (List<SqlCloudSession>) query.execute(new Date(System.currentTimeMillis() - 7*ONE_DAY_IN_MILLIS))) {
+            Transaction tx = pm.currentTransaction();
+            tx.begin();
+            try {
+                pm.deletePersistent(session);
+                tx.commit();
+            } finally {
+                if (tx.isActive())
+                    tx.rollback();
+            }
+        }
+        resp.setStatus(200);
     }
 
     private void clearAllData(HttpServletResponse resp) throws IOException {

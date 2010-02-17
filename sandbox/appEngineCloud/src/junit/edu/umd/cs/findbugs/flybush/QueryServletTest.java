@@ -14,9 +14,9 @@ import java.util.Arrays;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHashes;
-import static edu.umd.cs.findbugs.flybush.FlybushServletUtil.checkIssuesEqualExceptTimestamps;
-import static edu.umd.cs.findbugs.flybush.FlybushServletUtil.createDbIssue;
-import static edu.umd.cs.findbugs.flybush.FlybushServletUtil.createEvaluation;
+import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.checkIssuesEqualExceptTimestamps;
+import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.createDbIssue;
+import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.createEvaluation;
 
 public class QueryServletTest extends AbstractFlybushServletTest {
 

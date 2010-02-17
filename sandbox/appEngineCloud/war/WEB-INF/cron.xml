@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+  <cron>
+    <url>/expire-sql-sessions</url>
+    <description>Clear all expired SQL sessions from the database</description>
+    <schedule>every 5 minutes</schedule>
+  </cron>
+</cronentries>
