@@ -28,7 +28,6 @@
         <url-pattern>/find-issues</url-pattern>
         <url-pattern>/get-evaluations</url-pattern>
         <url-pattern>/get-recent-evaluations</url-pattern>
-        <url-pattern>/expire-sql-sessions</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateServlet</servlet-name>
@@ -36,5 +35,6 @@
         <url-pattern>/upload-issues</url-pattern>
         <url-pattern>/upload-evaluation</url-pattern>
         <url-pattern>/set-bug-link</url-pattern>
+        <url-pattern>/expire-sql-sessions</url-pattern>
     </servlet-mapping>
 </web-app>

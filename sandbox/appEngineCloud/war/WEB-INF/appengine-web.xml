@@ -2,7 +2,6 @@
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
 	<application>theflybush</application>
 	<version>2</version>
-	<precompilation-enabled>true</precompilation-enabled>
 
 	<!-- Configure java.util.logging -->
 	<system-properties>
