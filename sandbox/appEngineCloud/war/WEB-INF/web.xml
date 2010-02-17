@@ -27,7 +27,7 @@
         <servlet-name>QueryServlet</servlet-name>
         <url-pattern>/find-issues</url-pattern>
         <url-pattern>/get-evaluations</url-pattern>
-        <url-pattern>/get-recent-evaluation</url-pattern>
+        <url-pattern>/get-recent-evaluations</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateServlet</servlet-name>

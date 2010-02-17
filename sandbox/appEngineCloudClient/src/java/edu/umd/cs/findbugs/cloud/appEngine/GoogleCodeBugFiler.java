@@ -14,6 +14,7 @@ import com.google.gdata.data.projecthosting.Owner;
 import com.google.gdata.data.projecthosting.SendEmail;
 import com.google.gdata.data.projecthosting.Status;
 import com.google.gdata.data.projecthosting.Username;
+import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
@@ -25,6 +26,7 @@ import edu.umd.cs.findbugs.util.LaunchBrowser;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.prefs.Preferences;
 
 public class GoogleCodeBugFiler {
 
@@ -40,10 +42,12 @@ public class GoogleCodeBugFiler {
     private @CheckForNull ProjectHostingService projectHostingService;
 
 	private final URL issuesFeedUrl;
+    private static final String KEY_PROJECTHOSTING_OAUTH_TOKEN = "projecthosting_oauth_token";
+    private static final String KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET = "projecthosting_oauth_token_secret";
 
     public GoogleCodeBugFiler(Cloud cloud, String project) throws MalformedURLException {
         this.cloud = cloud;
-		issuesFeedUrl = makeIssuesFeedUrl(project);
+		issuesFeedUrl = getIssuesFeedUrl(project);
 		bugFilingHelper = new BugFilingHelper(cloud);
 	}
 
@@ -51,23 +55,52 @@ public class GoogleCodeBugFiler {
 			throws IOException, ServiceException, OAuthException, InterruptedException {
 
         if (projectHostingService == null)
-            initProjectHostingService();
+            initProjectHostingService(false);
 
-        return projectHostingService.insert(issuesFeedUrl, makeNewIssue(instance));
-	}
+        try {
+            return projectHostingService.insert(issuesFeedUrl, makeNewIssue(instance));
+        } catch (AuthenticationException e) {
+            // something failed, so maybe the OAuth token is expired
+            clearAuthTokenCache();
+            initProjectHostingService(true);
+            try {
+                return projectHostingService.insert(issuesFeedUrl, makeNewIssue(instance));
+            } catch (AuthenticationException e1) {
+                clearAuthTokenCache();
+                throw e1;
+            }
+        }
+    }
+
+    private void clearAuthTokenCache() {
+        Preferences prefs = getPrefs();
+        prefs.remove(KEY_PROJECTHOSTING_OAUTH_TOKEN);
+        prefs.remove(KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET);
+    }
 
     // ============================= end of public methods =====================================
 
-	private URL makeIssuesFeedUrl(String proj) throws MalformedURLException {
+	private URL getIssuesFeedUrl(String proj) throws MalformedURLException {
 		return new URL(FEED_URI_BASE + "/p/" + proj + "/issues" + PROJECTION);
 	}
 
-    // TODO: cache these tokens!
-    private void initProjectHostingService() throws OAuthException, MalformedURLException, InterruptedException {
+    private void initProjectHostingService(boolean forceGetNewToken)
+            throws OAuthException, MalformedURLException, InterruptedException {
+
+        OAuthHmacSha1Signer oauthSigner = new OAuthHmacSha1Signer();
         GoogleOAuthParameters oauthParameters = new GoogleOAuthParameters();
         oauthParameters.setOAuthConsumerKey("kano.net");
         oauthParameters.setOAuthConsumerSecret("b4EYCteCkyYvdpuIACmeHZK/");
-        OAuthHmacSha1Signer oauthSigner = new OAuthHmacSha1Signer();
+
+        String token = getPrefs().get(KEY_PROJECTHOSTING_OAUTH_TOKEN, null);
+        String secret = getPrefs().get(KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET, "");
+        if (!forceGetNewToken && token != null && secret != null) {
+            oauthParameters.setOAuthToken(token);
+            oauthParameters.setOAuthTokenSecret(secret);
+            projectHostingService = new ProjectHostingService("findbugs-cloud-client");
+            projectHostingService.setOAuthCredentials(oauthParameters, oauthSigner);
+            return;
+        }
         GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(oauthSigner);
         oauthParameters.setScope(FEED_URI_BASE);
 
@@ -83,14 +116,21 @@ public class GoogleCodeBugFiler {
                                    "your web browser, then click OK.");
 
         // convert the request token to a session token
-        oauthHelper.getAccessToken(oauthParameters);
+        token = oauthHelper.getAccessToken(oauthParameters);
+
+        getPrefs().put(KEY_PROJECTHOSTING_OAUTH_TOKEN, token);
+        getPrefs().put(KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET, oauthParameters.getOAuthTokenSecret());
 
         projectHostingService = new ProjectHostingService("findbugs-cloud-client");
         projectHostingService.setOAuthCredentials(oauthParameters, oauthSigner);
     }
 
+    private Preferences getPrefs() {
+        return Preferences.userNodeForPackage(GoogleCodeBugFiler.class);
+    }
 
-	private IssuesEntry makeNewIssue(BugInstance bug) {
+
+    private IssuesEntry makeNewIssue(BugInstance bug) {
 		Person author = new Person();
 		author.setName(cloud.getUser());
 

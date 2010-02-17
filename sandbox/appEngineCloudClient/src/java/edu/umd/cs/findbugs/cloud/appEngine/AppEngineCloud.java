@@ -48,6 +48,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
@@ -227,13 +228,18 @@ public class AppEngineCloud extends AbstractCloud {
     private IssuesEntry fileBugOnGoogleCode(BugInstance b)
             throws IOException, ServiceException, OAuthException, InterruptedException {
         IGuiCallback guiCallback = bugCollection.getProject().getGuiCallback();
+        Preferences prefs = Preferences.userNodeForPackage(AppEngineCloud.class);
+
+        String lastProject = prefs.get("last_google_code_project", "");
         String projectName = guiCallback.showQuestionDialog(
                 "Issue will be filed at Google Code.\n" +
                 "\n" +
-                "Google Code project name:", "Google Code Issue Tracker", "");
+                "Google Code project name:", "Google Code Issue Tracker",
+                lastProject);
         if (projectName == null || projectName.trim().length() == 0) {
             return null;
         }
+        prefs.put("last_google_code_project", projectName);
         GoogleCodeBugFiler bugFiler = new GoogleCodeBugFiler(this, projectName);
         IssuesEntry issue = bugFiler.file(b);
         if (issue == null)

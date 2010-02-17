@@ -53,11 +53,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author pugh
  */
 public class CommentsArea {
+    private static final Logger LOGGER = Logger.getLogger(CommentsArea.class.getName());
 
 	private JTextArea userCommentsText = new JTextArea();
 	private JTextArea reportText = new JTextArea();
@@ -83,7 +86,7 @@ public class CommentsArea {
 	
 	private Executor backgroundExecutor = Executors.newSingleThreadExecutor();
 
-	CommentsArea(MainFrame frame) {
+    CommentsArea(MainFrame frame) {
 		this.frame = frame;
 	}
 
@@ -159,7 +162,8 @@ public class CommentsArea {
                     } catch (Exception e1) {
                         JOptionPane.showMessageDialog(getMainFrame(),
                                                       "Could not file bug:\n"
-                                                      + e1.getClass().getSimpleName() + ": " + e1.getMessage());
+                                                      + e1.getClass().getSimpleName() + "\n" + e1.getMessage());
+                        LOGGER.log(Level.SEVERE, "Could not file bug", e1);
                     }
                 }
 	            
