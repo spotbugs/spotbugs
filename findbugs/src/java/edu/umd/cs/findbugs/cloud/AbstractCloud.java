@@ -19,6 +19,19 @@
 
 package edu.umd.cs.findbugs.cloud;
 
+import edu.umd.cs.findbugs.AppVersion;
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.PackageStats;
+import edu.umd.cs.findbugs.ProjectStats;
+import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.cloud.username.NameLookup;
+import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.Multiset;
+
 import java.io.PrintWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -29,13 +42,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.regex.Pattern;
-
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.cloud.username.NameLookup;
-import edu.umd.cs.findbugs.cloud.username.PromptForNameLookup;
-import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.util.Multiset;
 
 
 /**
@@ -435,7 +441,7 @@ public abstract class AbstractCloud implements Cloud {
 		
     }
     
-	protected void setStatusMsg(String newMsg) {
+	public void setStatusMsg(String newMsg) {
 		this.statusMsg = newMsg;
 		updatedStatus();
 	}

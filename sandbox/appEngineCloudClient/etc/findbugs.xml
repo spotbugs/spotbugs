@@ -13,7 +13,7 @@
                 >
 
   <Cloud id="edu.umd.cs.findbugs.cloud.appengine.theflybush"				
-	 cloudClass="edu.umd.cs.findbugs.cloud.appEngine.AppEngineCloud"
+	 cloudClass="edu.umd.cs.findbugs.cloud.appEngine.AppEngineCloudClient"
 	 usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup"
 	>
 <Properties>

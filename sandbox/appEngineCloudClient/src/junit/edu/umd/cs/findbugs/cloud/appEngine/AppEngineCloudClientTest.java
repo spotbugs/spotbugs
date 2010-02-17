@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class AppEngineCloudTest extends TestCase {
+public class AppEngineCloudClientTest extends TestCase {
 	private BugInstance missingIssue;
 	private BugInstance foundIssue;
     private boolean addMissingIssue;
@@ -87,8 +87,8 @@ public class AppEngineCloudTest extends TestCase {
 		ByteArrayOutputStream uploadIssuesBuffer = setupResponseCodeAndOutputStream(uploadConnection);
 
 		// execution
-		MyAppEngineCloud cloud = createAppEngineCloud(logInConnection, findIssuesConnection, uploadConnection);
-		cloud.setUsername("claimer");
+		MyAppEngineCloudClient cloud = createAppEngineCloudClient(logInConnection, findIssuesConnection, uploadConnection);
+		cloud.getNetworkClient().setUsername("claimer");
 		cloud.bugsPopulated();
 
 		// verify log-in
@@ -133,14 +133,14 @@ public class AppEngineCloudTest extends TestCase {
         addMissingIssue = true;
 		final HttpURLConnection conn = mock(HttpURLConnection.class);
 		ByteArrayOutputStream outputCollector = setupResponseCodeAndOutputStream(conn);
-		AppEngineCloud cloud = createAppEngineCloud(conn);
+		AppEngineCloudClient cloudClient = createAppEngineCloudClient(conn);
 
 		foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", 200, "my eval", "claimer"));
 
 		// execute
-		cloud.setUsername("claimer");
-		cloud.setSessionId(100);
-		cloud.storeUserAnnotation(foundIssue);
+		cloudClient.getNetworkClient().setUsername("claimer");
+		cloudClient.getNetworkClient().setSessionId(100);
+		cloudClient.storeUserAnnotation(foundIssue);
 
 		// verify
 		verify(conn).connect();
@@ -171,9 +171,9 @@ public class AppEngineCloudTest extends TestCase {
 
 
 		// setup & execute
-		MyAppEngineCloud cloud = createAppEngineCloud(logInConnection, findConnection, recentEvalConnection);
-		cloud.setUsername("claimer");
-		cloud.setSessionId(100);
+		MyAppEngineCloudClient cloud = createAppEngineCloudClient(logInConnection, findConnection, recentEvalConnection);
+		cloud.getNetworkClient().setUsername("claimer");
+		cloud.getNetworkClient().setSessionId(100);
 		cloud.bugsPopulated();
 		cloud.updateEvaluationsFromServer();
 
@@ -209,37 +209,14 @@ public class AppEngineCloudTest extends TestCase {
 
 
 		// setup & execute
-		AppEngineCloud cloud = createAppEngineCloud(logInConnection, findConnection, recentEvalConnection);
-		cloud.setUsername("claimer");
-		cloud.setSessionId(100);
-		cloud.bugsPopulated();
-		cloud.updateEvaluationsFromServer();
+		AppEngineCloudClient cloudClient = createAppEngineCloudClient(logInConnection, findConnection, recentEvalConnection);
+		cloudClient.getNetworkClient().setUsername("claimer");
+		cloudClient.getNetworkClient().setSessionId(100);
+		cloudClient.bugsPopulated();
+		cloudClient.updateEvaluationsFromServer();
 
 		// verify
-		List<BugDesignation> allUserDesignations = newList(cloud.getAllUserDesignations(foundIssue));
-		assertEquals(2, allUserDesignations.size());
-	}
-
-    public void testFileBug() throws Exception {
-        addMissingIssue = false;
-		Issue responseIssue = createFoundIssue(Arrays.asList(
-                createEvaluation("NOT_A_BUG", 100, "comment", "first")));
-
-        final HttpURLConnection logInConnection = createResponselessConnection();
-
-        final HttpURLConnection findConnection = createFindIssuesConnection(createFindIssuesResponseInputStream(responseIssue));
-
-        final HttpURLConnection fileBugConnection = createResponselessConnection();
-
-		// setup & execute
-		AppEngineCloud cloud = createAppEngineCloud(logInConnection, findConnection, fileBugConnection);
-		cloud.setUsername("claimer");
-		cloud.setSessionId(100);
-		cloud.bugsPopulated();
-		cloud.updateEvaluationsFromServer();
-
-		// verify
-		List<BugDesignation> allUserDesignations = newList(cloud.getAllUserDesignations(foundIssue));
+		List<BugDesignation> allUserDesignations = newList(cloudClient.getAllUserDesignations(foundIssue));
 		assertEquals(2, allUserDesignations.size());
 	}
 
@@ -341,19 +318,19 @@ public class AppEngineCloudTest extends TestCase {
 		return outputStream;
 	}
 
-	private MyAppEngineCloud createAppEngineCloud(HttpURLConnection... connections) {
+	private MyAppEngineCloudClient createAppEngineCloudClient(HttpURLConnection... connections) {
 		SortedBugCollection bugs = new SortedBugCollection();
 		if (addMissingIssue) bugs.add(missingIssue);
 		bugs.add(foundIssue);
 		final Iterator<HttpURLConnection> mockConnections = Arrays.asList(connections).iterator();
-		CloudPlugin plugin = new CloudPlugin("AppEngineCloudTest", AppEngineCloud.class.getClassLoader(),
-				AppEngineCloud.class, AppEngineNameLookup.class, new PropertyBundle(), "none", "none");
+		CloudPlugin plugin = new CloudPlugin("AppEngineCloudClientTest", AppEngineCloudClient.class.getClassLoader(),
+				AppEngineCloudClient.class, AppEngineNameLookup.class, new PropertyBundle(), "none", "none");
 		Executor runImmediatelyExecutor = new Executor() {
 			public void execute(Runnable command) {
 				command.run();
 			}
 		};
-		return new MyAppEngineCloud(plugin, bugs, runImmediatelyExecutor, mockConnections);
+		return new MyAppEngineCloudClient(plugin, bugs, runImmediatelyExecutor, mockConnections);
 	}
 
 	private void checkIssuesEqual(BugInstance issue, Issue uploadedIssue) {
@@ -373,22 +350,26 @@ public class AppEngineCloudTest extends TestCase {
 		return new ByteArrayInputStream(issueList.build().toByteArray());
 	}
 
-    private static class MyAppEngineCloud extends AppEngineCloud {
+    private static class MyAppEngineCloudClient extends AppEngineCloudClient {
         public List<String> urlsRequested;
         private final Iterator<HttpURLConnection> mockConnections;
 
-        public MyAppEngineCloud(CloudPlugin plugin, SortedBugCollection bugs, Executor runImmediatelyExecutor, Iterator<HttpURLConnection> mockConnections) {
+        public MyAppEngineCloudClient(CloudPlugin plugin, SortedBugCollection bugs,
+                                      Executor runImmediatelyExecutor, Iterator<HttpURLConnection> mockConnectionsP) {
             super(plugin, bugs, runImmediatelyExecutor);
-            this.mockConnections = mockConnections;
+            this.mockConnections = mockConnectionsP;
             urlsRequested = Lists.newArrayList();
-        }
 
-        HttpURLConnection openConnection(String url) {
-            if (!mockConnections.hasNext()) {
-                fail("No connection for " + url + " (past URL's: " + urlsRequested + ")");
-            }
-            urlsRequested.add(url);
-            return mockConnections.next();
+            setNetworkClient(new AppEngineCloudNetworkClient() {
+                @Override
+                HttpURLConnection openConnection(String url) {
+                    if (!mockConnections.hasNext()) {
+                        fail("No connection for " + url + " (past URL's: " + urlsRequested + ")");
+                    }
+                    urlsRequested.add(url);
+                    return mockConnections.next();
+                }
+            });
         }
     }
 }
