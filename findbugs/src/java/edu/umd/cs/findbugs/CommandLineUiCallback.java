@@ -18,25 +18,28 @@
  */
 package edu.umd.cs.findbugs;
 
-import javax.swing.JOptionPane;
-
 import edu.umd.cs.findbugs.cloud.Cloud;
 
+import javax.swing.JOptionPane;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.URLConnection;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.AbstractExecutorService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Implementation of the UI callback for command line sessions.
  * @author andy.st
  */
 public class CommandLineUiCallback implements IGuiCallback {
-   public void showMessageDialog(String message) {
+    private final CurrentThreadExecutorService bugUpdateExecutor = new CurrentThreadExecutorService();
+
+    public void showMessageDialog(String message) {
     System.out.println(message);
   }
 
@@ -118,4 +121,33 @@ public boolean showDocument(URL u) {
 
 public void registerCloud(Project project, BugCollection collection, Cloud cloud) {
 }
+
+    public ExecutorService getBugUpdateExecutor() {
+        return bugUpdateExecutor;
+    }
+
+    private static class CurrentThreadExecutorService extends AbstractExecutorService {
+        public void shutdown() {
+        }
+
+        public List<Runnable> shutdownNow() {
+            return null;
+        }
+
+        public boolean isShutdown() {
+            return false;
+        }
+
+        public boolean isTerminated() {
+            return false;
+        }
+
+        public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+            return false;
+        }
+
+        public void execute(Runnable command) {
+            command.run();
+        }
+    }
 }

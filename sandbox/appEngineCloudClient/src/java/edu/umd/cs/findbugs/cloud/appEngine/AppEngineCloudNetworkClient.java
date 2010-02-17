@@ -3,8 +3,8 @@ package edu.umd.cs.findbugs.cloud.appEngine;
 import com.google.protobuf.GeneratedMessage;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
@@ -25,7 +25,13 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
@@ -38,11 +44,11 @@ public class AppEngineCloudNetworkClient {
     private static final int HASH_CHECK_PARTITION_SIZE = 20;
 
     private AppEngineCloudClient cloudClient;
-    private Map<String, Issue> issuesByHash = new ConcurrentHashMap<String, Issue>();
+    private ConcurrentMap<String, Issue> issuesByHash = new ConcurrentHashMap<String, Issue>();
     private String host;
     private long sessionId;
     private String username;
-    private long mostRecentEvaluationMillis = 0;
+    private volatile long mostRecentEvaluationMillis = 0;
 
     public AppEngineCloudNetworkClient() {
     }
@@ -126,11 +132,11 @@ public class AppEngineCloudNetworkClient {
             String hash = hashes.get(j);
             Issue issue = response.getFoundIssues(j);
 
+            storeIssueDetails(hash, issue);
+
             if (isEmpty(issue))
                 // the issue was not found!
                 continue;
-
-            storeIssueDetails(hash, issue);
 
             BugInstance bugInstance;
             if (FORCE_UPLOAD_ALL_ISSUES) bugInstance = bugsByHash.get(hash);
@@ -169,13 +175,13 @@ public class AppEngineCloudNetworkClient {
         return issue.getFirstSeen();
     }
 
-    public void storeIssueDetails(String hash, Issue newIssue) {
-        for (Evaluation eval : newIssue.getEvaluationsList()) {
+    public void storeIssueDetails(String hash, Issue issue) {
+        for (Evaluation eval : issue.getEvaluationsList()) {
             if (eval.getWhen() > mostRecentEvaluationMillis) {
                 mostRecentEvaluationMillis = eval.getWhen();
             }
         }
-        issuesByHash.put(hash, newIssue);
+        issuesByHash.put(hash, issue);
     }
 
     private FindIssuesResponse submitHashes(List<String> bugsByHash)
@@ -215,21 +221,49 @@ public class AppEngineCloudNetworkClient {
         return response;
     }
 
-    private void uploadIssues(Collection<BugInstance> bugsToSend)
+    private void uploadIssues(final Collection<BugInstance> bugsToSend)
             throws IOException {
         LOGGER.info("Uploading " + bugsToSend.size() + " bugs to App Engine Cloud");
-        Builder issueList = UploadIssues.newBuilder();
-        issueList.setSessionId(sessionId);
-        for (BugInstance bug : bugsToSend) {
-            issueList.addNewIssues(ProtoClasses.Issue.newBuilder()
-                    .setHash(encodeHash(bug.getInstanceHash()))
-                    .setBugPattern(bug.getType())
-                    .setPriority(bug.getPriority())
-                    .setPrimaryClass(bug.getPrimaryClass().getClassName())
-                    .setFirstSeen(cloudClient.getFirstSeen(bug))
-                    .build());
+        UploadIssues uploadIssues = buildUploadIssuesCommandInUIThread(bugsToSend);
+        if (uploadIssues == null)
+            return;
+        openPostUrl(uploadIssues, "/upload-issues");
+
+        // if it worked, store the issues locally
+        for (Issue issue : uploadIssues.getNewIssuesList()) {
+            storeIssueDetails(AppEngineProtoUtil.decodeHash(issue.getHash()), issue);
         }
-        openPostUrl(issueList.build(), "/upload-issues");
+    }
+
+    private UploadIssues buildUploadIssuesCommandInUIThread(final Collection<BugInstance> bugsToSend) {
+        ExecutorService updateExecutor = cloudClient.getBugCollection().getProject()
+                .getGuiCallback().getBugUpdateExecutor(); 
+
+        Future<UploadIssues> future = updateExecutor.submit(new Callable<UploadIssues>() {
+            public UploadIssues call() throws Exception {
+                Builder issueList = UploadIssues.newBuilder();
+                issueList.setSessionId(sessionId);
+                for (BugInstance bug : bugsToSend) {
+                    issueList.addNewIssues(Issue.newBuilder()
+                            .setHash(encodeHash(bug.getInstanceHash()))
+                            .setBugPattern(bug.getType())
+                            .setPriority(bug.getPriority())
+                            .setPrimaryClass(bug.getPrimaryClass().getClassName())
+                            .setFirstSeen(cloudClient.getFirstSeen(bug))
+                            .build());
+                }
+                return issueList.build();
+            }
+        });
+        try {
+            return future.get();
+        } catch (InterruptedException e) {
+            LOGGER.log(Level.SEVERE, "", e);
+            return null;
+        } catch (ExecutionException e) {
+            LOGGER.log(Level.SEVERE, "", e);
+            return null;
+        }
     }
 
     /**
@@ -312,7 +346,7 @@ public class AppEngineCloudNetworkClient {
     @SuppressWarnings({"deprecation"})
     public void storeUserAnnotation(BugInstance bugInstance) {
         BugDesignation designation = bugInstance.getNonnullUserDesignation();
-        edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.Builder evalBuilder = Evaluation.newBuilder()
+        Evaluation.Builder evalBuilder = Evaluation.newBuilder()
                 .setWhen(designation.getTimestamp())
                 .setDesignation(designation.getDesignationKey());
         String comment = designation.getAnnotationText();
@@ -328,7 +362,7 @@ public class AppEngineCloudNetworkClient {
         openPostUrl(uploadMsg, "/upload-evaluation");
     }
 
-    public Issue getIssueByHash(String hash) {
+    public @CheckForNull Issue getIssueByHash(String hash) {
         return issuesByHash.get(hash);
     }
 

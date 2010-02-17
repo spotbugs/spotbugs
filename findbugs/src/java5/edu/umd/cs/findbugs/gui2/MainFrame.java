@@ -19,47 +19,37 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.TreeSet;
-import java.util.concurrent.CountDownLatch;
-import java.util.logging.Level;
+import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.BugAnnotationWithSourceLines;
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
+import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.ProjectPackagePrefixes;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
+import edu.umd.cs.findbugs.filter.Filter;
+import edu.umd.cs.findbugs.filter.LastVersionMatcher;
+import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.gui.ConsoleLogger;
+import edu.umd.cs.findbugs.gui.LogSync;
+import edu.umd.cs.findbugs.gui.Logger;
+import edu.umd.cs.findbugs.gui2.BugTreeModel.TreeModification;
+import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
+import edu.umd.cs.findbugs.util.LaunchBrowser;
+import edu.umd.cs.findbugs.util.Multiset;
 
 import javax.annotation.Nonnull;
 import javax.swing.Action;
@@ -109,38 +99,52 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-
-import edu.umd.cs.findbugs.BugAnnotation;
-import edu.umd.cs.findbugs.BugAnnotationWithSourceLines;
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.ClassAnnotation;
-import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
-import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.ProjectPackagePrefixes;
-import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
-import edu.umd.cs.findbugs.filter.Filter;
-import edu.umd.cs.findbugs.filter.LastVersionMatcher;
-import edu.umd.cs.findbugs.filter.Matcher;
-import edu.umd.cs.findbugs.gui.ConsoleLogger;
-import edu.umd.cs.findbugs.gui.LogSync;
-import edu.umd.cs.findbugs.gui.Logger;
-import edu.umd.cs.findbugs.gui2.BugTreeModel.TreeModification;
-import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
-import edu.umd.cs.findbugs.util.LaunchBrowser;
-import edu.umd.cs.findbugs.util.Multiset;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.TreeSet;
+import java.util.concurrent.AbstractExecutorService;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 @SuppressWarnings("serial")
 
@@ -155,7 +159,9 @@ import edu.umd.cs.findbugs.util.Multiset;
  */
 public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 {
-	static JButton newButton(String key, String name) {
+    private AbstractExecutorService bugUpdateExecutor = new EventQueueExecutor();
+
+    static JButton newButton(String key, String name) {
 		JButton b = new JButton();
 		edu.umd.cs.findbugs.L10N.localiseButton(b, key, name, false);
 		return b;
@@ -180,7 +186,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	}
 	
 	private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(MainFrame.class.getName());
-	
+
 	JTree tree;
 	private BasicTreeUI treeUI;
 	boolean userInputEnabled;
@@ -469,8 +475,12 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	public void registerCloud(Project project, BugCollection collection, Cloud plugin) {
 		setProjectAndBugCollectionInSwingThread(project, collection);
     }
-	
-	@SwingThread
+
+    public ExecutorService getBugUpdateExecutor() {
+        return bugUpdateExecutor;
+    }
+
+    @SwingThread
 	void setProjectWithNoBugCollection(Project project) {
 		setProjectAndBugCollection(project, null);
 	}
@@ -1941,10 +1951,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		} else if (currentSelectedBugAspects != null) {
 			updateDesignationDisplay();
 			comments.updateCommentsFromNonLeafInformation(currentSelectedBugAspects);
-			displayer.displaySource(null, null);				
+			displayer.displaySource(null, null);
 			clearSummaryTab();
 		} else {
-			displayer.displaySource(null, null);			
+			displayer.displaySource(null, null);
 			clearSummaryTab();
 		}
 		setProjectChanged(prevProjectChanged);
@@ -3206,4 +3216,34 @@ public boolean showDocument(URL u) {
 	return LaunchBrowser.showDocument(u);
 }
 
+    private static class EventQueueExecutor extends AbstractExecutorService {
+        public void shutdown() {
+        }
+
+        public List<Runnable> shutdownNow() {
+            return Collections.emptyList();
+        }
+
+        public boolean isShutdown() {
+            return true;
+        }
+
+        public boolean isTerminated() {
+            return true;
+        }
+
+        public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+            return true;
+        }
+
+        public void execute(Runnable command) {
+            try {
+                SwingUtilities.invokeAndWait(command);
+            } catch (InterruptedException e) {
+                throw new IllegalStateException(e);
+            } catch (InvocationTargetException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+    }
 }

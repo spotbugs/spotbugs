@@ -18,10 +18,11 @@
  */
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.cloud.Cloud;
+
 import java.io.InputStream;
 import java.net.URL;
-
-import edu.umd.cs.findbugs.cloud.Cloud;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Interface for any kind of GUI attached to the current FindBug analysis
@@ -41,4 +42,10 @@ public interface IGuiCallback {
      * Useful for adding status msg listener.
      */
     void registerCloud(Project project, BugCollection collection, Cloud cloud);
+
+    /**
+     * Use this executor to queue bug collection updates without interfering with the GUI.
+     * Runs on the AWT event thread.
+     */
+    ExecutorService getBugUpdateExecutor();
 }

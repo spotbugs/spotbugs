@@ -36,7 +36,6 @@ import edu.umd.cs.findbugs.util.Multiset;
 
 import javax.annotation.CheckForNull;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;

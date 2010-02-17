@@ -149,8 +149,12 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     @Override
 	protected Iterable<BugDesignation> getAllUserDesignations(BugInstance bd) {
-		List<BugDesignation> list = new ArrayList<BugDesignation>();
-		for (Evaluation eval : networkClient.getIssueByHash(bd.getInstanceHash()).getEvaluationsList()) {
+        Issue issue = networkClient.getIssueByHash(bd.getInstanceHash());
+        if (issue == null)
+            return Collections.emptyList();
+
+        List<BugDesignation> list = new ArrayList<BugDesignation>();
+        for (Evaluation eval : issue.getEvaluationsList()) {
 			list.add(createBugDesignation(eval));
 		}
 		return list;
@@ -202,13 +206,17 @@ public class AppEngineCloudClient extends AbstractCloud {
 	}
 
 	@SuppressWarnings("deprecation")
-    public void updateBugInstanceAndNotify(BugInstance bugInstance) {
-		BugDesignation primaryDesignation = getPrimaryDesignation(bugInstance);
-		if (primaryDesignation != null) {
-			bugInstance.setUserDesignation(primaryDesignation);
-			updatedIssue(bugInstance);
-		}
-	}
+    public void updateBugInstanceAndNotify(final BugInstance bugInstance) {
+        getBugCollection().getProject().getGuiCallback().getBugUpdateExecutor().execute(new Runnable() {
+            public void run() {
+                BugDesignation primaryDesignation = getPrimaryDesignation(bugInstance);
+                if (primaryDesignation != null) {
+                    bugInstance.setUserDesignation(primaryDesignation);
+                    updatedIssue(bugInstance);
+                }
+            }
+        });
+    }
 
 	public Collection<String> getProjects(String className) {
 		return Collections.emptyList();
@@ -272,7 +280,6 @@ public class AppEngineCloudClient extends AbstractCloud {
 
         networkClient.setBugLinkOnCloud(b, viewUrl);
 
-        // update local DB
         String hash = b.getInstanceHash();
         networkClient.storeIssueDetails(hash,
                                         Issue.newBuilder(networkClient.getIssueByHash(hash))
