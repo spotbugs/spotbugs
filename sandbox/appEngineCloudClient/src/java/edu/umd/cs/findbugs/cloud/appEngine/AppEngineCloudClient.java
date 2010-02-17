@@ -79,7 +79,8 @@ public class AppEngineCloudClient extends AbstractCloud {
 	}
 
 	public boolean initialize() {
-		setStatusMsg("Signing into FindBugs Cloud");
+        super.initialize();
+        setStatusMsg("Signing into FindBugs Cloud");
         if (networkClient.initialize()) return false;
 
         if (timer != null)
@@ -107,34 +108,25 @@ public class AppEngineCloudClient extends AbstractCloud {
 	}
 
 	public void bugsPopulated() {
-		Map<String, BugInstance> bugsByHash = new HashMap<String, BugInstance>();
+		final Map<String, BugInstance> bugsByHash = new HashMap<String, BugInstance>();
 
 		for(BugInstance b : bugCollection.getCollection()) {
 			bugsByHash.put(b.getInstanceHash(), b);
 		}
 
-        int numBugs = bugsByHash.size();
-		setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud...");
+		backgroundExecutor.execute(new Runnable() {
+            public void run() {
+                try {
+                    actuallyCheckBugsAgainstCloud(bugsByHash);
 
-		try {
-            networkClient.logIntoCloud();
-
-            networkClient.checkHashes(new ArrayList<String>(bugsByHash.keySet()), bugsByHash);
-
-            Collection<BugInstance> newBugs = bugsByHash.values();
-            if (!newBugs.isEmpty()) {
-                System.out.println("Server didn't know " + bugsByHash);
-                uploadBugsInBackground(new ArrayList<BugInstance>(newBugs));
-            } else {
-				setStatusMsg("All " + numBugs + " bugs are already stored in the FindBugs Cloud");
-			}
-
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Error while checking bugs against cloud in background", e);
+                }
+            }
+        });
 	}
 
-	// =============== accessors ===================
+    // =============== accessors ===================
 
     AppEngineCloudNetworkClient getNetworkClient() {
         return networkClient;
@@ -200,7 +192,6 @@ public class AppEngineCloudClient extends AbstractCloud {
 	}
 
 	public void bugFiled(BugInstance b, Object bugLink) {
-		System.out.println("bug filed: " + b + ": " + bugLink);
 	}
 
 	// ================== mutators ================
@@ -224,6 +215,21 @@ public class AppEngineCloudClient extends AbstractCloud {
 	}
 
 	// ================== private methods ======================
+
+    private void actuallyCheckBugsAgainstCloud(Map<String, BugInstance> bugsByHash) throws IOException {
+        int numBugs = bugsByHash.size();
+        setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud...");
+        networkClient.logIntoCloud();
+
+        networkClient.checkHashes(new ArrayList<String>(bugsByHash.keySet()), bugsByHash);
+
+        Collection<BugInstance> newBugs = bugsByHash.values();
+        if (!newBugs.isEmpty()) {
+            uploadBugsInBackground(new ArrayList<BugInstance>(newBugs));
+        } else {
+            setStatusMsg("All " + numBugs + " bugs are already stored in the FindBugs Cloud");
+        }
+    }
 
     /** package-private for testing */
 	void updateEvaluationsFromServer() {

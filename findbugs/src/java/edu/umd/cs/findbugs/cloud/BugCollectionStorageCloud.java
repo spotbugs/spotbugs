@@ -19,15 +19,14 @@
 
 package edu.umd.cs.findbugs.cloud;
 
-import java.util.Collection;
-import java.util.Collections;
-
-import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
+
+import java.util.Collection;
+import java.util.Collections;
 
 
 /**
@@ -91,10 +90,6 @@ import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 	public boolean availableForInitialization() {
 		return true;
 	}
-    public boolean initialize() {
-	    return true;
-	    
-    }
 
     public void storeUserAnnotation(BugInstance bugInstance) {
 	    // TODO Auto-generated method stub

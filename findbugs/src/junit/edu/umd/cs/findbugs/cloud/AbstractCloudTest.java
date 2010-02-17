@@ -1,10 +1,5 @@
 package edu.umd.cs.findbugs.cloud;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.*;
-
-import junit.framework.TestCase;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
@@ -12,8 +7,23 @@ import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.cloud.Cloud.Mode;
 import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
+import junit.framework.TestCase;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@SuppressWarnings({"ToArrayCallWithZeroLengthArrayArgument"})
 public class AbstractCloudTest extends TestCase {
 
 	private BugCollection bugCollection;
@@ -21,15 +31,16 @@ public class AbstractCloudTest extends TestCase {
 	private StringWriter summary;
 	private ProjectStats projectStats;
 	private int timestampCounter;
-	
-	@Override
+    private CloudPlugin plugin;
+
+    @Override
     public void setUp() {
 		projectStats = new ProjectStats();
 		bugCollection = new SortedBugCollection(projectStats);
-		CloudPlugin plugin = new CloudPlugin("myAbstractCloud", this.getClass().getClassLoader(), MyAbstractCloud.class, 
-				NoNameLookup.class	, new PropertyBundle()	, "no description", "no details");
-		cloud = new MyAbstractCloud(plugin, bugCollection);
-		summary = new StringWriter();
+        plugin = new CloudPlugin("myAbstractCloud", this.getClass().getClassLoader(), MyAbstractCloud.class,
+                                 NoNameLookup.class, new PropertyBundle(), "no description", "no details");
+        cloud = new MyAbstractCloud(plugin, bugCollection);
+        summary = new StringWriter();
 		timestampCounter = 0;
 	}
 
@@ -170,8 +181,92 @@ public class AbstractCloudTest extends TestCase {
 				
 				printSummary(bugs.toArray(new BugInstance[0])));
 	}
+
+    public void testVotingModePropertyNull() {
+        checkVotingMode(Mode.COMMUNAL, null);
+    }
+
+    public void testVotingModePropertyInvalid() {
+        checkVotingMode(Mode.COMMUNAL, "garbage");
+    }
+
+    public void testVotingModeProperty() {
+        checkVotingMode(Mode.SECRET, "SECRET");
+        checkVotingMode(Mode.COMMUNAL, "COMMUNAL");
+    }
+
+    public void testSourceLinkPatternNotSpecified() {
+        initializeSourceLinks("edu/umd/(.*)", null, null);
+        checkSourceLink(null, "some.other.SomeClass", 0);
+    }
+
+    public void testSourceLinkPatternInvalid() {
+        initializeSourceLinks("edu/umd/(.*", "http://x.y.z/%s", null);
+        checkSourceLink(null, "edu.umd.cs.SomeClass", 0);
+    }
+
+    public void testSourceLinkFormatInvalid() {
+        initializeSourceLinks("edu/umd/(.*)", "http://x.y.z/%M", null);
+        checkSourceLink(null, "edu.umd.cs.SomeClass", 0);
+    }
+
+    public void testSourceLinkURLInvalid() {
+        initializeSourceLinks("edu/umd/(.*)", "://x.y.z/%s", null);
+        checkSourceLink(null, "edu.umd.cs.SomeClass", 0);
+    }
+
+    public void testSourceLinkWithoutLineNumber() {
+        initializeSourceLinks("edu/umd/(.*)", "http://x.y.z/%s", null);
+        checkSourceLink("http://x.y.z/cs/SomeClass.java", "edu.umd.cs.SomeClass", 0);
+    }
+
+    public void testSourceLinkWithLineNumber() {
+        initializeSourceLinks("edu/umd/(.*)", "http://x.y.z/%s", "http://x.y.z/%s#%d,%d");
+        checkSourceLink("http://x.y.z/cs/SomeClass.java#100,90", "edu.umd.cs.SomeClass", 100);
+    }
+
+    public void testSourceLinkNoMatch() {
+        initializeSourceLinks("edu/umd/(.*)", "http://x.y.z/%s", null);
+        checkSourceLink(null, "some.other.SomeClass", 0);
+    }
+
+    public void testSourceLinkTooltip() {
+        plugin.getProperties().setProperty("findbugs.sourcelink.tooltip", "View source link");
+        initializeSourceLinks("edu/umd/(.*)", "http://x.y.z/%s", null);
+        assertEquals("View source link", cloud.getSourceLinkToolTip(createBug("HI")));
+    }
 	
 	// ============================= end of tests =============================
+
+    private void checkSourceLink(String expectedLink, String className, int startLine) {
+        BugInstance bug = createBug("ABBREV");
+        bug.addSourceLine(new SourceLineAnnotation(className, "SomeClass.java", startLine, startLine, 0,0));
+        URL sourceLink = cloud.getSourceLink(bug);
+        if (expectedLink == null) {
+            assertNull(sourceLink);
+        } else {
+            assertNotNull(sourceLink);
+            assertEquals(expectedLink, sourceLink.toExternalForm());
+        }
+    }
+
+    private void checkVotingMode(Mode expectedMode, String modeString) {
+        if (modeString == null)
+            assertNull(plugin.getProperties().getProperty("findbugs.cloud.votingmode"));
+        else
+            plugin.getProperties().setProperty("findbugs.cloud.votingmode", modeString);
+        cloud.initialize();
+        assertEquals(expectedMode, cloud.getMode());
+    }
+
+    private void initializeSourceLinks(String pattern, String format, String formatWithLine) {
+        plugin.getProperties().setProperty("findbugs.sourcelink.pattern", pattern);
+        if (format != null)
+            plugin.getProperties().setProperty("findbugs.sourcelink.format", format);
+        if (formatWithLine != null)
+            plugin.getProperties().setProperty("findbugs.sourcelink.formatWithLine", formatWithLine);
+        cloud.initialize();
+    }
 
     private BugInstance createBug(String abbrev, String... designationUserPairs) {
     	assertTrue(designationUserPairs.length % 2 == 0);
@@ -215,7 +310,7 @@ public class AbstractCloudTest extends TestCase {
 	private String trimWhitespace(String string) {
 	    return string.replaceAll("^\\s+|\\s+$", "").replace("\r", "");
     }
-	
+
     private final class MyAbstractCloud extends AbstractCloud {
 	    private final Map<BugInstance, List<BugDesignation>> designations = new HashMap<BugInstance, List<BugDesignation>>();
 
@@ -227,19 +322,11 @@ public class AbstractCloudTest extends TestCase {
 	    	throw new UnsupportedOperationException();
 	    }
 
-	    public boolean initialize() {
-	    	throw new UnsupportedOperationException();
-	    }
-
 	    public String getUser() {
 	    	return "user";
 	    }
 
 	    public BugDesignation getPrimaryDesignation(BugInstance b) {
-	    	throw new UnsupportedOperationException();
-	    }
-
-	    public long getFirstSeen(BugInstance b) {
 	    	throw new UnsupportedOperationException();
 	    }
 

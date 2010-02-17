@@ -19,6 +19,27 @@
 
 package edu.umd.cs.findbugs.cloud.db;
 
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugRanker;
+import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.PluginLoader;
+import edu.umd.cs.findbugs.ProjectPackagePrefixes;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.StartTime;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.Version;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.BugFilingHelper;
+import edu.umd.cs.findbugs.cloud.CloudFactory;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.Util;
+
+import javax.annotation.CheckForNull;
+import javax.swing.JOptionPane;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -56,29 +77,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
-import javax.swing.JOptionPane;
-
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugRanker;
-import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.PluginLoader;
-import edu.umd.cs.findbugs.ProjectPackagePrefixes;
-import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.StartTime;
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.Version;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.cloud.AbstractCloud;
-import edu.umd.cs.findbugs.cloud.BugFilingHelper;
-import edu.umd.cs.findbugs.cloud.CloudFactory;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-import edu.umd.cs.findbugs.util.Util;
-
 /**
  * @author pwilliam
  */
@@ -88,9 +86,8 @@ public  class DBCloud extends AbstractCloud {
      * 
      */
     public static final String FINDBUGS_USER_PROPERTY = "findbugsUser";
-	static final boolean THROW_EXCEPTION_IF_CANT_CONNECT = false;
-	
-	static final long FIRST_LIGHT = FindBugs.MINIMUM_TIMESTAMP;
+
+    static final long FIRST_LIGHT = FindBugs.MINIMUM_TIMESTAMP;
 	static final long ONE_DAY = 24L * 60 * 60 * 1000;
 	
 	/**
@@ -550,25 +547,13 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 
-	  String getCloudProperty(String propertyName) {
-		return properties.getProperty("findbugs.cloud." + propertyName);
-	}
-
-	public  void setCloudProperty(String propertyName, String value) {
-		properties.setProperty("findbugs.cloud." + propertyName, value);
-	}
-	private  String getJDBCProperty(String propertyName) {
+    private  String getJDBCProperty(String propertyName) {
 		return properties.getProperty("findbugs.jdbc." + propertyName);
 	}
 
 	final  int MAX_DB_RANK = properties.getInt("findbugs.db.maxrank", 12);
 	final String url, dbUser, dbPassword, dbName;
 	String findbugsUser;
-	@CheckForNull Pattern sourceFileLinkPattern;
-	String sourceFileLinkFormat;
-	String sourceFileLinkFormatWithLine;
-	
-	String sourceFileLinkToolTip;
 	ProjectPackagePrefixes projectMapping = new ProjectPackagePrefixes();
 	Map<String,String> prefixBugComponentMapping = new HashMap<String,String>();
 	private final String sqlDriver;
@@ -579,33 +564,11 @@ public  class DBCloud extends AbstractCloud {
 
 
 	public boolean initialize() {
+        if (!super.initialize())
+            return false;
 		if (!availableForInitialization())
 			return false;
-		
-		String mode = getCloudProperty("votingmode");
-		if (mode != null)
-			setMode(Mode.valueOf(mode.toUpperCase()));
-		
-		String sp = properties.getProperty("findbugs.sourcelink.pattern");
-		String sf = properties.getProperty("findbugs.sourcelink.format");
-		String sfwl = properties.getProperty("findbugs.sourcelink.formatWithLine");
-		
-		String stt  = properties.getProperty("findbugs.sourcelink.tooltip");
-		if (sp != null && sf != null) {
-			try {
-			this.sourceFileLinkPattern = Pattern.compile(sp);
-			this.sourceFileLinkFormat = sf;
-			this.sourceFileLinkToolTip = stt;
-			this.sourceFileLinkFormatWithLine = sfwl;
-			} catch (RuntimeException e) {
-				AnalysisContext.logError("Could not compile pattern " + sp, e);
-				if (THROW_EXCEPTION_IF_CANT_CONNECT)
-					throw e;
-			}
-		}
-		
-		
-		
+
 		findbugsUser = getUsernameLookup().getUsername();
 		
 		if (findbugsUser == null)
@@ -652,8 +615,8 @@ public  class DBCloud extends AbstractCloud {
 			Util.closeSilently(c);
 		}
 	}
-	
-	private String getBugComponent(@SlashedClassName String className) {
+
+    private String getBugComponent(@SlashedClassName String className) {
 		
 		int longestMatch = -1;
 		String result = null;
@@ -1563,46 +1526,7 @@ public  class DBCloud extends AbstractCloud {
 	    updatedIssue(bugInstance);
 	    
     }
-    
-    @Override
-    public boolean supportsSourceLinks() {
-    	return sourceFileLinkPattern != null;
-    	
-    }
-    
-	@SuppressWarnings("boxing")
-    @Override
-    public @CheckForNull URL getSourceLink(BugInstance b) {
-		if (sourceFileLinkPattern == null)
-			return null;
 
-		SourceLineAnnotation src = b.getPrimarySourceLineAnnotation();
-		String fileName = src.getSourcePath();
-		int startLine = src.getStartLine();
-
-		java.util.regex.Matcher m = sourceFileLinkPattern.matcher(fileName);
-		boolean isMatch = m.matches();
-		if (isMatch)
-			try {
-				URL link;
-				if (startLine > 0)
-					link = new URL(String.format(sourceFileLinkFormatWithLine, m.group(1), startLine, startLine - 10));
-				else
-					link = new URL(String.format(sourceFileLinkFormat, m.group(1)));
-				return link;
-			} catch (MalformedURLException e) {
-				AnalysisContext.logError("Error generating source link for " + src, e);
-			}
-
-		return null;
-
-	}
-
-    @Override
-    public String getSourceLinkToolTip(BugInstance b) {
-	    return sourceFileLinkToolTip;
-    }
-  
 
     @Override
     public BugFilingStatus getBugLinkStatus(BugInstance b) {

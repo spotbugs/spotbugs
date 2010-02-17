@@ -27,12 +27,16 @@ import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.cloud.username.NameLookup;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Multiset;
 
+import javax.annotation.CheckForNull;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -41,6 +45,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 
@@ -49,35 +55,78 @@ import java.util.regex.Pattern;
  */
 public abstract class AbstractCloud implements Cloud {
 	
+    protected static final boolean THROW_EXCEPTION_IF_CANT_CONNECT = false;
+    private static final Mode DEFAULT_VOTING_MODE = Mode.COMMUNAL;
+    private static final Logger LOGGER = Logger.getLogger(AbstractCloud.class.getName());
+
     private static final String LEADERBOARD_BLACKLIST = SystemProperties.getProperty("findbugs.leaderboard.blacklist");
     private static final Pattern LEADERBOARD_BLACKLIST_PATTERN;
  	static {
  		Pattern p = null;
- 		if (LEADERBOARD_BLACKLIST != null) 
+ 		if (LEADERBOARD_BLACKLIST != null) {
  			try {
  				p = Pattern.compile(LEADERBOARD_BLACKLIST.replace(',', '|'));
  			} catch (Exception e) {
- 				assert true;
+ 				LOGGER.log(Level.WARNING, "Could not load leaderboard blacklist pattern", e);
  			}
- 			LEADERBOARD_BLACKLIST_PATTERN = p;	
- 			
+         }
+         LEADERBOARD_BLACKLIST_PATTERN = p;
  	}
 
  	protected final CloudPlugin plugin;
 	protected final BugCollection bugCollection;
 	protected final PropertyBundle properties;
+	@CheckForNull
+    private Pattern sourceFileLinkPattern;
+	private String sourceFileLinkFormat;
+	private String sourceFileLinkFormatWithLine;
 
-	CopyOnWriteArraySet<CloudListener> listeners = new CopyOnWriteArraySet<CloudListener>();
+	private String sourceFileLinkToolTip;
+
+	private CopyOnWriteArraySet<CloudListener> listeners = new CopyOnWriteArraySet<CloudListener>();
 	
-	Mode mode = Mode.COMMUNAL;
+	private Mode mode = Mode.COMMUNAL;
 	private String statusMsg;
-	protected AbstractCloud(CloudPlugin plugin, BugCollection bugs) {
+
+    protected AbstractCloud(CloudPlugin plugin, BugCollection bugs) {
 		this.plugin = plugin;
 		this.bugCollection = bugs;
 		this.properties = plugin.getProperties();
 	}
-	
-	public Mode getMode() {
+
+    public boolean initialize() {
+        String modeString = getCloudProperty("votingmode");
+        Mode newMode = DEFAULT_VOTING_MODE;
+        if (modeString != null) {
+            try {
+                newMode = Mode.valueOf(modeString.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                LOGGER.log(Level.WARNING, "No such voting mode " + modeString, e);
+            }
+        }
+        setMode(newMode);
+
+        String sp = properties.getProperty("findbugs.sourcelink.pattern");
+        String sf = properties.getProperty("findbugs.sourcelink.format");
+        String sfwl = properties.getProperty("findbugs.sourcelink.formatWithLine");
+
+        String stt  = properties.getProperty("findbugs.sourcelink.tooltip");
+        if (sp != null && sf != null) {
+            try {
+            this.sourceFileLinkPattern = Pattern.compile(sp);
+            this.sourceFileLinkFormat = sf;
+            this.sourceFileLinkToolTip = stt;
+            this.sourceFileLinkFormatWithLine = sfwl;
+            } catch (RuntimeException e) {
+                LOGGER.log(Level.WARNING, "Could not compile pattern " + sp, e);
+                if (THROW_EXCEPTION_IF_CANT_CONNECT)
+                    throw e;
+            }
+        }
+        return true;
+    }
+
+    public Mode getMode() {
 		return mode;
 	}
 	public void setMode(Mode mode) {
@@ -102,10 +151,6 @@ public abstract class AbstractCloud implements Cloud {
 
 	public boolean supportsCloudReports() {
 		return true;
-	}
-
-	public boolean supportsSourceLinks() {
-		return false;
 	}
 
 	public String claimedBy(BugInstance b) {
@@ -152,7 +197,7 @@ public abstract class AbstractCloud implements Cloud {
 			BugFilingStatus bugLinkStatus = getBugLinkStatus(b);
 			if (bugLinkStatus != null && bugLinkStatus.bugIsFiled()) {
 				//if (bugLinkStatus.)
-					builder.append("\nBug status is " + bugLinkStatus.displayName);
+                builder.append("\nBug status is ").append(bugLinkStatus.displayName);
 				//else
 				//	builder.append("\nBug assigned to " + bd.bugAssignedTo + ", status is " + bd.bugStatus);
 				
@@ -172,13 +217,6 @@ public abstract class AbstractCloud implements Cloud {
 		return builder.toString();
 	}
 
-	public URL getSourceLink(BugInstance b) {
-		throw new UnsupportedOperationException();
-	}
-
-    public String getSourceLinkToolTip(BugInstance b) {
-    	throw new UnsupportedOperationException();
-    }
 	public Date getUserDate(BugInstance b) {
 		return new Date(getUserTimestamp(b));
 	}
@@ -452,5 +490,44 @@ public abstract class AbstractCloud implements Cloud {
  		else
  			w.printf("%4s %s%n",  "num", title);
     	printLeaderBoard2(w, evaluations, maxRows, alwaysPrint, listRank ? "%3d %4d %s%n" : "%2$4d %3$s%n"  , title);
+    }
+
+    protected String getCloudProperty(String propertyName) {
+        return properties.getProperty("findbugs.cloud." + propertyName);
+    }
+
+    public boolean supportsSourceLinks() {
+    	return sourceFileLinkPattern != null;
+    }
+
+    @SuppressWarnings("boxing")
+    public @CheckForNull URL getSourceLink(BugInstance b) {
+		if (sourceFileLinkPattern == null)
+			return null;
+
+		SourceLineAnnotation src = b.getPrimarySourceLineAnnotation();
+		String fileName = src.getSourcePath();
+		int startLine = src.getStartLine();
+
+		java.util.regex.Matcher m = sourceFileLinkPattern.matcher(fileName);
+		boolean isMatch = m.matches();
+		if (isMatch)
+			try {
+				URL link;
+				if (startLine > 0)
+					link = new URL(String.format(sourceFileLinkFormatWithLine, m.group(1), startLine, startLine - 10));
+				else
+					link = new URL(String.format(sourceFileLinkFormat, m.group(1)));
+				return link;
+			} catch (Exception e) {
+				AnalysisContext.logError("Error generating source link for " + src, e);
+			}
+
+		return null;
+
+	}
+
+    public String getSourceLinkToolTip(BugInstance b) {
+	    return sourceFileLinkToolTip;
     }
 }
