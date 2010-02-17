@@ -89,11 +89,12 @@ public class GoogleCodeBugFiler {
 
         OAuthHmacSha1Signer oauthSigner = new OAuthHmacSha1Signer();
         GoogleOAuthParameters oauthParameters = new GoogleOAuthParameters();
-        oauthParameters.setOAuthConsumerKey("kano.net");
-        oauthParameters.setOAuthConsumerSecret("b4EYCteCkyYvdpuIACmeHZK/");
+        oauthParameters.setOAuthConsumerKey("findbugs.sourceforge.net");
+        oauthParameters.setOAuthConsumerSecret("srA0ocqhvT4Q7UUbe1CFQDLy");
 
-        String token = getPrefs().get(KEY_PROJECTHOSTING_OAUTH_TOKEN, null);
-        String secret = getPrefs().get(KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET, "");
+        Preferences prefs = getPrefs();
+        String token = prefs.get(KEY_PROJECTHOSTING_OAUTH_TOKEN, null);
+        String secret = prefs.get(KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET, "");
         if (!forceGetNewToken && token != null && secret != null) {
             oauthParameters.setOAuthToken(token);
             oauthParameters.setOAuthTokenSecret(secret);
@@ -118,8 +119,8 @@ public class GoogleCodeBugFiler {
         // convert the request token to a session token
         token = oauthHelper.getAccessToken(oauthParameters);
 
-        getPrefs().put(KEY_PROJECTHOSTING_OAUTH_TOKEN, token);
-        getPrefs().put(KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET, oauthParameters.getOAuthTokenSecret());
+        prefs.put(KEY_PROJECTHOSTING_OAUTH_TOKEN, token);
+        prefs.put(KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET, oauthParameters.getOAuthTokenSecret());
 
         projectHostingService = new ProjectHostingService("findbugs-cloud-client");
         projectHostingService.setOAuthCredentials(oauthParameters, oauthSigner);
