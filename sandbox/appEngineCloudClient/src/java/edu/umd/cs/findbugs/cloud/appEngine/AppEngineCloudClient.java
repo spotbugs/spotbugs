@@ -13,6 +13,7 @@ import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -31,6 +32,7 @@ import java.util.TimerTask;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -47,7 +49,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 	private Timer timer;
 
     private AppEngineCloudNetworkClient networkClient;
-    private LoggedInState loggedInState = LoggedInState.LOGGING_IN;
+    private SignedInState signedInState = SignedInState.SIGNING_IN;
 
     public AppEngineCloudClient(CloudPlugin plugin, BugCollection bugs) {
 		this(plugin, bugs, null);
@@ -81,19 +83,19 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 	public boolean initialize() {
         if (!super.initialize()) {
-            loggedInState = LoggedInState.LOGIN_FAILED;
+            signedInState = SignedInState.SIGNIN_FAILED;
 
             return false;
         }
         setStatusMsg("Signing into FindBugs Cloud");
         if (!networkClient.initialize()) {
-            loggedInState = LoggedInState.LOGIN_FAILED;
+            signedInState = SignedInState.SIGNIN_FAILED;
 
             setStatusMsg("");
             return false;
         }
 
-        loggedInState = LoggedInState.LOGGED_IN;
+        signedInState = SignedInState.SIGNED_IN;
 
         if (timer != null)
 			timer.cancel();
@@ -144,8 +146,38 @@ public class AppEngineCloudClient extends AbstractCloud {
         return networkClient;
     }
 
-    public LoggedInState getLoggedInState() {
-        return loggedInState;
+    public SignedInState getSignedInState() {
+        return signedInState;
+    }
+
+    public void setSaveSignInInformation(boolean save) {
+        AppEngineNameLookup.setSaveSessionInformation(save);
+        if (save) {
+            Long sessionId = networkClient.getSessionId();
+            if (sessionId != null) {
+                AppEngineNameLookup.saveSessionInformation(sessionId);
+            }
+        }
+    }
+
+    public boolean isSavingSignInInformationEnabled() {
+        return AppEngineNameLookup.isSavingSessionInfoEnabled();
+    }
+
+    public void signOut() {
+        if (backgroundExecutorService != null) {
+            backgroundExecutorService.shutdownNow();
+            try {
+                if (!backgroundExecutorService.awaitTermination(500, TimeUnit.MILLISECONDS)) {
+                    LOGGER.warning("Waited 500ms for background executor to finish but it didn't");
+                }
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.WARNING, "", e);
+            }
+        }
+        networkClient.signOut();
+        signedInState = SignedInState.SIGNED_OUT;
+        setStatusMsg("Signed out of FindBugs Cloud");
     }
 
     public String getUser() {

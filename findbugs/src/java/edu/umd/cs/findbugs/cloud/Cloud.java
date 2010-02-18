@@ -187,7 +187,17 @@ public interface Cloud {
 	/** Get user name */
 	String getUser();
 
-    LoggedInState getLoggedInState();
+    SignedInState getSignedInState();
+
+    /**
+     * Whether the cloud should save login information, session ID's, etc. If
+     * disabled, the user will need to re-authenticate each session.
+     */
+    void setSaveSignInInformation(boolean save);
+
+    boolean isSavingSignInInformationEnabled();
+
+    void signOut();
 
 	/* Supports links to a bug database */ 
 	boolean supportsBugLinks();
@@ -270,5 +280,5 @@ public interface Cloud {
 
     Collection<String> getProjects(String className);
 
-    enum LoggedInState { LOGGING_IN, LOGGED_IN, LOGIN_FAILED, NO_LOGIN_REQUIRED }
+    enum SignedInState { SIGNING_IN, SIGNED_IN, SIGNIN_FAILED, SIGNED_OUT, NO_SIGNIN_REQUIRED }
 }

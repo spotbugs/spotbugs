@@ -46,7 +46,7 @@ public class AppEngineCloudNetworkClient {
     private AppEngineCloudClient cloudClient;
     private ConcurrentMap<String, Issue> issuesByHash = new ConcurrentHashMap<String, Issue>();
     private String host;
-    private long sessionId;
+    private Long sessionId;
     private String username;
     private volatile long mostRecentEvaluationMillis = 0;
 
@@ -122,6 +122,9 @@ public class AppEngineCloudNetworkClient {
                                               + (i * 100 / numBugs) + "%");
             List<String> partition = hashes.subList(i, Math.min(i + HASH_CHECK_PARTITION_SIZE, numBugs));
             checkHashesPartition(partition, bugsByHash);
+
+            if (Thread.currentThread().isInterrupted())
+                break;
         }
     }
 
@@ -162,6 +165,9 @@ public class AppEngineCloudNetworkClient {
                                                   + " new bugs to the FindBugs Cloud..." + i * 100
                                                                                            / newBugs.size() + "%");
                 uploadIssues(newBugs.subList(i, Math.min(newBugs.size(), i + BUG_UPLOAD_PARTITION_SIZE)));
+                
+                if (Thread.currentThread().isInterrupted())
+                    break;
             }
         } finally {
             cloudClient.setStatusMsg("");
@@ -316,14 +322,16 @@ public class AppEngineCloudNetworkClient {
         try {
             HttpURLConnection conn = openConnection(url);
             conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
             conn.connect();
             try {
+                OutputStream stream = conn.getOutputStream();
                 if (uploadMsg != null) {
-                    OutputStream stream = conn.getOutputStream();
                     uploadMsg.writeTo(stream);
-                    stream.close();
-                    conn.getResponseCode(); // wait for response
+                } else {
+                    stream.write(0);
                 }
+                stream.close();
                 int responseCode = conn.getResponseCode();
                 if (responseCode != 200) {
                     throw new IllegalStateException(
@@ -374,5 +382,17 @@ public class AppEngineCloudNetworkClient {
     /** for testing */
     void setSessionId(long sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public void signOut() {
+        if (sessionId != null) {
+            openPostUrl(null, "/log-out/" + sessionId);
+            sessionId = null;
+            AppEngineNameLookup.clearSavedSessionInformation();
+        }
+    }
+
+    public Long getSessionId() {
+        return sessionId;
     }
 }

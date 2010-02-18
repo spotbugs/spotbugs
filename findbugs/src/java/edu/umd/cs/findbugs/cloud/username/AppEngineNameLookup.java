@@ -43,24 +43,29 @@ public class AppEngineNameLookup implements NameLookup {
     public static final String APPENGINE_LOCALHOST_PROPERTY_NAME = "appengine.host.local";
     public static final String APPENGINE_LOCALHOST_DEFAULT = "http://localhost:8080";
     public static final String APPENGINE_HOST_PROPERTY_NAME = "appengine.host";
+
+    /** if "true", prevents session info from being saved between launches. */
+    private static final String SYSPROP_NEVER_SAVE_SESSION = "appengine.never_save_session";
+    private static final String SYSPROP_APPENGINE_LOCAL = "appengine.local";
     
     private static final int USER_SIGNIN_TIMEOUT_SECS = 60;
+    private static final String KEY_SAVE_SESSION_INFO = "save_session_info";
     private static final String KEY_APPENGINECLOUD_SESSION_ID = "appenginecloud_session_id";
-	
+
 	private long sessionId;
 	private String username;
 	private String host;
-	
-	public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) {
+
+    public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) {
 		try {
 			PropertyBundle pluginProps = plugin.getProperties();
-			if (Boolean.getBoolean("appengine.local") || pluginProps.getBoolean(LOCAL_APPENGINE))
+			if (Boolean.getBoolean(SYSPROP_APPENGINE_LOCAL) || pluginProps.getBoolean(LOCAL_APPENGINE))
 				host = pluginProps.getProperty(APPENGINE_LOCALHOST_PROPERTY_NAME, APPENGINE_LOCALHOST_DEFAULT);
 			else 
 				host = pluginProps.getProperty(APPENGINE_HOST_PROPERTY_NAME);
 			
 			// check the previously used session ID 
-			long id = getOrCreateSessionId();
+			long id = loadOrCreateSessionId();
 			URL authCheckUrl = new URL(host + "/check-auth/" + id);
 			if (checkAuthorized(authCheckUrl)) {
 				return true;
@@ -83,22 +88,45 @@ public class AppEngineNameLookup implements NameLookup {
 			throw new IllegalStateException(e);
 		}
 	}
+
+    public static void setSaveSessionInformation(boolean save) {
+        Preferences prefs = Preferences.userNodeForPackage(AppEngineNameLookup.class);
+        prefs.putBoolean(KEY_SAVE_SESSION_INFO, save);
+        if (!save) {
+            clearSavedSessionInformation();
+        }
+    }
+
+    public static boolean isSavingSessionInfoEnabled() {
+        return !Boolean.getBoolean(SYSPROP_NEVER_SAVE_SESSION)
+               && Preferences.userNodeForPackage(AppEngineNameLookup.class).getBoolean(KEY_SAVE_SESSION_INFO, true);
+    }
+
+    public static void clearSavedSessionInformation() {
+        Preferences prefs = Preferences.userNodeForPackage(AppEngineNameLookup.class);
+        prefs.remove(KEY_APPENGINECLOUD_SESSION_ID);
+    }
+
+    public static void saveSessionInformation(long sessionId) {
+        Preferences.userNodeForPackage(AppEngineNameLookup.class).putLong(KEY_APPENGINECLOUD_SESSION_ID, sessionId);
+    }
 	
 	// ======================= end of public methods =======================
 
-	private long getOrCreateSessionId() {
+	private long loadOrCreateSessionId() {
 	    Preferences prefs = Preferences.userNodeForPackage(AppEngineNameLookup.class);
 	    long id = prefs.getLong(KEY_APPENGINECLOUD_SESSION_ID, 0);
 	    if (id == 0) {
 	    	SecureRandom r = new SecureRandom();
 	    	while (id == 0) 
 	    		id = r.nextLong();
-	    	prefs.putLong(KEY_APPENGINECLOUD_SESSION_ID, id);
-	    }
+            if (isSavingSessionInfoEnabled())
+                saveSessionInformation(id);
+        }
 	    return id;
     }
 
-	private boolean checkAuthorized(URL response) throws IOException {
+    private boolean checkAuthorized(URL response) throws IOException {
 	    HttpURLConnection connection = (HttpURLConnection) response.openConnection();
 
 	    int responseCode = connection.getResponseCode();

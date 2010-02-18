@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
-import edu.umd.cs.findbugs.cloud.Cloud.LoggedInState;
+import edu.umd.cs.findbugs.cloud.Cloud.SignedInState;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -54,6 +54,7 @@ import edu.umd.cs.findbugs.util.Multiset;
 
 import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -62,6 +63,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
@@ -74,7 +76,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -86,6 +87,8 @@ import javax.swing.ProgressMonitorInputStream;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeModelEvent;
@@ -225,8 +228,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	private JTableHeader tableheader;
     
 	private JLabel statusBarLabel = new JLabel();
-    private JLabel loggedInLabel;
-    private ImageIcon loggedInIcon;
+    private JLabel signedInLabel;
+    private ImageIcon signedInIcon;
     private ImageIcon warningIcon;
 
 	private JPanel summaryTopPanel;
@@ -2012,17 +2015,48 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
         constraints.fill = GridBagConstraints.NONE;
 
         try {
-            loggedInIcon = new ImageIcon(ImageIO.read(MainFrame.class.getResource("greencircle.png")).getScaledInstance(16,16, Image.SCALE_SMOOTH));
-            warningIcon = new ImageIcon(ImageIO.read(MainFrame.class.getResource("warningicon.png")).getScaledInstance(16,16, Image.SCALE_SMOOTH));
+            signedInIcon = loadImageResource("greencircle.png", 16, 16);
+            warningIcon = loadImageResource("warningicon.png", 16, 16);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "Could not load status icons", e);
+            signedInIcon = null;
+            warningIcon = null;
         }
-        loggedInLabel = new JLabel();
+        signedInLabel = new JLabel();
+        signedInLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        signedInLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JPopupMenu menu = new JPopupMenu();
+                boolean isSignedIn = bugCollection.getCloud().getSignedInState() == SignedInState.SIGNED_IN;
+                final JCheckBoxMenuItem signInAuto = new JCheckBoxMenuItem("Sign in automatically");
+                signInAuto.setToolTipText("Saves your Cloud session for the next time you run FindBugs. " +
+                                          "No personal information or passwords are saved.");
+                signInAuto.setSelected(bugCollection.getCloud().isSavingSignInInformationEnabled());
+                signInAuto.setEnabled(isSignedIn);
+                signInAuto.addChangeListener(new ChangeListener() {
+                    public void stateChanged(ChangeEvent e) {
+                        boolean checked = signInAuto.isSelected();
+                        if (checked != bugCollection.getCloud().isSavingSignInInformationEnabled()) {
+                            System.out.println("checked: " + checked);
+                            bugCollection.getCloud().setSaveSignInInformation(checked);
+                        }
+                    }
+                });
+                menu.add(signInAuto);
+                menu.add(new AbstractAction("Sign out") {
+                    public void actionPerformed(ActionEvent e) {
+                        bugCollection.getCloud().signOut();
+                    }
+                }).setEnabled(isSignedIn);
+                menu.show(e.getComponent(), e.getX(), e.getY());
+            }
+        });
         constraints.anchor = GridBagConstraints.EAST;
         constraints.insets = new Insets(0,5,0,5);
-        statusBar.add(loggedInLabel, constraints.clone());
+        statusBar.add(signedInLabel, constraints.clone());
 
-        loggedInLabel.setVisible(false);
+        signedInLabel.setVisible(false);
 
 		JLabel logoLabel = new JLabel();
 
@@ -2036,7 +2070,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		return statusBar;
 	}
 
-	private String join(String s1, String s2) {
+    private ImageIcon loadImageResource(String filename, int width, int height) throws IOException {
+        return new ImageIcon(ImageIO.read(MainFrame.class.getResource(filename)).getScaledInstance(width, height, Image.SCALE_SMOOTH));
+    }
+
+    private String join(String s1, String s2) {
 		if (s1 == null || s1.length() == 0) return s2;
 		if (s2 == null || s2.length() == 0) return s1;
 		return s1 + "; " + s2;
@@ -2058,22 +2096,26 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				String pluginMsg = plugin.getStatusMsg();
 				if (pluginMsg != null && pluginMsg.length() > 1)
 					msg = join(msg, pluginMsg);
-                if (plugin.getLoggedInState() == LoggedInState.LOGGING_IN) {
-                    loggedInLabel.setText("<html>FindBugs Cloud:<br> signing in");
-                    loggedInLabel.setIcon(null);
+                if (plugin.getSignedInState() == SignedInState.SIGNING_IN) {
+                    signedInLabel.setText("<html>FindBugs Cloud:<br> signing in");
+                    signedInLabel.setIcon(null);
                     showLoggedInStatus = true;
-                } else if (plugin.getLoggedInState() == LoggedInState.LOGGED_IN) {
-                    loggedInLabel.setText("<html>FindBugs Cloud:<br> signed in as " + plugin.getUser());
-                    loggedInLabel.setIcon(loggedInIcon);
+                } else if (plugin.getSignedInState() == SignedInState.SIGNED_IN) {
+                    signedInLabel.setText("<html>FindBugs Cloud:<br> signed in as " + plugin.getUser());
+                    signedInLabel.setIcon(signedInIcon);
                     showLoggedInStatus = true;
-                } else if (plugin.getLoggedInState() == LoggedInState.LOGIN_FAILED) {
-                    loggedInLabel.setText("<html>FindBugs Cloud:<br> not signed in");
-                    loggedInLabel.setIcon(warningIcon);
+                } else if (plugin.getSignedInState() == SignedInState.SIGNIN_FAILED) {
+                    signedInLabel.setText("<html>FindBugs Cloud:<br> not signed in");
+                    signedInLabel.setIcon(warningIcon);
+                    showLoggedInStatus = true;
+                } else if (plugin.getSignedInState() == SignedInState.SIGNED_OUT) {
+                    signedInLabel.setText("<html>FindBugs Cloud:<br> signed out");
+                    signedInLabel.setIcon(null);
                     showLoggedInStatus = true;
                 }
 			}
 		}
-        loggedInLabel.setVisible(showLoggedInStatus);
+        signedInLabel.setVisible(showLoggedInStatus);
 		if (errorMsg != null && errorMsg.length() > 0)
 			msg = join(msg, errorMsg);
         waitStatusLabel.setText(msg); // should not be the URL

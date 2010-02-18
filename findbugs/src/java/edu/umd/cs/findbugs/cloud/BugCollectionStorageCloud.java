@@ -87,8 +87,18 @@ import java.util.Collections;
 	    
     }
 
-    public LoggedInState getLoggedInState() {
-        return LoggedInState.NO_LOGIN_REQUIRED;
+    public SignedInState getSignedInState() {
+        return SignedInState.NO_SIGNIN_REQUIRED;
+    }
+
+    public void setSaveSignInInformation(boolean save) {
+    }
+
+    public boolean isSavingSignInInformationEnabled() {
+        return false;
+    }
+
+    public void signOut() {
     }
 
     public boolean availableForInitialization() {

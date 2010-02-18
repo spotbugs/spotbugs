@@ -94,7 +94,7 @@ public  class DBCloud extends AbstractCloud {
      * 
      */
     static final String USER_NAME = "user.name";
-    private LoggedInState loggedInState = LoggedInState.LOGGING_IN;
+    private SignedInState signedInState = SignedInState.SIGNING_IN;
 
 
     class BugData {
@@ -566,11 +566,11 @@ public  class DBCloud extends AbstractCloud {
 
 	public boolean initialize() {
         if (tryInitialization()) {
-            loggedInState = LoggedInState.LOGIN_FAILED;
+            signedInState = SignedInState.SIGNIN_FAILED;
             return false;
         }
 
-        loggedInState = LoggedInState.LOGGED_IN;
+        signedInState = SignedInState.SIGNED_IN;
 		
 		loadBugComponents();
 		Connection c = null;
@@ -1144,8 +1144,20 @@ public  class DBCloud extends AbstractCloud {
 		}
 	}
 
-    public LoggedInState getLoggedInState() {
-        return loggedInState;
+    public SignedInState getSignedInState() {
+        return signedInState;
+    }
+
+    public void setSaveSignInInformation(boolean save) {
+        // not saved anyway
+    }
+
+    public boolean isSavingSignInInformationEnabled() {
+        return false;
+    }
+
+    public void signOut() {
+        throw new UnsupportedOperationException();
     }
 
     public String getUser() {

@@ -326,8 +326,18 @@ public class AbstractCloudTest extends TestCase {
 	    	return "user";
 	    }
 
-        public LoggedInState getLoggedInState() {
-            return LoggedInState.NO_LOGIN_REQUIRED;
+        public SignedInState getSignedInState() {
+            return SignedInState.NO_SIGNIN_REQUIRED;
+        }
+
+        public void setSaveSignInInformation(boolean save) {
+        }
+
+        public boolean isSavingSignInInformationEnabled() {
+            return false;
+        }
+
+        public void signOut() {
         }
 
         public BugDesignation getPrimaryDesignation(BugInstance b) {
