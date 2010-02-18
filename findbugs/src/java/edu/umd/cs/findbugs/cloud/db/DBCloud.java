@@ -1692,7 +1692,7 @@ public  class DBCloud extends AbstractCloud {
     }
 
     @Override
-    protected BugInstance getBugByHash(String hash) {
+    public BugInstance getBugByHash(String hash) {
     	Collection<BugInstance> bugs = instanceMap.get(hash).bugs;
     	return bugs.isEmpty() ? null : bugs.iterator().next();
     }

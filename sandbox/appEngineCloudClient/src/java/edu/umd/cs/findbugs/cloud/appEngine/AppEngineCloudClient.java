@@ -21,15 +21,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -125,7 +125,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 	}
 
 	public void bugsPopulated() {
-		final Map<String, BugInstance> bugsByHash = new HashMap<String, BugInstance>();
+		final ConcurrentMap<String, BugInstance> bugsByHash = new ConcurrentHashMap<String, BugInstance>();
 
 		for(BugInstance b : bugCollection.getCollection()) {
 			bugsByHash.put(b.getInstanceHash(), b);
@@ -275,13 +275,25 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 	// ================== private methods ======================
 
-    private void actuallyCheckBugsAgainstCloud(Map<String, BugInstance> bugsByHash) throws IOException {
+    private void actuallyCheckBugsAgainstCloud(ConcurrentMap<String, BugInstance> bugsByHash) throws IOException {
         int numBugs = bugsByHash.size();
         setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud...");
         networkClient.logIntoCloud();
 
         List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
         networkClient.partitionHashes(new ArrayList<String>(bugsByHash.keySet()), tasks, bugsByHash);
+
+        executeAndWaitForAll(tasks);
+
+        Collection<BugInstance> newBugs = bugsByHash.values();
+        if (!newBugs.isEmpty()) {
+            uploadBugsInBackground(new ArrayList<BugInstance>(newBugs));
+        } else {
+            setStatusMsg("All " + numBugs + " bugs are already stored in the FindBugs Cloud");
+        }
+    }
+
+    private void executeAndWaitForAll(List<Callable<Object>> tasks) {
         try {
             List<Future<Object>> results = backgroundExecutorService.invokeAll(tasks);
             for (Future<Object> result : results) {
@@ -291,13 +303,6 @@ public class AppEngineCloudClient extends AbstractCloud {
             LOGGER.log(Level.SEVERE, "error while starting hash check threads", e);
         } catch (ExecutionException e) {
             LOGGER.log(Level.SEVERE, "", e);
-        }
-
-        Collection<BugInstance> newBugs = bugsByHash.values();
-        if (!newBugs.isEmpty()) {
-            uploadBugsInBackground(new ArrayList<BugInstance>(newBugs));
-        } else {
-            setStatusMsg("All " + numBugs + " bugs are already stored in the FindBugs Cloud");
         }
     }
 
@@ -376,11 +381,10 @@ public class AppEngineCloudClient extends AbstractCloud {
     private void uploadBugsInBackground(final List<BugInstance> newBugs) {
         backgroundExecutor.execute(new Runnable() {
             public void run() {
-                try {
-                    networkClient.uploadNewBugs(newBugs);
-                } catch (IOException e) {
-                    LOGGER.log(Level.WARNING, "Error while uploading new bugs", e);
-                }
+                List<Callable<Object>> callables = new ArrayList<Callable<Object>>();
+                networkClient.uploadNewBugs(newBugs, callables);
+                executeAndWaitForAll(callables);
+                setStatusMsg("");
             }
         });
     }

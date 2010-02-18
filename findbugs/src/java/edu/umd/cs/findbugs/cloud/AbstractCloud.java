@@ -448,14 +448,14 @@ public abstract class AbstractCloud implements Cloud {
 			listener.statusUpdated();
 	}
 
-	protected void updatedIssue(BugInstance bug) {
+	public void updatedIssue(BugInstance bug) {
 		for (CloudListener listener : listeners)
 			listener.issueUpdated(bug);
 	}
 
     protected abstract Iterable<BugDesignation> getAllUserDesignations(BugInstance bd);
 
-	protected BugInstance getBugByHash(String hash) {
+	public BugInstance getBugByHash(String hash) {
 		for (BugInstance instance : bugCollection.getCollection()) {
 			if (instance.getInstanceHash().equals(hash)) {
 				return instance;

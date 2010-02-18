@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -117,8 +118,9 @@ public class AppEngineCloudNetworkClient {
         }
     }
 
-    public void partitionHashes(final List<String> hashes, List<Callable<Object>> tasks,
-                                final Map<String, BugInstance> bugsByHash)
+    public void partitionHashes(final List<String> hashes,
+                                List<Callable<Object>> tasks,
+                                final ConcurrentMap<String, BugInstance> bugsByHash)
             throws IOException {
         final int numBugs = hashes.size();
         final AtomicInteger numberOfBugsCheckedSoFar = new AtomicInteger();
@@ -166,19 +168,20 @@ public class AppEngineCloudNetworkClient {
         return !issue.hasFirstSeen() && !issue.hasLastSeen() && issue.getEvaluationsCount() == 0;
     }
 
-    public void uploadNewBugs(List<BugInstance> newBugs) throws IOException {
-        try {
-            for (int i = 0; i < newBugs.size(); i += BUG_UPLOAD_PARTITION_SIZE) {
-                cloudClient.setStatusMsg("Uploading " + newBugs.size()
-                                                  + " new bugs to the FindBugs Cloud..." + i * 100
-                                                                                           / newBugs.size() + "%");
-                uploadIssues(newBugs.subList(i, Math.min(newBugs.size(), i + BUG_UPLOAD_PARTITION_SIZE)));
-                
-                if (Thread.currentThread().isInterrupted())
-                    break;
-            }
-        } finally {
-            cloudClient.setStatusMsg("");
+    public void uploadNewBugs(final List<BugInstance> newBugs, List<Callable<Object>> callables) {
+        final AtomicInteger bugsUploaded = new AtomicInteger(0);
+        final int bugCount = newBugs.size();
+        for (int i = 0; i < bugCount; i += BUG_UPLOAD_PARTITION_SIZE) {
+            final List<BugInstance> partition = newBugs.subList(i, Math.min(bugCount, i + BUG_UPLOAD_PARTITION_SIZE));
+            callables.add(new Callable<Object>() {
+                public Object call() throws Exception {
+                    uploadNewBugsPartition(partition);
+                    bugsUploaded.addAndGet(partition.size());
+                    cloudClient.setStatusMsg("Uploading " + bugCount
+                                             + " new bugs to the FindBugs Cloud..." + (bugsUploaded.get() * 100 / bugCount) + "%");
+                    return null;
+                }
+            });
         }
     }
 
@@ -235,7 +238,7 @@ public class AppEngineCloudNetworkClient {
         return response;
     }
 
-    private void uploadIssues(final Collection<BugInstance> bugsToSend)
+    private void uploadNewBugsPartition(final Collection<BugInstance> bugsToSend)
             throws IOException {
         LOGGER.info("Uploading " + bugsToSend.size() + " bugs to App Engine Cloud");
         UploadIssues uploadIssues = buildUploadIssuesCommandInUIThread(bugsToSend);
@@ -244,9 +247,24 @@ public class AppEngineCloudNetworkClient {
         openPostUrl(uploadIssues, "/upload-issues");
 
         // if it worked, store the issues locally
-        for (Issue issue : uploadIssues.getNewIssuesList()) {
-            storeIssueDetails(AppEngineProtoUtil.decodeHash(issue.getHash()), issue);
+        final List<String> hashes = new ArrayList<String>();
+        for (final Issue issue : uploadIssues.getNewIssuesList()) {
+            final String hash = AppEngineProtoUtil.decodeHash(issue.getHash());
+            storeIssueDetails(hash, issue);
+            hashes.add(hash);
         }
+        
+        // let the GUI know that things changed
+        cloudClient.getBugCollection().getProject().getGuiCallback().getBugUpdateExecutor().execute(new Runnable() {
+            public void run() {
+                for (String hash : hashes) {
+                    BugInstance bugInstance = cloudClient.getBugByHash(hash);
+                    if (bugInstance != null) {
+                        cloudClient.updatedIssue(bugInstance);
+                    }
+                }
+            }
+        });
     }
 
     private UploadIssues buildUploadIssuesCommandInUIThread(final Collection<BugInstance> bugsToSend) {
