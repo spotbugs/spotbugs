@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public abstract class AbstractFlybushServlet extends HttpServlet {
-    private static final Logger LOGGER = Logger.getLogger(AbstractFlybushServlet.class.getName());
+    protected static final Logger LOGGER = Logger.getLogger(AbstractFlybushServlet.class.getName());
 
     private PersistenceManager persistenceManager;
 
@@ -29,9 +29,7 @@ public abstract class AbstractFlybushServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String uri = req.getRequestURI();
 
-        long start = System.currentTimeMillis();
         PersistenceManager pm = getPersistenceManager();
-        LOGGER.warning("loading PM took " + (System.currentTimeMillis() - start) + "ms");
 
         try {
             handlePost(pm, req, resp, uri);

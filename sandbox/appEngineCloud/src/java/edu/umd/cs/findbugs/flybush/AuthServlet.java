@@ -20,8 +20,6 @@ import java.util.logging.Logger;
 @SuppressWarnings("serial")
 public class AuthServlet extends AbstractFlybushServlet {
 
-	private static final Logger LOGGER = Logger.getLogger(AuthServlet.class.getName());
-
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 

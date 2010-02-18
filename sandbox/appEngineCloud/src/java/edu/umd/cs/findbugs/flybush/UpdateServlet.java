@@ -28,15 +28,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 
 @SuppressWarnings("serial")
 public class UpdateServlet extends AbstractFlybushServlet {
-
     static final int ONE_DAY_IN_MILLIS = 1000*60*60*24;
-    private static final Logger LOGGER = Logger.getLogger(UpdateServlet.class.getName());
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -44,7 +41,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         PersistenceManager pm = getPersistenceManager();
         try {
             if (req.getRequestURI().equals("/expire-sql-sessions")) {
-                expireSqlSessions(req, resp, pm);
+                expireSqlSessions(resp, pm);
 
             } else {
                 super.doGet(req, resp);
@@ -72,9 +69,10 @@ public class UpdateServlet extends AbstractFlybushServlet {
     }
 
     @SuppressWarnings({"unchecked"})
-    private void expireSqlSessions(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) {
+    private void expireSqlSessions(HttpServletResponse resp, PersistenceManager pm) {
         Query query = pm.newQuery("select from " + SqlCloudSession.class.getName() + " where date < :when");
-        for (SqlCloudSession session : (List<SqlCloudSession>) query.execute(new Date(System.currentTimeMillis() - 7*ONE_DAY_IN_MILLIS))) {
+        Date oneWeekAgo = new Date(System.currentTimeMillis() - 7 * ONE_DAY_IN_MILLIS);
+        for (SqlCloudSession session : (List<SqlCloudSession>) query.execute(oneWeekAgo)) {
             Transaction tx = pm.currentTransaction();
             tx.begin();
             try {
@@ -112,12 +110,19 @@ public class UpdateServlet extends AbstractFlybushServlet {
             return;
         }
         List<String> hashes = decodeHashesForIssues(issues);
+        long start = System.currentTimeMillis();
         Set<String> existingIssueHashes = lookupHashes(hashes, pm);
+        LOGGER.warning("Looking up hashes took " + (System.currentTimeMillis() - start) + "ms");
         for (Issue issue : issues.getNewIssuesList()) {
-            if (!existingIssueHashes.contains(AppEngineProtoUtil.decodeHash(issue.getHash()))) {
+            String hashStr = decodeHash(issue.getHash());
+            if (!existingIssueHashes.contains(hashStr)) {
                 DbIssue dbIssue = createDbIssue(issue);
 
+                start = System.currentTimeMillis();
                 commitInTransaction(pm, dbIssue);
+                LOGGER.warning("Committed new issue in " + (System.currentTimeMillis() - start) + "ms");
+            } else {
+                LOGGER.warning("User is trying to upload existing issue " + hashStr);
             }
         }
 

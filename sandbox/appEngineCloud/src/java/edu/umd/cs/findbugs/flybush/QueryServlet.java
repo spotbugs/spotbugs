@@ -58,11 +58,19 @@ public class QueryServlet extends AbstractFlybushServlet {
         List<String> hashes = decodeHashes(loginMsg.getMyIssueHashesList());
         Map<String, DbIssue> issues = lookupTimesAndEvaluations(pm, hashes);
 		FindIssuesResponse.Builder issueProtos = FindIssuesResponse.newBuilder();
+        int found = 0;
         for (String hash : hashes) {
             DbIssue dbIssue = issues.get(hash);
-            Issue protoIssue = buildTerseIssueProto(dbIssue);
+            Builder issueBuilder = Issue.newBuilder();
+            if (dbIssue != null) {
+                buildTerseIssueProto(dbIssue, issueBuilder);
+                found++;
+            }
+
+            Issue protoIssue = issueBuilder.build();
             issueProtos.addFoundIssues(protoIssue);
         }
+        LOGGER.warning("Found: " + found + ", missing: " + (hashes.size()-found));
         
 		resp.setStatus(200);
 		issueProtos.build().writeTo(resp.getOutputStream());
@@ -113,21 +121,16 @@ public class QueryServlet extends AbstractFlybushServlet {
 
     // ========================= end of request handling ================================
 
-    private Issue buildTerseIssueProto(DbIssue dbIssue) {
-        Builder issueBuilder = Issue.newBuilder();
-        if (dbIssue != null) {
-            issueBuilder.setFirstSeen(dbIssue.getFirstSeen())
-                    .setLastSeen(dbIssue.getLastSeen());
-            if (dbIssue.getBugLink() != null) {
-                issueBuilder.setBugLink(dbIssue.getBugLink());
-            }
-
-            if (dbIssue.hasEvaluations()) {
-                addEvaluations(issueBuilder, dbIssue.getEvaluations());
-            }
+    private void buildTerseIssueProto(DbIssue dbIssue, Builder issueBuilder) {
+        issueBuilder.setFirstSeen(dbIssue.getFirstSeen())
+                .setLastSeen(dbIssue.getLastSeen());
+        if (dbIssue.getBugLink() != null) {
+            issueBuilder.setBugLink(dbIssue.getBugLink());
         }
 
-        return issueBuilder.build();
+        if (dbIssue.hasEvaluations()) {
+            addEvaluations(issueBuilder, dbIssue.getEvaluations());
+        }
     }
 
     private Issue buildFullIssueProto(DbIssue dbIssue, Set<DbEvaluation> evaluations) {
