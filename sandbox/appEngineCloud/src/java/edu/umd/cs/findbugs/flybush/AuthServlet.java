@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 @SuppressWarnings("serial")
@@ -128,21 +129,22 @@ public class AuthServlet extends AbstractFlybushServlet {
 		resp.setStatus(200);
 	}
 
-	private void logOut(HttpServletRequest req, HttpServletResponse resp,
+	@SuppressWarnings({"unchecked"})
+    private void logOut(HttpServletRequest req, HttpServletResponse resp,
 			PersistenceManager pm) throws IOException {
 		long id = Long.parseLong(req.getRequestURI().substring("/log-out/".length()));
-		Query query = pm.newQuery("select from " + SqlCloudSession.class.getName()
-                                  + " where randomID == :idToDelete");
-		Transaction tx = pm.currentTransaction();
-		tx.begin();
-		long deleted = 0;
-		try {
-			deleted = query.deletePersistentAll(Long.toString(id));
-			query.execute();
-			tx.commit();
-		} finally {
-			if (tx.isActive()) tx.rollback();
-		}
+        SqlCloudSession session = lookupCloudSessionById(id, pm);
+        long deleted = 0;
+        Transaction tx = pm.currentTransaction();
+        tx.begin();
+        try {
+            pm.deletePersistent(session);
+            deleted++;
+            tx.commit();
+        } finally {
+            if (tx.isActive())
+                tx.rollback();
+        }
 		if (deleted >= 1) {
 			resp.setStatus(200);
 		} else {
