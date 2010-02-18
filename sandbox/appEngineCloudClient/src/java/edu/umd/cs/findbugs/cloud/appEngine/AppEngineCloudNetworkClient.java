@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,7 +42,8 @@ public class AppEngineCloudNetworkClient {
     /** For debugging */
     private static final boolean FORCE_UPLOAD_ALL_ISSUES = false;
     private static final int BUG_UPLOAD_PARTITION_SIZE = 10;
-    private static final int HASH_CHECK_PARTITION_SIZE = 20;
+    /* big enough to keep total time down AND individual request time down for Google's sake */
+    private static final int HASH_CHECK_PARTITION_SIZE = 60;
 
     private AppEngineCloudClient cloudClient;
     private ConcurrentMap<String, Issue> issuesByHash = new ConcurrentHashMap<String, Issue>();
@@ -115,16 +117,22 @@ public class AppEngineCloudNetworkClient {
         }
     }
 
-    public void checkHashes(List<String> hashes, Map<String, BugInstance> bugsByHash) throws IOException {
-        int numBugs = hashes.size();
+    public void partitionHashes(final List<String> hashes, List<Callable<Object>> tasks,
+                                final Map<String, BugInstance> bugsByHash)
+            throws IOException {
+        final int numBugs = hashes.size();
+        final AtomicInteger numberOfBugsCheckedSoFar = new AtomicInteger();
         for (int i = 0; i < numBugs; i += HASH_CHECK_PARTITION_SIZE) {
-            cloudClient.setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud..."
-                                              + (i * 100 / numBugs) + "%");
-            List<String> partition = hashes.subList(i, Math.min(i + HASH_CHECK_PARTITION_SIZE, numBugs));
-            checkHashesPartition(partition, bugsByHash);
-
-            if (Thread.currentThread().isInterrupted())
-                break;
+            final List<String> partition = hashes.subList(i, Math.min(i + HASH_CHECK_PARTITION_SIZE, numBugs));
+            tasks.add(new Callable<Object>() {
+                public Object call() throws Exception {
+                    checkHashesPartition(partition, bugsByHash);
+                    numberOfBugsCheckedSoFar.addAndGet(partition.size());
+                    cloudClient.setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud..."
+                                             + (numberOfBugsCheckedSoFar.get() * 100 / numBugs) + "%");
+                    return null;
+                }
+            });
         }
     }
 

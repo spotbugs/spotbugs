@@ -29,9 +29,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,7 +64,7 @@ public class AppEngineCloudClient extends AbstractCloud {
                          @CheckForNull Executor executor) {
 		super(plugin, bugs);
 		if (executor == null) {
-			backgroundExecutorService = Executors.newCachedThreadPool();
+			backgroundExecutorService = Executors.newFixedThreadPool(10);
 			backgroundExecutor = backgroundExecutorService;
 		} else {
 			backgroundExecutorService = null;
@@ -277,7 +280,18 @@ public class AppEngineCloudClient extends AbstractCloud {
         setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud...");
         networkClient.logIntoCloud();
 
-        networkClient.checkHashes(new ArrayList<String>(bugsByHash.keySet()), bugsByHash);
+        List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
+        networkClient.partitionHashes(new ArrayList<String>(bugsByHash.keySet()), tasks, bugsByHash);
+        try {
+            List<Future<Object>> results = backgroundExecutorService.invokeAll(tasks);
+            for (Future<Object> result : results) {
+                result.get();
+            }
+        } catch (InterruptedException e) {
+            LOGGER.log(Level.SEVERE, "error while starting hash check threads", e);
+        } catch (ExecutionException e) {
+            LOGGER.log(Level.SEVERE, "", e);
+        }
 
         Collection<BugInstance> newBugs = bugsByHash.values();
         if (!newBugs.isEmpty()) {
