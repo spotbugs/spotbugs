@@ -115,6 +115,56 @@ public class DefaultNullnessAnnotations {
 		database.addMethodParameterAnnotation("java.util.concurrent.Executors$RunnableAdapter", "<init>", "(Ljava/lang/Runnable;Ljava/lang/Object;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentSkipListMap", "doRemove", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		
+		
+		database.addMethodParameterAnnotation("java.util.concurrent.ForkJoinPool", "casBarrierStack",
+		        "(Ljava/util/concurrent/ForkJoinPool$WaitQueueNode;Ljava/util/concurrent/ForkJoinPool$WaitQueueNode;)Z", false,
+		        1, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.ForkJoinPool", "casBarrierStack",
+		        "(Ljava/util/concurrent/ForkJoinPool$WaitQueueNode;Ljava/util/concurrent/ForkJoinPool$WaitQueueNode;)Z", false,
+		        2, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.ForkJoinPool", "casSpareStack",
+		        "(Ljava/util/concurrent/ForkJoinPool$WaitQueueNode;Ljava/util/concurrent/ForkJoinPool$WaitQueueNode;)Z", false,
+		        2, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.ForkJoinTask", "adapt",
+		        "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/ForkJoinTask;", true, 2,
+		        NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.ForkJoinTask", "awaitDone",
+		        "(Ljava/util/concurrent/ForkJoinWorkerThread;J)I", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.ForkJoinTask", "awaitDone",
+		        "(Ljava/util/concurrent/ForkJoinWorkerThread;Z)I", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.ForkJoinTask$AdaptedRunnable", "&lt;init&gt;",
+		        "(Ljava/lang/Runnable;Ljava/lang/Object;)V", false, 2, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.ForkJoinWorkerThread", "onTermination",
+		        "(Ljava/lang/Throwable;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.ForkJoinWorkerThread", "setSlot",
+		        "([Ljava/util/concurrent/ForkJoinTask;ILjava/util/concurrent/ForkJoinTask;)V", true, 3,
+		        NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.LinkedTransferQueue", "casCleanMe",
+		        "(Ljava/util/concurrent/LinkedTransferQueue$Node;Ljava/util/concurrent/LinkedTransferQueue$Node;)Z", false, 1,
+		        NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.LinkedTransferQueue", "casCleanMe",
+		        "(Ljava/util/concurrent/LinkedTransferQueue$Node;Ljava/util/concurrent/LinkedTransferQueue$Node;)Z", false, 2,
+		        NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.LinkedTransferQueue", "casHead",
+		        "(Ljava/util/concurrent/LinkedTransferQueue$Node;Ljava/util/concurrent/LinkedTransferQueue$Node;)Z", false, 1,
+		        NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.LinkedTransferQueue", "xfer",
+		        "(Ljava/lang/Object;ZIJ)Ljava/lang/Object;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.LinkedTransferQueue$Itr", "advance",
+		        "(Ljava/util/concurrent/LinkedTransferQueue$Node;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.LinkedTransferQueue$Node", "casItem",
+		        "(Ljava/lang/Object;Ljava/lang/Object;)Z", false, 2, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.LinkedTransferQueue$Node", "casNext",
+		        "(Ljava/util/concurrent/LinkedTransferQueue$Node;Ljava/util/concurrent/LinkedTransferQueue$Node;)Z", false, 1,
+		        NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.Phaser", "&lt;init&gt;", "(Ljava/util/concurrent/Phaser;)V",
+		        false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.Phaser", "&lt;init&gt;", "(Ljava/util/concurrent/Phaser;I)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+
+		
+		
+		
+		
 		if (ICSE10_NULLNESS_PAPER) {
 		database.addMethodAnnotation("java.util.HashMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodAnnotation("java.util.Hashtable", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);

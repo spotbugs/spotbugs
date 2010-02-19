@@ -187,7 +187,8 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 												'/')
 												+ ";"))
 					priority++;
-				
+				if (callSeen.isPrivate())
+					priority++;
 				String pattern = annotation.getPattern();
 				if (callSeen.getName().equals("<init>") 
 						&& (callSeen.getClassName().endsWith("Exception")  

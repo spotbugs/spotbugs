@@ -190,6 +190,11 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						String bridgedMethodSignature = "";
 						State state = State.INITIAL;
 						StubState stubState = StubState.INITIAL;
+						boolean isAccessMethod = methodName.startsWith("access$");
+						
+						String accessOwner, accessName, accessDesc;
+						boolean accessIsStatic;
+						
 						
 
 						@Override
@@ -246,6 +251,13 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						@Override
 						public void visitMethodInsn(int opcode, String owner, String name, String desc) {
 							methodCallCount++;
+							if (isAccessMethod && methodCallCount == 1) {
+								this.accessOwner = owner;
+								this.accessName = name;
+								this.accessDesc = desc;
+								this.accessIsStatic = opcode == Opcodes.INVOKESTATIC;
+								
+							}
 							if (stubState == StubState.LOADED_STUB 
 									&& opcode == Opcodes.INVOKESPECIAL && owner.equals("java/lang/RuntimeException")
 									&& name.equals("<init>"))
@@ -290,6 +302,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
 						}
 						public void visitEnd() {
+							if (isAccessMethod && methodCallCount == 1) {
+								mBuilder.setAccessMethodFor(accessOwner, accessName, accessDesc, accessIsStatic);
+							}
 							boolean sawThrow = sawNormalThrow | sawUnsupportedThrow | sawStubThrow;
 							if (sawThrow && !sawReturn || sawSystemExit && !sawBranch) {
 								

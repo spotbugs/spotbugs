@@ -63,6 +63,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		boolean usesConcurrency;
 		boolean isStub;
 		int methodCallCount;
+		MethodDescriptor accessMethodFor;
 
 		final Map<ClassDescriptor, AnnotationValue> methodAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(4);
 
@@ -75,6 +76,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 			this.accessFlags = accessFlags;
 		}
 
+		public void setAccessMethodFor(String owner, String name, String sig, boolean isStatic) {
+			accessMethodFor = new MethodDescriptor(owner, name, sig, isStatic);
+		}
 		public void setSourceSignature(String methodSourceSignature) {
 			this.methodSourceSignature = methodSourceSignature;
 		}
@@ -112,7 +116,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
 		public MethodInfo build() {
 			return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, null, accessFlags, isUnconditionalThrower, isUnsupported, usesConcurrency, 
-				 isStub, methodCallCount, exceptions, methodAnnotations, methodParameterAnnotations);
+				 isStub, methodCallCount, exceptions, accessMethodFor, methodAnnotations, methodParameterAnnotations);
 		}
 
         public void setIsUnconditionalThrower() {
@@ -149,6 +153,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
 	static IdentityHashMap<MethodInfo, Void> unconditionalThrowers = new IdentityHashMap<MethodInfo, Void>();
 	static IdentityHashMap<MethodInfo, Void> unsupportedMethods = new IdentityHashMap<MethodInfo, Void>();
+	static IdentityHashMap<MethodInfo, MethodDescriptor> accessMethodFor = new IdentityHashMap<MethodInfo, MethodDescriptor>();
 
 
 	/**
@@ -160,13 +165,14 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	 * @param usesConcurrency TODO
 	 * @param isStub TODO
 	 * @param methodCallCount TODO
+	 * @param accessMethodFor TODO
 	 * @param isStatic
 	 */
 	 MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature, 
 			 @CheckForNull String bridgeMethodSignature,
 	        int accessFlags, boolean isUnconditionalThrower,
 	        boolean isUnsupported, boolean usesConcurrency, boolean isStub, int methodCallCount,
-	        @CheckForNull String[] exceptions, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
+	        @CheckForNull String[] exceptions, MethodDescriptor accessMethodFor, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
 		super(className, methodName, methodSignature, bridgeMethodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
 		this.accessFlags = accessFlags;
 		this.exceptions = exceptions;
@@ -420,7 +426,14 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
      }
 
 	final MethodInfo copyAndSetBridgeSignature(String bridgeSignature) {
-		return new MethodInfo(getSlashedClassName(), getName(), getSignature(), methodSourceSignature, bridgeSignature,
-		        accessFlags, false, false, usesConcurrency, isStub, methodCallCount, exceptions, methodAnnotations, methodParameterAnnotations);
+		MethodInfo result = new MethodInfo(getSlashedClassName(), getName(), getSignature(), methodSourceSignature, bridgeSignature,
+		        accessFlags, isUnconditionalThrower(), isUnsupported(), usesConcurrency, isStub, methodCallCount, exceptions, getAccessMethodFor(), methodAnnotations, methodParameterAnnotations);
+		return result;
+		
 	}
+
+
+    public @CheckForNull MethodDescriptor getAccessMethodFor() {
+	   return accessMethodFor.get(this);
+    }
 }

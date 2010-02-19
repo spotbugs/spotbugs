@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.classfile.IClassObserver;
 /**
  * Generic interface for bug reporter objects.
  * A BugReporter accumulates all of the information reported
- * by the analyses, which includes bug reports, and also auxiliary
+ * by the analysis, which includes bug reports, and also auxiliary
  * information such as analysis errors, missing classes,
  * and class to source file mapping.
  *
