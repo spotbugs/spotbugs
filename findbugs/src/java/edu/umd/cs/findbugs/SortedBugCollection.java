@@ -948,6 +948,10 @@ public class SortedBugCollection implements BugCollection {
 	public void addError(AnalysisError error) {
 		errorList.add(error);
 	}
+	
+	public void clearErrors() {
+		errorList.clear();
+	}
 
 	public void addMissingClass(String className) {
 		if (className.length() == 0) return;
@@ -1091,7 +1095,12 @@ public class SortedBugCollection implements BugCollection {
 	public void clearAppVersions() {
 		appVersionList.clear();
 	}
+	public void trimAppVersions(long numberToRetain) {
+		while (appVersionList.size() > numberToRetain) 
+			appVersionList.remove(appVersionList.size()-1);
+		sequence = appVersionList.size();
 
+	}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#createEmptyCollectionWithMetadata()
 	 */

@@ -153,7 +153,7 @@ public class Obfuscate {
 
 	
 	static TypeAnnotation obfuscate(TypeAnnotation m) {
-		TypeAnnotation result = new TypeAnnotation(m.getTypeDescriptor());
+		TypeAnnotation result = new TypeAnnotation(hashSignature(m.getTypeDescriptor()));
 		result.setDescription(m.getDescription());
 		return result;
 
@@ -235,6 +235,7 @@ public class Obfuscate {
 		for(BugAnnotation a : b.getAnnotations()) 
 			a.accept(visitor);
 		result.setOldInstanceHash(hashData(b.getInstanceHash()));
+		result.setHistory(b);
 		return result;
 	}
 

@@ -1772,6 +1772,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			attributeList.addAttribute("instanceOccurrenceNum", Integer.toString(getInstanceOccurrenceNum()));
 			attributeList.addAttribute("instanceOccurrenceMax", Integer.toString(getInstanceOccurrenceMax()));
 
+		} else if (oldInstanceHash != null && !isInstanceHashConsistent()) {
+			attributeList.addAttribute("oldInstanceHash", oldInstanceHash);
 		}
 		if (firstVersion > 0) attributeList.addAttribute("first", Long.toString(firstVersion));
 		if (lastVersion >= 0) 	attributeList.addAttribute("last", Long.toString(lastVersion));
@@ -2048,10 +2050,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @param firstVersion The firstVersion to set.
 	 */
 	public void setFirstVersion(long firstVersion) {
-		this.firstVersion = firstVersion;
 		if (lastVersion >= 0 && firstVersion > lastVersion) 
 			throw new IllegalArgumentException(
 				firstVersion + ".." + lastVersion);
+		this.firstVersion = firstVersion;
+		
 	}
 
 	/**
@@ -2061,6 +2064,20 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return firstVersion;
 	}
 
+	public void setHistory(BugInstance from) {
+		long first = from.getFirstVersion();
+		long last = from.getLastVersion();
+		if (first > 0 && last >=0
+				&& first > last) {
+			
+			throw new IllegalArgumentException("from has version range " + first + "..." + last + " in " + from.getBugPattern() +"\n" + from.getMessage());
+		}
+		setFirstVersion(first);
+		setLastVersion(last);
+		this.removedByChangeOfPersistingClass = from.removedByChangeOfPersistingClass;
+		this.introducedByChangeOfExistingClass = from.introducedByChangeOfExistingClass;
+	}
+		
 	/**
 	 * @param lastVersion The lastVersion to set.
 	 */
@@ -2142,7 +2159,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	}
 
 	public boolean isInstanceHashConsistent() {
-		return oldInstanceHash == null || instanceHash.equals(oldInstanceHash);
+		return oldInstanceHash == null || getInstanceHash().equals(oldInstanceHash);
 	}
 	/**
 	 * @param instanceOccurrenceNum The instanceOccurrenceNum to set.

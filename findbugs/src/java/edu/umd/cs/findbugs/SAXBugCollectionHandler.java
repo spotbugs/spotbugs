@@ -228,9 +228,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 							bugInstance.setRemovedByChangeOfPersistingClass(Boolean.parseBoolean(removedByChange));
 						}
 						String oldInstanceHash = getOptionalAttribute(attributes, "instanceHash");
+						if (oldInstanceHash == null) 
+							oldInstanceHash = getOptionalAttribute(attributes, "oldInstanceHash");
 						if (oldInstanceHash != null) {
 							bugInstance.setOldInstanceHash(oldInstanceHash);
-						}
+						} 
 
 
 					} else if (qName.equals("FindBugsSummary")) {
