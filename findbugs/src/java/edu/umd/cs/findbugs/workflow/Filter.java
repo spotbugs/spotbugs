@@ -68,6 +68,7 @@ public class Filter {
 		Pattern className,bugPattern;
 		public boolean notSpecified = false;
 		public boolean not = false;
+		int duration;
 		long first;
 		String firstAsString; 
 		long after;
@@ -78,6 +79,7 @@ public class Filter {
 
 		long last;
 		String lastAsString; 
+		String trimToVersionAsString;
 		String fixedAsString; // alternate way to specify 'last'
 		long present;
 		String presentAsString; 
@@ -142,10 +144,12 @@ public class Filter {
 
 			addOption("-annotation", "text", "allow only warnings containing this text in a user annotation");
 			addSwitchWithOptionalExtraPart("-withMessages", "truth", "generated XML should contain textual messages");
+			addOption("-maxDuration", "# versions", "only issues present in at most this many versions");
 			addOption("-after", "when", "allow only warnings that first occurred after this version");
 			addOption("-before", "when", "allow only warnings that first occurred before this version");
 			addOption("-first", "when", "allow only warnings that first occurred in this version");
 			addOption("-last", "when", "allow only warnings that last occurred in this version");
+			addOption("-trimToVersion", "when", "trim bug collection to exclude information about versions after this one");
 			addOption("-fixed", "when", "allow only warnings that last occurred in the previous version (clobbers last)");
 			addOption("-present", "when", "allow only warnings present in this version");
 			addOption("-absent", "when", "allow only warnings absent in this version");
@@ -174,7 +178,7 @@ public class Filter {
 			
 		}
 
-		static long getVersionNum(Map<String, AppVersion> versions, 
+		public static long getVersionNum(Map<String, AppVersion> versions, 
 				SortedMap<Long, AppVersion> timeStamps , String val, 
 				boolean roundToLaterVersion, long currentSeqNum) {
 			long numVersions = currentSeqNum+1;
@@ -219,7 +223,9 @@ public class Filter {
 		}
 
 		edu.umd.cs.findbugs.filter.Filter suppressionFilter;
+		BugCollection collection;
 		void adjustFilter(Project project, BugCollection collection) {
+			this.collection = collection;
 			suppressionFilter = project.getSuppressionFilter();
 			Map<String, AppVersion> versions = new HashMap<String, AppVersion>();
 			SortedMap<Long, AppVersion> timeStamps = new TreeMap<Long, AppVersion>();
@@ -267,6 +273,12 @@ public class Filter {
 			if (afterAsString != null && bug.getFirstVersion() <= after)
 				return false;
 			if (beforeAsString != null && bug.getFirstVersion() >= before)
+				return false;
+			long lastSeen = bug.getLastVersion();
+			if (lastSeen < 0)
+				lastSeen = collection.getSequenceNumber();
+			long thisDuration = lastSeen - bug.getFirstVersion();
+			if (duration > 0 && thisDuration > duration)
 				return false;
 			if ((lastAsString != null || fixedAsString != null) && (last < 0 || bug.getLastVersion() != last))
 				return false;
@@ -399,6 +411,10 @@ public class Filter {
 				firstAsString = argument;
 			else if (option.equals("-last")) 
 				lastAsString = argument;
+			else if (option.equals("-trimToVersion")) 
+				trimToVersionAsString = argument;
+			else if (option.equals("-maxDuration")) 
+				duration = Integer.parseInt(argument);
 			else if (option.equals("-fixed")) 
 				fixedAsString = argument;
 			else if (option.equals("-after")) 
@@ -482,10 +498,47 @@ public class Filter {
 			resultCollection.getProjectStats().purgeClassesThatDontMatch(commandLine.className);
 		}
 		sourceSearcher = new SourceSearcher(project);
+		
+		long trimToVersion = -1;
+		if (commandLine.trimToVersionAsString != null) {
+			Map<String, AppVersion> versions = new HashMap<String, AppVersion>();
+			SortedMap<Long, AppVersion> timeStamps = new TreeMap<Long, AppVersion>();
+
+			for(Iterator<AppVersion> i = origCollection.appVersionIterator(); i.hasNext(); ) {
+				AppVersion v = i.next();
+				versions.put(v.getReleaseName(), v);
+				timeStamps.put(v.getTimestamp(), v);
+			}
+			// add current version to the maps
+			AppVersion v = resultCollection.getCurrentAppVersion();
+			versions.put(v.getReleaseName(), v);
+			timeStamps.put(v.getTimestamp(), v);
+
+			trimToVersion = edu.umd.cs.findbugs.workflow.Filter.FilterCommandLine.getVersionNum(
+					versions, timeStamps, commandLine.trimToVersionAsString, true, v.getSequenceNumber());
+			if (trimToVersion < origCollection.getSequenceNumber()) {
+				String name = resultCollection.getAppVersionFromSequenceNumber(trimToVersion).getReleaseName();
+				long timestamp = resultCollection.getAppVersionFromSequenceNumber(trimToVersion).getTimestamp();
+				resultCollection.setReleaseName(name);
+				resultCollection.setTimestamp(timestamp);
+				resultCollection.trimAppVersions(trimToVersion);
+			}
+
+		}
+
 		for (BugInstance bug : origCollection.getCollection())
 			if (commandLine.accept(bug)) {
+				if (trimToVersion >= 0) {
+					if (bug.getFirstVersion() > trimToVersion) {
+						dropped++;
+						continue;
+					} else if (bug.getLastVersion() >= trimToVersion) {
+						bug.setLastVersion(-1);
+						bug.setRemovedByChangeOfPersistingClass(false);
+					}
+				}
 				resultCollection.add(bug, false);
-				if (!bug.isDead() )
+				if (!bug.isDead())
 					resultCollection.getProjectStats().addBug(bug);
 				passed++;
 			} else

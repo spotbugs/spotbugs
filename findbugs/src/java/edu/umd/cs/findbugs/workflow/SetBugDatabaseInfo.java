@@ -22,13 +22,17 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.dom4j.DocumentException;
 
+import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -38,6 +42,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.filter.Filter;
+import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 
 /**
  * Java main application to compute update a historical bug collection with
@@ -58,6 +63,7 @@ public class SetBugDatabaseInfo {
 		String projectName;
 
 		String exclusionFilterFile;
+		String lastVersion;
 
 		boolean withMessages = false;
 		boolean purgeStats = false;
@@ -88,6 +94,7 @@ public class SetBugDatabaseInfo {
 			addSwitch("-purgeMissingClasses", "purge list of missing classes");
 			addOption("-findSource", "directory", "Find and add all relevant source directions contained within this directory");
 			addOption("-suppress", "filter file", "Suppress warnings matched by this file (replaces previous suppressions)");
+			addOption("-lastVersion", "version", "Trim the history to just include just the specified version");
 			addSwitch("-withMessages", "Add bug descriptions");
 		}
 
@@ -125,6 +132,9 @@ public class SetBugDatabaseInfo {
 
 			else if (option.equals("-source"))
 				sourcePaths.add(argument);
+			else if (option.equals("-lastVersion")) {
+						
+			}
 			else if (option.equals("-findSource"))
 				searchSourcePaths.add(argument);
 			else
@@ -141,8 +151,7 @@ public class SetBugDatabaseInfo {
 		SetInfoCommandLine commandLine = new SetInfoCommandLine();
 		int argCount = commandLine.parse(args, 0, 2, USAGE);
 
-		BugCollection origCollection;
-		origCollection = new SortedBugCollection();
+		SortedBugCollection origCollection = new SortedBugCollection();
 
 		if (argCount < args.length) 
 			origCollection.readXML(args[argCount++]);
@@ -169,7 +178,6 @@ public class SetBugDatabaseInfo {
 			project.getSourceDirList().clear();
 			project.getFileList().clear();
 			project.getAuxClasspathEntryList().clear();
-			
 		}
 		if (commandLine.resetSource)
 			project.getSourceDirList().clear();
@@ -183,6 +191,31 @@ public class SetBugDatabaseInfo {
 			}
 		if (commandLine.purgeMissingClasses)
 			origCollection.clearMissingClasses();
+		if (commandLine.lastVersion != null) {
+			Map<String, AppVersion> versions = new HashMap<String, AppVersion>();
+			SortedMap<Long, AppVersion> timeStamps = new TreeMap<Long, AppVersion>();
+
+			for(Iterator<AppVersion> i = origCollection.appVersionIterator(); i.hasNext(); ) {
+				AppVersion v = i.next();
+				versions.put(v.getReleaseName(), v);
+				timeStamps.put(v.getTimestamp(), v);
+			}
+			// add current version to the maps
+			AppVersion v = origCollection.getCurrentAppVersion();
+			versions.put(v.getReleaseName(), v);
+			timeStamps.put(v.getTimestamp(), v);
+
+			long last = edu.umd.cs.findbugs.workflow.Filter.FilterCommandLine.getVersionNum(
+					versions, timeStamps, commandLine.lastVersion, true, v.getSequenceNumber());
+			if (last < origCollection.getSequenceNumber()) {
+				String name = origCollection.getAppVersionFromSequenceNumber(last).getReleaseName();
+				long timestamp = origCollection.getAppVersionFromSequenceNumber(last).getTimestamp();
+				origCollection.setReleaseName(name);
+				origCollection.setTimestamp(timestamp);
+				origCollection.trimAppVersions(last);
+			}
+
+		}
 
 		Map<String,Set<String>> missingFiles = new HashMap<String,Set<String>>();
 		if (!commandLine.searchSourcePaths.isEmpty()) {

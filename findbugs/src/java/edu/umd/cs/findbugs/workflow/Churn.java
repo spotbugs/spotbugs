@@ -33,11 +33,6 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
- * Mine historical information from a BugCollection. The BugCollection should be
- * built using UpdateBugCollection to record the history of analyzing all
- * versions over time.
- * 
- * @author David Hovemeyer
  * @author William Pugh
  */
 public class Churn {
@@ -56,7 +51,13 @@ public class Churn {
 	}
 
 	String getKey(BugInstance b) {
-		return b.getType();
+		if (false)
+			return b.getType();
+		String result = b.getCategoryAbbrev();
+		if (result.equals("C") || result.equals("N"))
+			return result;
+		return "O";
+			 
 		// return b.getPriorityAbbreviation() + "-" + b.getType();
 	}
 
@@ -140,19 +141,35 @@ public class Churn {
 		if (this.fixRate == -1)
 			fixRate = ((double) all.fixed)/(all.fixed+all.persist);
 		else fixRate = this.fixRate/100.0;
+		double highFixRate = fixRate + 0.05;
+		double lowFixRate = fixRate - 0.05;
 		for (Map.Entry<String, Data> e : data.entrySet()) {
 			Data d = e.getValue();
 			int total = d.persist + d.fixed;
 			if (total < 2)
 				continue;
 			
-			double expectedFixed = fixRate*total;
-			double expectedPersist = (1-fixRate) * total;
-			double chiValue = (d.fixed - expectedFixed)*(d.fixed - expectedFixed)/expectedFixed
-							+ (d.persist - expectedPersist)*(d.persist - expectedPersist)/expectedPersist;
-			if (expectedFixed > d.fixed)
-				chiValue = -chiValue;
-			System.out.printf("%7.1f %3d %5d %5d %5d %s%n", chiValue, d.fixed * 100 / total, d.persist, d.fixed, 
+			double rawFixRate = ((double)d.fixed) / total;
+			
+			double chiValue;
+			if (lowFixRate <= rawFixRate && rawFixRate <= highFixRate) {
+				chiValue = 0;
+			} else {
+				double baseFixRate;
+				
+				if (rawFixRate < lowFixRate)
+					baseFixRate = lowFixRate;
+				else 
+					baseFixRate = highFixRate;
+				double expectedFixed = baseFixRate*total;
+				double expectedPersist = (1-baseFixRate) * total;
+				chiValue = (d.fixed - expectedFixed)*(d.fixed - expectedFixed)/expectedFixed
+								+ (d.persist - expectedPersist)*(d.persist - expectedPersist)/expectedPersist;
+				if (rawFixRate < lowFixRate)
+					chiValue = -chiValue;
+			}
+			
+			System.out.printf("%7d %3d %5d %5d %5d %s%n", (int)chiValue, d.fixed * 100 / total, d.persist, d.fixed, 
 					d.maxRemovedAtOnce(), e.getKey());
 		}
 

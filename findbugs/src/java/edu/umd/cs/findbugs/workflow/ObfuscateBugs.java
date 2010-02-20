@@ -23,8 +23,8 @@ import java.io.IOException;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Obfuscate;
+import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
 
@@ -77,7 +77,7 @@ public class ObfuscateBugs {
 		CommandLine commandLine = new CommandLine();
 		
 		int argCount = commandLine
-		        .parse(args, 0, 1, "Usage: " + ObfuscateBugs.class.getName() + " [options] [<xml results>] ");
+		        .parse(args, 0, 2, "Usage: " + ObfuscateBugs.class.getName() + " [options] [<xml results>] ");
 
 		SortedBugCollection bugCollection = new SortedBugCollection();
 		if (argCount < args.length)
@@ -86,9 +86,19 @@ public class ObfuscateBugs {
 			bugCollection.readXML(System.in);
 		
 		
-		SortedBugCollection results = new SortedBugCollection();
+		SortedBugCollection results = bugCollection.createEmptyCollectionWithMetadata();
+		Project project = results.getProject();
+		project.getSourceDirList().clear();
+		project.getFileList().clear();
+		project.getAuxClasspathEntryList().clear();
+
+		results.getProjectStats().getPackageStats().clear();
+		results.clearMissingClasses();
+		results.clearErrors();
+		
+		
 		for(BugInstance bug : bugCollection) {
-			results.add(Obfuscate.obfuscate(bug));
+			results.add(Obfuscate.obfuscate(bug), false);
 		}
 
 		if (argCount == args.length) {
