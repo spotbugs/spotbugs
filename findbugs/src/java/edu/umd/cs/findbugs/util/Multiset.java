@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
@@ -39,10 +40,16 @@ public class Multiset<K> {
 	public Multiset(Map<K,Integer> map) {
 		this.map = map;
 	}
-
+	public Multiset(Multiset<K> mset) {
+		this.map = new HashMap(mset.map);
+	}
 		
 	public void clear() {
 		map.clear();
+	}
+	
+	public boolean isEmpty() {
+		return map.isEmpty();
 	}
 
 	public int numKeys() {
@@ -51,6 +58,18 @@ public class Multiset<K> {
 
 	public void add(K k) {
 		add(k,1);
+	}
+	
+	public boolean remove(K k) {
+		Integer v = map.get(k);
+		if (v == null || v.intValue() == 0)
+			return false;
+		if (v.intValue() == 1) {
+			map.remove(k);
+			return true;
+		}
+		map.put(k, v.intValue() -1);
+		return true;
 	}
 	public void add(K k, int val) {
 		Integer v = map.get(k);
@@ -74,6 +93,9 @@ public class Multiset<K> {
 		return map.entrySet();
 	}
 
+	public Set<K> uniqueKeys() {
+		return map.keySet();
+	}
 	public Iterable<Map.Entry<K, Integer>> entriesInDecreasingFrequency() {
 		TreeSet<Map.Entry<K, Integer>> result = new TreeSet<Map.Entry<K, Integer>>(new EntryComparator<K>());
 		result.addAll(map.entrySet());
