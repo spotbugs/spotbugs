@@ -255,7 +255,7 @@ public class AppEngineCloudNetworkClient {
         }
         
         // let the GUI know that things changed
-        cloudClient.getBugCollection().getProject().getGuiCallback().getBugUpdateExecutor().execute(new Runnable() {
+        cloudClient.getBugUpdateExecutor().execute(new Runnable() {
             public void run() {
                 for (String hash : hashes) {
                     BugInstance bugInstance = cloudClient.getBugByHash(hash);

@@ -26,49 +26,92 @@ import edu.umd.cs.findbugs.util.LaunchBrowser;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.Callable;
 import java.util.prefs.Preferences;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GoogleCodeBugFiler {
-
-	private static final String FEED_URI_BASE = "http://code.google.com/feeds/issues";
-	private static final String PROJECTION = "/full";
-
-	private static final String defaultStatus = "New";
-	private static final String defaultLabels = "FindBugsGenerated";
-
-	private final Cloud cloud;
-
-	private final BugFilingHelper bugFilingHelper;
-    private @CheckForNull ProjectHostingService projectHostingService;
-
-	private final URL issuesFeedUrl;
     private static final String KEY_PROJECTHOSTING_OAUTH_TOKEN = "projecthosting_oauth_token";
     private static final String KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET = "projecthosting_oauth_token_secret";
 
-    public GoogleCodeBugFiler(Cloud cloud, String project) throws MalformedURLException {
+    private static final String PROJECTION = "/full";
+
+	private static final String DEFAULT_STATUS = "New";
+	private static final String DEFAULT_LABELS = "FindBugsGenerated";
+
+    private static final Pattern URL_REGEX = Pattern.compile("http://code.google.com/p/(.*?)/issues/detail\\?id=(\\d+)");
+
+	private final Cloud cloud;
+	private final BugFilingHelper bugFilingHelper;
+
+    private @CheckForNull ProjectHostingService projectHostingService;
+
+    public GoogleCodeBugFiler(Cloud cloud) {
         this.cloud = cloud;
-		issuesFeedUrl = getIssuesFeedUrl(project);
 		bugFilingHelper = new BugFilingHelper(cloud);
 	}
 
-	public IssuesEntry file(BugInstance instance)
+	public IssuesEntry file(final BugInstance instance, String project)
 			throws IOException, ServiceException, OAuthException, InterruptedException {
+        final URL issuesFeedUrl = getIssuesFeedUrl(project);
 
         if (projectHostingService == null)
             initProjectHostingService(false);
 
+        Callable<IssuesEntry> callable = new Callable<IssuesEntry>() {
+            public IssuesEntry call() throws Exception {
+                return projectHostingService.insert(issuesFeedUrl, makeNewIssue(instance));
+            }
+        };
+        return initProjectHostingServiceAndExecute(callable);
+    }
+
+    public String getBugStatus(String bugLink)
+            throws MalformedURLException, OAuthException, InterruptedException, AuthenticationException {
+        
+        Matcher m = URL_REGEX.matcher(bugLink);
+        if (!m.matches()) {
+            return null;
+        }
+        final String project = m.group(1);
+        final long issueID = Long.parseLong(m.group(2));
+
+        return initProjectHostingServiceAndExecute(new Callable<String>() {
+            public String call() throws Exception {
+                IssuesEntry issue = projectHostingService.getEntry(
+                        new URL("http://code.google.com/feeds/issues/p/" + project + "/issues/full/" + issueID),
+                        IssuesEntry.class);
+                Status status = issue.getStatus();
+                if (status == null)
+                    return null;
+                return status.getValue();
+            }
+        });
+    }
+
+    // ============================= end of public methods =====================================
+
+    private <E> E initProjectHostingServiceAndExecute(Callable<E> callable)
+            throws OAuthException, MalformedURLException, InterruptedException, AuthenticationException {
+        if (projectHostingService == null)
+            initProjectHostingService(false);
         try {
-            return projectHostingService.insert(issuesFeedUrl, makeNewIssue(instance));
+            return callable.call();
         } catch (AuthenticationException e) {
             // something failed, so maybe the OAuth token is expired
             clearAuthTokenCache();
             initProjectHostingService(true);
             try {
-                return projectHostingService.insert(issuesFeedUrl, makeNewIssue(instance));
+                return callable.call();
             } catch (AuthenticationException e1) {
                 clearAuthTokenCache();
                 throw e1;
+            } catch (Exception e1) {
+                throw new IllegalStateException(e);
             }
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
         }
     }
 
@@ -78,10 +121,8 @@ public class GoogleCodeBugFiler {
         prefs.remove(KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET);
     }
 
-    // ============================= end of public methods =====================================
-
 	private URL getIssuesFeedUrl(String proj) throws MalformedURLException {
-		return new URL(FEED_URI_BASE + "/p/" + proj + "/issues" + PROJECTION);
+		return new URL("http://code.google.com/feeds/issues" + "/p/" + proj + "/issues" + PROJECTION);
 	}
 
     private void initProjectHostingService(boolean forceGetNewToken)
@@ -103,7 +144,7 @@ public class GoogleCodeBugFiler {
             return;
         }
         GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(oauthSigner);
-        oauthParameters.setScope(FEED_URI_BASE);
+        oauthParameters.setScope("http://code.google.com/feeds/issues");
 
         oauthHelper.getUnauthorizedRequestToken(oauthParameters);
         String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
@@ -130,7 +171,6 @@ public class GoogleCodeBugFiler {
         return Preferences.userNodeForPackage(GoogleCodeBugFiler.class);
     }
 
-
     private IssuesEntry makeNewIssue(BugInstance bug) {
 		Person author = new Person();
 		author.setName(cloud.getUser());
@@ -142,8 +182,8 @@ public class GoogleCodeBugFiler {
 		entry.getAuthors().add(author);
         entry.setTitle(new PlainTextConstruct(bugFilingHelper.getBugReportSummary(bug)));
 		entry.setContent(new HtmlTextConstruct(bugFilingHelper.getBugReportText(bug)));
-		entry.setStatus(new Status(defaultStatus));
-		for (String label : defaultLabels.split(" ")) {
+		entry.setStatus(new Status(DEFAULT_STATUS));
+		for (String label : DEFAULT_LABELS.split(" ")) {
 			entry.addLabel(new Label(label));
 		}
 		entry.setSendEmail(new SendEmail("True"));

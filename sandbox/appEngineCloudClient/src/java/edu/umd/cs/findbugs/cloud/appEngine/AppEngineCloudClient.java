@@ -1,20 +1,5 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import com.google.gdata.client.authn.oauth.OAuthException;
-import com.google.gdata.data.projecthosting.IssuesEntry;
-import com.google.gdata.util.ServiceException;
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.AbstractCloud;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -40,6 +26,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import com.google.gdata.client.authn.oauth.OAuthException;
+import com.google.gdata.data.projecthosting.IssuesEntry;
+import com.google.gdata.util.ServiceException;
+
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 
 public class AppEngineCloudClient extends AbstractCloud {
@@ -53,6 +55,8 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     private AppEngineCloudNetworkClient networkClient;
     private SignedInState signedInState = SignedInState.SIGNING_IN;
+    private GoogleCodeBugFiler bugFiler;
+    private Map<String,String> bugStatusCache = new ConcurrentHashMap<String, String>();
 
     public AppEngineCloudClient(CloudPlugin plugin, BugCollection bugs) {
 		this(plugin, bugs, null);
@@ -70,7 +74,8 @@ public class AppEngineCloudClient extends AbstractCloud {
 			backgroundExecutorService = null;
 			backgroundExecutor = executor;
 		}
-	}
+        bugFiler = new GoogleCodeBugFiler(this);
+    }
 
 	/** package-private for testing */
     void setNetworkClient(AppEngineCloudNetworkClient networkClient) {
@@ -213,7 +218,38 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     // ================================ bug filing =====================================
 
-	@Override
+    @Override
+    protected String getBugStatus(final BugInstance b) {
+        final String hash = b.getInstanceHash();
+        String status = bugStatusCache.get(hash);
+        if (status != null) {
+            return status;
+        }
+        final String bugLink = networkClient.getIssueByHash(hash).getBugLink();
+        backgroundExecutor.execute(new Runnable() {
+            public void run() {
+                String status = null;
+                try {
+                    status = bugFiler.getBugStatus(bugLink);
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Error while looking up Google Code issue", e);
+                }
+                if (status != null) {
+                    bugStatusCache.put(hash, status);
+                    getBugUpdateExecutor().execute(new Runnable() {
+                        public void run() {
+                            updatedIssue(b);
+                        }
+                    });
+                }
+            }
+        });
+        status = "<loading...>";
+        bugStatusCache.put(hash, status);
+        return status;
+    }
+
+    @Override
 	public URL getBugLink(BugInstance b) {
         if (getBugLinkStatus(b) == BugFilingStatus.FILE_BUG) {
 		    try {
@@ -258,7 +294,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 	@SuppressWarnings("deprecation")
     public void updateBugInstanceAndNotify(final BugInstance bugInstance) {
-        getBugCollection().getProject().getGuiCallback().getBugUpdateExecutor().execute(new Runnable() {
+        getBugUpdateExecutor().execute(new Runnable() {
             public void run() {
                 BugDesignation primaryDesignation = getPrimaryDesignation(bugInstance);
                 if (primaryDesignation != null) {
@@ -269,7 +305,11 @@ public class AppEngineCloudClient extends AbstractCloud {
         });
     }
 
-	public Collection<String> getProjects(String className) {
+    protected ExecutorService getBugUpdateExecutor() {
+        return getBugCollection().getProject().getGuiCallback().getBugUpdateExecutor();
+    }
+
+    public Collection<String> getProjects(String className) {
 		return Collections.emptyList();
 	}
 
@@ -345,6 +385,8 @@ public class AppEngineCloudClient extends AbstractCloud {
             return null;
         }
 
+        bugStatusCache.put(b.getInstanceHash(), googleCodeIssue.getStatus().getValue());
+
         networkClient.setBugLinkOnCloud(b, viewUrl);
 
         String hash = b.getInstanceHash();
@@ -371,8 +413,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             return null;
         }
         prefs.put("last_google_code_project", projectName);
-        GoogleCodeBugFiler bugFiler = new GoogleCodeBugFiler(this, projectName);
-        IssuesEntry issue = bugFiler.file(b);
+        IssuesEntry issue = bugFiler.file(b, projectName);
         if (issue == null)
             return null;
         return issue;

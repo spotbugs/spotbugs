@@ -196,7 +196,7 @@ public abstract class AbstractCloud implements Cloud {
 			BugFilingStatus bugLinkStatus = getBugLinkStatus(b);
 			if (bugLinkStatus != null && bugLinkStatus.bugIsFiled()) {
 				//if (bugLinkStatus.)
-                builder.append("\nBug status is ").append(bugLinkStatus.displayName);
+                builder.append("\nBug status is ").append(getBugStatus(b));
 				//else
 				//	builder.append("\nBug assigned to " + bd.bugAssignedTo + ", status is " + bd.bugStatus);
 				
@@ -216,7 +216,11 @@ public abstract class AbstractCloud implements Cloud {
 		return builder.toString();
 	}
 
-	public Date getUserDate(BugInstance b) {
+    protected String getBugStatus(BugInstance b) {
+        return null;
+    }
+
+    public Date getUserDate(BugInstance b) {
 		return new Date(getUserTimestamp(b));
 	}
 
@@ -279,12 +283,14 @@ public abstract class AbstractCloud implements Cloud {
 		int classCount = 0;
 		int ncss = 0;
 		ProjectStats projectStats = bugCollection.getProjectStats();
-		for(PackageStats ps : projectStats.getPackageStats()) 
-			if (ClassName.matchedPrefixes(packagePrefixes, ps.getPackageName()) &&  ps.size() > 0 && ps.getNumClasses() > 0) {
-				packageCount++;
-				 ncss += ps.size();
-				 classCount += ps.getNumClasses();
-		}
+		for(PackageStats ps : projectStats.getPackageStats()) {
+            int num = ps.getNumClasses();
+            if (ClassName.matchedPrefixes(packagePrefixes, ps.getPackageName()) && num > 0) {
+                packageCount++;
+                ncss += ps.size();
+                classCount += num;
+            }
+        }
 		
 		
 		if (classCount == 0) {

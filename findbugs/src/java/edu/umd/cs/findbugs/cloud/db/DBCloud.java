@@ -1583,6 +1583,11 @@ public  class DBCloud extends AbstractCloud {
     	return  BugFilingStatus.NA;
     }
 
+    @Override
+    protected String getBugStatus(BugInstance b) {
+        return getBugData(b).bugStatus;
+    }
+
     private boolean pendingStatusHasExpired(long whenFiled) {
 	    return System.currentTimeMillis() - whenFiled > 60*60*1000L;
     }
