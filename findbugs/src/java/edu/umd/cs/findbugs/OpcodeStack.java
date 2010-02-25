@@ -147,6 +147,7 @@ public class OpcodeStack implements Constants2
 		public static final @SpecialKind int NEWLY_ALLOCATED  = 16;
 		public static final @SpecialKind int ZERO_MEANS_NULL  = 17;
 		public static final @SpecialKind int NONZERO_MEANS_NULL  = 18;
+		public static final @SpecialKind int RESULT_OF_I2L = 19;
 		
 		private static final int IS_INITIAL_PARAMETER_FLAG=1;
 		private static final int COULD_BE_ZERO_FLAG = 2;
@@ -1461,7 +1462,10 @@ public class OpcodeStack implements Constants2
 					 } else {
 						 newValue = new Item("J");
 					 }
-					 newValue.setSpecialKind(it.getSpecialKind());
+					 if (seen == I2L)
+						 newValue.setSpecialKind(Item.RESULT_OF_I2L);
+					 else
+						 newValue.setSpecialKind(it.getSpecialKind());
 					 push(newValue);
 				 }
 				 break;

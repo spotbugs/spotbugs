@@ -32,10 +32,10 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
-import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
@@ -58,7 +58,7 @@ public class InconsistentAnnotations implements Detector, UseAnnotationDatabase 
 
 		for (Method method : jclass.getMethods()) {
 			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-			ParameterNullnessProperty nonnullParameters = AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase().getProperty(xmethod.getMethodDescriptor());
+			ParameterProperty nonnullParameters = AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase().getProperty(xmethod.getMethodDescriptor());
 			if (nonnullParameters != null) {
 				for (int p : nonnullParameters.iterable()) {
 					TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications.getDirectTypeQualifierAnnotation(xmethod, p, nonnullTypeQualifierValue);

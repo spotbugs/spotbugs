@@ -51,6 +51,7 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefAnalysis;
+import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -134,7 +135,7 @@ public class DerefFinder {
 						BitSet unconditionallyDereferencedNullArgSet = null;
 						 for (JavaClassAndMethod targetMethod : targetMethodSet) {
 
-							ParameterNullnessProperty property = unconditionalDerefParamDatabase
+							ParameterProperty property = unconditionalDerefParamDatabase
 									.getProperty(targetMethod.toMethodDescriptor());
 							if (property == null) {
 								unconditionallyDereferencedNullArgSet = null;

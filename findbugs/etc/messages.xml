@@ -124,6 +124,24 @@ This plugin contains all of the standard FindBugs detectors.
   **********************************************************************
    -->
 
+ <Detector class="edu.umd.cs.findbugs.detect.IntCast2LongAsInstant">
+     <Details>
+<![CDATA[
+<p> Finds uses of 32-bit values to describe milliseconds since the epoc.
+</p>
+]]>
+     </Details>
+   </Detector>
+
+ <Detector class="edu.umd.cs.findbugs.detect.TrainLongInstantfParams">
+     <Details>
+<![CDATA[
+<p> Builds database of parameters that take a 64 bit value describing
+milliseconds since the epoc.</p>
+]]>
+     </Details>
+   </Detector>
+
  <Detector class="edu.umd.cs.findbugs.detect.InconsistentAnnotations">
      <Details>
 <![CDATA[
@@ -6719,6 +6737,41 @@ or
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="ICAST_INT_2_LONG_AS_INSTANT">
+    <ShortDescription>int value converted to long and used as absolute time</ShortDescription>
+    <LongDescription>int converted to long and passed as absolute time to {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code converts a 32-bit int value to a 64-bit long value, and then
+passes that value for a method parameter that requires an absolute time value.
+An absolute time value is the number 
+of milliseconds since the standard base time known as "the epoch", namely January 1, 1970, 00:00:00 GMT.
+For example, the following method, intended to convert seconds since the epoc into a Date, is badly 
+broken:</p>
+<pre>
+Date getDate(int seconds) { return new Date(seconds * 1000); }
+</pre>
+<p>The multiplication is done using 32-bit arithmetic, and then converted to a 64-bit value.
+When a 32-bit value is converted to 64-bits and used to express an absolute time
+value, only dates in December 1969 and January 1970 can be represented.</p>
+
+<p>Correct implementations for the above method are:</p>
+
+<pre>
+// Fails for dates after 2037
+Date getDate(int seconds) { return new Date(seconds * 1000L); }
+
+// better, works for all dates
+Date getDate(long seconds) { return new Date(seconds * 1000); }
+</pre>
+]]>
+    </Details>
+  </BugPattern>
+
+
+
 
   <BugPattern type="ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND">
     <ShortDescription>int value cast to float and then passed to Math.round</ShortDescription>

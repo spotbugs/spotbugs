@@ -43,10 +43,10 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
+import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
-import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -163,9 +163,9 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
 			if (VERBOSE_DEBUG) {
 				ClassContext.dumpDataflowInformation(method, cfg, vnaDataflow, classContext.getIsNullValueDataflow(method), dataflow,  classContext.getTypeDataflow(method));
 			}
-			ParameterNullnessProperty property = new ParameterNullnessProperty();
+			ParameterProperty property = new ParameterProperty();
 			nonnullReferenceParameters += unconditionalDerefSet.cardinality();
-			property.setNonNullParamSet(unconditionalDerefSet);
+			property.setParamsWithProperty(unconditionalDerefSet);
 
 			AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase().setProperty(xmethod.getMethodDescriptor(), property);
 			if (DEBUG) {

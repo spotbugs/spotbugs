@@ -16,32 +16,40 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.umd.cs.findbugs.ba.npe;
+package edu.umd.cs.findbugs.ba.interproc;
 
 import java.util.BitSet;
 import java.util.Iterator;
 
 /**
- * Method property recording which parameters are (or should be)
- * non-null, meaning that null values should not be passed
- * as their arguments.
+ * Method property recording which parameters are have some
+ * property (originally, which were required to be nonnull,
+ * now made more generic)
  * 
  * @author David Hovemeyer
  */
-public class ParameterNullnessProperty{
+public class ParameterProperty{
 	/**
-	 * Maximum number of parameters that can be represented by a ParameterNullnessProperty.
+	 * Maximum number of parameters that can be represented by a ParameterProperty.
 	 */
 	public static final int MAX_PARAMS = 32;
 
-	private int nonNullParamSet;
+	private int bits;
 
 	/**
 	 * Constructor.
 	 * Parameters are all assumed not to be non-null.
 	 */
-	public ParameterNullnessProperty() {
-		this.nonNullParamSet = 0;
+	public ParameterProperty() {
+		this.bits = 0;
+	}
+
+	/**
+	 * Constructor.
+	 * Parameters are all assumed not to be non-null.
+	 */
+	public ParameterProperty(int bits) {
+		this.bits = bits;
 	}
 
 	/**
@@ -49,8 +57,8 @@ public class ParameterNullnessProperty{
 	 * 
 	 * @return the non-null param bitset
 	 */
-	int getNonNullParamSet() {
-		return nonNullParamSet;
+	public int getParamsWithProperty() {
+		return bits;
 	}
 
 	public Iterable<Integer> iterable() {
@@ -64,7 +72,7 @@ public class ParameterNullnessProperty{
 	            	}
 
                     private void advanceNextInt() {
-	                    while (!isNonNull(nextInt) && nextInt < 32) nextInt++;
+	                    while (!hasProperty(nextInt) && nextInt < 32) nextInt++;
 	                      if (nextInt >= 32) nextInt = -1;
                     }
 					public boolean hasNext() {
@@ -91,8 +99,8 @@ public class ParameterNullnessProperty{
 	 * 
 	 * @param nonNullParamSet the non-null param bitset
 	 */
-	void setNonNullParamSet(int nonNullParamSet) {
-		this.nonNullParamSet = nonNullParamSet;
+	public void setParamsWithProperty(int nonNullParamSet) {
+		this.bits = nonNullParamSet;
 	}
 
 	/**
@@ -101,9 +109,9 @@ public class ParameterNullnessProperty{
 	 * @param nonNullSet BitSet indicating which parameters are
 	 *                              non-null
 	 */
-	public void setNonNullParamSet(BitSet nonNullSet) {
+	public void setParamsWithProperty(BitSet nonNullSet) {
 		for (int i = 0; i < 32; ++i) {
-			setNonNull(i, nonNullSet.get(i));
+			setParamWithProperty(i, nonNullSet.get(i));
 		}
 	}
 
@@ -111,15 +119,15 @@ public class ParameterNullnessProperty{
 	 * Set whether or not a parameter might be non-null.
 	 * 
 	 * @param param              the parameter index
-	 * @param nonNull true if the parameter might be non-null, false otherwise
+	 * @param hasProperty true if the parameter might be non-null, false otherwise
 	 */
-	public void setNonNull(int param, boolean nonNull) {
+	public void setParamWithProperty(int param, boolean hasProperty) {
 		if (param < 0 || param > 31)
 			return;
-		if (nonNull) {
-			nonNullParamSet |= (1 << param);
+		if (hasProperty) {
+			bits |= (1 << param);
 		} else {
-			nonNullParamSet &= ~(1 << param);
+			bits &= ~(1 << param);
 		}
 	}
 
@@ -129,11 +137,11 @@ public class ParameterNullnessProperty{
 	 * @param param the parameter index
 	 * @return true if the parameter might be non-null, false otherwise
 	 */
-	public boolean isNonNull(int param) {
+	public boolean hasProperty(int param) {
 		if (param < 0 || param > 31)
 			return false;
 		else
-			return (nonNullParamSet & (1 << param)) != 0;
+			return (bits & (1 << param)) != 0;
 	}
 
 	/**
@@ -144,10 +152,10 @@ public class ParameterNullnessProperty{
 	 * @param nullArgSet bitset of null arguments
 	 * @return bitset intersecting null arguments and non-null params
 	 */
-	public BitSet getViolatedParamSet(BitSet nullArgSet) {
+	public BitSet getMatchingParameters(BitSet nullArgSet) {
 		BitSet result = new BitSet();
 		for (int i = 0; i < 32; ++i) {
-			result.set(i, nullArgSet.get(i) && isNonNull(i));
+			result.set(i, nullArgSet.get(i) && hasProperty(i));
 		}
 		return result;
 	}
@@ -156,7 +164,7 @@ public class ParameterNullnessProperty{
 		BitSet result = new BitSet();
 		if (isEmpty()) return result;
 		for (int i = 0; i < 32; ++i) {
-			result.set(i,  isNonNull(i));
+			result.set(i,  hasProperty(i));
 		}
 		return result;
 	}
@@ -167,7 +175,7 @@ public class ParameterNullnessProperty{
 	 * @return true if the set is empty, false if it contains at least one parameter
 	 */
 	public boolean isEmpty() {
-		return nonNullParamSet == 0;
+		return bits == 0;
 	}
 
 	@Override
@@ -176,7 +184,7 @@ public class ParameterNullnessProperty{
 
 		buf.append('{');
 		for (int i = 0; i < 32; ++i) {
-			if (isNonNull(i)) {
+			if (hasProperty(i)) {
 				if (buf.length() > 1)
 					buf.append(',');
 				buf.append(i);
@@ -193,8 +201,8 @@ public class ParameterNullnessProperty{
 	 * 
 	 * @param targetDerefParamSet another set
 	 */
-	public void intersectWith(ParameterNullnessProperty targetDerefParamSet) {
-		nonNullParamSet &= targetDerefParamSet.nonNullParamSet;
+	public void intersectWith(ParameterProperty targetDerefParamSet) {
+		bits &= targetDerefParamSet.bits;
 	}
 
 	/**
@@ -202,7 +210,7 @@ public class ParameterNullnessProperty{
 	 * 
 	 * @param other another ParameterNullnessProperty
 	 */
-	public void copyFrom(ParameterNullnessProperty other) {
-		this.nonNullParamSet = other.nonNullParamSet;
+	public void copyFrom(ParameterProperty other) {
+		this.bits = other.bits;
 	}
 }

@@ -94,6 +94,7 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
+import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
@@ -104,7 +105,6 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
 import edu.umd.cs.findbugs.ba.npe.NullValueUnconditionalDeref;
-import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.PointerUsageRequiringNonNullValue;
 import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
@@ -621,14 +621,14 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 				System.out.println("For target method " + targetMethod);
 			}
 
-			ParameterNullnessProperty property = unconditionalDerefParamDatabase.getProperty(targetMethod.toMethodDescriptor());
+			ParameterProperty property = unconditionalDerefParamDatabase.getProperty(targetMethod.toMethodDescriptor());
 			if (property == null)
 				continue;
 			if (DEBUG_NULLARG) {
 				System.out.println("\tUnconditionally dereferenced params: " + property);
 			}
 
-			BitSet targetUnconditionallyDereferencedNullArgSet = property.getViolatedParamSet(nullArgSet);
+			BitSet targetUnconditionallyDereferencedNullArgSet = property.getMatchingParameters(nullArgSet);
 
 			if (targetUnconditionallyDereferencedNullArgSet.isEmpty())
 				continue;
@@ -637,7 +637,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
 			unconditionallyDereferencedNullArgSet.or(targetUnconditionallyDereferencedNullArgSet);
 
-			if (!property.getViolatedParamSet(definitelyNullArgSet).isEmpty())
+			if (!property.getMatchingParameters(definitelyNullArgSet).isEmpty())
 				veryDangerousCallTargetList.add(targetMethod);
 		}
 

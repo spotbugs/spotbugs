@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
+import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 
 /**
@@ -28,19 +29,18 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
  * 
  * @author David Hovemeyer
  */
-public class ParameterNullnessPropertyDatabase extends MethodPropertyDatabase<ParameterNullnessProperty> {
+public class ParameterNullnessPropertyDatabase extends MethodPropertyDatabase<ParameterProperty> {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#decodeProperty(java.lang.String)
 	 */
 
 	@Override
-		 protected ParameterNullnessProperty decodeProperty(String propStr)
+		 protected ParameterProperty decodeProperty(String propStr)
 			throws PropertyDatabaseFormatException {
 		try {
 			int unconditionalDerefSet = Integer.parseInt(propStr);
-			ParameterNullnessProperty prop = new ParameterNullnessProperty();
-			prop.setNonNullParamSet(unconditionalDerefSet);
+			ParameterProperty prop = new ParameterProperty(unconditionalDerefSet);
 			return prop;
 		} catch (NumberFormatException e) {
 			throw new PropertyDatabaseFormatException("Invalid unconditional deref param set: " + propStr);
@@ -52,8 +52,8 @@ public class ParameterNullnessPropertyDatabase extends MethodPropertyDatabase<Pa
 	 */
 
 	@Override
-		 protected String encodeProperty(ParameterNullnessProperty property) {
-		return String.valueOf(property.getNonNullParamSet());
+		 protected String encodeProperty(ParameterProperty property) {
+		return String.valueOf(property.getParamsWithProperty());
 	}
 
 }

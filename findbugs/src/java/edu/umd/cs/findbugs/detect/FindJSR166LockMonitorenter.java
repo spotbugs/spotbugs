@@ -85,6 +85,8 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass jclass = classContext.getJavaClass();
+		if (jclass.getClassName().startsWith("java.util.concurrent."))
+			return;
 		Method[] methodList = jclass.getMethods();
 
 		for (Method method : methodList) {
@@ -201,6 +203,7 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 				        : NORMAL_PRIORITY).addClassAndMethod(classContext.getJavaClass(), method).addType(sig)
 				        .addSourceForTopStackValue(classContext, method, location).addSourceLine(classContext, method, location));
 			} else if (isUtilConcurrentSig) {
+				
 				int priority = "Ljava/util/concurrent/CopyOnWriteArrayList;".equals(sig) ? HIGH_PRIORITY : NORMAL_PRIORITY;
 				bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_UTILCONCURRENT_MONITORENTER", priority)
 				        .addClassAndMethod(classContext.getJavaClass(), method).addType(sig).addSourceForTopStackValue(

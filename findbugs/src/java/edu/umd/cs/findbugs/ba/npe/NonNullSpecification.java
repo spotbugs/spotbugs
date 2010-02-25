@@ -20,13 +20,14 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 
 public class NonNullSpecification {
 	private final JavaClassAndMethod classAndMethod;
-	private final ParameterNullnessProperty nonNullProperty;
-	private final ParameterNullnessProperty possiblyNullProperty;
+	private final ParameterProperty nonNullProperty;
+	private final ParameterProperty possiblyNullProperty;
 
-	public NonNullSpecification(JavaClassAndMethod classAndMethod, ParameterNullnessProperty nonParamProperty, ParameterNullnessProperty possiblyNullProperty) {
+	public NonNullSpecification(JavaClassAndMethod classAndMethod, ParameterProperty nonParamProperty, ParameterProperty possiblyNullProperty) {
 		this.classAndMethod = classAndMethod;
 		this.nonNullProperty = nonParamProperty;
 		this.possiblyNullProperty = possiblyNullProperty;
@@ -36,11 +37,11 @@ public class NonNullSpecification {
 		return classAndMethod;
 	}
 
-	public ParameterNullnessProperty getNonNullProperty() {
+	public ParameterProperty getNonNullProperty() {
 		return nonNullProperty;
 	}
 
-	public ParameterNullnessProperty getCheckForNullProperty() {
+	public ParameterProperty getCheckForNullProperty() {
 		return possiblyNullProperty;
 	}
 

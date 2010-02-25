@@ -74,9 +74,11 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 			return false;
 		// System.out.println("Checking to see if " + method + " is defined in "
 		// + clazz.getClassName());
-		for (Method m : clazz.getMethods())
-			if (!m.isStatic() && method.equals(m.getName() + ":" + m.getSignature()))
+		for (Method m : clazz.getMethods()) {
+			String key = m.getName() + ":" + m.getSignature();
+			if (!m.isStatic() && method.equals( key ))
 				return true;
+		}
 
 		return definedInSuperClassOrInterface(clazz, method);
 
@@ -196,9 +198,11 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 			JavaClass clazz = getThisClass();
 			XMethod xmethod = XFactory.createXMethod(clazz, obj);
 			XFactory factory = AnalysisContext.currentXFactory();
+			String key = obj.getName() + ":" + obj.getSignature();
 			if (!factory.isCalled(xmethod)
 					&& (obj.isStatic() || 
-							!definedInSuperClassOrInterface(clazz, obj.getName() + ":" + obj.getSignature()))) {
+							!definedInSuperClassOrInterface(clazz, key))) {
+				boolean value = definedInSuperClassOrInterface(clazz, key);
 				int priority = NORMAL_PRIORITY;
 				JavaClass superClass = clazz.getSuperClass();
 				String superClassName = superClass.getClassName();

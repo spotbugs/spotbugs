@@ -679,8 +679,8 @@ public abstract class AnalysisContext {
 		try {
 			if (DEBUG) System.out.println("Loading default " + description + " from " 
 					+ resourceName + " @ "
-			 + PropertyDatabase.class.getResource(resourceName) + " ... ");
-			InputStream in = PropertyDatabase.class.getResourceAsStream(resourceName);
+			 + database.getClass().getResource(resourceName) + " ... ");
+			InputStream in = database.getClass().getResourceAsStream(resourceName);
 			database.read(in);
 			in.close();
 			return database;

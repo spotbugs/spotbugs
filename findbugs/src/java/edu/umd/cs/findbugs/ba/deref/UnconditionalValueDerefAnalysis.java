@@ -61,11 +61,11 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import edu.umd.cs.findbugs.ba.npe.IsNullConditionDecision;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
-import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
@@ -355,14 +355,14 @@ public class UnconditionalValueDerefAnalysis extends
 
 			if (DEBUG_CHECK_CALLS) System.out.println("target set size: " + targetSet.size());
 			// Compute the intersection of all properties
-			ParameterNullnessProperty derefParamSet = null;
+			ParameterProperty derefParamSet = null;
 			for (XMethod target : targetSet) {
 				if (target.isStub()) 
 					continue;
 				if (DEBUG_CHECK_CALLS) 
 					System.out.print("Checking: " + target + ": ");
 
-				ParameterNullnessProperty targetDerefParamSet = database.getProperty(target.getMethodDescriptor());
+				ParameterProperty targetDerefParamSet = database.getProperty(target.getMethodDescriptor());
 				if (targetDerefParamSet == null) {
 					// Hmm...no information for this target.
 					// assume it doesn't dereference anything
@@ -375,7 +375,7 @@ public class UnconditionalValueDerefAnalysis extends
 					System.out.println("==> " + targetDerefParamSet);
 				}
 				if (derefParamSet == null) {
-					derefParamSet = new ParameterNullnessProperty();
+					derefParamSet = new ParameterProperty();
 					derefParamSet.copyFrom(targetDerefParamSet);
 				} else {
 					derefParamSet.intersectWith(targetDerefParamSet);
@@ -394,7 +394,7 @@ public class UnconditionalValueDerefAnalysis extends
 
 				HashSet<ValueNumber> requiredToBeNonnull = new HashSet<ValueNumber>();
 				for (int i = 0; i < numParams; i++) {
-					if (!derefParamSet.isNonNull(i)) {
+					if (!derefParamSet.hasProperty(i)) {
 						continue;
 					}
 						int argSlot = vnaFrame.getStackLocation(sigParser.getSlotsFromTopOfStackForParameter(i));
