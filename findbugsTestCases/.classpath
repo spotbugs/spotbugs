@@ -10,6 +10,7 @@
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/j2ee.jar"/>
+	<classpathentry kind="lib" path="lib/joda-time-1.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="var" path="FINDBUGS_ANNOTATIONS"/>
 	<classpathentry kind="lib" path="lib/jsr305.jar"/>
