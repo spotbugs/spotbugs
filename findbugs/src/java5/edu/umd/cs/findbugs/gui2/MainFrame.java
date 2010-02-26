@@ -54,38 +54,7 @@ import edu.umd.cs.findbugs.util.Multiset;
 
 import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.JToolTip;
-import javax.swing.JTree;
-import javax.swing.KeyStroke;
-import javax.swing.ProgressMonitor;
-import javax.swing.ProgressMonitorInputStream;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -3180,6 +3149,16 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
     SaveType getSaveType() {
 	    return saveType;
     }
+
+    public void showMessageDialogAndWait(final String message) throws InvocationTargetException, InterruptedException {
+    	if (SwingUtilities.isEventDispatchThread())
+    		JOptionPane.showMessageDialog(this, message);
+    	else
+    		SwingUtilities.invokeAndWait(new Runnable(){
+				public void run() {
+					JOptionPane.showMessageDialog(MainFrame.this, message);
+                }});
+    }
     
     public void showMessageDialog(final String message) {
     	if (SwingUtilities.isEventDispatchThread()) 
@@ -3313,6 +3292,63 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 public String showQuestionDialog(String message, String title, String defaultValue) {
 	return (String) JOptionPane.showInputDialog(this, message, title, JOptionPane.QUESTION_MESSAGE, null, null, defaultValue);
 }
+
+    public List<String> showForm(String message, String title, List<FormItem> items) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1;
+        gbc.weighty = 0;
+        gbc.gridwidth = 2;
+        gbc.gridy = 1;
+        gbc.insets = new Insets(5,5,5,5);
+        panel.add(new JLabel(message), gbc);
+        List<JComponent> fields = new ArrayList<JComponent>();
+        for (FormItem item : items) {
+            gbc.gridy++;
+            panel.add(new JLabel(item.getLabel()), gbc);
+            String defaultValue = item.getDefaultValue();
+            if (item.getPossibleValues() != null) {
+                DefaultComboBoxModel model = new DefaultComboBoxModel();
+                JComboBox box = new JComboBox(model);
+                item.setField(box);
+                for (String possibleValue : item.getPossibleValues()) {
+                    model.addElement(possibleValue);
+                }
+                if (defaultValue == null)
+                    model.setSelectedItem(model.getElementAt(0));
+                else
+                    model.setSelectedItem(defaultValue);
+                panel.add(box, gbc);
+
+            } else {
+                JTextField field = (item.isPassword() ? new JPasswordField() : new JTextField());
+                if (defaultValue != null) {
+                    field.setText(defaultValue);
+                }
+                item.setField(field);
+                panel.add(field, gbc);
+            }
+        }
+
+        int result = JOptionPane.showConfirmDialog(this, panel, title, JOptionPane.OK_CANCEL_OPTION);
+        if (result != JOptionPane.OK_OPTION)
+            return null;
+        List<String> results = new ArrayList<String>();
+        for (FormItem item : items) {
+            JComponent field = item.getField();
+            if (field instanceof JTextComponent) {
+                JTextComponent textComponent = (JTextComponent) field;
+                results.add(textComponent.getText());
+            } else if (field instanceof JComboBox) {
+                JComboBox box = (JComboBox) field;
+                results.add((String) box.getSelectedItem());
+            }
+        }
+        return results;
+    }
+
 /* (non-Javadoc)
  * @see edu.umd.cs.findbugs.IGuiCallback#showDocument(java.net.URL)
  */

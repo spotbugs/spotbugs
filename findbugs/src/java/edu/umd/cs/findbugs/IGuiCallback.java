@@ -18,10 +18,14 @@
  */
 package edu.umd.cs.findbugs;
 
+import javax.swing.*;
+
 import edu.umd.cs.findbugs.cloud.Cloud;
 
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -33,6 +37,9 @@ public interface IGuiCallback {
 	void showMessageDialog(String message);
 	int showConfirmDialog(String message, String title, int optionType);
 	String showQuestionDialog(String message, String title, String defaultValue);
+    
+    List<String> showForm(String message, String title, List<FormItem> labels);
+
     InputStream getProgressMonitorInputStream(InputStream in, int length, String msg);
     void setErrorMessage(String errorMsg);
     void displayNonmodelMessage(String title, String message);
@@ -48,4 +55,57 @@ public interface IGuiCallback {
      * Runs on the AWT event thread.
      */
     ExecutorService getBugUpdateExecutor();
+
+    void showMessageDialogAndWait(String message) throws InvocationTargetException, InterruptedException;
+
+    public class FormItem {
+        private String label;
+        private String defaultValue;
+        private boolean password = false;
+        private List<String> possibleValues;
+        private JComponent field;
+
+        public FormItem(String label) {
+            this(label, null, null);
+        }
+
+        public FormItem(String label, String defaultValue) {
+            this(label, defaultValue, null);
+        }
+
+        public FormItem(String label, String defaultValue, List<String> possibleValues) {
+            this.label = label;
+            this.defaultValue = defaultValue;
+            this.possibleValues = possibleValues;
+        }
+
+        public FormItem password() {
+            password = true;
+            return this;
+        }
+
+        public boolean isPassword() {
+            return password;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public String getDefaultValue() {
+            return defaultValue;
+        }
+
+        public List<String> getPossibleValues() {
+            return possibleValues;
+        }
+
+        public JComponent getField() {
+            return field;
+        }
+
+        public void setField(JComponent field) {
+            this.field = field;
+        }
+    }
 }

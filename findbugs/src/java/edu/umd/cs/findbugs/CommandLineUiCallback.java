@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
@@ -38,6 +39,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class CommandLineUiCallback implements IGuiCallback {
     private final CurrentThreadExecutorService bugUpdateExecutor = new CurrentThreadExecutorService();
+
+    public void showMessageDialogAndWait(String message) throws InvocationTargetException, InterruptedException {
+        System.out.println(message);
+    }
 
     public void showMessageDialog(String message) {
     System.out.println(message);
@@ -111,6 +116,10 @@ public class CommandLineUiCallback implements IGuiCallback {
 public String showQuestionDialog(String message, String title, String defaultValue) {
 	throw new UnsupportedOperationException();
 }
+
+    public List<String> showForm(String message, String title, List<FormItem> labels) {
+        throw new UnsupportedOperationException();
+    }
 
 /* (non-Javadoc)
  * @see edu.umd.cs.findbugs.IGuiCallback#showDocument(java.net.URL)

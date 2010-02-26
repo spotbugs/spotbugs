@@ -5,6 +5,7 @@ import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
@@ -75,7 +76,7 @@ public class AppEngineCloudNetworkClient {
         return true;
     }
 
-    public void setBugLinkOnCloud(BugInstance b, String bugLink) throws IOException {
+    public void setBugLinkOnCloud(BugInstance b, ProtoClasses.BugLinkType type, String bugLink) throws IOException {
         HttpURLConnection conn = openConnection("/set-bug-link");
         conn.setDoOutput(true);
         try {
@@ -83,6 +84,7 @@ public class AppEngineCloudNetworkClient {
             SetBugLink.newBuilder()
                     .setSessionId(sessionId)
                     .setHash(encodeHash(b.getInstanceHash()))
+                    .setBugLinkType(type)
                     .setUrl(bugLink)
                     .build()
                     .writeTo(outputStream);
@@ -96,6 +98,18 @@ public class AppEngineCloudNetworkClient {
         } finally {
             conn.disconnect();
         }
+    }
+
+    public void setBugLinkOnCloudAndStoreIssueDetails(BugInstance b, String viewUrl, ProtoClasses.BugLinkType linkType) 
+            throws IOException {
+        setBugLinkOnCloud(b, linkType, viewUrl);
+
+        String hash = b.getInstanceHash();
+        storeIssueDetails(hash,
+                          Issue.newBuilder(getIssueByHash(hash))
+                                  .setBugLink(viewUrl)
+                                  .setBugLinkType(linkType)
+                                  .build());
     }
 
     public void logIntoCloud() throws IOException {

@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executor;
 
+import static edu.umd.cs.findbugs.cloud.appEngine.AppEngineCloudClient.processJiraDashboardUrl;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.normalizeHash;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -219,6 +220,18 @@ public class AppEngineCloudClientTest extends TestCase {
 		List<BugDesignation> allUserDesignations = newList(cloudClient.getAllUserDesignations(foundIssue));
 		assertEquals(2, allUserDesignations.size());
 	}
+
+    public void testJiraDashboardUrlProcessor() {
+        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("  jira.atlassian.com    "));
+        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("jira.atlassian.com"));
+        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("http://jira.atlassian.com"));
+        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com"));
+        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure"));
+        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/"));
+        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa"));
+        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa;sessionId=blah"));
+        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa?blah"));
+    }
 
     // =================================== end of tests ===========================================
 

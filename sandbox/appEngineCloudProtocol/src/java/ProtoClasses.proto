@@ -1,17 +1,15 @@
 package edu.umd.cs.findbugs.cloud.appEngine.protobuf;
 
-// sent to server on login
 message LogIn {
-  required int64 sessionId = 1;
-  required int64 analysisTimestamp = 3;
+    required int64 sessionId = 1;
+    required int64 analysisTimestamp = 3;
 }
 
 message FindIssues {
-  required int64 sessionId = 1;
-  repeated bytes myIssueHashes = 4;
+    required int64 sessionId = 1;
+    repeated bytes myIssueHashes = 4;
 }
 
-// response from login
 message FindIssuesResponse {
 	repeated Issue foundIssues = 1;
 }
@@ -31,6 +29,7 @@ message SetBugLink {
     required int64 sessionId = 1;
     required bytes hash = 2;
     optional string url = 3;
+    optional BugLinkType bugLinkType = 9;
 }
 
 message GetRecentEvaluations {
@@ -47,24 +46,30 @@ message GetEvaluations {
 	repeated bytes hashes = 2;
 }
 
+enum BugLinkType {
+    GOOGLE_CODE = 1;
+    JIRA = 2;
+}
+
 message Issue {
-  optional bytes hash = 1;
-  optional string bugPattern = 2;
-  optional int32 priority = 3;
-  optional string primaryClass = 4;
-  optional int64 firstSeen = 5;
-  optional int64 lastSeen = 6;
-  optional string bugLink = 8;
-  repeated Evaluation evaluations = 7;
+    optional bytes hash = 1;
+    optional string bugPattern = 2;
+    optional int32 priority = 3;
+    optional string primaryClass = 4;
+    optional int64 firstSeen = 5;
+    optional int64 lastSeen = 6;
+    optional string bugLink = 8;
+    repeated Evaluation evaluations = 7;
+    optional BugLinkType bugLinkType = 9;
 }
 
 // part of an issue
 message Evaluation {
-  // who is ignored during evaluation upload
-  optional string who = 1;
-  optional string designation = 2;
-  optional string comment = 3;
-  optional int64 when = 4;
+    // who is ignored during evaluation upload
+    optional string who = 1;
+    optional string designation = 2;
+    optional string comment = 3;
+    optional int64 when = 4;
 }
 
 

@@ -16,6 +16,8 @@ import com.google.gdata.data.projecthosting.Status;
 import com.google.gdata.data.projecthosting.Username;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
+import org.apache.commons.discovery.log.SimpleLog;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -24,14 +26,20 @@ import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GoogleCodeBugFiler {
+public class GoogleCodeBugFiler implements BugFiler {
+
+    private static final Logger LOGGER = Logger.getLogger(GoogleCodeBugFiler.class.getName());
+
     private static final String KEY_PROJECTHOSTING_OAUTH_TOKEN = "projecthosting_oauth_token";
     private static final String KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET = "projecthosting_oauth_token_secret";
 
@@ -154,8 +162,12 @@ public class GoogleCodeBugFiler {
         }
 
         IGuiCallback callback = cloud.getBugCollection().getProject().getGuiCallback();
-        callback.showMessageDialog("Please sign into your Google Account in\n" +
-                                   "your web browser, then click OK.");
+        try {
+            callback.showMessageDialogAndWait("Please sign into your Google Account in\n" +
+                                       "your web browser, then click OK.");
+        } catch (InvocationTargetException e) {
+            LOGGER.log(Level.SEVERE, "", e);
+        }
 
         // convert the request token to a session token
         token = oauthHelper.getAccessToken(oauthParameters);

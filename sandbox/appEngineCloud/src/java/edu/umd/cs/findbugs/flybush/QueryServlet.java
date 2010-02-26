@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.flybush;
 
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.Level;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHashes;
 
@@ -126,6 +128,9 @@ public class QueryServlet extends AbstractFlybushServlet {
                 .setLastSeen(dbIssue.getLastSeen());
         if (dbIssue.getBugLink() != null) {
             issueBuilder.setBugLink(dbIssue.getBugLink());
+            DbIssue.DbBugLinkType linkType = dbIssue.getBugLinkType();
+            if (linkType != null)
+                issueBuilder.setBugLinkType(ProtoClasses.BugLinkType.valueOf(linkType.name()));
         }
 
         if (dbIssue.hasEvaluations()) {
@@ -141,8 +146,12 @@ public class QueryServlet extends AbstractFlybushServlet {
 				.setFirstSeen(dbIssue.getFirstSeen())
 				.setLastSeen(dbIssue.getLastSeen())
 				.setPrimaryClass(dbIssue.getPrimaryClass());
-        if (dbIssue.getBugLink() != null)
+        if (dbIssue.getBugLink() != null) {
             issueBuilder.setBugLink(dbIssue.getBugLink());
+            DbIssue.DbBugLinkType linkType = dbIssue.getBugLinkType();
+            if (linkType != null)
+                issueBuilder.setBugLinkType(ProtoClasses.BugLinkType.valueOf(linkType.name()));
+        }
         addEvaluations(issueBuilder, evaluations);
         return issueBuilder.build();
 	}
@@ -201,7 +210,7 @@ public class QueryServlet extends AbstractFlybushServlet {
 
     @SuppressWarnings("unchecked")
     private Map<String, DbIssue> lookupTimesAndEvaluations(PersistenceManager pm, List<String> hashes) {
-        Query query = pm.newQuery("select hash, firstSeen, lastSeen, bugLink, hasEvaluations, evaluations from "
+        Query query = pm.newQuery("select hash, firstSeen, lastSeen, bugLink, bugLinkType, hasEvaluations, evaluations from "
                                   + DbIssue.class.getName() + " where :hashes.contains(hash)");
         List<Object[]> results = (List<Object[]>) query.execute(hashes);
         Map<String,DbIssue> map = new HashMap<String, DbIssue>();
@@ -211,8 +220,16 @@ public class QueryServlet extends AbstractFlybushServlet {
             issue.setFirstSeen((Long) result[1]);
             issue.setLastSeen((Long) result[2]);
             issue.setBugLink((String) result[3]);
-            issue.setHasEvaluations((Boolean) result[4]);
-            issue.setEvaluationsDontLook((Set<DbEvaluation>) result[5]);
+            try {
+                DbIssue.DbBugLinkType linkType = (DbIssue.DbBugLinkType) result[4];
+                if (linkType != null) {
+                    issue.setBugLinkType(DbIssue.DbBugLinkType.valueOf(linkType.name()));
+                }
+            } catch (IllegalArgumentException e) {
+                LOGGER.log(Level.SEVERE, "Error parsing issue " + issue.getHash(), e);
+            }
+            issue.setHasEvaluations((Boolean) result[5]);
+            issue.setEvaluationsDontLook((Set<DbEvaluation>) result[6]);
             map.put(issue.getHash(), issue);
 		}
         return map;

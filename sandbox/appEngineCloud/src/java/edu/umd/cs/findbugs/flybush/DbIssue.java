@@ -20,6 +20,7 @@ public class DbIssue {
     @Persistent private long lastSeen;
     @Persistent private boolean hasEvaluations = false;
     @Persistent private String bugLink;
+    @Persistent private DbBugLinkType bugLinkType;
     @Persistent(mappedBy = "issue") @Element(dependent="true") private Set<DbEvaluation> evaluations;
 
 	public String getHash() {
@@ -100,6 +101,14 @@ public class DbIssue {
         this.bugLink = bugLink;
     }
 
+    public DbBugLinkType getBugLinkType() {
+        return bugLinkType;
+    }
+
+    public void setBugLinkType(DbBugLinkType bugLinkType) {
+        this.bugLinkType = bugLinkType;
+    }
+
     @Override
     public String toString() {
         return "DbIssue{" +
@@ -108,4 +117,6 @@ public class DbIssue {
                ", evaluations=" + evaluations +
                '}';
     }
+
+    public static enum DbBugLinkType { GOOGLE_CODE, JIRA }
 }

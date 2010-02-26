@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.flybush;
 
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
@@ -276,6 +277,7 @@ public class QueryServletTest extends AbstractFlybushServletTest {
         assertEquals(100, issue.getFirstSeen());
         assertEquals(200, issue.getLastSeen());
         assertEquals("http://bug.link", issue.getBugLink());
+        assertEquals(ProtoClasses.BugLinkType.JIRA, issue.getBugLinkType());
         assertFalse(issue.hasBugPattern());
         assertFalse(issue.hasHash());
         assertFalse(issue.hasPriority());

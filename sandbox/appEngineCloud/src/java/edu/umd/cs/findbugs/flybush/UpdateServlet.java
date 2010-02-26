@@ -6,6 +6,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink;
@@ -187,6 +188,10 @@ public class UpdateServlet extends AbstractFlybushServlet {
             if (bugLink != null && bugLink.length() == 0)
                 bugLink = null;
             issue.setBugLink(bugLink);
+
+            issue.setBugLinkType(setBugLinkMsg.hasBugLinkType()
+                    ? DbIssue.DbBugLinkType.valueOf(setBugLinkMsg.getBugLinkType().name())
+                    : null);
             pm.makePersistent(issue);
 
             tx.commit();
