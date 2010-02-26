@@ -35,13 +35,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -78,7 +76,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
 	 * @param key the key
 	 * @return the property, or null if no property is set for this key
 	 */
-	public ValueType getProperty(KeyType key) {
+	public @CheckForNull ValueType getProperty(KeyType key) {
 		return propertyMap.get(key);
 	}
 
