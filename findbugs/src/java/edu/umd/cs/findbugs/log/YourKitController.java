@@ -59,7 +59,7 @@ public class YourKitController {
 		try {
 			captureMemorySnapshot.invoke(controller);
 		} catch (Exception e) {
-			return;
+			assert true;
 		}
 	}
 
