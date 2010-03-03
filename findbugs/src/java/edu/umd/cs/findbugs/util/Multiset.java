@@ -41,7 +41,7 @@ public class Multiset<K> {
 		this.map = map;
 	}
 	public Multiset(Multiset<K> mset) {
-		this.map = new HashMap(mset.map);
+		this.map = new HashMap<K,Integer>(mset.map);
 	}
 		
 	public void clear() {
