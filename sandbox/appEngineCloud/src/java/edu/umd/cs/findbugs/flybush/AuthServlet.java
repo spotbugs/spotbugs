@@ -1,24 +1,29 @@
 package edu.umd.cs.findbugs.flybush;
 
+import com.dyuproject.openid.OpenIdUser;
+import com.dyuproject.openid.RelyingParty;
+import com.dyuproject.openid.ext.AxSchemaExtension;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 
 import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
 import javax.jdo.Transaction;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
-import java.util.List;
-import java.util.logging.Logger;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 public class AuthServlet extends AbstractFlybushServlet {
+
+    static {
+        // run on startup to configure DyuProject to request e-mail addresses from OpenID providers
+        RelyingParty.getInstance().addListener(new AxSchemaExtension()
+            .addExchange("email")
+        );
+    }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
@@ -53,36 +58,41 @@ public class AuthServlet extends AbstractFlybushServlet {
 
     private void browserAuth(HttpServletRequest req, HttpServletResponse resp,
 			PersistenceManager pm) throws IOException {
-		UserService userService = UserServiceFactory.getUserService();
-		User user = userService.getCurrentUser();
+        OpenIdUser user = (OpenIdUser)req.getAttribute(OpenIdUser.ATTR_NAME);
 
-		if (user != null) {
-			long id = Long.parseLong(req.getRequestURI().substring("/browser-auth/".length()));
-		    Date date = new Date();
-		    SqlCloudSession session = new SqlCloudSession(user, id, date);
+        if (user == null) {
+            setResponse(resp, 403, "OpenID authorization required");
+            return;
+        }
+        Map<String,String> axschema = AxSchemaExtension.get(user);
+        String email = axschema.get("email");
 
-		    Transaction tx = pm.currentTransaction();
-		    tx.begin();
-		    try {
-				pm.makePersistent(session);
-				tx.commit();
-			} finally {
-				if (tx.isActive()) tx.rollback();
-			}
-			resp.setStatus(200);
-		    resp.setContentType("text/html");
-		    PrintWriter writer = resp.getWriter();
-		    writer.println("<title>FindBugs Cloud</title>");
-			writer.println("<h1>You are now signed in</h1>");
-		    writer.println("<p style='font-size: large; font-weight: bold'>"
-		    		+ "Please return to the FindBugs application window to continue.</p>");
-		    writer.println("<p style='font-style: italic'>Signed in as " + user.getNickname()
-		    		       + " (" + user.getEmail() + ")</p>");
+        if (email == null || !email.matches(".*@([^.]+\\.)+[^.]{2,}")) {
+            setResponse(resp, 403, "Your OpenID provider for " + user.getIdentifier() + " did not provide an e-mail " +
+                                   "address. You need an e-mail address to use this service.");
+        }
 
-		} else {
-		    resp.sendRedirect(userService.createLoginURL(req.getRequestURI()));
-		}
-	}
+        long id = Long.parseLong(req.getRequestURI().substring("/browser-auth/".length()));
+        Date date = new Date();
+        SqlCloudSession session = new SqlCloudSession(email, id, date);
+
+        Transaction tx = pm.currentTransaction();
+        tx.begin();
+        try {
+            pm.makePersistent(session);
+            tx.commit();
+        } finally {
+            if (tx.isActive()) tx.rollback();
+        }
+        resp.setStatus(200);
+        resp.setContentType("text/html");
+        PrintWriter writer = resp.getWriter();
+        writer.println("<title>FindBugs Cloud</title>");
+        writer.println("<h1>You are now signed in</h1>");
+        writer.println("<p style='font-size: large; font-weight: bold'>"
+                + "Please return to the FindBugs application window to continue.</p>");
+        writer.println("<p style='font-style: italic'>Signed in as <strong>" + email + "</strong> (" + user.getIdentity() + ")</p>");
+    }
 
 	private void checkAuth(HttpServletRequest req, HttpServletResponse resp,
 			PersistenceManager pm) throws IOException {
@@ -94,7 +104,7 @@ public class AuthServlet extends AbstractFlybushServlet {
 			setResponse(resp, 200,
 					"OK\n"
 					+ sqlCloudSession.getRandomID() + "\n"
-					+ sqlCloudSession.getUser().getNickname());
+					+ sqlCloudSession.getUser());
 		}
 		resp.flushBuffer();
 	}
@@ -108,7 +118,7 @@ public class AuthServlet extends AbstractFlybushServlet {
 		}
 
 		DbInvocation invocation = new DbInvocation();
-		invocation.setWho(session.getUser().getNickname());
+		invocation.setWho(session.getUser());
 		invocation.setStartTime(loginMsg.getAnalysisTimestamp());
 
 		Transaction tx = pm.currentTransaction();

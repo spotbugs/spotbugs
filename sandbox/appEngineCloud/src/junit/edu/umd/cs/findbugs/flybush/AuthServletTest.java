@@ -35,12 +35,12 @@ public class AuthServletTest extends AbstractFlybushServletTest {
     }
 
 	public void testCheckAuthForValidId() throws Exception {
-		SqlCloudSession session = new SqlCloudSession(new User("my", "email.com"), 100, new Date(200));
+		SqlCloudSession session = new SqlCloudSession("my@email.com", 100, new Date(200));
 		persistenceManager.makePersistent(session);
 
 		executeGet("/check-auth/100");
 
-		checkResponse(200, "OK\n100\nmy\n");
+		checkResponse(200, "OK\n100\nmy@email.com\n");
 	}
 
 	public void testCheckAuthForNonexistentId() throws Exception {

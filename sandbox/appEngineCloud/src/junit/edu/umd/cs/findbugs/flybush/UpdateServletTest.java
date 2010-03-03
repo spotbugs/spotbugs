@@ -1,7 +1,6 @@
 package edu.umd.cs.findbugs.flybush;
 
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.users.User;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
@@ -33,19 +32,20 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
 
     @SuppressWarnings({"unchecked"})
     public void testExpireSqlSessions() throws Exception {
-        SqlCloudSession oldSession = new SqlCloudSession(new User("old", "test.com"), 100,
+        fail("FIX ME!");
+        SqlCloudSession oldSession = new SqlCloudSession("old@test.com", 100,
                                                       new Date(System.currentTimeMillis() - 8 * ONE_DAY_IN_MILLIS));
-        SqlCloudSession recentSession = new SqlCloudSession(new User("recent", "test.com"), 101,
+        SqlCloudSession recentSession = new SqlCloudSession("recent@test.com", 101,
                                                       new Date(System.currentTimeMillis() - 6 * ONE_DAY_IN_MILLIS));
         persistenceManager.makePersistentAll(oldSession, recentSession);
 
-        assertEquals("old", findSqlSession(100).get(0).getUser().getEmail());
-        assertEquals("recent", findSqlSession(101).get(0).getUser().getEmail());
+        assertEquals("old", findSqlSession(100).get(0).getUser());
+        assertEquals("recent", findSqlSession(101).get(0).getUser());
 
         executeGet("/expire-sql-sessions");
 
         assertEquals(0, findSqlSession(100).size());
-        assertEquals("recent", findSqlSession(101).get(0).getUser().getEmail());
+        assertEquals("recent", findSqlSession(101).get(0).getUser());
     }
 
     @SuppressWarnings({"unchecked"})

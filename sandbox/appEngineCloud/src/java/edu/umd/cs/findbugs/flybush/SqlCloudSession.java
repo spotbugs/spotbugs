@@ -1,7 +1,6 @@
 package edu.umd.cs.findbugs.flybush;
 
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.users.User;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -16,7 +15,7 @@ public class SqlCloudSession {
     private String randomID;
 
     @Persistent
-    private User user;
+    private String user;
 
     @Persistent
     private Date date;
@@ -24,13 +23,13 @@ public class SqlCloudSession {
     @Persistent
     private Key invocation;
 
-    public SqlCloudSession(User author, String randomID, Date date) {
+    public SqlCloudSession(String author, String randomID, Date date) {
         this.user = author;
         this.randomID = randomID;
         this.date = date;
     }
 
-    public SqlCloudSession(User author, long randomID, Date date) {
+    public SqlCloudSession(String author, long randomID, Date date) {
         this(author, Long.toString(randomID), date);
     }
 
@@ -50,11 +49,11 @@ public class SqlCloudSession {
         this.date = date;
     }
 
-	public User getUser() {
+	public String getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(String user) {
 		this.user = user;
 	}
 

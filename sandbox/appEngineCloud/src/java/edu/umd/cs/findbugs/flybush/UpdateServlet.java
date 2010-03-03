@@ -140,7 +140,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         }
 
         DbEvaluation dbEvaluation = createDbEvaluation(uploadEvalMsg.getEvaluation());
-        dbEvaluation.setWho(session.getUser().getNickname());
+        dbEvaluation.setWho(session.getUser());
         copyInvocationToEvaluation(pm, session, dbEvaluation);
         Transaction tx = pm.currentTransaction();
         try {

@@ -7,6 +7,11 @@
         <element id="directory" name="classes">
           <element id="module-output" name="AppEngineCloudServer" />
         </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="openid4java" />
+          <element id="library" level="application" name="openid4java" />
+          <element id="library" level="application" name="dyuproject" />
+        </element>
       </element>
     </root>
   </artifact>
