@@ -1,0 +1,23 @@
+<project name="local-cloud">
+    <path id="enhancer.classpath">
+        <fileset dir="C:/Users/Keith/Code/Libraries/datanucleus-accessplatform-full-deps-1.1.6">
+            <include name="lib/datanucleus-enhancer-1.1.4.jar"/>
+            <include name="lib/datanucleus-core-1.1.6.jar"/>
+            <include name="deps/asm-3.1.jar"/>
+            <include name="deps/log4j-1.2.8.jar"/>
+            <include name="deps/jdo2-api-2.3-eb.jar"/>
+        </fileset>
+    </path>
+    <target name="enhance">
+        <taskdef name="datanucleusenhancer" classpathref="enhancer.classpath"
+                 classname="org.datanucleus.enhancer.tools.EnhancerTask"/>
+
+        <datanucleusenhancer classpathref="enhancer.classpath" classpath="bin"
+                             failonerror="true">
+            <jvmarg line="-Dlog4j.configuration=etc/logging.properties"/>
+            <fileset dir="bin">
+                <include name="**/*.class"/>
+            </fileset>
+        </datanucleusenhancer>
+    </target>
+</project>

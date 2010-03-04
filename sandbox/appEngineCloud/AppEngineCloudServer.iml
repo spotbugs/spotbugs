@@ -35,7 +35,7 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library name="junit3">
         <CLASSES>
           <root url="jar://$APPLICATION_HOME_DIR$/lib/junit.jar!/" />
@@ -44,7 +44,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library name="mockito-all-1.8.2.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/mockito-all-1.8.2.jar!/" />
@@ -53,7 +53,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library name="AppEngineCloudProtocol.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/war/WEB-INF/lib/AppEngineCloudProtocol.jar!/" />
@@ -63,7 +63,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="AppEngine 1.3.0" level="application_server_libraries" />
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/war/WEB-INF/lib/protobuf-java-2.3.0.jar!/" />
@@ -72,7 +72,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/war/WEB-INF/lib/dyuproject-openid-1.1.6.jar!/" />
@@ -84,7 +84,7 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/war/WEB-INF/lib/dyuproject-util-1.1.6.jar!/" />
