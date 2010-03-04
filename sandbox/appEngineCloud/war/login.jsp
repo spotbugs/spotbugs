@@ -35,8 +35,6 @@
         </div>
 
         <div id="openid_input_area">
-            <input id="openid_identifier" name="openid_identifier" type="text" value="http://"/>
-            <input id="openid_submit" type="submit" value="Sign-In"/>
         </div>
         <noscript>
             <p>OpenID is service that allows you to log-on to many different websites using a single indentity.

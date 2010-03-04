@@ -167,10 +167,10 @@ var openid = {
     
     	var hidden = $('#'+this.input_id);
     	if (hidden.length > 0) {
-    		hidden.value = url;
-    	} else {
-    		$('#openid_form').append('<input type="hidden" id="' + this.input_id + '" name="' + this.input_id + '" value="'+url+'"/>');
+    		hidden.remove()
     	}
+        $('#openid_input_area').hide()
+        $('#openid_form').append('<input type="hidden" id="' + this.input_id + '" name="' + this.input_id + '" value="'+url+'"/>');
     },
     highlight: function (box_id) {
     	
@@ -201,6 +201,11 @@ var openid = {
 		return null;
     },
     useInputBox: function (provider) {
+
+
+    	var hidden = $('#'+this.input_id);
+        if (hidden.length > 0)
+            hidden.remove()
    	
 		var input_area = $('#openid_input_area');
 		
@@ -223,6 +228,7 @@ var openid = {
 		
 		input_area.empty();
 		input_area.append(html);
+        input_area.show();
 
 		$('#'+id).focus();
     }
