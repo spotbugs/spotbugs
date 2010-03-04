@@ -54,15 +54,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="protobuf-java-2.2.0.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/war/WEB-INF/lib/protobuf-java-2.2.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="AppEngineCloudProtocol.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/war/WEB-INF/lib/AppEngineCloudProtocol.jar!/" />
@@ -72,6 +63,48 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="AppEngine 1.3.0" level="application_server_libraries" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/war/WEB-INF/lib/protobuf-java-2.3.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/war/WEB-INF/lib/dyuproject-openid-1.1.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../../../Libraries/dyuproject-1.1.6/modules/openid/src/test/java" />
+          <root url="file://$MODULE_DIR$/../../../Libraries/dyuproject-1.1.6/modules/openid/src/main/java" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/war/WEB-INF/lib/dyuproject-util-1.1.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../../../Libraries/dyuproject-1.1.6/modules/util/src/main/java" />
+          <root url="file://$MODULE_DIR$/../../../Libraries/dyuproject-1.1.6/modules/util/src/test/java" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/war/WEB-INF/lib/jetty-util-6.1.19.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 
