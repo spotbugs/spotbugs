@@ -17,7 +17,6 @@ import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.en
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHashes;
 import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.checkIssuesEqualExceptTimestamps;
 import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.createDbIssue;
-import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.createEvaluation;
 
 public class QueryServletTest extends AbstractFlybushServletTest {
 
@@ -318,7 +317,7 @@ public class QueryServletTest extends AbstractFlybushServletTest {
 		assertEquals(dbEval.getComment(), protoEval.getComment());
 		assertEquals(dbEval.getDesignation(), protoEval.getDesignation());
 		assertEquals(dbEval.getWhen(), protoEval.getWhen());
-		assertEquals(dbEval.getWho(), protoEval.getWho());
+		assertEquals(getDbUser(dbEval.getWho()).getEmail(), protoEval.getWho());
 	}
 
 }

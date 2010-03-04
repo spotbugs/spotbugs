@@ -58,26 +58,36 @@ public class AuthServlet extends AbstractFlybushServlet {
 
     private void browserAuth(HttpServletRequest req, HttpServletResponse resp,
 			PersistenceManager pm) throws IOException {
-        OpenIdUser user = (OpenIdUser)req.getAttribute(OpenIdUser.ATTR_NAME);
+        OpenIdUser openIdUser = (OpenIdUser)req.getAttribute(OpenIdUser.ATTR_NAME);
 
-        if (user == null) {
+        if (openIdUser == null) {
             setResponse(resp, 403, "OpenID authorization required");
             return;
         }
-        Map<String,String> axschema = AxSchemaExtension.get(user);
+        Map<String,String> axschema = AxSchemaExtension.get(openIdUser);
         String email = axschema == null ? null : axschema.get("email");
 
-        if (email == null || !email.matches(".*@([^.]+\\.)+[^.]{2,}")) {
-            setResponse(resp, 403, "Your OpenID provider for " + user.getIdentifier() + " did not provide an e-mail " +
+        String openidUrl = openIdUser.getIdentity();
+        if (openidUrl == null || email == null || !email.matches(".*@([^.]+\\.)+[^.]{2,}")) {
+            setResponse(resp, 403, "Your OpenID provider for " + openidUrl + " did not provide an e-mail " +
                                    "address. You need an e-mail address to use this service.");
             return;
         }
 
         long id = Long.parseLong(req.getRequestURI().substring("/browser-auth/".length()));
         Date date = new Date();
-        SqlCloudSession session = new SqlCloudSession(email, id, date);
+        DbUser dbUser = new DbUser(openidUrl, email);
+        SqlCloudSession session = new SqlCloudSession(dbUser.createKeyObject(), id, date);
 
         Transaction tx = pm.currentTransaction();
+        tx.begin();
+        try {
+            pm.makePersistent(dbUser);
+            tx.commit();
+        } finally {
+            if (tx.isActive()) tx.rollback();
+        }
+        tx = pm.currentTransaction();
         tx.begin();
         try {
             pm.makePersistent(session);
@@ -92,7 +102,7 @@ public class AuthServlet extends AbstractFlybushServlet {
         writer.println("<h1>You are now signed in</h1>");
         writer.println("<p style='font-size: large; font-weight: bold'>"
                 + "Please return to the FindBugs application window to continue.</p>");
-        writer.println("<p style='font-style: italic'>Signed in as <strong>" + email + "</strong> (" + user.getIdentity() + ")</p>");
+        writer.println("<p style='font-style: italic'>Signed in as <strong>" + email + "</strong> (" + openIdUser.getIdentity() + ")</p>");
     }
 
 	private void checkAuth(HttpServletRequest req, HttpServletResponse resp,
@@ -102,10 +112,11 @@ public class AuthServlet extends AbstractFlybushServlet {
 		if (sqlCloudSession == null) {
 			setResponse(resp, 418, "FAIL");
 		} else {
-			setResponse(resp, 200,
+            DbUser user = pm.getObjectById(DbUser.class, sqlCloudSession.getUser());
+            setResponse(resp, 200,
 					"OK\n"
 					+ sqlCloudSession.getRandomID() + "\n"
-					+ sqlCloudSession.getUser());
+					+ user.getEmail());
 		}
 		resp.flushBuffer();
 	}

@@ -65,7 +65,7 @@ public class QueryServlet extends AbstractFlybushServlet {
             DbIssue dbIssue = issues.get(hash);
             Builder issueBuilder = Issue.newBuilder();
             if (dbIssue != null) {
-                buildTerseIssueProto(dbIssue, issueBuilder);
+                buildTerseIssueProto(dbIssue, issueBuilder, pm);
                 found++;
             }
 
@@ -93,7 +93,7 @@ public class QueryServlet extends AbstractFlybushServlet {
 		Map<String, SortedSet<DbEvaluation>> issues = groupUniqueEvaluationsByIssue(evaluations);
 		for (SortedSet<DbEvaluation> evaluationsForIssue : issues.values()) {
 			DbIssue issue = evaluations.iterator().next().getIssue();
-			Issue issueProto = buildFullIssueProto(issue, evaluationsForIssue);
+			Issue issueProto = buildFullIssueProto(issue, evaluationsForIssue, pm);
 			issueProtos.addIssues(issueProto);
 		}
 		query.closeAll();
@@ -111,7 +111,7 @@ public class QueryServlet extends AbstractFlybushServlet {
 
 		RecentEvaluations.Builder response = RecentEvaluations.newBuilder();
 		for (DbIssue issue : lookupIssues(decodeHashes(evalsRequest.getHashesList()), pm)) {
-			Issue issueProto = buildFullIssueProto(issue, issue.getEvaluations());
+			Issue issueProto = buildFullIssueProto(issue, issue.getEvaluations(), pm);
 			response.addIssues(issueProto);
 		}
 
@@ -123,7 +123,7 @@ public class QueryServlet extends AbstractFlybushServlet {
 
     // ========================= end of request handling ================================
 
-    private void buildTerseIssueProto(DbIssue dbIssue, Builder issueBuilder) {
+    private void buildTerseIssueProto(DbIssue dbIssue, Builder issueBuilder, PersistenceManager pm) {
         issueBuilder.setFirstSeen(dbIssue.getFirstSeen())
                 .setLastSeen(dbIssue.getLastSeen());
         if (dbIssue.getBugLink() != null) {
@@ -134,11 +134,11 @@ public class QueryServlet extends AbstractFlybushServlet {
         }
 
         if (dbIssue.hasEvaluations()) {
-            addEvaluations(issueBuilder, dbIssue.getEvaluations());
+            addEvaluations(issueBuilder, dbIssue.getEvaluations(), pm);
         }
     }
 
-    private Issue buildFullIssueProto(DbIssue dbIssue, Set<DbEvaluation> evaluations) {
+    private Issue buildFullIssueProto(DbIssue dbIssue, Set<DbEvaluation> evaluations, PersistenceManager pm) {
 		Issue.Builder issueBuilder = Issue.newBuilder()
 				.setBugPattern(dbIssue.getBugPattern())
 				.setPriority(dbIssue.getPriority())
@@ -152,17 +152,17 @@ public class QueryServlet extends AbstractFlybushServlet {
             if (linkType != null)
                 issueBuilder.setBugLinkType(ProtoClasses.BugLinkType.valueOf(linkType.name()));
         }
-        addEvaluations(issueBuilder, evaluations);
+        addEvaluations(issueBuilder, evaluations, pm);
         return issueBuilder.build();
 	}
 
-    private void addEvaluations(Builder issueBuilder, Set<DbEvaluation> evaluations) {
+    private void addEvaluations(Builder issueBuilder, Set<DbEvaluation> evaluations, PersistenceManager pm) {
         for (DbEvaluation dbEval : sortAndFilterEvaluations(evaluations)) {
 			issueBuilder.addEvaluations(Evaluation.newBuilder()
 					.setComment(dbEval.getComment())
 					.setDesignation(dbEval.getDesignation())
 					.setWhen(dbEval.getWhen())
-					.setWho(dbEval.getWho()).build());
+					.setWho(pm.getObjectById(DbUser.class, dbEval.getWho()).getEmail()).build());
 		}
     }
 
@@ -174,7 +174,7 @@ public class QueryServlet extends AbstractFlybushServlet {
         LinkedList<DbEvaluation> result = new LinkedList<DbEvaluation>();
         for (ListIterator<DbEvaluation> it = evaluationsList.listIterator(numEvaluations); it.hasPrevious();) {
             DbEvaluation dbEvaluation = it.previous();
-            boolean userIsNew = seenUsernames.add(dbEvaluation.getWho());
+            boolean userIsNew = seenUsernames.add(dbEvaluation.getWho().getName());
             if (userIsNew) {
                 result.add(0, dbEvaluation);
             }

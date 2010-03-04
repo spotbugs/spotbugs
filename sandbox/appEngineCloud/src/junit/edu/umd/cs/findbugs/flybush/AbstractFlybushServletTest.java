@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs.flybush;
 
 import com.dyuproject.openid.OpenIdUser;
 import com.dyuproject.openid.ext.AxSchemaExtension;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.dev.LocalDatastoreService;
 import com.google.appengine.tools.development.ApiProxyLocalImpl;
 import com.google.apphosting.api.ApiProxy;
@@ -93,6 +94,9 @@ public abstract class AbstractFlybushServletTest extends TestCase {
 
     protected void initOpenidUserParameter() {
         OpenIdUser user = new OpenIdUser();
+        HashMap<String, String> jsonAttr = new HashMap<String, String>();
+        jsonAttr.put("b", "http://some.website");
+        user.fromJSON(jsonAttr);
         Map<String, String> axattr = new HashMap<String, String>();
         user.setAttribute(AxSchemaExtension.ATTR_NAME, axattr);
         axattr.put("email", "my@email.com");
@@ -172,5 +176,20 @@ public abstract class AbstractFlybushServletTest extends TestCase {
 		}
 	}
 
+    protected DbEvaluation createEvaluation(DbIssue issue, String who, int when) {
+        DbUser user = new DbUser("http://" + who, who);
+        persistenceManager.makePersistent(user);
+        DbEvaluation eval = new DbEvaluation();
+        eval.setComment("my comment");
+        eval.setDesignation("MUST_FIX");
+        eval.setIssue(issue);
+        eval.setWhen(when);
+        eval.setWho(user.createKeyObject());
+        return eval;
+    }
+
+    protected DbUser getDbUser(Key user) {
+        return persistenceManager.getObjectById(DbUser.class, user);
+    }
 }
 

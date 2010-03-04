@@ -15,7 +15,7 @@ public class SqlCloudSession {
     private String randomID;
 
     @Persistent
-    private String user;
+    private Key user;
 
     @Persistent
     private Date date;
@@ -23,13 +23,13 @@ public class SqlCloudSession {
     @Persistent
     private Key invocation;
 
-    public SqlCloudSession(String author, String randomID, Date date) {
+    public SqlCloudSession(Key author, String randomID, Date date) {
         this.user = author;
         this.randomID = randomID;
         this.date = date;
     }
 
-    public SqlCloudSession(String author, long randomID, Date date) {
+    public SqlCloudSession(Key author, long randomID, Date date) {
         this(author, Long.toString(randomID), date);
     }
 
@@ -49,11 +49,11 @@ public class SqlCloudSession {
         this.date = date;
     }
 
-	public String getUser() {
+	public Key getUser() {
 		return user;
 	}
 
-	public void setUser(String user) {
+	public void setUser(Key user) {
 		this.user = user;
 	}
 

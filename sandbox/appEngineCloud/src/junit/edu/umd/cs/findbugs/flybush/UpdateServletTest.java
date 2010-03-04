@@ -32,19 +32,21 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
 
     @SuppressWarnings({"unchecked"})
     public void testExpireSqlSessions() throws Exception {
-        SqlCloudSession oldSession = new SqlCloudSession("old@test.com", 100,
-                                                      new Date(System.currentTimeMillis() - 8 * ONE_DAY_IN_MILLIS));
-        SqlCloudSession recentSession = new SqlCloudSession("recent@test.com", 101,
-                                                      new Date(System.currentTimeMillis() - 6 * ONE_DAY_IN_MILLIS));
-        persistenceManager.makePersistentAll(oldSession, recentSession);
+        DbUser oldUser = new DbUser("http://some.website", "old@test.com");
+        SqlCloudSession oldSession = new SqlCloudSession(oldUser.createKeyObject(), 100,
+                                                         new Date(System.currentTimeMillis() - 8 * ONE_DAY_IN_MILLIS));
+        DbUser recentUser = new DbUser("http://some.website2", "recent@test.com");
+        SqlCloudSession recentSession = new SqlCloudSession(recentUser.createKeyObject(), 101,
+                                                            new Date(System.currentTimeMillis() - 6 * ONE_DAY_IN_MILLIS));
+        persistenceManager.makePersistentAll(oldUser, recentUser, oldSession, recentSession);
 
-        assertEquals("old@test.com", findSqlSession(100).get(0).getUser());
-        assertEquals("recent@test.com", findSqlSession(101).get(0).getUser());
+        assertEquals("old@test.com", getDbUser(findSqlSession(100).get(0).getUser()).getEmail());
+        assertEquals("recent@test.com", getDbUser(findSqlSession(101).get(0).getUser()).getEmail());
 
         executeGet("/expire-sql-sessions");
 
         assertEquals(0, findSqlSession(100).size());
-        assertEquals("recent@test.com", findSqlSession(101).get(0).getUser());
+        assertEquals("recent@test.com", getDbUser(findSqlSession(101).get(0).getUser()).getEmail());
     }
 
     @SuppressWarnings({"unchecked"})
@@ -149,7 +151,7 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
 		assertEquals(protoEval.getComment(), dbEval.getComment());
 		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
 		assertEquals(protoEval.getWhen(), dbEval.getWhen());
-		assertEquals("my@email.com", dbEval.getWho());
+		assertEquals("my@email.com", getDbUser(dbEval.getWho()).getEmail());
 		assertNull(dbEval.getInvocation());
 	}
 
@@ -187,12 +189,12 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
 		assertEquals(protoEval.getComment(), dbEval.getComment());
 		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
 		assertEquals(protoEval.getWhen(), dbEval.getWhen());
-		assertEquals("my@email.com", dbEval.getWho());
+		assertEquals("my@email.com", getDbUser(dbEval.getWho()).getEmail());
 		Key invocationId = dbEval.getInvocation();
 		assertNotNull(invocationId);
 		DbInvocation invocation = persistenceManager.getObjectById(DbInvocation.class,
                                                                    invocationId);
-		assertEquals("my@email.com", invocation.getWho());
+		assertEquals("my@email.com", getDbUser(invocation.getWho()).getEmail());
 		assertEquals(100, invocation.getStartTime());
 	}
 
@@ -287,9 +289,9 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
     	createCloudSession(555);
 
         DbIssue foundIssue = FlybushServletTestUtil.createDbIssue("fad1");
-        DbEvaluation eval1 = FlybushServletTestUtil.createEvaluation(foundIssue, "first", 100);
-        DbEvaluation eval2 = FlybushServletTestUtil.createEvaluation(foundIssue, "second", 200);
-        DbEvaluation eval3 = FlybushServletTestUtil.createEvaluation(foundIssue, "first", 300);
+        DbEvaluation eval1 = createEvaluation(foundIssue, "first", 100);
+        DbEvaluation eval2 = createEvaluation(foundIssue, "second", 200);
+        DbEvaluation eval3 = createEvaluation(foundIssue, "first", 300);
 		foundIssue.addEvaluation(eval1);
 		foundIssue.addEvaluation(eval2);
 		foundIssue.addEvaluation(eval3);

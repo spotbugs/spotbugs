@@ -17,6 +17,7 @@ public class AuthServletTest extends AbstractFlybushServletTest {
         return new AuthServlet();
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public void DISABLED_testBrowserAuthLoginRedirect() throws Exception {
     	executeGet("/browser-auth/100");
     	verify(mockResponse).sendRedirect(anyString());
@@ -34,11 +35,14 @@ public class AuthServletTest extends AbstractFlybushServletTest {
 				   outputString.contains("now signed in"));
 		assertTrue("Should contain email address: " + outputString,
 				   outputString.contains("my@email.com"));
+		assertTrue("Should contain OpenID URL: " + outputString,
+				   outputString.contains("http://some.website"));
     }
 
     public void testCheckAuthForValidId() throws Exception {
-		SqlCloudSession session = new SqlCloudSession("my@email.com", 100, new Date(200));
-		persistenceManager.makePersistent(session);
+        DbUser user = new DbUser("http://some.website", "my@email.com");
+        SqlCloudSession session = new SqlCloudSession(user.createKeyObject(), 100, new Date(200));
+		persistenceManager.makePersistentAll(user, session);
 
 		executeGet("/check-auth/100");
 
@@ -97,7 +101,7 @@ public class AuthServletTest extends AbstractFlybushServletTest {
 		Query query = persistenceManager.newQuery("select from " + DbInvocation.class.getName());
 		List<DbInvocation> invocations = (List<DbInvocation>) query.execute();
 		assertEquals(1, invocations.size());
-		assertEquals("my@email.com", invocations.get(0).getWho());
+		assertEquals("my@email.com", getDbUser(invocations.get(0).getWho()).getEmail());
 		query.closeAll();
 	}
 

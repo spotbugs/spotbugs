@@ -9,16 +9,6 @@ import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.de
 public class FlybushServletTestUtil {
     private FlybushServletTestUtil() { }
 
-    public static DbEvaluation createEvaluation(DbIssue issue, String who, int when) {
-        DbEvaluation eval = new DbEvaluation();
-        eval.setComment("my comment");
-        eval.setDesignation("MUST_FIX");
-        eval.setIssue(issue);
-        eval.setWhen(when);
-        eval.setWho(who);
-        return eval;
-    }
-
     public static DbIssue createDbIssue(String patternAndHash) {
         patternAndHash = AppEngineProtoUtil.normalizeHash(patternAndHash);
         DbIssue foundIssue = new DbIssue();

@@ -1,36 +1,31 @@
 package edu.umd.cs.findbugs.flybush;
 
+import com.google.appengine.api.datastore.Key;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Key;
-
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class DbEvaluation implements Comparable<DbEvaluation> {
-	@PrimaryKey
+	@SuppressWarnings({"UnusedDeclaration"})
+    @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
 
-	@Persistent private String who;
+	@Persistent private Key who;
 	@Persistent private String designation;
 	@Persistent private String comment;
 	@Persistent private DbIssue issue;
 	@Persistent private long when;
 	@Persistent private Key invocation;
 
-	public Key getKey() {
-		return key;
-	}
-	public void setKey(Key key) {
-		this.key = key;
-	}
-	public String getWho() {
+	public Key getWho() {
 		return who;
 	}
-	public void setWho(String who) {
+	public void setWho(Key who) {
 		this.who = who;
 	}
 	public String getDesignation() {
@@ -79,7 +74,7 @@ public class DbEvaluation implements Comparable<DbEvaluation> {
 		return comparePossiblyNull(getDesignation(), o.getDesignation());
 	}
 
-	private int comparePossiblyNull(String a, String b) {
+	private <E extends Comparable<? super E>> int comparePossiblyNull(E a, E b) {
 		return a == null ? -1 : (b == null ? 1 : a.compareTo(b));
 	}
 
