@@ -1,6 +1,5 @@
 package edu.umd.cs.findbugs.flybush;
 
-import com.google.appengine.api.users.User;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 
@@ -13,28 +12,31 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 
 public class AuthServletTest extends AbstractFlybushServletTest {
-
     @Override
     protected AbstractFlybushServlet createServlet() {
         return new AuthServlet();
     }
 
-    public void testBrowserAuthLoginRedirect() throws Exception {
+    public void DISABLED_testBrowserAuthLoginRedirect() throws Exception {
     	executeGet("/browser-auth/100");
     	verify(mockResponse).sendRedirect(anyString());
     }
 
     public void testBrowserAuthWhenLoggedIn() throws Exception {
-    	testEnvironment.setEmail("my@email.com");
+        initOpenidUserParameter();
+
     	executeGet("/browser-auth/100");
+        
     	verify(mockResponse).setStatus(200);
     	verify(mockResponse).setContentType("text/html");
     	String outputString = new String(outputCollector.toByteArray(), "UTF-8");
 		assertTrue("Should contain 'now signed in': " + outputString,
 				   outputString.contains("now signed in"));
+		assertTrue("Should contain email address: " + outputString,
+				   outputString.contains("my@email.com"));
     }
 
-	public void testCheckAuthForValidId() throws Exception {
+    public void testCheckAuthForValidId() throws Exception {
 		SqlCloudSession session = new SqlCloudSession("my@email.com", 100, new Date(200));
 		persistenceManager.makePersistent(session);
 

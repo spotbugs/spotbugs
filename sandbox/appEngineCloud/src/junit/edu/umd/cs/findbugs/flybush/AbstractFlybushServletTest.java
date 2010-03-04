@@ -1,5 +1,7 @@
 package edu.umd.cs.findbugs.flybush;
 
+import com.dyuproject.openid.OpenIdUser;
+import com.dyuproject.openid.ext.AxSchemaExtension;
 import com.google.appengine.api.datastore.dev.LocalDatastoreService;
 import com.google.appengine.tools.development.ApiProxyLocalImpl;
 import com.google.apphosting.api.ApiProxy;
@@ -19,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.mockito.Mockito.atLeastOnce;
@@ -37,7 +41,7 @@ public abstract class AbstractFlybushServletTest extends TestCase {
 
     private AbstractFlybushServlet servlet;
     protected AuthServlet authServlet;
-	private HttpServletRequest mockRequest;
+	protected HttpServletRequest mockRequest;
 	private PersistenceManager actualPersistenceManager;
 
 	@Override
@@ -87,8 +91,16 @@ public abstract class AbstractFlybushServletTest extends TestCase {
 		when(mockResponse.getWriter()).thenReturn(new PrintWriter(servletOutputStream, true));
 	}
 
+    protected void initOpenidUserParameter() {
+        OpenIdUser user = new OpenIdUser();
+        Map<String, String> axattr = new HashMap<String, String>();
+        user.setAttribute(AxSchemaExtension.ATTR_NAME, axattr);
+        axattr.put("email", "my@email.com");
+        when(mockRequest.getAttribute(OpenIdUser.ATTR_NAME)).thenReturn(user);
+    }
+
     protected void createCloudSession(long sessionId) throws IOException, ServletException {
-		testEnvironment.setEmail("my@email.com");
+		initOpenidUserParameter();
     	executeGet(authServlet, "/browser-auth/" + sessionId);
     	initServletAndMocks();
 	}

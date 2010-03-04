@@ -65,11 +65,12 @@ public class AuthServlet extends AbstractFlybushServlet {
             return;
         }
         Map<String,String> axschema = AxSchemaExtension.get(user);
-        String email = axschema.get("email");
+        String email = axschema == null ? null : axschema.get("email");
 
         if (email == null || !email.matches(".*@([^.]+\\.)+[^.]{2,}")) {
             setResponse(resp, 403, "Your OpenID provider for " + user.getIdentifier() + " did not provide an e-mail " +
                                    "address. You need an e-mail address to use this service.");
+            return;
         }
 
         long id = Long.parseLong(req.getRequestURI().substring("/browser-auth/".length()));
