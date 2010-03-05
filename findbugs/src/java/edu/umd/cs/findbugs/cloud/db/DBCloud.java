@@ -552,7 +552,7 @@ public  class DBCloud extends AbstractCloud {
 		return properties.getProperty("findbugs.jdbc." + propertyName);
 	}
 
-	final  int MAX_DB_RANK = properties.getInt("findbugs.db.maxrank", 12);
+	final  int MAX_DB_RANK = properties.getInt("findbugs.db.maxrank", 14);
 	final String url, dbUser, dbPassword, dbName;
 	String findbugsUser;
 	ProjectPackagePrefixes projectMapping = new ProjectPackagePrefixes();
