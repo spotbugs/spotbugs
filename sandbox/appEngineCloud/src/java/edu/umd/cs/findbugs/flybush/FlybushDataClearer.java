@@ -9,8 +9,16 @@ import java.net.URL;
 public class FlybushDataClearer {
     public static void main(String[] args) throws IOException {
         System.out.println("Are you sure you want to clear all data on theflybush.appspot.com? (y/n) ");
-        if (System.in.read() != 'y')
+        String typedLine = new BufferedReader(new InputStreamReader(System.in)).readLine();
+        if (!typedLine.equals("y"))
             return;
+        while (true) {
+            if (!clearAllData()) 
+                break;
+        }
+    }
+
+    private static boolean clearAllData() throws IOException {
         URL url = new URL("http://theflybush.appspot.com/clear-all-data");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
@@ -23,7 +31,10 @@ public class FlybushDataClearer {
             String line = br.readLine();
             if (line == null) break;
             System.out.println(line);
+            if (line.equals("Deleted 0 entities"))
+                return false;
         }
         conn.disconnect();
+        return true;
     }
 }

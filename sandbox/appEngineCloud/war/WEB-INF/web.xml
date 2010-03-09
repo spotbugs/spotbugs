@@ -12,12 +12,6 @@
             <param-name>forwardUri</param-name>
             <param-value>/login.jsp</param-value>
         </init-param>
-<!--
-        <init-param>
-            <param-name>forwardUriHandler</param-name>
-            <param-value>edu.umd.cs.findbugs.flybush.OpenidForwarder</param-value>
-        </init-param>
--->
     </filter>
 
     <filter-mapping>
@@ -31,6 +25,10 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet>
+        <servlet-name>RemoteApiServlet</servlet-name>
+        <servlet-class>com.google.apphosting.utils.remoteapi.RemoteApiServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>QueryServlet</servlet-name>
         <servlet-class>edu.umd.cs.findbugs.flybush.QueryServlet</servlet-class>
     </servlet>
@@ -39,6 +37,10 @@
         <servlet-class>edu.umd.cs.findbugs.flybush.UpdateServlet</servlet-class>
     </servlet>
 
+    <servlet-mapping>
+        <servlet-name>RemoteApiServlet</servlet-name>
+        <url-pattern>/remote_api</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AuthServlet</servlet-name>
         <url-pattern>/browser-auth/*</url-pattern>
@@ -60,4 +62,14 @@
         <url-pattern>/set-bug-link</url-pattern>
         <url-pattern>/expire-sql-sessions</url-pattern>
     </servlet-mapping>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Remote API</web-resource-name>
+            <url-pattern>/remote_api</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
 </web-app>
