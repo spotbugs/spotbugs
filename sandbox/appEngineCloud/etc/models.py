@@ -36,7 +36,7 @@ class DbInvocationLoader(bulkloader.Loader):
 class DbInvocationExporter(bulkloader.Exporter):
     def __init__(self):
         bulkloader.Exporter.__init__(self, 'DbInvocation',
-                                     [ ('__key__', lambda x: x.to_path()[1], None)
+                                     [ ('__key__', lambda x: x.to_path()[1], None),
                                        ('who', lambda x: x.to_path()[1], None),
                                        ('startTime', str, None),
                                        ('endTime', str, '')
