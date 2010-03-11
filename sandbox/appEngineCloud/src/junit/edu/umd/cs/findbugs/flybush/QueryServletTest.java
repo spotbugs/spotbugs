@@ -4,7 +4,6 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
@@ -12,8 +11,6 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluatio
 import java.io.IOException;
 import java.util.Arrays;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHashes;
 import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.checkIssuesEqualExceptTimestamps;
 import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.createDbIssue;
@@ -42,7 +39,7 @@ public class QueryServletTest extends AbstractFlybushServletTest {
     	createCloudSession(555);
 
 		DbIssue foundIssue = createDbIssue("fad2");
-		DbEvaluation eval = createEvaluation(foundIssue, "someone", 100);
+		AppEngineDbEvaluation eval = createEvaluation(foundIssue, "someone", 100);
 		foundIssue.addEvaluation(eval);
 
 		// apparently the evaluation is automatically persisted. throws
@@ -60,9 +57,9 @@ public class QueryServletTest extends AbstractFlybushServletTest {
     	createCloudSession(555);
 
 		DbIssue foundIssue = createDbIssue("fad1");
-		DbEvaluation eval1 = createEvaluation(foundIssue, "first", 100);
-		DbEvaluation eval2 = createEvaluation(foundIssue, "second", 200);
-		DbEvaluation eval3 = createEvaluation(foundIssue, "first", 300);
+		AppEngineDbEvaluation eval1 = createEvaluation(foundIssue, "first", 100);
+		AppEngineDbEvaluation eval2 = createEvaluation(foundIssue, "second", 200);
+		AppEngineDbEvaluation eval3 = createEvaluation(foundIssue, "first", 300);
 		foundIssue.addEvaluation(eval1);
 		foundIssue.addEvaluation(eval2);
 		foundIssue.addEvaluation(eval3);
@@ -88,9 +85,9 @@ public class QueryServletTest extends AbstractFlybushServletTest {
 		createCloudSession(555);
 
 		DbIssue issue = createDbIssue("fad");
-		DbEvaluation eval1 = createEvaluation(issue, "someone1", 100);
-		DbEvaluation eval2 = createEvaluation(issue, "someone2", 200);
-		DbEvaluation eval3 = createEvaluation(issue, "someone3", 300);
+		AppEngineDbEvaluation eval1 = createEvaluation(issue, "someone1", 100);
+		AppEngineDbEvaluation eval2 = createEvaluation(issue, "someone2", 200);
+		AppEngineDbEvaluation eval3 = createEvaluation(issue, "someone3", 300);
 		issue.addEvaluations(eval1, eval2, eval3);
 
 		persistenceManager.makePersistent(issue);
@@ -114,11 +111,11 @@ public class QueryServletTest extends AbstractFlybushServletTest {
 		createCloudSession(555);
 
 		DbIssue issue = createDbIssue("fad");
-		DbEvaluation eval1 = createEvaluation(issue, "first",  100);
-		DbEvaluation eval2 = createEvaluation(issue, "second", 200);
-		DbEvaluation eval3 = createEvaluation(issue, "first",  300);
-		DbEvaluation eval4 = createEvaluation(issue, "second", 400);
-		DbEvaluation eval5 = createEvaluation(issue, "first",  500);
+		AppEngineDbEvaluation eval1 = createEvaluation(issue, "first",  100);
+		AppEngineDbEvaluation eval2 = createEvaluation(issue, "second", 200);
+		AppEngineDbEvaluation eval3 = createEvaluation(issue, "first",  300);
+		AppEngineDbEvaluation eval4 = createEvaluation(issue, "second", 400);
+		AppEngineDbEvaluation eval5 = createEvaluation(issue, "first",  500);
 		issue.addEvaluations(eval1, eval2, eval3, eval4, eval5);
 
 		persistenceManager.makePersistent(issue);
@@ -142,9 +139,9 @@ public class QueryServletTest extends AbstractFlybushServletTest {
 		createCloudSession(555);
 
 		DbIssue issue = createDbIssue("fad");
-		DbEvaluation eval1 = createEvaluation(issue, "someone", 100);
-		DbEvaluation eval2 = createEvaluation(issue, "someone", 200);
-		DbEvaluation eval3 = createEvaluation(issue, "someone", 300);
+		AppEngineDbEvaluation eval1 = createEvaluation(issue, "someone", 100);
+		AppEngineDbEvaluation eval2 = createEvaluation(issue, "someone", 200);
+		AppEngineDbEvaluation eval3 = createEvaluation(issue, "someone", 300);
 		issue.addEvaluations(eval1, eval2, eval3);
 
 		persistenceManager.makePersistent(issue);
@@ -155,115 +152,6 @@ public class QueryServletTest extends AbstractFlybushServletTest {
 		assertEquals(0, result.getIssuesCount());
 	}
 
-	public void testGetEvaluationsNotAuthenticated() throws Exception {
-		executePost("/get-evaluations", GetEvaluations.newBuilder()
-				.setSessionId(555)
-				.addHashes(encodeHash("fad"))
-				.build().toByteArray());
-		checkResponse(403, "not authenticated");
-	}
-
-	public void testGetEvaluationsForNonexistentIssue() throws Exception {
-		createCloudSession(555);
-
-		executePost("/get-evaluations", GetEvaluations.newBuilder()
-				.setSessionId(555)
-				.addHashes(encodeHash("fad"))
-				.build().toByteArray());
-		checkResponse(200);
-		RecentEvaluations evals = RecentEvaluations.parseFrom(outputCollector.toByteArray());
-		assertEquals(0, evals.getIssuesCount());
-	}
-
-	public void testGetEvaluationsForSomeNonexistentIssues() throws Exception {
-		createCloudSession(555);
-
-		DbIssue issue1 = createDbIssue("fad1");
-		issue1.addEvaluations(createEvaluation(issue1, "someone1", 100),
-							 createEvaluation(issue1, "someone2", 200),
-							 createEvaluation(issue1, "someone3", 300));
-
-		persistenceManager.makePersistentAll(issue1);
-
-		executePost("/get-evaluations", GetEvaluations.newBuilder()
-				.setSessionId(555)
-				.addHashes(encodeHash("fad1"))
-				.addHashes(encodeHash("fad2"))
-				.build().toByteArray());
-		checkResponse(200);
-		RecentEvaluations evals = RecentEvaluations.parseFrom(outputCollector.toByteArray());
-		assertEquals(1, evals.getIssuesCount());
-		Issue protoIssue1 = evals.getIssues(0);
-		assertEquals(3, protoIssue1.getEvaluationsCount());
-		assertEquals(100, protoIssue1.getEvaluations(0).getWhen());
-		assertEquals(200, protoIssue1.getEvaluations(1).getWhen());
-		assertEquals(300, protoIssue1.getEvaluations(2).getWhen());
-	}
-
-	public void testGetEvaluations() throws Exception {
-		createCloudSession(555);
-
-		DbIssue issue1 = createDbIssue("fad1");
-		issue1.addEvaluations(createEvaluation(issue1, "someone1", 100),
-							 createEvaluation(issue1, "someone2", 200),
-							 createEvaluation(issue1, "someone3", 300));
-
-		DbIssue issue2 = createDbIssue("fad2");
-		issue2.addEvaluations(createEvaluation(issue2, "someone1", 2100),
-							 createEvaluation(issue2, "someone2", 2200),
-							 createEvaluation(issue2, "someone3", 2300));
-
-		persistenceManager.makePersistentAll(issue1, issue2);
-
-		executePost("/get-evaluations",
-				GetEvaluations.newBuilder()
-					.setSessionId(555)
-					.addHashes(encodeHash("fad1"))
-					.addHashes(encodeHash("fad2"))
-					.build()
-				.toByteArray());
-		checkResponse(200);
-		RecentEvaluations evals = RecentEvaluations.parseFrom(outputCollector.toByteArray());
-		assertEquals(2, evals.getIssuesCount());
-		Issue protoIssue1 = evals.getIssues(0);
-		assertEquals("fad1", decodeHash(protoIssue1.getHash()));
-		assertEquals(3, protoIssue1.getEvaluationsCount());
-		assertEquals(100, protoIssue1.getEvaluations(0).getWhen());
-		assertEquals(200, protoIssue1.getEvaluations(1).getWhen());
-		assertEquals(300, protoIssue1.getEvaluations(2).getWhen());
-
-		Issue protoIssue2 = evals.getIssues(1);
-		assertEquals("fad2", decodeHash(protoIssue2.getHash()));
-		assertEquals(3, protoIssue2.getEvaluationsCount());
-		assertEquals(2100, protoIssue2.getEvaluations(0).getWhen());
-		assertEquals(2200, protoIssue2.getEvaluations(1).getWhen());
-		assertEquals(2300, protoIssue2.getEvaluations(2).getWhen());
-	}
-
-	public void testGetEvaluationsOnlyShowsLatestFromEachPerson()
-			throws Exception {
-		createCloudSession(555);
-
-		DbIssue issue = createDbIssue("fad1");
-		issue.addEvaluations(createEvaluation(issue, "first", 100),
-							 createEvaluation(issue, "second", 200),
-							 createEvaluation(issue, "first", 300));
-
-		persistenceManager.makePersistentAll(issue);
-
-		executePost("/get-evaluations", GetEvaluations.newBuilder()
-				.setSessionId(555)
-				.addHashes(encodeHash("fad1"))
-				.build().toByteArray());
-		checkResponse(200);
-		RecentEvaluations evals = RecentEvaluations.parseFrom(outputCollector.toByteArray());
-		assertEquals(1, evals.getIssuesCount());
-		Issue protoIssue = evals.getIssues(0);
-		assertEquals(2, protoIssue.getEvaluationsCount());
-		assertEquals(200, protoIssue.getEvaluations(0).getWhen());
-		assertEquals(300, protoIssue.getEvaluations(1).getWhen());
-	}
-
 	// ========================= end of tests ================================
 
     private FindIssuesResponse findIssues(String... hashes) throws IOException {
@@ -272,7 +160,7 @@ public class QueryServletTest extends AbstractFlybushServletTest {
         return FindIssuesResponse.parseFrom(outputCollector.toByteArray());
     }
 
-    private void checkTerseIssue(Issue issue, DbEvaluation... evals) {
+    private void checkTerseIssue(Issue issue, AppEngineDbEvaluation... evals) {
         assertEquals(100, issue.getFirstSeen());
         assertEquals(200, issue.getLastSeen());
         assertEquals("http://bug.link", issue.getBugLink());

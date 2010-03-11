@@ -1,18 +1,13 @@
 package edu.umd.cs.findbugs.flybush;
 
-import com.google.appengine.api.datastore.Key;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.*;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink.Builder;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 
+import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
@@ -32,11 +27,11 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
 
     @SuppressWarnings({"unchecked"})
     public void testExpireSqlSessions() throws Exception {
-        DbUser oldUser = new DbUser("http://some.website", "old@test.com");
-        SqlCloudSession oldSession = new SqlCloudSession(oldUser.createKeyObject(), 100,
+        AppEngineDbUser oldUser = new AppEngineDbUser("http://some.website", "old@test.com");
+        AppEngineSqlCloudSession oldSession = new AppEngineSqlCloudSession(oldUser.createKeyObject(), 100,
                                                          new Date(System.currentTimeMillis() - 8 * ONE_DAY_IN_MILLIS));
-        DbUser recentUser = new DbUser("http://some.website2", "recent@test.com");
-        SqlCloudSession recentSession = new SqlCloudSession(recentUser.createKeyObject(), 101,
+        AppEngineDbUser recentUser = new AppEngineDbUser("http://some.website2", "recent@test.com");
+        AppEngineSqlCloudSession recentSession = new AppEngineSqlCloudSession(recentUser.createKeyObject(), 101,
                                                             new Date(System.currentTimeMillis() - 6 * ONE_DAY_IN_MILLIS));
         persistenceManager.makePersistentAll(oldUser, recentUser, oldSession, recentSession);
 
@@ -52,7 +47,7 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
     @SuppressWarnings({"unchecked"})
     private List<SqlCloudSession> findSqlSession(long sessionId) {
         return (List<SqlCloudSession>) persistenceManager.newQuery(
-                "select from " + SqlCloudSession.class.getName()
+                "select from " + AppEngineSqlCloudSession.class.getName()
                 + " where randomID == :val").execute(Long.toString(sessionId));
     }
 
@@ -95,7 +90,7 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
 		executePost("/upload-issues", issuesToUpload.toByteArray());
 		checkResponse(200, "");
 		List<DbIssue> dbIssues = (List<DbIssue>) persistenceManager
-				.newQuery("select from " + DbIssue.class.getName()).execute();
+				.newQuery("select from " + AppEngineDbIssue.class.getName()).execute();
 		assertEquals(2, dbIssues.size());
 
         FlybushServletTestUtil.checkIssuesEqualExceptTimestamps(dbIssues.get(0), issue1);
@@ -117,7 +112,7 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
 		executePost("/upload-issues", issuesToUpload.toByteArray());
 		checkResponse(200, "");
 		List<DbIssue> dbIssues = (List<DbIssue>) persistenceManager
-				.newQuery("select from " + DbIssue.class.getName() + " order by hash").execute();
+				.newQuery("select from " + AppEngineDbIssue.class.getName() + " order by hash").execute();
 		assertEquals(2, dbIssues.size());
 
 		assertEquals("fad1", dbIssues.get(0).getHash());
@@ -152,7 +147,7 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
 		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
 		assertEquals(protoEval.getWhen(), dbEval.getWhen());
 		assertEquals("my@email.com", getDbUser(dbEval.getWho()).getEmail());
-		assertNull(dbEval.getInvocation());
+		assertNull(dbEval.getInvocationKey());
 	}
 
 	public void testUploadEvaluationWithFindIssuesFirst() throws Exception {
@@ -166,7 +161,11 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
 		initServletAndMocks();
 
         QueryServlet queryServlet = new QueryServlet();
-        queryServlet.setPersistenceManager(persistenceManager);
+        queryServlet.setPersistenceHelper(new AppEnginePersistenceHelper() {
+            public PersistenceManager getPersistenceManager() {
+                return persistenceManager;
+            }
+        });
         initServletAndMocks();
         executePost(queryServlet, "/find-issues", FindIssues.newBuilder()
 				.setSessionId(555)
@@ -190,10 +189,11 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
 		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
 		assertEquals(protoEval.getWhen(), dbEval.getWhen());
 		assertEquals("my@email.com", getDbUser(dbEval.getWho()).getEmail());
-		Key invocationId = dbEval.getInvocation();
+		Object invocationId = dbEval.getInvocationKey();
 		assertNotNull(invocationId);
-		DbInvocation invocation = persistenceManager.getObjectById(DbInvocation.class,
-                                                                   invocationId);
+		DbInvocation invocation = persistenceHelper.getObjectById(persistenceManager,
+                                                                  AppEngineDbInvocation.class,
+                                                                  invocationId);
 		assertEquals("my@email.com", getDbUser(invocation.getWho()).getEmail());
 		assertEquals(100, invocation.getStartTime());
 	}
@@ -307,7 +307,7 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
         persistenceManager.close();
         initPersistenceManager();
 
-        for (Class<?> cls : Arrays.asList(DbIssue.class, DbEvaluation.class, DbInvocation.class, SqlCloudSession.class)) {
+        for (Class<?> cls : Arrays.asList(AppEngineDbIssue.class, AppEngineDbEvaluation.class, AppEngineDbInvocation.class, AppEngineSqlCloudSession.class)) {
             try {
                 List objs = (List) persistenceManager.newQuery("select from " + cls.getName()).execute();
                 fail("some entities still exist: " + cls.getSimpleName() + ": " + objs);
@@ -337,15 +337,15 @@ public class UpdateServletTest extends AbstractFlybushServletTest {
 
     @SuppressWarnings("unchecked")
     private List<DbIssue> getAllIssuesFromDb() {
-        Query query = persistenceManager.newQuery("select from " + DbIssue.class.getName());
+        Query query = persistenceManager.newQuery("select from " + AppEngineDbIssue.class.getName());
         return (List<DbIssue>) query.execute();
     }
 
-    private void setBugLink(String hash, DbIssue.DbBugLinkType linkType, String link) throws IOException {
+    private void setBugLink(String hash, DbIssue.DbBugLinkType linkType, String link) throws IOException, ServletException {
         setBugLinkExpectResponse(200, hash, linkType, link);
     }
 
-    private void setBugLinkExpectResponse(int responseCode, String hash, DbIssue.DbBugLinkType linkType, String link) throws IOException {
+    private void setBugLinkExpectResponse(int responseCode, String hash, DbIssue.DbBugLinkType linkType, String link) throws IOException, ServletException {
         initServletAndMocks();
         Builder setBugLink = SetBugLink.newBuilder()
                 .setSessionId(555)

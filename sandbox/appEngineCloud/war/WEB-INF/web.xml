@@ -19,6 +19,11 @@
         <url-pattern>/browser-auth/*</url-pattern>
     </filter-mapping>
 
+    <context-param>
+        <param-name>edu.umd.cs.findbugs.flybush.persistenceHelper</param-name>
+        <param-value>edu.umd.cs.findbugs.flybush.AppEnginePersistenceHelper</param-value>
+    </context-param>
+
     <servlet>
         <servlet-name>AuthServlet</servlet-name>
         <servlet-class>edu.umd.cs.findbugs.flybush.AuthServlet</servlet-class>

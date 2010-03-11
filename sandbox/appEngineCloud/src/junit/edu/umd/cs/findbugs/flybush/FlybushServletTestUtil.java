@@ -11,7 +11,7 @@ public class FlybushServletTestUtil {
 
     public static DbIssue createDbIssue(String patternAndHash) {
         patternAndHash = AppEngineProtoUtil.normalizeHash(patternAndHash);
-        DbIssue foundIssue = new DbIssue();
+        DbIssue foundIssue = new AppEngineDbIssue();
         foundIssue.setHash(patternAndHash);
         foundIssue.setBugPattern(patternAndHash);
         foundIssue.setPriority(2);

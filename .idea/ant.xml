@@ -9,7 +9,6 @@
       <maximumHeapSize value="128" />
       <maximumStackSize value="2" />
       <properties />
-      <executeOn event="afterCompilation" target="enhance" />
     </buildFile>
   </component>
 </project>

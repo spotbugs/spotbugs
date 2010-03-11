@@ -40,8 +40,8 @@ public class AuthServletTest extends AbstractFlybushServletTest {
     }
 
     public void testCheckAuthForValidId() throws Exception {
-        DbUser user = new DbUser("http://some.website", "my@email.com");
-        SqlCloudSession session = new SqlCloudSession(user.createKeyObject(), 100, new Date(200));
+        AppEngineDbUser user = new AppEngineDbUser("http://some.website", "my@email.com");
+        AppEngineSqlCloudSession session = new AppEngineSqlCloudSession(user.createKeyObject(), 100, new Date(200));
 		persistenceManager.makePersistentAll(user, session);
 
 		executeGet("/check-auth/100");
@@ -98,7 +98,7 @@ public class AuthServletTest extends AbstractFlybushServletTest {
         checkResponse(200);
 		FindIssuesResponse result = FindIssuesResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getFoundIssuesCount());
-		Query query = persistenceManager.newQuery("select from " + DbInvocation.class.getName());
+		Query query = persistenceManager.newQuery("select from " + AppEngineDbInvocation.class.getName());
 		List<DbInvocation> invocations = (List<DbInvocation>) query.execute();
 		assertEquals(1, invocations.size());
 		assertEquals("my@email.com", getDbUser(invocations.get(0).getWho()).getEmail());

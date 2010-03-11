@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="localCloud:Web">
+    <output-path>$PROJECT_DIR$/sandbox/localCloud/war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="localCloud/web/LocalCloud" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes" />
+        <element id="directory" name="lib" />
+      </element>
+    </root>
+  </artifact>
+</component>

@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component>
-	<output-test url="file://$MODULE_DIR$/bin"/>
 	<exclude-output/>
 	<contentEntry url="file://$MODULE_DIR$">
 		<excludeFolder url="file://$MODULE_DIR$/bin"/>
-		<excludeFolder url="file://$MODULE_DIR$/bin"/>
+		<excludeFolder url="file://$MODULE_DIR$/classes"/>
+		<excludeFolder url="file://$MODULE_DIR$/classes"/>
 	</contentEntry>
+	<lib name="hsqldb.jar" scope="COMPILE">
+		<srcroot url="jar://$MODULE_DIR$/lib/hsqldb-src.zip!/"/>
+	</lib>
+	<lib name="jetty-6.1.22.jar" scope="COMPILE">
+		<srcroot url="jar://$MODULE_DIR$/lib/jetty-6.1.22-src.zip!/"/>
+	</lib>
 </component>

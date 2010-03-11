@@ -2,7 +2,6 @@ package edu.umd.cs.findbugs.flybush;
 
 import com.dyuproject.openid.OpenIdUser;
 import com.dyuproject.openid.ext.AxSchemaExtension;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.dev.LocalDatastoreService;
 import com.google.appengine.tools.development.ApiProxyLocalImpl;
 import com.google.apphosting.api.ApiProxy;
@@ -11,27 +10,15 @@ import junit.framework.TestCase;
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public abstract class AbstractFlybushServletTest extends TestCase {
 
@@ -44,8 +31,9 @@ public abstract class AbstractFlybushServletTest extends TestCase {
     protected AuthServlet authServlet;
 	protected HttpServletRequest mockRequest;
 	private PersistenceManager actualPersistenceManager;
+    protected PersistenceHelper persistenceHelper;
 
-	@Override
+    @Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		testEnvironment = new TestEnvironment();
@@ -74,12 +62,12 @@ public abstract class AbstractFlybushServletTest extends TestCase {
 
 	// ========================= supporting methods ================================
 
-	protected void initServletAndMocks() throws IOException {
+	protected void initServletAndMocks() throws IOException, ServletException {
         authServlet = new AuthServlet();
-        authServlet.setPersistenceManager(persistenceManager);
+        authServlet.setPersistenceHelper(persistenceHelper);
 
 		servlet = createServlet();
-        servlet.setPersistenceManager(persistenceManager);
+        servlet.setPersistenceHelper(persistenceHelper);
 		mockRequest = mock(HttpServletRequest.class);
 		mockResponse = mock(HttpServletResponse.class);
 		outputCollector = new ByteArrayOutputStream();
@@ -159,6 +147,11 @@ public abstract class AbstractFlybushServletTest extends TestCase {
         PersistenceManagerFactory pmf = JDOHelper.getPersistenceManagerFactory(newProperties);
 		actualPersistenceManager = pmf.getPersistenceManager();
 		persistenceManager = spy(actualPersistenceManager);
+        persistenceHelper = new AppEnginePersistenceHelper() {
+            public PersistenceManager getPersistenceManager() {
+                return persistenceManager;
+            }
+        };
 
 		doNothing().when(persistenceManager).close();
     }
@@ -176,10 +169,10 @@ public abstract class AbstractFlybushServletTest extends TestCase {
 		}
 	}
 
-    protected DbEvaluation createEvaluation(DbIssue issue, String who, int when) {
-        DbUser user = new DbUser("http://" + who, who);
+    protected AppEngineDbEvaluation createEvaluation(DbIssue issue, String who, int when) {
+        AppEngineDbUser user = new AppEngineDbUser("http://" + who, who);
         persistenceManager.makePersistent(user);
-        DbEvaluation eval = new DbEvaluation();
+        AppEngineDbEvaluation eval = new AppEngineDbEvaluation();
         eval.setComment("my comment");
         eval.setDesignation("MUST_FIX");
         eval.setIssue(issue);
@@ -188,8 +181,9 @@ public abstract class AbstractFlybushServletTest extends TestCase {
         return eval;
     }
 
-    protected DbUser getDbUser(Key user) {
-        return persistenceManager.getObjectById(DbUser.class, user);
+    protected DbUser getDbUser(Object user) {
+        assertNotNull(user);
+        return persistenceHelper.getObjectById(persistenceManager, AppEngineDbUser.class, user);
     }
 }
 

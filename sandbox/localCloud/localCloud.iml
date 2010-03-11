@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module classpath="eclipse" classpath-dir="$MODULE_DIR$" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
-    <facet type="web" name="Web">
+    <facet type="web" name="LocalCloud">
       <configuration>
         <descriptors>
-          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/web/WEB-INF/web.xml" />
+          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/war/WEB-INF/web.xml" />
         </descriptors>
         <webroots>
-          <root url="file://$MODULE_DIR$/web" relative="/" />
+          <root url="file://$MODULE_DIR$/war" relative="/" />
         </webroots>
-        <context-artifact name="localCloud:war exploded" />
+        <context-artifact name="localCloud:Web" />
       </configuration>
     </facet>
   </component>
