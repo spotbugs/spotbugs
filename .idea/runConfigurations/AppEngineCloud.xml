@@ -6,7 +6,6 @@
     <option name="UPDATING_POLICY" value="hot-swap-classes" />
     <server-settings>
       <option name="artifact" value="AppEngineCloud:Web" />
-      <option name="port" value="8081" />
       <option name="serverParameters" value="-a 127.0.0.1" />
     </server-settings>
     <RunnerSettings RunnerId="Debug">
