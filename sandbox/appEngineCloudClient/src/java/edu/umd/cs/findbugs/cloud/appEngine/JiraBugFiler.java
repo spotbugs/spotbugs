@@ -20,7 +20,6 @@ import com.atlassian.jira.rpc.soap.beans.RemoteProject;
 import com.atlassian.jira.rpc.soap.beans.RemoteStatus;
 import com.atlassian.jira.rpc.soap.jirasoapservice_v2.JiraSoapService;
 import com.atlassian.jira.rpc.soap.jirasoapservice_v2.JiraSoapServiceServiceLocator;
-import com.sun.deploy.services.ServiceManager;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
@@ -30,7 +29,7 @@ import edu.umd.cs.findbugs.cloud.Cloud;
 
 public class JiraBugFiler implements BugFiler {
     private static final Pattern BUG_LINK_PATTERN = Pattern.compile("(.*?)/browse/(.*-\\d+).*");
-    
+
     private final Cloud cloud;
     private final Map<String,JiraSession> sessionsByBaseUrl = new ConcurrentHashMap<String, JiraSession>();
 
@@ -89,7 +88,7 @@ public class JiraBugFiler implements BugFiler {
             throw new IllegalArgumentException("no component named " + componentName);
         RemoteProject project = session.service.getProjectByKey(session.token, projectKey);
         BugFilingHelper helper = new BugFilingHelper(cloud);
-        
+
         RemoteIssue issue = new RemoteIssue();
         issue.setReporter(session.username);
         issue.setAssignee(session.username);
