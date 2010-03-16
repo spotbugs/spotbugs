@@ -1,4 +1,4 @@
-<project name="local-cloud">
+<project name="local-cloud" default="enhance">
     <path id="enhancer.classpath">
         <fileset dir="lib/datanucleus">
             <include name="datanucleus-enhancer-1.1.4.jar"/>
