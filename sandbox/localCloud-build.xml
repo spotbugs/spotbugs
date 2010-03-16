@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="localCloud-build" default="local-cloud-dist">
+
+    <path id="enhancer.classpath">
+        <fileset dir="localCloud/lib/datanucleus">
+            <include name="datanucleus-enhancer-1.1.4.jar"/>
+            <include name="datanucleus-core-1.1.6.jar"/>
+            <include name="deps/asm-3.1.jar"/>
+            <include name="deps/log4j-1.2.8.jar"/>
+            <include name="deps/jdo2-api-2.3-eb.jar"/>
+        </fileset>
+    </path>
+
+    <property name="cloudServletLib" value="cloudServlet/lib"/>
+    <property name="localCloudLib" value="localCloud/lib"/>
+    <property name="cloudProtocolLib" value="appEngineCloudProtocol/lib"/>
+
+    <!-- Compiler options -->
+
+    <property name="compiler.debug" value="on"/>
+    <property name="compiler.generate.no.warnings" value="off"/>
+    <property name="compiler.args" value=""/>
+    <property name="compiler.max.memory" value="128m"/>
+
+    <!-- Module AppEngineCloudProtocol -->
+
+    <dirname property="module.appenginecloudprotocol.basedir" file="${ant.file}"/>
+
+
+
+    <property name="appenginecloudprotocol.output.dir" value="ant-build"/>
+
+
+    <path id="appenginecloudprotocol.module.classpath">
+        <pathelement location="${cloudProtocolLib}/protobuf-java-2.3.0.jar"/>
+    </path>
+
+    <path id="appenginecloudprotocol.runtime.module.classpath">
+        <pathelement location="${appenginecloudprotocol.output.dir}"/>
+        <pathelement location="${cloudProtocolLib}/protobuf-java-2.3.0.jar"/>
+    </path>
+
+    <target name="compile.module.appenginecloudprotocol"
+            description="Compile module AppEngineCloudProtocol; production classes">
+        <mkdir dir="${appenginecloudprotocol.output.dir}"/>
+        <javac destdir="${appenginecloudprotocol.output.dir}" debug="${compiler.debug}"
+               nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
+            <classpath refid="appenginecloudprotocol.module.classpath"/>
+            <src path="appEngineCloudProtocol/src/java"/>
+        </javac>
+    </target>
+
+    <target name="clean.module.appenginecloudprotocol" description="cleanup module">
+        <delete dir="${appenginecloudprotocol.output.dir}"/>
+    </target>
+
+
+    <!-- Module cloudServlet -->
+
+    <dirname property="module.cloudservlet.basedir" file="${ant.file}"/>
+
+    <property name="cloudservlet.output.dir" value="cloudServlet/classes"/>
+
+    <path id="cloudservlet.module.classpath">
+        <fileset dir="${cloudServletLib}" includes="**/*.jar"/>
+        <pathelement location="${appenginecloudprotocol.output.dir}"/>
+        <pathelement location="${cloudProtocolLib}/protobuf-java-2.3.0.jar"/>
+    </path>
+
+    <path id="cloudservlet.runtime.module.classpath">
+        <pathelement location="${cloudservlet.output.dir}"/>
+        <fileset dir="${cloudServletLib}" includes="**/*.jar"/>
+        <path refid="appenginecloudprotocol.runtime.module.classpath"/>
+    </path>
+
+    <target name="compile.module.cloudservlet" depends="compile.module.appenginecloudprotocol"
+            description="Compile module cloudServlet; production classes">
+        <mkdir dir="${cloudservlet.output.dir}"/>
+        <javac destdir="${cloudservlet.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}"
+               memorymaximumsize="${compiler.max.memory}" fork="true" >
+            <classpath refid="cloudservlet.module.classpath"/>
+            <classpath refid="enhancer.classpath"/>
+            <src path="cloudServlet/src/java"/>
+        </javac>
+    </target>
+
+    <target name="clean.module.cloudservlet" description="cleanup module">
+        <delete dir="${cloudservlet.output.dir}"/>
+    </target>
+
+
+    <!-- Module localCloud -->
+
+    <dirname property="module.localcloud.basedir" file="${ant.file}"/>
+
+    <property name="localcloud.output.dir" value="localCloud/classes"/>
+
+    <path id="localcloud.module.classpath">
+        <fileset dir="${localCloudLib}" includes="**/*.jar"/>
+        <fileset dir="${cloudServletLib}" includes="**/*.jar"/>
+        <pathelement location="${cloudservlet.output.dir}"/>
+        <pathelement location="${appenginecloudprotocol.output.dir}"/>
+        <pathelement location="${cloudProtocolLib}/protobuf-java-2.3.0.jar"/>
+    </path>
+
+    <path id="localcloud.runtime.module.classpath">
+        <fileset dir="${localCloudLib}" includes="**/*.jar"/>
+        <fileset dir="${cloudServletLib}" includes="**/*.jar"/>
+        <pathelement location="${localcloud.output.dir}"/>
+        <path refid="cloudservlet.runtime.module.classpath"/>
+    </path>
+
+    <target name="compile.module.localcloud" depends="compile.module.cloudservlet"
+            description="Compile module localCloud; production classes">
+        <mkdir dir="${localcloud.output.dir}"/>
+        <javac destdir="${localcloud.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}"
+               memorymaximumsize="${compiler.max.memory}" fork="true">
+            <classpath refid="localcloud.module.classpath"/>
+            <src path="localCloud/src/java"/>
+        </javac>
+    </target>
+
+    <target name="clean.module.localcloud" description="cleanup module">
+        <delete dir="${localcloud.output.dir}"/>
+    </target>
+
+    <target name="init" description="Build initialization">
+        <!-- Perform any build initialization in this target -->
+    </target>
+
+    <target name="clean"
+            depends="clean.module.appenginecloudprotocol, clean.module.cloudservlet, clean.module.localcloud, clean.artifact.localcloud_dist"
+            description="cleanup all"/>
+
+    <target name="build.modules"
+            depends="init, clean, compile.module.appenginecloudprotocol, compile.module.cloudservlet, compile.module.localcloud"
+            description="build all modules"/>
+
+    <target name="init.artifacts">
+        <property name="artifacts.temp.dir" value="${basedir}/__artifacts_temp"/>
+        <property name="artifact.output.localcloud_dist"
+                  value="localCloud/dist/"/>
+        <mkdir dir="${artifacts.temp.dir}"/>
+        <property name="temp.jar.path.localCloud.jar" value="${artifacts.temp.dir}/localCloud.jar"/>
+    </target>
+
+
+    <target name="clean.artifact.localcloud_dist" description="clean localCloud dist artifact output">
+        <delete dir="${artifact.output.localcloud_dist}"/>
+    </target>
+
+    <target name="local-cloud-dist"
+            depends="init.artifacts, compile.module.localcloud, compile.module.cloudservlet, compile.module.appenginecloudprotocol"
+            description="Build &apos;localCloud dist&apos; artifact">
+        <mkdir dir="${artifact.output.localcloud_dist}"/>
+        <jar destfile="${temp.jar.path.localCloud.jar}" duplicate="preserve" filesetmanifest="mergewithoutmain">
+            <zipfileset dir="${localcloud.output.dir}"/>
+            <zipfileset dir="${cloudservlet.output.dir}"/>
+            <zipfileset dir="${appenginecloudprotocol.output.dir}"/>
+        </jar>
+        <mkdir dir="${artifact.output.localcloud_dist}/lib"/>
+        <copy todir="${artifact.output.localcloud_dist}/lib" flatten="true" >
+            <fileset dir="${localCloudLib}" includes="*.jar"/>
+            <fileset dir="${localCloudLib}/datanucleus" includes="*.jar"/>
+            <fileset dir="${localCloudLib}/datanucleus/deps" includes="*.jar"/>
+            <fileset dir="${localCloudLib}/jetty-jsp" includes="*.jar"/>
+            <fileset dir="${cloudServletLib}" includes="*.jar"/>
+            <fileset dir="${cloudServletLib}/datanucleus" includes="*.jar"/>
+            <fileset file="${cloudProtocolLib}/protobuf-java-2.3.0.jar"/>
+        </copy>
+        <copy file="${temp.jar.path.localCloud.jar}" tofile="${artifact.output.localcloud_dist}/lib/localCloud.jar"/>
+        <mkdir dir="${artifact.output.localcloud_dist}/web-root"/>
+        <copy todir="${artifact.output.localcloud_dist}/web-root">
+            <fileset dir="localCloud/war"/>
+        </copy>
+        <copy file="localCloud/etc/fbcloud.sh"
+              tofile="${artifact.output.localcloud_dist}/fbcloud.sh"/>
+        <copy file="localCloud/etc/jdo.properties"
+              tofile="${artifact.output.localcloud_dist}/jdo.properties"/>
+    </target>
+</project>
