@@ -1,4 +1,4 @@
-package edu.umd.cs.findbugs.flybush;
+package edu.umd.cs.findbugs.flybush.appengine;
 
 import com.google.apphosting.api.ApiProxy;
 

@@ -15,7 +15,7 @@ import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.en
 import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.checkIssuesEqualExceptTimestamps;
 import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.createDbIssue;
 
-public class QueryServletTest extends AbstractFlybushServletTest {
+public abstract class QueryServletTest extends AbstractFlybushServletTest {
 
     @Override
     protected AbstractFlybushServlet createServlet() {
@@ -25,8 +25,8 @@ public class QueryServletTest extends AbstractFlybushServletTest {
 	public void testFindIssuesOneFoundNoEvaluations() throws Exception {
     	createCloudSession(555);
 
-		DbIssue foundIssue = createDbIssue("FAD1");
-		persistenceManager.makePersistent(foundIssue);
+		DbIssue foundIssue = createDbIssue("FAD1", persistenceHelper);
+        getPersistenceManager().makePersistent(foundIssue);
 
 		FindIssuesResponse result = findIssues("FAD1", "FAD2");
 		assertEquals(2, result.getFoundIssuesCount());
@@ -38,13 +38,13 @@ public class QueryServletTest extends AbstractFlybushServletTest {
     public void testFindIssuesWithEvaluations() throws Exception {
     	createCloudSession(555);
 
-		DbIssue foundIssue = createDbIssue("fad2");
-		AppEngineDbEvaluation eval = createEvaluation(foundIssue, "someone", 100);
+		DbIssue foundIssue = createDbIssue("fad2", persistenceHelper);
+		DbEvaluation eval = createEvaluation(foundIssue, "someone", 100);
 		foundIssue.addEvaluation(eval);
 
 		// apparently the evaluation is automatically persisted. throws
 		// exception when attempting to persist the eval with the issue.
-		persistenceManager.makePersistent(foundIssue);
+        getPersistenceManager().makePersistent(foundIssue);
 
         FindIssuesResponse result = findIssues("fad1", "fad2");
 
@@ -56,17 +56,17 @@ public class QueryServletTest extends AbstractFlybushServletTest {
     public void testFindIssuesOnlyShowsLatestEvaluationFromEachPerson() throws Exception {
     	createCloudSession(555);
 
-		DbIssue foundIssue = createDbIssue("fad1");
-		AppEngineDbEvaluation eval1 = createEvaluation(foundIssue, "first", 100);
-		AppEngineDbEvaluation eval2 = createEvaluation(foundIssue, "second", 200);
-		AppEngineDbEvaluation eval3 = createEvaluation(foundIssue, "first", 300);
+		DbIssue foundIssue = createDbIssue("fad1", persistenceHelper);
+		DbEvaluation eval1 = createEvaluation(foundIssue, "first", 100);
+		DbEvaluation eval2 = createEvaluation(foundIssue, "second", 200);
+		DbEvaluation eval3 = createEvaluation(foundIssue, "first", 300);
 		foundIssue.addEvaluation(eval1);
 		foundIssue.addEvaluation(eval2);
 		foundIssue.addEvaluation(eval3);
 
 		// apparently the evaluation is automatically persisted. throws
 		// exception when attempting to persist the eval with the issue.
-		persistenceManager.makePersistent(foundIssue);
+        getPersistenceManager().makePersistent(foundIssue);
 
 		FindIssuesResponse result = findIssues("fad2", "fad1");
 		assertEquals(2, result.getFoundIssuesCount());
@@ -84,13 +84,13 @@ public class QueryServletTest extends AbstractFlybushServletTest {
 	public void testGetRecentEvaluations() throws Exception {
 		createCloudSession(555);
 
-		DbIssue issue = createDbIssue("fad");
-		AppEngineDbEvaluation eval1 = createEvaluation(issue, "someone1", 100);
-		AppEngineDbEvaluation eval2 = createEvaluation(issue, "someone2", 200);
-		AppEngineDbEvaluation eval3 = createEvaluation(issue, "someone3", 300);
+		DbIssue issue = createDbIssue("fad", persistenceHelper);
+		DbEvaluation eval1 = createEvaluation(issue, "someone1", 100);
+		DbEvaluation eval2 = createEvaluation(issue, "someone2", 200);
+		DbEvaluation eval3 = createEvaluation(issue, "someone3", 300);
 		issue.addEvaluations(eval1, eval2, eval3);
 
-		persistenceManager.makePersistent(issue);
+        getPersistenceManager().makePersistent(issue);
 
 		executePost("/get-recent-evaluations", createRecentEvalsRequest(150).toByteArray());
 		checkResponse(200);
@@ -110,15 +110,15 @@ public class QueryServletTest extends AbstractFlybushServletTest {
 	public void testGetRecentEvaluationsOnlyShowsLatestFromEachPerson() throws Exception {
 		createCloudSession(555);
 
-		DbIssue issue = createDbIssue("fad");
-		AppEngineDbEvaluation eval1 = createEvaluation(issue, "first",  100);
-		AppEngineDbEvaluation eval2 = createEvaluation(issue, "second", 200);
-		AppEngineDbEvaluation eval3 = createEvaluation(issue, "first",  300);
-		AppEngineDbEvaluation eval4 = createEvaluation(issue, "second", 400);
-		AppEngineDbEvaluation eval5 = createEvaluation(issue, "first",  500);
+		DbIssue issue = createDbIssue("fad", persistenceHelper);
+		DbEvaluation eval1 = createEvaluation(issue, "first",  100);
+		DbEvaluation eval2 = createEvaluation(issue, "second", 200);
+		DbEvaluation eval3 = createEvaluation(issue, "first",  300);
+		DbEvaluation eval4 = createEvaluation(issue, "second", 400);
+		DbEvaluation eval5 = createEvaluation(issue, "first",  500);
 		issue.addEvaluations(eval1, eval2, eval3, eval4, eval5);
 
-		persistenceManager.makePersistent(issue);
+        getPersistenceManager().makePersistent(issue);
 
 		executePost("/get-recent-evaluations", createRecentEvalsRequest(150).toByteArray());
 		checkResponse(200);
@@ -138,13 +138,13 @@ public class QueryServletTest extends AbstractFlybushServletTest {
 	public void testGetRecentEvaluationsNoneFound() throws Exception {
 		createCloudSession(555);
 
-		DbIssue issue = createDbIssue("fad");
-		AppEngineDbEvaluation eval1 = createEvaluation(issue, "someone", 100);
-		AppEngineDbEvaluation eval2 = createEvaluation(issue, "someone", 200);
-		AppEngineDbEvaluation eval3 = createEvaluation(issue, "someone", 300);
+		DbIssue issue = createDbIssue("fad", persistenceHelper);
+		DbEvaluation eval1 = createEvaluation(issue, "someone", 100);
+		DbEvaluation eval2 = createEvaluation(issue, "someone", 200);
+		DbEvaluation eval3 = createEvaluation(issue, "someone", 300);
 		issue.addEvaluations(eval1, eval2, eval3);
 
-		persistenceManager.makePersistent(issue);
+        getPersistenceManager().makePersistent(issue);
 
 		executePost("/get-recent-evaluations", createRecentEvalsRequest(300).toByteArray());
 		checkResponse(200);
@@ -160,7 +160,7 @@ public class QueryServletTest extends AbstractFlybushServletTest {
         return FindIssuesResponse.parseFrom(outputCollector.toByteArray());
     }
 
-    private void checkTerseIssue(Issue issue, AppEngineDbEvaluation... evals) {
+    private void checkTerseIssue(Issue issue, DbEvaluation... evals) {
         assertEquals(100, issue.getFirstSeen());
         assertEquals(200, issue.getLastSeen());
         assertEquals("http://bug.link", issue.getBugLink());

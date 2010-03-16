@@ -2,8 +2,11 @@
 <component>
 	<exclude-output/>
 	<contentEntry url="file://$MODULE_DIR$">
+		<testFolder url="file://$MODULE_DIR$/src/junit"/>
 		<excludeFolder url="file://$MODULE_DIR$/bin"/>
 		<excludeFolder url="file://$MODULE_DIR$/classes"/>
+		<excludeFolder url="file://$MODULE_DIR$/dist"/>
+		<excludeFolder url="file://$MODULE_DIR$/war_exploded"/>
 		<excludeFolder url="file://$MODULE_DIR$/classes"/>
 	</contentEntry>
 	<lib name="hsqldb.jar" scope="COMPILE">
@@ -11,5 +14,11 @@
 	</lib>
 	<lib name="jetty-6.1.22.jar" scope="COMPILE">
 		<srcroot url="jar://$MODULE_DIR$/lib/jetty-6.1.22-src.zip!/"/>
+	</lib>
+	<lib name="junit.jar" scope="TEST">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/sandbox/cloudServlet/lib/junit.jar!/"/>
+	</lib>
+	<lib name="mockito-all-1.8.2.jar" scope="TEST">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/sandbox/cloudServlet/lib/mockito-all-1.8.2.jar!/"/>
 	</lib>
 </component>

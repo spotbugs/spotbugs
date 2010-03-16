@@ -1,6 +1,9 @@
-package edu.umd.cs.findbugs.flybush;
+package edu.umd.cs.findbugs.flybush.appengine;
 
 import com.google.appengine.api.datastore.Key;
+import edu.umd.cs.findbugs.flybush.DbEvaluation;
+import edu.umd.cs.findbugs.flybush.DbInvocation;
+import edu.umd.cs.findbugs.flybush.DbIssue;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;

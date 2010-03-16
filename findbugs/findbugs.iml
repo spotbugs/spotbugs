@@ -15,6 +15,13 @@
       <excludeFolder url="file://$MODULE_DIR$/build" />
       <excludeFolder url="file://$MODULE_DIR$/classesEclipse" />
     </content>
+    <content url="file://$CODE_DIR$/findbugs/sandbox">
+      <excludeFolder url="file://$CODE_DIR$/findbugs/sandbox/appEngineCloud" />
+      <excludeFolder url="file://$CODE_DIR$/findbugs/sandbox/appEngineCloudClient" />
+      <excludeFolder url="file://$CODE_DIR$/findbugs/sandbox/appEngineCloudProtocol" />
+      <excludeFolder url="file://$CODE_DIR$/findbugs/sandbox/cloudServlet" />
+      <excludeFolder url="file://$CODE_DIR$/findbugs/sandbox/localCloud" />
+    </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="jdk" jdkName="J2SE-1.5" jdkType="JavaSDK" />
     <orderEntry type="module-library">

@@ -1,4 +1,7 @@
-package edu.umd.cs.findbugs.flybush;
+package edu.umd.cs.findbugs.flybush.appengine;
+
+import edu.umd.cs.findbugs.flybush.DbEvaluation;
+import edu.umd.cs.findbugs.flybush.DbIssue;
 
 import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdentityType;

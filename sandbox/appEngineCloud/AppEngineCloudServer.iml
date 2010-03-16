@@ -36,7 +36,7 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="jdk" jdkName="J2SE-1.5" jdkType="JavaSDK" />
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" scope="TEST">
       <library name="junit3">
         <CLASSES>
           <root url="jar://$APPLICATION_HOME_DIR$/lib/junit.jar!/" />
@@ -45,7 +45,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library" exported="" scope="TEST">
       <library name="mockito-all-1.8.2.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/mockito-all-1.8.2.jar!/" />

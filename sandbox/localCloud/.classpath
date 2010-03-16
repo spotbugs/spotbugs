@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/java"/>
+	<classpathentry kind="src" path="src/junit"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/hsqldb.jar" sourcepath="lib/hsqldb-src.zip"/>
 	<classpathentry kind="lib" path="lib/datanucleus/deps/ehcache-1.1.jar"/>
@@ -40,5 +41,7 @@
 	<classpathentry kind="lib" path="lib/jetty-jsp/jasper-compiler-5.5.15.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cloudServlet"/>
 	<classpathentry kind="lib" path="lib/datanucleus/datanucleus-enhancer-1.1.4.jar"/>
+	<classpathentry kind="lib" path="/cloudServlet/lib/junit.jar"/>
+	<classpathentry kind="lib" path="/cloudServlet/lib/mockito-all-1.8.2.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

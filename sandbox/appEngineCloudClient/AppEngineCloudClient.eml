@@ -7,4 +7,6 @@
 		<excludeFolder url="file://$MODULE_DIR$/build/classes"/>
 		<excludeFolder url="file://$MODULE_DIR$/build/classes"/>
 	</contentEntry>
+	<lib name="junit3" scope="TEST"/>
+	<lib name="mockito-all-1.8.2.jar" scope="TEST"/>
 </component>

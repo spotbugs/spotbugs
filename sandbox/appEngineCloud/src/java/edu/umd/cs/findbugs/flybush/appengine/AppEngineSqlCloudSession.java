@@ -1,6 +1,8 @@
-package edu.umd.cs.findbugs.flybush;
+package edu.umd.cs.findbugs.flybush.appengine;
 
 import com.google.appengine.api.datastore.Key;
+import edu.umd.cs.findbugs.flybush.DbInvocation;
+import edu.umd.cs.findbugs.flybush.SqlCloudSession;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;

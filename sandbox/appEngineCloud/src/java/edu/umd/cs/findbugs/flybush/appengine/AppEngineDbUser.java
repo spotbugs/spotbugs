@@ -1,7 +1,8 @@
-package edu.umd.cs.findbugs.flybush;
+package edu.umd.cs.findbugs.flybush.appengine;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import edu.umd.cs.findbugs.flybush.DbUser;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;

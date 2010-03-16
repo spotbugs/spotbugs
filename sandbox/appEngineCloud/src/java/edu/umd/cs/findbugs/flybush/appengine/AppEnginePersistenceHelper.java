@@ -1,4 +1,4 @@
-package edu.umd.cs.findbugs.flybush;
+package edu.umd.cs.findbugs.flybush.appengine;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -6,6 +6,11 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import edu.umd.cs.findbugs.flybush.DbEvaluation;
+import edu.umd.cs.findbugs.flybush.DbInvocation;
+import edu.umd.cs.findbugs.flybush.DbIssue;
+import edu.umd.cs.findbugs.flybush.DbUser;
+import edu.umd.cs.findbugs.flybush.PersistenceHelper;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;

@@ -9,9 +9,9 @@ import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.de
 public class FlybushServletTestUtil {
     private FlybushServletTestUtil() { }
 
-    public static DbIssue createDbIssue(String patternAndHash) {
+    public static DbIssue createDbIssue(String patternAndHash, PersistenceHelper persistenceHelper) {
         patternAndHash = AppEngineProtoUtil.normalizeHash(patternAndHash);
-        DbIssue foundIssue = new AppEngineDbIssue();
+        DbIssue foundIssue = persistenceHelper.createDbIssue();
         foundIssue.setHash(patternAndHash);
         foundIssue.setBugPattern(patternAndHash);
         foundIssue.setPriority(2);

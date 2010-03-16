@@ -21,7 +21,7 @@
 
     <context-param>
         <param-name>edu.umd.cs.findbugs.flybush.persistenceHelper</param-name>
-        <param-value>edu.umd.cs.findbugs.flybush.AppEnginePersistenceHelper</param-value>
+        <param-value>edu.umd.cs.findbugs.flybush.appengine.AppEnginePersistenceHelper</param-value>
     </context-param>
 
     <servlet>

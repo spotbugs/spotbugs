@@ -1,4 +1,4 @@
-package edu.umd.cs.findbugs.flybush;
+package edu.umd.cs.findbugs.flybush.appengine;
 
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManagerFactory;

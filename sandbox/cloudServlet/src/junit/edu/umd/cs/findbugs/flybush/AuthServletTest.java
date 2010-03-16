@@ -11,7 +11,7 @@ import java.util.List;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 
-public class AuthServletTest extends AbstractFlybushServletTest {
+public abstract class AuthServletTest extends AbstractFlybushServletTest {
     @Override
     protected AbstractFlybushServlet createServlet() {
         return new AuthServlet();
@@ -40,9 +40,10 @@ public class AuthServletTest extends AbstractFlybushServletTest {
     }
 
     public void testCheckAuthForValidId() throws Exception {
-        AppEngineDbUser user = new AppEngineDbUser("http://some.website", "my@email.com");
-        AppEngineSqlCloudSession session = new AppEngineSqlCloudSession(user.createKeyObject(), 100, new Date(200));
-		persistenceManager.makePersistentAll(user, session);
+        DbUser user = persistenceHelper.createDbUser("http://some.website", "my@email.com");
+        SqlCloudSession session = persistenceHelper.createSqlCloudSession(100, new Date(200),
+                                                                          user.createKeyObject());
+        getPersistenceManager().makePersistentAll(user, session);
 
 		executeGet("/check-auth/100");
 
@@ -98,7 +99,8 @@ public class AuthServletTest extends AbstractFlybushServletTest {
         checkResponse(200);
 		FindIssuesResponse result = FindIssuesResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getFoundIssuesCount());
-		Query query = persistenceManager.newQuery("select from " + AppEngineDbInvocation.class.getName());
+		Query query = getPersistenceManager().newQuery(
+                "select from " + persistenceHelper.getDbInvocationClass().getName());
 		List<DbInvocation> invocations = (List<DbInvocation>) query.execute();
 		assertEquals(1, invocations.size());
 		assertEquals("my@email.com", getDbUser(invocations.get(0).getWho()).getEmail());
@@ -108,6 +110,9 @@ public class AuthServletTest extends AbstractFlybushServletTest {
 	// ========================= end of tests ================================
 
     private void executeLogIn() throws IOException {
-        executePost("/log-in", LogIn.newBuilder().setSessionId(555).setAnalysisTimestamp(100).build().toByteArray());
+        executePost("/log-in",
+                    LogIn.newBuilder()
+                            .setSessionId(555).setAnalysisTimestamp(100)
+                            .build().toByteArray());
     }
 }
