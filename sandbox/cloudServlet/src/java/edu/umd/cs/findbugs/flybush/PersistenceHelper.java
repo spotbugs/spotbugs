@@ -2,14 +2,15 @@ package edu.umd.cs.findbugs.flybush;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 public interface PersistenceHelper {
 
-    PersistenceManagerFactory getPersistenceManagerFactory();
-    PersistenceManager getPersistenceManager();
+    PersistenceManagerFactory getPersistenceManagerFactory() throws IOException;
+    PersistenceManager getPersistenceManager() throws IOException;
 
     DbUser createDbUser(String openidUrl, String email);
     SqlCloudSession createSqlCloudSession(long id, Date date, Object userKey);

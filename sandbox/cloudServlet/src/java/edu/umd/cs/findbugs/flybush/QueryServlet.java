@@ -64,7 +64,7 @@ public class QueryServlet extends AbstractFlybushServlet {
             Issue protoIssue = issueBuilder.build();
             issueProtos.addFoundIssues(protoIssue);
         }
-        LOGGER.warning("Found: " + found + ", missing: " + (hashes.size()-found));
+        LOGGER.info("Found: " + found + ", missing: " + (hashes.size()-found));
         
 		resp.setStatus(200);
 		issueProtos.build().writeTo(resp.getOutputStream());

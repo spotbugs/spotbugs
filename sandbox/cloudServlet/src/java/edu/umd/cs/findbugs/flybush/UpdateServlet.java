@@ -95,7 +95,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         List<String> hashes = decodeHashesForIssues(issues);
         long start = System.currentTimeMillis();
         Set<String> existingIssueHashes = lookupHashes(hashes, pm);
-        LOGGER.warning("Looking up hashes took " + (System.currentTimeMillis() - start) + "ms");
+        LOGGER.info("Looking up hashes took " + (System.currentTimeMillis() - start) + "ms");
         for (Issue issue : issues.getNewIssuesList()) {
             String hashStr = AppEngineProtoUtil.decodeHash(issue.getHash());
             if (!existingIssueHashes.contains(hashStr)) {
@@ -103,7 +103,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
 
                 start = System.currentTimeMillis();
                 commitInTransaction(pm, dbIssue);
-                LOGGER.warning("Committed new issue in " + (System.currentTimeMillis() - start) + "ms");
+                LOGGER.info("Committed new issue in " + (System.currentTimeMillis() - start) + "ms");
             } else {
                 LOGGER.warning("User is trying to upload existing issue " + hashStr);
             }

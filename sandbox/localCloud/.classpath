@@ -10,7 +10,11 @@
 	<classpathentry kind="lib" path="lib/datanucleus/deps/asm-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/datanucleus/deps/geronimo-jpa_3.0_spec-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/datanucleus/deps/db4o-7.4.63.11890-java5.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-6.1.22.jar" sourcepath="lib/jetty-6.1.22-src.zip"/>
+	<classpathentry kind="lib" path="lib/jetty-6.1.22.jar" sourcepath="lib/jetty-6.1.22-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="http://jetty.codehaus.org/jetty/jetty-6/apidocs"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/datanucleus/deps/poi-3.2-FINAL.jar"/>
 	<classpathentry kind="lib" path="lib/datanucleus/deps/neodatis-odb-1.9.jar"/>
 	<classpathentry kind="lib" path="lib/datanucleus/deps/xercesImpl-2.8.1.jar"/>

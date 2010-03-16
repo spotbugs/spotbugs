@@ -84,7 +84,7 @@ public abstract class AbstractFlybushServlet extends HttpServlet {
         return sessions.isEmpty() ? null : sessions.get(0);
     }
 
-    protected PersistenceManager getPersistenceManager() {
+    protected PersistenceManager getPersistenceManager() throws IOException {
         return persistenceHelper.getPersistenceManager();
     }
 

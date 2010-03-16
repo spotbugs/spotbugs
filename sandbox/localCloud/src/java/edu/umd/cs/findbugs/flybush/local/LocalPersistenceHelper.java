@@ -11,6 +11,8 @@ import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,33 +22,25 @@ import java.util.Properties;
 public class LocalPersistenceHelper implements PersistenceHelper {
     private static PersistenceManagerFactory pmf;
 
-    private static PersistenceManagerFactory createPersistenceManagerFactory() {
+    private static PersistenceManagerFactory createPersistenceManagerFactory() throws IOException {
         Properties properties = new Properties();
-        properties.setProperty("javax.jdo.PersistenceManagerFactoryClass",
-                               "org.datanucleus.jdo.JDOPersistenceManagerFactory");
-        properties.setProperty("javax.jdo.option.ConnectionDriverName", "org.hsqldb.jdbcDriver");
-        properties.setProperty("javax.jdo.option.ConnectionURL", "jdbc:hsqldb:file:testdb");
-        properties.setProperty("javax.jdo.option.ConnectionUserName", "sa");
-        properties.setProperty("javax.jdo.option.ConnectionPassword", "");
-        properties.setProperty("javax.jdo.option.NontransactionalRead", "true");
-        properties.setProperty("javax.jdo.option.NontransactionalWrite", "true");
-        properties.setProperty("datanucleus.autoCreateTables", "true");
+        properties.load(new FileInputStream("jdo.properties"));
         return JDOHelper.getPersistenceManagerFactory(properties);
     }
 
-    private static synchronized PersistenceManagerFactory get() {
+    private static synchronized PersistenceManagerFactory get() throws IOException {
         if (pmf == null || pmf.isClosed()) {
             pmf = createPersistenceManagerFactory();
         }
         return pmf;
     }
 
-    public PersistenceManager getPersistenceManager() {
+    public PersistenceManager getPersistenceManager() throws IOException {
         PersistenceManagerFactory pmf = getPersistenceManagerFactory();
         return pmf.getPersistenceManager();
     }
 
-    public PersistenceManagerFactory getPersistenceManagerFactory() {
+    public PersistenceManagerFactory getPersistenceManagerFactory() throws IOException {
         return get();
     }
 
