@@ -250,6 +250,7 @@ public class Project implements XMLWriteable {
           for (String dir : makeAbsoluteCwdCandidates(dirName)) {
             isNew = addToListInternal(srcDirList, dir) || isNew;
           }
+          sourceFinder = new SourceFinder(this);
           return isNew;
 	}
 
@@ -340,6 +341,7 @@ public class Project implements XMLWriteable {
 	 */
 	public void removeSourceDir(int num) {
 		srcDirList.remove(num);
+		sourceFinder = new SourceFinder(this);
 		isModified = true;
 	}
 
