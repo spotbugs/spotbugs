@@ -1,5 +1,7 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -22,6 +24,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,8 +50,6 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
-
 public class AppEngineCloudClient extends AbstractCloud {
 
     private static final Logger LOGGER = Logger.getLogger(AppEngineCloudClient.class.getName());
@@ -72,10 +73,14 @@ public class AppEngineCloudClient extends AbstractCloud {
 	/** for testing */
 	AppEngineCloudClient(CloudPlugin plugin, BugCollection bugs,
                          @CheckForNull Executor executor) {
+
 		super(plugin, bugs);
 		if (executor == null) {
 			backgroundExecutorService = Executors.newFixedThreadPool(10);
 			backgroundExecutor = backgroundExecutorService;
+			if (backgroundExecutorService.isShutdown())
+	    		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown at creation");
+
 		} else {
 			backgroundExecutorService = null;
 			backgroundExecutor = executor;
@@ -127,6 +132,8 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     @Override
 	public void shutdown() {
+    	 LOGGER.log(Level.INFO, "Shutting down " + this, new RuntimeException("Shutdown"));
+
 		super.shutdown();
         if (timer != null)
             timer.cancel();
@@ -180,6 +187,8 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
     public void signOut() {
+        LOGGER.log(Level.INFO, "signing out", new RuntimeException("Signing out"));
+
         if (backgroundExecutorService != null) {
             backgroundExecutorService.shutdownNow();
             try {
@@ -364,7 +373,7 @@ public class AppEngineCloudClient extends AbstractCloud {
         List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
         networkClient.partitionHashes(new ArrayList<String>(bugsByHash.keySet()), tasks, bugsByHash);
 
-        executeAndWaitForAll(tasks);
+        executeAndWaitForAll(numBugs, tasks);
 
         Collection<BugInstance> newBugs = bugsByHash.values();
         if (!newBugs.isEmpty()) {
@@ -374,7 +383,9 @@ public class AppEngineCloudClient extends AbstractCloud {
         }
     }
 
-    private void executeAndWaitForAll(List<Callable<Object>> tasks) {
+    private void executeAndWaitForAll(int numBugs, List<Callable<Object>> tasks) {
+       if (backgroundExecutorService.isShutdown())
+    		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown in executeAndWaitForAll");
         try {
             List<Future<Object>> results = backgroundExecutorService.invokeAll(tasks);
             for (Future<Object> result : results) {
@@ -383,7 +394,22 @@ public class AppEngineCloudClient extends AbstractCloud {
         } catch (InterruptedException e) {
             LOGGER.log(Level.SEVERE, "error while starting hash check threads", e);
         } catch (ExecutionException e) {
-            LOGGER.log(Level.SEVERE, "", e);
+        	if (backgroundExecutorService.isShutdown())
+        		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown ", e);
+        	else 	if (backgroundExecutorService.isTerminated())
+       		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is termination ", e);
+        	else
+        		 LOGGER.log(Level.SEVERE, "execution exception", e);
+
+        }  catch (RejectedExecutionException e) {
+             	if (backgroundExecutorService.isShutdown())
+             		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown ", e);
+             	else 	if (backgroundExecutorService.isTerminated())
+            		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is termination ", e);
+             	else
+             		 LOGGER.log(Level.SEVERE, "Rejected execution", e);
+
+
         }
     }
 
@@ -485,7 +511,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             public void run() {
                 List<Callable<Object>> callables = new ArrayList<Callable<Object>>();
                 networkClient.uploadNewBugs(newBugs, callables);
-                executeAndWaitForAll(callables);
+                executeAndWaitForAll(newBugs.size(), callables);
                 setStatusMsg("");
             }
         });
