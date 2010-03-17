@@ -20,7 +20,9 @@
 package edu.umd.cs.findbugs.cloud;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.SystemProperties;
 
 import java.lang.reflect.Constructor;
@@ -53,6 +55,11 @@ public class CloudFactory {
 				bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloud.getClass().getName());
 			return cloud;
 		} catch (Exception e) {
+			if (DEBUG) {
+				bc.getProject().getGuiCallback().showMessageDialog("failed " + e.getMessage() + e.getClass().getName());
+				e.printStackTrace();
+			}
+			
 			assert true;
         }
 		if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToDB"))
@@ -90,10 +97,12 @@ public class CloudFactory {
     static CloudPlugin defaultPlugin;
 	/**
      * @param cloudPlugin
+	 * @param enabled TODO
      */
-    public static void registerCloud(CloudPlugin cloudPlugin) {
+    public static void registerCloud(CloudPlugin cloudPlugin, boolean enabled) {
     	registeredClouds.put(cloudPlugin.getId(), cloudPlugin);
-    	defaultPlugin = cloudPlugin;
+    	if (enabled) 
+    		defaultPlugin = cloudPlugin;
 	    
     }
 	

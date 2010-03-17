@@ -120,7 +120,7 @@ import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
+import java.util.logging.Level;             
 
 @SuppressWarnings("serial")
 
@@ -135,7 +135,7 @@ import java.util.logging.Level;
  */
 public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 {
-    private AbstractExecutorService bugUpdateExecutor = new EventQueueExecutor();
+	 private AbstractExecutorService bugUpdateExecutor = new EventQueueExecutor();
 
     static JButton newButton(String key, String name) {
 		JButton b = new JButton();
@@ -450,10 +450,26 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 	BugCollection bugCollection;
 	
-	CloudListener userAnnotationListener = null;
+	CloudListener userAnnotationListener = new CloudListener() {
+
+		public void issueUpdated(BugInstance bug) {
+			if (currentSelectedBugLeaf != null
+					&& currentSelectedBugLeaf.getBug() == bug)
+				comments.updateCommentsFromLeafInformation(currentSelectedBugLeaf);
+		}
+
+		public void statusUpdated() {
+			SwingUtilities.invokeLater(updateStatusBarRunner);
+		}
+	};
 	
 	public void registerCloud(Project project, BugCollection collection, Cloud plugin) {
-		setProjectAndBugCollectionInSwingThread(project, collection);
+		assert collection.getCloud() == plugin;
+		if (this.bugCollection == collection) {
+			plugin.addListener(userAnnotationListener);	
+		}
+		// Don't think we need to do this
+		//		setProjectAndBugCollectionInSwingThread(project, collection);
     }
 
     public ExecutorService getBugUpdateExecutor() {
@@ -476,39 +492,27 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		if (suppressionMatcher != null) {
 			suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
 		}
-		if (this.bugCollection != null && userAnnotationListener != null) {
-			
-			Cloud plugin = this.bugCollection.getCloud();
-			if (plugin != null)  {
-				plugin.removeListener(userAnnotationListener);
-				plugin.shutdown();
-			}
-			
-		}
+		if (this.bugCollection != bugCollection && this.bugCollection != null) {
+        	
+        	Cloud plugin = this.bugCollection.getCloud();
+        	if (plugin != null)  {
+        		plugin.removeListener(userAnnotationListener);
+        		plugin.shutdown();
+        	}
+        	
+        }
 		// setRebuilding(false);
-		if (bugCollection == null) {
+		if (bugCollection != null) {
 			showTreeCard();
-		} else {
 			setProject(project);
 			this.bugCollection = bugCollection;
 			bugCollection.setRequestDatabaseCloud(true);
 			displayer.clearCache();
 			Cloud plugin = bugCollection.getCloud();
 			if (plugin != null) {
-				userAnnotationListener = new CloudListener() {
-
-					public void issueUpdated(BugInstance bug) {
-						if (currentSelectedBugLeaf != null
-								&& currentSelectedBugLeaf.getBug() == bug)
-							comments.updateCommentsFromLeafInformation(currentSelectedBugLeaf);
-					}
-
-					public void statusUpdated() {
-						SwingUtilities.invokeLater(updateStatusBarRunner);
-					}
-				};
 				plugin.addListener(userAnnotationListener);
 			}
+			updateBugTree();
 		}
 		setProjectChanged(false);
 		Runnable runnable = new Runnable() {
@@ -2959,9 +2963,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			public void run() {
 				Project project = new Project();
 				project.setGuiCallback(MainFrame.this);
-				SortedBugCollection bc;
-
-				bc = BugLoader.loadBugs(MainFrame.this, project, url);
+				SortedBugCollection bc = BugLoader.loadBugs(MainFrame.this, project, url);
 				project.getSourceFinder(); // force source finder to be initialized
 				setProjectAndBugCollectionInSwingThread(project, bc);
 			}

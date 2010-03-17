@@ -225,7 +225,9 @@ public abstract class AbstractCloud implements Cloud {
 	}
 
 	public void addListener(CloudListener listener) {
-		listeners.add(listener);
+		if (listener == null) throw new NullPointerException();
+		if (!listeners.contains(listener))
+			listeners.add(listener);
 	}
 
 	public void removeListener(CloudListener listener) {

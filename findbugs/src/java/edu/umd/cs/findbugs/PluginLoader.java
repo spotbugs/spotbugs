@@ -348,7 +348,7 @@ public class PluginLoader {
 			
 			CloudPlugin cloudPlugin = new CloudPlugin(cloudid, classLoader, cloudClass, usernameClass, properties, description, details);
 
-			CloudFactory.registerCloud(cloudPlugin);
+			CloudFactory.registerCloud(cloudPlugin, pluginEnabled);
 			
 		}
 		

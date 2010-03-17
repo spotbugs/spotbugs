@@ -33,6 +33,7 @@ import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -210,9 +211,7 @@ public class DetectorFactoryCollection {
 		factoriesByDetectorClassName.put(factory.getFullName(), factory);
 	}
 
-	private void determinePlugins() {
-		if (pluginList != null)
-			return;
+	private ArrayList<URL> determineInstalledPlugins() {
 		ArrayList<URL> plugins = new ArrayList<URL>();
 		
 		String homeDir = getFindBugsHome();
@@ -226,8 +225,7 @@ public class DetectorFactoryCollection {
 		File pluginDir = new File(new File(homeDir), "plugin");
 		File[] contentList = pluginDir.listFiles();
 		if (contentList == null) {
-			pluginList = new URL[0];
-			return;
+			return plugins;
 		}
 
 		for (File file : contentList) {
@@ -244,23 +242,8 @@ public class DetectorFactoryCollection {
 			}
 		}
 		}
-		Set<Entry<Object, Object>> entrySet = SystemProperties.getAllProperties().entrySet();
-		for(Map.Entry<?,?> e : entrySet) {
-			if (e.getKey() instanceof String && e.getValue() instanceof String && ((String)e.getKey()).startsWith("findbugs.plugin.")) {
-				try {
-	                String value = (String) e.getValue();
-	                if (value.startsWith("file:") && !value.endsWith("/"))
-	                	value += "/";
-					URL u = new URL(value);
-	                plugins.add(u);
-                } catch (MalformedURLException e1) {
-	                AnalysisContext.logError(String.format("Bad URL for plugin: %s=%s", e.getKey(), e.getValue()), e1);
-                }
-				
-			}
-		}
-		pluginList = plugins.toArray(new URL[plugins.size()]);
-
+		return plugins;
+		
 	}
 	
 	private static final Pattern[] findbugsJarNames = {
@@ -336,8 +319,9 @@ public class DetectorFactoryCollection {
 	
 	void loadPlugins() {
 		if (loaded) 
-			throw new IllegalStateException();
-		
+			throw new IllegalStateException("plugins already loaded");
+		if (pluginList != null)
+			throw new IllegalStateException("Plugin list already defined");
 		//
 		// Load the core plugin.
 		//
@@ -349,63 +333,46 @@ public class DetectorFactoryCollection {
 			throw new IllegalStateException("Warning: could not load FindBugs core plugin: " + e.toString(), e);
 		}
 		
-		URL u = PluginLoader.loadFromFindBugsEtcDir(BugRanker.ADJUST_FILENAME);
-        
+		URL u = PluginLoader.getCoreResource(BugRanker.ADJUST_FILENAME);
+		
 		try {
 			adjustmentBugRanker = new BugRanker(u);
         } catch (IOException e1) {
 	       AnalysisContext.logError("Unable to parse " + u, e1);
         }
-
-		if (SystemProperties.getBoolean("findbugs.jaws")) {
-			URL pluginList = PluginLoader.getCoreResource("pluginlist.properties");
-			List<URL> plugins = new ArrayList<URL>();
-			if (pluginList != null) {
+        List<URL> plugins;
+		
+        if (!SystemProperties.getBoolean("findbugs.jaws")) {
+        	plugins = determineInstalledPlugins();
+        } else {
+        	plugins = determineWebStartPlugins();
+        }
+		Set<Entry<Object, Object>> entrySet = SystemProperties.getAllProperties().entrySet();
+		for(Map.Entry<?,?> e : entrySet) {
+			if (e.getKey() instanceof String && e.getValue() instanceof String && ((String)e.getKey()).startsWith("findbugs.plugin.")) {
 				try {
-					
-				jawsDebugMessage(pluginList.toString());
-				String urlname = pluginList.toString();
-				URL base = pluginList;
-				int pos = urlname.indexOf("!/");
-				if (pos >= 0 && urlname.startsWith("jar:")) {
-					urlname = urlname.substring(4,pos);
-					base = new URL(urlname);
-				}
-				
-				BufferedReader in = new BufferedReader(new InputStreamReader(pluginList.openStream()));
-				while (true) {
-					String plugin = in.readLine();
-					
-					if (plugin == null)
-						break;
-					URL url = new URL(base, plugin);
-					try {
-					URLConnection connection = url.openConnection();
-					String contentType = connection.getContentType();
-					jawsDebugMessage("contentType : " + contentType);
-					if (connection instanceof HttpURLConnection) 
-						((HttpURLConnection)connection).disconnect();
-					plugins.add(url);
-					} catch  (Exception e) {
-						jawsDebugMessage("error loading " + url + " : " + e.getMessage());
-						
-					}
-					
-				}
-				in.close();
-				} catch (Exception e) {
-					jawsDebugMessage("error : " + e.getMessage());
-					
-				}
+	                String value = (String) e.getValue();
+	                if (value.startsWith("file:") && !value.endsWith(".jar") && !value.endsWith("/"))
+	                	value += "/";
+					plugins.add(new URL(value));
+                } catch (MalformedURLException e1) {
+	                AnalysisContext.logError(String.format("Bad URL for plugin: %s=%s", e.getKey(), e.getValue()), e1);
+                }
 				
 			}
-
-			setPluginList(plugins.toArray(new URL[plugins.size()]));
-		
-		} else {
-			// Load all detector plugins.
-			determinePlugins();
 		}
+		
+		 if (!plugins.isEmpty() && SystemProperties.getBoolean("findbugs.jaws")) {
+			// disable security manager; plugins cause problems
+			// http://lopica.sourceforge.net/faq.html
+	        //	URL policyUrl = Thread.currentThread().getContextClassLoader().getResource("my.java.policy");
+	       // 	Policy.getPolicy().refresh();
+	        	
+			System.setSecurityManager(null);
+			      
+		 }
+		      
+		setPluginList(plugins.toArray(new URL[plugins.size()]));
 
 		//
 		// Load any discovered third-party plugins.
@@ -436,19 +403,77 @@ public class DetectorFactoryCollection {
 		
 	}
 
-	final static boolean DEBUG_JAWS = false;
+	/**
+     * @param plugins
+     */
+    private List<URL>  determineWebStartPlugins() {
+    	List<URL> plugins = new LinkedList<URL>();
+	    URL pluginListProperties = PluginLoader.getCoreResource("pluginlist.properties");
+	    if (pluginListProperties != null) {
+	    	try {
+
+	    		jawsDebugMessage(pluginListProperties.toString());
+	    		URL base = getUrlBase(pluginListProperties);
+
+	    		BufferedReader in = new BufferedReader(new InputStreamReader(pluginListProperties.openStream()));
+	    		while (true) {
+	    			String plugin = in.readLine();
+
+	    			if (plugin == null)
+	    				break;
+	    			URL url = new URL(base, plugin);
+	    			try {
+	    				URLConnection connection = url.openConnection();
+	    				String contentType = connection.getContentType();
+	    				jawsDebugMessage("contentType : " + contentType);
+	    				if (connection instanceof HttpURLConnection) 
+	    					((HttpURLConnection)connection).disconnect();
+	    				plugins.add(url);
+	    			} catch  (Exception e) {
+	    				jawsDebugMessage("error loading " + url + " : " + e.getMessage());
+
+	    			}
+
+	    		}
+	    		in.close();
+	    	} catch (Exception e) {
+	    		jawsDebugMessage("error : " + e.getMessage());
+
+	    	}
+
+	    }
+	    return plugins;
+    }
+
+	/**
+     * @param pluginListProperties
+     * @return
+     * @throws MalformedURLException
+     */
+    private URL getUrlBase(URL pluginListProperties) throws MalformedURLException {
+	    String urlname = pluginListProperties.toString();
+	    URL base = pluginListProperties;
+	    int pos = urlname.indexOf("!/");
+	    if (pos >= 0 && urlname.startsWith("jar:")) {
+	    	urlname = urlname.substring(4,pos);
+	    	base = new URL(urlname);
+	    }
+	    return base;
+    }
+
+	final static boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
 	/**
      * @param message
      */
 	
 	
-    private void jawsDebugMessage(String message) {
+    public static  void jawsDebugMessage(String message) {
 	    if (DEBUG_JAWS)
 	    	JOptionPane.showMessageDialog(null, message);
 	    else if  (FindBugs.DEBUG)
 	    	System.err.println(message);
     }
-    private void jawsErrorMessage(String message) {
+     public static void jawsErrorMessage(String message) {
 	    if (DEBUG_JAWS)
 	    	JOptionPane.showMessageDialog(null, message);
 	    else 
