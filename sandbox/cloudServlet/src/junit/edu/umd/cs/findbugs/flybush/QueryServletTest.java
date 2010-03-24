@@ -15,6 +15,7 @@ import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.en
 import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.checkIssuesEqualExceptTimestamps;
 import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.createDbIssue;
 
+@SuppressWarnings({"UnusedDeclaration"})
 public abstract class QueryServletTest extends AbstractFlybushServletTest {
 
     @Override
@@ -40,6 +41,25 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 
 		DbIssue foundIssue = createDbIssue("fad2", persistenceHelper);
 		DbEvaluation eval = createEvaluation(foundIssue, "someone", 100);
+		foundIssue.addEvaluation(eval);
+
+		// apparently the evaluation is automatically persisted. throws
+		// exception when attempting to persist the eval with the issue.
+        getPersistenceManager().makePersistent(foundIssue);
+
+        FindIssuesResponse result = findIssues("fad1", "fad2");
+
+		assertEquals(2, result.getFoundIssuesCount());
+        checkIssueEmpty(result.getFoundIssues(0));
+        checkTerseIssue(result.getFoundIssues(1), eval);
+	}
+
+    public void testFindIssuesWithOldStyleEvaluation() throws Exception {
+    	createCloudSession(555);
+
+		DbIssue foundIssue = createDbIssue("fad2", persistenceHelper);
+		DbEvaluation eval = createEvaluation(foundIssue, "someone", 100);
+        persistenceHelper.convertToOldStyleForTesting(eval);
 		foundIssue.addEvaluation(eval);
 
 		// apparently the evaluation is automatically persisted. throws

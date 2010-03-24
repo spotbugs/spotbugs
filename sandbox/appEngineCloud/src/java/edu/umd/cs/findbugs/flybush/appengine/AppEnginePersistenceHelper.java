@@ -114,4 +114,10 @@ public class AppEnginePersistenceHelper implements PersistenceHelper {
 		}
         return map;
     }
+
+    public void convertToOldStyleForTesting(DbEvaluation eval) {
+        AppEngineDbEvaluation aede = (AppEngineDbEvaluation) eval;
+        aede.setShortComment(aede.getLongComment().getValue());
+        aede.setLongComment(null);
+    }
 }

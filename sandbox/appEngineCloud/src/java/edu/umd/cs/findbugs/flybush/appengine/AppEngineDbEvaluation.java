@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.flybush.appengine;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Text;
 import edu.umd.cs.findbugs.flybush.DbEvaluation;
 import edu.umd.cs.findbugs.flybush.DbInvocation;
 import edu.umd.cs.findbugs.flybush.DbIssue;
@@ -23,6 +24,7 @@ public class AppEngineDbEvaluation implements DbEvaluation {
     @Persistent private Key invocation;
     @Persistent private String designation;
     @Persistent private String comment;
+    @Persistent private Text commentLong;
     @Persistent private AppEngineDbIssue issue;
     @Persistent private long when;
 
@@ -59,11 +61,11 @@ public class AppEngineDbEvaluation implements DbEvaluation {
     }
 
     public String getComment() {
-        return comment;
+        return commentLong == null ? comment : commentLong.getValue();
     }
 
     public void setComment(String comment) {
-        this.comment = comment;
+        this.commentLong = new Text(comment);
     }
 
     public DbIssue getIssue() {
@@ -101,5 +103,17 @@ public class AppEngineDbEvaluation implements DbEvaluation {
 
     private <E extends Comparable<? super E>> int comparePossiblyNull(E a, E b) {
         return a == null ? -1 : (b == null ? 1 : a.compareTo(b));
+    }
+
+    public Text getLongComment() {
+        return commentLong;
+    }
+
+    public void setShortComment(String comment) {
+        this.comment = comment;
+    }
+
+    public void setLongComment(Text comment) {
+        this.commentLong = comment;
     }
 }

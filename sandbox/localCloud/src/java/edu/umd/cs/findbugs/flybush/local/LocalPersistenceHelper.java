@@ -106,4 +106,7 @@ public class LocalPersistenceHelper implements PersistenceHelper {
 		}
         return map;
     }
+
+    public void convertToOldStyleForTesting(DbEvaluation eval) {
+    }
 }

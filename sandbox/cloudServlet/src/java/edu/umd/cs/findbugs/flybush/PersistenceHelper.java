@@ -29,4 +29,6 @@ public interface PersistenceHelper {
     <E> E getObjectById(PersistenceManager pm, Class<? extends E> cls, Object key);
 
     Map<String, DbIssue> findIssues(PersistenceManager pm, Iterable<String> hashes);
+
+    void convertToOldStyleForTesting(DbEvaluation eval);
 }

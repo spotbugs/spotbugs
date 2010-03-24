@@ -23,6 +23,7 @@ import static edu.umd.cs.findbugs.flybush.DbIssue.DbBugLinkType.GOOGLE_CODE;
 import static edu.umd.cs.findbugs.flybush.DbIssue.DbBugLinkType.JIRA;
 import static edu.umd.cs.findbugs.flybush.UpdateServlet.ONE_DAY_IN_MILLIS;
 
+@SuppressWarnings({"UnusedDeclaration"})
 public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 
     @Override
@@ -141,6 +142,34 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         DbIssue dbIssue = FlybushServletTestUtil.createDbIssue("fad", persistenceHelper);
         getPersistenceManager().makePersistent(dbIssue);
 		Evaluation protoEval = createProtoEvaluation();
+		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
+				.setSessionId(555)
+				.setHash(encodeHash("fad"))
+				.setEvaluation(protoEval)
+				.build().toByteArray());
+		checkResponse(200);
+        getPersistenceManager().refresh(dbIssue);
+		assertEquals(1, dbIssue.getEvaluations().size());
+		DbEvaluation dbEval = dbIssue.getEvaluations().iterator().next();
+		assertEquals(protoEval.getComment(), dbEval.getComment());
+		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
+		assertEquals(protoEval.getWhen(), dbEval.getWhen());
+		assertEquals("my@email.com", getDbUser(dbEval.getWho()).getEmail());
+		assertNull(dbEval.getInvocationKey());
+	}
+
+	public void testUploadEvaluationMoreThan500chars() throws Exception {
+		createCloudSession(555);
+
+        DbIssue dbIssue = FlybushServletTestUtil.createDbIssue("fad", persistenceHelper);
+        getPersistenceManager().makePersistent(dbIssue);
+        char[] array = new char[600];
+        Arrays.fill(array, 'x');
+        Evaluation protoEval = Evaluation.newBuilder()
+                .setDesignation("MUST_FIX")
+                .setComment(new String(array))
+                .setWhen(100)
+                .build();
 		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
 				.setSessionId(555)
 				.setHash(encodeHash("fad"))

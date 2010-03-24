@@ -4,6 +4,7 @@ import edu.umd.cs.findbugs.flybush.DbEvaluation;
 import edu.umd.cs.findbugs.flybush.DbInvocation;
 import edu.umd.cs.findbugs.flybush.DbIssue;
 
+import javax.jdo.annotations.Column;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -21,7 +22,7 @@ public class LocalDbEvaluation implements DbEvaluation {
     @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"})
     @Persistent private LocalDbInvocation invocation;
     @Persistent private String designation;
-    @Persistent private String comment;
+    @Persistent(columns = @Column(sqlType = "longvarchar")) private String comment;
     @Persistent private LocalDbIssue issue;
     @Persistent private long when;
 
