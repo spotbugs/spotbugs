@@ -159,11 +159,11 @@ public class AppEngineCloudNetworkClient {
             String hash = hashes.get(j);
             Issue issue = response.getFoundIssues(j);
 
-            storeIssueDetails(hash, issue);
-
             if (isEmpty(issue))
                 // the issue was not found!
                 continue;
+
+            storeIssueDetails(hash, issue);
 
             BugInstance bugInstance;
             if (FORCE_UPLOAD_ALL_ISSUES) bugInstance = bugsByHash.get(hash);
@@ -201,7 +201,7 @@ public class AppEngineCloudNetworkClient {
 
     public long getFirstSeenFromCloud(BugInstance b) {
         Issue issue = issuesByHash.get(b.getInstanceHash());
-        if (issue == null)
+        if (issue == null || issue.getFirstSeen() == 0)
             return Long.MAX_VALUE;
         return issue.getFirstSeen();
     }

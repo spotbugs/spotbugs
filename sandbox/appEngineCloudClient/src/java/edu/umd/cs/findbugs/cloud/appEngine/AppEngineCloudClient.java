@@ -384,7 +384,7 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
     private void executeAndWaitForAll(int numBugs, List<Callable<Object>> tasks) {
-       if (backgroundExecutorService.isShutdown())
+       if (backgroundExecutorService != null && backgroundExecutorService.isShutdown())
     		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown in executeAndWaitForAll");
         try {
             List<Future<Object>> results = backgroundExecutorService.invokeAll(tasks);
@@ -431,7 +431,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 			Issue existingIssue = networkClient.getIssueByHash(decodeHash(issue.getHash()));
 			if (existingIssue != null) {
 				Issue newIssue = mergeIssues(existingIssue, issue);
-				assert newIssue.getHash().equals(issue.getHash());
+				assert newIssue.getHash().equals(issue.getHash()) : newIssue.getHash() + " vs " + issue.getHash();
                 networkClient.storeIssueDetails(decodeHash(issue.getHash()), newIssue);
 				BugInstance bugInstance = getBugByHash(decodeHash(issue.getHash()));
 				if (bugInstance != null) {
