@@ -115,10 +115,10 @@ var openid = {
         
         $('#openid_form').submit(this.submit);
         
-        var box_id = this.readCookie();
-        if (box_id) {
-        	this.signin(box_id, true);
-        }  
+        //var box_id = this.readCookie();
+        //if (box_id) {
+        	//this.signin(box_id, true);
+        //}  
     },
     getBoxHTML: function(provider, box_size, image_ext) {
             
