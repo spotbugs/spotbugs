@@ -42,5 +42,6 @@
 	<classpathentry kind="lib" path="lib/datanucleus/datanucleus-enhancer-1.1.4.jar"/>
 	<classpathentry kind="lib" path="/cloudServlet/lib/junit.jar"/>
 	<classpathentry kind="lib" path="/cloudServlet/lib/mockito-all-1.8.2.jar"/>
+	<classpathentry kind="lib" path="lib/datanucleus/datanucleus-core-1.1.6.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

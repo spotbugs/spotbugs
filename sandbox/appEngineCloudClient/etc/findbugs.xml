@@ -17,7 +17,7 @@
 	 usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup"
 	>
 <Properties>
-appengine.host=http://theflybush.appspot.com
+appengine.host=http://findbugs-cloud.appspot.com
 </Properties>
 </Cloud>
 

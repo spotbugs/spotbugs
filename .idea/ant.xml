@@ -10,7 +10,7 @@
       <maximumStackSize value="2" />
       <properties />
     </buildFile>
-    <buildFile url="file://$PROJECT_DIR$/sandbox/findbugs.xml">
+    <buildFile url="file://$PROJECT_DIR$/sandbox/localCloud-build.xml">
       <additionalClassPath />
       <antReference projectDefault="true" />
       <customJdkName value="" />
