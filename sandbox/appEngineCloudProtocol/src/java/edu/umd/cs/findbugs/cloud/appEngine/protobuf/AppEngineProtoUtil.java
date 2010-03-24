@@ -18,7 +18,8 @@ public final class AppEngineProtoUtil {
 	public static String decodeHash(ByteString hash) {
 		String hashStr = new BigInteger(1, hash.toByteArray()).toString(16);
 		hashStr = normalizeHash(hashStr);
-		assert hash.equals(encodeHash(hashStr));
+        ByteString reEncoded = encodeHash(hashStr);
+        assert hashStr.equals("0") || hash.equals(reEncoded) : "re-encoding failed for " + hashStr + ": got " + decodeHash(reEncoded);
 		return hashStr;
 	}
 

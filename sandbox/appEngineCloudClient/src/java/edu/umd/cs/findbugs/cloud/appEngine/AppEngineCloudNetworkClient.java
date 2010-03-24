@@ -79,6 +79,15 @@ public class AppEngineCloudNetworkClient {
             System.err.println("No App Engine Cloud username or hostname found! Check etc/findbugs.xml");
             return false;
         }
+        // now that we know our own username, we need to update all the bugs in the UI to show what "our"
+        // designation & comments are.
+        // this might be really slow with a lot of issues. seems fine so far.
+        for (BugInstance instance : cloudClient.getBugCollection().getCollection()) {
+            Issue issue = issuesByHash.get(instance.getInstanceHash());
+            if (issue != null && issue.getEvaluationsCount() > 0) {
+                cloudClient.updateBugInstanceAndNotify(instance);
+            }
+        }
         return true;
     }
 
@@ -344,12 +353,15 @@ public class AppEngineCloudNetworkClient {
         conn.setDoOutput(true);
         try {
             OutputStream outputStream = conn.getOutputStream();
-            GetRecentEvaluations.newBuilder()
-                    .setSessionId(sessionId)
-                    .setTimestamp(mostRecentEvaluationMillis)
-                    .build()
-                    .writeTo(outputStream);
+            GetRecentEvaluations.Builder msgb = GetRecentEvaluations.newBuilder();
+            if (sessionId != null) {
+                msgb.setSessionId(sessionId);
+            }
+            msgb.setTimestamp(mostRecentEvaluationMillis);
+
+            msgb.build().writeTo(outputStream);
             outputStream.close();
+
             if (conn.getResponseCode() != 200) {
                 throw new IllegalStateException(
                         "server returned error code "

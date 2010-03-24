@@ -74,7 +74,6 @@ public class QueryServlet extends AbstractFlybushServlet {
 	private void getRecentEvaluations(HttpServletRequest req,
 			HttpServletResponse resp, PersistenceManager pm) throws IOException {
 		GetRecentEvaluations recentEvalsRequest = GetRecentEvaluations.parseFrom(req.getInputStream());
-        if (isAuthenticated(resp, pm, recentEvalsRequest.getSessionId())) return;
 		long startTime = recentEvalsRequest.getTimestamp();
 		Query query = pm.newQuery(
 				"select from " + persistenceHelper.getDbEvaluationClass().getName()

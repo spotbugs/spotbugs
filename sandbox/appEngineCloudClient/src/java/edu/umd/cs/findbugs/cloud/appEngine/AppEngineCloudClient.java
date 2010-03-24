@@ -387,8 +387,9 @@ public class AppEngineCloudClient extends AbstractCloud {
                 BugDesignation primaryDesignation = getPrimaryDesignation(bugInstance);
                 if (primaryDesignation != null) {
                     bugInstance.setUserDesignation(primaryDesignation);
-                    updatedIssue(bugInstance);
                 }
+                // update anyway - the cloud report may have changed
+                updatedIssue(bugInstance);
             }
         });
     }
@@ -458,6 +459,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 		try {
 			evals = networkClient.getRecentEvaluationsFromServer();
 		} catch (IOException e) {
+            setStatusMsg("Checking FindBugs Cloud for updates...failed - " + e.getMessage());
 			throw new IllegalStateException(e);
 		}
 		if (evals.getIssuesCount() > 0)
@@ -465,12 +467,14 @@ public class AppEngineCloudClient extends AbstractCloud {
 		else
 			setStatusMsg("");
 		for (Issue issue : evals.getIssuesList()) {
-			Issue existingIssue = networkClient.getIssueByHash(decodeHash(issue.getHash()));
+            String protoHash = decodeHash(issue.getHash());
+            Issue existingIssue = networkClient.getIssueByHash(protoHash);
 			if (existingIssue != null) {
 				Issue newIssue = mergeIssues(existingIssue, issue);
-				assert newIssue.getHash().equals(issue.getHash()) : newIssue.getHash() + " vs " + issue.getHash();
-                networkClient.storeIssueDetails(decodeHash(issue.getHash()), newIssue);
-				BugInstance bugInstance = getBugByHash(decodeHash(issue.getHash()));
+                String newHash = decodeHash(newIssue.getHash());
+                assert newHash.equals(protoHash) : newHash + " vs " + protoHash;
+                networkClient.storeIssueDetails(protoHash, newIssue);
+				BugInstance bugInstance = getBugByHash(protoHash);
 				if (bugInstance != null) {
 					updateBugInstanceAndNotify(bugInstance);
 				}
@@ -564,7 +568,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 		allEvaluations.addAll(updatedIssue.getEvaluationsList());
 		removeAllButLatestEvaluationPerUser(allEvaluations);
 
-		return Issue.newBuilder(existingIssue)
+		return Issue.newBuilder(updatedIssue)
 				.clearEvaluations()
 				.addAllEvaluations(allEvaluations)
 				.build();

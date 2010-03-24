@@ -33,17 +33,12 @@ message SetBugLink {
 }
 
 message GetRecentEvaluations {
-	required int64 sessionId = 1;
+	optional int64 sessionId = 1;
 	required int64 timestamp = 2;
 }
 
 message RecentEvaluations {
 	repeated Issue issues = 1;
-}
-
-message GetEvaluations {
-	required int64 sessionId = 1;
-	repeated bytes hashes = 2;
 }
 
 enum BugLinkType {

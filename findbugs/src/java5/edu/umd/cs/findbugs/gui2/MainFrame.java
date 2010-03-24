@@ -3393,6 +3393,10 @@ public boolean showDocument(URL u) {
         }
 
         public void execute(Runnable command) {
+            if (SwingUtilities.isEventDispatchThread()) {
+                command.run();
+                return;
+            }
             try {
                 SwingUtilities.invokeAndWait(command);
             } catch (InterruptedException e) {

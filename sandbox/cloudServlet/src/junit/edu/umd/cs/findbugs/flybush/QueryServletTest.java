@@ -87,15 +87,8 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
         checkTerseIssue(result.getFoundIssues(1), eval2, eval3);
 	}
 
-    public void testGetRecentEvaluationsNoAuth() throws Exception {
-		executePost("/get-recent-evaluations", createRecentEvalsRequest(100).toByteArray());
-		checkResponse(403, "not authenticated");
-	}
-
     //TODO: updated bug links should be included in this list!
 	public void testGetRecentEvaluations() throws Exception {
-		createCloudSession(555);
-
 		DbIssue issue = createDbIssue("fad", persistenceHelper);
 		DbEvaluation eval1 = createEvaluation(issue, "someone1", 100);
 		DbEvaluation eval2 = createEvaluation(issue, "someone2", 200);
@@ -120,8 +113,6 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 	}
 
 	public void testGetRecentEvaluationsOnlyShowsLatestFromEachPerson() throws Exception {
-		createCloudSession(555);
-
 		DbIssue issue = createDbIssue("fad", persistenceHelper);
 		DbEvaluation eval1 = createEvaluation(issue, "first",  100);
 		DbEvaluation eval2 = createEvaluation(issue, "second", 200);
@@ -148,8 +139,6 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 	}
 
 	public void testGetRecentEvaluationsNoneFound() throws Exception {
-		createCloudSession(555);
-
 		DbIssue issue = createDbIssue("fad", persistenceHelper);
 		DbEvaluation eval1 = createEvaluation(issue, "someone", 100);
 		DbEvaluation eval2 = createEvaluation(issue, "someone", 200);
@@ -204,7 +193,6 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 
     private GetRecentEvaluations createRecentEvalsRequest(int timestamp) {
 		return GetRecentEvaluations.newBuilder()
-				.setSessionId(555)
 				.setTimestamp(timestamp)
 				.build();
 	}
