@@ -24,8 +24,6 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
     }
 
 	public void testFindIssuesOneFoundNoEvaluations() throws Exception {
-    	createCloudSession(555);
-
 		DbIssue foundIssue = createDbIssue("FAD1", persistenceHelper);
         getPersistenceManager().makePersistent(foundIssue);
 
@@ -37,8 +35,6 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
     }
 
     public void testFindIssuesWithEvaluations() throws Exception {
-    	createCloudSession(555);
-
 		DbIssue foundIssue = createDbIssue("fad2", persistenceHelper);
 		DbEvaluation eval = createEvaluation(foundIssue, "someone", 100);
 		foundIssue.addEvaluation(eval);
@@ -55,8 +51,6 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 	}
 
     public void testFindIssuesWithOldStyleEvaluation() throws Exception {
-    	createCloudSession(555);
-
 		DbIssue foundIssue = createDbIssue("fad2", persistenceHelper);
 		DbEvaluation eval = createEvaluation(foundIssue, "someone", 100);
         persistenceHelper.convertToOldStyleForTesting(eval);
@@ -74,8 +68,6 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 	}
 
     public void testFindIssuesOnlyShowsLatestEvaluationFromEachPerson() throws Exception {
-    	createCloudSession(555);
-
 		DbIssue foundIssue = createDbIssue("fad1", persistenceHelper);
 		DbEvaluation eval1 = createEvaluation(foundIssue, "first", 100);
 		DbEvaluation eval2 = createEvaluation(foundIssue, "second", 200);
@@ -175,7 +167,7 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 	// ========================= end of tests ================================
 
     private FindIssuesResponse findIssues(String... hashes) throws IOException {
-        FindIssues findIssues = createAuthenticatedFindIssues(hashes).build();
+        FindIssues findIssues = createUnauthenticatedFindIssues(hashes).build();
         executePost("/find-issues", findIssues.toByteArray());
         return FindIssuesResponse.parseFrom(outputCollector.toByteArray());
     }
@@ -206,15 +198,11 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
         assertFalse(protoIssue1.hasPrimaryClass());
     }
 
-	private FindIssues.Builder createAuthenticatedFindIssues(String... hashes) {
-		return createAuthenticatedFindIssues().addAllMyIssueHashes(encodeHashes(Arrays.asList(hashes)));
+	private FindIssues.Builder createUnauthenticatedFindIssues(String... hashes) {
+        return FindIssues.newBuilder().addAllMyIssueHashes(encodeHashes(Arrays.asList(hashes)));
 	}
 
-	private FindIssues.Builder createAuthenticatedFindIssues() {
-		return FindIssues.newBuilder().setSessionId(555);
-	}
-
-	private GetRecentEvaluations createRecentEvalsRequest(int timestamp) {
+    private GetRecentEvaluations createRecentEvalsRequest(int timestamp) {
 		return GetRecentEvaluations.newBuilder()
 				.setSessionId(555)
 				.setTimestamp(timestamp)

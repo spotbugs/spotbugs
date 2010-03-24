@@ -98,6 +98,9 @@ import java.util.Collections;
         return false;
     }
 
+    public void signIn() {
+    }
+
     public void signOut() {
     }
 

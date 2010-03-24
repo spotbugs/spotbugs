@@ -11,6 +11,7 @@ import java.util.List;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 
+@SuppressWarnings({"UnusedDeclaration"})
 public abstract class AuthServletTest extends AbstractFlybushServletTest {
     @Override
     protected AbstractFlybushServlet createServlet() {

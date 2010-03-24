@@ -197,6 +197,8 @@ public interface Cloud {
 
     boolean isSavingSignInInformationEnabled();
 
+    void signIn();
+
     void signOut();
 
 	/* Supports links to a bug database */ 
@@ -280,5 +282,5 @@ public interface Cloud {
 
     Collection<String> getProjects(String className);
 
-    enum SignedInState { SIGNING_IN, SIGNED_IN, SIGNIN_FAILED, SIGNED_OUT, NO_SIGNIN_REQUIRED }
+    enum SignedInState { SIGNING_IN, SIGNED_IN, SIGNIN_FAILED, SIGNED_OUT, NOT_SIGNED_IN_YET, NO_SIGNIN_REQUIRED }
 }

@@ -129,8 +129,7 @@ import java.util.logging.Level;
  * All the menus are set up, all the listeners, all the frames, dockable window functionality
  * There is no one style used, no one naming convention, its all just kinda here.  This is another one of those 
  * classes where no one knows quite why it works.
- */
-/**
+ * <p>
  * The MainFrame is just that, the main application window where just about everything happens.
  */
 public class MainFrame extends FBFrame implements LogSync, IGuiCallback
@@ -469,7 +468,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			plugin.addListener(userAnnotationListener);	
 		}
 		// Don't think we need to do this
-		//		setProjectAndBugCollectionInSwingThread(project, collection);
+        setProjectAndBugCollectionInSwingThread(project, collection);
     }
 
     public ExecutorService getBugUpdateExecutor() {
@@ -538,16 +537,18 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		
 	}
 	private void updateBugTree() {
-	    BugTreeModel model = (BugTreeModel) getTree().getModel();     
-	    BugSet bs = new BugSet(bugCollection);
-	    model.getOffListenerList();
-	    model.changeSet(bs);
-	    if (bs.size() == 0 && bs.sizeUnfiltered() > 0) {
-	    	warnUserOfFilters();
-	    }
-	    
-	    
-	    updateStatusBar();
+	    BugTreeModel model = (BugTreeModel) getTree().getModel();
+        if (bugCollection != null) {
+            BugSet bs = new BugSet(bugCollection);
+            model.getOffListenerList();
+            model.changeSet(bs);
+            if (bs.size() == 0 && bs.sizeUnfiltered() > 0) {
+                warnUserOfFilters();
+            }
+        }
+
+
+        updateStatusBar();
     }
 
 	void resetViewCache() {
@@ -2001,7 +2002,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
             @Override
             public void mouseClicked(MouseEvent e) {
                 JPopupMenu menu = new JPopupMenu();
-                boolean isSignedIn = bugCollection.getCloud().getSignedInState() == SignedInState.SIGNED_IN;
+                SignedInState signedInState = bugCollection.getCloud().getSignedInState();
+                boolean isSignedIn = signedInState == SignedInState.SIGNED_IN;
                 final JCheckBoxMenuItem signInAuto = new JCheckBoxMenuItem("Sign in automatically");
                 signInAuto.setToolTipText("Saves your Cloud session for the next time you run FindBugs. " +
                                           "No personal information or passwords are saved.");
@@ -2017,11 +2019,19 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
                     }
                 });
                 menu.add(signInAuto);
-                menu.add(new AbstractAction("Sign out") {
-                    public void actionPerformed(ActionEvent e) {
-                        bugCollection.getCloud().signOut();
-                    }
-                }).setEnabled(isSignedIn);
+                if (signedInState == SignedInState.SIGNED_OUT || signedInState == SignedInState.NOT_SIGNED_IN_YET || signedInState == SignedInState.SIGNIN_FAILED) {
+                    menu.add(new AbstractAction("Sign in") {
+                        public void actionPerformed(ActionEvent e) {
+                            bugCollection.getCloud().signIn();
+                        }
+                    });
+                } else {
+                    menu.add(new AbstractAction("Sign out") {
+                        public void actionPerformed(ActionEvent e) {
+                            bugCollection.getCloud().signOut();
+                        }
+                    }).setEnabled(isSignedIn);
+                }
                 menu.show(e.getComponent(), e.getX(), e.getY());
             }
         });
@@ -2083,6 +2093,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
                     showLoggedInStatus = true;
                 } else if (plugin.getSignedInState() == SignedInState.SIGNED_OUT) {
                     signedInLabel.setText("<html>FindBugs Cloud:<br> signed out");
+                    signedInLabel.setIcon(null);
+                    showLoggedInStatus = true;
+                } else if (plugin.getSignedInState() == SignedInState.NOT_SIGNED_IN_YET) {
+                    signedInLabel.setText("<html>FindBugs Cloud:<br> accessing anonymously");
                     signedInLabel.setIcon(null);
                     showLoggedInStatus = true;
                 }

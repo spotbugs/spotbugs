@@ -337,6 +337,9 @@ public class AbstractCloudTest extends TestCase {
             return false;
         }
 
+        public void signIn() {
+        }
+
         public void signOut() {
         }
 

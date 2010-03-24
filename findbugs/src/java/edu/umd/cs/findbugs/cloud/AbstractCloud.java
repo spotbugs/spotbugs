@@ -203,16 +203,18 @@ public abstract class AbstractCloud implements Cloud {
 				builder.append("\n\n");
 			}
 		}
-		for(BugDesignation d : getAllUserDesignations(b)) 
-			if (getUser().equals(d.getUser())|| canSeeCommentsByOthers ) {
-				builder.append(String.format("%s @ %s: %s%n", d.getUser(), format.format(new Date(d.getTimestamp())), 
-						i18n.getUserDesignation(d.getDesignationKey())));
-				String annotationText = d.getAnnotationText();
-				if (annotationText != null && annotationText.length() > 0) {
-					builder.append(annotationText);
-					builder.append("\n\n");
-				}
-			}
+        String me = getUser();
+        for(BugDesignation d : getAllUserDesignations(b)) {
+            if ((me != null && me.equals(d.getUser()))|| canSeeCommentsByOthers ) {
+                builder.append(String.format("%s @ %s: %s%n", d.getUser(), format.format(new Date(d.getTimestamp())),
+                        i18n.getUserDesignation(d.getDesignationKey())));
+                String annotationText = d.getAnnotationText();
+                if (annotationText != null && annotationText.length() > 0) {
+                    builder.append(annotationText);
+                    builder.append("\n\n");
+                }
+            }
+        }
 		return builder.toString();
 	}
 

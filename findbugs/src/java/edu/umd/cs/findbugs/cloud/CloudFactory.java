@@ -28,6 +28,8 @@ import edu.umd.cs.findbugs.SystemProperties;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -41,10 +43,10 @@ public class CloudFactory {
 	public static boolean DEBUG = SystemProperties.getBoolean("findbugs.cloud.debug",false);
 	
     private static final String DEFAULT_CLOUD_CLASS = "edu.umd.cs.findbugs.cloud.db.DBCloud";
+    private static final Logger LOGGER = Logger.getLogger(CloudFactory.class.getName());
 
-    
 
-	public static Cloud createCloudWithoutInitializing(BugCollection bc) {
+    public static Cloud createCloudWithoutInitializing(BugCollection bc) {
 		CloudPlugin plugin = defaultPlugin;
 		
 		try {
@@ -57,8 +59,8 @@ public class CloudFactory {
 		} catch (Exception e) {
 			if (DEBUG) {
 				bc.getProject().getGuiCallback().showMessageDialog("failed " + e.getMessage() + e.getClass().getName());
-				e.printStackTrace();
 			}
+            LOGGER.log(Level.WARNING, "Could not load cloud plugin " + plugin, e);
 			
 			assert true;
         }

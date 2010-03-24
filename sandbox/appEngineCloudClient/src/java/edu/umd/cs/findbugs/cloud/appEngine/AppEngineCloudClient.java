@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
+@SuppressWarnings({"ThrowableInstanceNeverThrown"})
 public class AppEngineCloudClient extends AbstractCloud {
 
     private static final Logger LOGGER = Logger.getLogger(AppEngineCloudClient.class.getName());
@@ -65,6 +66,8 @@ public class AppEngineCloudClient extends AbstractCloud {
     private JiraBugFiler jiraBugFiler;
     private Map<String,String> bugStatusCache = new ConcurrentHashMap<String, String>();
 
+    /** used via reflection */
+    @SuppressWarnings({"UnusedDeclaration"})
     public AppEngineCloudClient(CloudPlugin plugin, BugCollection bugs) {
 		this(plugin, bugs, null);
         setNetworkClient(new AppEngineCloudNetworkClient());
@@ -107,7 +110,6 @@ public class AppEngineCloudClient extends AbstractCloud {
 
             return false;
         }
-        setStatusMsg("Signing into FindBugs Cloud");
         if (!networkClient.initialize()) {
             signedInState = SignedInState.SIGNIN_FAILED;
 
@@ -115,8 +117,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             return false;
         }
 
-        signedInState = SignedInState.SIGNED_IN;
-
+        signedInState = SignedInState.NOT_SIGNED_IN_YET;
         if (timer != null)
 			timer.cancel();
 		timer = new Timer("App Engine Cloud evaluation updater", true);
@@ -129,6 +130,22 @@ public class AppEngineCloudClient extends AbstractCloud {
 		}, periodMillis, periodMillis);
 		return true;
 	}
+
+    public void signInIfNecessary() {
+        if (signedInState == SignedInState.NOT_SIGNED_IN_YET) {
+            signIn();
+
+        } else if (signedInState == SignedInState.SIGNING_IN) {
+            // huh?
+            throw new IllegalStateException("signing in");
+        } else if (signedInState == SignedInState.SIGNED_IN) {
+            // great!
+        } else {
+            getBugCollection().getProject().getGuiCallback().showMessageDialog(
+                    "You need to sign into the FindBugs cloud again first!");
+            throw new IllegalStateException();
+        }
+    }
 
     @Override
 	public void shutdown() {
@@ -184,6 +201,27 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     public boolean isSavingSignInInformationEnabled() {
         return AppEngineNameLookup.isSavingSessionInfoEnabled();
+    }
+
+    public void signIn() {
+        signedInState = SignedInState.SIGNING_IN;
+        setStatusMsg("Signing into FindBugs Cloud");
+        if (!networkClient.signIn(true)) {
+            signedInState = SignedInState.SIGNIN_FAILED;
+
+            setStatusMsg("");
+            throw new IllegalStateException();
+        }
+
+        try {
+            networkClient.logIntoCloudForce();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Could not log into cloud", e);
+            throw new IllegalStateException(e);
+        }
+
+        signedInState = SignedInState.SIGNED_IN;
+        setStatusMsg("");
     }
 
     public void signOut() {
@@ -368,12 +406,11 @@ public class AppEngineCloudClient extends AbstractCloud {
     private void actuallyCheckBugsAgainstCloud(ConcurrentMap<String, BugInstance> bugsByHash) throws IOException {
         int numBugs = bugsByHash.size();
         setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud...");
-        networkClient.logIntoCloud();
 
         List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
         networkClient.partitionHashes(new ArrayList<String>(bugsByHash.keySet()), tasks, bugsByHash);
 
-        executeAndWaitForAll(numBugs, tasks);
+        executeAndWaitForAll(tasks);
 
         Collection<BugInstance> newBugs = bugsByHash.values();
         if (!newBugs.isEmpty()) {
@@ -383,7 +420,7 @@ public class AppEngineCloudClient extends AbstractCloud {
         }
     }
 
-    private void executeAndWaitForAll(int numBugs, List<Callable<Object>> tasks) {
+    private void executeAndWaitForAll(List<Callable<Object>> tasks) {
        if (backgroundExecutorService != null && backgroundExecutorService.isShutdown())
     		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown in executeAndWaitForAll");
         try {
@@ -511,7 +548,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             public void run() {
                 List<Callable<Object>> callables = new ArrayList<Callable<Object>>();
                 networkClient.uploadNewBugs(newBugs, callables);
-                executeAndWaitForAll(newBugs.size(), callables);
+                executeAndWaitForAll(callables);
                 setStatusMsg("");
             }
         });

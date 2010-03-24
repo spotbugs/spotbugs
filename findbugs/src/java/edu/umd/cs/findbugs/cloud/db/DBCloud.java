@@ -1156,6 +1156,10 @@ public  class DBCloud extends AbstractCloud {
         return false;
     }
 
+    public void signIn() {
+        throw new UnsupportedOperationException();
+    }
+
     public void signOut() {
         throw new UnsupportedOperationException();
     }

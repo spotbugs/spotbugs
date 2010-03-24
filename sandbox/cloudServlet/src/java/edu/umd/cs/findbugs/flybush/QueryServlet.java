@@ -45,9 +45,9 @@ public class QueryServlet extends AbstractFlybushServlet {
     private void findIssues(HttpServletRequest req, HttpServletResponse resp,
 			PersistenceManager pm) throws IOException {
 		FindIssues loginMsg = FindIssues.parseFrom(req.getInputStream());
-        long sessionId = loginMsg.getSessionId();
-        if (isAuthenticated(resp, pm, sessionId))
-            return;
+//        long sessionId = loginMsg.getSessionId();
+//        if (isAuthenticated(resp, pm, sessionId))
+//            return;
 
         List<String> hashes = AppEngineProtoUtil.decodeHashes(loginMsg.getMyIssueHashesList());
         Map<String, DbIssue> issues = persistenceHelper.findIssues(pm, hashes);

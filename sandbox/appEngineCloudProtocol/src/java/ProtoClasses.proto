@@ -6,7 +6,7 @@ message LogIn {
 }
 
 message FindIssues {
-    required int64 sessionId = 1;
+    optional int64 sessionId = 1;
     repeated bytes myIssueHashes = 4;
 }
 

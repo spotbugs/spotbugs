@@ -44,28 +44,34 @@ public class AppEngineCloudNetworkClient {
     /** For debugging */
     private static final boolean FORCE_UPLOAD_ALL_ISSUES = false;
     private static final int BUG_UPLOAD_PARTITION_SIZE = 10;
-    /* big enough to keep total time down AND individual request time down for Google's sake */
+    /** Big enough to keep total find-issues time down AND also keep individual request time down (for Google's sake) */
     private static final int HASH_CHECK_PARTITION_SIZE = 60;
 
     private AppEngineCloudClient cloudClient;
+    private AppEngineNameLookup lookerupper;
     private ConcurrentMap<String, Issue> issuesByHash = new ConcurrentHashMap<String, Issue>();
     private String host;
     private Long sessionId;
     private String username;
     private volatile long mostRecentEvaluationMillis = 0;
 
-    public AppEngineCloudNetworkClient() {
-    }
-
     public void setCloudClient(AppEngineCloudClient appEngineCloudClient) {
         this.cloudClient = appEngineCloudClient;
     }
 
     public boolean initialize() {
-        AppEngineNameLookup lookerupper = new AppEngineNameLookup();
-        if (!lookerupper.initialize(cloudClient.getPlugin(), cloudClient.getBugCollection())) {
-            return false;
-        }
+        lookerupper = new AppEngineNameLookup();
+        lookerupper.initializeHostname(cloudClient.getPlugin());
+        this.host = lookerupper.getHost();
+
+        return true;
+    }
+
+    public boolean signIn(boolean force) {
+        if (!force && sessionId != null)
+            throw new IllegalStateException("already signed in");
+        if (!lookerupper.initialize(cloudClient.getPlugin(), cloudClient.getBugCollection()))
+            throw new IllegalStateException();
         this.sessionId = lookerupper.getSessionId();
         this.username = lookerupper.getUsername();
         this.host = lookerupper.getHost();
@@ -77,6 +83,8 @@ public class AppEngineCloudNetworkClient {
     }
 
     public void setBugLinkOnCloud(BugInstance b, ProtoClasses.BugLinkType type, String bugLink) throws IOException {
+        cloudClient.signInIfNecessary();
+
         HttpURLConnection conn = openConnection("/set-bug-link");
         conn.setDoOutput(true);
         try {
@@ -102,6 +110,7 @@ public class AppEngineCloudNetworkClient {
 
     public void setBugLinkOnCloudAndStoreIssueDetails(BugInstance b, String viewUrl, ProtoClasses.BugLinkType linkType) 
             throws IOException {
+        cloudClient.signInIfNecessary();
         setBugLinkOnCloud(b, linkType, viewUrl);
 
         String hash = b.getInstanceHash();
@@ -112,7 +121,13 @@ public class AppEngineCloudNetworkClient {
                                   .build());
     }
 
-    public void logIntoCloud() throws IOException {
+    public void logIntoCloudIfNecessary() throws IOException {
+        if (sessionId != null)
+            return;
+        logIntoCloudForce();
+    }
+
+    public void logIntoCloudForce() throws IOException {
         HttpURLConnection conn = openConnection("/log-in");
         conn.setDoOutput(true);
         conn.connect();
@@ -183,6 +198,7 @@ public class AppEngineCloudNetworkClient {
     }
 
     public void uploadNewBugs(final List<BugInstance> newBugs, List<Callable<Object>> callables) {
+        cloudClient.signInIfNecessary();
         final AtomicInteger bugsUploaded = new AtomicInteger(0);
         final int bugCount = newBugs.size();
         for (int i = 0; i < bugCount; i += BUG_UPLOAD_PARTITION_SIZE) {
@@ -218,9 +234,11 @@ public class AppEngineCloudNetworkClient {
     private FindIssuesResponse submitHashes(List<String> bugsByHash)
             throws IOException {
         LOGGER.info("Checking " + bugsByHash.size() + " bugs against App Engine Cloud");
-        FindIssues hashList = FindIssues.newBuilder()
-                .setSessionId(sessionId)
-                .addAllMyIssueHashes(AppEngineProtoUtil.encodeHashes(bugsByHash))
+        FindIssues.Builder msgb = FindIssues.newBuilder();
+        if (sessionId != null) {
+            msgb.setSessionId(sessionId);
+        }
+        FindIssues hashList = msgb.addAllMyIssueHashes(AppEngineProtoUtil.encodeHashes(bugsByHash))
                 .build();
 
         long start = System.currentTimeMillis();
@@ -254,6 +272,7 @@ public class AppEngineCloudNetworkClient {
 
     private void uploadNewBugsPartition(final Collection<BugInstance> bugsToSend)
             throws IOException {
+
         LOGGER.info("Uploading " + bugsToSend.size() + " bugs to App Engine Cloud");
         UploadIssues uploadIssues = buildUploadIssuesCommandInUIThread(bugsToSend);
         if (uploadIssues == null)
@@ -393,6 +412,7 @@ public class AppEngineCloudNetworkClient {
 
     @SuppressWarnings({"deprecation"})
     public void storeUserAnnotation(BugInstance bugInstance) {
+        cloudClient.signInIfNecessary();
         BugDesignation designation = bugInstance.getNonnullUserDesignation();
         Evaluation.Builder evalBuilder = Evaluation.newBuilder()
                 .setWhen(designation.getTimestamp())

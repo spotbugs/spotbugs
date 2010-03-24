@@ -58,11 +58,7 @@ public class AppEngineNameLookup implements NameLookup {
 
     public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) {
 		try {
-			PropertyBundle pluginProps = plugin.getProperties();
-			if (Boolean.getBoolean(SYSPROP_APPENGINE_LOCAL) || pluginProps.getBoolean(LOCAL_APPENGINE))
-				host = pluginProps.getProperty(APPENGINE_LOCALHOST_PROPERTY_NAME, APPENGINE_LOCALHOST_DEFAULT);
-			else 
-				host = pluginProps.getProperty(APPENGINE_HOST_PROPERTY_NAME);
+            initializeHostname(plugin);
 			
 			// check the previously used session ID 
 			long id = loadOrCreateSessionId();
@@ -88,6 +84,14 @@ public class AppEngineNameLookup implements NameLookup {
 			throw new IllegalStateException(e);
 		}
 	}
+
+    public void initializeHostname(CloudPlugin plugin) {
+        PropertyBundle pluginProps = plugin.getProperties();
+        if (Boolean.getBoolean(SYSPROP_APPENGINE_LOCAL) || pluginProps.getBoolean(LOCAL_APPENGINE))
+            host = pluginProps.getProperty(APPENGINE_LOCALHOST_PROPERTY_NAME, APPENGINE_LOCALHOST_DEFAULT);
+        else
+            host = pluginProps.getProperty(APPENGINE_HOST_PROPERTY_NAME);
+    }
 
     public static void setSaveSessionInformation(boolean save) {
         Preferences prefs = Preferences.userNodeForPackage(AppEngineNameLookup.class);

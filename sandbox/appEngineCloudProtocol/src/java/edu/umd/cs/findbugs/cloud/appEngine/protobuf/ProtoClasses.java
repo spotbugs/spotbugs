@@ -427,7 +427,7 @@ public final class ProtoClasses {
       return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_FindIssues_fieldAccessorTable;
     }
     
-    // required int64 sessionId = 1;
+    // optional int64 sessionId = 1;
     public static final int SESSIONID_FIELD_NUMBER = 1;
     private boolean hasSessionId;
     private long sessionId_ = 0L;
@@ -449,7 +449,6 @@ public final class ProtoClasses {
     private void initFields() {
     }
     public final boolean isInitialized() {
-      if (!hasSessionId) return false;
       return true;
     }
     
@@ -693,7 +692,7 @@ public final class ProtoClasses {
       }
       
       
-      // required int64 sessionId = 1;
+      // optional int64 sessionId = 1;
       public boolean hasSessionId() {
         return result.hasSessionId();
       }
@@ -4438,7 +4437,7 @@ public final class ProtoClasses {
       "\n\022ProtoClasses.proto\022,edu.umd.cs.findbug" +
       "s.cloud.appEngine.protobuf\"5\n\005LogIn\022\021\n\ts" +
       "essionId\030\001 \002(\003\022\031\n\021analysisTimestamp\030\003 \002(" +
-      "\003\"6\n\nFindIssues\022\021\n\tsessionId\030\001 \002(\003\022\025\n\rmy" +
+      "\003\"6\n\nFindIssues\022\021\n\tsessionId\030\001 \001(\003\022\025\n\rmy" +
       "IssueHashes\030\004 \003(\014\"^\n\022FindIssuesResponse\022" +
       "H\n\013foundIssues\030\001 \003(\01323.edu.umd.cs.findbu" +
       "gs.cloud.appEngine.protobuf.Issue\"i\n\014Upl" +
