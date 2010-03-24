@@ -19,10 +19,9 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -45,7 +44,7 @@ public class BugRenderer extends DefaultTreeCellRenderer
 		else
 		{
 			BugInstance bug=((BugLeafNode) node).getBug();
-			Color c;
+			final Color c;
 			switch (bug.getPriority())
 			{
 				case Detector.LOW_PRIORITY:
@@ -55,7 +54,7 @@ public class BugRenderer extends DefaultTreeCellRenderer
 					if (bug.isDead())
 						c = new Color(0.2f, 0.2f, 0.2f);
 					else 
-						c=Color.black;
+						c= new Color(255, 204, 0);
 					break;
 				case Detector.HIGH_PRIORITY:
 					if (bug.isDead())
@@ -69,8 +68,27 @@ public class BugRenderer extends DefaultTreeCellRenderer
 					c=Color.blue;
 					break;
 			}
-			if (leaf)
-				toReturn.setForeground(c);
+			if (leaf) {
+                Icon icon = new Icon() {
+                    public void paintIcon(Component comp, Graphics g, int x, int y) {
+                        Graphics2D g2 = (Graphics2D) g;
+                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        g2.setColor(c);
+                        g2.fillOval(2, 2, 12, 12);
+                        g2.setColor(Color.BLACK);
+                        g2.drawOval(2, 2, 12, 12);
+                    }
+
+                    public int getIconWidth() {
+                        return 16;
+                    }
+
+                    public int getIconHeight() {
+                        return 16;
+                    }
+                };
+                ((BugRenderer)toReturn).setLeafIcon(icon);
+            }
 			return toReturn;
 		}
 	}

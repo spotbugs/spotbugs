@@ -314,7 +314,7 @@ public class ViewFilter {
 			String [] parts = value.split("[ ,:]+");
 			for(String p : parts)
 				if (!legalClassSearchString.matcher(p).matches())
-					throw new IllegalArgumentException("Class search string isn't a legal classname substring: " + p);
+					throw new IllegalArgumentException("Classname filter must be legal Java identifier: " + p);
 			
 			classSearchStrings = parts;
 		}

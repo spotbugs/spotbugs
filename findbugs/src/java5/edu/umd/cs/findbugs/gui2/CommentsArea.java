@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
+import javax.print.attribute.PrintRequestAttributeSet;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -37,6 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.TreePath;
@@ -131,7 +133,7 @@ public class CommentsArea {
 		userCommentsText.setEnabled(false);
 		userCommentsText.setBackground(userCommentsTextUnenabledColor);
 		JScrollPane commentsScrollP = new JScrollPane(userCommentsText);
-		
+
 		reportText.setLineWrap(true);
 		reportText
 				.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.report", "Information about the bug here"));
@@ -229,18 +231,16 @@ public class CommentsArea {
 		// comments.add(designationComboBox);
 		// comments.add(whoWhen);
 		
+        JPanel myStuffPanel = new JPanel(new GridBagLayout());
+        myStuffPanel.setBorder(new TitledBorder("My Evaluation"));
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
-		c.fill=GridBagConstraints.HORIZONTAL;
-		c.weightx = 0;
-		centerPanel.add(new JLabel("Classify:"), c);
-		
-		c.gridx++;
+
 		c.fill=GridBagConstraints.HORIZONTAL;
 		c.weightx = 1;
 		
-		centerPanel.add(designationComboBox, c);
+		myStuffPanel.add(designationComboBox, c);
 		
 		
 		c.gridx = 0;
@@ -249,7 +249,9 @@ public class CommentsArea {
 		c.weighty = 2;
 		c.gridwidth = 2;
 		c.fill=GridBagConstraints.BOTH;
-		centerPanel.add(commentsScrollP, c);
+		myStuffPanel.add(commentsScrollP, c);
+
+        centerPanel.add(myStuffPanel, c);
 		
 		if (cloud != null && cloud.supportsCloudReports()) {
 			c.gridy++;
@@ -264,7 +266,8 @@ public class CommentsArea {
 			c.gridy++;
 			c.weightx = 0;
 			c.weighty = 0;
-			c.fill = GridBagConstraints.HORIZONTAL;
+			c.fill = GridBagConstraints.NONE;
+            c.anchor = GridBagConstraints.EAST;
 			centerPanel.add(fileBug, c);
 		}
 		

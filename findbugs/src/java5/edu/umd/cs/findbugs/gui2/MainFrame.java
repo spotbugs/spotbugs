@@ -56,6 +56,8 @@ import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeExpansionEvent;
@@ -65,6 +67,8 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -1704,6 +1708,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
     JPanel bugListPanel()
     {
     	tableheader = new JTableHeader();
+        tableheader.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
     	//Listener put here for when user double clicks on sorting
     	//column header SorterDialog appears.
     	tableheader.addMouseListener(new MouseAdapter(){
@@ -1768,19 +1773,50 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
     	//End of new code.
     	//Changed code.
     	textFieldForPackagesToDisplay = new JTextField();
-    	textFieldForPackagesToDisplay.addActionListener(new ActionListener(){
+        ActionListener filterAction = new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    viewFilter.setPackagesToDisplay(textFieldForPackagesToDisplay.getText());
+                    resetViewCache();
+                } catch (IllegalArgumentException err) {
+                    JOptionPane.showMessageDialog(MainFrame.this, err.getMessage(), "Bad class search string", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+        textFieldForPackagesToDisplay.addActionListener(filterAction);
+        JButton filterButton = new JButton("Filter");
+        filterButton.addActionListener(filterAction);
+        JPanel filterPanel = new JPanel();
+        filterPanel.setLayout(new GridBagLayout());
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridy = 1;
+        filterPanel.add(textFieldForPackagesToDisplay, gbc);
+
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        filterPanel.add(filterButton, gbc);
     
-    		public void actionPerformed(ActionEvent e) {
-    			try {
-    				viewFilter.setPackagesToDisplay(textFieldForPackagesToDisplay.getText());
-    				resetViewCache();
-    			} catch (IllegalArgumentException err) {
-    				JOptionPane.showMessageDialog(MainFrame.this, err.getMessage(), "Bad class search string", JOptionPane.ERROR_MESSAGE);
-    			}
-            }});
-    
-    	textFieldForPackagesToDisplay.setToolTipText("Provide a comma separated list of class search strings to restrict the view to classes containing those substrings");
-    	JPanel topPanel = makeNavigationPanel("Class search strings:", textFieldForPackagesToDisplay, tableheader, treePanel);
+    	filterPanel.setToolTipText("Only show classes containing the word(s) you specify");
+
+        JPanel sortablePanel = new JPanel(new GridBagLayout());
+        JLabel sortableLabel = new JLabel("Group bugs by:");
+        sortableLabel.setLabelFor(tableheader);
+        gbc = new GridBagConstraints();
+        gbc.weightx = 0;
+        gbc.gridy = 1;
+        gbc.insets = new Insets(3,3,3,3);
+        gbc.fill = GridBagConstraints.BOTH;
+        sortablePanel.add(sortableLabel, gbc);
+        gbc.weightx = 1;
+        sortablePanel.add(tableheader, gbc);
+
+        tableheader.setBorder(new LineBorder(Color.BLACK));
+
+    	JPanel topPanel = makeNavigationPanel("Class name filter:", filterPanel, sortablePanel, treePanel);
     	cardPanel = new JPanel(new CardLayout());
     	waitPanel = new JPanel();
     	waitPanel.setLayout(new BoxLayout(waitPanel, BoxLayout.Y_AXIS));
@@ -1952,7 +1988,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	 void clearSourcePane(){
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
-				setSourceTab("Source", null);				
+				setSourceTab("", null);				
 				sourceCodeTextPane.setDocument(SourceCodeDisplay.SOURCE_NOT_RELEVANT);
 			}
 		});	
@@ -2237,11 +2273,20 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		JSplitPane splitP = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, 
 				summaryScrollPane, summaryHtmlScrollPane);
 		splitP.setDividerLocation(GUISaveState.getInstance().getSplitSummary());
-		splitP.setOneTouchExpandable(true);
-		return splitP;
-	}
+        splitP.setOneTouchExpandable(true);
+        splitP.setUI(new BasicSplitPaneUI() {
+            public BasicSplitPaneDivider createDefaultDivider() {
+                return new BasicSplitPaneDivider(this) {
+                    public void setBorder(Border b) {
+                    }
+                };
+            }
+        });
+        splitP.setBorder(null);
+        return splitP;
+    }
 
-	/**
+    /**
 	 * Creates bug summary component. If obj is a string will create a JLabel
 	 * with that string as it's text and return it. If obj is an annotation
 	 * will return a JLabel with the annotation's toString(). If that

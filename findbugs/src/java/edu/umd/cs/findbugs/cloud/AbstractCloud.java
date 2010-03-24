@@ -188,6 +188,7 @@ public abstract class AbstractCloud implements Cloud {
 		StringBuilder builder = new StringBuilder();
 		long firstSeen = getFirstSeen(b);
 		builder.append(String.format("First seen %s%n", format.format(new Date(firstSeen))));
+        builder.append("\n");
 		
 		
 		I18N i18n = I18N.instance();
