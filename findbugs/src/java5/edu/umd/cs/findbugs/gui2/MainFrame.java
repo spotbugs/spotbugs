@@ -551,8 +551,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
             }
         }
 
-
         updateStatusBar();
+        changeTitle();
     }
 
 	void resetViewCache() {
@@ -584,12 +584,17 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	 *
 	 */	
 	public void changeTitle(){
-		String name = getProject().getProjectName();
+		Project project = getProject();
+		String name = project == null ? null : project.getProjectName();
 		if(name == null && saveFile != null)
 			name = saveFile.getAbsolutePath();
 		if(name == null)
 			name = Project.UNNAMED_PROJECT;
-		MainFrame.this.setTitle(TITLE_START_TXT + name);
+		String oldTitle = MainFrame.this.getTitle();
+		String newTitle = TITLE_START_TXT + name;
+		if (oldTitle.equals(newTitle))
+			return;
+		MainFrame.this.setTitle(newTitle);
 	}
 
 	/**
@@ -3005,7 +3010,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				project.setGuiCallback(MainFrame.this);
 				project.setCurrentWorkingDirectory(file.getParentFile());
 				BugLoader.loadBugs(MainFrame.this, project, file);
-
+				project.getSourceFinder(); // force source finder to be initialized
 				updateBugTree();
 			}
 		};
@@ -3022,9 +3027,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			public void run() {
 				Project project = new Project();
 				project.setGuiCallback(MainFrame.this);
-				SortedBugCollection bc = BugLoader.loadBugs(MainFrame.this, project, url);
+				BugLoader.loadBugs(MainFrame.this, project, url);
 				project.getSourceFinder(); // force source finder to be initialized
-				setProjectAndBugCollectionInSwingThread(project, bc);
+				updateBugTree();
 			}
 		};
 		if (EventQueue.isDispatchThread())
