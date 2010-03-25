@@ -137,7 +137,16 @@ public class AuthServlet extends AbstractFlybushServlet {
 		tx.begin();
 		try {
 			invocation = pm.makePersistent(invocation);
-			session.setInvocation(invocation);
+			tx.commit();
+		} finally {
+			if (tx.isActive()) {
+				tx.rollback();
+			}
+		}
+        session.setInvocation(invocation);
+        tx = pm.currentTransaction();
+		tx.begin();
+		try {
 			pm.makePersistent(session);
 			tx.commit();
 		} finally {
