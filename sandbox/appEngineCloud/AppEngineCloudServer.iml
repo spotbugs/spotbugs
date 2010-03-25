@@ -32,7 +32,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/junit" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/war/WEB-INF/classes" />
-      <excludeFolder url="file://$MODULE_DIR$/web_exploded/WEB-INF/classes" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="jdk" jdkName="J2SE-1.5" jdkType="JavaSDK" />
@@ -41,7 +40,7 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/appengine-testing.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/junit.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -51,6 +50,15 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/mockito-all-1.8.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/appengine-testing.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -173,7 +181,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
+    <orderEntry type="module-library" scope="PROVIDED">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/appengine-local-runtime.jar!/" />
