@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.SystemProperties;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,7 +70,7 @@ public class CloudFactory {
         return getPlainCloud(bc);
 	}
 	
-	public static void initializeCloud(BugCollection bc, Cloud cloud) {
+	public static void initializeCloud(BugCollection bc, Cloud cloud) throws IOException {
         IGuiCallback callback = bc.getProject().getGuiCallback();
 
         if (cloud.availableForInitialization()) {
@@ -89,7 +90,7 @@ public class CloudFactory {
 
 
     public static Cloud getPlainCloud(BugCollection bc) {
-	    Cloud cloud = new BugCollectionStorageCloud(bc);
+	    BugCollectionStorageCloud cloud = new BugCollectionStorageCloud(bc);
         if (cloud.initialize())
         	return cloud;
         throw new IllegalStateException("Unable to initialize plain cloud");

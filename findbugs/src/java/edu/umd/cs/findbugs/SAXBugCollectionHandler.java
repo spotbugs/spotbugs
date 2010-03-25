@@ -22,8 +22,12 @@ package edu.umd.cs.findbugs;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.cloud.NotSignedInException;
+import org.apache.tools.ant.Task;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -59,8 +63,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	private static final String FIND_BUGS_FILTER = "FindBugsFilter";
 	private static final String PROJECT = "Project";
 	private static final String BUG_COLLECTION = "BugCollection";
+    private static final Logger LOGGER = Logger.getLogger(SAXBugCollectionHandler.class.getName());
 
-	/**
+    /**
      * @param attributes
      * @param qName
      * @return
@@ -150,7 +155,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				// Read and set the sequence number.
 				String version = getOptionalAttribute(attributes, "version");
 				if (bugCollection instanceof SortedBugCollection)
-					((SortedBugCollection)bugCollection).setAnalysisVersion(version);
+					bugCollection.setAnalysisVersion(version);
 
 				// Read and set the sequence number.
 				String sequence = getOptionalAttribute(attributes, "sequence");
@@ -477,8 +482,14 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    } else if (qName.equals("UserAnnotation")) {
 	    	// ignore AnnotationText for now; will handle in endElement
 	    	String s = getOptionalAttribute(attributes, "designation"); // optional
-	    	if (s != null) bugInstance.setUserDesignationKey(s, null);
-	    	s = getOptionalAttribute(attributes, "user"); // optional
+	    	if (s != null) {
+                try {
+                    bugInstance.setUserDesignationKey(s, null);
+                } catch (NotSignedInException e) {
+                    LOGGER.log(Level.WARNING, "Could not store user designation for bug", e);
+                }
+            }
+            s = getOptionalAttribute(attributes, "user"); // optional
 	    	if (s != null) bugInstance.setUser(s);
 	    	s = getOptionalAttribute(attributes, "timestamp"); // optional
 	    	if (s != null) try {
@@ -553,10 +564,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			int sb = startBytecode != null ? Integer.parseInt(startBytecode) : -1;
 			int eb = endBytecode != null ? Integer.parseInt(endBytecode) : -1;
 
-			SourceLineAnnotation annotation =
-				new SourceLineAnnotation(classname, sourceFile, sl, el, sb, eb);
-
-			return annotation;
+            return new SourceLineAnnotation(classname, sourceFile, sl, el, sb, eb);
 		} catch (NumberFormatException e) {
 			throw new SAXException("Bad integer value in SourceLine element", e);
 		}
@@ -595,8 +603,12 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					project.addAuxClasspathEntry(getTextContents());
 			} else if (outerElement.equals("BugInstance")) {
 				if (qName.equals("UserAnnotation")) {
-					bugInstance.setAnnotationText(getTextContents(), null);
-				}
+                    try {
+                        bugInstance.setAnnotationText(getTextContents(), null);
+                    } catch (NotSignedInException e) {
+                        LOGGER.log(Level.WARNING, "Could not set annotation text", e);
+                    }
+                }
 			} else if (outerElement.equals(BugCollection.ERRORS_ELEMENT_NAME)) {
 				if (qName.equals(BugCollection.ANALYSIS_ERROR_ELEMENT_NAME)) {
 					analysisError.setMessage(getTextContents());

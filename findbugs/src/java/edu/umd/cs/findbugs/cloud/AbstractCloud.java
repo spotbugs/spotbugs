@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Multiset;
 
 import javax.annotation.CheckForNull;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -93,7 +94,7 @@ public abstract class AbstractCloud implements Cloud {
 		this.properties = plugin.getProperties();
 	}
 
-    public boolean initialize() {
+    public boolean initialize() throws IOException {
         String modeString = getCloudProperty("votingmode");
         Mode newMode = DEFAULT_VOTING_MODE;
         if (modeString != null) {
@@ -475,7 +476,7 @@ public abstract class AbstractCloud implements Cloud {
 		return null;
 	}
     
-    protected NameLookup getUsernameLookup() {
+    protected NameLookup getUsernameLookup() throws IOException {
     	NameLookup lookup;
         try {
 	        lookup = plugin.getUsernameClass().newInstance();

@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
+import edu.umd.cs.findbugs.cloud.NotSignedInException;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 import javax.print.attribute.PrintRequestAttributeSet;
@@ -49,6 +50,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -396,8 +398,12 @@ public class CommentsArea {
 		// may talk to server - should run in background
 		backgroundExecutor.execute(new Runnable() {
 	        public void run() {
-		        bug.setAnnotationText(comments, MainFrame.getInstance().bugCollection);
-		        setProjectChanged(true);
+                try {
+                    bug.setAnnotationText(comments, MainFrame.getInstance().bugCollection);
+                } catch (NotSignedInException e) {
+                    return;
+                }
+                setProjectChanged(true);
 		        changed = false;
 		        addToPrevComments(comments);
 	        }
@@ -658,8 +664,12 @@ public class CommentsArea {
 			return false;
 		backgroundExecutor.execute(new Runnable() {
 	        public void run() {
-		        bug.setUserDesignationKey(selection, MainFrame.getInstance().bugCollection);
-	        }
+                try {
+                    bug.setUserDesignationKey(selection, MainFrame.getInstance().bugCollection);
+                } catch (NotSignedInException e) {
+                    return;
+                }
+            }
         });
 		return true;
 	}
@@ -764,18 +774,24 @@ public class CommentsArea {
 		if (!getSorter().getOrder().contains(Sortables.DESIGNATION)) {
 			// designation not sorted on at all
 
-			theNode.getBug().setUserDesignationKey(
-					selection,  MainFrame.getInstance().bugCollection);
+            try {
+                theNode.getBug().setUserDesignationKey(
+                        selection,  MainFrame.getInstance().bugCollection);
+            } catch (NotSignedInException e) {
+            }
 
-		} else if (getSorter().getOrderBeforeDivider().contains(
+        } else if (getSorter().getOrderBeforeDivider().contains(
 				Sortables.DESIGNATION)) {
 
 			BugTreeModel model = getModel();
 			TreePath path = model.getPathToBug(theNode.getBug());
 			if (path == null) {
-				theNode.getBug().setUserDesignationKey(
-						selection,  MainFrame.getInstance().bugCollection);
-				return;
+                try {
+                    theNode.getBug().setUserDesignationKey(
+                            selection,  MainFrame.getInstance().bugCollection);
+                } catch (NotSignedInException e) {
+                }
+                return;
 			}
 			Object[] objPath = path.getParentPath().getPath();
 			ArrayList<Object> reconstruct = new ArrayList<Object>();
@@ -793,9 +809,12 @@ public class CommentsArea {
 				listOfNodesToReconstruct.add(pathToNode);
 			}
 
-			theNode.getBug().setUserDesignationKey(
-					selection,  MainFrame.getInstance().bugCollection);
-			model.bugTreeFilterListener.suppressBug(path);
+            try {
+                theNode.getBug().setUserDesignationKey(
+                        selection,  MainFrame.getInstance().bugCollection);
+            } catch (NotSignedInException e) {
+            }
+            model.bugTreeFilterListener.suppressBug(path);
 			TreePath unsuppressPath = model.getPathToBug(theNode.getBug());
 			if (unsuppressPath != null)// If choosing their designation has not
 										// moved the bug under any filters
@@ -810,9 +829,12 @@ public class CommentsArea {
 		} else if (getSorter().getOrderAfterDivider().contains(
 				Sortables.DESIGNATION)) {
 
-			theNode.getBug().setUserDesignationKey(
-					selection,  MainFrame.getInstance().bugCollection);
-			BugTreeModel model = getModel();
+            try {
+                theNode.getBug().setUserDesignationKey(
+                        selection,  MainFrame.getInstance().bugCollection);
+            } catch (NotSignedInException e) {
+            }
+            BugTreeModel model = getModel();
 			TreePath path = model.getPathToBug(theNode.getBug());
 			if (path != null)
 				model.sortBranch(path.getParentPath());

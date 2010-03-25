@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutorService;
 public interface IGuiCallback {
 	void showMessageDialog(String message);
 	int showConfirmDialog(String message, String title, int optionType);
+    int showConfirmDialogAndwait(String message, String title, int optionType, String ok, String cancel);
 	String showQuestionDialog(String message, String title, String defaultValue);
     
     List<String> showForm(String message, String title, List<FormItem> labels);

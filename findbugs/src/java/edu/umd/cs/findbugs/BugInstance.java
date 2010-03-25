@@ -37,6 +37,7 @@ import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
 
+import edu.umd.cs.findbugs.cloud.NotSignedInException;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -567,8 +568,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @param key
 	 * @param bugCollection TODO
 	 */
-	public void setUserDesignationKey(String key, @CheckForNull BugCollection bugCollection) {
-		BugDesignation userDesignation = getNonnullUserDesignation();
+	public void setUserDesignationKey(String key, @CheckForNull BugCollection bugCollection) throws NotSignedInException {
+
+        BugDesignation userDesignation = getNonnullUserDesignation();
 		if (userDesignation.getDesignationKey().equals(key))
 			return;
 		userDesignation.setDesignationKey(key);
@@ -581,7 +583,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @param index
 	 * @param bugCollection TODO
 	 */
-	public void setUserDesignationKeyIndex(int index, @CheckForNull BugCollection bugCollection) {
+	public void setUserDesignationKeyIndex(int index, @CheckForNull BugCollection bugCollection) throws NotSignedInException {
 		setUserDesignationKey(
 				I18N.instance().getUserDesignationKey(index), bugCollection);
 		}
@@ -592,7 +594,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @param annotationText the user annotation text
 	 * @param bugCollection TODO
 	 */
-	public void setAnnotationText(String annotationText, @CheckForNull BugCollection bugCollection) {
+	public void setAnnotationText(String annotationText, @CheckForNull BugCollection bugCollection) throws NotSignedInException {
 		final BugDesignation u = getNonnullUserDesignation();
 		String existingText = u.getAnnotationText();
 		if (existingText != null && existingText.equals(annotationText))

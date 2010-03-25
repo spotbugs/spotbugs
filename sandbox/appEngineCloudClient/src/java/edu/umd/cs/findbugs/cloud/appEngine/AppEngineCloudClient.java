@@ -44,12 +44,16 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.NotSignedInException;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+
+import javax.swing.*;
 
 @SuppressWarnings({"ThrowableInstanceNeverThrown"})
 public class AppEngineCloudClient extends AbstractCloud {
@@ -105,20 +109,28 @@ public class AppEngineCloudClient extends AbstractCloud {
 		return true;
 	}
 
-	public boolean initialize() {
+	public boolean initialize() throws IOException {
         if (!super.initialize()) {
             signedInState = SignedInState.SIGNIN_FAILED;
 
             return false;
         }
-        if (!networkClient.initialize()) {
-            signedInState = SignedInState.SIGNIN_FAILED;
+        try {
+            if (networkClient.initialize()) {
 
-            setStatusMsg("");
+                networkClient.logIntoCloudForce();
+                signedInState = SignedInState.SIGNED_IN;
+                setStatusMsg("");
+
+            } else {
+                // soft init didn't work
+                signedInState = SignedInState.NOT_SIGNED_IN_YET;
+            }
+        } catch (IOException e) {
+            signedInState = SignedInState.SIGNIN_FAILED;
             return false;
         }
 
-        signedInState = SignedInState.NOT_SIGNED_IN_YET;
         if (timer != null)
 			timer.cancel();
 		timer = new Timer("App Engine Cloud evaluation updater", true);
@@ -132,19 +144,29 @@ public class AppEngineCloudClient extends AbstractCloud {
 		return true;
 	}
 
-    public void signInIfNecessary() {
-        if (signedInState == SignedInState.NOT_SIGNED_IN_YET) {
-            signIn();
+    public void signInIfNecessary(String reason) throws NotSignedInException {
+        if (signedInState == SignedInState.NOT_SIGNED_IN_YET
+            || signedInState == SignedInState.SIGNIN_FAILED
+            || signedInState == SignedInState.SIGNED_OUT) {
+
+            IGuiCallback callback = getGuiCallback();
+            int result = callback.showConfirmDialogAndwait(reason, "FindBugs Cloud", JOptionPane.OK_CANCEL_OPTION,
+                                                           "Sign in", "Cancel");
+            if (result == 0)
+                try {
+                    signIn();
+                } catch (IOException e) {
+                    setStatusMsg("Could not sign into Cloud: " + e.getMessage());
+                    throw new NotSignedInException(e);
+                }
+            else
+                throw new NotSignedInException();
 
         } else if (signedInState == SignedInState.SIGNING_IN) {
             // huh?
             throw new IllegalStateException("signing in");
         } else if (signedInState == SignedInState.SIGNED_IN) {
             // great!
-        } else {
-            getBugCollection().getProject().getGuiCallback().showMessageDialog(
-                    "You need to sign into the FindBugs cloud again first!");
-            throw new IllegalStateException();
         }
     }
 
@@ -204,21 +226,20 @@ public class AppEngineCloudClient extends AbstractCloud {
         return AppEngineNameLookup.isSavingSessionInfoEnabled();
     }
 
-    public void signIn() {
+    public void signIn() throws IOException {
         signedInState = SignedInState.SIGNING_IN;
         setStatusMsg("Signing into FindBugs Cloud");
-        if (!networkClient.signIn(true)) {
-            signedInState = SignedInState.SIGNIN_FAILED;
-
-            setStatusMsg("");
-            throw new IllegalStateException();
-        }
-
         try {
+            networkClient.signIn(true);
             networkClient.logIntoCloudForce();
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Could not log into cloud", e);
-            throw new IllegalStateException(e);
+            signedInState = SignedInState.SIGNIN_FAILED;
+
+            throw e;
+        } catch (RuntimeException e) {
+            signedInState = SignedInState.SIGNIN_FAILED;
+
+            throw e;
         }
 
         signedInState = SignedInState.SIGNED_IN;
@@ -387,7 +408,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 	// ================== mutators ================
 
 	@SuppressWarnings("deprecation")
-	public void storeUserAnnotation(BugInstance bugInstance) {
+	public void storeUserAnnotation(BugInstance bugInstance) throws NotSignedInException {
         networkClient.storeUserAnnotation(bugInstance);
 	}
 
@@ -406,7 +427,7 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
     protected ExecutorService getBugUpdateExecutor() {
-        return getBugCollection().getProject().getGuiCallback().getBugUpdateExecutor();
+        return getGuiCallback().getBugUpdateExecutor();
     }
 
     public Collection<String> getProjects(String className) {
@@ -414,6 +435,10 @@ public class AppEngineCloudClient extends AbstractCloud {
 	}
 
 	// ================== private methods ======================
+
+    private IGuiCallback getGuiCallback() {
+        return getBugCollection().getProject().getGuiCallback();
+    }
 
     private void actuallyCheckBugsAgainstCloud(ConcurrentMap<String, BugInstance> bugsByHash) throws IOException {
         int numBugs = bugsByHash.size();
@@ -494,7 +519,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 	}
 
     private URL fileGoogleCodeBug(BugInstance b, String projectName)
-            throws IOException, ServiceException, OAuthException, InterruptedException {
+            throws IOException, ServiceException, OAuthException, InterruptedException, NotSignedInException {
         IssuesEntry googleCodeIssue = googleCodeBugFiler.file(b, projectName);
         if (googleCodeIssue == null)
             return null;
@@ -562,8 +587,13 @@ public class AppEngineCloudClient extends AbstractCloud {
         backgroundExecutor.execute(new Runnable() {
             public void run() {
                 List<Callable<Object>> callables = new ArrayList<Callable<Object>>();
-                networkClient.uploadNewBugs(newBugs, callables);
-                executeAndWaitForAll(callables);
+                try {
+                    networkClient.uploadNewBugs(newBugs, callables);
+                    executeAndWaitForAll(callables);
+
+                } catch (NotSignedInException e) {
+                    // OK!
+                }
                 setStatusMsg("");
             }
         });

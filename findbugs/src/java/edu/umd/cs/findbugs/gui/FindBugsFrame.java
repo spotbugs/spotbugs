@@ -100,6 +100,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import edu.umd.cs.findbugs.cloud.NotSignedInException;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -3445,8 +3446,12 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	private void synchBugAnnotation(BugInstance selected) {
 		if (currentBugInstance != null) {
 			String text = annotationTextArea.getText();
-			currentBugInstance.setAnnotationText(text, null);
-		}
+            try {
+                currentBugInstance.setAnnotationText(text, null);
+            } catch (NotSignedInException e) {
+                logger.logMessage(Logger.WARNING, e.getMessage());
+            }
+        }
 
 		//annotationTextArea.setText(selected.getAnnotationText());
 		String userAnnotation = selected.getAnnotationText();

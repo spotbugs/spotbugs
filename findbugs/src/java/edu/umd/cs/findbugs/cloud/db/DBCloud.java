@@ -564,7 +564,7 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 
-	public boolean initialize() {
+	public boolean initialize() throws IOException {
         if (tryInitialization()) {
             signedInState = SignedInState.SIGNIN_FAILED;
             return false;
@@ -614,7 +614,7 @@ public  class DBCloud extends AbstractCloud {
 		}
 	}
 
-    private boolean tryInitialization() {
+    private boolean tryInitialization() throws IOException {
         if (!super.initialize())
             return true;
         if (!availableForInitialization())

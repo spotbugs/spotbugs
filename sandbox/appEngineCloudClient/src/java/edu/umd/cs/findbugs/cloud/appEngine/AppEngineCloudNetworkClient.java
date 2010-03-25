@@ -3,7 +3,9 @@ package edu.umd.cs.findbugs.cloud.appEngine;
 import com.google.protobuf.GeneratedMessage;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.NotSignedInException;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
@@ -59,25 +61,28 @@ public class AppEngineCloudNetworkClient {
         this.cloudClient = appEngineCloudClient;
     }
 
-    public boolean initialize() {
+    /** returns whether soft initialization worked and the user is now signed in */
+    public boolean initialize() throws IOException {
         lookerupper = new AppEngineNameLookup();
-        lookerupper.initializeHostname(cloudClient.getPlugin());
+        lookerupper.initializeSoftly(cloudClient.getPlugin());
+        this.sessionId = lookerupper.getSessionId();
+        this.username = lookerupper.getUsername();
         this.host = lookerupper.getHost();
-
-        return true;
+        return this.sessionId != null;
     }
 
-    public boolean signIn(boolean force) {
+    public void signIn(boolean force) throws IOException {
         if (!force && sessionId != null)
             throw new IllegalStateException("already signed in");
-        if (!lookerupper.initialize(cloudClient.getPlugin(), cloudClient.getBugCollection()))
-            throw new IllegalStateException();
+        if (!lookerupper.initialize(cloudClient.getPlugin(), cloudClient.getBugCollection())) {
+            getGuiCallback().setErrorMessage("Signing into FindBugs Cloud failed!");
+            return;
+        }
         this.sessionId = lookerupper.getSessionId();
         this.username = lookerupper.getUsername();
         this.host = lookerupper.getHost();
         if (getUsername() == null || host == null) {
-            System.err.println("No App Engine Cloud username or hostname found! Check etc/findbugs.xml");
-            return false;
+            throw new IllegalStateException("No App Engine Cloud username or hostname found! Check etc/findbugs.xml");
         }
         // now that we know our own username, we need to update all the bugs in the UI to show what "our"
         // designation & comments are.
@@ -88,11 +93,10 @@ public class AppEngineCloudNetworkClient {
                 cloudClient.updateBugInstanceAndNotify(instance);
             }
         }
-        return true;
     }
 
-    public void setBugLinkOnCloud(BugInstance b, ProtoClasses.BugLinkType type, String bugLink) throws IOException {
-        cloudClient.signInIfNecessary();
+    public void setBugLinkOnCloud(BugInstance b, ProtoClasses.BugLinkType type, String bugLink) throws IOException, NotSignedInException {
+        cloudClient.signInIfNecessary("To store the bug URL on the FindBugs cloud, you must sign in.");
 
         HttpURLConnection conn = openConnection("/set-bug-link");
         conn.setDoOutput(true);
@@ -117,9 +121,8 @@ public class AppEngineCloudNetworkClient {
         }
     }
 
-    public void setBugLinkOnCloudAndStoreIssueDetails(BugInstance b, String viewUrl, ProtoClasses.BugLinkType linkType) 
-            throws IOException {
-        cloudClient.signInIfNecessary();
+    public void setBugLinkOnCloudAndStoreIssueDetails(BugInstance b, String viewUrl, ProtoClasses.BugLinkType linkType)
+            throws IOException, NotSignedInException {
         setBugLinkOnCloud(b, linkType, viewUrl);
 
         String hash = b.getInstanceHash();
@@ -128,12 +131,6 @@ public class AppEngineCloudNetworkClient {
                                   .setBugLink(viewUrl)
                                   .setBugLinkType(linkType)
                                   .build());
-    }
-
-    public void logIntoCloudIfNecessary() throws IOException {
-        if (sessionId != null)
-            return;
-        logIntoCloudForce();
     }
 
     public void logIntoCloudForce() throws IOException {
@@ -151,8 +148,8 @@ public class AppEngineCloudNetworkClient {
 
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
-            throw new IllegalStateException("Could not log into cloud - error "
-                                            + responseCode + conn.getResponseMessage());
+            throw new IllegalStateException("Could not log into cloud with ID " + sessionId + " - error "
+                                            + responseCode + " " + conn.getResponseMessage());
         }
     }
 
@@ -206,8 +203,9 @@ public class AppEngineCloudNetworkClient {
         return !issue.hasFirstSeen() && !issue.hasLastSeen() && issue.getEvaluationsCount() == 0;
     }
 
-    public void uploadNewBugs(final List<BugInstance> newBugs, List<Callable<Object>> callables) {
-        cloudClient.signInIfNecessary();
+    public void uploadNewBugs(final List<BugInstance> newBugs, List<Callable<Object>> callables) throws NotSignedInException {
+        cloudClient.signInIfNecessary("Some bugs were not found on the FindBugs Cloud service.\n" +
+                                      "Would you like to sign in and upload them to the Cloud?");
         final AtomicInteger bugsUploaded = new AtomicInteger(0);
         final int bugCount = newBugs.size();
         for (int i = 0; i < bugCount; i += BUG_UPLOAD_PARTITION_SIZE) {
@@ -238,6 +236,10 @@ public class AppEngineCloudNetworkClient {
             }
         }
         issuesByHash.put(hash, issue);
+    }
+
+    private IGuiCallback getGuiCallback() {
+        return cloudClient.getBugCollection().getProject().getGuiCallback();
     }
 
     private FindIssuesResponse submitHashes(List<String> bugsByHash)
@@ -310,8 +312,7 @@ public class AppEngineCloudNetworkClient {
     }
 
     private UploadIssues buildUploadIssuesCommandInUIThread(final Collection<BugInstance> bugsToSend) {
-        ExecutorService updateExecutor = cloudClient.getBugCollection().getProject()
-                .getGuiCallback().getBugUpdateExecutor(); 
+        ExecutorService updateExecutor = getGuiCallback().getBugUpdateExecutor();
 
         Future<UploadIssues> future = updateExecutor.submit(new Callable<UploadIssues>() {
             public UploadIssues call() throws Exception {
@@ -423,13 +424,18 @@ public class AppEngineCloudNetworkClient {
     }
 
     @SuppressWarnings({"deprecation"})
-    public void storeUserAnnotation(BugInstance bugInstance) {
-        cloudClient.signInIfNecessary();
+    public void storeUserAnnotation(BugInstance bugInstance) throws NotSignedInException {
+        // store this stuff first because signIn might clobber it. this is kludgy but works.
         BugDesignation designation = bugInstance.getNonnullUserDesignation();
-        Evaluation.Builder evalBuilder = Evaluation.newBuilder()
-                .setWhen(designation.getTimestamp())
-                .setDesignation(designation.getDesignationKey());
+        long timestamp = designation.getTimestamp();
+        String designationKey = designation.getDesignationKey();
         String comment = designation.getAnnotationText();
+
+        cloudClient.signInIfNecessary("To store your evaluation on the FindBugs Cloud, you must sign in first.");
+        
+        Evaluation.Builder evalBuilder = Evaluation.newBuilder()
+                .setWhen(timestamp)
+                .setDesignation(designationKey);
         if (comment != null) {
             evalBuilder.setComment(comment);
         }

@@ -79,7 +79,11 @@ public class CommandLineUiCallback implements IGuiCallback {
     }
   }
 
-  private int parseAnswer(String answer) {
+    public int showConfirmDialogAndwait(String message, String title, int optionType, String ok, String cancel) {
+        return showConfirmDialog(message, title, optionType);
+    }
+
+    private int parseAnswer(String answer) {
     if (null == answer || answer.length() == 0) {
       return 0;
     }

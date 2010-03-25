@@ -12,6 +12,7 @@ import edu.umd.cs.findbugs.cloud.Cloud.Mode;
 import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 import junit.framework.TestCase;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
@@ -182,55 +183,55 @@ public class AbstractCloudTest extends TestCase {
 				printSummary(bugs.toArray(new BugInstance[0])));
 	}
 
-    public void testVotingModePropertyNull() {
+    public void testVotingModePropertyNull() throws Exception {
         checkVotingMode(Mode.COMMUNAL, null);
     }
 
-    public void testVotingModePropertyInvalid() {
+    public void testVotingModePropertyInvalid() throws Exception {
         checkVotingMode(Mode.COMMUNAL, "garbage");
     }
 
-    public void testVotingModeProperty() {
+    public void testVotingModeProperty() throws Exception {
         checkVotingMode(Mode.SECRET, "SECRET");
         checkVotingMode(Mode.COMMUNAL, "COMMUNAL");
     }
 
-    public void testSourceLinkPatternNotSpecified() {
+    public void testSourceLinkPatternNotSpecified() throws Exception {
         initializeSourceLinks("edu/umd/(.*)", null, null);
         checkSourceLink(null, "some.other.SomeClass", 0);
     }
 
-    public void testSourceLinkPatternInvalid() {
+    public void testSourceLinkPatternInvalid() throws Exception {
         initializeSourceLinks("edu/umd/(.*", "http://x.y.z/%s", null);
         checkSourceLink(null, "edu.umd.cs.SomeClass", 0);
     }
 
-    public void testSourceLinkFormatInvalid() {
+    public void testSourceLinkFormatInvalid() throws Exception {
         initializeSourceLinks("edu/umd/(.*)", "http://x.y.z/%M", null);
         checkSourceLink(null, "edu.umd.cs.SomeClass", 0);
     }
 
-    public void testSourceLinkURLInvalid() {
+    public void testSourceLinkURLInvalid() throws Exception {
         initializeSourceLinks("edu/umd/(.*)", "://x.y.z/%s", null);
         checkSourceLink(null, "edu.umd.cs.SomeClass", 0);
     }
 
-    public void testSourceLinkWithoutLineNumber() {
+    public void testSourceLinkWithoutLineNumber() throws Exception {
         initializeSourceLinks("edu/umd/(.*)", "http://x.y.z/%s", null);
         checkSourceLink("http://x.y.z/cs/SomeClass.java", "edu.umd.cs.SomeClass", 0);
     }
 
-    public void testSourceLinkWithLineNumber() {
+    public void testSourceLinkWithLineNumber() throws Exception {
         initializeSourceLinks("edu/umd/(.*)", "http://x.y.z/%s", "http://x.y.z/%s#%d,%d");
         checkSourceLink("http://x.y.z/cs/SomeClass.java#100,90", "edu.umd.cs.SomeClass", 100);
     }
 
-    public void testSourceLinkNoMatch() {
+    public void testSourceLinkNoMatch() throws Exception {
         initializeSourceLinks("edu/umd/(.*)", "http://x.y.z/%s", null);
         checkSourceLink(null, "some.other.SomeClass", 0);
     }
 
-    public void testSourceLinkTooltip() {
+    public void testSourceLinkTooltip() throws Exception {
         plugin.getProperties().setProperty("findbugs.sourcelink.tooltip", "View source link");
         initializeSourceLinks("edu/umd/(.*)", "http://x.y.z/%s", null);
         assertEquals("View source link", cloud.getSourceLinkToolTip(createBug("HI")));
@@ -250,7 +251,7 @@ public class AbstractCloudTest extends TestCase {
         }
     }
 
-    private void checkVotingMode(Mode expectedMode, String modeString) {
+    private void checkVotingMode(Mode expectedMode, String modeString) throws IOException {
         if (modeString == null)
             assertNull(plugin.getProperties().getProperty("findbugs.cloud.votingmode"));
         else
@@ -259,7 +260,7 @@ public class AbstractCloudTest extends TestCase {
         assertEquals(expectedMode, cloud.getMode());
     }
 
-    private void initializeSourceLinks(String pattern, String format, String formatWithLine) {
+    private void initializeSourceLinks(String pattern, String format, String formatWithLine) throws IOException {
         plugin.getProperties().setProperty("findbugs.sourcelink.pattern", pattern);
         if (format != null)
             plugin.getProperties().setProperty("findbugs.sourcelink.format", format);

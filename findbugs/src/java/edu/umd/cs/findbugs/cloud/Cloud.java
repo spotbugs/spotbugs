@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SystemProperties;
 
 import javax.annotation.CheckForNull;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Collection;
@@ -156,7 +157,7 @@ public interface Cloud {
 	/** Attempt to initialize the cloud
 	 * @return true if successful
 	 */
-	public boolean initialize();
+	public boolean initialize() throws IOException;
 	
 	/** Called after the bugs in the bug collection are loaded; 
 	 * synchronizes them with the database */
@@ -197,7 +198,7 @@ public interface Cloud {
 
     boolean isSavingSignInInformationEnabled();
 
-    void signIn();
+    void signIn() throws IOException;
 
     void signOut();
 
@@ -268,7 +269,7 @@ public interface Cloud {
 	boolean overallClassificationIsNotAProblem(BugInstance b);
 
 	/** Update user designation and evaluation from information in bug instance and push to database */
-	void storeUserAnnotation(BugInstance bugInstance);
+	void storeUserAnnotation(BugInstance bugInstance) throws NotSignedInException;
 
 	/** Is this bug one that gets persisted to the cloud?
 	 * We may decide that we don't persist low confidence issues to the 

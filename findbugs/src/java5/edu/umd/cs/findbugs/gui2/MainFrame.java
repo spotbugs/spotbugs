@@ -2063,7 +2063,12 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
                 if (signedInState == SignedInState.SIGNED_OUT || signedInState == SignedInState.NOT_SIGNED_IN_YET || signedInState == SignedInState.SIGNIN_FAILED) {
                     menu.add(new AbstractAction("Sign in") {
                         public void actionPerformed(ActionEvent e) {
-                            bugCollection.getCloud().signIn();
+                            try {
+                                bugCollection.getCloud().signIn();
+                            } catch (IOException e1) {
+                                showMessageDialog("Sign-in error: " + e1.getMessage());
+                                LOGGER.log(Level.SEVERE, "Could not sign in", e1);
+                            }
                         }
                     });
                 } else {
@@ -2120,24 +2125,21 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				String pluginMsg = plugin.getStatusMsg();
 				if (pluginMsg != null && pluginMsg.length() > 1)
 					msg = join(msg, pluginMsg);
-                if (plugin.getSignedInState() == SignedInState.SIGNING_IN) {
+                SignedInState state = plugin.getSignedInState();
+                if (state == SignedInState.SIGNING_IN) {
                     signedInLabel.setText("<html>FindBugs Cloud:<br> signing in");
                     signedInLabel.setIcon(null);
                     showLoggedInStatus = true;
-                } else if (plugin.getSignedInState() == SignedInState.SIGNED_IN) {
+                } else if (state == SignedInState.SIGNED_IN) {
                     signedInLabel.setText("<html>FindBugs Cloud:<br> signed in as " + plugin.getUser());
                     signedInLabel.setIcon(signedInIcon);
                     showLoggedInStatus = true;
-                } else if (plugin.getSignedInState() == SignedInState.SIGNIN_FAILED) {
-                    signedInLabel.setText("<html>FindBugs Cloud:<br> not signed in");
+                } else if (state == SignedInState.SIGNIN_FAILED) {
+                    signedInLabel.setText("<html>FindBugs Cloud:<br> sign-in failed");
                     signedInLabel.setIcon(warningIcon);
                     showLoggedInStatus = true;
-                } else if (plugin.getSignedInState() == SignedInState.SIGNED_OUT) {
-                    signedInLabel.setText("<html>FindBugs Cloud:<br> signed out");
-                    signedInLabel.setIcon(null);
-                    showLoggedInStatus = true;
-                } else if (plugin.getSignedInState() == SignedInState.NOT_SIGNED_IN_YET) {
-                    signedInLabel.setText("<html>FindBugs Cloud:<br> accessing anonymously");
+                } else if (state == SignedInState.SIGNED_OUT || state == SignedInState.NOT_SIGNED_IN_YET) {
+                    signedInLabel.setText("<html>FindBugs Cloud:<br> not signed in");
                     signedInLabel.setIcon(null);
                     showLoggedInStatus = true;
                 }
@@ -3240,10 +3242,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
         return JOptionPane.showConfirmDialog(this, message, title, optionType);
     }
 
-	/**
-     * @param project
-     * @param bc
-     */
+    public int showConfirmDialogAndwait(String message, String title, int optionType, String ok, String cancel) {
+        return JOptionPane.showOptionDialog(this, message, title, optionType, JOptionPane.PLAIN_MESSAGE, null,
+                                            new Object[] { ok, cancel }, ok);
+    }
+
     private void setProjectAndBugCollectionInSwingThread(final Project project, final BugCollection bc) {
 	    setProjectAndBugCollection(project, bc);
     }

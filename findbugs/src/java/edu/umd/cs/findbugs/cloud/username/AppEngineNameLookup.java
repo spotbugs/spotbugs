@@ -29,8 +29,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.SecureRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 /**
@@ -44,6 +47,8 @@ public class AppEngineNameLookup implements NameLookup {
     public static final String APPENGINE_LOCALHOST_DEFAULT = "http://localhost:8080";
     public static final String APPENGINE_HOST_PROPERTY_NAME = "appengine.host";
 
+    private static final Logger LOGGER = Logger.getLogger(AppEngineNameLookup.class.getName());
+
     /** if "true", prevents session info from being saved between launches. */
     private static final String SYSPROP_NEVER_SAVE_SESSION = "appengine.never_save_session";
     private static final String SYSPROP_APPENGINE_LOCAL = "appengine.local";
@@ -52,45 +57,63 @@ public class AppEngineNameLookup implements NameLookup {
     private static final String KEY_SAVE_SESSION_INFO = "save_session_info";
     private static final String KEY_APPENGINECLOUD_SESSION_ID = "appenginecloud_session_id";
 
-	private long sessionId;
+	private Long sessionId;
 	private String username;
 	private String host;
 
-    public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) {
-		try {
-            initializeHostname(plugin);
-			
-			// check the previously used session ID 
-			long id = loadOrCreateSessionId();
-			URL authCheckUrl = new URL(host + "/check-auth/" + id);
-			if (checkAuthorized(authCheckUrl)) {
-				return true;
-			}
-			
-			// open web browser to register new session ID 
-			URL u = new URL(host + "/browser-auth/" + id);
-			LaunchBrowser.showDocument(u);
-			
-			// wait 1 minute for the user to sign in
-			for (int i = 0; i < USER_SIGNIN_TIMEOUT_SECS; i++) {
-				if (checkAuthorized(authCheckUrl)) {
-					return true;
-				}
-				Thread.sleep(1000);
-			}
-			return false;
+    public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) throws IOException {
+        if (initializeSoftly(plugin))
+            return true;
 
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
+        if (sessionId == null)
+            sessionId = loadOrCreateSessionId();
+
+        LOGGER.info("Opening browser for session " + sessionId);
+        URL u = new URL(host + "/browser-auth/" + sessionId);
+        LaunchBrowser.showDocument(u);
+
+        // wait 1 minute for the user to sign in
+        for (int i = 0; i < USER_SIGNIN_TIMEOUT_SECS; i++) {
+            if (checkAuthorized(getAuthCheckUrl(sessionId))) {
+                return true;
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+        LOGGER.info("Sign-in timed out for " + sessionId);
+        throw new IOException("Sign-in timed out");
 	}
 
-    public void initializeHostname(CloudPlugin plugin) {
+    public boolean initializeSoftly(CloudPlugin plugin) throws IOException {
+        if (sessionId != null) {
+            if (checkAuthorized(getAuthCheckUrl(sessionId))) {
+                LOGGER.fine("Skipping soft init; session ID already exists - " + sessionId);
+                return true;
+            } else {
+                sessionId = null;
+            }
+        }
         PropertyBundle pluginProps = plugin.getProperties();
         if (Boolean.getBoolean(SYSPROP_APPENGINE_LOCAL) || pluginProps.getBoolean(LOCAL_APPENGINE))
             host = pluginProps.getProperty(APPENGINE_LOCALHOST_PROPERTY_NAME, APPENGINE_LOCALHOST_DEFAULT);
         else
             host = pluginProps.getProperty(APPENGINE_HOST_PROPERTY_NAME);
+        // check the previously used session ID
+        long id = loadOrCreateSessionId();
+        boolean authorized = checkAuthorized(getAuthCheckUrl(id));
+        if (authorized) {
+            LOGGER.info("Authorized with session ID: " + id);
+            this.sessionId = id;
+        }
+        
+        return authorized;
+    }
+
+    private URL getAuthCheckUrl(long sessionId) throws MalformedURLException {
+        return new URL(host + "/check-auth/" + sessionId);
     }
 
     public static void setSaveSessionInformation(boolean save) {
@@ -114,6 +137,18 @@ public class AppEngineNameLookup implements NameLookup {
     public static void saveSessionInformation(long sessionId) {
         Preferences.userNodeForPackage(AppEngineNameLookup.class).putLong(KEY_APPENGINECLOUD_SESSION_ID, sessionId);
     }
+
+	public Long getSessionId() {
+    	return sessionId;
+    }
+
+	public String getUsername() {
+    	return username;
+    }
+
+	public String getHost() {
+		return host;
+	}
 	
 	// ======================= end of public methods =======================
 
@@ -126,6 +161,8 @@ public class AppEngineNameLookup implements NameLookup {
 	    		id = r.nextLong();
             if (isSavingSessionInfoEnabled())
                 saveSessionInformation(id);
+        } else {
+            LOGGER.info("Using saved session ID: " + id);
         }
 	    return id;
     }
@@ -140,23 +177,13 @@ public class AppEngineNameLookup implements NameLookup {
 	    	sessionId = Long.parseLong(in.readLine());
 	    	username = in.readLine();
 	    	Util.closeSilently(in);
-	    	if ("OK".equals(status))
+	    	if ("OK".equals(status)) {
+                LOGGER.info("Authorized session " + sessionId);
 	    		return true;
+            }
 
 	    }
 	    connection.disconnect();
 	    return false;
     }
-
-	public long getSessionId() {
-    	return sessionId;
-    }
-
-	public String getUsername() {
-    	return username;
-    }
-	
-	public String getHost() {
-		return host;
-	}
 }

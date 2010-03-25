@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -46,7 +47,17 @@ import java.util.Collections;
 		 return new CloudPlugin("fallback local cloud", BugCollectionStorageCloud.class.getClassLoader(),
 				 BugCollectionStorageCloud.class, NoNameLookup.class, new PropertyBundle(), "no description", "no details");
 	 }
-	@Override
+    @Override
+      public boolean initialize()  {
+        try {
+            // we know AbstractCloud.initialize doesn't throw this.
+            return super.initialize();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Override
     public Mode getMode() {
 	    return Mode.COMMUNAL;
     }

@@ -21,7 +21,10 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import edu.umd.cs.findbugs.cloud.NotSignedInException;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
@@ -30,10 +33,12 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
  * Add an annotation string to every BugInstance in a BugCollection.
  */
 public class AddAnnotation {
-	private BugCollection bugCollection;
-	private String annotation;
+    private static final Logger LOGGER = Logger.getLogger(AddAnnotation.class.getName());
+    
+    private BugCollection bugCollection;
+    private String annotation;
 
-	public AddAnnotation(BugCollection bugCollection, String annotation) {
+    public AddAnnotation(BugCollection bugCollection, String annotation) {
 		this.bugCollection = bugCollection;
 		this.annotation = annotation;
 	}
@@ -53,22 +58,24 @@ public class AddAnnotation {
 	}
 
 	public void execute() {
-		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
-			BugInstance bugInstance = i.next();
+        for (BugInstance bugInstance : bugCollection) {
+            // Don't add the annotation if it is already present
+            if (bugInstance.annotationTextContainsWord(this.annotation))
+                continue;
 
-			// Don't add the annotation if it is already present
-			if (bugInstance.annotationTextContainsWord(this.annotation))
-				continue;
-
-			String annotation = bugInstance.getAnnotationText();
-			StringBuilder buf = new StringBuilder();
-			if (!annotation.equals("")) {
-				buf.append(annotation);
-				buf.append('\n');
-			}
-			buf.append(this.annotation);
-			bugInstance.setAnnotationText(buf.toString(),  bugCollection);
-		}
+            String annotation = bugInstance.getAnnotationText();
+            StringBuilder buf = new StringBuilder();
+            if (!annotation.equals("")) {
+                buf.append(annotation);
+                buf.append('\n');
+            }
+            buf.append(this.annotation);
+            try {
+                bugInstance.setAnnotationText(buf.toString(), bugCollection);
+            } catch (NotSignedInException e) {
+                break;
+            }
+        }
 	}
 
 	@SuppressWarnings("DM_EXIT")
