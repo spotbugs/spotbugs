@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -254,7 +255,17 @@ public class AppEngineCloudClient extends AbstractCloud {
 	public long getFirstSeen(BugInstance b) {
         long firstSeenFromCloud = networkClient.getFirstSeenFromCloud(b);
         long firstSeenLocally = super.getFirstSeen(b);
-        return Math.min(firstSeenFromCloud, firstSeenLocally);
+        return dateMin(firstSeenFromCloud, firstSeenLocally);
+	}
+
+	private static long MIN_TIMESTAMP = new Date("Jan 23, 1996").getTime();
+	public long dateMin(long timestamp1, long timestamp2) {
+		if (timestamp1 < MIN_TIMESTAMP)
+			return timestamp2;
+		if (timestamp2 < MIN_TIMESTAMP)
+			return timestamp1;
+		return Math.min(timestamp1, timestamp2);
+
 	}
 
     @Override
