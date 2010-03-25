@@ -1,19 +1,13 @@
 
-<project name="AppEngineCloudClient" default="plugin">
+<project name="AppEngineCloudClient" default="jnlp">
 
 <property name="classes.dir" value="build/classes"/>
         
 
- <target name="copyXML" >
- <copy todir="${classes.dir}">
-	<fileset dir="etc">
-		<include name="*.xml"/>
-	</fileset>
-	</copy>
-</target>
 
- <target name="plugin" depends="copyXML" >
-        <jar destfile="plugin.jar">
+ <target name="plugin" >
+        <jar destfile="build/AppEngineCloudClient.jar"
+		 manifest="etc/MANIFEST.MF">
         <fileset dir="etc">
 		<include name="*.xml"/>
 	</fileset>
@@ -23,9 +17,23 @@
         <fileset dir="../AppEngineCloudProtocol/build">
 			<include name="**/*.class"/>
 		</fileset>
-	 <zipfileset src="../AppEngineCloudProtocol/lib/protobuf-java-2.2.0.jar"/>
 	</jar>
 </target>
+ <target name="jnlp" depends="plugin">
+   <copy todir="../findbugs/jnlp" flatten="true">
+                    <fileset dir="lib">
+                      <include name="**/*.jar"/>
+                      <exclude name="mockito-all-1.8.2.jar"/>
+                    </fileset>
+                    <fileset dir="build">
+                      <include name="*.jar"/>
+                    </fileset>
+                    <fileset dir="../AppEngineCloudProtocol/lib">
+                      <include name="**/*.jar"/>
+                    </fileset>
+</copy>
+</target>
+             
 </project>
 
       
