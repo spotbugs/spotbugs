@@ -223,8 +223,14 @@ public class AppEngineCloudNetworkClient {
     }
 
     public long getFirstSeenFromCloud(BugInstance b) {
-        Issue issue = issuesByHash.get(b.getInstanceHash());
-        if (issue == null || issue.getFirstSeen() == 0)
+        String instanceHash = b.getInstanceHash();
+		Issue issue = issuesByHash.get(instanceHash);
+
+        if (issue == null)
+        	  return Long.MAX_VALUE;
+        if (AppEngineCloudClient.DEBUG_FIRST_SEEN)
+        System.out.println("First seen is " + issue.getFirstSeen() + " for " + b.getMessage());
+        if (issue.getFirstSeen() == 0)
             return Long.MAX_VALUE;
         return issue.getFirstSeen();
     }

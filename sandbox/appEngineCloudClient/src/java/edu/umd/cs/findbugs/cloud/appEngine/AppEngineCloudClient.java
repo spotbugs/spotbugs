@@ -273,10 +273,24 @@ public class AppEngineCloudClient extends AbstractCloud {
 		return e == null ? null : createBugDesignation(e);
 	}
 
+    static final boolean DEBUG_FIRST_SEEN = false;
+
 	public long getFirstSeen(BugInstance b) {
-        long firstSeenFromCloud = networkClient.getFirstSeenFromCloud(b);
-        long firstSeenLocally = super.getFirstSeen(b);
-        return dateMin(firstSeenFromCloud, firstSeenLocally);
+		long firstSeenFromCloud = networkClient.getFirstSeenFromCloud(b);
+		long firstSeenLocally = super.getFirstSeen(b);
+		long firstSeen = dateMin(firstSeenFromCloud, firstSeenLocally);
+
+		if (DEBUG_FIRST_SEEN) {
+			System.out.println(b.getMessageWithoutPrefix());
+			System.out.printf("%s %s %s\n", new Date(firstSeenFromCloud),
+					new Date(firstSeenLocally), new Date(firstSeen));
+			if (firstSeenFromCloud == Long.MAX_VALUE) {
+				new RuntimeException("Not seen previously")
+						.printStackTrace(System.out);
+				networkClient.getFirstSeenFromCloud(b);
+			}
+		}
+		return firstSeen;
 	}
 
 	private static long MIN_TIMESTAMP = new Date("Jan 23, 1996").getTime();
