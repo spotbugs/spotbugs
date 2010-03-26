@@ -26,13 +26,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import edu.umd.cs.findbugs.cloud.NotSignedInException;
-import org.apache.tools.ant.Task;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import edu.umd.cs.findbugs.ba.ClassHash;
+import edu.umd.cs.findbugs.cloud.NotSignedInException;
 import edu.umd.cs.findbugs.filter.AndMatcher;
 import edu.umd.cs.findbugs.filter.BugMatcher;
 import edu.umd.cs.findbugs.filter.ClassMatcher;
