@@ -1,0 +1,9 @@
+
+Plugins can be specified in three different ways:
+* For a standard FindBugd distro, they can be put into the plugins directory
+* For a JAWS distro, the file pluginlist.properties contains
+  a list of URLs to plugins. These URLs can be relative or absolute. If they
+  are absolute, they are relative to jar file that contained the pluginlist.properties
+  file.
+* You can define properties findbugs.plugin.*. Each such property defines a URL
+  for a plugin
