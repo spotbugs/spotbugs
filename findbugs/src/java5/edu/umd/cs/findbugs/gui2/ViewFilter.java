@@ -266,14 +266,21 @@ public class ViewFilter {
         	return displayName;
         }
 	}
+	static final int NO_MATTER_WHEN_FIRST_SEEN = 400000;
+
 	enum FirstSeenFilter implements ViewFilterEnum {
 		LAST_DAY(1, "Last day"), 
 		LAST_3_DAYS(3, "Last 3 days"),
 		LAST_WEEK(7, "Last week"), LAST_MONTH(30, "Last month"), LAST_THREE_MONTHS(91, "Last 90 days"), ALL(
-		        400000, "No matter when first seen");
+				Integer.MAX_VALUE, "No matter when first seen") {
+			public boolean show(MainFrame mf, BugInstance b) {
+				return true;
+			}
+			
+		};
 
 		final int maxDays;
-
+		
 		final String displayName;
 
 		private FirstSeenFilter(int days, String displayName) {
