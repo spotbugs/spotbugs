@@ -14,6 +14,15 @@ message FindIssuesResponse {
 	repeated Issue foundIssues = 1;
 }
 
+message UpdateIssueTimestamps {
+    required int64 sessionId = 1;
+    message IssueGroup {
+        repeated bytes issueHashes = 1;
+        required int64 timestamp = 2;
+    }
+    repeated IssueGroup issueGroups = 2;
+}
+
 message UploadIssues {
     required int64 sessionId = 1;
 	repeated Issue newIssues = 2;

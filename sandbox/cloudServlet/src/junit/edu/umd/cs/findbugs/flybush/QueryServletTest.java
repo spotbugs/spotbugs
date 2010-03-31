@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHashes;
+import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.SAMPLE_TIMESTAMP;
 import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.checkIssuesEqualExceptTimestamps;
 import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.createDbIssue;
 
@@ -162,8 +163,8 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
     }
 
     private void checkTerseIssue(Issue issue, DbEvaluation... evals) {
-        assertEquals(100, issue.getFirstSeen());
-        assertEquals(200, issue.getLastSeen());
+        assertEquals(SAMPLE_TIMESTAMP +100, issue.getFirstSeen());
+        assertEquals(SAMPLE_TIMESTAMP +200, issue.getLastSeen());
         assertEquals("http://bug.link", issue.getBugLink());
         assertEquals(ProtoClasses.BugLinkType.JIRA, issue.getBugLinkType());
         assertFalse(issue.hasBugPattern());

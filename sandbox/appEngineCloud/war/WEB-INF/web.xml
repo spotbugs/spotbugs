@@ -62,6 +62,7 @@
     <servlet-mapping>
         <servlet-name>UpdateServlet</servlet-name>
         <url-pattern>/clear-all-data</url-pattern>
+        <url-pattern>/update-issue-timestamps</url-pattern>
         <url-pattern>/upload-issues</url-pattern>
         <url-pattern>/upload-evaluation</url-pattern>
         <url-pattern>/set-bug-link</url-pattern>

@@ -1,7 +1,13 @@
 package edu.umd.cs.findbugs.flybush;
 
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.*;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps.IssueGroup;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
@@ -11,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -22,6 +29,7 @@ import java.util.logging.Level;
 @SuppressWarnings("serial")
 public class UpdateServlet extends AbstractFlybushServlet {
     static final int ONE_DAY_IN_MILLIS = 1000*60*60*24;
+    private static final long JAN_1_1990 = 631173600;
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -44,6 +52,9 @@ public class UpdateServlet extends AbstractFlybushServlet {
             throws IOException {
         if (uri.equals("/clear-all-data")) {
             clearAllData(resp);
+
+        } else if (uri.equals("/update-issue-timestamps")) {
+            updateIssueTimestamps(req, resp, pm);
 
         } else if (uri.equals("/upload-issues")) {
             uploadIssues(req, resp, pm);
@@ -72,6 +83,54 @@ public class UpdateServlet extends AbstractFlybushServlet {
             }
         }
         resp.setStatus(200);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void updateIssueTimestamps(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm)
+            throws IOException {
+        UpdateIssueTimestamps issues = UpdateIssueTimestamps.parseFrom(req.getInputStream());
+        SqlCloudSession session = lookupCloudSessionById(issues.getSessionId(), pm);
+        if (session == null) {
+            resp.setStatus(403);
+            return;
+        }
+        DbUser user = persistenceHelper.getObjectById(pm, persistenceHelper.getDbUserClass(), session.getUser());
+        boolean completed = false;
+        int updated = 0;
+        try {
+            for (IssueGroup issueGroup : issues.getIssueGroupsList()) {
+                long newFirstSeen = issueGroup.getTimestamp();
+                if (newFirstSeen < JAN_1_1990) {
+                    DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+                    LOGGER.warning("Skipping update of " + issueGroup.getIssueHashesCount() + " issue timestamps " +
+                                   "- date too early - " + dateFormat.format(new Date(newFirstSeen)));
+                    continue;
+                }
+                Query query = pm.newQuery("select from " + persistenceHelper.getDbIssueClass().getName() + " where :hashes.contains(hash)");
+                for (DbIssue issue : (List<? extends DbIssue>) query.execute(AppEngineProtoUtil.decodeHashes(issueGroup.getIssueHashesList()))) {
+                    long storedFirstSeen = issue.getFirstSeen();
+                    long firstSeen = storedFirstSeen == 0 ? newFirstSeen : Math.min(newFirstSeen, storedFirstSeen);
+                    if (storedFirstSeen != firstSeen) {
+                        issue.setFirstSeen(firstSeen);
+                        Transaction tx = pm.currentTransaction();
+                        tx.begin();
+                        try {
+                            pm.makePersistent(issue);
+                            tx.commit();
+                            updated++;
+                        } finally {
+                            if (tx.isActive()) tx.rollback();
+                        }
+                    }
+                }
+            }
+
+            setResponse(resp, 200, null);
+            completed = true;
+        } finally {
+            LOGGER.log(completed ? Level.INFO : Level.WARNING, "Updated " + updated + " issue timestamps from "
+                                                               + user.getEmail() + "(" + user.getOpenid() + ")");
+        }
     }
 
     private void clearAllData(HttpServletResponse resp) throws IOException {

@@ -7,6 +7,8 @@ import junit.framework.Assert;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 
 public class FlybushServletTestUtil {
+    public static final long SAMPLE_TIMESTAMP = 1270061080;
+
     private FlybushServletTestUtil() { }
 
     public static DbIssue createDbIssue(String patternAndHash, PersistenceHelper persistenceHelper) {
@@ -16,8 +18,8 @@ public class FlybushServletTestUtil {
         foundIssue.setBugPattern(patternAndHash);
         foundIssue.setPriority(2);
         foundIssue.setPrimaryClass("my.class");
-        foundIssue.setFirstSeen(100);
-        foundIssue.setLastSeen(200);
+        foundIssue.setFirstSeen(SAMPLE_TIMESTAMP +100);
+        foundIssue.setLastSeen(SAMPLE_TIMESTAMP +200);
         foundIssue.setBugLinkType(DbIssue.DbBugLinkType.JIRA);
         foundIssue.setBugLink("http://bug.link");
         return foundIssue;

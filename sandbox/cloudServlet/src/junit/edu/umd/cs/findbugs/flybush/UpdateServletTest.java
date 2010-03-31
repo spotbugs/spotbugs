@@ -8,9 +8,12 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink.Builder;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps.IssueGroup;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 
+import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -21,6 +24,7 @@ import java.util.List;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
 import static edu.umd.cs.findbugs.flybush.DbIssue.DbBugLinkType.GOOGLE_CODE;
 import static edu.umd.cs.findbugs.flybush.DbIssue.DbBugLinkType.JIRA;
+import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.SAMPLE_TIMESTAMP;
 import static edu.umd.cs.findbugs.flybush.UpdateServlet.ONE_DAY_IN_MILLIS;
 
 @SuppressWarnings({"UnusedDeclaration"})
@@ -34,13 +38,15 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
     @SuppressWarnings({"unchecked"})
     public void testExpireSqlSessions() throws Exception {
         DbUser oldUser = persistenceHelper.createDbUser("http://some.website", "old@test.com");
-        SqlCloudSession oldSession = persistenceHelper.createSqlCloudSession(100,
-                                                                             new Date(System.currentTimeMillis() - 8 * ONE_DAY_IN_MILLIS),
-                                                                             oldUser.createKeyObject());
+        SqlCloudSession oldSession = persistenceHelper.createSqlCloudSession(
+                100,
+                new Date(System.currentTimeMillis() - 8 * ONE_DAY_IN_MILLIS),
+                oldUser.createKeyObject());
         DbUser recentUser = persistenceHelper.createDbUser("http://some.website2", "recent@test.com");
-        SqlCloudSession recentSession = persistenceHelper.createSqlCloudSession(101,
-                                                                                new Date(System.currentTimeMillis() - 6 * ONE_DAY_IN_MILLIS),
-                                                                                recentUser.createKeyObject());
+        SqlCloudSession recentSession = persistenceHelper.createSqlCloudSession(
+                101,
+                new Date(System.currentTimeMillis() - 6 * ONE_DAY_IN_MILLIS),
+                recentUser.createKeyObject());
         getPersistenceManager().makePersistentAll(oldUser, recentUser, oldSession, recentSession);
 
         assertEquals("old@test.com", getDbUser(findSqlSession(100).get(0).getUser()).getEmail());
@@ -52,11 +58,133 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         assertEquals("recent@test.com", getDbUser(findSqlSession(101).get(0).getUser()).getEmail());
     }
 
-    @SuppressWarnings({"unchecked"})
-    private List<SqlCloudSession> findSqlSession(long sessionId) {
-        return (List<SqlCloudSession>) getPersistenceManager().newQuery(
-                "select from " + persistenceHelper.getSqlCloudSessionClass().getName()
-                + " where randomID == :val").execute(Long.toString(sessionId));
+    public void testUpdateIssueTimestampsNotAuthenticated() throws Exception {
+        UpdateIssueTimestamps tsCmd = UpdateIssueTimestamps.newBuilder()
+                .setSessionId(555)
+                .addIssueGroups(IssueGroup.newBuilder()
+                        .setTimestamp(SAMPLE_TIMESTAMP +50)
+                        .addIssueHashes(encodeHash("fad1"))
+                        .build())
+                .build();
+        executePost("/update-issue-timestamps", tsCmd.toByteArray());
+        checkResponse(403);
+    }
+    
+    public void testUpdateIssueTimestamps() throws Exception {
+        createCloudSession(555);
+
+        PersistenceManager pm = getPersistenceManager();
+        DbIssue issue1 = FlybushServletTestUtil.createDbIssue("fad1", persistenceHelper);
+        DbIssue issue2 = FlybushServletTestUtil.createDbIssue("fad2", persistenceHelper);
+        pm.makePersistentAll(issue1, issue2);
+
+        UpdateIssueTimestamps tsCmd = UpdateIssueTimestamps.newBuilder()
+                .setSessionId(555)
+                .addIssueGroups(IssueGroup.newBuilder()
+                        .setTimestamp(SAMPLE_TIMESTAMP +50)
+                        .addIssueHashes(encodeHash("fad1"))
+                        .addIssueHashes(encodeHash("fad2"))
+                        .build())
+                .build();
+        executePost("/update-issue-timestamps", tsCmd.toByteArray());
+        pm.refreshAll(issue1, issue2);
+        checkResponse(200);
+        assertEquals(SAMPLE_TIMESTAMP +50, issue1.getFirstSeen());
+        assertEquals(SAMPLE_TIMESTAMP +50, issue2.getFirstSeen());
+    }
+
+    public void testUpdateIssueTimestampsZeroStored() throws Exception {
+        createCloudSession(555);
+
+        PersistenceManager pm = getPersistenceManager();
+        DbIssue issue1 = FlybushServletTestUtil.createDbIssue("fad1", persistenceHelper);
+        DbIssue issue2 = FlybushServletTestUtil.createDbIssue("fad2", persistenceHelper);
+        issue2.setFirstSeen(0);
+        pm.makePersistentAll(issue1, issue2);
+
+        UpdateIssueTimestamps tsCmd = UpdateIssueTimestamps.newBuilder()
+                .setSessionId(555)
+                .addIssueGroups(IssueGroup.newBuilder()
+                        .setTimestamp(SAMPLE_TIMESTAMP +50)
+                        .addIssueHashes(encodeHash("fad1"))
+                        .addIssueHashes(encodeHash("fad2"))
+                        .build())
+                .build();
+        executePost("/update-issue-timestamps", tsCmd.toByteArray());
+        pm.refreshAll(issue1, issue2);
+        checkResponse(200);
+        assertEquals(SAMPLE_TIMESTAMP +50, issue1.getFirstSeen());
+        assertEquals(SAMPLE_TIMESTAMP +50, issue2.getFirstSeen());
+    }
+
+    public void testUpdateIssueTimestampsIgnoreOldTimestamp() throws Exception {
+        createCloudSession(555);
+
+        PersistenceManager pm = getPersistenceManager();
+        DbIssue issue1 = FlybushServletTestUtil.createDbIssue("fad1", persistenceHelper);
+        pm.makePersistentAll(issue1, issue1);
+
+        UpdateIssueTimestamps tsCmd = UpdateIssueTimestamps.newBuilder()
+                .setSessionId(555)
+                .addIssueGroups(IssueGroup.newBuilder()
+                        .setTimestamp(50)
+                        .addIssueHashes(encodeHash("fad1"))
+                        .build())
+                .build();
+        executePost("/update-issue-timestamps", tsCmd.toByteArray());
+        pm.refreshAll(issue1);
+        checkResponse(200);
+        assertEquals(SAMPLE_TIMESTAMP +100, issue1.getFirstSeen());
+    }
+
+    public void testUpdateIssueTimestampsMultipleGroups() throws Exception {
+        createCloudSession(555);
+
+        PersistenceManager pm = getPersistenceManager();
+        DbIssue issue1 = FlybushServletTestUtil.createDbIssue("fad1", persistenceHelper);
+        DbIssue issue2 = FlybushServletTestUtil.createDbIssue("fad2", persistenceHelper);
+        pm.makePersistentAll(issue1, issue2);
+
+        UpdateIssueTimestamps tsCmd = UpdateIssueTimestamps.newBuilder()
+                .setSessionId(555)
+                .addIssueGroups(IssueGroup.newBuilder()
+                        .setTimestamp(SAMPLE_TIMESTAMP +50)
+                        .addIssueHashes(encodeHash("fad1"))
+                        .build())
+                .addIssueGroups(IssueGroup.newBuilder()
+                        .setTimestamp(SAMPLE_TIMESTAMP +25)
+                        .addIssueHashes(encodeHash("fad2"))
+                        .build())
+                .build();
+        executePost("/update-issue-timestamps", tsCmd.toByteArray());
+        pm.refreshAll(issue1, issue2);
+        checkResponse(200);
+        assertEquals(SAMPLE_TIMESTAMP +50, issue1.getFirstSeen());
+        assertEquals(SAMPLE_TIMESTAMP +25, issue2.getFirstSeen());
+    }
+
+    public void testUpdateIssueTimestampsLaterThanStored() throws Exception {
+        createCloudSession(555);
+
+        PersistenceManager pm = getPersistenceManager();
+        DbIssue issue1 = FlybushServletTestUtil.createDbIssue("fad1", persistenceHelper);
+        DbIssue issue2 = FlybushServletTestUtil.createDbIssue("fad2", persistenceHelper);
+        issue2.setFirstSeen(SAMPLE_TIMESTAMP +25);
+        pm.makePersistentAll(issue1, issue2);
+
+        UpdateIssueTimestamps tsCmd = UpdateIssueTimestamps.newBuilder()
+                .setSessionId(555)
+                .addIssueGroups(IssueGroup.newBuilder()
+                        .setTimestamp(SAMPLE_TIMESTAMP +50)
+                        .addIssueHashes(encodeHash("fad1"))
+                        .addIssueHashes(encodeHash("fad2"))
+                        .build())
+                .build();
+        executePost("/update-issue-timestamps", tsCmd.toByteArray());
+        pm.refreshAll(issue1, issue2);
+        checkResponse(200);
+        assertEquals(SAMPLE_TIMESTAMP +50, issue1.getFirstSeen());
+        assertEquals(SAMPLE_TIMESTAMP +25, issue2.getFirstSeen());
     }
 
     public void testUploadIssueWithoutAuthenticating() throws Exception {
@@ -352,6 +480,13 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 	}
 
 	// ========================= end of tests ================================
+
+    @SuppressWarnings({"unchecked"})
+    private List<SqlCloudSession> findSqlSession(long sessionId) {
+        return (List<SqlCloudSession>) getPersistenceManager().newQuery(
+                "select from " + persistenceHelper.getSqlCloudSessionClass().getName()
+                + " where randomID == :val").execute(Long.toString(sessionId));
+    }
 
     private void checkBugLinkInDb(DbIssue.DbBugLinkType expectedType, String expectedUrl) {
         List<DbIssue> dbIssues = getAllIssuesFromDb();
