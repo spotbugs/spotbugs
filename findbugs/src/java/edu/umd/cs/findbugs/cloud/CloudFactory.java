@@ -19,18 +19,17 @@
 
 package edu.umd.cs.findbugs.cloud;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.PluginLoader;
-import edu.umd.cs.findbugs.SystemProperties;
-
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.SystemProperties;
 
 
 /**
@@ -48,14 +47,21 @@ public class CloudFactory {
 
 
     public static Cloud createCloudWithoutInitializing(BugCollection bc) {
-		CloudPlugin plugin = defaultPlugin;
+    		CloudPlugin plugin = null;
+    		String cloudId = bc.getProject().getCloudId();
+    		if (cloudId != null) {
+    			plugin = registeredClouds.get(cloudId);
+    		}
+    		if (plugin == null) plugin = defaultPlugin;
 		
 		try {
 			Class<? extends Cloud> cloudClass = plugin.getCloudClass();
-	        Constructor<? extends Cloud> constructor = cloudClass.getConstructor(CloudPlugin.class, BugCollection.class);
-			Cloud cloud = constructor.newInstance(plugin, bc);
+			Properties properties = bc.getProject().getCloudProperties();
+	        Constructor<? extends Cloud> constructor = cloudClass.getConstructor(CloudPlugin.class, BugCollection.class, Properties.class);
+			Cloud cloud = constructor.newInstance(plugin, bc, properties);
 			if (DEBUG)
 				bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloud.getClass().getName());
+			
 			return cloud;
 		} catch (Exception e) {
 			if (DEBUG) {

@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -214,7 +215,7 @@ public class DBStats {
 		
 		// TODO: this this
 		
-		DBCloud cloud = new DBCloud(null, null);
+		DBCloud cloud = new DBCloud(null, null, new Properties());
 		cloud.initialize();
 		Connection c = cloud.getConnection();
 		

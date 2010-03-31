@@ -1,17 +1,5 @@
 package edu.umd.cs.findbugs.cloud;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.ClassAnnotation;
-import edu.umd.cs.findbugs.ProjectStats;
-import edu.umd.cs.findbugs.PropertyBundle;
-import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.cloud.Cloud.Mode;
-import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
-import junit.framework.TestCase;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -23,6 +11,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
+import junit.framework.TestCase;
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.ProjectStats;
+import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.cloud.Cloud.Mode;
+import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 
 @SuppressWarnings({"ToArrayCallWithZeroLengthArrayArgument"})
 public class AbstractCloudTest extends TestCase {
@@ -40,7 +41,7 @@ public class AbstractCloudTest extends TestCase {
 		bugCollection = new SortedBugCollection(projectStats);
         plugin = new CloudPlugin("myAbstractCloud", this.getClass().getClassLoader(), MyAbstractCloud.class,
                                  NoNameLookup.class, new PropertyBundle(), "no description", "no details");
-        cloud = new MyAbstractCloud(plugin, bugCollection);
+        cloud = new MyAbstractCloud(plugin, bugCollection, new Properties());
         summary = new StringWriter();
 		timestampCounter = 0;
 	}
@@ -315,8 +316,8 @@ public class AbstractCloudTest extends TestCase {
     private final class MyAbstractCloud extends AbstractCloud {
 	    private final Map<BugInstance, List<BugDesignation>> designations = new HashMap<BugInstance, List<BugDesignation>>();
 
-	    private MyAbstractCloud(CloudPlugin plugin, BugCollection bugs) {
-		    super(plugin, bugs);
+	    private MyAbstractCloud(CloudPlugin plugin, BugCollection bugs, Properties properties) {
+		    super(plugin, bugs, properties);
 	    }
 
 	    public void storeUserAnnotation(BugInstance bugInstance) {

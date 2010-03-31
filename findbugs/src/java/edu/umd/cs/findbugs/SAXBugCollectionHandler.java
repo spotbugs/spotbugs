@@ -20,7 +20,10 @@
 package edu.umd.cs.findbugs;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -89,6 +92,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	private int nestingOfIgnoredElements = 0;
 	private final File base;
 	private final String topLevelName;
+	private String cloudPropertyKey;
 
 	private SAXBugCollectionHandler(String topLevelName, BugCollection bugCollection, Project project, File base) {
 		this.topLevelName = topLevelName;
@@ -321,6 +325,18 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 							throw new SAXException("Invalid AppVersion element", e);
 						}
 					}
+				} else if (outerElement.equals(BugCollection.PROJECT_ELEMENT_NAME)) {
+					if (qName.equals(Project.CLOUD_ELEMENT_NAME)) {
+						String cloudId = getRequiredAttribute(attributes, Project.CLOUD_ID_ATTRIBUTE_NAME, qName);
+						project.setCloudId(cloudId);
+						
+					}
+					
+				} else if (outerElement.equals(Project.CLOUD_ELEMENT_NAME)) {
+					if (qName.equals(Project.CLOUD_PROPERTY_ELEMENT_NAME)) {
+						cloudPropertyKey = getRequiredAttribute(attributes, "key", qName);
+					}
+					
 				}
 			}
 		}
@@ -600,6 +616,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					project.addSourceDir(getTextContents());
 				else if (qName.equals("AuxClasspathEntry"))
 					project.addAuxClasspathEntry(getTextContents());
+			}	else if (outerElement.equals(Project.CLOUD_ELEMENT_NAME) && qName.equals(Project.CLOUD_PROPERTY_ELEMENT_NAME)) {
+					assert cloudPropertyKey != null;
+					project.getCloudProperties().setProperty(cloudPropertyKey, getTextContents());
+					cloudPropertyKey = null;
 			} else if (outerElement.equals("BugInstance")) {
 				if (qName.equals("UserAnnotation")) {
                     try {

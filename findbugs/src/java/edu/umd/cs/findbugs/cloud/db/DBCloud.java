@@ -19,27 +19,6 @@
 
 package edu.umd.cs.findbugs.cloud.db;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugRanker;
-import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.PluginLoader;
-import edu.umd.cs.findbugs.ProjectPackagePrefixes;
-import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.StartTime;
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.Version;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.cloud.AbstractCloud;
-import edu.umd.cs.findbugs.cloud.BugFilingHelper;
-import edu.umd.cs.findbugs.cloud.CloudFactory;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-import edu.umd.cs.findbugs.util.Util;
-
-import javax.annotation.CheckForNull;
-import javax.swing.JOptionPane;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -66,6 +45,7 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.Timer;
@@ -76,6 +56,28 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
+
+import javax.annotation.CheckForNull;
+import javax.swing.JOptionPane;
+
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugRanker;
+import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.PluginLoader;
+import edu.umd.cs.findbugs.ProjectPackagePrefixes;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.StartTime;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.Version;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.BugFilingHelper;
+import edu.umd.cs.findbugs.cloud.CloudFactory;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * @author pwilliam
@@ -244,8 +246,8 @@ public  class DBCloud extends AbstractCloud {
 	private BugFilingHelper bugFilingHelper = new BugFilingHelper(this);
 	final long now;
 	
-	public DBCloud(CloudPlugin plugin, BugCollection bugs) {
-		super(plugin, bugs);
+	public DBCloud(CloudPlugin plugin, BugCollection bugs, Properties properties) {
+		super(plugin, bugs, properties);
 		sqlDriver = getJDBCProperty("dbDriver");
 		url = getJDBCProperty("dbUrl");
 		dbName = getJDBCProperty("dbName");

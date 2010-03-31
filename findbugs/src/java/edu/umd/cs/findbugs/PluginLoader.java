@@ -342,14 +342,15 @@ public class PluginLoader {
 					continue;
 				properties.loadPropertiesFromURL(properiesURL);
 			}
-			String inlineProperties = getOptionalChildText(cloudNode, "Properties");
-			if (inlineProperties != null)
-				properties.loadPropertiesFromString(inlineProperties);
+			List<Node> propertyNodes = cloudNode.selectNodes("Property");
+			for(Node node :  propertyNodes ) {
+				String key = node.valueOf("@key");
+				String value = node.getText();
+				properties.setProperty(key, value);
+			}
 			
 			CloudPlugin cloudPlugin = new CloudPlugin(cloudid, classLoader, cloudClass, usernameClass, properties, description, details);
-
 			CloudFactory.registerCloud(cloudPlugin, pluginEnabled);
-			
 		}
 		
 		// Create a DetectorFactory for all Detector nodes

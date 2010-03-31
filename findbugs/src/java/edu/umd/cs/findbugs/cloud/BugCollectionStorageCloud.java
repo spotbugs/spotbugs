@@ -19,15 +19,16 @@
 
 package edu.umd.cs.findbugs.cloud;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Properties;
+
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
 
 
 /**
@@ -35,12 +36,12 @@ import java.util.Collections;
  */
  class BugCollectionStorageCloud extends AbstractCloud {
 	
-	BugCollectionStorageCloud(CloudPlugin plugin, BugCollection bc) {
-			super(plugin, bc);
+	BugCollectionStorageCloud(CloudPlugin plugin, BugCollection bc, Properties properties) {
+			super(plugin, bc, properties);
 	}
 	
 	BugCollectionStorageCloud(BugCollection bc) {
-		this(getFallbackPlugin(), bc);
+		this(getFallbackPlugin(), bc, new Properties());
 	}
 
 	private  static CloudPlugin getFallbackPlugin() {

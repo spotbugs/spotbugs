@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -121,6 +123,37 @@ public class Project implements XMLWriteable {
 	 * Flag to indicate that this Project has been modified.
 	 */
 	private boolean isModified;
+	
+	private String cloudId;
+	/**
+     * @return Returns the cloudId.
+     */
+    public String getCloudId() {
+    	return cloudId;
+    }
+
+	/**
+     * @param cloudId The cloudId to set.
+     */
+    public void setCloudId(String cloudId) {
+    	this.cloudId = cloudId;
+    }
+
+	private Properties cloudProperties = new Properties();
+
+	/**
+     * @return Returns the cloudProperties.
+     */
+    public Properties getCloudProperties() {
+    	return cloudProperties;
+    }
+
+	/**
+     * @param cloudProperties The cloudProperties to set.
+     */
+    public void setCloudProperties(Properties cloudProperties) {
+    	this.cloudProperties = cloudProperties;
+    }
 
 	/**
 	 * Constant used to name anonymous projects.
@@ -163,6 +196,8 @@ public class Project implements XMLWriteable {
 		dup.auxClasspathEntryList.addAll(this.auxClasspathEntryList);
 		dup.timestampForAnalyzedClasses = timestampForAnalyzedClasses;
 		dup.guiCallback = guiCallback;
+		dup.cloudId = cloudId;
+		dup.cloudProperties.putAll(cloudProperties);
 		return dup;
 	}
 	
@@ -901,6 +936,12 @@ public class Project implements XMLWriteable {
 	static final String WRK_DIR_ELEMENT_NAME = "WrkDir";
 	static final String FILENAME_ATTRIBUTE_NAME = "filename";
 	static final String PROJECTNAME_ATTRIBUTE_NAME = "projectName";
+	
+	static final String CLOUD_ELEMENT_NAME = "Cloud";
+	static final String CLOUD_ID_ATTRIBUTE_NAME = "cloudId";
+	static final String CLOUD_PROPERTY_ELEMENT_NAME = "Property";
+	
+	
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		writeXML(xmlOutput, null);
@@ -926,6 +967,23 @@ public class Project implements XMLWriteable {
 			suppressionFilter.writeBodyAsXML(xmlOutput);
 			xmlOutput.closeTag("SuppressionFilter");
 		}
+		
+		if (cloudId != null) {
+			xmlOutput.startTag(CLOUD_ELEMENT_NAME);
+			xmlOutput.addAttribute(CLOUD_ID_ATTRIBUTE_NAME, cloudId);
+			xmlOutput.stopTag(false);
+			for(Map.Entry e : cloudProperties.entrySet()) {
+				xmlOutput.startTag(CLOUD_PROPERTY_ELEMENT_NAME);
+				xmlOutput.addAttribute("key", e.getKey().toString());
+				xmlOutput.stopTag(false);
+				Object value = e.getValue();
+				xmlOutput.writeText(value.toString());
+				xmlOutput.closeTag(CLOUD_PROPERTY_ELEMENT_NAME);
+			}
+			xmlOutput.closeTag(CLOUD_ELEMENT_NAME);	
+			
+		}
+			
 		xmlOutput.closeTag(BugCollection.PROJECT_ELEMENT_NAME);
 	}
 

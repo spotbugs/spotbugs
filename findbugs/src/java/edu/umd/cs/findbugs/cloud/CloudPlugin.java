@@ -65,7 +65,4 @@ public class CloudPlugin {
 	final PropertyBundle properties;
 	final String description;
 	final String details;
-	
-	
-
 }

@@ -19,6 +19,23 @@
 
 package edu.umd.cs.findbugs.cloud;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
@@ -34,24 +51,9 @@ import edu.umd.cs.findbugs.cloud.username.NameLookup;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Multiset;
 
-import javax.annotation.CheckForNull;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
-
 
 /**
- * @author pwilliam
+ * @author William Pugh
  */
 public abstract class AbstractCloud implements Cloud {
 	
@@ -87,11 +89,15 @@ public abstract class AbstractCloud implements Cloud {
 	
 	private Mode mode = Mode.COMMUNAL;
 	private String statusMsg;
+	public static long MIN_TIMESTAMP = new Date("Jan 23, 1996").getTime();
 
-    protected AbstractCloud(CloudPlugin plugin, BugCollection bugs) {
+    protected AbstractCloud(CloudPlugin plugin, BugCollection bugs, Properties properties) {
 		this.plugin = plugin;
 		this.bugCollection = bugs;
-		this.properties = plugin.getProperties();
+		this.properties = plugin.getProperties().copy();
+		if (!properties.isEmpty()) {
+			this.properties.loadProperties(properties);
+		}
 	}
 
     public boolean initialize() throws IOException {
@@ -309,8 +315,10 @@ public abstract class AbstractCloud implements Cloud {
 		} else {
 			w.println("Code analyzed");
 		}
-		w.printf("%,7d packages%n%,7d classes%n%,7d thousands of lines of non-commenting source statements%n",
-				packageCount, classCount, (ncss+999)/1000);
+		w.printf("%,7d packages%n%,7d classes%n", packageCount, classCount);
+		if (ncss > 0)
+			w.printf("%,7d thousands of lines of non-commenting source statements%n",
+				 (ncss+999)/1000);
 		w.println();
 		int count = 0;
 		int notInCloud = 0;

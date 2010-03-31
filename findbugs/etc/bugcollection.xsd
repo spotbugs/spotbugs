@@ -19,6 +19,23 @@
 								maxOccurs="unbounded"/>
 							<xs:element name="WrkDir" type="xs:string" minOccurs="0"
 								maxOccurs="unbounded"/>
+							<xs:element name="Cloud">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Property" minOccurs="0"
+											maxOccurs="unbounded" >
+										<xs:complexType>
+											<xs:simpleContent>
+												<xs:extension base="xs:string">
+													<xs:attribute name="key" type="xs:string" />
+												</xs:extension>
+											</xs:simpleContent>
+										</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="cloudId" type="xs:string"/>
+								</xs:complexType>
+							</xs:element>
 						</xs:sequence>
 						<xs:attribute name="filename" type="xs:string" use="optional"/>
 						<xs:attribute name="projectName" type="xs:string" use="optional"/>
@@ -218,7 +235,7 @@
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="Errors">
-					<xs:complexType>	
+					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="MissingClass" type="xs:string" minOccurs="0"
 								maxOccurs="unbounded"/>
@@ -236,15 +253,15 @@
 									<xs:attribute name="path" type="xs:string" use="required"/>
 									<xs:attribute name="bugCount" type="xs:unsignedInt"
 										use="required"/>
-									<xs:attribute name="size" type="xs:unsignedInt"
-										use="optional"/>
+									<xs:attribute name="size" type="xs:unsignedInt" use="optional"/>
 									<xs:attribute name="bugHash" type="xs:string" use="optional"/>
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="PackageStats" minOccurs="0" maxOccurs="unbounded">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="ClassStats" minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="ClassStats" minOccurs="0"
+											maxOccurs="unbounded">
 											<xs:complexType>
 												<xs:attribute name="class" type="xs:string"
 												use="required"/>
@@ -283,14 +300,22 @@
 							<xs:element name="FindBugsProfile" minOccurs="0" maxOccurs="1">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="ClassProfile" minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="ClassProfile" minOccurs="0"
+											maxOccurs="unbounded">
 											<xs:complexType>
-												<xs:attribute name="name" type="xs:string" use="required"/>
-												<xs:attribute name="totalMilliseconds" type="xs:unsignedInt" use="required"/>
-												<xs:attribute name="invocations" type="xs:unsignedInt" use="required"/>
-												<xs:attribute name="avgMicrosecondsPerInvocation" type="xs:unsignedInt" use="required"/>
-												<xs:attribute name="maxMicrosecondsPerInvocation" type="xs:unsignedInt" use="optional"/>
-												<xs:attribute name="standardDeviationMircosecondsPerInvocation" type="xs:unsignedInt" use="optional"/>
+												<xs:attribute name="name" type="xs:string"
+												use="required"/>
+												<xs:attribute name="totalMilliseconds"
+												type="xs:unsignedInt" use="required"/>
+												<xs:attribute name="invocations"
+												type="xs:unsignedInt" use="required"/>
+												<xs:attribute name="avgMicrosecondsPerInvocation"
+												type="xs:unsignedInt" use="required"/>
+												<xs:attribute name="maxMicrosecondsPerInvocation"
+												type="xs:unsignedInt" use="optional"/>
+												<xs:attribute
+												name="standardDeviationMircosecondsPerInvocation"
+												type="xs:unsignedInt" use="optional"/>
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>

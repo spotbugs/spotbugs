@@ -17,8 +17,9 @@
   <Cloud id="edu.umd.cs.findbugs.cloud.db.Default"				
 	 cloudClass="edu.umd.cs.findbugs.cloud.db.DBCloud"
 	 usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup"
-	 properties="db.properties"
-	/>
+	>
+	<Property key="key1">value1</Property>
+	</Cloud>
 
 	
   <OrderingConstraints>

@@ -37,26 +37,49 @@ import edu.umd.cs.findbugs.io.IO;
  */
 public class PropertyBundle {
 
-	private final Properties properties = new Properties();
+	private final Properties properties;
 
-	private final String urlRewritePatternString;
+	class Rewriter {
+		private final String urlRewritePatternString = getOSDependentProperty("findbugs.urlRewritePattern");
 
-	private final Pattern urlRewritePattern;
+		private final Pattern urlRewritePattern;
 
-	private final String urlRewriteFormat;
+		private final String urlRewriteFormat = getOSDependentProperty("findbugs.urlRewriteFormat");
+		
+		Rewriter() {
+			Pattern p = null;
+			if (urlRewritePatternString != null && urlRewriteFormat != null)
+				try {
+					p = Pattern.compile(urlRewritePatternString);
+				} catch (Exception e) {
+					assert true;
+				}
+			
+			urlRewritePattern = p;
+		}
+	}
+	volatile Rewriter rewriter;
 
-	public PropertyBundle() {
-		urlRewritePatternString = getOSDependentProperty("findbugs.urlRewritePattern");
-		urlRewriteFormat = getOSDependentProperty("findbugs.urlRewriteFormat");
-
-		Pattern p = null;
-		if (urlRewritePatternString != null && urlRewriteFormat != null)
-			try {
-				p = Pattern.compile(urlRewritePatternString);
-			} catch (Exception e) {
-				assert true;
+	Rewriter getRewriter() {
+		if (rewriter == null) {
+			synchronized(this) {
+				if (rewriter == null)
+					rewriter = new Rewriter();
 			}
-		urlRewritePattern = p;
+		}
+		return rewriter;
+	}
+	
+	public PropertyBundle() {
+		properties = new Properties();
+	}
+	
+	public PropertyBundle(Properties properties) {
+		this.properties = (Properties) properties.clone();
+	}
+		
+	public PropertyBundle copy() {
+		return new PropertyBundle(properties);
 	}
 
 	public Properties getProperties() {
@@ -93,6 +116,10 @@ public class PropertyBundle {
 			IO.close(in);
 		}
 	}
+	public void loadProperties(Properties properties) {
+		this.properties.putAll(properties);
+	}
+	
 	/**
 	 * Get boolean property, returning false if a security manager prevents us
 	 * from accessing system properties
@@ -158,10 +185,10 @@ public class PropertyBundle {
 	 */
 	public String getProperty(String name) {
 		try {
-			String value = properties.getProperty(name);
+			String value = SystemProperties.getProperty(name);
 			if (value != null)
 				return value;
-			return SystemProperties.getProperty(name);
+			return properties.getProperty(name);	
 		} catch (Exception e) {
 			return null;
 		}
@@ -185,23 +212,19 @@ public class PropertyBundle {
 	 * @return string value (or defaultValue if the property does not exist)
 	 */
 	public String getProperty(String name, String defaultValue) {
-		try {
-			String value = properties.getProperty(name);
+			String value = getProperty(name);
 			if (value != null)
 				return value;
-			return SystemProperties.getProperty(name, defaultValue);
-		} catch (Exception e) {
 			return defaultValue;
-		}
 	}
 
 	public String rewriteURLAccordingToProperties(String u) {
-		if (urlRewritePattern == null || urlRewriteFormat == null)
+		if (getRewriter().urlRewritePattern == null || getRewriter().urlRewriteFormat == null)
 			return u;
-		Matcher m = urlRewritePattern.matcher(u);
+		Matcher m = getRewriter().urlRewritePattern.matcher(u);
 		if (!m.matches())
 			return u;
-		String result = String.format(urlRewriteFormat, m.group(1));
+		String result = String.format(getRewriter().urlRewriteFormat, m.group(1));
 		return result;
 	}
 
