@@ -170,8 +170,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     @Override
 	public void shutdown() {
-    	 LOGGER.log(Level.INFO, "Shutting down " + this, new RuntimeException("Shutdown"));
-
+    	 
 		super.shutdown();
         if (timer != null)
             timer.cancel();
