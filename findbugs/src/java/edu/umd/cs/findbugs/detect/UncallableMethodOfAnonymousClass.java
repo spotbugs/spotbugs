@@ -202,7 +202,6 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 			if (!factory.isCalled(xmethod)
 					&& (obj.isStatic() || 
 							!definedInSuperClassOrInterface(clazz, key))) {
-				boolean value = definedInSuperClassOrInterface(clazz, key);
 				int priority = NORMAL_PRIORITY;
 				JavaClass superClass = clazz.getSuperClass();
 				String superClassName = superClass.getClassName();

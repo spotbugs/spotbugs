@@ -37,12 +37,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -88,22 +86,12 @@ public class Project implements XMLWriteable {
 	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.project.debug");
 
 	private List<File> currentWorkingDirectoryList;
-	/**
-	 * Project filename.
-	 */
-	@Deprecated
-	private String projectFileName;
-
+	
 	private String projectName;
 
 	
 	
-	/**
-	 * Options.
-	 */
-	@Deprecated
-	private Map<String, Boolean> optionsMap;
-
+	
 	/**
 	 * List of jars/directories to analyze
 	 */
@@ -171,9 +159,6 @@ public class Project implements XMLWriteable {
 	 * Create an anonymous project.
 	 */
 	public Project() {
-		this.projectFileName = UNNAMED_PROJECT;
-		optionsMap = new HashMap<String, Boolean>();
-		optionsMap.put(RELATIVE_PATHS, Boolean.FALSE);
 		analysisTargets = new LinkedList<String>();
 		srcDirList = new LinkedList<String>();
 		auxClasspathEntryList = new LinkedList<String>();
@@ -186,11 +171,8 @@ public class Project implements XMLWriteable {
 	 */
 	public Project duplicate() {
 		Project dup = new Project();
-		dup.projectFileName = this.projectFileName;
-        dup.currentWorkingDirectoryList.addAll(this.currentWorkingDirectoryList);
+		dup.currentWorkingDirectoryList.addAll(this.currentWorkingDirectoryList);
         dup.projectName = this.projectName;
-		dup.optionsMap.clear();
-		dup.optionsMap.putAll(this.optionsMap);
 		dup.analysisTargets.addAll(this.analysisTargets);
 		dup.srcDirList.addAll(this.srcDirList);
 		dup.auxClasspathEntryList.addAll(this.auxClasspathEntryList);
@@ -215,7 +197,6 @@ public class Project implements XMLWriteable {
 	 * add information from project2 to this project
 	 */
 	public void add(Project project2) {
-		optionsMap.putAll(project2.optionsMap);
 		analysisTargets = appendWithoutDuplicates(analysisTargets, project2.analysisTargets);
 		srcDirList = appendWithoutDuplicates(srcDirList, project2.srcDirList);
 		auxClasspathEntryList = appendWithoutDuplicates(auxClasspathEntryList, project2.auxClasspathEntryList);
@@ -245,23 +226,7 @@ public class Project implements XMLWriteable {
 		this.isModified = isModified;
 	}
 
-	/**
-	 * Get the project filename.
-	 */
-	@Deprecated
-	public String getProjectFileName() {
-		return projectFileName;
-	}
-
-	/**
-	 * Set the project filename.
-	 *
-	 * @param projectFileName the new filename
-	 */
-	@Deprecated
-	public void setProjectFileName(String projectFileName) {
-		this.projectFileName = projectFileName;
-	}
+	
 
 	/**
 	 * Add a file to the project.
@@ -302,17 +267,7 @@ public class Project implements XMLWriteable {
 	}
 
 
-	/**
-	 * Retrieve the Options value.
-	 *
-	 * @param option the name of option to get
-	 * @return the value of the option
-	 */
-	@Deprecated
-	public boolean getOption(String option) {
-		Boolean value = optionsMap.get(option);
-		return value != null && value.booleanValue();
-	}
+	
 
 	/**
 	 * Get the number of files in the project.
@@ -726,86 +681,7 @@ public class Project implements XMLWriteable {
 		}
 	}
 
-	/**
-	 * Read the project from an input file.
-	 * This method should only be used on an empty Project
-	 * (created with the default constructor).
-	 *
-	 * @param inputFile name of the input file to read the project from
-	 * @throws IOException if an error occurs while reading
-	 */
-	@Deprecated
-	public void read(String inputFile) throws IOException {
-		if (isModified) {
-	        throw new IllegalStateException("Reading into a modified Project!");
-        }
-
-		// Make the input file absolute, if necessary
-		File file = new File(inputFile);
-		if (!file.isAbsolute()) {
-	        inputFile = file.getAbsolutePath();
-        }
-
-		// Store the project filename
-		setProjectFileName(inputFile);
-
-		BufferedReader reader = null;
-
-		try {
-			reader = new BufferedReader(Util.getFileReader(inputFile));
-			String line;
-			line = getLine(reader);
-
-			if (line == null || !line.equals(JAR_FILES_KEY)) {
-	            throw new IOException("Bad format: missing jar files key");
-            }
-			while ((line = getLine(reader)) != null && !line.equals(SRC_DIRS_KEY)) {
-				addToListInternal(analysisTargets, line);
-			}
-
-			if (line == null) {
-	            throw new IOException("Bad format: missing source dirs key");
-            }
-			while ((line = getLine(reader)) != null && !line.equals(AUX_CLASSPATH_ENTRIES_KEY)) {
-				addToListInternal(srcDirList, line);
-			}
-
-			// The list of aux classpath entries is optional
-			if (line != null) {
-				while ((line = getLine(reader)) != null) {
-					if (line.equals(OPTIONS_KEY)) {
-	                    break;
-                    }
-					addToListInternal(auxClasspathEntryList, line);
-				}
-			}
-
-			// The Options section is also optional
-			if (line != null && line.equals(OPTIONS_KEY)) {
-				while ((line = getLine(reader)) != null && !line.equals(JAR_FILES_KEY)) {
-	                parseOption(line);
-                }
-			}
-
-			// If this project has the relative paths option set,
-			// resolve all internal relative paths into absolute
-			// paths, using the absolute path of the project
-			// file as a base directory.
-			if (getOption(RELATIVE_PATHS)) {
-				makeListAbsoluteProject(analysisTargets);
-				makeListAbsoluteProject(srcDirList);
-				makeListAbsoluteProject(auxClasspathEntryList);
-			}
-
-			// Clear the modification flag set by the various "add" methods.
-			isModified = false;
-		} finally {
-			if (reader != null) {
-	            reader.close();
-            }
-		}
-	}
-
+	
 	/**
 	 * Read Project from named file.
 	 * 
@@ -818,25 +694,7 @@ public class Project implements XMLWriteable {
 	    
 	    File projectFile = new File(projectFileName);
 	    
-	    if (projectFile.isDirectory()) {
-	    	// New-style (GUI2) project directory.
-	    	// We read in the bug collection in order to read the project
-	    	// information as a side effect.
-	    	// Inefficient, but effective.
-	    	String name = projectFile.getAbsolutePath() + File.separator + projectFile.getName() + ".xml";
-	    	File f = new File(name);
-	    	SortedBugCollection bugCollection = new SortedBugCollection();
-
-	    	try {
-	    		bugCollection.readXML(f.getPath());
-	    		return bugCollection.getProject();
-	    	} catch (DocumentException e) {
-	    		IOException ioe = new IOException("Couldn't read saved XML in project directory");
-	    		ioe.initCause(e);
-	    		throw ioe;
-	    	}
-
-	    } else if (projectFileName.endsWith(".xml") || projectFileName.endsWith(".fbp")) {
+	    if (projectFileName.endsWith(".xml") || projectFileName.endsWith(".fbp")) {
 	    	try {
 	    		return Project.readXML(projectFile);
 	    	} catch (DocumentException e) {
@@ -849,22 +707,8 @@ public class Project implements XMLWriteable {
 	    		ioe.initCause(e);
 	    		throw ioe;
 	    	}
-	    } else {
-	    	// Old-style (original GUI) project file
-
-	    	// Convert project file to be an absolute path
-	    	projectFileName = new File(projectFileName).getAbsolutePath();
-
-	    	try {
-	    		Project project = new Project();
-	    		project.read(projectFileName);
-	    		return project;
-	    	} catch (IOException e) {
-	    		System.err.println("Error opening " + projectFileName);
-	    		e.printStackTrace(System.err);
-	    		throw e;
-	    	}
-	    }
+	    } 
+	    throw new IllegalArgumentException("Can't read project from " + argument);
     }
 
 	/**
@@ -883,19 +727,7 @@ public class Project implements XMLWriteable {
 	}
 
 
-	public String projectNameFromProjectFileName() {
-		String name = projectFileName;
-		int lastSep = name.lastIndexOf(File.separatorChar);
-		if (lastSep >= 0) {
-	        name = name.substring(lastSep + 1);
-        }
-		int dot = name.lastIndexOf('.');
-		if (dot >= 0) {
-	        name = name.substring(0, dot);
-        }
-		return name;
-
-	}
+	
 	/**
 	 * Convert to a string in a nice (displayable) format.
 	 */
@@ -904,19 +736,7 @@ public class Project implements XMLWriteable {
 		if(projectName != null) {
 			return projectName;
 		}
-		// TODO Andrei: if this old stuff is not more used, delete it
-		String name = projectFileName;
-		int lastSep = name.lastIndexOf(File.separatorChar);
-		if (lastSep >= 0) {
-	        name = name.substring(lastSep + 1);
-        }
-		//int dot = name.lastIndexOf('.');
-		//Don't hide every suffix--some are informative and/or disambiguative.
-		int dot = (name.endsWith(".fb") ? name.length()-3 : -1);
-		if (dot >= 0) {
-	        name = name.substring(0, dot);
-        }
-		return name;
+		return UNNAMED_PROJECT;
 	}
 
 	/**
@@ -948,8 +768,6 @@ public class Project implements XMLWriteable {
 	}
 		public void writeXML(XMLOutput xmlOutput, @CheckForNull Object destination) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList();
-		if (!getProjectFileName().equals(UNNAMED_PROJECT))
-			attributeList.addAttribute(FILENAME_ATTRIBUTE_NAME, getProjectFileName());
 		if (getProjectName() != null) {
 	        attributeList = attributeList.addAttribute(PROJECTNAME_ATTRIBUTE_NAME, getProjectName());
         }
@@ -1011,20 +829,7 @@ public class Project implements XMLWriteable {
 		}
 		return files;
 	}
-	/**
-	 * Parse one line in the [Options] section.
-	 *
-	 * @param option one line in the [Options] section
-	 */
-	private void parseOption(String option) throws IOException {
-		int equalPos = option.indexOf("=");
-		if (equalPos < 0) {
-	        throw new IOException("Bad format: invalid option format");
-        }
-		String name = option.substring(0, equalPos);
-		String value = option.substring(equalPos + 1);
-		optionsMap.put(name, Boolean.valueOf(value));
-	}
+	
 
 	/**
 	 * Hack for whether files are case insensitive.
@@ -1119,16 +924,12 @@ public class Project implements XMLWriteable {
 		File file = new File(fileName);
 
 		if (!file.isAbsolute()) {
-			// Only try to make the relative path absolute
-			// if the project file is absolute.
-			File projectFile = new File(projectFileName);
-			if (projectFile.isAbsolute()) {
-				// Get base directory (parent of the project file)
-				String base = new File(projectFileName).getParent();
-
-				// Make the file absolute in terms of the parent directory
-				fileName = new File(base, fileName).getCanonicalPath();
+			for(File cwd : currentWorkingDirectoryList) {
+				File test = new File(cwd,fileName);
+				if (test.canRead())
+					return test.getAbsolutePath();
 			}
+			return file.getAbsolutePath();
 		}
 		return fileName;
 	}

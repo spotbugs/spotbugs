@@ -125,6 +125,9 @@ import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
+import edu.umd.cs.findbugs.log.ConsoleLogger;
+import edu.umd.cs.findbugs.log.LogSync;
+import edu.umd.cs.findbugs.log.Logger;
 
 /**
  * The main GUI frame for FindBugs.

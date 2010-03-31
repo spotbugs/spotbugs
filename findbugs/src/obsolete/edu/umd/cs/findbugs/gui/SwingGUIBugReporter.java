@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.gui;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.TextUIBugReporter;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.log.ConsoleLogger;
 
 /**
  * BugReporter used by AnalysisRun.

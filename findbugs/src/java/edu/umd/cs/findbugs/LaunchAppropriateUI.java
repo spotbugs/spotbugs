@@ -24,8 +24,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.gui2.Driver;
-
 /**
  * Class to launch the appropriate textUI or GUI.
  * This class is the Main-Class in the findbugs.jar

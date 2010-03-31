@@ -44,10 +44,10 @@ import edu.umd.cs.findbugs.cloud.Cloud.SignedInState;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
-import edu.umd.cs.findbugs.gui.ConsoleLogger;
-import edu.umd.cs.findbugs.gui.LogSync;
-import edu.umd.cs.findbugs.gui.Logger;
 import edu.umd.cs.findbugs.gui2.BugTreeModel.TreeModification;
+import edu.umd.cs.findbugs.log.ConsoleLogger;
+import edu.umd.cs.findbugs.log.LogSync;
+import edu.umd.cs.findbugs.log.Logger;
 import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 import edu.umd.cs.findbugs.util.Multiset;
@@ -3373,7 +3373,6 @@ public String showQuestionDialog(String message, String title, String defaultVal
         gbc.gridy = 1;
         gbc.insets = new Insets(5,5,5,5);
         panel.add(new JLabel(message), gbc);
-        List<JComponent> fields = new ArrayList<JComponent>();
         for (FormItem item : items) {
             gbc.gridy++;
             panel.add(new JLabel(item.getLabel()), gbc);

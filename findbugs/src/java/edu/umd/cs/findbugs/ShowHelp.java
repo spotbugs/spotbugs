@@ -18,8 +18,6 @@
  */
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.gui.FindBugsFrame;
-import edu.umd.cs.findbugs.gui2.GUI2CommandLine;
 
 /**
  * Show command line help.
@@ -30,20 +28,21 @@ public class ShowHelp {
 	public static void main(String[] args) {
 		
 		System.out.println("FindBugs version " + Version.RELEASE + ", " + Version.WEBSITE);
-		FindBugsFrame.showSynopsis();
-		FindBugs.showSynopsis();
 		showGeneralOptions();
 		System.out.println("GUI Options:");
 		FindBugsCommandLine guiCmd = new FindBugsCommandLine(true){};
 		guiCmd.printUsage(System.out);
+		System.out.println();
+		System.out.println("Command line Options:");
 		FindBugs.showCommandLineOptions();
-		System.exit(0);
 	}
 
+	public static void showSynopsis() {
+		System.out.println("Usage: findbugs [general options] [gui options]");
+	}
 	public static void showGeneralOptions() {
 		System.out.println("General options:");
 		System.out.println("  -gui             Use the Graphical UI (default behavior)");
-		System.out.println("  -gui1            Use the older Graphical UI");
 		System.out.println("  -textui          Use the Text UI");
 		System.out.println("  -jvmArgs args    Pass args to JVM");
 		System.out.println("  -maxHeap size    Maximum Java heap size in megabytes (default=768)");

@@ -47,6 +47,8 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.log.ConsoleLogger;
+import edu.umd.cs.findbugs.log.Logger;
 
 
 

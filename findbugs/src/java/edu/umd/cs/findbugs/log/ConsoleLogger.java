@@ -23,7 +23,7 @@
  * Created on April 3, 2003, 1:37 PM
  */
 
-package edu.umd.cs.findbugs.gui;
+package edu.umd.cs.findbugs.log;
 
 import java.util.Date;
 

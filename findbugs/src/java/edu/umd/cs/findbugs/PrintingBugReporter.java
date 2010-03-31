@@ -194,7 +194,6 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
 		bugCollection.setApplySuppressions(applySuppression);
 		if (argCount < args.length) {
-			proj.setProjectFileName(args[argCount]);
 			bugCollection.readXML(args[argCount++]);
 		} else
 			bugCollection.readXML(System.in);

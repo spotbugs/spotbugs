@@ -191,9 +191,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				pushCompoundMatcher(filter);
 			} else if (qName.equals(PROJECT)) {
 				// Project element
-				String filename = getOptionalAttribute(attributes, Project.FILENAME_ATTRIBUTE_NAME);
-				if (filename != null)
-					project.setProjectFileName(filename);
 				String projectName = getOptionalAttribute(attributes, Project.PROJECTNAME_ATTRIBUTE_NAME);
 				if (projectName != null)
 					project.setProjectName(projectName);
