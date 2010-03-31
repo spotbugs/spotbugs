@@ -29,7 +29,7 @@ import java.util.logging.Level;
 @SuppressWarnings("serial")
 public class UpdateServlet extends AbstractFlybushServlet {
     static final int ONE_DAY_IN_MILLIS = 1000*60*60*24;
-    private static final long JAN_1_1990 = 631173600;
+    private static final long FINDBUGS_FIRST_RELEASE = new Date("Jan 23, 1996").getTime();
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -100,7 +100,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         try {
             for (IssueGroup issueGroup : issues.getIssueGroupsList()) {
                 long newFirstSeen = issueGroup.getTimestamp();
-                if (newFirstSeen < JAN_1_1990) {
+                if (newFirstSeen < FINDBUGS_FIRST_RELEASE) {
                     DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
                     LOGGER.warning("Skipping update of " + issueGroup.getIssueHashesCount() + " issue timestamps " +
                                    "- date too early - " + dateFormat.format(new Date(newFirstSeen)));

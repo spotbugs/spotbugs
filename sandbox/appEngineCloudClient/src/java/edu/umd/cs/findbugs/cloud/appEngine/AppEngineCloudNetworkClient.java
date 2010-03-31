@@ -16,6 +16,8 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps.IssueGroup;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.Builder;
@@ -27,11 +29,17 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -46,6 +54,8 @@ public class AppEngineCloudNetworkClient {
     /** For debugging */
     private static final boolean FORCE_UPLOAD_ALL_ISSUES = false;
     private static final int BUG_UPLOAD_PARTITION_SIZE = 10;
+    /** For updating firstSeen timestamps */
+    private static final int BUG_UPDATE_PARTITION_SIZE = 10;
     /** Big enough to keep total find-issues time down AND also keep individual request time down (for Google's sake) */
     private static final int HASH_CHECK_PARTITION_SIZE = 60;
 
@@ -56,6 +66,7 @@ public class AppEngineCloudNetworkClient {
     private Long sessionId;
     private String username;
     private volatile long mostRecentEvaluationMillis = 0;
+    private CopyOnWriteArrayList<String> timestampsToUpdate = new CopyOnWriteArrayList<String>();
 
     public void setCloudClient(AppEngineCloudClient appEngineCloudClient) {
         this.cloudClient = appEngineCloudClient;
@@ -153,9 +164,9 @@ public class AppEngineCloudNetworkClient {
         }
     }
 
-    public void partitionHashes(final List<String> hashes,
-                                List<Callable<Object>> tasks,
-                                final ConcurrentMap<String, BugInstance> bugsByHash)
+    public void generateHashCheckRunnables(final List<String> hashes,
+                                           List<Callable<Object>> tasks,
+                                           final ConcurrentMap<String, BugInstance> bugsByHash)
             throws IOException {
         final int numBugs = hashes.size();
         final AtomicInteger numberOfBugsCheckedSoFar = new AtomicInteger();
@@ -171,6 +182,10 @@ public class AppEngineCloudNetworkClient {
                 }
             });
         }
+    }
+
+    public CopyOnWriteArrayList<String> getTimestampsToUpdate() {
+        return timestampsToUpdate;
     }
 
     private void checkHashesPartition(List<String> hashes, Map<String, BugInstance> bugsByHash) throws IOException {
@@ -195,6 +210,10 @@ public class AppEngineCloudNetworkClient {
                 continue;
             }
 
+            long firstSeen = cloudClient.getFirstSeen(bugInstance);
+            if (true || (firstSeen > 0 && firstSeen < issue.getFirstSeen()))
+                timestampsToUpdate.add(hash);
+
             cloudClient.updateBugInstanceAndNotify(bugInstance);
         }
     }
@@ -203,19 +222,105 @@ public class AppEngineCloudNetworkClient {
         return !issue.hasFirstSeen() && !issue.hasLastSeen() && issue.getEvaluationsCount() == 0;
     }
 
-    public void uploadNewBugs(final List<BugInstance> newBugs, List<Callable<Object>> callables) throws NotSignedInException {
+    public void generateUpdateTimestampRunnables(List<Callable<Object>> callables) throws NotSignedInException {
+        List<String> timestamps = new ArrayList<String>(timestampsToUpdate);
+        int bugCount = timestamps.size();
+        if (bugCount == 0)
+            return;
+        
+        cloudClient.signInIfNecessary("Some bugs' timestamps need to be updated on the FindBugs Cloud.\n" +
+                                      "Would you like to sign in to update them on the Cloud?");
+
+        final List<BugInstance> bugs = new ArrayList<BugInstance>();
+        for (String hash : timestamps) {
+            BugInstance bug = cloudClient.getBugByHash(hash);
+            if (bug != null)
+                bugs.add(bug);
+        }
+
+        // since the protocol groups bugs by timestamp, let's optimize network bandwidth by sorting first. probably
+        // doesn't matter.
+        Collections.sort(bugs, new Comparator<BugInstance>() {
+            public int compare(BugInstance o1, BugInstance o2) {
+                long v1 = o1.getFirstVersion();
+                long v2 = o2.getFirstVersion();
+                if (v1 < v2) return -1;
+                if (v1 > v2) return 1;
+                return 0;
+            }
+        });
+        
+        for (int i = 0; i < bugCount; i += BUG_UPDATE_PARTITION_SIZE) {
+            final List<BugInstance> partition = bugs.subList(i, Math.min(bugCount, i + BUG_UPLOAD_PARTITION_SIZE));
+
+            callables.add(new Callable<Object>() {
+                public Object call() throws Exception {
+                    updateTimestampsNow(partition);
+                    return null;
+                }
+            });
+        }
+    }
+
+    private void updateTimestampsNow(Collection<BugInstance> bugs) throws IOException {
+        HttpURLConnection conn = openConnection("/update-issue-timestamps");
+        conn.setDoOutput(true);
+        try {
+            OutputStream outputStream = conn.getOutputStream();
+            UpdateIssueTimestamps.Builder builder = UpdateIssueTimestamps.newBuilder()
+                    .setSessionId(sessionId);
+            for (Map.Entry<Long, Set<BugInstance>> entry : groupBugsByTimestamp(bugs).entrySet()) {
+                UpdateIssueTimestamps.IssueGroup.Builder groupBuilder = IssueGroup.newBuilder()
+                        .setTimestamp(entry.getKey());
+                for (BugInstance bugInstance : entry.getValue()) {
+                    groupBuilder.addIssueHashes(encodeHash(bugInstance.getInstanceHash()));
+                }
+                builder.addIssueGroups(groupBuilder.build());
+            }
+            LOGGER.info("Updating timestamps for " + bugs.size() + " bugs in " + builder.getIssueGroupsCount() + " groups");
+            builder.build().writeTo(outputStream);
+            outputStream.close();
+            if (conn.getResponseCode() != 200) {
+                throw new IllegalStateException(
+                        "server returned error code "
+                        + conn.getResponseCode() + " "
+                        + conn.getResponseMessage());
+            }
+        } finally {
+            conn.disconnect();
+        }
+    }
+
+    private Map<Long, Set<BugInstance>> groupBugsByTimestamp(Collection<BugInstance> bugs) {
+        Map<Long, Set<BugInstance>> map = new HashMap<Long, Set<BugInstance>>();
+        for (BugInstance bug : bugs) {
+            long firstSeen = cloudClient.getFirstSeen(bug);
+            Set<BugInstance> bugsForTimestamp = map.get(firstSeen);
+            if (bugsForTimestamp == null) {
+                bugsForTimestamp = new HashSet<BugInstance>();
+                map.put(firstSeen, bugsForTimestamp);
+            }
+            bugsForTimestamp.add(bug);
+        }
+        return map;
+    }
+
+    public void generateUploadRunnables(final List<BugInstance> newBugs, List<Callable<Object>> callables)
+            throws NotSignedInException {
+        final int bugCount = newBugs.size();
+        if (bugCount == 0)
+            return;
         cloudClient.signInIfNecessary("Some bugs were not found on the FindBugs Cloud service.\n" +
                                       "Would you like to sign in and upload them to the Cloud?");
         final AtomicInteger bugsUploaded = new AtomicInteger(0);
-        final int bugCount = newBugs.size();
         for (int i = 0; i < bugCount; i += BUG_UPLOAD_PARTITION_SIZE) {
             final List<BugInstance> partition = newBugs.subList(i, Math.min(bugCount, i + BUG_UPLOAD_PARTITION_SIZE));
             callables.add(new Callable<Object>() {
                 public Object call() throws Exception {
                     uploadNewBugsPartition(partition);
                     bugsUploaded.addAndGet(partition.size());
-                    cloudClient.setStatusMsg("Uploading " + bugCount
-                                             + " new bugs to the FindBugs Cloud..." + (bugsUploaded.get() * 100 / bugCount) + "%");
+                    cloudClient.setStatusMsg("Uploading " + bugCount + " new bugs to the FindBugs Cloud..."
+                                             + (bugsUploaded.get() * 100 / bugCount) + "%");
                     return null;
                 }
             });
@@ -294,7 +399,7 @@ public class AppEngineCloudNetworkClient {
         UploadIssues uploadIssues = buildUploadIssuesCommandInUIThread(bugsToSend);
         if (uploadIssues == null)
             return;
-        openPostUrl(uploadIssues, "/upload-issues");
+        openPostUrl("/upload-issues", uploadIssues);
 
         // if it worked, store the issues locally
         final List<String> hashes = new ArrayList<String>();
@@ -396,7 +501,7 @@ public class AppEngineCloudNetworkClient {
         return mostRecent;
     }
 
-    private void openPostUrl(GeneratedMessage uploadMsg, String url) {
+    private void openPostUrl(String url, GeneratedMessage uploadMsg) {
         try {
             HttpURLConnection conn = openConnection(url);
             conn.setDoOutput(true);
@@ -451,7 +556,7 @@ public class AppEngineCloudNetworkClient {
                 .setEvaluation(evalBuilder.build())
                 .build();
 
-        openPostUrl(uploadMsg, "/upload-evaluation");
+        openPostUrl("/upload-evaluation", uploadMsg);
     }
 
     public @CheckForNull Issue getIssueByHash(String hash) {
@@ -470,7 +575,7 @@ public class AppEngineCloudNetworkClient {
 
     public void signOut() {
         if (sessionId != null) {
-            openPostUrl(null, "/log-out/" + sessionId);
+            openPostUrl("/log-out/" + sessionId, null);
             sessionId = null;
             AppEngineNameLookup.clearSavedSessionInformation();
         }

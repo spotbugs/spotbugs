@@ -7,7 +7,7 @@ import junit.framework.Assert;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 
 public class FlybushServletTestUtil {
-    public static final long SAMPLE_TIMESTAMP = 1270061080;
+    public static final long SAMPLE_TIMESTAMP = 1270061080000L;
 
     private FlybushServletTestUtil() { }
 

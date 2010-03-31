@@ -1,8 +1,24 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+import com.atlassian.jira.rpc.soap.beans.RemoteIssue;
+import com.google.gdata.client.authn.oauth.OAuthException;
+import com.google.gdata.data.projecthosting.IssuesEntry;
+import com.google.gdata.util.ServiceException;
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.NotSignedInException;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
-
+import javax.swing.JOptionPane;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,26 +51,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JOptionPane;
-
-import com.atlassian.jira.rpc.soap.beans.RemoteIssue;
-import com.google.gdata.client.authn.oauth.OAuthException;
-import com.google.gdata.data.projecthosting.IssuesEntry;
-import com.google.gdata.util.ServiceException;
-
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.AbstractCloud;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.NotSignedInException;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 
 @SuppressWarnings({"ThrowableInstanceNeverThrown"})
 public class AppEngineCloudClient extends AbstractCloud {
@@ -297,7 +294,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 	public long dateMin(long timestamp1, long timestamp2) {
 		if (timestamp1 < AbstractCloud.MIN_TIMESTAMP)
 			return timestamp2;
-		if (timestamp2 < AbstractCloud.MIN_TIMESTAMP)
+		if (timestamp2 < MIN_TIMESTAMP)
 			return timestamp1;
 		return Math.min(timestamp1, timestamp2);
 
@@ -459,13 +456,13 @@ public class AppEngineCloudClient extends AbstractCloud {
         setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud...");
 
         List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
-        networkClient.partitionHashes(new ArrayList<String>(bugsByHash.keySet()), tasks, bugsByHash);
+        networkClient.generateHashCheckRunnables(new ArrayList<String>(bugsByHash.keySet()), tasks, bugsByHash);
 
         executeAndWaitForAll(tasks);
 
         Collection<BugInstance> newBugs = bugsByHash.values();
-        if (!newBugs.isEmpty()) {
-            uploadBugsInBackground(new ArrayList<BugInstance>(newBugs));
+        if (!newBugs.isEmpty() || !networkClient.getTimestampsToUpdate().isEmpty()) {
+            uploadAndUpdateBugsInBackground(new ArrayList<BugInstance>(newBugs));
         } else {
             setStatusMsg("All " + numBugs + " bugs are already stored in the FindBugs Cloud");
         }
@@ -597,12 +594,13 @@ public class AppEngineCloudClient extends AbstractCloud {
         return projectName;
     }
 
-    private void uploadBugsInBackground(final List<BugInstance> newBugs) {
+    private void uploadAndUpdateBugsInBackground(final List<BugInstance> newBugs) {
         backgroundExecutor.execute(new Runnable() {
             public void run() {
                 List<Callable<Object>> callables = new ArrayList<Callable<Object>>();
                 try {
-                    networkClient.uploadNewBugs(newBugs, callables);
+                    networkClient.generateUploadRunnables(newBugs, callables);
+                    networkClient.generateUpdateTimestampRunnables(callables);
                     executeAndWaitForAll(callables);
 
                 } catch (NotSignedInException e) {
