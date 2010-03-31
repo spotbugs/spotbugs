@@ -1,23 +1,10 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import com.google.common.collect.Lists;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.PropertyBundle;
-import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
-import junit.framework.TestCase;
+import static edu.umd.cs.findbugs.cloud.appEngine.AppEngineCloudClient.processJiraDashboardUrl;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.normalizeHash;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,13 +15,29 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.Executor;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.AppEngineCloudClient.processJiraDashboardUrl;
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.normalizeHash;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import junit.framework.TestCase;
+
+import com.google.common.collect.Lists;
+
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
 public class AppEngineCloudClientTest extends TestCase {
 	private BugInstance missingIssue;
@@ -369,7 +372,7 @@ public class AppEngineCloudClientTest extends TestCase {
 
         public MyAppEngineCloudClient(CloudPlugin plugin, SortedBugCollection bugs,
                                       Executor runImmediatelyExecutor, Iterator<HttpURLConnection> mockConnectionsP) {
-            super(plugin, bugs, runImmediatelyExecutor);
+            super(plugin, bugs, new Properties(), runImmediatelyExecutor);
             this.mockConnections = mockConnectionsP;
             urlsRequested = Lists.newArrayList();
 

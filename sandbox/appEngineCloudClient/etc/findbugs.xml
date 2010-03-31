@@ -16,9 +16,7 @@
 	 cloudClass="edu.umd.cs.findbugs.cloud.appEngine.AppEngineCloudClient"
 	 usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup"
 	>
-<Properties>
-appengine.host=http://findbugs-cloud.appspot.com
-</Properties>
+       <Property key="appengine.host">http://findbugs-cloud.appspot.com</Property>
 </Cloud>
 
 </FindbugsPlugin>

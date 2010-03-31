@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -33,6 +35,8 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.JOptionPane;
+
 import com.atlassian.jira.rpc.soap.beans.RemoteIssue;
 import com.google.gdata.client.authn.oauth.OAuthException;
 import com.google.gdata.data.projecthosting.IssuesEntry;
@@ -44,7 +48,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
-import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.NotSignedInException;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
@@ -52,8 +55,6 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
-
-import javax.swing.*;
 
 @SuppressWarnings({"ThrowableInstanceNeverThrown"})
 public class AppEngineCloudClient extends AbstractCloud {
@@ -73,16 +74,16 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     /** used via reflection */
     @SuppressWarnings({"UnusedDeclaration"})
-    public AppEngineCloudClient(CloudPlugin plugin, BugCollection bugs) {
-		this(plugin, bugs, null);
+    public AppEngineCloudClient(CloudPlugin plugin, BugCollection bugs, Properties properties) {
+		this(plugin, bugs, properties, null);
         setNetworkClient(new AppEngineCloudNetworkClient());
 	}
 
 	/** for testing */
-	AppEngineCloudClient(CloudPlugin plugin, BugCollection bugs,
+	AppEngineCloudClient(CloudPlugin plugin, BugCollection bugs,  Properties properties,
                          @CheckForNull Executor executor) {
 
-		super(plugin, bugs);
+		super(plugin, bugs, properties);
 		if (executor == null) {
 			backgroundExecutorService = Executors.newFixedThreadPool(10);
 			backgroundExecutor = backgroundExecutorService;
@@ -293,11 +294,10 @@ public class AppEngineCloudClient extends AbstractCloud {
 		return firstSeen;
 	}
 
-	private static long MIN_TIMESTAMP = new Date("Jan 23, 1996").getTime();
 	public long dateMin(long timestamp1, long timestamp2) {
-		if (timestamp1 < MIN_TIMESTAMP)
+		if (timestamp1 < AbstractCloud.MIN_TIMESTAMP)
 			return timestamp2;
-		if (timestamp2 < MIN_TIMESTAMP)
+		if (timestamp2 < AbstractCloud.MIN_TIMESTAMP)
 			return timestamp1;
 		return Math.min(timestamp1, timestamp2);
 
