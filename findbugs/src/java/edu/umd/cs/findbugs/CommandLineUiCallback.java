@@ -79,8 +79,8 @@ public class CommandLineUiCallback implements IGuiCallback {
     }
   }
 
-    public int showConfirmDialogAndwait(String message, String title, int optionType, String ok, String cancel) {
-        return showConfirmDialog(message, title, optionType);
+    public int showConfirmDialog(String message, String title, String ok, String cancel) {
+        return showConfirmDialog(message, title, JOptionPane.OK_CANCEL_OPTION);
     }
 
     private int parseAnswer(String answer) {

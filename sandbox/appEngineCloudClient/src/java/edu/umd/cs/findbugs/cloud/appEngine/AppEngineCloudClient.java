@@ -142,23 +142,26 @@ public class AppEngineCloudClient extends AbstractCloud {
 		return true;
 	}
 
-    public void signInIfNecessary(String reason) throws NotSignedInException {
-        if (signedInState == SignedInState.NOT_SIGNED_IN_YET
-            || signedInState == SignedInState.SIGNIN_FAILED
-            || signedInState == SignedInState.SIGNED_OUT) {
+    /**
+     * @param reason if null, no question dialog will be shown, signin will be automatic
+     */
+    public void signInIfNecessary(@CheckForNull String reason) throws NotSignedInException {
+        if (couldSignIn()) {
 
-            IGuiCallback callback = getGuiCallback();
-            int result = callback.showConfirmDialogAndwait(reason, "FindBugs Cloud", JOptionPane.OK_CANCEL_OPTION,
-                                                           "Sign in", "Cancel");
-            if (result == 0)
-                try {
-                    signIn();
-                } catch (IOException e) {
-                    setStatusMsg("Could not sign into Cloud: " + e.getMessage());
-                    throw new NotSignedInException(e);
-                }
-            else
-                throw new NotSignedInException();
+            if (reason != null) {
+                IGuiCallback callback = getGuiCallback();
+                int result = callback.showConfirmDialog(reason, "FindBugs Cloud", "Sign in", "Cancel");
+                if (result != 0)
+                    return;
+                else
+                    throw new NotSignedInException();
+            }
+            try {
+                signIn();
+            } catch (IOException e) {
+                setStatusMsg("Could not sign into Cloud: " + e.getMessage());
+                throw new NotSignedInException(e);
+            }
 
         } else if (signedInState == SignedInState.SIGNING_IN) {
             // huh?
@@ -166,6 +169,12 @@ public class AppEngineCloudClient extends AbstractCloud {
         } else if (signedInState == SignedInState.SIGNED_IN) {
             // great!
         }
+    }
+
+    public boolean couldSignIn() {
+        return signedInState == SignedInState.NOT_SIGNED_IN_YET
+            || signedInState == SignedInState.SIGNIN_FAILED
+            || signedInState == SignedInState.SIGNED_OUT;
     }
 
     @Override
@@ -272,6 +281,10 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     static final boolean DEBUG_FIRST_SEEN = false;
 
+    public long getLocalFirstSeen(BugInstance bug) {
+        return super.getFirstSeen(bug);
+    }
+
 	public long getFirstSeen(BugInstance b) {
 		long firstSeenFromCloud = networkClient.getFirstSeenFromCloud(b);
 		long firstSeenLocally = super.getFirstSeen(b);
@@ -288,15 +301,6 @@ public class AppEngineCloudClient extends AbstractCloud {
 			}
 		}
 		return firstSeen;
-	}
-
-	public long dateMin(long timestamp1, long timestamp2) {
-		if (timestamp1 < AbstractCloud.MIN_TIMESTAMP)
-			return timestamp2;
-		if (timestamp2 < MIN_TIMESTAMP)
-			return timestamp1;
-		return Math.min(timestamp1, timestamp2);
-
 	}
 
     @Override
@@ -445,6 +449,15 @@ public class AppEngineCloudClient extends AbstractCloud {
 	}
 
 	// ================== private methods ======================
+
+	private static long dateMin(long timestamp1, long timestamp2) {
+		if (timestamp1 < AbstractCloud.MIN_TIMESTAMP)
+			return timestamp2;
+		if (timestamp2 < MIN_TIMESTAMP)
+			return timestamp1;
+		return Math.min(timestamp1, timestamp2);
+
+	}
 
     private IGuiCallback getGuiCallback() {
         return getBugCollection().getProject().getGuiCallback();
@@ -639,5 +652,4 @@ public class AppEngineCloudClient extends AbstractCloud {
     private <E> ListIterator<E> reverseIterator(List<E> list) {
         return list.listIterator(list.size());
     }
-
 }

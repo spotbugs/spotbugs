@@ -248,7 +248,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	FBFileChooser filterOpenFileChooser;
 	
 	@CheckForNull private File saveFile = null;
-	enum SaveReturn {SAVE_SUCCESSFUL, SAVE_IO_EXCEPTION, SAVE_ERROR};
+
+    enum SaveReturn {SAVE_SUCCESSFUL, SAVE_IO_EXCEPTION, SAVE_ERROR};
 	JMenuItem saveMenuItem = newJMenuItem("menu.save_item", "Save", KeyEvent.VK_S);
 
 	public static void makeInstance(FindBugsLayoutManagerFactory factory) {
@@ -3242,8 +3243,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
         return JOptionPane.showConfirmDialog(this, message, title, optionType);
     }
 
-    public int showConfirmDialogAndwait(String message, String title, int optionType, String ok, String cancel) {
-        return JOptionPane.showOptionDialog(this, message, title, optionType, JOptionPane.PLAIN_MESSAGE, null,
+    public int showConfirmDialog(String message, String title, String ok, String cancel) {
+        return JOptionPane.showOptionDialog(this, message, title,
+                                            JOptionPane.OK_CANCEL_OPTION, 
+                                            JOptionPane.PLAIN_MESSAGE, null,
                                             new Object[] { ok, cancel }, ok);
     }
 

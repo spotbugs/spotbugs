@@ -23,11 +23,14 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.Builder;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -36,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -211,7 +215,7 @@ public class AppEngineCloudNetworkClient {
             }
 
             long firstSeen = cloudClient.getFirstSeen(bugInstance);
-            if (true || (firstSeen > 0 && firstSeen < issue.getFirstSeen()))
+            if ((firstSeen > 0 && firstSeen < issue.getFirstSeen()))
                 timestampsToUpdate.add(hash);
 
             cloudClient.updateBugInstanceAndNotify(bugInstance);
@@ -227,16 +231,53 @@ public class AppEngineCloudNetworkClient {
         int bugCount = timestamps.size();
         if (bugCount == 0)
             return;
-        
-        cloudClient.signInIfNecessary("Some bugs' timestamps need to be updated on the FindBugs Cloud.\n" +
-                                      "Would you like to sign in to update them on the Cloud?");
 
         final List<BugInstance> bugs = new ArrayList<BugInstance>();
+        long biggestDiffMs = 0;
+        boolean someZeroOnCloud = false;
         for (String hash : timestamps) {
             BugInstance bug = cloudClient.getBugByHash(hash);
-            if (bug != null)
+            if (bug != null) {
                 bugs.add(bug);
+                long firstSeenFromCloud = getFirstSeenFromCloud(bug);
+                long localFirstSeen = cloudClient.getLocalFirstSeen(bug);
+                long diffMs = firstSeenFromCloud - localFirstSeen;
+                if (diffMs > biggestDiffMs)
+                    biggestDiffMs = diffMs;
+                else if (firstSeenFromCloud == 0 && localFirstSeen != 0)
+                    someZeroOnCloud = true;
+            }
         }
+        if (!someZeroOnCloud && biggestDiffMs < 1000 * 60)
+            // less than 1 minute off
+            return;
+
+        // if some bugs have a zero timestamp, let's not bother telling the user anything specific
+        String durationStr;
+        if (someZeroOnCloud) durationStr = "";
+        else durationStr = " up to " + toDuration(biggestDiffMs);
+
+        Calendar now = Calendar.getInstance();
+        TimeZone timeZone = now.getTimeZone();
+        String timeStr = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(now.getTime());
+        boolean daylight = timeZone.inDaylightTime(now.getTime());
+        String zoneStr = timeZone.getDisplayName(daylight, TimeZone.LONG) 
+                         + " (" + timeZone.getDisplayName(daylight, TimeZone.SHORT) + ")";
+
+        int result = getGuiCallback().showConfirmDialog(
+                "Your first-seen dates for " + bugCount + " bugs are" + durationStr
+                + " earlier than those on the FindBugs Cloud.\n" +
+                "Would you like to update the dates on the Cloud?\n" +
+
+                "\n" +
+                timeStr + "\n" +
+                zoneStr + "\n" +
+                "(If you're not sure the time and time zone are correct, click Cancel.)",
+                "FindBugs Cloud", "Update", "Cancel");
+        if (result != 0)
+            return;
+
+        cloudClient.signInIfNecessary(null);
 
         // since the protocol groups bugs by timestamp, let's optimize network bandwidth by sorting first. probably
         // doesn't matter.
@@ -260,6 +301,26 @@ public class AppEngineCloudNetworkClient {
                 }
             });
         }
+    }
+
+    private String toDuration(long ms) {
+        long weeks = ms / (1000 * 60 * 60 * 24 * 7);
+        if (weeks > 0)
+            return plural(weeks, "week");
+        long days = ms / (1000 * 60 * 60 * 24);
+        if (days > 0)
+            return plural(days, "day");
+        long hours = ms / (1000 * 60 * 60);
+        if (hours > 0)
+            return plural(hours, "hour");
+        long minutes = ms / (1000 * 60);
+        if (minutes > 0)
+            return plural(minutes, "minute");
+        return "less than a minute";
+    }
+
+    private String plural(long value, String noun) {
+        return value + " " + (value == 1 ? noun : noun+"s");
     }
 
     private void updateTimestampsNow(Collection<BugInstance> bugs) throws IOException {
