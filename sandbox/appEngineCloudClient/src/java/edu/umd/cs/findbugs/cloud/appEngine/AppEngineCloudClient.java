@@ -18,7 +18,6 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
-import javax.swing.JOptionPane;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,6 +34,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -60,16 +60,16 @@ public class AppEngineCloudClient extends AbstractCloud {
     private static final int EVALUATION_CHECK_SECS = 5 * 60;
 
     private Executor backgroundExecutor;
-	private @CheckForNull ExecutorService backgroundExecutorService;
+	@CheckForNull ExecutorService backgroundExecutorService;
 	private Timer timer;
 
     private AppEngineCloudNetworkClient networkClient;
-    private SignedInState signedInState = SignedInState.SIGNING_IN;
+    private SignedInState signedInState = SignedInState.NOT_SIGNED_IN_YET;
     private GoogleCodeBugFiler googleCodeBugFiler;
     private JiraBugFiler jiraBugFiler;
     private Map<String,String> bugStatusCache = new ConcurrentHashMap<String, String>();
 
-    /** used via reflection */
+    /** invoked via reflection */
     @SuppressWarnings({"UnusedDeclaration"})
     public AppEngineCloudClient(CloudPlugin plugin, BugCollection bugs, Properties properties) {
 		this(plugin, bugs, properties, null);
@@ -88,7 +88,30 @@ public class AppEngineCloudClient extends AbstractCloud {
 	    		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown at creation");
 
 		} else {
-			backgroundExecutorService = null;
+			backgroundExecutorService = new AbstractExecutorService() {
+                public void shutdown() {
+                }
+
+                public List<Runnable> shutdownNow() {
+                    return null;
+                }
+
+                public boolean isShutdown() {
+                    return false;
+                }
+
+                public boolean isTerminated() {
+                    return false;
+                }
+
+                public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+                    return false;
+                }
+
+                public void execute(Runnable command) {
+                    command.run();
+                }
+            };
 			backgroundExecutor = executor;
 		}
         googleCodeBugFiler = new GoogleCodeBugFiler(this);
@@ -152,8 +175,6 @@ public class AppEngineCloudClient extends AbstractCloud {
                 IGuiCallback callback = getGuiCallback();
                 int result = callback.showConfirmDialog(reason, "FindBugs Cloud", "Sign in", "Cancel");
                 if (result != 0)
-                    return;
-                else
                     throw new NotSignedInException();
             }
             try {
@@ -459,7 +480,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 	}
 
-    private IGuiCallback getGuiCallback() {
+    protected IGuiCallback getGuiCallback() {
         return getBugCollection().getProject().getGuiCallback();
     }
 
@@ -483,29 +504,31 @@ public class AppEngineCloudClient extends AbstractCloud {
     private void executeAndWaitForAll(List<Callable<Object>> tasks) {
        if (backgroundExecutorService != null && backgroundExecutorService.isShutdown())
     		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown in executeAndWaitForAll");
+        
         try {
             List<Future<Object>> results = backgroundExecutorService.invokeAll(tasks);
             for (Future<Object> result : results) {
                 result.get();
             }
+
         } catch (InterruptedException e) {
             LOGGER.log(Level.SEVERE, "error while starting hash check threads", e);
+
         } catch (ExecutionException e) {
-        	if (backgroundExecutorService.isShutdown())
-        		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown ", e);
-        	else 	if (backgroundExecutorService.isTerminated())
-       		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is termination ", e);
-        	else
-        		 LOGGER.log(Level.SEVERE, "execution exception", e);
+            if (backgroundExecutorService.isShutdown())
+                LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown ", e);
+            else if (backgroundExecutorService.isTerminated())
+                LOGGER.log(Level.SEVERE, "backgroundExecutor service is termination ", e);
+            else
+                LOGGER.log(Level.SEVERE, "execution exception", e);
 
-        }  catch (RejectedExecutionException e) {
-             	if (backgroundExecutorService.isShutdown())
-             		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown ", e);
-             	else 	if (backgroundExecutorService.isTerminated())
-            		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is termination ", e);
-             	else
-             		 LOGGER.log(Level.SEVERE, "Rejected execution", e);
-
+        } catch (RejectedExecutionException e) {
+            if (backgroundExecutorService.isShutdown())
+                LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown ", e);
+            else if (backgroundExecutorService.isTerminated())
+                LOGGER.log(Level.SEVERE, "backgroundExecutor service is termination ", e);
+            else
+                LOGGER.log(Level.SEVERE, "Rejected execution", e);
 
         }
     }
@@ -525,19 +548,22 @@ public class AppEngineCloudClient extends AbstractCloud {
 			setStatusMsg("Checking FindBugs Cloud for updates...found " + evals.getIssuesCount());
 		else
 			setStatusMsg("");
-		for (Issue issue : evals.getIssuesList()) {
-            String protoHash = decodeHash(issue.getHash());
+		for (Issue updatedIssue : evals.getIssuesList()) {
+            String protoHash = decodeHash(updatedIssue.getHash());
             Issue existingIssue = networkClient.getIssueByHash(protoHash);
-			if (existingIssue != null) {
-				Issue newIssue = mergeIssues(existingIssue, issue);
-                String newHash = decodeHash(newIssue.getHash());
+            Issue issueToStore;
+            if (existingIssue != null) {
+                issueToStore = mergeIssues(existingIssue, updatedIssue);
+                String newHash = decodeHash(issueToStore.getHash());
                 assert newHash.equals(protoHash) : newHash + " vs " + protoHash;
-                networkClient.storeIssueDetails(protoHash, newIssue);
-				BugInstance bugInstance = getBugByHash(protoHash);
-				if (bugInstance != null) {
-					updateBugInstanceAndNotify(bugInstance);
-				}
-			}
+
+			} else {
+                issueToStore = updatedIssue;
+            }
+            networkClient.storeIssueDetails(protoHash, issueToStore);
+            BugInstance bugInstance = getBugByHash(protoHash);
+            if (bugInstance != null)
+                updateBugInstanceAndNotify(bugInstance);
 		}
 	}
 

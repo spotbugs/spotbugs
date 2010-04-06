@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
 import com.google.protobuf.GeneratedMessage;
+import com.google.protobuf.TextFormat;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
@@ -23,7 +24,6 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.Builder;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -78,12 +78,16 @@ public class AppEngineCloudNetworkClient {
 
     /** returns whether soft initialization worked and the user is now signed in */
     public boolean initialize() throws IOException {
-        lookerupper = new AppEngineNameLookup();
+        lookerupper = createNameLookup();
         lookerupper.initializeSoftly(cloudClient.getPlugin());
         this.sessionId = lookerupper.getSessionId();
         this.username = lookerupper.getUsername();
         this.host = lookerupper.getHost();
         return this.sessionId != null;
+    }
+
+    protected AppEngineNameLookup createNameLookup() {
+        return new AppEngineNameLookup();
     }
 
     public void signIn(boolean force) throws IOException {
@@ -411,7 +415,7 @@ public class AppEngineCloudNetworkClient {
     }
 
     private IGuiCallback getGuiCallback() {
-        return cloudClient.getBugCollection().getProject().getGuiCallback();
+        return cloudClient.getGuiCallback();
     }
 
     private FindIssuesResponse submitHashes(List<String> bugsByHash)
@@ -444,6 +448,7 @@ public class AppEngineCloudNetworkClient {
             LOGGER.info("Error " + responseCode + ", took " + (System.currentTimeMillis() - start) + "ms");
             throw new IOException("Response code " + responseCode + " : " + conn.getResponseMessage());
         }
+
         FindIssuesResponse response = FindIssuesResponse.parseFrom(conn.getInputStream());
         conn.disconnect();
         int foundIssues = response.getFoundIssuesCount();
@@ -484,7 +489,7 @@ public class AppEngineCloudNetworkClient {
     }
 
     private UploadIssues buildUploadIssuesCommandInUIThread(final Collection<BugInstance> bugsToSend) {
-        ExecutorService updateExecutor = getGuiCallback().getBugUpdateExecutor();
+        ExecutorService updateExecutor = cloudClient.getBugUpdateExecutor();
 
         Future<UploadIssues> future = updateExecutor.submit(new Callable<UploadIssues>() {
             public UploadIssues call() throws Exception {
