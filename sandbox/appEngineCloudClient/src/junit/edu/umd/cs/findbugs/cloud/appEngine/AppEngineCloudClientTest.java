@@ -37,7 +37,7 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.AppEngineCloudClient.processJiraDashboardUrl;
+import static edu.umd.cs.findbugs.cloud.appEngine.BugFilingHelper.processJiraDashboardUrl;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.normalizeHash;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;

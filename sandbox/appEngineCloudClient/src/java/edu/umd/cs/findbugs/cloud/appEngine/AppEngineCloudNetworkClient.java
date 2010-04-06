@@ -1,7 +1,6 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
 import com.google.protobuf.GeneratedMessage;
-import com.google.protobuf.TextFormat;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
@@ -84,10 +83,6 @@ public class AppEngineCloudNetworkClient {
         this.username = lookerupper.getUsername();
         this.host = lookerupper.getHost();
         return this.sessionId != null;
-    }
-
-    protected AppEngineNameLookup createNameLookup() {
-        return new AppEngineNameLookup();
     }
 
     public void signIn(boolean force) throws IOException {
@@ -196,40 +191,6 @@ public class AppEngineCloudNetworkClient {
         return timestampsToUpdate;
     }
 
-    private void checkHashesPartition(List<String> hashes, Map<String, BugInstance> bugsByHash) throws IOException {
-        FindIssuesResponse response = submitHashes(hashes);
-
-        for (int j = 0; j < hashes.size(); j++) {
-            String hash = hashes.get(j);
-            Issue issue = response.getFoundIssues(j);
-
-            if (isEmpty(issue))
-                // the issue was not found!
-                continue;
-
-            storeIssueDetails(hash, issue);
-
-            BugInstance bugInstance;
-            if (FORCE_UPLOAD_ALL_ISSUES) bugInstance = bugsByHash.get(hash);
-            else bugInstance = bugsByHash.remove(hash);
-
-            if (bugInstance == null) {
-                LOGGER.warning("Server sent back issue that we don't know about: " + hash + " - " + issue);
-                continue;
-            }
-
-            long firstSeen = cloudClient.getFirstSeen(bugInstance);
-            if ((firstSeen > 0 && firstSeen < issue.getFirstSeen()))
-                timestampsToUpdate.add(hash);
-
-            cloudClient.updateBugInstanceAndNotify(bugInstance);
-        }
-    }
-
-    private boolean isEmpty(Issue issue) {
-        return !issue.hasFirstSeen() && !issue.hasLastSeen() && issue.getEvaluationsCount() == 0;
-    }
-
     public void generateUpdateTimestampRunnables(List<Callable<Object>> callables) throws NotSignedInException {
         List<String> timestamps = new ArrayList<String>(timestampsToUpdate);
         int bugCount = timestamps.size();
@@ -307,6 +268,176 @@ public class AppEngineCloudNetworkClient {
         }
     }
 
+    public void generateUploadRunnables(final List<BugInstance> newBugs, List<Callable<Object>> callables)
+            throws NotSignedInException {
+        final int bugCount = newBugs.size();
+        if (bugCount == 0)
+            return;
+        cloudClient.signInIfNecessary("Some bugs were not found on the FindBugs Cloud service.\n" +
+                                      "Would you like to sign in and upload them to the Cloud?");
+        final AtomicInteger bugsUploaded = new AtomicInteger(0);
+        for (int i = 0; i < bugCount; i += BUG_UPLOAD_PARTITION_SIZE) {
+            final List<BugInstance> partition = newBugs.subList(i, Math.min(bugCount, i + BUG_UPLOAD_PARTITION_SIZE));
+            callables.add(new Callable<Object>() {
+                public Object call() throws Exception {
+                    uploadNewBugsPartition(partition);
+                    bugsUploaded.addAndGet(partition.size());
+                    cloudClient.setStatusMsg("Uploading " + bugCount + " new bugs to the FindBugs Cloud..."
+                                             + (bugsUploaded.get() * 100 / bugCount) + "%");
+                    return null;
+                }
+            });
+        }
+    }
+
+    public long getFirstSeenFromCloud(BugInstance b) {
+        String instanceHash = b.getInstanceHash();
+		Issue issue = issuesByHash.get(instanceHash);
+
+        if (issue == null)
+        	  return Long.MAX_VALUE;
+        if (AppEngineCloudClient.DEBUG_FIRST_SEEN)
+        System.out.println("First seen is " + issue.getFirstSeen() + " for " + b.getMessage());
+        if (issue.getFirstSeen() == 0)
+            return Long.MAX_VALUE;
+        return issue.getFirstSeen();
+    }
+
+    public void storeIssueDetails(String hash, Issue issue) {
+        for (Evaluation eval : issue.getEvaluationsList()) {
+            if (eval.getWhen() > mostRecentEvaluationMillis) {
+                mostRecentEvaluationMillis = eval.getWhen();
+            }
+        }
+        issuesByHash.put(hash, issue);
+    }
+
+    public RecentEvaluations getRecentEvaluationsFromServer() throws IOException {
+        HttpURLConnection conn = openConnection("/get-recent-evaluations");
+        conn.setDoOutput(true);
+        try {
+            OutputStream outputStream = conn.getOutputStream();
+            GetRecentEvaluations.Builder msgb = GetRecentEvaluations.newBuilder();
+            if (sessionId != null) {
+                msgb.setSessionId(sessionId);
+            }
+            msgb.setTimestamp(mostRecentEvaluationMillis);
+
+            msgb.build().writeTo(outputStream);
+            outputStream.close();
+
+            if (conn.getResponseCode() != 200) {
+                throw new IllegalStateException(
+                        "server returned error code "
+                        + conn.getResponseCode() + " "
+                        + conn.getResponseMessage());
+            }
+            return RecentEvaluations.parseFrom(conn.getInputStream());
+        } finally {
+            conn.disconnect();
+        }
+    }
+
+    public Evaluation getMostRecentEvaluation(BugInstance b) {
+        Issue issue = issuesByHash.get(b.getInstanceHash());
+        if (issue == null)
+            return null;
+        Evaluation mostRecent = null;
+        long when = Long.MIN_VALUE;
+        for (Evaluation e : issue.getEvaluationsList())
+            if (e.getWho().equals(cloudClient.getUser()) && e.getWhen() > when) {
+                mostRecent = e;
+                when = e.getWhen();
+            }
+
+        return mostRecent;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    @SuppressWarnings({"deprecation"})
+    public void storeUserAnnotation(BugInstance bugInstance) throws NotSignedInException {
+        // store this stuff first because signIn might clobber it. this is kludgy but works.
+        BugDesignation designation = bugInstance.getNonnullUserDesignation();
+        long timestamp = designation.getTimestamp();
+        String designationKey = designation.getDesignationKey();
+        String comment = designation.getAnnotationText();
+
+        cloudClient.signInIfNecessary("To store your evaluation on the FindBugs Cloud, you must sign in first.");
+        
+        Evaluation.Builder evalBuilder = Evaluation.newBuilder()
+                .setWhen(timestamp)
+                .setDesignation(designationKey);
+        if (comment != null) {
+            evalBuilder.setComment(comment);
+        }
+        UploadEvaluation uploadMsg = UploadEvaluation.newBuilder()
+                .setSessionId(sessionId)
+                .setHash(encodeHash(bugInstance.getInstanceHash()))
+                .setEvaluation(evalBuilder.build())
+                .build();
+
+        openPostUrl("/upload-evaluation", uploadMsg);
+    }
+
+    public @CheckForNull Issue getIssueByHash(String hash) {
+        return issuesByHash.get(hash);
+    }
+
+    public void signOut() {
+        if (sessionId != null) {
+            openPostUrl("/log-out/" + sessionId, null);
+            sessionId = null;
+            AppEngineNameLookup.clearSavedSessionInformation();
+        }
+    }
+
+    public Long getSessionId() {
+        return sessionId;
+    }
+
+    // ========================= private methods ==========================
+
+    protected AppEngineNameLookup createNameLookup() {
+        return new AppEngineNameLookup();
+    }
+
+    private void checkHashesPartition(List<String> hashes, Map<String, BugInstance> bugsByHash) throws IOException {
+        FindIssuesResponse response = submitHashes(hashes);
+
+        for (int j = 0; j < hashes.size(); j++) {
+            String hash = hashes.get(j);
+            Issue issue = response.getFoundIssues(j);
+
+            if (isEmpty(issue))
+                // the issue was not found!
+                continue;
+
+            storeIssueDetails(hash, issue);
+
+            BugInstance bugInstance;
+            if (FORCE_UPLOAD_ALL_ISSUES) bugInstance = bugsByHash.get(hash);
+            else bugInstance = bugsByHash.remove(hash);
+
+            if (bugInstance == null) {
+                LOGGER.warning("Server sent back issue that we don't know about: " + hash + " - " + issue);
+                continue;
+            }
+
+            long firstSeen = cloudClient.getFirstSeen(bugInstance);
+            if ((firstSeen > 0 && firstSeen < issue.getFirstSeen()))
+                timestampsToUpdate.add(hash);
+
+            cloudClient.updateBugInstanceAndNotify(bugInstance);
+        }
+    }
+
+    private boolean isEmpty(Issue issue) {
+        return !issue.hasFirstSeen() && !issue.hasLastSeen() && issue.getEvaluationsCount() == 0;
+    }
+
     private String toDuration(long ms) {
         long weeks = ms / (1000 * 60 * 60 * 24 * 7);
         if (weeks > 0)
@@ -370,50 +501,6 @@ public class AppEngineCloudNetworkClient {
         return map;
     }
 
-    public void generateUploadRunnables(final List<BugInstance> newBugs, List<Callable<Object>> callables)
-            throws NotSignedInException {
-        final int bugCount = newBugs.size();
-        if (bugCount == 0)
-            return;
-        cloudClient.signInIfNecessary("Some bugs were not found on the FindBugs Cloud service.\n" +
-                                      "Would you like to sign in and upload them to the Cloud?");
-        final AtomicInteger bugsUploaded = new AtomicInteger(0);
-        for (int i = 0; i < bugCount; i += BUG_UPLOAD_PARTITION_SIZE) {
-            final List<BugInstance> partition = newBugs.subList(i, Math.min(bugCount, i + BUG_UPLOAD_PARTITION_SIZE));
-            callables.add(new Callable<Object>() {
-                public Object call() throws Exception {
-                    uploadNewBugsPartition(partition);
-                    bugsUploaded.addAndGet(partition.size());
-                    cloudClient.setStatusMsg("Uploading " + bugCount + " new bugs to the FindBugs Cloud..."
-                                             + (bugsUploaded.get() * 100 / bugCount) + "%");
-                    return null;
-                }
-            });
-        }
-    }
-
-    public long getFirstSeenFromCloud(BugInstance b) {
-        String instanceHash = b.getInstanceHash();
-		Issue issue = issuesByHash.get(instanceHash);
-
-        if (issue == null)
-        	  return Long.MAX_VALUE;
-        if (AppEngineCloudClient.DEBUG_FIRST_SEEN)
-        System.out.println("First seen is " + issue.getFirstSeen() + " for " + b.getMessage());
-        if (issue.getFirstSeen() == 0)
-            return Long.MAX_VALUE;
-        return issue.getFirstSeen();
-    }
-
-    public void storeIssueDetails(String hash, Issue issue) {
-        for (Evaluation eval : issue.getEvaluationsList()) {
-            if (eval.getWhen() > mostRecentEvaluationMillis) {
-                mostRecentEvaluationMillis = eval.getWhen();
-            }
-        }
-        issuesByHash.put(hash, issue);
-    }
-
     private IGuiCallback getGuiCallback() {
         return cloudClient.getGuiCallback();
     }
@@ -474,7 +561,7 @@ public class AppEngineCloudNetworkClient {
             storeIssueDetails(hash, issue);
             hashes.add(hash);
         }
-        
+
         // let the GUI know that things changed
         cloudClient.getBugUpdateExecutor().execute(new Runnable() {
             public void run() {
@@ -526,47 +613,6 @@ public class AppEngineCloudNetworkClient {
         return (HttpURLConnection) u.openConnection();
     }
 
-    public RecentEvaluations getRecentEvaluationsFromServer() throws IOException {
-        HttpURLConnection conn = openConnection("/get-recent-evaluations");
-        conn.setDoOutput(true);
-        try {
-            OutputStream outputStream = conn.getOutputStream();
-            GetRecentEvaluations.Builder msgb = GetRecentEvaluations.newBuilder();
-            if (sessionId != null) {
-                msgb.setSessionId(sessionId);
-            }
-            msgb.setTimestamp(mostRecentEvaluationMillis);
-
-            msgb.build().writeTo(outputStream);
-            outputStream.close();
-
-            if (conn.getResponseCode() != 200) {
-                throw new IllegalStateException(
-                        "server returned error code "
-                        + conn.getResponseCode() + " "
-                        + conn.getResponseMessage());
-            }
-            return RecentEvaluations.parseFrom(conn.getInputStream());
-        } finally {
-            conn.disconnect();
-        }
-    }
-
-    public Evaluation getMostRecentEvaluation(BugInstance b) {
-        Issue issue = issuesByHash.get(b.getInstanceHash());
-        if (issue == null)
-            return null;
-        Evaluation mostRecent = null;
-        long when = Long.MIN_VALUE;
-        for (Evaluation e : issue.getEvaluationsList())
-            if (e.getWho().equals(cloudClient.getUser()) && e.getWhen() > when) {
-                mostRecent = e;
-                when = e.getWhen();
-            }
-
-        return mostRecent;
-    }
-
     private void openPostUrl(String url, GeneratedMessage uploadMsg) {
         try {
             HttpURLConnection conn = openConnection(url);
@@ -594,60 +640,5 @@ public class AppEngineCloudNetworkClient {
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    @SuppressWarnings({"deprecation"})
-    public void storeUserAnnotation(BugInstance bugInstance) throws NotSignedInException {
-        // store this stuff first because signIn might clobber it. this is kludgy but works.
-        BugDesignation designation = bugInstance.getNonnullUserDesignation();
-        long timestamp = designation.getTimestamp();
-        String designationKey = designation.getDesignationKey();
-        String comment = designation.getAnnotationText();
-
-        cloudClient.signInIfNecessary("To store your evaluation on the FindBugs Cloud, you must sign in first.");
-        
-        Evaluation.Builder evalBuilder = Evaluation.newBuilder()
-                .setWhen(timestamp)
-                .setDesignation(designationKey);
-        if (comment != null) {
-            evalBuilder.setComment(comment);
-        }
-        UploadEvaluation uploadMsg = UploadEvaluation.newBuilder()
-                .setSessionId(sessionId)
-                .setHash(encodeHash(bugInstance.getInstanceHash()))
-                .setEvaluation(evalBuilder.build())
-                .build();
-
-        openPostUrl("/upload-evaluation", uploadMsg);
-    }
-
-    public @CheckForNull Issue getIssueByHash(String hash) {
-        return issuesByHash.get(hash);
-    }
-
-    /** for testing */
-    void setUsername(String username) {
-        this.username = username;
-    }
-
-    /** for testing */
-    void setSessionId(long sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public void signOut() {
-        if (sessionId != null) {
-            openPostUrl("/log-out/" + sessionId, null);
-            sessionId = null;
-            AppEngineNameLookup.clearSavedSessionInformation();
-        }
-    }
-
-    public Long getSessionId() {
-        return sessionId;
     }
 }

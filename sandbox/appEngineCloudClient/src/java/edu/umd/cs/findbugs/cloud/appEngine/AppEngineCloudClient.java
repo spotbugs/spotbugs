@@ -1,9 +1,5 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import com.atlassian.jira.rpc.soap.beans.RemoteIssue;
-import com.google.gdata.client.authn.oauth.OAuthException;
-import com.google.gdata.data.projecthosting.IssuesEntry;
-import com.google.gdata.util.ServiceException;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
@@ -12,7 +8,6 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.NotSignedInException;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
@@ -22,7 +17,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -47,9 +41,6 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 
@@ -65,9 +56,8 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     private AppEngineCloudNetworkClient networkClient;
     private SignedInState signedInState = SignedInState.NOT_SIGNED_IN_YET;
-    private GoogleCodeBugFiler googleCodeBugFiler;
-    private JiraBugFiler jiraBugFiler;
     private Map<String,String> bugStatusCache = new ConcurrentHashMap<String, String>();
+    private final BugFilingHelper bugFilingHelper = new BugFilingHelper(this);
 
     /** invoked via reflection */
     @SuppressWarnings({"UnusedDeclaration"})
@@ -88,34 +78,9 @@ public class AppEngineCloudClient extends AbstractCloud {
 	    		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown at creation");
 
 		} else {
-			backgroundExecutorService = new AbstractExecutorService() {
-                public void shutdown() {
-                }
-
-                public List<Runnable> shutdownNow() {
-                    return null;
-                }
-
-                public boolean isShutdown() {
-                    return false;
-                }
-
-                public boolean isTerminated() {
-                    return false;
-                }
-
-                public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-                    return false;
-                }
-
-                public void execute(Runnable command) {
-                    command.run();
-                }
-            };
+			backgroundExecutorService = new ReallySimpleExecutorService();
 			backgroundExecutor = executor;
 		}
-        googleCodeBugFiler = new GoogleCodeBugFiler(this);
-        jiraBugFiler = new JiraBugFiler(this);
     }
 
 	/** package-private for testing */
@@ -346,69 +311,14 @@ public class AppEngineCloudClient extends AbstractCloud {
         if (status != null) {
             return status;
         }
-        Issue issue = networkClient.getIssueByHash(hash);
-        ProtoClasses.BugLinkType linkType = ProtoClasses.BugLinkType.GOOGLE_CODE; // default to googlecode
-        if (issue.hasBugLinkType())
-            linkType = issue.getBugLinkType();
-
-        final BugFiler bugFiler;
-        switch (linkType) {
-            case GOOGLE_CODE:
-                bugFiler = googleCodeBugFiler;
-                break;
-            case JIRA:
-                bugFiler = jiraBugFiler;
-                break;
-            default:
-                return "<unknown>";
-        }
-        final String bugLink = issue.getBugLink();
-        backgroundExecutor.execute(new Runnable() {
-            public void run() {
-                String status = null;
-                try {
-                    status = bugFiler.getBugStatus(bugLink);
-                } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Error while connecting to bug tracker", e);
-                }
-                if (status == null)
-                    status = "<unknown>";
-                bugStatusCache.put(hash, status);
-                getBugUpdateExecutor().execute(new Runnable() {
-                    public void run() {
-                        updatedIssue(b);
-                    }
-                });
-            }
-        });
-        status = "<loading...>";
-        bugStatusCache.put(hash, status);
-        return status;
+        return bugFilingHelper.lookupBugStatus(b);
     }
 
     @Override
 	public URL getBugLink(BugInstance b) {
         if (getBugLinkStatus(b) == BugFilingStatus.FILE_BUG) {
 		    try {
-                String jiraUrl = askUserForJiraUrl();
-                if (jiraUrl == null)
-                    return null;
-                IGuiCallback callback = bugCollection.getProject().getGuiCallback();
-                List<String> result = callback.showForm("", "File a bug on JIRA", Arrays.asList(
-                        new IGuiCallback.FormItem("Project", null, jiraBugFiler.getProjectKeys(jiraUrl)),
-                        new IGuiCallback.FormItem("Component"),
-                        new IGuiCallback.FormItem("Type", null, jiraBugFiler.getIssueTypes(jiraUrl))));
-                if (result == null)
-                    return null; // user cancelled
-                RemoteIssue issue = jiraBugFiler.fileBug(jiraUrl, b, result.get(0), result.get(1), result.get(2));
-                String bugUrl = jiraUrl + "/browse/" + issue.getKey();
-                networkClient.setBugLinkOnCloudAndStoreIssueDetails(b, bugUrl, ProtoClasses.BugLinkType.JIRA);
-                return new URL(bugUrl);
-
-//                String projectName = askUserForGoogleCodeProjectName();
-//                if (projectName == null)
-//                    return null;
-//                return fileGoogleCodeBug(b, projectName);
+                return bugFilingHelper.fileBug(b, this);
 
             } catch (Exception e) {
                 throw new IllegalStateException(e);
@@ -469,7 +379,26 @@ public class AppEngineCloudClient extends AbstractCloud {
 		return Collections.emptyList();
 	}
 
-	// ================== private methods ======================
+    // ============================== misc =====================================
+
+    public Executor getBackgroundExecutor() {
+        return backgroundExecutor;
+    }
+
+    public void updateBugStatusCache(final BugInstance b, String status) {
+        bugStatusCache.put(b.getInstanceHash(), status);
+        getBugUpdateExecutor().execute(new Runnable() {
+            public void run() {
+                updatedIssue(b);
+            }
+        });
+    }
+
+    protected IGuiCallback getGuiCallback() {
+        return getBugCollection().getProject().getGuiCallback();
+    }
+
+	// ========================= private methods ==================================
 
 	private static long dateMin(long timestamp1, long timestamp2) {
 		if (timestamp1 < AbstractCloud.MIN_TIMESTAMP)
@@ -479,10 +408,6 @@ public class AppEngineCloudClient extends AbstractCloud {
 		return Math.min(timestamp1, timestamp2);
 
 	}
-
-    protected IGuiCallback getGuiCallback() {
-        return getBugCollection().getProject().getGuiCallback();
-    }
 
     private void actuallyCheckBugsAgainstCloud(ConcurrentMap<String, BugInstance> bugsByHash) throws IOException {
         int numBugs = bugsByHash.size();
@@ -567,71 +492,6 @@ public class AppEngineCloudClient extends AbstractCloud {
 		}
 	}
 
-    private URL fileGoogleCodeBug(BugInstance b, String projectName)
-            throws IOException, ServiceException, OAuthException, InterruptedException, NotSignedInException {
-        IssuesEntry googleCodeIssue = googleCodeBugFiler.file(b, projectName);
-        if (googleCodeIssue == null)
-            return null;
-
-        String viewUrl = googleCodeIssue.getHtmlLink().getHref();
-        if (viewUrl == null) {
-            LOGGER.warning("Filed issue on Google Code, but URL is missing!");
-            return null;
-        }
-
-        bugStatusCache.put(b.getInstanceHash(), googleCodeIssue.getStatus().getValue());
-
-        networkClient.setBugLinkOnCloudAndStoreIssueDetails(b, viewUrl, ProtoClasses.BugLinkType.GOOGLE_CODE);
-
-        return new URL(viewUrl);
-    }
-
-    private String askUserForJiraUrl() {
-        IGuiCallback guiCallback = bugCollection.getProject().getGuiCallback();
-        Preferences prefs = Preferences.userNodeForPackage(AppEngineCloudClient.class);
-
-        String lastProject = prefs.get("last_jira_url", "");
-        String dashboardUrl = guiCallback.showQuestionDialog(
-                "Issue will be filed in JIRA.\n" +
-                "\n" +
-                "JIRA dashboard URL:\n" +
-                "(ex. http://jira.atlassian.com/secure/Dashboard.jspa)", "JIRA",
-                lastProject);
-        if (dashboardUrl == null || dashboardUrl.trim().length() == 0) {
-            return null;
-        }
-        dashboardUrl = processJiraDashboardUrl(dashboardUrl);
-        prefs.put("last_jira_url", dashboardUrl);
-        return dashboardUrl;
-    }
-
-    /** package-private for testing */
-    static String processJiraDashboardUrl(String dashboardUrl) {
-        dashboardUrl = dashboardUrl.trim();
-        Matcher m = Pattern.compile("(?:https?://)?(.*?)(?:/secure(?:/Dashboard.jspa)?.*)?").matcher(dashboardUrl);
-        if (m.matches()) {
-            dashboardUrl = "http://" + m.group(1);
-        }
-        return dashboardUrl;
-    }
-
-    private String askUserForGoogleCodeProjectName() {
-        IGuiCallback guiCallback = bugCollection.getProject().getGuiCallback();
-        Preferences prefs = Preferences.userNodeForPackage(AppEngineCloudClient.class);
-
-        String lastProject = prefs.get("last_google_code_project", "");
-        String projectName = guiCallback.showQuestionDialog(
-                "Issue will be filed at Google Code.\n" +
-                "\n" +
-                "Google Code project name:", "Google Code Issue Tracker",
-                lastProject);
-        if (projectName == null || projectName.trim().length() == 0) {
-            return null;
-        }
-        prefs.put("last_google_code_project", projectName);
-        return projectName;
-    }
-
     private void uploadAndUpdateBugsInBackground(final List<BugInstance> newBugs) {
         backgroundExecutor.execute(new Runnable() {
             public void run() {
@@ -677,5 +537,30 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     private <E> ListIterator<E> reverseIterator(List<E> list) {
         return list.listIterator(list.size());
+    }
+
+    private static class ReallySimpleExecutorService extends AbstractExecutorService {
+        public void shutdown() {
+        }
+
+        public List<Runnable> shutdownNow() {
+            return null;
+        }
+
+        public boolean isShutdown() {
+            return false;
+        }
+
+        public boolean isTerminated() {
+            return false;
+        }
+
+        public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+            return false;
+        }
+
+        public void execute(Runnable command) {
+            command.run();
+        }
     }
 }
