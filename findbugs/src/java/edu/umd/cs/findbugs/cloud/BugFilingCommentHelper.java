@@ -43,13 +43,13 @@ import java.util.List;
 /**
  * @author Keith
  */
-public class BugFilingHelper {
+public class BugFilingCommentHelper {
 	private final Cloud cloud;
     private final String BUG_NOTE;
     private final String POSTMORTEM_NOTE;
     private final int POSTMORTEM_RANK;
     
-    public BugFilingHelper(Cloud cloud) {
+    public BugFilingCommentHelper(Cloud cloud) {
         this.cloud = cloud;
         PropertyBundle properties = cloud.getPlugin().getProperties();
 		BUG_NOTE = properties.getProperty("findbugs.bugnote");

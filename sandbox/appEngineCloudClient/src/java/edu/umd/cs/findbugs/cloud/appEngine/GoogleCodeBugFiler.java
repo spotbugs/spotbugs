@@ -16,12 +16,11 @@ import com.google.gdata.data.projecthosting.Status;
 import com.google.gdata.data.projecthosting.Username;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
-import org.apache.commons.discovery.log.SimpleLog;
+import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.BugFilingHelper;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
@@ -51,13 +50,13 @@ public class GoogleCodeBugFiler implements BugFiler {
     private static final Pattern URL_REGEX = Pattern.compile("http://code.google.com/p/(.*?)/issues/detail\\?id=(\\d+)");
 
 	private final Cloud cloud;
-	private final BugFilingHelper bugFilingHelper;
+	private final BugFilingCommentHelper bugFilingCommentHelper;
 
     private @CheckForNull ProjectHostingService projectHostingService;
 
     public GoogleCodeBugFiler(Cloud cloud) {
         this.cloud = cloud;
-		bugFilingHelper = new BugFilingHelper(cloud);
+		bugFilingCommentHelper = new BugFilingCommentHelper(cloud);
 	}
 
 	public IssuesEntry file(final BugInstance instance, String project)
@@ -107,18 +106,26 @@ public class GoogleCodeBugFiler implements BugFiler {
         try {
             return callable.call();
         } catch (AuthenticationException e) {
-            // something failed, so maybe the OAuth token is expired
-            clearAuthTokenCache();
-            initProjectHostingService(true);
-            try {
-                return callable.call();
-            } catch (AuthenticationException e1) {
-                clearAuthTokenCache();
-                throw e1;
-            } catch (Exception e1) {
-                throw new IllegalStateException(e);
-            }
+            return tryAgain(callable, e);
+        } catch (ServiceException e) {
+            return tryAgain(callable, e);
+
         } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private <E> E tryAgain(Callable<E> callable, Exception e) 
+            throws OAuthException, MalformedURLException, InterruptedException, AuthenticationException {
+        // something failed, so maybe the OAuth token is expired
+        clearAuthTokenCache();
+        initProjectHostingService(true);
+        try {
+            return callable.call();
+        } catch (AuthenticationException e1) {
+            clearAuthTokenCache();
+            throw e1;
+        } catch (Exception e1) {
             throw new IllegalStateException(e);
         }
     }
@@ -192,8 +199,8 @@ public class GoogleCodeBugFiler implements BugFiler {
 
 		IssuesEntry entry = new IssuesEntry();
 		entry.getAuthors().add(author);
-        entry.setTitle(new PlainTextConstruct(bugFilingHelper.getBugReportSummary(bug)));
-		entry.setContent(new HtmlTextConstruct(bugFilingHelper.getBugReportText(bug)));
+        entry.setTitle(new PlainTextConstruct(bugFilingCommentHelper.getBugReportSummary(bug)));
+		entry.setContent(new HtmlTextConstruct(bugFilingCommentHelper.getBugReportText(bug)));
 		entry.setStatus(new Status(DEFAULT_STATUS));
 		for (String label : DEFAULT_LABELS.split(" ")) {
 			entry.addLabel(new Label(label));

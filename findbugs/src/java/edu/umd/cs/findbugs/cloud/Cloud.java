@@ -19,10 +19,12 @@
 
 package edu.umd.cs.findbugs.cloud;
 
+import com.google.protobuf.ServiceException;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 
 import javax.annotation.CheckForNull;
 import java.io.IOException;
@@ -38,8 +40,7 @@ import java.util.Date;
  * 
  * Each Cloud instance is associated with a BugCollection.
  */
-public interface Cloud {
-    public interface CloudListener {
+public interface Cloud {    public interface CloudListener {
 		void issueUpdated(BugInstance bug);
 		void statusUpdated();
 	}
@@ -210,6 +211,8 @@ public interface Cloud {
 
 	/** Get link for bug, either to file one or to view it */
 	URL getBugLink(BugInstance b);
+
+    URL fileBug(BugInstance bug, ProtoClasses.BugLinkType bugLinkType) throws NotSignedInException;
 
 	/** Note that we've initiated or completed a request to file a bug;
 	 * @param b bug against which bug was filed

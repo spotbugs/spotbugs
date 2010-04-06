@@ -73,7 +73,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
-import edu.umd.cs.findbugs.cloud.BugFilingHelper;
+import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
@@ -243,7 +243,7 @@ public  class DBCloud extends AbstractCloud {
 			throw new IllegalStateException("Bug has first seen of " + new Date(bd.firstSeen));
 	}
 
-	private BugFilingHelper bugFilingHelper = new BugFilingHelper(this);
+	private BugFilingCommentHelper bugFilingCommentHelper = new BugFilingCommentHelper(this);
 	final long now;
 	
 	public DBCloud(CloudPlugin plugin, BugCollection bugs, Properties properties) {
@@ -1495,16 +1495,16 @@ public  class DBCloud extends AbstractCloud {
         component = COMPONENT_FOR_BAD_ANALYSIS;
       else
         component = getBugComponent(b.getPrimaryClass().getClassName().replace('.', '/'));
-      String summary = bugFilingHelper.getBugReportSummary(b);
-      String report = bugFilingHelper.getBugReportText(b);
+      String summary = bugFilingCommentHelper.getBugReportSummary(b);
+      String report = bugFilingCommentHelper.getBugReportText(b);
       String u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
       if (u.length() > maxURLLength) {
-        String head = bugFilingHelper.getBugReportHead(b);
-		String sourceCode = bugFilingHelper.getBugReportSourceCode(b);
-		String tail = bugFilingHelper.getBugReportTail(b);
+        String head = bugFilingCommentHelper.getBugReportHead(b);
+		String sourceCode = bugFilingCommentHelper.getBugReportSourceCode(b);
+		String tail = bugFilingCommentHelper.getBugReportTail(b);
 		report = head + sourceCode + tail;
-        String lineTerminatedUserEvaluation = bugFilingHelper.getLineTerminatedUserEvaluation(b);
-		String explanation = bugFilingHelper.getBugPatternExplanation(b);
+        String lineTerminatedUserEvaluation = bugFilingCommentHelper.getLineTerminatedUserEvaluation(b);
+		String explanation = bugFilingCommentHelper.getBugPatternExplanation(b);
 		String supplemental = lineTerminatedUserEvaluation + explanation;
         u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
         if (u.length() > maxURLLength) {

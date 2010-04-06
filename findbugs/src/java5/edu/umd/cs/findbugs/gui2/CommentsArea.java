@@ -26,19 +26,10 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
 import edu.umd.cs.findbugs.cloud.NotSignedInException;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
-import javax.print.attribute.PrintRequestAttributeSet;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -50,7 +41,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -89,6 +79,7 @@ public class CommentsArea {
 	final MainFrame frame;
 	
 	private Executor backgroundExecutor = Executors.newSingleThreadExecutor();
+    private BugFilingStatus currentBugStatus;
 
     CommentsArea(MainFrame frame) {
 		this.frame = frame;
@@ -149,31 +140,25 @@ public class CommentsArea {
 		fileBug.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent e) {
-				if (frame.currentSelectedBugLeaf != null) {
-					saveComments();
-					BugInstance bug = frame.currentSelectedBugLeaf.getBug();
-					Cloud cloud = getMainFrame().bugCollection.getCloud();
-					if (!cloud.supportsBugLinks())
-						return;
-                    try {
-                        URL u = cloud.getBugLink(bug);
-                        if (u != null) {
-                            if (LaunchBrowser.showDocument(u)) {
-                                cloud.bugFiled(bug, null);
-                                getMainFrame().syncBugInformation();
-                            }
+                if (currentBugStatus == BugFilingStatus.VIEW_BUG) {
+                    fileOrViewBugForSelectedIssue(ProtoClasses.BugLinkType.JIRA);
+                } else {
+                    JPopupMenu menu = new JPopupMenu();
+                    menu.add("JIRA").addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            fileOrViewBugForSelectedIssue(ProtoClasses.BugLinkType.JIRA);
                         }
-                    } catch (Exception e1) {
-                        JOptionPane.showMessageDialog(getMainFrame(),
-                                                      "Could not file bug:\n"
-                                                      + e1.getClass().getSimpleName() + "\n" + e1.getMessage());
-                        LOGGER.log(Level.SEVERE, "Could not file bug", e1);
-                    }
+                    });
+                    menu.add("Google Code").addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            fileOrViewBugForSelectedIssue(ProtoClasses.BugLinkType.GOOGLE_CODE);
+                        }
+                    });
+                    menu.show(fileBug.getParent(), fileBug.getX(), fileBug.getY()+fileBug.getHeight());
                 }
-	            
             }});
 		
-		 prevCommentsComboBox = new JComboBox();
+		prevCommentsComboBox = new JComboBox();
 		prevCommentsComboBox.setEnabled(false);
 		prevCommentsComboBox
 				.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.reuse_comments", "Use this to reuse a previous textual comment for this bug"));
@@ -276,7 +261,37 @@ public class CommentsArea {
 		return centerPanel;
 	}
 
-	void setUnknownDesignation() {
+    private void fileOrViewBugForSelectedIssue(ProtoClasses.BugLinkType bugLinkType) {
+        if (frame.currentSelectedBugLeaf == null) {
+            return;
+        }
+        saveComments();
+        BugInstance bug = frame.currentSelectedBugLeaf.getBug();
+        Cloud cloud = getMainFrame().bugCollection.getCloud();
+        if (!cloud.supportsBugLinks())
+            return;
+        try {
+            URL u;
+            if (cloud.getBugLinkStatus(bug) == BugFilingStatus.FILE_BUG) {
+                u = cloud.fileBug(bug, bugLinkType);
+            } else {
+                u = cloud.getBugLink(bug);
+            }
+            if (u != null) {
+                if (LaunchBrowser.showDocument(u)) {
+                    cloud.bugFiled(bug, null);
+                    getMainFrame().syncBugInformation();
+                }
+            }
+        } catch (Exception e1) {
+            LOGGER.log(Level.SEVERE, "Could not file bug", e1);
+            JOptionPane.showMessageDialog(getMainFrame(),
+                                          "Could not file bug:\n"
+                                          + e1.getClass().getSimpleName() + "\n" + e1.getMessage());
+        }
+    }
+
+    void setUnknownDesignation() {
 		assert designationComboBox.getItemCount() == designationKeys.size();
 		designationComboBox.setSelectedIndex(0); // WARNING: this is hard
 													// coded in here.
@@ -338,10 +353,10 @@ public class CommentsArea {
 				Cloud plugin = getCloud();
 
 				if (plugin.supportsBugLinks()) {
-					BugFilingStatus status = plugin.getBugLinkStatus(bug);
-					fileBug.setText(status.toString());
-		            fileBug.setToolTipText(status == BugFilingStatus.FILE_BUG ? "Click to file bug for this issue" : "");
-					fileBug.setEnabled(status.linkEnabled());
+                    currentBugStatus = plugin.getBugLinkStatus(bug);
+					fileBug.setText(currentBugStatus.toString());
+		            fileBug.setToolTipText(currentBugStatus == BugFilingStatus.FILE_BUG ? "Click to file bug for this issue" : "");
+					fileBug.setEnabled(currentBugStatus.linkEnabled());
 				} else {
 					fileBug.setEnabled(false);
 				}

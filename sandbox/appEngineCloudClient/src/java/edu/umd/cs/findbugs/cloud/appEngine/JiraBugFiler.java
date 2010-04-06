@@ -24,7 +24,7 @@ import com.atlassian.jira.rpc.soap.jirasoapservice_v2.JiraSoapServiceServiceLoca
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.BugFilingHelper;
+import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
 import edu.umd.cs.findbugs.cloud.Cloud;
 
 public class JiraBugFiler implements BugFiler {
@@ -87,7 +87,7 @@ public class JiraBugFiler implements BugFiler {
         if (actualComponent == null)
             throw new IllegalArgumentException("no component named " + componentName);
         RemoteProject project = session.service.getProjectByKey(session.token, projectKey);
-        BugFilingHelper helper = new BugFilingHelper(cloud);
+        BugFilingCommentHelper helper = new BugFilingCommentHelper(cloud);
 
         RemoteIssue issue = new RemoteIssue();
         issue.setReporter(session.username);

@@ -22,8 +22,6 @@ import java.util.regex.Pattern;
 public class BugFilingHelper {
     private static final Logger LOGGER = Logger.getLogger(BugFilingHelper.class.getName());
 
-    private static final boolean USE_GOOGLE_CODE_BUG_FILER = true;
-
     private final AppEngineCloudClient appEngineCloudClient;
     private GoogleCodeBugFiler googleCodeBugFiler;
     private JiraBugFiler jiraBugFiler;
@@ -72,16 +70,16 @@ public class BugFilingHelper {
         return status;
     }
 
-    public URL fileBug(BugInstance b, AppEngineCloudClient appEngineCloudClient)
+    public URL fileBug(BugInstance b, ProtoClasses.BugLinkType bugLinkType)
             throws javax.xml.rpc.ServiceException, IOException, NotSignedInException, OAuthException,
                    InterruptedException, ServiceException {
-        if (USE_GOOGLE_CODE_BUG_FILER) {
+        if (bugLinkType == ProtoClasses.BugLinkType.GOOGLE_CODE) {
             String projectName = askUserForGoogleCodeProjectName();
             if (projectName == null)
                 return null;
             return fileGoogleCodeBug(b, projectName);
 
-        } else {
+        } else if (bugLinkType == ProtoClasses.BugLinkType.JIRA) {
             String jiraUrl = askUserForJiraUrl();
             if (jiraUrl == null)
                 return null;
@@ -97,6 +95,9 @@ public class BugFilingHelper {
             appEngineCloudClient.getNetworkClient().setBugLinkOnCloudAndStoreIssueDetails(
                     b, bugUrl, ProtoClasses.BugLinkType.JIRA);
             return new URL(bugUrl);
+            
+        } else {
+            throw new IllegalArgumentException("Unknown issue tracker " + bugLinkType);
         }
     }
 
@@ -128,7 +129,7 @@ public class BugFilingHelper {
         String dashboardUrl = guiCallback.showQuestionDialog(
                 "Issue will be filed in JIRA.\n" +
                 "\n" +
-                "JIRA dashboard URL:\n" +
+                "Type your project's JIRA dashboard URL below.\n" +
                 "(ex. http://jira.atlassian.com/secure/Dashboard.jspa)", "JIRA",
                 lastProject);
         if (dashboardUrl == null || dashboardUrl.trim().length() == 0) {
@@ -159,7 +160,7 @@ public class BugFilingHelper {
         String projectName = guiCallback.showQuestionDialog(
                 "Issue will be filed at Google Code.\n" +
                 "\n" +
-                "Google Code project name:", "Google Code Issue Tracker",
+                "Type your Google Code project name:", "Google Code Issue Tracker",
                 lastProject);
         if (projectName == null || projectName.trim().length() == 0) {
             return null;

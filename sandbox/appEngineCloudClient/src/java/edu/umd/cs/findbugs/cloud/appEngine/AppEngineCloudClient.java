@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+import com.google.gdata.client.authn.oauth.OAuthException;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
@@ -8,11 +9,13 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.NotSignedInException;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
+import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -318,13 +321,17 @@ public class AppEngineCloudClient extends AbstractCloud {
 	public URL getBugLink(BugInstance b) {
         if (getBugLinkStatus(b) == BugFilingStatus.FILE_BUG) {
 		    try {
-                return bugFilingHelper.fileBug(b, this);
+                return fileBug(b, ProtoClasses.BugLinkType.JIRA);
 
             } catch (Exception e) {
                 throw new IllegalStateException(e);
             }
+            
         } else {
-            String url = networkClient.getIssueByHash(b.getInstanceHash()).getBugLink();
+            Issue issue = networkClient.getIssueByHash(b.getInstanceHash());
+            if (issue == null)
+                return null;
+            String url = issue.getBugLink();
             try {
                 return new URL(url);
             } catch (MalformedURLException e) {
@@ -333,6 +340,23 @@ public class AppEngineCloudClient extends AbstractCloud {
             }
         }
 	}
+
+    public URL fileBug(BugInstance bug, ProtoClasses.BugLinkType bugLinkType)
+            throws NotSignedInException {
+        try {
+            return bugFilingHelper.fileBug(bug, bugLinkType);
+        } catch (ServiceException e) {
+            throw new IllegalStateException(e);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        } catch (OAuthException e) {
+            throw new IllegalStateException(e);
+        } catch (InterruptedException e) {
+            throw new IllegalStateException(e);
+        } catch (com.google.gdata.util.ServiceException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     @Override
 	public BugFilingStatus getBugLinkStatus(BugInstance b) {
