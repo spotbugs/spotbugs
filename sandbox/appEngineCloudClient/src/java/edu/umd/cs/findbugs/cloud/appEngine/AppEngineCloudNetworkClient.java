@@ -200,6 +200,8 @@ public class AppEngineCloudNetworkClient {
         final List<BugInstance> bugs = new ArrayList<BugInstance>();
         long biggestDiffMs = 0;
         boolean someZeroOnCloud = false;
+
+        long earliestFirstSeen = Long.MAX_VALUE;
         for (String hash : timestamps) {
             BugInstance bug = cloudClient.getBugByHash(hash);
             if (bug != null) {
@@ -207,9 +209,10 @@ public class AppEngineCloudNetworkClient {
                 long firstSeenFromCloud = getFirstSeenFromCloud(bug);
                 long localFirstSeen = cloudClient.getLocalFirstSeen(bug);
                 long diffMs = firstSeenFromCloud - localFirstSeen;
-                if (diffMs > biggestDiffMs)
+                if (diffMs > biggestDiffMs) {
                     biggestDiffMs = diffMs;
-                else if (firstSeenFromCloud == 0 && localFirstSeen != 0)
+                    earliestFirstSeen = Math.min(earliestFirstSeen, localFirstSeen);
+                } else if (firstSeenFromCloud == 0 && localFirstSeen != 0)
                     someZeroOnCloud = true;
             }
         }
@@ -226,17 +229,21 @@ public class AppEngineCloudNetworkClient {
         TimeZone timeZone = now.getTimeZone();
         String timeStr = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(now.getTime());
         boolean daylight = timeZone.inDaylightTime(now.getTime());
-        String zoneStr = timeZone.getDisplayName(daylight, TimeZone.LONG) 
+        String zoneStr = timeZone.getDisplayName(daylight, TimeZone.LONG)
                          + " (" + timeZone.getDisplayName(daylight, TimeZone.SHORT) + ")";
 
-        int result = getGuiCallback().showConfirmDialog(
-                "Your first-seen dates for " + bugCount + " bugs are" + durationStr
-                + " earlier than those on the FindBugs Cloud.\n" +
-                "Would you like to update the dates on the Cloud?\n" +
+        Calendar earliest = Calendar.getInstance(timeZone);
+        earliest.setTimeInMillis(earliestFirstSeen);
+        String earliestStr = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(earliest.getTime());
 
+        int result = getGuiCallback().showConfirmDialog(
+                "Your first-seen dates for " + bugCount + " bugs are " + durationStr
+                + " earlier than those on the FindBugs Cloud.\n"
+                + "The earliest first-seen from the local analysis is "  + earliestStr
+                + "\n"
+                + "Would you like to back date the first-seen dates on the Cloud?\n" +
                 "\n" +
-                timeStr + "\n" +
-                zoneStr + "\n" +
+                "Current time: " + timeStr + " " +  zoneStr + "\n" +
                 "(If you're not sure the time and time zone are correct, click Cancel.)",
                 "FindBugs Cloud", "Update", "Cancel");
         if (result != 0)
@@ -255,7 +262,7 @@ public class AppEngineCloudNetworkClient {
                 return 0;
             }
         });
-        
+
         for (int i = 0; i < bugCount; i += BUG_UPDATE_PARTITION_SIZE) {
             final List<BugInstance> partition = bugs.subList(i, Math.min(bugCount, i + BUG_UPLOAD_PARTITION_SIZE));
 
@@ -366,7 +373,7 @@ public class AppEngineCloudNetworkClient {
         String comment = designation.getAnnotationText();
 
         cloudClient.signInIfNecessary("To store your evaluation on the FindBugs Cloud, you must sign in first.");
-        
+
         Evaluation.Builder evalBuilder = Evaluation.newBuilder()
                 .setWhen(timestamp)
                 .setDesignation(designationKey);

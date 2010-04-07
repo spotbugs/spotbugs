@@ -1,21 +1,7 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import com.google.gdata.client.authn.oauth.OAuthException;
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.AbstractCloud;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.NotSignedInException;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 
-import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,7 +31,24 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
+import javax.xml.rpc.ServiceException;
+
+import com.google.gdata.client.authn.oauth.OAuthException;
+
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.BugLinkInterface;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.NotSignedInException;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
 @SuppressWarnings({"ThrowableInstanceNeverThrown"})
 public class AppEngineCloudClient extends AbstractCloud {
@@ -98,6 +101,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 		return true;
 	}
 
+	@Override
 	public boolean initialize() throws IOException {
         if (!super.initialize()) {
             signedInState = SignedInState.SIGNIN_FAILED;
@@ -168,11 +172,11 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     @Override
 	public void shutdown() {
-    	 
+
 		super.shutdown();
         if (timer != null)
             timer.cancel();
-        
+
         if (backgroundExecutorService != null) {
 			backgroundExecutorService.shutdownNow();
 		}
@@ -274,6 +278,7 @@ public class AppEngineCloudClient extends AbstractCloud {
         return super.getFirstSeen(bug);
     }
 
+	@Override
 	public long getFirstSeen(BugInstance b) {
 		long firstSeenFromCloud = networkClient.getFirstSeenFromCloud(b);
 		long firstSeenLocally = super.getFirstSeen(b);
@@ -326,7 +331,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             } catch (Exception e) {
                 throw new IllegalStateException(e);
             }
-            
+
         } else {
             Issue issue = networkClient.getIssueByHash(b.getInstanceHash());
             if (issue == null)
@@ -341,7 +346,8 @@ public class AppEngineCloudClient extends AbstractCloud {
         }
 	}
 
-    public URL fileBug(BugInstance bug, ProtoClasses.BugLinkType bugLinkType)
+    @Override
+	public URL fileBug(BugInstance bug, BugLinkInterface bugLinkType)
             throws NotSignedInException {
         try {
             return bugFilingHelper.fileBug(bug, bugLinkType);
@@ -368,7 +374,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 	@Override
 	public boolean supportsBugLinks() {
-		return true;
+		return false;
 	}
 
 	public void bugFiled(BugInstance b, Object bugLink) {
@@ -453,7 +459,7 @@ public class AppEngineCloudClient extends AbstractCloud {
     private void executeAndWaitForAll(List<Callable<Object>> tasks) {
        if (backgroundExecutorService != null && backgroundExecutorService.isShutdown())
     		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown in executeAndWaitForAll");
-        
+
         try {
             List<Future<Object>> results = backgroundExecutorService.invokeAll(tasks);
             for (Future<Object> result : results) {

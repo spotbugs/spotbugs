@@ -1,10 +1,5 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import javax.xml.rpc.ServiceException;
-import java.net.MalformedURLException;
-
-import com.google.gdata.client.authn.oauth.OAuthException;
-import com.google.gdata.util.AuthenticationException;
 
 /**
  * Created by IntelliJ IDEA.

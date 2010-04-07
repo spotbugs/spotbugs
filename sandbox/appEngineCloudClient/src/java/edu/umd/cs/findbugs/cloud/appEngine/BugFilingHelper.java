@@ -1,14 +1,5 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import com.atlassian.jira.rpc.soap.beans.RemoteIssue;
-import com.google.gdata.client.authn.oauth.OAuthException;
-import com.google.gdata.data.projecthosting.IssuesEntry;
-import com.google.gdata.util.ServiceException;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.cloud.NotSignedInException;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
@@ -18,6 +9,17 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.atlassian.jira.rpc.soap.beans.RemoteIssue;
+import com.google.gdata.client.authn.oauth.OAuthException;
+import com.google.gdata.data.projecthosting.IssuesEntry;
+import com.google.gdata.util.ServiceException;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.cloud.BugLinkInterface;
+import edu.umd.cs.findbugs.cloud.NotSignedInException;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 
 public class BugFilingHelper {
     private static final Logger LOGGER = Logger.getLogger(BugFilingHelper.class.getName());
@@ -70,7 +72,7 @@ public class BugFilingHelper {
         return status;
     }
 
-    public URL fileBug(BugInstance b, ProtoClasses.BugLinkType bugLinkType)
+    public URL fileBug(BugInstance b, BugLinkInterface bugLinkType)
             throws javax.xml.rpc.ServiceException, IOException, NotSignedInException, OAuthException,
                    InterruptedException, ServiceException {
         if (bugLinkType == ProtoClasses.BugLinkType.GOOGLE_CODE) {
@@ -95,7 +97,7 @@ public class BugFilingHelper {
             appEngineCloudClient.getNetworkClient().setBugLinkOnCloudAndStoreIssueDetails(
                     b, bugUrl, ProtoClasses.BugLinkType.JIRA);
             return new URL(bugUrl);
-            
+
         } else {
             throw new IllegalArgumentException("Unknown issue tracker " + bugLinkType);
         }
