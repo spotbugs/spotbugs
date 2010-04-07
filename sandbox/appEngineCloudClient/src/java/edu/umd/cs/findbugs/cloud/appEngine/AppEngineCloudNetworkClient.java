@@ -227,14 +227,14 @@ public class AppEngineCloudNetworkClient {
 
         Calendar now = Calendar.getInstance();
         TimeZone timeZone = now.getTimeZone();
-        String timeStr = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(now.getTime());
+        String timeStr = DateFormat.getDateTimeInstance().format(now.getTime());
         boolean daylight = timeZone.inDaylightTime(now.getTime());
         String zoneStr = timeZone.getDisplayName(daylight, TimeZone.LONG)
                          + " (" + timeZone.getDisplayName(daylight, TimeZone.SHORT) + ")";
 
         Calendar earliest = Calendar.getInstance(timeZone);
         earliest.setTimeInMillis(earliestFirstSeen);
-        String earliestStr = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(earliest.getTime());
+        String earliestStr = DateFormat.getDateTimeInstance().format(earliest.getTime());
 
         int result = getGuiCallback().showConfirmDialog(
                 "Your first-seen dates for " + bugCount + " bugs are " + durationStr
