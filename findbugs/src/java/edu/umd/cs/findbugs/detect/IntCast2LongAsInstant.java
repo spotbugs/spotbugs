@@ -50,7 +50,8 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
 		        "long instant database");
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+    public void sawOpcode(int seen) {
 		if (seen == INVOKEINTERFACE || seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKESTATIC) {
 			String signature = getSigConstantOperand();
 
@@ -77,11 +78,13 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
 	 * 
 	 * @see edu.umd.cs.findbugs.Detector#report()
 	 */
-	public void report() {
+	@Override
+    public void report() {
 
 	}
 
-	public void visitClassContext(ClassContext classContext) {
+	@Override
+    public void visitClassContext(ClassContext classContext) {
 		classContext.getJavaClass().accept(this);
 	}
 

@@ -273,7 +273,8 @@ public class ViewFilter {
 		LAST_3_DAYS(3, "Last 3 days"),
 		LAST_WEEK(7, "Last week"), LAST_MONTH(30, "Last month"), LAST_THREE_MONTHS(91, "Last 90 days"), ALL(
 				Integer.MAX_VALUE, "No matter when first seen") {
-			public boolean show(MainFrame mf, BugInstance b) {
+			@Override
+            public boolean show(MainFrame mf, BugInstance b) {
 				return true;
 			}
 			

@@ -125,8 +125,10 @@ public class SplitLayout implements FindBugsLayoutManager {
 
     private void removeSplitPaneBorders(JSplitPane pane) {
         pane.setUI(new BasicSplitPaneUI() {
+            @Override
             public BasicSplitPaneDivider createDefaultDivider() {
                 return new BasicSplitPaneDivider(this) {
+                    @Override
                     public void setBorder(Border b) {
                     }
                 };

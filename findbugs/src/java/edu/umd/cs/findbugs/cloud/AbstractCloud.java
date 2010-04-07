@@ -47,7 +47,6 @@ import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.username.NameLookup;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Multiset;
@@ -172,7 +171,7 @@ public abstract class AbstractCloud implements Cloud {
 		throw new UnsupportedOperationException();
 	}
 
-    public URL fileBug(BugInstance bug, ProtoClasses.BugLinkType bugLinkType) throws NotSignedInException {
+    public URL fileBug(BugInstance bug, BugLinkInterface bugLinkType) throws NotSignedInException {
         throw new UnsupportedOperationException();
     }
 

@@ -46,7 +46,8 @@ public class SlowInputStream extends FilterInputStream {
 		}
 	}
 
-	public int read() throws IOException {
+	@Override
+    public int read() throws IOException {
 		int b = in.read();
 		if (b >= 0)
 			length++;
@@ -54,11 +55,13 @@ public class SlowInputStream extends FilterInputStream {
 		return b;
 	}
 
-	public int read(byte[] b) throws IOException {
+	@Override
+    public int read(byte[] b) throws IOException {
 		return read(b, 0, b.length);
 	}
 
-	public int read(byte[] b, int off, int len) throws IOException {
+	@Override
+    public int read(byte[] b, int off, int len) throws IOException {
 		if (len > bytesPerSecond / 10)
 			len = bytesPerSecond / 10;
 		int tmp = in.read(b, off, len);
@@ -69,7 +72,8 @@ public class SlowInputStream extends FilterInputStream {
 		return tmp;
 	}
 
-	public long skip(long n) throws IOException {
+	@Override
+    public long skip(long n) throws IOException {
 		n = in.skip(n);
 		if (n >= 0)
 			length += n;
@@ -77,7 +81,8 @@ public class SlowInputStream extends FilterInputStream {
 		return n;
 	}
 
-	public void close() throws IOException {
+	@Override
+    public void close() throws IOException {
 		in.close();
 	}
 }

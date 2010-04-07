@@ -122,7 +122,8 @@ public class PackageStats implements XMLWriteable {
 	private int size;
 	private int numClasses;
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		return String.format("%s, %d classes, %d ncss",  packageName, numClasses, size);
 	}
 

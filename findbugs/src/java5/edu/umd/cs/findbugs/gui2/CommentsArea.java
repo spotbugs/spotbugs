@@ -19,21 +19,6 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
-import edu.umd.cs.findbugs.cloud.NotSignedInException;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
-import edu.umd.cs.findbugs.util.LaunchBrowser;
-
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.tree.TreePath;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -49,6 +34,30 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.tree.TreePath;
+
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.BugLinkInterface;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.NotSignedInException;
+import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
+import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 /**
  * @author pugh
@@ -140,22 +149,22 @@ public class CommentsArea {
 		fileBug.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent e) {
-                if (currentBugStatus == BugFilingStatus.VIEW_BUG) {
-                    fileOrViewBugForSelectedIssue(ProtoClasses.BugLinkType.JIRA);
-                } else {
-                    JPopupMenu menu = new JPopupMenu();
-                    menu.add("JIRA").addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            fileOrViewBugForSelectedIssue(ProtoClasses.BugLinkType.JIRA);
-                        }
-                    });
-                    menu.add("Google Code").addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            fileOrViewBugForSelectedIssue(ProtoClasses.BugLinkType.GOOGLE_CODE);
-                        }
-                    });
-                    menu.show(fileBug.getParent(), fileBug.getX(), fileBug.getY()+fileBug.getHeight());
-                }
+//                if (currentBugStatus == BugFilingStatus.VIEW_BUG) {
+//                    fileOrViewBugForSelectedIssue(ProtoClasses.BugLinkType.JIRA);
+//                } else {
+//                    JPopupMenu menu = new JPopupMenu();
+//                    menu.add("JIRA").addActionListener(new ActionListener() {
+//                        public void actionPerformed(ActionEvent e) {
+//                            fileOrViewBugForSelectedIssue(ProtoClasses.BugLinkType.JIRA);
+//                        }
+//                    });
+//                    menu.add("Google Code").addActionListener(new ActionListener() {
+//                        public void actionPerformed(ActionEvent e) {
+//                            fileOrViewBugForSelectedIssue(ProtoClasses.BugLinkType.GOOGLE_CODE);
+//                        }
+//                    });
+//                    menu.show(fileBug.getParent(), fileBug.getX(), fileBug.getY()+fileBug.getHeight());
+//                }
             }});
 		
 		prevCommentsComboBox = new JComboBox();
@@ -261,7 +270,7 @@ public class CommentsArea {
 		return centerPanel;
 	}
 
-    private void fileOrViewBugForSelectedIssue(ProtoClasses.BugLinkType bugLinkType) {
+    private void fileOrViewBugForSelectedIssue(BugLinkInterface bugLinkType) {
         if (frame.currentSelectedBugLeaf == null) {
             return;
         }

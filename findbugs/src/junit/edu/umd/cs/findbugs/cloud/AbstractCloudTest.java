@@ -370,5 +370,13 @@ public class AbstractCloudTest extends TestCase {
         public Collection<String> getProjects(String className) {
             return Collections.emptyList();
         }
+
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.cloud.Cloud#fileBug(edu.umd.cs.findbugs.BugInstance, ProtoClasses.BugLinkType)
+         */
+        @Override
+        public URL fileBug(BugInstance bug, BugLinkInterface bugLinkType) throws NotSignedInException {
+	        throw new UnsupportedOperationException();
+        }
     }
 }

@@ -164,7 +164,8 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
 	}
 
 	
-	public String toString(ClassAnnotation primaryClass) {
+	@Override
+    public String toString(ClassAnnotation primaryClass) {
 		String pattern = I18N.instance().getAnnotationDescription(description);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
 		return format.format(new BugAnnotation[]{this}, primaryClass);

@@ -264,7 +264,8 @@ public class NewProjectWizard extends FBDialog
 				sourceModel.addElement(i);
 			projectName.setText(curProject.getProjectName());
 			projectName.addKeyListener(new KeyAdapter() {
-				public void keyTyped(KeyEvent e) {
+				@Override
+                public void keyTyped(KeyEvent e) {
 					projectNameChanged = true;
 				}
 			});

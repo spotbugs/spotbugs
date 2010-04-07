@@ -115,7 +115,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 				OpcodeStack.Item name = stack.getStackItem(0);
 				Object nameConstant = name.getConstant();
 				if (nameConstant instanceof String) {
-					top = map.get((String) nameConstant);
+					top = map.get(nameConstant);
 					
 					if (isTainted(top))  {
 						replaceTop = top;

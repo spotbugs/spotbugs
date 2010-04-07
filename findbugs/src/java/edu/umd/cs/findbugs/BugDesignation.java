@@ -48,7 +48,8 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
 
 	
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		String result =  designation;
 		if (user != null)
 			result += " by " + user;
@@ -199,7 +200,8 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
 		}
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		int hash = (int) this.timestamp;
 		if (user != null)
 			hash += user.hashCode();
@@ -210,7 +212,8 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
 		return hash;
 	}
 	
-	 public boolean equals(Object o) {
+	 @Override
+    public boolean equals(Object o) {
 		 if (!(o instanceof BugDesignation))
 			 return false;
 		 return this.compareTo((BugDesignation)o) == 0;

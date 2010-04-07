@@ -74,8 +74,10 @@ import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
+import edu.umd.cs.findbugs.cloud.BugLinkInterface;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.NotSignedInException;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -566,7 +568,8 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 
-	public boolean initialize() throws IOException {
+	@Override
+    public boolean initialize() throws IOException {
         if (tryInitialization()) {
             signedInState = SignedInState.SIGNIN_FAILED;
             return false;
@@ -1169,6 +1172,7 @@ public  class DBCloud extends AbstractCloud {
     public String getUser() {
 	   return findbugsUser;
     }
+    @Override
     public long getFirstSeen(BugInstance b) {
 	   return getBugData(b).firstSeen;
     }
@@ -1710,5 +1714,14 @@ public  class DBCloud extends AbstractCloud {
 
     public Collection<String> getProjects(String className) {
 	    return projectMapping.getProjects(className);
+    }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#fileBug(edu.umd.cs.findbugs.BugInstance, ProtoClasses.BugLinkType)
+     */
+    @Override
+    public URL fileBug(BugInstance bug, BugLinkInterface bugLinkType) throws NotSignedInException {
+	    // TODO Auto-generated method stub
+	    return null;
     }
 }

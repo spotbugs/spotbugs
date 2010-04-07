@@ -634,7 +634,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	 * push them on the stack. Note that two locals are loaded for long and
 	 * double loads.
 	 */
-	public void handleLoadInstruction(LoadInstruction obj) {
+	@Override
+    public void handleLoadInstruction(LoadInstruction obj) {
 		int numProduced = obj.produceStack(cpg);
 		if (numProduced == Constants.UNPREDICTABLE)
 			throw new InvalidBytecodeException("Unpredictable stack production");
