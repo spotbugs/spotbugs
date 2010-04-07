@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -47,6 +48,40 @@ import edu.umd.cs.findbugs.util.ClassName;
 public enum Sortables implements Comparator<SortableValue>
 {
 
+	FIRST_SEEN(edu.umd.cs.findbugs.L10N.getLocalString("sort.first_seen", "First Seen"))
+	{
+		@Override
+		public String getFrom(BugInstance bug)
+		{
+			long firstSeen = getFirstSeen(bug); 
+			return Long.toString(firstSeen);
+		}
+
+		/**
+         * @param bug
+         * @return
+         */
+        private long getFirstSeen(BugInstance bug) {
+	        BugCollection bugCollection = MainFrame.getInstance().bugCollection;
+			long firstSeen = bugCollection.getCloud().getFirstSeen(bug);
+	        return firstSeen;
+        }
+
+		@Override
+		public String formatValue(String value)
+		{	
+			long when = Long.parseLong(value);
+			return DateFormat.getDateTimeInstance().format(when);
+		}
+
+		@Override
+		public int compare(SortableValue one, SortableValue two)
+		{
+			// Numerical (zero is first)
+			return Integer.valueOf(one.value).compareTo(Integer.valueOf(two.value));
+		}
+	},
+	
 	FIRSTVERSION(edu.umd.cs.findbugs.L10N.getLocalString("sort.first_version", "First Version"))
 	{
 		@Override
@@ -78,6 +113,13 @@ public enum Sortables implements Comparator<SortableValue>
 		{
 			// Numerical (zero is first)
 			return Integer.valueOf(one.value).compareTo(Integer.valueOf(two.value));
+		}
+		
+		@Override
+		public boolean isAvailable(MainFrame mainframe) {
+			BugCollection bugCollection = mainframe.bugCollection;
+			return bugCollection.getCurrentAppVersion().getSequenceNumber() > 0;
+			
 		}
 	},
 
@@ -124,6 +166,14 @@ public enum Sortables implements Comparator<SortableValue>
 			if (first < second) return -1;
 			return 1;
 		}
+		
+		@Override
+		public boolean isAvailable(MainFrame mainframe) {
+			BugCollection bugCollection = mainframe.bugCollection;
+			return bugCollection.getCurrentAppVersion().getSequenceNumber() > 0;
+			
+		}
+
 	},
 
 	PRIORITY(edu.umd.cs.findbugs.L10N.getLocalString("sort.priority", "Priority"))
