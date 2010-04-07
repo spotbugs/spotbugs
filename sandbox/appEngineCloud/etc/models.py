@@ -47,7 +47,7 @@ class AppEngineDbInvocationLoader(bulkloader.Loader):
         entity.pk = None
         return entity
     def generate_key(self, i, values):
-        return int(values[0])
+        return db.Key.from_path('AppEngineDbInvocation', int(values[0]))
 
 class AppEngineDbInvocationExporter(bulkloader.Exporter):
     def __init__(self):
