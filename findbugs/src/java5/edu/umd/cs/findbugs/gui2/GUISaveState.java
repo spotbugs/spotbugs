@@ -123,7 +123,6 @@ public class GUISaveState{
 	public void setPackagePrefixSegments(int packagePrefixSegments) {
 		this.packagePrefixSegments = packagePrefixSegments;
 	}
-
 	
 	public byte[] getDockingLayout()
 	{
@@ -156,7 +155,6 @@ public class GUISaveState{
 	private GUISaveState()
 	{
 		recentFiles=new ArrayList<File>();
-//		projectsToLocations=new HashMap<String,String>();
 		previousComments=new LinkedList<String>();
 	}
 

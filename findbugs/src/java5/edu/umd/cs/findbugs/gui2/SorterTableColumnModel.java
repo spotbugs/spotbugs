@@ -25,7 +25,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListSelectionModel;
@@ -48,42 +50,52 @@ import javax.swing.tree.TreeModel;
  * @author Dan
  *
  */
-public class SorterTableColumnModel implements TableColumnModel{
+public class SorterTableColumnModel implements TableColumnModel {
 
 	private ArrayList<Sortables> order=new ArrayList<Sortables>();
-	private final Sortables[] sortables = Sortables.values();
-	private boolean[] showOrder=new boolean[sortables.length];
+	private Set<Sortables> shown = new HashSet<Sortables>();
 	private ArrayList<TableColumn> columnList=new ArrayList<TableColumn>();
 	private DefaultListSelectionModel dlsm;
 	private ArrayList<TableColumnModelListener> watchers=new ArrayList<TableColumnModelListener>();
 	private boolean frozen=false;
 
+	
+	public boolean isShown(Sortables s) {
+		return shown.contains(s);
+	}
 	public SorterTableColumnModel(Sortables[] columnHeaders){
 
-		for(int x = 0; x < columnHeaders.length; x++)
-		{
-			Sortables c=columnHeaders[x];
-			//System.out.println(c);
-			for (int y=0; y<sortables.length;y++)
-			{
-				if (c.equals(sortables[y])) 
-					showOrder[y]=true;
-			}
+		MainFrame mainFrame =  MainFrame.isAvailable() ? MainFrame.getInstance() : null;
+		int x = 0;
+		for(Sortables c : columnHeaders) {
+			if (MainFrame.isAvailable()  && !c.isAvailable(mainFrame)) continue;
+			shown.add(c);
 
-			TableColumn tc=new TableColumn(x);
-			FBTableCellRenderer temp = new FBTableCellRenderer(); 
-			tc.setHeaderRenderer(temp);
-			tc.setIdentifier(c);
-			tc.setHeaderValue(c);
-			tc.setResizable(false);
-			tc.sizeWidthToFit();
+			TableColumn tc = makeTableColumn(x, c);
 			columnList.add(tc);
+			x++;
 		}
 		dlsm=new DefaultListSelectionModel();
 		dlsm.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		orderUpdate();
 	}
+	/**
+     * @param x
+     * @param c
+     * @return
+     */
+    private TableColumn makeTableColumn(int x, Sortables c) {
+	    TableColumn tc=new TableColumn(x);
+	    FBTableCellRenderer temp = new FBTableCellRenderer(); 
+	    tc.setHeaderRenderer(temp);
+	    tc.setIdentifier(c);
+	    tc.setHeaderValue(c);
+	    tc.setResizable(false);
+	    tc.sizeWidthToFit();
+	    return tc;
+    }
 
+	
 	public void createFrom(SorterTableColumnModel other)
 	{
 		if (this.getOrder().equals(other.getOrder()))
@@ -96,28 +108,17 @@ public class SorterTableColumnModel implements TableColumnModel{
 		}
 
 		//First, empty showOrder
-		for(int x=0; x<showOrder.length;x++)
-			showOrder[x]=false; 
-
-		for(int x = 0; x < other.order.size(); x++)
-		{
-			Sortables c=other.order.get(x);
+		shown.clear();
+		MainFrame mainFrame = MainFrame.getInstance();
+		int x = 0;
+		for(Sortables c : other.order) {
+			if (!c.isAvailable(mainFrame)) continue;
 			
-			for (int y=0; y<sortables.length;y++)
-			{
-				if (c.equals(sortables[y])) 
-					showOrder[y]=true;//Then refill it, this allows sorterDialog to keep track of whats open
-			}
-
-			TableColumn tc=new TableColumn(x);
-			tc.setHeaderRenderer(new FBTableCellRenderer());
-			tc.setIdentifier(c);
-			tc.setHeaderValue(c);
-			tc.setResizable(false);
-			tc.sizeWidthToFit();
+			TableColumn tc = makeTableColumn(x, c);
 			columnList.add(tc);
 			for (TableColumnModelListener l: watchers)
 				l.columnAdded(new TableColumnModelEvent(this,x,x));
+			x++;
 		}
 		dlsm=new DefaultListSelectionModel();
 		dlsm.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -174,26 +175,17 @@ public class SorterTableColumnModel implements TableColumnModel{
 		throw new UnsupportedOperationException("Can't change sorter table columns using removeColumn");
 	}
 
-	boolean[] getVisibleColumns()
-	{
-		return showOrder;
-	}
+	
+	public void setVisible(Sortables s, boolean on) {
 
-	void setIndexChanged(int index)
-	{
-		showOrder[index]=!showOrder[index];
-		Sortables s=MainFrame.getInstance().sortables()[index];
-
-		boolean on=showOrder[index];
-
+		if (shown.contains(s) == on) {
+			// no op
+			return;
+		}
 		if (on)
 		{
-			TableColumn tc=new TableColumn(columnList.size());
-			tc.setHeaderRenderer(new FBTableCellRenderer());
-			tc.setIdentifier(s);
-			tc.setHeaderValue(s);
-			tc.setResizable(false);
-			tc.sizeWidthToFit();
+			shown.add(s);
+			TableColumn tc = makeTableColumn(columnList.size(), s);
 			columnList.add(tc);
 			for (int x=0;x<columnList.size();x++)
 			{
@@ -207,6 +199,7 @@ public class SorterTableColumnModel implements TableColumnModel{
 		}
 		else if (!on)
 		{
+			shown.remove(s);
 			for (int x=0;x<columnList.size();x++)
 			{
 				columnList.get(x).setModelIndex(x);
@@ -377,10 +370,8 @@ public class SorterTableColumnModel implements TableColumnModel{
 		if (!frozen)
 		{
 			order=new ArrayList<Sortables>();
-			for (int x=0;x<columnList.size();x++)
-			{
-				order.add((Sortables)columnList.get(x).getIdentifier());
-			}
+			for(TableColumn c : columnList)
+				order.add((Sortables) c.getIdentifier());
 		}
 	}
 

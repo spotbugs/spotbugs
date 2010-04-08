@@ -78,7 +78,13 @@ public enum Sortables implements Comparator<SortableValue>
 		public int compare(SortableValue one, SortableValue two)
 		{
 			// Numerical (zero is first)
-			return Integer.valueOf(one.value).compareTo(Integer.valueOf(two.value));
+			return Long.valueOf(one.value).compareTo(Long.valueOf(two.value));
+		}
+		
+		@Override
+		public boolean isAvailable(MainFrame mainframe) {
+			BugCollection bugCollection = mainframe.bugCollection;
+			return bugCollection != null;			
 		}
 	},
 	
@@ -118,7 +124,11 @@ public enum Sortables implements Comparator<SortableValue>
 		@Override
 		public boolean isAvailable(MainFrame mainframe) {
 			BugCollection bugCollection = mainframe.bugCollection;
-			return bugCollection.getCurrentAppVersion().getSequenceNumber() > 0;
+			if (bugCollection == null) {
+				return true;
+			}
+			long sequenceNumber = bugCollection.getCurrentAppVersion().getSequenceNumber();
+			return sequenceNumber > 0;
 			
 		}
 	},
@@ -170,6 +180,8 @@ public enum Sortables implements Comparator<SortableValue>
 		@Override
 		public boolean isAvailable(MainFrame mainframe) {
 			BugCollection bugCollection = mainframe.bugCollection;
+			if (bugCollection == null)
+				return true;
 			return bugCollection.getCurrentAppVersion().getSequenceNumber() > 0;
 			
 		}

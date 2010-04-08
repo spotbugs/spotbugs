@@ -3256,15 +3256,18 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	    setProjectAndBugCollection(project, bc);
     }
     
-    Sortables[] sortables;
+    
 	private JLabel waitStatusLabel;
-    {
+	
+    public Sortables[] getAvailableSortables() {
+    	Sortables[] sortables;
     	ArrayList<Sortables> a = new ArrayList<Sortables>(Sortables.values().length);
     	for(Sortables s : Sortables.values()) 
     		if (s.isAvailable(this))
     			a.add(s);
     	sortables = new Sortables[a.size()];
     	a.toArray(sortables);
+    	return sortables;
     }
 	public  Sortables[] sortables() {
     	return Sortables.values();

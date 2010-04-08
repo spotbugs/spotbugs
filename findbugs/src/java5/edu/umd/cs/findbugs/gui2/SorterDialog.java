@@ -35,6 +35,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
+import org.junit.runner.manipulation.Sortable;
+
 /**
  * This is the window that pops up when the user double clicks on the sorting table
  * Its also available from the menu if they remove all Sortables.  
@@ -49,14 +51,12 @@ import javax.swing.table.JTableHeader;
 public class SorterDialog extends FBDialog {
 
 	private JTableHeader preview;
-	private ArrayList<JCheckBox> checkBoxSortList = new ArrayList<JCheckBox>();
-	private CheckBoxList chBList;
+	private ArrayList<SortableCheckBox> checkBoxSortList = new ArrayList<SortableCheckBox>();
 	JButton sortApply;
-	private static SorterDialog instance = new SorterDialog();
-
+	
 	public static SorterDialog getInstance()
 	{
-		return instance;
+	 return new SorterDialog();
 	}
 
 	@Override
@@ -79,6 +79,20 @@ public class SorterDialog extends FBDialog {
 		setResizable(false);
 		preview.setColumnModel(new SorterTableColumnModel(MainFrame.getInstance().getSorter().getOrder()));
 	}
+	
+	 class SortableCheckBox extends JCheckBox {
+		final Sortables sortable;
+		SortableCheckBox(Sortables s) {
+			super(s == Sortables.DIVIDER ? edu.umd.cs.findbugs.L10N.getLocalString("sort.divider", "[divider]") : s.toString());
+			this.sortable = s;
+			addChangeListener(new ChangeListener() { 
+				public void stateChanged(ChangeEvent e) {
+						((SorterTableColumnModel)preview.getColumnModel()).setVisible(sortable, isSelected());
+				}
+			})	;
+		}
+		
+	}
 	/**
 	 * Creates JPanel with checkboxes of different things to
 	 * sort by. List is: priority, class, package, category,
@@ -91,27 +105,20 @@ public class SorterDialog extends FBDialog {
 		insidePanel.setLayout(new BorderLayout());
 		sorter.setLayout(new BorderLayout());
 		preview=new JTableHeader();
-		Sortables[] sortables = MainFrame.getInstance().sortables();
+		Sortables[] sortables = MainFrame.getInstance().getAvailableSortables();
 		preview.setColumnModel(new SorterTableColumnModel(sortables));
 
 		
 		for(Sortables s : sortables){
-			if (s == Sortables.DIVIDER)
-				checkBoxSortList.add(new JCheckBox(edu.umd.cs.findbugs.L10N.getLocalString("sort.divider", "[divider]")));
-			else
-				checkBoxSortList.add(new JCheckBox(s.toString()));
+			checkBoxSortList.add(new SortableCheckBox(s));
 		}
 
 		setSorterCheckBoxes();
 
-		for(int i = 0; i < sortables.length; i++){
-			checkBoxSortList.get(i).addChangeListener(new CheckBoxChangedListener(i));
-		}		
+	
 
-		chBList = new CheckBoxList(checkBoxSortList.toArray(
-				new JCheckBox[checkBoxSortList.size()]));
-
-		insidePanel.add(chBList, BorderLayout.NORTH);
+		insidePanel.add( new CheckBoxList(checkBoxSortList.toArray(
+				new JCheckBox[checkBoxSortList.size()])), BorderLayout.NORTH);
 
 		//insidePanel.add(sorterInfoLabel(), BorderLayout.CENTER);
 
@@ -141,7 +148,7 @@ public class SorterDialog extends FBDialog {
 			{
 				MainFrame.getInstance().getSorter().createFrom((SorterTableColumnModel)preview.getColumnModel());
 				((BugTreeModel)MainFrame.getInstance().getTree().getModel()).checkSorter();
-				instance.setVisible(false); //close window
+				SorterDialog.this.dispose();
 			}
 		});
 		bottomPanel.add(sortApply,BorderLayout.SOUTH);
@@ -150,18 +157,6 @@ public class SorterDialog extends FBDialog {
 		return sorter;
 	}
 
-	private class CheckBoxChangedListener implements ChangeListener{
-
-		int indexOfCheckBox;
-
-		public CheckBoxChangedListener(int index){
-			indexOfCheckBox = index;
-		}
-
-		public void stateChanged(ChangeEvent e) {
-				((SorterTableColumnModel)preview.getColumnModel()).setIndexChanged(indexOfCheckBox);
-		}
-	}	
 
 	/**
 	 * Sets the checkboxes in the sorter panel to what is shown in 
@@ -170,13 +165,11 @@ public class SorterDialog extends FBDialog {
 	 * the order that sorter panel has.
 	 */
 	private void setSorterCheckBoxes() {
-		boolean[] chBoxSorterBooleans = MainFrame.getInstance().getSorter().getVisibleColumns();
-		if(chBoxSorterBooleans.length != checkBoxSortList.size())
-			return;
-
-		for(int i = 0; i < checkBoxSortList.size(); i++){
-			checkBoxSortList.get(i).setSelected(chBoxSorterBooleans[i]);
-		}
+		
+		SorterTableColumnModel sorter = MainFrame.getInstance().getSorter();
+		
+		for(SortableCheckBox c : checkBoxSortList)
+			c.setSelected(sorter.isShown(c.sortable));
 	}
 
 	void freeze()

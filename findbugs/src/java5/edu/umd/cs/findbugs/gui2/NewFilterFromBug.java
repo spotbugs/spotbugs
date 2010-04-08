@@ -56,7 +56,7 @@ public class NewFilterFromBug extends FBDialog
 
 		JPanel center = new JPanel();
 		center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
-		for (Sortables s : MainFrame.getInstance().sortables())
+		for (Sortables s : MainFrame.getInstance().getAvailableSortables())
 		{
 			if (s.equals(Sortables.DIVIDER))
 				continue;
