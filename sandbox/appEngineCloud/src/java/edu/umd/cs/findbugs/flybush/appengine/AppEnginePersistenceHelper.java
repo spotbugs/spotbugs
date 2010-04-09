@@ -101,9 +101,9 @@ public class AppEnginePersistenceHelper implements PersistenceHelper {
             issue.setLastSeen((Long) result[2]);
             issue.setBugLink((String) result[3]);
             try {
-                DbIssue.DbBugLinkType linkType = (DbIssue.DbBugLinkType) result[4];
+                String linkType = (String) result[4];
                 if (linkType != null) {
-                    issue.setBugLinkType(DbIssue.DbBugLinkType.valueOf(linkType.name()));
+                    issue.setBugLinkType(linkType);
                 }
             } catch (IllegalArgumentException e) {
                 LOGGER.log(Level.SEVERE, "Error parsing issue " + issue.getHash(), e);

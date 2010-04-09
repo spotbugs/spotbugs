@@ -20,7 +20,7 @@ public class FlybushServletTestUtil {
         foundIssue.setPrimaryClass("my.class");
         foundIssue.setFirstSeen(SAMPLE_TIMESTAMP +100);
         foundIssue.setLastSeen(SAMPLE_TIMESTAMP +200);
-        foundIssue.setBugLinkType(DbIssue.DbBugLinkType.JIRA);
+        foundIssue.setBugLinkType("JIRA");
         foundIssue.setBugLink("http://bug.link");
         return foundIssue;
     }

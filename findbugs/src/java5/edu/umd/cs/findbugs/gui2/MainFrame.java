@@ -3381,6 +3381,7 @@ public String showQuestionDialog(String message, String title, String defaultVal
         gbc.gridy = 1;
         gbc.insets = new Insets(5,5,5,5);
         panel.add(new JLabel(message), gbc);
+        gbc.gridwidth = 1;
         for (FormItem item : items) {
             gbc.gridy++;
             panel.add(new JLabel(item.getLabel()), gbc);

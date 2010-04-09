@@ -100,8 +100,10 @@ public class JiraBugFiler implements BugFiler {
         return session.service.createIssue(session.token, issue);
     }
 
-    public List<String> getIssueTypes(String baseUrl) throws MalformedURLException, RemoteException, ServiceException {
+    public @CheckForNull List<String> getIssueTypes(String baseUrl) throws MalformedURLException, RemoteException, ServiceException {
         JiraSession session = getJiraSession(baseUrl);
+        if (session == null)
+            return null;
         List<String> typeNames = new ArrayList<String>();
         for (RemoteIssueType issueType : session.service.getIssueTypes(session.token)) {
             typeNames.add(issueType.getName());
@@ -147,8 +149,8 @@ public class JiraBugFiler implements BugFiler {
         String usernameKey = getPreferenceskeyForJiraBaseUrl(baseUrl); // alphanumeric plus dots and dashes
         Preferences prefs = Preferences.userNodeForPackage(JiraBugFiler.class);
         String lastUsername = prefs.get(usernameKey, "");
-        List<String> results = callback.showForm("Enter username and password for " + baseUrl,
-                                                 "JIRA Login",
+        List<String> results = callback.showForm("Enter JIRA username and password for\n" + baseUrl,
+                                                 "JIRA",
                                                  Arrays.asList(new IGuiCallback.FormItem("Username", lastUsername),
                                                                new IGuiCallback.FormItem("Password").password()));
         if (results == null)

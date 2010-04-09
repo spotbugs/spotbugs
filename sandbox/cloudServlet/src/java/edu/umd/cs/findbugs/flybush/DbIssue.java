@@ -43,9 +43,7 @@ public interface DbIssue {
 
     void setBugLink(String bugLink);
 
-    DbBugLinkType getBugLinkType();
+    String getBugLinkType();
 
-    void setBugLinkType(DbBugLinkType bugLinkType);
-
-    public static enum DbBugLinkType { GOOGLE_CODE, JIRA }
+    void setBugLinkType(String bugLinkType);
 }

@@ -19,35 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import javax.annotation.Nonnull;
-
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.Type;
-import org.objectweb.asm.tree.ClassNode;
-
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -73,7 +44,6 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.NotSignedInException;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -81,6 +51,33 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.Type;
+import org.objectweb.asm.tree.ClassNode;
+
+import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * An instance of a bug pattern.
@@ -569,8 +566,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 	 * @param key
 	 * @param bugCollection TODO
 	 */
-	public void setUserDesignationKey(String key, @CheckForNull BugCollection bugCollection) throws NotSignedInException {
-
+	public void setUserDesignationKey(String key, @CheckForNull BugCollection bugCollection) {
         BugDesignation userDesignation = getNonnullUserDesignation();
 		if (userDesignation.getDesignationKey().equals(key))
 			return;
@@ -584,7 +580,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 	 * @param index
 	 * @param bugCollection TODO
 	 */
-	public void setUserDesignationKeyIndex(int index, @CheckForNull BugCollection bugCollection) throws NotSignedInException {
+	public void setUserDesignationKeyIndex(int index, @CheckForNull BugCollection bugCollection) {
 		setUserDesignationKey(
 				I18N.instance().getUserDesignationKey(index), bugCollection);
 		}
@@ -595,7 +591,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 	 * @param annotationText the user annotation text
 	 * @param bugCollection TODO
 	 */
-	public void setAnnotationText(String annotationText, @CheckForNull BugCollection bugCollection) throws NotSignedInException {
+	public void setAnnotationText(String annotationText, @CheckForNull BugCollection bugCollection) {
 		final BugDesignation u = getNonnullUserDesignation();
 		String existingText = u.getAnnotationText();
 		if (existingText != null && existingText.equals(annotationText))

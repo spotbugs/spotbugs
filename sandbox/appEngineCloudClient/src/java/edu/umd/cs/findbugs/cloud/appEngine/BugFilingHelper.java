@@ -17,19 +17,23 @@ import com.google.gdata.util.ServiceException;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.cloud.BugLinkInterface;
-import edu.umd.cs.findbugs.cloud.NotSignedInException;
+import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 
 public class BugFilingHelper {
     private static final Logger LOGGER = Logger.getLogger(BugFilingHelper.class.getName());
+    private static final Pattern PATTERN_GOOGLE_CODE_URL = Pattern.compile(
+            "\\s*(?:http://)?code.google.com/p/([^/\\s]*)(?:/.*)?\\s*");
 
     private final AppEngineCloudClient appEngineCloudClient;
+    private PropertyBundle properties;
     private GoogleCodeBugFiler googleCodeBugFiler;
     private JiraBugFiler jiraBugFiler;
 
-    public BugFilingHelper(AppEngineCloudClient appEngineCloudClient) {
+    public BugFilingHelper(AppEngineCloudClient appEngineCloudClient, PropertyBundle properties) {
         this.appEngineCloudClient = appEngineCloudClient;
+        this.properties = properties;
         googleCodeBugFiler = new GoogleCodeBugFiler(appEngineCloudClient);
         jiraBugFiler = new JiraBugFiler(appEngineCloudClient);
     }
@@ -38,21 +42,18 @@ public class BugFilingHelper {
         final String hash = b.getInstanceHash();
         String status;
         ProtoClasses.Issue issue = appEngineCloudClient.getNetworkClient().getIssueByHash(hash);
-        ProtoClasses.BugLinkType linkType = ProtoClasses.BugLinkType.GOOGLE_CODE; // default to googlecode
-        if (issue.hasBugLinkType())
-            linkType = issue.getBugLinkType();
+        String linkType = "GOOGLE_CODE"; // default to googlecode
+        if (issue.hasBugLinkTypeStr())
+            linkType = issue.getBugLinkTypeStr();
 
         final BugFiler bugFiler;
-        switch (linkType) {
-            case GOOGLE_CODE:
-                bugFiler = googleCodeBugFiler;
-                break;
-            case JIRA:
-                bugFiler = jiraBugFiler;
-                break;
-            default:
-                return "<unknown>";
-        }
+        if (linkType.equals("GOOGLE_CODE"))
+            bugFiler = googleCodeBugFiler;
+        else if (linkType.equals("JIRA"))
+            bugFiler = jiraBugFiler;
+        else
+            return "<unknown>";
+
         final String bugLink = issue.getBugLink();
         appEngineCloudClient.getBackgroundExecutor().execute(new Runnable() {
             public void run() {
@@ -72,30 +73,42 @@ public class BugFilingHelper {
         return status;
     }
 
-    public URL fileBug(BugInstance b, BugLinkInterface bugLinkType)
-            throws javax.xml.rpc.ServiceException, IOException, NotSignedInException, OAuthException,
+    public URL fileBug(BugInstance b, String bugLinkType)
+            throws javax.xml.rpc.ServiceException, IOException, SignInCancelledException, OAuthException,
                    InterruptedException, ServiceException {
-        if (bugLinkType == ProtoClasses.BugLinkType.GOOGLE_CODE) {
-            String projectName = askUserForGoogleCodeProjectName();
-            if (projectName == null)
+        String trackerUrl = properties.getProperty("cloud.bugTrackerUrl");
+        if (trackerUrl != null && trackerUrl.trim().length() == 0)
+            trackerUrl = null;
+
+        if ("GOOGLE_CODE".equals(bugLinkType)) {
+            if (trackerUrl == null)
+                trackerUrl = askUserForGoogleCodeProjectName();
+            if (trackerUrl == null)
                 return null;
+            Matcher m = PATTERN_GOOGLE_CODE_URL.matcher(trackerUrl);
+            String projectName = m.matches() ? m.group(1) : trackerUrl;
             return fileGoogleCodeBug(b, projectName);
 
-        } else if (bugLinkType == ProtoClasses.BugLinkType.JIRA) {
-            String jiraUrl = askUserForJiraUrl();
-            if (jiraUrl == null)
+        } else if ("JIRA".equals(bugLinkType)) {
+            if (trackerUrl == null)
+                trackerUrl = askUserForJiraUrl();
+            if (trackerUrl == null)
                 return null;
+            trackerUrl = processJiraDashboardUrl(trackerUrl);
+
             IGuiCallback callback = appEngineCloudClient.getGuiCallback();
+            List<String> issueTypes = jiraBugFiler.getIssueTypes(trackerUrl);
+            if (issueTypes == null)
+                return null;
             List<String> result = callback.showForm("", "File a bug on JIRA", Arrays.asList(
-                    new IGuiCallback.FormItem("Project", null, jiraBugFiler.getProjectKeys(jiraUrl)),
+                    new IGuiCallback.FormItem("Project", null, jiraBugFiler.getProjectKeys(trackerUrl)),
                     new IGuiCallback.FormItem("Component"),
-                    new IGuiCallback.FormItem("Type", null, jiraBugFiler.getIssueTypes(jiraUrl))));
+                    new IGuiCallback.FormItem("Type", null, issueTypes)));
             if (result == null)
                 return null; // user cancelled
-            RemoteIssue issue = jiraBugFiler.fileBug(jiraUrl, b, result.get(0), result.get(1), result.get(2));
-            String bugUrl = jiraUrl + "/browse/" + issue.getKey();
-            appEngineCloudClient.getNetworkClient().setBugLinkOnCloudAndStoreIssueDetails(
-                    b, bugUrl, ProtoClasses.BugLinkType.JIRA);
+            RemoteIssue issue = jiraBugFiler.fileBug(trackerUrl, b, result.get(0), result.get(1), result.get(2));
+            String bugUrl = trackerUrl + "/browse/" + issue.getKey();
+            appEngineCloudClient.getNetworkClient().setBugLinkOnCloudAndStoreIssueDetails(b, bugUrl, "JIRA");
             return new URL(bugUrl);
 
         } else {
@@ -104,7 +117,7 @@ public class BugFilingHelper {
     }
 
     private URL fileGoogleCodeBug(BugInstance b, String projectName)
-            throws IOException, ServiceException, OAuthException, InterruptedException, NotSignedInException {
+            throws IOException, ServiceException, OAuthException, InterruptedException, SignInCancelledException {
         IssuesEntry googleCodeIssue = googleCodeBugFiler.file(b, projectName);
         if (googleCodeIssue == null)
             return null;
@@ -118,7 +131,7 @@ public class BugFilingHelper {
         appEngineCloudClient.updateBugStatusCache(b, googleCodeIssue.getStatus().getValue());
 
         appEngineCloudClient.getNetworkClient().setBugLinkOnCloudAndStoreIssueDetails(
-                b, viewUrl, ProtoClasses.BugLinkType.GOOGLE_CODE);
+                b, viewUrl, "GOOGLE_CODE");
 
         return new URL(viewUrl);
     }

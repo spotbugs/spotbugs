@@ -100,9 +100,9 @@ public class QueryServlet extends AbstractFlybushServlet {
                 .setLastSeen(dbIssue.getLastSeen());
         if (dbIssue.getBugLink() != null) {
             issueBuilder.setBugLink(dbIssue.getBugLink());
-            DbIssue.DbBugLinkType linkType = dbIssue.getBugLinkType();
+            String linkType = dbIssue.getBugLinkType();
             if (linkType != null)
-                issueBuilder.setBugLinkType(ProtoClasses.BugLinkType.valueOf(linkType.name()));
+                issueBuilder.setBugLinkTypeStr(linkType);
         }
 
         if (dbIssue.hasEvaluations()) {
@@ -120,9 +120,9 @@ public class QueryServlet extends AbstractFlybushServlet {
 				.setPrimaryClass(dbIssue.getPrimaryClass());
         if (dbIssue.getBugLink() != null) {
             issueBuilder.setBugLink(dbIssue.getBugLink());
-            DbIssue.DbBugLinkType linkType = dbIssue.getBugLinkType();
+            String linkType = dbIssue.getBugLinkType();
             if (linkType != null)
-                issueBuilder.setBugLinkType(ProtoClasses.BugLinkType.valueOf(linkType.name()));
+                issueBuilder.setBugLinkTypeStr(linkType);
         }
         addEvaluations(issueBuilder, evaluations, pm);
         return issueBuilder.build();

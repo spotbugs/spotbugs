@@ -23,7 +23,7 @@ public class LocalDbIssue implements DbIssue {
     @Persistent private long lastSeen;
     @Persistent private boolean hasEvaluations = false;
     @Persistent private String bugLink;
-    @Persistent private DbBugLinkType bugLinkType;
+    @Persistent private String bugLinkType;
     @Persistent(mappedBy = "issue") @Element(dependent="true") private Set<LocalDbEvaluation> evaluations;
 
 	public String getHash() {
@@ -105,11 +105,11 @@ public class LocalDbIssue implements DbIssue {
         this.bugLink = bugLink;
     }
 
-    public DbBugLinkType getBugLinkType() {
+    public String getBugLinkType() {
         return bugLinkType;
     }
 
-    public void setBugLinkType(DbBugLinkType bugLinkType) {
+    public void setBugLinkType(String bugLinkType) {
         this.bugLinkType = bugLinkType;
     }
 

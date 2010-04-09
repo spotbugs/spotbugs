@@ -5,9 +5,8 @@ import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.NotSignedInException;
+import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
@@ -109,7 +108,7 @@ public class AppEngineCloudNetworkClient {
         }
     }
 
-    public void setBugLinkOnCloud(BugInstance b, ProtoClasses.BugLinkType type, String bugLink) throws IOException, NotSignedInException {
+    public void setBugLinkOnCloud(BugInstance b, String type, String bugLink) throws IOException, SignInCancelledException {
         cloudClient.signInIfNecessary("To store the bug URL on the FindBugs cloud, you must sign in.");
 
         HttpURLConnection conn = openConnection("/set-bug-link");
@@ -135,15 +134,15 @@ public class AppEngineCloudNetworkClient {
         }
     }
 
-    public void setBugLinkOnCloudAndStoreIssueDetails(BugInstance b, String viewUrl, ProtoClasses.BugLinkType linkType)
-            throws IOException, NotSignedInException {
+    public void setBugLinkOnCloudAndStoreIssueDetails(BugInstance b, String viewUrl, String linkType)
+            throws IOException, SignInCancelledException {
         setBugLinkOnCloud(b, linkType, viewUrl);
 
         String hash = b.getInstanceHash();
         storeIssueDetails(hash,
                           Issue.newBuilder(getIssueByHash(hash))
                                   .setBugLink(viewUrl)
-                                  .setBugLinkType(linkType)
+                                  .setBugLinkTypeStr(linkType)
                                   .build());
     }
 
@@ -191,7 +190,7 @@ public class AppEngineCloudNetworkClient {
         return timestampsToUpdate;
     }
 
-    public void generateUpdateTimestampRunnables(List<Callable<Object>> callables) throws NotSignedInException {
+    public void generateUpdateTimestampRunnables(List<Callable<Object>> callables) throws SignInCancelledException {
         List<String> timestamps = new ArrayList<String>(timestampsToUpdate);
         int bugCount = timestamps.size();
         if (bugCount == 0)
@@ -276,7 +275,7 @@ public class AppEngineCloudNetworkClient {
     }
 
     public void generateUploadRunnables(final List<BugInstance> newBugs, List<Callable<Object>> callables)
-            throws NotSignedInException {
+            throws SignInCancelledException {
         final int bugCount = newBugs.size();
         if (bugCount == 0)
             return;
@@ -365,7 +364,7 @@ public class AppEngineCloudNetworkClient {
     }
 
     @SuppressWarnings({"deprecation"})
-    public void storeUserAnnotation(BugInstance bugInstance) throws NotSignedInException {
+    public void storeUserAnnotation(BugInstance bugInstance) throws SignInCancelledException {
         // store this stuff first because signIn might clobber it. this is kludgy but works.
         BugDesignation designation = bugInstance.getNonnullUserDesignation();
         long timestamp = designation.getTimestamp();

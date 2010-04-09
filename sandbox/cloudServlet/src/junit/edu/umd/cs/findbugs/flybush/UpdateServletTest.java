@@ -22,8 +22,6 @@ import java.util.Date;
 import java.util.List;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
-import static edu.umd.cs.findbugs.flybush.DbIssue.DbBugLinkType.GOOGLE_CODE;
-import static edu.umd.cs.findbugs.flybush.DbIssue.DbBugLinkType.JIRA;
 import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.SAMPLE_TIMESTAMP;
 import static edu.umd.cs.findbugs.flybush.UpdateServlet.ONE_DAY_IN_MILLIS;
 
@@ -371,26 +369,26 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 	}
 
     public void testSetBugLinkNotAuthenticated() throws Exception {
-        setBugLinkExpectResponse(403, "fad", GOOGLE_CODE, "http://my.bug/123");
+        setBugLinkExpectResponse(403, "fad", "GOOGLE_CODE", "http://my.bug/123");
     }
 
     public void testSetBugLinkNonexistentBug() throws Exception {
         createCloudSession(555);
-        setBugLinkExpectResponse(404, "fad", GOOGLE_CODE, "http://my.bug/123");
+        setBugLinkExpectResponse(404, "fad", "GOOGLE_CODE", "http://my.bug/123");
     }
 
     public void testSetBugLinkGoogleCode() throws Exception {
         createCloudSession(555);
         uploadIssue("fad");
-        setBugLink("fad", GOOGLE_CODE, "http://my.bug/123");
-        checkBugLinkInDb(GOOGLE_CODE, "http://my.bug/123");
+        setBugLink("fad", "GOOGLE_CODE", "http://my.bug/123");
+        checkBugLinkInDb("GOOGLE_CODE", "http://my.bug/123");
     }
 
     public void testSetBugLinkJira() throws Exception {
         createCloudSession(555);
         uploadIssue("fad");
-        setBugLink("fad", JIRA, "http://my.bug/123");
-        checkBugLinkInDb(JIRA, "http://my.bug/123");
+        setBugLink("fad", "JIRA", "http://my.bug/123");
+        checkBugLinkInDb("JIRA", "http://my.bug/123");
     }
 
     public void testSetBugLinkNullType() throws Exception {
@@ -403,44 +401,44 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
     public void testSetBugLinkTrimsSpace() throws Exception {
         createCloudSession(555);
         uploadIssue("fad");
-        setBugLink("fad", GOOGLE_CODE, "  http://my.bug/123   ");
-        checkBugLinkInDb(GOOGLE_CODE, "http://my.bug/123");
+        setBugLink("fad", "GOOGLE_CODE", "  http://my.bug/123   ");
+        checkBugLinkInDb("GOOGLE_CODE", "http://my.bug/123");
     }
 
     public void testUpdateExistingBugLink() throws Exception {
         createCloudSession(555);
         uploadIssue("fad");
-        setBugLink("fad", GOOGLE_CODE, "http://my.bug/123");
-        checkBugLinkInDb(GOOGLE_CODE, "http://my.bug/123");
-        setBugLink("fad", GOOGLE_CODE, "http://my.bug/456");
-        checkBugLinkInDb(GOOGLE_CODE, "http://my.bug/456");
+        setBugLink("fad", "GOOGLE_CODE", "http://my.bug/123");
+        checkBugLinkInDb("GOOGLE_CODE", "http://my.bug/123");
+        setBugLink("fad", "GOOGLE_CODE", "http://my.bug/456");
+        checkBugLinkInDb("GOOGLE_CODE", "http://my.bug/456");
     }
 
     public void testClearBugLink() throws Exception {
         createCloudSession(555);
         uploadIssue("fad");
-        setBugLink("fad", GOOGLE_CODE, "http://my.bug/123");
-        checkBugLinkInDb(GOOGLE_CODE, "http://my.bug/123");
-        setBugLink("fad", GOOGLE_CODE, null);
-        checkBugLinkInDb(GOOGLE_CODE, null);
+        setBugLink("fad", "GOOGLE_CODE", "http://my.bug/123");
+        checkBugLinkInDb("GOOGLE_CODE", "http://my.bug/123");
+        setBugLink("fad", "GOOGLE_CODE", null);
+        checkBugLinkInDb("GOOGLE_CODE", null);
     }
 
     public void testClearBugLinkWithEmptyString() throws Exception {
         createCloudSession(555);
         uploadIssue("fad");
-        setBugLink("fad", GOOGLE_CODE, "http://my.bug/123");
-        checkBugLinkInDb(GOOGLE_CODE, "http://my.bug/123");
-        setBugLink("fad", GOOGLE_CODE, "");
-        checkBugLinkInDb(GOOGLE_CODE, null);
+        setBugLink("fad", "GOOGLE_CODE", "http://my.bug/123");
+        checkBugLinkInDb("GOOGLE_CODE", "http://my.bug/123");
+        setBugLink("fad", "GOOGLE_CODE", "");
+        checkBugLinkInDb("GOOGLE_CODE", null);
     }
 
     public void testClearBugLinkWithSpace() throws Exception {
         createCloudSession(555);
         uploadIssue("fad");
-        setBugLink("fad", GOOGLE_CODE, "http://my.bug/123");
-        checkBugLinkInDb(GOOGLE_CODE, "http://my.bug/123");
-        setBugLink("fad", GOOGLE_CODE, "  ");
-        checkBugLinkInDb(GOOGLE_CODE, null);
+        setBugLink("fad", "GOOGLE_CODE", "http://my.bug/123");
+        checkBugLinkInDb("GOOGLE_CODE", "http://my.bug/123");
+        setBugLink("fad", "GOOGLE_CODE", "  ");
+        checkBugLinkInDb("GOOGLE_CODE", null);
     }
 
     // TODO: I suspect this doesn't work due to DatastoreService and PersistenceManager sync issues
@@ -488,7 +486,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
                 + " where randomID == :val").execute(Long.toString(sessionId));
     }
 
-    private void checkBugLinkInDb(DbIssue.DbBugLinkType expectedType, String expectedUrl) {
+    private void checkBugLinkInDb(String expectedType, String expectedUrl) {
         List<DbIssue> dbIssues = getAllIssuesFromDb();
         assertEquals(1, dbIssues.size());
         DbIssue issue = dbIssues.get(0);
@@ -498,7 +496,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         else
             assertEquals(expectedUrl, dbBugLink);
 
-        DbIssue.DbBugLinkType dbBugLinkType = issue.getBugLinkType();
+        String dbBugLinkType = issue.getBugLinkType();
         if (expectedType == null)
             assertNull("" + dbBugLinkType, dbBugLinkType);
         else
@@ -511,11 +509,11 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         return (List<DbIssue>) query.execute();
     }
 
-    private void setBugLink(String hash, DbIssue.DbBugLinkType linkType, String link) throws IOException, ServletException {
+    private void setBugLink(String hash, String linkType, String link) throws IOException, ServletException {
         setBugLinkExpectResponse(200, hash, linkType, link);
     }
 
-    private void setBugLinkExpectResponse(int responseCode, String hash, DbIssue.DbBugLinkType linkType, String link) throws IOException, ServletException {
+    private void setBugLinkExpectResponse(int responseCode, String hash, String linkType, String link) throws IOException, ServletException {
         initServletAndMocks();
         Builder setBugLink = SetBugLink.newBuilder()
                 .setSessionId(555)
@@ -523,7 +521,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         if (link != null)
             setBugLink.setUrl(link);
         if (linkType != null) {
-            setBugLink.setBugLinkType(ProtoClasses.BugLinkType.valueOf(linkType.name()));
+            setBugLink.setBugLinkType(linkType);
         }
 
         executePost("/set-bug-link", setBugLink.build().toByteArray());

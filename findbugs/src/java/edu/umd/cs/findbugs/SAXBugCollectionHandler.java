@@ -20,10 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Properties;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,7 +31,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import edu.umd.cs.findbugs.ba.ClassHash;
-import edu.umd.cs.findbugs.cloud.NotSignedInException;
+import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 import edu.umd.cs.findbugs.filter.AndMatcher;
 import edu.umd.cs.findbugs.filter.BugMatcher;
 import edu.umd.cs.findbugs.filter.ClassMatcher;
@@ -495,11 +492,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    	// ignore AnnotationText for now; will handle in endElement
 	    	String s = getOptionalAttribute(attributes, "designation"); // optional
 	    	if (s != null) {
-                try {
-                    bugInstance.setUserDesignationKey(s, null);
-                } catch (NotSignedInException e) {
-                    LOGGER.log(Level.WARNING, "Could not store user designation for bug", e);
-                }
+                bugInstance.setUserDesignationKey(s, null);
             }
             s = getOptionalAttribute(attributes, "user"); // optional
 	    	if (s != null) bugInstance.setUser(s);
@@ -619,11 +612,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					cloudPropertyKey = null;
 			} else if (outerElement.equals("BugInstance")) {
 				if (qName.equals("UserAnnotation")) {
-                    try {
-                        bugInstance.setAnnotationText(getTextContents(), null);
-                    } catch (NotSignedInException e) {
-                        LOGGER.log(Level.WARNING, "Could not set annotation text", e);
-                    }
+                    bugInstance.setAnnotationText(getTextContents(), null);
                 }
 			} else if (outerElement.equals(BugCollection.ERRORS_ELEMENT_NAME)) {
 				if (qName.equals(BugCollection.ANALYSIS_ERROR_ELEMENT_NAME)) {

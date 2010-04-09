@@ -97,7 +97,7 @@ public class AppEngineNameLookup implements NameLookup {
             }
         }
         PropertyBundle pluginProps = plugin.getProperties();
-        if (Boolean.getBoolean(SYSPROP_APPENGINE_LOCAL) || pluginProps.getBoolean(LOCAL_APPENGINE))
+        if (pluginProps.getBoolean(LOCAL_APPENGINE))
             host = pluginProps.getProperty(APPENGINE_LOCALHOST_PROPERTY_NAME, APPENGINE_LOCALHOST_DEFAULT);
         else
             host = pluginProps.getProperty(APPENGINE_HOST_PROPERTY_NAME);

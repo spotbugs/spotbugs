@@ -38,7 +38,7 @@ message SetBugLink {
     required int64 sessionId = 1;
     required bytes hash = 2;
     optional string url = 3;
-    optional BugLinkType bugLinkType = 9;
+    optional string bugLinkType = 10;
 }
 
 message GetRecentEvaluations {
@@ -50,11 +50,6 @@ message RecentEvaluations {
 	repeated Issue issues = 1;
 }
 
-enum BugLinkType {
-    GOOGLE_CODE = 1;
-    JIRA = 2;
-}
-
 message Issue {
     optional bytes hash = 1;
     optional string bugPattern = 2;
@@ -62,9 +57,11 @@ message Issue {
     optional string primaryClass = 4;
     optional int64 firstSeen = 5;
     optional int64 lastSeen = 6;
-    optional string bugLink = 8;
+
     repeated Evaluation evaluations = 7;
-    optional BugLinkType bugLinkType = 9;
+
+    optional string bugLink = 8;
+    optional string bugLinkTypeStr = 10;
 }
 
 // part of an issue

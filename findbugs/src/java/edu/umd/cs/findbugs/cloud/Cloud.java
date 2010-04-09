@@ -19,18 +19,17 @@
 
 package edu.umd.cs.findbugs.cloud;
 
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.SystemProperties;
+
+import javax.annotation.CheckForNull;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
-
-import javax.annotation.CheckForNull;
-
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.SystemProperties;
 
 
 /**
@@ -77,7 +76,7 @@ public interface Cloud {    public interface CloudListener {
 	}
 	enum Mode {
 		COMMUNAL, VOTING, SECRET
-	};
+	}
 
 	public static enum BugFilingStatus {
 		/** No bug yet filed */
@@ -211,7 +210,7 @@ public interface Cloud {    public interface CloudListener {
 	/** Get link for bug, either to file one or to view it */
 	URL getBugLink(BugInstance b);
 
-    URL fileBug(BugInstance bug, BugLinkInterface bugLinkType) throws NotSignedInException;
+    URL fileBug(BugInstance bug);
 
 	/** Note that we've initiated or completed a request to file a bug;
 	 * @param b bug against which bug was filed
@@ -271,7 +270,7 @@ public interface Cloud {    public interface CloudListener {
 	boolean overallClassificationIsNotAProblem(BugInstance b);
 
 	/** Update user designation and evaluation from information in bug instance and push to database */
-	void storeUserAnnotation(BugInstance bugInstance) throws NotSignedInException;
+	void storeUserAnnotation(BugInstance bugInstance);
 
 	/** Is this bug one that gets persisted to the cloud?
 	 * We may decide that we don't persist low confidence issues to the 

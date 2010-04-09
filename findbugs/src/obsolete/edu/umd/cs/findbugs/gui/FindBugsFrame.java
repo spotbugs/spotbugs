@@ -100,7 +100,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import edu.umd.cs.findbugs.cloud.NotSignedInException;
+import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -113,7 +113,6 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugsCommandLine;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.L10N;
-import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ShowHelp;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -3451,7 +3450,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			String text = annotationTextArea.getText();
             try {
                 currentBugInstance.setAnnotationText(text, null);
-            } catch (NotSignedInException e) {
+            } catch (SignInCancelledException e) {
                 logger.logMessage(Logger.WARNING, e.getMessage());
             }
         }

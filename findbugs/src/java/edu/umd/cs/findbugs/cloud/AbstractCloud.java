@@ -171,7 +171,7 @@ public abstract class AbstractCloud implements Cloud {
 		throw new UnsupportedOperationException();
 	}
 
-    public URL fileBug(BugInstance bug, BugLinkInterface bugLinkType) throws NotSignedInException {
+    public URL fileBug(BugInstance bug) {
         throw new UnsupportedOperationException();
     }
 

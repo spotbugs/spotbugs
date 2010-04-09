@@ -41,10 +41,8 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
-import edu.umd.cs.findbugs.cloud.BugLinkInterface;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.NotSignedInException;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
+import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
@@ -63,7 +61,7 @@ public class AppEngineCloudClient extends AbstractCloud {
     private AppEngineCloudNetworkClient networkClient;
     private SignedInState signedInState = SignedInState.NOT_SIGNED_IN_YET;
     private Map<String,String> bugStatusCache = new ConcurrentHashMap<String, String>();
-    private final BugFilingHelper bugFilingHelper = new BugFilingHelper(this);
+    private final BugFilingHelper bugFilingHelper = new BugFilingHelper(this, properties);
 
     /** invoked via reflection */
     @SuppressWarnings({"UnusedDeclaration"})
@@ -140,20 +138,20 @@ public class AppEngineCloudClient extends AbstractCloud {
     /**
      * @param reason if null, no question dialog will be shown, signin will be automatic
      */
-    public void signInIfNecessary(@CheckForNull String reason) throws NotSignedInException {
+    public void signInIfNecessary(@CheckForNull String reason) throws SignInCancelledException {
         if (couldSignIn()) {
 
             if (reason != null) {
                 IGuiCallback callback = getGuiCallback();
                 int result = callback.showConfirmDialog(reason, "FindBugs Cloud", "Sign in", "Cancel");
                 if (result != 0)
-                    throw new NotSignedInException();
+                    throw new SignInCancelledException();
             }
             try {
                 signIn();
             } catch (IOException e) {
                 setStatusMsg("Could not sign into Cloud: " + e.getMessage());
-                throw new NotSignedInException(e);
+                throw new SignInCancelledException(e);
             }
 
         } else if (signedInState == SignedInState.SIGNING_IN) {
@@ -326,7 +324,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 	public URL getBugLink(BugInstance b) {
         if (getBugLinkStatus(b) == BugFilingStatus.FILE_BUG) {
 		    try {
-                return fileBug(b, ProtoClasses.BugLinkType.JIRA);
+                return fileBug(b);
 
             } catch (Exception e) {
                 throw new IllegalStateException(e);
@@ -347,10 +345,9 @@ public class AppEngineCloudClient extends AbstractCloud {
 	}
 
     @Override
-	public URL fileBug(BugInstance bug, BugLinkInterface bugLinkType)
-            throws NotSignedInException {
+	public URL fileBug(BugInstance bug) {
         try {
-            return bugFilingHelper.fileBug(bug, bugLinkType);
+            return bugFilingHelper.fileBug(bug, properties.getProperty("cloud.bugTrackerType"));
         } catch (ServiceException e) {
             throw new IllegalStateException(e);
         } catch (IOException e) {
@@ -361,6 +358,8 @@ public class AppEngineCloudClient extends AbstractCloud {
             throw new IllegalStateException(e);
         } catch (com.google.gdata.util.ServiceException e) {
             throw new IllegalStateException(e);
+        } catch (SignInCancelledException e) {
+            return null;
         }
     }
 
@@ -374,7 +373,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 	@Override
 	public boolean supportsBugLinks() {
-		return false;
+		return true;
 	}
 
 	public void bugFiled(BugInstance b, Object bugLink) {
@@ -383,9 +382,12 @@ public class AppEngineCloudClient extends AbstractCloud {
 	// ================== mutators ================
 
 	@SuppressWarnings("deprecation")
-	public void storeUserAnnotation(BugInstance bugInstance) throws NotSignedInException {
-        networkClient.storeUserAnnotation(bugInstance);
-	}
+	public void storeUserAnnotation(BugInstance bugInstance) {
+        try {
+            networkClient.storeUserAnnotation(bugInstance);
+        } catch (SignInCancelledException e) {
+        }
+    }
 
 	@SuppressWarnings("deprecation")
     public void updateBugInstanceAndNotify(final BugInstance bugInstance) {
@@ -531,7 +533,7 @@ public class AppEngineCloudClient extends AbstractCloud {
                     networkClient.generateUpdateTimestampRunnables(callables);
                     executeAndWaitForAll(callables);
 
-                } catch (NotSignedInException e) {
+                } catch (SignInCancelledException e) {
                     // OK!
                 }
                 setStatusMsg("");

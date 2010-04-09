@@ -20,11 +20,9 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import edu.umd.cs.findbugs.cloud.NotSignedInException;
+import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
@@ -70,11 +68,7 @@ public class AddAnnotation {
                 buf.append('\n');
             }
             buf.append(this.annotation);
-            try {
-                bugInstance.setAnnotationText(buf.toString(), bugCollection);
-            } catch (NotSignedInException e) {
-                break;
-            }
+            bugInstance.setAnnotationText(buf.toString(), bugCollection);
         }
 	}
 

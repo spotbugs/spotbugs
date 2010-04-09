@@ -19,45 +19,32 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
+import edu.umd.cs.findbugs.util.LaunchBrowser;
+
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.tree.TreePath;
-
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.BugLinkInterface;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.NotSignedInException;
-import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
-import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 /**
  * @author pugh
@@ -149,22 +136,28 @@ public class CommentsArea {
 		fileBug.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent e) {
-//                if (currentBugStatus == BugFilingStatus.VIEW_BUG) {
-//                    fileOrViewBugForSelectedIssue(ProtoClasses.BugLinkType.JIRA);
-//                } else {
-//                    JPopupMenu menu = new JPopupMenu();
-//                    menu.add("JIRA").addActionListener(new ActionListener() {
-//                        public void actionPerformed(ActionEvent e) {
-//                            fileOrViewBugForSelectedIssue(ProtoClasses.BugLinkType.JIRA);
-//                        }
-//                    });
-//                    menu.add("Google Code").addActionListener(new ActionListener() {
-//                        public void actionPerformed(ActionEvent e) {
-//                            fileOrViewBugForSelectedIssue(ProtoClasses.BugLinkType.GOOGLE_CODE);
-//                        }
-//                    });
-//                    menu.show(fileBug.getParent(), fileBug.getX(), fileBug.getY()+fileBug.getHeight());
-//                }
+                if (frame.currentSelectedBugLeaf == null) {
+                    return;
+                }
+                saveComments();
+                BugInstance bug = frame.currentSelectedBugLeaf.getBug();
+                Cloud cloud1 = getMainFrame().bugCollection.getCloud();
+                if (!cloud1.supportsBugLinks())
+                    return;
+                try {
+                    URL u = cloud1.getBugLink(bug);
+                    if (u != null) {
+                        if (LaunchBrowser.showDocument(u)) {
+                            cloud1.bugFiled(bug, null);
+                            getMainFrame().syncBugInformation();
+                        }
+                    }
+                } catch (Exception e1) {
+                    LOGGER.log(Level.SEVERE, "Could not view/file bug", e1);
+                    JOptionPane.showMessageDialog(getMainFrame(),
+                                                  "Could not view/file bug:\n"
+                                                  + e1.getClass().getSimpleName() + "\n" + e1.getMessage());
+                }
             }});
 		
 		prevCommentsComboBox = new JComboBox();
@@ -266,39 +259,9 @@ public class CommentsArea {
             c.anchor = GridBagConstraints.EAST;
 			centerPanel.add(fileBug, c);
 		}
-		
+
 		return centerPanel;
 	}
-
-    private void fileOrViewBugForSelectedIssue(BugLinkInterface bugLinkType) {
-        if (frame.currentSelectedBugLeaf == null) {
-            return;
-        }
-        saveComments();
-        BugInstance bug = frame.currentSelectedBugLeaf.getBug();
-        Cloud cloud = getMainFrame().bugCollection.getCloud();
-        if (!cloud.supportsBugLinks())
-            return;
-        try {
-            URL u;
-            if (cloud.getBugLinkStatus(bug) == BugFilingStatus.FILE_BUG) {
-                u = cloud.fileBug(bug, bugLinkType);
-            } else {
-                u = cloud.getBugLink(bug);
-            }
-            if (u != null) {
-                if (LaunchBrowser.showDocument(u)) {
-                    cloud.bugFiled(bug, null);
-                    getMainFrame().syncBugInformation();
-                }
-            }
-        } catch (Exception e1) {
-            LOGGER.log(Level.SEVERE, "Could not file bug", e1);
-            JOptionPane.showMessageDialog(getMainFrame(),
-                                          "Could not file bug:\n"
-                                          + e1.getClass().getSimpleName() + "\n" + e1.getMessage());
-        }
-    }
 
     void setUnknownDesignation() {
 		assert designationComboBox.getItemCount() == designationKeys.size();
@@ -345,7 +308,6 @@ public class CommentsArea {
 	}
 
 
-	SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 	/**
 	 * Updates comments tab. Takes node passed and sets the designation and
 	 * comments.
@@ -366,8 +328,9 @@ public class CommentsArea {
 					fileBug.setText(currentBugStatus.toString());
 		            fileBug.setToolTipText(currentBugStatus == BugFilingStatus.FILE_BUG ? "Click to file bug for this issue" : "");
 					fileBug.setEnabled(currentBugStatus.linkEnabled());
+                    fileBug.setVisible(true);
 				} else {
-					fileBug.setEnabled(false);
+					fileBug.setVisible(false);
 				}
 				if (!plugin.canStoreUserAnnotation(bug)) {
 					designationComboBox.setSelectedIndex(0);
@@ -422,11 +385,7 @@ public class CommentsArea {
 		// may talk to server - should run in background
 		backgroundExecutor.execute(new Runnable() {
 	        public void run() {
-                try {
-                    bug.setAnnotationText(comments, MainFrame.getInstance().bugCollection);
-                } catch (NotSignedInException e) {
-                    return;
-                }
+                bug.setAnnotationText(comments, MainFrame.getInstance().bugCollection);
                 setProjectChanged(true);
 		        changed = false;
 		        addToPrevComments(comments);
@@ -524,12 +483,10 @@ public class CommentsArea {
 				temp[i] = ary[i];
 		} else {
 			temp = new String[ary.length];
-			for (int i = 0; i < ary.length; i++)
-				temp[i] = ary[i];
+            System.arraycopy(ary, 0, temp, 0, ary.length);
 		}
 
-		for (String str : temp)
-			prevCommentsList.add(str);
+        prevCommentsList.addAll(Arrays.asList(temp));
 
 		resetPrevCommentsComboBox();
 	}
@@ -688,11 +645,7 @@ public class CommentsArea {
 			return false;
 		backgroundExecutor.execute(new Runnable() {
 	        public void run() {
-                try {
-                    bug.setUserDesignationKey(selection, MainFrame.getInstance().bugCollection);
-                } catch (NotSignedInException e) {
-                    return;
-                }
+                bug.setUserDesignationKey(selection, MainFrame.getInstance().bugCollection);
             }
         });
 		return true;
@@ -772,7 +725,7 @@ public class CommentsArea {
 					allSame = false;
 			}
 		}
-		if((comments == null) || (allSame == false))
+		if(comments == null || !allSame)
 			return "";
 		else return comments;
 	}
@@ -792,17 +745,15 @@ public class CommentsArea {
 			System.out.println("Couldn't find combo box for " + designationKey);
 	}
 
-	public void moveNodeAccordingToDesignation(BugLeafNode theNode,
+	@SuppressWarnings({"deprecation"})
+    public void moveNodeAccordingToDesignation(BugLeafNode theNode,
 			String selection) {
 
 		if (!getSorter().getOrder().contains(Sortables.DESIGNATION)) {
 			// designation not sorted on at all
 
-            try {
-                theNode.getBug().setUserDesignationKey(
-                        selection,  MainFrame.getInstance().bugCollection);
-            } catch (NotSignedInException e) {
-            }
+            theNode.getBug().setUserDesignationKey(
+                    selection,  MainFrame.getInstance().bugCollection);
 
         } else if (getSorter().getOrderBeforeDivider().contains(
 				Sortables.DESIGNATION)) {
@@ -810,34 +761,27 @@ public class CommentsArea {
 			BugTreeModel model = getModel();
 			TreePath path = model.getPathToBug(theNode.getBug());
 			if (path == null) {
-                try {
-                    theNode.getBug().setUserDesignationKey(
-                            selection,  MainFrame.getInstance().bugCollection);
-                } catch (NotSignedInException e) {
-                }
+                theNode.getBug().setUserDesignationKey(
+                        selection,  MainFrame.getInstance().bugCollection);
                 return;
 			}
 			Object[] objPath = path.getParentPath().getPath();
 			ArrayList<Object> reconstruct = new ArrayList<Object>();
 			ArrayList<TreePath> listOfNodesToReconstruct = new ArrayList<TreePath>();
-			for (int x = 0; x < objPath.length; x++) {
-				Object o = objPath[x];
-				reconstruct.add(o);
-				if (o instanceof BugAspects) {
-					if (((BugAspects) o).getCount() == 1) {
-						// Debug.println((BugAspects)(o));
-						break;
-					}
-				}
-				TreePath pathToNode = new TreePath(reconstruct.toArray());
-				listOfNodesToReconstruct.add(pathToNode);
-			}
-
-            try {
-                theNode.getBug().setUserDesignationKey(
-                        selection,  MainFrame.getInstance().bugCollection);
-            } catch (NotSignedInException e) {
+            for (Object o : objPath) {
+                reconstruct.add(o);
+                if (o instanceof BugAspects) {
+                    if (((BugAspects) o).getCount() == 1) {
+                        // Debug.println((BugAspects)(o));
+                        break;
+                    }
+                }
+                TreePath pathToNode = new TreePath(reconstruct.toArray());
+                listOfNodesToReconstruct.add(pathToNode);
             }
+
+            theNode.getBug().setUserDesignationKey(
+                    selection,  MainFrame.getInstance().bugCollection);
             model.bugTreeFilterListener.suppressBug(path);
 			TreePath unsuppressPath = model.getPathToBug(theNode.getBug());
 			if (unsuppressPath != null)// If choosing their designation has not
@@ -853,11 +797,8 @@ public class CommentsArea {
 		} else if (getSorter().getOrderAfterDivider().contains(
 				Sortables.DESIGNATION)) {
 
-            try {
-                theNode.getBug().setUserDesignationKey(
-                        selection,  MainFrame.getInstance().bugCollection);
-            } catch (NotSignedInException e) {
-            }
+            theNode.getBug().setUserDesignationKey(
+                    selection,  MainFrame.getInstance().bugCollection);
             BugTreeModel model = getModel();
 			TreePath path = model.getPathToBug(theNode.getBug());
 			if (path != null)
@@ -867,8 +808,7 @@ public class CommentsArea {
 	}
 	
 
-	protected @CheckForNull
-	String convertDesignationNameToDesignationKey(String name) {
+	protected @CheckForNull String convertDesignationNameToDesignationKey(String name) {
 		/*
 		 * This converts a designation name from human-readable format ("mostly
 		 * harmless", "critical") to the program's internal format

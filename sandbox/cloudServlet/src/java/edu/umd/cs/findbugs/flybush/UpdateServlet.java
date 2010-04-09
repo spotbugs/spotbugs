@@ -231,7 +231,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
             issue.setBugLink(bugLink);
 
             issue.setBugLinkType(setBugLinkMsg.hasBugLinkType()
-                    ? DbIssue.DbBugLinkType.valueOf(setBugLinkMsg.getBugLinkType().name())
+                    ? setBugLinkMsg.getBugLinkType()
                     : null);
             pm.makePersistent(issue);
 
