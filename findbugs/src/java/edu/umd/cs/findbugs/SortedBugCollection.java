@@ -493,7 +493,7 @@ public class SortedBugCollection implements BugCollection {
 			// Write BugInstances
 			for(BugInstance bugInstance : getCollection())
 				if (!applySuppressions || !project.getSuppressionFilter().match(bugInstance))
-				bugInstance.writeXML(xmlOutput, withMessages, false);
+				bugInstance.writeXML(xmlOutput, this, withMessages);
 
 			writeEpilogue(xmlOutput);
 			

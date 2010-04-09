@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,7 +38,6 @@ import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
 
-import edu.umd.cs.findbugs.cloud.NotSignedInException;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -73,13 +73,14 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.NotSignedInException;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
  * An instance of a bug pattern.
@@ -106,7 +107,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  * @author David Hovemeyer
  * @see BugAnnotation
  */
-public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMessages, Serializable, Cloneable {
+public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 
 	private final String type;
@@ -1747,10 +1748,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * ---------------------------------------------------------------------- */
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		writeXML(xmlOutput, false, false);
+		writeXML(xmlOutput, null, false);
 	}
 
-	public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
+	public void writeXML(XMLOutput xmlOutput, BugCollection bugCollection, boolean addMessages) throws IOException {
 		  XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("type", type)
 			.addAttribute("priority", String.valueOf(priority));
@@ -1773,6 +1774,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			attributeList.addAttribute("instanceHash", getInstanceHash());
 			attributeList.addAttribute("instanceOccurrenceNum", Integer.toString(getInstanceOccurrenceNum()));
 			attributeList.addAttribute("instanceOccurrenceMax", Integer.toString(getInstanceOccurrenceMax()));
+			attributeList.addAttribute("rank", Integer.toString(getBugRank()));
 
 		} else if (oldInstanceHash != null && !isInstanceHashConsistent()) {
 			attributeList.addAttribute("oldInstanceHash", oldInstanceHash);
@@ -1783,6 +1785,25 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			attributeList.addAttribute("introducedByChange", "true");
 		if (removedByChangeOfPersistingClass) 
 			attributeList.addAttribute("removedByChange", "true");
+		
+		if (addMessages && bugCollection != null) {
+			Cloud cloud = bugCollection.getCloud();
+			
+			long firstSeen = cloud.getFirstSeen(this);
+			long age = bugCollection.getAnalysisTimestamp() - firstSeen;
+			if (age < 0) age = 0;
+			int ageInDays = (int)(age / 1000 / 3600 / 24);
+			attributeList.addAttribute("ageInDays", Integer.toString(ageInDays));
+			attributeList.addAttribute("firstSeen", DateFormat.getDateTimeInstance().format(firstSeen));
+			int reviews = cloud. getNumberReviewers(this);
+			if (reviews > 0) {
+				attributeList.addAttribute("reviews", Integer.toString(reviews));
+				
+				if (cloud.overallClassificationIsNotAProblem(this))
+					attributeList.addAttribute("notAProblem", "true");
+			}
+
+		}
 
 		xmlOutput.openTag(ELEMENT_NAME, attributeList);
 
