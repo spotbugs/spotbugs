@@ -97,8 +97,7 @@ public class CloudFactory {
 
     public static Cloud getPlainCloud(BugCollection bc) {
 	    BugCollectionStorageCloud cloud = new BugCollectionStorageCloud(bc);
-        if (cloud.initialize())
-        	return cloud;
+        if (cloud.initialize())	return cloud;
         throw new IllegalStateException("Unable to initialize plain cloud");
     }
 
@@ -108,11 +107,17 @@ public class CloudFactory {
      * @param cloudPlugin
 	 * @param enabled TODO
      */
-    public static void registerCloud(CloudPlugin cloudPlugin, boolean enabled) {
-    	registeredClouds.put(cloudPlugin.getId(), cloudPlugin);
-    	if (enabled) 
-    		defaultPlugin = cloudPlugin;
-	    
+	public static void registerCloud(CloudPlugin cloudPlugin, boolean enabled) {
+		
+		String id = cloudPlugin.getId();
+		if (registeredClouds.containsKey(id)) {
+			new RuntimeException(id + " already registered").printStackTrace();
+			return;
+		}
+		registeredClouds.put(id, cloudPlugin);
+		if (enabled)
+			defaultPlugin = cloudPlugin;
+
     }
 	
 }

@@ -388,6 +388,8 @@ public class DetectorFactoryCollection {
 
 				});
 				loadPlugin(pluginLoader);
+			} catch (PluginDoesntContainMetadataException e) {
+				
 			} catch (PluginException e) {
 				jawsErrorMessage("Warning: could not load plugin " + url + ": " + e.toString());
 				if (FindBugs.DEBUG)

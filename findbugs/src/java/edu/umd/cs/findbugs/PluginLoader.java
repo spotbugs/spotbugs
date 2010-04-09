@@ -85,6 +85,8 @@ public class PluginLoader {
 	private Plugin plugin;
 	
 	private final boolean corePlugin;
+	
+	private final URL loadedFrom;
 
 	/**
 	 * Constructor.
@@ -94,6 +96,7 @@ public class PluginLoader {
 	 */
 	public PluginLoader(URL url) throws PluginException {
 		this.classLoader = new URLClassLoader(new URL[]{url});
+		loadedFrom = url;
 		corePlugin = false;
 		init();
 	}
@@ -106,6 +109,7 @@ public class PluginLoader {
 	 */
 	public PluginLoader(URL url, ClassLoader parent) throws PluginException {
 		this.classLoader = new URLClassLoader(new URL[]{url}, parent);
+		loadedFrom = url;
 		corePlugin = false;
 		init();
 	}
@@ -120,6 +124,7 @@ public class PluginLoader {
 	public PluginLoader() {
 		this.classLoader = this.getClass().getClassLoader();
 		corePlugin = true;
+		loadedFrom = null;
 	}
 	
 	/**
@@ -230,6 +235,7 @@ public class PluginLoader {
 		
 	}
 
+	
 	@SuppressWarnings("unchecked")
     private void init() throws PluginException {
 		// Plugin descriptor (a.k.a, "findbugs.xml").  Defines
@@ -247,8 +253,13 @@ public class PluginLoader {
 		URL findbugsXML_URL = getResource(name);
 		if (findbugsXML_URL == null)
 			throw new PluginException("Couldn't find \"" + name + "\" in plugin");
-		if(DEBUG) {
+		if(DEBUG) 
 			System.out.println("PluginLoader found " + name + " at: " + findbugsXML_URL);
+		
+		
+		if (loadedFrom != null 
+				&& !findbugsXML_URL.toString().contains(loadedFrom.toString())) {
+			throw new PluginDoesntContainMetadataException("plugin doesn't contain findbugs.xml: " + loadedFrom);
 		}
 		SAXReader reader = new SAXReader();
 		
