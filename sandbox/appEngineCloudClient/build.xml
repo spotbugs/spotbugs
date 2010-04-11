@@ -1,11 +1,19 @@
 
-<project name="AppEngineCloudClient" default="jnlp">
+<project name="AppEngineCloudClient" default="install">
 
 <property name="classes.dir" value="build/classes"/>
         
 
+    <target name="validate">
+                <xmlvalidate lenient="false" failonerror="yes"
+			>
+                        <attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
+                        <attribute name="http://xml.org/sax/features/namespaces" value="true"/>
+                        <fileset dir="etc" includes="*.xml"/>
+                </xmlvalidate>
+        </target>
 
- <target name="plugin" >
+ <target name="plugin"  >
         <jar destfile="build/AppEngineCloudClient.jar"
 		 manifest="etc/MANIFEST.MF">
         <fileset dir="etc">
@@ -19,14 +27,16 @@
 		</fileset>
 	</jar>
 </target>
- <target name="jnlp" depends="plugin">
-   <copy todir="../findbugs/jnlp" flatten="true">
+ <target name="install" depends="plugin">
+   <copy todir="../findbugs/plugin" flatten="true">
+                    <fileset dir="build">
+                      <include name="*.jar"/>
+                    </fileset>
+	</copy>
+   <copy todir="../findbugs/plugin/AppEngineCloudClient" flatten="true">
                     <fileset dir="lib">
                       <include name="**/*.jar"/>
                       <exclude name="mockito-all-1.8.2.jar"/>
-                    </fileset>
-                    <fileset dir="build">
-                      <include name="*.jar"/>
                     </fileset>
                     <fileset dir="../AppEngineCloudProtocol/lib">
                       <include name="**/*.jar"/>

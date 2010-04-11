@@ -27,6 +27,12 @@ This plugin provides the Appengine cloud plugin.
 		Google AppEngine at http://theflybush.appspot.com
 	</Details>
 	</Cloud>
+  <Cloud id="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud">
+	<Description>Bug history information stored at findbugs-cloud.appspot.com</Description>
+	<Details>Information about bug history and evaluations are stored 
+		Google AppEngine at http://findbugs-cloud.appspot.com
+	</Details>
+	</Cloud>
 
   </MessageCollection>
 
