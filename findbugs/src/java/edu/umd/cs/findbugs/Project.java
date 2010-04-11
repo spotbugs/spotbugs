@@ -1072,6 +1072,8 @@ public class Project implements XMLWriteable {
     }
 
 	public IGuiCallback getGuiCallback() {
+		if (guiCallback == null)
+			guiCallback = new CommandLineUiCallback();
 	    return guiCallback;
     }
 

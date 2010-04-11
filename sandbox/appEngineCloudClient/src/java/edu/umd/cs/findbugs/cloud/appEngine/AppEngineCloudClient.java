@@ -75,6 +75,8 @@ public class AppEngineCloudClient extends AbstractCloud {
                          @CheckForNull Executor executor) {
 
 		super(plugin, bugs, properties);
+		if (bugs.getProject().getGuiCallback().isHeadless())
+			signedInState = SignedInState.SIGNIN_FAILED;
 		if (executor == null) {
 			backgroundExecutorService = Executors.newFixedThreadPool(10);
 			backgroundExecutor = backgroundExecutorService;
@@ -449,6 +451,9 @@ public class AppEngineCloudClient extends AbstractCloud {
         networkClient.generateHashCheckRunnables(new ArrayList<String>(bugsByHash.keySet()), tasks, bugsByHash);
 
         executeAndWaitForAll(tasks);
+
+       if (signedInState == SignedInState.SIGNIN_FAILED)
+    		return;
 
         Collection<BugInstance> newBugs = bugsByHash.values();
         if (!newBugs.isEmpty() || !networkClient.getTimestampsToUpdate().isEmpty()) {

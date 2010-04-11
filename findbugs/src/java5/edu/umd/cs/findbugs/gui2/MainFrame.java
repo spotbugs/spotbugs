@@ -3467,4 +3467,10 @@ public boolean showDocument(URL u) {
             }
         }
     }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.IGuiCallback#isHeadless()
+     */
+    public boolean isHeadless() {
+	    return false;
+    }
 }

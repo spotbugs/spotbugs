@@ -34,6 +34,7 @@ import java.util.concurrent.ExecutorService;
  * @author Andrei
  */
 public interface IGuiCallback {
+	boolean isHeadless();
 	void showMessageDialog(String message);
 	int showConfirmDialog(String message, String title, int optionType);
     int showConfirmDialog(String message, String title, String ok, String cancel);

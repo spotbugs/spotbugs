@@ -226,14 +226,15 @@ public class AppEngineCloudNetworkClient {
 
         Calendar now = Calendar.getInstance();
         TimeZone timeZone = now.getTimeZone();
-        String timeStr = DateFormat.getDateTimeInstance().format(now.getTime());
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT);
+		String timeStr = df.format(now.getTime());
         boolean daylight = timeZone.inDaylightTime(now.getTime());
         String zoneStr = timeZone.getDisplayName(daylight, TimeZone.LONG)
                          + " (" + timeZone.getDisplayName(daylight, TimeZone.SHORT) + ")";
 
         Calendar earliest = Calendar.getInstance(timeZone);
         earliest.setTimeInMillis(earliestFirstSeen);
-        String earliestStr = DateFormat.getDateTimeInstance().format(earliest.getTime());
+        String earliestStr = df.format(earliest.getTime());
 
         int result = getGuiCallback().showConfirmDialog(
                 "Your first-seen dates for " + bugCount + " bugs are " + durationStr
@@ -432,8 +433,8 @@ public class AppEngineCloudNetworkClient {
                 continue;
             }
 
-            long firstSeen = cloudClient.getFirstSeen(bugInstance);
-            if ((firstSeen > 0 && firstSeen < issue.getFirstSeen()))
+            long firstSeen = cloudClient.getLocalFirstSeen(bugInstance);
+            if (firstSeen > 0 && firstSeen < issue.getFirstSeen())
                 timestampsToUpdate.add(hash);
 
             cloudClient.updateBugInstanceAndNotify(bugInstance);

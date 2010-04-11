@@ -71,7 +71,7 @@ public enum Sortables implements Comparator<SortableValue>
 		public String formatValue(String value)
 		{	
 			long when = Long.parseLong(value);
-			return DateFormat.getDateTimeInstance().format(when);
+			return DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT).format(when);
 		}
 
 		@Override

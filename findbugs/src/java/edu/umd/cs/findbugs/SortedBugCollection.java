@@ -130,24 +130,19 @@ public class SortedBugCollection implements BugCollection {
 			return null;
 		}
 		if (userAnnotationPlugin == null) {
-			if (useDatabaseCloud) {
-                IGuiCallback callback = getProject().getGuiCallback();
-                try {
-                    userAnnotationPlugin = CloudFactory.createCloudWithoutInitializing(this);
-                    callback.registerCloud(getProject(), this, userAnnotationPlugin);
-                    CloudFactory.initializeCloud(this, userAnnotationPlugin);
-                } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Could not load cloud plugin", e);
-                    callback.showMessageDialog("Unable to connect to cloud: "
-                                               + e.getClass().getSimpleName()
-                                               + ": " + e.getMessage());
-                    userAnnotationPlugin = null;
-                }
-            }
-            if (userAnnotationPlugin == null) {
-                userAnnotationPlugin = CloudFactory.getPlainCloud(this);
-            }
-            shouldNotUsePlugin = userAnnotationPlugin == null;
+			IGuiCallback callback = getProject().getGuiCallback();
+			try {
+				userAnnotationPlugin = CloudFactory.createCloudWithoutInitializing(this);
+				callback.registerCloud(getProject(), this, userAnnotationPlugin);
+				CloudFactory.initializeCloud(this, userAnnotationPlugin);
+			} catch (Exception e) {
+				LOGGER.log(Level.SEVERE, "Could not load cloud plugin", e);
+				callback.showMessageDialog("Unable to connect to cloud: "
+						+ e.getClass().getSimpleName()
+						+ ": " + e.getMessage());
+				userAnnotationPlugin = CloudFactory.getPlainCloud(this);
+			}
+
 		}
 		return userAnnotationPlugin;
 	}
