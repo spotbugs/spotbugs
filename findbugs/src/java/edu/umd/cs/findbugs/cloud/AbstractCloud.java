@@ -554,4 +554,26 @@ public abstract class AbstractCloud implements Cloud {
     public String getSourceLinkToolTip(BugInstance b) {
 	    return sourceFileLinkToolTip;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#getBugIsUnassigned(edu.umd.cs.findbugs.BugInstance)
+     */
+    public boolean getBugIsUnassigned(BugInstance b) {
+    	return true;
+    }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#getWillNotBeFixed(edu.umd.cs.findbugs.BugInstance)
+     */
+    public boolean getWillNotBeFixed(BugInstance b) {
+    	return false;
+    }
+    
+	public Set<String> getReviewers(BugInstance b) {
+		HashSet<String> result = new HashSet<String>();
+		for(BugDesignation d : getAllUserDesignations(b))
+			result.add(d.getUser());
+         return result;
+	} 
+    
 }

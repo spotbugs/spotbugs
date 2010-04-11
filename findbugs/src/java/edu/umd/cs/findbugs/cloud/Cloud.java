@@ -30,6 +30,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 
 /**
@@ -206,6 +207,14 @@ public interface Cloud {    public interface CloudListener {
 
 	/* get the bug filing status for a bug instance */ 
 	BugFilingStatus getBugLinkStatus(BugInstance b);
+	
+	/** has the issue been marked "will not be fixed" in a bug tracker */
+	boolean getWillNotBeFixed(BugInstance b);
+	
+	/** does the issue have an unassigned issue in the bug tracker */
+	boolean getBugIsUnassigned(BugInstance b);
+
+	
 
 	/** Get link for bug, either to file one or to view it */
 	URL getBugLink(BugInstance b);
@@ -217,6 +226,8 @@ public interface Cloud {    public interface CloudListener {
 	 * @param bugLink if we have any information about the result of filing the bug, it should go here
 	 */
 	void bugFiled(BugInstance b, @CheckForNull Object bugLink);
+	
+	
 
 	/** Supports textual summaries about the status of a bug */
 	boolean supportsCloudReports();
@@ -233,6 +244,7 @@ public interface Cloud {    public interface CloudListener {
 	/** Get the user who has claimed a bug; null if no one has */
 	@CheckForNull
 	String claimedBy(BugInstance b);
+	
 
 	/**
 	 * Claim the bug; true if no one else has already done so 
@@ -264,7 +276,8 @@ public interface Cloud {    public interface CloudListener {
 	double getPortionObsoleteClassifications(BugInstance b);
 
 	int getNumberReviewers(BugInstance b);
-
+	Set<String> getReviewers(BugInstance b);
+	    
 	long getFirstSeen(BugInstance b);
 
 	boolean overallClassificationIsNotAProblem(BugInstance b);

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.util;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -42,7 +42,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
-import edu.umd.cs.findbugs.util.LaunchBrowser;
+import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * @author pugh
@@ -185,7 +185,7 @@ public class TestDesktopIntegration extends JPanel {
 					try {
 
 						writer.println("Launch via jnlp of " + url);
-						LaunchBrowser.viaWebStart(url);
+						JavaWebStart.viaWebStart(url);
 						writer.println("Launch via jnlp completed");
 
 					} catch (Throwable e1) {

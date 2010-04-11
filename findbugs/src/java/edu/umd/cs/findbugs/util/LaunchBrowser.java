@@ -27,7 +27,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 
 /**
@@ -35,9 +34,6 @@ import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
  */
 public class LaunchBrowser {
 
-	private static final @CheckForNull Method jnlpShowMethod;
-	private static final Object jnlpShowObject; // will not be null if jnlpShowMethod!=null
-	
 	public static final boolean launchFirefox = SystemProperties.getBoolean("findbugs.launchFirefox")
 				&& "Linux".equals(SystemProperties.getProperty("os.name"));
 	private static Object desktopObject;
@@ -52,42 +48,21 @@ public class LaunchBrowser {
 		}  catch (Exception e) {
 			assert true;
 		} 
-		// attempt to set the JNLP BasicService object and its showDocument(URL) method
-		Method showMethod = null;
-		Object showObject = null;
-		try {
-			Class<?> serviceManagerClass = Class.forName("javax.jnlp.ServiceManager");
-			Method lookupMethod = serviceManagerClass.getMethod("lookup", new Class[] { String.class });
-			showObject = lookupMethod.invoke(null, new Object[] { "javax.jnlp.BasicService" });
-			showMethod = showObject.getClass().getMethod("showDocument", new Class [] { URL.class });
-		} catch (ClassNotFoundException e) {
-			assert true;
-		} catch (NoSuchMethodException e) {
-			assert true;
-		} catch (IllegalAccessException e) {
-			assert true;
-		} catch (InvocationTargetException e) {
-			assert true;
-		}
-		jnlpShowMethod = showMethod;
-		jnlpShowObject = showObject;
-	}
+			}
 
-
-	public static boolean desktopFeasible() {
+	static boolean desktopFeasible() {
 		return desktopObject != null && desktopBrowseMethod != null;
 	}
 	
-	public static boolean webstartFeasible() {
-		return jnlpShowMethod != null && jnlpShowObject != null;
+	static boolean webstartFeasible() {
+		return JavaWebStart.jnlpShowDocumentMethod != null && JavaWebStart.jnlpBasicService != null;
 	}
-	public static boolean showDocumentViaDesktop(URL u) {
+	static boolean showDocumentViaDesktop(URL u) {
 		
 		if (desktopObject != null && desktopBrowseMethod != null) try { 
 			 viaDesktop(u.toURI());
 			 return true;
 		} catch (InvocationTargetException ite) {
-			
 			assert true;
 		} catch (IllegalAccessException iae) {
 			assert true;
@@ -99,30 +74,14 @@ public class LaunchBrowser {
         return false;
 	}
 
-	public static void viaDesktop(URI u) throws IllegalAccessException, InvocationTargetException, URISyntaxException {
+	static void viaDesktop(URI u) throws IllegalAccessException, InvocationTargetException, URISyntaxException {
 	    if (desktopBrowseMethod == null)
 	    	throw new UnsupportedOperationException("Launch via desktop not available");
 	    desktopBrowseMethod.invoke(desktopObject, u);
     }
 
-	public static Boolean viaWebStart(URL url) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		if (jnlpShowMethod == null)
-	    	throw new UnsupportedOperationException("Launch via web start not available");
-	    return (Boolean) jnlpShowMethod.invoke(jnlpShowObject,  url );
-	}
-	public static boolean showViaWebStart(URL url) {
-		if (jnlpShowMethod != null) try {
-			Boolean b = viaWebStart(url);
-			return b != null && b.booleanValue();
-		} catch (InvocationTargetException ite) {
-			assert true;
-		} catch (IllegalAccessException iae) {
-			assert true;
-		}
-		return false;
-	}
 	
-	public static boolean showDocumentViaExec(URL url) {
+	static boolean showDocumentViaExec(URL url) {
 		if (launchFirefox && !launchViaExecFailed) {
 			try {
 				Process p = launchFirefox(url);
@@ -143,7 +102,7 @@ public class LaunchBrowser {
 	
 	}
 
-	public static Process launchFirefox(URL url) throws IOException {
+	static Process launchFirefox(URL url) throws IOException {
 	    ProcessBuilder builder = new ProcessBuilder("firefox", url.toString() );
 	    Process p = builder.start();
 	    return p;
@@ -160,7 +119,7 @@ public class LaunchBrowser {
 			return true;
 		if (showDocumentViaDesktop(url))
 			return true;
-		if (showViaWebStart(url))
+		if (JavaWebStart.showViaWebStart(url))
 			return true;
 		return false;
 	

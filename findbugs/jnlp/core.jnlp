@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<jnlp spec="1.0+" >
+  <information> 
+    <title>FindBugs</title>
+    <vendor>University of Maryland</vendor> 
+    <homepage href="http://findbugs.sourceforge.net"/> 
+    <description>Findbugs: Static Bug Finder</description> 
+    <description kind="short">Static analysis tool for defect detection</description> 
+    <icon href="buggy-sm.png"/> 
+    <offline-allowed/> 
+  </information> 
+  <security> 
+      <all-permissions/> 
+  </security> 
+  <resources> 
+    <jar href="AppleJavaExtensions.jar"/>
+    <jar href="bcel.jar"/>
+    <jar href="dom4j-1.6.1.jar"/>
+    <jar href="asm-3.2.jar"/>
+    <jar href="asm-tree-3.2.jar"/>
+    <jar href="asm-commons-3.2.jar"/>
+    <jar href="jaxen-1.1.1.jar"/>
+    <jar href="jFormatString.jar"/>
+    <jar href="commons-lang-2.4.jar"/>
+    <jar href="jsr305.jar"/>
+  </resources> 
+  <component-desc />
+</jnlp> 
+
+
+

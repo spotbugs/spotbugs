@@ -26,7 +26,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
-import edu.umd.cs.findbugs.cloud.db.DBCloud;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -71,28 +70,28 @@ public class ViewFilter {
 	enum OverallClassificationFilter implements ViewFilterEnum {
 		SHOULD_FIX("Overall classification is should fix") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				double score = cloud.getClassificationScore(b);
 				return score >= UserDesignation.SHOULD_FIX.score();
 			}
 		},
 		DONT_FIX("Overall classification is don't fix") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				double score = cloud.getClassificationScore(b);
 				return score <= UserDesignation.MOSTLY_HARMLESS.score();
 			}
 		},
 		OBSOLETE("Overall classification is obsolete code") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				double score = cloud.getPortionObsoleteClassifications(b);
 				return score >= 0.5;
 			}
 		},
 		UNCERTAIN("Overall classification is uncertain") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				if (SHOULD_FIX.show(cloud, b) || DONT_FIX.show(cloud, b) || OBSOLETE.show(cloud, b))
 					return false;
 				if (cloud.getNumberReviewers(b) >= 2)
@@ -102,7 +101,7 @@ public class ViewFilter {
 		},
 		HIGH_VARIANCE("Controversial") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				double variance = cloud.getClassificationDisagreement(b);
 				return variance > 0.26;
 			}
@@ -110,7 +109,7 @@ public class ViewFilter {
 		},
 		ALL("All issues") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				return true;
 			}
 
@@ -121,7 +120,7 @@ public class ViewFilter {
 
 		final String displayName;
 
-		abstract boolean show(DBCloud cloud, BugInstance b);
+		abstract boolean show(Cloud cloud, BugInstance b);
 
 		public boolean supported(Cloud cloud) {
 			return true;
@@ -129,8 +128,8 @@ public class ViewFilter {
 
 		public boolean show(MainFrame mf, BugInstance b) {
 			Cloud c = mf.bugCollection.getCloud();
-			if (c instanceof DBCloud)
-				return show((DBCloud) c, b);
+			if (c instanceof Cloud)
+				return show((Cloud) c, b);
 			return true;
 		}
 
@@ -144,54 +143,54 @@ public class ViewFilter {
 	enum CloudFilter implements ViewFilterEnum {
 		MY_REVIEWS("Classified by me") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				return cloud.getReviewers(b).contains(cloud.getUser());
 			}
 
 		},
 		NOT_REVIEWED_BY_ME("Not classified by me") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				return !cloud.getReviewers(b).contains(cloud.getUser());
 			}
 
 		},
 		NO_REVIEWS("No one has classified") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				return cloud.getReviewers(b).isEmpty();
 			}
 
 			@Override
             public boolean supported(Cloud cloud) {
-	           return cloud instanceof DBCloud && cloud.getMode() != Cloud.Mode.SECRET;
+	           return cloud instanceof Cloud && cloud.getMode() != Cloud.Mode.SECRET;
             }
 		},
 		HAS_REVIEWS("Someone has classified") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				return !cloud.getReviewers(b).isEmpty();
 			}
 
 
 			@Override
            public  boolean supported(Cloud cloud) {
-	           return cloud instanceof DBCloud && cloud.getMode() != Cloud.Mode.SECRET;
+	           return cloud.getMode() != Cloud.Mode.SECRET;
             }
 		},
 		NO_ONE_COMMITTED_TO_FIXING("Has no fixers") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
-				return !cloud.isClaimed(b);
+			boolean show(Cloud cloud, BugInstance b) {
+				return supported(cloud) && cloud.claimedBy(b) != null;
 			}
 			@Override
             public boolean supported(Cloud cloud) {
-	           return cloud instanceof DBCloud && cloud.getMode() != Cloud.Mode.SECRET;
+	           return cloud.supportsClaims() &&  cloud.getMode() != Cloud.Mode.SECRET;
             }
 		},
 		I_WILL_FIX("I will fix") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				return cloud.getIWillFix(b);
 
 			}
@@ -199,7 +198,7 @@ public class ViewFilter {
 		},
 		HAS_FILED_BUGS("Has entry in bug database") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				return cloud.getBugLinkStatus(b).bugIsFiled();
 
 			}
@@ -210,7 +209,7 @@ public class ViewFilter {
 		},
 		NO_FILED_BUGS("Don't have entry in bug database") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				return !cloud.getBugLinkStatus(b).bugIsFiled();
 			}
 			@Override
@@ -220,7 +219,7 @@ public class ViewFilter {
 		},
 		WILL_NOT_FIX("bug database entry marked Will Not Fix") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				return cloud.getWillNotBeFixed(b);
 			}
 			@Override
@@ -230,7 +229,7 @@ public class ViewFilter {
 		},
 		BUG_STATUS_IS_UNASSIGNED("bug database entry is unassigned") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				return cloud.getBugIsUnassigned(b);
 			}
 			@Override
@@ -240,7 +239,7 @@ public class ViewFilter {
 		},
 		ALL("All issues") {
 			@Override
-			boolean show(DBCloud cloud, BugInstance b) {
+			boolean show(Cloud cloud, BugInstance b) {
 				return true;
 			}
         }; 
@@ -250,16 +249,14 @@ public class ViewFilter {
         }
 		final String displayName;
 
-		abstract boolean show(DBCloud cloud, BugInstance b);
+		abstract boolean show(Cloud cloud, BugInstance b);
 		public boolean supported(Cloud cloud) {
 			return true;
 		}
 	       
         public boolean show(MainFrame mf, BugInstance b) {
 	        Cloud c = mf.bugCollection.getCloud();
-	        if (c instanceof DBCloud) 
-	        	return show((DBCloud) c, b);
-	        return true;
+	        return show(c, b);
         }
         @Override
         public String toString() {

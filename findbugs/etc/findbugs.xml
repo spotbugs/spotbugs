@@ -18,7 +18,6 @@
 	 cloudClass="edu.umd.cs.findbugs.cloud.db.DBCloud"
 	 usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup"
 	>
-	<Property key="key1">value1</Property>
 	</Cloud>
 
 	

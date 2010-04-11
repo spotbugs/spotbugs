@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import junit.framework.TestCase;
 import edu.umd.cs.findbugs.BugCollection;
@@ -377,6 +378,27 @@ public class AbstractCloudTest extends TestCase {
         @Override
         public URL fileBug(BugInstance bug) {
 	        throw new UnsupportedOperationException();
+        }
+
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.cloud.Cloud#getBugIsUnassigned(edu.umd.cs.findbugs.BugInstance)
+         */
+        public boolean getBugIsUnassigned(BugInstance b) {
+        	throw new UnsupportedOperationException();
+        }
+
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.cloud.Cloud#getReviewers(edu.umd.cs.findbugs.BugInstance)
+         */
+        public Set<String> getReviewers(BugInstance b) {
+        	throw new UnsupportedOperationException();
+        }
+
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.cloud.Cloud#getWillNotBeFixed(edu.umd.cs.findbugs.BugInstance)
+         */
+        public boolean getWillNotBeFixed(BugInstance b) {
+        	throw new UnsupportedOperationException();
         }
     }
 }

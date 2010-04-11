@@ -44,6 +44,7 @@ import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.util.ClassPathUtil;
+import edu.umd.cs.findbugs.util.JavaWebStart;
 
 /**
  * The DetectorFactoryCollection stores all of the DetectorFactory objects
@@ -342,10 +343,10 @@ public class DetectorFactoryCollection {
         }
         List<URL> plugins;
 		
-        if (!SystemProperties.getBoolean("findbugs.jaws")) {
-        	plugins = determineInstalledPlugins();
-        } else {
+        if (JavaWebStart.isRunningViaJavaWebstart()) {
         	plugins = determineWebStartPlugins();
+        } else {
+        	plugins = determineInstalledPlugins();
         }
 		Set<Entry<Object, Object>> entrySet = SystemProperties.getAllProperties().entrySet();
 		for(Map.Entry<?,?> e : entrySet) {
@@ -354,7 +355,8 @@ public class DetectorFactoryCollection {
 	                String value = (String) e.getValue();
 	                if (value.startsWith("file:") && !value.endsWith(".jar") && !value.endsWith("/"))
 	                	value += "/";
-					plugins.add(new URL(value));
+	                URL url = JavaWebStart.resolveRelativeToJnlpCodebase(value);
+	                plugins.add(url);
                 } catch (MalformedURLException e1) {
 	                AnalysisContext.logError(String.format("Bad URL for plugin: %s=%s", e.getKey(), e.getValue()), e1);
                 }
@@ -362,7 +364,7 @@ public class DetectorFactoryCollection {
 			}
 		}
 		
-		 if (!plugins.isEmpty() && SystemProperties.getBoolean("findbugs.jaws")) {
+		 if (!plugins.isEmpty() && JavaWebStart.isRunningViaJavaWebstart()) {
 			// disable security manager; plugins cause problems
 			// http://lopica.sourceforge.net/faq.html
 	        //	URL policyUrl = Thread.currentThread().getContextClassLoader().getResource("my.java.policy");

@@ -41,8 +41,8 @@ public class CloudFactory {
     private static final String FINDBUGS_NAMELOOKUP_REQUIRED = "findbugs.namelookup.required";
 
 	public static boolean DEBUG = SystemProperties.getBoolean("findbugs.cloud.debug",false);
-	
-    private static final String DEFAULT_CLOUD_CLASS = "edu.umd.cs.findbugs.cloud.db.DBCloud";
+	public static String DEFAULT_CLOUD = SystemProperties.getProperty("findbugs.cloud.default");
+
     private static final Logger LOGGER = Logger.getLogger(CloudFactory.class.getName());
 
 
@@ -52,8 +52,20 @@ public class CloudFactory {
     		if (cloudId != null) {
     			plugin = registeredClouds.get(cloudId);
     		}
-    		if (plugin == null) plugin = defaultPlugin;
-		
+    		if (plugin == null)  {
+    			if (DEFAULT_CLOUD != null)
+    				 LOGGER.log(Level.FINE, "Trying default cloud " + DEFAULT_CLOUD);
+    			plugin = registeredClouds.get(DEFAULT_CLOUD);
+    			if (plugin == null) {
+    				LOGGER.log(Level.FINE, "default cloud " + DEFAULT_CLOUD + " not registered");
+    		    		
+    			  return getPlainCloud(bc);
+    			}
+    		
+    		}
+    		 LOGGER.log(Level.FINE, "Using cloud plugin " + plugin.getId());;
+ 			
+    		
 		try {
 			Class<? extends Cloud> cloudClass = plugin.getCloudClass();
 			Properties properties = bc.getProject().getCloudProperties();
@@ -61,19 +73,19 @@ public class CloudFactory {
 			Cloud cloud = constructor.newInstance(plugin, bc, properties);
 			if (DEBUG)
 				bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloud.getClass().getName());
-			
+			 LOGGER.log(Level.FINE, "constructed cloud plugin " + plugin.getId());;
+		 		
 			return cloud;
 		} catch (Exception e) {
 			if (DEBUG) {
 				bc.getProject().getGuiCallback().showMessageDialog("failed " + e.getMessage() + e.getClass().getName());
 			}
             LOGGER.log(Level.WARNING, "Could not load cloud plugin " + plugin, e);
-			
-			assert true;
+        	if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToCloud"))
+    			System.exit(1);
+            return getPlainCloud(bc);
         }
-		if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToDB"))
-			System.exit(1);
-        return getPlainCloud(bc);
+	
 	}
 	
 	public static void initializeCloud(BugCollection bc, Cloud cloud) throws IOException {
@@ -102,22 +114,15 @@ public class CloudFactory {
     }
 
     static  Map<String, CloudPlugin> registeredClouds = new HashMap<String, CloudPlugin>();
-    static CloudPlugin defaultPlugin;
-	/**
+    /**
      * @param cloudPlugin
 	 * @param enabled TODO
      */
-	public static void registerCloud(CloudPlugin cloudPlugin, boolean enabled) {
-		
-		String id = cloudPlugin.getId();
-		if (registeredClouds.containsKey(id)) {
-			new RuntimeException(id + " already registered").printStackTrace();
-			return;
-		}
-		registeredClouds.put(id, cloudPlugin);
-		if (enabled)
-			defaultPlugin = cloudPlugin;
-
+    public static void registerCloud(CloudPlugin cloudPlugin, boolean enabled) {
+    	 LOGGER.log(Level.FINE, "Registering " + cloudPlugin.getId());
+			
+    	if (enabled) 
+    		registeredClouds.put(cloudPlugin.getId(), cloudPlugin);
     }
 	
 }
