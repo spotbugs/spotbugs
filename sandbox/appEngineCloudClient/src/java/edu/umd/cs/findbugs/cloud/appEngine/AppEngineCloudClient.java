@@ -83,7 +83,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 	    		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown at creation");
 
 		} else {
-			backgroundExecutorService = new ReallySimpleExecutorService();
+			backgroundExecutorService = new CurrentThreadExecutorService();
 			backgroundExecutor = executor;
 		}
     }
@@ -114,6 +114,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 	@Override
 	public boolean initialize() throws IOException {
+        setSigninState(SignedInState.NOT_SIGNED_IN_YET);
         if (!super.initialize()) {
             setSigninState(SignedInState.SIGNIN_FAILED);
 
@@ -142,8 +143,12 @@ public class AppEngineCloudClient extends AbstractCloud {
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				updateEvaluationsFromServer();
-			}
+                try {
+                    updateEvaluationsFromServer();
+                } catch (IOException e) {
+                    LOGGER.log(Level.SEVERE, "Error during periodic evaluation check", e);
+                }
+            }
 		}, periodMillis, periodMillis);
 		return true;
 	}
@@ -162,7 +167,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             }
             try {
                 signIn();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 setStatusMsg("Could not sign into Cloud: " + e.getMessage());
                 throw new SignInCancelledException(e);
             }
@@ -240,11 +245,10 @@ public class AppEngineCloudClient extends AbstractCloud {
             networkClient.logIntoCloudForce();
         } catch (IOException e) {
             setSigninState(SignedInState.SIGNIN_FAILED);
-
             throw e;
+
         } catch (RuntimeException e) {
             setSigninState(SignedInState.SIGNIN_FAILED);
-
             throw e;
         }
 
@@ -479,8 +483,8 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
     private void executeAndWaitForAll(List<Callable<Object>> tasks) throws ExecutionException, InterruptedException {
-       if (backgroundExecutorService != null && backgroundExecutorService.isShutdown())
-    		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown in executeAndWaitForAll");
+        if (backgroundExecutorService != null && backgroundExecutorService.isShutdown())
+            LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown in executeAndWaitForAll");
 
         try {
             List<Future<Object>> results = backgroundExecutorService.invokeAll(tasks);
@@ -492,7 +496,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             if (backgroundExecutorService.isShutdown())
                 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown ", e);
             else if (backgroundExecutorService.isTerminated())
-                LOGGER.log(Level.SEVERE, "backgroundExecutor service is termination ", e);
+                LOGGER.log(Level.SEVERE, "backgroundExecutor service is terminated ", e);
             else
                 LOGGER.log(Level.SEVERE, "Rejected execution", e);
 
@@ -500,7 +504,7 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
     /** package-private for testing */
-	void updateEvaluationsFromServer() {
+	void updateEvaluationsFromServer() throws IOException {
 		setStatusMsg("Checking FindBugs Cloud for updates");
 
 		RecentEvaluations evals;
@@ -508,7 +512,10 @@ public class AppEngineCloudClient extends AbstractCloud {
 			evals = networkClient.getRecentEvaluationsFromServer();
 		} catch (IOException e) {
             setStatusMsg("Checking FindBugs Cloud for updates...failed - " + e.getMessage());
-			throw new IllegalStateException(e);
+			throw e;
+		} catch (RuntimeException e) {
+            setStatusMsg("Checking FindBugs Cloud for updates...failed - " + e.getMessage());
+			throw e;
 		}
 		if (evals.getIssuesCount() > 0)
 			setStatusMsg("Checking FindBugs Cloud for updates...found " + evals.getIssuesCount());
@@ -544,9 +551,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
                 } catch (SignInCancelledException e) {
                     // OK!
-                } catch (InterruptedException e) {
-                    LOGGER.log(Level.SEVERE, "", e);
-                } catch (ExecutionException e) {
+                } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "", e);
                 }
                 setStatusMsg("");
@@ -584,7 +589,7 @@ public class AppEngineCloudClient extends AbstractCloud {
         return list.listIterator(list.size());
     }
 
-    private static class ReallySimpleExecutorService extends AbstractExecutorService {
+    private static class CurrentThreadExecutorService extends AbstractExecutorService {
         public void shutdown() {
         }
 

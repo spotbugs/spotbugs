@@ -333,7 +333,7 @@ public class AppEngineCloudNetworkClient {
             outputStream.close();
 
             if (conn.getResponseCode() != 200) {
-                throw new IllegalStateException(
+                throw new IOException(
                         "server returned error code "
                         + conn.getResponseCode() + " "
                         + conn.getResponseMessage());
