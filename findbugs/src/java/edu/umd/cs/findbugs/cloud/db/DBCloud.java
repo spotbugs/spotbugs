@@ -617,7 +617,7 @@ public  class DBCloud extends AbstractCloud {
 		}
 	}
 
-    public void waitForIssueSync() {
+    public void waitUntilIssueDataDownloaded() {
         //TODO
     }
 
