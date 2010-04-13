@@ -69,7 +69,7 @@ public interface Cloud {
 	public boolean initialize() throws IOException;
 
     /** Waits until all data about this bug collection has been received from the cloud. */
-    void waitForIssueSync();
+    void waitUntilIssueDataDownloaded();
 
 	
 	/** Called after the bugs in the bug collection are loaded; 

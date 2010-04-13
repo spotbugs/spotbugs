@@ -126,7 +126,7 @@ public class AppEngineCloudClientTest extends TestCase {
         final AtomicBoolean doneWaiting = new AtomicBoolean(false);
         new Thread(new Runnable() {
             public void run() {
-                cloud.waitForIssueSync();
+                cloud.waitUntilIssueDataDownloaded();
                 doneWaiting.set(true);
             }
         }).start();
@@ -137,6 +137,32 @@ public class AppEngineCloudClientTest extends TestCase {
         assertTrue(doneWaiting.get());
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
+	}
+
+	public void testWaitForIssueSyncReturnsImmediatelyWhenAlreadySynced() throws IOException {
+		// set up mocks
+		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
+        when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
+        setupResponseCodeAndOutputStream(findIssuesConn);
+
+		// execution
+		final MyAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        final AtomicBoolean doneWaiting = new AtomicBoolean(false);
+        new Thread(new Runnable() {
+            public void run() {
+                cloud.waitUntilIssueDataDownloaded();
+                doneWaiting.set(true);
+            }
+        }).start();
+        assertFalse(doneWaiting.get());
+        cloud.initialize();
+		cloud.bugsPopulated();
+        assertTrue(doneWaiting.get());
+
+        long start = System.currentTimeMillis();
+        cloud.waitUntilIssueDataDownloaded();
+        if (System.currentTimeMillis() - start > 10) // should return immediately
+            fail();
 	}
 
 	public void testWaitForIssueSyncNetworkFailure() throws IOException {
@@ -152,7 +178,7 @@ public class AppEngineCloudClientTest extends TestCase {
         final AtomicBoolean doneWaiting = new AtomicBoolean(false);
         new Thread(new Runnable() {
             public void run() {
-                cloud.waitForIssueSync();
+                cloud.waitUntilIssueDataDownloaded();
                 doneWaiting.set(true);
             }
         }).start();
@@ -185,7 +211,7 @@ public class AppEngineCloudClientTest extends TestCase {
         Future<Throwable> bgThreadFuture = Executors.newSingleThreadExecutor().submit(new Callable<Throwable>() {
             public Throwable call() throws Exception {
                 try {
-                    cloud.waitForIssueSync();
+                    cloud.waitUntilIssueDataDownloaded();
                     doneWaiting.set(true);
                     assertEquals(1, cloud.urlsRequested.size());
                     assertEquals("/find-issues", cloud.urlsRequested.get(0));

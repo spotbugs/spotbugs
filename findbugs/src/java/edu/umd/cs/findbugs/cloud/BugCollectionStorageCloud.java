@@ -61,7 +61,7 @@ class BugCollectionStorageCloud extends AbstractCloud {
         }
     }
 
-    public void waitForIssueSync() {
+    public void waitUntilIssueDataDownloaded() {
     }
 
     @Override

@@ -96,7 +96,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     // ====================== initialization =====================
 
-    public void waitForIssueSync() {
+    public void waitUntilIssueDataDownloaded() {
         synchronized (issueDataDownloadedLock) {
             if (issueDataDownloaded)
                 return;
