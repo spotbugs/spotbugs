@@ -7,6 +7,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
@@ -34,9 +35,14 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import static edu.umd.cs.findbugs.cloud.Cloud.SignedInState.NOT_SIGNED_IN_YET;
 import static edu.umd.cs.findbugs.cloud.appEngine.BugFilingHelper.processJiraDashboardUrl;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.normalizeHash;
 import static org.mockito.Matchers.anyString;
@@ -60,45 +66,130 @@ public class AppEngineCloudClientTest extends TestCase {
         addMissingIssue = false;
 	}
 
-	public static void testEncodeDecodeHash() {
-		checkHashEncodeRoundtrip("9e107d9d372bb6826bd81d3542a419d6");
-		checkHashEncodeRoundtrip("83ab7e45f39c7a7a84e5e63b95beeb5");
-		checkHashEncodeRoundtrip("1fe8e2bc5f1cceae0bf5954e7b5e84ac");
-		checkHashEncodeRoundtrip("6977735a4a0f8036778b223cd9f9c1f0");
-		checkHashEncodeRoundtrip("9ba282b1a7b049fa3c5b068941c25977");
-		checkHashEncodeRoundtrip("6606a054edd331799ed567b4efd539a6");
-		checkHashEncodeRoundtrip("6f2130edc682a1cb0db9b709179593d9");
-		checkHashEncodeRoundtrip("ffffffffffffffffffffffffffffffff");
-		checkHashEncodeRoundtrip("0");
-		checkHashEncodeRoundtrip("1");
+    // ======================= waiting for issue sync ======================
+
+	public void testWaitForIssueSyncAllFound() throws IOException {
+        addMissingIssue = false;
+		// set up mocks
+
+		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
+        when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
+        setupResponseCodeAndOutputStream(findIssuesConn);
+
+		// execution
+		final MyAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        final AtomicBoolean doneWaiting = new AtomicBoolean(false);
+        new Thread(new Runnable() {
+            public void run() {
+                cloud.waitForIssueSync();
+                doneWaiting.set(true);
+            }
+        }).start();
+        assertFalse(doneWaiting.get());
+        when(cloud.mockGuiCallback.showConfirmDialog(anyString(), anyString(), Mockito.anyInt())).thenReturn(0);
+        cloud.initialize();
+        assertFalse(doneWaiting.get());
+		cloud.bugsPopulated();
+        assertTrue(doneWaiting.get());
+
+        assertEquals("/find-issues", cloud.urlsRequested.get(0));
 	}
 
-	public void testNormalizeHash() {
-		assertEquals("0", normalizeHash("0"));
-		assertEquals("0", normalizeHash("000000000"));
-		assertEquals("1", normalizeHash("000000000000001"));
-		assertEquals("fffffffffffffffffffffffffffffff", normalizeHash("0fffffffffffffffffffffffffffffff"));
+	public void testWaitForIssueSyncNetworkFailure() throws IOException {
+        addMissingIssue = false;
+		// set up mocks
+
+		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
+        when(findIssuesConn.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        when(findIssuesConn.getResponseCode()).thenReturn(500);
+        when(findIssuesConn.getOutputStream()).thenReturn(outputStream);
+
+        // execution
+		final MyAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        final AtomicBoolean doneWaiting = new AtomicBoolean(false);
+        new Thread(new Runnable() {
+            public void run() {
+                cloud.waitForIssueSync();
+                doneWaiting.set(true);
+            }
+        }).start();
+        assertFalse(doneWaiting.get());
+        when(cloud.mockGuiCallback.showConfirmDialog(anyString(), anyString(), Mockito.anyInt())).thenReturn(0);
+        cloud.initialize();
+        assertFalse(doneWaiting.get());
+        cloud.bugsPopulated();
+        assertTrue(doneWaiting.get());
+
+        assertEquals("/find-issues", cloud.urlsRequested.get(0));
 	}
 
-	public void testNormalizeHashMakesLowercase() {
-		assertEquals("f", normalizeHash("F"));
-		assertEquals("fffffffffffffffffffffffffffffff", normalizeHash("0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
-		assertEquals("ffffffffffffffffffffffffffffffff", normalizeHash("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
-	}
+	public void testWaitForIssueSyncReturnsBeforeUpload() throws Throwable {
 
-	public void testLogInAllIssuesFound() throws IOException {
+        addMissingIssue = true;
+		// set up mocks
+
+		final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
+        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
+        setupResponseCodeAndOutputStream(findIssuesConnection);
+
+		final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
+		setupResponseCodeAndOutputStream(logInConnection);
+
+		HttpURLConnection uploadConnection = mock(HttpURLConnection.class);
+		setupResponseCodeAndOutputStream(uploadConnection);
+
+		// execution
+		final MyAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection, logInConnection, uploadConnection);
+        final AtomicBoolean doneWaiting = new AtomicBoolean(false);
+        Future<Throwable> bgThreadFuture = Executors.newSingleThreadExecutor().submit(new Callable<Throwable>() {
+            public Throwable call() throws Exception {
+                try {
+                    cloud.waitForIssueSync();
+                    doneWaiting.set(true);
+                    assertEquals(1, cloud.urlsRequested.size());
+                    assertEquals("/find-issues", cloud.urlsRequested.get(0));
+                    return null;
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    return e;
+                }
+            }
+        });
+        assertFalse(doneWaiting.get());
+        when(cloud.mockGuiCallback.showConfirmDialog(anyString(), anyString(), Mockito.anyInt())).thenReturn(0);
+        cloud.initialize();
+        assertFalse(doneWaiting.get());
+		cloud.bugsPopulated();
+        assertTrue(doneWaiting.get());
+
+        assertEquals("/find-issues", cloud.urlsRequested.get(0));
+        assertEquals("/log-in", cloud.urlsRequested.get(1));
+        assertEquals("/upload-issues", cloud.urlsRequested.get(2));
+
+        // make any exception thrown in the bg thread is registered as a failure
+        Throwable t = bgThreadFuture.get();
+        if (t != null)
+            throw t;
+    }
+
+    // ============================ find issues ============================
+
+	public void testFindIssuesAllFound() throws IOException {
         addMissingIssue = false;
 		// set up mocks
 
 		final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponseInputStream(createFoundIssueProto()));
+        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
         ByteArrayOutputStream findIssuesOutput = setupResponseCodeAndOutputStream(findIssuesConnection);
 
 		// execution
 		MyAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
         when(cloud.mockGuiCallback.showConfirmDialog(anyString(), anyString(), Mockito.anyInt())).thenReturn(0);
         cloud.initialize();
 		cloud.bugsPopulated();
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
 
         // verify find-issues
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
@@ -122,12 +213,34 @@ public class AppEngineCloudClientTest extends TestCase {
 		assertEquals("test@example.com", primaryDesignation.getUser());
 	}
 
+	public void testFindIssuesNetworkFailure() throws IOException {
+        addMissingIssue = false;
+
+		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
+        when(findIssuesConn.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        when(findIssuesConn.getResponseCode()).thenReturn(500);
+        when(findIssuesConn.getOutputStream()).thenReturn(outputStream);
+
+        // execution
+		final MyAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        when(cloud.mockGuiCallback.showConfirmDialog(anyString(), anyString(), Mockito.anyInt())).thenReturn(0);
+        cloud.initialize();
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        cloud.bugsPopulated();
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+
+        assertEquals(1, cloud.urlsRequested.size());
+        assertEquals("/find-issues", cloud.urlsRequested.get(0));
+	}
+
 	public void testLogInAndUploadIssues() throws IOException {
         addMissingIssue = true;
 		// set up mocks
 
 		final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponseInputStream(createFoundIssueProto()));
+        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
         ByteArrayOutputStream findIssuesOutput = setupResponseCodeAndOutputStream(findIssuesConnection);
 
 		final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
@@ -139,8 +252,11 @@ public class AppEngineCloudClientTest extends TestCase {
 		// execution
 		MyAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection, logInConnection, uploadConnection);
         when(cloud.mockGuiCallback.showConfirmDialog(anyString(), anyString(), Mockito.anyInt())).thenReturn(0);
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
         cloud.initialize();
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
 		cloud.bugsPopulated();
+        assertEquals(Cloud.SignedInState.SIGNED_IN, cloud.getSignedInState());
 
         // verify find-issues
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
@@ -177,6 +293,62 @@ public class AppEngineCloudClientTest extends TestCase {
 		assertEquals(1, uploadedIssues.getNewIssuesCount());
 		checkIssuesEqual(missingIssue, uploadedIssues.getNewIssues(0));
 	}
+
+    // ================================ authentication =================================
+
+
+	public void testSignInManually() throws IOException {
+        addMissingIssue = false;
+		// set up mocks
+
+		final HttpURLConnection signInConn = mock(HttpURLConnection.class);
+        ByteArrayOutputStream findIssuesOutput = setupResponseCodeAndOutputStream(signInConn);
+
+		// execution
+		MyAppEngineCloudClient cloud = createAppEngineCloudClient(signInConn);
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        when(cloud.mockGuiCallback.showConfirmDialog(anyString(), anyString(), Mockito.anyInt())).thenReturn(0);
+        cloud.initialize();
+        cloud.signIn();
+        assertEquals(Cloud.SignedInState.SIGNED_IN, cloud.getSignedInState());
+
+        // verify
+        assertEquals("/log-in", cloud.urlsRequested.get(0));
+		verify(signInConn).connect();
+		LogIn logIn = LogIn.parseFrom(findIssuesOutput.toByteArray());
+        assertEquals(555, logIn.getSessionId());
+	}
+    
+	public void testSignOut() throws IOException {
+        addMissingIssue = false;
+		// set up mocks
+
+		final HttpURLConnection signInConn = mock(HttpURLConnection.class);
+        ByteArrayOutputStream signInReq = setupResponseCodeAndOutputStream(signInConn);
+		final HttpURLConnection signOutConn = mock(HttpURLConnection.class);
+        setupResponseCodeAndOutputStream(signOutConn);
+
+		// execution
+		MyAppEngineCloudClient cloud = createAppEngineCloudClient(signInConn, signOutConn);
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        when(cloud.mockGuiCallback.showConfirmDialog(anyString(), anyString(), Mockito.anyInt())).thenReturn(0);
+        cloud.initialize();
+        cloud.signIn();
+        assertEquals(Cloud.SignedInState.SIGNED_IN, cloud.getSignedInState());
+        cloud.signOut();
+        assertEquals(Cloud.SignedInState.SIGNED_OUT, cloud.getSignedInState());
+
+        // verify
+        assertEquals("/log-in", cloud.urlsRequested.get(0));
+		verify(signInConn).connect();
+		LogIn logIn = LogIn.parseFrom(signInReq.toByteArray());
+        assertEquals(555, logIn.getSessionId());
+        // verify
+        assertEquals("/log-out/555", cloud.urlsRequested.get(1));
+		verify(signOutConn).connect();
+	}
+
+    // ================================== evaluations ==================================
 
 	@SuppressWarnings("deprecation")
 	public void testStoreUserAnnotation() throws Exception {
@@ -240,7 +412,7 @@ public class AppEngineCloudClientTest extends TestCase {
                 createEvaluation("NOT_A_BUG", SAMPLE_DATE+100, "comment", "first")));
 
 
-        final HttpURLConnection findConnection = createFindIssuesConnection(createFindIssuesResponseInputStream(responseIssue));
+        final HttpURLConnection findConnection = createFindIssuesConnection(createFindIssuesResponse(responseIssue));
 
         final HttpURLConnection recentEvalConnection = createResponselessConnection();
 		RecentEvaluations recentEvalResponse = RecentEvaluations.newBuilder()
@@ -264,6 +436,8 @@ public class AppEngineCloudClientTest extends TestCase {
 		assertEquals(2, allUserDesignations.size());
 	}
 
+    // =============================== misc utility functions ===================================
+
     public void testJiraDashboardUrlProcessor() {
         assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("  jira.atlassian.com    "));
         assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("jira.atlassian.com"));
@@ -275,6 +449,32 @@ public class AppEngineCloudClientTest extends TestCase {
         assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa;sessionId=blah"));
         assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa?blah"));
     }
+
+	public static void testEncodeDecodeHash() {
+		checkHashEncodeRoundtrip("9e107d9d372bb6826bd81d3542a419d6");
+		checkHashEncodeRoundtrip("83ab7e45f39c7a7a84e5e63b95beeb5");
+		checkHashEncodeRoundtrip("1fe8e2bc5f1cceae0bf5954e7b5e84ac");
+		checkHashEncodeRoundtrip("6977735a4a0f8036778b223cd9f9c1f0");
+		checkHashEncodeRoundtrip("9ba282b1a7b049fa3c5b068941c25977");
+		checkHashEncodeRoundtrip("6606a054edd331799ed567b4efd539a6");
+		checkHashEncodeRoundtrip("6f2130edc682a1cb0db9b709179593d9");
+		checkHashEncodeRoundtrip("ffffffffffffffffffffffffffffffff");
+		checkHashEncodeRoundtrip("0");
+		checkHashEncodeRoundtrip("1");
+	}
+
+	public void testNormalizeHash() {
+		assertEquals("0", normalizeHash("0"));
+		assertEquals("0", normalizeHash("000000000"));
+		assertEquals("1", normalizeHash("000000000000001"));
+		assertEquals("fffffffffffffffffffffffffffffff", normalizeHash("0fffffffffffffffffffffffffffffff"));
+	}
+
+	public void testNormalizeHashMakesLowercase() {
+		assertEquals("f", normalizeHash("F"));
+		assertEquals("fffffffffffffffffffffffffffffff", normalizeHash("0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
+		assertEquals("ffffffffffffffffffffffffffffffff", normalizeHash("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"));
+	}
 
     // =================================== end of tests ===========================================
 
@@ -397,7 +597,7 @@ public class AppEngineCloudClientTest extends TestCase {
 		assertEquals(issue.getPrimaryClass().getClassName(), uploadedIssue.getPrimaryClass());
 	}
 
-	private InputStream createFindIssuesResponseInputStream(Issue foundIssue) {
+	private InputStream createFindIssuesResponse(Issue foundIssue) {
 		FindIssuesResponse.Builder issueList = FindIssuesResponse.newBuilder();
         if (addMissingIssue)
             issueList.addFoundIssues(Issue.newBuilder().build());

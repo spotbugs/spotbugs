@@ -62,6 +62,8 @@ public class AppEngineCloudClient extends AbstractCloud {
     private SignedInState signedInState = SignedInState.NOT_SIGNED_IN_YET;
     private Map<String,String> bugStatusCache = new ConcurrentHashMap<String, String>();
     private final BugFilingHelper bugFilingHelper = new BugFilingHelper(this, properties);
+    private final Object findIssuesCompleteLock = new Object();
+    private boolean findIssuesComplete = false;
 
     /** invoked via reflection */
     @SuppressWarnings({"UnusedDeclaration"})
@@ -75,8 +77,6 @@ public class AppEngineCloudClient extends AbstractCloud {
                          @CheckForNull Executor executor) {
 
 		super(plugin, bugs, properties);
-		if (bugs.getProject().getGuiCallback().isHeadless())
-			signedInState = SignedInState.SIGNIN_FAILED;
 		if (executor == null) {
 			backgroundExecutorService = Executors.newFixedThreadPool(10);
 			backgroundExecutor = backgroundExecutorService;
@@ -97,7 +97,21 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     // ====================== initialization =====================
 
-	public boolean availableForInitialization() {
+    public void waitForIssueSync() {
+//        for (;;) {
+            synchronized (findIssuesCompleteLock) {
+                try {
+                    findIssuesCompleteLock.wait();
+                } catch (InterruptedException e) {
+                    LOGGER.log(Level.WARNING, "interrupted", e);
+                }
+                if (findIssuesComplete)
+                    return;
+            }
+//        }
+    }
+
+    public boolean availableForInitialization() {
 		return true;
 	}
 
@@ -443,17 +457,26 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 	}
 
-    private void actuallyCheckBugsAgainstCloud(ConcurrentMap<String, BugInstance> bugsByHash) throws IOException {
+    private void actuallyCheckBugsAgainstCloud(ConcurrentMap<String, BugInstance> bugsByHash)
+            throws ExecutionException, InterruptedException {
         int numBugs = bugsByHash.size();
         setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud...");
 
-        List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
-        networkClient.generateHashCheckRunnables(new ArrayList<String>(bugsByHash.keySet()), tasks, bugsByHash);
 
-        executeAndWaitForAll(tasks);
+        try {
+            List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
+            networkClient.generateHashCheckRunnables(new ArrayList<String>(bugsByHash.keySet()), tasks, bugsByHash);
+            executeAndWaitForAll(tasks);
+        } finally {
 
-       if (signedInState == SignedInState.SIGNIN_FAILED)
-    		return;
+            synchronized(findIssuesCompleteLock) {
+                findIssuesComplete = true;
+                findIssuesCompleteLock.notifyAll();
+            }
+        }
+
+        if (signedInState == SignedInState.SIGNIN_FAILED)
+            return;
 
         Collection<BugInstance> newBugs = bugsByHash.values();
         if (!newBugs.isEmpty() || !networkClient.getTimestampsToUpdate().isEmpty()) {
@@ -463,7 +486,7 @@ public class AppEngineCloudClient extends AbstractCloud {
         }
     }
 
-    private void executeAndWaitForAll(List<Callable<Object>> tasks) {
+    private void executeAndWaitForAll(List<Callable<Object>> tasks) throws ExecutionException, InterruptedException {
        if (backgroundExecutorService != null && backgroundExecutorService.isShutdown())
     		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown in executeAndWaitForAll");
 
@@ -472,17 +495,6 @@ public class AppEngineCloudClient extends AbstractCloud {
             for (Future<Object> result : results) {
                 result.get();
             }
-
-        } catch (InterruptedException e) {
-            LOGGER.log(Level.SEVERE, "error while starting hash check threads", e);
-
-        } catch (ExecutionException e) {
-            if (backgroundExecutorService.isShutdown())
-                LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown ", e);
-            else if (backgroundExecutorService.isTerminated())
-                LOGGER.log(Level.SEVERE, "backgroundExecutor service is termination ", e);
-            else
-                LOGGER.log(Level.SEVERE, "execution exception", e);
 
         } catch (RejectedExecutionException e) {
             if (backgroundExecutorService.isShutdown())
@@ -540,6 +552,10 @@ public class AppEngineCloudClient extends AbstractCloud {
 
                 } catch (SignInCancelledException e) {
                     // OK!
+                } catch (InterruptedException e) {
+                    LOGGER.log(Level.SEVERE, "", e);
+                } catch (ExecutionException e) {
+                    LOGGER.log(Level.SEVERE, "", e);
                 }
                 setStatusMsg("");
             }

@@ -617,6 +617,10 @@ public  class DBCloud extends AbstractCloud {
 		}
 	}
 
+    public void waitForIssueSync() {
+        //TODO
+    }
+
     private boolean tryInitialization() throws IOException {
         if (!super.initialize())
             return true;

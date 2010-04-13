@@ -168,8 +168,7 @@ public class AppEngineCloudNetworkClient {
 
     public void generateHashCheckRunnables(final List<String> hashes,
                                            List<Callable<Object>> tasks,
-                                           final ConcurrentMap<String, BugInstance> bugsByHash)
-            throws IOException {
+                                           final ConcurrentMap<String, BugInstance> bugsByHash) {
         final int numBugs = hashes.size();
         final AtomicInteger numberOfBugsCheckedSoFar = new AtomicInteger();
         for (int i = 0; i < numBugs; i += HASH_CHECK_PARTITION_SIZE) {

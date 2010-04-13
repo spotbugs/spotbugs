@@ -59,6 +59,9 @@ import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
         }
     }
 
+    public void waitForIssueSync() {
+    }
+
     @Override
     public Mode getMode() {
 	    return Mode.COMMUNAL;

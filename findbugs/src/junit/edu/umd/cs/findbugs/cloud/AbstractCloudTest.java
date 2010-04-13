@@ -362,7 +362,10 @@ public class AbstractCloudTest extends TestCase {
 	    	throw new UnsupportedOperationException();
 	    }
 
-	    @Override
+        public void waitForIssueSync() {
+        }
+
+        @Override
 	    protected Iterable<BugDesignation> getAllUserDesignations(BugInstance bd) {
 	    	List<BugDesignation> designationList = designations.get(bd);
 			return designationList != null ? designationList : Collections.<BugDesignation>emptyList();

@@ -39,100 +39,7 @@ import java.util.Set;
  * 
  * Each Cloud instance is associated with a BugCollection.
  */
-public interface Cloud {    public interface CloudListener {
-		void issueUpdated(BugInstance bug);
-		void statusUpdated();
-	}
-	public enum UserDesignation {
-		UNCLASSIFIED,
-		NEEDS_STUDY,
-		BAD_ANALYSIS,
-		NOT_A_BUG,
-		MOSTLY_HARMLESS,
-		SHOULD_FIX,
-		MUST_FIX,
-		I_WILL_FIX,
-		OBSOLETE_CODE;
-
-		
-		public int score() {
-			switch (this) {
-
-			case BAD_ANALYSIS:
-				return -3;
-			case NOT_A_BUG:
-			case OBSOLETE_CODE:
-				return  -2;
-			case MOSTLY_HARMLESS:
-				return -1;
-			case SHOULD_FIX:
-				return  1;
-			case MUST_FIX:
-			case I_WILL_FIX:
-				return 2;	
-			default:
-				return 0;
-			}
-		}
-	}
-	enum Mode {
-		COMMUNAL, VOTING, SECRET
-	}
-
-	public static enum BugFilingStatus {
-		/** No bug yet filed */
-		FILE_BUG(SystemProperties.getProperty("findbugs.filebug.label", "File bug")) {
-			@Override
-			public boolean bugIsFiled() {
-				return false;
-			}
-		},
-		/** URL was sent to browser, but request has expired */
-		FILE_AGAIN("File again"), 
-		
-		/** Sent a URL to a browser to file a bug, no information yet */
-		BUG_PENDING("Bug pending") {
-			@Override
-			public boolean linkEnabled() {
-				return false;
-			}
-		},
-		/** synchronized bug instance with bug database */
-		VIEW_BUG(SystemProperties.getProperty("findbugs.viewbug.label", "View bug")), 
-		
-		/* Not applicable, bug linking not supported */
-		NA("") {
-			@Override
-			public boolean linkEnabled() {
-				return false;
-			}
-
-			@Override
-			public boolean bugIsFiled() {
-				return false;
-			}
-		};
-
-		final String displayName;
-
-		public boolean bugIsFiled() {
-			return true;
-		}
-
-		public boolean linkEnabled() {
-			return true;
-		}
-
-		BugFilingStatus(String name) {
-			this.displayName = name;
-		}
-
-		@Override
-		public String toString() {
-			return displayName;
-		}
-
-	}
+public interface Cloud {
 	
 	CloudPlugin getPlugin();
 
@@ -158,6 +65,10 @@ public interface Cloud {    public interface CloudListener {
 	 * @return true if successful
 	 */
 	public boolean initialize() throws IOException;
+
+    /** Waits until all data about this bug collection has been received from the cloud. */
+    void waitForIssueSync();
+
 	
 	/** Called after the bugs in the bug collection are loaded; 
 	 * synchronizes them with the database */
@@ -226,8 +137,8 @@ public interface Cloud {    public interface CloudListener {
 	 * @param bugLink if we have any information about the result of filing the bug, it should go here
 	 */
 	void bugFiled(BugInstance b, @CheckForNull Object bugLink);
-	
-	
+
+    
 
 	/** Supports textual summaries about the status of a bug */
 	boolean supportsCloudReports();
@@ -245,13 +156,11 @@ public interface Cloud {    public interface CloudListener {
 	@CheckForNull
 	String claimedBy(BugInstance b);
 	
-
 	/**
 	 * Claim the bug; true if no one else has already done so 
 	 */
 	boolean claim(BugInstance b);
 
-	
 	/** Return the time the user last changed their evaluation of this bug */
 	
 	long getUserTimestamp(BugInstance b);
@@ -298,4 +207,101 @@ public interface Cloud {    public interface CloudListener {
     Collection<String> getProjects(String className);
 
     enum SignedInState { SIGNING_IN, SIGNED_IN, SIGNIN_FAILED, SIGNED_OUT, NOT_SIGNED_IN_YET, NO_SIGNIN_REQUIRED }
+
+    public interface CloudListener {
+		void issueUpdated(BugInstance bug);
+		void statusUpdated();
+	}
+
+	public enum UserDesignation {
+		UNCLASSIFIED,
+		NEEDS_STUDY,
+		BAD_ANALYSIS,
+		NOT_A_BUG,
+		MOSTLY_HARMLESS,
+		SHOULD_FIX,
+		MUST_FIX,
+		I_WILL_FIX,
+		OBSOLETE_CODE;
+
+
+		public int score() {
+			switch (this) {
+
+			case BAD_ANALYSIS:
+				return -3;
+			case NOT_A_BUG:
+			case OBSOLETE_CODE:
+				return  -2;
+			case MOSTLY_HARMLESS:
+				return -1;
+			case SHOULD_FIX:
+				return  1;
+			case MUST_FIX:
+			case I_WILL_FIX:
+				return 2;
+			default:
+				return 0;
+			}
+		}
+	}
+
+	enum Mode {
+		COMMUNAL, VOTING, SECRET
+	}
+
+	public static enum BugFilingStatus {
+		/** No bug yet filed */
+		FILE_BUG(SystemProperties.getProperty("findbugs.filebug.label", "File bug")) {
+			@Override
+			public boolean bugIsFiled() {
+				return false;
+			}
+		},
+		/** URL was sent to browser, but request has expired */
+		FILE_AGAIN("File again"),
+
+		/** Sent a URL to a browser to file a bug, no information yet */
+		BUG_PENDING("Bug pending") {
+			@Override
+			public boolean linkEnabled() {
+				return false;
+			}
+		},
+		/** synchronized bug instance with bug database */
+		VIEW_BUG(SystemProperties.getProperty("findbugs.viewbug.label", "View bug")),
+
+		/* Not applicable, bug linking not supported */
+		NA("") {
+			@Override
+			public boolean linkEnabled() {
+				return false;
+			}
+
+			@Override
+			public boolean bugIsFiled() {
+				return false;
+			}
+		};
+
+		final String displayName;
+
+		public boolean bugIsFiled() {
+			return true;
+		}
+
+		public boolean linkEnabled() {
+			return true;
+		}
+
+		BugFilingStatus(String name) {
+			this.displayName = name;
+		}
+
+		@Override
+		public String toString() {
+			return displayName;
+		}
+
+	}
 }
