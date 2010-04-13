@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.cloud;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
@@ -35,22 +34,25 @@ import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 /**
  * @author pwilliam
  */
- class BugCollectionStorageCloud extends AbstractCloud {
-	
-	BugCollectionStorageCloud(CloudPlugin plugin, BugCollection bc, Properties properties) {
-			super(plugin, bc, properties);
-	}
-	
-	BugCollectionStorageCloud(BugCollection bc) {
-		this(getFallbackPlugin(), bc, new Properties());
-	}
+class BugCollectionStorageCloud extends AbstractCloud {
 
-	private  static CloudPlugin getFallbackPlugin() {
-		 return new CloudPlugin("fallback local cloud", BugCollectionStorageCloud.class.getClassLoader(),
-				 BugCollectionStorageCloud.class, NoNameLookup.class, new PropertyBundle(), "no description", "no details");
-	 }
+    private static CloudPlugin getFallbackPlugin() {
+        return new CloudPlugin("fallback local cloud", BugCollectionStorageCloud.class.getClassLoader(),
+                               BugCollectionStorageCloud.class, NoNameLookup.class, new PropertyBundle(),
+                               "no description", "no details");
+    }
+
+    BugCollectionStorageCloud(CloudPlugin plugin, BugCollection bc, Properties properties) {
+        super(plugin, bc, properties);
+        setSigninState(SignedInState.NO_SIGNIN_REQUIRED);
+    }
+
+    BugCollectionStorageCloud(BugCollection bc) {
+        this(getFallbackPlugin(), bc, new Properties());
+    }
+
     @Override
-      public boolean initialize()  {
+    public boolean initialize() {
         try {
             // we know AbstractCloud.initialize doesn't throw this.
             return super.initialize();
@@ -64,7 +66,7 @@ import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 
     @Override
     public Mode getMode() {
-	    return Mode.COMMUNAL;
+        return Mode.COMMUNAL;
     }
 
 	public String getUser() {
@@ -101,10 +103,6 @@ import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
     public void bugsPopulated() {
 	    assert true;
 	    
-    }
-
-    public SignedInState getSignedInState() {
-        return SignedInState.NO_SIGNIN_REQUIRED;
     }
 
     public void setSaveSignInInformation(boolean save) {

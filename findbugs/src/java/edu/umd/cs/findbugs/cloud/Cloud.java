@@ -51,10 +51,12 @@ public interface Cloud {
 	String getStatusMsg();
 
 	public void addListener(CloudListener listener);
-
 	public void removeListener(CloudListener listener);
 
-	/** Do we have the configuration information needed to try initializing the cloud;
+    public void addStatusListener(CloudStatusListener cloudStatusListener);
+    public void removeStatusListener(CloudStatusListener cloudStatusListener);
+
+    /** Do we have the configuration information needed to try initializing the cloud;
 	 * calling this method should have no side effects and not display any dialogs
 	 * or make any network connections. 
 	 * @return true if we have the needed information
@@ -304,4 +306,10 @@ public interface Cloud {
 		}
 
 	}
+
+    public interface CloudStatusListener {
+        void handleIssueDataDownloadedEvent();
+
+        void handleStateChange(SignedInState oldState, SignedInState state);
+    }
 }

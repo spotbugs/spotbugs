@@ -59,11 +59,10 @@ public class AppEngineCloudClient extends AbstractCloud {
 	private Timer timer;
 
     private AppEngineCloudNetworkClient networkClient;
-    private SignedInState signedInState = SignedInState.NOT_SIGNED_IN_YET;
     private Map<String,String> bugStatusCache = new ConcurrentHashMap<String, String>();
     private final BugFilingHelper bugFilingHelper = new BugFilingHelper(this, properties);
-    private final Object findIssuesCompleteLock = new Object();
-    private boolean findIssuesComplete = false;
+    private final Object issueDataDownloadedLock = new Object();
+    private boolean issueDataDownloaded = false;
 
     /** invoked via reflection */
     @SuppressWarnings({"UnusedDeclaration"})
@@ -98,17 +97,15 @@ public class AppEngineCloudClient extends AbstractCloud {
     // ====================== initialization =====================
 
     public void waitForIssueSync() {
-//        for (;;) {
-            synchronized (findIssuesCompleteLock) {
-                try {
-                    findIssuesCompleteLock.wait();
-                } catch (InterruptedException e) {
-                    LOGGER.log(Level.WARNING, "interrupted", e);
-                }
-                if (findIssuesComplete)
-                    return;
+        synchronized (issueDataDownloadedLock) {
+            if (issueDataDownloaded)
+                return;
+            try {
+                issueDataDownloadedLock.wait();
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.WARNING, "interrupted", e);
             }
-//        }
+        }
     }
 
     public boolean availableForInitialization() {
@@ -118,7 +115,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 	@Override
 	public boolean initialize() throws IOException {
         if (!super.initialize()) {
-            signedInState = SignedInState.SIGNIN_FAILED;
+            setSigninState(SignedInState.SIGNIN_FAILED);
 
             return false;
         }
@@ -126,15 +123,15 @@ public class AppEngineCloudClient extends AbstractCloud {
             if (networkClient.initialize()) {
 
                 networkClient.logIntoCloudForce();
-                signedInState = SignedInState.SIGNED_IN;
+                setSigninState(SignedInState.SIGNED_IN);
                 setStatusMsg("");
 
             } else {
                 // soft init didn't work
-                signedInState = SignedInState.NOT_SIGNED_IN_YET;
+                setSigninState(SignedInState.NOT_SIGNED_IN_YET);
             }
         } catch (IOException e) {
-            signedInState = SignedInState.SIGNIN_FAILED;
+            setSigninState(SignedInState.SIGNIN_FAILED);
             return false;
         }
 
@@ -170,18 +167,18 @@ public class AppEngineCloudClient extends AbstractCloud {
                 throw new SignInCancelledException(e);
             }
 
-        } else if (signedInState == SignedInState.SIGNING_IN) {
-            // huh?
+        } else if (getSignedInState() == SignedInState.SIGNING_IN) {
+            // TODO should probably handle this
             throw new IllegalStateException("signing in");
-        } else if (signedInState == SignedInState.SIGNED_IN) {
+        } else if (getSignedInState() == SignedInState.SIGNED_IN) {
             // great!
         }
     }
 
     public boolean couldSignIn() {
-        return signedInState == SignedInState.NOT_SIGNED_IN_YET
-            || signedInState == SignedInState.SIGNIN_FAILED
-            || signedInState == SignedInState.SIGNED_OUT;
+        return getSignedInState() == SignedInState.NOT_SIGNED_IN_YET
+            || getSignedInState() == SignedInState.SIGNIN_FAILED
+            || getSignedInState() == SignedInState.SIGNED_OUT;
     }
 
     @Override
@@ -221,10 +218,6 @@ public class AppEngineCloudClient extends AbstractCloud {
         return networkClient;
     }
 
-    public SignedInState getSignedInState() {
-        return signedInState;
-    }
-
     public void setSaveSignInInformation(boolean save) {
         AppEngineNameLookup.setSaveSessionInformation(save);
         if (save) {
@@ -240,28 +233,26 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
     public void signIn() throws IOException {
-        signedInState = SignedInState.SIGNING_IN;
+        setSigninState(SignedInState.SIGNING_IN);
         setStatusMsg("Signing into FindBugs Cloud");
         try {
             networkClient.signIn(true);
             networkClient.logIntoCloudForce();
         } catch (IOException e) {
-            signedInState = SignedInState.SIGNIN_FAILED;
+            setSigninState(SignedInState.SIGNIN_FAILED);
 
             throw e;
         } catch (RuntimeException e) {
-            signedInState = SignedInState.SIGNIN_FAILED;
+            setSigninState(SignedInState.SIGNIN_FAILED);
 
             throw e;
         }
 
-        signedInState = SignedInState.SIGNED_IN;
+        setSigninState(SignedInState.SIGNED_IN);
         setStatusMsg("");
     }
 
     public void signOut() {
-        LOGGER.log(Level.INFO, "signing out", new RuntimeException("Signing out"));
-
         if (backgroundExecutorService != null) {
             backgroundExecutorService.shutdownNow();
             try {
@@ -273,7 +264,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             }
         }
         networkClient.signOut();
-        signedInState = SignedInState.SIGNED_OUT;
+        setSigninState(SignedInState.SIGNED_OUT);
         setStatusMsg("Signed out of FindBugs Cloud");
     }
 
@@ -469,13 +460,14 @@ public class AppEngineCloudClient extends AbstractCloud {
             executeAndWaitForAll(tasks);
         } finally {
 
-            synchronized(findIssuesCompleteLock) {
-                findIssuesComplete = true;
-                findIssuesCompleteLock.notifyAll();
+            synchronized(issueDataDownloadedLock) {
+                issueDataDownloaded = true;
+                issueDataDownloadedLock.notifyAll();
             }
+            fireIssueDataDownloadedEvent();
         }
 
-        if (signedInState == SignedInState.SIGNIN_FAILED)
+        if (getSignedInState() == SignedInState.SIGNIN_FAILED)
             return;
 
         Collection<BugInstance> newBugs = bugsByHash.values();

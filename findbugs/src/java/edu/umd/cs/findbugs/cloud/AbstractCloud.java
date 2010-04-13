@@ -19,23 +19,6 @@
 
 package edu.umd.cs.findbugs.cloud;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
-
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
@@ -51,29 +34,56 @@ import edu.umd.cs.findbugs.cloud.username.NameLookup;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Multiset;
 
+import javax.annotation.CheckForNull;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
 
 /**
  * @author William Pugh
  */
 public abstract class AbstractCloud implements Cloud {
-	
+
+    public static long MIN_TIMESTAMP;
+
     protected static final boolean THROW_EXCEPTION_IF_CANT_CONNECT = false;
+    
     private static final Mode DEFAULT_VOTING_MODE = Mode.COMMUNAL;
     private static final Logger LOGGER = Logger.getLogger(AbstractCloud.class.getName());
 
     private static final String LEADERBOARD_BLACKLIST = SystemProperties.getProperty("findbugs.leaderboard.blacklist");
     private static final Pattern LEADERBOARD_BLACKLIST_PATTERN;
- 	static {
- 		Pattern p = null;
- 		if (LEADERBOARD_BLACKLIST != null) {
- 			try {
- 				p = Pattern.compile(LEADERBOARD_BLACKLIST.replace(',', '|'));
- 			} catch (Exception e) {
- 				LOGGER.log(Level.WARNING, "Could not load leaderboard blacklist pattern", e);
- 			}
-         }
-         LEADERBOARD_BLACKLIST_PATTERN = p;
- 	}
+
+    static {
+        Pattern p = null;
+        if (LEADERBOARD_BLACKLIST != null) {
+            try {
+                p = Pattern.compile(LEADERBOARD_BLACKLIST.replace(',', '|'));
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Could not load leaderboard blacklist pattern", e);
+            }
+        }
+        LEADERBOARD_BLACKLIST_PATTERN = p;
+        try {
+            MIN_TIMESTAMP = DateFormat.getDateInstance().parse("Jan 23, 1996").getTime();
+        } catch (ParseException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
  	protected final CloudPlugin plugin;
 	protected final BugCollection bugCollection;
@@ -86,10 +96,11 @@ public abstract class AbstractCloud implements Cloud {
 	private String sourceFileLinkToolTip;
 
 	private CopyOnWriteArraySet<CloudListener> listeners = new CopyOnWriteArraySet<CloudListener>();
-	
+	private CopyOnWriteArraySet<CloudStatusListener> statusListeners = new CopyOnWriteArraySet<CloudStatusListener>();
+
 	private Mode mode = Mode.COMMUNAL;
 	private String statusMsg;
-	public static long MIN_TIMESTAMP = new Date("Jan 23, 1996").getTime();
+    private SignedInState signinState = SignedInState.NOT_SIGNED_IN_YET;
 
     protected AbstractCloud(CloudPlugin plugin, BugCollection bugs, Properties properties) {
 		this.plugin = plugin;
@@ -248,7 +259,17 @@ public abstract class AbstractCloud implements Cloud {
 	public void removeListener(CloudListener listener) {
 		listeners.remove(listener);
 	}
-	
+
+    public void addStatusListener(CloudStatusListener listener) {
+		if (listener == null) throw new NullPointerException();
+		if (!statusListeners.contains(listener))
+			statusListeners.add(listener);
+    }
+
+    public void removeStatusListener(CloudStatusListener listener) {
+        statusListeners.remove(listener);
+    }
+
     public String getStatusMsg() {
 	   return statusMsg;
     }
@@ -478,6 +499,24 @@ public abstract class AbstractCloud implements Cloud {
 			listener.issueUpdated(bug);
 	}
 
+    protected void fireIssueDataDownloadedEvent() {
+        for (CloudStatusListener statusListener : statusListeners)
+            statusListener.handleIssueDataDownloadedEvent();
+    }
+
+    public SignedInState getSignedInState() {
+        return signinState;
+    }
+
+    protected void setSigninState(SignedInState state) {
+        SignedInState oldState = this.signinState;
+        if (oldState == state)
+            return;
+        this.signinState = state;
+        for (CloudStatusListener statusListener : statusListeners)
+            statusListener.handleStateChange(oldState, state);
+    }
+
     protected abstract Iterable<BugDesignation> getAllUserDesignations(BugInstance bd);
 
 	public BugInstance getBugByHash(String hash) {
@@ -574,6 +613,5 @@ public abstract class AbstractCloud implements Cloud {
 		for(BugDesignation d : getAllUserDesignations(b))
 			result.add(d.getUser());
          return result;
-	} 
-    
+	}
 }
