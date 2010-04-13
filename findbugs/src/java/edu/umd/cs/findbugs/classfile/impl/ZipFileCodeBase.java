@@ -56,7 +56,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 			File parent = file.getParentFile();
 			if (!file.exists()) {
 				if (!(parent.exists() && parent.isDirectory() && parent.canRead()))
-						throw new ZipException("Can't ready directory containing zip file: " + file);
+						throw new ZipException("Can't read directory containing zip file: " + file);
 				throw new ZipException("Zip file doesn't exist: " + file);
 			}
 			if (!file.canRead())
