@@ -362,7 +362,7 @@ public class AbstractCloudTest extends TestCase {
 	    	throw new UnsupportedOperationException();
 	    }
 
-        public void waitForIssueSync() {
+        public void waitUntilIssueDataDownloaded() {
         }
 
         @Override
