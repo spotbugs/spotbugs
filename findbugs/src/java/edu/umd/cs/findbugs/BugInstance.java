@@ -1791,7 +1791,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 			int ageInDays = (int)(age / 1000 / 3600 / 24);
 			attributeList.addAttribute("ageInDays", Integer.toString(ageInDays));
 			attributeList.addAttribute("firstSeen", DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT).format(firstSeen));
-			int reviews = cloud. getNumberReviewers(this);
+			int reviews = cloud.getNumberReviewers(this);
 			if (reviews > 0) {
 				attributeList.addAttribute("reviews", Integer.toString(reviews));
 				

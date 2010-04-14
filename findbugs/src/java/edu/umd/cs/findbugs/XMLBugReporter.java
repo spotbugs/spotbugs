@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 
 /**
@@ -37,20 +38,23 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 	public void setAddMessages(boolean enable) {
 		getBugCollection().setWithMessages(enable);
 	}
-	
-	@Override
-	public void finish() {
-		try {
-		Project project = getProject();
-		if (project == null) 
-			throw new NullPointerException("No project");
-		getBugCollection().writeXML(outputStream);
-		} catch (IOException e) {
-			throw new FatalException("Error writing XML output", e);
-		}
-	}
 
-	/**
+    @Override
+    public void finish() {
+        try {
+            Project project = getProject();
+            if (project == null)
+                throw new NullPointerException("No project");
+            Cloud cloud = getBugCollection().getCloud();
+            if (cloud != null)
+                cloud.bugsPopulated();
+            getBugCollection().writeXML(outputStream);
+        } catch (IOException e) {
+            throw new FatalException("Error writing XML output", e);
+        }
+    }
+
+    /**
      * @param xmlMinimal
      */
     public void setMinimalXML(boolean xmlMinimal) {

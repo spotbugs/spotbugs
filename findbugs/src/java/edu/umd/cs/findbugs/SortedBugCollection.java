@@ -370,6 +370,8 @@ public class SortedBugCollection implements BugCollection {
 		//if (project == null) throw new NullPointerException("No project");
 		
 		if (withMessages) {
+            Cloud cloud = getCloud();
+            cloud.waitUntilIssueDataDownloaded();
 			xmlOutput= new OutputStreamXMLOutput(out, "http://findbugs.sourceforge.net/xsl/default.xsl");
 		} else {
 			xmlOutput= new OutputStreamXMLOutput(out);

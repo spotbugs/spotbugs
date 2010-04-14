@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -42,7 +43,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static edu.umd.cs.findbugs.cloud.Cloud.SignedInState.NOT_SIGNED_IN_YET;
+import static edu.umd.cs.findbugs.cloud.Cloud.SigninState.NOT_SIGNED_IN_YET;
 import static edu.umd.cs.findbugs.cloud.appEngine.BugFilingHelper.processJiraDashboardUrl;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.normalizeHash;
 import static org.mockito.Matchers.anyString;
@@ -60,11 +61,28 @@ public class AppEngineCloudClientTest extends TestCase {
     @Override
 	protected void setUp() throws Exception {
 		missingIssue = new BugInstance("MISSING", 2).addClass("MissingClass");
-		foundIssue = new BugInstance("FOUND", 2).addClass("FoundClass");
         missingIssue.setInstanceHash("fad1");
+        foundIssue = new BugInstance("FOUND", 2).addClass("FoundClass");
         foundIssue.setInstanceHash("fad2");
         addMissingIssue = false;
 	}
+
+    // ================================ misc ============================
+
+    public void testGetLatestDesignationFromEachUser() throws Exception {
+        MyAppEngineCloudClient cloud = createAppEngineCloudClient();
+        AppEngineCloudNetworkClient spyNetworkClient = createSpyNetworkClient(cloud);
+        when(spyNetworkClient.getIssueByHash("fad2")).thenReturn(Issue.newBuilder().addAllEvaluations(Arrays.asList(
+                Evaluation.newBuilder().setWho("user1").setDesignation("MUST_FIX").setWhen(SAMPLE_DATE+100).build(),
+                Evaluation.newBuilder().setWho("user2").setDesignation("I_WILL_FIX").setWhen(SAMPLE_DATE+200).build(),
+                Evaluation.newBuilder().setWho("user1").setDesignation("NOT_A_BUG").setWhen(SAMPLE_DATE+300).build()
+                )).build());
+        List<BugDesignation> designations = newList(cloud.getLatestDesignationFromEachUser(foundIssue));
+        assertEquals(2, designations.size());
+        assertEquals("user2", designations.get(0).getUser());
+        assertEquals("user1", designations.get(1).getUser());
+        assertEquals("NOT_A_BUG", designations.get(1).getDesignationKey());
+    }
 
     // ===================== soft signin ==========================
 
@@ -92,7 +110,7 @@ public class AppEngineCloudClientTest extends TestCase {
         when(networkClient.initialize()).thenReturn(true);
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
         cloud.initialize();
-        assertEquals(Cloud.SignedInState.SIGNED_IN, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSignedInState());
         verify(networkClient).logIntoCloudForce();
     }
 
@@ -108,7 +126,7 @@ public class AppEngineCloudClientTest extends TestCase {
         Mockito.doThrow(new IOException()).when(networkClient).logIntoCloudForce();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
         cloud.initialize();
-        assertEquals(Cloud.SignedInState.SIGNIN_FAILED, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSignedInState());
         assertEquals(0, cloud.urlsRequested.size());
     }
 
@@ -252,7 +270,7 @@ public class AppEngineCloudClientTest extends TestCase {
                 synced.set(true);
             }
 
-            public void handleStateChange(Cloud.SignedInState oldState, Cloud.SignedInState state) {
+            public void handleStateChange(Cloud.SigninState oldState, Cloud.SigninState state) {
             }
         });
         cloud.initialize();
@@ -277,7 +295,7 @@ public class AppEngineCloudClientTest extends TestCase {
         cloud.addStatusListener(new Cloud.CloudStatusListener() {
             public void handleIssueDataDownloadedEvent() {
             }
-            public void handleStateChange(Cloud.SignedInState oldState, Cloud.SignedInState state) {
+            public void handleStateChange(Cloud.SigninState oldState, Cloud.SigninState state) {
                 states.add(oldState.name());
                 states.add(state.name());
             }
@@ -371,7 +389,7 @@ public class AppEngineCloudClientTest extends TestCase {
         cloud.initialize();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
 		cloud.bugsPopulated();
-        assertEquals(Cloud.SignedInState.SIGNED_IN, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSignedInState());
 
         // verify find-issues
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
@@ -446,7 +464,7 @@ public class AppEngineCloudClientTest extends TestCase {
         cloud.initialize();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
 		cloud.bugsPopulated();
-        assertEquals(Cloud.SignedInState.SIGNIN_FAILED, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSignedInState());
 
         // verify
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
@@ -464,7 +482,7 @@ public class AppEngineCloudClientTest extends TestCase {
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
         cloud.initialize();
         cloud.signIn();
-        assertEquals(Cloud.SignedInState.SIGNED_IN, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSignedInState());
 
         // verify
         assertEquals("/log-in", cloud.urlsRequested.get(0));
@@ -489,7 +507,7 @@ public class AppEngineCloudClientTest extends TestCase {
             fail();
         } catch (IOException e) {
         }
-        assertEquals(Cloud.SignedInState.SIGNIN_FAILED, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSignedInState());
 
 
         cloud.initialize();
@@ -500,7 +518,7 @@ public class AppEngineCloudClientTest extends TestCase {
             fail();
         } catch (IllegalStateException e) {
         }
-        assertEquals(Cloud.SignedInState.SIGNIN_FAILED, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSignedInState());
 	}
 
     @SuppressWarnings({"ThrowableInstanceNeverThrown"})
@@ -523,9 +541,9 @@ public class AppEngineCloudClientTest extends TestCase {
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
         cloud.initialize();
         cloud.signIn();
-        assertEquals(Cloud.SignedInState.SIGNED_IN, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSignedInState());
         cloud.signOut();
-        assertEquals(Cloud.SignedInState.SIGNED_OUT, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNED_OUT, cloud.getSignedInState());
 
         // verify
         assertEquals("/log-in", cloud.urlsRequested.get(0));
@@ -671,7 +689,7 @@ public class AppEngineCloudClientTest extends TestCase {
 		cloudClient.updateEvaluationsFromServer();
 
 		// verify
-		List<BugDesignation> allUserDesignations = newList(cloudClient.getAllUserDesignations(foundIssue));
+		List<BugDesignation> allUserDesignations = newList(cloudClient.getLatestDesignationFromEachUser(foundIssue));
 		assertEquals(2, allUserDesignations.size());
 	}
 

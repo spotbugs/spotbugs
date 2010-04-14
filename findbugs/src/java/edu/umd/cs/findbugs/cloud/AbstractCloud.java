@@ -100,7 +100,7 @@ public abstract class AbstractCloud implements Cloud {
 
 	private Mode mode = Mode.COMMUNAL;
 	private String statusMsg;
-    private SignedInState signinState = SignedInState.NOT_SIGNED_IN_YET;
+    private SigninState signinState = SigninState.NOT_SIGNED_IN_YET;
 
     protected AbstractCloud(CloudPlugin plugin, BugCollection bugs, Properties properties) {
 		this.plugin = plugin;
@@ -200,7 +200,7 @@ public abstract class AbstractCloud implements Cloud {
     }
     
     public boolean hasVoted(BugInstance bug) {
-    	for(BugDesignation bd : getAllUserDesignations(bug))
+    	for(BugDesignation bd : getLatestDesignationFromEachUser(bug))
     		if (getUser().equals(bd.getUser())) 
     			return true;
     	return false;
@@ -228,7 +228,7 @@ public abstract class AbstractCloud implements Cloud {
 			}
 		}
         String me = getUser();
-        for(BugDesignation d : getAllUserDesignations(b)) {
+        for(BugDesignation d : getLatestDesignationFromEachUser(b)) {
             if ((me != null && me.equals(d.getUser()))|| canSeeCommentsByOthers ) {
                 builder.append(String.format("%s @ %s: %s%n", d.getUser(), format.format(new Date(d.getTimestamp())),
                         i18n.getUserDesignation(d.getDesignationKey())));
@@ -283,10 +283,35 @@ public abstract class AbstractCloud implements Cloud {
     }
     
     public boolean overallClassificationIsNotAProblem(BugInstance b) {
-		return false;
+    	int isAProblem = 0;
+        int notAProblem = 0;
+        for (BugDesignation d : getLatestDesignationFromEachUser(b)) {
+            UserDesignation ud;
+            try {
+                ud = UserDesignation.valueOf(d.getDesignationKey());
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
+            switch (ud) {
+                case I_WILL_FIX:
+                case MUST_FIX:
+                case SHOULD_FIX:
+                    isAProblem++;
+                    break;
+                case BAD_ANALYSIS:
+                case NOT_A_BUG:
+                case MOSTLY_HARMLESS:
+                case OBSOLETE_CODE:
+                    notAProblem++;
+                    break;
+            }
+        }
+
+
+        return notAProblem > isAProblem;
 	}
-    
-	public  double getClassificationScore(BugInstance b) {
+
+    public  double getClassificationScore(BugInstance b) {
 		return getUserDesignation(b).score();
 	}
 	public  double getPortionObsoleteClassifications(BugInstance b) {
@@ -297,11 +322,14 @@ public abstract class AbstractCloud implements Cloud {
 	public  double getClassificationVariance(BugInstance b) {
 		return 0;
 	}
-	public int getNumberReviewers(BugInstance b) {
-		if (getUserDesignation(b) == UserDesignation.UNCLASSIFIED)
-			return 0;
-		return 1;
-	  }
+
+    public int getNumberReviewers(BugInstance b) {
+        Set<String> reviewers = new HashSet<String>();
+        for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
+            reviewers.add(designation.getUser());
+        }
+        return reviewers.size();
+    }
 	
     @SuppressWarnings("boxing")
     public void printCloudSummary(PrintWriter w, Iterable<BugInstance> bugs, String[] packagePrefixes) {
@@ -359,7 +387,7 @@ public abstract class AbstractCloud implements Cloud {
     		BugFilingStatus linkStatus = supportsBugLinks() ? getBugLinkStatus(bd) : null;
 			if (linkStatus != null)
     			bugStatus.add(linkStatus.name());
-    		for(BugDesignation d : getAllUserDesignations(bd)) 
+    		for(BugDesignation d : getLatestDesignationFromEachUser(bd))
     		    if (reviewers.add(d.getUser())) {
     		    	evaluations.add(d.getUser());
     		    	designations.add(i18n.getUserDesignation(d.getDesignationKey()));
@@ -504,12 +532,12 @@ public abstract class AbstractCloud implements Cloud {
             statusListener.handleIssueDataDownloadedEvent();
     }
 
-    public SignedInState getSignedInState() {
+    public SigninState getSignedInState() {
         return signinState;
     }
 
-    protected void setSigninState(SignedInState state) {
-        SignedInState oldState = this.signinState;
+    protected void setSigninState(SigninState state) {
+        SigninState oldState = this.signinState;
         if (oldState == state)
             return;
         this.signinState = state;
@@ -517,7 +545,7 @@ public abstract class AbstractCloud implements Cloud {
             statusListener.handleStateChange(oldState, state);
     }
 
-    protected abstract Iterable<BugDesignation> getAllUserDesignations(BugInstance bd);
+    protected abstract Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd);
 
 	public BugInstance getBugByHash(String hash) {
 		for (BugInstance instance : bugCollection.getCollection()) {
@@ -610,7 +638,7 @@ public abstract class AbstractCloud implements Cloud {
     
 	public Set<String> getReviewers(BugInstance b) {
 		HashSet<String> result = new HashSet<String>();
-		for(BugDesignation d : getAllUserDesignations(b))
+		for(BugDesignation d : getLatestDesignationFromEachUser(b))
 			result.add(d.getUser());
          return result;
 	}

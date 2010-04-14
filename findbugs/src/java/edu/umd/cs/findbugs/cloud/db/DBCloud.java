@@ -96,7 +96,7 @@ public  class DBCloud extends AbstractCloud {
      * 
      */
     static final String USER_NAME = "user.name";
-    private SignedInState signedInState = SignedInState.SIGNING_IN;
+    private SigninState signinState = SigninState.SIGNING_IN;
 
 
     class BugData {
@@ -569,11 +569,11 @@ public  class DBCloud extends AbstractCloud {
 	@Override
     public boolean initialize() throws IOException {
         if (tryInitialization()) {
-            signedInState = SignedInState.SIGNIN_FAILED;
+            signinState = SigninState.SIGNIN_FAILED;
             return false;
         }
 
-        signedInState = SignedInState.SIGNED_IN;
+        signinState = SigninState.SIGNED_IN;
 		
 		loadBugComponents();
 		Connection c = null;
@@ -1151,8 +1151,8 @@ public  class DBCloud extends AbstractCloud {
 		}
 	}
 
-    public SignedInState getSignedInState() {
-        return signedInState;
+    public SigninState getSignedInState() {
+        return signinState;
     }
 
     public void setSaveSignInInformation(boolean save) {
@@ -1178,32 +1178,6 @@ public  class DBCloud extends AbstractCloud {
     public long getFirstSeen(BugInstance b) {
 	   return getBugData(b).firstSeen;
     }
-    @Override
-    public boolean overallClassificationIsNotAProblem(BugInstance b) {
-    	BugData bd = getBugData(b);
-    	if (bd == null)
-    		return false;
-    	int isAProblem = 0;
-    	int notAProblem = 0;
-    	for(BugDesignation d : bd.getUniqueDesignations() )
-    		switch(UserDesignation.valueOf(d.getDesignationKey())) {
-    		case I_WILL_FIX:
-    		case MUST_FIX:
-    		case SHOULD_FIX:
-    			isAProblem++;
-    			break;
-    		case BAD_ANALYSIS:
-    		case	NOT_A_BUG: 
-    		case 	MOSTLY_HARMLESS:
-    		case OBSOLETE_CODE:
-    			notAProblem++;
-    			break;
-    		}
-    			
-    			
-    		return notAProblem > isAProblem;
- 	  
-     }
 	
 
     static String urlEncode(String s) {
@@ -1214,15 +1188,6 @@ public  class DBCloud extends AbstractCloud {
 	       return "No utf-8 encoding";
         }
     }
-    
-    @Override
-    public int getNumberReviewers(BugInstance b) {
-    	BugData bd = getBugData(b);
-    	if (bd == null)
-    		return 0;
-    	Collection<BugDesignation> uniqueDesignations = bd.getUniqueDesignations();
-    	return uniqueDesignations.size();
-	  }
     
     @Override
     public double getClassificationScore(BugInstance b) {
@@ -1239,7 +1204,7 @@ public  class DBCloud extends AbstractCloud {
 			total += designation.score();
 			count++;
     	}
-    	return total /  count++;
+    	return total /  count;
     }
 	/**
      * @param designation
@@ -1704,7 +1669,7 @@ public  class DBCloud extends AbstractCloud {
 	}
 
     @Override
-    protected Iterable<BugDesignation> getAllUserDesignations(BugInstance bd) {
+    protected Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd) {
 	    return instanceMap.get(bd.getInstanceHash()).getUniqueDesignations();
     }
 
@@ -1716,6 +1681,10 @@ public  class DBCloud extends AbstractCloud {
 
     public Collection<String> getProjects(String className) {
 	    return projectMapping.getProjects(className);
+    }
+
+    public String getCloudName() {
+        return "FindBugs SQL Cloud";
     }
 
     @Override

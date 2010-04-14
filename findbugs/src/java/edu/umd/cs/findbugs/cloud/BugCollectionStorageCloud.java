@@ -44,7 +44,7 @@ class BugCollectionStorageCloud extends AbstractCloud {
 
     BugCollectionStorageCloud(CloudPlugin plugin, BugCollection bc, Properties properties) {
         super(plugin, bc, properties);
-        setSigninState(SignedInState.NO_SIGNIN_REQUIRED);
+        setSigninState(SigninState.NO_SIGNIN_REQUIRED);
     }
 
     BugCollectionStorageCloud(BugCollection bc) {
@@ -137,11 +137,15 @@ class BugCollectionStorageCloud extends AbstractCloud {
     }
 
     @Override
-    protected Iterable<BugDesignation> getAllUserDesignations(BugInstance bd) {
+    protected Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd) {
 	    return Collections.emptyList();
     }
 
     public Collection<String> getProjects(String className) {
 	    return Collections.emptyList();
+    }
+
+    public String getCloudName() {
+        return "local storage cloud";
     }
 }

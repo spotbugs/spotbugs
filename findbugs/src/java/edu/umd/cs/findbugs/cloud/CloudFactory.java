@@ -101,7 +101,7 @@ public class CloudFactory {
 
                 return;
             }
-            callback.showMessageDialog("Unable to connect to " + cloud.getClass().getSimpleName());
+            callback.showMessageDialog("Unable to connect to " + cloud.getCloudName());
 
         }
 	}

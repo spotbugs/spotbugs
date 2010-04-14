@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
-import edu.umd.cs.findbugs.cloud.Cloud.SignedInState;
+import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -2044,8 +2044,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
             @Override
             public void mouseClicked(MouseEvent e) {
                 JPopupMenu menu = new JPopupMenu();
-                SignedInState signedInState = bugCollection.getCloud().getSignedInState();
-                boolean isSignedIn = signedInState == SignedInState.SIGNED_IN;
+                SigninState signinState = bugCollection.getCloud().getSignedInState();
+                boolean isSignedIn = signinState == Cloud.SigninState.SIGNED_IN;
                 final JCheckBoxMenuItem signInAuto = new JCheckBoxMenuItem("Sign in automatically");
                 signInAuto.setToolTipText("Saves your Cloud session for the next time you run FindBugs. " +
                                           "No personal information or passwords are saved.");
@@ -2061,7 +2061,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
                     }
                 });
                 menu.add(signInAuto);
-                if (signedInState == SignedInState.SIGNED_OUT || signedInState == SignedInState.NOT_SIGNED_IN_YET || signedInState == SignedInState.SIGNIN_FAILED) {
+                if (signinState == Cloud.SigninState.SIGNED_OUT || signinState == Cloud.SigninState.NOT_SIGNED_IN_YET || signinState == Cloud.SigninState.SIGNIN_FAILED) {
                     menu.add(new AbstractAction("Sign in") {
                         public void actionPerformed(ActionEvent e) {
                             try {
@@ -2126,20 +2126,20 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				String pluginMsg = plugin.getStatusMsg();
 				if (pluginMsg != null && pluginMsg.length() > 1)
 					msg = join(msg, pluginMsg);
-                SignedInState state = plugin.getSignedInState();
-                if (state == SignedInState.SIGNING_IN) {
+                SigninState state = plugin.getSignedInState();
+                if (state == SigninState.SIGNING_IN) {
                     signedInLabel.setText("<html>FindBugs Cloud:<br> signing in");
                     signedInLabel.setIcon(null);
                     showLoggedInStatus = true;
-                } else if (state == SignedInState.SIGNED_IN) {
+                } else if (state == Cloud.SigninState.SIGNED_IN) {
                     signedInLabel.setText("<html>FindBugs Cloud:<br> signed in as " + plugin.getUser());
                     signedInLabel.setIcon(signedInIcon);
                     showLoggedInStatus = true;
-                } else if (state == SignedInState.SIGNIN_FAILED) {
+                } else if (state == SigninState.SIGNIN_FAILED) {
                     signedInLabel.setText("<html>FindBugs Cloud:<br> sign-in failed");
                     signedInLabel.setIcon(warningIcon);
                     showLoggedInStatus = true;
-                } else if (state == SignedInState.SIGNED_OUT || state == SignedInState.NOT_SIGNED_IN_YET) {
+                } else if (state == SigninState.SIGNED_OUT || state == SigninState.NOT_SIGNED_IN_YET) {
                     signedInLabel.setText("<html>FindBugs Cloud:<br> not signed in");
                     signedInLabel.setIcon(null);
                     showLoggedInStatus = true;

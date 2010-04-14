@@ -101,7 +101,7 @@ public interface Cloud {
 	/** Get user name */
 	String getUser();
 
-    SignedInState getSignedInState();
+    SigninState getSignedInState();
 
     /**
      * Whether the cloud should save login information, session ID's, etc. If
@@ -199,7 +199,6 @@ public interface Cloud {
 	/** Is this bug one that gets persisted to the cloud?
 	 * We may decide that we don't persist low confidence issues to the 
 	 * database to avoid overloading it */
-
 	boolean canStoreUserAnnotation(BugInstance bugInstance);
 
 	public void printCloudSummary(PrintWriter w, Iterable<BugInstance> bugs, String[] packagePrefixes);
@@ -208,14 +207,21 @@ public interface Cloud {
 
     Collection<String> getProjects(String className);
 
-    enum SignedInState { SIGNING_IN, SIGNED_IN, SIGNIN_FAILED, SIGNED_OUT, NOT_SIGNED_IN_YET, NO_SIGNIN_REQUIRED }
+    String getCloudName();
 
-    public interface CloudListener {
+    interface CloudListener {
 		void issueUpdated(BugInstance bug);
 		void statusUpdated();
 	}
 
-	public enum UserDesignation {
+    public interface CloudStatusListener {
+        void handleIssueDataDownloadedEvent();
+        void handleStateChange(SigninState oldState, SigninState state);
+    }
+
+    enum SigninState { NO_SIGNIN_REQUIRED, NOT_SIGNED_IN_YET, SIGNING_IN, SIGNED_IN, SIGNIN_FAILED, SIGNED_OUT,  }
+
+	enum UserDesignation {
 		UNCLASSIFIED,
 		NEEDS_STUDY,
 		BAD_ANALYSIS,
@@ -248,11 +254,9 @@ public interface Cloud {
 		}
 	}
 
-	enum Mode {
-		COMMUNAL, VOTING, SECRET
-	}
+	enum Mode { COMMUNAL, VOTING, SECRET }
 
-	public static enum BugFilingStatus {
+	enum BugFilingStatus {
 		/** No bug yet filed */
 		FILE_BUG(SystemProperties.getProperty("findbugs.filebug.label", "File bug")) {
 			@Override
@@ -306,10 +310,4 @@ public interface Cloud {
 		}
 
 	}
-
-    public interface CloudStatusListener {
-        void handleIssueDataDownloadedEvent();
-
-        void handleStateChange(SignedInState oldState, SignedInState state);
-    }
 }

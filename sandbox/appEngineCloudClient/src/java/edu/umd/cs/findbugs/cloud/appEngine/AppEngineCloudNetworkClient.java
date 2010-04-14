@@ -28,6 +28,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -344,7 +345,7 @@ public class AppEngineCloudNetworkClient {
         }
     }
 
-    public Evaluation getMostRecentEvaluation(BugInstance b) {
+    public Evaluation getMostRecentEvaluationBySelf(BugInstance b) {
         Issue issue = issuesByHash.get(b.getInstanceHash());
         if (issue == null)
             return null;

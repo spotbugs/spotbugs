@@ -8,7 +8,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -27,6 +29,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,6 +50,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import edu.umd.cs.findbugs.util.Util;
 
 @SuppressWarnings({"ThrowableInstanceNeverThrown"})
 public class AppEngineCloudClient extends AbstractCloud {
@@ -55,7 +59,7 @@ public class AppEngineCloudClient extends AbstractCloud {
     private static final int EVALUATION_CHECK_SECS = 5 * 60;
 
     private Executor backgroundExecutor;
-	@CheckForNull ExecutorService backgroundExecutorService;
+	ExecutorService backgroundExecutorService;
 	private Timer timer;
 
     private AppEngineCloudNetworkClient networkClient;
@@ -77,7 +81,13 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 		super(plugin, bugs, properties);
 		if (executor == null) {
-			backgroundExecutorService = Executors.newFixedThreadPool(10);
+			backgroundExecutorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
+                public Thread newThread(Runnable r) {
+                    Thread t = new Thread(r, getClass().getSimpleName() + " bg");
+                    t.setDaemon(true);
+                    return t;
+                }
+            });
 			backgroundExecutor = backgroundExecutorService;
 			if (backgroundExecutorService.isShutdown())
 	    		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown at creation");
@@ -96,12 +106,17 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     // ====================== initialization =====================
 
+    public String getCloudName() {
+        return "FindBugs Cloud";
+    }
+
     public void waitUntilIssueDataDownloaded() {
+        LOGGER.info("Waiting for issue data to be downloaded");
         synchronized (issueDataDownloadedLock) {
             if (issueDataDownloaded)
                 return;
             try {
-                issueDataDownloadedLock.wait();
+                issueDataDownloadedLock.wait(60*1000);
             } catch (InterruptedException e) {
                 LOGGER.log(Level.WARNING, "interrupted", e);
             }
@@ -114,9 +129,10 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 	@Override
 	public boolean initialize() throws IOException {
-        setSigninState(SignedInState.NOT_SIGNED_IN_YET);
+        LOGGER.info("Initializing " + getClass().getSimpleName());
+        setSigninState(SigninState.NOT_SIGNED_IN_YET);
         if (!super.initialize()) {
-            setSigninState(SignedInState.SIGNIN_FAILED);
+            setSigninState(SigninState.SIGNIN_FAILED);
 
             return false;
         }
@@ -124,32 +140,21 @@ public class AppEngineCloudClient extends AbstractCloud {
             if (networkClient.initialize()) {
 
                 networkClient.logIntoCloudForce();
-                setSigninState(SignedInState.SIGNED_IN);
+                setSigninState(SigninState.SIGNED_IN);
                 setStatusMsg("");
 
             } else {
                 // soft init didn't work
-                setSigninState(SignedInState.NOT_SIGNED_IN_YET);
+                setSigninState(SigninState.NOT_SIGNED_IN_YET);
             }
         } catch (IOException e) {
-            setSigninState(SignedInState.SIGNIN_FAILED);
+            setSigninState(SigninState.SIGNIN_FAILED);
             return false;
         }
 
-        if (timer != null)
-			timer.cancel();
-		timer = new Timer("App Engine Cloud evaluation updater", true);
-		int periodMillis = EVALUATION_CHECK_SECS *1000;
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-                try {
-                    updateEvaluationsFromServer();
-                } catch (IOException e) {
-                    LOGGER.log(Level.SEVERE, "Error during periodic evaluation check", e);
-                }
-            }
-		}, periodMillis, periodMillis);
+        if (!getGuiCallback().isHeadless()) {
+            startEvaluationCheckThread();
+        }
 		return true;
 	}
 
@@ -172,18 +177,18 @@ public class AppEngineCloudClient extends AbstractCloud {
                 throw new SignInCancelledException(e);
             }
 
-        } else if (getSignedInState() == SignedInState.SIGNING_IN) {
+        } else if (getSignedInState() == SigninState.SIGNING_IN) {
             // TODO should probably handle this
             throw new IllegalStateException("signing in");
-        } else if (getSignedInState() == SignedInState.SIGNED_IN) {
+        } else if (getSignedInState() == SigninState.SIGNED_IN) {
             // great!
         }
     }
 
     public boolean couldSignIn() {
-        return getSignedInState() == SignedInState.NOT_SIGNED_IN_YET
-            || getSignedInState() == SignedInState.SIGNIN_FAILED
-            || getSignedInState() == SignedInState.SIGNED_OUT;
+        return getSignedInState() == SigninState.NOT_SIGNED_IN_YET
+            || getSignedInState() == SigninState.SIGNIN_FAILED
+            || getSignedInState() == SigninState.SIGNED_OUT;
     }
 
     @Override
@@ -198,6 +203,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 		}
 	}
 
+    //TODO: test for host==null
 	public void bugsPopulated() {
 		final ConcurrentMap<String, BugInstance> bugsByHash = new ConcurrentHashMap<String, BugInstance>();
 
@@ -238,37 +244,27 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
     public void signIn() throws IOException {
-        setSigninState(SignedInState.SIGNING_IN);
+        setSigninState(SigninState.SIGNING_IN);
         setStatusMsg("Signing into FindBugs Cloud");
         try {
             networkClient.signIn(true);
             networkClient.logIntoCloudForce();
         } catch (IOException e) {
-            setSigninState(SignedInState.SIGNIN_FAILED);
+            setSigninState(SigninState.SIGNIN_FAILED);
             throw e;
 
         } catch (RuntimeException e) {
-            setSigninState(SignedInState.SIGNIN_FAILED);
+            setSigninState(SigninState.SIGNIN_FAILED);
             throw e;
         }
 
-        setSigninState(SignedInState.SIGNED_IN);
+        setSigninState(SigninState.SIGNED_IN);
         setStatusMsg("");
     }
 
     public void signOut() {
-        if (backgroundExecutorService != null) {
-            backgroundExecutorService.shutdownNow();
-            try {
-                if (!backgroundExecutorService.awaitTermination(500, TimeUnit.MILLISECONDS)) {
-                    LOGGER.warning("Waited 500ms for background executor to finish but it didn't");
-                }
-            } catch (InterruptedException e) {
-                LOGGER.log(Level.WARNING, "", e);
-            }
-        }
         networkClient.signOut();
-        setSigninState(SignedInState.SIGNED_OUT);
+        setSigninState(SigninState.SIGNED_OUT);
         setStatusMsg("Signed out of FindBugs Cloud");
     }
 
@@ -276,8 +272,8 @@ public class AppEngineCloudClient extends AbstractCloud {
 		return networkClient.getUsername();
 	}
 
-	public BugDesignation getPrimaryDesignation(BugInstance b) {
-		Evaluation e = networkClient.getMostRecentEvaluation(b);
+    public BugDesignation getPrimaryDesignation(BugInstance b) {
+		Evaluation e = networkClient.getMostRecentEvaluationBySelf(b);
 		return e == null ? null : createBugDesignation(e);
 	}
 
@@ -307,16 +303,16 @@ public class AppEngineCloudClient extends AbstractCloud {
 	}
 
     @Override
-	protected Iterable<BugDesignation> getAllUserDesignations(BugInstance bd) {
+	protected Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd) {
         Issue issue = networkClient.getIssueByHash(bd.getInstanceHash());
         if (issue == null)
             return Collections.emptyList();
 
-        List<BugDesignation> list = new ArrayList<BugDesignation>();
-        for (Evaluation eval : issue.getEvaluationsList()) {
-			list.add(createBugDesignation(eval));
+        Map<String,BugDesignation> map = new HashMap<String, BugDesignation>();
+        for (Evaluation eval : sortEvals(issue.getEvaluationsList())) {
+            map.put(eval.getWho(), createBugDesignation(eval));
 		}
-		return list;
+        return sortDesignations(map.values());
 	}
 
     // ================================ bug filing =====================================
@@ -443,6 +439,43 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 	// ========================= private methods ==================================
 
+    private List<BugDesignation> sortDesignations(Collection<BugDesignation> bugDesignations) {
+        List<BugDesignation> designations = new ArrayList<BugDesignation>(bugDesignations);
+        Collections.sort(designations, new Comparator<BugDesignation>() {
+            public int compare(BugDesignation o1, BugDesignation o2) {
+                return Util.compare(o1.getTimestamp(), o2.getTimestamp());
+            }
+        });
+        return designations;
+    }
+
+    private List<Evaluation> sortEvals(List<Evaluation> evaluationsList) {
+        List<Evaluation> evals = new ArrayList<Evaluation>(evaluationsList);
+        Collections.sort(evals, new Comparator<Evaluation>() {
+            public int compare(Evaluation o1, Evaluation o2) {
+                return Util.compare(o1.getWhen(), o2.getWhen());
+            }
+        });
+        return evals;
+    }
+
+    private void startEvaluationCheckThread() {
+        if (timer != null)
+            timer.cancel();
+        timer = new Timer("App Engine Cloud evaluation updater", true);
+        int periodMillis = EVALUATION_CHECK_SECS *1000;
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    updateEvaluationsFromServer();
+                } catch (IOException e) {
+                    LOGGER.log(Level.SEVERE, "Error during periodic evaluation check", e);
+                }
+            }
+        }, periodMillis, periodMillis);
+    }
+
 	private static long dateMin(long timestamp1, long timestamp2) {
 		if (timestamp1 < AbstractCloud.MIN_TIMESTAMP)
 			return timestamp2;
@@ -471,7 +504,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             fireIssueDataDownloadedEvent();
         }
 
-        if (getSignedInState() == SignedInState.SIGNIN_FAILED)
+        if (getSignedInState() == SigninState.SIGNIN_FAILED)
             return;
 
         Collection<BugInstance> newBugs = bugsByHash.values();

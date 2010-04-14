@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.cloud.appEngine.AppEngineCloudNetworkClient;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import junit.framework.TestCase;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
@@ -46,6 +48,94 @@ public class AbstractCloudTest extends TestCase {
         summary = new StringWriter();
 		timestampCounter = 0;
 	}
+
+    public void testCountReviewersTwo() throws Exception {
+        BugInstance bug1 = createBug("BUG_1",
+                                     "I_WILL_FIX", "user1",
+                                     "NOT_A_BUG", "user2",
+                                     "NOT_A_BUG", "user1");
+        assertEquals(2, cloud.getNumberReviewers(bug1));
+    }
+
+    public void testCountReviewersNone() throws Exception {
+        BugInstance bug1 = createBug("BUG_1");
+        assertEquals(0, cloud.getNumberReviewers(bug1));
+    }
+
+    public void testOverallClassificationNotAProblemNoEvals() throws Exception {
+        BugInstance bug1 = createBug("BUG_1");
+        assertFalse(cloud.overallClassificationIsNotAProblem(bug1));
+    }
+
+    public void testOverallClassificationNotAProblemNeedsStudy() throws Exception {
+        BugInstance bug1 = createBug("BUG_1", "NEEDS_STUDY", "user1");
+        assertFalse(cloud.overallClassificationIsNotAProblem(bug1));
+    }
+
+    public void testOverallClassificationNotAProblemYes() throws Exception {
+        BugInstance bug1 = createBug("BUG_1",
+                                     "MUST_FIX", "user2");
+        assertFalse(cloud.overallClassificationIsNotAProblem(bug1));
+    }
+
+    public void testOverallClassificationNotAProblemUnanimousYes() throws Exception {
+        BugInstance bug1 = createBug("BUG_1",
+                                     "I_WILL_FIX", "user1",
+                                     "MUST_FIX", "user2");
+        assertFalse(cloud.overallClassificationIsNotAProblem(bug1));
+    }
+
+    public void testOverallClassificationNotAProblemYesAndNo() throws Exception {
+        BugInstance bug1 = createBug("BUG_1",
+                                     "I_WILL_FIX", "user1",
+                                     "NOT_A_BUG", "user2");
+        assertFalse(cloud.overallClassificationIsNotAProblem(bug1));
+    }
+
+    public void testOverallClassificationNotAProblemNo() throws Exception {
+        BugInstance bug1 = createBug("BUG_1",
+                                     "NOT_A_BUG", "user2");
+        assertTrue(cloud.overallClassificationIsNotAProblem(bug1));
+    }
+
+    public void testOverallClassificationNotAProblemUnanimousNo() throws Exception {
+        BugInstance bug1 = createBug("BUG_1",
+                                     "BAD_ANALYSIS", "user1",
+                                     "NOT_A_BUG", "user2");
+        assertTrue(cloud.overallClassificationIsNotAProblem(bug1));
+    }
+
+    public void testOverallClassificationNotAProblemMostlyNo() throws Exception {
+        BugInstance bug1 = createBug("BUG_1",
+                                     "BAD_ANALYSIS", "user1",
+                                     "MUST_FIX", "user2",
+                                     "NOT_A_BUG", "user3");
+        assertTrue(cloud.overallClassificationIsNotAProblem(bug1));
+    }
+
+    public void testOverallClassificationNotAProblemMostlyYes() throws Exception {
+        BugInstance bug1 = createBug("BUG_1",
+                                     "BAD_ANALYSIS", "user1",
+                                     "MUST_FIX", "user2",
+                                     "NOT_A_BUG", "user3");
+        assertTrue(cloud.overallClassificationIsNotAProblem(bug1));
+    }
+
+    public void testOverallClassificationNotAProblemChangedMindNo() throws Exception {
+        BugInstance bug1 = createBug("BUG_1",
+                                     "I_WILL_FIX", "user1",
+                                     "MUST_FIX", "user1",
+                                     "NOT_A_BUG", "user1");
+        assertTrue(cloud.overallClassificationIsNotAProblem(bug1));
+    }
+
+    public void testOverallClassificationNotAProblemChangedMindYes() throws Exception {
+        BugInstance bug1 = createBug("BUG_1",
+                                     "NOT_A_BUG", "user1",
+                                     "MUST_FIX", "user1",
+                                     "I_WILL_FIX", "user1");
+        assertFalse(cloud.overallClassificationIsNotAProblem(bug1));
+    }
 
 	public void testPrintSummaryNoBugs() {
 		printSummary();
@@ -329,8 +419,8 @@ public class AbstractCloudTest extends TestCase {
 	    	return "user";
 	    }
 
-        public SignedInState getSignedInState() {
-            return SignedInState.NO_SIGNIN_REQUIRED;
+        public SigninState getSignedInState() {
+            return SigninState.NO_SIGNIN_REQUIRED;
         }
 
         public void setSaveSignInInformation(boolean save) {
@@ -366,7 +456,7 @@ public class AbstractCloudTest extends TestCase {
         }
 
         @Override
-	    protected Iterable<BugDesignation> getAllUserDesignations(BugInstance bd) {
+	    protected Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd) {
 	    	List<BugDesignation> designationList = designations.get(bd);
 			return designationList != null ? designationList : Collections.<BugDesignation>emptyList();
 	    }
@@ -375,9 +465,17 @@ public class AbstractCloudTest extends TestCase {
             return Collections.emptyList();
         }
 
-		/* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.cloud.Cloud#fileBug(edu.umd.cs.findbugs.BugInstance, ProtoClasses.BugLinkType)
-         */
+        public String getCloudName() {
+            return "test";
+        }
+
+        public Iterable<UserDesignation> getDesignations(BugInstance b) {
+            throw new UnsupportedOperationException();
+        }
+
+        /* (non-Javadoc)
+        * @see edu.umd.cs.findbugs.cloud.Cloud#fileBug(edu.umd.cs.findbugs.BugInstance, ProtoClasses.BugLinkType)
+        */
         @Override
         public URL fileBug(BugInstance bug) {
 	        throw new UnsupportedOperationException();
