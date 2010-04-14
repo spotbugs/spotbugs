@@ -61,6 +61,8 @@ public class AppEngineNameLookup implements NameLookup {
 	private String host;
 
     public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) throws IOException {
+        loadProperties(plugin);
+
         if (softSignin())
             return true;
 
@@ -86,7 +88,7 @@ public class AppEngineNameLookup implements NameLookup {
         throw new IOException("Sign-in timed out");
 	}
 
-    public void initialize(CloudPlugin plugin) {
+    public void loadProperties(CloudPlugin plugin) {
         PropertyBundle pluginProps = plugin.getProperties();
         if (pluginProps.getBoolean(LOCAL_APPENGINE))
             host = pluginProps.getProperty(APPENGINE_LOCALHOST_PROPERTY_NAME, APPENGINE_LOCALHOST_DEFAULT);

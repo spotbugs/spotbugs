@@ -409,7 +409,7 @@ public class AppEngineCloudNetworkClient {
 
     protected AppEngineNameLookup createNameLookup() {
         AppEngineNameLookup nameLookup = new AppEngineNameLookup();
-        nameLookup.initialize(cloudClient.getPlugin());
+        nameLookup.loadProperties(cloudClient.getPlugin());
         return nameLookup;
     }
 
