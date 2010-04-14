@@ -28,7 +28,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -78,7 +77,8 @@ public class AppEngineCloudNetworkClient {
     /** returns whether soft initialization worked and the user is now signed in */
     public boolean initialize() throws IOException {
         lookerupper = createNameLookup();
-        lookerupper.initializeSoftly(cloudClient.getPlugin());
+        if (!getGuiCallback().isHeadless())
+            lookerupper.softSignin();
         this.sessionId = lookerupper.getSessionId();
         this.username = lookerupper.getUsername();
         this.host = lookerupper.getHost();
@@ -408,7 +408,9 @@ public class AppEngineCloudNetworkClient {
     // ========================= private methods ==========================
 
     protected AppEngineNameLookup createNameLookup() {
-        return new AppEngineNameLookup();
+        AppEngineNameLookup nameLookup = new AppEngineNameLookup();
+        nameLookup.initialize(cloudClient.getPlugin());
+        return nameLookup;
     }
 
     private void checkHashesPartition(List<String> hashes, Map<String, BugInstance> bugsByHash) throws IOException {

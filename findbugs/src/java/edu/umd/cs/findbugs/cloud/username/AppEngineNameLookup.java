@@ -61,7 +61,7 @@ public class AppEngineNameLookup implements NameLookup {
 	private String host;
 
     public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) throws IOException {
-        if (initializeSoftly(plugin))
+        if (softSignin())
             return true;
 
         if (sessionId == null)
@@ -86,7 +86,17 @@ public class AppEngineNameLookup implements NameLookup {
         throw new IOException("Sign-in timed out");
 	}
 
-    public boolean initializeSoftly(CloudPlugin plugin) throws IOException {
+    public void initialize(CloudPlugin plugin) {
+        PropertyBundle pluginProps = plugin.getProperties();
+        if (pluginProps.getBoolean(LOCAL_APPENGINE))
+            host = pluginProps.getProperty(APPENGINE_LOCALHOST_PROPERTY_NAME, APPENGINE_LOCALHOST_DEFAULT);
+        else
+            host = pluginProps.getProperty(APPENGINE_HOST_PROPERTY_NAME);
+        if (host == null)
+            throw new IllegalStateException("Host not specified for " + plugin.getId());
+    }
+
+    public boolean softSignin() throws IOException {
         if (sessionId != null) {
             if (checkAuthorized(getAuthCheckUrl(sessionId))) {
                 LOGGER.fine("Skipping soft init; session ID already exists - " + sessionId);
@@ -95,13 +105,6 @@ public class AppEngineNameLookup implements NameLookup {
                 sessionId = null;
             }
         }
-        PropertyBundle pluginProps = plugin.getProperties();
-        if (pluginProps.getBoolean(LOCAL_APPENGINE))
-            host = pluginProps.getProperty(APPENGINE_LOCALHOST_PROPERTY_NAME, APPENGINE_LOCALHOST_DEFAULT);
-        else
-            host = pluginProps.getProperty(APPENGINE_HOST_PROPERTY_NAME);
-        if (host == null)
-        		throw new IllegalStateException("Host not specified for " + plugin.getId());
         // check the previously used session ID
         long id = loadOrCreateSessionId();
         boolean authorized = checkAuthorized(getAuthCheckUrl(id));

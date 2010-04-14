@@ -32,7 +32,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -48,6 +47,7 @@ import static edu.umd.cs.findbugs.cloud.appEngine.BugFilingHelper.processJiraDas
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.normalizeHash;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -71,7 +71,7 @@ public class AppEngineCloudClientTest extends TestCase {
 
     public void testGetLatestDesignationFromEachUser() throws Exception {
         MyAppEngineCloudClient cloud = createAppEngineCloudClient();
-        AppEngineCloudNetworkClient spyNetworkClient = createSpyNetworkClient(cloud);
+        AppEngineCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
         when(spyNetworkClient.getIssueByHash("fad2")).thenReturn(Issue.newBuilder().addAllEvaluations(Arrays.asList(
                 Evaluation.newBuilder().setWho("user1").setDesignation("MUST_FIX").setWhen(SAMPLE_DATE+100).build(),
                 Evaluation.newBuilder().setWho("user2").setDesignation("I_WILL_FIX").setWhen(SAMPLE_DATE+200).build(),
@@ -86,7 +86,8 @@ public class AppEngineCloudClientTest extends TestCase {
 
     // ===================== soft signin ==========================
 
-    public void testSoftSignInSkip() throws Exception {
+    /** soft sign-in should try to sign in with an existing session ID, then fail silently */
+    public void testSoftSignInFailSilently() throws Exception {
 		final HttpURLConnection logInConn = mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
         MyAppEngineCloudClient cloud = createAppEngineCloudClient(logInConn);
@@ -98,6 +99,20 @@ public class AppEngineCloudClientTest extends TestCase {
         cloud.initialize();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
         assertEquals(0, cloud.urlsRequested.size());
+    }
+
+    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    public void testSoftSignInSkipWhenHeadless() throws Exception {
+		final HttpURLConnection logInConn = mock(HttpURLConnection.class);
+        setupResponseCodeAndOutputStream(logInConn);
+        MyAppEngineCloudClient cloud = createAppEngineCloudClient(logInConn);
+        AppEngineCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
+
+        when(cloud.mockGuiCallback.isHeadless()).thenReturn(true);
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        cloud.initialize();
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        verify(spyNetworkClient, never()).logIntoCloudForce();
     }
 
     public void testSoftSignInSucceed() throws Exception {
@@ -115,7 +130,7 @@ public class AppEngineCloudClientTest extends TestCase {
     }
 
     @SuppressWarnings({"ThrowableInstanceNeverThrown"})
-    public void testSoftSignInFail() throws Exception {
+    public void testSoftSignInFailLoudly() throws Exception {
 		final HttpURLConnection logInConn = mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
         MyAppEngineCloudClient cloud = createAppEngineCloudClient(logInConn);
@@ -131,9 +146,8 @@ public class AppEngineCloudClientTest extends TestCase {
     }
 
     // ======================= waiting for issue sync ======================
-    //TODO: these are flaky due to race conditions in the tests themselves
 
-	public void testWaitForIssueSyncAllFound() throws IOException {
+	public void testWaitForIssueSyncAllFound() throws Exception {
 		// set up mocks
 		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
         when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
@@ -152,12 +166,13 @@ public class AppEngineCloudClientTest extends TestCase {
         cloud.initialize();
         assertFalse(doneWaiting.get());
 		cloud.bugsPopulated();
+        Thread.sleep(10);
         assertTrue(doneWaiting.get());
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
 	}
 
-	public void testWaitForIssueSyncReturnsImmediatelyWhenAlreadySynced() throws IOException {
+	public void testWaitForIssueSyncReturnsImmediatelyWhenAlreadySynced() throws Exception {
 		// set up mocks
 		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
         when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
@@ -175,15 +190,17 @@ public class AppEngineCloudClientTest extends TestCase {
         assertFalse(doneWaiting.get());
         cloud.initialize();
 		cloud.bugsPopulated();
+        Thread.sleep(10);
         assertTrue(doneWaiting.get());
 
         long start = System.currentTimeMillis();
         cloud.waitUntilIssueDataDownloaded();
-        if (System.currentTimeMillis() - start > 10) // should return immediately
-            fail();
+        long elapsed = System.currentTimeMillis() - start;
+        if (elapsed > 10) // should return immediately
+            fail("was " + elapsed);
 	}
 
-	public void testWaitForIssueSyncNetworkFailure() throws IOException {
+	public void testWaitForIssueSyncNetworkFailure() throws Exception {
 		// set up mocks
 		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
         when(findIssuesConn.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
@@ -204,6 +221,7 @@ public class AppEngineCloudClientTest extends TestCase {
         cloud.initialize();
         assertFalse(doneWaiting.get());
         cloud.bugsPopulated();
+        Thread.sleep(10);
         assertTrue(doneWaiting.get());
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
@@ -244,6 +262,7 @@ public class AppEngineCloudClientTest extends TestCase {
         cloud.initialize();
         assertFalse(doneWaiting.get());
 		cloud.bugsPopulated();
+        Thread.sleep(10);
         assertTrue(doneWaiting.get());
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
@@ -448,6 +467,26 @@ public class AppEngineCloudClientTest extends TestCase {
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
 	}
 
+	public void testDontUploadInTextMode() throws IOException {
+        addMissingIssue = true;
+
+		// set up mocks
+		final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
+        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
+        setupResponseCodeAndOutputStream(findIssuesConnection);
+
+		// execution
+		MyAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
+        when(cloud.mockGuiCallback.isHeadless()).thenReturn(true);
+        cloud.initialize();
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+		cloud.bugsPopulated();
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+
+        // verify
+        assertEquals("/find-issues", cloud.urlsRequested.get(0));
+	}
+
 	@SuppressWarnings({"ThrowableInstanceNeverThrown"})
     public void testLogInAndUploadIssuesFailsDuringSignIn() throws IOException {
         addMissingIssue = true;
@@ -459,7 +498,7 @@ public class AppEngineCloudClientTest extends TestCase {
 
 		// execution
 		MyAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
-        AppEngineCloudNetworkClient spyNetworkClient = createSpyNetworkClient(cloud);
+        AppEngineCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
         Mockito.doThrow(new IOException()).when(spyNetworkClient).signIn(Mockito.anyBoolean());
         cloud.initialize();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
@@ -499,7 +538,7 @@ public class AppEngineCloudClientTest extends TestCase {
 
 		// execution
 		MyAppEngineCloudClient cloud = createAppEngineCloudClient(signInConn);
-        AppEngineCloudNetworkClient spyNetworkClient = createSpyNetworkClient(cloud);
+        AppEngineCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
         cloud.initialize();
         try {
@@ -520,14 +559,6 @@ public class AppEngineCloudClientTest extends TestCase {
         }
         assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSignedInState());
 	}
-
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
-    private AppEngineCloudNetworkClient createSpyNetworkClient(MyAppEngineCloudClient cloud) throws IOException {
-        AppEngineCloudNetworkClient spyNetworkClient = Mockito.spy(cloud.getNetworkClient());
-        Mockito.doThrow(new IOException()).when(spyNetworkClient).signIn(true);
-        cloud.setNetworkClient(spyNetworkClient);
-        return spyNetworkClient;
-    }
 
     public void testSignOut() throws IOException {
 		// set up mocks
@@ -915,6 +946,14 @@ public class AppEngineCloudClientTest extends TestCase {
         @Override
         protected IGuiCallback getGuiCallback() {
             return mockGuiCallback;
+        }
+
+        @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+        private AppEngineCloudNetworkClient createSpyNetworkClient() throws IOException {
+            AppEngineCloudNetworkClient spyNetworkClient = Mockito.spy(getNetworkClient());
+            Mockito.doThrow(new IOException()).when(spyNetworkClient).signIn(true);
+            setNetworkClient(spyNetworkClient);
+            return spyNetworkClient;
         }
 
         private class MyAppEngineCloudNetworkClient extends AppEngineCloudNetworkClient {

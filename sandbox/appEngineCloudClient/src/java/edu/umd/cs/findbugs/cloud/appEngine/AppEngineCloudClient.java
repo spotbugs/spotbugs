@@ -131,12 +131,13 @@ public class AppEngineCloudClient extends AbstractCloud {
 	public boolean initialize() throws IOException {
         LOGGER.info("Initializing " + getClass().getSimpleName());
         setSigninState(SigninState.NOT_SIGNED_IN_YET);
-        if (!super.initialize()) {
-            setSigninState(SigninState.SIGNIN_FAILED);
 
-            return false;
-        }
         try {
+            if (!super.initialize()) {
+                setSigninState(SigninState.SIGNIN_FAILED);
+
+                return false;
+            }
             if (networkClient.initialize()) {
 
                 networkClient.logIntoCloudForce();
@@ -508,7 +509,8 @@ public class AppEngineCloudClient extends AbstractCloud {
             return;
 
         Collection<BugInstance> newBugs = bugsByHash.values();
-        if (!newBugs.isEmpty() || !networkClient.getTimestampsToUpdate().isEmpty()) {
+        if (!getGuiCallback().isHeadless()
+            && (!newBugs.isEmpty() || !networkClient.getTimestampsToUpdate().isEmpty())) {
             uploadAndUpdateBugsInBackground(new ArrayList<BugInstance>(newBugs));
         } else {
             setStatusMsg("All " + numBugs + " bugs are already stored in the FindBugs Cloud");
