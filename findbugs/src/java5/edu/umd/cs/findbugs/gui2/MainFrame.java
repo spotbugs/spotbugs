@@ -466,14 +466,36 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			SwingUtilities.invokeLater(updateStatusBarRunner);
 		}
 	};
+    private Cloud.CloudStatusListener cloudStatusListener = new Cloud.CloudStatusListener() {
+        public void handleIssueDataDownloadedEvent() {
+            rebuildBugTreeIfSortablesDependOnCloud();
+        }
+
+        public void handleStateChange(SigninState oldState, SigninState state) {
+            rebuildBugTreeIfSortablesDependOnCloud();
+        }
+    };
 	
 	public void registerCloud(Project project, BugCollection collection, Cloud plugin) {
 		assert collection.getCloud() == plugin;
 		if (this.bugCollection == collection) {
-			plugin.addListener(userAnnotationListener);	
+			plugin.addListener(userAnnotationListener);
+            plugin.addStatusListener(cloudStatusListener);
 		}
 		// Don't think we need to do this
         setProjectAndBugCollectionInSwingThread(project, collection);
+    }
+
+    private void rebuildBugTreeIfSortablesDependOnCloud() {
+        BugTreeModel bt=(BugTreeModel) (this.getTree().getModel());
+        List<Sortables> sortables = sorter.getOrderBeforeDivider();
+        if (sortables.contains(Sortables.DESIGNATION)
+            || sortables.contains(Sortables.FIRST_SEEN)
+            || sortables.contains(Sortables.FIRSTVERSION)
+            || sortables.contains(Sortables.LASTVERSION)) {
+
+            bt.rebuild();
+        }
     }
 
     public ExecutorService getBugUpdateExecutor() {
@@ -501,6 +523,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
         	Cloud plugin = this.bugCollection.getCloud();
         	if (plugin != null)  {
         		plugin.removeListener(userAnnotationListener);
+                plugin.removeStatusListener(cloudStatusListener);
         		plugin.shutdown();
         	}
         	
@@ -515,6 +538,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			Cloud plugin = bugCollection.getCloud();
 			if (plugin != null) {
 				plugin.addListener(userAnnotationListener);
+                plugin.addStatusListener(cloudStatusListener);
 			}
 			updateBugTree();
 		}
@@ -2044,7 +2068,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
             @Override
             public void mouseClicked(MouseEvent e) {
                 JPopupMenu menu = new JPopupMenu();
-                SigninState signinState = bugCollection.getCloud().getSignedInState();
+                SigninState signinState = bugCollection.getCloud().getSigninState();
                 boolean isSignedIn = signinState == Cloud.SigninState.SIGNED_IN;
                 final JCheckBoxMenuItem signInAuto = new JCheckBoxMenuItem("Sign in automatically");
                 signInAuto.setToolTipText("Saves your Cloud session for the next time you run FindBugs. " +
@@ -2126,7 +2150,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				String pluginMsg = plugin.getStatusMsg();
 				if (pluginMsg != null && pluginMsg.length() > 1)
 					msg = join(msg, pluginMsg);
-                SigninState state = plugin.getSignedInState();
+                SigninState state = plugin.getSigninState();
                 if (state == SigninState.SIGNING_IN) {
                     signedInLabel.setText("<html>FindBugs Cloud:<br> signing in");
                     signedInLabel.setIcon(null);

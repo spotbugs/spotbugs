@@ -323,7 +323,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 		 * Swaps in a new BugTreeModel and a new JTree
 		 *
 		 */
-		private void rebuild()
+        public void rebuild()
 		{
 			if (TRACE) 
 				System.out.println("rebuilding bug tree model");

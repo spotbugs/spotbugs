@@ -101,7 +101,7 @@ public interface Cloud {
 	/** Get user name */
 	String getUser();
 
-    SigninState getSignedInState();
+    SigninState getSigninState();
 
     /**
      * Whether the cloud should save login information, session ID's, etc. If

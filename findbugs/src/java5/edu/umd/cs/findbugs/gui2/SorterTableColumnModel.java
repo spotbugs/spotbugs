@@ -23,6 +23,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -127,7 +128,7 @@ public class SorterTableColumnModel implements TableColumnModel {
 
 	}
 
-	public SorterTableColumnModel(ArrayList<Sortables> columnHeaders)
+	public SorterTableColumnModel(Collection<Sortables> columnHeaders)
 	{
 		this(columnHeaders.toArray(new Sortables[columnHeaders.size()]));
 	}

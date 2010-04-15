@@ -83,7 +83,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 		if (executor == null) {
 			backgroundExecutorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
                 public Thread newThread(Runnable r) {
-                    Thread t = new Thread(r, getClass().getSimpleName() + " bg");
+                    Thread t = new Thread(r, AppEngineCloudClient.class.getSimpleName() + " bg");
                     t.setDaemon(true);
                     return t;
                 }
@@ -178,18 +178,18 @@ public class AppEngineCloudClient extends AbstractCloud {
                 throw new SignInCancelledException(e);
             }
 
-        } else if (getSignedInState() == SigninState.SIGNING_IN) {
+        } else if (getSigninState() == SigninState.SIGNING_IN) {
             // TODO should probably handle this
             throw new IllegalStateException("signing in");
-        } else if (getSignedInState() == SigninState.SIGNED_IN) {
+        } else if (getSigninState() == SigninState.SIGNED_IN) {
             // great!
         }
     }
 
     public boolean couldSignIn() {
-        return getSignedInState() == SigninState.NOT_SIGNED_IN_YET
-            || getSignedInState() == SigninState.SIGNIN_FAILED
-            || getSignedInState() == SigninState.SIGNED_OUT;
+        return getSigninState() == SigninState.NOT_SIGNED_IN_YET
+            || getSigninState() == SigninState.SIGNIN_FAILED
+            || getSigninState() == SigninState.SIGNED_OUT;
     }
 
     @Override
@@ -505,7 +505,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             fireIssueDataDownloadedEvent();
         }
 
-        if (getSignedInState() == SigninState.SIGNIN_FAILED)
+        if (getSigninState() == SigninState.SIGNIN_FAILED)
             return;
 
         Collection<BugInstance> newBugs = bugsByHash.values();

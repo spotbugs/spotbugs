@@ -532,7 +532,7 @@ public abstract class AbstractCloud implements Cloud {
             statusListener.handleIssueDataDownloadedEvent();
     }
 
-    public SigninState getSignedInState() {
+    public SigninState getSigninState() {
         return signinState;
     }
 

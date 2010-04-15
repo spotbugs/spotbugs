@@ -23,7 +23,11 @@ import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -53,7 +57,8 @@ public class GUISaveState{
 	private static final int MAXNUMRECENTPROJECTS= 5;
 	private static final int MAXNUMRECENTANALYSES= MAXNUMRECENTPROJECTS;
 	private static final Sortables[] DEFAULT_COLUMN_HEADERS = new Sortables[] {
-		Sortables.CATEGORY, Sortables.BUGCODE, Sortables.TYPE, Sortables.DIVIDER, Sortables.BUG_RANK };
+		Sortables.CATEGORY, Sortables.BUGCODE, Sortables.TYPE, Sortables.DIVIDER, Sortables.BUG_RANK,
+        Sortables.FIRST_SEEN, Sortables.DESIGNATION};
 
 	private static final String[] RECENTPROJECTKEYS=new String[MAXNUMRECENTPROJECTS];//{"Project1","Project2","Project3","Project4","Project5"};//Make MAXNUMRECENTPROJECTS of these
 	private static final String[] RECENTANALYSISKEYS=new String[MAXNUMRECENTPROJECTS];
@@ -269,8 +274,14 @@ public class GUISaveState{
 					newInstance.useDefault=true;
 				}
 			}
-			if(!newInstance.useDefault)
-				newInstance.starterTable=new SorterTableColumnModel(sortColumns);
+			if(!newInstance.useDefault) {
+                // the beauty of Java
+                Set<Sortables> missingSortColumns = new HashSet<Sortables>(Arrays.asList(DEFAULT_COLUMN_HEADERS));
+                List<Sortables> sortColumnsWithMissingCols = new ArrayList<Sortables>(Arrays.asList(sortColumns));
+                missingSortColumns.removeAll(sortColumnsWithMissingCols);
+                sortColumnsWithMissingCols.addAll(missingSortColumns);
+                newInstance.starterTable=new SorterTableColumnModel(sortColumnsWithMissingCols);
+            }
 		}
 		else
 			newInstance.useDefault=true;

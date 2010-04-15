@@ -95,9 +95,9 @@ public class AppEngineCloudClientTest extends TestCase {
         cloud.setNetworkClient(networkClient);
 
         when(networkClient.initialize()).thenReturn(false);
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         assertEquals(0, cloud.urlsRequested.size());
     }
 
@@ -109,9 +109,9 @@ public class AppEngineCloudClientTest extends TestCase {
         AppEngineCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
 
         when(cloud.mockGuiCallback.isHeadless()).thenReturn(true);
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         verify(spyNetworkClient, never()).logIntoCloudForce();
     }
 
@@ -123,9 +123,9 @@ public class AppEngineCloudClientTest extends TestCase {
         cloud.setNetworkClient(networkClient);
 
         when(networkClient.initialize()).thenReturn(true);
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
-        assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSigninState());
         verify(networkClient).logIntoCloudForce();
     }
 
@@ -139,9 +139,9 @@ public class AppEngineCloudClientTest extends TestCase {
 
         when(networkClient.initialize()).thenReturn(true);
         Mockito.doThrow(new IOException()).when(networkClient).logIntoCloudForce();
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
-        assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSigninState());
         assertEquals(0, cloud.urlsRequested.size());
     }
 
@@ -309,7 +309,7 @@ public class AppEngineCloudClientTest extends TestCase {
 
 		// execution
 		MyAppEngineCloudClient cloud = createAppEngineCloudClient(signInConn, signOutConn);
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         final List<String> states = new ArrayList<String>();
         cloud.addStatusListener(new Cloud.CloudStatusListener() {
             public void handleIssueDataDownloadedEvent() {
@@ -342,10 +342,10 @@ public class AppEngineCloudClientTest extends TestCase {
 
 		// execution
 		MyAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
 		cloud.bugsPopulated();
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 
         // verify find-issues
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
@@ -378,11 +378,11 @@ public class AppEngineCloudClientTest extends TestCase {
 
         // execution
 		final MyAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.bugsPopulated();
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 
         assertEquals(1, cloud.urlsRequested.size());
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
@@ -404,11 +404,11 @@ public class AppEngineCloudClientTest extends TestCase {
 
 		// execution
 		MyAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection, logInConnection, uploadConnection);
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 		cloud.bugsPopulated();
-        assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSigninState());
 
         // verify find-issues
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
@@ -459,9 +459,9 @@ public class AppEngineCloudClientTest extends TestCase {
         when(cloud.mockGuiCallback.showConfirmDialog(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(-1);
         cloud.initialize();
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 		cloud.bugsPopulated();
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 
         // verify
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
@@ -479,9 +479,9 @@ public class AppEngineCloudClientTest extends TestCase {
 		MyAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
         when(cloud.mockGuiCallback.isHeadless()).thenReturn(true);
         cloud.initialize();
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 		cloud.bugsPopulated();
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 
         // verify
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
@@ -501,9 +501,9 @@ public class AppEngineCloudClientTest extends TestCase {
         AppEngineCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
         Mockito.doThrow(new IOException()).when(spyNetworkClient).signIn(Mockito.anyBoolean());
         cloud.initialize();
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 		cloud.bugsPopulated();
-        assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSigninState());
 
         // verify
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
@@ -518,10 +518,10 @@ public class AppEngineCloudClientTest extends TestCase {
 
 		// execution
 		MyAppEngineCloudClient cloud = createAppEngineCloudClient(signInConn);
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
         cloud.signIn();
-        assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSigninState());
 
         // verify
         assertEquals("/log-in", cloud.urlsRequested.get(0));
@@ -539,25 +539,25 @@ public class AppEngineCloudClientTest extends TestCase {
 		// execution
 		MyAppEngineCloudClient cloud = createAppEngineCloudClient(signInConn);
         AppEngineCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
         try {
             cloud.signIn();
             fail();
         } catch (IOException e) {
         }
-        assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSigninState());
 
 
         cloud.initialize();
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         Mockito.doThrow(new IllegalStateException()).when(spyNetworkClient).signIn(true);
         try {
             cloud.signIn();
             fail();
         } catch (IllegalStateException e) {
         }
-        assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSigninState());
 	}
 
     public void testSignOut() throws IOException {
@@ -569,12 +569,12 @@ public class AppEngineCloudClientTest extends TestCase {
 
 		// execution
 		MyAppEngineCloudClient cloud = createAppEngineCloudClient(signInConn, signOutConn);
-        assertEquals(NOT_SIGNED_IN_YET, cloud.getSignedInState());
+        assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
         cloud.signIn();
-        assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSigninState());
         cloud.signOut();
-        assertEquals(Cloud.SigninState.SIGNED_OUT, cloud.getSignedInState());
+        assertEquals(Cloud.SigninState.SIGNED_OUT, cloud.getSigninState());
 
         // verify
         assertEquals("/log-in", cloud.urlsRequested.get(0));

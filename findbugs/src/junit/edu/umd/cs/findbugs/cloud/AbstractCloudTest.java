@@ -419,7 +419,7 @@ public class AbstractCloudTest extends TestCase {
 	    	return "user";
 	    }
 
-        public SigninState getSignedInState() {
+        public SigninState getSigninState() {
             return SigninState.NO_SIGNIN_REQUIRED;
         }
 

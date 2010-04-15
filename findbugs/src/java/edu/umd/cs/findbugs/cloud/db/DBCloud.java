@@ -1151,7 +1151,7 @@ public  class DBCloud extends AbstractCloud {
 		}
 	}
 
-    public SigninState getSignedInState() {
+    public SigninState getSigninState() {
         return signinState;
     }
 
