@@ -140,7 +140,7 @@ public abstract class FindBugs  {
 	/**
 	 * FindBugs home directory.
 	 */
-	private static String home = System.getProperty("findbugs.home", ".");
+	private static String home = System.getProperty("findbugs.home");
 
 	public static boolean noAnalysis = Boolean.getBoolean("findbugs.noAnalysis");
 

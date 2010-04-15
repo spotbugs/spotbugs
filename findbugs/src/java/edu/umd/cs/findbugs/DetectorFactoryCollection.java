@@ -23,10 +23,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -35,9 +38,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
@@ -272,7 +277,23 @@ public class DetectorFactoryCollection {
 				}
 			}
 		}
-		return null;
+        String classFilePath = FindBugs.class.getName().replaceAll("\\.", "/") + ".class";
+        URL resource = FindBugs.class.getClassLoader().getResource(classFilePath);
+        if (resource != null && resource.getProtocol().equals("file")) {
+            try {
+                String classfile = URLDecoder.decode(resource.getPath(), Charset.defaultCharset().name());
+                Matcher m = Pattern.compile("(.*)/.*?/edu/umd.*").matcher(classfile);
+                if (m.matches()) {
+                    String home = m.group(1);
+                    if (new File(home + "/etc/findbugs.xml").exists()) {
+                        FindBugs.setHome(home);
+                        return home;
+                    }
+                }
+            } catch (UnsupportedEncodingException e) {
+            }
+        }
+        return null;
 		
 	}
 
