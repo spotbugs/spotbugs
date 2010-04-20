@@ -51,10 +51,12 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 		// execution
 		final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
         final AtomicBoolean doneWaiting = new AtomicBoolean(false);
+        final CountDownLatch latch = addStatusListenerWaiter(cloud);
         new Thread(new Runnable() {
             public void run() {
                 cloud.waitUntilIssueDataDownloaded();
                 doneWaiting.set(true);
+                latch.countDown();
             }
         }).start();
         assertFalse(doneWaiting.get());
@@ -80,11 +82,13 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 
         // execution
 		final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        final CountDownLatch latch = addStatusListenerWaiter(cloud);
         final AtomicBoolean doneWaiting = new AtomicBoolean(false);
         new Thread(new Runnable() {
             public void run() {
                 cloud.waitUntilIssueDataDownloaded();
                 doneWaiting.set(true);
+                latch.countDown();
             }
         }).start();
         assertFalse(doneWaiting.get());
@@ -119,20 +123,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 		final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection, logInConnection, uploadConnection);
         final AtomicBoolean doneWaiting = new AtomicBoolean(false);
 
-        // ensure synchronization between threads for the test
-        final CountDownLatch latch = new CountDownLatch(1);
-        cloud.addStatusListener(new Cloud.CloudStatusListener() {
-            public void handleIssueDataDownloadedEvent() {
-                try {
-                    latch.await();
-                } catch (InterruptedException e) {
-                    throw new IllegalStateException(e);
-                }
-            }
-
-            public void handleStateChange(Cloud.SigninState oldState, Cloud.SigninState state) {
-            }
-        });
+        final CountDownLatch latch = addStatusListenerWaiter(cloud);
         Future<Throwable> bgThreadFuture = Executors.newSingleThreadExecutor().submit(new Callable<Throwable>() {
             public Throwable call() throws Exception {
                 try {
@@ -165,7 +156,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
             throw t;
     }
 
-	public void testIssueDataDownloadedCallback() throws IOException {
+    public void testIssueDataDownloadedCallback() throws IOException {
 		// set up mocks
 		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
         when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
@@ -189,4 +180,21 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
 	}
+
+    private CountDownLatch addStatusListenerWaiter(MockAppEngineCloudClient cloud) {
+        final CountDownLatch latch = new CountDownLatch(1);
+        cloud.addStatusListener(new Cloud.CloudStatusListener() {
+            public void handleIssueDataDownloadedEvent() {
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+
+            public void handleStateChange(Cloud.SigninState oldState, Cloud.SigninState state) {
+            }
+        });
+        return latch;
+    }
 }
