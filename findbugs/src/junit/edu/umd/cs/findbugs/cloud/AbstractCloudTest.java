@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.cloud.appEngine.AppEngineCloudNetworkClient;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import junit.framework.TestCase;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
