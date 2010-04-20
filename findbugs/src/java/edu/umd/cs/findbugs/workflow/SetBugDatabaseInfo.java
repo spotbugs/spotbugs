@@ -33,7 +33,6 @@ import java.util.TreeMap;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.AppVersion;
-import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.PackageStats;
@@ -42,7 +41,6 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.filter.Filter;
-import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 
 /**
  * Java main application to compute update a historical bug collection with
@@ -64,6 +62,9 @@ public class SetBugDatabaseInfo {
 
 		String exclusionFilterFile;
 		String lastVersion;
+		
+		String cloudId;
+		HashMap<String,String> cloudProperties = new HashMap<String,String>();
 
 		boolean withMessages = false;
 		boolean purgeStats = false;
@@ -96,6 +97,9 @@ public class SetBugDatabaseInfo {
 			addOption("-suppress", "filter file", "Suppress warnings matched by this file (replaces previous suppressions)");
 			addOption("-lastVersion", "version", "Trim the history to just include just the specified version");
 			addSwitch("-withMessages", "Add bug descriptions");
+			addOption("-cloud", "id", "set cloud id");
+			addOption("-cloudProperty", "key=value", "set cloud property");
+
 		}
 
 		@Override
@@ -123,6 +127,17 @@ public class SetBugDatabaseInfo {
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
 			if (option.equals("-name"))
 				revisionName = argument;
+			else if (option.equals("-cloud")) 
+				cloudId = argument;
+			else if (option.equals("-cloudProperty")) {
+				int e = argument.indexOf('=');
+				if (e == -1)
+					throw new IllegalArgumentException("Bad cloud property: " + argument);
+				String key = argument.substring(0, e);
+				String value = argument.substring(e+1);
+				cloudProperties.put(key, value);
+				
+			}
 			else if (option.equals("-projectName"))
 				projectName = argument;
 			else if (option.equals("-suppress"))
@@ -178,6 +193,11 @@ public class SetBugDatabaseInfo {
 			project.getSourceDirList().clear();
 			project.getFileList().clear();
 			project.getAuxClasspathEntryList().clear();
+		}
+		if (commandLine.cloudId != null)
+			project.setCloudId(commandLine.cloudId);
+		for(Map.Entry<String,String> e : commandLine.cloudProperties.entrySet()) {
+			project.getCloudProperties().setProperty(e.getKey(), e.getValue());
 		}
 		if (commandLine.resetSource)
 			project.getSourceDirList().clear();

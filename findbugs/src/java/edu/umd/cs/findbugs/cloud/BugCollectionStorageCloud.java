@@ -100,7 +100,8 @@ class BugCollectionStorageCloud extends AbstractCloud {
 	    // TODO Auto-generated method stub
     }
 
-    public void bugsPopulated() {
+  
+	public void bugsPopulated(boolean initiateCommunication) {
 	    assert true;
 	    
     }

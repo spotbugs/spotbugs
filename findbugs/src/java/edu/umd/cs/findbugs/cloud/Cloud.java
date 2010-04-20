@@ -73,9 +73,9 @@ public interface Cloud {
 
 	
 	/** Called after the bugs in the bug collection are loaded; 
-	 * synchronizes them with the database */
-	
-	public void bugsPopulated();
+	 * synchronizes them with the database 
+	 * @param initiateCommunication TODO*/
+	public void bugsPopulated(boolean initiateCommunication);
 
 	/** Shutdown the cloud, note termination of session, close connections */
 	public void shutdown();

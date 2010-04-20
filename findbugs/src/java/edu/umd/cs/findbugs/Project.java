@@ -758,7 +758,7 @@ public class Project implements XMLWriteable {
 	static final String PROJECTNAME_ATTRIBUTE_NAME = "projectName";
 	
 	static final String CLOUD_ELEMENT_NAME = "Cloud";
-	static final String CLOUD_ID_ATTRIBUTE_NAME = "cloudId";
+	static final String CLOUD_ID_ATTRIBUTE_NAME = "id";
 	static final String CLOUD_PROPERTY_ELEMENT_NAME = "Property";
 	
 	

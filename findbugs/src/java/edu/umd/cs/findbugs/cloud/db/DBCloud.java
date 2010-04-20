@@ -285,7 +285,9 @@ public  class DBCloud extends AbstractCloud {
 	 final boolean PROMPT_FOR_USER_NAME = properties.getBoolean("findbugs.cloud.promptForUserName", false);
 	int sessionId = -1;
 	final CountDownLatch initialSyncDone = new CountDownLatch(1);
-	public void bugsPopulated() {
+
+
+	public void bugsPopulated(boolean initiateCommunication) {
 		queue.add(new PopulateBugs(true));
 		
 	}

@@ -47,6 +47,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
@@ -130,6 +131,7 @@ public class BugLoader {
 		col.setRequestDatabaseCloud(true);
 		try {
 	        col.readXML(source);
+	        initiateCommunication(col);
         } catch (Exception e) {
         	e.printStackTrace();
         	JOptionPane.showMessageDialog(mainFrame,"Could not read " +  source+ "; " + e.getMessage());
@@ -137,12 +139,23 @@ public class BugLoader {
 		addDeadBugMatcher(project);
 		return col;
 	}
+
+	/**
+     * @param col
+     */
+    private static void initiateCommunication(SortedBugCollection col) {
+	    Cloud cloud = col.getCloud();
+	    if (cloud != null)
+	    	cloud.bugsPopulated(true);
+    }
+	
 	public static @CheckForNull SortedBugCollection loadBugs(MainFrame mainFrame, Project project, URL url) {
 		
 		SortedBugCollection col=new SortedBugCollection(project);
 		col.setRequestDatabaseCloud(true);
 		try {
 	        col.readXML(url);
+	        initiateCommunication(col);
         } catch (Exception e) {
         	String msg = SystemProperties.getOSDependentProperty("findbugs.unableToLoadViaURL");
         	if (msg == null)

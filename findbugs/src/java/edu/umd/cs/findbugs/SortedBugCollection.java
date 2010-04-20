@@ -278,7 +278,6 @@ public class SortedBugCollection implements BugCollection {
 	private void doReadXML(@WillClose InputStream in, File base) throws IOException, DocumentException {
 		timeStartedLoading = System.currentTimeMillis();
 
-		Cloud plugin = getCloud(); // initialize cloud to allow listener to be registered
 		SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, base);
 		Profiler profiler = getProjectStats().getProfiler();
 		profiler.start(handler.getClass());
@@ -308,9 +307,10 @@ public class SortedBugCollection implements BugCollection {
 			profiler.end(handler.getClass());
 		}
 		timeFinishedLoading = System.currentTimeMillis();
+		Cloud plugin = getCloud(); // initialize cloud to allow listener to be registered
 		
 		if (plugin != null)
-			plugin.bugsPopulated();
+			plugin.bugsPopulated(false);
 		// Presumably, project is now up-to-date
 		project.setModified(false);
 	}
@@ -371,6 +371,7 @@ public class SortedBugCollection implements BugCollection {
 		
 		if (withMessages) {
             Cloud cloud = getCloud();
+            System.out.println(cloud.getClass().getName());
             cloud.waitUntilIssueDataDownloaded();
 			xmlOutput= new OutputStreamXMLOutput(out, "http://findbugs.sourceforge.net/xsl/default.xsl");
 		} else {
@@ -1265,7 +1266,7 @@ public class SortedBugCollection implements BugCollection {
     	userAnnotationPlugin = null;
     	Cloud cloud = getCloud();
     	if (cloud != null) 
-    		cloud.bugsPopulated();
+    		cloud.bugsPopulated(false);
     	return cloud;
     }
 	/* (non-Javadoc)

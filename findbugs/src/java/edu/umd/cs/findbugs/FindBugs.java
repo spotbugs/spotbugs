@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.dom4j.DocumentException;
 
@@ -144,6 +146,11 @@ public abstract class FindBugs  {
 
 	public static boolean noAnalysis = Boolean.getBoolean("findbugs.noAnalysis");
 
+	public static final Logger LOGGER = Logger.getLogger(FindBugs.class.getPackage().getName());
+	
+	static {
+		LOGGER.setLevel(Level.WARNING);
+	}
 	/**
 	 * Known URL protocols.
 	 * Filename URLs that do not have an explicit protocol are

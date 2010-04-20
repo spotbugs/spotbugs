@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -96,7 +97,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private boolean xargs = false;
 	private boolean scanNestedArchives = true;
 	private boolean applySuppression;
-
+	
+	
 	/**
 	 * Constructor.
 	 */
@@ -160,7 +162,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		addSwitch("-exitcode", "set exit code of process");
 		addSwitch("-noClassOk", "output empty warning file if no classes are specified");
 		addSwitch("-xargs", "get list of classfiles/jarfiles from standard input rather than command line");
-		
+		addOption("-cloud", "id", "set cloud id");
+		addOption("-cloudProperty", "key=value", "set cloud property");
+
 		}
 
 	@Override
@@ -275,7 +279,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-			
 		} else if (option.equals("-noClassOk")) {
 			noClassOk = true;
 		} else if (option.equals("-xargs")) {
@@ -300,6 +303,16 @@ public class TextUICommandLine extends FindBugsCommandLine {
 				System.err.println("Couldn't open " + outputFile + " for output: " + e.toString());
 				System.exit(1);
 			}
+		} else if (option.equals("-cloud")) 
+			project.setCloudId(argument);
+		 else if (option.equals("-cloudProperty")) {
+			int e = argument.indexOf('=');
+			if (e == -1)
+				throw new IllegalArgumentException("Bad cloud property: " + argument);
+			String key = argument.substring(0, e);
+			String value = argument.substring(e+1);
+			project.getCloudProperties().setProperty(key, value);
+			
 		} else if (option.equals("-maxRank")) {
 			this.rankThreshold = Integer.parseInt(argument);
 		} else if (option.equals("-projectName")) {

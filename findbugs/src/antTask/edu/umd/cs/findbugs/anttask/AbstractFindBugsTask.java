@@ -320,7 +320,7 @@ public abstract class AbstractFindBugsTask extends Task {
 	 * @param arg the argument
 	 */
 	protected void addArg(String arg) {
-		findbugsEngine.createArg().setValue(arg);
+		findbugsEngine.createArg().setValue(arg.trim());
 	}
 	
 	/**
