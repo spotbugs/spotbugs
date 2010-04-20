@@ -33,7 +33,7 @@
 										</xs:complexType>
 										</xs:element>
 									</xs:sequence>
-									<xs:attribute name="cloudId" type="xs:string"/>
+									<xs:attribute name="id" type="xs:string"/>
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
