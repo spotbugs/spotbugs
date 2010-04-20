@@ -170,11 +170,14 @@ public class MergeSummarizeAndView {
 		for (int i = argCount; i < argv.length; i++)
 			options.analysisFiles.add(argv[i]);
 		MergeSummarizeAndView msv = new MergeSummarizeAndView(options);
+		boolean isCloudManagedByGui = false;
 		try {
 			msv.load();
-			msv.report();
+			isCloudManagedByGui = msv.report();
 		} finally {
-			msv.shutdown();
+			if (!isCloudManagedByGui) {
+				msv.shutdown();
+			}
 		}
 
 	}
@@ -340,8 +343,9 @@ public class MergeSummarizeAndView {
 			}
 	}
 
-	private void report() {
+	private boolean report() {
 
+		boolean isCloudManagedByGui = false;
 		boolean hasScaryBugs = !scaryBugs.getCollection().isEmpty();
 		if (hasScaryBugs) {
 			System.out.printf("%4s%n", "days");
@@ -372,7 +376,7 @@ public class MergeSummarizeAndView {
 		if (hasScaryBugs || (options.alwaysShowGui && results.getCollection().size() > 0)) {
 			if (GraphicsEnvironment.isHeadless()) {
 				System.out.println("Running in GUI headless mode, can't open GUI");
-				return;
+				return isCloudManagedByGui;
 			}
 			GUISaveState.loadInstance();
 			cloud.setMode(originalMode);
@@ -383,12 +387,14 @@ public class MergeSummarizeAndView {
 				instance.waitUntilReady();
 
 				instance.openBugCollection(results);
+				isCloudManagedByGui = true;
 			} catch (RuntimeException e) {
 				throw e;
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		}
+		return isCloudManagedByGui;
 
 	}
 
