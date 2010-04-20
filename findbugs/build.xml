@@ -495,6 +495,22 @@
               outputFile="${sampleoutput.dir}/bcel.xml" >
       <class location="${jar.dir}/bcel.jar" />
     </findbugs>
+    <findbugs home="."
+              output="xml"
+		cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
+			  jvmargs="-ea -Xmx900m"
+			  projectName="Byte code Engineering Library (BCEL)"
+              outputFile="${sampleoutput.dir}/bcel-cloud0.xml" >
+      <class location="${jar.dir}/bcel.jar" />
+    </findbugs>
+    <findbugs home="."
+              output="xml:withMessages"
+		cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
+			  jvmargs="-ea -Xmx900m"
+			  projectName="Byte code Engineering Library (BCEL)"
+              outputFile="${sampleoutput.dir}/bcel-cloud.xml" >
+      <class location="${jar.dir}/bcel.jar" />
+    </findbugs>
 
 <!--
 <findbugs home="${findbugs.home}"
