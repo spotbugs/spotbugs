@@ -4,7 +4,10 @@
     <option name="BUILD_JARS_ON_MAKE" value="false" />
   </component>
   <component name="DependencyValidationManager">
+    <scope name="App Engine" pattern="file[AppEngineCloudClient]:*//*||file[AppEngineCloudProtocol]:*//*||file[AppEngineCloudServer]:*//*||file[cloudServlet]:*//*||file[localCloud]:*//*" />
+    <scope name="FindBugs Core" pattern="file[findbugs]:*//*||file[findbugsTestCases]:*//*" />
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
+    <deny_rule from_scope="FindBugs Core" to_scope="App Engine" is_deny="true" />
   </component>
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
@@ -36,6 +39,84 @@
     <option name="myConfigurationMap">
       <map>
         <entry key="$PROJECT_DIR$">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="https://findbugs.googlecode.com/svn/branches">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="https://findbugs.googlecode.com/svn/repos">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="https://findbugs.googlecode.com/svn/tags">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="https://findbugs.googlecode.com/svn/wiki">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="https://findbugs.googlecode.com/svn/branches" />
+                  <option value="https://findbugs.googlecode.com/svn/repos" />
+                  <option value="https://findbugs.googlecode.com/svn/tags" />
+                  <option value="https://findbugs.googlecode.com/svn/wiki" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="https://findbugs.googlecode.com/svn/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/findbugs">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="https://findbugs.googlecode.com/svn/branches">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="https://findbugs.googlecode.com/svn/repos">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="https://findbugs.googlecode.com/svn/tags">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="https://findbugs.googlecode.com/svn/wiki">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="https://findbugs.googlecode.com/svn/branches" />
+                  <option value="https://findbugs.googlecode.com/svn/repos" />
+                  <option value="https://findbugs.googlecode.com/svn/tags" />
+                  <option value="https://findbugs.googlecode.com/svn/wiki" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="https://findbugs.googlecode.com/svn/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/sandbox">
           <value>
             <SvnBranchConfiguration>
               <option name="branchMap">
