@@ -35,7 +35,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         assertFalse(doneWaiting.get());
         cloud.initialize();
         assertFalse(doneWaiting.get());
-		cloud.bugsPopulated();
+		cloud.bugsPopulated(true);
         Thread.sleep(10);
         assertTrue(doneWaiting.get());
 
@@ -61,7 +61,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         }).start();
         assertFalse(doneWaiting.get());
         cloud.initialize();
-		cloud.bugsPopulated();
+		cloud.bugsPopulated(true);
         Thread.sleep(10);
         assertTrue(doneWaiting.get());
 
@@ -94,7 +94,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         assertFalse(doneWaiting.get());
         cloud.initialize();
         assertFalse(doneWaiting.get());
-        cloud.bugsPopulated();
+        cloud.bugsPopulated(true);
         Thread.sleep(10);
         assertTrue(doneWaiting.get());
 
@@ -103,7 +103,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 
     /**
      * The UI updates when waitUntilIssueDataDownloaded returns, so this test
-     * ensures that the caller doesn't wait longer than necessary. 
+     * ensures that the caller doesn't wait longer than necessary.
      */
 	public void testWaitForIssueSyncReturnsBeforeUpload() throws Throwable {
         addMissingIssue = true;
@@ -142,7 +142,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         assertFalse(doneWaiting.get());
         cloud.initialize();
         assertFalse(doneWaiting.get());
-		cloud.bugsPopulated();
+		cloud.bugsPopulated(true);
         Thread.sleep(10);
         assertTrue(doneWaiting.get());
 
@@ -175,7 +175,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         });
         cloud.initialize();
         assertFalse(synced.get());
-		cloud.bugsPopulated();
+		cloud.bugsPopulated(true);
         assertTrue(synced.get());
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));

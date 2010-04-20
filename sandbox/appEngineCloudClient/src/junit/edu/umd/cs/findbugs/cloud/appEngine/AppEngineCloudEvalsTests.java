@@ -148,7 +148,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 		// setup & execute
 		AppEngineCloudClient cloudClient = createAppEngineCloudClient(findConnection, recentEvalConnection);
         cloudClient.initialize();
-		cloudClient.bugsPopulated();
+		cloudClient.bugsPopulated(true);
 		cloudClient.updateEvaluationsFromServer();
 
 		// verify

@@ -482,7 +482,7 @@ public class AppEngineCloudNetworkClient {
                 }
                 builder.addIssueGroups(groupBuilder.build());
             }
-            LOGGER.info("Updating timestamps for " + bugs.size() + " bugs in " + builder.getIssueGroupsCount() + " groups");
+            LOGGER.finer("Updating timestamps for " + bugs.size() + " bugs in " + builder.getIssueGroupsCount() + " groups");
             builder.build().writeTo(outputStream);
             outputStream.close();
             if (conn.getResponseCode() != 200) {
@@ -516,7 +516,7 @@ public class AppEngineCloudNetworkClient {
 
     private FindIssuesResponse submitHashes(List<String> bugsByHash)
             throws IOException {
-        LOGGER.info("Checking " + bugsByHash.size() + " bugs against App Engine Cloud");
+        LOGGER.finer("Checking " + bugsByHash.size() + " bugs against App Engine Cloud");
         FindIssues.Builder msgb = FindIssues.newBuilder();
         if (sessionId != null) {
             msgb.setSessionId(sessionId);
@@ -528,14 +528,14 @@ public class AppEngineCloudNetworkClient {
         HttpURLConnection conn = openConnection("/find-issues");
         conn.setDoOutput(true);
         conn.connect();
-        LOGGER.info("Connected in " + (System.currentTimeMillis() - start) + "ms");
+        LOGGER.finer("Connected in " + (System.currentTimeMillis() - start) + "ms");
 
         start = System.currentTimeMillis();
         OutputStream stream = conn.getOutputStream();
         hashList.writeTo(stream);
         stream.close();
         long elapsed = System.currentTimeMillis() - start;
-        LOGGER.info("Submitted hashes (" + hashList.getSerializedSize() / 1024 + " KB) in " + elapsed + "ms ("
+        LOGGER.finer("Submitted hashes (" + hashList.getSerializedSize() / 1024 + " KB) in " + elapsed + "ms ("
                                          + (elapsed / bugsByHash.size()) + "ms per hash)");
 
         start = System.currentTimeMillis();
@@ -549,7 +549,7 @@ public class AppEngineCloudNetworkClient {
         conn.disconnect();
         int foundIssues = response.getFoundIssuesCount();
         elapsed = System.currentTimeMillis() - start;
-        LOGGER.info("Received " + foundIssues + " bugs from server in " + elapsed + "ms ("
+        LOGGER.fine("Received " + foundIssues + " bugs from server in " + elapsed + "ms ("
                                          + (elapsed / (foundIssues + 1)) + "ms per bug)");
         return response;
     }
@@ -557,7 +557,7 @@ public class AppEngineCloudNetworkClient {
     private void uploadNewBugsPartition(final Collection<BugInstance> bugsToSend)
             throws IOException {
 
-        LOGGER.info("Uploading " + bugsToSend.size() + " bugs to App Engine Cloud");
+        LOGGER.finer("Uploading " + bugsToSend.size() + " bugs to App Engine Cloud");
         UploadIssues uploadIssues = buildUploadIssuesCommandInUIThread(bugsToSend);
         if (uploadIssues == null)
             return;

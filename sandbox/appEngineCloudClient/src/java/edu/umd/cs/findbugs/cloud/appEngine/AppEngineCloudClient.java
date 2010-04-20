@@ -22,7 +22,7 @@ import java.util.TimerTask;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -65,8 +65,7 @@ public class AppEngineCloudClient extends AbstractCloud {
     private AppEngineCloudNetworkClient networkClient;
     private Map<String,String> bugStatusCache = new ConcurrentHashMap<String, String>();
     private final BugFilingHelper bugFilingHelper = new BugFilingHelper(this, properties);
-    private final Object issueDataDownloadedLock = new Object();
-    private boolean issueDataDownloaded = false;
+    private CountDownLatch issueDataDownloaded = new CountDownLatch(1);
 
     /** invoked via reflection */
     @SuppressWarnings({"UnusedDeclaration"})
@@ -111,25 +110,36 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
     public void waitUntilIssueDataDownloaded() {
-        LOGGER.info("Waiting for issue data to be downloaded");
-        synchronized (issueDataDownloadedLock) {
-            if (issueDataDownloaded)
-                return;
+    	try {
+    		bugsPopulated.await();
+    	} catch (InterruptedException e) {
+    		 LOGGER.log(Level.WARNING, "interrupted", e);
+    		 return;
+    	}
+    	initiateCommunication();
+        LOGGER.fine("Waiting for issue data to be downloaded");
+
             try {
-                issueDataDownloadedLock.wait(60*1000);
+                issueDataDownloaded.await(60, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 LOGGER.log(Level.WARNING, "interrupted", e);
             }
-        }
+
     }
 
     public boolean availableForInitialization() {
 		return true;
 	}
 
+	boolean initialized = false;
 	@Override
 	public boolean initialize() throws IOException {
-        LOGGER.info("Initializing " + getClass().getSimpleName());
+		if (false && initialized) {
+			LOGGER.warning("Already initialized " + getClass().getSimpleName());
+			return true;
+		}
+
+        LOGGER.fine("Initializing " + getClass().getSimpleName());
         setSigninState(SigninState.NOT_SIGNED_IN_YET);
 
         try {
@@ -156,6 +166,7 @@ public class AppEngineCloudClient extends AbstractCloud {
         if (!getGuiCallback().isHeadless()) {
             startEvaluationCheckThread();
         }
+		initialized = true;
 		return true;
 	}
 
@@ -204,26 +215,33 @@ public class AppEngineCloudClient extends AbstractCloud {
 		}
 	}
 
-    //TODO: test for host==null
-	public void bugsPopulated() {
-		final ConcurrentMap<String, BugInstance> bugsByHash = new ConcurrentHashMap<String, BugInstance>();
+    CountDownLatch bugsPopulated = new CountDownLatch(1);
 
-		for(BugInstance b : bugCollection.getCollection()) {
-			bugsByHash.put(b.getInstanceHash(), b);
-		}
 
-		backgroundExecutor.execute(new Runnable() {
-            public void run() {
-                try {
-                    actuallyCheckBugsAgainstCloud(bugsByHash);
+	public void bugsPopulated(boolean initiateCommunication) {
+		bugsPopulated.countDown();
+		if (initiateCommunication)
+			initiateCommunication();
 
-                } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Error while checking bugs against cloud in background", e);
-                }
-            }
-        });
 	}
 
+	Object initiationLock = new Object();
+	boolean communicationInitiated;
+	public void initiateCommunication() {
+		synchronized(initiationLock) {
+			if (communicationInitiated) return;
+			backgroundExecutor.execute(new Runnable() {
+	            public void run() {
+	                try {
+	                    actuallyCheckBugsAgainstCloud();
+	                } catch (Exception e) {
+	                    LOGGER.log(Level.SEVERE, "Error while checking bugs against cloud in background", e);
+	                }
+	            }
+	        });
+			communicationInitiated = true;
+		}
+	}
     // =============== accessors ===================
 
     AppEngineCloudNetworkClient getNetworkClient() {
@@ -486,22 +504,25 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 	}
 
-    private void actuallyCheckBugsAgainstCloud(ConcurrentMap<String, BugInstance> bugsByHash)
+    private void actuallyCheckBugsAgainstCloud()
             throws ExecutionException, InterruptedException {
-        int numBugs = bugsByHash.size();
-        setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud...");
+    	 ConcurrentHashMap<String, BugInstance> bugsByHash = new ConcurrentHashMap<String, BugInstance>();
 
+		for(BugInstance b : bugCollection.getCollection()) {
+			bugsByHash.put(b.getInstanceHash(), b);
+		}
+
+        int numBugs = bugsByHash.size();
+        String msg = "Checking " + numBugs + " bugs against the FindBugs Cloud...";
+		LOGGER.info(msg);
+        setStatusMsg(msg);
 
         try {
             List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
             networkClient.generateHashCheckRunnables(new ArrayList<String>(bugsByHash.keySet()), tasks, bugsByHash);
             executeAndWaitForAll(tasks);
         } finally {
-
-            synchronized(issueDataDownloadedLock) {
-                issueDataDownloaded = true;
-                issueDataDownloadedLock.notifyAll();
-            }
+            issueDataDownloaded .countDown();
             fireIssueDataDownloadedEvent();
         }
 

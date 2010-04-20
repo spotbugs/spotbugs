@@ -35,7 +35,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
 		MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
-		cloud.bugsPopulated();
+		cloud.bugsPopulated(true);
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 
         // verify find-issues
@@ -72,7 +72,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
-        cloud.bugsPopulated();
+        cloud.bugsPopulated(true);
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 
         assertEquals(1, cloud.urlsRequested.size());
@@ -98,7 +98,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
-		cloud.bugsPopulated();
+		cloud.bugsPopulated(true);
         assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSigninState());
 
         // verify find-issues
@@ -151,7 +151,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
                 .thenReturn(-1);
         cloud.initialize();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
-		cloud.bugsPopulated();
+		cloud.bugsPopulated(true);
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 
         // verify
@@ -171,7 +171,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         when(cloud.mockGuiCallback.isHeadless()).thenReturn(true);
         cloud.initialize();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
-		cloud.bugsPopulated();
+		cloud.bugsPopulated(true);
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 
         // verify
@@ -193,7 +193,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         Mockito.doThrow(new IOException()).when(spyNetworkClient).signIn(Mockito.anyBoolean());
         cloud.initialize();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
-		cloud.bugsPopulated();
+		cloud.bugsPopulated(true);
         assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSigninState());
 
         // verify
