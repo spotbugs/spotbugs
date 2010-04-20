@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -96,6 +97,10 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
 	}
 
+    /**
+     * The UI updates when waitUntilIssueDataDownloaded returns, so this test
+     * ensures that the caller doesn't wait longer than necessary. 
+     */
 	public void testWaitForIssueSyncReturnsBeforeUpload() throws Throwable {
         addMissingIssue = true;
 
@@ -113,6 +118,21 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 		// execution
 		final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection, logInConnection, uploadConnection);
         final AtomicBoolean doneWaiting = new AtomicBoolean(false);
+
+        // ensure synchronization between threads for the test
+        final CountDownLatch latch = new CountDownLatch(1);
+        cloud.addStatusListener(new Cloud.CloudStatusListener() {
+            public void handleIssueDataDownloadedEvent() {
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+
+            public void handleStateChange(Cloud.SigninState oldState, Cloud.SigninState state) {
+            }
+        });
         Future<Throwable> bgThreadFuture = Executors.newSingleThreadExecutor().submit(new Callable<Throwable>() {
             public Throwable call() throws Exception {
                 try {
@@ -120,6 +140,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
                     doneWaiting.set(true);
                     assertEquals(1, cloud.urlsRequested.size());
                     assertEquals("/find-issues", cloud.urlsRequested.get(0));
+                    latch.countDown(); // now the bg thread can continue
                     return null;
                 } catch (Throwable e) {
                     e.printStackTrace();
