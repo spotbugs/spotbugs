@@ -182,6 +182,10 @@ public abstract class AbstractCloud implements Cloud {
 		throw new UnsupportedOperationException();
 	}
 
+    public String getBugLinkType(BugInstance instance) {
+        return null;
+    }
+
     public URL fileBug(BugInstance bug) {
         throw new UnsupportedOperationException();
     }

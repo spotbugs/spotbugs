@@ -8,7 +8,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import java.util.Arrays;
 import java.util.List;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.BugFilingHelper.processJiraDashboardUrl;
+import static edu.umd.cs.findbugs.cloud.appEngine.JiraBugFiler.processJiraDashboardUrl;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.normalizeHash;
 import static org.mockito.Mockito.when;
 
@@ -27,18 +27,6 @@ public class AppEngineCloudMiscTests extends AbstractAppEngineCloudTest {
         assertEquals("user2", designations.get(0).getUser());
         assertEquals("user1", designations.get(1).getUser());
         assertEquals("NOT_A_BUG", designations.get(1).getDesignationKey());
-    }
-
-    public void testJiraDashboardUrlProcessor() {
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("  jira.atlassian.com    "));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("jira.atlassian.com"));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("http://jira.atlassian.com"));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com"));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure"));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/"));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa"));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa;sessionId=blah"));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa?blah"));
     }
 
 	public static void testEncodeDecodeHash() {

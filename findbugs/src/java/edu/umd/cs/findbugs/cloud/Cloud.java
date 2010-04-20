@@ -209,6 +209,8 @@ public interface Cloud {
 
     String getCloudName();
 
+    String getBugLinkType(BugInstance instance);
+
     interface CloudListener {
 		void issueUpdated(BugInstance bug);
 		void statusUpdated();

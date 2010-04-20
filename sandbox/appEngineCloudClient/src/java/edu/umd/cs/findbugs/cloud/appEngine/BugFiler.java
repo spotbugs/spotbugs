@@ -1,13 +1,16 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+import com.google.gdata.client.authn.oauth.OAuthException;
+import com.google.gdata.util.ServiceException;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 
-/**
- * Created by IntelliJ IDEA.
- * User: keith
- * Date: Feb 26, 2010
- * Time: 2:02:32 PM
- * To change this template use File | Settings | File Templates.
- */
+import java.io.IOException;
+import java.net.URL;
+
 public interface BugFiler {
     String getBugStatus(String bugUrl) throws Exception;
+
+    URL file(BugInstance b, String url)
+            throws IOException, SignInCancelledException;
 }

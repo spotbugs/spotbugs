@@ -46,6 +46,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
@@ -369,6 +370,12 @@ public class AppEngineCloudClient extends AbstractCloud {
             }
         }
 	}
+
+    @Override
+     public String getBugLinkType(BugInstance instance) {
+        Issue issue = networkClient.getIssueByHash(instance.getInstanceHash());
+        return issue != null && issue.hasBugLinkTypeStr() ? issue.getBugLinkTypeStr() : null;
+    }
 
     @Override
 	public URL fileBug(BugInstance bug) {
