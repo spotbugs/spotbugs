@@ -1,6 +1,10 @@
 <project name="AppEngineCloudClient" default="install">
 
+  <property file="local.properties" />
+
+
     <property name="classes.dir" value="build/classes"/>
+    <property name="findbugs.home" value="../../findbugs"/>
 
 
     <target name="validate">
@@ -26,12 +30,12 @@
         </jar>
     </target>
     <target name="install" depends="plugin">
-        <copy todir="../../findbugs/plugin" flatten="true">
+        <copy todir="${findbugs.home}/plugin" flatten="true">
             <fileset dir="build">
                 <include name="*.jar"/>
             </fileset>
         </copy>
-        <copy todir="../../findbugs/plugin/AppEngineCloudClient" flatten="true">
+        <copy todir="${findbugs.home}/plugin/AppEngineCloudClient" flatten="true">
             <fileset dir="lib">
                 <include name="**/*.jar"/>
                 <exclude name="mockito-all-1.8.2.jar"/>

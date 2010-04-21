@@ -110,23 +110,20 @@ public class AppEngineCloudClient extends AbstractCloud {
         return "FindBugs Cloud";
     }
 
-    public void waitUntilIssueDataDownloaded() {
-    	try {
-    		bugsPopulated.await();
-    	} catch (InterruptedException e) {
-    		 LOGGER.log(Level.WARNING, "interrupted", e);
-    		 return;
-    	}
-    	initiateCommunication();
-        LOGGER.fine("Waiting for issue data to be downloaded");
+	public void waitUntilIssueDataDownloaded() {
+		bugsPopulated();
+		
+		initiateCommunication();
+		
+		LOGGER.fine("Waiting for issue data to be downloaded");
 
-            try {
-                issueDataDownloaded.await(60, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                LOGGER.log(Level.WARNING, "interrupted", e);
-            }
+		try {
+			issueDataDownloaded.await(60, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			LOGGER.log(Level.WARNING, "interrupted", e);
+		}
 
-    }
+	}
 
     public boolean availableForInitialization() {
 		return true;
@@ -220,12 +217,13 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 
 	public void bugsPopulated() {
-		bugsPopulated.countDown();;
+		bugsPopulated.countDown();
 	}
 
 	private Object initiationLock = new Object();
 	volatile boolean communicationInitiated;
 	public void initiateCommunication() {
+		bugsPopulated();
 		if (communicationInitiated) 
 			return;
 		synchronized(initiationLock) {
