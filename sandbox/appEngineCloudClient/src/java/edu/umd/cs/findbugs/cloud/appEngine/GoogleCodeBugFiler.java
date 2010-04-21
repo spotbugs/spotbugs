@@ -23,11 +23,9 @@ import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Callable;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
@@ -37,8 +35,8 @@ public class GoogleCodeBugFiler implements BugFiler {
 
     private static final Logger LOGGER = Logger.getLogger(GoogleCodeBugFiler.class.getName());
 
-    private static final String KEY_PROJECTHOSTING_OAUTH_TOKEN = "projecthosting_oauth_token";
-    private static final String KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET = "projecthosting_oauth_token_secret";
+    static final String KEY_PROJECTHOSTING_OAUTH_TOKEN = "projecthosting_oauth_token";
+    static final String KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET = "projecthosting_oauth_token_secret";
 
     private static final String PROJECTION = "/full";
 
@@ -194,11 +192,10 @@ public class GoogleCodeBugFiler implements BugFiler {
         if (!forceGetNewToken && token != null && secret != null) {
             oauthParameters.setOAuthToken(token);
             oauthParameters.setOAuthTokenSecret(secret);
-            projectHostingService = new ProjectHostingService("findbugs-cloud-client");
-            projectHostingService.setOAuthCredentials(oauthParameters, oauthSigner);
+            projectHostingService = createProjectHostingService(oauthSigner, oauthParameters);
             return;
         }
-        GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(oauthSigner);
+        GoogleOAuthHelper oauthHelper = createOAuthHelper(oauthSigner);
         oauthParameters.setScope("http://code.google.com/feeds/issues");
 
         oauthHelper.getUnauthorizedRequestToken(oauthParameters);
@@ -209,12 +206,8 @@ public class GoogleCodeBugFiler implements BugFiler {
             throw new IllegalStateException("cannot launch browser");
         }
 
-        try {
-            callback.showMessageDialogAndWait("Please sign into your Google Account in\n" +
-                                       "your web browser, then click OK.");
-        } catch (InvocationTargetException e) {
-            LOGGER.log(Level.SEVERE, "", e);
-        }
+        callback.showMessageDialogAndWait("Please sign into your Google Account in\n" +
+                                   "your web browser, then click OK.");
 
         // convert the request token to a session token
         token = oauthHelper.getAccessToken(oauthParameters);
@@ -222,11 +215,23 @@ public class GoogleCodeBugFiler implements BugFiler {
         prefs.put(KEY_PROJECTHOSTING_OAUTH_TOKEN, token);
         prefs.put(KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET, oauthParameters.getOAuthTokenSecret());
 
-        projectHostingService = new ProjectHostingService("findbugs-cloud-client");
-        projectHostingService.setOAuthCredentials(oauthParameters, oauthSigner);
+        projectHostingService = createProjectHostingService(oauthSigner, oauthParameters);
     }
 
-    private Preferences getPrefs() {
+    /** package-private for testing */
+    ProjectHostingService createProjectHostingService(OAuthHmacSha1Signer oauthSigner, GoogleOAuthParameters oauthParameters) throws OAuthException {
+        ProjectHostingService projectHostingService = new ProjectHostingService("findbugs-cloud-client");
+        projectHostingService.setOAuthCredentials(oauthParameters, oauthSigner);
+        return projectHostingService;
+    }
+
+    /** package-private for testing */
+    GoogleOAuthHelper createOAuthHelper(OAuthHmacSha1Signer oauthSigner) {
+        return new GoogleOAuthHelper(oauthSigner);
+    }
+
+    /** package-private for testing */
+    Preferences getPrefs() {
         return Preferences.userNodeForPackage(GoogleCodeBugFiler.class);
     }
 
@@ -265,8 +270,6 @@ public class GoogleCodeBugFiler implements BugFiler {
                 throw (OAuthException) cause;
             if (cause instanceof ServiceException)
                 throw (ServiceException) cause;
-            if (cause instanceof SignInCancelledException)
-                throw (SignInCancelledException) cause;
             throw e;
         }
         if (googleCodeIssue == null)

@@ -58,7 +58,7 @@ public interface IGuiCallback {
      */
     ExecutorService getBugUpdateExecutor();
 
-    void showMessageDialogAndWait(String message) throws InvocationTargetException, InterruptedException;
+    void showMessageDialogAndWait(String message) throws InterruptedException;
 
     public class FormItem {
         private String label;

@@ -3245,14 +3245,19 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	    return saveType;
     }
 
-    public void showMessageDialogAndWait(final String message) throws InvocationTargetException, InterruptedException {
+    public void showMessageDialogAndWait(final String message) throws InterruptedException {
     	if (SwingUtilities.isEventDispatchThread())
     		JOptionPane.showMessageDialog(this, message);
     	else
-    		SwingUtilities.invokeAndWait(new Runnable(){
-				public void run() {
-					JOptionPane.showMessageDialog(MainFrame.this, message);
-                }});
+            try {
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    public void run() {
+                        JOptionPane.showMessageDialog(MainFrame.this, message);
+                    }
+                });
+            } catch (InvocationTargetException e) {
+                throw new IllegalStateException(e);
+            }
     }
     
     public void showMessageDialog(final String message) {

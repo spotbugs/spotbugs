@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 public class CommandLineUiCallback implements IGuiCallback {
     private final CurrentThreadExecutorService bugUpdateExecutor = new CurrentThreadExecutorService();
 
-    public void showMessageDialogAndWait(String message) throws InvocationTargetException, InterruptedException {
+    public void showMessageDialogAndWait(String message) throws InterruptedException {
         System.out.println(message);
     }
 
