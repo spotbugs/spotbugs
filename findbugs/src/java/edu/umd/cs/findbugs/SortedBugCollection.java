@@ -310,7 +310,7 @@ public class SortedBugCollection implements BugCollection {
 		Cloud plugin = getCloud(); // initialize cloud to allow listener to be registered
 		
 		if (plugin != null)
-			plugin.bugsPopulated(false);
+			plugin.bugsPopulated();
 		// Presumably, project is now up-to-date
 		project.setModified(false);
 	}
@@ -1266,7 +1266,7 @@ public class SortedBugCollection implements BugCollection {
     	userAnnotationPlugin = null;
     	Cloud cloud = getCloud();
     	if (cloud != null) 
-    		cloud.bugsPopulated(false);
+    		cloud.bugsPopulated();
     	return cloud;
     }
 	/* (non-Javadoc)

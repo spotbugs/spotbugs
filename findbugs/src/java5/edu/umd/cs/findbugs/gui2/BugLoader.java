@@ -146,7 +146,7 @@ public class BugLoader {
     private static void initiateCommunication(SortedBugCollection col) {
 	    Cloud cloud = col.getCloud();
 	    if (cloud != null)
-	    	cloud.bugsPopulated(true);
+	    	cloud.initiateCommunication();
     }
 	
 	public static @CheckForNull SortedBugCollection loadBugs(MainFrame mainFrame, Project project, URL url) {

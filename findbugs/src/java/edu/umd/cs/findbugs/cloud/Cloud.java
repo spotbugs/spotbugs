@@ -73,9 +73,14 @@ public interface Cloud {
 
 	
 	/** Called after the bugs in the bug collection are loaded; 
-	 * synchronizes them with the database 
-	 * @param initiateCommunication TODO*/
-	public void bugsPopulated(boolean initiateCommunication);
+	 * synchronizes them with the database */
+	public void bugsPopulated();
+	
+	/** Initiate communication with the cloud. Clouds can implement lazy communication, where they
+	 * don't initiate communication with the cloud until a request for cloud data is seen, or a call
+	 * is made to {@link #waitUntilIssueDataDownloaded()}.
+	 * A call to this method forces eager initiation of communication.*/
+	public void initiateCommunication();
 
 	/** Shutdown the cloud, note termination of session, close connections */
 	public void shutdown();

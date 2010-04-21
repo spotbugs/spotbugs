@@ -14,6 +14,11 @@ import static org.mockito.Mockito.when;
 
 public class AppEngineCloudMiscTests extends AbstractAppEngineCloudTest {
 
+	
+	public AppEngineCloudMiscTests() {
+		super();
+	}
+	
     public void testGetLatestDesignationFromEachUser() throws Exception {
         MockAppEngineCloudClient cloud = createAppEngineCloudClient();
         AppEngineCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();

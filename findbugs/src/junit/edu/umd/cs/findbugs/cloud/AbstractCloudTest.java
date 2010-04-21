@@ -440,10 +440,13 @@ public class AbstractCloudTest extends TestCase {
 
 	   
 
-		public void bugsPopulated(boolean initiateCommunication) {
+		public void bugsPopulated() {
 	    	throw new UnsupportedOperationException();
 	    }
 
+		public void initiateCommunication() {
+			
+	    }
 	    public void bugFiled(BugInstance b, Object bugLink) {
 	    	throw new UnsupportedOperationException();
 	    }

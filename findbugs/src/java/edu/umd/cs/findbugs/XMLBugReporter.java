@@ -47,7 +47,7 @@ public class XMLBugReporter extends BugCollectionBugReporter {
                 throw new NullPointerException("No project");
             Cloud cloud = getBugCollection().getCloud();
             if (cloud != null)
-                cloud.bugsPopulated(false);
+                cloud.bugsPopulated();
             getBugCollection().writeXML(outputStream);
         } catch (IOException e) {
             throw new FatalException("Error writing XML output", e);

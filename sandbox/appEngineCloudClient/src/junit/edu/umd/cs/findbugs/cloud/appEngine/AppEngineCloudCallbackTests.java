@@ -35,7 +35,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         assertFalse(doneWaiting.get());
         cloud.initialize();
         assertFalse(doneWaiting.get());
-		cloud.bugsPopulated(true);
+		cloud.bugsPopulated();
         Thread.sleep(10);
         assertTrue(doneWaiting.get());
 
@@ -61,7 +61,8 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         }).start();
         assertFalse(doneWaiting.get());
         cloud.initialize();
-		cloud.bugsPopulated(true);
+		cloud.bugsPopulated();
+		cloud.initiateCommunication();
         Thread.sleep(10);
         assertTrue(doneWaiting.get());
 
@@ -94,7 +95,8 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         assertFalse(doneWaiting.get());
         cloud.initialize();
         assertFalse(doneWaiting.get());
-        cloud.bugsPopulated(true);
+        cloud.bugsPopulated();
+        cloud.initiateCommunication();
         Thread.sleep(10);
         assertTrue(doneWaiting.get());
 
@@ -142,7 +144,8 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         assertFalse(doneWaiting.get());
         cloud.initialize();
         assertFalse(doneWaiting.get());
-		cloud.bugsPopulated(true);
+		cloud.bugsPopulated();
+		cloud.initiateCommunication();
         Thread.sleep(10);
         assertTrue(doneWaiting.get());
 
@@ -156,7 +159,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
             throw t;
     }
 
-    public void testIssueDataDownloadedCallback() throws IOException {
+    public void testIssueDataDownloadedCallback() throws IOException, InterruptedException {
 		// set up mocks
 		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
         when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
@@ -175,7 +178,9 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         });
         cloud.initialize();
         assertFalse(synced.get());
-		cloud.bugsPopulated(true);
+		cloud.bugsPopulated();
+		cloud.initiateCommunication();
+		Thread.sleep(10);
         assertTrue(synced.get());
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));

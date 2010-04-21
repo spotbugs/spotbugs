@@ -63,6 +63,8 @@ class BugCollectionStorageCloud extends AbstractCloud {
 
     public void waitUntilIssueDataDownloaded() {
     }
+    public void initiateCommunication() {	
+    }
 
     @Override
     public Mode getMode() {
@@ -101,7 +103,7 @@ class BugCollectionStorageCloud extends AbstractCloud {
     }
 
   
-	public void bugsPopulated(boolean initiateCommunication) {
+	public void bugsPopulated() {
 	    assert true;
 	    
     }

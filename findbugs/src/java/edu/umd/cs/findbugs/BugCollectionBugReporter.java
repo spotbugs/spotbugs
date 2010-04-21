@@ -98,7 +98,7 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 	public void finish() {
 		Cloud userAnnotationPlugin = bugCollection.getCloud();
 		if (userAnnotationPlugin != null)
-			userAnnotationPlugin.bugsPopulated(false);
+			userAnnotationPlugin.bugsPopulated();
 	}
 }
 

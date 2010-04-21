@@ -219,18 +219,18 @@ public class AppEngineCloudClient extends AbstractCloud {
     CountDownLatch bugsPopulated = new CountDownLatch(1);
 
 
-	public void bugsPopulated(boolean initiateCommunication) {
-		bugsPopulated.countDown();
-		if (initiateCommunication)
-			initiateCommunication();
-
+	public void bugsPopulated() {
+		bugsPopulated.countDown();;
 	}
 
-	Object initiationLock = new Object();
-	boolean communicationInitiated;
+	private Object initiationLock = new Object();
+	volatile boolean communicationInitiated;
 	public void initiateCommunication() {
+		if (communicationInitiated) 
+			return;
 		synchronized(initiationLock) {
 			if (communicationInitiated) return;
+			communicationInitiated = true;
 			backgroundExecutor.execute(new Runnable() {
 	            public void run() {
 	                try {
@@ -240,7 +240,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 	                }
 	            }
 	        });
-			communicationInitiated = true;
+			
 		}
 	}
     // =============== accessors ===================

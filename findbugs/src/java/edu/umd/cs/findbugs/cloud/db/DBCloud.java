@@ -287,11 +287,13 @@ public  class DBCloud extends AbstractCloud {
 	final CountDownLatch initialSyncDone = new CountDownLatch(1);
 
 
-	public void bugsPopulated(boolean initiateCommunication) {
+	public void bugsPopulated() {
 		queue.add(new PopulateBugs(true));
 		
 	}
-	
+	public void initiateCommunication() {
+		
+    }
 	private static final long LAST_SEEN_UPDATE_WINDOW = TimeUnit.MILLISECONDS.convert(7*24*3600, TimeUnit.SECONDS);
 	long boundDuration(long milliseconds) {
 		if (milliseconds < 0) 
