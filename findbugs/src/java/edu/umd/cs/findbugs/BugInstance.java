@@ -34,8 +34,6 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
-import edu.umd.cs.findbugs.ba.vna.ValueNumber;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -1911,18 +1909,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 		int pc = location.getHandle().getPosition();
 
 		try {
-			ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
-			if (vnaFrame.isValid()) {
-				ValueNumber valueNumber = vnaFrame.getStackValue(stackPos);
-				if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
-					return null;
-				BugAnnotation variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location,
-				        valueNumber, vnaFrame, "VALUE_OF");
-				if (variableAnnotation != null) {
-					return variableAnnotation;
-				}
-
-			}
+			BugAnnotation result =  ValueNumberSourceInfo.getFromValueNumber(classContext, method, location, stackPos);
+			if (result != null)
+				return result;
 		} catch (DataflowAnalysisException e) {
 			AnalysisContext.logError("Couldn't find value source", e);
 		} catch (CFGBuilderException e) {

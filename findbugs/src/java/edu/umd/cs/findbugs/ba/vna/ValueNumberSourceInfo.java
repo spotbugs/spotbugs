@@ -28,6 +28,9 @@ import org.apache.bcel.generic.InstructionHandle;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.XField;
 
@@ -130,5 +133,28 @@ public abstract class ValueNumberSourceInfo {
 		}
 		return null;
 	}
+
+	/**
+     * @param classContext
+     * @param method
+     * @param location
+     * @param stackPos
+     * @throws DataflowAnalysisException
+     * @throws CFGBuilderException
+     */
+    static @CheckForNull
+	public BugAnnotation getFromValueNumber(ClassContext classContext, Method method, Location location, int stackPos)
+	        throws DataflowAnalysisException, CFGBuilderException {
+		ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
+		if (!vnaFrame.isValid())
+			return null;
+		ValueNumber valueNumber = vnaFrame.getStackValue(stackPos);
+		if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
+			return null;
+		BugAnnotation variableAnnotation = findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame, "VALUE_OF");
+
+		return variableAnnotation;
+       
+    }
 
 }
