@@ -45,7 +45,6 @@ import edu.umd.cs.findbugs.ExcludingHashesBugReporter;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PackageStats;
-import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -121,6 +120,8 @@ public class Filter {
 		public boolean dontUpdateStats = false;
 		public boolean dontUpdateStatsSpecified = false;
 
+		public int maxAge = 0;
+		public boolean maxAgeSpecified = false;
 
 		public boolean withMessagesSpecified = false;
 		public boolean withMessages = false;
@@ -169,6 +170,7 @@ public class Filter {
 			"allow only warnings removed by removal of a class");
 			addOption("-priority", "level", "allow only warnings with this priority or higher");
 			addOption("-maxRank", "rank", "allow only warnings with this rank or lower");
+			addOption("-maxAge", "days", "Only issues that weren't first seen more than this many days ago");
 			
 			addOption("-class", "pattern", "allow only bugs whose primary class name matches this pattern");
 			addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
@@ -223,10 +225,9 @@ public class Filter {
 			}
 		}
 
+        private long minFirstSeen;
 		edu.umd.cs.findbugs.filter.Filter suppressionFilter;
-		BugCollection collection;
 		void adjustFilter(Project project, BugCollection collection) {
-			this.collection = collection;
 			suppressionFilter = project.getSuppressionFilter();
 			Map<String, AppVersion> versions = new HashMap<String, AppVersion>();
 			SortedMap<Long, AppVersion> timeStamps = new TreeMap<Long, AppVersion>();
@@ -241,6 +242,9 @@ public class Filter {
 			versions.put(v.getReleaseName(), v);
 			timeStamps.put(v.getTimestamp(), v);
 
+			if (maxAgeSpecified) {
+				minFirstSeen = collection.getAnalysisTimestamp() - maxAge * MILLISECONDS_PER_DAY;
+			}
 			first = getVersionNum(versions, timeStamps, firstAsString, true, v.getSequenceNumber());
 			last = getVersionNum(versions, timeStamps, lastAsString, true,  v.getSequenceNumber());
 			before = getVersionNum(versions, timeStamps, beforeAsString, true,  v.getSequenceNumber());
@@ -252,12 +256,12 @@ public class Filter {
 			if (fixed >= 0) last = fixed - 1; // fixed means last on previous sequence (ok if -1)
 		}
 
-		boolean accept(BugInstance bug) {
-			boolean result = evaluate(bug);
+		boolean accept(BugCollection collection, BugInstance bug) {
+			boolean result = evaluate( collection, bug);
 			if (not) return !result;
 			return result;
 		}
-		boolean evaluate(BugInstance bug) {
+		boolean evaluate(BugCollection collection, BugInstance bug) {
 
 
 			for(Matcher m : includeFilter)
@@ -338,6 +342,13 @@ public class Filter {
 				if (sourceSearcher.findSource(primarySourceLineAnnotation) != withSource) 
 					return false;
 			}
+			
+			if (maxAgeSpecified) {
+				long firstSeen = collection.getCloud().getFirstSeen(bug);
+				if ( firstSeen < minFirstSeen)
+				  return false;
+			}
+				
 			return true;
 		}
 
@@ -455,7 +466,11 @@ public class Filter {
 				} catch (FilterException e) {
 					throw new IllegalArgumentException("Error processing include file: " + argument, e);
 				}
+			} else if (option.equals("-maxAge")) {
+				maxAge = Integer.parseInt(argument);
+				maxAgeSpecified = true;
 			} else throw new IllegalArgumentException("can't handle command line argument of " + option);
+			
 		}
 
 
@@ -528,8 +543,12 @@ public class Filter {
 
 		}
 
+
+		if (commandLine.maxAgeSpecified)
+			origCollection.getCloud().waitUntilIssueDataDownloaded();
+		
 		for (BugInstance bug : origCollection.getCollection())
-			if (commandLine.accept(bug)) {
+			if (commandLine.accept(origCollection, bug)) {
 				if (trimToVersion >= 0) {
 					if (bug.getFirstVersion() > trimToVersion) {
 						dropped++;
