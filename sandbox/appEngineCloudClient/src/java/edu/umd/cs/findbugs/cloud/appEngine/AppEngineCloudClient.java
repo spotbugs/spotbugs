@@ -118,7 +118,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 		LOGGER.fine("Waiting for issue data to be downloaded");
 
 		try {
-			issueDataDownloaded.await(60, TimeUnit.SECONDS);
+			issueDataDownloaded.await();
 		} catch (InterruptedException e) {
 			LOGGER.log(Level.WARNING, "interrupted", e);
 		}
@@ -295,7 +295,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 		return e == null ? null : createBugDesignation(e);
 	}
 
-    static final boolean DEBUG_FIRST_SEEN = false;
+    static final boolean DEBUG_FIRST_SEEN = Boolean.getBoolean("debug.first.seen");
 
     public long getLocalFirstSeen(BugInstance bug) {
         return super.getFirstSeen(bug);
@@ -303,6 +303,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 	@Override
 	public long getFirstSeen(BugInstance b) {
+		
 		long firstSeenFromCloud = networkClient.getFirstSeenFromCloud(b);
 		long firstSeenLocally = super.getFirstSeen(b);
 		long firstSeen = dateMin(firstSeenFromCloud, firstSeenLocally);
@@ -519,7 +520,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
         int numBugs = bugsByHash.size();
         String msg = "Checking " + numBugs + " bugs against the FindBugs Cloud...";
-		LOGGER.info(msg);
+        LOGGER.info(msg);
         setStatusMsg(msg);
 
         try {
