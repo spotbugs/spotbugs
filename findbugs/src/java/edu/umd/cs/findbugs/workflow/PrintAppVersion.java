@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.workflow;
 
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.SortedBugCollection;
 
 /**
@@ -33,7 +34,7 @@ public class PrintAppVersion {
 					" <bug collection>" );
 			System.exit(1);
 		}
-
+		FindBugs.setNoAnalysis();
 		SortedBugCollection bugCollection = new SortedBugCollection();
 		bugCollection.readXML(args[0]);
 		System.out.println(bugCollection.getCurrentAppVersion());

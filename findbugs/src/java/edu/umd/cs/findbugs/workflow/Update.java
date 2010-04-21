@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -400,6 +401,7 @@ public class Update {
 
 	public static void main(String[] args) throws IOException,
 	DocumentException {
+		FindBugs.setNoAnalysis();
 		new Update().doit(args);
 	}
 

@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Obfuscate;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
@@ -73,7 +74,7 @@ public class ObfuscateBugs {
 	}
 
 	public static void main(String[] args) throws Exception {
-		
+		FindBugs.setNoAnalysis();
 		CommandLine commandLine = new CommandLine();
 		
 		int argCount = commandLine

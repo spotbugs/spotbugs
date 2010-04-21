@@ -146,6 +146,12 @@ public abstract class FindBugs  {
 
 	public static boolean noAnalysis = Boolean.getBoolean("findbugs.noAnalysis");
 
+	/**
+	 * Disable analysis within FindBugs. Turns off loading of bug detectors. 
+	 */
+	public static void setNoAnalysis() {
+		noAnalysis = true;
+	}
 	public static final Logger LOGGER = Logger.getLogger(FindBugs.class.getPackage().getName());
 	
 	static {

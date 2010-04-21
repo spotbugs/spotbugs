@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
@@ -104,6 +105,7 @@ public class CountClassVersions {
 	}
 
 	public static void main(String args[]) throws Exception {
+		FindBugs.setNoAnalysis();
 		CountClassVersionsCommandLine commandLine = new CountClassVersionsCommandLine();
 		int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, "Usage: " + CountClassVersions.class.getName()
 		        + " [options] [<jarFile>+] ");

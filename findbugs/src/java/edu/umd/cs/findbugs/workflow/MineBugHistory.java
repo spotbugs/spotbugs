@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.CommandLine;
 
@@ -378,6 +379,7 @@ public class MineBugHistory {
 	}
 
 	public static void main(String[] args) throws Exception {
+		FindBugs.setNoAnalysis();
 		DetectorFactoryCollection.instance(); // load plugins
 
 		MineBugHistory mineBugHistory = new MineBugHistory();

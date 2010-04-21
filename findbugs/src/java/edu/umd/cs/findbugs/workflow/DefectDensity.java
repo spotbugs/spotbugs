@@ -19,6 +19,7 @@
 package edu.umd.cs.findbugs.workflow;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
@@ -52,7 +53,7 @@ public class DefectDensity {
 			System.err.println("Usage: " + DefectDensity.class.getName() + " [<infile>]");
 			System.exit(1);
 		}
-
+		FindBugs.setNoAnalysis();
 		BugCollection origCollection = new SortedBugCollection();
 		int argCount = 0;
 		if (argCount == args.length)

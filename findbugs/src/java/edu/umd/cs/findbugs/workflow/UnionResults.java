@@ -26,6 +26,7 @@ import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -86,7 +87,7 @@ public class UnionResults {
 
 	public static void main(String[] argv) throws IOException, DocumentException  {
 
-
+		FindBugs.setNoAnalysis();
 		final UnionResultsCommandLine commandLine = new UnionResultsCommandLine();
 
 		int argCount = commandLine.parse(argv, 2, Integer.MAX_VALUE, "Usage: " + UnionResults.class.getName()

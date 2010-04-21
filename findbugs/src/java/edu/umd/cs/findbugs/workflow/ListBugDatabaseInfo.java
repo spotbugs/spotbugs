@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -69,7 +70,7 @@ public class ListBugDatabaseInfo {
 	}
 
 	public static void main(String[] args) throws IOException, DocumentException {
-
+		FindBugs.setNoAnalysis();
 		DetectorFactoryCollection.instance();
 		ListBugDatabaseInfoCommandLine commandLine = new ListBugDatabaseInfoCommandLine();
 		int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, USAGE);

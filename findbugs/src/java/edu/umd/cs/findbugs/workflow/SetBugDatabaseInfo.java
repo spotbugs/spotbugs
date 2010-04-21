@@ -35,6 +35,7 @@ import org.dom4j.DocumentException;
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -161,7 +162,7 @@ public class SetBugDatabaseInfo {
 
 	public static void main(String[] args) throws IOException,
 			DocumentException {
-
+		FindBugs.setNoAnalysis();
 		DetectorFactoryCollection.instance();
 		SetInfoCommandLine commandLine = new SetInfoCommandLine();
 		int argCount = commandLine.parse(args, 0, 2, USAGE);

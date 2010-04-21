@@ -49,6 +49,7 @@ import java.util.zip.ZipOutputStream;
 import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
@@ -242,6 +243,7 @@ public class RejarClassesForAnalysis {
 	int numFilesToAnalyze = 0;
 
 	public static void main(String args[]) throws Exception {
+		FindBugs.setNoAnalysis();
 		RejarClassesForAnalysisCommandLine commandLine = new RejarClassesForAnalysisCommandLine();
 		int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, "Usage: " + RejarClassesForAnalysis.class.getName()
 		        + " [options] [<jarFile>+] ");

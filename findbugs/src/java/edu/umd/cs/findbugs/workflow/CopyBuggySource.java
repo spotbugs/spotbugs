@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.BugAnnotationWithSourceLines;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -55,7 +56,7 @@ public class CopyBuggySource {
 
 	public static void main(String[] args) throws IOException,
 			DocumentException {
-
+		FindBugs.setNoAnalysis();
 		DetectorFactoryCollection.instance();
 		if (args.length != 2) {
 			System.out.println(USAGE);

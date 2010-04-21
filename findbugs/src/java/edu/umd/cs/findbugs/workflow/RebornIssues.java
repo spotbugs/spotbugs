@@ -29,6 +29,7 @@ import java.util.TreeSet;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.SortedBugCollection;
 
 /**
@@ -108,6 +109,7 @@ public class RebornIssues {
 	}
 
 	public static void main(String[] args) throws Exception {
+		FindBugs.setNoAnalysis();
 		DetectorFactoryCollection.instance(); // load plugins
 
 		RebornIssues reborn = new RebornIssues();

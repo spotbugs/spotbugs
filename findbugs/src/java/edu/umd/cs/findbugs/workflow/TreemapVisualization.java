@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -72,6 +73,7 @@ public class TreemapVisualization {
 			cleanCode(superpackage, loc,classes);
 	}
 	public static void main(String[] args) throws Exception {
+		FindBugs.setNoAnalysis();
 		DetectorFactoryCollection.instance(); // load plugins
 
 		SortedBugCollection bugCollection = new SortedBugCollection();

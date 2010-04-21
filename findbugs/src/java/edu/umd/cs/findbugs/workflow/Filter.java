@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.ExcludingHashesBugReporter;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.Plugin;
@@ -472,6 +473,7 @@ public class Filter {
 	static SourceSearcher sourceSearcher;
 
 	public static void main(String[] args) throws Exception {
+		FindBugs.setNoAnalysis();
 		DetectorFactoryCollection.instance();
 		
 		final FilterCommandLine commandLine = new FilterCommandLine();

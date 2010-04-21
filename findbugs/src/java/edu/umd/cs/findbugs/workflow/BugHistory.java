@@ -39,6 +39,7 @@ import java.util.Map.Entry;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FuzzyBugComparator;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SloppyBugComparator;
@@ -539,6 +540,7 @@ public class BugHistory {
 	}
 
 	public static void main(String[] argv) throws Exception {
+		FindBugs.setNoAnalysis();
 		BugHistoryCommandLine commandLine = new BugHistoryCommandLine();
 		int argCount = commandLine.parse(argv);
 
