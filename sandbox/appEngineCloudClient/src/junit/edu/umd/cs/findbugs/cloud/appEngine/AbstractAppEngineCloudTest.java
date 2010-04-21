@@ -22,7 +22,7 @@ import java.util.concurrent.Executor;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AbstractAppEngineCloudTest extends TestCase {
+public abstract class AbstractAppEngineCloudTest extends TestCase {
     protected static final long SAMPLE_DATE = 1200000000L * 1000L; // Thu, 10 Jan 2008 21:20:00 GMT
 
     protected BugInstance missingIssue;
