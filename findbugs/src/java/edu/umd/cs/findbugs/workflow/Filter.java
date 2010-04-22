@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
+import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -89,6 +90,10 @@ public class Filter {
 		public boolean activeSpecified = false;
 		public boolean active = false;
 
+		public boolean notAProblem = false;
+		public boolean notAProblemSpecified = false;
+		public boolean shouldFix = false;
+		public boolean shouldFixSpecified = false;
 		public boolean hasField = false;
 		public boolean hasFieldSpecified = false;
 
@@ -171,6 +176,8 @@ public class Filter {
 			addOption("-priority", "level", "allow only warnings with this priority or higher");
 			addOption("-maxRank", "rank", "allow only warnings with this rank or lower");
 			addOption("-maxAge", "days", "Only issues that weren't first seen more than this many days ago");
+			addSwitchWithOptionalExtraPart("-notAProblem", "truth", "Only issues with a consensus view that they are not a problem");
+			addSwitchWithOptionalExtraPart("-shouldFix", "truth", "Only issues with a consensus view that they should be fixed");
 			
 			addOption("-class", "pattern", "allow only bugs whose primary class name matches this pattern");
 			addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
@@ -349,6 +356,15 @@ public class Filter {
 				  return false;
 			}
 				
+			
+			System.out.printf("%4g %s%n", collection.getCloud().getClassificationScore(bug), bug.getMessage());
+			if (notAProblemSpecified && 
+					notAProblem != collection.getCloud().overallClassificationIsNotAProblem(bug))
+				return false;
+			if (shouldFixSpecified && 
+					shouldFix != (collection.getCloud().getClassificationScore(bug) >= UserDesignation.SHOULD_FIX.score()))
+				return false;
+			
 			return true;
 		}
 
@@ -544,7 +560,8 @@ public class Filter {
 		}
 
 
-		if (commandLine.maxAgeSpecified)
+		if (commandLine.maxAgeSpecified || commandLine.notAProblemSpecified ||
+				commandLine.shouldFixSpecified)
 			origCollection.getCloud().waitUntilIssueDataDownloaded();
 		
 		for (BugInstance bug : origCollection.getCollection())

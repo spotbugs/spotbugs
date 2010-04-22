@@ -259,6 +259,15 @@ public interface Cloud {
 				return 0;
 			}
 		}
+
+		/**
+         * @return
+         */
+         public  boolean nonVoting() {
+            return this == UserDesignation.OBSOLETE_CODE
+              || this == UserDesignation.NEEDS_STUDY
+              || this == UserDesignation.UNCLASSIFIED;
+        }
 	}
 
 	enum Mode { COMMUNAL, VOTING, SECRET }

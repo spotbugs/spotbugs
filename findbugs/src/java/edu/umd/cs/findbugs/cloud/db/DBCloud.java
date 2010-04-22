@@ -1203,23 +1203,13 @@ public  class DBCloud extends AbstractCloud {
     	int count = 0;
     	for(BugDesignation d : uniqueDesignations) {
     		UserDesignation designation = UserDesignation.valueOf(d.getDesignationKey());
-    		if (nonVoting(designation)) 
+    		if (designation.nonVoting()) 
     			continue;
 			total += designation.score();
 			count++;
     	}
     	return total /  count;
     }
-	/**
-     * @param designation
-     * @return
-     */
-    private boolean nonVoting(UserDesignation designation) {
-	    return designation == UserDesignation.OBSOLETE_CODE
-	      || designation == UserDesignation.NEEDS_STUDY
-	      || designation == UserDesignation.UNCLASSIFIED;
-    }
-    
 	@Override
     public  double getPortionObsoleteClassifications(BugInstance b) {
 		BugData bd = getBugData(b);
@@ -1245,7 +1235,7 @@ public  class DBCloud extends AbstractCloud {
     	int count = 0;
     	for(BugDesignation d : uniqueDesignations) {
     		UserDesignation designation = UserDesignation.valueOf(d.getDesignationKey());
-    		if (nonVoting(designation)) 
+    		if (designation.nonVoting()) 
     			continue;
     		int score = designation.score();
 			total += score;
@@ -1266,7 +1256,7 @@ public  class DBCloud extends AbstractCloud {
     	int dontFix = 0;
     	for(BugDesignation d : uniqueDesignations) {
     		UserDesignation designation = UserDesignation.valueOf(d.getDesignationKey());
-    		if (nonVoting(designation)) 
+    		if (designation.nonVoting()) 
     			continue;
     		int score = designation.score();
     		if (score > 0)

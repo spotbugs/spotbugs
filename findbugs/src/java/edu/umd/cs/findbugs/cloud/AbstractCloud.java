@@ -316,23 +316,54 @@ public abstract class AbstractCloud implements Cloud {
 	}
 
     public  double getClassificationScore(BugInstance b) {
-		return getUserDesignation(b).score();
+    	
+        int count = 0;
+        double total = 0.0;
+    	    for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
+    	    	UserDesignation d =	UserDesignation.valueOf(designation.getDesignationKey());
+    	 		if (d.nonVoting()) 
+        			continue;
+    	    	   count++;
+    	    	   total += d.score();
+    	    }
+    	    return total / count;
+    	       
+	}
+public  double getClassificationVariance(BugInstance b) {
+    	
+        int count = 0;
+        double total = 0.0;
+        double totalSquares = 0.0;
+    	    for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
+    	    	UserDesignation d =	UserDesignation.valueOf(designation.getDesignationKey());
+    	 		if (d.nonVoting()) 
+        			continue;
+    	    	   count++;
+    	    	   total += d.score();
+    	    	   totalSquares += d.score() * d.score();
+    	    }
+    	 	double average = total/count;
+        	return totalSquares / count - average*average;
+    	       
 	}
 	public  double getPortionObsoleteClassifications(BugInstance b) {
-		if ( getUserDesignation(b) == UserDesignation.OBSOLETE_CODE)
-			return 1.0;
-		return 0.0;
+		 int count = 0;
+	        double total = 0.0;
+	    	    for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
+	    	    	   count++;
+	    	    	   UserDesignation d = UserDesignation.valueOf(designation.getDesignationKey());
+	    	    	   if ( d == UserDesignation.OBSOLETE_CODE)
+	    	    		   total++;
+	    	    }
+	    	    return total / count;
 	}
-	public  double getClassificationVariance(BugInstance b) {
-		return 0;
-	}
-
+	
     public int getNumberReviewers(BugInstance b) {
-        Set<String> reviewers = new HashSet<String>();
+        int count = 0;
         for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
-            reviewers.add(designation.getUser());
+            count++;
         }
-        return reviewers.size();
+        return count;
     }
 	
     @SuppressWarnings("boxing")
