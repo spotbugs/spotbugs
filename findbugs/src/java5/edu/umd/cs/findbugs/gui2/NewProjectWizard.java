@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -30,12 +31,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -48,9 +49,11 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.cloud.CloudFactory;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 
 /**
  * The User Interface for creating a Project and editing it after the fact.  
@@ -96,9 +99,35 @@ public class NewProjectWizard extends FBDialog
 	private JButton finishButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.finish_btn", "Finish"));
 	private JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
 
-	private JComponent[] wizardComponents = new JComponent[3];
+	private JComboBox cloudSelector = new JComboBox();
+	private JComponent[] wizardComponents = new JComponent[4];
 	private int currentPanel;
 
+	
+	class CloudComboBoxRenderer extends BasicComboBoxRenderer {
+	    public Component getListCellRendererComponent(JList list, Object value,
+	        int index, boolean isSelected, boolean cellHasFocus) {
+	    	  CloudPlugin plugin = (CloudPlugin) value;
+	      if (isSelected) {
+	        setBackground(list.getSelectionBackground());
+	        setForeground(list.getSelectionForeground());
+	        if (-1 < index) {
+	        	  if (plugin == null)
+	        		  list.setToolTipText("No cloud plugin specified by project");
+	        	  else
+	        		  list.setToolTipText(plugin.getDetails());
+	        }
+	      } else {
+	        setBackground(list.getBackground());
+	        setForeground(list.getForeground());
+	      }
+	      setFont(list.getFont());
+	      setText((value == null) ? "" : plugin.getDescription());
+	      return this;
+	    }
+	  }
+	
+	
 	public NewProjectWizard()
 	{
 		this(null);
@@ -123,7 +152,7 @@ public class NewProjectWizard extends FBDialog
 		final boolean reconfig = temp;
 
 		JPanel mainPanel = new JPanel();
-		mainPanel.setLayout(new GridLayout(3,1));
+		mainPanel.setLayout(new GridLayout(wizardComponents.length,1));
 
 
 		wizardComponents[0] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl", "Class archives and directories to analyze:"), 
@@ -134,6 +163,16 @@ public class NewProjectWizard extends FBDialog
 
 		wizardComponents[2] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.source_dirs_lbl", "Source directories:"), sourceList, sourceModel, JFileChooser.FILES_AND_DIRECTORIES, null, "Choose Source Directories", true);
 
+		wizardComponents[3] = cloudSelector;
+		cloudSelector.setRenderer(new CloudComboBoxRenderer());
+		cloudSelector.addItem(null);
+		for(CloudPlugin c : CloudFactory.getRegisteredClouds().values()) {
+			cloudSelector.addItem(c);
+		}
+		if (project.getCloudId() != null) {
+			CloudPlugin c = CloudFactory.getRegisteredClouds().get(project.getCloudId());
+			cloudSelector.setSelectedItem(c);
+		}
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
 		if (MainFrame.isMacLookAndFeel()) {
@@ -216,13 +255,18 @@ public class NewProjectWizard extends FBDialog
 				for (int i = 0; i < sourceModel.getSize(); i++)
 					p.addSourceDir((String) sourceModel.get(i));
 				p.setProjectName(projectName.getText());
+				CloudPlugin cloudPlugin = (CloudPlugin) cloudSelector.getSelectedItem();
+				if (cloudPlugin != null) {
+					project.setCloudId(cloudPlugin.getId());
+				} else
+					project.setCloudId(null);
+				
 				if (keepGoing) {
 					MainFrame.getInstance().setProject(p);
-					
 				}
 				else if (project == null || (projectChanged && JOptionPane.showConfirmDialog(NewProjectWizard.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.project_settings_changed_lbl", "Project settings have been changed.  Perform a new analysis with the changed files?"), edu.umd.cs.findbugs.L10N.getLocalString("dlg.redo_analysis_question_lbl", "Redo analysis?"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION))
 					new AnalyzingDialog(p,resetSettings);
-
+				
 				if(reconfig == true)
 					MainFrame.getInstance().setProjectChanged(true);
 

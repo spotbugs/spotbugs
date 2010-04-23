@@ -19,6 +19,35 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.StringTokenizer;
+
+import javax.annotation.Nonnull;
+
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.Type;
+import org.objectweb.asm.tree.ClassNode;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -42,6 +71,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -49,33 +79,6 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.Type;
-import org.objectweb.asm.tree.ClassNode;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.io.Serializable;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 /**
  * An instance of a bug pattern.
@@ -1792,9 +1795,15 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 			int reviews = cloud.getNumberReviewers(this);
 			if (reviews > 0) {
 				attributeList.addAttribute("reviews", Integer.toString(reviews));
+				UserDesignation d = cloud.getConsensusDesignation(this);
 				
-				if (cloud.overallClassificationIsNotAProblem(this))
-					attributeList.addAttribute("notAProblem", "true");
+				if (d != UserDesignation.UNCLASSIFIED) {
+					attributeList.addAttribute("consensus", d.toString());
+					if (d.score() < 0)
+						attributeList.addAttribute("notAProblem", "true");
+					else if (d.score() > 0)
+						attributeList.addAttribute("shouldFix", "true");
+				}
 			}
 
 		}

@@ -58,6 +58,10 @@ public class CloudPlugin {
 	public String getDetails() {
     	return details;
     }
+	
+	public String toString() {
+		return getDescription();
+	}
 	final String cloudid;
 	final ClassLoader classLoader;
 	final Class<? extends Cloud> cloudClass;

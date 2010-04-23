@@ -19,6 +19,28 @@
 
 package edu.umd.cs.findbugs.cloud;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
@@ -33,24 +55,6 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.cloud.username.NameLookup;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Multiset;
-
-import javax.annotation.CheckForNull;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 
 /**
@@ -249,7 +253,8 @@ public abstract class AbstractCloud implements Cloud {
     protected String getBugStatus(BugInstance b) {
         return null;
     }
-
+    protected abstract Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd);
+	
     public Date getUserDate(BugInstance b) {
 		return new Date(getUserTimestamp(b));
 	}
@@ -286,35 +291,70 @@ public abstract class AbstractCloud implements Cloud {
     	return getUserDesignation(b) == UserDesignation.I_WILL_FIX;
     }
     
-    public boolean overallClassificationIsNotAProblem(BugInstance b) {
-    	int isAProblem = 0;
+    
+
+    public UserDesignation getConsensusDesignation(BugInstance b) {
+    		Multiset<UserDesignation> designations = new Multiset<UserDesignation>();
+      	int count = 0;
+      	int totalCount = 0;
+        double total = 0.0;
+        int                     isAProblem = 0;
         int notAProblem = 0;
-        for (BugDesignation d : getLatestDesignationFromEachUser(b)) {
-            UserDesignation ud;
-            try {
-                ud = UserDesignation.valueOf(d.getDesignationKey());
-            } catch (IllegalArgumentException e) {
-                continue;
-            }
-            switch (ud) {
-                case I_WILL_FIX:
-                case MUST_FIX:
-                case SHOULD_FIX:
-                    isAProblem++;
-                    break;
-                case BAD_ANALYSIS:
-                case NOT_A_BUG:
-                case MOSTLY_HARMLESS:
-                case OBSOLETE_CODE:
-                    notAProblem++;
-                    break;
-            }
-        }
-
-
-        return notAProblem > isAProblem;
-	}
-
+    	    for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
+    	    	   UserDesignation d =	UserDesignation.valueOf(designation.getDesignationKey());
+    	    	   if (d == UserDesignation.I_WILL_FIX)
+    	    		   d = UserDesignation.MUST_FIX;
+    	    	   else if (d == UserDesignation.UNCLASSIFIED)
+    	    		   continue;
+    	    	   switch (d) {
+                   case I_WILL_FIX:
+                   case MUST_FIX:
+                   case SHOULD_FIX:
+                       isAProblem++;
+                       break;
+                   case BAD_ANALYSIS:
+                   case NOT_A_BUG:
+                   case MOSTLY_HARMLESS:
+                   case OBSOLETE_CODE:
+                       notAProblem++;
+                       break;
+               }
+    	    	   designations.add(d);
+    	    	   totalCount++;
+    	    	   if (d.nonVoting()) 
+           			continue;
+       	   count++;
+       	   total += d.score();
+    	    }
+    	    if (totalCount == 0)
+    	    		return UserDesignation.UNCLASSIFIED;
+    	    UserDesignation mostCommonVotingDesignation = null;
+    	    UserDesignation mostCommonDesignation = null;
+     	   
+    	    for(Map.Entry<UserDesignation,Integer> e : designations.entriesInDecreasingFrequency()) {
+    	    		UserDesignation d = e.getKey();
+				if (mostCommonVotingDesignation == null && !d.nonVoting()) {
+    	    				mostCommonVotingDesignation = d;
+    	    				if (e.getValue() > count/2)
+    	    				  return d;
+				}
+				if (mostCommonDesignation == null && d != UserDesignation.UNCLASSIFIED) {
+					mostCommonDesignation = d;
+    					if (e.getValue() > count/2)
+    						return d;
+		}
+    	    		}
+    	    	
+    	    double score = total/count;
+    		if (score >= UserDesignation.SHOULD_FIX.score() || isAProblem > notAProblem)
+    			return UserDesignation.SHOULD_FIX;
+    		if (score <= UserDesignation.NOT_A_BUG.score())
+    			return UserDesignation.NOT_A_BUG;
+    		if (score <= UserDesignation.MOSTLY_HARMLESS.score() || notAProblem > isAProblem)
+    			return UserDesignation.MOSTLY_HARMLESS;
+    		return UserDesignation.NEEDS_STUDY;
+    	 	
+    }
     public  double getClassificationScore(BugInstance b) {
     	
         int count = 0;
@@ -360,7 +400,8 @@ public  double getClassificationVariance(BugInstance b) {
 	
     public int getNumberReviewers(BugInstance b) {
         int count = 0;
-        for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
+        Iterable<BugDesignation> designations = getLatestDesignationFromEachUser(b);
+		for (BugDesignation designation : designations) {
             count++;
         }
         return count;
@@ -580,7 +621,11 @@ public  double getClassificationVariance(BugInstance b) {
             statusListener.handleStateChange(oldState, state);
     }
 
-    protected abstract Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd);
+    
+   
+  
+    
+    
 
 	public BugInstance getBugByHash(String hash) {
 		for (BugInstance instance : bugCollection.getCollection()) {

@@ -163,7 +163,7 @@ public class BugFilingCommentHelper {
         if (BUG_NOTE != null) {
 			out.println(BUG_NOTE);
 			if (POSTMORTEM_NOTE != null && BugRanker.findRank(b) <= POSTMORTEM_RANK
-                && !cloud.overallClassificationIsNotAProblem(b)) {
+                && cloud.getConsensusDesignation(b).score() >= 0) {
 
 				out.println(POSTMORTEM_NOTE);
             }

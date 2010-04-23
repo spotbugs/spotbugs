@@ -204,6 +204,10 @@ public class PropertyBundle {
 		properties.setProperty(name, value);
 	}
 
+	@Override
+    public String toString() {
+		return properties.toString();
+	}
 	/**
 	 * @param name
 	 *            property name

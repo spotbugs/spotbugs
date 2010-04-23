@@ -311,10 +311,10 @@ public class PluginLoader {
 		// Set provider and website, if specified
 		String provider = pluginDescriptor.valueOf("/FindbugsPlugin/@provider");
 		if (!provider.equals(""))
-			plugin.setProvider(provider);
+			plugin.setProvider(provider.trim());
 		String website = pluginDescriptor.valueOf("/FindbugsPlugin/@website");
 		if (!website.equals(""))
-			plugin.setWebsite(website);
+			plugin.setWebsite(website.trim());
 
 		// Set short description, if specified
 		Node pluginShortDesc = null;
@@ -327,7 +327,7 @@ public class PluginLoader {
 			// Missing description is not fatal, so ignore
 		}
 		if (pluginShortDesc != null) {
-			plugin.setShortDescription(pluginShortDesc.getText());
+			plugin.setShortDescription(pluginShortDesc.getText().trim());
 		}
 
 		List<Node> cloudNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Cloud");
@@ -344,8 +344,8 @@ public class PluginLoader {
 			Node cloudMessageNode = findMessageNode(messageCollectionList,
 					"/MessageCollection/Cloud[@id='" + cloudid + "']",
 					"Missing Cloud description for cloud " + cloudid);
-			String description = getChildText(cloudMessageNode, "Description");
-			String details = getChildText(cloudMessageNode, "Details");
+			String description = getChildText(cloudMessageNode, "Description").trim();
+			String details = getChildText(cloudMessageNode, "Details").trim();
 			PropertyBundle properties = new PropertyBundle();
 			if (propertiesLocation != null && propertiesLocation.length() > 0) {
 				URL properiesURL = classLoader.getResource(propertiesLocation);

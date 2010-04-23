@@ -21,7 +21,8 @@ package edu.umd.cs.findbugs.cloud;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -113,7 +114,11 @@ public class CloudFactory {
         throw new IllegalStateException("Unable to initialize plain cloud");
     }
 
-    static  Map<String, CloudPlugin> registeredClouds = new HashMap<String, CloudPlugin>();
+    static  Map<String, CloudPlugin> registeredClouds = new LinkedHashMap<String, CloudPlugin>();
+    
+    public static  Map<String, CloudPlugin> getRegisteredClouds() {
+    		return Collections.unmodifiableMap(registeredClouds);
+    }
     /**
      * @param cloudPlugin
 	 * @param enabled TODO

@@ -193,10 +193,9 @@ public interface Cloud {
 
 	int getNumberReviewers(BugInstance b);
 	Set<String> getReviewers(BugInstance b);
-	    
 	long getFirstSeen(BugInstance b);
 
-	boolean overallClassificationIsNotAProblem(BugInstance b);
+	UserDesignation getConsensusDesignation(BugInstance b);
 
 	/** Update user designation and evaluation from information in bug instance and push to database */
 	void storeUserAnnotation(BugInstance bugInstance);

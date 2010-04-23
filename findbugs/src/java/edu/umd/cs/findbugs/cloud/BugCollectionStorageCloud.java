@@ -139,7 +139,7 @@ class BugCollectionStorageCloud extends AbstractCloud {
     	return  b.getUserDesignation();
     }
 
-    @Override
+    
     protected Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd) {
 	    return Collections.emptyList();
     }

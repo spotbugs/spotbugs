@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -24,6 +25,7 @@ import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.cloud.Cloud.Mode;
+import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 
 @SuppressWarnings({"ToArrayCallWithZeroLengthArrayArgument"})
@@ -62,45 +64,47 @@ public class AbstractCloudTest extends TestCase {
 
     public void testOverallClassificationNotAProblemNoEvals() throws Exception {
         BugInstance bug1 = createBug("BUG_1");
-        assertFalse(cloud.overallClassificationIsNotAProblem(bug1));
+        assertEquals(UserDesignation.UNCLASSIFIED, cloud.getConsensusDesignation(bug1));
     }
 
     public void testOverallClassificationNotAProblemNeedsStudy() throws Exception {
         BugInstance bug1 = createBug("BUG_1", "NEEDS_STUDY", "user1");
-        assertFalse(cloud.overallClassificationIsNotAProblem(bug1));
+        assertEquals(UserDesignation.NEEDS_STUDY, cloud.getConsensusDesignation(bug1));
     }
 
     public void testOverallClassificationNotAProblemYes() throws Exception {
         BugInstance bug1 = createBug("BUG_1",
                                      "MUST_FIX", "user2");
-        assertFalse(cloud.overallClassificationIsNotAProblem(bug1));
+        assertEquals(UserDesignation.MUST_FIX, cloud.getConsensusDesignation(bug1));
+        
     }
 
     public void testOverallClassificationNotAProblemUnanimousYes() throws Exception {
         BugInstance bug1 = createBug("BUG_1",
                                      "I_WILL_FIX", "user1",
                                      "MUST_FIX", "user2");
-        assertFalse(cloud.overallClassificationIsNotAProblem(bug1));
+        assertEquals(UserDesignation.MUST_FIX, cloud.getConsensusDesignation(bug1));
     }
 
     public void testOverallClassificationNotAProblemYesAndNo() throws Exception {
         BugInstance bug1 = createBug("BUG_1",
                                      "I_WILL_FIX", "user1",
                                      "NOT_A_BUG", "user2");
-        assertFalse(cloud.overallClassificationIsNotAProblem(bug1));
+        assertEquals(UserDesignation.NEEDS_STUDY, cloud.getConsensusDesignation(bug1));
+        
     }
 
     public void testOverallClassificationNotAProblemNo() throws Exception {
         BugInstance bug1 = createBug("BUG_1",
                                      "NOT_A_BUG", "user2");
-        assertTrue(cloud.overallClassificationIsNotAProblem(bug1));
+        assertEquals(UserDesignation.NOT_A_BUG, cloud.getConsensusDesignation(bug1));
     }
 
     public void testOverallClassificationNotAProblemUnanimousNo() throws Exception {
         BugInstance bug1 = createBug("BUG_1",
                                      "BAD_ANALYSIS", "user1",
                                      "NOT_A_BUG", "user2");
-        assertTrue(cloud.overallClassificationIsNotAProblem(bug1));
+        assertEquals(UserDesignation.NOT_A_BUG, cloud.getConsensusDesignation(bug1));
     }
 
     public void testOverallClassificationNotAProblemMostlyNo() throws Exception {
@@ -108,15 +112,15 @@ public class AbstractCloudTest extends TestCase {
                                      "BAD_ANALYSIS", "user1",
                                      "MUST_FIX", "user2",
                                      "NOT_A_BUG", "user3");
-        assertTrue(cloud.overallClassificationIsNotAProblem(bug1));
+        assertTrue(cloud.getConsensusDesignation(bug1).score() < 0);
     }
 
     public void testOverallClassificationNotAProblemMostlyYes() throws Exception {
         BugInstance bug1 = createBug("BUG_1",
                                      "BAD_ANALYSIS", "user1",
                                      "MUST_FIX", "user2",
-                                     "NOT_A_BUG", "user3");
-        assertTrue(cloud.overallClassificationIsNotAProblem(bug1));
+                                     "SHOULD_FIX", "user3");
+        assertTrue(cloud.getConsensusDesignation(bug1).score() > 0);
     }
 
     public void testOverallClassificationNotAProblemChangedMindNo() throws Exception {
@@ -124,7 +128,7 @@ public class AbstractCloudTest extends TestCase {
                                      "I_WILL_FIX", "user1",
                                      "MUST_FIX", "user1",
                                      "NOT_A_BUG", "user1");
-        assertTrue(cloud.overallClassificationIsNotAProblem(bug1));
+        assertEquals(UserDesignation.NOT_A_BUG, cloud.getConsensusDesignation(bug1));
     }
 
     public void testOverallClassificationNotAProblemChangedMindYes() throws Exception {
@@ -132,7 +136,8 @@ public class AbstractCloudTest extends TestCase {
                                      "NOT_A_BUG", "user1",
                                      "MUST_FIX", "user1",
                                      "I_WILL_FIX", "user1");
-        assertFalse(cloud.overallClassificationIsNotAProblem(bug1));
+        assertEquals(UserDesignation.MUST_FIX, cloud.getConsensusDesignation(bug1));
+
     }
 
 	public void testPrintSummaryNoBugs() {
@@ -343,9 +348,10 @@ public class AbstractCloudTest extends TestCase {
 
     private void checkVotingMode(Mode expectedMode, String modeString) throws IOException {
         if (modeString == null)
-            assertNull(plugin.getProperties().getProperty("findbugs.cloud.votingmode"));
+        		plugin.getProperties().getProperties().remove("findbugs.cloud.votingmode");
         else
-            plugin.getProperties().setProperty("findbugs.cloud.votingmode", modeString);
+        		plugin.getProperties().setProperty("findbugs.cloud.votingmode", modeString);
+        cloud = new MyAbstractCloud(plugin, bugCollection, new Properties());
         cloud.initialize();
         assertEquals(expectedMode, cloud.getMode());
     }
@@ -356,6 +362,7 @@ public class AbstractCloudTest extends TestCase {
             plugin.getProperties().setProperty("findbugs.sourcelink.format", format);
         if (formatWithLine != null)
             plugin.getProperties().setProperty("findbugs.sourcelink.formatWithLine", formatWithLine);
+        cloud = new MyAbstractCloud(plugin, bugCollection, new Properties());
         cloud.initialize();
     }
 
@@ -458,11 +465,7 @@ public class AbstractCloudTest extends TestCase {
         public void waitUntilIssueDataDownloaded() {
         }
 
-        @Override
-	    protected Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd) {
-	    	List<BugDesignation> designationList = designations.get(bd);
-			return designationList != null ? designationList : Collections.<BugDesignation>emptyList();
-	    }
+       
 
         public Collection<String> getProjects(String className) {
             return Collections.emptyList();
@@ -504,5 +507,22 @@ public class AbstractCloudTest extends TestCase {
         public boolean getWillNotBeFixed(BugInstance b) {
         	throw new UnsupportedOperationException();
         }
+
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.cloud.AbstractCloud#getLatestDesignationFromEachUser(edu.umd.cs.findbugs.BugInstance)
+         */
+		@Override
+		protected Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance b) {
+			Map<String, BugDesignation> map = new HashMap<String, BugDesignation>();
+			List<BugDesignation> list = designations.get(b);
+			if (list == null)
+				return Collections.emptyList();
+			for (BugDesignation bd : list) {
+				BugDesignation old = map.get(bd.getUser());
+				if (old == null || old.getTimestamp() < bd.getTimestamp())
+					map.put(bd.getUser(), bd);
+			}
+			return map.values();
+		}
     }
 }

@@ -326,7 +326,7 @@ public class MergeSummarizeAndView {
 				int rank = BugRanker.findRank(warning);
 				if (rank > 20)
 					continue;
-				if (cloud.overallClassificationIsNotAProblem(warning)) {
+				if (cloud.getConsensusDesignation(warning).score() < 0) {
 					harmless++;
 					continue;
 				}

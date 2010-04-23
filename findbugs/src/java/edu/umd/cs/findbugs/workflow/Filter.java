@@ -358,10 +358,10 @@ public class Filter {
 				
 			
 			if (notAProblemSpecified && 
-					notAProblem != collection.getCloud().overallClassificationIsNotAProblem(bug))
+					notAProblem != (collection.getCloud().getConsensusDesignation(bug).score() < 0))
 				return false;
 			if (shouldFixSpecified && 
-					shouldFix != (collection.getCloud().getClassificationScore(bug) >= UserDesignation.SHOULD_FIX.score()))
+					shouldFix != (collection.getCloud().getConsensusDesignation(bug).score() > 0))
 				return false;
 			
 			return true;
