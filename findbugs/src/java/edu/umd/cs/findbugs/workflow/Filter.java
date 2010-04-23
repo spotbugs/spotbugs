@@ -357,7 +357,6 @@ public class Filter {
 			}
 				
 			
-			System.out.printf("%4g %s%n", collection.getCloud().getClassificationScore(bug), bug.getMessage());
 			if (notAProblemSpecified && 
 					notAProblem != collection.getCloud().overallClassificationIsNotAProblem(bug))
 				return false;
