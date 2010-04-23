@@ -342,8 +342,6 @@ public class DetectorFactoryCollection {
 	void loadPlugins() {
 		if (loaded) 
 			throw new IllegalStateException("plugins already loaded");
-		if (pluginList != null)
-			throw new IllegalStateException("Plugin list already defined");
 		//
 		// Load the core plugin.
 		//
@@ -395,12 +393,11 @@ public class DetectorFactoryCollection {
 			      
 		 }
 		      
-		setPluginList(plugins.toArray(new URL[plugins.size()]));
-
+		
 		//
 		// Load any discovered third-party plugins.
 		//
-		for (final URL url : pluginList) {
+		for (final URL url : plugins) {
 			try {
 				jawsDebugMessage("Loading plugin: " + url.toString());
 				PluginLoader pluginLoader = AccessController.doPrivileged(new PrivilegedExceptionAction<PluginLoader>() {
@@ -412,7 +409,9 @@ public class DetectorFactoryCollection {
 				});
 				loadPlugin(pluginLoader);
 			} catch (PluginDoesntContainMetadataException e) {
-				
+				if (FindBugs.DEBUG)
+					e.printStackTrace();
+		
 			} catch (PluginException e) {
 				jawsErrorMessage("Warning: could not load plugin " + url + ": " + e.toString());
 				if (FindBugs.DEBUG)
@@ -423,6 +422,7 @@ public class DetectorFactoryCollection {
 					e.printStackTrace();
 			}
 		}
+		setPluginList(plugins.toArray(new URL[plugins.size()]));
 		loaded = true;
 
 		
