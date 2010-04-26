@@ -51,6 +51,7 @@ public interface IGuiCallback {
      * Useful for adding status msg listener.
      */
     void registerCloud(Project project, BugCollection collection, Cloud cloud);
+    void unregisterCloud(Project project, BugCollection collection, Cloud cloud);
 
     /**
      * Use this executor to queue bug collection updates without interfering with the GUI.

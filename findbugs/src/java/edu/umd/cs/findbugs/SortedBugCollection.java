@@ -92,7 +92,7 @@ public class SortedBugCollection implements BugCollection {
 	private boolean withMessages = false;
 	private boolean minimalXML = false;
 	private boolean applySuppressions = false;
-	private Cloud userAnnotationPlugin;
+	private Cloud cloud;
 	boolean shouldNotUsePlugin;
 	
 	long timeStartedLoading, timeFinishedLoading;
@@ -122,6 +122,7 @@ public class SortedBugCollection implements BugCollection {
 	}
 	
 	boolean useDatabaseCloud = false;
+	@Deprecated
 	public void setRequestDatabaseCloud(boolean useDatabaseCloud) {
 		this.useDatabaseCloud = useDatabaseCloud;
 	}
@@ -129,22 +130,22 @@ public class SortedBugCollection implements BugCollection {
 		if (shouldNotUsePlugin) {
 			return null;
 		}
-		if (userAnnotationPlugin == null) {
+		if (cloud == null) {
 			IGuiCallback callback = getProject().getGuiCallback();
 			try {
-				userAnnotationPlugin = CloudFactory.createCloudWithoutInitializing(this);
-				callback.registerCloud(getProject(), this, userAnnotationPlugin);
-				CloudFactory.initializeCloud(this, userAnnotationPlugin);
+				cloud = CloudFactory.createCloudWithoutInitializing(this);
+				callback.registerCloud(getProject(), this, cloud);
+				CloudFactory.initializeCloud(this, cloud);
 			} catch (Exception e) {
 				LOGGER.log(Level.SEVERE, "Could not load cloud plugin", e);
 				callback.showMessageDialog("Unable to connect to cloud: "
 						+ e.getClass().getSimpleName()
 						+ ": " + e.getMessage());
-				userAnnotationPlugin = CloudFactory.getPlainCloud(this);
+				cloud = CloudFactory.getPlainCloud(this);
 			}
 
 		}
-		return userAnnotationPlugin;
+		return cloud;
 	}
 	
 	public boolean isApplySuppressions() {
@@ -1262,12 +1263,17 @@ public class SortedBugCollection implements BugCollection {
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.BugCollection#reinitializeCloud()
      */
-    public Cloud reinitializeCloud() {
-    	userAnnotationPlugin = null;
-    	Cloud cloud = getCloud();
-    	if (cloud != null) 
-    		cloud.bugsPopulated();
-    	return cloud;
+	public Cloud reinitializeCloud() {
+		Cloud oldCloud = cloud;
+		IGuiCallback callback = project.getGuiCallback();
+		callback.unregisterCloud(project, this, oldCloud);
+		oldCloud.shutdown();
+		cloud = null;
+		Cloud newCloud = getCloud();
+		assert newCloud == cloud;
+		if (cloud != null) 
+			cloud.bugsPopulated();
+		return cloud;
     }
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.BugCollection#setMinimalXML(boolean)

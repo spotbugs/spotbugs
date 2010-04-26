@@ -40,12 +40,11 @@ import edu.umd.cs.findbugs.CommandLineUiCallback;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.PrintingBugReporter;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.cloud.BugCollectionStorageCloud;
 import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.db.DBCloud;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.gui2.FindBugsLayoutManagerFactory;
 import edu.umd.cs.findbugs.gui2.GUISaveState;
@@ -308,7 +307,7 @@ public class MergeSummarizeAndView {
 
 		results.setRequestDatabaseCloud(true);
 		cloud = results.reinitializeCloud();      
-		isConnectedToCloud = cloud instanceof DBCloud;
+		isConnectedToCloud = !(cloud instanceof BugCollectionStorageCloud);
 		Project project = results.getProject();
 		originalMode = cloud.getMode();
 

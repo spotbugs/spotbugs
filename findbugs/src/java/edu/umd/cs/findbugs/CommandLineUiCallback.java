@@ -170,4 +170,11 @@ public void registerCloud(Project project, BugCollection collection, Cloud cloud
     public boolean isHeadless() {
 	    return true;
     }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.IGuiCallback#unregisterCloud(edu.umd.cs.findbugs.Project, edu.umd.cs.findbugs.BugCollection, edu.umd.cs.findbugs.cloud.Cloud)
+     */
+    public void unregisterCloud(Project project, BugCollection collection, Cloud cloud) {
+	    
+    }
 }

@@ -51,9 +51,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * The User Interface for creating a Project and editing it after the fact.  
@@ -163,7 +165,11 @@ public class NewProjectWizard extends FBDialog
 
 		wizardComponents[2] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.source_dirs_lbl", "Source directories:"), sourceList, sourceModel, JFileChooser.FILES_AND_DIRECTORIES, null, "Choose Source Directories", true);
 
-		wizardComponents[3] = cloudSelector;
+		JPanel cloudPanel = new JPanel(new BorderLayout());
+		cloudPanel.add(new JLabel("Bug cloud"), BorderLayout.NORTH);
+		cloudPanel.add(cloudSelector, BorderLayout.CENTER);
+		
+		wizardComponents[3] = cloudPanel;
 		cloudSelector.setRenderer(new CloudComboBoxRenderer());
 		cloudSelector.addItem(null);
 		for(CloudPlugin c : CloudFactory.getRegisteredClouds().values()) {
@@ -223,6 +229,7 @@ public class NewProjectWizard extends FBDialog
 					}
 				}
 				Project p;
+				 String oldCloudId = null;
 				boolean resetSettings;
 				if (project==null)
 				{
@@ -232,6 +239,7 @@ public class NewProjectWizard extends FBDialog
 				else
 				{
 					p=project;
+					oldCloudId = project.getCloudId();
 					resetSettings=false;
 				}
 					//First clear p's old files, otherwise we can't remove a file once an analysis has been performed on it	
@@ -256,17 +264,23 @@ public class NewProjectWizard extends FBDialog
 					p.addSourceDir((String) sourceModel.get(i));
 				p.setProjectName(projectName.getText());
 				CloudPlugin cloudPlugin = (CloudPlugin) cloudSelector.getSelectedItem();
+				String newCloudId;
 				if (cloudPlugin != null) {
-					project.setCloudId(cloudPlugin.getId());
+					newCloudId = cloudPlugin.getId();
 				} else
-					project.setCloudId(null);
+					newCloudId = null;
+				project.setCloudId(newCloudId);
 				
 				if (keepGoing) {
 					MainFrame.getInstance().setProject(p);
 				}
 				else if (project == null || (projectChanged && JOptionPane.showConfirmDialog(NewProjectWizard.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.project_settings_changed_lbl", "Project settings have been changed.  Perform a new analysis with the changed files?"), edu.umd.cs.findbugs.L10N.getLocalString("dlg.redo_analysis_question_lbl", "Redo analysis?"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION))
 					new AnalyzingDialog(p,resetSettings);
-				
+				else if (!Util.nullSafeEquals(newCloudId, oldCloudId)) {
+					BugCollection bugs = MainFrame.getInstance().bugCollection;
+					bugs.reinitializeCloud();
+					
+				}
 				if(reconfig == true)
 					MainFrame.getInstance().setProjectChanged(true);
 

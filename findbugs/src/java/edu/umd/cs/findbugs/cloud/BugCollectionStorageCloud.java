@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 /**
  * @author pwilliam
  */
-class BugCollectionStorageCloud extends AbstractCloud {
+public class BugCollectionStorageCloud extends AbstractCloud {
 
     private static CloudPlugin getFallbackPlugin() {
         return new CloudPlugin("fallback local cloud", BugCollectionStorageCloud.class.getClassLoader(),
