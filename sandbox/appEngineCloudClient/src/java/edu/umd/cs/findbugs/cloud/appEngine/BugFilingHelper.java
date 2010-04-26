@@ -1,16 +1,19 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import com.google.gdata.client.authn.oauth.OAuthException;
-import com.google.gdata.util.ServiceException;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.PropertyBundle;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.SignInCancelledException;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.annotation.CheckForNull;
+
+import com.google.gdata.client.authn.oauth.OAuthException;
+import com.google.gdata.util.ServiceException;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 
 public class BugFilingHelper {
     private static final Logger LOGGER = Logger.getLogger(BugFilingHelper.class.getName());
@@ -32,19 +35,8 @@ public class BugFilingHelper {
         if (appEngineCloudClient.getBugLinkStatus(b) == Cloud.BugFilingStatus.FILE_BUG)
             return null;
 
-        final String hash = b.getInstanceHash();
         String status;
-        String linkType = appEngineCloudClient.getBugLinkType(appEngineCloudClient.getBugByHash(hash));
-        if (linkType == null)
-            linkType = "GOOGLE_CODE";
-
-        final BugFiler bugFiler;
-        if (linkType.equals("GOOGLE_CODE"))
-            bugFiler = googleCodeBugFiler;
-        else if (linkType.equals("JIRA"))
-            bugFiler = jiraBugFiler;
-        else
-            return "<unknown>";
+        final BugFiler bugFiler = getBugFiler(b);
 
         final String bugLink = appEngineCloudClient.getBugLink(b).toExternalForm();
         appEngineCloudClient.getBackgroundExecutor().execute(new Runnable() {
@@ -64,6 +56,25 @@ public class BugFilingHelper {
         appEngineCloudClient.updateBugStatusCache(b, status);
         return status;
     }
+
+	/**
+	 * @param b
+	 * @return
+	 */
+	private @CheckForNull BugFiler getBugFiler(final BugInstance b) {
+		String hash = b.getInstanceHash();
+        String linkType = appEngineCloudClient.getBugLinkType(appEngineCloudClient.getBugByHash(hash));
+        if (linkType == null)
+            linkType = "GOOGLE_CODE";
+
+        BugFiler bugFiler;
+        if (linkType.equals("GOOGLE_CODE"))
+            return  googleCodeBugFiler;
+        else if (linkType.equals("JIRA"))
+        		return jiraBugFiler;
+        else
+            return null;
+	}
 
     public URL fileBug(BugInstance b, String bugLinkType)
             throws javax.xml.rpc.ServiceException, IOException, SignInCancelledException, OAuthException,
