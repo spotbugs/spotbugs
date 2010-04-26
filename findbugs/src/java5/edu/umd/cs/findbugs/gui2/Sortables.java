@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
+import edu.umd.cs.findbugs.cloud.Cloud.Mode;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -377,7 +378,32 @@ public enum Sortables implements Comparator<SortableValue>
 			return I18N.instance().getShortMessageWithoutCode(value);
 		}
 	},
-	
+	CONSENSUS(edu.umd.cs.findbugs.L10N.getLocalString("sort.consensus", "Consensus"))
+	{
+		@Override
+		public String getFrom(BugInstance bug)
+		{
+			 BugCollection bugCollection = MainFrame.getInstance().bugCollection;
+				
+			return bugCollection.getCloud().getConsensusDesignation(bug)
+			     .name();
+		}
+
+		@Override
+		public String formatValue(String value)
+		{
+			return I18N.instance().getUserDesignation(value);
+		}
+		
+		@Override
+		public boolean isAvailable(MainFrame mf) {
+			BugCollection bugCollection = mf.bugCollection;
+			if (bugCollection == null || bugCollection.getCloud() == null)
+				return false;
+			return bugCollection.getCloud().getMode() == Mode.COMMUNAL;
+			
+		}
+	},
 	
 	BUG_RANK(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_bugrank", "Bug Rank"))
 	{
