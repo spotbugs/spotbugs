@@ -35,6 +35,11 @@
                 <include name="*.jar"/>
             </fileset>
         </copy>
+        <copy todir="${findbugs.home}/jnlp" flatten="true">
+            <fileset dir="etc">
+                <include name="*.jnlp"/>
+            </fileset>
+        </copy>
         <copy todir="${findbugs.home}/plugin/AppEngineCloudClient" flatten="true">
             <fileset dir="lib">
                 <include name="**/*.jar"/>
