@@ -923,6 +923,11 @@
 		<copy todir="${jnlp.dir}">
 			<fileset refid="plugin.jars"/>
 		</copy>
+		<copy todir="${jnlp.dir}">
+			<fileset dir="${plugin.dir}">
+				<exclude name="README"/>
+			</fileset>
+		</copy>
 		<echo file="${plugin.dir}/pluginlist.properties">${prop.plugin.jars}</echo>
 		<jar destfile="${jnlp.dir}/findbugs.jar" update="yes">
 					<fileset dir="${etc.dir}">

@@ -21,7 +21,7 @@
     <extension href="core.jnlp" name="FindBugs"/>
     <extension href="appengine.jnlp" name="AppEngine cloud for FindBugs"/>
 
-    <property name="findbugs.loadBugsFromURL" value="http://findbugs.cs.umd.edu/cloud/jboss/index.xml.gz"/>
+    <property name="findbugs.loadBugsFromURL" value="http://findbugs.cs.umd.edu/cloud/XXX/index.xml.gz"/>
   </resources>
 
   <application-desc main-class="edu.umd.cs.findbugs.gui2.Driver"/>
