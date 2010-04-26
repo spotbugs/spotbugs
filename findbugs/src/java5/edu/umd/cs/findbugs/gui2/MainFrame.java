@@ -485,6 +485,15 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		// Don't think we need to do this
         setProjectAndBugCollectionInSwingThread(project, collection);
     }
+	public void unregisterCloud(Project project, BugCollection collection, Cloud plugin) {
+		assert collection.getCloud() == plugin;
+		if (this.bugCollection == collection) {
+			plugin.removeListener(userAnnotationListener);
+            plugin.removeStatusListener(cloudStatusListener);
+		}
+		// Don't think we need to do this
+        setProjectAndBugCollectionInSwingThread(project, collection);
+    }
 
     private void rebuildBugTreeIfSortablesDependOnCloud() {
         BugTreeModel bt=(BugTreeModel) (this.getTree().getModel());
@@ -3333,6 +3342,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			JOptionPane.showMessageDialog(this, "There is no cloud");
 			return;
 		}
+	  cloud.waitUntilIssueDataDownloaded();
 	  StringWriter stringWriter = new StringWriter();
 	  PrintWriter writer = new PrintWriter(stringWriter);
 	  cloud.printCloudSummary(writer, getDisplayedBugs(), viewFilter.getPackagePrefixes());
