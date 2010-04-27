@@ -1,11 +1,15 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
 import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,7 +18,11 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,7 +37,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 		setupResponseCodeAndOutputStream(logInConnection);
 
 		final HttpURLConnection uploadConnection = mock(HttpURLConnection.class);
-		ByteArrayOutputStream outputCollector = setupResponseCodeAndOutputStream(uploadConnection);
+		ByteArrayOutputStream uploadMsgData = setupResponseCodeAndOutputStream(uploadConnection);
 
         // execute
 		AppEngineCloudClient cloudClient = createAppEngineCloudClient(logInConnection, uploadConnection);
@@ -40,7 +48,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 
 		// verify
 		verify(uploadConnection).connect();
-		UploadEvaluation uploadMsg = UploadEvaluation.parseFrom(outputCollector.toByteArray());
+		UploadEvaluation uploadMsg = UploadEvaluation.parseFrom(uploadMsgData.toByteArray());
 		checkUploadedEvaluation(uploadMsg);
 	}
 
@@ -133,7 +141,6 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 		Issue responseIssue = createFoundIssue(Arrays.asList(
                 createEvaluation("NOT_A_BUG", SAMPLE_DATE+100, "comment", "first")));
 
-
         final HttpURLConnection findConnection = createFindIssuesConnection(createFindIssuesResponse(responseIssue));
 
         final HttpURLConnection recentEvalConnection = createResponselessConnection();
@@ -158,6 +165,198 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 		List<BugDesignation> allUserDesignations = newList(cloudClient.getLatestDesignationFromEachUser(foundIssue));
 		assertEquals(2, allUserDesignations.size());
 	}
+
+    @SuppressWarnings({"deprecation"})
+    public void testStoreAnnotationBeforeFindIssues() throws Exception {
+        Issue responseIssue = createFoundIssue(Arrays.asList(
+                createEvaluation("NOT_A_BUG", SAMPLE_DATE+100, "comment", "first")));
+        foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
+
+        // set up mocks
+        final HttpURLConnection findConnection = createFindIssuesConnection(createFindIssuesResponse(responseIssue));
+
+		final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
+		setupResponseCodeAndOutputStream(logInConnection);
+
+        final HttpURLConnection uploadEvalConnection = mock(HttpURLConnection.class);
+        ByteArrayOutputStream uploadBytes = setupResponseCodeAndOutputStream(uploadEvalConnection);
+
+        MockAppEngineCloudClient cloudClient = createAppEngineCloudClient(findConnection, logInConnection, uploadEvalConnection);
+        when(cloudClient.mockGuiCallback.showConfirmDialog(matches(".*XML.*contains.*evaluations.*upload.*"),
+                                                           anyString(), anyString(), anyString()))
+                .thenReturn(IGuiCallback.YES_OPTION);
+        final CountDownLatch latch = new CountDownLatch(1);
+        Mockito.doAnswer(new Answer<Object>() {
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                latch.countDown();
+                return null;
+            }
+        }).when(cloudClient.mockGuiCallback).showMessageDialog("Uploaded 1 evaluations from XML (0 out of date, 0 already present)");
+
+        // execute
+        cloudClient.storeUserAnnotation(foundIssue);
+        cloudClient.initialize();
+        cloudClient.initiateCommunication();
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
+
+		// verify
+        UploadEvaluation uploadMsg = UploadEvaluation.parseFrom(uploadBytes.toByteArray());
+        assertEquals("fad2", AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));
+        assertEquals("my eval", uploadMsg.getEvaluation().getComment());
+    }
+
+	@SuppressWarnings("deprecation")
+	public void testUploadEvaluationsFromXMLWithoutUploadingIssues() throws Exception {
+        Issue responseIssue = createFoundIssue(Arrays.asList(
+                createEvaluation("NOT_A_BUG", SAMPLE_DATE+100, "comment", "first")));
+        foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
+
+        // set up mocks
+        final HttpURLConnection findConnection = createFindIssuesConnection(createFindIssuesResponse(responseIssue));
+
+		final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
+		setupResponseCodeAndOutputStream(logInConnection);
+
+        final HttpURLConnection uploadEvalConnection = mock(HttpURLConnection.class);
+        ByteArrayOutputStream uploadBytes = setupResponseCodeAndOutputStream(uploadEvalConnection);
+
+        MockAppEngineCloudClient cloudClient = createAppEngineCloudClient(findConnection, logInConnection, uploadEvalConnection);
+        when(cloudClient.mockGuiCallback.showConfirmDialog(matches(".*XML.*contains.*evaluations.*upload.*"),
+                                                           anyString(), anyString(), anyString()))
+                .thenReturn(IGuiCallback.YES_OPTION);
+        final CountDownLatch latch = new CountDownLatch(1);
+        Mockito.doAnswer(new Answer<Object>() {
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                latch.countDown();
+                return null;
+            }
+        }).when(cloudClient.mockGuiCallback).showMessageDialog("Uploaded 1 evaluations from XML (0 out of date, 0 already present)");
+
+        // execute
+        cloudClient.initialize();
+        cloudClient.initiateCommunication();
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
+
+		// verify
+        UploadEvaluation uploadMsg = UploadEvaluation.parseFrom(uploadBytes.toByteArray());
+        assertEquals("fad2", AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));
+        assertEquals("my eval", uploadMsg.getEvaluation().getComment());
+    }
+
+	@SuppressWarnings("deprecation")
+	public void testUploadEvaluationsFromXMLAfterUploadingIssues() throws Exception {
+        Issue responseIssue = createFoundIssue(Arrays.asList(
+                createEvaluation("NOT_A_BUG", SAMPLE_DATE+100, "comment", "first")));
+        foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
+
+        // set up mocks
+        addMissingIssue = true;
+
+        final HttpURLConnection findConnection = createFindIssuesConnection(createFindIssuesResponse(responseIssue));
+
+		final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
+		setupResponseCodeAndOutputStream(logInConnection);
+
+		final HttpURLConnection uploadConnection = mock(HttpURLConnection.class);
+		setupResponseCodeAndOutputStream(logInConnection);
+
+        final HttpURLConnection uploadEvalConnection = mock(HttpURLConnection.class);
+        ByteArrayOutputStream uploadBytes = setupResponseCodeAndOutputStream(uploadEvalConnection);
+
+        MockAppEngineCloudClient cloudClient = createAppEngineCloudClient(findConnection, logInConnection,
+                                                                          uploadConnection, uploadEvalConnection);
+        when(cloudClient.mockGuiCallback.showConfirmDialog(matches(".*XML.*contains.*evaluations.*upload.*"),
+                                                           anyString(), anyString(), anyString()))
+                .thenReturn(IGuiCallback.YES_OPTION);
+        final CountDownLatch latch = new CountDownLatch(1);
+        Mockito.doAnswer(new Answer<Object>() {
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                latch.countDown();
+                return null;
+            }
+        }).when(cloudClient.mockGuiCallback).showMessageDialog("Uploaded 1 evaluations from XML (0 out of date, 0 already present)");
+
+        // execute
+        cloudClient.initialize();
+        cloudClient.initiateCommunication();
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
+
+		// verify
+        UploadEvaluation uploadMsg = UploadEvaluation.parseFrom(uploadBytes.toByteArray());
+        assertEquals("fad2", AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));
+        assertEquals("my eval", uploadMsg.getEvaluation().getComment());
+    }
+
+	@SuppressWarnings("deprecation")
+	public void testDontUploadEvaluationsFromXMLWhenSigninFails() throws Exception {
+        Issue responseIssue = createFoundIssue(Arrays.asList(
+                createEvaluation("NOT_A_BUG", SAMPLE_DATE+100, "comment", "first")));
+        foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
+
+        // set up mocks
+        final HttpURLConnection findConnection = createFindIssuesConnection(createFindIssuesResponse(responseIssue));
+
+		final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
+		when(logInConnection.getResponseCode()).thenReturn(403);
+
+        MockAppEngineCloudClient cloudClient = createAppEngineCloudClient(findConnection, logInConnection);
+        when(cloudClient.mockGuiCallback.showConfirmDialog(matches(".*XML.*contains.*evaluations.*upload.*"),
+                                                           anyString(), anyString(), anyString()))
+                .thenReturn(IGuiCallback.YES_OPTION);
+        when(cloudClient.mockGuiCallback.showConfirmDialog(matches(".*store.*sign in.*"),
+                                                           anyString(), anyString(), anyString()))
+                .thenReturn(IGuiCallback.YES_OPTION);
+        final CountDownLatch latch = new CountDownLatch(1);
+        Mockito.doAnswer(new Answer<Object>() {
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                latch.countDown();
+                return null;
+            }
+        }).when(cloudClient.mockGuiCallback).showMessageDialog(matches(".*Could not sign into.*"));
+
+        // execute
+        cloudClient.initialize();
+        cloudClient.initiateCommunication();
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
+    }
+
+	@SuppressWarnings("deprecation")
+	public void testDontUploadEvaluationsFromXMLWhenFirstEvalUploadFails() throws Exception {
+        Issue responseIssue = createFoundIssue(Arrays.asList(
+                createEvaluation("NOT_A_BUG", SAMPLE_DATE+100, "comment", "first")));
+        foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
+
+        // set up mocks
+        final HttpURLConnection findConnection = createFindIssuesConnection(createFindIssuesResponse(responseIssue));
+
+		final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
+		setupResponseCodeAndOutputStream(logInConnection);
+
+        final HttpURLConnection uploadEvalConnection = createResponselessConnection();
+        when(uploadEvalConnection.getResponseCode()).thenReturn(403);
+
+        MockAppEngineCloudClient cloudClient = createAppEngineCloudClient(findConnection, logInConnection, uploadEvalConnection);
+        when(cloudClient.mockGuiCallback.showConfirmDialog(matches(".*XML.*contains.*evaluations.*upload.*"),
+                                                           anyString(), anyString(), anyString()))
+                .thenReturn(IGuiCallback.YES_OPTION);
+        when(cloudClient.mockGuiCallback.showConfirmDialog(matches(".*store.*sign in.*"),
+                                                           anyString(), anyString(), anyString()))
+                .thenReturn(IGuiCallback.YES_OPTION);
+        final CountDownLatch latch = new CountDownLatch(1);
+        Mockito.doAnswer(new Answer<Object>() {
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                latch.countDown();
+                return null;
+            }
+        }).when(cloudClient.mockGuiCallback).showMessageDialog(matches(".*Could not.*XML.*server.*"));
+
+        // execute
+        cloudClient.initialize();
+        cloudClient.bugsPopulated();
+        cloudClient.initiateCommunication();
+        boolean timedOut = !latch.await(5, TimeUnit.SECONDS);
+        assertTrue(!timedOut);
+    }
 
     // =================================== end of tests ===========================================
 

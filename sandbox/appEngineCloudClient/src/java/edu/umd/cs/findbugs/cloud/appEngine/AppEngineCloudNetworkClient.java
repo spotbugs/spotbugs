@@ -352,11 +352,13 @@ public class AppEngineCloudNetworkClient {
             return null;
         Evaluation mostRecent = null;
         long when = Long.MIN_VALUE;
-        for (Evaluation e : issue.getEvaluationsList())
-            if (e.getWho().equals(cloudClient.getUser()) && e.getWhen() > when) {
+        String myUsername = cloudClient.getUser();
+        for (Evaluation e : issue.getEvaluationsList()) {
+            if (e.getWho().equals(myUsername) && e.getWhen() > when) {
                 mostRecent = e;
                 when = e.getWhen();
             }
+        }
 
         return mostRecent;
     }

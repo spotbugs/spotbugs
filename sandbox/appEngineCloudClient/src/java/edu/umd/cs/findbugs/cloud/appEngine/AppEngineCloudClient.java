@@ -1,7 +1,22 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
+import com.google.gdata.client.authn.oauth.OAuthException;
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.SignInCancelledException;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import edu.umd.cs.findbugs.util.Util;
 
+import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -36,25 +51,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.SwingUtilities;
-import javax.xml.rpc.ServiceException;
-
-import com.google.gdata.client.authn.oauth.OAuthException;
-
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.AbstractCloud;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.SignInCancelledException;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
-import edu.umd.cs.findbugs.util.Util;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 
 @SuppressWarnings({"ThrowableInstanceNeverThrown"})
 public class AppEngineCloudClient extends AbstractCloud {
@@ -188,7 +185,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             try {
                 signIn();
             } catch (Exception e) {
-                setStatusMsg("Could not sign into Cloud: " + e.getMessage());
+                getGuiCallback().showMessageDialog("Could not sign into FindBugs Cloud: " + e.getMessage());
                 throw new SignInCancelledException(e);
             }
 
@@ -218,13 +215,11 @@ public class AppEngineCloudClient extends AbstractCloud {
         }
     }
 
-    CountDownLatch bugsPopulated = new CountDownLatch(1);
+    private CountDownLatch bugsPopulated = new CountDownLatch(1);
 
-    AtomicBoolean checkedForUpload = new AtomicBoolean(false);
+    private AtomicBoolean checkedForUpload = new AtomicBoolean(false);
 
     public void bugsPopulated() {
-        tryUploadingStoredAnnotations();
-
         bugsPopulated.countDown();
     }
 
@@ -237,11 +232,12 @@ public class AppEngineCloudClient extends AbstractCloud {
         if (num <= 0)
             return;
         int result = getGuiCallback().showConfirmDialog("The loaded XML file contains " + num + " user evaluations of issues\n"
-                                                    + "Do you wish to upload these evaluations as your evaluations?", "Upload evaluations", "Yes", "No");
+                                                    + "Do you wish to upload these evaluations as your evaluations?", "Upload evaluations", "Upload", "Skip");
         if (result != IGuiCallback.YES_OPTION)
             return;
 
         backgroundExecutor.execute(new Runnable() {
+            @SuppressWarnings({"deprecation"})
             public void run() {
                 waitUntilIssueDataDownloaded();
                 try {
@@ -249,35 +245,47 @@ public class AppEngineCloudClient extends AbstractCloud {
                 } catch (InterruptedException e1) {
                     return;
                 }
-                if (getSigninState() == SigninState.SIGNIN_FAILED) {
+
+                try {
+                    signInIfNecessary("To store your evaluations on the FindBugs Cloud, you must sign in first.");
+                } catch (SignInCancelledException e) {
+                    return;
+                }
+                if (getSigninState() != SigninState.SIGNED_IN) {
                     getGuiCallback().showMessageDialog("Can't upload evaluations unless you are signed in");
+                    return;
                 }
                 int uploaded = 0;
                 int outOfDate = 0;
-                for (Map.Entry<BugInstance, BugDesignation> e : designationsLoadedFromXML.entrySet()) {
-                    BugInstance b = e.getKey();
-                    BugDesignation loaded = e.getValue();
-                    BugDesignation inCloud = getPrimaryDesignation(b);
-                    if (inCloud == null || !loaded.getDesignationKey().equals(inCloud.getDesignationKey())
-                        || !Util.nullSafeEquals(loaded.getAnnotationText(), inCloud.getAnnotationText())) {
-                        if (inCloud != null && inCloud.getTimestamp() > loaded.getTimestamp())
-                            outOfDate++;
-                        else {
-                            b.setUserDesignation(loaded);
-                            storeUserAnnotation(b);
-                            uploaded++;
-                        }
+                try {
+                    for (Map.Entry<BugInstance, BugDesignation> e : designationsLoadedFromXML.entrySet()) {
+                        BugInstance b = e.getKey();
+                        BugDesignation loaded = e.getValue();
+                        BugDesignation inCloud = getPrimaryDesignation(b);
+                        if (inCloud == null || !loaded.getDesignationKey().equals(inCloud.getDesignationKey())
+                            || !Util.nullSafeEquals(loaded.getAnnotationText(), inCloud.getAnnotationText())) {
+                            if (inCloud != null && inCloud.getTimestamp() > loaded.getTimestamp())
+                                outOfDate++;
+                            else {
+                                b.setUserDesignation(loaded);
+                                storeUserAnnotation(b);
+                                uploaded++;
+                            }
 
+                        }
                     }
+                    final String msg = String.format("Uploaded %d evaluations from XML (%d out of date, %d already present)",
+                                                     uploaded, outOfDate, designationsLoadedFromXML.size() - uploaded - outOfDate);
+                    getGuiCallback().showMessageDialog(msg);
+                } catch (Exception e) {
+                    getGuiCallback().showMessageDialog("Could not upload evaluations from XML: " + e.getMessage());
                 }
-                final String msg = String.format("Uploaded %d evaluations from XML (%d out of date, %d already present)",
-                                                 uploaded, outOfDate, designationsLoadedFromXML.size() - uploaded - outOfDate);
-                getGuiCallback().showMessageDialog(msg);
 
             }
         });
     }
 
+    @SuppressWarnings({"deprecation"})
     private IdentityHashMap<BugInstance, BugDesignation> getDesignationsFromXML() {
         final IdentityHashMap<BugInstance, BugDesignation>
                 designationsLoadedFromXML = new IdentityHashMap<BugInstance, BugDesignation>();
@@ -291,28 +299,29 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
     private final Object initiationLock = new Object();
-	private volatile boolean communicationInitiated;
+	private volatile boolean communicationInitiated = false;
 
-	public void initiateCommunication() {
-		bugsPopulated();
-		if (communicationInitiated) 
-			return;
-		synchronized(initiationLock) {
-			if (communicationInitiated)
+    public void initiateCommunication() {
+        bugsPopulated();
+
+        if (communicationInitiated)
+            return;
+        synchronized (initiationLock) {
+            if (communicationInitiated)
                 return;
-			communicationInitiated = true;
-			backgroundExecutor.execute(new Runnable() {
-	            public void run() {
-	                try {
-	                    actuallyCheckBugsAgainstCloud();
-	                } catch (Exception e) {
-	                    LOGGER.log(Level.SEVERE, "Error while checking bugs against cloud in background", e);
-	                }
-	            }
-	        });
-			
-		}
-	}
+            communicationInitiated = true;
+            backgroundExecutor.execute(new Runnable() {
+                public void run() {
+                    try {
+                        actuallyCheckBugsAgainstCloud();
+                    } catch (Exception e) {
+                        LOGGER.log(Level.SEVERE, "Error while checking bugs against cloud in background", e);
+                    }
+                }
+            });
+
+        }
+    }
     // =============== accessors ===================
 
     AppEngineCloudNetworkClient getNetworkClient() {
@@ -487,14 +496,15 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 	@SuppressWarnings("deprecation")
 	public void storeUserAnnotation(BugInstance bugInstance) {
-        try {
-        	waitUntilIssueDataDownloaded();
-        	newIssuesUploaded.await();
-            networkClient.storeUserAnnotation(bugInstance);
-        } catch (SignInCancelledException e) {
-        } catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
+        SigninState state = getSigninState();
+        if (state == SigninState.SIGNED_IN || state == SigninState.NOT_SIGNED_IN_YET) {
+            // no need to do this if we're not signed in yet, because it will get picked up during the
+            // upload-evals-from-XML step
+            try {
+                networkClient.storeUserAnnotation(bugInstance);
+            } catch (SignInCancelledException e) {
+            }
+        }
     }
 
 	@SuppressWarnings("deprecation")
@@ -586,7 +596,7 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
 	private static long dateMin(long timestamp1, long timestamp2) {
-		if (timestamp1 < AbstractCloud.MIN_TIMESTAMP)
+		if (timestamp1 < MIN_TIMESTAMP)
 			return timestamp2;
 		if (timestamp2 < MIN_TIMESTAMP)
 			return timestamp1;
@@ -623,13 +633,15 @@ public class AppEngineCloudClient extends AbstractCloud {
         }
 
         Collection<BugInstance> newBugs = bugsByHash.values();
-        if (!getGuiCallback().isHeadless()
-            && (!newBugs.isEmpty() || !networkClient.getTimestampsToUpdate().isEmpty())) {
+        boolean hasTimestampsToUpdate = !networkClient.getTimestampsToUpdate().isEmpty();
+        boolean hasBugsToUpload = !newBugs.isEmpty();
+        if (!getGuiCallback().isHeadless() && (hasBugsToUpload || hasTimestampsToUpdate)) {
             uploadAndUpdateBugsInBackground(new ArrayList<BugInstance>(newBugs));
         } else {
         	newIssuesUploaded.countDown();
             setStatusMsg("All " + numBugs + " bugs are already stored in the FindBugs Cloud");
         }
+        tryUploadingStoredAnnotations();
     }
 
     private void executeAndWaitForAll(List<Callable<Object>> tasks) throws ExecutionException, InterruptedException {
