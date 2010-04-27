@@ -5,13 +5,13 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.CheckForNull;
 
 import com.google.gdata.client.authn.oauth.OAuthException;
 import com.google.gdata.util.ServiceException;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 
@@ -19,15 +19,30 @@ public class BugFilingHelper {
     private static final Logger LOGGER = Logger.getLogger(BugFilingHelper.class.getName());
 
     private final AppEngineCloudClient appEngineCloudClient;
-    private PropertyBundle properties;
-    private GoogleCodeBugFiler googleCodeBugFiler;
-    private JiraBugFiler jiraBugFiler;
-
+    private final PropertyBundle properties;
+    private final String trackerUrl;
+    
+    private final BugFiler bugFiler;
+    
     public BugFilingHelper(AppEngineCloudClient appEngineCloudClient, PropertyBundle properties) {
         this.appEngineCloudClient = appEngineCloudClient;
         this.properties = properties;
-        googleCodeBugFiler = new GoogleCodeBugFiler(appEngineCloudClient);
-        jiraBugFiler = new JiraBugFiler(appEngineCloudClient);
+        this.trackerUrl = properties.getProperty("cloud.bugTrackerUrl");
+        String bugTrackerType = properties.getProperty("cloud.bugTrackerType");
+        BugFiler filer = null;
+        if ("GOOGLE_CODE".equals(bugTrackerType)) 
+        	filer = new GoogleCodeBugFiler(appEngineCloudClient, trackerUrl);
+        else  if ("JIRA".equals(bugTrackerType)) 
+        filer = new JiraBugFiler(appEngineCloudClient, trackerUrl);
+        else filer = null;
+        this.bugFiler = filer;
+        
+    }
+
+    public boolean bugFilingAvailable(final BugInstance b) {
+    	if (bugFilingAvailable())
+    		return false;
+    	return true;
     }
 
     public String lookupBugStatus(final BugInstance b) {
@@ -36,7 +51,7 @@ public class BugFilingHelper {
             return null;
 
         String status;
-        final BugFiler bugFiler = getBugFiler(b);
+        final BugFiler bugFiler = getBugFiler(appEngineCloudClient, b);
 
         final String bugLink = appEngineCloudClient.getBugLink(b).toExternalForm();
         appEngineCloudClient.getBackgroundExecutor().execute(new Runnable() {
@@ -57,42 +72,27 @@ public class BugFilingHelper {
         return status;
     }
 
+	public URL fileBug(BugInstance b, String bugLinkType)
+            throws javax.xml.rpc.ServiceException, IOException, SignInCancelledException, OAuthException,
+                   InterruptedException, ServiceException {
+		
+		return bugFiler.file(b);
+
+    }
+
 	/**
+	 * @param appEngineCloudClient TODO
 	 * @param b
 	 * @return
 	 */
-	private @CheckForNull BugFiler getBugFiler(final BugInstance b) {
-		String hash = b.getInstanceHash();
-        String linkType = appEngineCloudClient.getBugLinkType(appEngineCloudClient.getBugByHash(hash));
-        if (linkType == null)
-            linkType = "GOOGLE_CODE";
+	@CheckForNull BugFiler getBugFiler(AppEngineCloudClient appEngineCloudClient, final BugInstance b) {
+		return bugFiler;
 
-        BugFiler bugFiler;
-        if (linkType.equals("GOOGLE_CODE"))
-            return  googleCodeBugFiler;
-        else if (linkType.equals("JIRA"))
-        		return jiraBugFiler;
-        else
-            return null;
 	}
 
-    public URL fileBug(BugInstance b, String bugLinkType)
-            throws javax.xml.rpc.ServiceException, IOException, SignInCancelledException, OAuthException,
-                   InterruptedException, ServiceException {
-        String trackerUrl = properties.getProperty("cloud.bugTrackerUrl");
-        if (trackerUrl != null && trackerUrl.trim().length() == 0)
-            trackerUrl = null;
-
-        if ("GOOGLE_CODE".equals(bugLinkType)) {
-            return googleCodeBugFiler.file(b, trackerUrl);
-
-        } else if ("JIRA".equals(bugLinkType)) {
-            return jiraBugFiler.file(b, trackerUrl);
-
-        } else {
-            throw new IllegalArgumentException("Unknown issue tracker " + bugLinkType);
-        }
-    }
+	public boolean bugFilingAvailable() {
+		return bugFiler != null && trackerUrl != null;
+	}
 
     // ============================== end of public methods ==============================
 

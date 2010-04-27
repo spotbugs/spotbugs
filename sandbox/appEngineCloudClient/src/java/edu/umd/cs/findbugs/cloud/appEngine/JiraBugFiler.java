@@ -33,16 +33,16 @@ public class JiraBugFiler implements BugFiler {
     private final AppEngineCloudClient appEngineCloudClient;
     private final Map<String,JiraSession> sessionsByBaseUrl = new ConcurrentHashMap<String, JiraSession>();
 
-    public JiraBugFiler(AppEngineCloudClient appEngineCloudClient) {
+    private final String url;
+    public JiraBugFiler(AppEngineCloudClient appEngineCloudClient, String url) {
         this.appEngineCloudClient = appEngineCloudClient;
+        this.url = url;
     }
 
-    public URL file(BugInstance b, String trackerUrl) throws IOException, SignInCancelledException {
-        if (trackerUrl == null)
-            trackerUrl = askUserForJiraUrl();
-        if (trackerUrl == null)
+    public URL file(BugInstance b) throws IOException, SignInCancelledException {
+        if (url == null)
             return null;
-        trackerUrl = processJiraDashboardUrl(trackerUrl);
+        String trackerUrl = processJiraDashboardUrl(url);
 
         try {
             return actuallyFile(b, trackerUrl);

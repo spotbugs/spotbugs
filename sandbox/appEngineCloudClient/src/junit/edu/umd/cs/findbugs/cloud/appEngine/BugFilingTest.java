@@ -63,7 +63,7 @@ public class BugFilingTest extends TestCase {
         createPreferencesToPropertiesBridge(mockPrefs, props);
 
         triedAgain = false;
-        filer = new GoogleCodeBugFiler(mockCloudClient) {
+        filer = new GoogleCodeBugFiler(mockCloudClient, "http://code.google.com/p/test/") {
             @Override
             <E> E tryAgain(Callable<E> callable, Exception e) throws OAuthException, MalformedURLException,
                                                                      InterruptedException, AuthenticationException {
@@ -114,7 +114,7 @@ public class BugFilingTest extends TestCase {
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
-        URL url = filer.file(bug, "test");
+        URL url = filer.file(bug);
 
         // verify
         assertEquals("http://test.url", url.toExternalForm());
@@ -130,7 +130,7 @@ public class BugFilingTest extends TestCase {
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
-        URL url = filer.file(bug, "http://code.google.com/p/test");
+        URL url = filer.file(bug);
 
         // verify
         assertEquals("http://test.url", url.toExternalForm());
@@ -146,22 +146,12 @@ public class BugFilingTest extends TestCase {
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
-        URL url = filer.file(bug, "http://code.google.com/p/test/issues/list");
+        URL url = filer.file(bug);
 
         // verify
         assertEquals("http://test.url", url.toExternalForm());
         verify(mockCloudClient).updateBugStatusCache(bug, "OK");
         verify(mockNetworkClient).setBugLinkOnCloudAndStoreIssueDetails(bug, "http://test.url", "GOOGLE_CODE");
-    }
-
-    public void testGoogleCodeFileBadUrl() throws Exception {
-        BugInstance bug = new BugInstance("Blah", 2);
-        try {
-            filer.file(bug, "http://test!");
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertEquals("Invalid Google Code project URL 'http://test!'", e.getMessage());
-        }
     }
 
     @SuppressWarnings({"ThrowableInstanceNeverThrown"})
@@ -172,7 +162,7 @@ public class BugFilingTest extends TestCase {
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
-        URL url = filer.file(bug, "test");
+        URL url = filer.file(bug);
 
         // verify
         assertTrue(triedAgain);
@@ -190,7 +180,7 @@ public class BugFilingTest extends TestCase {
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
         try {
-            filer.file(bug, "test");
+            filer.file(bug);
             fail();
         } catch (IOException e) {
             assertEquals("Invalid request URI", e.getMessage());
@@ -227,7 +217,7 @@ public class BugFilingTest extends TestCase {
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
-        URL url = filer.file(bug, "test");
+        URL url = filer.file(bug);
 
         // verify
         assertEquals("TOKEN", props.getProperty(GoogleCodeBugFiler.KEY_PROJECTHOSTING_OAUTH_TOKEN));
@@ -254,7 +244,7 @@ public class BugFilingTest extends TestCase {
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
-        URL url = filer.file(bug, "test");
+        URL url = filer.file(bug);
 
         // verify
         verify(mockOAuthHelper, Mockito.never()).createUserAuthorizationUrl(Mockito.<OAuthParameters>any());

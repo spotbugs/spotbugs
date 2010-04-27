@@ -63,8 +63,8 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         cloud.initialize();
 		cloud.bugsPopulated();
 		cloud.initiateCommunication();
-        Thread.sleep(10);
-        assertTrue(doneWaiting.get());
+        Thread.sleep(1000);
+        assertTrue("expected completion", doneWaiting.get());
 
         long start = System.currentTimeMillis();
         cloud.waitUntilIssueDataDownloaded();
@@ -97,8 +97,8 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         assertFalse(doneWaiting.get());
         cloud.bugsPopulated();
         cloud.initiateCommunication();
-        Thread.sleep(10);
-        assertTrue(doneWaiting.get());
+        Thread.sleep(100);
+        assertTrue("expected communications to be done", doneWaiting.get());
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
 	}
@@ -146,8 +146,8 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         assertFalse(doneWaiting.get());
 		cloud.bugsPopulated();
 		cloud.initiateCommunication();
-        Thread.sleep(10);
-        assertTrue(doneWaiting.get());
+        Thread.sleep(100);
+        assertTrue("expected communcation to be done", doneWaiting.get());
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
         assertEquals("/log-in", cloud.urlsRequested.get(1));

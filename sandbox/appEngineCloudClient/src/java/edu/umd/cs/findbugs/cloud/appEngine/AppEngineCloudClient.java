@@ -111,13 +111,14 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
 	public void waitUntilIssueDataDownloaded() {
-		bugsPopulated();
+		try {
+			bugsPopulated.await();
 		
 		initiateCommunication();
 		
 		LOGGER.fine("Waiting for issue data to be downloaded");
 
-		try {
+		
 			issueDataDownloaded.await();
 		} catch (InterruptedException e) {
 			LOGGER.log(Level.WARNING, "interrupted", e);
@@ -379,7 +380,7 @@ public class AppEngineCloudClient extends AbstractCloud {
     @Override
 	public URL fileBug(BugInstance bug) {
         try {
-            return bugFilingHelper.fileBug(bug, properties.getProperty("cloud.bugTrackerType"));
+            return bugFilingHelper.fileBug(bug, getBugLinkType(bug));
         } catch (ServiceException e) {
             throw new IllegalStateException(e);
         } catch (IOException e) {
@@ -405,7 +406,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 	@Override
 	public boolean supportsBugLinks() {
-		return true;
+		return bugFilingHelper.bugFilingAvailable();
 	}
 
 	public void bugFiled(BugInstance b, Object bugLink) {
@@ -520,6 +521,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
         int numBugs = bugsByHash.size();
         String msg = "Checking " + numBugs + " bugs against the FindBugs Cloud...";
+        System.out.println(msg);
         LOGGER.info(msg);
         setStatusMsg(msg);
 

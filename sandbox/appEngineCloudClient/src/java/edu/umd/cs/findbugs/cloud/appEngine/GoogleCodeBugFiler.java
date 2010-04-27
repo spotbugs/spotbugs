@@ -49,12 +49,15 @@ public class GoogleCodeBugFiler implements BugFiler {
 
 	private final AppEngineCloudClient appEngineCloudClient;
 	private BugFilingCommentHelper bugFilingCommentHelper;
+	
+	private final String url;
 
     private @CheckForNull ProjectHostingService projectHostingService;
 
-    public GoogleCodeBugFiler(AppEngineCloudClient appEngineCloudClient) {
+    public GoogleCodeBugFiler(AppEngineCloudClient appEngineCloudClient, String url) {
         this.appEngineCloudClient = appEngineCloudClient;
 		bugFilingCommentHelper = new BugFilingCommentHelper(appEngineCloudClient);
+		this.url = url;
 	}
 
     /** for testing */
@@ -67,10 +70,8 @@ public class GoogleCodeBugFiler implements BugFiler {
         projectHostingService = service;
     }
 
-    public URL file(BugInstance b, String url)
+    public URL file(BugInstance b)
             throws IOException, SignInCancelledException {
-        if (url == null)
-            url = askUserForGoogleCodeProjectName();
         if (url == null)
             return null;
         Matcher m = PATTERN_GOOGLE_CODE_URL.matcher(url);
