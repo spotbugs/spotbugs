@@ -23,6 +23,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.Bu
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -545,7 +546,8 @@ public class AppEngineCloudNetworkClient {
             throw new IOException("Response code " + responseCode + " : " + conn.getResponseMessage());
         }
 
-        FindIssuesResponse response = FindIssuesResponse.parseFrom(conn.getInputStream());
+        InputStream instream = conn.getInputStream();
+        FindIssuesResponse response = FindIssuesResponse.parseFrom(instream);
         conn.disconnect();
         int foundIssues = response.getFoundIssuesCount();
         elapsed = System.currentTimeMillis() - start;

@@ -34,8 +34,8 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         // execute
 		AppEngineCloudClient cloudClient = createAppEngineCloudClient(logInConnection, uploadConnection);
 		cloudClient.initialize();
-		cloudClient.bugsPopulated();
-		foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
+        cloudClient.pretendIssuesSyncedAndUploaded();
+        foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
 		cloudClient.storeUserAnnotation(foundIssue);
 
 		// verify
@@ -150,7 +150,8 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 		AppEngineCloudClient cloudClient = createAppEngineCloudClient(findConnection, recentEvalConnection);
         cloudClient.initialize();
 		cloudClient.bugsPopulated();
-		cloudClient.initiateCommunication();
+        cloudClient.initiateCommunication();
+        cloudClient.waitUntilIssueDataDownloaded();
 		cloudClient.updateEvaluationsFromServer();
 
 		// verify

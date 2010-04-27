@@ -88,7 +88,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
     private class MockAppEngineCloudNetworkClient extends AppEngineCloudNetworkClient {
         @Override
         HttpURLConnection openConnection(String url) {
-            System.err.println("opening " + url);
+            System.err.println("opening " + url + " at " + Thread.currentThread().getStackTrace()[2]);
             if (!mockConnections.hasNext()) {
                 Assert.fail("No mock connections left (for " + url + " - already requested URL's: " + urlsRequested + ")");
             }

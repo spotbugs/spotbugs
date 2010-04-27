@@ -11,7 +11,6 @@ import com.google.gdata.util.ServiceException;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.PropertyBundle;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 
@@ -19,30 +18,23 @@ public class BugFilingHelper {
     private static final Logger LOGGER = Logger.getLogger(BugFilingHelper.class.getName());
 
     private final AppEngineCloudClient appEngineCloudClient;
-    private final PropertyBundle properties;
     private final String trackerUrl;
     
     private final BugFiler bugFiler;
     
     public BugFilingHelper(AppEngineCloudClient appEngineCloudClient, PropertyBundle properties) {
         this.appEngineCloudClient = appEngineCloudClient;
-        this.properties = properties;
         this.trackerUrl = properties.getProperty("cloud.bugTrackerUrl");
         String bugTrackerType = properties.getProperty("cloud.bugTrackerType");
-        BugFiler filer = null;
+        BugFiler filer;
         if ("GOOGLE_CODE".equals(bugTrackerType)) 
         	filer = new GoogleCodeBugFiler(appEngineCloudClient, trackerUrl);
-        else  if ("JIRA".equals(bugTrackerType)) 
-        filer = new JiraBugFiler(appEngineCloudClient, trackerUrl);
-        else filer = null;
+        else if ("JIRA".equals(bugTrackerType))
+            filer = new JiraBugFiler(appEngineCloudClient, trackerUrl);
+        else
+            filer = null;
         this.bugFiler = filer;
         
-    }
-
-    public boolean bugFilingAvailable(final BugInstance b) {
-    	if (bugFilingAvailable())
-    		return false;
-    	return true;
     }
 
     public String lookupBugStatus(final BugInstance b) {
@@ -51,7 +43,6 @@ public class BugFilingHelper {
             return null;
 
         String status;
-        final BugFiler bugFiler = getBugFiler(appEngineCloudClient, b);
 
         final String bugLink = appEngineCloudClient.getBugLink(b).toExternalForm();
         appEngineCloudClient.getBackgroundExecutor().execute(new Runnable() {
@@ -72,7 +63,7 @@ public class BugFilingHelper {
         return status;
     }
 
-	public URL fileBug(BugInstance b, String bugLinkType)
+	public URL fileBug(BugInstance b)
             throws javax.xml.rpc.ServiceException, IOException, SignInCancelledException, OAuthException,
                    InterruptedException, ServiceException {
 		
@@ -80,17 +71,7 @@ public class BugFilingHelper {
 
     }
 
-	/**
-	 * @param appEngineCloudClient TODO
-	 * @param b
-	 * @return
-	 */
-	@CheckForNull BugFiler getBugFiler(AppEngineCloudClient appEngineCloudClient, final BugInstance b) {
-		return bugFiler;
-
-	}
-
-	public boolean bugFilingAvailable() {
+    public boolean bugFilingAvailable() {
 		return bugFiler != null && trackerUrl != null;
 	}
 
