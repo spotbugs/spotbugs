@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
 import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
@@ -29,27 +30,25 @@ import static org.mockito.Mockito.when;
 
 public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 	@SuppressWarnings("deprecation")
-	public void testStoreUserAnnotation() throws Exception {
+	public void testStoreUserAnnotationAfterUploading() throws Exception {
 		// set up mocks
         addMissingIssue = true;
+        foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
 
-		final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
-		setupResponseCodeAndOutputStream(logInConnection);
+		MockAppEngineCloudClient cloud = createAppEngineCloudClient();
 
-		final HttpURLConnection uploadConnection = mock(HttpURLConnection.class);
-		ByteArrayOutputStream uploadMsgData = setupResponseCodeAndOutputStream(uploadConnection);
+        cloud.expectConnection("log-in");
+        cloud.expectConnection("upload-evaluation");
 
         // execute
-		AppEngineCloudClient cloudClient = createAppEngineCloudClient(logInConnection, uploadConnection);
-		cloudClient.initialize();
-        cloudClient.pretendIssuesSyncedAndUploaded();
-        foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
-		cloudClient.storeUserAnnotation(foundIssue);
+		cloud.initialize();
+        cloud.pretendIssuesSyncedAndUploaded();
+		cloud.storeUserAnnotation(foundIssue);
 
 		// verify
-		verify(uploadConnection).connect();
-		UploadEvaluation uploadMsg = UploadEvaluation.parseFrom(uploadMsgData.toByteArray());
-		checkUploadedEvaluation(uploadMsg);
+        cloud.verifyAllConnectionsOpened();
+        checkEvaluationMatches(foundIssue,
+                               UploadEvaluation.parseFrom(cloud.postedData("upload-evaluation")));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -57,11 +56,11 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 		// set up mocks
 		foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
 
-		Issue issue = createFoundIssueWithOneEvaluation();
+		Issue issue = createIssueToReturnWithEvaluation();
 
         final HttpURLConnection recentEvalConnection = createResponselessConnection();
 		RecentEvaluations recentEvalResponse = RecentEvaluations.newBuilder()
-				.addIssues(createFullProtoIssue(issue,
+				.addIssues(createFullProtoIssue(issue, foundIssue,
                         createEvaluation("MUST_FIX", SAMPLE_DATE+250, "comment", "test@example.com"),
                         createEvaluation("MOSTLY_HARMLESS", SAMPLE_DATE+300, "new comment", "test@example.com")))
 				.build();
@@ -84,7 +83,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 
 		assertEquals(Arrays.asList("Checking FindBugs Cloud for updates",
                                    "Checking FindBugs Cloud for updates...found 1"),
-                     cloud.statusChanges);
+                     cloud.statusBarHistory);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -107,7 +106,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 		// verify
 		assertEquals(Arrays.asList("Checking FindBugs Cloud for updates",
                                    ""),
-                     cloud.statusChanges);
+                     cloud.statusBarHistory);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -133,19 +132,19 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         // verify
 		assertEquals(Arrays.asList("Checking FindBugs Cloud for updates",
                                    "Checking FindBugs Cloud for updates...failed - server returned error code 500 null"),
-                     cloud.statusChanges);
+                     cloud.statusBarHistory);
 	}
 
     public void testGetRecentEvaluationsOverwritesOldEvaluationsFromSamePerson()
 			throws Exception {
-		Issue responseIssue = createFoundIssue(Arrays.asList(
+		Issue responseIssue = createIssueToReturn(Arrays.asList(
                 createEvaluation("NOT_A_BUG", SAMPLE_DATE+100, "comment", "first")));
 
         final HttpURLConnection findConnection = createFindIssuesConnection(createFindIssuesResponse(responseIssue));
 
         final HttpURLConnection recentEvalConnection = createResponselessConnection();
 		RecentEvaluations recentEvalResponse = RecentEvaluations.newBuilder()
-				.addIssues(createFullProtoIssue(responseIssue,
+				.addIssues(createFullProtoIssue(responseIssue, foundIssue,
                         createEvaluation("NOT_A_BUG", SAMPLE_DATE+200, "comment2", "second"),
                         createEvaluation("NOT_A_BUG", SAMPLE_DATE+300, "comment3", "first")))
 				.build();
@@ -168,7 +167,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 
     @SuppressWarnings({"deprecation"})
     public void testStoreAnnotationBeforeFindIssues() throws Exception {
-        Issue responseIssue = createFoundIssue(Arrays.asList(
+        Issue responseIssue = createIssueToReturn(Arrays.asList(
                 createEvaluation("NOT_A_BUG", SAMPLE_DATE+100, "comment", "first")));
         foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
 
@@ -207,7 +206,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 
 	@SuppressWarnings("deprecation")
 	public void testUploadEvaluationsFromXMLWithoutUploadingIssues() throws Exception {
-        Issue responseIssue = createFoundIssue(Arrays.asList(
+        Issue responseIssue = createIssueToReturn(Arrays.asList(
                 createEvaluation("NOT_A_BUG", SAMPLE_DATE+100, "comment", "first")));
         foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
 
@@ -245,7 +244,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 
 	@SuppressWarnings("deprecation")
 	public void testUploadEvaluationsFromXMLAfterUploadingIssues() throws Exception {
-        Issue responseIssue = createFoundIssue(Arrays.asList(
+        Issue responseIssue = createIssueToReturn(Arrays.asList(
                 createEvaluation("NOT_A_BUG", SAMPLE_DATE+100, "comment", "first")));
         foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
 
@@ -289,7 +288,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 
 	@SuppressWarnings("deprecation")
 	public void testDontUploadEvaluationsFromXMLWhenSigninFails() throws Exception {
-        Issue responseIssue = createFoundIssue(Arrays.asList(
+        Issue responseIssue = createIssueToReturn(Arrays.asList(
                 createEvaluation("NOT_A_BUG", SAMPLE_DATE+100, "comment", "first")));
         foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
 
@@ -322,7 +321,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 
 	@SuppressWarnings("deprecation")
 	public void testDontUploadEvaluationsFromXMLWhenFirstEvalUploadFails() throws Exception {
-        Issue responseIssue = createFoundIssue(Arrays.asList(
+        Issue responseIssue = createIssueToReturn(Arrays.asList(
                 createEvaluation("NOT_A_BUG", SAMPLE_DATE+100, "comment", "first")));
         foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
 
@@ -360,7 +359,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 
     // =================================== end of tests ===========================================
 
-    private Evaluation createEvaluation(String designation, long when, String comment, String who) {
+    private static Evaluation createEvaluation(String designation, long when, String comment, String who) {
         return Evaluation.newBuilder()
             .setWhen(when)
             .setDesignation(designation)
@@ -369,18 +368,18 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
             .build();
     }
 
-    private HttpURLConnection createFindIssuesConnection(InputStream response) throws IOException {
+    private static HttpURLConnection createFindIssuesConnection(InputStream response) throws IOException {
         final HttpURLConnection findConnection = mock(HttpURLConnection.class);
         when(findConnection.getInputStream()).thenReturn(response);
         setupResponseCodeAndOutputStream(findConnection);
         return findConnection;
     }
 
-    private Issue createFoundIssueWithOneEvaluation() {
-		return createFoundIssue(Arrays.asList(createEvaluation("NOT_A_BUG", SAMPLE_DATE+200, "first comment", "test@example.com")));
+    private static Issue createIssueToReturnWithEvaluation() {
+		return createIssueToReturn(Arrays.asList(createEvaluation("NOT_A_BUG", SAMPLE_DATE+200, "first comment", "test@example.com")));
 	}
 
-	private Issue createFoundIssue(Iterable<Evaluation> evaluations) {
+	private static Issue createIssueToReturn(Iterable<Evaluation> evaluations) {
 		return Issue.newBuilder()
 				.setFirstSeen(SAMPLE_DATE+100)
 				.setLastSeen(SAMPLE_DATE+300)
@@ -388,21 +387,21 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 				.build();
 	}
 
-	private Issue createFullProtoIssue(Issue issue, Evaluation... evalsToAdd) {
-        return Issue.newBuilder(issue)
-				.setBugPattern(foundIssue.getAbbrev())
-				.setHash(AppEngineProtoUtil.encodeHash(foundIssue.getInstanceHash()))
-				.setPrimaryClass(foundIssue.getPrimaryClass().getClassName())
+	private static Issue createFullProtoIssue(Issue prototype, BugInstance source, Evaluation... evalsToAdd) {
+        return Issue.newBuilder(prototype)
+				.setBugPattern(source.getAbbrev())
+				.setHash(AppEngineProtoUtil.encodeHash(source.getInstanceHash()))
+				.setPrimaryClass(source.getPrimaryClass().getClassName())
 				.setPriority(1)
                 .addAllEvaluations(Arrays.asList(evalsToAdd))
                 .build();
 	}
 
-	private void checkUploadedEvaluation(UploadEvaluation uploadMsg) {
+	private static void checkEvaluationMatches(BugInstance issue, UploadEvaluation uploadMsg) {
 		assertEquals(555, uploadMsg.getSessionId());
-		assertEquals(foundIssue.getInstanceHash(), AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));
-		assertEquals(foundIssue.getUserDesignationKey(), uploadMsg.getEvaluation().getDesignation());
-		assertEquals(foundIssue.getAnnotationText(), uploadMsg.getEvaluation().getComment());
+		assertEquals(issue.getInstanceHash(), AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));
+		assertEquals(issue.getUserDesignationKey(), uploadMsg.getEvaluation().getDesignation());
+		assertEquals(issue.getAnnotationText(), uploadMsg.getEvaluation().getComment());
 	}
 
 }

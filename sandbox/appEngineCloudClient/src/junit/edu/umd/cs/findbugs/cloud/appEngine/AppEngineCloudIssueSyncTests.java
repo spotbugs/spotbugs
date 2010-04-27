@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static edu.umd.cs.findbugs.cloud.Cloud.SigninState.NOT_SIGNED_IN_YET;
 import static org.mockito.Matchers.anyString;
@@ -37,7 +38,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         cloud.initialize();
 		cloud.bugsPopulated();
 		cloud.initiateCommunication();
-		Thread.sleep(10);
+		cloud.waitUntilIssueDataDownloaded();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 
         // verify find-issues
@@ -76,7 +77,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.bugsPopulated();
         cloud.initiateCommunication();
-        Thread.sleep(10);
+        cloud.waitUntilIssueDataDownloaded();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 
         assertEquals(1, cloud.urlsRequested.size());
@@ -102,10 +103,10 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
-		cloud.bugsPopulated();
-		 cloud.initiateCommunication();
-	      Thread.sleep(10);
-	        
+        cloud.bugsPopulated();
+        cloud.initiateCommunication();
+        cloud.waitUntilIssuesUploaded(5, TimeUnit.SECONDS);
+
         assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSigninState());
 
         // verify find-issues
@@ -158,10 +159,10 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
                 .thenReturn(-1);
         cloud.initialize();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
-		cloud.bugsPopulated();
-		 cloud.initiateCommunication();
-	        Thread.sleep(10);
-	        
+        cloud.bugsPopulated();
+        cloud.initiateCommunication();
+        cloud.waitUntilIssuesUploaded(5, TimeUnit.SECONDS);
+
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 
         // verify
@@ -181,10 +182,10 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         when(cloud.mockGuiCallback.isHeadless()).thenReturn(true);
         cloud.initialize();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
-		cloud.bugsPopulated();
-		 cloud.initiateCommunication();
-	        Thread.sleep(10);
-	        
+        cloud.bugsPopulated();
+        cloud.initiateCommunication();
+        cloud.waitUntilIssuesUploaded(5, TimeUnit.SECONDS);
+
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
 
         // verify
@@ -206,10 +207,10 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         Mockito.doThrow(new IOException()).when(spyNetworkClient).signIn(Mockito.anyBoolean());
         cloud.initialize();
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
-		cloud.bugsPopulated();
-		 cloud.initiateCommunication();
-	        Thread.sleep(10);
-	        
+        cloud.bugsPopulated();
+        cloud.initiateCommunication();
+        cloud.waitUntilIssuesUploaded(5, TimeUnit.SECONDS);
+
         assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSigninState());
 
         // verify

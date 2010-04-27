@@ -19,6 +19,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Filter;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -29,6 +34,9 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
     protected BugInstance missingIssue;
     protected BugInstance foundIssue;
     protected boolean addMissingIssue;
+    private SortedBugCollection bugCollection;
+    private CloudPlugin plugin;
+    private ConsoleHandler logHandler;
 
     @Override
 	protected void setUp() throws Exception {
@@ -37,7 +45,28 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
         foundIssue = new BugInstance("FOUND", 2).addClass("FoundClass");
         foundIssue.setInstanceHash("fad2");
         addMissingIssue = false;
-	}
+        bugCollection = new SortedBugCollection();
+        plugin = new CloudPlugin("AbstractAppEngineCloudTest", AppEngineCloudClient.class.getClassLoader(),
+                                 AppEngineCloudClient.class, AppEngineNameLookup.class,
+                                 new PropertyBundle(), "none", "none");
+        Logger logger = Logger.getLogger("edu.umd.cs.findbugs.cloud");
+        logger.setLevel(Level.FINEST);
+        logHandler = new ConsoleHandler();
+        logHandler.setLevel(Level.FINER);
+        logHandler.setFilter(new Filter() {
+            public boolean isLoggable(LogRecord record) {
+                return record.getLevel().intValue() < Level.INFO.intValue();
+            }
+        });
+        logger.addHandler(logHandler);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        Logger logger = Logger.getLogger("edu.umd.cs.findbugs.cloud");
+        logger.removeHandler(logHandler);
+    }
 
     protected ProtoClasses.Issue createFoundIssueProto() {
         return ProtoClasses.Issue.newBuilder()
@@ -64,7 +93,7 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
                 .build();
     }
 
-    protected ByteArrayOutputStream setupResponseCodeAndOutputStream(HttpURLConnection connection)
+    protected static ByteArrayOutputStream setupResponseCodeAndOutputStream(HttpURLConnection connection)
             throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         when(connection.getResponseCode()).thenReturn(200);
@@ -73,16 +102,10 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
     }
 
     protected MockAppEngineCloudClient createAppEngineCloudClient(HttpURLConnection... connections) throws IOException {
-        SortedBugCollection bugs = new SortedBugCollection();
         if (addMissingIssue)
-            bugs.add(missingIssue);
-        bugs.add(foundIssue);
-        final Iterator<HttpURLConnection> mockConnections = Arrays.asList(connections).iterator();
-        CloudPlugin plugin = new CloudPlugin("AppEngineCloudMiscTests", AppEngineCloudClient.class.getClassLoader(),
-                                             AppEngineCloudClient.class, AppEngineNameLookup.class,
-                                             new PropertyBundle(), "none", "none");
-        Executor executor = Executors.newCachedThreadPool();
-        return new MockAppEngineCloudClient(plugin, bugs, executor, mockConnections);
+            bugCollection.add(missingIssue);
+        bugCollection.add(foundIssue);
+        return new MockAppEngineCloudClient(plugin, bugCollection, Arrays.asList(connections));
     }
 
     protected InputStream createFindIssuesResponse(ProtoClasses.Issue foundIssue) {

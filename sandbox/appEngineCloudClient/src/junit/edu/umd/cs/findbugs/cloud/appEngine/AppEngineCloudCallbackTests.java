@@ -10,6 +10,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.mockito.Mockito.mock;
@@ -25,19 +26,18 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 
 		// execution
 		final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
-        final AtomicBoolean doneWaiting = new AtomicBoolean(false);
+        final CountDownLatch latch = new CountDownLatch(1);
         new Thread(new Runnable() {
             public void run() {
                 cloud.waitUntilIssueDataDownloaded();
-                doneWaiting.set(true);
+                latch.countDown();
             }
         }).start();
-        assertFalse(doneWaiting.get());
+        assertEquals(1, latch.getCount());
         cloud.initialize();
-        assertFalse(doneWaiting.get());
+        assertEquals(1, latch.getCount());
 		cloud.bugsPopulated();
-        Thread.sleep(10);
-        assertTrue(doneWaiting.get());
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
 	}
@@ -69,7 +69,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         long start = System.currentTimeMillis();
         cloud.waitUntilIssueDataDownloaded();
         long elapsed = System.currentTimeMillis() - start;
-        if (elapsed > 10) // should return immediately
+        if (elapsed > 100) // should return immediately
             fail("was " + elapsed);
 	}
 
@@ -97,7 +97,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         assertFalse(doneWaiting.get());
         cloud.bugsPopulated();
         cloud.initiateCommunication();
-        Thread.sleep(100);
+        Thread.sleep(1000);
         assertTrue("expected communications to be done", doneWaiting.get());
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
@@ -146,7 +146,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         assertFalse(doneWaiting.get());
 		cloud.bugsPopulated();
 		cloud.initiateCommunication();
-        Thread.sleep(100);
+        Thread.sleep(1000);
         assertTrue("expected communcation to be done", doneWaiting.get());
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
@@ -167,21 +167,20 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 
 		// execution
 		final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
-        final AtomicBoolean synced = new AtomicBoolean(false);
+        final CountDownLatch latch = new CountDownLatch(1);
         cloud.addStatusListener(new Cloud.CloudStatusListener() {
             public void handleIssueDataDownloadedEvent() {
-                synced.set(true);
+                latch.countDown();
             }
 
             public void handleStateChange(Cloud.SigninState oldState, Cloud.SigninState state) {
             }
         });
         cloud.initialize();
-        assertFalse(synced.get());
+        assertEquals(1, latch.getCount());
 		cloud.bugsPopulated();
 		cloud.initiateCommunication();
-		Thread.sleep(10);
-        assertTrue(synced.get());
+		assertTrue(latch.await(5, TimeUnit.SECONDS));
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
 	}

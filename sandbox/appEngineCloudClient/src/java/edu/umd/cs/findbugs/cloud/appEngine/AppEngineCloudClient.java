@@ -7,7 +7,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
-import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
@@ -40,7 +39,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -59,45 +57,34 @@ public class AppEngineCloudClient extends AbstractCloud {
     private static final Logger LOGGER = Logger.getLogger(AppEngineCloudClient.class.getPackage().getName());
     private static final int EVALUATION_CHECK_SECS = 5 * 60;
 
-    private Executor backgroundExecutor;
-	ExecutorService backgroundExecutorService;
+    protected ExecutorService backgroundExecutorService;
 	private Timer timer;
 
     private AppEngineCloudNetworkClient networkClient;
     private Map<String,String> bugStatusCache = new ConcurrentHashMap<String, String>();
     private final BugFilingHelper bugFilingHelper = new BugFilingHelper(this, properties);
+
     private CountDownLatch issueDataDownloaded = new CountDownLatch(1);
-    private CountDownLatch newIssuesUploaded = new CountDownLatch(1);
+    protected CountDownLatch newIssuesUploaded = new CountDownLatch(1);
+    private CountDownLatch bugsPopulated = new CountDownLatch(1);
+
+    private AtomicBoolean checkedForUpload = new AtomicBoolean(false);
 
     /** invoked via reflection */
     @SuppressWarnings({"UnusedDeclaration"})
     public AppEngineCloudClient(CloudPlugin plugin, BugCollection bugs, Properties properties) {
-		this(plugin, bugs, properties, null);
+        super(plugin, bugs, properties);
         setNetworkClient(new AppEngineCloudNetworkClient());
         LOGGER.setLevel(Level.FINER);
-	}
-
-	/** for testing */
-	AppEngineCloudClient(CloudPlugin plugin, BugCollection bugs,  Properties properties,
-                         @CheckForNull Executor executor) {
-
-		super(plugin, bugs, properties);
-		if (executor == null) {
-			backgroundExecutorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
-                public Thread newThread(Runnable r) {
-                    Thread t = new Thread(r, AppEngineCloudClient.class.getSimpleName() + " bg");
-                    t.setDaemon(true);
-                    return t;
-                }
-            });
-			backgroundExecutor = backgroundExecutorService;
-			if (backgroundExecutorService.isShutdown())
-	    		 LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown at creation");
-
-		} else {
-			backgroundExecutorService = new CurrentThreadExecutorService();
-			backgroundExecutor = executor;
-		}
+        backgroundExecutorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r, AppEngineCloudClient.class.getSimpleName() + " bg");
+                t.setDaemon(true);
+                return t;
+            }
+        });
+        if (backgroundExecutorService.isShutdown())
+             LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown at creation");
     }
 
 	/** package-private for testing */
@@ -134,7 +121,8 @@ public class AppEngineCloudClient extends AbstractCloud {
 	boolean initialized = false;
 	@Override
 	public boolean initialize() throws IOException {
-		if (false && initialized) {
+        //noinspection ConstantConditions
+        if (false && initialized) {
 			LOGGER.warning("Already initialized " + getClass().getSimpleName());
 			return true;
 		}
@@ -192,6 +180,7 @@ public class AppEngineCloudClient extends AbstractCloud {
         } else if (getSigninState() == SigninState.SIGNING_IN) {
             // TODO should probably handle this
             throw new IllegalStateException("signing in");
+
         } else if (getSigninState() == SigninState.SIGNED_IN) {
             // great!
         }
@@ -215,10 +204,6 @@ public class AppEngineCloudClient extends AbstractCloud {
         }
     }
 
-    private CountDownLatch bugsPopulated = new CountDownLatch(1);
-
-    private AtomicBoolean checkedForUpload = new AtomicBoolean(false);
-
     public void bugsPopulated() {
         bugsPopulated.countDown();
     }
@@ -236,7 +221,7 @@ public class AppEngineCloudClient extends AbstractCloud {
         if (result != IGuiCallback.YES_OPTION)
             return;
 
-        backgroundExecutor.execute(new Runnable() {
+        backgroundExecutorService.execute(new Runnable() {
             @SuppressWarnings({"deprecation"})
             public void run() {
                 waitUntilIssueDataDownloaded();
@@ -310,7 +295,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             if (communicationInitiated)
                 return;
             communicationInitiated = true;
-            backgroundExecutor.execute(new Runnable() {
+            backgroundExecutorService.execute(new Runnable() {
                 public void run() {
                     try {
                         actuallyCheckBugsAgainstCloud();
@@ -531,8 +516,8 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     // ============================== misc =====================================
 
-    public Executor getBackgroundExecutor() {
-        return backgroundExecutor;
+    public ExecutorService getBackgroundExecutor() {
+        return backgroundExecutorService;
     }
 
     public void updateBugStatusCache(final BugInstance b, String status) {
@@ -555,7 +540,7 @@ public class AppEngineCloudClient extends AbstractCloud {
         communicationInitiated = true;
         bugsPopulated.countDown();
         issueDataDownloaded.countDown();
-        newIssuesUploaded.countDown();
+        markNewIssuesUploaded();
     }
 
     private List<BugDesignation> sortDesignations(Collection<BugDesignation> bugDesignations) {
@@ -628,7 +613,7 @@ public class AppEngineCloudClient extends AbstractCloud {
         }
 
         if (getSigninState() == SigninState.SIGNIN_FAILED) {
-        	newIssuesUploaded.countDown();
+            markNewIssuesUploaded();
             return;
         }
 
@@ -638,10 +623,15 @@ public class AppEngineCloudClient extends AbstractCloud {
         if (!getGuiCallback().isHeadless() && (hasBugsToUpload || hasTimestampsToUpdate)) {
             uploadAndUpdateBugsInBackground(new ArrayList<BugInstance>(newBugs));
         } else {
-        	newIssuesUploaded.countDown();
+            markNewIssuesUploaded();
             setStatusMsg("All " + numBugs + " bugs are already stored in the FindBugs Cloud");
         }
         tryUploadingStoredAnnotations();
+    }
+
+    private void markNewIssuesUploaded() {
+        LOGGER.log(Level.FINER, "new issues uploaded", new Throwable());
+        newIssuesUploaded.countDown();
     }
 
     private void executeAndWaitForAll(List<Callable<Object>> tasks) throws ExecutionException, InterruptedException {
@@ -703,7 +693,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 	}
 
     private void uploadAndUpdateBugsInBackground(final List<BugInstance> newBugs) {
-        backgroundExecutor.execute(new Runnable() {
+        backgroundExecutorService.execute(new Runnable() {
             public void run() {
                 List<Callable<Object>> callables = new ArrayList<Callable<Object>>();
                 try {
@@ -717,7 +707,7 @@ public class AppEngineCloudClient extends AbstractCloud {
                     LOGGER.log(Level.SEVERE, "", e);
                 }
                 setStatusMsg("");
-                newIssuesUploaded.countDown();
+                markNewIssuesUploaded();
             }
         });
     }
@@ -751,32 +741,4 @@ public class AppEngineCloudClient extends AbstractCloud {
     private <E> ListIterator<E> reverseIterator(List<E> list) {
         return list.listIterator(list.size());
     }
-
-    private static class CurrentThreadExecutorService extends AbstractExecutorService {
-        public void shutdown() {
-        }
-
-        public List<Runnable> shutdownNow() {
-            return null;
-        }
-
-        public boolean isShutdown() {
-            return false;
-        }
-
-        public boolean isTerminated() {
-            return false;
-        }
-
-        public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-            return false;
-        }
-
-        public void execute(Runnable command) {
-            command.run();
-        }
-    }
-
-
-
 }

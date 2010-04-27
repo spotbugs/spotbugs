@@ -602,20 +602,16 @@ public abstract class AbstractCloud implements Cloud {
 		return signinState;
 	}
 
-	protected void setSigninState(SigninState state) {
+	@SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    protected void setSigninState(SigninState state) {
 		SigninState oldState = this.signinState;
 		if (oldState == state)
 			return;
+        LOGGER.log(Level.FINER, "State " + oldState + " -> " + state, new Throwable());
 		this.signinState = state;
 		for (CloudStatusListener statusListener : statusListeners)
 			statusListener.handleStateChange(oldState, state);
 	}
-
-
-
-
-
-
 
 	public BugInstance getBugByHash(String hash) {
 		for (BugInstance instance : bugCollection.getCollection()) {
