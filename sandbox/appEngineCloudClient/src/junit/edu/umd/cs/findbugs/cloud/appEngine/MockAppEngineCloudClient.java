@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
 import com.google.common.collect.Lists;
+import com.google.protobuf.GeneratedMessage;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
@@ -13,15 +14,20 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -103,8 +109,10 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         return mockNameLookup;
     }
 
-    public void expectConnection(String url) {
-        expectedConnections.add(new ExpectedConnection().withUrl(url));
+    public ExpectedConnection expectConnection(String url) {
+        ExpectedConnection connection = new ExpectedConnection();
+        expectedConnections.add(connection.withUrl(url));
+        return connection;
     }
 
     public byte[] postedData(String url) {
@@ -118,7 +126,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         return null;
     }
 
-    public void verifyAllConnectionsOpened() {
+    public void verifyConnections() {
         if (expectedConnections.size() != nextConnection) {
             Assert.fail("some connections were not opened\n" +
                         "opened: " + expectedConnections.subList(0, nextConnection) + "\n" +
@@ -130,6 +138,26 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         if (!newIssuesUploaded.await(timeout, unit)) {
             Assert.fail("issues uploaded event never fired after " + timeout + " " + unit.toString());
         }
+    }
+
+    /**
+     * Returns a {@link CountDownLatch} that waits for a IGuiCallback showMessageDialog call
+     * with a message matching the given regex.
+     */
+    public CountDownLatch getDialogLatch(String dialogRegex) {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Mockito.doAnswer(new Answer<Object>() {
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                latch.countDown();
+                return null;
+            }
+        }).when(mockGuiCallback).showMessageDialog(Mockito.matches(dialogRegex));
+        return latch;
+    }
+
+    public void clickYes(String regex) {
+        when(mockGuiCallback.showConfirmDialog(matches(regex), anyString(), anyString(), anyString()))
+                .thenReturn(IGuiCallback.YES_OPTION);
     }
 
     private class MockAppEngineCloudNetworkClient extends AppEngineCloudNetworkClient {
@@ -159,15 +187,21 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         }
     }
 
-    private class ExpectedConnection {
+    public class ExpectedConnection {
         private HttpURLConnection mockConnection;
         private String url = null;
         private int responseCode = 200;
+        private InputStream responseStream;
 
         public ExpectedConnection() {
             mockConnection = mock(HttpURLConnection.class);
             try {
                 when(mockConnection.getOutputStream()).thenReturn(new ByteArrayOutputStream());
+                when(mockConnection.getInputStream()).thenAnswer(new Answer<InputStream>() {
+                    public InputStream answer(InvocationOnMock invocationOnMock) throws Throwable {
+                        return responseStream;
+                    }
+                });
                 when(mockConnection.getResponseCode()).thenAnswer(new Answer<Integer>() {
                     public Integer answer(InvocationOnMock invocationOnMock) throws Throwable {
                         return responseCode;
@@ -191,6 +225,12 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
             return this;
         }
 
+        public void withResponse(GeneratedMessage response) {
+            if (responseStream != null)
+                throw new IllegalStateException("Already have response stream");
+            responseStream = new ByteArrayInputStream(response.toByteArray());
+        }
+
         public byte[] getPostData() {
             return getOutputStream().toByteArray();
         }
@@ -207,6 +247,10 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         public String toString() {
             ByteArrayOutputStream postStream = getOutputStream();
             return "/" + url() + (postStream.size() > 0 ? " <" + postStream.size() + ">" : "");
+        }
+
+        public void withErrorCode(int code) {
+            this.responseCode = code;
         }
     }
 }

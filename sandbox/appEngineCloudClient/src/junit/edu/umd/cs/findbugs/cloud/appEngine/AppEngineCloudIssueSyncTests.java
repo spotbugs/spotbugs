@@ -29,7 +29,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
 	public void testFindIssuesAllFound() throws IOException, InterruptedException {
 		// set up mocks
 		final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
+        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         ByteArrayOutputStream findIssuesOutput = setupResponseCodeAndOutputStream(findIssuesConnection);
 
 		// execution
@@ -89,7 +89,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
 
 		// set up mocks
 		final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
+        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         ByteArrayOutputStream findIssuesOutput = setupResponseCodeAndOutputStream(findIssuesConnection);
 
 		final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
@@ -150,7 +150,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
 
 		// set up mocks
 		final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
+        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConnection);
 
 		// execution
@@ -174,7 +174,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
 
 		// set up mocks
 		final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
+        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConnection);
 
 		// execution
@@ -198,7 +198,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
 
 		// set up mocks
 		final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
+        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConnection);
 
 		// execution

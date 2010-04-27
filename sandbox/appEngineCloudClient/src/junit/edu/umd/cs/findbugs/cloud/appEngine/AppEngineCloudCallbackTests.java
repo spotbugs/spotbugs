@@ -21,7 +21,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
     public void testWaitForIssueSyncAllFound() throws Exception {
 		// set up mocks
 		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
-        when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
+        when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConn);
 
 		// execution
@@ -45,7 +45,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 	public void testWaitForIssueSyncReturnsImmediatelyWhenAlreadySynced() throws Exception {
 		// set up mocks
 		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
-        when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
+        when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConn);
 
 		// execution
@@ -112,7 +112,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 
 		// set up mocks
 		final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
+        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConnection);
 
 		final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
@@ -162,7 +162,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
     public void testIssueDataDownloadedCallback() throws IOException, InterruptedException {
 		// set up mocks
 		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
-        when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto()));
+        when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConn);
 
 		// execution

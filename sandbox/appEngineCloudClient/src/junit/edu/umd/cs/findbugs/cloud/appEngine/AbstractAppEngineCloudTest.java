@@ -15,10 +15,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Filter;
 import java.util.logging.Level;
@@ -34,7 +31,7 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
     protected BugInstance missingIssue;
     protected BugInstance foundIssue;
     protected boolean addMissingIssue;
-    private SortedBugCollection bugCollection;
+    protected SortedBugCollection bugCollection;
     private CloudPlugin plugin;
     private ConsoleHandler logHandler;
 
@@ -108,19 +105,18 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
         return new MockAppEngineCloudClient(plugin, bugCollection, Arrays.asList(connections));
     }
 
-    protected InputStream createFindIssuesResponse(ProtoClasses.Issue foundIssue) {
+    protected InputStream createFindIssuesResponse(ProtoClasses.Issue foundIssue, boolean addMissingIssue) {
+        return new ByteArrayInputStream(createFindIssuesResponseObj(foundIssue, addMissingIssue).toByteArray());
+    }
+
+    protected ProtoClasses.FindIssuesResponse createFindIssuesResponseObj(ProtoClasses.Issue foundIssue,
+                                                                          boolean addMissingIssue) {
         ProtoClasses.FindIssuesResponse.Builder issueList = ProtoClasses.FindIssuesResponse.newBuilder();
         if (addMissingIssue)
             issueList.addFoundIssues(ProtoClasses.Issue.newBuilder().build());
 
         issueList.addFoundIssues(foundIssue);
-        return new ByteArrayInputStream(issueList.build().toByteArray());
-    }
-
-    protected HttpURLConnection createResponselessConnection() throws IOException {
-        final HttpURLConnection conn = mock(HttpURLConnection.class);
-        setupResponseCodeAndOutputStream(conn);
-        return conn;
+        return issueList.build();
     }
 
     protected <E> List<E> newList(Iterable<E> iterable) {
