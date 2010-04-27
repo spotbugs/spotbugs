@@ -33,8 +33,9 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 
         // execute
 		AppEngineCloudClient cloudClient = createAppEngineCloudClient(logInConnection, uploadConnection);
-		foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
 		cloudClient.initialize();
+		cloudClient.bugsPopulated();
+		foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE+200, "my eval", "test@example.com"));
 		cloudClient.storeUserAnnotation(foundIssue);
 
 		// verify

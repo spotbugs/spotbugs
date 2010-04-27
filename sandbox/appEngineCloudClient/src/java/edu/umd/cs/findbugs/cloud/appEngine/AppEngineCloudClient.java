@@ -483,6 +483,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 	@SuppressWarnings("deprecation")
 	public void storeUserAnnotation(BugInstance bugInstance) {
         try {
+        	waitUntilIssueDataDownloaded();
         	newIssuesUploaded.await();
             networkClient.storeUserAnnotation(bugInstance);
         } catch (SignInCancelledException e) {

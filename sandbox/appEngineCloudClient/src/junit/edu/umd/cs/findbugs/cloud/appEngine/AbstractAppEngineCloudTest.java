@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -80,12 +81,8 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
         CloudPlugin plugin = new CloudPlugin("AppEngineCloudMiscTests", AppEngineCloudClient.class.getClassLoader(),
                                              AppEngineCloudClient.class, AppEngineNameLookup.class,
                                              new PropertyBundle(), "none", "none");
-        Executor runImmediatelyExecutor = new Executor() {
-            public void execute(Runnable command) {
-                command.run();
-            }
-        };
-        return new MockAppEngineCloudClient(plugin, bugs, runImmediatelyExecutor, mockConnections);
+        Executor executor = Executors.newCachedThreadPool();
+        return new MockAppEngineCloudClient(plugin, bugs, executor, mockConnections);
     }
 
     protected InputStream createFindIssuesResponse(ProtoClasses.Issue foundIssue) {
