@@ -52,7 +52,7 @@ import java.util.logging.Logger;
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
 
 public class AppEngineCloudNetworkClient {
-    private static final Logger LOGGER = Logger.getLogger(AppEngineCloudNetworkClient.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AppEngineCloudNetworkClient.class.getPackage().getName());
     /** For debugging */
     private static final boolean FORCE_UPLOAD_ALL_ISSUES = false;
     private static final int BUG_UPLOAD_PARTITION_SIZE = 10;
@@ -304,7 +304,7 @@ public class AppEngineCloudNetworkClient {
         if (issue == null)
         	  return Long.MAX_VALUE;
         if (AppEngineCloudClient.DEBUG_FIRST_SEEN)
-        System.out.println("First seen is " + issue.getFirstSeen() + " for " + b.getMessage());
+          System.out.println("First seen is " + issue.getFirstSeen() + " for " + b.getMessage());
         if (issue.getFirstSeen() == 0)
             return Long.MAX_VALUE;
         return issue.getFirstSeen();
