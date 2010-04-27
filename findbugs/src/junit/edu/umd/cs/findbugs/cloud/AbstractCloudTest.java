@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.cloud;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -145,23 +146,37 @@ public class AbstractCloudTest extends TestCase {
 		assertEquals("No classes were analyzed", trimWhitespace(summary.toString()));
 	}
 
+	
+	public void assertEqualText(String [] expectedLines, String actual) {
+		String actualLines [] = actual.split("\n");
+		for(int i = 0; i < expectedLines.length && i < actualLines.length; i++) {
+			assertEquals("line " + (i+1), expectedLines[i].trim(), actualLines[i].trim());
+		}
+		int diff = actualLines.length - expectedLines.length;
+		if (diff < 0) 
+		   fail((-diff) + " more lines than expected " 
+				   + Arrays.asList(actualLines).subList(expectedLines.length, actualLines.length));
+		else if (diff > 0) 
+			   fail((diff) + " missing lines " 
+					   + Arrays.asList(expectedLines).subList(actualLines.length, expectedLines.length));
+	}
 	public void testPrintSummaryOneBugNoEvals() {
 		BugInstance bug1 = new BugInstance("BUG_1", 2);
 		bug1.addClass("edu.umd.Test");
-		assertEquals(lines(
+		assertEqualText(new String[] {
 				"Code analyzed",
 				"      1 packages",
 				"      1 classes",
 				"      1 thousands of lines of non-commenting source statements",
 				"",
-				"Summary for 1 issues that are in the current view",
+				"Summary for 1 issues",
 				"",
 				"No evaluations found",
 				"",
-				"No bugs filed",
-				"",
+//				"No bugs filed",
+//				"",
 				"Distribution of number of reviews",
-				"   1  with   0 reviews"), printSummary(bug1));
+				"   1  with   0 reviews"}, printSummary(bug1));
 	}
 
 	public void testPrintSummaryWithEvaluations() {
@@ -169,13 +184,13 @@ public class AbstractCloudTest extends TestCase {
 		BugInstance bug2 = createBug("BUG_2", "NOT_A_BUG", "user");
 		BugInstance bug3 = createBug("BUG_3", "I_WILL_FIX", "user");
 		
-		assertEquals(lines(
+		assertEqualText(new String[] {
 				"Code analyzed",
 				"      1 packages",
 				"      3 classes",
 				"      1 thousands of lines of non-commenting source statements",
 				"",
-				"Summary for 3 issues that are in the current view",
+				"Summary for 3 issues",
 				"",
 				"People who have performed the most reviews",
 				"rnk  num reviewer",
@@ -187,10 +202,8 @@ public class AbstractCloudTest extends TestCase {
 				"   2 I will fix",
 				"   1 not a bug",
 				"",
-				"No bugs filed",
-				"",
 				"Distribution of number of reviews",
-				"   3  with   1 review"), 
+				"   3  with   1 review"}, 
 				
 				printSummary(bug1, bug2, bug3));
 	}
@@ -206,13 +219,13 @@ public class AbstractCloudTest extends TestCase {
 			}
         }
 		
-		assertEquals(lines(
+		assertEqualText(new String[] {
 				"Code analyzed",
 				"      1 packages",
 				"     67 classes",
 				"      7 thousands of lines of non-commenting source statements",
 				"",
-				"Summary for 67 issues that are in the current view",
+				"Summary for 67 issues",
 				"",
 				"People who have performed the most reviews",
 				"rnk  num reviewer",
@@ -233,10 +246,8 @@ public class AbstractCloudTest extends TestCase {
 				"  66 I will fix",
 				"   1 not a bug",
 				"",
-				"No bugs filed",
-				"",
 				"Distribution of number of reviews",
-				"  67  with   1 review"), 
+				"  67  with   1 review"}, 
 				
 				printSummary(bugs.toArray(new BugInstance[0])));
 	}
@@ -248,13 +259,13 @@ public class AbstractCloudTest extends TestCase {
 		bugs.add(createBug("MY_SPECIAL_BUG2", "NOT_A_BUG", "user3", "I_WILL_FIX", "user2"));
 		bugs.add(createBug("MY_SPECIAL_BUG3", "NOT_A_BUG", "user3", "I_WILL_FIX", "user2", "MOSTLY_HARMLESS", "user1"));
 		
-		assertEquals(lines(
+		assertEqualText(new String[] {
 				"Code analyzed",
 				"      1 packages",
 				"      3 classes",
 				"      1 thousands of lines of non-commenting source statements",
 				"",
-				"Summary for 3 issues that are in the current view",
+				"Summary for 3 issues",
 				"",
 				"People who have performed the most reviews",
 				"rnk  num reviewer",
@@ -268,12 +279,10 @@ public class AbstractCloudTest extends TestCase {
 				"   2 I will fix",
 				"   1 mostly harmless",
 				"",
-				"No bugs filed",
-				"",
 				"Distribution of number of reviews",
 				"   1  with   1 review",
 				"   1  with   2 reviews",
-				"   1  with   3 reviews"), 
+				"   1  with   3 reviews"}, 
 				
 				printSummary(bugs.toArray(new BugInstance[0])));
 	}
