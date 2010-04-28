@@ -1,7 +1,6 @@
 package edu.umd.cs.findbugs.flybush;
 
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
@@ -39,12 +38,12 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         SqlCloudSession oldSession = persistenceHelper.createSqlCloudSession(
                 100,
                 new Date(System.currentTimeMillis() - 8 * ONE_DAY_IN_MILLIS),
-                oldUser.createKeyObject());
+                oldUser.createKeyObject(), "old@test.com");
         DbUser recentUser = persistenceHelper.createDbUser("http://some.website2", "recent@test.com");
         SqlCloudSession recentSession = persistenceHelper.createSqlCloudSession(
                 101,
                 new Date(System.currentTimeMillis() - 6 * ONE_DAY_IN_MILLIS),
-                recentUser.createKeyObject());
+                recentUser.createKeyObject(), "old@test.com");
         getPersistenceManager().makePersistentAll(oldUser, recentUser, oldSession, recentSession);
 
         assertEquals("old@test.com", getDbUser(findSqlSession(100).get(0).getUser()).getEmail());
@@ -54,6 +53,30 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 
         assertEquals(0, findSqlSession(100).size());
         assertEquals("recent@test.com", getDbUser(findSqlSession(101).get(0).getUser()).getEmail());
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public void testUpdateEvaluationEmails() throws Exception {
+        // setup
+        DbUser userA = persistenceHelper.createDbUser("http://some.website", "a@a.com");
+        DbEvaluation evalA = persistenceHelper.createDbEvaluation();
+        evalA.setWho(userA.createKeyObject());
+        evalA.setEmail("x@x.com");
+
+        DbUser userB = persistenceHelper.createDbUser("http://some.website2", "b@b.com");
+        DbEvaluation evalB = persistenceHelper.createDbEvaluation();
+        evalB.setWho(userB.createKeyObject());
+
+        PersistenceManager pm = getPersistenceManager();
+        pm.makePersistentAll(userA, userB, evalA, evalB);
+
+        // execute
+        executeGet("/update-evaluation-emails");
+
+        // verify
+        pm.refreshAll(evalA, evalB);
+        assertEquals("x@x.com", evalA.getEmail());
+        assertEquals("b@b.com", evalB.getEmail());
     }
 
     public void testUpdateIssueTimestampsNotAuthenticated() throws Exception {
@@ -155,6 +178,8 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
                         .build())
                 .build();
         executePost("/update-issue-timestamps", tsCmd.toByteArray());
+
+        // verify
         pm.refreshAll(issue1, issue2);
         checkResponse(200);
         assertEquals(SAMPLE_TIMESTAMP +50, issue1.getFirstSeen());
@@ -179,6 +204,8 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
                         .build())
                 .build();
         executePost("/update-issue-timestamps", tsCmd.toByteArray());
+
+        // verify
         pm.refreshAll(issue1, issue2);
         checkResponse(200);
         assertEquals(SAMPLE_TIMESTAMP +50, issue1.getFirstSeen());
@@ -189,6 +216,8 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 		Issue issue = createProtoIssue("fad");
 		UploadIssues issuesToUpload = UploadIssues.newBuilder().setSessionId(555).addNewIssues(issue).build();
 		executePost("/upload-issues", issuesToUpload.toByteArray());
+
+        // verify
 		checkResponse(403);
 	}
 
@@ -222,6 +251,8 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 				.setSessionId(555).addNewIssues(issue1).addNewIssues(issue2)
 				.build();
 		executePost("/upload-issues", issuesToUpload.toByteArray());
+
+        // verify
 		checkResponse(200, "");
 		List<DbIssue> dbIssues = (List<DbIssue>) getPersistenceManager()
 				.newQuery("select from " + persistenceHelper.getDbIssueClass().getName()).execute();
@@ -244,6 +275,8 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 				.addNewIssues(newIssue)
 				.build();
 		executePost("/upload-issues", issuesToUpload.toByteArray());
+
+        // verify
 		checkResponse(200, "");
 		List<DbIssue> dbIssues = (List<DbIssue>) getPersistenceManager()
 				.newQuery("select from " + persistenceHelper.getDbIssueClass().getName() + " order by hash ascending").execute();
@@ -259,6 +292,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 				.setHash(encodeHash("fad"))
 				.setEvaluation(createProtoEvaluation())
 				.build().toByteArray());
+        // verify
 		checkResponse(403, "not authenticated");
 	}
 
@@ -273,6 +307,8 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 				.setHash(encodeHash("fad"))
 				.setEvaluation(protoEval)
 				.build().toByteArray());
+
+        // verify
 		checkResponse(200);
         getPersistenceManager().refresh(dbIssue);
 		assertEquals(1, dbIssue.getEvaluations().size());
@@ -313,15 +349,18 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 	}
 
 	public void testUploadEvaluationWithFindIssuesFirst() throws Exception {
+        // setup
 		createCloudSession(555);
 
+        // execute log-in
 		executePost(authServlet, "/log-in", LogIn.newBuilder()
 				.setSessionId(555)
                 .setAnalysisTimestamp(100)
 				.build().toByteArray());
 		checkResponse(200);
-		initServletAndMocks();
 
+        // execute find-issues
+		initServletAndMocks();
         QueryServlet queryServlet = new QueryServlet();
         queryServlet.setPersistenceHelper(testHelper.createPersistenceHelper(getPersistenceManager()));
         initServletAndMocks();
@@ -330,8 +369,9 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 				.addMyIssueHashes(encodeHash("abc"))
 				.build().toByteArray());
 		checkResponse(200);
-		initServletAndMocks();
 
+        // execute upload-evaluation
+		initServletAndMocks();
         DbIssue dbIssue = FlybushServletTestUtil.createDbIssue("fad", persistenceHelper);
         getPersistenceManager().makePersistent(dbIssue);
 		Evaluation protoEval = createProtoEvaluation();
@@ -340,13 +380,20 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 				.setHash(encodeHash("fad"))
 				.setEvaluation(protoEval)
 				.build().toByteArray());
+
+        // verify
 		checkResponse(200);
+
+        // evaluations
 		assertEquals(1, dbIssue.getEvaluations().size());
 		DbEvaluation dbEval = dbIssue.getEvaluations().iterator().next();
 		assertEquals(protoEval.getComment(), dbEval.getComment());
 		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
 		assertEquals(protoEval.getWhen(), dbEval.getWhen());
 		assertEquals("my@email.com", getDbUser(dbEval.getWho()).getEmail());
+		assertEquals("my@email.com", dbEval.getEmail());
+
+        // invocation
 		Object invocationId = dbEval.getInvocationKey();
 		assertNotNull(invocationId);
 		DbInvocation invocation = persistenceHelper.getObjectById(getPersistenceManager(),

@@ -59,6 +59,7 @@
         <url-pattern>/upload-evaluation</url-pattern>
         <url-pattern>/set-bug-link</url-pattern>
         <url-pattern>/expire-sql-sessions</url-pattern>
+        <url-pattern>/update-evaluation-emails</url-pattern>
     </servlet-mapping>
 
     <security-constraint>

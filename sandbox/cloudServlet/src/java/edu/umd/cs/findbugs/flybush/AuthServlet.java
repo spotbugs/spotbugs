@@ -76,7 +76,7 @@ public class AuthServlet extends AbstractFlybushServlet {
         long id = Long.parseLong(req.getRequestURI().substring("/browser-auth/".length()));
         Date date = new Date();
         DbUser dbUser = persistenceHelper.createDbUser(openidUrl, email);
-        SqlCloudSession session = persistenceHelper.createSqlCloudSession(id, date, dbUser.createKeyObject());
+        SqlCloudSession session = persistenceHelper.createSqlCloudSession(id, date, dbUser.createKeyObject(), email);
 
         Transaction tx = pm.currentTransaction();
         tx.begin();

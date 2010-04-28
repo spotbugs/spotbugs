@@ -4,7 +4,6 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 public interface PersistenceHelper {
@@ -13,7 +12,7 @@ public interface PersistenceHelper {
     PersistenceManager getPersistenceManager() throws IOException;
 
     DbUser createDbUser(String openidUrl, String email);
-    SqlCloudSession createSqlCloudSession(long id, Date date, Object userKey);
+    SqlCloudSession createSqlCloudSession(long id, Date date, Object userKey, String email);
     DbInvocation createDbInvocation();
     DbIssue createDbIssue();
     DbEvaluation createDbEvaluation();
@@ -31,4 +30,6 @@ public interface PersistenceHelper {
     Map<String, DbIssue> findIssues(PersistenceManager pm, Iterable<String> hashes);
 
     void convertToOldStyleForTesting(DbEvaluation eval);
+
+    String getEmail(PersistenceManager pm, Comparable<?> who);
 }

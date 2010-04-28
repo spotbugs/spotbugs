@@ -17,24 +17,30 @@ public class LocalSqlCloudSession implements SqlCloudSession {
     private String randomID;
 
     @Persistent private LocalDbUser user;
+    @Persistent private String email;
     @Persistent private Date date;
     @Persistent private LocalDbInvocation invocation;
 
-    public LocalSqlCloudSession(LocalDbUser author, String randomID, Date date) {
+    public LocalSqlCloudSession(LocalDbUser author, String email, String randomID, Date date) {
         this.user = author;
+        this.email = email;
         this.randomID = randomID;
         this.date = date;
     }
 
-    public LocalSqlCloudSession(LocalDbUser author, long randomID, Date date) {
-        this(author, Long.toString(randomID), date);
+    public LocalSqlCloudSession(LocalDbUser author, String email, long randomID, Date date) {
+        this(author, email, Long.toString(randomID), date);
     }
 
     public LocalDbUser getUser() {
 		return user;
 	}
 
-	public LocalDbInvocation getInvocation() {
+    public String getEmail() {
+        return email;
+    }
+
+    public LocalDbInvocation getInvocation() {
 		return invocation;
 	}
 

@@ -48,8 +48,8 @@ public class LocalPersistenceHelper implements PersistenceHelper {
         return new LocalDbUser(openidUrl, email);
     }
 
-    public SqlCloudSession createSqlCloudSession(long id, Date date, Object userKey) {
-        return new LocalSqlCloudSession((LocalDbUser) userKey, id, date);
+    public SqlCloudSession createSqlCloudSession(long id, Date date, Object userKey, String email) {
+        return new LocalSqlCloudSession((LocalDbUser) userKey, email, id, date);
     }
 
     public DbInvocation createDbInvocation() {
@@ -108,5 +108,9 @@ public class LocalPersistenceHelper implements PersistenceHelper {
     }
 
     public void convertToOldStyleForTesting(DbEvaluation eval) {
+    }
+
+    public String getEmail(PersistenceManager pm, Comparable<?> who) {
+        return ((LocalDbUser) who).getEmail();
     }
 }

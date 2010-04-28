@@ -29,6 +29,7 @@ import java.util.logging.Level;
 @SuppressWarnings("serial")
 public class UpdateServlet extends AbstractFlybushServlet {
     static final int ONE_DAY_IN_MILLIS = 1000*60*60*24;
+    @SuppressWarnings({"deprecation"})
     private static final long FINDBUGS_FIRST_RELEASE = new Date("Jan 23, 1996").getTime();
 
     @Override
@@ -38,6 +39,9 @@ public class UpdateServlet extends AbstractFlybushServlet {
         try {
             if (req.getRequestURI().equals("/expire-sql-sessions")) {
                 expireSqlSessions(resp, pm);
+
+            } else if (req.getRequestURI().equals("/update-evaluation-emails")) {
+                updateEvaluationEmails(resp, pm);
 
             } else {
                 super.doGet(req, resp);
@@ -64,6 +68,38 @@ public class UpdateServlet extends AbstractFlybushServlet {
             
         } else if (uri.equals("/set-bug-link")) {
             setBugLink(req, resp, pm);
+        }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void updateEvaluationEmails(HttpServletResponse resp, PersistenceManager pm) {
+        int skipped = 0;
+        int updated = 0;
+        boolean finished = false;
+        try {
+            Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName());
+            for (DbEvaluation evaluation : (List<DbEvaluation>) query.execute()) {
+                if (evaluation.getEmail() != null) {
+                    skipped++;
+                    continue;
+                }
+                evaluation.setEmail(persistenceHelper.getEmail(pm, evaluation.getWho()));
+                Transaction tx = pm.currentTransaction();
+                try {
+                    tx.begin();
+                    pm.makePersistent(evaluation);
+                    tx.commit();
+                    updated++;
+                } finally {
+                    if (tx.isActive())
+                        tx.rollback();
+                }
+            }
+            finished = true;
+        } finally {
+            LOGGER.info((finished ? "" : "(PARTIAL UPDATE) ")
+                        + "Updated " + updated + ", skipped " + skipped);
+            resp.setStatus(200);
         }
     }
 
@@ -182,6 +218,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
 
         DbEvaluation dbEvaluation = createDbEvaluation(uploadEvalMsg.getEvaluation());
         dbEvaluation.setWho(session.getUser());
+        dbEvaluation.setEmail(session.getEmail());
         copyInvocationToEvaluation(pm, session, dbEvaluation);
         Transaction tx = pm.currentTransaction();
         try {

@@ -20,6 +20,7 @@ public class AppEngineDbEvaluation implements DbEvaluation {
     private Key key;
 
 	@Persistent private Key who;
+    @Persistent private String email;
     @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"})
     @Persistent private Key invocation;
     @Persistent private String designation;
@@ -38,6 +39,14 @@ public class AppEngineDbEvaluation implements DbEvaluation {
 
     public void setWho(Object user) {
         setWho((Key) user);
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setInvocation(DbInvocation invocation) {

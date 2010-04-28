@@ -37,8 +37,8 @@ public class AppEnginePersistenceHelper implements PersistenceHelper {
         return new AppEngineDbUser(openidUrl, email);
     }
 
-    public AppEngineSqlCloudSession createSqlCloudSession(long id, Date date, Object userKey) {
-        return new AppEngineSqlCloudSession((Key) userKey, id, date);
+    public AppEngineSqlCloudSession createSqlCloudSession(long id, Date date, Object userKey, String email) {
+        return new AppEngineSqlCloudSession((Key) userKey, id, email, date);
     }
 
     public Class<? extends DbUser> getDbUserClass() {
@@ -119,5 +119,10 @@ public class AppEnginePersistenceHelper implements PersistenceHelper {
         AppEngineDbEvaluation aede = (AppEngineDbEvaluation) eval;
         aede.setShortComment(aede.getLongComment().getValue());
         aede.setLongComment(null);
+    }
+
+    public String getEmail(PersistenceManager pm, Comparable<?> who) {
+        //noinspection RedundantCast
+        return pm.getObjectById(getDbUserClass(), (Key) who).getEmail();
     }
 }

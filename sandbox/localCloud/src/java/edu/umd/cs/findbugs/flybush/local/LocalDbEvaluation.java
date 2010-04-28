@@ -19,6 +19,7 @@ public class LocalDbEvaluation implements DbEvaluation {
     private Long key;
 
 	@Persistent private LocalDbUser who;
+    @Persistent private String email;
     @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"})
     @Persistent private LocalDbInvocation invocation;
     @Persistent private String designation;
@@ -36,6 +37,14 @@ public class LocalDbEvaluation implements DbEvaluation {
 
     public void setWho(Object user) {
         who = (LocalDbUser) user;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setInvocation(DbInvocation invocation) {

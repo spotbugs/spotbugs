@@ -43,7 +43,7 @@ public abstract class AuthServletTest extends AbstractFlybushServletTest {
     public void testCheckAuthForValidId() throws Exception {
         DbUser user = persistenceHelper.createDbUser("http://some.website", "my@email.com");
         SqlCloudSession session = persistenceHelper.createSqlCloudSession(100, new Date(200),
-                                                                          user.createKeyObject());
+                                                                          user.createKeyObject(), "my@email.com");
         getPersistenceManager().makePersistentAll(user, session);
 
 		executeGet("/check-auth/100");

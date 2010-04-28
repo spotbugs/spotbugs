@@ -2,6 +2,7 @@
 
 <html>
 <head>
+    <title>FindBugs Cloud Sign-in</title>
     <style type="text/css">
         /* Basic page formatting. */
         body {

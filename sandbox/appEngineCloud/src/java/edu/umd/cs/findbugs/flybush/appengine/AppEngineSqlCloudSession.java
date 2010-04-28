@@ -18,24 +18,30 @@ public class AppEngineSqlCloudSession implements SqlCloudSession {
     private String randomID;
 
     @Persistent private Key user;
+    @Persistent private String email;
     @Persistent private Date date;
     @Persistent private Key invocation;
 
-    public AppEngineSqlCloudSession(Key author, String randomID, Date date) {
+    public AppEngineSqlCloudSession(Key author, String randomID, String email, Date date) {
         this.user = author;
         this.randomID = randomID;
+        this.email = email;
         this.date = date;
     }
 
-    public AppEngineSqlCloudSession(Key author, long randomID, Date date) {
-        this(author, Long.toString(randomID), date);
+    public AppEngineSqlCloudSession(Key author, long randomID, String email, Date date) {
+        this(author, Long.toString(randomID), email, date);
     }
 
     public Key getUser() {
 		return user;
 	}
 
-	public Key getInvocation() {
+    public String getEmail() {
+        return email;
+    }
+
+    public Key getInvocation() {
 		return invocation;
 	}
 

@@ -67,12 +67,21 @@
         <url-pattern>/upload-evaluation</url-pattern>
         <url-pattern>/set-bug-link</url-pattern>
         <url-pattern>/expire-sql-sessions</url-pattern>
+        <url-pattern>/update-evaluation-emails</url-pattern>
     </servlet-mapping>
 
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>Remote API</web-resource-name>
             <url-pattern>/remote_api</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>Update Evaluation Emails</web-resource-name>
+            <url-pattern>/update-evaluation-emails</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>Expire SQL Sessions</web-resource-name>
+            <url-pattern>/expire-sql-sessions</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>admin</role-name>

@@ -12,8 +12,7 @@ import javax.jdo.annotations.PrimaryKey;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class AppEngineDbUser implements DbUser {
     @PrimaryKey
-    @Persistent
-    protected String openid;
+    @Persistent protected String openid;
 
     @Persistent protected String email;
 
