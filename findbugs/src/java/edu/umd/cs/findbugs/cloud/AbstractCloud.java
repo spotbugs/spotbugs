@@ -629,7 +629,7 @@ public abstract class AbstractCloud implements Cloud {
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to obtain username", e);
 		}
-		if (!lookup.initialize(plugin, bugCollection)) {
+		if (!lookup.signIn(plugin, bugCollection)) {
 			throw new RuntimeException("Unable to obtain username");
 		}
 		return lookup;

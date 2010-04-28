@@ -58,7 +58,7 @@ public class PromptForNameLookup implements NameLookup {
 	
 
 
-	public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) {
+	public boolean signIn(CloudPlugin plugin, BugCollection bugCollection) {
 		this.bugCollection = bugCollection;
 		return true;
 	}

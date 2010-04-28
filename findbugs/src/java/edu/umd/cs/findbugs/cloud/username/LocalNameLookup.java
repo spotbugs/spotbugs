@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.cloud.db.DBCloud;
 public class LocalNameLookup implements NameLookup {
 
 	String username;
-	public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) {
+	public boolean signIn(CloudPlugin plugin, BugCollection bugCollection) {
 			
 		try {
 		username = System.getProperty(USER_NAME, "");

@@ -15,6 +15,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluatio
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 import edu.umd.cs.findbugs.util.Util;
 
+import javax.swing.SwingUtilities;
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -27,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -213,60 +215,112 @@ public class AppEngineCloudClient extends AbstractCloud {
             return;
 
         final IdentityHashMap<BugInstance, BugDesignation> designationsLoadedFromXML = getDesignationsFromXML();
+        
         int num = designationsLoadedFromXML.size();
         if (num <= 0)
             return;
-        int result = getGuiCallback().showConfirmDialog("The loaded XML file contains " + num + " user evaluations of issues\n"
-                                                    + "Do you wish to upload these evaluations as your evaluations?", "Upload evaluations", "Upload", "Skip");
-        if (result != IGuiCallback.YES_OPTION)
-            return;
-
+       
         backgroundExecutorService.execute(new Runnable() {
-            @SuppressWarnings({"deprecation"})
+
             public void run() {
                 waitUntilIssueDataDownloaded();
-                try {
-                    newIssuesUploaded.await();
-                } catch (InterruptedException e1) {
-                    return;
-                }
-
-                try {
-                    signInIfNecessary("To store your evaluations on the FindBugs Cloud, you must sign in first.");
-                } catch (SignInCancelledException e) {
-                    return;
-                }
-                if (getSigninState() != SigninState.SIGNED_IN) {
-                    getGuiCallback().showMessageDialog("Can't upload evaluations unless you are signed in");
-                    return;
-                }
-                int uploaded = 0;
-                int outOfDate = 0;
-                try {
-                    for (Map.Entry<BugInstance, BugDesignation> e : designationsLoadedFromXML.entrySet()) {
-                        BugInstance b = e.getKey();
-                        BugDesignation loaded = e.getValue();
-                        BugDesignation inCloud = getPrimaryDesignation(b);
-                        if (inCloud == null || !loaded.getDesignationKey().equals(inCloud.getDesignationKey())
-                            || !Util.nullSafeEquals(loaded.getAnnotationText(), inCloud.getAnnotationText())) {
-                            if (inCloud != null && inCloud.getTimestamp() > loaded.getTimestamp())
-                                outOfDate++;
-                            else {
-                                b.setUserDesignation(loaded);
-                                storeUserAnnotation(b);
-                                uploaded++;
-                            }
-
-                        }
+                for (Iterator<Map.Entry<BugInstance, BugDesignation>> i = designationsLoadedFromXML.entrySet().iterator(); i.hasNext(); ) {
+                    Map.Entry<BugInstance, BugDesignation> e = i.next();
+                    BugInstance b = e.getKey();
+                    BugDesignation loaded = e.getValue();
+                    BugDesignation inCloud = getPrimaryDesignation(b);
+                    if (!shouldUpload(loaded, inCloud))
+                    	   i.remove();
                     }
-                    final String msg = String.format("Uploaded %d evaluations from XML (%d out of date, %d already present)",
-                                                     uploaded, outOfDate, designationsLoadedFromXML.size() - uploaded - outOfDate);
-                    getGuiCallback().showMessageDialog(msg);
-                } catch (Exception e) {
-                    getGuiCallback().showMessageDialog("Could not upload evaluations from XML: " + e.getMessage());
-                }
+                if (designationsLoadedFromXML.isEmpty())
+                	  return;
+                
+                SwingUtilities.invokeLater(new Runnable() {
+
+					public void run() {
+						final String userString = getAuthors(designationsLoadedFromXML);
+		                
+						 String message;
+						 if (userString.equals(getUser()))
+							 message =
+						  "The loaded XML file contains " + designationsLoadedFromXML.size() + " of your evaluations that are more recent than ones stored in the cloud"
+                                 + "Do you wish to upload these evaluations?";
+						 else message =
+							  "The loaded XML file contains " + designationsLoadedFromXML.size() + " user evaluations of issues by " + userString +"\n"
+                              + "Do you wish to upload these evaluations as your evaluations?";
+						int result = getGuiCallback().showConfirmDialog(message, "Upload evaluations", "Upload", "Skip");
+						 if (result != IGuiCallback.YES_OPTION)
+							 return;
+						 try {
+			                    signInIfNecessary("To store your evaluations on the FindBugs Cloud, you must sign in first.");
+			                } catch (SignInCancelledException e) {
+			                    return;
+			                }
+			                if (getSigninState() != SigninState.SIGNED_IN) {
+			                    getGuiCallback().showMessageDialog("Can't upload evaluations unless you are signed in");
+			                    return;
+			                }
+						 backgroundExecutorService.execute(new Runnable() {
+					            @SuppressWarnings({"deprecation"})
+							public void run() {
+								try {
+				                    newIssuesUploaded.await();
+				                } catch (InterruptedException e1) {
+				                    return;
+				                }
+				                for (Map.Entry<BugInstance, BugDesignation> e: designationsLoadedFromXML.entrySet()) {
+				                	  BugInstance b = e.getKey();
+				                  BugDesignation loaded = e.getValue();
+				                  b.setUserDesignation(loaded);
+				                	  storeUserAnnotation(b);
+				                }
+				                    
+								
+							}});
+						
+					} });
 
             }
+
+			/**
+			 * Given two Bug designations, one from local storage and one in the cloud, should
+			 * we upload the one from local storage
+			 * @param loaded
+			 * @param inCloud
+			 * @return
+			 */
+			private boolean shouldUpload(BugDesignation loaded,
+					BugDesignation inCloud) {
+				if (inCloud == null)
+					return true;
+				if (inCloud.getTimestamp() > loaded.getTimestamp())
+					return false;
+				return  !loaded.getDesignationKey().equals(inCloud.getDesignationKey())
+				    || !Util.nullSafeEquals(loaded.getAnnotationText(), inCloud.getAnnotationText());
+				   
+			}
+
+			/**
+			 * @param designationsLoadedFromXML
+			 * @return
+			 */
+			private String getAuthors(
+					final IdentityHashMap<BugInstance, BugDesignation> designationsLoadedFromXML) {
+				HashSet<String> users = new HashSet<String>();
+                
+                for(BugDesignation bd : designationsLoadedFromXML.values()) {
+                		String user = bd.getUser();
+                		if (user == null || user.length() == 0)
+                			user = "<unknown>";
+        			users.add(user);
+                }
+                String userString;
+                if (users.size() == 1)
+                	    userString = users.iterator().next();
+                else
+                	    userString  = users.toString();
+				return userString;
+			}
         });
     }
 
@@ -328,6 +382,8 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
     public void signIn() throws IOException {
+    		if (getSigninState() == SigninState.SIGNED_IN)
+    			return;
         setSigninState(SigninState.SIGNING_IN);
         setStatusMsg("Signing into FindBugs Cloud");
         try {

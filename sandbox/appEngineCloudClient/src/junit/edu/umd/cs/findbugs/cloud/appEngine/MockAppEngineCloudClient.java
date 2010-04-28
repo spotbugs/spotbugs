@@ -99,7 +99,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
                 return mockSessionId;
             }
         });
-        when(mockNameLookup.initialize(Mockito.<CloudPlugin>any(), Mockito.<BugCollection>any()))
+        when(mockNameLookup.signIn(Mockito.<CloudPlugin>any(), Mockito.<BugCollection>any()))
                 .thenAnswer(new Answer<Boolean>() {
                     public Boolean answer(InvocationOnMock invocationOnMock) throws Throwable {
                         mockSessionId = 555L;

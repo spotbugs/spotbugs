@@ -60,7 +60,7 @@ public class AppEngineNameLookup implements NameLookup {
 	private String username;
 	private String host;
 
-    public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) throws IOException {
+    public boolean signIn(CloudPlugin plugin, BugCollection bugCollection) throws IOException {
         loadProperties(plugin);
 
         if (softSignin())
@@ -98,6 +98,11 @@ public class AppEngineNameLookup implements NameLookup {
             throw new IllegalStateException("Host not specified for " + plugin.getId());
     }
 
+    /**
+     * If the user can be authenticated due to an existing session id, do so
+     * @return true if we could authenticate the user
+     * @throws IOException
+     */
     public boolean softSignin() throws IOException {
         if (sessionId != null) {
             if (checkAuthorized(getAuthCheckUrl(sessionId))) {
@@ -108,7 +113,9 @@ public class AppEngineNameLookup implements NameLookup {
             }
         }
         // check the previously used session ID
-        long id = loadOrCreateSessionId();
+        long id = loadSessionId();
+        if (id == 0)
+        	  return false;
         boolean authorized = checkAuthorized(getAuthCheckUrl(id));
         if (authorized) {
             LOGGER.info("Authorized with session ID: " + id);
@@ -141,6 +148,7 @@ public class AppEngineNameLookup implements NameLookup {
     }
 
     public static void saveSessionInformation(long sessionId) {
+    	    assert sessionId != 0;
         Preferences.userNodeForPackage(AppEngineNameLookup.class).putLong(KEY_APPENGINECLOUD_SESSION_ID, sessionId);
     }
 
@@ -159,17 +167,29 @@ public class AppEngineNameLookup implements NameLookup {
 	// ======================= end of public methods =======================
 
 	private long loadOrCreateSessionId() {
+		long id = loadSessionId();
+		if (id != 0) {
+			LOGGER.info("Using saved session ID: " + id);
+			return id;
+		}
+		SecureRandom r = new SecureRandom();
+		while (id == 0)
+			id = r.nextLong();
+		if (id == 0) { // 0 is reserved for no session id
+			id = 42;
+		}
+		if (isSavingSessionInfoEnabled())
+			saveSessionInformation(id);
+
+		return id;
+	}
+
+	/**
+     * @return session id if already exists, or 0 if it doesn't
+     */
+    private long loadSessionId() {
 	    Preferences prefs = Preferences.userNodeForPackage(AppEngineNameLookup.class);
 	    long id = prefs.getLong(KEY_APPENGINECLOUD_SESSION_ID, 0);
-	    if (id == 0) {
-	    	SecureRandom r = new SecureRandom();
-	    	while (id == 0) 
-	    		id = r.nextLong();
-            if (isSavingSessionInfoEnabled())
-                saveSessionInformation(id);
-        } else {
-            LOGGER.info("Using saved session ID: " + id);
-        }
 	    return id;
     }
 

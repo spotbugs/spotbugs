@@ -34,7 +34,7 @@ import java.util.concurrent.ExecutorService;
  * @author Andrei
  */
 public interface IGuiCallback {
-	
+	/** If true, do not open windows or browsers */
 	boolean isHeadless();
 	void showMessageDialog(String message);
 	

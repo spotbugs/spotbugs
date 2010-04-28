@@ -41,5 +41,5 @@ public interface NameLookup {
 	 * 
 	 * @return true if successful
 	 */
-	boolean initialize(CloudPlugin plugin, BugCollection bugCollection) throws IOException;
+	boolean signIn(CloudPlugin plugin, BugCollection bugCollection) throws IOException;
 }

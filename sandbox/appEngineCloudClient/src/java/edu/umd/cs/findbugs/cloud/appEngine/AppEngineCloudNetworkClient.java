@@ -78,8 +78,7 @@ public class AppEngineCloudNetworkClient {
     /** returns whether soft initialization worked and the user is now signed in */
     public boolean initialize() throws IOException {
         lookerupper = createNameLookup();
-        if (!getGuiCallback().isHeadless())
-            lookerupper.softSignin();
+        lookerupper.softSignin();
         this.sessionId = lookerupper.getSessionId();
         this.username = lookerupper.getUsername();
         this.host = lookerupper.getHost();
@@ -89,7 +88,7 @@ public class AppEngineCloudNetworkClient {
     public void signIn(boolean force) throws IOException {
         if (!force && sessionId != null)
             throw new IllegalStateException("already signed in");
-        if (!lookerupper.initialize(cloudClient.getPlugin(), cloudClient.getBugCollection())) {
+        if (!lookerupper.signIn(cloudClient.getPlugin(), cloudClient.getBugCollection())) {
             getGuiCallback().setErrorMessage("Signing into FindBugs Cloud failed!");
             return;
         }

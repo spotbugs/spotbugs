@@ -23,6 +23,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.BugCollectionStorageCloud;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
@@ -98,12 +99,12 @@ public class CommentsArea {
 				new DocumentListener() {
 
 					public void insertUpdate(DocumentEvent e) {
-						setProjectChanged(true);
+						setCommentsChanged(true);
 						changed = true;
 					}
 
 					public void removeUpdate(DocumentEvent e) {
-						setProjectChanged(true);
+						setCommentsChanged(true);
 						changed = true;
 					}
 
@@ -299,7 +300,7 @@ public class CommentsArea {
 			// so when not enabled shows default setting of designation
 			setUnknownDesignation();
 			userCommentsText.setBackground(userCommentsTextUnenabledColor);
-			setProjectChanged(b);
+			setCommentsChanged(b);
 		} else
 			userCommentsText.setBackground(Color.WHITE);
 		userCommentsText.setEnabled(isEnabled);
@@ -347,7 +348,7 @@ public class CommentsArea {
 					setUserCommentInputEnableFromSwingThread(plugin.canStoreUserAnnotation(bug));
 				}
 				changed = false;
-				setProjectChanged(b);
+				setCommentsChanged(b);
 			}
 		});
 	}
@@ -360,7 +361,7 @@ public class CommentsArea {
 				updateCommentsFromNonLeafInformationFromSwingThread(theAspects);
 				setUserCommentInputEnableFromSwingThread(true);
 				changed = false;
-				setProjectChanged(b);
+				setCommentsChanged(b);
 			}
 		});
 	}
@@ -386,7 +387,7 @@ public class CommentsArea {
 		backgroundExecutor.execute(new Runnable() {
 	        public void run() {
                 bug.setAnnotationText(comments, MainFrame.getInstance().bugCollection);
-                setProjectChanged(true);
+                setCommentsChanged(true);
 		        changed = false;
 		        addToPrevComments(comments);
 	        }
@@ -609,7 +610,7 @@ public class CommentsArea {
 				reportText.setText(report);
 			}
 			changed = true;
-			setProjectChanged(true);
+			setCommentsChanged(true);
 		}
 		setDesignationComboBox(designationKey);
 	}
@@ -632,7 +633,7 @@ public class CommentsArea {
 		for (BugLeafNode nextNode : filteredSet)
 			if (changeDesignationOfBug(nextNode, designationKey)){
 				changed = true;
-				setProjectChanged(true);
+				setCommentsChanged(true);
 			}
 		setDesignationComboBox(designationKey);
 	}
@@ -793,7 +794,7 @@ public class CommentsArea {
 			for (TreePath pathToNode : listOfNodesToReconstruct) {
 				model.treeNodeChanged(pathToNode);
 			}
-			setProjectChanged(true);
+			setCommentsChanged(true);
 		} else if (getSorter().getOrderAfterDivider().contains(
 				Sortables.DESIGNATION)) {
 
@@ -823,8 +824,10 @@ public class CommentsArea {
 		return null;
 	}
 
-	private void setProjectChanged(boolean b) {
-		frame.setProjectChanged(b);
+	private void setCommentsChanged(boolean b) {
+		Cloud cloud = getCloud();
+		if (cloud == null || cloud instanceof BugCollectionStorageCloud)
+		  frame.setProjectChanged(b);
 	}
 
 	/**

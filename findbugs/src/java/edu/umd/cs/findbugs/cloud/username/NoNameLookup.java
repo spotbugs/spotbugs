@@ -34,7 +34,7 @@ public class NoNameLookup implements NameLookup {
 		return "no name";
 	}
 	
-	public boolean initialize(CloudPlugin plugin, BugCollection bugCollection) {
+	public boolean signIn(CloudPlugin plugin, BugCollection bugCollection) {
 		return true;
 	}
 
