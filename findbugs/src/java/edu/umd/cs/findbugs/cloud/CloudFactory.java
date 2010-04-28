@@ -53,10 +53,13 @@ public class CloudFactory {
     		if (cloudId != null) {
     			plugin = registeredClouds.get(cloudId);
     		}
+    		boolean usedDefaultCloud = false;
     		if (plugin == null)  {
     			if (DEFAULT_CLOUD != null)
     				 LOGGER.log(Level.FINE, "Trying default cloud " + DEFAULT_CLOUD);
-    			plugin = registeredClouds.get(DEFAULT_CLOUD);
+    			cloudId = DEFAULT_CLOUD;
+    			plugin = registeredClouds.get(cloudId);
+    			usedDefaultCloud = true;
     			if (plugin == null) {
     				LOGGER.log(Level.FINE, "default cloud " + DEFAULT_CLOUD + " not registered");
     		    		
@@ -75,7 +78,8 @@ public class CloudFactory {
 			if (DEBUG)
 				bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloud.getClass().getName());
 			 LOGGER.log(Level.FINE, "constructed cloud plugin " + plugin.getId());;
-		 		
+		 	if (usedDefaultCloud)
+		 		bc.getProject().setCloudId(plugin.getId());
 			return cloud;
 		} catch (Exception e) {
 			if (DEBUG) {

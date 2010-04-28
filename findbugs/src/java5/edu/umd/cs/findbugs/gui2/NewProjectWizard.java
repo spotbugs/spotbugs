@@ -106,7 +106,7 @@ public class NewProjectWizard extends FBDialog
 	private int currentPanel;
 
 	
-	class CloudComboBoxRenderer extends BasicComboBoxRenderer {
+	static class CloudComboBoxRenderer extends BasicComboBoxRenderer {
 	    public Component getListCellRendererComponent(JList list, Object value,
 	        int index, boolean isSelected, boolean cellHasFocus) {
 	    	  CloudPlugin plugin = (CloudPlugin) value;
@@ -175,7 +175,7 @@ public class NewProjectWizard extends FBDialog
 		for(CloudPlugin c : CloudFactory.getRegisteredClouds().values()) {
 			cloudSelector.addItem(c);
 		}
-		if (project.getCloudId() != null) {
+		if (project != null && project.getCloudId() != null) {
 			CloudPlugin c = CloudFactory.getRegisteredClouds().get(project.getCloudId());
 			cloudSelector.setSelectedItem(c);
 		}
@@ -269,7 +269,7 @@ public class NewProjectWizard extends FBDialog
 					newCloudId = cloudPlugin.getId();
 				} else
 					newCloudId = null;
-				project.setCloudId(newCloudId);
+				p.setCloudId(newCloudId);
 				
 				if (keepGoing) {
 					MainFrame.getInstance().setProject(p);

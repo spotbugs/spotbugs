@@ -41,6 +41,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 import javax.xml.transform.TransformerException;
 import java.awt.GraphicsEnvironment;
@@ -126,9 +127,9 @@ public class SortedBugCollection implements BugCollection {
 	public void setRequestDatabaseCloud(boolean useDatabaseCloud) {
 		this.useDatabaseCloud = useDatabaseCloud;
 	}
-	public @CheckForNull Cloud getCloud() {
+	public @Nonnull Cloud getCloud() {
 		if (shouldNotUsePlugin) {
-			return null;
+			return CloudFactory.getPlainCloud(this);
 		}
 		if (cloud == null) {
 			IGuiCallback callback = getProject().getGuiCallback();

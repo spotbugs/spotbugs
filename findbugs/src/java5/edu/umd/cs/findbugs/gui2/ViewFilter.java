@@ -128,9 +128,8 @@ public class ViewFilter {
 
 		public boolean show(MainFrame mf, BugInstance b) {
 			Cloud c = mf.bugCollection.getCloud();
-			if (c instanceof Cloud)
-				return show((Cloud) c, b);
-			return true;
+			return show((Cloud) c, b);
+
 		}
 
 		@Override
@@ -163,7 +162,7 @@ public class ViewFilter {
 
 			@Override
             public boolean supported(Cloud cloud) {
-	           return cloud instanceof Cloud && cloud.getMode() != Cloud.Mode.SECRET;
+	           return cloud.getMode() != Cloud.Mode.SECRET;
             }
 		},
 		HAS_REVIEWS("Someone has classified") {

@@ -116,7 +116,7 @@ public class Project implements XMLWriteable {
 	/**
      * @return Returns the cloudId.
      */
-    public String getCloudId() {
+    public @CheckForNull String getCloudId() {
     	return cloudId;
     }
 

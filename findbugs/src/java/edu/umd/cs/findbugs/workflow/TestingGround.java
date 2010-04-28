@@ -69,7 +69,6 @@ public class TestingGround {
 	public static void main(String[] args) throws Exception {
 		DetectorFactoryCollection.instance(); // load plugins
 
-		TestingGround reborn = new TestingGround();
 		CommandLine commandLine = new CommandLine();
 		int argCount = commandLine.parse(args, 0, 2, "Usage: " + TestingGround.class.getName() + " [options] [<xml results>] ");
 

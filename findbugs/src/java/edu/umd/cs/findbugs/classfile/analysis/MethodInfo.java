@@ -172,7 +172,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 			 @CheckForNull String bridgeMethodSignature,
 	        int accessFlags, boolean isUnconditionalThrower,
 	        boolean isUnsupported, boolean usesConcurrency, boolean isStub, int methodCallCount,
-	        @CheckForNull String[] exceptions, MethodDescriptor accessMethodFor, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
+	        @CheckForNull String[] exceptions,  @CheckForNull MethodDescriptor accessMethodFor, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
 		super(className, methodName, methodSignature, bridgeMethodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
 		this.accessFlags = accessFlags;
 		this.exceptions = exceptions;
@@ -426,8 +426,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
      }
 
 	final MethodInfo copyAndSetBridgeSignature(String bridgeSignature) {
+		MethodDescriptor accessMethodFor = getAccessMethodFor();
 		MethodInfo result = new MethodInfo(getSlashedClassName(), getName(), getSignature(), methodSourceSignature, bridgeSignature,
-		        accessFlags, isUnconditionalThrower(), isUnsupported(), usesConcurrency, isStub, methodCallCount, exceptions, getAccessMethodFor(), methodAnnotations, methodParameterAnnotations);
+		        accessFlags, isUnconditionalThrower(), isUnsupported(), usesConcurrency, isStub, methodCallCount, exceptions, 
+		        accessMethodFor, methodAnnotations, methodParameterAnnotations);
 		return result;
 		
 	}
