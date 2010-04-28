@@ -174,6 +174,10 @@ public class AppEngineCloudClient extends AbstractCloud {
             try {
                 signIn();
             } catch (Exception e) {
+            	    Throwable t = e.getCause();
+            	    if (t != null)
+            	    	  t.printStackTrace();
+            	    e.printStackTrace();
                 getGuiCallback().showMessageDialog("Could not sign into FindBugs Cloud: " + e.getMessage());
                 throw new SignInCancelledException(e);
             }
@@ -229,11 +233,15 @@ public class AppEngineCloudClient extends AbstractCloud {
                     BugInstance b = e.getKey();
                     BugDesignation loaded = e.getValue();
                     BugDesignation inCloud = getPrimaryDesignation(b);
-                    if (!shouldUpload(loaded, inCloud))
+                    if (!shouldUpload(loaded, inCloud)) {
+                    	   System.out.println("Don't need to upload " + b.getMessage());
                     	   i.remove();
+                    } else
+                    	System.out.println("Need to upload " + b.getMessage());
                     }
                 if (designationsLoadedFromXML.isEmpty())
                 	  return;
+            	    System.out.println("Uploading " +designationsLoadedFromXML.size() );
                 
                 SwingUtilities.invokeLater(new Runnable() {
 
@@ -243,12 +251,14 @@ public class AppEngineCloudClient extends AbstractCloud {
 						 String message;
 						 if (userString.equals(getUser()))
 							 message =
-						  "The loaded XML file contains " + designationsLoadedFromXML.size() + " of your evaluations that are more recent than ones stored in the cloud"
+						  "The loaded XML file contains " + designationsLoadedFromXML.size() + " of your evaluations that are more recent than ones stored in the cloud\n"
                                  + "Do you wish to upload these evaluations?";
 						 else message =
 							  "The loaded XML file contains " + designationsLoadedFromXML.size() + " user evaluations of issues by " + userString +"\n"
                               + "Do you wish to upload these evaluations as your evaluations?";
+						 System.out.println(message);
 						int result = getGuiCallback().showConfirmDialog(message, "Upload evaluations", "Upload", "Skip");
+						System.out.println("Dialog: " + result);
 						 if (result != IGuiCallback.YES_OPTION)
 							 return;
 						 try {
@@ -275,7 +285,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 				                	  storeUserAnnotation(b);
 				                }
 				                    
-								
+								setStatusMsg(String.format("%d issues from XML uploaded to cloud", designationsLoadedFromXML.size()));
 							}});
 						
 					} });

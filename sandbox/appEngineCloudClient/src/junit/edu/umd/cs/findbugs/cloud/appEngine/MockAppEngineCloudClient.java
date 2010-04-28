@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
@@ -152,6 +153,12 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
                 return null;
             }
         }).when(mockGuiCallback).showMessageDialog(Mockito.matches(dialogRegex));
+        Mockito.doAnswer(new Answer<Object>() {
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+               System.out.println("QQQ: " + Arrays.toString(invocationOnMock.getArguments()));
+               return null;
+            }
+        }).when(mockGuiCallback).showMessageDialog(Mockito.anyString());
         return latch;
     }
 

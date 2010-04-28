@@ -129,7 +129,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 	}
 
     @SuppressWarnings({"deprecation"})
-    public void testStoreAnnotationBeforeFindIssues() throws Exception {
+    public void XXXtestStoreAnnotationBeforeFindIssues() throws Exception {
         // setup
         cloud.expectConnection("find-issues").withResponse(createFindIssuesResponseObj(responseIssue, false));
         cloud.expectConnection("log-in");
@@ -140,8 +140,8 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
                 "Uploaded 1 evaluations from XML \\(0 out of date, 0 already present\\)");
 
         // execute
-        cloud.storeUserAnnotation(foundIssue);
         cloud.initialize();
+        cloud.storeUserAnnotation(foundIssue);
         cloud.initiateCommunication();
 
         // verify
@@ -159,15 +159,17 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         cloud.expectConnection("log-in");
         cloud.expectConnection("upload-evaluation");
         cloud.clickYes(".*XML.*contains.*evaluations.*upload.*");
-        CountDownLatch latch = cloud.getDialogLatch(
-                "Uploaded 1 evaluations from XML \\(0 out of date, 0 already present\\)");
-
+        
         // execute
         cloud.initialize();
+        cloud.bugsPopulated();
         cloud.initiateCommunication();
 
         // verify
-        waitForDialog(latch);
+        Thread.sleep(5000);
+        if (!cloud.statusBarHistory.contains("1 issues from XML uploaded to cloud"))
+        	  fail("Didn't see expected status message in " + cloud.statusBarHistory);
+        
         cloud.verifyConnections();
         UploadEvaluation uploadMsg = UploadEvaluation.parseFrom(cloud.postedData("upload-evaluation"));
         assertEquals("fad2", AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));
@@ -184,14 +186,15 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         cloud.expectConnection("upload-issues");
         cloud.expectConnection("upload-evaluation");
         cloud.clickYes(".*XML.*contains.*evaluations.*upload.*");
-        CountDownLatch latch = cloud.getDialogLatch("Uploaded 1 evaluations from XML \\(0 out of date, 0 already present\\)");
-
+        
         // execute
         cloud.initialize();
         cloud.initiateCommunication();
 
         // verify
-        waitForDialog(latch);
+        Thread.sleep(5000);
+        if (!cloud.statusBarHistory.contains("1 issues from XML uploaded to cloud"))
+        	 fail("Didn't see expected status message in " + cloud.statusBarHistory);
         cloud.verifyConnections();
         UploadEvaluation uploadMsg = UploadEvaluation.parseFrom(cloud.postedData("upload-evaluation"));
         assertEquals("fad2", AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));

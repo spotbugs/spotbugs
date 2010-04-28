@@ -46,16 +46,16 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
         plugin = new CloudPlugin("AbstractAppEngineCloudTest", AppEngineCloudClient.class.getClassLoader(),
                                  AppEngineCloudClient.class, AppEngineNameLookup.class,
                                  new PropertyBundle(), "none", "none");
-        Logger logger = Logger.getLogger("edu.umd.cs.findbugs.cloud");
-        logger.setLevel(Level.FINEST);
-        logHandler = new ConsoleHandler();
-        logHandler.setLevel(Level.FINER);
-        logHandler.setFilter(new Filter() {
-            public boolean isLoggable(LogRecord record) {
-                return record.getLevel().intValue() < Level.INFO.intValue();
-            }
-        });
-        logger.addHandler(logHandler);
+//        Logger logger = Logger.getLogger("edu.umd.cs.findbugs.cloud");
+//        logger.setLevel(Level.FINEST);
+//        logHandler = new ConsoleHandler();
+//        logHandler.setLevel(Level.FINER);
+//        logHandler.setFilter(new Filter() {
+//            public boolean isLoggable(LogRecord record) {
+//                return record.getLevel().intValue() < Level.INFO.intValue();
+//            }
+//        });
+//        logger.addHandler(logHandler);
     }
 
     @Override
