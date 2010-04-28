@@ -154,7 +154,6 @@ public class ReportConfigurationTab extends Composite {
 			}
 		}
 		propertyPage.getVisibleDetectors().clear();
-		propertyPage.getDetectorTab().refreshTable();
 	}
 
 	/**
@@ -181,7 +180,7 @@ public class ReportConfigurationTab extends Composite {
 		}
 		syncSelectedCategories();
 	}
-	
+
 	protected List<Button> getChkEnableBugCategoryList() {
 		return chkEnableBugCategoryList;
 	}
