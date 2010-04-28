@@ -1417,7 +1417,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 	 * @return this object
 	 */
 	public BugInstance addString(String value) {
-		add(new StringAnnotation(value));
+		add(StringAnnotation.fromRawString(value));
 		return this;
 	}
 
@@ -1428,7 +1428,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 	 * @return this object
 	 */
 	public BugInstance addString(char c) {
-		add(new StringAnnotation(Character.toString(c)));
+		add(StringAnnotation.fromRawString(Character.toString(c)));
 		return this;
 	}
 	/* ----------------------------------------------------------------------

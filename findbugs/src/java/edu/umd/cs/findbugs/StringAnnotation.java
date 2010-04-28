@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import edu.umd.cs.findbugs.util.Strings;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -57,6 +59,11 @@ public class StringAnnotation implements BugAnnotation {
 		this.description = DEFAULT_ROLE;
 	}
 
+	public static StringAnnotation fromRawString(String value) {
+		return new StringAnnotation(StringEscapeUtils.escapeJava(value));
+		
+	}
+	
 	public static StringAnnotation fromXMLEscapedString(String value) {
 		return new StringAnnotation(Strings.unescapeXml(value));
 		
@@ -85,7 +92,8 @@ public class StringAnnotation implements BugAnnotation {
 	}   
 
 	public String format(String key, ClassAnnotation primaryClass) {
-		return value;
+		String txt = value;
+		return txt;
 	}
 
 	public void setDescription(String description) {
