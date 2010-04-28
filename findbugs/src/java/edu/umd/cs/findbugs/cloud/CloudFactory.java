@@ -78,7 +78,7 @@ public class CloudFactory {
 			if (DEBUG)
 				bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloud.getClass().getName());
 			 LOGGER.log(Level.FINE, "constructed cloud plugin " + plugin.getId());;
-		 	if (usedDefaultCloud)
+		 	if (false && usedDefaultCloud)
 		 		bc.getProject().setCloudId(plugin.getId());
 			return cloud;
 		} catch (Exception e) {
