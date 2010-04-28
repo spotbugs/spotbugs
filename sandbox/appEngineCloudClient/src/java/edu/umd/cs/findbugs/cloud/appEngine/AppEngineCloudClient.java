@@ -75,7 +75,6 @@ public class AppEngineCloudClient extends AbstractCloud {
     public AppEngineCloudClient(CloudPlugin plugin, BugCollection bugs, Properties properties) {
         super(plugin, bugs, properties);
         setNetworkClient(new AppEngineCloudNetworkClient());
-        LOGGER.setLevel(Level.FINER);
         backgroundExecutorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
             public Thread newThread(Runnable r) {
                 Thread t = new Thread(r, AppEngineCloudClient.class.getSimpleName() + " bg");
@@ -205,11 +204,12 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
     public void bugsPopulated() {
+    	tryUploadingStoredAnnotations();
         bugsPopulated.countDown();
     }
 
     private void tryUploadingStoredAnnotations() {
-        if (!checkedForUpload.compareAndSet(false, true) || getGuiCallback().isHeadless())
+        if (!checkedForUpload.compareAndSet(false, true) || getGuiCallback().isHeadless() || !couldSignIn())
             return;
 
         final IdentityHashMap<BugInstance, BugDesignation> designationsLoadedFromXML = getDesignationsFromXML();
@@ -626,7 +626,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             markNewIssuesUploaded();
             setStatusMsg("All " + numBugs + " bugs are already stored in the FindBugs Cloud");
         }
-        tryUploadingStoredAnnotations();
+        
     }
 
     private void markNewIssuesUploaded() {
