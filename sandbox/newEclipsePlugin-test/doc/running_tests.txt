@@ -1,0 +1,26 @@
+Here is how to run the FindBugs Eclipse Plugin Tests:
+
+1) If necessary, check out the findbugs and findBugsEclipsePlugin projects.
+They are siblings of this project stored in:
+http://findbugs.googlecode.com/svn/trunk/findbugs
+http://findbugs.googlecode.com/svn/trunk/eclipsePlugin
+
+2) Add a local.properties file to the root of the findBugsEclipsePlugin project.
+This file should contain an entry for the eclipse plugins directory.
+For example:
+
+eclipsePlugin.dir=C:/Java/eclipse-rcp-ganymede/plugins 
+
+3) Build the findbugs project.
+Select the build.xml file at the root of the findbugs project, Run As, Ant Build.
+
+4) Build the findBugsEclipsePlugin project.
+Select the build.xml file at the root of the findbugs project, Run As, Ant Build.
+
+5) Set the target platform.
+Go to Window, Preferences, Plugin Development, Target Platform.
+Make sure the target platform points to an Eclipse SDK 3.3 or later.
+
+6) Run the tests.
+Go to the Run, Run Configurations... menu and select the 'All FindBugs Plugin
+Tests' launcher.

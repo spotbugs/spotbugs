@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="1.3.8-dev-20090214" sequence="7" timestamp="1234634035592" analysisTimestamp="1234634035592" release="">
+  <Project filename="&lt;&lt;unnamed project&gt;&gt;" projectName="TestProject">
+  </Project>
+  <BugInstance type="EI_EXPOSE_REP" priority="2" abbrev="EI" category="MALICIOUS_CODE" first="7" introducedByChange="true">
+    <Class classname="A">
+      <SourceLine classname="A" sourcefile="A.java" sourcepath="A.java"/>
+    </Class>
+    <Method classname="A" name="getCreationDate" signature="()Ljava/util/Date;" isStatic="false">
+      <SourceLine classname="A" start="7" end="7" startBytecode="0" endBytecode="46" sourcefile="A.java" sourcepath="A.java"/>
+    </Method>
+    <Field classname="A" name="creationDate" signature="Ljava/util/Date;" isStatic="false">
+      <SourceLine classname="A" sourcefile="A.java" sourcepath="A.java"/>
+    </Field>
+    <SourceLine classname="A" start="7" end="7" startBytecode="4" endBytecode="4" sourcefile="A.java" sourcepath="A.java"/>
+  </BugInstance>
+  <BugInstance type="EI_EXPOSE_REP2" priority="2" abbrev="EI2" category="MALICIOUS_CODE" first="7" introducedByChange="true">
+    <Class classname="A">
+      <SourceLine classname="A" sourcefile="A.java" sourcepath="A.java"/>
+    </Class>
+    <Method classname="A" name="setCreationDate" signature="(Ljava/util/Date;)V" isStatic="false">
+      <SourceLine classname="A" start="11" end="12" startBytecode="0" endBytecode="61" sourcefile="A.java" sourcepath="A.java"/>
+    </Method>
+    <Field classname="A" name="creationDate" signature="Ljava/util/Date;" isStatic="false">
+      <SourceLine classname="A" sourcefile="A.java" sourcepath="A.java"/>
+    </Field>
+    <LocalVariable name="creationDate" register="1" pc="2" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="A" start="11" end="11" startBytecode="2" endBytecode="2" sourcefile="A.java" sourcepath="A.java"/>
+  </BugInstance>
+  <BugInstance type="DM_STRING_CTOR" priority="2" abbrev="Dm" category="PERFORMANCE" first="3">
+    <Class classname="B">
+      <SourceLine classname="B" sourcefile="B.java" sourcepath="B.java"/>
+    </Class>
+    <Method classname="B" name="&lt;init&gt;" signature="()V" isStatic="false">
+      <SourceLine classname="B" start="2" end="2" startBytecode="0" endBytecode="67" sourcefile="B.java" sourcepath="B.java"/>
+    </Method>
+    <SourceLine classname="B" start="4" end="4" startBytecode="11" endBytecode="11" sourcefile="B.java" sourcepath="B.java"/>
+  </BugInstance>
+  <BugInstance type="URF_UNREAD_FIELD" priority="2" abbrev="UrF" category="PERFORMANCE" first="3">
+    <Class classname="B">
+      <SourceLine classname="B" sourcefile="B.java" sourcepath="B.java"/>
+    </Class>
+    <Field classname="B" name="s" signature="Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="B" sourcefile="B.java" sourcepath="B.java"/>
+    </Field>
+    <SourceLine classname="B" start="4" end="4" startBytecode="14" endBytecode="14" sourcefile="B.java" sourcepath="B.java"/>
+  </BugInstance>
+  <Errors errors="0" missingClasses="0"></Errors>
+  <FindBugsSummary timestamp="Sat, 14 Feb 2009 12:53:55 -0500" total_classes="1" referenced_classes="6" total_bugs="0" total_size="9" num_packages="1" vm_version="1.5.0_12-b04" cpu_seconds="0.28" clock_seconds="0.28" peak_mbytes="81.38" alloc_mbytes="63.56" gc_seconds="0.04">
+    <PackageStats package="" total_bugs="0" total_types="1" total_size="9">
+      <ClassStats class="A" sourceFile="A.java" interface="false" size="9" bugs="0"/>
+    </PackageStats>
+    <FindBugsProfile>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindInconsistentSync2" totalMilliseconds="10" invocations="5" avgMicrosecondsPerInvocation="2189"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues" totalMilliseconds="11" invocations="5" avgMicrosecondsPerInvocation="2206"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="12" invocations="30" avgMicrosecondsPerInvocation="418"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="13" invocations="15" avgMicrosecondsPerInvocation="891"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="14" invocations="5" avgMicrosecondsPerInvocation="2875"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.asm.ClassReaderAnalysisEngine" totalMilliseconds="14" invocations="355" avgMicrosecondsPerInvocation="41"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="15" invocations="15" avgMicrosecondsPerInvocation="1048"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="19" invocations="15" avgMicrosecondsPerInvocation="1332"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="28" invocations="15" avgMicrosecondsPerInvocation="1879"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="28" invocations="30" avgMicrosecondsPerInvocation="948"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="33" invocations="30" avgMicrosecondsPerInvocation="1124"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="37" invocations="320" avgMicrosecondsPerInvocation="118"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="38" invocations="15" avgMicrosecondsPerInvocation="2568"/>
+      <ClassProfile name="edu.umd.cs.findbugs.SAXBugCollectionHandler" totalMilliseconds="43" invocations="9" avgMicrosecondsPerInvocation="4881"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="46" invocations="30" avgMicrosecondsPerInvocation="1555"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="46" invocations="15" avgMicrosecondsPerInvocation="3128"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="61" invocations="50" avgMicrosecondsPerInvocation="1234"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="64" invocations="30" avgMicrosecondsPerInvocation="2165"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="68" invocations="20" avgMicrosecondsPerInvocation="3424"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="77" invocations="610" avgMicrosecondsPerInvocation="127"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="218" invocations="600" avgMicrosecondsPerInvocation="364"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="343" invocations="15" avgMicrosecondsPerInvocation="22922"/>
+      <ClassProfile name="edu.umd.cs.findbugs.FindBugs2" totalMilliseconds="1468" invocations="10" avgMicrosecondsPerInvocation="146831"/>
+    </FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History>
+    <AppVersion sequence="0" timestamp="-1" release="" codeSize="0" numClasses="0"/>
+    <AppVersion sequence="1" timestamp="1234634030045" release="" codeSize="9" numClasses="1"/>
+    <AppVersion sequence="2" timestamp="1234634030842" release="" codeSize="0" numClasses="0"/>
+    <AppVersion sequence="3" timestamp="1234634032076" release="" codeSize="9" numClasses="1"/>
+    <AppVersion sequence="4" timestamp="1234634032717" release="" codeSize="0" numClasses="0"/>
+    <AppVersion sequence="5" timestamp="1234634033639" release="" codeSize="9" numClasses="1"/>
+    <AppVersion sequence="6" timestamp="1234634034779" release="" codeSize="9" numClasses="1"/>
+  </History>
+</BugCollection>

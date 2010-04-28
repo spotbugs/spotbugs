@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <Match>
+        <Bug code="EI" />
+    </Match>
+    <Match>
+        <Bug code="EI2" />
+    </Match>
+    <Match>
+        <Bug code="UrF" />
+    </Match>
+    <Match>
+        <Bug code="Dm" />
+    </Match>
+</FindBugsFilter>
