@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.5"?>
+
+<target name="Eclipse 3.4">
+<locations>
+<location id="org.eclipse.cvs.source" path="F:\java\eclipse342_template" type="Feature" version="1.1.2.R342_v20090122-7C79E9x9sLM1t6M9YD7_A7"/>
+<location id="org.eclipse.cvs" path="F:\java\eclipse342_template" type="Feature" version="1.1.2.R342_v20090122-7C79E9x9sLM1t6M9YD7_A7"/>
+<location id="org.eclipse.equinox.p2.user.ui.source" path="F:\java\eclipse342_template" type="Feature" version="1.0.2.r34x_v20090120-7d-7tEQcCaaYSBeNOClOn02267"/>
+<location id="org.eclipse.equinox.p2.user.ui" path="F:\java\eclipse342_template" type="Feature" version="1.0.2.r34x_v20090120-7d-7tEQcCaaYSBeNOClOn02267"/>
+<location id="org.eclipse.help.source" path="F:\java\eclipse342_template" type="Feature" version="1.0.2.R342_v20090122-7r7xEKaEJBZu5oGhP3u6nOmbM9VK"/>
+<location id="org.eclipse.help" path="F:\java\eclipse342_template" type="Feature" version="1.0.2.R342_v20090122-7r7xEKaEJBZu5oGhP3u6nOmbM9VK"/>
+<location id="org.eclipse.jdt.source" path="F:\java\eclipse342_template" type="Feature" version="3.4.2.r342_v20081217-7o7tEAoEEDWEm5HTrKn-svO4BbDI"/>
+<location id="org.eclipse.jdt" path="F:\java\eclipse342_template" type="Feature" version="3.4.2.r342_v20081217-7o7tEAoEEDWEm5HTrKn-svO4BbDI"/>
+<location id="org.eclipse.pde.p2.source" path="F:\java\eclipse342_template" type="Feature" version="1.0.0.v20080522-1--7w3119171503111"/>
+<location id="org.eclipse.pde.p2" path="F:\java\eclipse342_template" type="Feature" version="1.0.0.v20080522-1--7w3119171503111"/>
+<location id="org.eclipse.pde.source" path="F:\java\eclipse342_template" type="Feature" version="3.4.2.R342_v20090122-7T7U1E9imVKz-A8Vz-p_jRS"/>
+<location id="org.eclipse.pde" path="F:\java\eclipse342_template" type="Feature" version="3.4.2.R342_v20090122-7T7U1E9imVKz-A8Vz-p_jRS"/>
+<location id="org.eclipse.platform.source" path="F:\java\eclipse342_template" type="Feature" version="3.4.2.R342_v20090122-9I96EiWElHi8lheoJKJIvhM3JfVsYbRrgVIWL"/>
+<location id="org.eclipse.platform" path="F:\java\eclipse342_template" type="Feature" version="3.4.2.R342_v20090122-9I96EiWElHi8lheoJKJIvhM3JfVsYbRrgVIWL"/>
+<location id="org.eclipse.rcp.source" path="F:\java\eclipse342_template" type="Feature" version="3.4.200.R342_v20090122-989JESTEbig-SVaL8UJHcYBr4A63"/>
+<location id="org.eclipse.rcp" path="F:\java\eclipse342_template" type="Feature" version="3.4.200.R342_v20090122-989JESTEbig-SVaL8UJHcYBr4A63"/>
+<location id="org.eclipse.sdk" path="F:\java\eclipse342_template" type="Feature" version="3.4.2.R342_v20090122-7O7S7GApJ3_vCyk7ETmsfcmjhz0eHnqw7MIjk9Vdhe4Ic"/>
+</locations>
+<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+<launcherArgs>
+<vmArgs>-Xmx900m</vmArgs>
+</launcherArgs>
+</target>

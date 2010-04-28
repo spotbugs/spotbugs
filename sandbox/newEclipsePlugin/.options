@@ -1,0 +1,10 @@
+edu.umd.cs.findbugs.plugin.eclipse/debug=false
+edu.umd.cs.findbugs.plugin.eclipse/debug/builder=false
+edu.umd.cs.findbugs.plugin.eclipse/debug/marker=false
+edu.umd.cs.findbugs.plugin.eclipse/debug/nature=false
+edu.umd.cs.findbugs.plugin.eclipse/debug/properties=false
+edu.umd.cs.findbugs.plugin.eclipse/debug/reporter=false
+edu.umd.cs.findbugs.plugin.eclipse/debug/util=false
+edu.umd.cs.findbugs.plugin.eclipse/debug/visitor=false
+edu.umd.cs.findbugs.plugin.eclipse/debug/profiler=false
+edu.umd.cs.findbugs.plugin.eclipse/debug/content=false

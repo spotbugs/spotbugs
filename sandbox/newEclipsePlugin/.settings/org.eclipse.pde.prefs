@@ -1,0 +1,15 @@
+#Fri Jun 08 22:45:02 CEST 2007
+compilers.incompatible-environment=1
+compilers.p.build=1
+compilers.p.deprecated=1
+compilers.p.missing-packages=2
+compilers.p.no-required-att=0
+compilers.p.not-externalized-att=2
+compilers.p.unknown-attribute=0
+compilers.p.unknown-class=0
+compilers.p.unknown-element=1
+compilers.p.unknown-resource=1
+compilers.p.unresolved-ex-points=0
+compilers.p.unresolved-import=0
+compilers.use-project=true
+eclipse.preferences.version=1
