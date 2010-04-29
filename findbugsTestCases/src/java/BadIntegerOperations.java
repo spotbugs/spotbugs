@@ -104,7 +104,8 @@ class BadIntegerOperations {
 	int orInByte2(int partialResult, byte b[], int i) {
 		return  b[i] | (partialResult &0xffffff00) ;
 	}
-
+	
+	
 	@ExpectWarning("BIT")
 	long shiftInByte(long partialResult, byte b[], int i) {
 		return  partialResult << 8 | b[i];
