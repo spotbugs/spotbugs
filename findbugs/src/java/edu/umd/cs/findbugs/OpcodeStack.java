@@ -1462,10 +1462,13 @@ public class OpcodeStack implements Constants2
 					 } else {
 						 newValue = new Item("J");
 					 }
-					 if (seen == I2L)
+					 int specialKind = it.getSpecialKind();
+	                    
+					 if (specialKind != Item.SIGNED_BYTE && seen == I2L)
 						 newValue.setSpecialKind(Item.RESULT_OF_I2L);
-					 else
-						 newValue.setSpecialKind(it.getSpecialKind());
+                     else 
+	                    newValue.setSpecialKind(specialKind);
+                    
 					 push(newValue);
 				 }
 				 break;
