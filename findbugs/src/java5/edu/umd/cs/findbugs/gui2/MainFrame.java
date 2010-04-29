@@ -3512,4 +3512,11 @@ public boolean showDocument(URL u) {
     public boolean isHeadless() {
 	    return false;
     }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.IGuiCallback#invokeInGUIThread(java.lang.Runnable)
+     */
+    public void invokeInGUIThread(Runnable r) {
+	    SwingUtilities.invokeLater(r);
+	    
+    }
 }

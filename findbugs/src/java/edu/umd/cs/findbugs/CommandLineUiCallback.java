@@ -177,4 +177,12 @@ public void registerCloud(Project project, BugCollection collection, Cloud cloud
     public void unregisterCloud(Project project, BugCollection collection, Cloud cloud) {
 	    
     }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.IGuiCallback#invokeInGUIThread(java.lang.Runnable)
+     */
+    public void invokeInGUIThread(Runnable r) {
+	    throw new UnsupportedOperationException();
+	    
+    }
 }

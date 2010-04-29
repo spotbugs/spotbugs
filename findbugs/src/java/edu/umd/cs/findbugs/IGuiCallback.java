@@ -47,6 +47,7 @@ public interface IGuiCallback {
 	 public static final int         YES_NO_CANCEL_OPTION = 1;
 	 public static final int         OK_CANCEL_OPTION = 2;
 
+	void invokeInGUIThread(Runnable r);
 	int showConfirmDialog(String message, String title, int optionType);
     int showConfirmDialog(String message, String title, String ok, String cancel);
 	String showQuestionDialog(String message, String title, String defaultValue);
