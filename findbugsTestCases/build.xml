@@ -48,6 +48,7 @@
 				<pathelement location="${findbugs.home}/lib/jsr305.jar"/>
 				<pathelement location="${junit.home}/junit.jar"/>
 				<pathelement location="lib/j2ee.jar"/>
+				<pathelement location="lib/joda-time-1.6.jar"/>
 			</classpath>
 		</javac>
 	</target>
@@ -97,7 +98,7 @@
 	 <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" 
            classpath="${fb-ant.jar}"/>
 		<findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx600m"
-                         output="xml" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/normal.xml">
+                         output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/normal.xml">
 			<sourcePath path="${basedir}/src/java" />
 			<auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar"/>
 			<class location="${basedir}/build/classes" />
