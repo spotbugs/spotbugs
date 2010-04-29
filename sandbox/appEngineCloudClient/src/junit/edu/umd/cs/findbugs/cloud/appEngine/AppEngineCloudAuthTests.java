@@ -61,7 +61,7 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
         assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSigninState());
-        verify(networkClient).logIntoCloudForce();
+        verify(networkClient, never()).logIntoCloudForce();
     }
 
     @SuppressWarnings({"ThrowableInstanceNeverThrown"})
@@ -72,8 +72,7 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
         AppEngineCloudNetworkClient networkClient = mock(AppEngineCloudNetworkClient.class);
         cloud.setNetworkClient(networkClient);
 
-        when(networkClient.initialize()).thenReturn(true);
-        Mockito.doThrow(new IOException()).when(networkClient).logIntoCloudForce();
+        when(networkClient.initialize()).thenThrow(new IOException());
         assertEquals(NOT_SIGNED_IN_YET, cloud.getSigninState());
         cloud.initialize();
         assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSigninState());

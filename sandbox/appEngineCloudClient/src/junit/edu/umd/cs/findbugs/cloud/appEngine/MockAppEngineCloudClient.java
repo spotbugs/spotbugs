@@ -10,6 +10,8 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 import junit.framework.Assert;
+
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -26,6 +28,7 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.matches;
@@ -55,6 +58,15 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         }
         mockNameLookup = createMockNameLookup();
         mockGuiCallback = mock(IGuiCallback.class);
+        Mockito.doAnswer(new Answer<Void>() {
+        	public Void answer(InvocationOnMock invocation) {
+        		Object[] args = invocation.getArguments();
+        		Runnable r = (Runnable) args[0];
+        		r.run();
+        		return null;
+        	}})
+        	.when(mockGuiCallback).invokeInGUIThread(Mockito.isA(Runnable.class));
+
         statusBarHistory = new ArrayList<String>();
 
         initStatusBarHistory();
@@ -86,7 +98,14 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
             }
 
             public void statusUpdated() {
-                statusBarHistory.add(getStatusMsg());
+            	String statusMsg = getStatusMsg();
+				
+            	if (!statusBarHistory.isEmpty()) {
+            		String last = statusBarHistory.get(statusBarHistory.size()-1);
+            		if (statusMsg.equals(last))
+            			return;
+            	}
+                statusBarHistory.add(statusMsg);
             }
         });
     }
@@ -145,18 +164,16 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
      * Returns a {@link CountDownLatch} that waits for a IGuiCallback showMessageDialog call
      * with a message matching the given regex.
      */
-    public CountDownLatch getDialogLatch(String dialogRegex) {
+    public CountDownLatch getDialogLatch(final String dialogRegex) {
         final CountDownLatch latch = new CountDownLatch(1);
-        Mockito.doAnswer(new Answer<Object>() {
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                latch.countDown();
+        Mockito.doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+            	String message = (String) invocationOnMock.getArguments()[0];
+            	 boolean match = Pattern.compile(dialogRegex).matcher(message).find();
+            	 System.out.println("QQQ: " +  " " + match + "\n\"" + dialogRegex +"\"\n\"" + message + "\"");
+             	if (match)
+                  latch.countDown();
                 return null;
-            }
-        }).when(mockGuiCallback).showMessageDialog(Mockito.matches(dialogRegex));
-        Mockito.doAnswer(new Answer<Object>() {
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-               System.out.println("QQQ: " + Arrays.toString(invocationOnMock.getArguments()));
-               return null;
             }
         }).when(mockGuiCallback).showMessageDialog(Mockito.anyString());
         return latch;

@@ -1,22 +1,7 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import com.google.gdata.client.authn.oauth.OAuthException;
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.AbstractCloud;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.SignInCancelledException;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
-import edu.umd.cs.findbugs.util.Util;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 
-import javax.swing.SwingUtilities;
-import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -36,7 +21,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -46,12 +30,27 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
+import javax.xml.rpc.ServiceException;
+
+import com.google.gdata.client.authn.oauth.OAuthException;
+
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.SignInCancelledException;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import edu.umd.cs.findbugs.util.Util;
 
 @SuppressWarnings({"ThrowableInstanceNeverThrown"})
 public class AppEngineCloudClient extends AbstractCloud {
@@ -139,7 +138,6 @@ public class AppEngineCloudClient extends AbstractCloud {
             }
             if (networkClient.initialize()) {
 
-                networkClient.logIntoCloudForce();
                 setSigninState(SigninState.SIGNED_IN);
                 setStatusMsg("");
 
@@ -174,18 +172,12 @@ public class AppEngineCloudClient extends AbstractCloud {
             try {
                 signIn();
             } catch (Exception e) {
-            	    Throwable t = e.getCause();
-            	    if (t != null)
-            	    	  t.printStackTrace();
-            	    e.printStackTrace();
                 getGuiCallback().showMessageDialog("Could not sign into FindBugs Cloud: " + e.getMessage());
                 throw new SignInCancelledException(e);
             }
 
         } else if (getSigninState() == SigninState.SIGNING_IN) {
-            // TODO should probably handle this
-            throw new IllegalStateException("signing in");
-
+            synchronized(signInLock) {}
         } else if (getSigninState() == SigninState.SIGNED_IN) {
             // great!
         }
@@ -233,17 +225,14 @@ public class AppEngineCloudClient extends AbstractCloud {
                     BugInstance b = e.getKey();
                     BugDesignation loaded = e.getValue();
                     BugDesignation inCloud = getPrimaryDesignation(b);
-                    if (!shouldUpload(loaded, inCloud)) {
-                    	   System.out.println("Don't need to upload " + b.getMessage());
+                    if (!shouldUpload(loaded, inCloud))
                     	   i.remove();
-                    } else
-                    	System.out.println("Need to upload " + b.getMessage());
                     }
+                System.out.println("Issues to upload: " + designationsLoadedFromXML.size());
                 if (designationsLoadedFromXML.isEmpty())
                 	  return;
-            	    System.out.println("Uploading " +designationsLoadedFromXML.size() );
                 
-                SwingUtilities.invokeLater(new Runnable() {
+               getGuiCallback().invokeInGUIThread(new Runnable() {
 
 					public void run() {
 						final String userString = getAuthors(designationsLoadedFromXML);
@@ -251,16 +240,16 @@ public class AppEngineCloudClient extends AbstractCloud {
 						 String message;
 						 if (userString.equals(getUser()))
 							 message =
-						  "The loaded XML file contains " + designationsLoadedFromXML.size() + " of your evaluations that are more recent than ones stored in the cloud\n"
+						  "The loaded XML file contains " + designationsLoadedFromXML.size() + " of your evaluations that are more recent than ones stored in the cloud"
                                  + "Do you wish to upload these evaluations?";
 						 else message =
 							  "The loaded XML file contains " + designationsLoadedFromXML.size() + " user evaluations of issues by " + userString +"\n"
                               + "Do you wish to upload these evaluations as your evaluations?";
-						 System.out.println(message);
+						System.out.println(message);
 						int result = getGuiCallback().showConfirmDialog(message, "Upload evaluations", "Upload", "Skip");
-						System.out.println("Dialog: " + result);
 						 if (result != IGuiCallback.YES_OPTION)
 							 return;
+						 System.out.println(result);
 						 try {
 			                    signInIfNecessary("To store your evaluations on the FindBugs Cloud, you must sign in first.");
 			                } catch (SignInCancelledException e) {
@@ -273,19 +262,33 @@ public class AppEngineCloudClient extends AbstractCloud {
 						 backgroundExecutorService.execute(new Runnable() {
 					            @SuppressWarnings({"deprecation"})
 							public void run() {
+					            	int uploaded = 0;
 								try {
 				                    newIssuesUploaded.await();
-				                } catch (InterruptedException e1) {
-				                    return;
-				                }
+				                
 				                for (Map.Entry<BugInstance, BugDesignation> e: designationsLoadedFromXML.entrySet()) {
 				                	  BugInstance b = e.getKey();
 				                  BugDesignation loaded = e.getValue();
 				                  b.setUserDesignation(loaded);
 				                	  storeUserAnnotation(b);
+				                	  uploaded++;
 				                }
 				                    
-								setStatusMsg(String.format("%d issues from XML uploaded to cloud", designationsLoadedFromXML.size()));
+								String statusMsg = designationsLoadedFromXML.size() + " issues from XML uploaded to cloud";
+								System.out.println(statusMsg);
+								setStatusMsg(statusMsg);
+				                } catch (Exception e) {
+				                	final String errorMsg = "Unable to upload " + (designationsLoadedFromXML.size() - uploaded)
+                					+ " issues from XML to cloud due to error\n" + e.getMessage();
+				                	 getGuiCallback().invokeInGUIThread(new Runnable() {
+										public void run() {
+											getGuiCallback().showMessageDialog( 
+						                			errorMsg);
+											
+										}});
+
+				                	
+				                }
 							}});
 						
 					} });
@@ -391,7 +394,9 @@ public class AppEngineCloudClient extends AbstractCloud {
         return AppEngineNameLookup.isSavingSessionInfoEnabled();
     }
 
+    private final  Object signInLock = new Object();
     public void signIn() throws IOException {
+    	synchronized(signInLock) {
     		if (getSigninState() == SigninState.SIGNED_IN)
     			return;
         setSigninState(SigninState.SIGNING_IN);
@@ -410,6 +415,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
         setSigninState(SigninState.SIGNED_IN);
         setStatusMsg("");
+    	}
     }
 
     public void signOut() {

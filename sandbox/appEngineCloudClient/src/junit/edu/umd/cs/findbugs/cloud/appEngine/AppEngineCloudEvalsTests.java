@@ -166,7 +166,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         cloud.initiateCommunication();
 
         // verify
-        Thread.sleep(5000);
+        Thread.sleep(1000);
         if (!cloud.statusBarHistory.contains("1 issues from XML uploaded to cloud"))
         	  fail("Didn't see expected status message in " + cloud.statusBarHistory);
         
@@ -189,10 +189,11 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         
         // execute
         cloud.initialize();
+        cloud.bugsPopulated();
         cloud.initiateCommunication();
 
         // verify
-        Thread.sleep(5000);
+        Thread.sleep(1000);
         if (!cloud.statusBarHistory.contains("1 issues from XML uploaded to cloud"))
         	 fail("Didn't see expected status message in " + cloud.statusBarHistory);
         cloud.verifyConnections();
@@ -211,10 +212,11 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 
         cloud.clickYes(".*XML.*contains.*evaluations.*upload.*");
         cloud.clickYes(".*store.*sign in.*");
-        CountDownLatch latch = cloud.getDialogLatch(".*Could not sign into.*");
-
+        CountDownLatch latch = cloud.getDialogLatch("Could not sign into");
+        System.out.println("Latch ready");
         // execute
         cloud.initialize();
+        cloud.bugsPopulated();
         cloud.initiateCommunication();
 
         // verify
@@ -231,7 +233,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         cloud.expectConnection("upload-evaluation").withErrorCode(403);
         cloud.clickYes(".*XML.*contains.*evaluations.*upload.*");
         cloud.clickYes(".*store.*sign in.*");
-        CountDownLatch latch = cloud.getDialogLatch(".*Could not.*XML.*server.*");
+        CountDownLatch latch = cloud.getDialogLatch("Unable to upload.*XML.*cloud");
 
         // execute
         cloud.initialize();
@@ -246,7 +248,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
     // =================================== end of tests ===========================================
 
     private void waitForDialog(CountDownLatch latch) throws InterruptedException {
-        assertTrue(latch.await(30, TimeUnit.SECONDS));
+        assertTrue("latch timed out", latch.await(15, TimeUnit.SECONDS));
     }
 
     private static Evaluation createEvaluation(String designation, long when, String comment, String who) {
