@@ -168,10 +168,11 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 				System.out.println("*** Found " + annotation + " annotation");
 			}
 			String expectedBugCodes = (String) expect.getValue("value");
+			boolean matchBugPattern = (Boolean) expect.getValue("bugPattern");
 			StringTokenizer tok = new StringTokenizer(expectedBugCodes, ",");
 			while (tok.hasMoreTokens()) {
 				String bugCode = tok.nextToken();
-				Collection<SourceLineAnnotation> bugs = countWarnings(xmethod.getMethodDescriptor(), bugCode);
+				Collection<SourceLineAnnotation> bugs = countWarnings(xmethod.getMethodDescriptor(), bugCode, matchBugPattern);
 				if (expectWarnings && bugs.isEmpty() && possibleBugCodes.contains(bugCode)) {
 					reporter.reportBug(new BugInstance(this, "FB_MISSING_EXPECTED_WARNING", priority).addClassAndMethod(xmethod.getMethodDescriptor()).
 							addString(bugCode));
@@ -183,13 +184,18 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 		}
 	}
 
-	private Collection<SourceLineAnnotation> countWarnings(MethodDescriptor methodDescriptor, String bugCode) {
+	private Collection<SourceLineAnnotation> countWarnings(MethodDescriptor methodDescriptor, String bugCode, boolean matchPattern) {
 		Collection<BugInstance> warnings = warningsByMethod.get(methodDescriptor);
 		Collection<SourceLineAnnotation> matching = new HashSet<SourceLineAnnotation>();
 		if (warnings != null) {
 			for (BugInstance warning : warnings) {
 				BugPattern pattern = warning.getBugPattern();
-				if (pattern.getAbbrev().equals(bugCode)) {
+				String match;
+				if (matchPattern)
+					match = pattern.getType();
+				else
+					match = pattern.getAbbrev();
+				if (match.equals(bugCode)) {
 					matching.add(warning.getPrimarySourceLineAnnotation());
 				}
 			}

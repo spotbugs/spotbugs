@@ -21,4 +21,5 @@ public @interface DesireNoWarning {
 	// Comma-separated list of bug codes (e.g., "NP") not desired
 	// in the annotated method.
 	public String value();
+	public boolean bugPattern() default false;
 }

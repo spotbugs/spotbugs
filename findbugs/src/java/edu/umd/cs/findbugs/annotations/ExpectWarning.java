@@ -17,6 +17,12 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.CLASS)
 public @interface ExpectWarning {
-	// The value indicates the bug code (e.g., NP) of the expected warning.
+	/**
+	 * The value indicates the bug code (e.g., NP) of the expected warning. Can be a comma-separated list.
+	 */
 	public String value();
+	/**
+	 * If true, the value is a bug pattern rather than a bug code
+	 */
+	public boolean bugPattern() default false;
 }

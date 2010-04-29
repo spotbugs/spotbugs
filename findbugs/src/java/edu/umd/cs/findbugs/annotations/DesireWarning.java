@@ -19,4 +19,5 @@ import java.lang.annotation.Target;
 public @interface DesireWarning {
 	// The value indicates the bug code (e.g., NP) of the desired warning.
 	public String value();
+	public boolean bugPattern() default false;
 }

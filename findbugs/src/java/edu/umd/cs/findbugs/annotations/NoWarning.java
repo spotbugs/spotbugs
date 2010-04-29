@@ -20,4 +20,5 @@ public @interface NoWarning {
 	// Comma-separated list of bug codes (e.g., "NP") not expected
 	// in the annotated method.
 	public String value();
+	public boolean bugPattern() default false;
 }
