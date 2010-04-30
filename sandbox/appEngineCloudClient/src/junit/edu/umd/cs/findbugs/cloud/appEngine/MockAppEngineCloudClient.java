@@ -42,7 +42,8 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
 
     public List<String> urlsRequested;
     public IGuiCallback mockGuiCallback;
-    public List<String> statusBarHistory;
+    public List<String> statusMsgHistory;
+    private final Object statusMsgLock = new Object();
 
     public MockAppEngineCloudClient(CloudPlugin plugin, SortedBugCollection bugs, List<HttpURLConnection> mockConnections)
             throws IOException {
@@ -65,7 +66,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         	}})
         	.when(mockGuiCallback).invokeInGUIThread(Mockito.isA(Runnable.class));
 
-        statusBarHistory = new ArrayList<String>();
+        statusMsgHistory = new ArrayList<String>();
 
         initStatusBarHistory();
     }
@@ -151,12 +152,15 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
             public void statusUpdated() {
             	String statusMsg = getStatusMsg();
 				
-            	if (!statusBarHistory.isEmpty()) {
-            		String last = statusBarHistory.get(statusBarHistory.size()-1);
+            	if (!statusMsgHistory.isEmpty()) {
+            		String last = statusMsgHistory.get(statusMsgHistory.size()-1);
             		if (statusMsg.equals(last))
             			return;
             	}
-                statusBarHistory.add(statusMsg);
+                statusMsgHistory.add(statusMsg);
+                synchronized (statusMsgLock) {
+                    statusMsgLock.notifyAll();
+                }
             }
         });
     }
@@ -189,7 +193,22 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
 
     public void checkStatusBarHistory(String... expectedStatusLines) {
         Assert.assertEquals(Arrays.asList(expectedStatusLines),
-                     statusBarHistory);
+                            statusMsgHistory);
+    }
+
+    public void waitForStatusMsg(String regex) throws InterruptedException {
+        Pattern pattern = Pattern.compile(regex);
+        long start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 10*1000) {
+            synchronized(statusMsgLock) {
+                statusMsgLock.wait(1000);
+                for (String status : statusMsgHistory) {
+                    if (pattern.matcher(status).matches())
+                        return;
+                }
+            }
+        }
+        Assert.fail("Did not see status message " + regex + " in:\n" + statusMsgHistory);
     }
 
     private class MockAppEngineCloudNetworkClient extends AppEngineCloudNetworkClient {

@@ -220,10 +220,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         cloud.initiateCommunication();
 
         // verify
-        Thread.sleep(1000);
-        if (!cloud.statusBarHistory.contains("1 issues from XML uploaded to cloud"))
-        	  fail("Didn't see expected status message in " + cloud.statusBarHistory);
-        
+        cloud.waitForStatusMsg("1 issues from XML uploaded to cloud");
         cloud.verifyConnections();
         UploadEvaluation uploadMsg = UploadEvaluation.parseFrom(cloud.postedData("upload-evaluation"));
         assertEquals("fad2", AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));
@@ -247,9 +244,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         cloud.initiateCommunication();
 
         // verify
-        Thread.sleep(1000);
-        if (!cloud.statusBarHistory.contains("1 issues from XML uploaded to cloud"))
-        	 fail("Didn't see expected status message in " + cloud.statusBarHistory);
+        cloud.waitForStatusMsg("1 issues from XML uploaded to cloud");
         cloud.verifyConnections();
         UploadEvaluation uploadMsg = UploadEvaluation.parseFrom(cloud.postedData("upload-evaluation"));
         assertEquals("fad2", AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));
@@ -266,8 +261,8 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 
         cloud.clickYes(".*XML.*contains.*evaluations.*upload.*");
         cloud.clickYes(".*store.*sign in.*");
-        CountDownLatch latch = cloud.getDialogLatch("Could not sign into");
-        System.out.println("Latch ready");
+        CountDownLatch latch = cloud.getDialogLatch("Could not sign into.*");
+
         // execute
         cloud.initialize();
         cloud.bugsPopulated();
@@ -275,7 +270,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 
         // verify
         waitForDialog(latch);
-        cloud.verifyConnections();
+        cloud.verifyConnections(); // no upload-evaluation
     }
 
     @SuppressWarnings("deprecation")
@@ -287,7 +282,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         cloud.expectConnection("upload-evaluation").withErrorCode(403);
         cloud.clickYes(".*XML.*contains.*evaluations.*upload.*");
         cloud.clickYes(".*store.*sign in.*");
-        CountDownLatch latch = cloud.getDialogLatch("Unable to upload.*XML.*cloud");
+        CountDownLatch latch = cloud.getDialogLatch("Unable to upload.*XML.*cloud.*");
 
         // execute
         cloud.initialize();

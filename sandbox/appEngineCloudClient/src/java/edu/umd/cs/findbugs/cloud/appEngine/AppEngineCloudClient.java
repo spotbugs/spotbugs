@@ -1,7 +1,21 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
+import com.google.gdata.client.authn.oauth.OAuthException;
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.SignInCancelledException;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import edu.umd.cs.findbugs.util.Util;
 
+import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -34,30 +48,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.rpc.ServiceException;
-
-import com.google.gdata.client.authn.oauth.OAuthException;
-
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.AbstractCloud;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.SignInCancelledException;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
-import edu.umd.cs.findbugs.util.Util;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 
 @SuppressWarnings({"ThrowableInstanceNeverThrown"})
 public class AppEngineCloudClient extends AbstractCloud {
 
     private static final Logger LOGGER = Logger.getLogger(AppEngineCloudClient.class.getPackage().getName());
-    private static final int EVALUATION_CHECK_SECS = 15;
+    private static final int EVALUATION_CHECK_SECS = 5 * 60;
 
     protected ExecutorService backgroundExecutorService;
 	private Timer timer;
@@ -303,8 +300,8 @@ public class AppEngineCloudClient extends AbstractCloud {
 			 * @param inCloud
 			 * @return
 			 */
-			private boolean shouldUpload(BugDesignation loaded,
-					BugDesignation inCloud) {
+			@SuppressWarnings({"SimplifiableIfStatement"})
+            private boolean shouldUpload(BugDesignation loaded, BugDesignation inCloud) {
 				if (inCloud == null)
 					return true;
 				if (inCloud.getTimestamp() > loaded.getTimestamp())
