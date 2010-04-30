@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
@@ -56,7 +57,7 @@ import edu.umd.cs.findbugs.util.Util;
 public class AppEngineCloudClient extends AbstractCloud {
 
     private static final Logger LOGGER = Logger.getLogger(AppEngineCloudClient.class.getPackage().getName());
-    private static final int EVALUATION_CHECK_SECS = 5 * 60;
+    private static final int EVALUATION_CHECK_SECS = 15;
 
     protected ExecutorService backgroundExecutorService;
 	private Timer timer;
@@ -419,9 +420,7 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
     public void signOut() {
-        networkClient.signOut();
-        setSigninState(SigninState.SIGNED_OUT);
-        setStatusMsg("Signed out of FindBugs Cloud");
+        signOut(false);
     }
 
     public String getUser() {
@@ -607,6 +606,12 @@ public class AppEngineCloudClient extends AbstractCloud {
 
 	// ========================= private methods ==================================
 
+    private void signOut(boolean background) {
+        networkClient.signOut(background);
+        setSigninState(SigninState.SIGNED_OUT);
+        setStatusMsg("Signed out of FindBugs Cloud");
+    }
+
     /** for testing */
     void pretendIssuesSyncedAndUploaded() {
         communicationInitiated = true;
@@ -734,10 +739,27 @@ public class AppEngineCloudClient extends AbstractCloud {
 		RecentEvaluations evals;
 		try {
 			evals = networkClient.getRecentEvaluationsFromServer();
-		} catch (IOException e) {
+		} catch (ServerReturnedErrorCodeException e) {
             setStatusMsg("Checking FindBugs Cloud for updates...failed - " + e.getMessage());
 			throw e;
-		} catch (RuntimeException e) {
+        } catch (IOException e) {
+            if (getSigninState() == SigninState.SIGNED_IN) {
+                signOut(true);
+                getGuiCallback().showMessageDialog(
+                        "A network error occurred while checking the FindBugs Cloud for updates.\n" +
+                        "\n" +
+                        "You have been automatically signed out of the Cloud. Any comments or \n" +
+                        "evaluations you make will only be stored on your computer if you save the\n" +
+                        "analysis via the File->Save menu.\n" +
+                        "\n" +
+                        "To sign back in, click the FindBugs Cloud box in the lower right corner\n" +
+                        "of the FindBugs window. Any changes you make while offline will be uploaded\n" +
+                        "to the server upon signin.");
+            } else {
+                setStatusMsg("Checking FindBugs Cloud for updates...failed - " + e.getMessage());
+            }
+            throw e;
+        } catch (RuntimeException e) {
             setStatusMsg("Checking FindBugs Cloud for updates...failed - " + e.getMessage());
 			throw e;
 		}

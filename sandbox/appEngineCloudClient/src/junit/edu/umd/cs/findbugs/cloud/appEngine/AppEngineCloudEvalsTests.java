@@ -2,16 +2,23 @@ package edu.umd.cs.findbugs.cloud.appEngine;
 
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
+import org.mockito.Mockito;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import static org.mockito.Matchers.matches;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
     protected MockAppEngineCloudClient cloud;
@@ -65,9 +72,9 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
 
 		// verify
         checkStoredEvaluationMatches(lastEval, cloud.getPrimaryDesignation(foundIssue));
-        checkStatusBarHistory(cloud,
-                              "Checking FindBugs Cloud for updates",
-                              "Checking FindBugs Cloud for updates...found 1");
+        cloud.checkStatusBarHistory(
+                "Checking FindBugs Cloud for updates",
+                "Checking FindBugs Cloud for updates...found 1");
     }
 
     @SuppressWarnings("deprecation")
@@ -79,14 +86,14 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         cloud.initialize();
 		cloud.updateEvaluationsFromServer();
 
-		// verify
-        checkStatusBarHistory(cloud,
-                              "Checking FindBugs Cloud for updates",
-                              "");
+        // verify
+        cloud.checkStatusBarHistory(
+                "Checking FindBugs Cloud for updates",
+                "");
     }
 
     @SuppressWarnings("deprecation")
-	public void testGetRecentEvaluationsFails() throws Exception {
+	public void testGetRecentEvaluationsFailsWithHttpErrorCode() throws Exception {
 		// setup
         cloud.expectConnection("get-recent-evaluations").withErrorCode(500);
 
@@ -99,9 +106,56 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         }
 
         // verify
-        checkStatusBarHistory(cloud,
-                              "Checking FindBugs Cloud for updates",
-                              "Checking FindBugs Cloud for updates...failed - server returned error code 500 null");
+        cloud.checkStatusBarHistory(
+                "Checking FindBugs Cloud for updates",
+                "Checking FindBugs Cloud for updates...failed - server returned error code 500 null");
+    }
+
+    @SuppressWarnings({"deprecation", "ThrowableInstanceNeverThrown"})
+	public void testGetRecentEvaluationsFailsWithNetworkError() throws Exception {
+		// setup
+        cloud.expectConnection("get-recent-evaluations").throwsNetworkError(new IOException("blah"));
+
+        // execute
+        cloud.initialize();
+        cloud.pretendIssuesSyncedAndUploaded();
+        cloud.setSigninState(Cloud.SigninState.SIGNED_IN);
+        try {
+            cloud.updateEvaluationsFromServer();
+            fail();
+        } catch (Exception e) {
+        }
+
+        assertEquals(Cloud.SigninState.SIGNED_OUT, cloud.getSigninState());
+
+        // verify
+        verify(cloud.mockGuiCallback).showMessageDialog(matches("(?s).*error.*signed out.*Cloud.*"));
+        cloud.checkStatusBarHistory(
+                "Checking FindBugs Cloud for updates",
+                "Signed out of FindBugs Cloud");
+    }
+
+    @SuppressWarnings({"deprecation", "ThrowableInstanceNeverThrown"})
+	public void testGetRecentEvaluationsFailsWhenNotSignedIn() throws Exception {
+		// setup
+        cloud.expectConnection("get-recent-evaluations").throwsNetworkError(new IOException("blah"));
+
+        // execute
+        cloud.initialize();
+        cloud.pretendIssuesSyncedAndUploaded();
+        cloud.setSigninState(Cloud.SigninState.SIGNED_OUT);
+        try {
+            cloud.updateEvaluationsFromServer();
+            fail();
+        } catch (Exception e) {
+        }
+
+        // verify no dialogs, just status bar changes
+        verify(cloud.mockGuiCallback, never())
+                .showMessageDialog(Mockito.anyString());
+        cloud.checkStatusBarHistory(
+                "Checking FindBugs Cloud for updates",
+                "Checking FindBugs Cloud for updates...failed - blah");
     }
 
     public void testGetRecentEvaluationsOverwritesOldEvaluationsFromSamePerson()
@@ -277,11 +331,6 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
                 .addAllEvaluations(Arrays.asList(evalsToAdd))
                 .build();
 	}
-
-    private void checkStatusBarHistory(MockAppEngineCloudClient cloud, String... expectedStatusLines) {
-        assertEquals(Arrays.asList(expectedStatusLines),
-                     cloud.statusBarHistory);
-    }
 
     private static void checkStoredEvaluationMatches(Evaluation expectedEval, BugDesignation designation) {
         assertNotNull(designation);

@@ -335,10 +335,7 @@ public class AppEngineCloudNetworkClient {
             outputStream.close();
 
             if (conn.getResponseCode() != 200) {
-                throw new IOException(
-                        "server returned error code "
-                        + conn.getResponseCode() + " "
-                        + conn.getResponseMessage());
+                throw new ServerReturnedErrorCodeException(conn.getResponseCode(), conn.getResponseMessage());
             }
             return RecentEvaluations.parseFrom(conn.getInputStream());
         } finally {
@@ -396,9 +393,18 @@ public class AppEngineCloudNetworkClient {
         return issuesByHash.get(hash);
     }
 
-    public void signOut() {
+    public void signOut(boolean background) {
         if (sessionId != null) {
-            openPostUrl("/log-out/" + sessionId, null);
+            final long oldSessionId = sessionId;
+            Runnable logoutRequest = new Runnable() {
+                public void run() {
+                    openPostUrl("/log-out/" + oldSessionId, null);
+                }
+            };
+            if (background)
+                cloudClient.getBackgroundExecutor().execute(logoutRequest);
+            else
+                logoutRequest.run();
             sessionId = null;
             AppEngineNameLookup.clearSavedSessionInformation();
         }
@@ -654,4 +660,5 @@ public class AppEngineCloudNetworkClient {
             throw new IllegalStateException(e);
         }
     }
+
 }

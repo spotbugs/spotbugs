@@ -10,8 +10,6 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 import junit.framework.Assert;
-
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -90,43 +88,9 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         return spyNetworkClient;
     }
 
-    // ========================== end of public methods =========================
-
-    private void initStatusBarHistory() {
-        addListener(new CloudListener() {
-            public void issueUpdated(BugInstance bug) {
-            }
-
-            public void statusUpdated() {
-            	String statusMsg = getStatusMsg();
-				
-            	if (!statusBarHistory.isEmpty()) {
-            		String last = statusBarHistory.get(statusBarHistory.size()-1);
-            		if (statusMsg.equals(last))
-            			return;
-            	}
-                statusBarHistory.add(statusMsg);
-            }
-        });
-    }
-
-    private AppEngineNameLookup createMockNameLookup() throws IOException {
-        AppEngineNameLookup mockNameLookup = mock(AppEngineNameLookup.class);
-        when(mockNameLookup.getHost()).thenReturn("host");
-        when(mockNameLookup.getUsername()).thenReturn("test@example.com");
-        when(mockNameLookup.getSessionId()).thenAnswer(new Answer<Long>() {
-            public Long answer(InvocationOnMock invocationOnMock) throws Throwable {
-                return mockSessionId;
-            }
-        });
-        when(mockNameLookup.signIn(Mockito.<CloudPlugin>any(), Mockito.<BugCollection>any()))
-                .thenAnswer(new Answer<Boolean>() {
-                    public Boolean answer(InvocationOnMock invocationOnMock) throws Throwable {
-                        mockSessionId = 555L;
-                        return true;
-                    }
-                });
-        return mockNameLookup;
+    @Override
+    public void setSigninState(SigninState state) {
+        super.setSigninState(state);
     }
 
     public ExpectedConnection expectConnection(String url) {
@@ -137,13 +101,6 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
 
     public byte[] postedData(String url) {
         return getExpectedConnection(url).getPostData();
-    }
-
-    private ExpectedConnection getExpectedConnection(String url) {
-        for (ExpectedConnection expectedConnection : expectedConnections)
-            if (url.equals(expectedConnection.url()))
-                return expectedConnection;
-        return null;
     }
 
     public void verifyConnections() {
@@ -184,6 +141,57 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
                 .thenReturn(IGuiCallback.YES_OPTION);
     }
 
+    // ========================== end of public methods =========================
+
+    private void initStatusBarHistory() {
+        addListener(new CloudListener() {
+            public void issueUpdated(BugInstance bug) {
+            }
+
+            public void statusUpdated() {
+            	String statusMsg = getStatusMsg();
+				
+            	if (!statusBarHistory.isEmpty()) {
+            		String last = statusBarHistory.get(statusBarHistory.size()-1);
+            		if (statusMsg.equals(last))
+            			return;
+            	}
+                statusBarHistory.add(statusMsg);
+            }
+        });
+    }
+
+    private AppEngineNameLookup createMockNameLookup() throws IOException {
+        AppEngineNameLookup mockNameLookup = mock(AppEngineNameLookup.class);
+        when(mockNameLookup.getHost()).thenReturn("host");
+        when(mockNameLookup.getUsername()).thenReturn("test@example.com");
+        when(mockNameLookup.getSessionId()).thenAnswer(new Answer<Long>() {
+            public Long answer(InvocationOnMock invocationOnMock) throws Throwable {
+                return mockSessionId;
+            }
+        });
+        when(mockNameLookup.signIn(Mockito.<CloudPlugin>any(), Mockito.<BugCollection>any()))
+                .thenAnswer(new Answer<Boolean>() {
+                    public Boolean answer(InvocationOnMock invocationOnMock) throws Throwable {
+                        mockSessionId = 555L;
+                        return true;
+                    }
+                });
+        return mockNameLookup;
+    }
+
+    private ExpectedConnection getExpectedConnection(String url) {
+        for (ExpectedConnection expectedConnection : expectedConnections)
+            if (url.equals(expectedConnection.url()))
+                return expectedConnection;
+        return null;
+    }
+
+    public void checkStatusBarHistory(String... expectedStatusLines) {
+        Assert.assertEquals(Arrays.asList(expectedStatusLines),
+                     statusBarHistory);
+    }
+
     private class MockAppEngineCloudNetworkClient extends AppEngineCloudNetworkClient {
         @Override
         HttpURLConnection openConnection(String url) {
@@ -216,11 +224,20 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         private String url = null;
         private int responseCode = 200;
         private InputStream responseStream;
+        private IOException networkError = null;
+        private ByteArrayOutputStream postDataStream;
 
         public ExpectedConnection() {
             mockConnection = mock(HttpURLConnection.class);
+            postDataStream = new ByteArrayOutputStream();
             try {
-                when(mockConnection.getOutputStream()).thenReturn(new ByteArrayOutputStream());
+                when(mockConnection.getOutputStream()).thenAnswer(new Answer<Object>() {
+                    public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                        if (networkError != null)
+                            throw networkError;
+                        return postDataStream;
+                    }
+                });
                 when(mockConnection.getInputStream()).thenAnswer(new Answer<InputStream>() {
                     public InputStream answer(InvocationOnMock invocationOnMock) throws Throwable {
                         return responseStream;
@@ -259,12 +276,12 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
             return getOutputStream().toByteArray();
         }
 
-        private ByteArrayOutputStream getOutputStream() {
-            try {
-                return (ByteArrayOutputStream) mockConnection.getOutputStream();
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
-            }
+        public void withErrorCode(int code) {
+            this.responseCode = code;
+        }
+
+        public void throwsNetworkError(IOException e) {
+            networkError = e;
         }
 
         @Override
@@ -273,8 +290,14 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
             return "/" + url() + (postStream.size() > 0 ? " <" + postStream.size() + ">" : "");
         }
 
-        public void withErrorCode(int code) {
-            this.responseCode = code;
+        // ====================== end of public methods =======================
+
+        private ByteArrayOutputStream getOutputStream() {
+            try {
+                return (ByteArrayOutputStream) mockConnection.getOutputStream();
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
         }
     }
 }
