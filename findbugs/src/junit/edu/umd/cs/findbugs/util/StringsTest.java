@@ -74,5 +74,18 @@ public class StringsTest extends TestCase {
 			}
 		}
 	}
+	
+	public void checkEscapeLFCRBackSlash(String expected, String argument) {
+		assertEquals(argument, expected, Strings.escapeLFCRBackSlash(argument));
+		
+	}
+		
+	public void testEscapeLFCRBackSlash() {
+		
+		checkEscapeLFCRBackSlash("abc", "abc");
+		checkEscapeLFCRBackSlash("\\n", "\n");
+		checkEscapeLFCRBackSlash("\\r", "\r");
+		checkEscapeLFCRBackSlash("\\\\a\\r", "\\a\r");
+	}
 
 }

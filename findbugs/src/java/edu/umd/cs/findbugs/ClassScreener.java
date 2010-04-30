@@ -75,7 +75,8 @@ public class ClassScreener implements IClassScreener {
 		 * could use String.replaceAll(regex, repl) but that can be problematic--javadoc says
 		 * "Note that backslashes (\) and dollar signs ($) in the replacement string may cause
 		 * the results to be different than if it were being treated as a literal replacement" */
-		return replace(replace(dotsName, "$", "\\$"), ".", SEP);
+		String tmp = dotsName.replace("$", "\\$");
+		return tmp.replace(".", SEP);
 		// note: The original code used the \Q and \E regex quoting constructs to escape $.
 	}
 

@@ -42,6 +42,7 @@ public class Strings {
 	 * @throws IllegalArgumentException if <code>find</code> has zero length
 	 * @see java.lang.String#replace(CharSequence target, CharSequence replacement)
 	 */
+	@Deprecated
 	public static String replace(String source, String find, String repl) {
 		return source.replace(find, repl);
 	}
@@ -252,4 +253,10 @@ public class Strings {
         return StringEscapeUtils.unescapeXml(s);
     }
 
+    public static String escapeLFCRBackSlash(String s) {
+    	s = s.replace("\\","\\\\");
+    	s = s.replace("\r", "\\r");
+    	s = s.replace("\n", "\\n");
+    	return s;
+    }
 }

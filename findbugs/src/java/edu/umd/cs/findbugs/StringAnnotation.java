@@ -60,7 +60,7 @@ public class StringAnnotation implements BugAnnotation {
 	}
 
 	public static StringAnnotation fromRawString(String value) {
-		return new StringAnnotation(StringEscapeUtils.escapeJava(value));
+		return new StringAnnotation(Strings.escapeLFCRBackSlash(value));
 		
 	}
 	

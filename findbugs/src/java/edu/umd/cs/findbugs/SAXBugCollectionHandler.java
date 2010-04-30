@@ -395,7 +395,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    	addMatcher(new RankMatcher(getOptionalAttribute(attributes, "value")));
 	    } else if (qName.equals("Package")) {
 	    	String pName = getOptionalAttribute(attributes, "name");
-	    	pName = pName.startsWith("~") ? pName : "~" + Strings.replace(pName, ".", "\\.");			
+	    	pName = pName.startsWith("~") ? pName : "~" + pName.replace(".", "\\.");			
 			addMatcher( new ClassMatcher(pName + "\\.[^.]+"));
 	    } else if (qName.equals("Method")) {
 	    	String name = getOptionalAttribute(attributes, "name");
