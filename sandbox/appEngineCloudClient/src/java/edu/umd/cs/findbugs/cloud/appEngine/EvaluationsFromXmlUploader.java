@@ -1,17 +1,19 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
+import edu.umd.cs.findbugs.util.Multiset;
 import edu.umd.cs.findbugs.util.Util;
-
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EvaluationsFromXmlUploader {
     private IdentityHashMap<BugInstance, BugDesignation> localAnnotations;
@@ -68,17 +70,18 @@ public class EvaluationsFromXmlUploader {
     }
 
     private void askUserAboutUploadingXMLDesignations() {
-        final String userString = getAuthors(localAnnotations);
+    	
+        Multiset<String> users = getAuthors(localAnnotations);
+        
+		 String message;
+		 if (users.numKeys() == 1 && users.uniqueKeys().iterator().next().equals(cloud.getUser()))
+			 message =
+		  "The loaded XML file contains " + localAnnotations.size() + " of your evaluations that are more recent than ones stored in the cloud"
+                + "Do you wish to upload these evaluations?";
+		 else message =
+			  "The loaded XML file contains " + authorsToString(users) +"\n"
+             + "Do you wish to upload these evaluations as your evaluations?";
 
-        String message;
-        if (userString.equals(cloud.getUser()))
-            message =
-                    "The loaded XML file contains " + localAnnotations.size() + " of your evaluations that are more recent than ones stored in the cloud"
-                            + "Do you wish to upload these evaluations?";
-        else message =
-                "The loaded XML file contains " + localAnnotations.size() + " user evaluations of issues by " + userString + "\n"
-                        + "Do you wish to upload these evaluations as your evaluations?";
-        System.out.println(message);
         int result = cloud.getGuiCallback().showConfirmDialog(message, "Upload evaluations", "Upload", "Skip");
         if (result != IGuiCallback.YES_OPTION)
             return;
@@ -119,27 +122,34 @@ public class EvaluationsFromXmlUploader {
 
     }
 
-    /**
-     * @param designationsLoadedFromXML
-     * @return
-     */
-    private String getAuthors(
-            final IdentityHashMap<BugInstance, BugDesignation> designationsLoadedFromXML) {
-        HashSet<String> users = new HashSet<String>();
+    private Multiset<String> getAuthors(
+			final IdentityHashMap<BugInstance, BugDesignation> designationsLoadedFromXML) {
+		Multiset<String> users = new Multiset<String>();
 
-        for (BugDesignation bd : designationsLoadedFromXML.values()) {
-            String user = bd.getUser();
-            if (user == null || user.length() == 0)
-                user = "<unknown>";
-            users.add(user);
-        }
-        String userString;
-        if (users.size() == 1)
-            userString = users.iterator().next();
-        else
-            userString = users.toString();
-        return userString;
-    }
+		for (BugDesignation bd : designationsLoadedFromXML.values()) {
+			String user = bd.getUser();
+			if (user == null || user.length() == 0)
+				user = "<unknown>";
+			users.add(user);
+		}
+		return users;
+	}
+
+	private String authorsToString(Multiset<String> users) {
+		StringWriter w = new StringWriter();
+		PrintWriter out = new PrintWriter(w);
+		int count = 0;
+		for (Map.Entry<String, Integer> e : users.entrySet()) {
+			if (count == users.numKeys() - 1)
+				out.print(" and ");
+			else if (count > 0)
+				out.print(", ");
+			out.printf("%d evaluations by %s", e.getValue(), e.getKey());
+			count++;
+		}
+		out.close();
+		return w.toString();
+	}
 
     @SuppressWarnings({"deprecation"})
     private void actuallyUploadXmlEvaluations(IdentityHashMap<BugInstance, BugDesignation> designationsLoadedFromXML) {
