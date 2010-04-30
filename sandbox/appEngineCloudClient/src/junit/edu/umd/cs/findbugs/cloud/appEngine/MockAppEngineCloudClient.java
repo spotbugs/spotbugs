@@ -21,8 +21,11 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +45,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
 
     public List<String> urlsRequested;
     public IGuiCallback mockGuiCallback;
-    public List<String> statusMsgHistory;
+    public List<String> statusMsgHistory = new CopyOnWriteArrayList<String>();
     private final Object statusMsgLock = new Object();
 
     public MockAppEngineCloudClient(CloudPlugin plugin, SortedBugCollection bugs, List<HttpURLConnection> mockConnections)
@@ -65,8 +68,6 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         		return null;
         	}})
         	.when(mockGuiCallback).invokeInGUIThread(Mockito.isA(Runnable.class));
-
-        statusMsgHistory = new ArrayList<String>();
 
         initStatusBarHistory();
     }
@@ -100,8 +101,12 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         return connection;
     }
 
+    /**
+     * Returns POST data submitted for the given URL. If the URL was expected & requested more than once, this will
+     * return only the data from the LATEST one.
+     */
     public byte[] postedData(String url) {
-        return getExpectedConnection(url).getPostData();
+        return getLatestExpectedConnection(url).getPostData();
     }
 
     public void verifyConnections() {
@@ -184,10 +189,12 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         return mockNameLookup;
     }
 
-    private ExpectedConnection getExpectedConnection(String url) {
-        for (ExpectedConnection expectedConnection : expectedConnections)
+    private ExpectedConnection getLatestExpectedConnection(String url) {
+        for (int i = expectedConnections.size()-1; i >= 0; i--) {
+            ExpectedConnection expectedConnection = expectedConnections.get(i);
             if (url.equals(expectedConnection.url()))
                 return expectedConnection;
+        }
         return null;
     }
 
@@ -199,7 +206,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
     public void waitForStatusMsg(String regex) throws InterruptedException {
         Pattern pattern = Pattern.compile(regex);
         long start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 10*1000) {
+        while (System.currentTimeMillis() - start < 15*1000) {
             synchronized(statusMsgLock) {
                 statusMsgLock.wait(1000);
                 for (String status : statusMsgHistory) {
@@ -245,6 +252,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         private InputStream responseStream;
         private IOException networkError = null;
         private ByteArrayOutputStream postDataStream;
+        private CountDownLatch latch = new CountDownLatch(1);
 
         public ExpectedConnection() {
             mockConnection = mock(HttpURLConnection.class);
@@ -252,6 +260,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
             try {
                 when(mockConnection.getOutputStream()).thenAnswer(new Answer<Object>() {
                     public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                        latch.countDown();
                         if (networkError != null)
                             throw networkError;
                         return postDataStream;
@@ -259,11 +268,13 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
                 });
                 when(mockConnection.getInputStream()).thenAnswer(new Answer<InputStream>() {
                     public InputStream answer(InvocationOnMock invocationOnMock) throws Throwable {
+                        latch.countDown();
                         return responseStream;
                     }
                 });
                 when(mockConnection.getResponseCode()).thenAnswer(new Answer<Integer>() {
                     public Integer answer(InvocationOnMock invocationOnMock) throws Throwable {
+                        latch.countDown();
                         return responseCode;
                     }
                 });
@@ -285,10 +296,11 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
             return this;
         }
 
-        public void withResponse(GeneratedMessage response) {
+        public ExpectedConnection withResponse(GeneratedMessage response) {
             if (responseStream != null)
                 throw new IllegalStateException("Already have response stream");
             responseStream = new ByteArrayInputStream(response.toByteArray());
+            return this;
         }
 
         public byte[] getPostData() {
@@ -301,6 +313,10 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
 
         public void throwsNetworkError(IOException e) {
             networkError = e;
+        }
+
+        public CountDownLatch getLatch() {
+            return latch;
         }
 
         @Override

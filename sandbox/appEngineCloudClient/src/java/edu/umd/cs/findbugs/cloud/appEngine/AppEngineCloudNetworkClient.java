@@ -7,18 +7,8 @@ import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.*;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps.IssueGroup;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.Builder;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
@@ -28,24 +18,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,6 +28,7 @@ import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.en
 
 public class AppEngineCloudNetworkClient {
     private static final Logger LOGGER = Logger.getLogger(AppEngineCloudNetworkClient.class.getPackage().getName());
+    
     /** For debugging */
     private static final boolean FORCE_UPLOAD_ALL_ISSUES = false;
     private static final int BUG_UPLOAD_PARTITION_SIZE = 10;
@@ -349,7 +324,7 @@ public class AppEngineCloudNetworkClient {
             return null;
         Evaluation mostRecent = null;
         long when = Long.MIN_VALUE;
-        String myUsername = cloudClient.getUser();
+        String myUsername = getUsername();
         for (Evaluation e : issue.getEvaluationsList()) {
             if (e.getWho().equals(myUsername) && e.getWhen() > when) {
                 mostRecent = e;
@@ -380,13 +355,24 @@ public class AppEngineCloudNetworkClient {
         if (comment != null) {
             evalBuilder.setComment(comment);
         }
+        String hash = bugInstance.getInstanceHash();
+        Evaluation eval = evalBuilder.build();
         UploadEvaluation uploadMsg = UploadEvaluation.newBuilder()
                 .setSessionId(sessionId)
-                .setHash(encodeHash(bugInstance.getInstanceHash()))
-                .setEvaluation(evalBuilder.build())
+                .setHash(encodeHash(hash))
+                .setEvaluation(eval)
                 .build();
 
         openPostUrl("/upload-evaluation", uploadMsg);
+
+        // store so it shows up in cloud report, etc
+        Issue issue = issuesByHash.get(hash);
+        if (issue == null)
+            // I think this only happens in tests -keith
+            return;
+        Evaluation evalToStore = username == null ? eval : Evaluation.newBuilder(eval).setWho(username).build();
+        Issue.Builder issueToStore = Issue.newBuilder(issue);
+        issuesByHash.put(hash, issueToStore.addEvaluations(evalToStore).build());
     }
 
     public @CheckForNull Issue getIssueByHash(String hash) {
