@@ -37,4 +37,8 @@ public class ProgramPoint {
 	public SourceLineAnnotation getSourceLineAnnotation() {
 		return SourceLineAnnotation.fromVisitedInstruction(method.getMethodDescriptor(), pc);
 	}
+	
+	public String toString() {
+		return method.toString() + ":" + pc;
+	}
 }

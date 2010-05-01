@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
@@ -64,8 +65,10 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 			if (item.getRegisterNumber() == 0) {
 				try {
                 	Set<XMethod> targets = Hierarchy2.resolveVirtualMethodCallTargets(m, false, false);
+                	Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+        			
 	                for(XMethod called : targets) {
-	                	if (!called.isAbstract() && !called.equals(m))
+	                	if (!called.isAbstract() && !called.equals(m) && subtypes2.isSubtype(called.getClassDescriptor(), getClassDescriptor()))
 	                		fieldSummary.setCalledFromSuperConstructor(new ProgramPoint(this), called);
 	                }
                 } catch (ClassNotFoundException e) {
