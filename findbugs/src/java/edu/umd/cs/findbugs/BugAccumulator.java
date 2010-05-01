@@ -19,16 +19,17 @@
 
 package edu.umd.cs.findbugs;
 
+import java.util.HashSet;
+import java.util.TreeSet;
+
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.MethodGen;
+
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.util.MultiMap;
-
-import java.util.TreeSet;
-
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.MethodGen;
 
 /**
  * Accumulate warnings that may occur at multiple source locations,
@@ -42,6 +43,7 @@ public class BugAccumulator {
 	private BugReporter reporter;
 	private final boolean performAccumulation;
 	private MultiMap<BugInstance, SourceLineAnnotation> map;
+	private HashSet<String> hashes = new HashSet<String>();
 	
 	/**
 	 * Constructor.
@@ -61,9 +63,11 @@ public class BugAccumulator {
 	 * @param sourceLine the source location
 	 */
 	public void accumulateBug(BugInstance bug, SourceLineAnnotation sourceLine) {
-		if (performAccumulation)
-			map.add(bug,sourceLine);
-		else
+		if (performAccumulation) {
+			String hash = bug.getInstanceHash();
+			if (map.keySet().contains(bug) || hashes.add(hash))
+			  map.add(bug,sourceLine);
+		} else
 			reporter.reportBug(bug.addSourceLine(sourceLine));
 		
 	}
@@ -116,7 +120,7 @@ public class BugAccumulator {
      */
     public void clearBugs() {
     	map.clear();
-	    
+    	hashes.clear();
     }
 
 	/**
