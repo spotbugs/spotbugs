@@ -2155,24 +2155,23 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 	public void setOldInstanceHash(String oldInstanceHash) {
 		this.oldInstanceHash = oldInstanceHash;
 	}
-	private static final boolean DONT_HASH =  SystemProperties.getBoolean("findbugs.dontHash");
 	/**
 	 * @return Returns the instanceHash.
 	 */
+	
 	public String getInstanceHash() {
 		if (instanceHash != null) return instanceHash;
-			MessageDigest digest = null;
-			try { digest = MessageDigest.getInstance("MD5");
-			} catch (Exception e2) {
-				// OK, we won't digest
-			}
-			instanceHash = getInstanceKey();
-			if (digest != null && !DONT_HASH) {
-				byte [] data = digest.digest(instanceHash.getBytes());
-				String tmp = new BigInteger(1,data).toString(16);
-				instanceHash = tmp;
-			}
-			return instanceHash;
+		MessageDigest digest;
+		try { digest = MessageDigest.getInstance("MD5");
+		} catch (Exception e2) {
+			e2.printStackTrace();
+			throw new Error("Unable to get MD5 digest", e2);
+		}
+		String key  = getInstanceKey();
+		byte [] data = digest.digest(key.getBytes());
+		String hash = new BigInteger(1,data).toString(16);
+		instanceHash = hash;
+		return hash;
 	}
 
 	public boolean isInstanceHashConsistent() {
