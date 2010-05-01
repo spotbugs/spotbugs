@@ -125,7 +125,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 
 				if (formatString.indexOf('\n') >= 0)
 					bugReporter.reportBug(
-							new BugInstance(this, "TESTING", HIGH_PRIORITY)
+							new BugInstance(this, "VA_FORMAT_STRING_USES_NEWLINE", NORMAL_PRIORITY)
 							.addClassAndMethod(this)
 							.addCalledMethod(this)
 							.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
