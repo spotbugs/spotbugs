@@ -19,7 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 import org.apache.bcel.classfile.Method;
@@ -40,11 +43,20 @@ import edu.umd.cs.findbugs.util.MultiMap;
  */
 public class BugAccumulator {
 
-	private BugReporter reporter;
+	private final BugReporter reporter;
 	private final boolean performAccumulation;
-	private MultiMap<BugInstance, SourceLineAnnotation> map;
-	private HashSet<String> hashes = new HashSet<String>();
+	private final Map<BugInstance, Data> map = new HashMap<BugInstance, Data>();
+	private final HashMap<String, BugInstance> hashes = new HashMap<String, BugInstance>();
 	
+	static class Data {
+		public Data(int priority, SourceLineAnnotation primarySource) {
+	        this.priority = priority;
+	        this.primarySource = primarySource;
+        }
+		int priority;
+		SourceLineAnnotation primarySource;
+		List<SourceLineAnnotation> allSource = new LinkedList<SourceLineAnnotation>();
+	}
 	/**
 	 * Constructor.
 	 * 
@@ -53,7 +65,6 @@ public class BugAccumulator {
 	public BugAccumulator(BugReporter reporter) {
 		this.reporter = reporter;
 		performAccumulation = AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.MERGE_SIMILAR_WARNINGS);
-		this.map = new MultiMap<BugInstance, SourceLineAnnotation>(TreeSet.class);
 	}
 
 	/**
@@ -63,13 +74,34 @@ public class BugAccumulator {
 	 * @param sourceLine the source location
 	 */
 	public void accumulateBug(BugInstance bug, SourceLineAnnotation sourceLine) {
-		if (performAccumulation) {
-			String hash = bug.getInstanceHash();
-			if (map.keySet().contains(bug) || hashes.add(hash))
-			  map.add(bug,sourceLine);
-		} else
+		if (sourceLine == null)
+			throw new NullPointerException("Missing source line");
+		if (!performAccumulation) {
 			reporter.reportBug(bug.addSourceLine(sourceLine));
-		
+			return;
+		}
+		int priority = bug.getPriority();
+		bug.setPriority(Priorities.NORMAL_PRIORITY);
+		String hash = bug.getInstanceHash();
+		Data d = map.get(bug);
+		if (d == null) {
+			BugInstance conflictingBug = hashes.get(hash);
+			if (conflictingBug != null) {
+				if (conflictingBug.getPriority() <= priority)
+					return;
+				map.remove(conflictingBug);
+			}
+			d = new Data(priority, sourceLine);
+			map.put(bug, d);
+			hashes.put(hash, bug);
+		} else if (d.priority > priority) {
+			if (d.priority >= Priorities.LOW_PRIORITY)
+				d.allSource.clear();
+			d.priority = priority;
+			d.primarySource = sourceLine;
+		} else if (priority >= Priorities.LOW_PRIORITY && priority > d.priority)
+			return;
+		d.allSource.add(sourceLine);
 	}
 
 	/**
@@ -90,7 +122,7 @@ public class BugAccumulator {
 	}
 	
 	public Iterable<? extends SourceLineAnnotation> locations(BugInstance bug) {
-		return map.get(bug);
+		return map.get(bug).allSource;
 	}
 	
 	/**
@@ -98,17 +130,15 @@ public class BugAccumulator {
 	 * Clears all accumulated warnings as a side-effect.
 	 */
 	public void reportAccumulatedBugs() {
-		for(BugInstance bug : map.keySet()) {
-			boolean first = true;
-			for (SourceLineAnnotation source  : map.get(bug)) {
-				if (source != null) {
-					bug.addSourceLine(source);
-					if (first) {
-						first = false;
-					} else {
-						bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
-					}
-				}
+		for(Map.Entry<BugInstance, Data> e : map.entrySet()) {
+			BugInstance bug = e.getKey();
+			Data d = e.getValue();
+			bug.setPriority(d.priority);
+			bug.addSourceLine(d.primarySource);
+			d.allSource.remove(d.primarySource);
+			for (SourceLineAnnotation source : d.allSource) {
+				bug.addSourceLine(source);
+					bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
 			}
 			reporter.reportBug(bug);
 		}
