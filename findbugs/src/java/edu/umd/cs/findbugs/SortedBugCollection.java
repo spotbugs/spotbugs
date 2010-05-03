@@ -420,11 +420,7 @@ public class SortedBugCollection implements BugCollection {
 	public void computeBugHashes() {
 		if (preciseHashOccurrenceNumbersAvailable) return;
 		invalidateHashes();
-		MessageDigest digest = null;
-		try { digest = MessageDigest.getInstance("MD5");
-		} catch (Exception e2) {
-			// OK, we won't digest
-		}
+		MessageDigest digest = Util.getMD5Digest();
 
 		HashMap<String, Integer> seen = new HashMap<String, Integer>();
 

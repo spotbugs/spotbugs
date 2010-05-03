@@ -25,6 +25,8 @@ import java.util.Arrays;
 
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.util.Util;
+
 
 /**
  * Compute a hash of the bytecode for given method. 
@@ -101,13 +103,7 @@ public class MethodHash implements Comparable<MethodHash> {
 	 * @return this object
 	 */
 	public MethodHash computeHash(Method method) {
-		MessageDigest digest_;
-		try {
-			digest_ = MessageDigest.getInstance("MD5");
-		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalStateException("No algorithm for computing method hash", e);
-		}
-		final MessageDigest digest = digest_;
+		final MessageDigest digest = Util.getMD5Digest();
 
 		byte[] code;
 		if (method.getCode() == null || method.getCode().getCode() == null) {

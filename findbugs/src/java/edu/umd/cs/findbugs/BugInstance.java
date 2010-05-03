@@ -74,6 +74,7 @@ import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -2160,16 +2161,13 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 	 */
 	
 	public String getInstanceHash() {
-		if (instanceHash != null) return instanceHash;
-		MessageDigest digest;
-		try { digest = MessageDigest.getInstance("MD5");
-		} catch (Exception e2) {
-			e2.printStackTrace();
-			throw new Error("Unable to get MD5 digest", e2);
-		}
-		String key  = getInstanceKey();
-		byte [] data = digest.digest(key.getBytes());
-		String hash = new BigInteger(1,data).toString(16);
+		String hash = instanceHash;
+		if (hash != null) return hash;
+
+		MessageDigest digest = Util.getMD5Digest();
+		String key = getInstanceKey();
+		byte[] data = digest.digest(key.getBytes());
+		hash = new BigInteger(1, data).toString(16);
 		instanceHash = hash;
 		return hash;
 	}

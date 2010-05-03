@@ -33,6 +33,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -484,4 +486,17 @@ public class Util {
 		s.add(k);
 		return s;
 	}
+
+	/**
+     * @return
+     * @throws NoSuchAlgorithmException
+     */
+    static public MessageDigest getMD5Digest()   {
+    	try {
+    		MessageDigest digest = MessageDigest.getInstance("MD5");
+    		return digest;
+    	} catch (NoSuchAlgorithmException e) {
+    		throw new Error("Unable to get MD5 digest", e);
+    	}
+    }
 }

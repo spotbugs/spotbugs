@@ -40,6 +40,7 @@ import java.util.zip.ZipFile;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * @author William Pugh
@@ -120,7 +121,7 @@ public class CountClassVersions {
 		else
 			fileList = Arrays.asList(args).subList(argCount, args.length - 1);
 		byte buffer[] = new byte[8192];
-		MessageDigest digest = MessageDigest.getInstance("MD5");
+		MessageDigest digest = Util.getMD5Digest();
 		DualKeyHashMap<String, String, String> map = new DualKeyHashMap<String, String, String>();
 
 		for (String fInName : fileList) {

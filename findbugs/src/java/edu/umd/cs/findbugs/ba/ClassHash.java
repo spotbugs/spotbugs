@@ -36,6 +36,7 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
 
@@ -171,12 +172,8 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 			}
 		});
 
-		MessageDigest digest;
-		try {
-			digest = MessageDigest.getInstance("MD5");
-		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalStateException("No algorithm for computing class hash", e);
-		}
+		MessageDigest digest = Util.getMD5Digest();
+		
 
 		// Compute digest of method names and signatures, in order.
 		// Also, compute method hashes.

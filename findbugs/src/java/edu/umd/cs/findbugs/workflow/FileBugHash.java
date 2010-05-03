@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.util.Util;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -53,14 +54,10 @@ public class FileBugHash {
 		Map<String, StringBuilder> hashes = new LinkedHashMap<String, StringBuilder>();
 		Map<String, Integer> counts = new HashMap<String, Integer>();
 		Map<String, Integer> sizes = new HashMap<String, Integer>();
-		MessageDigest digest;
+		MessageDigest digest = Util.getMD5Digest();
 		
 		FileBugHash(BugCollection bugs)  {
-			try {
-	            digest = MessageDigest.getInstance("MD5");
-            } catch (NoSuchAlgorithmException e) {
-	           AnalysisContext.logError("Unable to get MD5 digester", e);
-            }
+			
             for (PackageStats pStat : bugs.getProjectStats().getPackageStats())
             	for(ClassStats cStat : pStat.getSortedClassStats()) {
             		String path = cStat.getName();
