@@ -3590,8 +3590,8 @@ public class CircularClassInitialization {
   </BugPattern>
 
   <BugPattern type="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT">
-    <ShortDescription>Synchronization on interned String could lead to deadlock</ShortDescription>
-    <LongDescription>Synchronization on interned String could deadlock in {1}</LongDescription>
+    <ShortDescription>Synchronization on interned String </ShortDescription>
+    <LongDescription>Synchronization on interned String in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> The code synchronizes on interned String.
@@ -3605,13 +3605,14 @@ private static String LOCK = "LOCK";
 <p>Constant Strings are interned and shared across all other classes loaded by the JVM. Thus, this could
 is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
 blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> and <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a>.
+<p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DL_SYNCHRONIZATION_ON_BOOLEAN">
-    <ShortDescription>Synchronization on Boolean could lead to deadlock</ShortDescription>
-    <LongDescription>Synchronization on Boolean could deadlock in {1}</LongDescription>
+    <ShortDescription>Synchronization on Boolean</ShortDescription>
+    <LongDescription>Synchronization on Boolean in {1}</LongDescription>
     <Details>
       <![CDATA[
   <p> The code synchronizes on a boxed primitive constant, such as an Boolean.
@@ -3629,6 +3630,7 @@ private static Boolean inited = Boolean.FALSE;
 </p>
 <p>Since there normally exist only two Boolean objects, this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
 and possible deadlock</p>
+<p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3663,8 +3665,8 @@ throughout the JVM, leading to very confusing behavior and potential deadlock.
   </BugPattern>
 
   <BugPattern type="DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE">
-    <ShortDescription>Synchronization on boxed primitive could lead to deadlock</ShortDescription>
-    <LongDescription>Synchronization on {2} could deadlock in {1}</LongDescription>
+    <ShortDescription>Synchronization on boxed primitive</ShortDescription>
+    <LongDescription>Synchronization on {2} in {1}</LongDescription>
     <Details>
       <![CDATA[
   <p> The code synchronizes on a boxed primitive constant, such as an Integer.
@@ -3680,6 +3682,7 @@ private static Integer count = 0;
 <p>Since Integer objects can be cached and shared,
 this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
 and possible deadlock</p>
+<p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -8227,7 +8230,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="TQ">Inconsistent use of type qualifier annotations</BugCode>
   <BugCode abbrev="OBL">Unsatisfied obligation to clean up stream or resource</BugCode>
   <BugCode abbrev="FB">FindBugs did not produce the expected warnings on a method</BugCode>
-  <BugCode abbrev="DL">Potential deadlock due to unintended locking on shared objects</BugCode>
+  <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared objects</BugCode>
   </MessageCollection>
 
 
