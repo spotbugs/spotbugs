@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -40,7 +41,10 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
 		// System.out.println(getMethodName());
 
 		state = 0;
+		countDown = 0;
 		super.visit(code); // make callbacks to sawOpcode for all opcodes
+		syncField = field = putField = null;
+		pendingBug  = null;
 
 	}
 	
@@ -49,26 +53,45 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
 	XField field, putField;
 	XField syncField;
 	int putPC;
+	BugInstance pendingBug;
+	int countDown = 0;
 
 	@Override
 	public void sawOpcode(int seen) {
-		// System.out.println(state + " " + getPC() + " " + OPCODE_NAMES[seen]);
-		if (seen == PUTFIELD) {
-			if (getPrevOpcode(1) == ALOAD_0) 
-				putField = null;
-			else {
-				putField = getXFieldOperand();
-				putPC = getPC();
+//		System.out.println(state + " " + getPC() + " " + OPCODE_NAMES[seen]);
+		if (countDown == 2 && seen == GOTO) {
+			CodeException tryBlock = getSurroundingTryBlock(getPC());
+			if (tryBlock != null && tryBlock.getEndPC() == getPC())
+				pendingBug.setPriority(Priorities.NORMAL_PRIORITY);
+		}
+		if (countDown > 0) {
+			countDown--;
+			if (countDown == 0) {
+				if (seen == MONITOREXIT)
+					pendingBug.setPriority(Priorities.NORMAL_PRIORITY);
+				
+				bugReporter.reportBug(pendingBug);
+				pendingBug = null;
 			}
 		}
-		if (seen == MONITOREXIT && getPrevOpcode(2) == PUTFIELD
-				&& putField != null && putField.equals(syncField)) {
-			bugReporter.reportBug(new BugInstance(this, "ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD", Priorities.HIGH_PRIORITY).addClassAndMethod(this)
-			        .addField(syncField).addSourceLine(this, putPC));
+		if (seen == PUTFIELD) {
+			
+			if (syncField != null && getPrevOpcode(1) != ALOAD_0 && syncField.equals(getXFieldOperand())) {
+	            pendingBug = new BugInstance(this, "ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD", Priorities.HIGH_PRIORITY).addClassAndMethod(this)
+				        .addField(syncField).addSourceLine(this);
+	            countDown = 2;
+	            
+            }
+			
+		}
+		if (seen == MONITOREXIT) {
+			pendingBug = null;
+			countDown = 0;
 		}
 		
 		if (seen==MONITORENTER)
 			syncField = null;
+		
 		switch (state) {
 		case 0:
 			if (seen == ALOAD_0)

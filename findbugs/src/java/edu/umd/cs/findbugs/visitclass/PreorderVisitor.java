@@ -163,6 +163,14 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 			if (code == null) throw new IllegalStateException("Not visiting Code");
 			return Util.getSizeOfSurroundingTryBlock(constantPool, code, vmNameOfExceptionClass, pc);
 	 }
+	
+	 public CodeException getSurroundingTryBlock(int pc) {
+			return getSurroundingTryBlock(null, pc);
+	 }
+	 public CodeException getSurroundingTryBlock(String vmNameOfExceptionClass, int pc) {
+			if (code == null) throw new IllegalStateException("Not visiting Code");
+			return Util.getSurroundingTryBlock(constantPool, code, vmNameOfExceptionClass, pc);
+	 }
 	// Attributes
 	@Override
 		 public void visitCode(Code obj) {

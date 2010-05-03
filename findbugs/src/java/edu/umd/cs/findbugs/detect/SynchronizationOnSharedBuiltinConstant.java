@@ -30,12 +30,14 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.util.ClassName;
 
 public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector {
 
@@ -58,42 +60,78 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 	}
 	
 	private static final Pattern identified = Pattern.compile("\\p{Alnum}+");
+	BugInstance pendingBug;
+	int monitorEnterPC;
+	String syncSignature;
 	
 	@Override
 	public void visit(Code obj) {
 		super.visit(obj);
+		accumulateBug();
 		bugAccumulator.reportAccumulatedBugs();
 	}
 	@Override
 	public void sawOpcode(int seen) {
-		if (seen == MONITORENTER) {
+		switch(seen) {
+		case MONITORENTER:
 			OpcodeStack.Item top = stack.getStackItem(0);
-			String signature = top.getSignature();
+			
+			if (pendingBug != null) {
+				 bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(this).addValueSource(top, this), this);
+				 accumulateBug();
+			}
+			monitorEnterPC = getPC();
+			
+			syncSignature = top.getSignature();
 			Object constant = top.getConstant();
-			if (signature.equals("Ljava/lang/String;") && constant instanceof String) {
-				BugInstance bug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY).addClassAndMethod(this);
+			if (syncSignature.equals("Ljava/lang/String;") && constant instanceof String) {
+				pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY).addClassAndMethod(this);
 
 				String value = (String) constant;
 				if (identified.matcher(value).matches())
-					bug.addString(value).describe(StringAnnotation.STRING_CONSTANT_ROLE);
+					pendingBug.addString(value).describe(StringAnnotation.STRING_CONSTANT_ROLE);
 				
-				bugAccumulator.accumulateBug(bug, this);
-			} else if (badSignatures.contains(signature)) {
-				boolean isBoolean = signature.equals("Ljava/lang/Boolean;");
+			} else if (badSignatures.contains(syncSignature)) {
+				boolean isBoolean = syncSignature.equals("Ljava/lang/Boolean;");
 				XField field = top.getXField();
 				FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
 				OpcodeStack.Item summary = fieldSummary.getSummary(field);
 				int priority = NORMAL_PRIORITY;
 				if (isBoolean) priority--;
 				if (newlyConstructedObject(summary))
-					bugAccumulator.accumulateBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE", NORMAL_PRIORITY)
-					.addClassAndMethod(this).addType(signature).addOptionalField(field).addOptionalLocalVariable(this, top), this);
+					pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE", NORMAL_PRIORITY)
+					.addClassAndMethod(this).addType(syncSignature).addOptionalField(field).addOptionalLocalVariable(this, top);
 				else if (isBoolean) 
-					bugAccumulator.accumulateBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", priority)
-					.addClassAndMethod(this).addOptionalField(field).addOptionalLocalVariable(this, top), this);
-				else bugAccumulator.accumulateBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE", priority)
-				.addClassAndMethod(this).addType(signature).addOptionalField(field).addOptionalLocalVariable(this, top), this);
+					pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", priority)
+					.addClassAndMethod(this).addOptionalField(field).addOptionalLocalVariable(this, top);
+				else pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE", priority)
+				.addClassAndMethod(this).addType(syncSignature).addOptionalField(field).addOptionalLocalVariable(this, top);
 			}
+			break;
+		case MONITOREXIT:
+
+			accumulateBug();
+			break;
+		case INVOKEINTERFACE:
+		case INVOKEVIRTUAL:
+		case INVOKESPECIAL:
+		case INVOKESTATIC:
+			if (pendingBug != null && !getClassConstantOperand().equals(ClassName.fromFieldSignature(syncSignature)))
+				bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this).addCalledMethod(this), this);
+			
+			break;
+			
 		}
 	}
+
+
+
+	/**
+     * 
+     */
+    private void accumulateBug() {
+    		if (pendingBug == null) return;
+	    bugAccumulator.accumulateBug(pendingBug, SourceLineAnnotation.fromVisitedInstruction(this, monitorEnterPC));
+	    pendingBug = null;
+    }
 }

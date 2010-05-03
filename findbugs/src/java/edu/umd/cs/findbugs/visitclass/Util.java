@@ -65,8 +65,29 @@ public class Util {
 			 return Integer.MAX_VALUE;
 		 return getSizeOfSurroundingTryBlock(method.getConstantPool(), method.getCode(), vmNameOfExceptionClass, pc);
 	 }
-			
-		 
+	
+	 public static @CheckForNull CodeException getSurroundingTryBlock(ConstantPool constantPool, Code code, @CheckForNull String vmNameOfExceptionClass, int pc) {
+		 	int size = Integer.MAX_VALUE;
+			if (code.getExceptionTable() == null) return null;
+			CodeException result = null;
+			for (CodeException catchBlock : code.getExceptionTable()) {
+				if (vmNameOfExceptionClass != null) {
+					Constant catchType = constantPool.getConstant(catchBlock.getCatchType());
+					if (catchType == null || catchType instanceof ConstantClass 
+							&& !((ConstantClass)catchType).getBytes(constantPool).equals(vmNameOfExceptionClass)) continue;
+				}
+				int startPC = catchBlock.getStartPC();
+				int endPC = catchBlock.getEndPC();
+				if (pc >= startPC && pc <= endPC) {
+					int thisSize = endPC - startPC;
+					if (size > thisSize) {
+						size = thisSize;
+						result = catchBlock;
+					}
+				}
+			}
+			return result;
+	 }
 	 public static int getSizeOfSurroundingTryBlock(ConstantPool constantPool, Code code, @CheckForNull String vmNameOfExceptionClass, int pc) {
 			int size = Integer.MAX_VALUE;
 			int tightStartPC = 0;
