@@ -72,7 +72,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
 			}
 			break;
 		case GETFIELD:
-			if (seen == ICONST_1 || seen == LCONST_1)
+			if (seen == ICONST_1 || seen == LCONST_1 || seen == ICONST_M1)
 				state = IncrementState.LOADCONSTANT;
 			else 
 				resetIncrementState();
@@ -86,7 +86,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
 			break;
 		case ADD:
 			if (seen == PUTFIELD && incrementField.equals(getXFieldOperand()))
-				bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "VO_VOLATILE_INCREMENT", incrementField.getSignature().equals("J") ? Priorities.HIGH_PRIORITY : Priorities.NORMAL_PRIORITY)
 					.addClassAndMethod(this).addField(incrementField).addSourceLine(this));
 			resetIncrementState();
 			break;

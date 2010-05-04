@@ -1965,6 +1965,18 @@ in Java 5.0).</p>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="VO_VOLATILE_INCREMENT">
+    <ShortDescription>An increment to a volatile field isn't atomic</ShortDescription>
+    <LongDescription>Increment of volatile field {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>This code increments a volatile field. Increments of volatile fields aren't 
+atomic. If more than one thread is incrementing the field at the same time,
+increments could be lost.  
+</p>
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="UI_INHERITANCE_UNSAFE_GETRESOURCE">
     <ShortDescription>Usage of GetResource may be unsafe if class is extended</ShortDescription>
