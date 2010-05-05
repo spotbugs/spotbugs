@@ -161,6 +161,11 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 
 	}
 
+	private static boolean falseIfNull(Boolean b) {
+		if (b == null)
+			return false;
+		return b;
+	}
 	private void check(XMethod xmethod, ClassDescriptor annotation, boolean expectWarnings, int priority) {
 		AnnotationValue expect = xmethod.getAnnotation(annotation);
 		if (expect != null) {
@@ -168,7 +173,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 				System.out.println("*** Found " + annotation + " annotation");
 			}
 			String expectedBugCodes = (String) expect.getValue("value");
-			boolean matchBugPattern = (Boolean) expect.getValue("bugPattern");
+			boolean matchBugPattern = falseIfNull((Boolean) expect.getValue("bugPattern"));
 			StringTokenizer tok = new StringTokenizer(expectedBugCodes, ",");
 			while (tok.hasMoreTokens()) {
 				String bugCode = tok.nextToken();
