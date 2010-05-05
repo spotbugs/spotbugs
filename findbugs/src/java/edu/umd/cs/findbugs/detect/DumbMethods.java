@@ -189,8 +189,9 @@ public class DumbMethods extends OpcodeStackDetector  {
 				int year = (Integer) constant1;
 				if (year > 1900)
 					accumulator.accumulateBug(new BugInstance(this,
-							"UNKNOWN", HIGH_PRIORITY)
+							"TESTING", HIGH_PRIORITY)
 							.addClassAndMethod(this)
+							.addString("Comparison of getYear does understand that it returns year-1900")
 							.addMethod(returnValueOf).describe(MethodAnnotation.METHOD_CALLED)
 							.addInt(year).describe(IntAnnotation.INT_VALUE),
 							this);

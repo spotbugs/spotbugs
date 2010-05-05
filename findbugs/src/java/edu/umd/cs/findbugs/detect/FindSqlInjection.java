@@ -410,7 +410,7 @@ public class FindSqlInjection implements Detector {
 			}
 		}
 
-		String description = "UNKNOWN";
+		String description = "TESTING";
 		if (instruction instanceof InvokeInstruction && isExecuteDatabaseSink((InvokeInstruction) instruction, cpg)) {
 			description = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE";
 		} else if (isPreparedStatementDatabaseSink(instruction, cpg)) {
@@ -419,6 +419,8 @@ public class FindSqlInjection implements Detector {
 
 		BugInstance bug = new BugInstance(this, description, priority);
 		bug.addClassAndMethod(methodGen, javaClass.getSourceFileName());
+		if (description.equals("TESTING"))
+			bug.addString("Incomplete report invoking non-constant SQL string");
 
 		return bug;
 	}

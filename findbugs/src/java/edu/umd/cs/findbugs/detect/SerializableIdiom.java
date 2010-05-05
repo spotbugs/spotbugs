@@ -555,9 +555,10 @@ public class SerializableIdiom extends OpcodeStackDetector
 						|| Subtypes2.instanceOf(fieldType, "javax.ejb.EJBObject")
 						|| Subtypes2.instanceOf(fieldType, "javax.naming.Context")) {
 					if (obj.isTransient()) 
-						bugReporter.reportBug(new BugInstance(this, "UNKNOWN", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY)
 						.addClass(this)
-						.addVisitedField(this));
+						.addVisitedField(this)
+						.addString("EJB implementation classes should not have fields of this type"));
 					return;
 				}
 			}
