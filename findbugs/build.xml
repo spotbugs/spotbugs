@@ -21,6 +21,7 @@
 	<property name="plugin.dir" value="plugin"/>
 	<property name="build.dir" value="build"/>
 	<property name="classes.dir" value="build/classes"/>
+	<property name="eclipseClasses.dir" value="classesEclipse"/>
 	<property name="junitclasses.dir" value="build/junitclasses"/>
 	<property name="scripts.dir" value="bin"/>
 	<property name="src.dir" value="src/java"/>
@@ -253,6 +254,15 @@
 		</target>
 
 	<target name="jars" depends="classes, validate,version">
+		<copy todir="${eclipseClasses.dir}" overwrite="true">
+		    <fileset dir="${etc.dir}">
+                                <include name="*.xsd"/>
+                                <include name="bugrank.txt"/>
+                                <include name="findbugs.xml"/>
+                                <include name="messages*.xml"/>
+                        </fileset>
+		     </copy>
+
 		<mkdir dir="${plugin.dir}"/>
 		<!-- Main engine and command line jar file. -->
 		<jar destfile="${engine.jar}"
@@ -551,7 +561,7 @@
     		  timeout="1800000"
               outputFile="${sampleoutput.dir}/findbugs.xml" >
       <class location="${classes.dir}" />
-      <sourcePath path="src/java:src/java5:src/junit"/>
+      <sourcePath path="src/java:src/java5:src/junit:src/tools"/>
 	  <auxClasspath refid="tools.classpath"/>
     </findbugs>
   </target>
