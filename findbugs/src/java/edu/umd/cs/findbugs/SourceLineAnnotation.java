@@ -68,6 +68,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	public static final String ROLE_OBLIGATION_CREATED = "SOURCE_LINE_OBLIGATION_CREATED";
 	public static final String ROLE_OBLIGATION_CREATED_BY_WILLCLOSE_PARAMETER = "SOURCE_LINE_OBLIGATION_CREATED_BY_WILLCLOSE_PARAMETER";
 	public static final String ROLE_PATH_CONTINUES = "SOURCE_LINE_PATH_CONTINUES";
+	public static final String ROLE_LOCK_OBTAINED_AT = "SOURCE_LINE_LOCK_OBTAINED_AT";
 
 
 	/**

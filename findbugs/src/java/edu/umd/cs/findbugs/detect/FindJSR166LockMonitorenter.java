@@ -157,7 +157,9 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 						XMethod m = c.findMethod("await", "()V", false);
 						if (m != null && m.isPublic() && c.isPublic())
 							bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(
-							        classContext.getJavaClass(), method).addCalledMethod(cpg, iv).addSourceLine(classContext,
+							        classContext.getJavaClass(), method)
+							        .addString("Calling wait or notify on a util.concurrent object that supports await")
+							        .addCalledMethod(cpg, iv).addSourceLine(classContext,
 							        method, location));
 
 					} catch (CheckedAnalysisException e) {

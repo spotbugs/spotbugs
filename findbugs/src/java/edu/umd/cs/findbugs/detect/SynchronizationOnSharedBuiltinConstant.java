@@ -77,7 +77,9 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 			OpcodeStack.Item top = stack.getStackItem(0);
 			
 			if (pendingBug != null) {
-				 bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(this).addValueSource(top, this), this);
+				 bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", syncSignature.equals("Z") ? HIGH_PRIORITY : NORMAL_PRIORITY)
+				          .addClassAndMethod(this).addString("Getting lock while holding lock on shared object")
+						 .addValueSource(top, this).addSourceLine(this, monitorEnterPC).describe(SourceLineAnnotation.ROLE_LOCK_OBTAINED_AT), this);
 				 accumulateBug();
 			}
 			monitorEnterPC = getPC();
@@ -117,7 +119,10 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 		case INVOKESPECIAL:
 		case INVOKESTATIC:
 			if (pendingBug != null && !getClassConstantOperand().equals(ClassName.fromFieldSignature(syncSignature)))
-				bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this).addCalledMethod(this), this);
+				bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this)
+						.addString("Holding lock on shared object while calling method that might obtain other locks")
+						.addSourceLine(this, monitorEnterPC).describe(SourceLineAnnotation.ROLE_LOCK_OBTAINED_AT)
+						.addCalledMethod(this), this);
 			
 			break;
 			

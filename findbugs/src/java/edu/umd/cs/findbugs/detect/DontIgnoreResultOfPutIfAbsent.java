@@ -260,6 +260,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     							BugInstance bugInstance = new BugInstance(this,  "TESTING", 
 										priority)
 											.addClassAndMethod(methodGen,sourceFileName)
+											.addString("Counting putIfAbsentCalls")
 											.addCalledMethod(methodGen, invoke);
 								SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(
 										classContext, method, location);
