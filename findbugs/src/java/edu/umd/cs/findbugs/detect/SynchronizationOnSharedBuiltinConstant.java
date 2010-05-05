@@ -61,8 +61,10 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 	
 	private static final Pattern identified = Pattern.compile("\\p{Alnum}+");
 	BugInstance pendingBug;
+	
 	int monitorEnterPC;
 	String syncSignature;
+	boolean isSyncOnBoolean;
 	
 	@Override
 	public void visit(Code obj) {
@@ -77,16 +79,21 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 			OpcodeStack.Item top = stack.getStackItem(0);
 			
 			if (pendingBug != null) {
-				 bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", syncSignature.equals("Z") ? HIGH_PRIORITY : NORMAL_PRIORITY)
+
+				 bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", isSyncOnBoolean ? HIGH_PRIORITY : NORMAL_PRIORITY)
 				          .addClassAndMethod(this).addString("Getting lock while holding lock on shared object")
-						 .addValueSource(top, this).addSourceLine(this, monitorEnterPC).describe(SourceLineAnnotation.ROLE_LOCK_OBTAINED_AT), this);
+				          .addSourceLine(this, monitorEnterPC).describe(SourceLineAnnotation.ROLE_LOCK_OBTAINED_AT)
+				          .addType(syncSignature)
+						 .addValueSource(top, this), this);
 				 accumulateBug();
 			}
 			monitorEnterPC = getPC();
 			
 			syncSignature = top.getSignature();
+			isSyncOnBoolean = false;
 			Object constant = top.getConstant();
 			if (syncSignature.equals("Ljava/lang/String;") && constant instanceof String) {
+
 				pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY).addClassAndMethod(this);
 
 				String value = (String) constant;
@@ -94,16 +101,16 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 					pendingBug.addString(value).describe(StringAnnotation.STRING_CONSTANT_ROLE);
 				
 			} else if (badSignatures.contains(syncSignature)) {
-				boolean isBoolean = syncSignature.equals("Ljava/lang/Boolean;");
+				isSyncOnBoolean = syncSignature.equals("Ljava/lang/Boolean;");
 				XField field = top.getXField();
 				FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
 				OpcodeStack.Item summary = fieldSummary.getSummary(field);
 				int priority = NORMAL_PRIORITY;
-				if (isBoolean) priority--;
+				if (isSyncOnBoolean) priority--;
 				if (newlyConstructedObject(summary))
 					pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE", NORMAL_PRIORITY)
 					.addClassAndMethod(this).addType(syncSignature).addOptionalField(field).addOptionalLocalVariable(this, top);
-				else if (isBoolean) 
+				else if (isSyncOnBoolean) 
 					pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", priority)
 					.addClassAndMethod(this).addOptionalField(field).addOptionalLocalVariable(this, top);
 				else pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE", priority)
@@ -118,11 +125,20 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 		case INVOKEVIRTUAL:
 		case INVOKESPECIAL:
 		case INVOKESTATIC:
-			if (pendingBug != null && !getClassConstantOperand().equals(ClassName.fromFieldSignature(syncSignature)))
-				bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this)
+			if (pendingBug != null && !getClassConstantOperand().equals(ClassName.fromFieldSignature(syncSignature))) {
+				if (getClassConstantOperand().startsWith("java/lang/String"))
+					break;
+				if (getClassConstantOperand().startsWith("java/util/logging"))
+					break;
+				int priority =  isSyncOnBoolean ? HIGH_PRIORITY : NORMAL_PRIORITY;
+				if (getClassConstantOperand().startsWith("java"))
+					priority++;
+				bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", priority).addClassAndMethod(this)
 						.addString("Holding lock on shared object while calling method that might obtain other locks")
 						.addSourceLine(this, monitorEnterPC).describe(SourceLineAnnotation.ROLE_LOCK_OBTAINED_AT)
+						 .addType(syncSignature)
 						.addCalledMethod(this), this);
+			}
 			
 			break;
 			
