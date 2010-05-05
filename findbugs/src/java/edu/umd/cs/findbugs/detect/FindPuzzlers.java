@@ -539,13 +539,29 @@ public class FindPuzzlers extends OpcodeStackDetector {
 		
 		
 		
+		if (seen == IAND || seen == LAND) {
+			OpcodeStack.Item rhs = stack.getStackItem(0);
+			OpcodeStack.Item lhs = stack.getStackItem(1);
+			Object constant = rhs.getConstant();
+			OpcodeStack.Item value = lhs;
+			if (constant == null) {
+				constant = lhs.getConstant();
+				value = rhs;
+			}
+			if (constant instanceof Number) {
+				long constantValue = ((Number)constant).longValue();
+				if (constantValue == 0xEFFFFFFF || constantValue == 0xEFFFFFFFFFFFFFFFL)
+					bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this)
+							.addString("Apparent failed attempt to mask lower 31 bits of an int").addValueSource(value, this), this);
+				
+			}
+		}
 		if (seen == LDC2_W) {
 			value_LDC2_W = getConstantRefOperand();
 		} else if (seen == L2I && getPrevOpcode(1) == LAND && getPrevOpcode(2) == LDC2_W && value_LDC2_W instanceof ConstantLong) {
 			ConstantLong longValue = (ConstantLong) value_LDC2_W;
 			if (longValue.getBytes() == 0xEFFFFFFF)
-				bugAccumulator.accumulateBug(new BugInstance(this, "UNKNOWN", NORMAL_PRIORITY).addClassAndMethod(this), this);
-
+				bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this).addString("Apparent failed attempt to mask lower 31 bits of an int"), this);
 		}
 		prevOpCode = seen;
 
