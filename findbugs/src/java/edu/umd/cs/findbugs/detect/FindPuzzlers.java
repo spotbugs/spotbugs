@@ -546,7 +546,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 				constant = lhs.getConstant();
 				value = rhs;
 			}
-			if (constant instanceof Number) {
+			if (constant instanceof Number && (seen == LAND || value.getSpecialKind() == OpcodeStack.Item.RESULT_OF_L2I) ) {
 				long constantValue = ((Number)constant).longValue();
 				if (constantValue == 0xEFFFFFFF || constantValue == 0xEFFFFFFFFFFFFFFFL)
 					bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this)

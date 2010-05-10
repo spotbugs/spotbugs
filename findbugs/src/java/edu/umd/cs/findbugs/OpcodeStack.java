@@ -49,6 +49,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.OpcodeStack.Item.SpecialKind;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
@@ -148,6 +149,7 @@ public class OpcodeStack implements Constants2
 		public static final @SpecialKind int ZERO_MEANS_NULL  = 17;
 		public static final @SpecialKind int NONZERO_MEANS_NULL  = 18;
 		public static final @SpecialKind int RESULT_OF_I2L = 19;
+		public static final @SpecialKind int RESULT_OF_L2I = 20;
 		
 		private static final int IS_INITIAL_PARAMETER_FLAG=1;
 		private static final int COULD_BE_ZERO_FLAG = 2;
@@ -1486,11 +1488,17 @@ public class OpcodeStack implements Constants2
 				 case D2I:
 				 case F2I:
 					 it = pop();
+					 int oldSpecialKind = it.getSpecialKind();
 					 if (it.getConstant() != null) {
-						 push(new Item("I",constantToInt(it)));
+						 it = new Item("I",constantToInt(it));
 					 } else {
-						 push(new Item("I"));
+						 it = new Item("I");
 					 }
+					 if (oldSpecialKind == Item.NOT_SPECIAL)
+						 it.setSpecialKind(Item.RESULT_OF_L2I);
+					 else
+						 it.setSpecialKind(oldSpecialKind);
+					 push(it);
 				 break;
 
 				 case L2F:
