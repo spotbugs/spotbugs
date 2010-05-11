@@ -57,7 +57,6 @@ public class AppEngineCloudNetworkClient {
         this.sessionId = lookerupper.getSessionId();
         this.username = lookerupper.getUsername();
         this.host = lookerupper.getHost();
-        System.out.println("Session id: " + sessionId);
         return this.sessionId != null;
     }
 
