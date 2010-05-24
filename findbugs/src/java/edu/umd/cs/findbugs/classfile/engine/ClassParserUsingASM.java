@@ -278,12 +278,12 @@ public class ClassParserUsingASM implements ClassParserInterface {
 							   = opcode == Opcodes.INVOKESPECIAL && owner.equals("java/lang/UnsupportedOperationException") 
 							   && name.equals("<init>");
 							
-							if (isBridge) switch (opcode) {
+							if (isBridge && bridgedMethodSignature == null) switch (opcode) {
 								case Opcodes.INVOKEVIRTUAL:
 								case Opcodes.INVOKESPECIAL:
 								case Opcodes.INVOKESTATIC:
 								case Opcodes.INVOKEINTERFACE:
-									if (desc != null)
+									if (desc != null && name.equals(methodName))
 		                                bridgedMethodSignature = desc;
 								}
 							
@@ -323,7 +323,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 							mBuilder.setNumberMethodCalls(methodCallCount);
 							MethodInfo methodInfo = mBuilder.build();
 							Builder classBuilder = (ClassInfo.Builder)cBuilder;
-							if (isBridge && !bridgedMethodSignature.equals(methodDesc))
+							if (isBridge && bridgedMethodSignature != null && !bridgedMethodSignature.equals(methodDesc))
 									classBuilder.addBridgeMethodDescriptor(methodInfo, bridgedMethodSignature);
 							else 
 								classBuilder.addMethodDescriptor(methodInfo);								
