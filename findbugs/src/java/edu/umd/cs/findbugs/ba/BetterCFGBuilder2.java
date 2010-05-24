@@ -52,6 +52,8 @@ import org.apache.bcel.generic.MONITOREXIT;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.NOP;
+import org.apache.bcel.generic.POP;
+import org.apache.bcel.generic.POP2;
 import org.apache.bcel.generic.PUTSTATIC;
 import org.apache.bcel.generic.ReturnInstruction;
 
@@ -547,6 +549,18 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		while (head != null) {
 			Instruction i = head.getInstruction();
 			
+			if (i instanceof IfInstruction) {
+				IfInstruction ii = (IfInstruction) i;
+				InstructionHandle target = ii.getTarget();
+				InstructionHandle next = head.getNext();
+				if (target.equals(next)) {
+					int consumed = ii.consumeStack(methodGen.getConstantPool());
+					if (consumed != 1 && consumed != 2)
+						throw new IllegalStateException();
+					head.swapInstruction(consumed == 1 ? new POP() : new POP2());
+				}
+				
+			}
 			if (i instanceof ACONST_NULL) {
 				InstructionHandle next = head.getNext();
 				assert next != null;
