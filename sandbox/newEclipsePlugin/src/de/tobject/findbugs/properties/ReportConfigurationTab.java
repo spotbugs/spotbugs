@@ -28,12 +28,12 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
@@ -49,7 +49,8 @@ public class ReportConfigurationTab extends Composite {
 
 	private final FindbugsPropertyPage propertyPage;
 	private List<Button> chkEnableBugCategoryList;
-	private Combo minPriorityCombo;
+	private Scale minRankSlider;
+	private Label rankValueLabel;
 
 	/**
 	 * @param parent
@@ -65,31 +66,56 @@ public class ReportConfigurationTab extends Composite {
 		tabDetector.setControl(this);
 		tabDetector.setToolTipText("Configure bugs reported to the UI");
 
-		createPriorityGroup(this);
+		createRankGroup(this);
 		createBugCategoriesGroup(this, page.getProject());
 	}
 
-	private void createPriorityGroup(ReportConfigurationTab parent) {
+	private void createRankGroup(ReportConfigurationTab parent) {
 		Composite prioGroup = new Composite(parent, SWT.NONE);
 		prioGroup.setLayout(new GridLayout(2, false));
 
-		Label minPrioLabel = new Label(prioGroup, SWT.NONE);
-		minPrioLabel.setText(getMessage("property.minPriority"));
-		minPrioLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		Label minRankLabel = new Label(prioGroup, SWT.NONE);
+		minRankLabel.setText(getMessage("property.minRank")
+				+ System.getProperty("line.separator")
+				+ getMessage("property.minRank.line2"));
+		minRankLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 
-		minPriorityCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
-		minPriorityCombo.add(ProjectFilterSettings.HIGH_PRIORITY);
-		minPriorityCombo.add(ProjectFilterSettings.MEDIUM_PRIORITY);
-		minPriorityCombo.add(ProjectFilterSettings.LOW_PRIORITY);
-		minPriorityCombo.setText(propertyPage.getOriginalUserPreferences().getFilterSettings().getMinPriority());
-		minPriorityCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-		minPriorityCombo.addSelectionListener(new SelectionAdapter() {
+		minRankSlider = new Scale(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+		minRankSlider.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, false));
+		minRankSlider.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				String data = minPriorityCombo.getText();
-				getCurrentProps().getFilterSettings().setMinPriority(data);
+				int rank = minRankSlider.getSelection();
+				getCurrentProps().getFilterSettings().setMinRank(rank);
+				updateRankValueLabel();
 			}
 		});
+		minRankSlider.setMinimum(0);
+		minRankSlider.setMaximum(20);
+		minRankSlider.setSelection(getCurrentProps().getFilterSettings().getMinRank());
+		minRankSlider.setIncrement(1);
+		minRankSlider.setPageIncrement(5);
+		Label dummyLabel = new Label(prioGroup, SWT.NONE);
+		dummyLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+
+		rankValueLabel = new Label(prioGroup, SWT.NONE);
+		rankValueLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
+		updateRankValueLabel();
+	}
+
+	private void updateRankValueLabel() {
+		String label;
+		int rank = minRankSlider.getSelection();
+		if (rank < 5) {
+			label = "Scariest";
+		} else if (rank < 10) {
+			label = "Scary";
+		} else if (rank < 15) {
+			label = "Troubling";
+		} else {
+			label = "Possible";
+		}
+		rankValueLabel.setText(rank + " (" + label + ")");
 	}
 
 	/**
@@ -165,7 +191,7 @@ public class ReportConfigurationTab extends Composite {
 
 	@Override
 	public void setEnabled(boolean enabled) {
-		minPriorityCombo.setEnabled(enabled);
+		minRankSlider.setEnabled(enabled);
 		for (Button checkBox : chkEnableBugCategoryList) {
 			checkBox.setEnabled(enabled);
 		}
@@ -174,7 +200,7 @@ public class ReportConfigurationTab extends Composite {
 
 	void refreshUI(UserPreferences prefs) {
 		ProjectFilterSettings filterSettings = prefs.getFilterSettings();
-		minPriorityCombo.setText(filterSettings.getMinPriority());
+		minRankSlider.setSelection(filterSettings.getMinRank());
 		for (Button checkBox: chkEnableBugCategoryList) {
 			checkBox.setSelection(filterSettings.containsCategory((String) checkBox.getData()));
 		}

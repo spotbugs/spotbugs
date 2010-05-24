@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.I18N;
  * @see BugInstance
  * @author David Hovemeyer
  */
+@SuppressWarnings("boxing")
 public class ProjectFilterSettings implements Cloneable {
 	/** Text string for high priority. */
 	public static final String HIGH_PRIORITY = "High";
@@ -78,12 +79,15 @@ public class ProjectFilterSettings implements Cloneable {
 	 * The character used for delimiting list items in filter settings encoded as strings
 	 */
 	private static String LISTITEM_DELIMITER=",";
+	
+	private static int DEFAULT_MIN_RANK = 15;
 
 	// Fields
 	private Set<String> activeBugCategorySet; // not used for much: hiddenBugCategorySet has priority.
 	private Set<String> hiddenBugCategorySet;
 	private String minPriority;
 	private int minPriorityAsInt;
+	private int minRank = DEFAULT_MIN_RANK;
 	private boolean displayFalseWarnings;
 
 	/**
@@ -99,9 +103,18 @@ public class ProjectFilterSettings implements Cloneable {
 		this.hiddenBugCategorySet = new HashSet<String>();
 		activeBugCategorySet.remove("NOISE");
 		hiddenBugCategorySet.add("NOISE");
+		setMinRank(DEFAULT_MIN_RANK);
 		setMinPriority(DEFAULT_PRIORITY);
 		this.displayFalseWarnings = false;
 	}
+
+	public void setMinRank(int minRank) {
+	    this.minRank = minRank;
+    }
+
+	public int getMinRank() {
+	    return minRank;
+    }
 
 	/**
 	 * Factory method to create a default ProjectFilterSettings object.
@@ -178,11 +191,22 @@ public class ProjectFilterSettings implements Cloneable {
 		}
 
 		if (s.length() > 0) {
+			int bar = s.indexOf(FIELD_DELIMITER);
+			String minRankStr;
+			if (bar >= 0) {
+				minRankStr = s.substring(0, bar);
+				s = s.substring(bar+1);
+			} else {
+				minRankStr = s;
+				s = "";
+			}
+			result.setMinRank(Integer.parseInt(minRankStr));
+		}
+
+		if (s.length() > 0) {
 			// Can add other fields here...
 			assert true;
 		}
-
-
 
 		return result;
 
@@ -228,6 +252,11 @@ public class ProjectFilterSettings implements Cloneable {
 
 		int priority = bugInstance.getPriority();
 		if (priority > getMinPriorityAsInt()) {
+			return false;
+		}
+		
+		int rank = bugInstance.getBugRank();
+		if (rank > getMinRank()) {
 			return false;
 		}
 
@@ -408,6 +437,9 @@ public class ProjectFilterSettings implements Cloneable {
 		buf.append(FIELD_DELIMITER);
 		buf.append(displayFalseWarnings ? "true" : "false");
 
+		buf.append(FIELD_DELIMITER);
+		buf.append(getMinRank());
+		
 		return buf.toString();
 	}
 
@@ -427,6 +459,9 @@ public class ProjectFilterSettings implements Cloneable {
 		ProjectFilterSettings other = (ProjectFilterSettings) obj;
 
 		if (!this.getMinPriority().equals(other.getMinPriority())) {
+			return false;
+		}
+		if (this.getMinRank() != other.getMinRank()) {
 			return false;
 		}
 
@@ -458,6 +493,7 @@ public class ProjectFilterSettings implements Cloneable {
 			clone.activeBugCategorySet = new TreeSet<String>();
 			clone.activeBugCategorySet.addAll(this.activeBugCategorySet);
 			clone.setMinPriority(this.getMinPriority());
+			clone.setMinRank(this.getMinRank());
 			clone.displayFalseWarnings = this.displayFalseWarnings;
 
 			return clone;
@@ -473,7 +509,7 @@ public class ProjectFilterSettings implements Cloneable {
 	 */
 	@Override
 		 public int hashCode() {
-		return minPriority.hashCode()
+		return minPriority.hashCode() + minRank
 			+ 1009 * hiddenBugCategorySet.hashCode()
 			+ (displayFalseWarnings ? 7919 : 0);
 	}
