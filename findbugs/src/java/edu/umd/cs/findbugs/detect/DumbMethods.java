@@ -312,7 +312,14 @@ public class DumbMethods extends OpcodeStackDetector  {
 			accumulator.accumulateBug(new BugInstance(this, "DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR", HIGH_PRIORITY).addClassAndMethod(this), this);
 		}
 		if (isEqualsObject && !reportedBadCastInEquals) {
-			if (seen == INSTANCEOF || seen == INVOKEVIRTUAL && getNameConstantOperand().equals("getClass")
+			if (seen == INVOKEVIRTUAL &&  getNameConstantOperand().equals("isInstance")
+					&& getClassConstantOperand().equals("java/lang/Class")) {
+				OpcodeStack.Item item = stack.getStackItem(0);
+				if (item.getRegisterNumber() == 1) {
+					sawInstanceofCheck = true;
+				}
+			}
+			else if (seen == INSTANCEOF || seen == INVOKEVIRTUAL && getNameConstantOperand().equals("getClass")
 					&& getSigConstantOperand().equals("()Ljava/lang/Class;")
 					) {
 				OpcodeStack.Item item = stack.getStackItem(0);
