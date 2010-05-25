@@ -49,4 +49,26 @@ public class Bug3000680 {
 			case2a();
 		}
 	}
+	
+	public void case2b() {
+		System.out.println("Hello world!");
+
+
+		String text = null;
+		if (text != null) {
+			case2b();
+		} else {
+			case2b();
+		}
+	}
+	public void case2c(boolean b) {
+		System.out.println("Hello world!");
+
+		if (b) {
+			case2c(b);
+		} else {
+			case2c(b);
+		}
+	}
+
 }

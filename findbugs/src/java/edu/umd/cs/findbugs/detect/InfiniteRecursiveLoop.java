@@ -204,10 +204,15 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements
 		case SASTORE:
 		case CASTORE:
 		case BASTORE:
+			seenStateChange = true;
+			break;
 		case INVOKEVIRTUAL:
 		case INVOKESPECIAL:
 		case INVOKEINTERFACE:
 		case INVOKESTATIC:
+			if (getNameConstantOperand().equals("print") || getNameConstantOperand().equals("println") || getNameConstantOperand().equals("log")
+					|| getNameConstantOperand().equals("toString"))
+				break;
 			seenStateChange = true;
 			break;
 		}
