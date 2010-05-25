@@ -43,6 +43,9 @@ public class BugResolutionGenerator implements IMarkerResolutionGenerator2 {
 		try {
 			String type = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
             BugResolutionAssociations resolutions = FindbugsPlugin.getDefault().getBugResolutions();
+            if (resolutions == null) {
+				return new IMarkerResolution[0];
+			}
 			return resolutions.getBugResolutions(type);
 		} catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e, "Marker has no FindBugs bug-type.");
@@ -54,6 +57,9 @@ public class BugResolutionGenerator implements IMarkerResolutionGenerator2 {
 		try {
 			String type = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
             BugResolutionAssociations resolutions = FindbugsPlugin.getDefault().getBugResolutions();
+            if (resolutions == null) {
+				return false;
+			}
 			return resolutions.containsBugResolution(type);
 		} catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e, "Marker has no FindBugs bug-type.");

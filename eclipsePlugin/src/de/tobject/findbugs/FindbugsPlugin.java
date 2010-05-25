@@ -156,6 +156,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	private ResourceBundle resourceBundle;
 
 	private BugResolutionAssociations bugResolutions;
+	private boolean bugResolutionsLoaded;
 
 	/**
 	 * Constructor.
@@ -796,8 +797,14 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	}
 
 	public BugResolutionAssociations getBugResolutions() {
-		if (bugResolutions == null) {
-			bugResolutions = loadBugResolutions();
+		if (!bugResolutionsLoaded) {
+			bugResolutionsLoaded = true;
+			try {
+				bugResolutions = loadBugResolutions();
+			} catch(Exception e) {
+				FindbugsPlugin.getDefault().logException(
+						e, "Could not read load bug resolutions");
+			}
 		}
 		return bugResolutions;
 	}

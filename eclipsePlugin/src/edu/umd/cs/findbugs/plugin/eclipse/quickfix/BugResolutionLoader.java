@@ -98,7 +98,11 @@ public class BugResolutionLoader {
 	}
 
 	public BugResolutionAssociations loadBugResolutions(File xmlFile, BugResolutionAssociations associations) {
-		return loadBugResolutions(parseDocument(xmlFile), associations);
+		Document doc = parseDocument(xmlFile);
+		if (doc == null) {
+			return null;
+		}
+		return loadBugResolutions(doc, associations);
 	}
 
 	public BugResolutionAssociations loadBugResolutions(Document document) {
@@ -293,6 +297,15 @@ public class BugResolutionLoader {
 
 	@CheckForNull
 	private Document parseDocument(File xmlFile) {
+		if (!xmlFile.exists()) {
+			FindbugsPlugin.getDefault().logError("Need file '" + xmlFile.getPath() + "' but it doesn't exist");
+			return null;
+		}
+		if (!xmlFile.canRead()) {
+			FindbugsPlugin.getDefault().logError("Need file '" + xmlFile.getPath() + "' but it isn't readable");
+			return null;
+		}
+		
 		try {
             if (builder == null) {
 				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
