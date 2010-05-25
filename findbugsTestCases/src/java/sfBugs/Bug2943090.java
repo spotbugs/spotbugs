@@ -12,6 +12,14 @@ public class Bug2943090 {
 	int getNegativeNumber2() {
 		return (int) (-r.nextDouble() * 100);
 	}
+	
+	int getNegativeNumber3() {
+		return  (int)(Math.random() * Integer.MIN_VALUE);
+	}
+	int getNegativeNumber4() {
+		return  (int)(r.nextDouble() * Integer.MIN_VALUE);
+	}
+	
 	int getNegativeNumber(int n) {
 		return (int) (r.nextDouble() * n);
 	}

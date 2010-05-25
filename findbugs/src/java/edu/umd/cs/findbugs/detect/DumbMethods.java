@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
 import java.util.Iterator;
 
 import org.apache.bcel.classfile.Attribute;
@@ -28,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantDouble;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -603,7 +603,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 		&& getNameConstantOperand().equals("readLine")
 		&& getSigConstantOperand().equals("()Ljava/lang/String;");
 
-		// System.out.println(randomNextIntState + " " + OPCODE_NAMES[seen] + " " + getMethodName());
+    // System.out.println(randomNextIntState + " " + OPCODE_NAMES[seen] + " " + getMethodName());
 	switch(randomNextIntState) {
 		case 0:
 			if (seen == INVOKEVIRTUAL
@@ -621,11 +621,15 @@ public class DumbMethods extends OpcodeStackDetector  {
 					.addClassAndMethod(this), this);
 			  randomNextIntState = 0;
 			  }
-			else if (seen == DMUL) {
+			else if (seen == DMUL) 
 				randomNextIntState = 4;
-			} else {
+			else if (seen == LDC2_W
+						 && getConstantRefOperand() instanceof ConstantDouble 
+						 && ((ConstantDouble)getConstantRefOperand()).getBytes() == (double) Integer.MIN_VALUE)
+				randomNextIntState = 0;
+			else 
 				randomNextIntState = 2;
-			}
+			
 			break;
 		case 2:
 			if (seen == I2D) {
