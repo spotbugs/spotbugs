@@ -95,7 +95,8 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 							|| getNameConstantOperand().equals("getResourceAsStream"))
 					&& sawGetClass + 10 >= getPC()) {
 				int priority = NORMAL_PRIORITY;
-				if (prevOpcode == LDC && stringConstant != null && stringConstant.charAt(0)=='/')
+				if (prevOpcode == LDC && stringConstant != null 
+						&& stringConstant.length() > 0 && stringConstant.charAt(0)=='/')
 					priority = LOW_PRIORITY;
 				else {
 					priority = adjustPriority(priority);
@@ -134,8 +135,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
      * @return adjusted priority
      */
     private int adjustPriority(int priority) {
-//	    if (Subtypes.DO_NOT_USE) {
-	    	// Use Subtypes2 instead of (deprecated) Subtypes
+
 	    	try {
 	    		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
@@ -159,21 +159,6 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 	    	} catch (ClassNotFoundException e) {
 	    		bugReporter.reportMissingClass(e);
 	    	}
-//	    } else {
-//	    	Subtypes subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
-//	    	String myPackagename = getThisClass().getPackageName();
-//	    	Set<JavaClass> mySubtypes = subtypes.getTransitiveSubtypes(getThisClass());
-//	    	if (mySubtypes.isEmpty()) {
-//	    		priority++;
-//	    	} else {
-//	    		for(JavaClass c : mySubtypes) {
-//	    			if (!c.getPackageName().equals(myPackagename)) {
-//	    				priority--;
-//	    				break;
-//	    			}	
-//	    		}
-//	    	}
-//	    }
 	    return priority;
     }
 
