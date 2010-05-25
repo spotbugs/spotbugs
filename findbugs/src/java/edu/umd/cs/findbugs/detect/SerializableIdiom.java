@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -546,8 +547,12 @@ public class SerializableIdiom extends OpcodeStackDetector
 	@Override
 	public void visit(Field obj) {
 		int flags = obj.getAccessFlags();
+		FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+		Item summary = fieldSummary.getSummary(getXField());
+		String fieldSig = summary.getSignature();
+		
 		if (isEjbImplClass) {
-			ClassDescriptor fieldType = DescriptorFactory.createClassDescriptorFromFieldSignature(obj.getSignature());
+			ClassDescriptor fieldType = DescriptorFactory.createClassDescriptorFromFieldSignature(fieldSig);
 			if (fieldType != null) {
 				if (Subtypes2.instanceOf(fieldType, "javax.ejb.SessionContext")
 						|| Subtypes2.instanceOf(fieldType, "javax.transaction.UserTransaction")
@@ -564,6 +569,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 			}
 		}
 
+
 		if (obj.isTransient()) {
 			if (isSerializable && !isExternalizable) {
 				seenTransientField = true;
@@ -577,14 +583,14 @@ public class SerializableIdiom extends OpcodeStackDetector
 		else if (getClassName().indexOf("ObjectStreamClass") == -1
 				&& isSerializable
 				&& !isExternalizable
-				&& getFieldSig().indexOf("L") >= 0 && !obj.isTransient() && !obj.isStatic()) {
+				&& fieldSig.indexOf("L") >= 0 && !obj.isTransient() && !obj.isStatic()) {
 			if(DEBUG) {
 				System.out.println("Examining non-transient field with name: "
-				                   + getFieldName() + ", sig: " + getFieldSig());
+				                   + getFieldName() + ", sig: " + fieldSig);
 			}
 			try {
 
-				double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(getFieldSig());
+				double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(fieldSig);
 				if(DEBUG) {
 					System.out.println("  isSerializable: " + isSerializable);
 				}
@@ -624,7 +630,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 							.addClass(getThisClass().getClassName()));
 						else if (isSerializable < 0.9) fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
 							.addClass(getThisClass().getClassName())
-							.addField(getDottedClassName(), obj.getName(), getFieldSig(), false));
+							.addField(getDottedClassName(), obj.getName(), fieldSig, false));
 				} else if (!isGUIClass && !isEjbImplClass && obj.getName().equals("this$0"))
 					fieldWarningList.add(new BugInstance(this, "SE_INNER_CLASS",
 							implementsSerializableDirectly ? NORMAL_PRIORITY : LOW_PRIORITY)
@@ -642,11 +648,11 @@ public class SerializableIdiom extends OpcodeStackDetector
 			foundSynthetic = true;
 		if (!getFieldName().equals("serialVersionUID")) return;
 		int mask = ACC_STATIC | ACC_FINAL;
-		if (!getFieldSig().equals("I")
-				&& !getFieldSig().equals("J"))
+		if (!fieldSig.equals("I")
+				&& !fieldSig.equals("J"))
 			return;
 		if ((flags & mask) == mask
-				&& getFieldSig().equals("I")) {
+				&& fieldSig.equals("I")) {
 			bugReporter.reportBug(new BugInstance(this, "SE_NONLONG_SERIALVERSIONID", LOW_PRIORITY)
 					.addClass(this)
 					.addVisitedField(this));
