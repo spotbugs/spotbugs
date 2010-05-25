@@ -69,9 +69,11 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements
 	}
 
 	@Override
-		 public void sawBranchTo(int seen) {
-		if (largestBranchTarget < seen)
-			largestBranchTarget = seen;
+		 public void sawBranchTo(int target) {
+		if (target == getNextPC())
+				return;
+		if (largestBranchTarget < target)
+			largestBranchTarget = target;
 		seenTransferOfControl = true;
 	}
 
@@ -108,7 +110,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements
 				&& getNameConstantOperand().equals(getMethodName())
 				&& getSigConstantOperand().equals(getMethodSig())
 				&& (seen == INVOKESTATIC) == getMethod().isStatic()
-				&& (seen == INVOKESPECIAL) == (getMethod().isPrivate() || getMethodName().equals("<init>"))
+				&& (seen == INVOKESPECIAL) == (getMethod().isPrivate() && !getMethod().isStatic() || getMethodName().equals("<init>"))
 				) {
 			Type arguments[] = getMethod().getArgumentTypes();
 				// stack.getStackDepth() >= parameters
