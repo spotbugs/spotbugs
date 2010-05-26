@@ -54,6 +54,7 @@ import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.workflow.Update;
 
@@ -129,7 +130,7 @@ public class FindBugsWorker {
 
 		final Project findBugsProject = new Project();
 		findBugsProject.setProjectName(javaProject.getElementName());
-		final Reporter bugReporter = new Reporter(javaProject, monitor);
+		final Reporter bugReporter = new Reporter(javaProject, findBugsProject, monitor);
 		if(FindBugsConsole.getConsole() != null){
 			bugReporter.setReportingStream(FindBugsConsole.getConsole().newOutputStream());
 		}
@@ -216,7 +217,7 @@ public class FindBugsWorker {
 		clearMarkers(null);
 
 		final Project findBugsProject = new Project();
-		final Reporter bugReporter = new Reporter(javaProject, monitor);
+		final Reporter bugReporter = new Reporter(javaProject, findBugsProject, monitor);
 		bugReporter.setPriorityThreshold(userPrefs.getUserDetectorThreshold());
 
 		reportFromXml(fileName, findBugsProject, bugReporter);
@@ -297,7 +298,8 @@ public class FindBugsWorker {
 			SortedBugCollection resultCollection = mergeBugCollections(oldBugCollection,
 					newBugCollection, incremental);
 			resultCollection.setTimestamp(System.currentTimeMillis());
-
+			resultCollection.reinitializeCloud();
+			
 			// will store bugs in the default FB file + Eclipse project session props
 			st.newPoint("storeBugCollection");
 			FindbugsPlugin.storeBugCollection(project, resultCollection, monitor);

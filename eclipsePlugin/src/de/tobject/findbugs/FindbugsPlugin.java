@@ -183,13 +183,15 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			resourceBundle = null;
 		}
 
-		// TODO hardcore workaround for findbugs home property
-		// - see de.tobject.findbugs.builder.FindBugsWorker.work() too
-		String findBugsHome = getFindBugsEnginePluginLocation();
-		if (DEBUG) {
-			logInfo("Looking for FindBugs detectors in: " + findBugsHome);
+		if (System.getProperty("findbugs.home") == null) {
+			// TODO hardcore workaround for findbugs home property
+			// - see de.tobject.findbugs.builder.FindBugsWorker.work() too
+			String findBugsHome = getFindBugsEnginePluginLocation();
+			if (DEBUG) {
+				logInfo("Looking for FindBugs detectors in: " + findBugsHome);
+			}
+			System.setProperty("findbugs.home", findBugsHome);
 		}
-		System.setProperty("findbugs.home", findBugsHome);
 
 		// Register our save participant
 		FindbugsSaveParticipant saveParticipant = new FindbugsSaveParticipant();

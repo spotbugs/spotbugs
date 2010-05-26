@@ -44,9 +44,11 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.FindBugsProgress;
 import edu.umd.cs.findbugs.Footprint;
+import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.log.Profiler;
 
 /**
@@ -81,14 +83,15 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	 * Constructor.
 	 *
 	 * @param project         the project whose classes are being analyzed for bugs
+	 * @param findBugsProject TODO
 	 * @param monitor         progress monitor
 	 */
-	public Reporter(IJavaProject project, IProgressMonitor monitor) {
+	public Reporter(IJavaProject project, Project findBugsProject, IProgressMonitor monitor) {
 		super();
 		this.monitor = monitor;
 		this.project = project;
 		// TODO we do not need to sort bugs, so we can optimize performance and use just a list here
-		this.bugCollection = new SortedBugCollection(getProjectStats());
+		this.bugCollection = new SortedBugCollection(getProjectStats(), findBugsProject);
 	}
 
 	public void setReportingStream(IOConsoleOutputStream stream){
@@ -168,6 +171,10 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 		}
 		if(!isStreamReportingEnabled()){
 			return;
+		}
+		Cloud cloud = bugCollection.getCloud();
+		if (cloud == null) {
+			cloud.bugsPopulated();
 		}
 		printToStream("finished, found: " + bugCount + " bugs");
 		ConfigurableXmlOutputStream xmlStream = new ConfigurableXmlOutputStream(stream, true);

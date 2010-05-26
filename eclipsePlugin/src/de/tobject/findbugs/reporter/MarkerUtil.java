@@ -633,6 +633,21 @@ public final class MarkerUtil {
 				&& childId.charAt(parentId.length()) == JavaElement.JEM_CLASSFILE;
 	}
 
+	public static class BugCollectionAndInstance {
+		public BugCollection getBugCollection() {
+			return bugCollection;
+		}
+		public BugInstance getBugInstance() {
+			return bugInstance;
+		}
+		public BugCollectionAndInstance(BugCollection bugCollection,
+				BugInstance bugInstance) {
+			this.bugCollection = bugCollection;
+			this.bugInstance = bugInstance;
+		}
+		final BugCollection bugCollection;
+		final BugInstance bugInstance;
+	}
 	/**
 	 * Find the BugInstance associated with given FindBugs marker.
 	 *
@@ -641,6 +656,21 @@ public final class MarkerUtil {
 	 *         or null if we can't find the BugInstance
 	 */
 	public static @CheckForNull BugInstance findBugInstanceForMarker(IMarker marker) {
+		BugCollectionAndInstance bci = findBugCollectionAndInstanceForMarker(marker);
+		if (bci == null) {
+			return null;
+		}
+		return bci.bugInstance;
+	}
+	/**
+	 * Find the BugCollectionAndInstance associated with given FindBugs marker.
+	 *
+	 * @param marker a FindBugs marker
+	 * @return the BugInstance associated with the marker,
+	 *         or null if we can't find the BugInstance
+	 */
+	public static @CheckForNull BugCollectionAndInstance findBugCollectionAndInstanceForMarker(IMarker marker) {
+	
 		IResource resource = marker.getResource();
 		IProject project = resource.getProject();
 		if (project == null) {
@@ -686,7 +716,7 @@ public final class MarkerUtil {
 				return null;
 			}
 			BugInstance bug = bugCollection.findBug(bugId, bugType, primaryLineNumber.intValue());
-			return bug;
+			return new BugCollectionAndInstance(bugCollection, bug);
 		} catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e, "Could not get BugInstance for FindBugs marker");
 			return null;
