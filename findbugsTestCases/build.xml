@@ -88,7 +88,7 @@
 	<findbugs home="${findbugs-baseline.home}"  jvmargs="-ea -Xmx600m"
                          output="xml" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/baseline.xml">
 			<sourcePath path="${basedir}/src/java" />
-			<auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar"/>
+			<auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar"/>
 			<class location="${basedir}/build/classes" />
 		</findbugs>
 	</target>
@@ -100,7 +100,7 @@
 		<findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx600m"
                          output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/normal.xml">
 			<sourcePath path="${basedir}/src/java" />
-			<auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar"/>
+			<auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar"/>
 			<class location="${basedir}/build/classes" />
 		</findbugs>
 	</target>
