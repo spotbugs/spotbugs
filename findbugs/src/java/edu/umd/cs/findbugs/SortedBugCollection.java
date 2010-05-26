@@ -1263,13 +1263,17 @@ public class SortedBugCollection implements BugCollection {
 	public Cloud reinitializeCloud() {
 		Cloud oldCloud = cloud;
 		IGuiCallback callback = project.getGuiCallback();
-		callback.unregisterCloud(project, this, oldCloud);
-		oldCloud.shutdown();
+		if (oldCloud != null) {
+			callback.unregisterCloud(project, this, oldCloud);
+			oldCloud.shutdown();
+		}
 		cloud = null;
 		Cloud newCloud = getCloud();
 		assert newCloud == cloud;
-		if (cloud != null) 
+		if (cloud != null) {
 			cloud.bugsPopulated();
+			cloud.initiateCommunication();
+		}
 		return cloud;
     }
 	/* (non-Javadoc)
