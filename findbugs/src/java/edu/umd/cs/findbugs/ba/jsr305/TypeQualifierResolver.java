@@ -47,6 +47,7 @@ public class TypeQualifierResolver {
 	static ClassDescriptor elementTypeDescriptor = DescriptorFactory
     .createClassDescriptor(java.lang.annotation.ElementType.class);
 	static ClassDescriptor googleNullable = DescriptorFactory.createClassDescriptor("com/google/common/base/Nullable");
+	static ClassDescriptor intellijNullable = DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/Nullable");
 
 	/**
 	 * Resolve an AnnotationValue into a list of AnnotationValues
@@ -99,8 +100,8 @@ public class TypeQualifierResolver {
 			onStack.add(annotationClass);
 			
 			try {
-				if (annotationClass.equals(googleNullable)) {
-					resolveTypeQualifierNicknames(new AnnotationValue(JSR305NullnessAnnotations.NULLABLE), result, onStack);
+				if (annotationClass.equals(googleNullable) || annotationClass.equals(intellijNullable)) {
+					resolveTypeQualifierNicknames(new AnnotationValue(JSR305NullnessAnnotations.CHECK_FOR_NULL), result, onStack);
 					return;
 				}
 				XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, annotationClass);

@@ -43,7 +43,7 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
 
 	public static class Parser {
 	@CheckForNull public static NullnessAnnotation parse(String s) {
-		if (s.equals("com.google.common.base.Nullable"))
+		if (s.equals("com.google.common.base.Nullable") || s.equals("org.jetbrains.annotations.Nullable"))
 			return CHECK_FOR_NULL;
 		for(NullnessAnnotation v : myValues) 
 			if (s.endsWith(v.name)) return v;
