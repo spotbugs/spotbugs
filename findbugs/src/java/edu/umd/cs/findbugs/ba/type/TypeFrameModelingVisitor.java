@@ -37,11 +37,14 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -574,6 +577,24 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		}
 		if (handleToArray(obj))
 			return;
+		try {
+			for(XMethod m : Hierarchy2.resolveMethodCallTargets(obj, frame, cpg)) {
+				if (m.getSourceSignature() != null) {
+					GenericSignatureParser p = new GenericSignatureParser(m.getSourceSignature());
+					String rv = p.getReturnTypeSignature();
+					Type t = GenericUtilities.getType(rv);
+					consumeStack(obj);
+					if (t.getType() != T_VOID)
+						pushValue(t);
+					return;
+				}
+			}
+		} catch (DataflowAnalysisException e) {
+			AnalysisContext.logError("Ooops", e);
+		} catch (ClassNotFoundException e) {
+			AnalysisContext.logError("Ooops", e);
+		}
+		
 		consumeStack(obj);
 		pushReturnType(obj);
 	}
