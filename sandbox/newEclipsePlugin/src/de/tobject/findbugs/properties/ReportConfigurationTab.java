@@ -28,6 +28,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -51,6 +52,8 @@ public class ReportConfigurationTab extends Composite {
 	private List<Button> chkEnableBugCategoryList;
 	private Scale minRankSlider;
 	private Label rankValueLabel;
+	private Combo minPriorityCombo;
+
 
 	/**
 	 * @param parent
@@ -67,8 +70,33 @@ public class ReportConfigurationTab extends Composite {
 		tabDetector.setToolTipText("Configure bugs reported to the UI");
 
 		createRankGroup(this);
+		createPriorityGroup(this);
 		createBugCategoriesGroup(this, page.getProject());
 	}
+
+	private void createPriorityGroup(ReportConfigurationTab parent) {
+		Composite prioGroup = new Composite(parent, SWT.NONE);
+		prioGroup.setLayout(new GridLayout(2, false));
+
+		Label minPrioLabel = new Label(prioGroup, SWT.NONE);
+		minPrioLabel.setText(getMessage("property.minPriority"));
+		minPrioLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+
+		minPriorityCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+		minPriorityCombo.add(ProjectFilterSettings.HIGH_PRIORITY);
+		minPriorityCombo.add(ProjectFilterSettings.MEDIUM_PRIORITY);
+		minPriorityCombo.add(ProjectFilterSettings.LOW_PRIORITY);
+		minPriorityCombo.setText(propertyPage.getOriginalUserPreferences().getFilterSettings().getMinPriority());
+		minPriorityCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		minPriorityCombo.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				String data = minPriorityCombo.getText();
+				getCurrentProps().getFilterSettings().setMinPriority(data);
+			}
+		});
+	}
+
 
 	private void createRankGroup(ReportConfigurationTab parent) {
 		Composite prioGroup = new Composite(parent, SWT.NONE);
@@ -191,6 +219,7 @@ public class ReportConfigurationTab extends Composite {
 
 	@Override
 	public void setEnabled(boolean enabled) {
+		minPriorityCombo.setEnabled(enabled);
 		minRankSlider.setEnabled(enabled);
 		for (Button checkBox : chkEnableBugCategoryList) {
 			checkBox.setEnabled(enabled);
@@ -201,6 +230,7 @@ public class ReportConfigurationTab extends Composite {
 	void refreshUI(UserPreferences prefs) {
 		ProjectFilterSettings filterSettings = prefs.getFilterSettings();
 		minRankSlider.setSelection(filterSettings.getMinRank());
+		minPriorityCombo.setText(filterSettings.getMinPriority());
 		for (Button checkBox: chkEnableBugCategoryList) {
 			checkBox.setSelection(filterSettings.containsCategory((String) checkBox.getData()));
 		}
