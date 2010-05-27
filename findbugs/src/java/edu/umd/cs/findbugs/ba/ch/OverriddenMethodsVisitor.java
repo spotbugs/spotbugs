@@ -58,22 +58,22 @@ public abstract class OverriddenMethodsVisitor implements InheritanceGraphVisito
 	public boolean visitClass(ClassDescriptor classDescriptor, XClass xclass) {
 		assert xclass != null;
 		String methodSignature;
-		boolean bridged = xmethod.isBridged();
-		if (bridged && !classDescriptor.equals(xmethod.getClassDescriptor())) {
-			methodSignature = xmethod.getBridgeSignature();
+		XMethod bridgedFrom = xmethod.bridgeFrom();
+		if (bridgedFrom != null && !classDescriptor.equals(xmethod.getClassDescriptor())) {
+			methodSignature = bridgedFrom.getSignature();
 		} else {
 			methodSignature = xmethod.getSignature();			
 		}
 		// See if this class has an overridden method
 		XMethod xm = xclass.findMethod(xmethod.getName(), methodSignature, false);
-		if (xm == null && bridged && xclass.isInterface()) {
+		if (xm == null && bridgedFrom != null && xclass.isInterface()) {
 			// if the method is bridged and the superclass is an interface, 
 			// check the exact signature as well
 			xm = xclass.findMethod(xmethod.getName(), xmethod.getSignature(), false);
 		}
 
 		if (xm != null) {
-			return visitOverriddenMethod(xm) || bridged;
+			return visitOverriddenMethod(xm) || bridgedFrom != null;
 		} else {
 			// Even though this particular class doesn't contain the method we're
 			// looking for, a superclass might, so we need to keep going.

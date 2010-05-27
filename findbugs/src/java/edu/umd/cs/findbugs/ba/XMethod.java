@@ -73,16 +73,16 @@ public interface XMethod extends ClassMember, AnnotatedObject {
      */
     public boolean isStub();
     
-    /**
-     * @return whether the method is a bridge method
+    /** If nonnull, then this method is a synthetic method that overrides a 
+     * method in a superclass. This method simply forwards the call to
+     * the method it bridges to, which is a method with an identical name
+     * and set of arguments, but a different return value.
+     * @return
      */
-    public boolean isBridged();
+    public  @CheckForNull XMethod bridgeTo();
     
-    /**
-     * @return the signature for the bridge method
-     */
-    public String getBridgeSignature();
-    
+    public  @CheckForNull XMethod bridgeFrom();
+      
     /**
      * @return does this method unconditionally throw an UnsupportedOperationException? 
      */

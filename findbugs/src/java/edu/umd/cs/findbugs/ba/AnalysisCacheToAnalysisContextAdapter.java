@@ -23,7 +23,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
@@ -42,6 +46,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
+import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -371,5 +376,19 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	public DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase() {
 		return Global.getAnalysisCache().getDatabase(DirectlyRelevantTypeQualifiersDatabase.class);
 	}
+	
+	public @CheckForNull XMethod getBridgeTo(MethodInfo m) {
+		return bridgeTo.get(m);
+	}
+	public @CheckForNull XMethod getBridgeFrom(MethodInfo m) {
+		return bridgeFrom.get(m);
+	}
+	public void setBridgeMethod(MethodInfo from, MethodInfo to) {
+		bridgeTo.put(from, to);
+		bridgeFrom.put(to, from);
+	}
+	
+	 final Map<MethodInfo, MethodInfo> bridgeTo = new IdentityHashMap<MethodInfo, MethodInfo>();
+	 final Map<MethodInfo, MethodInfo> bridgeFrom = new IdentityHashMap<MethodInfo, MethodInfo>();
 	
 }

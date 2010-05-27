@@ -22,14 +22,15 @@ package edu.umd.cs.findbugs.classfile.analysis;
 import java.lang.annotation.ElementType;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -43,7 +44,6 @@ import edu.umd.cs.findbugs.classfile.engine.SelfMethodCalls;
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.TopologicalSort;
 import edu.umd.cs.findbugs.util.Util;
-import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges2;
 
 /**
@@ -67,6 +67,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	private final boolean hasStubs;
 
 
+	
 	public static class Builder extends ClassNameAndSuperclassInfo.Builder {
 		private List<FieldInfo>fieldInfoList = new LinkedList<FieldInfo>();
 
@@ -75,7 +76,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		/**
 		 * Mapping from one method signature to its bridge method signature
 		 */
-		private Map<String, String> bridgedSignatures = new HashMap<String, String>();
+		private Map<MethodInfo, String> bridgedSignatures = new IdentityHashMap<MethodInfo, String>();
 
 
 		private ClassDescriptor immediateEnclosingClass;
@@ -86,21 +87,25 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		boolean hasStubs;
 		@Override
         public ClassInfo build() {
+			AnalysisContext context = AnalysisContext.currentAnalysisContext();
 			FieldInfo fields [];
 			MethodInfo methods[];
 			if (fieldInfoList.size() == 0)
 				fields = FieldInfo.EMPTY_ARRAY;
 			else fields = fieldInfoList.toArray(new FieldInfo[fieldInfoList.size()]);
 
-			for (ListIterator<MethodInfo> mths = methodInfoList.listIterator(); mths.hasNext();) {
-				MethodInfo method = mths.next();
-				String signature = method.getSignature();
-				String bridgeSignature = bridgedSignatures.get(signature);
-				if (bridgeSignature != null) {
-					MethodInfo bridgeMethod = method.copyAndSetBridgeSignature(bridgeSignature);
-					mths.set(bridgeMethod);
+			
+			for(Map.Entry<MethodInfo, String> e : bridgedSignatures.entrySet()) {
+				MethodInfo method = e.getKey();
+				String signature = e.getValue();
+				for(MethodInfo m : methodInfoList) if (m.getName().equals(m.getName()) && m.getSignature().equals(signature)) {
+					context.setBridgeMethod(method, m);
+					
 				}
+				
+				
 			}
+			
 			if (methodInfoList.size() == 0)
 				methods = MethodInfo.EMPTY_ARRAY;
 			else methods = methodInfoList.toArray(new MethodInfo[methodInfoList.size()]);
@@ -152,7 +157,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		}
 		public void addBridgeMethodDescriptor(MethodInfo method, String bridgedSignature) {
 			if (bridgedSignature != null) {
-				bridgedSignatures.put(bridgedSignature, method.getSignature());
+				bridgedSignatures.put(method, bridgedSignature);
 			}
 			addMethodDescriptor(method);
 		}

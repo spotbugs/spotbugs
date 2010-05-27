@@ -107,7 +107,7 @@ public class GenericSignatureParser {
 
 				case 'V':
 				default:
-					throw new IllegalStateException("Invalid method signature: " + signature + " : " + signature.substring(index) + " " + result);
+					throw new IllegalStateException("Invalid method signature: '" + signature + "' : " + signature.substring(index) + " " + result);
 				}
 			} while (!done);
 			return result.toString();
@@ -128,12 +128,13 @@ public class GenericSignatureParser {
 	 */
 	public GenericSignatureParser(String signature) {
 		// XXX not currently handling Type parameters for class, interface or method definitions
-		if (signature.indexOf('(') < 0 || signature.indexOf(':') >= 0)
+		int s = signature.indexOf('(');
+		String sig = signature;
+		if (s > 0)
+			sig = sig.substring(s);
+		else if (s < 0 || sig.indexOf(':') >= 0 || sig.startsWith("(V)")) 
 			throw new IllegalArgumentException("Bad method signature: " + signature);
-		if (!signature.startsWith("(")) 
-			this.signature = signature.substring( signature.indexOf("(") );
-		else 
-			this.signature = signature;
+		this.signature = sig;
 	}
 
 	/**

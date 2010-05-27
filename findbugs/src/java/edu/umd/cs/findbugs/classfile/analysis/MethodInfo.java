@@ -31,6 +31,7 @@ import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -115,7 +116,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		}
 
 		public MethodInfo build() {
-			return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, null, accessFlags, isUnconditionalThrower, isUnsupported, usesConcurrency, 
+			return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags, isUnconditionalThrower, isUnsupported, usesConcurrency, 
 				 isStub, methodCallCount, exceptions, accessMethodFor, methodAnnotations, methodParameterAnnotations);
 		}
 
@@ -169,11 +170,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	 * @param isStatic
 	 */
 	 MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature, 
-			 @CheckForNull String bridgeMethodSignature,
 	        int accessFlags, boolean isUnconditionalThrower,
 	        boolean isUnsupported, boolean usesConcurrency, boolean isStub, int methodCallCount,
 	        @CheckForNull String[] exceptions,  @CheckForNull MethodDescriptor accessMethodFor, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
-		super(className, methodName, methodSignature, bridgeMethodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
+		super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
 		this.accessFlags = accessFlags;
 		this.exceptions = exceptions;
 		if (exceptions != null) 
@@ -425,17 +425,23 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
  	   return isStub;
      }
 
-	final MethodInfo copyAndSetBridgeSignature(String bridgeSignature) {
-		MethodDescriptor accessMethodFor = getAccessMethodFor();
-		MethodInfo result = new MethodInfo(getSlashedClassName(), getName(), getSignature(), methodSourceSignature, bridgeSignature,
-		        accessFlags, isUnconditionalThrower(), isUnsupported(), usesConcurrency, isStub, methodCallCount, exceptions, 
-		        accessMethodFor, methodAnnotations, methodParameterAnnotations);
-		return result;
-		
-	}
-
 
     public @CheckForNull MethodDescriptor getAccessMethodFor() {
 	   return accessMethodFor.get(this);
+    }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.XMethod#bridgeFrom()
+     */
+    public XMethod bridgeFrom() {
+    		return AnalysisContext.currentAnalysisContext().getBridgeFrom(this);
+    }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.XMethod#bridgeTo()
+     */
+    public XMethod bridgeTo() {
+   		return AnalysisContext.currentAnalysisContext().getBridgeTo(this);
+   	 
     }
 }

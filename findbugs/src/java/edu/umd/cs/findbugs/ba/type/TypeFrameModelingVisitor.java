@@ -582,31 +582,41 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			Set<XMethod> targets = Hierarchy2.resolveMethodCallTargets(obj, frame, cpg);
 			if (targets.size() == 1) {
 				XMethod m = targets.iterator().next();
+				XMethod m2 = m.bridgeTo();
+				if (m2 != null)
+					m = m2;
 				if (m.getSourceSignature() != null) {
 					GenericSignatureParser p = new GenericSignatureParser(m.getSourceSignature());
 					String rv = p.getReturnTypeSignature();
-					Type t = GenericUtilities.getType(rv);
-					consumeStack(obj);
-					if (t.getType() != T_VOID)
-						pushValue(t);
-					return;
+					if (!rv.equals("V")) {
+						Type t = GenericUtilities.getType(rv);
+						consumeStack(obj);
+						if (t.getType() != T_VOID)
+							pushValue(t);
+						return;
+					}
+					
 				}
 				SignatureParser p = new SignatureParser(m.getSignature());
-				Type t = Type.getType(p.getReturnTypeSignature());
+				String rv = p.getReturnTypeSignature();
+				
+				Type t = Type.getType(rv);
 				consumeStack(obj);
 				if (t.getType() != T_VOID)
 					pushValue(t);
 				return;
+				
 			}
 			for(XMethod m : targets) {
 				if (m.getSourceSignature() != null) {
 					GenericSignatureParser p = new GenericSignatureParser(m.getSourceSignature());
 					String rv = p.getReturnTypeSignature();
-					Type t = GenericUtilities.getType(rv);
-					consumeStack(obj);
-					if (t.getType() != T_VOID)
+					if (!rv.equals("V")) {
+						Type t = GenericUtilities.getType(rv);
+						consumeStack(obj);
 						pushValue(t);
-					return;
+						return;
+					}
 				}
 			}
 		} catch (DataflowAnalysisException e) {

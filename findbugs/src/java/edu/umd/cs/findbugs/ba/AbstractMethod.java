@@ -28,13 +28,11 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
 public abstract class AbstractMethod extends AbstractClassMember implements XMethod {
-	final String bridgeMethodSignature;
-
+	
 
 	protected AbstractMethod(@DottedClassName String className, String methodName, String methodSig, 
-			@CheckForNull String bridgeMethodSig, int accessFlags) {
+			 int accessFlags) {
 		super(className, methodName, methodSig, accessFlags);
-		this.bridgeMethodSignature = DescriptorFactory.canonicalizeString(bridgeMethodSig);
 	}
 
 	public int getNumParams() {
@@ -66,11 +64,5 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
 				isStatic());
 	}
 	
-	public final boolean isBridged() {
-	    return bridgeMethodSignature != null;
-	}
 	
-	public final String getBridgeSignature() {
-	    return bridgeMethodSignature;
-	}
 }

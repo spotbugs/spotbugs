@@ -180,6 +180,8 @@ public class FindBugs2 implements IFindBugsEngine2 {
 
 			progress.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
 			profiler.start(this.getClass());
+			// Create BCEL compatibility layer
+			createAnalysisContext(project, appClassList, analysisOptions.sourceInfoFileName);
 
 			// Discover all codebases in classpath and
 			// enumerate all classes (application and non-application)
@@ -189,7 +191,8 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			buildReferencedClassSet();
 
 			// Create BCEL compatibility layer
-			createAnalysisContext(project, appClassList, analysisOptions.sourceInfoFileName);
+			setAppClassList(appClassList);
+			
 
 			// Configure the BugCollection (if we are generating one)
 			FindBugs.configureBugCollection(this);
@@ -787,9 +790,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 		// the BCEL Repository
 		analysisContext.clearRepository();
 
-		// Specify which classes are application classes
-		analysisContext.setAppClassList(appClassList);
-
+		
 		// If needed, load SourceInfoMap
 		if (sourceInfoFileName != null) {
 			SourceInfoMap sourceInfoMap = analysisContext.getSourceInfoMap();
@@ -798,6 +799,14 @@ public class FindBugs2 implements IFindBugsEngine2 {
 		analysisContext.setProject(project);
 	}
 
+	public static void setAppClassList(
+			List<ClassDescriptor> appClassList)
+			throws CheckedAnalysisException, IOException {
+		AnalysisCacheToAnalysisContextAdapter analysisContext =
+			(AnalysisCacheToAnalysisContextAdapter) AnalysisContext.currentAnalysisContext();
+
+		analysisContext.setAppClassList(appClassList);
+	}
 	/**
 	 * Configure analysis feature settings.
 	 */

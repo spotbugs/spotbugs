@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
+import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.detect.UnreadFields;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
@@ -755,6 +756,11 @@ public abstract class AnalysisContext {
 	public Collection<XClass> getXClassCollection() {
 		return getSubtypes2().getXClassCollection();
 	}
+	
+	public abstract @CheckForNull XMethod getBridgeTo(MethodInfo m);
+	public abstract @CheckForNull XMethod getBridgeFrom(MethodInfo m);
+	public abstract void setBridgeMethod(MethodInfo from, MethodInfo to);
+	
 }
 
 // vim:ts=4
