@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
@@ -578,7 +579,26 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		if (handleToArray(obj))
 			return;
 		try {
-			for(XMethod m : Hierarchy2.resolveMethodCallTargets(obj, frame, cpg)) {
+			Set<XMethod> targets = Hierarchy2.resolveMethodCallTargets(obj, frame, cpg);
+			if (targets.size() == 1) {
+				XMethod m = targets.iterator().next();
+				if (m.getSourceSignature() != null) {
+					GenericSignatureParser p = new GenericSignatureParser(m.getSourceSignature());
+					String rv = p.getReturnTypeSignature();
+					Type t = GenericUtilities.getType(rv);
+					consumeStack(obj);
+					if (t.getType() != T_VOID)
+						pushValue(t);
+					return;
+				}
+				SignatureParser p = new SignatureParser(m.getSignature());
+				Type t = Type.getType(p.getReturnTypeSignature());
+				consumeStack(obj);
+				if (t.getType() != T_VOID)
+					pushValue(t);
+				return;
+			}
+			for(XMethod m : targets) {
 				if (m.getSourceSignature() != null) {
 					GenericSignatureParser p = new GenericSignatureParser(m.getSourceSignature());
 					String rv = p.getReturnTypeSignature();
