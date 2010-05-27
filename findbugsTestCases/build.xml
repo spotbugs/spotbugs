@@ -19,6 +19,12 @@
         <property name="fb-baseline-ant.jar" value="${findbugs-baseline.home}/lib/findbugs-ant.jar" />
 	<property name="history.dir" value="history"/>
 
+        <path id="build.classpath">
+		<pathelement location="${findbugs.home}/lib/annotations.jar" />
+		<pathelement location="${findbugs.home}/lib/jsr305.jar"/>
+		<pathelement location="${junit.home}/junit.jar"/>
+		<pathelement location="lib/j2ee.jar"/>
+	</path>
 
 	<target name="build" depends="classes,runfindbugs" />
 
@@ -43,12 +49,7 @@
 			<src path="src/fakeAnnotations"/>
 			<src path="src/fakeLibraries"/>
 			<classpath>
-				<pathelement location="build/classes"/>
-				<pathelement location="${findbugs.home}/lib/annotations.jar" />
-				<pathelement location="${findbugs.home}/lib/jsr305.jar"/>
-				<pathelement location="${junit.home}/junit.jar"/>
-				<pathelement location="lib/j2ee.jar"/>
-				<pathelement location="lib/joda-time-1.6.jar"/>
+				<path refid="build.classpath"/>
 			</classpath>
 		</javac>
 	</target>
@@ -101,6 +102,12 @@
                          output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/normal.xml">
 			<sourcePath path="${basedir}/src/java" />
 			<auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar"/>
+			<class location="${basedir}/build/classes" />
+		</findbugs>
+		<findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx600m"
+                         output="html" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/normal.html">
+			<sourcePath path="${basedir}/src/java" />
+			<auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar"/>
 			<class location="${basedir}/build/classes" />
 		</findbugs>
 	</target>
