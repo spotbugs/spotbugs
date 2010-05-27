@@ -22,7 +22,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.TabFolder;
 import org.junit.Assert;
 
-import de.tobject.findbugs.properties.DetectorConfigurationTab;
 import de.tobject.findbugs.properties.FilterFilesTab;
 import de.tobject.findbugs.properties.FindbugsPropertyPage;
 import de.tobject.findbugs.properties.ReportConfigurationTab;
@@ -30,12 +29,11 @@ import de.tobject.findbugs.properties.ReportConfigurationTab;
 /**
  * Test subclass of FindbugsPropertyPage that provides methods for handling the properties
  * page for testing purposes.
- * 
+ *
  * @author Tomás Pollak
  */
 public class FindbugsPropertyPageTestSubclass extends FindbugsPropertyPage {
 
-	private DetectorConfigurationTabTestSubclass detectorTab;
 	private FilterFilesTabTestSubclass filterTab;
 	private ReportConfigurationTabTestSubclass reportTab;
 
@@ -45,7 +43,7 @@ public class FindbugsPropertyPageTestSubclass extends FindbugsPropertyPage {
 	/**
 	 * Some widgets of the properties page are only created if it is opened for a project
 	 * and not for the workspace. This is a custom assertion that verifies this behaviour.
-	 * 
+	 *
 	 * @param expectsProject
 	 *            true if expecting the controls for a project, false for the workspace
 	 */
@@ -63,15 +61,13 @@ public class FindbugsPropertyPageTestSubclass extends FindbugsPropertyPage {
 	 * When the page is opened for a project, but the project doesn't have any properties,
 	 * the workspace preferences are inherited. In that case, many controls should be
 	 * disabled. This is a custom assertion that verifies this behaviour.
-	 * 
+	 *
 	 * @param enabled
 	 *            true if the controls should be enabled, false otherwise
 	 */
 	public void assertProjectSettingsEnabled(boolean enabled) {
-		Assert.assertEquals(enabled, getDetectorTab().isEnabled());
 		Assert.assertEquals(enabled, getReportTab().isEnabled());
 		Assert.assertEquals(enabled, getFilterTab().isEnabled());
-		Assert.assertEquals(enabled, getEffortViewer().getCombo().isEnabled());
 	}
 
 	public void enableFindBugs(boolean enable) {
@@ -82,26 +78,12 @@ public class FindbugsPropertyPageTestSubclass extends FindbugsPropertyPage {
 		getEnableProjectCheck().setSelection(enable);
 	}
 
-	public DetectorConfigurationTabTestSubclass getDetectorTab() {
-		return detectorTab;
-	}
-
 	public FilterFilesTabTestSubclass getFilterTab() {
 		return filterTab;
 	}
 
 	public ReportConfigurationTabTestSubclass getReportTab() {
 		return reportTab;
-	}
-
-	public void setEffort(Effort effort) {
-		getCurrentUserPreferences().setEffort(effort.getEffortLevel());
-	}
-
-	@Override
-	protected DetectorConfigurationTab createDetectorConfigurationTab(TabFolder tabFolder) {
-		detectorTab = new DetectorConfigurationTabTestSubclass(tabFolder, this, SWT.NONE);
-		return detectorTab;
 	}
 
 	@Override

@@ -227,6 +227,14 @@ public class ReportConfigurationTab extends Composite {
 		super.setEnabled(enabled);
 	}
 
+	public void setMinRank(int rank) {
+		minRankSlider.setSelection(rank);
+	}
+
+	public int getMinRank() {
+		return minRankSlider.getSelection();
+	}
+
 	void refreshUI(UserPreferences prefs) {
 		ProjectFilterSettings filterSettings = prefs.getFilterSettings();
 		minRankSlider.setSelection(filterSettings.getMinRank());
