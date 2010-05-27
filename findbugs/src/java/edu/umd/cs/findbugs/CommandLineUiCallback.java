@@ -41,8 +41,7 @@ public class CommandLineUiCallback implements IGuiCallback {
     private final CurrentThreadExecutorService bugUpdateExecutor = new CurrentThreadExecutorService();
 
     public CommandLineUiCallback() {
-    	System.out.println("Creating Command Line UI Callback");
-    }
+    	}
     public void showMessageDialogAndWait(String message) throws InterruptedException {
         System.out.println(message);
     }
