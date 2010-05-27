@@ -40,13 +40,16 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -107,7 +110,7 @@ public class FilterFilesTab extends Composite {
 		public void widgetSelected(SelectionEvent e) {
 			addFiles(e.display.getActiveShell());
 		}
-		
+
 		public void addFiles(Shell parentShell) {
 			FileDialog dialog = createFileDialog(parentShell);
 
@@ -123,7 +126,7 @@ public class FilterFilesTab extends Composite {
 			applyToPreferences();
 			validateAllFilters();
 		}
-		
+
 		private FileDialog createFileDialog(Shell parentShell) {
 			FileDialog dialog = new FileDialog(parentShell, SWT.OPEN | SWT.MULTI);
 			dialog.setFilterExtensions(new String[]{"*.xml"});
@@ -137,7 +140,7 @@ public class FilterFilesTab extends Composite {
 			}
 			return dialog;
 		}
-		
+
 		protected String openFileDialog(FileDialog dialog) {
 			return dialog.open();
 		}
@@ -149,7 +152,7 @@ public class FilterFilesTab extends Composite {
 		protected String getFilterPath(FileDialog dialog) {
 			return dialog.getFilterPath();
 		}
-		
+
 		private void addSelectedPaths(FileDialog dialog) {
 			String[] names = getFileNames(dialog);
 			String filterPath = getFilterPath(dialog);
@@ -267,14 +270,31 @@ public class FilterFilesTab extends Composite {
 		this.propertyPage = page;
 		setLayout(new GridLayout(2, true));
 
+		Link label = new Link(this, SWT.NONE);
+		label.setText("Filter files may be used to include or exclude bug detection for particular classes and methods.\n" +
+				"<a href=\"http://findbugs.sourceforge.net/manual/filter.html\">Details...</a>");
+		label.addSelectionListener(new SelectionListener() {
+
+			public void widgetSelected(SelectionEvent e) {
+				Program.launch(e.text);
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		label.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, true, true, 2, 1));
+
 		TabItem tabDetector = new TabItem(parent, SWT.NONE);
 		tabDetector.setText(getMessage("property.filterFilesTab"));
 		tabDetector.setControl(this);
 		tabDetector.setToolTipText("Configure external bug reporting filters");
 
-		filterIncl = createFilter(this, FilterKind.INCLUDE);
-		filterExcl = createFilter(this, FilterKind.EXCLUDE);
-		filterExclBugs = createFilter(this, FilterKind.EXCLUDE_BUGS);
+		filterIncl = createFilter(this, FilterKind.INCLUDE, null);
+		filterExcl = createFilter(this, FilterKind.EXCLUDE, null);
+		filterExclBugs = createFilter(this, FilterKind.EXCLUDE_BUGS,
+				"You can include past FindBugs result XML files here to exclude those bugs from analysis.");
 		validateAllFilters();
 	}
 
@@ -304,7 +324,7 @@ public class FilterFilesTab extends Composite {
 		return FindbugsPlugin.getDefault().getMessage(key);
 	}
 
-	private FilterProvider createFilter(final Composite parent, final FilterKind kind) {
+	private FilterProvider createFilter(final Composite parent, final FilterKind kind, String linkText) {
 		Composite tableComposite = new Composite(parent, SWT.NULL);
 		GridLayout layout = new GridLayout(2, false);
 		layout.marginHeight = 0;
@@ -316,6 +336,13 @@ public class FilterFilesTab extends Composite {
 
 		titleLabel.setText(title);
 		titleLabel.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true, false, 2, 1));
+
+		if (linkText != null) {
+			Label details = new Label(tableComposite, SWT.NULL);
+			details.setText(linkText);
+			details.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true, false, 2, 1));
+		}
+
 		final ListViewer viewer = new ListViewer(tableComposite, SWT.MULTI | SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer.getControl().setLayoutData(
@@ -470,15 +497,15 @@ public class FilterFilesTab extends Composite {
 		filterIncl.setFilters(prefs);
 		validateAllFilters();
 	}
-	
+
 	protected FilterProvider getFilterIncl() {
 		return filterIncl;
 	}
-	
+
 	protected FilterProvider getFilterExcl() {
 		return filterExcl;
 	}
-	
+
 	protected FilterProvider getFilterExclBugs() {
 		return filterExclBugs;
 	}
