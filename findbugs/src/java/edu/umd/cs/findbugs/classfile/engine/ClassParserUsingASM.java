@@ -187,7 +187,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						boolean sawStubThrow = false;
 						boolean justSawInitializationOfUnsupportedOperationException;
 						boolean isBridge = (access & Opcodes.ACC_SYNTHETIC) != 0 &&  (access & Opcodes.ACC_BRIDGE) != 0;
-						String bridgedMethodSignature = "";
+						String bridgedMethodSignature;
 						State state = State.INITIAL;
 						StubState stubState = StubState.INITIAL;
 						boolean isAccessMethod = methodName.startsWith("access$");
