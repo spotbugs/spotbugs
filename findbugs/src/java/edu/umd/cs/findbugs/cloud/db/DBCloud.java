@@ -1350,8 +1350,8 @@ public  class DBCloud extends AbstractCloud {
 				int answer = getBugCollection().getProject().getGuiCallback().showConfirmDialog(
 				        "Sorry, but since the time we last received updates from the database,\n"
 				                + "someone else already filed a bug report. Would you like to view the bug report?",
-				        "Someone else already filed a bug report", JOptionPane.YES_NO_OPTION);
-				if (answer == JOptionPane.NO_OPTION)
+				        "Someone else already filed a bug report", "Yes", "No");
+				if (answer == 0)
 					return null;
 				return getBugViewLink(bugReportId);
 			}
@@ -1380,8 +1380,8 @@ public  class DBCloud extends AbstractCloud {
 					                + " * Try to figure out the right person to assign it to.\n"
 					                + " * Provide the information needed to understand the issue.\n" + bugFilingNote
 					                + "Note that classifying an issue is distinct from (and lighter weight than) filing a bug.",
-					        "Do you want to file a bug report", JOptionPane.YES_NO_OPTION);
-					if (response != JOptionPane.YES_OPTION)
+					        "Do you want to file a bug report", "Yes", "No");
+					if (response != 0)
 						return null;
 				}
 				if (u != null)
@@ -1445,8 +1445,8 @@ public  class DBCloud extends AbstractCloud {
           if (!bugCollection.getProject().getGuiCallback().showDocument(u))
             return null;
           int r = bugCollection.getProject().getGuiCallback().showConfirmDialog(
-        		  BUG_LOGIN_MSG, "Logging into bug tracker...", JOptionPane.OK_CANCEL_OPTION);
-          if (r == JOptionPane.CANCEL_OPTION)
+        		  BUG_LOGIN_MSG, "Logging into bug tracker...", "OK", "Cancel");
+          if (r != 0)
             return null;
         }
         else

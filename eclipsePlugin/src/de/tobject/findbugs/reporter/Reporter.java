@@ -173,7 +173,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 			return;
 		}
 		Cloud cloud = bugCollection.getCloud();
-		if (cloud == null) {
+		if (cloud != null) {
 			cloud.bugsPopulated();
 		}
 		printToStream("finished, found: " + bugCount + " bugs");

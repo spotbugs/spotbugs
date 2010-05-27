@@ -1283,6 +1283,12 @@ public class SortedBugCollection implements BugCollection {
 	   this.minimalXML = minimalXML;
 	    
     }
+	/**
+     * @param b
+     */
+    public void setDoNotUseCloud(boolean b) {
+	    this.shouldNotUsePlugin = b;
+    }
 }
 
 // vim:ts=4

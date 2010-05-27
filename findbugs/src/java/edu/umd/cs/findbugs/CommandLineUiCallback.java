@@ -40,6 +40,9 @@ import java.util.concurrent.TimeUnit;
 public class CommandLineUiCallback implements IGuiCallback {
     private final CurrentThreadExecutorService bugUpdateExecutor = new CurrentThreadExecutorService();
 
+    public CommandLineUiCallback() {
+    	System.out.println("Creating Command Line UI Callback");
+    }
     public void showMessageDialogAndWait(String message) throws InterruptedException {
         System.out.println(message);
     }
@@ -48,39 +51,25 @@ public class CommandLineUiCallback implements IGuiCallback {
     System.out.println(message);
   }
 
-  public int showConfirmDialog(String message, String title, int optionType) {
-    String confirmStr = "Yes (Y) or No (N)?";
-    switch (optionType) {
-      case JOptionPane.YES_NO_CANCEL_OPTION:
-        confirmStr = "Yes (Y), No (N), or Cancel (C)?";
-        break;
-      case JOptionPane.OK_CANCEL_OPTION:
-        confirmStr = "Ok (Y) or Cancel (C)?";
-        break;
-      case JOptionPane.DEFAULT_OPTION:
-        confirmStr = "Press Y to continue.";
-        break;
-    }
-    System.out.println(String.format("Confirmation required: %s%n\t%s%n\t%s", title, message, confirmStr));
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    String answer = null;
-    while (true) {
-      try {
-        answer = br.readLine();
-      } catch (IOException ioe) {
-        throw new IllegalArgumentException("IO error trying to read System.in!");
-      }
-      int response = parseAnswer(answer);
-      if (response == 0) {
-        System.out.println(String.format("\t%s", confirmStr));
-      } else {
-        return response;
-      }
-    }
-  }
-
     public int showConfirmDialog(String message, String title, String ok, String cancel) {
-        return showConfirmDialog(message, title, JOptionPane.OK_CANCEL_OPTION);
+    	String confirmStr = "Yes (Y) or No (N)?";
+        
+        System.out.println(String.format("Confirmation required: %s%n\t%s%n\t%s", title, message, confirmStr));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String answer = null;
+        while (true) {
+          try {
+            answer = br.readLine();
+          } catch (IOException ioe) {
+            throw new IllegalArgumentException("IO error trying to read System.in!");
+          }
+          int response = parseAnswer(answer);
+          if (response == 0) {
+            System.out.println(String.format("\t%s", confirmStr));
+          } else {
+            return response;
+          }
+        }
     }
 
     private int parseAnswer(String answer) {

@@ -41,6 +41,7 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 
+import de.tobject.findbugs.EclipseGuiCallback;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.io.IO;
 import de.tobject.findbugs.marker.FindBugsMarker;
@@ -54,7 +55,6 @@ import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.workflow.Update;
 
@@ -297,9 +297,11 @@ public class FindBugsWorker {
 			st.newPoint("mergeBugCollections");
 			SortedBugCollection resultCollection = mergeBugCollections(oldBugCollection,
 					newBugCollection, incremental);
+			resultCollection.getProject().setGuiCallback(new EclipseGuiCallback());
 			resultCollection.setTimestamp(System.currentTimeMillis());
+			resultCollection.setDoNotUseCloud(false);
 			resultCollection.reinitializeCloud();
-			
+
 			// will store bugs in the default FB file + Eclipse project session props
 			st.newPoint("storeBugCollection");
 			FindbugsPlugin.storeBugCollection(project, resultCollection, monitor);
