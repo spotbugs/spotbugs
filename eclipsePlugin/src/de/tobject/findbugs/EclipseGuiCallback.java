@@ -32,7 +32,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -62,7 +61,7 @@ public class EclipseGuiCallback implements IGuiCallback {
 		IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
 		IWorkbenchPart part = page.getActivePart();
 		IViewPart btv = page.findView("de.tobject.findbugs.view.bugtreeview");
-		IViewSite btvsite = btv.getViewSite();
+		// IViewSite btvsite = btv.getViewSite();
 
 		if (part instanceof IEditorPart) {
 			final IEditorPart epart = (IEditorPart) part;
@@ -201,15 +200,17 @@ public class EclipseGuiCallback implements IGuiCallback {
 	}
 
 	public String showQuestionDialog(String message, String title, String defaultValue) {
-		throw new UnsupportedOperationException();
+		System.out.println(message);
+		return defaultValue;
 	}
 
 	public void showMessageDialogAndWait(String message) throws InterruptedException {
-		throw new UnsupportedOperationException();
+		System.out.println(message);
+		
 	}
 
 	public void showMessageDialog(String message) {
-		throw new UnsupportedOperationException();
+		System.out.println(message);
 	}
 
 	public List<String> showForm(String message, String title, List<FormItem> labels) {
@@ -231,7 +232,7 @@ public class EclipseGuiCallback implements IGuiCallback {
 	}
 
 	public void setErrorMessage(String errorMsg) {
-		throw new UnsupportedOperationException();
+		System.out.println(errorMsg);
 	}
 
 	public boolean isHeadless() {
