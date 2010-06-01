@@ -23,6 +23,8 @@
 		<pathelement location="${findbugs.home}/lib/annotations.jar" />
 		<pathelement location="${findbugs.home}/lib/jsr305.jar"/>
 		<pathelement location="${junit.home}/junit.jar"/>
+		<pathelement location="lib/joda-time-1.6.jar"/>
+		<pathelement location="lib/intellij-annotations.jar"/>
 		<pathelement location="lib/j2ee.jar"/>
 	</path>
 
