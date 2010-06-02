@@ -1,0 +1,38 @@
+<project name="webCloudProtocol" default="classes">
+
+  <property file="local.properties" />
+
+
+    <property name="src.dir" value="src/java"/>
+    <property name="classes.dir" value="build"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="findbugs.home" value="../findbugs"/>
+    <property name="protocol.home" value="../webCloudProtocol"/>
+
+        <path id="client.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar"/>
+		      </fileset>
+
+        </path>
+
+
+   <target name="classes">
+	<mkdir dir="${classes.dir}"/>
+        <javac
+		destdir="${classes.dir}"
+		source="1.5"
+		target="1.5"
+		includeantruntime="false"
+		encoding="ISO-8859-1"
+		deprecation="off"
+		debug="on">
+	<src path="${src.dir}"/>
+ 	<classpath refid="client.classpath"/>
+	</javac>
+	</target>
+                                        
+
+</project>
+      
+
