@@ -80,7 +80,6 @@ import de.tobject.findbugs.view.IMarkerSelectionHandler;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
 import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -815,8 +814,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
 	private BugResolutionAssociations loadBugResolutions() {
 		BugResolutionLoader loader = new BugResolutionLoader();
-		File xmlFile = new File(FindBugs.getHome() + File.separator + "plugin" + File.separator + "findbugs-resolutions.xml");
-		return loader.loadBugResolutions(xmlFile);
+		return loader.loadBugResolutions();
 	}
 
 	public static void showMarker(IMarker marker, String viewId, IWorkbenchPart source) {

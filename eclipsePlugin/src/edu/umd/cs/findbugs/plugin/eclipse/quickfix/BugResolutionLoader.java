@@ -25,6 +25,7 @@ import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ConditionCheck.ch
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
@@ -104,7 +105,14 @@ public class BugResolutionLoader {
 		}
 		return loadBugResolutions(doc, associations);
 	}
-
+	public BugResolutionAssociations loadBugResolutions() {
+		InputStream is = BugResolutionLoader.class.getResourceAsStream("findbugs-resolutions.xml");
+		Document doc = parseDocument(is);
+		if (doc == null) {
+			return null;
+		}
+		return loadBugResolutions(doc, null);
+	}
 	public BugResolutionAssociations loadBugResolutions(Document document) {
 		return loadBugResolutions(document, null);
 	}
@@ -322,5 +330,29 @@ public class BugResolutionLoader {
             return null;
 		}
 	}
-
+	@CheckForNull
+	private Document parseDocument(InputStream is) {
+			
+		try {
+            if (builder == null) {
+				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+				builder = factory.newDocumentBuilder();
+			}
+            return builder.parse(is);
+		} catch (ParserConfigurationException e) {
+			throw new IllegalStateException(e);
+		} catch (SAXException e) {
+            FindbugsPlugin.getDefault().logException(e, "Failed to parse xml file");
+			return null;
+		} catch (IOException e) {
+			FindbugsPlugin.getDefault().logException(e, "Failed to read the xml file");
+            return null;
+		} finally {
+			try {
+				is.close();
+			} catch (IOException e) {
+				assert true;
+			}
+		}
+	}
 }
