@@ -31,7 +31,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -57,10 +56,10 @@ public class EclipseGuiCallback implements IGuiCallback {
 	public void registerCloud(Project project, BugCollection collection, final Cloud cloud) {
 		this.cloud = cloud;
 
-		IWorkbenchWindow[] windows = FindbugsPlugin.getDefault().getWorkbench().getWorkbenchWindows();
+		// IWorkbenchWindow[] windows = FindbugsPlugin.getDefault().getWorkbench().getWorkbenchWindows();
 		IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
 		IWorkbenchPart part = page.getActivePart();
-		IViewPart btv = page.findView("de.tobject.findbugs.view.bugtreeview");
+		// IViewPart btv = page.findView("de.tobject.findbugs.view.bugtreeview");
 		// IViewSite btvsite = btv.getViewSite();
 
 		if (part instanceof IEditorPart) {
@@ -205,12 +204,15 @@ public class EclipseGuiCallback implements IGuiCallback {
 	}
 
 	public void showMessageDialogAndWait(String message) throws InterruptedException {
-		System.out.println(message);
-		
+		MessageDialog.openInformation(FindbugsPlugin.getShell(), null, message);
 	}
 
-	public void showMessageDialog(String message) {
-		System.out.println(message);
+	public void showMessageDialog(final String message) {
+		FindbugsPlugin.getShell().getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				MessageDialog.openInformation(FindbugsPlugin.getShell(), null, message);
+			}
+		});
 	}
 
 	public List<String> showForm(String message, String title, List<FormItem> labels) {
@@ -232,7 +234,7 @@ public class EclipseGuiCallback implements IGuiCallback {
 	}
 
 	public void setErrorMessage(String errorMsg) {
-		System.out.println(errorMsg);
+		showMessageDialog(errorMsg);
 	}
 
 	public boolean isHeadless() {
@@ -240,7 +242,7 @@ public class EclipseGuiCallback implements IGuiCallback {
 	}
 
 	public void invokeInGUIThread(Runnable r) {
-		getBugUpdateExecutor().execute(r);
+		FindbugsPlugin.getShell().getDisplay().asyncExec(r);
 	}
 
 	public InputStream getProgressMonitorInputStream(InputStream in, int length, String msg) {
@@ -251,8 +253,13 @@ public class EclipseGuiCallback implements IGuiCallback {
 		return guiExecutor;
 	}
 
-	public void displayNonmodelMessage(String title, String message) {
-		throw new UnsupportedOperationException();
+	public void displayNonmodelMessage(final String title, final String message) {
+		invokeInGUIThread(new Runnable() {
+
+			public void run() {
+				MessageDialog.openInformation(FindbugsPlugin.getShell(), title, message);
+			}
+		});
 	}
 
 	private void createLoginStatusBarItem(Composite parent) {
