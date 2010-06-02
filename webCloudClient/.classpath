@@ -4,7 +4,6 @@
 	<classpathentry kind="src" path="generated-src"/>
 	<classpathentry kind="src" output="build/testClasses" path="src/junit"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/AppEngineCloudProtocol"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="lib/mockito-all-1.8.2.jar"/>
@@ -36,5 +35,6 @@
 			<attribute name="javadoc_location" value="http://ws.apache.org/axis/java/apiDocs/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/webCloudProtocol"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

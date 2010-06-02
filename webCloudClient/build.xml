@@ -1,10 +1,10 @@
-<project name="AppEngineCloudClient" default="install">
+<project name="webCloudClient" default="install">
 
   <property file="local.properties" />
 
 
     <property name="classes.dir" value="build/classes"/>
-    <property name="findbugs.home" value="../../findbugs"/>
+    <property name="findbugs.home" value="../findbugs"/>
 
 
     <target name="validate">
@@ -16,7 +16,7 @@
     </target>
 
     <target name="plugin">
-        <jar destfile="build/AppEngineCloudClient.jar"
+        <jar destfile="build/webCloudClient.jar"
              manifest="etc/MANIFEST.MF">
             <fileset dir="etc">
                 <include name="*.xml"/>
@@ -24,7 +24,7 @@
             <fileset dir="${classes.dir}">
                 <include name="**/*.class"/>
             </fileset>
-            <fileset dir="../AppEngineCloudProtocol/build">
+            <fileset dir="../webCloudProtocol/build">
                 <include name="**/*.class"/>
             </fileset>
         </jar>
@@ -40,12 +40,12 @@
                 <include name="*.jnlp"/>
             </fileset>
         </copy>
-        <copy todir="${findbugs.home}/plugin/AppEngineCloudClient" flatten="true">
+        <copy todir="${findbugs.home}/plugin/webCloudClient" flatten="true">
             <fileset dir="lib">
                 <include name="**/*.jar"/>
                 <exclude name="mockito-all-1.8.2.jar"/>
             </fileset>
-            <fileset dir="../AppEngineCloudProtocol/lib">
+            <fileset dir="../webCloudProtocol/lib">
                 <include name="**/*.jar"/>
             </fileset>
         </copy>
