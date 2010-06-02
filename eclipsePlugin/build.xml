@@ -207,6 +207,7 @@
 				and disabled because of bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=256361
 				<include name="META-INF/p2.inf" />  -->
 			</fileset>
+			<fileset dir="${findbugs.dir}" includes="plugin/**"/>
 		</copy>
 		<copy todir="${dist.dir}/lib">
 			<fileset dir="${lib.dir}" includes="${jars.required}"/>
@@ -219,7 +220,7 @@
 	</target>
 
 	<!-- Build source distribution.  Must have 'svnant.home' set properly. -->
-	<target name="srcdist" depends="clean,classes,version">
+	<target name="srcdist" depends="clean,classes,version,dist">
 		<echo message="Creating FindBugs Eclipse plugin source distribution"/>
 		<fail unless="svnant.home"
 			message="Please specify path to the svnant-1.2.1 root folder in local.properties file, like svnant.home=F:\\java\\libs\\svnant-1.2.1"/>
@@ -244,7 +245,7 @@
 		</zip>
 	</target>
 
-	<target name="site" depends="dist" description="create files for eclipse auto-update site">
+	<target name="site" depends="dist,srcdist" description="create files for eclipse auto-update site">
 		<echo message="Creating FindBugs Eclipse plugin update sites"/>
 
 		<filterset id="sitevars">
@@ -302,6 +303,12 @@
 		<echo level="info" message="copying site.xml to ${site.dir}"/>
 
 		<copy file="${fbeclipse.dir}/plugin_site.xml" toFile="${site.dir}/site.xml">
+		  <filterset refid="sitevars"/>
+		</copy>
+		<copy file="${fbeclipse.dir}/plugin_site-candidate.xml" toFile="${site.dir}/site-candidate.xml">
+		  <filterset refid="sitevars"/>
+		</copy>
+		<copy file="${fbeclipse.dir}/plugin_site-daily.xml" toFile="${site.dir}/site-daily.xml">
 		  <filterset refid="sitevars"/>
 		</copy>
 	</target>
