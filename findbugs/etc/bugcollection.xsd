@@ -18,19 +18,19 @@
 							<xs:element name="SrcDir" type="xs:string" minOccurs="0"
 								maxOccurs="unbounded"/>
 							<xs:element name="WrkDir" type="xs:string" minOccurs="0"
-								maxOccurs="unbounded"/>
-							<xs:element name="Cloud">
+								maxOccurs="1"/>
+							<xs:element name="Cloud" minOccurs="0" maxOccurs="1">
 								<xs:complexType>
 									<xs:sequence>
 										<xs:element name="Property" minOccurs="0"
-											maxOccurs="unbounded" >
-										<xs:complexType>
-											<xs:simpleContent>
+											maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:simpleContent>
 												<xs:extension base="xs:string">
-													<xs:attribute name="key" type="xs:string" />
+												<xs:attribute name="key" type="xs:string"/>
 												</xs:extension>
-											</xs:simpleContent>
-										</xs:complexType>
+												</xs:simpleContent>
+											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
 									<xs:attribute name="id" type="xs:string"/>
@@ -201,6 +201,9 @@
 						<xs:attribute name="removedByChange" type="xs:boolean" use="optional"/>
 						<xs:attribute name="first" type="xs:unsignedInt" use="optional"/>
 						<xs:attribute name="introducedByChange" type="xs:boolean" use="optional"/>
+						<xs:attribute name="rank" type="xs:unsignedInt" use="optional"/>
+						<xs:attribute name="ageInDays" type="xs:unsignedInt" use="optional"/>
+						<xs:attribute name="firstSeen" type="xs:string" use="optional"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="BugCategory" minOccurs="0" maxOccurs="unbounded">
