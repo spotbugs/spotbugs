@@ -206,6 +206,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	 * method ensures that we push two types for each double or long value.
 	 */
 	protected void pushValue(Type type) {
+		if (type.getType() == T_VOID) 
+			throw new IllegalArgumentException("Can't push void");
 		TypeFrame frame = getFrame();
 		if (type.getType() == T_LONG) {
 			frame.pushValue(Type.LONG);
@@ -463,6 +465,14 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		String methodName = obj.getMethodName(cpg);
 		String signature = obj.getSignature(cpg);
 		String className = obj.getClassName(cpg);
+		
+		String returnValueSignature = new SignatureParser(signature).getReturnTypeSignature();
+		if (returnValueSignature.equals("V")) {
+			consumeStack(obj);
+			return;
+		}
+		
+	
 
 		if (methodName.equals("cast") && className.equals("java.lang.Class")) {
 			try {
@@ -588,11 +598,11 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				if (m.getSourceSignature() != null) {
 					GenericSignatureParser p = new GenericSignatureParser(m.getSourceSignature());
 					String rv = p.getReturnTypeSignature();
-					if (!rv.equals("V")) {
+					if (rv.charAt(0) != 'T') {
 						Type t = GenericUtilities.getType(rv);
 						consumeStack(obj);
-						if (t.getType() != T_VOID)
-							pushValue(t);
+						assert t.getType() != T_VOID;
+						pushValue(t);
 						return;
 					}
 					
@@ -602,8 +612,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				
 				Type t = Type.getType(rv);
 				consumeStack(obj);
-				if (t.getType() != T_VOID)
-					pushValue(t);
+				assert t.getType() != T_VOID;
+				pushValue(t);
 				return;
 				
 			}
@@ -611,7 +621,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				if (m.getSourceSignature() != null) {
 					GenericSignatureParser p = new GenericSignatureParser(m.getSourceSignature());
 					String rv = p.getReturnTypeSignature();
-					if (!rv.equals("V")) {
+					if (rv.charAt(0) != 'T') {
+						
 						Type t = GenericUtilities.getType(rv);
 						consumeStack(obj);
 						pushValue(t);
