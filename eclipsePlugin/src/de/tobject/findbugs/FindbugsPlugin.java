@@ -414,6 +414,15 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 				SESSION_PROPERTY_BUG_COLLECTION_DIRTY, isDirty ? Boolean.TRUE : Boolean.FALSE);
 	}
 
+	public static SortedBugCollection getBugCollectionIfSet(IProject project) {
+		try {
+			return (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
+	}
+
 	/**
 	 * Get the stored BugCollection for project.
 	 * If there is no stored bug collection for the project,

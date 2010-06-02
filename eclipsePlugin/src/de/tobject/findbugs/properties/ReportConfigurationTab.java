@@ -18,6 +18,7 @@
  */
 package de.tobject.findbugs.properties;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,6 +41,9 @@ import org.eclipse.swt.widgets.TabItem;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.cloud.CloudFactory;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
@@ -53,6 +57,8 @@ public class ReportConfigurationTab extends Composite {
 	private Scale minRankSlider;
 	private Label rankValueLabel;
 	private Combo minPriorityCombo;
+	private Combo cloudCombo;
+	private Label cloudLabel;
 
 
 	/**
@@ -95,6 +101,64 @@ public class ReportConfigurationTab extends Composite {
 				getCurrentProps().getFilterSettings().setMinPriority(data);
 			}
 		});
+
+		cloudLabel = new Label(prioGroup, SWT.NONE);
+		cloudCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+		cloudCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+
+		enableOrDisableCloudControls();
+		IProject eclipseProj = propertyPage.getProject();
+		String cloudid = null;
+		if (eclipseProj != null) {
+			SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
+			if (collection != null) {
+				cloudid = collection.getCloud().getPlugin().getId();
+			}
+		}
+
+		final List<CloudPlugin> clouds = new ArrayList<CloudPlugin>();
+		clouds.add(null);
+		cloudCombo.add("");
+		cloudCombo.select(0);
+		int i = 1;
+		for (CloudPlugin cloud : CloudFactory.getRegisteredClouds().values()) {
+			cloudCombo.add(cloud.getDescription());
+			clouds.add(cloud);
+			if (cloud.getId().equals(cloudid)) {
+				cloudCombo.select(i);
+			}
+			i++;
+		}
+
+		cloudCombo.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				IProject eclipseProj = propertyPage.getProject();
+				if (eclipseProj != null) {
+					SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
+					CloudPlugin item = clouds.get(cloudCombo.getSelectionIndex());
+					if (item != null && !item.getId().equals(collection.getProject().getCloudId())) {
+						collection.getProject().setCloudId(item.getId());
+						collection.reinitializeCloud();
+					}
+				}
+			}
+		});
+	}
+
+	private IProject enableOrDisableCloudControls() {
+		IProject eclipseProj = propertyPage.getProject();
+		String txt = "Comment storage:";
+		if (eclipseProj == null) {
+			cloudLabel.setEnabled(false);
+			cloudCombo.setEnabled(false);
+			cloudLabel.setText(txt + " (only configurable at the project-specific level)");
+		} else {
+			cloudLabel.setEnabled(true);
+			cloudCombo.setEnabled(true);
+			cloudLabel.setText(txt);
+		}
+		return eclipseProj;
 	}
 
 
@@ -221,6 +285,11 @@ public class ReportConfigurationTab extends Composite {
 	public void setEnabled(boolean enabled) {
 		minPriorityCombo.setEnabled(enabled);
 		minRankSlider.setEnabled(enabled);
+		if (enabled) {
+			enableOrDisableCloudControls();
+		} else {
+			cloudCombo.setEnabled(false);
+		}
 		for (Button checkBox : chkEnableBugCategoryList) {
 			checkBox.setEnabled(enabled);
 		}

@@ -60,21 +60,23 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 	private String userAnnotation;
 
 	private String firstVersionText;
-	
+
 	private String cloudText;
 
 	private @CheckForNull
 	BugCollectionAndInstance theBug;
 
 	private  Text userAnnotationTextField;
-	
+
 	private  Text cloudTextField;
 
-	
+
 
 	private Label firstVersionLabel;
 
 	private Combo designationComboBox;
+
+	private SigninStatusBox signinStatusBox;
 
 	private ISelectionListener selectionListener;
 
@@ -113,14 +115,17 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 				widgetSelected(e);
 			}
 		});
-		designationComboBox.setSize(designationComboBox.computeSize(
-				SWT.DEFAULT, SWT.DEFAULT));
+		//designationComboBox.setSize(designationComboBox.computeSize(
+		//		SWT.DEFAULT, SWT.DEFAULT));
 		designationComboBox.setEnabled(false);
+
+		signinStatusBox = new SigninStatusBox(main, SWT.NONE);
+		signinStatusBox.setLayoutData(new GridData(GridData.CENTER, GridData.CENTER, false, false));
 
 		firstVersionLabel = new Label(main, SWT.LEFT);
 		firstVersionLabel
 				.setToolTipText("The earliest version in which the bug was present");
-		firstVersionLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		firstVersionLabel.setLayoutData(new GridData(GridData.BEGINNING, GridData.CENTER, false, true));
 
 		userAnnotationTextField = new Text(main, SWT.LEFT | SWT.WRAP
 				| SWT.BORDER);
@@ -139,12 +144,12 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 			}
 		});
 		Label cloudLabel = new Label(main, SWT.LEFT);
-		cloudLabel.setText("Cloud summary:");
-		
+		cloudLabel.setText("Comments:");
+
 		cloudTextField = new Text(main, SWT.LEFT | SWT.WRAP
 				| SWT.BORDER | SWT.READ_ONLY);
 		cloudTextField.setLayoutData(uatfData);
-		
+
 		// Add selection listener to detect click in problems view or bug tree
 		// view
 		ISelectionService theService = getSite().getWorkbenchWindow()
@@ -172,10 +177,13 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 	private void updateDisplay() {
 		userAnnotationTextField.setText(userAnnotation);
 		firstVersionLabel.setText(firstVersionText);
+		firstVersionLabel.setSize(firstVersionLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		cloudTextField.setText(cloudText);
 		if (theBug == null) {
+			signinStatusBox.setCloud(null);
 			return;
 		}
+		signinStatusBox.setCloud(theBug.getBugCollection().getCloud());
 		int comboIndex = theBug.getBugInstance().getUserDesignationKeyIndex();
 		if (comboIndex == -1) {
 			FindbugsPlugin.getDefault()
@@ -190,12 +198,13 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 	 */
 	public void setContent(BugCollectionAndInstance bci, String firstVersionText) {
 		if (bci == null) {
+			signinStatusBox.setCloud(null);
 			this.userAnnotationTextField.setEnabled(false);
 			this.designationComboBox.setEnabled(false);
 			this.userAnnotation = "";
 			this.firstVersionText = "";
 			this.cloudText = "";
-			
+
 		} else {
 			BugInstance bug = bci.getBugInstance();
 			Cloud cloud = bci.getBugCollection().getCloud();
@@ -207,6 +216,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 			this.theBug = bci;
 			this.userAnnotationTextField.setEnabled(theBug != null);
 			this.designationComboBox.setEnabled(theBug != null);
+			signinStatusBox.setCloud(bci.getBugCollection().getCloud());
 		}
 		updateDisplay();
 	}
@@ -230,8 +240,8 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 			return;
 		}
 		BugCollectionAndInstance bci = MarkerUtil.findBugCollectionAndInstanceForMarker(marker);
-		
-		
+
+
 
 		setContent(bci, firstVersion);
 

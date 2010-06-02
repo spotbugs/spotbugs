@@ -22,11 +22,11 @@ This plugin provides the Appengine cloud plugin.
 
 
   <Cloud id="edu.umd.cs.findbugs.cloud.appengine.theflybush">
-	<Description>Bug history information stored at theflybush.appspot.com</Description>
+	<Description>FindBugs Cloud</Description>
 	<Details>Information about bug history and evaluations are stored in Google AppEngine at http://theflybush.appspot.com</Details>
 	</Cloud>
   <Cloud id="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud">
-	<Description>Bug history information stored at findbugs-cloud.appspot.com</Description>
+	<Description>FindBugs Cloud Beta Server (developers only)</Description>
 	<Details>Information about bug history and evaluations are stored in Google AppEngine at http://findbugs-cloud.appspot.com</Details>
 	</Cloud>
 
