@@ -42,6 +42,9 @@
 	<!-- the binaries/classes, built by javac -->
 	<property name="bin.dir" value="bin_build" />
 
+	<!-- the binaries/classes, built by eclipse -->
+	<property name="binEclipse.dir" value="bin_eclipse" />
+
 	<!-- update site destination directory -->
 	<property name="site.dir" value="${bin.dir}/site" />
 
@@ -127,6 +130,13 @@
 		<copy todir="${bin.dir}">
 			<fileset dir="${src.dir}">
 				<include name="**/*.properties"/>
+				<include name="**/*.xml"/>
+			</fileset>
+		</copy>
+		<copy todir="${binEclipse.dir}">
+			<fileset dir="${src.dir}">
+				<include name="**/*.properties"/>
+				<include name="**/*.xml"/>
 			</fileset>
 		</copy>
 	</target>
