@@ -3,8 +3,26 @@
   <property file="local.properties" />
 
 
+    <property name="src.dir" value="src/java"/>
+    <property name="gsrc.dir" value="generated-src"/>
     <property name="classes.dir" value="build/classes"/>
+    <property name="lib.dir" value="lib"/>
     <property name="findbugs.home" value="../findbugs"/>
+    <property name="protocol.home" value="../webCloudProtocol"/>
+
+        <path id="client.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar"/>
+		      </fileset>
+		<fileset dir="${findbugs.home}/lib">
+			<include name="*.jar"/>
+		      </fileset>
+		<fileset dir="${protocol.home}/lib">
+			<include name="*.jar"/>
+		      </fileset>
+		<pathelement location="${protocol.home}/build"/>
+
+        </path>
 
 
     <target name="validate">
@@ -15,7 +33,26 @@
         </xmlvalidate>
     </target>
 
-    <target name="plugin">
+   <target name="classes">
+	<mkdir dir="${classes.dir}"/>
+        <javac
+		destdir="${classes.dir}"
+		source="1.5"
+		target="1.5"
+		includeantruntime="false"
+		encoding="ISO-8859-1"
+		deprecation="off"
+		debug="on">
+	<src path="${src.dir}"/>
+	<src path="${gsrc.dir}"/>
+ 	<classpath refid="client.classpath"/>
+	</javac>
+	</target>
+                                        
+
+      
+
+    <target name="plugin" depends="classes">
         <jar destfile="build/webCloudClient.jar"
              manifest="etc/MANIFEST.MF">
             <fileset dir="etc">
