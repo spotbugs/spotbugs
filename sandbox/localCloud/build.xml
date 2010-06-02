@@ -14,7 +14,7 @@
 
         <datanucleusenhancer classpathref="enhancer.classpath" classpath="classes"
                              failonerror="true" verbose="true">
-            <classpath path="../cloudServlet/classes"/>
+            <classpath path="../../webCloudServerCommon/classes"/>
             <jvmarg line="-Dlog4j.configuration=etc/logging.properties"/>
             <fileset dir="classes">
                 <include name="**/*.class"/>

@@ -38,10 +38,10 @@
 	<classpathentry kind="lib" path="lib/jetty-jsp/xmlParserAPIs-2.6.2.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-jsp/jsp-api-2.0.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-jsp/jasper-compiler-5.5.15.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/cloudServlet"/>
 	<classpathentry kind="lib" path="lib/datanucleus/datanucleus-enhancer-1.1.4.jar"/>
-	<classpathentry kind="lib" path="/cloudServlet/lib/junit.jar"/>
-	<classpathentry kind="lib" path="/cloudServlet/lib/mockito-all-1.8.2.jar"/>
 	<classpathentry kind="lib" path="lib/datanucleus/datanucleus-core-1.1.6.jar"/>
+	<classpathentry kind="lib" path="lib/junit.jar"/>
+	<classpathentry kind="lib" path="lib/mockito-all-1.8.2.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/webCloudServerCommon"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

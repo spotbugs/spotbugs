@@ -6,10 +6,10 @@
 	<classpathentry exported="true" kind="lib" path="lib/jetty-util-6.1.19.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dyuproject-openid-1.1.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dyuproject-util-1.1.6.jar"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/AppEngineCloudProtocol"/>
 	<classpathentry exported="true" kind="lib" path="lib/servlet-api-2.5-20081211.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jdo2-api-2.3-eb.jar"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
 	<classpathentry kind="lib" path="lib/mockito-all-1.8.2.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/webCloudProtocol"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
