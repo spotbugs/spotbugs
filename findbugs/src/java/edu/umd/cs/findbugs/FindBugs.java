@@ -135,10 +135,6 @@ public abstract class FindBugs  {
 	 */
 	public static final boolean DEBUG = Boolean.getBoolean("findbugs.debug");
 
-	// The following don't seem to be used...
-//	public static final boolean TIMEDEBUG = SystemProperties.getBoolean("findbugs.time");
-//	public static final int TIMEQUANTUM = SystemProperties.getInteger("findbugs.time.quantum", 1000);
-
 	/**
 	 * FindBugs home directory.
 	 */
