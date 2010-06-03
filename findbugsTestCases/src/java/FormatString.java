@@ -27,7 +27,7 @@ public class FormatString {
 
 	@NoWarning("FS")
 	public static void falsePositive() {
-		System.out.printf("last updated %1$tY-%1$tm-%1$te %1$tH:%1$tM:%1$tS.%1$tL, threshold %2$d min.\n",
+		System.out.printf("last updated %1$tY-%1$tm-%1$te %1$tH:%1$tM:%1$tS.%1$tL, threshold %2$d min.%n",
                 new Date(),
                20);
 		java.util.Formatter f = new java.util.Formatter();
