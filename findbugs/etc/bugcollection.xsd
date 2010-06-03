@@ -401,10 +401,9 @@
 			<xs:attribute name="end" type="xs:int" use="optional"/>
 			<xs:attribute name="startBytecode" type="xs:int" use="optional"/>
 			<xs:attribute name="endBytecode" type="xs:int" use="optional"/>
-			<xs:attribute name="opcodes" type="xs:string" use="optional"/>
-			<!-- no longer generated -->
 			<xs:attribute name="sourcefile" type="xs:string" use="optional"/>
 			<xs:attribute name="sourcepath" type="xs:string" use="optional"/>
+			<xs:attribute name="relSourcepath" type="xs:string" use="optional"/>
 			<xs:attribute name="synthetic" type="xs:boolean" use="optional"/>
 			<xs:attribute name="role" type="xs:string" use="optional"/>
 			<xs:attribute name="primary" type="xs:boolean" use="optional"/>
