@@ -618,8 +618,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				
 			}
 			for(XMethod m : targets) {
-				if (m.getSourceSignature() != null) {
-					GenericSignatureParser p = new GenericSignatureParser(m.getSourceSignature());
+				String sourceSignature = m.getSourceSignature();
+				if (sourceSignature != null) {
+					GenericSignatureParser p = new GenericSignatureParser(sourceSignature);
 					String rv = p.getReturnTypeSignature();
 					if (rv.charAt(0) != 'T') {
 						
