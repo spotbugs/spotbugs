@@ -447,7 +447,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(
 				getShell(), "Full FindBugs build required",
 				"FindBugs analysis settings are changed." +
-				"\nConsider to execute FindBugs analysis again.",
+				"\nReexecute FindBugs analysis to see updated results.",
 				"Do not show this warning again", false, null, null);
 
 		getPreferenceStore().setValue(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD, dialog

@@ -119,7 +119,8 @@ public class SigninStatusBox extends Composite {
 			public void run() {
 				if (statusLine != null) {
 					if (cloud != null) {
-						statusLine.setText(cloud.getSigninState().name());
+						statusLine.setText(cloud.getSigninState().toString() 
+								+ ":" + cloud.getPlugin().getDescription());
 						Point a = statusLine.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 						statusLine.setSize(a);
 						Point b = computeSize(SWT.DEFAULT, SWT.DEFAULT);
