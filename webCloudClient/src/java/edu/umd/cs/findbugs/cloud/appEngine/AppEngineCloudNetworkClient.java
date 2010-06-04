@@ -28,7 +28,7 @@ import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.en
 
 public class AppEngineCloudNetworkClient {
     private static final Logger LOGGER = Logger.getLogger(AppEngineCloudNetworkClient.class.getPackage().getName());
-    
+
     /** For debugging */
     private static final boolean FORCE_UPLOAD_ALL_ISSUES = false;
     private static final int BUG_UPLOAD_PARTITION_SIZE = 10;
@@ -372,6 +372,7 @@ public class AppEngineCloudNetworkClient {
         Evaluation evalToStore = username == null ? eval : Evaluation.newBuilder(eval).setWho(username).build();
         Issue.Builder issueToStore = Issue.newBuilder(issue);
         issuesByHash.put(hash, issueToStore.addEvaluations(evalToStore).build());
+        cloudClient.updateBugInstanceAndNotify(bugInstance);
     }
 
     public @CheckForNull Issue getIssueByHash(String hash) {
