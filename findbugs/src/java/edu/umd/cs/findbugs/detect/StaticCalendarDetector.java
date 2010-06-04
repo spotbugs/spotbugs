@@ -140,10 +140,19 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	/**
 	 * Checks if the visited field is of type {@link java.util.Calendar} or
 	 * {@link java.text.DateFormat} or a subclass of either one. If so and the field is
-	 * static it is suspicious and will be reported.
+	 * static and non-private it is suspicious and will be reported.
 	 */
 	@Override
 	public void visit(Field aField) {
+		if (aField.isPrivate()) {
+			/*
+			 * private fields are harmless, as long as they are used correctly
+			 * inside their own class. This should be something the rest of this
+			 * detector can find out, so do not report them, they might be false
+			 * positives.
+			 */
+			return;
+		}
 		String superclassName = getSuperclassName();
 		if (!aField.isStatic()  && !superclassName.equals("java/lang/Enum")) return;
 		if (!aField.isPublic() && !aField.isProtected()) return;
