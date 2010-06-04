@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Map;
 
+import org.apache.bcel.classfile.ElementValue;
+import org.apache.bcel.classfile.EnumElementValue;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugReporter;
@@ -43,12 +45,13 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements
 
 	@Override
 	public void visitAnnotation(String annotationClass,
-			Map<String, Object> map, boolean runtimeVisible) {
+			Map<String, ElementValue> map, boolean runtimeVisible) {
 
 		if (!annotationClass.equals("java.lang.annotation.Retention"))
 			return;
-		Object value = map.get("value");
-		if ("java.lang.annotation.RetentionPolicy.RUNTIME".equals(value))
+		EnumElementValue v = (EnumElementValue) map.get("value");
+		
+		if ("RUNTIME".equals(v.getEnumValueString()))
 			runtimeRetention = true;
 	}
 

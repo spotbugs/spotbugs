@@ -22,10 +22,12 @@ package edu.umd.cs.findbugs.ba;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JCIPAnnotationDatabase {
-	Map<ClassMember, Map<String, Object>> memberAnnotations = new HashMap<ClassMember, Map<String, Object>>();
+import org.apache.bcel.classfile.ElementValue;
 
-	Map<String, Map<String, Object>> classAnnotations = new HashMap<String, Map<String, Object>>();
+public class JCIPAnnotationDatabase {
+	Map<ClassMember, Map<String, ElementValue>> memberAnnotations = new HashMap<ClassMember, Map<String, ElementValue>>();
+
+	Map<String, Map<String, ElementValue>> classAnnotations = new HashMap<String, Map<String, ElementValue>>();
 
 
 	public Object getClassAnnotation(String dottedClassName, String annotationClass) {
@@ -49,21 +51,21 @@ public class JCIPAnnotationDatabase {
 		return getEntryForClassMember(method).containsKey(annotationClass);
 	}
 
-	public Map<String, Object> getEntryForClassMember(ClassMember member) {
-		Map<String, Object> map = memberAnnotations.get(member);
+	public Map<String, ElementValue> getEntryForClassMember(ClassMember member) {
+		Map<String, ElementValue> map = memberAnnotations.get(member);
 		if (map == null) {
-			map = new HashMap<String, Object>();
+			map = new HashMap<String, ElementValue>();
 			memberAnnotations.put(member, map);
 		}
 		return map;
 	}
 
 	public 
-	 Map<String, Object> getEntryForClass(String dottedClassName) {
+	 Map<String, ElementValue> getEntryForClass(String dottedClassName) {
 		assert dottedClassName.indexOf('/') == -1;
-		Map<String, Object> map = classAnnotations.get(dottedClassName);
+		Map<String, ElementValue> map = classAnnotations.get(dottedClassName);
 		if (map == null) {
-			map = new HashMap<String, Object>(3);
+			map = new HashMap<String, ElementValue>(3);
 			classAnnotations.put(dottedClassName, map);
 		}
 		return map;

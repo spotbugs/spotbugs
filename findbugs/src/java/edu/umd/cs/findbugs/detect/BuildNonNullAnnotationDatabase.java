@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.classfile.ElementValue;
+
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
@@ -69,7 +71,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
 	@Override
 	public void visitAnnotation(String annotationClass,
-			Map<String, Object> map, boolean runtimeVisible) {
+			Map<String, ElementValue> map, boolean runtimeVisible) {
 
 		if (database == null) {
 			return;
@@ -81,6 +83,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 			if (annotationClass.startsWith("DefaultAnnotation")) {
 
 				Object v = map.get("value");
+				
 				if (v == null || !(v instanceof Object[]))
 					return;
 				annotationClass = annotationClass.substring("DefaultAnnotation"
@@ -125,7 +128,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
 	@Override
 	public void visitParameterAnnotation(int p, String annotationClass,
-			Map<String, Object> map, boolean runtimeVisible) {
+			Map<String, ElementValue> map, boolean runtimeVisible) {
 		if (database == null) {
 			return;
 		}

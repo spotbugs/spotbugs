@@ -280,6 +280,8 @@ public abstract class AnalysisContext {
 		if (c == null) 
 			throw new NullPointerException("argument is null");
 		String missing = c.getDottedClassName();
+		if (missing.length() == 1)
+			System.out.println(c);
 		if (skipReportingMissingClass(missing))
 			return;
 		RepositoryLookupFailureCallback lookupFailureCallback = getCurrentLookupFailureCallback();

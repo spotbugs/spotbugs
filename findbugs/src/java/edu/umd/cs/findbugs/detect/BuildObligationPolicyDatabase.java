@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseActionType;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseEntry;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseEntryType;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -278,7 +279,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 		
 		Obligation javaIoInputStreamObligation = database.getFactory().getObligationByName("java.io.InputStream");
 		database.addEntry(new MatchMethodEntry(
-				new SubtypeTypeMatcher(ObjectType.getInstance("java.lang.Class")),
+				new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.lang.Class")),
 				new ExactStringMatcher("getResourceAsStream"),
 				new ExactStringMatcher("(Ljava/lang/String;)Ljava/io/InputStream;"),
 				false,
@@ -292,7 +293,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 		
 		// Add factory method entries for database obligation types
 		database.addEntry(new MatchMethodEntry(
-			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.DriverManager")),
+			new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.DriverManager")),
 			new ExactStringMatcher("getConnection"),
 			new RegexStringMatcher("^.*\\)Ljava/sql/Connection;$"),
 			false,
@@ -300,7 +301,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 			ObligationPolicyDatabaseEntryType.STRONG,
 			connection));
 		database.addEntry(new MatchMethodEntry(
-			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.Connection")),
+			new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Connection")),
 			new ExactStringMatcher("createStatement"),
 			new RegexStringMatcher("^.*\\)Ljava/sql/Statement;$"),
 			false,
@@ -308,7 +309,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 			ObligationPolicyDatabaseEntryType.STRONG,
 			statement));
 		database.addEntry(new MatchMethodEntry(
-			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.Connection")),
+			new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Connection")),
 			new ExactStringMatcher("prepareStatement"),
 			new RegexStringMatcher("^.*\\)Ljava/sql/PreparedStatement;$"),
 			false,
@@ -316,7 +317,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 			ObligationPolicyDatabaseEntryType.STRONG,
 			statement));
 		database.addEntry(new MatchMethodEntry(
-			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.Statement")),
+			new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Statement")),
 			new ExactStringMatcher("executeQuery"),
 			new RegexStringMatcher("^.*\\)Ljava/sql/ResultSet;$"),
 			false,
@@ -326,7 +327,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 		
 		// Add close method entries for database obligation types
 		database.addEntry(new MatchMethodEntry(
-			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.Connection")),
+			new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Connection")),
 			new ExactStringMatcher("close"),
 			new ExactStringMatcher("()V"),
 			false,
@@ -334,7 +335,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 			ObligationPolicyDatabaseEntryType.STRONG,
 			connection));
 		database.addEntry(new MatchMethodEntry(
-			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.Statement")),
+			new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Statement")),
 			new ExactStringMatcher("close"),
 			new ExactStringMatcher("()V"),
 			false,
@@ -342,7 +343,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 			ObligationPolicyDatabaseEntryType.STRONG,
 			statement, resultSet));
 		database.addEntry(new MatchMethodEntry(
-			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.ResultSet")),
+			new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.ResultSet")),
 			new ExactStringMatcher("close"),
 			new ExactStringMatcher("()V"),
 			false,
@@ -357,14 +358,14 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 	private void addFileStreamEntries(String kind) {
 		Obligation obligation = database.getFactory().addObligation("java.io." + kind);
 		database.addEntry(new MatchMethodEntry(
-			new SubtypeTypeMatcher(ObjectType.getInstance("java.io.File" + kind)),
+			new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.io.File" + kind)),
 			new ExactStringMatcher("<init>"),
 			new RegexStringMatcher(".*"),
 			false, ObligationPolicyDatabaseActionType.ADD,
 			ObligationPolicyDatabaseEntryType.STRONG,
 			obligation));
 		database.addEntry(new MatchMethodEntry(
-			new SubtypeTypeMatcher(ObjectType.getInstance("java.io." + kind)),
+			new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.io." + kind)),
 			new ExactStringMatcher("close"),
 			new ExactStringMatcher("()V"),
 			false,

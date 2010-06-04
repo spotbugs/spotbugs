@@ -285,12 +285,12 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 							}
 
 							if (RLE_DEBUG)
-								System.out.println("Creating phi node " + phi + " for " + load + " from " + Strings.toString(myVN) + " x " +  Strings.toString(otherVN) + " in " + System.identityHashCode(this));	
+								System.out.println("Creating phi node " + phi + " for " + load + " from " + Arrays.toString(myVN) + " x " +  Arrays.toString(otherVN) + " in " + System.identityHashCode(this));	
 							changed = true;
 							e.setValue(new ValueNumber[] { phi });
 						} else {
 							if (RLE_DEBUG)
-									System.out.println("Reusing phi node : " + phi + " for " + load + " from "+ Strings.toString(myVN) + " x " +  Strings.toString(otherVN)+ " in " + System.identityHashCode(this));
+									System.out.println("Reusing phi node : " + phi + " for " + load + " from "+ Arrays.toString(myVN) + " x " +  Arrays.toString(otherVN)+ " in " + System.identityHashCode(this));
 							if (myVN.length != 1 || !myVN[0].equals(phi))
 								e.setValue(new ValueNumber[] { phi });
 						}
@@ -332,7 +332,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		if (mergedValueList == null && other.isValid()) {
 			// This is where this frame gets its size.
 			// It will have the same size as long as it remains valid.
-			mergedValueList = new ArrayList<ValueNumber>();
+			mergedValueList = new ArrayList<ValueNumber>(other.getNumSlots());
 			int numSlots = other.getNumSlots();
 			for (int i = 0; i < numSlots; ++i)
 				mergedValueList.add(null);

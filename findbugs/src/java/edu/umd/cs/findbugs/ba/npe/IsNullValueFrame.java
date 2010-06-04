@@ -74,7 +74,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		super(numLocals);
 		this.trackValueNumbers = trackValueNumbers;
 		if (trackValueNumbers) {
-			this.knownValueMap = new HashMap<ValueNumber, IsNullValue>();
+			this.knownValueMap = new HashMap<ValueNumber, IsNullValue>(3);
 		}
 	}
 

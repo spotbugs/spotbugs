@@ -19,10 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.lang.annotation.ElementType;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.meta.When;
+
+import org.apache.bcel.classfile.ElementValue;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
@@ -56,7 +59,7 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 
 	}
 
-	static String lastPortion(String className) {
+	static String simpleClassName(@DottedClassName String className) {
 		int i = className.lastIndexOf(".");
 		if (i < 0)
 			return className;
@@ -64,9 +67,9 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 	}
 
 	@Override
-	public void visitAnnotation(@DottedClassName String annotationClassName, Map<String, Object> map, boolean runtimeVisible) {
+	public void visitAnnotation(@DottedClassName String annotationClassName, Map<String, ElementValue> map, boolean runtimeVisible) {
 
-		String annotationClassSimpleName = lastPortion(annotationClassName);
+		String annotationClassSimpleName = simpleClassName(annotationClassName);
 
 		if (annotationClassSimpleName.startsWith("DefaultAnnotation")) {
 
@@ -81,8 +84,8 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 
 			if (annotationTarget != null)
 				for (Object aClass : (Object[]) v) {
-					if (aClass instanceof String && lastPortion((String) aClass).equals("CheckReturnValue")) {
-						CheckReturnValueAnnotation n = CheckReturnValueAnnotation.parse((String) map.get("priority"));
+					if (aClass instanceof String && simpleClassName((String) aClass).equals("CheckReturnValue")) {
+						CheckReturnValueAnnotation n = CheckReturnValueAnnotation.parse(getAnnotationParameterAsString(map, "priority"));
 						if (n != null)
 							AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase().addDefaultAnnotation(
 						        annotationTarget, getDottedClassName(), n);
@@ -96,7 +99,7 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 		if (annotationClassName.equals(javax.annotation.CheckReturnValue.class.getName())) {
 			Object when = map.get("when");
 			if (when instanceof String) {
-				String w = lastPortion((String)when);
+				String w = simpleClassName((String)when);
 				if (w.equals("NEVER") || w.equals("UNKNOWN"))
 					n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE;
 				else if (w.equals("MAYBE")) 
@@ -109,7 +112,7 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 				n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
 
 		} else if (annotationClassName.equals(edu.umd.cs.findbugs.annotations.CheckReturnValue.class.getName())) {
-			n = CheckReturnValueAnnotation.parse((String) map.get("priority"));
+			n = CheckReturnValueAnnotation.parse(getAnnotationParameterAsString(map, "priority"));
 		} else if (annotationClassSimpleName.equals("CheckReturnValue")) {
 			n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
 		} else

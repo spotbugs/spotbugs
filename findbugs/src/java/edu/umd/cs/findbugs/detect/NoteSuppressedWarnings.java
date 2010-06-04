@@ -24,7 +24,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.ArrayElementValue;
+import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.SimpleElementValue;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
@@ -98,42 +101,31 @@ public class NoteSuppressedWarnings
 	}
 
 	@Override
-	public void visitAnnotation(String annotationClass, Map<String, Object> map,
+	public void visitAnnotation(String annotationClass, Map<String, ElementValue> map,
 			boolean runtimeVisible) {
 		if (!annotationClass.endsWith("SuppressWarnings"))
 			return;
-		Object value = map.get("value");
-		if (value == null || !(value instanceof Object[])) {
+		String [] suppressed = getAnnotationParameterAsStringArray(map, "value");
+		if (suppressed == null || suppressed.length == 0)
 			suppressWarning(null);
-			return;
-		}
-		Object[] suppressedWarnings = (Object[]) value;
-		if (suppressedWarnings.length == 0)
-			suppressWarning(null);
-		else
-			for (Object suppressedWarning : suppressedWarnings)
-				if (suppressedWarning instanceof String)
-				suppressWarning((String) suppressedWarning);
+		else 
+			for (String s : suppressed)
+				suppressWarning( s);
 	}
 
 	@Override
 	public void visitParameterAnnotation(int p, String annotationClass,
-			Map<String, Object> map, boolean runtimeVisible) {
+			Map<String, ElementValue> map, boolean runtimeVisible) {
 		if (!annotationClass.endsWith("SuppressWarnings"))
 			return;
 		if (!getMethod().isStatic()) p++;
-		Object value = map.get("value");
-		if (value == null || !(value instanceof Object[])) {
+		
+		String [] suppressed = getAnnotationParameterAsStringArray(map, "value");
+		if (suppressed == null || suppressed.length == 0)
 			suppressWarning(p, null);
-			return;
-		}
-		Object[] suppressedWarnings = (Object[]) value;
-		if (suppressedWarnings.length == 0)
-			suppressWarning(p, null);
-		else
-			for (Object suppressedWarning : suppressedWarnings)
-				if (suppressedWarning instanceof String)
-				suppressWarning(p, (String) suppressedWarning);
+		else 
+			for (String s : suppressed)
+				suppressWarning(p, s);
 	}
 	
 	private void suppressWarning(int parameter, String pattern) {

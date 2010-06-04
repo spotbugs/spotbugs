@@ -35,6 +35,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantValue;
+import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -262,7 +263,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 
 	@Override
 	public void visitAnnotation(String annotationClass,
-			Map<String, Object> map, boolean runtimeVisible) {
+			Map<String, ElementValue> map, boolean runtimeVisible) {
 		if (!visitingField()) return;
 		if (isInjectionAttribute(annotationClass)) {
 			containerFields.add(XFactory.createXField(this));

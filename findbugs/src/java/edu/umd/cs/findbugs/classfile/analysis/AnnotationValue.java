@@ -91,12 +91,18 @@ public class AnnotationValue {
 		return annotationClass + ":" + valueMap.toString();
 	}
 
+	private static String canonicalString(String s) {
+		if (s.equals("value"))
+			return "value";
+		return s;
+	}
 	/**
 	 * Get an AnnotationVisitor which can populate this AnnotationValue object.
 	 */
 	public AnnotationVisitor getAnnotationVisitor() {
 		return new AnnotationVisitor() {
 			public void visit(String name, Object value) {
+				name = canonicalString(name);
 				valueMap.put(name, value);
 			}
 
@@ -107,6 +113,7 @@ public class AnnotationValue {
 			 *      java.lang.String)
 			 */
 			public AnnotationVisitor visitAnnotation(String name, String desc) {
+				name = canonicalString(name);
 				AnnotationValue newValue = new AnnotationValue(desc);
 				valueMap.put(name, newValue);
 				typeMap.put(name, desc);
@@ -118,7 +125,8 @@ public class AnnotationValue {
 			 * 
 			 * @see org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
 			 */
-			public AnnotationVisitor visitArray(final String name) {
+			public AnnotationVisitor visitArray(String name) {
+				name = canonicalString(name);
 				return new AnnotationArrayVisitor(name);
 			}
 
@@ -138,6 +146,7 @@ public class AnnotationValue {
 			 *      java.lang.String, java.lang.String)
 			 */
 			public void visitEnum(String name, String desc, String value) {
+				name = canonicalString(name);
 				valueMap.put(name, new EnumValue(desc, value));
 				typeMap.put(name, desc);
 
@@ -162,6 +171,7 @@ public class AnnotationValue {
 		 * @param result
 		 */
 		private AnnotationArrayVisitor(String name) {
+			name = canonicalString(name);
 			this.name = name;
 			this.outerList = null;
 		}

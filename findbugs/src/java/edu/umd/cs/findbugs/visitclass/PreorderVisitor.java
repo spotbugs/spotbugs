@@ -19,10 +19,15 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.bcel.classfile.AnnotationDefault;
+import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.Annotations;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -30,6 +35,9 @@ import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantUtf8;
+import org.apache.bcel.classfile.ElementValue;
+import org.apache.bcel.classfile.ElementValuePair;
+import org.apache.bcel.classfile.EnclosingMethod;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.InnerClass;
 import org.apache.bcel.classfile.InnerClasses;
@@ -39,6 +47,10 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.ParameterAnnotationEntry;
+import org.apache.bcel.classfile.ParameterAnnotations;
+import org.apache.bcel.classfile.StackMapTable;
+import org.apache.bcel.classfile.StackMapTableEntry;
 
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
@@ -68,7 +80,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  * @author <A HREF="http://www.inf.fu-berlin.de/~dahm">M. Dahm</A>
  * @version 970819
  */
-public abstract class PreorderVisitor extends BetterVisitor implements Constants2 {
+public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
 	// Available when visiting a class
 	private ConstantPool constantPool;
@@ -544,4 +556,58 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
     public String toString() {
 		return this.getClass().getSimpleName() + " analyzing " + getClassName();
 	}
+
+	/* (non-Javadoc)
+     * @see org.apache.bcel.classfile.Visitor#visitAnnotation(org.apache.bcel.classfile.Annotations)
+     */
+    public void visitAnnotation(Annotations arg0) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
+	/* (non-Javadoc)
+     * @see org.apache.bcel.classfile.Visitor#visitAnnotationDefault(org.apache.bcel.classfile.AnnotationDefault)
+     */
+    public void visitAnnotationDefault(AnnotationDefault arg0) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
+	/* (non-Javadoc)
+     * @see org.apache.bcel.classfile.Visitor#visitAnnotationEntry(org.apache.bcel.classfile.AnnotationEntry)
+     */
+    public void visitAnnotationEntry(AnnotationEntry arg0) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
+	/* (non-Javadoc)
+     * @see org.apache.bcel.classfile.Visitor#visitEnclosingMethod(org.apache.bcel.classfile.EnclosingMethod)
+     */
+    public void visitEnclosingMethod(EnclosingMethod arg0) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
+	/* (non-Javadoc)
+     * @see org.apache.bcel.classfile.Visitor#visitParameterAnnotation(org.apache.bcel.classfile.ParameterAnnotations)
+     */
+    public void visitParameterAnnotation(ParameterAnnotations arg0) {
+    }
+
+	/* (non-Javadoc)
+     * @see org.apache.bcel.classfile.Visitor#visitStackMapTable(org.apache.bcel.classfile.StackMapTable)
+     */
+    public void visitStackMapTable(StackMapTable arg0) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
+	/* (non-Javadoc)
+     * @see org.apache.bcel.classfile.Visitor#visitStackMapTableEntry(org.apache.bcel.classfile.StackMapTableEntry)
+     */
+    public void visitStackMapTableEntry(StackMapTableEntry arg0) {
+	    // TODO Auto-generated method stub
+	    
+    }
 }

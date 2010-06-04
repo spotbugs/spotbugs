@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
@@ -130,5 +131,9 @@ public abstract class BCELUtil {
      */
     public static void throwClassNotFoundException(ClassDescriptor classDescriptor) throws ClassNotFoundException {
         ClassDescriptor.throwClassNotFoundException(classDescriptor);
+    }
+    
+    public static ObjectType getObjectTypeInstance(@DottedClassName String className) {
+    	return ObjectType.getInstance(className);
     }
 }

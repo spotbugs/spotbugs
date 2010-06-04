@@ -51,6 +51,12 @@ import edu.umd.cs.findbugs.util.Util;
 public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedObject {
 
 	public static final MethodInfo [] EMPTY_ARRAY = new MethodInfo[0];
+	
+	public static MethodInfo [] newArray(int sz) {
+		if (sz == 0)
+			return EMPTY_ARRAY;
+		return new MethodInfo[sz];
+	}
 	static public class Builder {
 		int accessFlags;
 

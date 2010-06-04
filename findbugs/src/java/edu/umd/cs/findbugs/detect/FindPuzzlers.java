@@ -548,9 +548,9 @@ public class FindPuzzlers extends OpcodeStackDetector {
 			}
 			if (constant instanceof Number && (seen == LAND || value.getSpecialKind() == OpcodeStack.Item.RESULT_OF_L2I) ) {
 				long constantValue = ((Number)constant).longValue();
-				if (constantValue == 0xEFFFFFFF || constantValue == 0xEFFFFFFFFFFFFFFFL)
-					bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this)
-							.addString("Apparent failed attempt to mask lower 31 bits of an int").addValueSource(value, this), this);
+				if (constantValue == 0xEFFFFFFFL || constantValue == 0xEFFFFFFFFFFFFFFFL || seen == IAND && constantValue == 0xEFFFFFFF)
+					bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", seen == LAND ? HIGH_PRIORITY : NORMAL_PRIORITY).addClassAndMethod(this)
+							.addString("Possible failed attempt to mask lower 31 bits of an int").addValueSource(value, this), this);
 				
 			}
 		}

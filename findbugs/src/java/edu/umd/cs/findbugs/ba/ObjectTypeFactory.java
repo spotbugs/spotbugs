@@ -59,7 +59,7 @@ public class ObjectTypeFactory {
 		Map<String, ObjectType> map = instance.get();
 		ObjectType result = map.get(s);
 		if (result != null) return result;
-		result = new ObjectType(s);
+		result = ObjectType.getInstance(s);
 		map.put(s, result);
 		return result;
 	}

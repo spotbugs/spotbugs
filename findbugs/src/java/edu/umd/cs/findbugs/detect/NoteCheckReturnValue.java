@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugReporter;
@@ -76,7 +77,7 @@ public class NoteCheckReturnValue extends AnnotationVisitor
 	}
 
 	@Override
-	public void visitAnnotation(String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
+	public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
 		if (!annotationClass.endsWith("CheckReturnValue"))
 			return;
 		if (!visitingMethod())

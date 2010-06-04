@@ -139,6 +139,7 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 	 * Get the number of words produced by given instruction.
 	 */
 	public int getNumWordsProduced(Instruction ins) {
+		
 		int numWordsProduced = ins.produceStack(cpg);
 		if (numWordsProduced == Constants.UNPREDICTABLE)
 			throw new InvalidBytecodeException("Unpredictable stack productions");

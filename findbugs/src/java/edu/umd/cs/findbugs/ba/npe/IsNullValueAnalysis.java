@@ -789,6 +789,8 @@ public class IsNullValueAnalysis
 										   ValueNumber replaceMe, ValueNumberFrame prevVnaFrame, ValueNumberFrame targetVnaFrame, 
 										  IsNullValue replacementValue) {
 
+		if (!targetVnaFrame.isValid())
+			throw new IllegalArgumentException("Invalid frame in " + methodGen.getClassName() + "." + methodGen.getName() + " : " + methodGen.getSignature());
 		// If required, make a copy of the frame
 		frame = modifyFrame(origFrame, frame);
 

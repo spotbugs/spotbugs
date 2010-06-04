@@ -373,7 +373,6 @@ public class SortedBugCollection implements BugCollection {
 		
 		if (withMessages) {
             Cloud cloud = getCloud();
-            System.out.println(cloud.getClass().getName());
             cloud.waitUntilIssueDataDownloaded();
 			xmlOutput= new OutputStreamXMLOutput(out, "http://findbugs.sourceforge.net/xsl/default.xsl");
 		} else {

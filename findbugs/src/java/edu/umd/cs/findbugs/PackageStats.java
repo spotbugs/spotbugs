@@ -132,7 +132,7 @@ public class PackageStats implements XMLWriteable {
 
 	// all classes and interfaces in this package
 	private Map<String, ClassStats> packageMembers = 
-		new HashMap<String, ClassStats>();
+		new HashMap<String, ClassStats>(5);
 
 	public PackageStats(String packageName) {
 		this.packageName = packageName;

@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -77,7 +78,7 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 	}
 	@Override
 	public void visitAnnotation(String annotationClass,
-			Map<String, Object> map, boolean runtimeVisible) {
+			Map<String, ElementValue> map, boolean runtimeVisible) {
 		if (!visitingField()) return;
 		if (UnreadFields.isInjectionAttribute(annotationClass)) {
 			containerFields.add(FieldAnnotation.fromVisitedField(this));

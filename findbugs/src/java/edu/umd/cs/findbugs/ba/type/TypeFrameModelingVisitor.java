@@ -388,8 +388,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			pushValue(returnType);
 			return;
 		}
-		consumeStack(obj);
-		pushReturnType(obj);
+		visitInvokeInstructionCommon(obj);
 	}
 
 	@Override
@@ -590,47 +589,37 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			return;
 		try {
 			Set<XMethod> targets = Hierarchy2.resolveMethodCallTargets(obj, frame, cpg);
-			if (targets.size() == 1) {
-				XMethod m = targets.iterator().next();
+			for(XMethod m : targets) {
 				XMethod m2 = m.bridgeTo();
 				if (m2 != null)
 					m = m2;
-				if (m.getSourceSignature() != null) {
+				if (m.getSourceSignature() != null && !m.getSourceSignature().equals(m.getSignature())) {
 					GenericSignatureParser p = new GenericSignatureParser(m.getSourceSignature());
 					String rv = p.getReturnTypeSignature();
 					if (rv.charAt(0) != 'T') {
 						Type t = GenericUtilities.getType(rv);
-						consumeStack(obj);
-						assert t.getType() != T_VOID;
-						pushValue(t);
-						return;
+						if (t != null) {
+							consumeStack(obj);
+							assert t.getType() != T_VOID;
+							pushValue(t);
+							return;
+						}
 					}
-					
 				}
-				SignatureParser p = new SignatureParser(m.getSignature());
-				String rv = p.getReturnTypeSignature();
-				
-				Type t = Type.getType(rv);
-				consumeStack(obj);
-				assert t.getType() != T_VOID;
-				pushValue(t);
-				return;
-				
-			}
-			for(XMethod m : targets) {
-				String sourceSignature = m.getSourceSignature();
-				if (sourceSignature != null) {
-					GenericSignatureParser p = new GenericSignatureParser(sourceSignature);
+
+				if (m == m2) {
+					SignatureParser p = new SignatureParser(m.getSignature());
 					String rv = p.getReturnTypeSignature();
-					if (rv.charAt(0) != 'T') {
-						
-						Type t = GenericUtilities.getType(rv);
-						consumeStack(obj);
-						pushValue(t);
-						return;
-					}
+
+					Type t = Type.getType(rv);
+					consumeStack(obj);
+					assert t.getType() != T_VOID;
+					pushValue(t);
+					return;
 				}
 			}
+			
+			
 		} catch (DataflowAnalysisException e) {
 			AnalysisContext.logError("Ooops", e);
 		} catch (ClassNotFoundException e) {

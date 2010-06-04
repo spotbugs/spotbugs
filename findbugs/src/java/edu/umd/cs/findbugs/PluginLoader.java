@@ -502,7 +502,8 @@ public class PluginLoader {
 			int cweid = 0;
 			try {
 				String cweString = bugPatternNode.valueOf("@cweid");
-				cweid = Integer.parseInt(cweString);
+				if (cweString.length() > 0)
+					cweid = Integer.parseInt(cweString);
 			} catch (RuntimeException e) {
 				assert true; // ignore
 			}
@@ -513,7 +514,7 @@ public class PluginLoader {
 			
 			try {
 				String deprecatedStr = bugPatternNode.valueOf("@deprecated");
-				boolean deprecated = Boolean.valueOf(deprecatedStr).booleanValue();
+				boolean deprecated = deprecatedStr.length() > 0 && Boolean.valueOf(deprecatedStr).booleanValue();
 				if(deprecated){
 					bugPattern.setDeprecated(deprecated);
 				}

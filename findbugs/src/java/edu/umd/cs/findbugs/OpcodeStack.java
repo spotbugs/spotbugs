@@ -2389,34 +2389,56 @@ public void initialize() {
 		if (rhs.getConstant() != null && lhs.getConstant() != null) {
 			int lhsValue = constantToInt(lhs);
 			int rhsValue = constantToInt(rhs);
-			if (seen == IADD)
-				newValue = new Item("I",lhsValue + rhsValue);
-			else if (seen == ISUB)
-				newValue = new Item("I",lhsValue - rhsValue);
-			else if (seen == IMUL)
+			if ((seen == IDIV || seen == IREM) && rhsValue == 0) {
+				AnalysisContext.logError("Saw 0" + (seen == IDIV ? "/" : "%") + "0 at PC " + dbc.getPC() + " in " + dbc.getFullyQualifiedMethodName());
+				  push(newValue);
+				  return;
+			}
+			switch (seen) {
+
+			case IADD:
+				newValue = new Item("I", lhsValue + rhsValue);
+				break;
+			case ISUB:
+				newValue = new Item("I", lhsValue - rhsValue);
+				break;
+			case IMUL:
 				newValue = new Item("I", lhsValue * rhsValue);
-			else if (seen == IDIV)
+				break;
+			case IDIV:
 				newValue = new Item("I", lhsValue / rhsValue);
-			else if (seen == IAND) {
+				break;
+			case IREM:
+				newValue = new Item("I", lhsValue % rhsValue);
+				break;
+			case IAND:
 				newValue = new Item("I", lhsValue & rhsValue);
-				if ((rhsValue&0xff) == 0 && rhsValue != 0 || (lhsValue&0xff) == 0 && lhsValue != 0 ) 	
+				if ((rhsValue & 0xff) == 0 && rhsValue != 0 || (lhsValue & 0xff) == 0 && lhsValue != 0)
 					newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
 
-			} else if (seen == IOR)
-				newValue = new Item("I",lhsValue | rhsValue);
-			else if (seen == IXOR)
-				newValue = new Item("I",lhsValue ^ rhsValue);
-			else if (seen == ISHL) {
-				newValue = new Item("I",lhsValue << rhsValue);
-				if (rhsValue >= 8) 	
+				break;
+			case IOR:
+				newValue = new Item("I", lhsValue | rhsValue);
+				break;
+			case IXOR:
+				newValue = new Item("I", lhsValue ^ rhsValue);
+				break;
+			case ISHL:
+				newValue = new Item("I", lhsValue << rhsValue);
+				if (rhsValue >= 8)
 					newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
-			}
-			else if (seen == ISHR)
-				newValue = new Item("I",lhsValue >> rhsValue);
-			else if (seen == IREM)
-				newValue = new Item("I", lhsValue % rhsValue);
-			else if (seen == IUSHR)
+
+				break;
+			case ISHR:
+				newValue = new Item("I", lhsValue >> rhsValue);
+
+				break;
+			case IUSHR:
 				newValue = new Item("I", lhsValue >>> rhsValue);
+
+			}
+
+
 		} else if ((seen == ISHL || seen == ISHR || seen == IUSHR)) { 
 			if (rhs.getConstant() != null) {
 			int constant = constantToInt(rhs);

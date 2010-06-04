@@ -55,6 +55,7 @@ public class Strings {
 	 * @see java.util.Arrays#toString(Object[])
 	 * @see java.util.Arrays#deepToString(Object[])
 	 */
+	@Deprecated
 	public static String toString(final Object[] a) {
 		return Arrays.toString(a);
 	}
@@ -259,4 +260,5 @@ public class Strings {
     	s = s.replace("\n", "\\n");
     	return s;
     }
+    
 }

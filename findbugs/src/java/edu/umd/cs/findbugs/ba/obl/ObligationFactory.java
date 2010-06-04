@@ -33,6 +33,7 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -74,7 +75,7 @@ public class ObligationFactory {
 	 */
 	public boolean isObligationType(ClassDescriptor classDescriptor) {
 		try {
-			return getObligationByType(ObjectType.getInstance(classDescriptor.toDottedClassName())) != null;
+			return getObligationByType(BCELUtil.getObjectTypeInstance(classDescriptor.toDottedClassName())) != null;
 		} catch (ClassNotFoundException e) {
 			Global.getAnalysisCache().getErrorLogger().reportMissingClass(e);
 			return false;
@@ -124,7 +125,7 @@ public class ObligationFactory {
 	 */
 	public @CheckForNull Obligation getObligationByType(ClassDescriptor classDescriptor) {
 		try {
-			return getObligationByType(ObjectType.getInstance(classDescriptor.toDottedClassName()));
+			return getObligationByType(BCELUtil.getObjectTypeInstance(classDescriptor.toDottedClassName()));
 		} catch (ClassNotFoundException e) {
 			Global.getAnalysisCache().getErrorLogger().reportMissingClass(e);
 			return null;

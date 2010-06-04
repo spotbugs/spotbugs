@@ -197,7 +197,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		for(Attribute a : code.getAttributes()) {
 			if (a instanceof LocalVariableTypeTable) {
 				typeTable = (LocalVariableTypeTable) a;
-				for (LocalVariable v : typeTable.getLocalVariableTable()) {
+				for (LocalVariable v : typeTable.getLocalVariableTypeTable()) {
 					int startPC = v.getStartPC();
 					if (startPC >= 0) startOfLocalTypedVariables.set(startPC);
 				}
@@ -331,7 +331,9 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 				) {
 				// replace with a generic version of the type
 				try { 
-					argType = GenericUtilities.getType(s);
+					Type t = GenericUtilities.getType(s);
+					if (t != null)
+						argType = t;
 				} catch (RuntimeException e) {} // degrade gracefully
 			}
 
@@ -371,7 +373,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		if (typeTable != null) {
 			int pos = handle.getPosition();
 			if (pos >= 0 && startOfLocalTypedVariables.get(pos))
-			for(LocalVariable local : typeTable.getLocalVariableTable()) {
+			for(LocalVariable local : typeTable.getLocalVariableTypeTable()) {
 				if (local.getStartPC() == pos) {
 					String signature = local.getSignature();
 					Type t;

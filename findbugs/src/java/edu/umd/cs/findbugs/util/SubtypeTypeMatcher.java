@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.util;
 
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -53,7 +54,7 @@ public class SubtypeTypeMatcher implements TypeMatcher {
 	 *                  or not candidate Types are subtypes of the class
 	 */
 	public SubtypeTypeMatcher(ClassDescriptor classDescriptor) {
-		this(ObjectType.getInstance(classDescriptor.toDottedClassName()));
+		this(BCELUtil.getObjectTypeInstance(classDescriptor.toDottedClassName()));
 	}
 
 	public boolean matches(Type t) {

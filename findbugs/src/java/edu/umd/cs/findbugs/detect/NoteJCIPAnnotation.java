@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Map;
 
+import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugReporter;
@@ -44,25 +45,25 @@ public class NoteJCIPAnnotation extends AnnotationVisitor implements
 
 	@Override
 	public void visitAnnotation(String annotationClass,
-			Map<String, Object> map, boolean runtimeVisible) {
+			Map<String, ElementValue> map, boolean runtimeVisible) {
 
 		if (!annotationClass.startsWith(NET_JCIP_ANNOTATIONS))
 			return;
 		annotationClass = annotationClass.substring(NET_JCIP_ANNOTATIONS
 				.length());
-		Object value = map.get("value");
+		ElementValue value = map.get("value");
 		ClassMember member;
 		if (visitingField())
 			member = XFactory.createXField(this);
 		else if (visitingMethod())
 			member = XFactory.createXMethod(this);
 		else {
-			Map<String, Object> annotationsOfThisClass = AnalysisContext.currentAnalysisContext()
+			Map<String, ElementValue> annotationsOfThisClass = AnalysisContext.currentAnalysisContext()
 			.getJCIPAnnotationDatabase().getEntryForClass(getDottedClassName());
 			annotationsOfThisClass.put(annotationClass, value);
 			return;
 		}
-		Map<String, Object> annotationsOfThisMember = AnalysisContext.currentAnalysisContext()
+		Map<String, ElementValue> annotationsOfThisMember = AnalysisContext.currentAnalysisContext()
 		.getJCIPAnnotationDatabase().getEntryForClassMember(member);
 		annotationsOfThisMember.put(annotationClass, value);
 	}

@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
@@ -232,7 +234,7 @@ public class GenericUtilities {
 	 * to break up a signature with many types or call createTypes(String) to
 	 * return a list of types
 	 */
-	public static  Type getType(String signature) {
+	public static  @CheckForNull Type getType(String signature) {
 		// ensure signature only has one type
 		if (new GenericSignatureParser("(" + signature + ")V").getNumParameters() != 1)
 			throw new IllegalArgumentException("the following signature does not " +
@@ -245,26 +247,34 @@ public class GenericUtilities {
 				return Type.getType(stripAngleBrackets(signature));
 
 			String typeParameters = signature.substring(index+1, nextUnmatchedRightAngleBracket(signature, index+1));
-			List<ReferenceType> parameters = GenericUtilities.getTypes(typeParameters);			
+			List<ReferenceType> parameters = GenericUtilities.getTypeParameters(typeParameters);	
+			if (parameters == null)
+				return null;
 			String baseType = removeMatchedAngleBrackets(signature.substring(1,index)).replace('.', '$');
 			return new GenericObjectType(baseType,	parameters);		
 
 		} else if (signature.startsWith("T")) {
-			// ignore the prefix "T" and the suffix ";"
-			return new GenericObjectType(signature.substring(1,signature.length()-1));
+			// can't handle type variables
+			return null;
 
 		} else if (signature.startsWith("[")) {
 			index++;
 			while (signature.charAt(index) == '[') index++;
-			return new ArrayType( getType(signature.substring(index)), index);
+			Type componentType = getType(signature.substring(index));
+			if (componentType == null)
+				return null;
+			return new ArrayType( componentType, index);
 
 		} else if (signature.startsWith("*")) {
 			return new GenericObjectType("*");
 
 		} else if (signature.startsWith("+") || signature.startsWith("-")) {
+			Type baseType = getType(signature.substring(1));
+			if (baseType == null)
+				return null;
 			return new GenericObjectType(
 					signature.substring(0,1), 
-					(ReferenceType) getType(signature.substring(1)) );
+					(ReferenceType) baseType );
 
 		} else
 			// assert signature contains no generic information
@@ -334,16 +344,39 @@ public class GenericUtilities {
 	 * @param signature bytecode signature e.g. 
 	 * e.g. <code>Ljava/util/ArrayList&lt;Ljava/lang/String;&gt;;Ljava/util/ArrayList&lt;TT;&gt;;Ljava/util/ArrayList&lt;*&gt;;</code>
 	 */
-	public static final List<ReferenceType> getTypes(String signature) {
+	public static final @CheckForNull List<ReferenceType> getTypeParameters(String signature) {
 		GenericSignatureParser parser = new GenericSignatureParser("(" + signature + ")V");
 		List<ReferenceType> types = new ArrayList<ReferenceType>();
 
 		Iterator<String> iter = parser.parameterSignatureIterator();
 		while (iter.hasNext()) {
 			String parameterString = iter.next();
-			types.add((ReferenceType)getType(parameterString));
+			ReferenceType t = (ReferenceType)getType(parameterString);
+			if (t == null)
+				return null;
+			types.add(t);
 		}
 		return types;
 	}
+	
+	public static final List<String>  split(String signature) {
+		List<String> result = new ArrayList<String>();
+		int depth = 0;
+		int start = 0;
+		for(int pos = start; pos < signature.length(); pos++) 
+			switch(signature.charAt(pos)) {
+			case '<' : depth++; break;
+			case '>' : depth--; break;
+			case ';' : 
+				if (depth > 0)  break;
+				result.add(signature.substring(start,pos+1));
+				start = pos+1;
+			}
+		if (depth != 0)
+			throw new IllegalArgumentException("Unbalanced signature: " + signature);
+		return result;
+		}
+
+		
 
 }

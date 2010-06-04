@@ -59,6 +59,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.props.GeneralWarningProperty;
 import edu.umd.cs.findbugs.props.WarningProperty;
@@ -197,6 +198,40 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		}
 		return false;
 	}
+	
+	private boolean isGenericCollection(ClassDescriptor operandClass) {
+		if (!Subtypes2.instanceOf(operandClass, "java.util.Map") && !Subtypes2.instanceOf(operandClass, "java.util.Collection"))
+			return false;
+		if (operandClass.getClassName().startsWith("java/util")) 
+			return true;
+		try {
+			XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, operandClass);
+        		
+        	String sig = xclass.getSourceSignature();
+        	if (sig == null) return false;
+        	int j = sig.indexOf('>');
+        	sig = sig.substring(j+1);
+        			
+        	for(String s : GenericUtilities.split(sig)) {
+        		int i = s.indexOf('<');
+        		if (i < 0) continue;
+        		if (s.charAt(0) != 'L')
+        			throw new IllegalStateException("unexpected non signature: " + s);
+        		ClassDescriptor c = DescriptorFactory.createClassDescriptor(s.substring(1,i));
+        		if (isGenericCollection(c)) {
+        			if (DEBUG)
+        				System.out.println(operandClass + " is a subtype of " + s);
+        			return true;
+        		}
+        	}
+
+        	
+
+	    } catch (CheckedAnalysisException e1) {
+          AnalysisContext.logError("Error checking for weird generic parameterization of " + operandClass, e1);
+        }
+    	return false;
+	}
 
 	private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
 		if (isSynthetic(method) || !prescreen(classContext, method))
@@ -234,7 +269,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			InvokeInstruction inv = (InvokeInstruction) ins;
 
 			XMethod invokedMethod = XFactory.createXMethod(inv, cpg);
-
+			
 			String invokedMethodName = invokedMethod.getName();
 			for (ClassDescriptor interfaceOfInterest : nameToInterfaceMap.get(invokedMethodName)) {
 
@@ -262,7 +297,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 					AnalysisContext.reportMissingClass(e);
 					continue;
 				}
-				// OK, we've fold a method call of interest
+				// OK, we've found a method call of interest
 
 				int typeArgument = nameToTypeArgumentIndex.get(invokedMethodName);
 
@@ -284,14 +319,20 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 }
 
 				ValueNumberFrame vnFrame = vnDataflow.getFactAtLocation(location);
+				
+				if (!vnFrame.isValid()) {
+					AnalysisContext.logError("Invalid value number frame in " +xmethod );
+					continue;
+				}
 				int numArguments = frame.getNumArguments(inv, cpg);
 
 				if (numArguments != 1+pos)
 					continue;
 
 				int expectedParameters = 1;
-				if (interfaceOfInterest.getSimpleName().equals("Map"))
+				if (interfaceOfInterest.getSimpleName().equals("Map")) 
 					expectedParameters = 2;
+
 
 				// compare containers type parameters to corresponding arguments
 				SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));
@@ -341,18 +382,10 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				// ... containers
 				if (!operand.hasParameters())
 					continue;
-				ClassDescriptor operandClass = DescriptorFactory.getClassDescriptor(operand);
-				if (!operandClass.getClassName().startsWith("java/util")) try {
-	            	XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, operandClass);
-	            	String sig = xclass.getSourceSignature();
-	            	if (sig != null && sig.indexOf("<L") > 0)
-	            		continue;
-
-			    } catch (CheckedAnalysisException e1) {
-		          AnalysisContext.logError("Error checking for weird generic parameterization", e1);
-	            }
-
 				if (operand.getNumParameters() != expectedParameters)
+					continue;
+				ClassDescriptor operandClass = DescriptorFactory.getClassDescriptor(operand);
+				if (!isGenericCollection(operandClass))
 					continue;
 
 				Type expectedType;
@@ -421,7 +454,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 					expectedType = ((GenericObjectType) expectedType).getUpperBound();
 
 				int priority = matchResult.getPriority();
-
+				if (!operandClass.getClassName().startsWith("java/util") && priority == Priorities.HIGH_PRIORITY)
+					priority = Math.max(priority,Priorities.NORMAL_PRIORITY);
 				if (TestCaseDetector.likelyTestCase(xmethod))
 					priority = Math.max(priority,Priorities.NORMAL_PRIORITY);
 				else if (selfOperation)

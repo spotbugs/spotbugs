@@ -77,7 +77,7 @@ public class Subtypes2 {
 	 * Object to record the results of a supertype search.
 	 */
 	private static class SupertypeQueryResults {
-		private Set<ClassDescriptor> supertypeSet = new HashSet<ClassDescriptor>();
+		private Set<ClassDescriptor> supertypeSet = new HashSet<ClassDescriptor>(4);
 		private boolean encounteredMissingClasses = false;
 
 		public void addSupertype(ClassDescriptor classDescriptor) {
@@ -911,7 +911,7 @@ public class Subtypes2 {
 			}
 		}
 
-		return result;
+		return new HashSet<ClassDescriptor>(result);
 	}
 
 	private Set<ClassDescriptor> computeKnownSupertypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
