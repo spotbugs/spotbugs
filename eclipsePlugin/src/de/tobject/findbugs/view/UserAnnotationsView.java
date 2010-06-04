@@ -196,6 +196,9 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 					.removeSelectionListener(selectionListener);
 			selectionListener = null;
 		}
+		if (lastCloud != null) {
+			lastCloud.removeListener(cloudListener);
+		}
 		super.dispose();
 	}
 
