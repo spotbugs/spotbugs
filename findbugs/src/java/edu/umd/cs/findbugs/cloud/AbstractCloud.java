@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -83,7 +84,7 @@ public abstract class AbstractCloud implements Cloud {
 		}
 		LEADERBOARD_BLACKLIST_PATTERN = p;
 		try {
-			MIN_TIMESTAMP = DateFormat.getDateInstance().parse("Jan 23, 1996").getTime();
+			MIN_TIMESTAMP = DateFormat.getDateInstance(DateFormat.DEFAULT, Locale.US).parse("Jan 23, 1996").getTime();
 		} catch (ParseException e) {
 			throw new IllegalStateException(e);
 		}
