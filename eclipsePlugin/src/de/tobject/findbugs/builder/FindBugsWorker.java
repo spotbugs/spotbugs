@@ -292,7 +292,7 @@ public class FindBugsWorker {
 		try {
 			st.newPoint("getBugCollection");
 			SortedBugCollection oldBugCollection = FindbugsPlugin.getBugCollection(project,
-					monitor);
+					monitor, false);
 
 			st.newPoint("mergeBugCollections");
 			SortedBugCollection resultCollection = mergeBugCollections(oldBugCollection,

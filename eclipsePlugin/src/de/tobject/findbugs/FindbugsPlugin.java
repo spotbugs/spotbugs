@@ -423,6 +423,11 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		}
 	}
 
+	public static SortedBugCollection getBugCollection(IProject project,
+			IProgressMonitor monitor) throws CoreException {
+		return getBugCollection(project, monitor, true);
+	}
+
 	/**
 	 * Get the stored BugCollection for project.
 	 * If there is no stored bug collection for the project,
@@ -435,12 +440,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @throws CoreException
 	 */
 	public static SortedBugCollection getBugCollection(
-			IProject project, IProgressMonitor monitor) throws CoreException {
+			IProject project, IProgressMonitor monitor, boolean useCloud) throws CoreException {
 		SortedBugCollection bugCollection = (SortedBugCollection) project.getSessionProperty(
 				SESSION_PROPERTY_BUG_COLLECTION);
 		if (bugCollection == null) {
 			try {
-				readBugCollectionAndProject(project, monitor);
+				readBugCollectionAndProject(project, monitor, useCloud);
 				bugCollection = (SortedBugCollection) project.getSessionProperty(
 						SESSION_PROPERTY_BUG_COLLECTION);
 			} catch (IOException e) {
@@ -507,7 +512,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @throws DocumentException
 	 * @throws CoreException
 	 */
-	private static void readBugCollectionAndProject(IProject project, IProgressMonitor monitor) throws IOException, DocumentException, CoreException {
+	private static void readBugCollectionAndProject(IProject project, IProgressMonitor monitor, boolean useCloud) throws IOException, DocumentException, CoreException {
 		SortedBugCollection bugCollection;
 
 		IPath bugCollectionPath = getBugCollectionFile(project);
@@ -523,7 +528,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
 		bugCollection = new SortedBugCollection();
 		bugCollection.getProject().setGuiCallback(new EclipseGuiCallback());
-		bugCollection.setDoNotUseCloud(true);
+		bugCollection.setDoNotUseCloud(!useCloud);
 
 		bugCollection.readXML(bugCollectionFile);
 

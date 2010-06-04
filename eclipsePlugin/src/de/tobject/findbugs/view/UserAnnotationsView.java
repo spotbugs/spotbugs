@@ -20,12 +20,14 @@
 package de.tobject.findbugs.view;
 
 import java.util.Calendar;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -46,6 +48,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
 
 /**
  * View which shows bug annotations.
@@ -63,8 +66,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 
 	private String cloudText;
 
-	private @CheckForNull
-	BugCollectionAndInstance theBug;
+	private @CheckForNull BugCollectionAndInstance theBug;
 
 	private  Text userAnnotationTextField;
 
@@ -79,6 +81,21 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 	private SigninStatusBox signinStatusBox;
 
 	private ISelectionListener selectionListener;
+
+	private final ExecutorService executor = Executors.newCachedThreadPool();
+
+	private Cloud lastCloud;
+
+	private final CloudListener cloudListener = new CloudListener() {
+		public void statusUpdated() {
+		}
+
+		public void issueUpdated(BugInstance bug) {
+			if (theBug != null && bug.equals(theBug.getBugInstance())) {
+				updateBugInfo();
+			}
+		}
+	};
 
 	public UserAnnotationsView() {
 		super();
@@ -106,8 +123,14 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		designationComboBox.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				if (theBug != null) {
-					theBug.getBugInstance().setUserDesignationKeyIndex(
-						designationComboBox.getSelectionIndex(), theBug.getBugCollection());
+					final int selectionIndex = designationComboBox.getSelectionIndex();
+					executor.submit(new Runnable() {
+						public void run() {
+							theBug.getBugInstance().setUserDesignationKeyIndex(
+									selectionIndex, theBug.getBugCollection());
+						}
+					});
+
 				}
 			}
 
@@ -125,7 +148,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		firstVersionLabel = new Label(main, SWT.LEFT);
 		firstVersionLabel
 				.setToolTipText("The earliest version in which the bug was present");
-		firstVersionLabel.setLayoutData(new GridData(GridData.BEGINNING, GridData.CENTER, false, true));
+		firstVersionLabel.setLayoutData(new GridData(GridData.BEGINNING, GridData.CENTER, false, false));
 
 		userAnnotationTextField = new Text(main, SWT.LEFT | SWT.WRAP
 				| SWT.BORDER);
@@ -135,11 +158,17 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		GridData uatfData = new GridData(GridData.FILL_BOTH);
 		uatfData.horizontalSpan = 2;
 		userAnnotationTextField.setLayoutData(uatfData);
-		userAnnotationTextField.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
+		userAnnotationTextField.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
 				if (theBug != null) {
-					theBug.getBugInstance().setAnnotationText(
-							userAnnotationTextField.getText(), theBug.getBugCollection());
+					final String txt = userAnnotationTextField.getText();
+					executor.submit(new Runnable() {
+						public void run() {
+							theBug.getBugInstance().setAnnotationText(
+									txt, theBug.getBugCollection());
+						}
+					});
 				}
 			}
 		});
@@ -175,30 +204,20 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 	 * title and description fields.
 	 */
 	private void updateDisplay() {
-		userAnnotationTextField.setText(userAnnotation);
-		firstVersionLabel.setText(firstVersionText);
 		firstVersionLabel.setSize(firstVersionLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		cloudTextField.setText(cloudText);
-		if (theBug == null) {
-			signinStatusBox.setCloud(null);
-			return;
-		}
-		signinStatusBox.setCloud(theBug.getBugCollection().getCloud());
-		int comboIndex = theBug.getBugInstance().getUserDesignationKeyIndex();
-		if (comboIndex == -1) {
-			FindbugsPlugin.getDefault()
-					.logError("Cannot find user designation");
-		} else {
-			designationComboBox.select(comboIndex);
-		}
 	}
 
 	/**
 	 * Set the content to be displayed
 	 */
-	public void setContent(BugCollectionAndInstance bci, String firstVersionText) {
-		if (bci == null) {
-			signinStatusBox.setCloud(null);
+	public void setContent(BugCollectionAndInstance bci) {
+		this.theBug = bci;
+		updateBugInfo();
+	}
+
+	private void updateBugInfo() {
+		if (theBug == null) {
+			setCloud(null);
 			this.userAnnotationTextField.setEnabled(false);
 			this.designationComboBox.setEnabled(false);
 			this.userAnnotation = "";
@@ -206,19 +225,44 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 			this.cloudText = "";
 
 		} else {
-			BugInstance bug = bci.getBugInstance();
-			Cloud cloud = bci.getBugCollection().getCloud();
+
+			BugInstance bug = theBug.getBugInstance();
+			long timestamp = theBug.getBugCollection().getAppVersionFromSequenceNumber(bug.getFirstVersion()).getTimestamp();
+
+			String firstVersion = "Bug present since: "	+ convertTimestamp(timestamp);
+
+			Cloud cloud = theBug.getBugCollection().getCloud();
 			String userDesignation = cloud.getUserEvaluation(bug);
 			this.userAnnotation = (userDesignation == null) ? "" : userDesignation.trim();
-			this.firstVersionText = (firstVersionText == null) ? "" : firstVersionText
-					.trim();
-			this.cloudText = bug == null ? "" : cloud.getCloudReport(bug);
-			this.theBug = bci;
+			this.firstVersionText = firstVersion.trim();
+			this.cloudText = cloud.getCloudReport(bug);
 			this.userAnnotationTextField.setEnabled(theBug != null);
 			this.designationComboBox.setEnabled(theBug != null);
-			signinStatusBox.setCloud(bci.getBugCollection().getCloud());
+			setCloud(cloud);
+
+			int comboIndex = theBug.getBugInstance().getUserDesignationKeyIndex();
+			if (comboIndex == -1) {
+				FindbugsPlugin.getDefault()
+						.logError("Cannot find user designation");
+			} else {
+				designationComboBox.select(comboIndex);
+			}
 		}
+		userAnnotationTextField.setText(userAnnotation);
+		firstVersionLabel.setText(firstVersionText);
+		cloudTextField.setText(cloudText);
 		updateDisplay();
+	}
+
+	private void setCloud(Cloud cloud) {
+		signinStatusBox.setCloud(cloud);
+		if (cloud != lastCloud) {
+			if (lastCloud != null) {
+				lastCloud.removeListener(cloudListener);
+			}
+			cloud.addListener(cloudListener);
+			lastCloud = cloud;
+		}
 	}
 
 	/**
@@ -232,9 +276,6 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 	private void showInView(IMarker marker) {
 
 		String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
-		long timestamp = Long.parseLong(marker.getAttribute(
-				FindBugsMarker.FIRST_VERSION, "-2"));
-		String firstVersion = "Bug present since: "	+ convertTimestamp(timestamp);
 		BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
 		if (pattern == null) {
 			return;
@@ -243,7 +284,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 
 
 
-		setContent(bci, firstVersion);
+		setContent(bci);
 
 	}
 

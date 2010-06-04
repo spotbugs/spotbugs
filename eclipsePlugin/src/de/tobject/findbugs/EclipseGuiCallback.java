@@ -17,7 +17,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -35,7 +34,6 @@ public class EclipseGuiCallback implements IGuiCallback {
 		private final AbstractExecutorService guiExecutor = new EclipseDisplayThreadExecutor();
 	private CloudListener cloudListener;
 	private CloudStatusListener cloudStatusListener;
-	private Label loginStatusBarItem;
 
 	public void registerCloud(Project project, BugCollection collection, final Cloud cloud) {
 		cloudListener = new CloudListener() {
@@ -44,7 +42,6 @@ public class EclipseGuiCallback implements IGuiCallback {
 
 				final IWorkbenchWindow win = FindbugsPlugin.getActiveWorkbenchWindow();
 				win.getShell().getDisplay().asyncExec(new Runnable() {
-					@SuppressWarnings("hiding")
 					public void run() {
 						IWorkbenchPage page = win.getActivePage();
 						IWorkbenchPart part = page.getActivePart();
@@ -137,7 +134,6 @@ public class EclipseGuiCallback implements IGuiCallback {
 
 	public void displayNonmodelMessage(final String title, final String message) {
 		invokeInGUIThread(new Runnable() {
-
 			public void run() {
 				MessageDialog.openInformation(FindbugsPlugin.getShell(), title, message);
 			}

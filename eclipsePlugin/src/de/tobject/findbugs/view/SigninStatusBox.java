@@ -33,7 +33,7 @@ public class SigninStatusBox extends Composite {
 
 		cloudStatusListener = new CloudStatusListener() {
 			public void handleStateChange(SigninState oldState, SigninState state) {
-				updateLoginStatusBarItem();
+				updateLabel();
 			}
 
 			public void handleIssueDataDownloadedEvent() { // ok
@@ -51,7 +51,7 @@ public class SigninStatusBox extends Composite {
 		if (cloud != null) {
 			cloud.addStatusListener(cloudStatusListener);
 		}
-		updateLoginStatusBarItem();
+		updateLabel();
 	}
 
 	private void createControls() {
@@ -67,7 +67,7 @@ public class SigninStatusBox extends Composite {
 			    showSigninPopupMenu(statusLine.toDisplay(e.x, e.y));
 			}
 		});
-		updateLoginStatusBarItem();
+		updateLabel();
 	}
 
 	private void showSigninPopupMenu(Point p) {
@@ -114,13 +114,14 @@ public class SigninStatusBox extends Composite {
 	    popupMenu.setVisible(true);
 	}
 
-	private void updateLoginStatusBarItem() {
+	private void updateLabel() {
 		FindbugsPlugin.getShell().getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				if (statusLine != null) {
 					if (cloud != null) {
-						statusLine.setText(cloud.getSigninState().toString() 
-								+ ":" + cloud.getPlugin().getDescription());
+						statusLine.setText(cloud.getPlugin().getDescription()
+								+ "\n" + cloud.getSigninState()
+								+ ": " + cloud.getUser());
 						Point a = statusLine.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 						statusLine.setSize(a);
 						Point b = computeSize(SWT.DEFAULT, SWT.DEFAULT);
