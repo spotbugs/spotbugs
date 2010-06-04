@@ -2390,7 +2390,7 @@ public void initialize() {
 			int lhsValue = constantToInt(lhs);
 			int rhsValue = constantToInt(rhs);
 			if ((seen == IDIV || seen == IREM) && rhsValue == 0) {
-				AnalysisContext.logError("Saw 0" + (seen == IDIV ? "/" : "%") + "0 at PC " + dbc.getPC() + " in " + dbc.getFullyQualifiedMethodName());
+				AnalysisContext.logError("Saw 0" + (seen == IDIV ? "/" : "%") + "0 at PC " + dbc.getPC() + " in " + dbc.getFullyQualifiedMethodName(), new ArithmeticException());
 				  push(newValue);
 				  return;
 			}
