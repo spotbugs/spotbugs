@@ -230,7 +230,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 						DepthFirstSearch dfs, TypeMerger typeMerger,
 						RepositoryLookupFailureCallback lookupFailureCallback, ExceptionSetFactory exceptionSetFactory) {
 		this(method, methodGen, cfg, dfs,
-				typeMerger, new TypeFrameModelingVisitor(methodGen.getConstantPool()),
+				typeMerger, new TypeFrameModelingVisitor(methodGen.getConstantPool(), typeMerger),
 				lookupFailureCallback, exceptionSetFactory);
 	}
 

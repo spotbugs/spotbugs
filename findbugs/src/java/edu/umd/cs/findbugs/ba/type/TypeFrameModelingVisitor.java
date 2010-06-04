@@ -83,17 +83,20 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	private Set<ReferenceType> typesComputedFromGenerics = Util.newSetFromMap(new IdentityHashMap<ReferenceType, Boolean>());
 	
 
+	protected final TypeMerger typeMerger;
 	/**
 	 * Constructor.
 	 * 
 	 * @param cpg
 	 *            the ConstantPoolGen of the method whose instructions we are
 	 *            examining
+	 * @param typeMerger TODO
 	 * @param typesComputerFromGenerics TODO
 	 */
-	public TypeFrameModelingVisitor(ConstantPoolGen cpg) {
+	public TypeFrameModelingVisitor(ConstantPoolGen cpg, TypeMerger typeMerger) {
 		super(cpg);
 		fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+		this.typeMerger = typeMerger;
 
 	}
 
@@ -587,9 +590,12 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		}
 		if (handleToArray(obj))
 			return;
+		Type result = TopType.instance();
 		try {
 			Set<XMethod> targets = Hierarchy2.resolveMethodCallTargets(obj, frame, cpg);
+			
 			for(XMethod m : targets) {
+				boolean foundSomething = false;
 				XMethod m2 = m.bridgeTo();
 				if (m2 != null)
 					m = m2;
@@ -599,10 +605,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 					if (rv.charAt(0) != 'T') {
 						Type t = GenericUtilities.getType(rv);
 						if (t != null) {
-							consumeStack(obj);
 							assert t.getType() != T_VOID;
-							pushValue(t);
-							return;
+							result = typeMerger.mergeTypes(result, t);
+							foundSomething = true;
 						}
 					}
 				}
@@ -612,10 +617,13 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 					String rv = p.getReturnTypeSignature();
 
 					Type t = Type.getType(rv);
-					consumeStack(obj);
-					assert t.getType() != T_VOID;
-					pushValue(t);
-					return;
+					result = typeMerger.mergeTypes(result, t);
+					foundSomething = true;
+					
+				}
+				if (!foundSomething) {
+					result = TopType.instance();
+					break;
 				}
 			}
 			
@@ -627,7 +635,10 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		}
 		
 		consumeStack(obj);
-		pushReturnType(obj);
+		if (result instanceof TopType)
+			pushReturnType(obj);
+		else
+			pushValue(result);
 	}
 
 	private boolean handleToArray(InvokeInstruction obj) {

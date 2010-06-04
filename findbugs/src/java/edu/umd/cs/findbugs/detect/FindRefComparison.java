@@ -348,8 +348,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 		public RefComparisonTypeFrameModelingVisitor(
 				ConstantPoolGen cpg,
-				RepositoryLookupFailureCallback lookupFailureCallback) {
-			super(cpg);
+				TypeMerger typeMerger, RepositoryLookupFailureCallback lookupFailureCallback) {
+			super(cpg, typeMerger);
 			this.lookupFailureCallback = lookupFailureCallback;
 			this.sawStringIntern = false;
 		}
@@ -698,7 +698,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		RefComparisonTypeMerger typeMerger =
 			new RefComparisonTypeMerger(bugReporter, exceptionSetFactory);
 		RefComparisonTypeFrameModelingVisitor visitor =
-			new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), bugReporter);
+			new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), typeMerger, bugReporter);
 		TypeAnalysis typeAnalysis =
 			new SpecialTypeAnalysis(method, methodGen, cfg, dfs, typeMerger, visitor, bugReporter, exceptionSetFactory);
 		TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
