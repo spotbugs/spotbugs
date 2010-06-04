@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/findbugs/src/java/edu/umd/cs/findbugs/FindBugs2.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.umd.cs.findbugs.FindBugs2"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-help -experimental -output:xml newpatch.xml ../findbugsTestCases/build/classes"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="findbugs"/>
+</launchConfiguration>
