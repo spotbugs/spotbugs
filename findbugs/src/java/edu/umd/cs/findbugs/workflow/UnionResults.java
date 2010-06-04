@@ -81,11 +81,15 @@ public class UnionResults {
 		ProjectStats stats = result.getProjectStats();
 		ProjectStats stats2 = newCollection.getProjectStats();
 		stats.addStats(stats2);
+		
+		Project project = result.getProject();
+		Project project2 = newCollection.getProject();
+		project.add(project2);
 
 		return result;
 	}
 
-	public static void main(String[] argv) throws IOException, DocumentException  {
+	public static void main(String[] argv) throws IOException {
 
 		FindBugs.setNoAnalysis();
 		final UnionResultsCommandLine commandLine = new UnionResultsCommandLine();
@@ -95,19 +99,16 @@ public class UnionResults {
 		
 
 		SortedBugCollection results = null;
-		Project project = null;
 		for(int i = argCount; i < argv.length; i++) {
 			try {
 				SortedBugCollection more = new SortedBugCollection();
 				
 				more.readXML(argv[i]);
-				if (project != null) {
-					project.add(more.getProject());
+				if (results != null) {
 					results = union(results, more);
 				} else {
 					results = more;
 				}
-				project = results.getProject();
 			} catch (IOException e) {
 				System.err.println("Trouble reading/parsing " + argv[i]);
 			} catch (DocumentException e) {
@@ -118,6 +119,7 @@ public class UnionResults {
 		if (results == null) {
 			System.err.println("No files successfully read");
 			System.exit(1);
+			return;
 		}
 		results.setWithMessages(commandLine.withMessages);
 		if (commandLine.outputFile == null)
