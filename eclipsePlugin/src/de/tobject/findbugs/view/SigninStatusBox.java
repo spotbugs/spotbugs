@@ -43,6 +43,14 @@ public class SigninStatusBox extends Composite {
 
 	}
 
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (this.cloud != null) {
+			this.cloud.removeStatusListener(cloudStatusListener);
+		}
+	}
+
 	public void setCloud(Cloud cloud) {
 		if (this.cloud != null) {
 			this.cloud.removeStatusListener(cloudStatusListener);
