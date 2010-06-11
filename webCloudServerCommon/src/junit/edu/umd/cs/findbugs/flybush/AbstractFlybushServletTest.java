@@ -140,7 +140,7 @@ public abstract class AbstractFlybushServletTest extends TestCase {
 		}
 	}
 
-    protected DbEvaluation createEvaluation(DbIssue issue, String who, int when) {
+    protected DbEvaluation createEvaluation(DbIssue issue, String who, long when) {
         DbUser user;
         Query query = getPersistenceManager().newQuery("select from " + persistenceHelper.getDbUserClass().getName()
                                                        + " where openid == :myopenid");
@@ -159,6 +159,7 @@ public abstract class AbstractFlybushServletTest extends TestCase {
         eval.setIssue(issue);
         eval.setWhen(when);
         eval.setWho(user.createKeyObject());
+        eval.setEmail(who);
         return eval;
     }
 
