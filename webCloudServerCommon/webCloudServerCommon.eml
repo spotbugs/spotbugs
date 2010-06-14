@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component>
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$">
+		<testFolder url="file://$MODULE_DIR$/src/junit"/>
+		<excludeFolder url="file://$MODULE_DIR$/classes"/>
+		<excludeFolder url="file://$MODULE_DIR$/classes"/>
+	</contentEntry>
+	<lib name="jetty-util-6.1.19.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/webCloudServerCommon/lib/jetty-util-6.1.19.jar!/"/>
+	</lib>
+	<lib name="dyuproject-openid-1.1.6.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/webCloudServerCommon/lib/dyuproject-openid-1.1.6.jar!/"/>
+	</lib>
+	<lib name="dyuproject-util-1.1.6.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/webCloudServerCommon/lib/dyuproject-util-1.1.6.jar!/"/>
+	</lib>
+	<lib name="servlet-api-2.5-20081211.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/webCloudServerCommon/lib/servlet-api-2.5-20081211.jar!/"/>
+	</lib>
+	<lib name="jdo2-api-2.3-eb.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/webCloudServerCommon/lib/jdo2-api-2.3-eb.jar!/"/>
+	</lib>
+	<lib name="junit.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/webCloudServerCommon/lib/junit.jar!/"/>
+	</lib>
+	<lib name="mockito-all-1.8.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/webCloudServerCommon/lib/mockito-all-1.8.2.jar!/"/>
+	</lib>
+	<lib name="charts4j-1.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/webCloudServerCommon/lib/charts4j-1.2.jar!/"/>
+	</lib>
+</component>

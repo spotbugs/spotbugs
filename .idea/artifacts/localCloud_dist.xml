@@ -43,11 +43,11 @@
         <element id="library" level="module" name="shared-ldap-0.9.13.jar" module-name="localCloud" />
         <element id="archive" name="localCloud.jar">
           <element id="module-output" name="localCloud" />
-          <element id="module-output" name="cloudServlet" />
+          <element id="module-output" name="webCloudServerCommon" />
           <element id="directory" name="META-INF">
             <element id="file-copy" path="$PROJECT_DIR$/sandbox/localCloud/etc/META-INF/MANIFEST.MF" />
           </element>
-          <element id="module-output" name="AppEngineCloudProtocol" />
+          <element id="module-output" name="webCloudProtocol" />
         </element>
         <element id="library" level="module" name="protobuf-java-2.3.0.jar" module-name="AppEngineCloudProtocol" />
       </element>

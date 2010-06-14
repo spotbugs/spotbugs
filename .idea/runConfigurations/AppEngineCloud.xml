@@ -5,7 +5,7 @@
     <option name="COMMON_VM_ARGUMENTS" value="-ea" />
     <option name="UPDATING_POLICY" value="hot-swap-classes" />
     <server-settings>
-      <option name="artifact" value="AppEngineCloud:Web" />
+      <option name="artifact" value="webCloudServerAppEngine" />
       <option name="serverParameters" value="-a 127.0.0.1" />
     </server-settings>
     <RunnerSettings RunnerId="Debug">
@@ -14,7 +14,7 @@
       <option name="LOCAL" value="true" />
     </RunnerSettings>
     <RunnerSettings RunnerId="Profile ">
-      <option name="myExternalizedOptions" value="&#10;snapshots-dir=&#10;additional-options2=onexit\=snapshot&#10;" />
+      <option name="myExternalizedOptions" value="&#13;&#10;snapshots-dir=&#13;&#10;additional-options2=onexit\=snapshot&#13;&#10;" />
     </RunnerSettings>
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper VM_VAR="" RunnerId="Debug">
@@ -49,7 +49,7 @@
     </ConfigurationWrapper>
     <method>
       <option name="BuildArtifacts" enabled="true">
-        <artifact name="AppEngineCloud:Web" />
+        <artifact name="webCloudServerAppEngine" />
       </option>
     </method>
   </configuration>
