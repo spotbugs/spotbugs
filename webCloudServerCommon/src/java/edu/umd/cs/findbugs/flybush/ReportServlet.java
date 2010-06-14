@@ -93,12 +93,16 @@ public class ReportServlet extends AbstractFlybushServlet {
             userCountByWeek.put(beginningOfWeek, seenUsers.size());
         }
 
+        // build charts
+        BarChart histogram = buildEvaluatorsHistogram(issuesByUser);
+
         BarChart evalsByUserChart = buildByUserChart(totalCountByUser, issueCountByUser);
 
         LineChart evalsOverTimeChart = createTimelineChart(evalsByWeek, issueCountByWeek, userCountByWeek);
 
         LineChart cumulativeTimeline = createCumulativeTimelineChart(evalsByWeek, issueCountByWeek, userCountByWeek);
 
+        // print results
         resp.setStatus(200);
 
         resp.getOutputStream().print("<html>" +
@@ -109,6 +113,46 @@ public class ReportServlet extends AbstractFlybushServlet {
         showChartImg(resp, cumulativeTimeline.toURLString());
         resp.getOutputStream().print("<br><br>");
         showChartImg(resp, evalsByUserChart.toURLString());
+        resp.getOutputStream().print("<br><br>");
+        showChartImg(resp, histogram.toURLString());
+    }
+
+    private BarChart buildEvaluatorsHistogram(Multimap<String, String> issuesByUser) {
+        Map<String, Integer> usersPerIssue = Maps.newHashMap();
+        for (String email : issuesByUser.keySet()) {
+            for (String hash : issuesByUser.get(email)) {
+                increment(usersPerIssue, hash);
+            }
+        }
+
+        // map from # of evaluators -> # of issues with that many evaluators
+        Map<Integer, Integer> issuesPerEvaluatorCount = Maps.newHashMap();
+        for (String issue : usersPerIssue.keySet()) {
+            increment(issuesPerEvaluatorCount, usersPerIssue.get(issue));
+        }
+
+        List<Double> histogramData = Lists.newArrayList();
+        int maxEvaluators = Collections.max(issuesPerEvaluatorCount.keySet());
+        int maxIssues = Collections.max(issuesPerEvaluatorCount.values());
+        List<String> barLabels = Lists.newArrayList();
+        for (int evaluators = 1; evaluators <= maxEvaluators; evaluators++) {
+            Integer issuesWithThisManyEvaluators = issuesPerEvaluatorCount.get(evaluators);
+            if (issuesWithThisManyEvaluators == null)
+                issuesWithThisManyEvaluators = 0;
+            histogramData.add(issuesWithThisManyEvaluators * 100.0 / maxIssues);
+            barLabels.add(Integer.toString(evaluators));
+        }
+        BarChart histogram = GCharts.newBarChart(Plots.newBarChartPlot(Data.newData(histogramData)));
+        histogram.setSize(400, 500);
+        histogram.setBarWidth(BarChart.AUTO_RESIZE);
+        histogram.setTitle("Histogram: Evaluators Per Issue");
+        histogram.setDataEncoding(DataEncoding.TEXT);
+        histogram.addXAxisLabels(AxisLabelsFactory.newAxisLabels(barLabels));
+        histogram.addYAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, maxIssues));
+        AxisLabels bigLabel = AxisLabelsFactory.newAxisLabels("No. of evaluators", 50);
+        bigLabel.setAxisStyle(AxisStyle.newAxisStyle(Color.BLACK, 12, AxisTextAlignment.CENTER));
+        histogram.addXAxisLabels(bigLabel);
+        return histogram;
     }
 
     private <E> void increment(Map<E, Integer> map, E key) {

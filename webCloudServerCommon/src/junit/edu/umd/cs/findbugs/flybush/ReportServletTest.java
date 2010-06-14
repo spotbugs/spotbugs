@@ -123,6 +123,44 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         checkParam(url, "chd", "t:42.9,71.4,71.4,100.0|14.3,28.6,28.6,42.9|66.7,100.0,100.0,100.0");
     }
 
+    public void testGraphIssuesByEvaluatorCount() throws Exception {
+        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
+        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
+        DbIssue foundIssue3 = createDbIssue("fad4", persistenceHelper);
+        DbIssue foundIssue4 = createDbIssue("fad5", persistenceHelper);
+        DbIssue foundIssue5 = createDbIssue("fad6", persistenceHelper);
+        DbIssue foundIssue6 = createDbIssue("fad7", persistenceHelper);
+        createEvaluation(foundIssue1, "a", 100);
+        createEvaluation(foundIssue1, "b", 200);
+        createEvaluation(foundIssue1, "c", 300);
+        createEvaluation(foundIssue1, "d", 300);
+        createEvaluation(foundIssue1, "e", 300);
+        createEvaluation(foundIssue1, "e", 300); // duplicate
+
+        createEvaluation(foundIssue2, "f", 300);
+        createEvaluation(foundIssue2, "g", 300);
+        createEvaluation(foundIssue2, "h", 300);
+
+        createEvaluation(foundIssue6, "k", 300);
+        createEvaluation(foundIssue6, "l", 300);
+        createEvaluation(foundIssue6, "m", 300);
+
+        createEvaluation(foundIssue3, "i", 300);
+
+        createEvaluation(foundIssue4, "j", 100);
+
+        createEvaluation(foundIssue5, "j", 100);
+
+        getPersistenceManager().makePersistentAll(foundIssue1, foundIssue2, foundIssue3,
+                                                  foundIssue4, foundIssue5, foundIssue6);
+
+        executeGet("/stats");
+
+        String url = generatedCharts.get(3);
+        checkParam(url, "chxl", "1:|1|2|3|4|5|2:|No. of evaluators");
+        checkParam(url, "chd", "t:100.0,0.0,66.7,0.0,33.3");
+    }
+
     // =============================== end of tests ==================================
     
     private void checkParam(String url, String pname, String expectedValue)
