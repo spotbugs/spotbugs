@@ -47,7 +47,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
 
         executeGet("/stats");
 
-        String url = generatedCharts.get(1);
+        String url = generatedCharts.get(2);
         checkParam(url, "chxl", "0:|someone-else|someone|someone3");
         checkParam(url, "chd", "t:50.0,50.0,25.0|50.0,25.0,0.0");
     }
@@ -66,33 +66,61 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
 
         executeGet("/stats");
 
-        String url = generatedCharts.get(1);
+        String url = generatedCharts.get(2);
         checkParam(url, "chxl", "0:|someone-else|someone|lots");
         checkParam(url, "chd", "t:0.8,0.8,0.8|99.2,0.8,0.0");
     }
 
     public void testGraphEvalsByDate() throws Exception {
-        DbIssue foundIssue = createDbIssue("fad2", persistenceHelper);
+        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
+        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
+        DbIssue foundIssue3 = createDbIssue("fad4", persistenceHelper);
         // week 1
-        createEvaluation(foundIssue, "someone", days(2));
-        createEvaluation(foundIssue, "someone-else", days(2));
-        createEvaluation(foundIssue, "someone", days(3));
+        createEvaluation(foundIssue1, "someone", days(2));
+        createEvaluation(foundIssue1, "someone-else", days(2));
+        createEvaluation(foundIssue1, "someone", days(3));
 
         // week 2
-        createEvaluation(foundIssue, "someone3", days(9));
-        createEvaluation(foundIssue, "someone3", days(10));
+        createEvaluation(foundIssue2, "someone3", days(9));
+        createEvaluation(foundIssue1, "someone3", days(10));
 
         // week 4
-        createEvaluation(foundIssue, "someone3", days(24));
-        createEvaluation(foundIssue, "someone3", days(25));
+        createEvaluation(foundIssue3, "someone3", days(24));
+        createEvaluation(foundIssue1, "someone3", days(25));
 
-        getPersistenceManager().makePersistent(foundIssue);
+        getPersistenceManager().makePersistentAll(foundIssue1, foundIssue2, foundIssue3);
 
         executeGet("/stats");
 
         String url = generatedCharts.get(0);
         checkParam(url, "chxl", "1:|3/21/10|3/28/10|4/4/10|4/11/10");
-        checkParam(url, "chd", "t:100.0,66.7,0.0,66.7");
+        checkParam(url, "chd", "t:100.0,66.7,0.0,66.7|33.3,33.3,0.0,33.3|66.7,33.3,0.0,0.0");
+    }
+
+    public void testCumulativeTimelineGraph() throws Exception {
+        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
+        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
+        DbIssue foundIssue3 = createDbIssue("fad4", persistenceHelper);
+        // week 1
+        createEvaluation(foundIssue1, "someone", days(2));
+        createEvaluation(foundIssue1, "someone-else", days(2));
+        createEvaluation(foundIssue1, "someone", days(3));
+
+        // week 2
+        createEvaluation(foundIssue2, "someone3", days(9));
+        createEvaluation(foundIssue1, "someone3", days(10));
+
+        // week 4
+        createEvaluation(foundIssue3, "someone3", days(24));
+        createEvaluation(foundIssue1, "someone3", days(25));
+
+        getPersistenceManager().makePersistentAll(foundIssue1, foundIssue2, foundIssue3);
+
+        executeGet("/stats");
+
+        String url = generatedCharts.get(1);
+        checkParam(url, "chxl", "2:|3/21/10|3/28/10|4/4/10|4/11/10");
+        checkParam(url, "chd", "t:42.9,71.4,71.4,100.0|14.3,28.6,28.6,42.9|66.7,100.0,100.0,100.0");
     }
 
     // =============================== end of tests ==================================
