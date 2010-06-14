@@ -32,21 +32,24 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
     }
 
     public void testGraphEvalsByUser() throws Exception {
-        DbIssue foundIssue = createDbIssue("fad2", persistenceHelper);
-        createEvaluation(foundIssue, "someone", 100);
-        createEvaluation(foundIssue, "someone-else", 200);
-        createEvaluation(foundIssue, "someone", 300);
-        createEvaluation(foundIssue, "someone3", 300);
-        createEvaluation(foundIssue, "someone3", 300);
-        createEvaluation(foundIssue, "someone3", 300);
-        
-        getPersistenceManager().makePersistent(foundIssue);
+        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
+        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
+        createEvaluation(foundIssue1, "someone", 100);
+        createEvaluation(foundIssue1, "someone-else", 200);
+        createEvaluation(foundIssue2, "someone", 300);
+        createEvaluation(foundIssue2, "someone", 300);
+        createEvaluation(foundIssue1, "someone3", 300);
+        createEvaluation(foundIssue1, "someone3", 300);
+        createEvaluation(foundIssue1, "someone3", 300);
+        createEvaluation(foundIssue2, "someone3", 300);
+
+        getPersistenceManager().makePersistentAll(foundIssue1, foundIssue2);
 
         executeGet("/stats");
 
         String url = generatedCharts.get(1);
-        checkParam(url, "chxl", "0:|someone-else (1)|someone (2)|someone3 (3)");
-        checkParam(url, "chd", "t:100.0,66.7,33.3");
+        checkParam(url, "chxl", "0:|someone-else|someone|someone3");
+        checkParam(url, "chd", "t:50.0,50.0,25.0|50.0,25.0,0.0");
     }
 
     public void testGraphEvalsByUserOver100() throws Exception {
@@ -54,8 +57,6 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         createEvaluation(foundIssue, "someone", 100);
         createEvaluation(foundIssue, "someone-else", 200);
         createEvaluation(foundIssue, "someone", 300);
-
-
 
         for (int i = 0; i < 120; i++) {
             foundIssue.addEvaluation(createEvaluation(foundIssue, "lots", 400));
@@ -66,26 +67,8 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         executeGet("/stats");
 
         String url = generatedCharts.get(1);
-        checkParam(url, "chxl", "0:|someone-else (1)|someone (2)|lots (120)");
-        checkParam(url, "chd", "t:100.0,1.7,0.8");
-    }
-
-    public void testGraphIssuesByUser() throws Exception {
-        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
-        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
-        createEvaluation(foundIssue1, "someone", 100);
-        createEvaluation(foundIssue1, "someone-else", 200);
-        createEvaluation(foundIssue2, "someone", 300);
-        createEvaluation(foundIssue2, "someone", 300);
-        createEvaluation(foundIssue1, "someone-else", 300);
-
-        getPersistenceManager().makePersistentAll(foundIssue1, foundIssue2);
-
-        executeGet("/stats");
-
-        String url = generatedCharts.get(2);
-        checkParam(url, "chxl", "0:|someone-else (1)|someone (2)");
-        checkParam(url, "chd", "t:100.0,50.0");
+        checkParam(url, "chxl", "0:|someone-else|someone|lots");
+        checkParam(url, "chd", "t:0.8,0.8,0.8|99.2,0.8,0.0");
     }
 
     public void testGraphEvalsByDate() throws Exception {

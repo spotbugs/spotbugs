@@ -11,7 +11,6 @@ import com.googlecode.charts4j.BarChart;
 import com.googlecode.charts4j.Color;
 import com.googlecode.charts4j.Data;
 import com.googlecode.charts4j.DataEncoding;
-import com.googlecode.charts4j.Fills;
 import com.googlecode.charts4j.GCharts;
 import com.googlecode.charts4j.Line;
 import com.googlecode.charts4j.LineChart;
@@ -72,21 +71,16 @@ public class ReportServlet extends AbstractFlybushServlet {
             String email = eval.getEmail();
             if (email == null)
                 continue;
+
             issuesByUser.put(email, eval.getIssue().getHash());
-            Integer count = totalCountByUser.get(email);
-            if (count == null) count = 0;
-            totalCountByUser.put(email, count + 1);
+            increment(totalCountByUser, email);
             issueCountByUser.put(email, issuesByUser.get(email).size());
 
             long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
-            Integer oldCount = evalsByWeek.get(beginningOfWeek);
-            evalsByWeek.put(beginningOfWeek, (oldCount == null ? 0 : oldCount) + 1);
+            increment(evalsByWeek, beginningOfWeek);
         }
 
-        BarChart issuesByUserChart = buildByUserChart(issueCountByUser);
-        issuesByUserChart.setTitle("Issues Evaluated by User");
-        BarChart evalsByUserChart = buildByUserChart(totalCountByUser);
-        evalsByUserChart.setTitle("Total Evaluations by User");
+        BarChart evalsByUserChart = buildByUserChart(totalCountByUser, issueCountByUser);
 
         LineChart evalsOverTimeChart = createEvalsByWeekChart(evalsByWeek);
         evalsOverTimeChart.setTitle("Evaluations Submitted");
@@ -99,7 +93,12 @@ public class ReportServlet extends AbstractFlybushServlet {
         showChartImg(resp, evalsOverTimeChart.toURLString());
         resp.getOutputStream().print("<br><br>");
         showChartImg(resp, evalsByUserChart.toURLString());
-        showChartImg(resp, issuesByUserChart.toURLString());
+    }
+
+    private <E> void increment(Map<E, Integer> map, E key) {
+        Integer oldCount = map.get(key);
+        if (oldCount == null) oldCount = 0;
+        map.put(key, oldCount + 1);
     }
 
     private LineChart createEvalsByWeekChart(Map<Long, Integer> evalsByWeek) {
@@ -119,12 +118,13 @@ public class ReportServlet extends AbstractFlybushServlet {
 
         Line line = Plots.newLine(Data.newData(byWeekData));
         line.setFillAreaColor(Color.BEIGE);
-        LineChart evalsOverTimeChart = GCharts.newLineChart(line);
-        evalsOverTimeChart.setDataEncoding(DataEncoding.TEXT);
-        evalsOverTimeChart.setSize(600, 250);
-        evalsOverTimeChart.addYAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, maxPerWeek));
-        evalsOverTimeChart.addXAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
-        return evalsOverTimeChart;
+        LineChart chart = GCharts.newLineChart(line);
+        chart.setDataEncoding(DataEncoding.TEXT);
+        chart.setSize(600, 250);
+        chart.setGrid(100, 10 / (maxPerWeek / 100.0), 4, 1);
+        chart.addYAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, maxPerWeek));
+        chart.addXAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
+        return chart;
     }
 
     private void resetToMidnight(Calendar cal) {
@@ -145,19 +145,28 @@ public class ReportServlet extends AbstractFlybushServlet {
         return weekCal.getTimeInMillis();
     }
 
-    private BarChart buildByUserChart(Map<String, Integer> countByUser) {
-        List<String> labels = new ArrayList<String>();
-        List<Double> values = new ArrayList<Double>();
-        int max = Collections.max(countByUser.values());
-        for (Entry<String, Integer> entry : sortEntries(countByUser.entrySet())) {
+    private BarChart buildByUserChart(Map<String, Integer> totalCountByUser,
+                                      Map<String, Integer> issueCountByUser) {
+        List<String> labels = Lists.newArrayList();
+        List<Double> totals = Lists.newArrayList();
+        List<Double> issues = Lists.newArrayList();
+        int max = Collections.max(totalCountByUser.values());
+        for (Entry<String, Integer> entry : sortEntries(totalCountByUser.entrySet())) {
             String email = entry.getKey();
-            int count = entry.getValue();
-            labels.add(email + " (" + count + ")");
-            values.add(count * 100.0 / max);
+            int issueCount = issueCountByUser.get(email);
+            int evalCount = entry.getValue();
+            labels.add(email);
+            totals.add((evalCount - issueCount) * 100.0 / max);
+            issues.add(issueCount * 100.0 / max);
         }
 
-        Collections.reverse(values);
-        BarChart chart = GCharts.newBarChart(Plots.newBarChartPlot(Data.newData(values)));
+        Collections.reverse(totals);
+        Collections.reverse(issues);
+        BarChart chart = GCharts.newBarChart(Plots.newBarChartPlot(Data.newData(issues), Color.DARKORCHID, "New evals"),
+                                             Plots.newBarChartPlot(Data.newData(totals), Color.ORCHID, "Eval updates"));
+
+        chart.setDataStacked(true);
+        chart.setGrid(20.0 / (max / 100.0), 100, 4, 1);
         chart.addYAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
         chart.addXAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, max));
         chart.setBarWidth(BarChart.AUTO_RESIZE);
