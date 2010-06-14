@@ -31,6 +31,7 @@
           <element id="file-copy" path="$PROJECT_DIR$/webCloudServerCommon/lib/charts4j-1.2.jar" />
           <element id="library" level="module" name="protobuf-java-2.3.0.jar" module-name="webCloudProtocol" />
           <element id="library" level="module" name="wsdl4j-1.5.1.jar" module-name="webCloudClient" />
+          <element id="file-copy" path="$PROJECT_DIR$/webCloudServerCommon/lib/guava-r05.jar" />
         </element>
       </element>
       <element id="javaee-facet-resources" facet="webCloudServerAppEngine/web/Web" />

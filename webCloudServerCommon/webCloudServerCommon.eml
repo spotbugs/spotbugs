@@ -30,4 +30,8 @@
 	<lib name="charts4j-1.2.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/webCloudServerCommon/lib/charts4j-1.2.jar!/"/>
 	</lib>
+	<lib name="C:\Users\Keith\Code\findbugs\webCloudServerCommon\lib\guava-r05.jar" scope="COMPILE">
+		<srcroot url="jar://$CODE_DIR$/Libraries/guava-r05/guava-src-r05.zip!/"/>
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/webCloudServerCommon/lib/guava-r05.jar!/"/>
+	</lib>
 </component>

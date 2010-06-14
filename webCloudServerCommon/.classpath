@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="lib/mockito-all-1.8.2.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/webCloudProtocol"/>
 	<classpathentry kind="lib" path="lib/charts4j-1.2.jar" sourcepath="C:/Users/Keith/Code/Libraries/charts4j-1.2/src"/>
+	<classpathentry exported="true" kind="lib" path="lib/guava-r05.jar" sourcepath="C:/Users/Keith/Code/Libraries/guava-r05/guava-src-r05.zip"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

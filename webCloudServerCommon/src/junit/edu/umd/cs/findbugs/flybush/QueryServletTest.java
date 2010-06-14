@@ -37,7 +37,6 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
     public void testFindIssuesWithEvaluations() throws Exception {
 		DbIssue foundIssue = createDbIssue("fad2", persistenceHelper);
 		DbEvaluation eval = createEvaluation(foundIssue, "someone", 100);
-		foundIssue.addEvaluation(eval);
 
 		// apparently the evaluation is automatically persisted. throws
 		// exception when attempting to persist the eval with the issue.
@@ -54,7 +53,6 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 		DbIssue foundIssue = createDbIssue("fad2", persistenceHelper);
 		DbEvaluation eval = createEvaluation(foundIssue, "someone", 100);
         persistenceHelper.convertToOldStyleForTesting(eval);
-		foundIssue.addEvaluation(eval);
 
 		// apparently the evaluation is automatically persisted. throws
 		// exception when attempting to persist the eval with the issue.
@@ -69,12 +67,9 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 
     public void testFindIssuesOnlyShowsLatestEvaluationFromEachPerson() throws Exception {
 		DbIssue foundIssue = createDbIssue("fad1", persistenceHelper);
-		DbEvaluation eval1 = createEvaluation(foundIssue, "first", 100);
+		createEvaluation(foundIssue, "first", 100);
 		DbEvaluation eval2 = createEvaluation(foundIssue, "second", 200);
 		DbEvaluation eval3 = createEvaluation(foundIssue, "first", 300);
-		foundIssue.addEvaluation(eval1);
-		foundIssue.addEvaluation(eval2);
-		foundIssue.addEvaluation(eval3);
 
 		// apparently the evaluation is automatically persisted. throws
 		// exception when attempting to persist the eval with the issue.
@@ -90,10 +85,9 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
     //TODO: updated bug links should be included in this list!
 	public void testGetRecentEvaluations() throws Exception {
 		DbIssue issue = createDbIssue("fad", persistenceHelper);
-		DbEvaluation eval1 = createEvaluation(issue, "someone1", 100);
+		createEvaluation(issue, "someone1", 100);
 		DbEvaluation eval2 = createEvaluation(issue, "someone2", 200);
 		DbEvaluation eval3 = createEvaluation(issue, "someone3", 300);
-		issue.addEvaluations(eval1, eval2, eval3);
 
         getPersistenceManager().makePersistent(issue);
 
@@ -114,12 +108,11 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 
 	public void testGetRecentEvaluationsOnlyShowsLatestFromEachPerson() throws Exception {
 		DbIssue issue = createDbIssue("fad", persistenceHelper);
-		DbEvaluation eval1 = createEvaluation(issue, "first",  100);
-		DbEvaluation eval2 = createEvaluation(issue, "second", 200);
-		DbEvaluation eval3 = createEvaluation(issue, "first",  300);
+		createEvaluation(issue, "first",  100);
+		createEvaluation(issue, "second", 200);
+		createEvaluation(issue, "first",  300);
 		DbEvaluation eval4 = createEvaluation(issue, "second", 400);
 		DbEvaluation eval5 = createEvaluation(issue, "first",  500);
-		issue.addEvaluations(eval1, eval2, eval3, eval4, eval5);
 
         getPersistenceManager().makePersistent(issue);
 
@@ -140,10 +133,9 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 
 	public void testGetRecentEvaluationsNoneFound() throws Exception {
 		DbIssue issue = createDbIssue("fad", persistenceHelper);
-		DbEvaluation eval1 = createEvaluation(issue, "someone", 100);
-		DbEvaluation eval2 = createEvaluation(issue, "someone", 200);
-		DbEvaluation eval3 = createEvaluation(issue, "someone", 300);
-		issue.addEvaluations(eval1, eval2, eval3);
+		createEvaluation(issue, "someone", 100);
+		createEvaluation(issue, "someone", 200);
+		createEvaluation(issue, "someone", 300);
 
         getPersistenceManager().makePersistent(issue);
 

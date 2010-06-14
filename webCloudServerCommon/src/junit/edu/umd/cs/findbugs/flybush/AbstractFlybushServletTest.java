@@ -140,6 +140,7 @@ public abstract class AbstractFlybushServletTest extends TestCase {
 		}
 	}
 
+    @SuppressWarnings({"unchecked"})
     protected DbEvaluation createEvaluation(DbIssue issue, String who, long when) {
         DbUser user;
         Query query = getPersistenceManager().newQuery("select from " + persistenceHelper.getDbUserClass().getName()
@@ -160,6 +161,7 @@ public abstract class AbstractFlybushServletTest extends TestCase {
         eval.setWhen(when);
         eval.setWho(user.createKeyObject());
         eval.setEmail(who);
+        issue.addEvaluation(eval);
         return eval;
     }
 
