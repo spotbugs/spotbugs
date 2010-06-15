@@ -34,4 +34,8 @@
 		<srcroot url="jar://$CODE_DIR$/Libraries/guava-r05/guava-src-r05.zip!/"/>
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/webCloudServerCommon/lib/guava-r05.jar!/"/>
 	</lib>
+	<lib name="commons-lang" scope="COMPILE">
+		<srcroot url="jar://$CODE_DIR$/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar!/"/>
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/webCloudServerCommon/lib/commons-lang-2.5.jar!/"/>
+	</lib>
 </component>

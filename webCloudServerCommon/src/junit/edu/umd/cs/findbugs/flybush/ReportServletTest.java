@@ -1,5 +1,7 @@
 package edu.umd.cs.findbugs.flybush;
 
+import org.mockito.Mockito;
+
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -160,6 +162,36 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         checkParam(url, "chxl", "1:|1|2|3|4|5|2:|No. of evaluators");
         checkParam(url, "chd", "t:100.0,0.0,66.7,0.0,33.3");
     }
+
+    public void testGraphUserEvalsByDate() throws Exception {
+        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
+        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
+        DbIssue foundIssue3 = createDbIssue("fad4", persistenceHelper);
+        // week 1
+        createEvaluation(foundIssue1, "someone", days(2));
+        createEvaluation(foundIssue1, "someone-else", days(2));
+        createEvaluation(foundIssue1, "someone", days(3));
+
+        // week 2
+        createEvaluation(foundIssue2, "someone3", days(9));
+        createEvaluation(foundIssue1, "someone3", days(10));
+
+        // week 4
+        createEvaluation(foundIssue3, "someone3", days(24));
+        createEvaluation(foundIssue1, "someone3", days(25));
+        createEvaluation(foundIssue2, "someone3", days(25));
+
+        getPersistenceManager().makePersistentAll(foundIssue1, foundIssue2, foundIssue3);
+
+        prepareRequestAndResponse("/stats", null);
+        Mockito.when(mockRequest.getParameter("user")).thenReturn("someone3");
+        servlet.doGet(mockRequest, mockResponse);
+
+        String url = generatedCharts.get(0);
+        checkParam(url, "chxl", "1:|3/28/10|4/4/10|4/11/10");
+        checkParam(url, "chd", "t:66.7,0.0,100.0");
+    }
+
 
     // =============================== end of tests ==================================
     

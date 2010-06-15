@@ -18,8 +18,10 @@ import com.googlecode.charts4j.GCharts;
 import com.googlecode.charts4j.Line;
 import com.googlecode.charts4j.LineChart;
 import com.googlecode.charts4j.Plots;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -30,9 +32,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 public class ReportServlet extends AbstractFlybushServlet {
@@ -55,12 +59,63 @@ public class ReportServlet extends AbstractFlybushServlet {
         }
 	}
 
-    @SuppressWarnings({"unchecked"})
     private void showStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm)
             throws IOException {
-        List<DbEvaluation> evals = (List<DbEvaluation>) pm.newQuery("select from "
-                                                                    + persistenceHelper.getDbEvaluationClass().getName()
-                                                                    + " order by when").execute();
+        if (req.getParameter("user") != null) {
+            showUserStats(resp, pm, req.getParameter("user"));
+        } else {
+            showSummaryStats(resp, pm);
+        }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void showUserStats(HttpServletResponse resp, PersistenceManager pm, String email) throws IOException {
+        Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName()
+                                  + " where email == :email order by when");
+        List<DbEvaluation> evals = (List<DbEvaluation>) query.execute(email);
+        if (evals.isEmpty()) {
+            setResponse(resp, 404, "No such user");
+        }
+        Map<Long, Integer> evalsPerWeek = Maps.newHashMap();
+        for (DbEvaluation eval : evals) {
+            long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
+            increment(evalsPerWeek, beginningOfWeek);
+        }
+        query.closeAll();
+
+        int maxEvalsPerWeek = Collections.max(evalsPerWeek.values());
+        List<Double> data = Lists.newArrayList();
+        List<String> labels = Lists.newArrayList();
+        for (Calendar cal : iterateByWeek(evalsPerWeek.keySet())) {
+            Integer evalsThisWeek = evalsPerWeek.get(cal.getTimeInMillis());
+            if (evalsThisWeek == null)
+                evalsThisWeek = 0;
+            data.add(evalsThisWeek * 100.0 / maxEvalsPerWeek);
+            labels.add(DATE_FORMAT.format(new Date(cal.getTimeInMillis())));
+        }
+
+        LineChart chart = GCharts.newLineChart(Plots.newLine(Data.newData(data)));
+        chart.addXAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
+        chart.addYAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, maxEvalsPerWeek));
+        chart.setTitle("Evaluations over Time - " + email);
+        chart.setDataEncoding(DataEncoding.TEXT);
+        chart.setSize(800, 350);
+
+        resp.setStatus(200);
+        resp.getOutputStream().print(
+                "<html>" +
+                "<head><title>" + StringEscapeUtils.escapeHtml(email) + " - FindBugs Cloud Stats</title></head>" +
+                "<body>");
+
+        showChartImg(resp, chart.toURLString());
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void showSummaryStats(HttpServletResponse resp, PersistenceManager pm) throws IOException {
+        Query query = pm.newQuery("select from "
+                                  + persistenceHelper.getDbEvaluationClass().getName()
+                                  + " order by when");
+        List<DbEvaluation> evals = (List<DbEvaluation>) query.execute();
         Map<String,Integer> totalCountByUser = Maps.newHashMap();
         Map<String,Integer> issueCountByUser = Maps.newHashMap();
         Multimap<String, String> issuesByUser = Multimaps.newSetMultimap(Maps.<String, Collection<String>>newHashMap(),
@@ -92,6 +147,7 @@ public class ReportServlet extends AbstractFlybushServlet {
             seenUsers.add(email);
             userCountByWeek.put(beginningOfWeek, seenUsers.size());
         }
+        query.closeAll();
 
         // build charts
         BarChart histogram = buildEvaluatorsHistogram(issuesByUser);
@@ -165,17 +221,13 @@ public class ReportServlet extends AbstractFlybushServlet {
                                           Map<Long, Integer> userCountByWeek) {
         int maxEvalsPerWeek = Collections.max(evalsByWeek.values());
 
-        long first = Collections.min(evalsByWeek.keySet());
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(first);
-        long last = Collections.max(evalsByWeek.keySet());
         List<Double> evalsData = new ArrayList<Double>();
         List<Double> userCountData = new ArrayList<Double>();
         List<Double> newIssuesData = Lists.newArrayList();
         List<String> timelineLabels = Lists.newArrayList();
         int issuesCount = 0;
         int userCount = 0;
-        for (; cal.getTimeInMillis() <= last; cal.add(Calendar.DAY_OF_MONTH, 7)) {
+        for (Calendar cal : iterateByWeek(evalsByWeek.keySet())) {
             Integer evalsThisWeek = evalsByWeek.get(cal.getTimeInMillis());
             Integer issuesThisWeek = issueCountByWeek.get(cal.getTimeInMillis());
             int newIssuesThisWeek;
@@ -229,10 +281,6 @@ public class ReportServlet extends AbstractFlybushServlet {
         }
         int totalUsers = Collections.max(userCountByWeek.values());
 
-        long first = Collections.min(evalsByWeek.keySet());
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(first);
-        long last = Collections.max(evalsByWeek.keySet());
         List<Double> issuesData = Lists.newArrayList();
         List<Double> evalsData = Lists.newArrayList();
         List<Double> usersData = Lists.newArrayList();
@@ -240,7 +288,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         int issuesCount = 0;
         int userCount = 0;
         int evalCount = 0;
-        for (; cal.getTimeInMillis() <= last; cal.add(Calendar.DAY_OF_MONTH, 7)) {
+        for (Calendar cal : iterateByWeek(evalsByWeek.keySet())) {
             long time = cal.getTimeInMillis();
             Integer issuesThisWeek = issueCountByWeek.get(time);
             if (issuesThisWeek != null)
@@ -264,7 +312,6 @@ public class ReportServlet extends AbstractFlybushServlet {
         issuesLine.setFillAreaColor(Color.ORCHID);
 
         Line usersLine = Plots.newLine(Data.newData(usersData), Color.LIGHTSTEELBLUE, "Total Users");
-//        issuesLine.setFillAreaColor(Color.LIGHTB);
 
         LineChart chart = GCharts.newLineChart(evalsLine, issuesLine, usersLine);
         chart.setTitle("Growth Over Time");
@@ -282,6 +329,37 @@ public class ReportServlet extends AbstractFlybushServlet {
         rightLabels.setAxisStyle(AxisStyle.newAxisStyle(Color.STEELBLUE, 10, AxisTextAlignment.LEFT));
         chart.addRightAxisLabels(rightLabels);
         return chart;
+    }
+
+    private Iterable<Calendar> iterateByWeek(Set<Long> unixtimes) {
+        final long first = Collections.min(unixtimes);
+        final long last = Collections.max(unixtimes);
+        return new Iterable<Calendar>() {
+            public Iterator<Calendar> iterator() {
+                return new Iterator<Calendar>() {
+                    private Calendar cal = Calendar.getInstance();
+                    {
+                        cal.setTimeInMillis(first);
+                    }
+
+                    public boolean hasNext() {
+                        return cal.getTimeInMillis() <= last;
+                    }
+
+                    public Calendar next() {
+                        if (!hasNext())
+                            throw new NoSuchElementException();
+                        Calendar toReturn = (Calendar) cal.clone();
+                        cal.add(Calendar.DAY_OF_MONTH, 7);
+                        return toReturn;
+                    }
+
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        };
     }
 
     private void resetToMidnight(Calendar cal) {

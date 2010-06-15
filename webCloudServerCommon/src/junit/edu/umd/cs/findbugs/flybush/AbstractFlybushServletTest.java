@@ -27,7 +27,7 @@ public abstract class AbstractFlybushServletTest extends TestCase {
 	protected HttpServletResponse mockResponse;
 	protected ByteArrayOutputStream outputCollector;
 
-    private AbstractFlybushServlet servlet;
+    protected AbstractFlybushServlet servlet;
     protected AuthServlet authServlet;
 	protected HttpServletRequest mockRequest;
     protected PersistenceHelper persistenceHelper;
@@ -127,7 +127,7 @@ public abstract class AbstractFlybushServletTest extends TestCase {
     // ================================ end of helper methods ===============================
 
 
-	private void prepareRequestAndResponse(String requestUri, byte[] input)
+	protected void prepareRequestAndResponse(String requestUri, byte[] input)
 			throws IOException {
 		Mockito.when(mockRequest.getRequestURI()).thenReturn(requestUri);
 		if (input != null) {
