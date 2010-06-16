@@ -120,6 +120,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 	}
 	public static void main(String[] args) throws Exception {
 
+		FindBugs.setNoAnalysis();
 		PrintingBugReporter reporter = new PrintingBugReporter();
 		PrintingCommandLine commandLine = reporter.new PrintingCommandLine();
 
