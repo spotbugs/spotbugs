@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="webCloudServerAppEngine">
-    <output-path>$CODE_DIR$/findbugswebCloudServerAppEngine/out/artifacts/webCloudServerAppEngine</output-path>
+    <output-path>$PROJECT_DIR$/webCloudServerAppEngine/out/artifacts/webCloudServerAppEngine</output-path>
     <root id="root">
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
@@ -33,6 +33,7 @@
           <element id="library" level="module" name="wsdl4j-1.5.1.jar" module-name="webCloudClient" />
           <element id="file-copy" path="$PROJECT_DIR$/webCloudServerCommon/lib/guava-r05.jar" />
           <element id="library" level="module" name="commons-lang" module-name="webCloudServerCommon" />
+          <element id="library" level="module" name="commons-lang-2.5.jar" module-name="webCloudServerCommon" />
         </element>
       </element>
       <element id="javaee-facet-resources" facet="webCloudServerAppEngine/web/Web" />
