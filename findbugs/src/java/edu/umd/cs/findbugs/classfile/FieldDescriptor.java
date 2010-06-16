@@ -41,4 +41,9 @@ public class FieldDescriptor
 		super(className, fieldName, fieldSignature, isStatic);
 	}
 	
+	@Override
+	public String toString() {
+		return (isStatic() ? "static " : "") + getClassDescriptor().getDottedClassName() + "." + getName() + " " + getSignature();
+	}
+	
 }
