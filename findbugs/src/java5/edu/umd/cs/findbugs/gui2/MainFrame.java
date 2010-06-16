@@ -522,11 +522,14 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	}
 
 	@SwingThread
-	private void setProjectAndBugCollection(Project project, @CheckForNull BugCollection bugCollection) {
-		Filter suppressionMatcher = project.getSuppressionFilter();
-		if (suppressionMatcher != null) {
-			suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
+	private void setProjectAndBugCollection(@CheckForNull Project project, @CheckForNull BugCollection bugCollection) {
+		if (project != null) {
+			Filter suppressionMatcher = project.getSuppressionFilter();
+			if (suppressionMatcher != null) {
+				suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
+			}
 		}
+		
 		if (this.bugCollection != bugCollection && this.bugCollection != null) {
         	
         	Cloud plugin = this.bugCollection.getCloud();
