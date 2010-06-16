@@ -2,10 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/sandbox/appEngineCloudClient/AppEngineCloudClient.iml" filepath="$PROJECT_DIR$/sandbox/appEngineCloudClient/AppEngineCloudClient.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sandbox/appEngineCloudProtocol/AppEngineCloudProtocol.iml" filepath="$PROJECT_DIR$/sandbox/appEngineCloudProtocol/AppEngineCloudProtocol.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sandbox/appEngineCloud/AppEngineCloudServer.iml" filepath="$PROJECT_DIR$/sandbox/appEngineCloud/AppEngineCloudServer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sandbox/cloudServlet/cloudServlet.iml" filepath="$PROJECT_DIR$/sandbox/cloudServlet/cloudServlet.iml" />
       <module fileurl="file://$PROJECT_DIR$/findbugs/findbugs.iml" filepath="$PROJECT_DIR$/findbugs/findbugs.iml" />
       <module fileurl="file://$PROJECT_DIR$/findbugsTestCases/findbugsTestCases.iml" filepath="$PROJECT_DIR$/findbugsTestCases/findbugsTestCases.iml" />
       <module fileurl="file://$PROJECT_DIR$/sandbox/localCloud/localCloud.iml" filepath="$PROJECT_DIR$/sandbox/localCloud/localCloud.iml" />

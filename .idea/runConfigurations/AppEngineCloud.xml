@@ -3,7 +3,7 @@
     <option name="OPEN_IN_BROWSER" value="false" />
     <option name="OPEN_IN_BROWSER_URL" value="http://127.0.0.1:8080" />
     <option name="COMMON_VM_ARGUMENTS" value="-ea" />
-    <option name="UPDATING_POLICY" value="hot-swap-classes" />
+    <option name="UPDATING_POLICY" value="update-resources" />
     <server-settings>
       <option name="artifact" value="webCloudServerAppEngine" />
       <option name="serverParameters" value="-a 127.0.0.1" />

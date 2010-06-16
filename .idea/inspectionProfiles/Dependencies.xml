@@ -126,7 +126,8 @@
     <inspection_tool class="FinalPrivateMethod" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="FinalStaticMethod" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="FinalizeCallsSuperFinalize" enabled="false" level="WARNING" enabled_by_default="false">
-      <option name="m_ignoreForObjectSubclasses" value="false" />
+      <option name="ignoreObjectSubclasses" value="false" />
+      <option name="ignoreTrivialFinalizers" value="true" />
     </inspection_tool>
     <inspection_tool class="FinallyBlockCannotCompleteNormally" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ForCanBeForeach" enabled="false" level="WARNING" enabled_by_default="false">
@@ -476,7 +477,6 @@
         </value>
       </option>
       <option name="ADD_EJB_TO_ENTRIES" value="true" />
-      <option name="ADD_TESTNG_TO_ENTRIES" value="true" />
       <option name="ADD_JUNIT_TO_ENTRIES" value="true" />
     </inspection_tool>
     <inspection_tool class="UnusedLabel" enabled="false" level="WARNING" enabled_by_default="false" />

@@ -1,0 +1,13 @@
+<atlassian-ide-plugin>
+  <project-configuration>
+    <servers>
+      <jira>
+        <server-id>11bfdd1b-d886-4df8-a72b-652e3b8c2c86</server-id>
+        <name>FindBugs Demo JIRA</name>
+        <url>http://localhost:8080</url>
+        <dontUseBasicAuth>false</dontUseBasicAuth>
+      </jira>
+    </servers>
+    <default-jira-server>11bfdd1b-d886-4df8-a72b-652e3b8c2c86</default-jira-server>
+  </project-configuration>
+</atlassian-ide-plugin>
