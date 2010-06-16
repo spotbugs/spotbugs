@@ -338,6 +338,9 @@ public class PluginLoader {
 			String cloudid = cloudNode.valueOf("@id");
 			String usernameClassname =  cloudNode.valueOf("@usernameClass");
 			String propertiesLocation = cloudNode.valueOf("@properties");
+			boolean disabled = Boolean.valueOf(cloudNode.valueOf("@disabled"));
+			if (disabled)
+				continue;
 			Class<? extends Cloud> cloudClass = getClass(classLoader, cloudClassname, Cloud.class);
 			
 			Class<? extends NameLookup> usernameClass = getClass(classLoader, usernameClassname, NameLookup.class);
