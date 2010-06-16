@@ -15,6 +15,7 @@
   <Cloud id="edu.umd.cs.findbugs.cloud.appengine.theflybush"				
 	 cloudClass="edu.umd.cs.findbugs.cloud.appEngine.AppEngineCloudClient"
 	 usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup"
+         disabled="true"
 	>
        <Property key="appengine.host">http://theflybush.appspot.com</Property>
 </Cloud>
