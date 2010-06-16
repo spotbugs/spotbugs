@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -189,9 +190,45 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
 
         String url = generatedCharts.get(0);
         checkParam(url, "chxl", "1:|3/28/10|4/4/10|4/11/10");
-        checkParam(url, "chd", "t:66.7,0.0,100.0");
+        checkParam(url, "chd", "t:66.7,0.0,100.0|66.7,0.0,33.3");
     }
 
+    public void testUserSelectionComboBox() throws Exception {
+        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
+        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
+        DbIssue foundIssue3 = createDbIssue("fad4", persistenceHelper);
+        // week 1
+        createEvaluation(foundIssue1, "someone", days(2));
+        createEvaluation(foundIssue1, "someone-else", days(2));
+        createEvaluation(foundIssue1, "someone", days(3));
+
+        // week 2
+        createEvaluation(foundIssue2, "someone3", days(9));
+        createEvaluation(foundIssue1, "someone3", days(10));
+
+        // week 4
+        createEvaluation(foundIssue3, "someone3", days(24));
+        createEvaluation(foundIssue1, "someone3", days(25));
+        createEvaluation(foundIssue2, "someone3", days(25));
+
+        getPersistenceManager().makePersistentAll(foundIssue1, foundIssue2, foundIssue3);
+
+        executeGet("/stats");
+
+        // list of recent evals
+        // upload project name, invocation end time
+        // store invocation per issue
+        // remove comment field
+        
+
+        int last = 0;
+        String page = outputCollector.toString();
+        for (String email : Arrays.asList("someone", "someone-else", "someone3")) {
+            last = page.indexOf("<option value=\"" + email + "\">" + email + "</option>", last);
+            assertTrue("could not find combo box item for " + email + ": " + page,
+                       last != -1);
+        }
+    }
 
     // =============================== end of tests ==================================
     

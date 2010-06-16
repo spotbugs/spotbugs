@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -62,14 +63,15 @@ public class ReportServlet extends AbstractFlybushServlet {
     private void showStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm)
             throws IOException {
         if (req.getParameter("user") != null) {
-            showUserStats(resp, pm, req.getParameter("user"));
+            showUserStats(req, resp, pm, req.getParameter("user"));
         } else {
-            showSummaryStats(resp, pm);
+            showSummaryStats(req, resp, pm);
         }
     }
 
     @SuppressWarnings({"unchecked"})
-    private void showUserStats(HttpServletResponse resp, PersistenceManager pm, String email) throws IOException {
+    private void showUserStats(HttpServletRequest req, HttpServletResponse resp,
+                               PersistenceManager pm, String email) throws IOException {
         Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName()
                                   + " where email == :email order by when");
         List<DbEvaluation> evals = (List<DbEvaluation>) query.execute(email);
@@ -77,24 +79,45 @@ public class ReportServlet extends AbstractFlybushServlet {
             setResponse(resp, 404, "No such user");
         }
         Map<Long, Integer> evalsPerWeek = Maps.newHashMap();
+        Set<String> seenIssues = Sets.newHashSet();
+        Map<Long,Integer> newIssuesByWeek = Maps.newHashMap();
         for (DbEvaluation eval : evals) {
             long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
             increment(evalsPerWeek, beginningOfWeek);
+            if (seenIssues.add(eval.getIssue().getHash()))
+                increment(newIssuesByWeek, beginningOfWeek);
         }
         query.closeAll();
 
+        Query userQuery = pm.newQuery("select from " + persistenceHelper.getDbUserClass().getName());
+        List<DbUser> userObjs = (List<DbUser>) userQuery.execute();
+        Set<String> users = Sets.newHashSet();
+        for (DbUser userObj : userObjs) {
+            users.add(userObj.getEmail());
+        }
+        userQuery.closeAll();
+
         int maxEvalsPerWeek = Collections.max(evalsPerWeek.values());
-        List<Double> data = Lists.newArrayList();
+        List<Double> evalsData = Lists.newArrayList();
         List<String> labels = Lists.newArrayList();
+        List<Double> newIssuesData = Lists.newArrayList();
         for (Calendar cal : iterateByWeek(evalsPerWeek.keySet())) {
             Integer evalsThisWeek = evalsPerWeek.get(cal.getTimeInMillis());
             if (evalsThisWeek == null)
                 evalsThisWeek = 0;
-            data.add(evalsThisWeek * 100.0 / maxEvalsPerWeek);
+            Integer newIssuesThisWeek = newIssuesByWeek.get(cal.getTimeInMillis());
+            if (newIssuesThisWeek == null)
+                newIssuesThisWeek = 0;
+            evalsData.add(evalsThisWeek * 100.0 / maxEvalsPerWeek);
+            newIssuesData.add(newIssuesThisWeek * 100.0 / maxEvalsPerWeek);
             labels.add(DATE_FORMAT.format(new Date(cal.getTimeInMillis())));
         }
 
-        LineChart chart = GCharts.newLineChart(Plots.newLine(Data.newData(data)));
+        Line evalsLine = Plots.newLine(Data.newData(evalsData), Color.LIGHTPINK, "Updated evaluations");
+        evalsLine.setFillAreaColor(Color.LIGHTPINK);
+        Line issuesLine = Plots.newLine(Data.newData(newIssuesData), Color.ORCHID, "Initial evaluations");
+        issuesLine.setFillAreaColor(Color.ORCHID);
+        LineChart chart = GCharts.newLineChart(evalsLine, issuesLine);
         chart.addXAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
         chart.addYAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, maxEvalsPerWeek));
         chart.setTitle("Evaluations over Time - " + email);
@@ -107,11 +130,13 @@ public class ReportServlet extends AbstractFlybushServlet {
                 "<head><title>" + StringEscapeUtils.escapeHtml(email) + " - FindBugs Cloud Stats</title></head>" +
                 "<body>");
 
+        printUserStatsSelector(req, resp, users, email);
+
         showChartImg(resp, chart.toURLString());
     }
 
     @SuppressWarnings({"unchecked"})
-    private void showSummaryStats(HttpServletResponse resp, PersistenceManager pm) throws IOException {
+    private void showSummaryStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
         Query query = pm.newQuery("select from "
                                   + persistenceHelper.getDbEvaluationClass().getName()
                                   + " order by when");
@@ -161,16 +186,39 @@ public class ReportServlet extends AbstractFlybushServlet {
         // print results
         resp.setStatus(200);
 
-        resp.getOutputStream().print("<html>" +
-                                     "<head><title>FindBugs Cloud Stats</title></head>" +
-                                     "<body>");
+        ServletOutputStream page = resp.getOutputStream();
+        page.println("<html>" +
+                     "<head><title>FindBugs Cloud Stats</title></head>" +
+                     "<body>");
         showChartImg(resp, evalsOverTimeChart.toURLString());
-        resp.getOutputStream().print("<br><br>");
+        page.println("<br><br>");
         showChartImg(resp, cumulativeTimeline.toURLString());
-        resp.getOutputStream().print("<br><br>");
+        page.println("<br><br>");
+
+        printUserStatsSelector(req, resp, seenUsers, null);
+
         showChartImg(resp, evalsByUserChart.toURLString());
-        resp.getOutputStream().print("<br><br>");
+        page.println("<br><br>");
         showChartImg(resp, histogram.toURLString());
+    }
+
+    private void printUserStatsSelector(HttpServletRequest req, HttpServletResponse resp,
+                                        Collection<String> seenUsers, String selectedEmail) throws IOException {
+        ServletOutputStream page = resp.getOutputStream();
+        page.println("User stats:" +
+                     "<form action=\"" + req.getRequestURI() + "\" method=get>\n" +
+                     "<select name=user>\n" +
+                     "<option value=\"\"></option>");
+        List<String> seenUsersList = Lists.newArrayList(seenUsers);
+        Collections.sort(seenUsersList);
+        for (String email : seenUsersList) {
+            String escaped = StringEscapeUtils.escapeHtml(email);
+            page.println("<option value=\"" + escaped + "\" " + (email.equals(selectedEmail) ? "selected" : "") + ">"
+                         + escaped + "</option>");
+        }
+        page.println("</select>\n" +
+                     "<input type=submit value=Submit>\n" +
+                     "</form>");
     }
 
     private BarChart buildEvaluatorsHistogram(Multimap<String, String> issuesByUser) {
