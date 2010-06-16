@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<datastore-indexes autoGenerate="true">
+    <datastore-index kind="AppEngineDbEvaluation" ancestor="false" source="auto">
+        <property name="email" direction="asc"/>
+        <property name="when" direction="asc"/>
+    </datastore-index>
+</datastore-indexes>
