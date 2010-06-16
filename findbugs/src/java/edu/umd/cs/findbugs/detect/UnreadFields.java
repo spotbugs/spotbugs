@@ -243,8 +243,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 		allMyFields.add(f);
 		String signature = obj.getSignature();
 		int flags = obj.getAccessFlags();
-		if ((flags & doNotConsider) == 0
-				&& !getFieldName().equals("serialVersionUID")) {
+		if (!getFieldName().equals("serialVersionUID")) {
 
 			myFields.add(f);
 			if (obj.getName().equals("_jspx_dependants"))
@@ -709,7 +708,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 			ClassDescriptor classDescriptor = f.getClassDescriptor();
 			if (currentAnalysisContext.isApplicationClass(classDescriptor) 
 					&& !currentAnalysisContext.isTooBig(classDescriptor) 
-					&& !xFactory.isReflectiveClass(classDescriptor)  && !f.isProtected() && !f.isPublic())
+					&& !xFactory.isReflectiveClass(classDescriptor) )
 				declaredFields.add(f);
 		}
 		// Don't report anything about ejb3Fields
@@ -826,6 +825,8 @@ public class UnreadFields extends OpcodeStackDetector  {
 				if (!(fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '['))
 					priority++;
 				if (maxCount.containsKey(f)) priority++;
+				if (f.isProtected() || f.isPublic())
+					priority--;
 				bugReporter.reportBug(addClassFieldAndAccess(new BugInstance(this,
 						"UWF_UNWRITTEN_FIELD",
 						priority),f));
