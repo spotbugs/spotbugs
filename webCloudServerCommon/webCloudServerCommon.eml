@@ -14,6 +14,17 @@
 	<lib name="dyuproject-openid-1.1.6.jar" scope="COMPILE">
 		<srcroot url="jar://$CODE_DIR$/Libraries/guava-r05/guava-src-r05.zip!/"/>
 		<srcroot url="jar://$CODE_DIR$/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar!/"/>
+		<srcroot url="file://$CODE_DIR$/Libraries/dyuproject-1.1.6/modules/json/src/test/java"/>
+		<srcroot url="file://$CODE_DIR$/Libraries/dyuproject-1.1.6/modules/web/src/main/java"/>
+		<srcroot url="file://$CODE_DIR$/Libraries/dyuproject-1.1.6/modules/openid/src/main/java"/>
+		<srcroot url="file://$CODE_DIR$/Libraries/dyuproject-1.1.6/modules/util/src/test/java"/>
+		<srcroot url="file://$CODE_DIR$/Libraries/dyuproject-1.1.6/modules/ioc/src/test/java"/>
+		<srcroot url="file://$CODE_DIR$/Libraries/dyuproject-1.1.6/modules/ioc/src/main/java"/>
+		<srcroot url="file://$CODE_DIR$/Libraries/dyuproject-1.1.6/modules/oauth/src/test/java"/>
+		<srcroot url="file://$CODE_DIR$/Libraries/dyuproject-1.1.6/modules/util/src/main/java"/>
+		<srcroot url="file://$CODE_DIR$/Libraries/dyuproject-1.1.6/modules/openid/src/test/java"/>
+		<srcroot url="file://$CODE_DIR$/Libraries/dyuproject-1.1.6/modules/oauth/src/main/java"/>
+		<srcroot url="file://$CODE_DIR$/Libraries/dyuproject-1.1.6/modules/json/src/main/java"/>
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/webCloudServerCommon/lib/dyuproject-openid-1.1.6.jar!/"/>
 	</lib>
 	<lib name="dyuproject-util-1.1.6.jar" scope="COMPILE">

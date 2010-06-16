@@ -80,7 +80,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         }
         Map<Long, Integer> evalsPerWeek = Maps.newHashMap();
         Set<String> seenIssues = Sets.newHashSet();
-        Map<Long,Integer> newIssuesByWeek = Maps.newHashMap();
+        Map<Long, Integer> newIssuesByWeek = Maps.newHashMap();
         for (DbEvaluation eval : evals) {
             long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
             increment(evalsPerWeek, beginningOfWeek);
@@ -96,7 +96,25 @@ public class ReportServlet extends AbstractFlybushServlet {
             users.add(userObj.getEmail());
         }
         userQuery.closeAll();
+        LineChart chart = null;
+        if (!evalsPerWeek.isEmpty())
+            chart = buildUserTimeline(email, evalsPerWeek, newIssuesByWeek);
 
+        resp.setStatus(200);
+        resp.getOutputStream().print(
+                "<html>" +
+                "<head><title>" + StringEscapeUtils.escapeHtml(email) + " - FindBugs Cloud Stats</title></head>" +
+                "<body>");
+
+        printUserStatsSelector(req, resp, users, email);
+
+        if (chart != null)
+            showChartImg(resp, chart.toURLString());
+        else
+            resp.getOutputStream().println("Oops! No evaluations uploaded by " + StringEscapeUtils.escapeHtml(email));
+    }
+
+    private LineChart buildUserTimeline(String email, Map<Long, Integer> evalsPerWeek, Map<Long, Integer> newIssuesByWeek) {
         int maxEvalsPerWeek = Collections.max(evalsPerWeek.values());
         List<Double> evalsData = Lists.newArrayList();
         List<String> labels = Lists.newArrayList();
@@ -123,20 +141,12 @@ public class ReportServlet extends AbstractFlybushServlet {
         chart.setTitle("Evaluations over Time - " + email);
         chart.setDataEncoding(DataEncoding.TEXT);
         chart.setSize(800, 350);
-
-        resp.setStatus(200);
-        resp.getOutputStream().print(
-                "<html>" +
-                "<head><title>" + StringEscapeUtils.escapeHtml(email) + " - FindBugs Cloud Stats</title></head>" +
-                "<body>");
-
-        printUserStatsSelector(req, resp, users, email);
-
-        showChartImg(resp, chart.toURLString());
+        return chart;
     }
 
     @SuppressWarnings({"unchecked"})
-    private void showSummaryStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
+    private void showSummaryStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm)
+            throws IOException {
         Query query = pm.newQuery("select from "
                                   + persistenceHelper.getDbEvaluationClass().getName()
                                   + " order by when");
@@ -213,8 +223,8 @@ public class ReportServlet extends AbstractFlybushServlet {
         Collections.sort(seenUsersList);
         for (String email : seenUsersList) {
             String escaped = StringEscapeUtils.escapeHtml(email);
-            page.println("<option value=\"" + escaped + "\" " + (email.equals(selectedEmail) ? "selected" : "") + ">"
-                         + escaped + "</option>");
+            page.println(String.format("<option value=\"%s\"%s>%s</option>",
+                                       escaped, email.equals(selectedEmail) ? " selected" : "", escaped));
         }
         page.println("</select>\n" +
                      "<input type=submit value=Submit>\n" +
@@ -380,8 +390,13 @@ public class ReportServlet extends AbstractFlybushServlet {
     }
 
     private Iterable<Calendar> iterateByWeek(Set<Long> unixtimes) {
-        final long first = Collections.min(unixtimes);
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(Collections.min(unixtimes));
+        cal.add(Calendar.DAY_OF_MONTH, -7); // one week prior
+
+        final long first = cal.getTimeInMillis();
         final long last = Collections.max(unixtimes);
+        
         return new Iterable<Calendar>() {
             public Iterator<Calendar> iterator() {
                 return new Iterator<Calendar>() {

@@ -96,8 +96,8 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         executeGet("/stats");
 
         String url = generatedCharts.get(0);
-        checkParam(url, "chxl", "1:|3/21/10|3/28/10|4/4/10|4/11/10");
-        checkParam(url, "chd", "t:100.0,66.7,0.0,66.7|33.3,33.3,0.0,33.3|66.7,33.3,0.0,0.0");
+        checkParam(url, "chxl", "1:|3/14/10|3/21/10|3/28/10|4/4/10|4/11/10");
+        checkParam(url, "chd", "t:0.0,100.0,66.7,0.0,66.7|0.0,33.3,33.3,0.0,33.3|0.0,66.7,33.3,0.0,0.0");
     }
 
     public void testCumulativeTimelineGraph() throws Exception {
@@ -122,8 +122,8 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         executeGet("/stats");
 
         String url = generatedCharts.get(1);
-        checkParam(url, "chxl", "2:|3/21/10|3/28/10|4/4/10|4/11/10");
-        checkParam(url, "chd", "t:42.9,71.4,71.4,100.0|14.3,28.6,28.6,42.9|66.7,100.0,100.0,100.0");
+        checkParam(url, "chxl", "2:|3/14/10|3/21/10|3/28/10|4/4/10|4/11/10");
+        checkParam(url, "chd", "t:0.0,42.9,71.4,71.4,100.0|0.0,14.3,28.6,28.6,42.9|0.0,66.7,100.0,100.0,100.0");
     }
 
     public void testGraphIssuesByEvaluatorCount() throws Exception {
@@ -189,8 +189,28 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         servlet.doGet(mockRequest, mockResponse);
 
         String url = generatedCharts.get(0);
-        checkParam(url, "chxl", "1:|3/28/10|4/4/10|4/11/10");
-        checkParam(url, "chd", "t:66.7,0.0,100.0|66.7,0.0,33.3");
+        checkParam(url, "chxl", "1:|3/21/10|3/28/10|4/4/10|4/11/10");
+        checkParam(url, "chd", "t:0.0,66.7,0.0,100.0|0.0,66.7,0.0,33.3");
+    }
+
+    public void testGraphUserEvalsByDateJustOneWeek() throws Exception {
+        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
+        // week 1
+        createEvaluation(foundIssue1, "someone", days(2));
+        createEvaluation(foundIssue1, "someone2", days(2));
+
+        // week 2
+        createEvaluation(foundIssue1, "someone2", days(9));
+
+        getPersistenceManager().makePersistentAll(foundIssue1);
+
+        prepareRequestAndResponse("/stats", null);
+        Mockito.when(mockRequest.getParameter("user")).thenReturn("someone");
+        servlet.doGet(mockRequest, mockResponse);
+
+        String url = generatedCharts.get(0);
+        checkParam(url, "chxl", "1:|3/14/10|3/21/10");
+        checkParam(url, "chd", "t:0.0,100.0|0.0,100.0");
     }
 
     public void testUserSelectionComboBox() throws Exception {

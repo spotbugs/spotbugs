@@ -4,7 +4,7 @@
 	<classpathentry kind="src" path="src/junit"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/jetty-util-6.1.19.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dyuproject-openid-1.1.6.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dyuproject-openid-1.1.6.jar" sourcepath="C:/Users/Keith/Code/Libraries/dyuproject-1.1.6/modules/json/src/main/java"/>
 	<classpathentry exported="true" kind="lib" path="lib/dyuproject-util-1.1.6.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/servlet-api-2.5-20081211.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jdo2-api-2.3-eb.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
