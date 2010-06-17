@@ -93,7 +93,7 @@ public class SigninStatusBox extends Composite {
 			}
 		});
 
-	    if (state == SigninState.NOT_SIGNED_IN_YET || state == SigninState.SIGNED_OUT
+	    if (state == SigninState.UNAUTHENTICATED || state == SigninState.SIGNED_OUT
 	    		|| state == SigninState.SIGNIN_FAILED) {
 		    MenuItem signInItem = new MenuItem(popupMenu, SWT.NONE);
 		    signInItem.setText("Sign in");
