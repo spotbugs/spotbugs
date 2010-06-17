@@ -105,7 +105,7 @@ public abstract class AbstractCloud implements Cloud {
 
 	private Mode mode = Mode.COMMUNAL;
 	private String statusMsg;
-	private SigninState signinState = SigninState.NOT_SIGNED_IN_YET;
+	private SigninState signinState = SigninState.UNAUTHENTICATED;
 
 	protected AbstractCloud(CloudPlugin plugin, BugCollection bugs, Properties properties) {
 		this.plugin = plugin;

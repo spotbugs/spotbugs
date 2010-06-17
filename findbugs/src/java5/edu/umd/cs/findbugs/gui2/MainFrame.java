@@ -2077,47 +2077,52 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
         signedInLabel = new JLabel();
         signedInLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         signedInLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                JPopupMenu menu = new JPopupMenu();
-                SigninState signinState = bugCollection.getCloud().getSigninState();
-                boolean isSignedIn = signinState == Cloud.SigninState.SIGNED_IN;
-                final JCheckBoxMenuItem signInAuto = new JCheckBoxMenuItem("Sign in automatically");
-                signInAuto.setToolTipText("Saves your Cloud session for the next time you run FindBugs. " +
-                                          "No personal information or passwords are saved.");
-                signInAuto.setSelected(bugCollection.getCloud().isSavingSignInInformationEnabled());
-                signInAuto.setEnabled(isSignedIn);
-                signInAuto.addChangeListener(new ChangeListener() {
-                    public void stateChanged(ChangeEvent e) {
-                        boolean checked = signInAuto.isSelected();
-                        if (checked != bugCollection.getCloud().isSavingSignInInformationEnabled()) {
-                            System.out.println("checked: " + checked);
-                            bugCollection.getCloud().setSaveSignInInformation(checked);
-                        }
-                    }
-                });
-                menu.add(signInAuto);
-                if (signinState == Cloud.SigninState.SIGNED_OUT || signinState == Cloud.SigninState.NOT_SIGNED_IN_YET || signinState == Cloud.SigninState.SIGNIN_FAILED) {
-                    menu.add(new AbstractAction("Sign in") {
-                        public void actionPerformed(ActionEvent e) {
-                            try {
-                                bugCollection.getCloud().signIn();
-                            } catch (IOException e1) {
-                                showMessageDialog("Sign-in error: " + e1.getMessage());
-                                LOGGER.log(Level.SEVERE, "Could not sign in", e1);
-                            }
-                        }
-                    });
-                } else {
-                    menu.add(new AbstractAction("Sign out") {
-                        public void actionPerformed(ActionEvent e) {
-                            bugCollection.getCloud().signOut();
-                        }
-                    }).setEnabled(isSignedIn);
-                }
-                menu.show(e.getComponent(), e.getX(), e.getY());
-            }
-        });
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JPopupMenu menu = new JPopupMenu();
+				SigninState signinState = bugCollection.getCloud().getSigninState();
+				boolean isSignedIn = signinState == Cloud.SigninState.SIGNED_IN;
+				final JCheckBoxMenuItem signInAuto = new JCheckBoxMenuItem("Sign in automatically");
+				signInAuto.setToolTipText("Saves your Cloud session for the next time you run FindBugs. "
+				        + "No personal information or passwords are saved.");
+				signInAuto.setSelected(bugCollection.getCloud().isSavingSignInInformationEnabled());
+				signInAuto.setEnabled(isSignedIn);
+				signInAuto.addChangeListener(new ChangeListener() {
+					public void stateChanged(ChangeEvent e) {
+						boolean checked = signInAuto.isSelected();
+						if (checked != bugCollection.getCloud().isSavingSignInInformationEnabled()) {
+							System.out.println("checked: " + checked);
+							bugCollection.getCloud().setSaveSignInInformation(checked);
+						}
+					}
+				});
+				menu.add(signInAuto);
+				switch (signinState) {
+				case SIGNED_OUT:
+				case UNAUTHENTICATED:
+				case SIGNIN_FAILED:
+
+					menu.add(new AbstractAction("Sign in") {
+						public void actionPerformed(ActionEvent e) {
+							try {
+								bugCollection.getCloud().signIn();
+							} catch (IOException e1) {
+								showMessageDialog("Sign-in error: " + e1.getMessage());
+								LOGGER.log(Level.SEVERE, "Could not sign in", e1);
+							}
+						}
+					});
+					break;
+				default:
+					menu.add(new AbstractAction("Sign out") {
+						public void actionPerformed(ActionEvent e) {
+							bugCollection.getCloud().signOut();
+						}
+					}).setEnabled(isSignedIn);
+				}
+				menu.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
         constraints.anchor = GridBagConstraints.EAST;
         constraints.insets = new Insets(0,5,0,5);
         statusBar.add(signedInLabel, constraints.clone());
@@ -2175,7 +2180,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
                     signedInLabel.setText("<html>FindBugs Cloud:<br> sign-in failed");
                     signedInLabel.setIcon(warningIcon);
                     showLoggedInStatus = true;
-                } else if (state == SigninState.SIGNED_OUT || state == SigninState.NOT_SIGNED_IN_YET) {
+                } else if (state == SigninState.SIGNED_OUT || state == SigninState.UNAUTHENTICATED) {
                     signedInLabel.setText("<html>FindBugs Cloud:<br> not signed in");
                     signedInLabel.setIcon(null);
                     showLoggedInStatus = true;

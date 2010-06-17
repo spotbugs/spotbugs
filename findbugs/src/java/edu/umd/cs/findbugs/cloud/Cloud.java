@@ -19,18 +19,21 @@
 
 package edu.umd.cs.findbugs.cloud;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.SystemProperties;
-
-import javax.annotation.CheckForNull;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.Set;
+
+import javax.annotation.CheckForNull;
+
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.SystemProperties;
 
 
 /**
@@ -225,8 +228,21 @@ public interface Cloud {
         void handleStateChange(SigninState oldState, SigninState state);
     }
 
-    enum SigninState { NO_SIGNIN_REQUIRED, NOT_SIGNED_IN_YET, SIGNING_IN, SIGNED_IN, SIGNIN_FAILED, SIGNED_OUT,  }
+	enum SigninState {
+		NO_SIGNIN_REQUIRED, UNAUTHENTICATED, SIGNING_IN, SIGNED_IN, SIGNIN_FAILED, SIGNED_OUT;
+		static final ResourceBundle names = ResourceBundle.getBundle(Cloud.class.getName(), Locale.getDefault());
 
+		@Override
+		public String toString() {
+			String value = names.getString(this.name());
+			if (value != null)
+			  return value.trim();
+			return this.name();
+		}
+    	}
+
+    
+    
 	enum UserDesignation {
 		UNCLASSIFIED,
 		NEEDS_STUDY,
