@@ -131,7 +131,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 		}
 
         LOGGER.fine("Initializing " + getClass().getSimpleName());
-        setSigninState(SigninState.NOT_SIGNED_IN_YET);
+        setSigninState(SigninState.UNAUTHENTICATED);
 
         try {
             if (!super.initialize()) {
@@ -146,7 +146,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
             } else {
                 // soft init didn't work
-                setSigninState(SigninState.NOT_SIGNED_IN_YET);
+                setSigninState(SigninState.UNAUTHENTICATED);
             }
         } catch (IOException e) {
             setSigninState(SigninState.SIGNIN_FAILED);
@@ -187,7 +187,7 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
     public boolean couldSignIn() {
-        return getSigninState() == SigninState.NOT_SIGNED_IN_YET
+        return getSigninState() == SigninState.UNAUTHENTICATED
             || getSigninState() == SigninState.SIGNIN_FAILED
             || getSigninState() == SigninState.SIGNED_OUT;
     }
@@ -416,7 +416,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 	@SuppressWarnings("deprecation")
 	public void storeUserAnnotation(BugInstance bugInstance) {
         SigninState state = getSigninState();
-        if (state == SigninState.SIGNED_IN || state == SigninState.NOT_SIGNED_IN_YET) {
+        if (state == SigninState.SIGNED_IN || state == SigninState.UNAUTHENTICATED) {
             // no need to do this if we're not signed in yet, because it will get picked up during the
             // upload-evals-from-XML step
             try {
