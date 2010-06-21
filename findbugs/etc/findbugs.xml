@@ -26,6 +26,14 @@
 		<Earlier class="edu.umd.cs.findbugs.detect.FieldItemSummary"/>
 		<LaterCategory name="reporting" spanplugins="true"/>
 	</SplitPass>
+	<WithinPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.FieldItemSummary"/>
+		<Later class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
+	</WithinPass>
+	<WithinPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.FieldItemSummary"/>
+		<Later class="edu.umd.cs.findbugs.detect.BuildUnconditionalParamDerefDatabase"/>
+	</WithinPass>
 	<!--
 		NoteSuppressedWarnings should be run in
 		an earlier pass than all reporting detectors, including those in
