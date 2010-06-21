@@ -43,6 +43,7 @@
 		<xsd:attribute name="id" type="ClassType"/>
 		<xsd:attribute name="cloudClass" type="ClassType"/>
 		<xsd:attribute name="usernameClass" type="ClassType"/>
+		<xsd:attribute name="disabled" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="DetectorType">
