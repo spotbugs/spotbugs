@@ -17,8 +17,12 @@
   <Cloud id="edu.umd.cs.findbugs.cloud.db.Default"				
 	 cloudClass="edu.umd.cs.findbugs.cloud.db.DBCloud"
 	 usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup"
-	>
-	</Cloud>
+	/>
+  <Cloud id="edu.umd.cs.findbugs.cloud.db.DB-UserName"				
+	 cloudClass="edu.umd.cs.findbugs.cloud.db.DBCloud"
+	 usernameClass="edu.umd.cs.findbugs.cloud.username.LocalNameLookup"
+	 disabled="true"
+	/>
 
 	
   <OrderingConstraints>

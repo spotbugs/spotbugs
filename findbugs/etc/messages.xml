@@ -24,11 +24,15 @@ This plugin contains all of the standard FindBugs detectors.
 	<Description>Bug history information stored in XML</Description>
 	<Details>Information about bug history and evaluations are stored in the XML that also contains the analysis results</Details>
 	</Cloud>
+
   <Cloud id="edu.umd.cs.findbugs.cloud.db.Default" >
 	<Description>Bug history information stored in a SQL database hosted at UMD</Description>
 	<Details>Information about bug history and evaluations are stored in a MySql database hosted at UMD</Details>
 	</Cloud>
-
+  <Cloud id="edu.umd.cs.findbugs.cloud.db.DB-UserName" >
+	<Description>Bug history information stored in a SQL database and uses system user name</Description>
+	<Details>Information about bug history and evaluations are stored in an SQL database; user name gotten from system properties</Details>
+	</Cloud>
 
   <!--
   **********************************************************************
