@@ -23,6 +23,7 @@
 		<pathelement location="${findbugs.home}/lib/annotations.jar" />
 		<pathelement location="${findbugs.home}/lib/jsr305.jar"/>
 		<pathelement location="${junit.home}/junit.jar"/>
+		<pathelement location="lib/guava-r05.jar"/>
 		<pathelement location="lib/joda-time-1.6.jar"/>
 		<pathelement location="lib/intellij-annotations.jar"/>
 		<pathelement location="lib/j2ee.jar"/>
@@ -91,7 +92,7 @@
 	<findbugs home="${findbugs-baseline.home}"  jvmargs="-ea -Xmx600m"
                          output="xml" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/baseline.xml">
 			<sourcePath path="${basedir}/src/java" />
-			<auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar"/>
+			<auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava-r05.jar"/>
 			<class location="${basedir}/build/classes" />
 		</findbugs>
 	</target>

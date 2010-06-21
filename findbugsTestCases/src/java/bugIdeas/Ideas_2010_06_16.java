@@ -2,13 +2,13 @@ package bugIdeas;
 
 import javax.annotation.Nullable;
 
-import edu.umd.cs.findbugs.annotations.DesireNoWarning;
-import edu.umd.cs.findbugs.annotations.DesireWarning;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2010_06_16 {
 	
 	
-	@DesireNoWarning("NP")
+	@NoWarning("NP")
 	static void test2(@Nullable Object... t) {
 		for(Object x : t) {
 			System.err.println(x);
@@ -20,7 +20,7 @@ public class Ideas_2010_06_16 {
 		main2();
 	}
 	
-	@DesireWarning("NP")
+	@ExpectWarning("NP")
 	public static void main2() {
 		test2((Object[]) null);
 		
