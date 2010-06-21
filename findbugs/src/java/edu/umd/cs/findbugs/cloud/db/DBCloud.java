@@ -54,11 +54,11 @@ import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
-import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
@@ -287,11 +287,15 @@ public  class DBCloud extends AbstractCloud {
 	final CountDownLatch initialSyncDone = new CountDownLatch(1);
 
 
+	AtomicBoolean bugsPopulated = new AtomicBoolean(false);
 	public void bugsPopulated() {
-		queue.add(new PopulateBugs(true));
+		if (bugsPopulated.compareAndSet(false, true)) 
+		  queue.add(new PopulateBugs(true));
 		
 	}
+
 	public void initiateCommunication() {
+		bugsPopulated();
 		
     }
 	private static final long LAST_SEEN_UPDATE_WINDOW = TimeUnit.MILLISECONDS.convert(7*24*3600, TimeUnit.SECONDS);

@@ -335,18 +335,19 @@ public class PluginLoader {
 		for(Node cloudNode : cloudNodeList) {
 			
 			String cloudClassname = cloudNode.valueOf("@cloudClass");
-			String cloudid = cloudNode.valueOf("@id");
+			String cloudId = cloudNode.valueOf("@id");
 			String usernameClassname =  cloudNode.valueOf("@usernameClass");
 			String propertiesLocation = cloudNode.valueOf("@properties");
-			boolean disabled = Boolean.valueOf(cloudNode.valueOf("@disabled"));
+			boolean disabled = Boolean.valueOf(cloudNode.valueOf("@disabled"))
+					&& !cloudId.equals(CloudFactory.DEFAULT_CLOUD);
 			if (disabled)
 				continue;
 			Class<? extends Cloud> cloudClass = getClass(classLoader, cloudClassname, Cloud.class);
 			
 			Class<? extends NameLookup> usernameClass = getClass(classLoader, usernameClassname, NameLookup.class);
 			Node cloudMessageNode = findMessageNode(messageCollectionList,
-					"/MessageCollection/Cloud[@id='" + cloudid + "']",
-					"Missing Cloud description for cloud " + cloudid);
+					"/MessageCollection/Cloud[@id='" + cloudId + "']",
+					"Missing Cloud description for cloud " + cloudId);
 			String description = getChildText(cloudMessageNode, "Description").trim();
 			String details = getChildText(cloudMessageNode, "Details").trim();
 			PropertyBundle properties = new PropertyBundle();
@@ -363,7 +364,7 @@ public class PluginLoader {
 				properties.setProperty(key, value);
 			}
 			
-			CloudPlugin cloudPlugin = new CloudPlugin(cloudid, classLoader, cloudClass, usernameClass, properties, description, details);
+			CloudPlugin cloudPlugin = new CloudPlugin(cloudId, classLoader, cloudClass, usernameClass, properties, description, details);
 			CloudFactory.registerCloud(cloudPlugin, pluginEnabled);
 		}
 		

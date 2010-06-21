@@ -64,7 +64,7 @@ public class Driver {
 			if (argLowerCase.endsWith(".fbp") || argLowerCase.endsWith(".fb")) {
 				// Project file specified
 				commandLine.loadProject(arg);
-			} else if (argLowerCase.endsWith(".xml") || argLowerCase.endsWith(".fba")) {
+			} else if (argLowerCase.endsWith(".xml") || argLowerCase.endsWith(".xml.gz") || argLowerCase.endsWith(".fba")) {
 				// Saved analysis results specified
 				commandLine.setSaveFile(new File(arg));
 			} else {

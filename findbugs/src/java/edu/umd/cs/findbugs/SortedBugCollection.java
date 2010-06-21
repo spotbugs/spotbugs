@@ -122,11 +122,6 @@ public class SortedBugCollection implements BugCollection {
 		return project;
 	}
 	
-	boolean useDatabaseCloud = false;
-	@Deprecated
-	public void setRequestDatabaseCloud(boolean useDatabaseCloud) {
-		this.useDatabaseCloud = useDatabaseCloud;
-	}
 	public @Nonnull Cloud getCloud() {
 		if (shouldNotUsePlugin) {
 			return CloudFactory.getPlainCloud(this);

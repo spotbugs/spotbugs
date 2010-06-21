@@ -482,8 +482,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			plugin.addListener(userAnnotationListener);
             plugin.addStatusListener(cloudStatusListener);
 		}
-		// Don't think we need to do this
-        setProjectAndBugCollectionInSwingThread(project, collection);
+		// setProjectAndBugCollectionInSwingThread(project, collection);
     }
 	public void unregisterCloud(Project project, BugCollection collection, Cloud plugin) {
 		assert collection.getCloud() == plugin;
@@ -492,7 +491,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
             plugin.removeStatusListener(cloudStatusListener);
 		}
 		// Don't think we need to do this
-        setProjectAndBugCollectionInSwingThread(project, collection);
+        // setProjectAndBugCollectionInSwingThread(project, collection);
     }
 
     private void rebuildBugTreeIfSortablesDependOnCloud() {
@@ -545,7 +544,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			showTreeCard();
 			setProject(project);
 			this.bugCollection = bugCollection;
-			bugCollection.setRequestDatabaseCloud(true);
 			displayer.clearCache();
 			Cloud plugin = bugCollection.getCloud();
 			if (plugin != null) {
@@ -3298,7 +3296,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
                                             new Object[] { ok, cancel }, ok);
     }
 
-    private void setProjectAndBugCollectionInSwingThread(final Project project, final BugCollection bc) {
+    void setProjectAndBugCollectionInSwingThread(final Project project, final BugCollection bc) {
 	    setProjectAndBugCollection(project, bc);
     }
     

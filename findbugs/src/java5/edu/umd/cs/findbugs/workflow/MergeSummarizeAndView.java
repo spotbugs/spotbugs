@@ -305,7 +305,6 @@ public class MergeSummarizeAndView {
 			throw new RuntimeException("No files successfully read");
 		}
 
-		results.setRequestDatabaseCloud(true);
 		cloud = results.reinitializeCloud();      
 		isConnectedToCloud = !(cloud instanceof BugCollectionStorageCloud);
 		Project project = results.getProject();

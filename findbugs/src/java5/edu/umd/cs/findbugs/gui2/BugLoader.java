@@ -128,10 +128,10 @@ public class BugLoader {
 			return null;
 		}
 		SortedBugCollection col=new SortedBugCollection(project);
-		col.setRequestDatabaseCloud(true);
 		try {
 	        col.readXML(source);
 	        initiateCommunication(col);
+	        MainFrame.getInstance().setProjectAndBugCollectionInSwingThread(project, col);
         } catch (Exception e) {
         	e.printStackTrace();
         	JOptionPane.showMessageDialog(mainFrame,"Could not read " +  source+ "; " + e.getMessage());
@@ -152,7 +152,6 @@ public class BugLoader {
 	public static @CheckForNull SortedBugCollection loadBugs(MainFrame mainFrame, Project project, URL url) {
 		
 		SortedBugCollection col=new SortedBugCollection(project);
-		col.setRequestDatabaseCloud(true);
 		try {
 	        col.readXML(url);
 	        initiateCommunication(col);
