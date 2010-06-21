@@ -155,6 +155,8 @@ public class TypeQualifierApplications {
 		Map<Integer, Collection<AnnotationValue>> map =  directParameterAnnotations.get(m);
 		if (map == null) {
 			int n = m.getNumParams();
+			if (m.isVarArgs())
+				n--;
 			map = new HashMap<Integer, Collection<AnnotationValue>>(n+2);
 			for(int i = 0; i < n; i++) {
 				Collection<AnnotationValue> a = TypeQualifierResolver.resolveTypeQualifiers(m.getParameterAnnotations(i));

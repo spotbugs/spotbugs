@@ -117,7 +117,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 	}
 	/**
 	 * Visit annotation on a method parameter
-	 * @param p  parameter number, starting at zero (this parameter is not counted)
+	 * @param p  parameter number, starting at zero ("this" parameter is not counted)
 	 * @param annotationClass class of annotation
 	 * @param map map from names to values
 	 * @param runtimeVisible true if annotation is runtime visible
