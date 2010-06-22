@@ -49,7 +49,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
 	private static final boolean UGLY_METHODS = SystemProperties.getBoolean("ma.ugly");
 
-	private static final String DEFAULT_ROLE = "METHOD_DEFAULT";
+	public static final String DEFAULT_ROLE = "METHOD_DEFAULT";
 
 	private String methodName;
 	private String methodSig;

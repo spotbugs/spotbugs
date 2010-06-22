@@ -562,6 +562,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		String endLine = getOptionalAttribute(attributes, "end");     // (were too many "-1"s in the xml)
 		String startBytecode = getOptionalAttribute(attributes, "startBytecode");
 		String endBytecode = getOptionalAttribute(attributes, "endBytecode");
+		String synthetic = getOptionalAttribute(attributes, "synthetic");
 
 		try {
 			int sl = startLine != null ? Integer.parseInt(startLine) : -1;
@@ -569,7 +570,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			int sb = startBytecode != null ? Integer.parseInt(startBytecode) : -1;
 			int eb = endBytecode != null ? Integer.parseInt(endBytecode) : -1;
 
-            return new SourceLineAnnotation(classname, sourceFile, sl, el, sb, eb);
+            SourceLineAnnotation s =  new SourceLineAnnotation(classname, sourceFile, sl, el, sb, eb);
+            if ("true".equals(synthetic))
+            	s.setSynthetic(true);
+            return s;
 		} catch (NumberFormatException e) {
 			throw new SAXException("Bad integer value in SourceLine element", e);
 		}

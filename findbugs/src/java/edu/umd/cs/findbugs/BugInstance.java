@@ -426,21 +426,25 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 		// Highest priority: return the first top level source line annotation
 		for (BugAnnotation annotation : annotationList) {
 			if (annotation instanceof SourceLineAnnotation
-					&& annotation.getDescription().equals(SourceLineAnnotation.DEFAULT_ROLE))
+					&& annotation.getDescription().equals(SourceLineAnnotation.DEFAULT_ROLE)
+					&& !((SourceLineAnnotation)annotation).isUnknown())
+				
 				return (SourceLineAnnotation) annotation;
 		}
+		
 		for (BugAnnotation annotation : annotationList) {
-			if (annotation instanceof SourceLineAnnotation)
+			if (annotation instanceof SourceLineAnnotation
+					&& !((SourceLineAnnotation)annotation).isUnknown())
+				
 				return (SourceLineAnnotation) annotation;
 		}
-
 		// Next: Try primary method, primary field, primary class
 		SourceLineAnnotation srcLine;
-		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryMethod())) != null)
+		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryMethod())) != null && !srcLine.isUnknown())
 			return srcLine;
-		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryField())) != null)
+		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryField())) != null && !srcLine.isUnknown())
 			return srcLine;
-		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryClass())) != null)
+		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryClass())) != null && !srcLine.isUnknown())
 			return srcLine;
 
 		// Last resort: throw exception
@@ -2205,6 +2209,58 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 	
 	public DetectorFactory getDetectorFactory() {
 		return detectorFactory;
+	}
+	
+	private void optionalAdd(Collection<BugAnnotation> c, BugAnnotation a) {
+		if (a != null)
+			c.add(a);
+	}
+	public Iterable<BugAnnotation> getAnnotationsForMessage(boolean showContext) {
+		ArrayList<BugAnnotation> result = new ArrayList<BugAnnotation>();
+		
+		HashSet<BugAnnotation> primaryAnnotations = new HashSet<BugAnnotation>();
+		
+		//This ensures the order of the primary annotations of the bug
+		FieldAnnotation primeField = getPrimaryField();
+		MethodAnnotation primeMethod = getPrimaryMethod();
+		ClassAnnotation primeClass = getPrimaryClass();
+		
+		SourceLineAnnotation primarySourceLineAnnotation = getPrimarySourceLineAnnotation();
+		optionalAdd(primaryAnnotations, primarySourceLineAnnotation);
+		optionalAdd(primaryAnnotations, primeMethod);
+		optionalAdd(primaryAnnotations, primeField);
+		optionalAdd(primaryAnnotations, primeClass);
+	
+		if (showContext || primarySourceLineAnnotation != null && !primarySourceLineAnnotation.getDescription().equals(SourceLineAnnotation.DEFAULT_ROLE)) 
+			result.add(primarySourceLineAnnotation);
+
+		if (showContext || primeMethod != null && !primeMethod.getDescription().equals(MethodAnnotation.DEFAULT_ROLE)) 
+			result.add(primeMethod);
+		
+		
+		
+		String fieldClass = "";
+		String methodClass = "";
+		if(primeField != null)
+			fieldClass = primeField.getClassName();
+		if(primeMethod != null)
+			methodClass = primeMethod.getClassName();			
+		if(showContext && (primaryAnnotations.size() < 2) || (!(primeClass.getClassName().equals(fieldClass) || 
+				primeClass.getClassName().equals(methodClass)))){
+			optionalAdd(result, primeClass);
+		}
+	
+		for(BugAnnotation b : getAnnotations())  {
+			if (primaryAnnotations.contains(b)) continue;
+			if (b instanceof LocalVariableAnnotation 
+					&& !((LocalVariableAnnotation)b).isNamed())
+				continue;
+			if (b instanceof SourceLineAnnotation 
+					&& ((SourceLineAnnotation)b).isUnknown())
+				continue;
+			result.add(b);
+		}
+		return result;
 	}
 }
 

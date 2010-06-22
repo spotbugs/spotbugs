@@ -724,8 +724,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 	@Override
 	public int hashCode() {
 		if (startLine != -1) 
-		return className.hashCode() + startLine + 3 * endLine;
-		return className.hashCode() + startBytecode + 3 * endBytecode;
+		return className.hashCode() + startLine + 3 * endLine + getDescription().hashCode();
+		return className.hashCode() + startBytecode + 3 * endBytecode + getDescription().hashCode();
 	}
 
 	@Override
@@ -733,6 +733,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 		if (!(o instanceof SourceLineAnnotation))
 			return false;
 		SourceLineAnnotation other = (SourceLineAnnotation) o;
+		if (!getDescription().equals(other.getDescription()))
+			return false;
 		if (startLine != -1) 
 			return className.equals(other.className)
 				&& startLine == other.startLine

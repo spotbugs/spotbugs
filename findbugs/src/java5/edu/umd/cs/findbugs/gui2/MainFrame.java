@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
 import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
@@ -2209,63 +2210,15 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	{
 		final BugInstance bug = node.getBug();
 
-		final ArrayList<BugAnnotation> primaryAnnotations = new ArrayList<BugAnnotation>();
-		boolean classIncluded = false;
-
-		//This ensures the order of the primary annotations of the bug
-		if(bug.getPrimarySourceLineAnnotation() != null)
-			primaryAnnotations.add(bug.getPrimarySourceLineAnnotation());
-		if(bug.getPrimaryMethod() != null)
-			primaryAnnotations.add(bug.getPrimaryMethod());
-		if(bug.getPrimaryField() != null)
-			primaryAnnotations.add(bug.getPrimaryField());
-
-		/*
-		 * This makes the primary class annotation appear only when
-		 * the visible field and method primary annotations don't have
-		 * the same class.
-		 */
-		if(bug.getPrimaryClass() != null){
-			FieldAnnotation primeField = bug.getPrimaryField();
-			MethodAnnotation primeMethod = bug.getPrimaryMethod();
-			ClassAnnotation primeClass = bug.getPrimaryClass();
-			String fieldClass = "";
-			String methodClass = "";
-			if(primeField != null)
-				fieldClass = primeField.getClassName();
-			if(primeMethod != null)
-				methodClass = primeMethod.getClassName();			
-			if((primaryAnnotations.size() < 2) || (!(primeClass.getClassName().equals(fieldClass) || 
-					primeClass.getClassName().equals(methodClass)))){
-				primaryAnnotations.add(primeClass);
-				classIncluded = true;
-			}
-		}
-
-		final boolean classIncluded2 = classIncluded;
-
+		
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
 				summaryTopPanel.removeAll();
 
-				summaryTopPanel.add(bugSummaryComponent(bug.getMessageWithoutPrefix(), bug));
-				for(BugAnnotation b : primaryAnnotations)
+				summaryTopPanel.add(bugSummaryComponent(bug.getAbridgedMessage(), bug));
+				
+				for(BugAnnotation b : bug.getAnnotationsForMessage(false)) 
 					summaryTopPanel.add(bugSummaryComponent(b, bug));
-
-
-				if(!classIncluded2 && bug.getPrimaryClass() != null)
-					primaryAnnotations.add(bug.getPrimaryClass());
-
-				for(Iterator<BugAnnotation> i = bug.annotationIterator(); i.hasNext();){
-					BugAnnotation b = i.next();
-					boolean cont = true;
-					for(BugAnnotation p : primaryAnnotations)
-						if(p == b)
-							cont = false;
-
-					if(cont)
-						summaryTopPanel.add(bugSummaryComponent(b, bug));
-				}
 
 				summaryHtmlArea.setText(bug.getBugPattern().getDetailHTML());
 
@@ -2354,6 +2307,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		label.setForeground(Color.BLACK);
 
 		label.setText(str);
+		
+		SourceLineAnnotation link = bug.getPrimarySourceLineAnnotation();
+		if (link != null) 
+			label.addMouseListener(new BugSummaryMouseListener(bug, label, link));
+		
 		return label;
 	}
 	
@@ -2369,11 +2327,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		String summaryLines = edu.umd.cs.findbugs.L10N.getLocalString("summary.lines", "Lines");
 		String clickToGoToText = edu.umd.cs.findbugs.L10N.getLocalString("tooltip.click_to_go_to", "Click to go to");
 		if (value instanceof SourceLineAnnotation) {
-			final SourceLineAnnotation note = (SourceLineAnnotation) value;
-			if (sourceCodeExists(note)) {
+			final SourceLineAnnotation link = (SourceLineAnnotation) value;
+			if (sourceCodeExists(link)) {
 				String srcStr = "";
-				int start = note.getStartLine();
-				int end = note.getEndLine();
+				int start = link.getStartLine();
+				int end = link.getEndLine();
 				if (start < 0 && end < 0)
 					srcStr = sourceCodeLabel;
 				else if (start == end)
@@ -2383,17 +2341,17 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 				label.setToolTipText(clickToGoToText + " " + srcStr);
 
-				label.addMouseListener(new BugSummaryMouseListener(bug, label, note));
+				label.addMouseListener(new BugSummaryMouseListener(bug, label, link));
 			}
 
-			label.setText(note.toString());
+			label.setText(link.toString());
 		} else if (value instanceof BugAnnotationWithSourceLines) {
 			BugAnnotationWithSourceLines note = (BugAnnotationWithSourceLines) value;
-			final SourceLineAnnotation noteSrc = note.getSourceLines();
+			final SourceLineAnnotation link = note.getSourceLines();
 			String srcStr = "";
-			if (noteSrc != null && sourceCodeExists(noteSrc)) {
-				int start = noteSrc.getStartLine();
-				int end = noteSrc.getEndLine();
+			if (link != null && sourceCodeExists(link)) {
+				int start = link.getStartLine();
+				int end = link.getEndLine();
 				if (start < 0 && end < 0)
 					srcStr = sourceCodeLabel;
 				else if (start == end)
@@ -2403,7 +2361,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 				if (!srcStr.equals("")) {
 					label.setToolTipText(clickToGoToText + " " + srcStr);
-					label.addMouseListener(new BugSummaryMouseListener(bug, label, noteSrc));
+					label.addMouseListener(new BugSummaryMouseListener(bug, label, link));
 				}
 			}
 			String noteText;
@@ -2560,10 +2518,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		private final JLabel label;
 		private final SourceLineAnnotation note;
 
-		BugSummaryMouseListener(@NonNull BugInstance bugInstance, @NonNull JLabel label,  @NonNull SourceLineAnnotation note){
+		BugSummaryMouseListener(@NonNull BugInstance bugInstance, @NonNull JLabel label,  @NonNull SourceLineAnnotation link){
 			this.bugInstance = bugInstance;
 			this.label = label;
-			this.note = note;
+			this.note = link;
 		}
 
 		@Override

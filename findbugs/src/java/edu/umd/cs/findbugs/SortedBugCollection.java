@@ -272,15 +272,26 @@ public class SortedBugCollection implements BugCollection {
 		doReadXML(in, null);
 	}
 
-	private void doReadXML(@WillClose InputStream in, File base) throws IOException, DocumentException {
+	public void readXML(@WillClose Reader reader) throws IOException, DocumentException {
+		assert project != null;
+		assert reader != null;
+		doReadXML(reader, null);
+	}
+	
+	private void doReadXML(@WillClose InputStream in, @CheckForNull  File base) throws IOException, DocumentException {
+		checkInputStream(in);
+		Reader reader = Util.getReader(in);
+		doReadXML(reader, base);
+	}
+	
+	private void doReadXML(@WillClose Reader reader, @CheckForNull File base) throws IOException, DocumentException {
 		timeStartedLoading = System.currentTimeMillis();
 
 		SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, base);
 		Profiler profiler = getProjectStats().getProfiler();
 		profiler.start(handler.getClass());
 		try {
-			checkInputStream(in);
-
+			
 			XMLReader xr = null;
 			try {
 				xr = XMLReaderFactory.createXMLReader();
@@ -291,8 +302,7 @@ public class SortedBugCollection implements BugCollection {
 			xr.setContentHandler(handler);
 			xr.setErrorHandler(handler);
 
-			Reader reader = Util.getReader(in);
-
+		
 			xr.parse(new InputSource(reader));
 		} catch (SAXParseException e) {
 			throw new DocumentException("Parse error at line " + e.getLineNumber() + " : " + e.getColumnNumber(), e);
@@ -300,7 +310,7 @@ public class SortedBugCollection implements BugCollection {
 			// FIXME: throw SAXException from method?
 			throw new DocumentException("Sax error ", e);
 		} finally {
-			Util.closeSilently(in);
+			Util.closeSilently(reader);
 			profiler.end(handler.getClass());
 		}
 		timeFinishedLoading = System.currentTimeMillis();
@@ -710,38 +720,40 @@ public class SortedBugCollection implements BugCollection {
 	
 	
 	private void checkInputStream(InputStream in) throws IOException {
-		if (in.markSupported()) {
-			byte[] buf = new byte[200];
-			in.mark(buf.length);
+		if (!in.markSupported())
+			return;
 
-			int numRead = 0;
-			
-			boolean isEOF = false;
-			while (numRead < buf.length && !isEOF) {
-				int n = in.read(buf, numRead, buf.length - numRead);
-				if (n < 0) {
-					isEOF = true;
-				} else {
-					numRead += n;
-				}
+		byte[] buf = new byte[200];
+		in.mark(buf.length);
+
+		int numRead = 0;
+
+		boolean isEOF = false;
+		while (numRead < buf.length && !isEOF) {
+			int n = in.read(buf, numRead, buf.length - numRead);
+			if (n < 0) {
+				isEOF = true;
+			} else {
+				numRead += n;
 			}
-
-			in.reset();
-
-			BufferedReader reader = new BufferedReader(Util.getReader(new ByteArrayInputStream(buf)));
-			try {
-				String line;
-				while ((line = reader.readLine()) != null) {
-					if (line.startsWith("<BugCollection")) {
-						return;
-					}
-				}
-			} finally {
-				reader.close();
-			}
-
-			throw new IOException("XML does not contain saved bug data");
 		}
+
+		in.reset();
+
+		BufferedReader reader = new BufferedReader(Util.getReader(new ByteArrayInputStream(buf)));
+		try {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith("<BugCollection")) {
+					return;
+				}
+			}
+		} finally {
+			reader.close();
+		}
+
+		throw new IOException("XML does not contain saved bug data");
+
 	}
 
 	/**
