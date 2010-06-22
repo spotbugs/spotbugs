@@ -33,6 +33,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -325,6 +326,17 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		xmlOutput.closeTag("FindBugsSummary");
 	}
 
+	public Map<String, String> getFileHashes(BugCollection bugs) {
+		if (fileBugHashes == null)
+			computeFileStats(bugs);
+
+		HashMap<String, String> result = new HashMap<String, String>();
+		for(String sourceFile : fileBugHashes.getSourceFiles()) {
+			result.put(sourceFile, fileBugHashes.getHash(sourceFile));
+		}
+		return result;
+			
+	}
 	/**
 	 * Report statistics as an XML document to given output stream.
 	 */
