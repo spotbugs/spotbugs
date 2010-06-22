@@ -825,10 +825,11 @@ public class UnreadFields extends OpcodeStackDetector  {
 				if (!(fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '['))
 					priority++;
 				if (maxCount.containsKey(f)) priority++;
+				String pattern = "UWF_UNWRITTEN_FIELD";
 				if (f.isProtected() || f.isPublic())
-					priority--;
+					pattern = "UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD";
 				bugReporter.reportBug(addClassFieldAndAccess(new BugInstance(this,
-						"UWF_UNWRITTEN_FIELD",
+						pattern,
 						priority),f));
 			}
 
@@ -869,9 +870,10 @@ public class UnreadFields extends OpcodeStackDetector  {
 				} else {
 					priority--;
 				}
+				String pattern = (f.isPublic() || f.isProtected()) ? "NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" : "NP_UNWRITTEN_FIELD";
 				for (ProgramPoint p : assumedNonNullAt)
 					bugAccumulator.accumulateBug(new BugInstance(this,
-							"NP_UNWRITTEN_FIELD",
+							pattern,
 							npPriority)
 							.addClassAndMethod(p.method)
 							.addField(f), 
@@ -997,14 +999,14 @@ public class UnreadFields extends OpcodeStackDetector  {
 				} else if (fieldsOfSerializableOrNativeClassed.contains(f)) {
 					// ignore it
 				} else if (!writtenFields.contains(f))
-					bugReporter.reportBug(new BugInstance(this, "UUF_UNUSED_FIELD", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this,( f.isPublic() || f.isProtected())? "UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" :  "UUF_UNUSED_FIELD", NORMAL_PRIORITY)
 							.addClass(className)
 							.addField(f).lowerPriorityIfDeprecated());
 				else if (f.getName().toLowerCase().indexOf("guardian") < 0) {
 					int priority = NORMAL_PRIORITY;
 					if (f.isStatic()) priority++;
 					if (f.isFinal()) priority++;
-					bugReporter.reportBug(addClassFieldAndAccess(new BugInstance(this, "URF_UNREAD_FIELD", priority),f));
+					bugReporter.reportBug(addClassFieldAndAccess(new BugInstance(this, ( f.isPublic() || f.isProtected())? "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" : "URF_UNREAD_FIELD", priority),f));
 				}
 			}
 		}

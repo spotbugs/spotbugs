@@ -4485,6 +4485,7 @@ of a serializable class.</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="UUF_UNUSED_FIELD">
     <ShortDescription>Unused field</ShortDescription>
     <LongDescription>Unused field: {1}</LongDescription>
@@ -4494,12 +4495,39 @@ of a serializable class.</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="URF_UNREAD_FIELD">
     <ShortDescription>Unread field</ShortDescription>
     <LongDescription>Unread field: {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> This field is never read.&nbsp; Consider removing it from the class.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD">
+    <ShortDescription>Unused public or protected field</ShortDescription>
+    <LongDescription>Unused public or protected field: {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This field is never used.&nbsp; 
+The field is public or protected, so perhaps
+	it is intended to be used with classes not seen as part of the analysis. If not,
+consider removing it from the class.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD">
+    <ShortDescription>Unread public/protected field</ShortDescription>
+    <LongDescription>Unread public/protected field: {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This field is never read.&nbsp 
+The field is public or protected, so perhaps
+	it is intended to be used with classes not seen as part of the analysis. If not,
+consider removing it from the class.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4527,6 +4555,18 @@ Check for errors, or remove it if it is useless.</p>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD">
+    <ShortDescription>Unwritten public or protected field</ShortDescription>
+    <LongDescription>Unwritten public or protected field: {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> No writes were seen to this public/protected field.&nbsp; All reads of it will return the default
+value. Check for errors (should it have been initialized?), or remove it if it is useless.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
   <BugPattern type="UWF_UNWRITTEN_FIELD">
     <ShortDescription>Unwritten field</ShortDescription>
     <LongDescription>Unwritten field: {1}</LongDescription>
@@ -4596,7 +4636,22 @@ to read, readLine() will return null and dereferencing that will generate a null
     <Details>
 <![CDATA[
   <p> The program is dereferencing a field that does not seem to ever have a non-null value written to it.
-Dereferencing this value will generate a null pointer exception.
+Unless the field is initialized via some mechanism not seen by the analysis,
+dereferencing this value will generate a null pointer exception.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD">
+    <ShortDescription>Read of unwritten public or protected field</ShortDescription>
+    <LongDescription>Read of unwritten public or protected field {2.name} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> The program is dereferencing a public or protected 
+field that does not seem to ever have a non-null value written to it.
+Unless the field is initialized via some mechanism not seen by the analysis,
+dereferencing this value will generate a null pointer exception.
 </p>
 ]]>
     </Details>
