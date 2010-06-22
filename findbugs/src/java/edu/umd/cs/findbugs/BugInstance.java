@@ -440,11 +440,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 		}
 		// Next: Try primary method, primary field, primary class
 		SourceLineAnnotation srcLine;
-		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryMethod())) != null && !srcLine.isUnknown())
+		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryMethod())) != null)
 			return srcLine;
-		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryField())) != null && !srcLine.isUnknown())
+		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryField())) != null)
 			return srcLine;
-		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryClass())) != null && !srcLine.isUnknown())
+		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryClass())) != null)
 			return srcLine;
 
 		// Last resort: throw exception
