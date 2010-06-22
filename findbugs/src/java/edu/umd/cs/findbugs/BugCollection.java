@@ -21,8 +21,11 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.annotation.WillClose;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -30,7 +33,6 @@ import org.dom4j.DocumentException;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.xml.XMLOutput;
-import javax.annotation.WillClose;
 
 public interface BugCollection extends Iterable<BugInstance>
 {
@@ -229,6 +231,17 @@ public interface BugCollection extends Iterable<BugInstance>
 	 * @param in      the InputStream
 	 */
 	public void readXML(@WillClose InputStream in)
+			throws IOException, DocumentException;
+
+	/**
+	 * Read XML data from given reader into this
+	 * object, populating the Project as a side effect.
+	 * An attempt will be made to close the reader
+	 * (even if an exception is thrown).
+	 *
+	 * @param reader	the Reader
+	 */
+	public void readXML(@WillClose Reader reader)
 			throws IOException, DocumentException;
 
 	/**
