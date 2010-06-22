@@ -249,7 +249,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 	 * ---------------------------------------------------------------------- */
 
 	/**
-	 * Get the bug type.
+	 * Get the bug pattern name (e.g., IL_INFINITE_RECURSIVE_LOOP)
 	 */
 	public String getType() {
 		return type;
@@ -448,7 +448,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 			return srcLine;
 
 		// Last resort: throw exception
-		throw new IllegalStateException("BugInstance must contain at least one class, method, or field annotation");
+		throw new IllegalStateException("BugInstance for " + getType() + " must contain at least one class, method, or field annotation");
 	}
 
 	
