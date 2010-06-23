@@ -173,12 +173,13 @@ public class PackageStats implements XMLWriteable {
 		return result;
 	}
 	public void addError(BugInstance bug) {
+		SourceLineAnnotation source = bug.getPrimarySourceLineAnnotation();
 		if (bug.getPriority() >= nBugs.length) return;
 		++nBugs[bug.getPriority()];
 		++nBugs[0];
 
-		ClassAnnotation primaryClass = bug.getPrimaryClass();
-		getClassStats(primaryClass.getClassName(), primaryClass.getSourceFileName()).addError(bug);
+		
+		getClassStats(source.getClassName(), source.getSourceFile()).addError(bug);
 	}
 
 	/**

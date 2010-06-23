@@ -72,10 +72,7 @@ public class FileBugHash {
             	}
 			for (BugInstance bug : bugs.getCollection()) {
 				SourceLineAnnotation source = bug.getPrimarySourceLineAnnotation();
-				ClassAnnotation classAnnotation = bug.getPrimaryClass();
-				MethodAnnotation methodAnnotation = bug.getPrimaryMethod();
-				FieldAnnotation fieldAnnotation = bug.getPrimaryField();
-
+				
 				String packagePath = source.getPackageName().replace('.', '/');
 				String key;
 				if (packagePath.length() == 0)

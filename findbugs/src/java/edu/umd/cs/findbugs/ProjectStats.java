@@ -207,7 +207,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 * Called when a bug is reported.
 	 */
 	public void addBug(BugInstance bug) {
-		PackageStats stat = getPackageStats(bug.getPrimaryClass().getPackageName());
+		
+		SourceLineAnnotation source = bug.getPrimarySourceLineAnnotation();
+		PackageStats stat = getPackageStats(source.getPackageName());
 		stat.addError(bug);
 		++totalErrors[0];
 		int priority = bug.getPriority();
@@ -250,6 +252,8 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	}
 	FileBugHash fileBugHashes;
 	public void computeFileStats(BugCollection bugs) {
+		if (bugs.getProjectStats() != this)
+			throw new IllegalArgumentException("Collection doesn't own stats");
 		fileBugHashes = FileBugHash.compute(bugs);
 	}
 	/**
@@ -327,6 +331,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	}
 
 	public Map<String, String> getFileHashes(BugCollection bugs) {
+		if (bugs.getProjectStats() != this)
+			throw new IllegalArgumentException("Collection doesn't own stats");
+		
 		if (fileBugHashes == null)
 			computeFileStats(bugs);
 

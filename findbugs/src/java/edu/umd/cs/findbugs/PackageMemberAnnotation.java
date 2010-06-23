@@ -43,6 +43,23 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
 	 * @param className name of the class
 	 */
 	protected PackageMemberAnnotation(@DottedClassName String className, String description) {
+		this(className, description, computeSourceFile(className));
+	}
+	
+	private static String computeSourceFile(String className) {
+		AnalysisContext context = AnalysisContext.currentAnalysisContext();
+		
+		if (context != null)  
+			return context.lookupSourceFile(className);
+		return SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
+		
+	}
+	/**
+	 * Constructor.
+	 *
+	 * @param className name of the class
+	 */
+	protected PackageMemberAnnotation(@DottedClassName String className, String description, String sourceFileName) {
 		if (className.length() == 0)
 			throw new IllegalArgumentException("Empty classname not allowed");
 		if (className.indexOf('/') >= 0) {
@@ -50,14 +67,11 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
 			className = className.replace('/', '.');
 		}
 		this.className = DescriptorFactory.canonicalizeString(className);
-		AnalysisContext context = AnalysisContext.currentAnalysisContext();
-		if (context != null) this.sourceFileName = context.lookupSourceFile(className);
-		else this.sourceFileName = SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
+		this.sourceFileName = sourceFileName;
 		if (description != null)
 			description = description.intern();
 		this.description = description;
 	}
-
 
 	/**
 	 * Get the class name.

@@ -54,6 +54,12 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	public ClassAnnotation(String className) {
 		super(className, DEFAULT_ROLE);
 	}
+	
+	public ClassAnnotation(String className, String sourceFileName) {
+		super(className, DEFAULT_ROLE, sourceFileName);
+	}
+
+
 
 	@Override
 	public boolean isSignificant() {

@@ -919,11 +919,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 	 * @param className the name of the class
 	 * @param sourceFileName the source file of the class
 	 * @return this object
-	 * @deprecated use addClass(String) instead
 	 */
-	@Deprecated
 	public BugInstance addClass(String className, String sourceFileName) {
-		ClassAnnotation classAnnotation = new ClassAnnotation(className);
+		ClassAnnotation classAnnotation = new ClassAnnotation(className, sourceFileName);
 		add(classAnnotation);
 		return this;
 	}
