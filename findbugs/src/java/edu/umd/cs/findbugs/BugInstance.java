@@ -2229,10 +2229,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 		optionalAdd(primaryAnnotations, primeField);
 		optionalAdd(primaryAnnotations, primeClass);
 	
-		if (showContext || primarySourceLineAnnotation != null && !primarySourceLineAnnotation.getDescription().equals(SourceLineAnnotation.DEFAULT_ROLE)) 
+		if ( primarySourceLineAnnotation != null && (showContext || !primarySourceLineAnnotation.getDescription().equals(SourceLineAnnotation.DEFAULT_ROLE))) 
 			result.add(primarySourceLineAnnotation);
 
-		if (showContext || primeMethod != null && !primeMethod.getDescription().equals(MethodAnnotation.DEFAULT_ROLE)) 
+		if ( primeMethod != null && (showContext || !primeMethod.getDescription().equals(MethodAnnotation.DEFAULT_ROLE))) 
 			result.add(primeMethod);
 		
 		
