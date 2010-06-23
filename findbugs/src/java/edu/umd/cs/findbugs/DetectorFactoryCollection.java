@@ -34,14 +34,15 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -217,17 +218,21 @@ public class DetectorFactoryCollection {
 		factoriesByDetectorClassName.put(factory.getFullName(), factory);
 	}
 
-	private ArrayList<URL> determineInstalledPlugins() {
-		ArrayList<URL> plugins = new ArrayList<URL>();
-		
+	private List<URL> determineInstalledPlugins() {
+		if (this.pluginList != null)
+			return Arrays.asList(this.pluginList);
+
 		String homeDir = getFindBugsHome();
-		
-		if (homeDir != null) {
-	
+		if (homeDir == null)
+			return Collections.emptyList();
+
+		ArrayList<URL> plugins = new ArrayList<URL>();
+
 		//
-		// See what plugins are available in the ${findbugs.home}/plugin directory
+		// See what plugins are available in the ${findbugs.home}/plugin
+		// directory
 		//
-		
+
 		File pluginDir = new File(new File(homeDir), "plugin");
 		File[] contentList = pluginDir.listFiles();
 		if (contentList == null) {
@@ -247,9 +252,8 @@ public class DetectorFactoryCollection {
 
 			}
 		}
-		}
 		return plugins;
-		
+
 	}
 	
 	private static final Pattern[] findbugsJarNames = {
