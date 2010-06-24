@@ -1046,10 +1046,13 @@
 	</target>
 
 	<!-- Build source distribution. -->
-	<target name="srcdist" depends="docs" description="Source distribution">
+	<target name="srcdist" description="Source distribution">
+		<echo>
+			${svnant.home}
+		</echo>
 		<mkdir dir="${build.dir}/src"/>
 		<delete dir="${build.dir}/src/findbugs-${release.number}"/>
-		<taskdef resource="svntask.properties" classpathref="svn.classpath"/>
+		<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="svn.classpath"/>
 
                 <svn username="guest" password="" javahl="false">
                     <!-- Use 'export' rather than 'checkout' to exclude the .svn stuff -->
@@ -1135,7 +1138,20 @@
 			</fileset>
 		</jar>
 	</target>
-	
+
+  <target name="srcJar" description="build source jar file">
+   <jar jarfile="findbugs-src.jar" compress="true">
+    <fileset dir="${src.dir}"/>
+    <fileset dir="${src5.dir}"/>
+    <fileset dir="${toolsrc.dir}"/>
+    <fileset dir="${anttasksrc.dir}"/>
+    <fileset dir="${junitsrc.dir}"/>
+    <fileset dir=".">
+      <include name="LICENSE*.txt"/>
+    </fileset>
+  </jar>
+
+</target>	
 </project>
 
 <!-- vim:set ts=4: -->
