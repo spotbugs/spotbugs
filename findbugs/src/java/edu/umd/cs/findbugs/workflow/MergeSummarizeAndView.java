@@ -73,6 +73,8 @@ public class MergeSummarizeAndView {
 		public boolean alwaysShowGui = false;
 		
 		public @CheckForNull Date baselineDate;
+		
+		public String cloudId;
 	}
 
 	static class MSVCommandLine extends CommandLine {
@@ -83,6 +85,7 @@ public class MergeSummarizeAndView {
 			this.options = options;
 			addOption("-workingDir", "filename",
 			        "Comma separated list of current working directory paths, used to resolve relative paths (Jar, AuxClasspathEntry, SrcDir)");
+			addOption("-cloud", "id", "id of the cloud to use");
 			addOption("-srcDir", "filename", "Comma separated list of directory paths, used to resolve relative SourceFile paths");
 			addOption("-maxRank", "rank", "maximum rank of issues to show in summary (default 12)");
 			addOption("-maxConsideredRank", "rank", "maximum rank of issues to consider (default 14)");
@@ -123,6 +126,8 @@ public class MergeSummarizeAndView {
 				options.maxRank = Integer.parseInt(argument);
 			else if (option.equals("-maxAge"))
 				options.maxAge = Integer.parseInt(argument);
+			else if (option.equals("-cloud"))
+				options.cloudId = argument;
 			else if (option.equals("-baseline"))
 	            try {
 	                options.baselineDate = new SimpleDateFormat("MM/dd/yyyy").parse(argument);
@@ -160,6 +165,7 @@ public class MergeSummarizeAndView {
 
 	public static void main(String[] argv) throws Exception {
 
+		FindBugs.setNoAnalysis();
 		final MSVOptions options = new MSVOptions();
 		final MSVCommandLine commandLine = new MSVCommandLine(options);
 
@@ -305,7 +311,13 @@ public class MergeSummarizeAndView {
 			throw new RuntimeException("No files successfully read");
 		}
 
-		cloud = results.reinitializeCloud();      
+		if (options.cloudId != null) {
+			results.getProject().setCloudId(options.cloudId);
+			results.reinitializeCloud();
+		}
+		
+		cloud = results.getCloud();   
+		cloud.waitUntilIssueDataDownloaded();
 		isConnectedToCloud = !(cloud instanceof BugCollectionStorageCloud);
 		Project project = results.getProject();
 		originalMode = cloud.getMode();
