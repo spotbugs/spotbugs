@@ -29,6 +29,10 @@ public class CloudPlugin {
 
 	public CloudPlugin(String cloudid, ClassLoader classLoader, Class<? extends Cloud> cloudClass,
             Class<? extends NameLookup> usernameClass, PropertyBundle properties, String description, String details) {
+		this(cloudid, classLoader, cloudClass, usernameClass, false, properties, description, details);
+    }
+	public CloudPlugin(String cloudid, ClassLoader classLoader, Class<? extends Cloud> cloudClass,
+            Class<? extends NameLookup> usernameClass, boolean hidden, PropertyBundle properties, String description, String details) {
 	    this.cloudid = cloudid;
 	    this.classLoader = classLoader;
 	    this.cloudClass = cloudClass;
@@ -36,6 +40,7 @@ public class CloudPlugin {
 	    this.properties = properties;
 	    this.description = description;
 	    this.details = details;
+	    this.hidden = hidden;
     }
 	public String getId() {
     	return cloudid;
@@ -49,6 +54,9 @@ public class CloudPlugin {
 	public Class<? extends NameLookup> getUsernameClass() {
     	return usernameClass;
     }
+	public boolean isHidden() {
+		return hidden;
+	}
 	public PropertyBundle getProperties() {
     	return properties;
     }
@@ -69,4 +77,5 @@ public class CloudPlugin {
 	final PropertyBundle properties;
 	final String description;
 	final String details;
+	final boolean hidden;
 }

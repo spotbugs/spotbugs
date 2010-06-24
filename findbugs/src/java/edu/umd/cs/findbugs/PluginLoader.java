@@ -342,6 +342,9 @@ public class PluginLoader {
 					&& !cloudId.equals(CloudFactory.DEFAULT_CLOUD);
 			if (disabled)
 				continue;
+			boolean hidden = Boolean.valueOf(cloudNode.valueOf("@hidden")) && !cloudId.equals(CloudFactory.DEFAULT_CLOUD);
+	
+
 			Class<? extends Cloud> cloudClass = getClass(classLoader, cloudClassname, Cloud.class);
 			
 			Class<? extends NameLookup> usernameClass = getClass(classLoader, usernameClassname, NameLookup.class);
@@ -364,7 +367,7 @@ public class PluginLoader {
 				properties.setProperty(key, value);
 			}
 			
-			CloudPlugin cloudPlugin = new CloudPlugin(cloudId, classLoader, cloudClass, usernameClass, properties, description, details);
+			CloudPlugin cloudPlugin = new CloudPlugin(cloudId, classLoader, cloudClass, usernameClass, hidden, properties, description, details);
 			CloudFactory.registerCloud(cloudPlugin, pluginEnabled);
 		}
 		

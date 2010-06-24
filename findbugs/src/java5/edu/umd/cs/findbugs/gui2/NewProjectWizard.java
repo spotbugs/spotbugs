@@ -172,10 +172,16 @@ public class NewProjectWizard extends FBDialog
 		wizardComponents[3] = cloudPanel;
 		cloudSelector.setRenderer(new CloudComboBoxRenderer());
 		cloudSelector.addItem(null);
+		String cloudId = null;
+		if (project != null)
+			cloudId = project.getCloudId();
+		
 		for(CloudPlugin c : CloudFactory.getRegisteredClouds().values()) {
-			cloudSelector.addItem(c);
+			if (!c.isHidden() || c.getId().equals(cloudId)) 
+				cloudSelector.addItem(c);
 		}
-		if (project != null && project.getCloudId() != null) {
+		
+		if (cloudId != null) {
 			CloudPlugin c = CloudFactory.getRegisteredClouds().get(project.getCloudId());
 			cloudSelector.setSelectedItem(c);
 		}

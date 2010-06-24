@@ -76,7 +76,7 @@ public interface Cloud {
 
 	
 	/** Called after the bugs in the bug collection are loaded; 
-	 * synchronizes them with the database */
+	 * bugs should not be synchronized before this method is called */
 	public void bugsPopulated();
 	
 	/** Initiate communication with the cloud. Clouds can implement lazy communication, where they
