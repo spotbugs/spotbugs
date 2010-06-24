@@ -49,7 +49,6 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.OpcodeStack.Item.SpecialKind;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
@@ -150,6 +149,16 @@ public class OpcodeStack implements Constants2
 		public static final @SpecialKind int NONZERO_MEANS_NULL  = 18;
 		public static final @SpecialKind int RESULT_OF_I2L = 19;
 		public static final @SpecialKind int RESULT_OF_L2I = 20;
+		
+		public static HashMap<Integer, String> specialKindNames = new HashMap<Integer, String>();
+		
+		private static int nextSpecialKind = RESULT_OF_L2I+1;
+		
+		public static @SpecialKind int defineNewSpecialKind(String name) {
+			specialKindNames.put(nextSpecialKind, name);
+			return nextSpecialKind++;
+		}
+		
 		
 		private static final int IS_INITIAL_PARAMETER_FLAG=1;
 		private static final int COULD_BE_ZERO_FLAG = 2;
@@ -288,6 +297,7 @@ public class OpcodeStack implements Constants2
 				break;
 			default:
 					buf.append(", #" + specialKind);
+					buf.append("(" + specialKindNames.get(specialKind) + ")");
 				break;
 
 			}
