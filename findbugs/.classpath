@@ -37,5 +37,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/asm-commons-3.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/asm-tree-3.2.jar"/>
 	<classpathentry kind="lib" path="lib/ant.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.7-bin.jar"/>
 	<classpathentry kind="output" path="classesEclipse"/>
 </classpath>
