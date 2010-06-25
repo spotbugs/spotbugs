@@ -1934,13 +1934,26 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
 	}
 
-	public static BugAnnotation getValueSource(OpcodeStack.Item item, Method method, int pc) {
+	public static @CheckForNull BugAnnotation getValueSource(OpcodeStack.Item item, Method method, int pc) {
 		LocalVariableAnnotation lv = LocalVariableAnnotation.getLocalVariableAnnotation(method, item, pc);
 		if (lv != null && lv.isNamed()) 
 			return lv;
 		
-		return getFieldOrMethodValueSource(item);
-		
+		BugAnnotation a = getFieldOrMethodValueSource(item);
+		if (a != null)
+			return a;
+		Object c = item.getConstant();
+		if (c instanceof String) {
+			a = new StringAnnotation((String)c);
+			a.setDescription(StringAnnotation.STRING_CONSTANT_ROLE);
+			return a;
+		}
+		if (c instanceof Integer) {
+			a = new IntAnnotation((Integer)c);
+			a.setDescription(IntAnnotation.INT_VALUE);
+			return a;
+		}
+		return null;
 
 	}
 
