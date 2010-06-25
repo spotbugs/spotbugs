@@ -512,6 +512,13 @@ that is not compatible with the class defining the equals method.
 Normally, this detector does nothing.</p>
 ]]>
     </Details>
+  <Detector class="edu.umd.cs.findbugs.detect.TestingGround2">
+    <Details>
+<![CDATA[
+<p> This detector is just a hook for testing new detectors.
+Normally, this detector does nothing.</p>
+]]>
+    </Details>
   </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.LostLoggerDueToWeakReference">
