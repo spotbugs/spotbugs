@@ -164,6 +164,9 @@ public class RejarClassesForAnalysis {
 				throw new IllegalArgumentException("Unknown option : " + option);
 		}
 
+		boolean skip(ZipEntry ze) {
+			return ze.getSize() > 1000000;
+		}
 	}
 
 	final RejarClassesForAnalysisCommandLine commandLine;
@@ -291,10 +294,13 @@ public class RejarClassesForAnalysis {
 			int oldSize = copied.size();
 			if (processZipEntries(f, new ZipElementHandler() {
 				public void handle(ZipFile file, ZipEntry ze) {
+					if (commandLine.skip(ze))
+						return;
 					String name = ze.getName();
 					
 					String dottedName = name.replace('/', '.');
 					if (exclude(dottedName)) return;
+					
 					
 					if (copied.add(name) && commandLine.prefix.matches(dottedName) ) {
 						filesToAnalyze.add(name);
@@ -320,8 +326,10 @@ public class RejarClassesForAnalysis {
 
 			if (processZipEntries(f, new ZipElementHandler() {
 				public void handle(ZipFile file, ZipEntry ze) {
-					String name = ze.getName();
+					if (commandLine.skip(ze))
+						return;
 					
+					String name = ze.getName();
 					String dottedName = name.replace('/', '.');
 					if (!exclude(dottedName)) 
 						copied.add(ze.getName());
@@ -382,6 +390,9 @@ public class RejarClassesForAnalysis {
 			processZipEntries(f, new ZipElementHandler() {
 
 				public void handle(ZipFile zipInputFile, ZipEntry ze) throws IOException {
+					if (commandLine.skip(ze))
+						return;
+					
 					String name = ze.getName();
 					String dottedName = name.replace('/', '.');
 					if (exclude(dottedName)) 
@@ -424,6 +435,9 @@ public class RejarClassesForAnalysis {
 			processZipEntries(f, new ZipElementHandler() {
 
 				public void handle(ZipFile zipInputFile, ZipEntry ze) throws IOException {
+					if (commandLine.skip(ze))
+						return;
+					
 					String name = ze.getName();
 					String dottedName = name.replace('/', '.');
 					
