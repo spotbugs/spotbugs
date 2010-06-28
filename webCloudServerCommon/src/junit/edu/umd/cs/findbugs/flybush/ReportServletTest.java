@@ -278,7 +278,8 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         for (int i = 0; i < 30; i++) {
             DbIssue issue = createDbIssue("fad2", persistenceHelper);
             issue.setPrimaryClass("edu.umd.cs.findbugs.sub" + i + ".MyClass");
-            createEvaluation(issue, "someone", days(2));
+            for (int j = 0; j < i; j++)
+                createEvaluation(issue, "someone", days(j));
             issues.add(issue);
         }
         getPersistenceManager().makePersistentAll(issues);
@@ -289,7 +290,13 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         Map<String, List<String>> params = getParams(url);
         List<String> pvalue = params.get("chxl");
         // assert that there are only 20 packages shown
-        assertEquals(21, pvalue.get(0).split("\\|").length);
+        String chxl = pvalue.get(0);
+        assertEquals(21, chxl.split("\\|").length);
+
+        // make sure they are in descending order
+        List<String> chds = params.get("chd");
+        String chd = chds.get(0);
+        assertTrue(chd.startsWith("t:100.0,96.6,93.1"));
     }
 
     // =============================== end of tests ==================================

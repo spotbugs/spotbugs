@@ -473,8 +473,9 @@ public class ReportServlet extends AbstractFlybushServlet {
         BarChart chart = GCharts.newBarChart(Plots.newBarChartPlot(Data.newData(data), Color.ORCHID, "Initial evaluation"));
 
         chart.setTitle("Evaluations Per Package");
-        chart.setGrid(5 / (maxPerPkg / 100.0), 100, 4, 1);
+        chart.setGrid(10.0 / (maxPerPkg / 100.0), 100, 4, 1);
         chart.addYAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
+        chart.addXAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, maxPerPkg, 10));
         chart.setBarWidth(BarChart.AUTO_RESIZE);
         chart.setSize(600, 500);
         chart.setHorizontal(true);
