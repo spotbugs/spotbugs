@@ -44,6 +44,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.logging.Level;
 
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
+
 public class ReportServlet extends AbstractFlybushServlet {
     private static final DateFormat DATE_FORMAT = DateFormat.getDateInstance(DateFormat.SHORT);
     private static final DateFormat DATE_TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG);
@@ -90,6 +92,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         Multimap<String,String> issuesByPkg = HashMultimap.create();
         Set<String> seenIssues = Sets.newHashSet();
         Map<String, Integer> evalsByPkg = Maps.newHashMap();
+        List<String> lines = Lists.newArrayList();
         for (DbEvaluation eval : evals) {
             String epkg = getPackageName(eval.getIssue().getPrimaryClass());
             if (epkg == null)
@@ -103,6 +106,7 @@ public class ReportServlet extends AbstractFlybushServlet {
             increment(evalsPerWeek, beginningOfWeek);
             if (seenIssues.add(eval.getIssue().getHash()))
                 increment(newIssuesPerWeek, beginningOfWeek);
+            lines.add(createEvalsTableEntry(req, eval));
         }
         LineChart timelineChart = null;
         BarChart subpkgChart = null;
@@ -118,7 +122,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         ServletOutputStream page = resp.getOutputStream();
         page.println(
                 "<html>\n" +
-                "<head><title>" + StringEscapeUtils.escapeHtml(desiredPackage) + " - FindBugs Cloud Stats</title></head>\n" +
+                "<head><title>" + escapeHtml(desiredPackage) + " - FindBugs Cloud Stats</title></head>\n" +
                 "<body>\n" +
                 backButton(req));
 
@@ -129,11 +133,13 @@ public class ReportServlet extends AbstractFlybushServlet {
         page.println("<br><br>");
 
         if (timelineChart == null)
-            page.print("No evaluations for classes in " + StringEscapeUtils.escapeHtml(desiredPackage));
+            page.print("No evaluations for classes in " + escapeHtml(desiredPackage));
         else
             showChartImg(resp, timelineChart.toURLString());
         if (subpkgChart != null)
             showChartImg(resp, subpkgChart.toURLString());
+
+        printEvalsTable(resp, lines);
     }
 
     private String backButton(HttpServletRequest req) {
@@ -144,7 +150,7 @@ public class ReportServlet extends AbstractFlybushServlet {
             throws IOException {
         resp.getOutputStream().println("<form action=\"" + req.getRequestURI() + "\" method=get>\n" +
                                        "Package stats:  <input type=text name=package size=30 value=\""
-                                       + StringEscapeUtils.escapeHtml(desiredPackage) + "\">\n" +
+                                       + escapeHtml(desiredPackage) + "\">\n" +
                                        "<input type=submit value=Go>\n" +
                                        "</form>");
     }
@@ -161,7 +167,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         else
             page.println("<li> <a href=\"" + req.getRequestURI() + "?package=*\">&lt;default package&gt;</a>");
         page.println("<ul>");
-        page.println("<li> " + (isDefaultPackage ? "&lt;default package&gt;" : StringEscapeUtils.escapeHtml(desiredPackage)));
+        page.println("<li> " + (isDefaultPackage ? "&lt;default package&gt;" : escapeHtml(desiredPackage)));
         page.println("<ul>");
         Set<String> alreadyPrinted = Sets.newHashSet();
         for (String pkg : Sets.newTreeSet(evalsByPkg.keySet())) {
@@ -187,7 +193,7 @@ public class ReportServlet extends AbstractFlybushServlet {
     }
 
     private String linkToPkg(HttpServletRequest req, String pkg) {
-        String escaped = StringEscapeUtils.escapeHtml(pkg);
+        String escaped = escapeHtml(pkg);
         try {
             return "<a href=\"" + req.getRequestURI() + "?package=" + URLEncoder.encode(escaped, "UTF-8") + "\">"
                    + escaped + "</a>";
@@ -231,15 +237,7 @@ public class ReportServlet extends AbstractFlybushServlet {
             increment(evalsPerWeek, beginningOfWeek);
             if (seenIssues.add(eval.getIssue().getHash()))
                 increment(newIssuesByWeek, beginningOfWeek);
-            table.add(String.format("<td>%s</td>" +
-                                    "<td>%s<br>%s</td>" +
-                                    "<td>%s</td>" +
-                                    "<td>%s</td>",
-                                    DATE_TIME_FORMAT.format(new Date(eval.getWhen())),
-                                    eval.getIssue().getBugPattern(),
-                                    eval.getIssue().getPrimaryClass(),
-                                    eval.getDesignation(),
-                                    eval.getComment()));
+            table.add(createEvalsTableEntry(req, eval));
         }
         query.closeAll();
 
@@ -251,7 +249,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         ServletOutputStream page = resp.getOutputStream();
         page.println(
                 "<html>\n" +
-                "<head><title>" + StringEscapeUtils.escapeHtml(email) + " - FindBugs Cloud Stats</title></head>\n" +
+                "<head><title>" + escapeHtml(email) + " - FindBugs Cloud Stats</title></head>\n" +
                 "<body>\n" +
                 backButton(req));
 
@@ -259,15 +257,23 @@ public class ReportServlet extends AbstractFlybushServlet {
         printUserStatsSelector(req, resp, users, email);
 
         if (chart == null) {
-            page.println("Oops! No evaluations uploaded by " + StringEscapeUtils.escapeHtml(email));
+            page.println("Oops! No evaluations uploaded by " + escapeHtml(email));
             return;
         }
         showChartImg(resp, chart.toURLString());
 
+        printEvalsTable(resp, table);
+    }
+
+    /**
+     * @param table should be sorted in ascending order
+     */
+    private static void printEvalsTable(HttpServletResponse resp, List<String> table) throws IOException {
+        ServletOutputStream page = resp.getOutputStream();
         page.println("<br><br>Evaluation history:");
         page.println("<div style='overflow:auto;height:400px;border:2px solid black'>\n" +
-                     "<table cellspacing=0 border=1>\n" +
-                     "<tr><th>Date</th><th>Pattern&amp;Class</th><th>Designation</th><th>Comment</th></tr>");
+                     "<table cellspacing=0 border=1 cellpadding=6>\n" +
+                     "<tr><th>Date (UTC)</th><th>User</th><th>Pattern&amp;Class</th><th>Designation</th><th>Comment</th></tr>");
         Collections.reverse(table);
         int odd = 0;
         for (String line : table) {
@@ -275,6 +281,41 @@ public class ReportServlet extends AbstractFlybushServlet {
         }
         page.println("</table>\n" +
                      "</div>");
+    }
+
+    private static String createEvalsTableEntry(HttpServletRequest req, DbEvaluation eval) {
+        return String.format("<td>%s</td>" +
+                                "<td><a href='%s'>%s</a></td>" +
+                                "<td>%s<br>%s</td>" +
+                                "<td>%s</td>" +
+                                "<td>%s</td>",
+                                DATE_TIME_FORMAT.format(new Date(eval.getWhen())).replaceAll(" UTC", ""),
+                                req.getRequestURI() + "?user=" + escapeHtml(eval.getEmail()),
+                                escapeHtml(eval.getEmail()),
+                                eval.getIssue().getBugPattern(),
+                                printPackageLinks(req, eval.getIssue().getPrimaryClass()),
+                                escapeHtml(eval.getDesignation()),
+                               escapeHtml(eval.getComment()));
+    }
+
+    @SuppressWarnings({"StringConcatenationInsideStringBufferAppend"})
+    private static String printPackageLinks(HttpServletRequest req, String cls) {
+        StringBuilder str = new StringBuilder();
+        int lastdot;
+        int dot = -1;
+        while (true) {
+            lastdot = dot;
+            dot = cls.indexOf('.', dot + 1);
+            if (dot == -1)
+                break;
+            String sofar = cls.substring(0,dot);
+            if (lastdot != -1)
+                str.append(".");
+            str.append("<a href=\"" + req.getRequestURI() + "?package=" + StringEscapeUtils.escapeHtml(sofar) + "\">");
+            str.append(cls.substring(lastdot+1,dot));
+            str.append("</a>");
+        }
+        return str.toString();
     }
 
     @SuppressWarnings({"unchecked"})
@@ -423,12 +464,12 @@ public class ReportServlet extends AbstractFlybushServlet {
         List<String> seenUsersList = Lists.newArrayList(seenUsers);
         Collections.sort(seenUsersList);
         for (String email : seenUsersList) {
-            String escaped = StringEscapeUtils.escapeHtml(email);
+            String escaped = escapeHtml(email);
             page.println(String.format("<option value=\"%s\"%s>%s</option>",
                                        escaped, email.equals(selectedEmail) ? " selected" : "", escaped));
         }
         page.println("</select>\n" +
-                     "<input type=submit value=Submit>\n" +
+                     "<input type=submit value=Go>\n" +
                      "</form>");
     }
 
