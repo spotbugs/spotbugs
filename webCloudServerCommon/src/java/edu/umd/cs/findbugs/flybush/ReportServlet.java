@@ -46,6 +46,7 @@ import java.util.logging.Level;
 
 public class ReportServlet extends AbstractFlybushServlet {
     private static final DateFormat DATE_FORMAT = DateFormat.getDateInstance(DateFormat.SHORT);
+    private static final DateFormat DATE_TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG);
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
@@ -115,10 +116,11 @@ public class ReportServlet extends AbstractFlybushServlet {
 
         resp.setStatus(200);
         ServletOutputStream page = resp.getOutputStream();
-        page.print(
-                "<html>" +
-                "<head><title>" + StringEscapeUtils.escapeHtml(desiredPackage) + " - FindBugs Cloud Stats</title></head>" +
-                "<body>");
+        page.println(
+                "<html>\n" +
+                "<head><title>" + StringEscapeUtils.escapeHtml(desiredPackage) + " - FindBugs Cloud Stats</title></head>\n" +
+                "<body>\n" +
+                backButton(req));
 
         printPackageForm(req, resp, desiredPackage);
 
@@ -132,6 +134,10 @@ public class ReportServlet extends AbstractFlybushServlet {
             showChartImg(resp, timelineChart.toURLString());
         if (subpkgChart != null)
             showChartImg(resp, subpkgChart.toURLString());
+    }
+
+    private String backButton(HttpServletRequest req) {
+        return "<a href=\"" + req.getRequestURI() + "\">&lt;&lt; Back</a>";
     }
 
     private void printPackageForm(HttpServletRequest req, HttpServletResponse resp, String desiredPackage)
@@ -219,11 +225,21 @@ public class ReportServlet extends AbstractFlybushServlet {
         Map<Long, Integer> evalsPerWeek = Maps.newHashMap();
         Set<String> seenIssues = Sets.newHashSet();
         Map<Long, Integer> newIssuesByWeek = Maps.newHashMap();
+        List<String> table = Lists.newArrayList();
         for (DbEvaluation eval : evals) {
             long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
             increment(evalsPerWeek, beginningOfWeek);
             if (seenIssues.add(eval.getIssue().getHash()))
                 increment(newIssuesByWeek, beginningOfWeek);
+            table.add(String.format("<td>%s</td>" +
+                                    "<td>%s<br>%s</td>" +
+                                    "<td>%s</td>" +
+                                    "<td>%s</td>",
+                                    DATE_TIME_FORMAT.format(new Date(eval.getWhen())),
+                                    eval.getIssue().getBugPattern(),
+                                    eval.getIssue().getPrimaryClass(),
+                                    eval.getDesignation(),
+                                    eval.getComment()));
         }
         query.closeAll();
 
@@ -232,19 +248,33 @@ public class ReportServlet extends AbstractFlybushServlet {
             chart = buildEvaluationTimeline("Evaluations over Time - " + email, evalsPerWeek, newIssuesByWeek);
 
         resp.setStatus(200);
-        resp.getOutputStream().print(
-                "<html>" +
-                "<head><title>" + StringEscapeUtils.escapeHtml(email) + " - FindBugs Cloud Stats</title></head>" +
-                "<body>");
+        ServletOutputStream page = resp.getOutputStream();
+        page.println(
+                "<html>\n" +
+                "<head><title>" + StringEscapeUtils.escapeHtml(email) + " - FindBugs Cloud Stats</title></head>\n" +
+                "<body>\n" +
+                backButton(req));
 
         Set<String> users = getAllUserEmails(pm);
         printUserStatsSelector(req, resp, users, email);
 
         if (chart == null) {
-            resp.getOutputStream().println("Oops! No evaluations uploaded by " + StringEscapeUtils.escapeHtml(email));
+            page.println("Oops! No evaluations uploaded by " + StringEscapeUtils.escapeHtml(email));
             return;
         }
         showChartImg(resp, chart.toURLString());
+
+        page.println("<br><br>Evaluation history:");
+        page.println("<div style='overflow:auto;height:400px;border:2px solid black'>\n" +
+                     "<table cellspacing=0 border=1>\n" +
+                     "<tr><th>Date</th><th>Pattern&amp;Class</th><th>Designation</th><th>Comment</th></tr>");
+        Collections.reverse(table);
+        int odd = 0;
+        for (String line : table) {
+            page.println("<tr style=background-color:" + ((++odd%2==0) ?"#ffddee":"white") + ";vertical-align:top>" + line + "</tr>");
+        }
+        page.println("</table>\n" +
+                     "</div>");
     }
 
     @SuppressWarnings({"unchecked"})
