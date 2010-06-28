@@ -270,7 +270,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
 
         String url = generatedCharts.get(2);
         checkParam(url, "chxl", "0:|edu.umd.cs.findbugs.sub|edu.umd.cs.findbugs");
-        checkParam(url, "chd", "t:100.0,20.0");
+        checkParam(url, "chd", "t:2.0,1.0|100.0,20.0");
     }
 
     public void testGraphEvalsByPackageMoreThan20() throws Exception {
@@ -296,7 +296,8 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         // make sure they are in descending order
         List<String> chds = params.get("chd");
         String chd = chds.get(0);
-        assertTrue(chd.startsWith("t:100.0,96.6,93.1"));
+        assertTrue(chd, chd.startsWith("t:1.0,1.0"));
+        assertTrue(chd, chd.contains("|100.0,96.6,93.1"));
     }
 
     // =============================== end of tests ==================================

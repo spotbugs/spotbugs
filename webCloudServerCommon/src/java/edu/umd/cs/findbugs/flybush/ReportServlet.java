@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.flybush;
 
 import com.google.common.base.Supplier;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -163,6 +164,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         Map<Long, Integer> issueCountByWeek = Maps.newHashMap();
         Map<Long, Integer> userCountByWeek = Maps.newHashMap();
         Map<String,Integer> evalCountByPkg = Maps.newHashMap();
+        Multimap<String, String> issuesByPkg = HashMultimap.create();
         Set<String> seenIssues = Sets.newHashSet();
         Set<String> seenUsers = Sets.newHashSet();
 
@@ -182,6 +184,7 @@ public class ReportServlet extends AbstractFlybushServlet {
                 // get package name
                 pkg = pkg.substring(0, pkg.lastIndexOf('.'));
                 increment(evalCountByPkg, pkg);
+                issuesByPkg.put(pkg, issueHash);
             }
 
             long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
@@ -198,7 +201,7 @@ public class ReportServlet extends AbstractFlybushServlet {
 
         BarChart evalsByUserChart = buildByUserChart(totalCountByUser, issueCountByUser);
 
-        BarChart evalsByPkgChart = buildByPkgChart(evalCountByPkg);
+        BarChart evalsByPkgChart = buildByPkgChart(issuesByPkg, evalCountByPkg);
 
         LineChart evalsOverTimeChart = createTimelineChart(evalsByWeek, issueCountByWeek, userCountByWeek);
 
@@ -456,24 +459,29 @@ public class ReportServlet extends AbstractFlybushServlet {
         return weekCal.getTimeInMillis();
     }
 
-    private BarChart buildByPkgChart(Map<String, Integer> evalCountByPkg) {
+    private BarChart buildByPkgChart(Multimap<String,String> issuesByPkg,
+                                     Map<String, Integer> evalCountByPkg) {
         List<String> labels = Lists.newArrayList();
-        List<Double> data = Lists.newArrayList();
+        List<Double> evalsData = Lists.newArrayList();
+        List<Double> issuesData = Lists.newArrayList();
         int maxPerPkg = Collections.max(evalCountByPkg.values());
         int count = 0;
         List<Entry<String, Integer>> entries = sortEntriesByValue(evalCountByPkg.entrySet());
         Collections.reverse(entries);
         for (Entry<String, Integer> entry : entries) {
             labels.add(entry.getKey());
-            data.add(entry.getValue() * 100.0 / maxPerPkg);
+            evalsData.add(entry.getValue() * 100.0 / maxPerPkg);
+            issuesData.add((double) issuesByPkg.get(entry.getKey()).size());
             if (count++ >= 19)
                  break;
         }
         Collections.reverse(labels);
-        BarChart chart = GCharts.newBarChart(Plots.newBarChartPlot(Data.newData(data), Color.ORCHID, "Initial evaluation"));
+        BarChart chart = GCharts.newBarChart(Plots.newBarChartPlot(Data.newData(issuesData), Color.DARKORCHID, "Issues"),
+                                             Plots.newBarChartPlot(Data.newData(evalsData), Color.ORCHID, "Evaluations"));
 
         chart.setTitle("Evaluations Per Package");
         chart.setGrid(10.0 / (maxPerPkg / 100.0), 100, 4, 1);
+        chart.setDataStacked(true);
         chart.addYAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
         chart.addXAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, maxPerPkg, 10));
         chart.setBarWidth(BarChart.AUTO_RESIZE);
