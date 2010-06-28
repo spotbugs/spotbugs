@@ -306,8 +306,10 @@ public class ReportServlet extends AbstractFlybushServlet {
         while (true) {
             lastdot = dot;
             dot = cls.indexOf('.', dot + 1);
-            if (dot == -1)
+            if (dot == -1) {
+                str.append(cls.substring(lastdot));
                 break;
+            }
             String sofar = cls.substring(0,dot);
             if (lastdot != -1)
                 str.append(".");
