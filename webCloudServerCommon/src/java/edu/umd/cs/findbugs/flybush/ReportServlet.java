@@ -27,6 +27,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,6 +42,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.logging.Level;
 
 public class ReportServlet extends AbstractFlybushServlet {
     private static final DateFormat DATE_FORMAT = DateFormat.getDateInstance(DateFormat.SHORT);
@@ -65,9 +68,143 @@ public class ReportServlet extends AbstractFlybushServlet {
             throws IOException {
         if (req.getParameter("user") != null) {
             showUserStats(req, resp, pm, req.getParameter("user"));
+        } else if (req.getParameter("package") != null) {
+            showPackageStats(req, resp, pm, req.getParameter("package"));
         } else {
             showSummaryStats(req, resp, pm);
         }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void showPackageStats(HttpServletRequest req, HttpServletResponse resp,
+                                  PersistenceManager pm, String desiredPackage) throws IOException {
+        if (desiredPackage.equals("*"))
+            desiredPackage = "";
+
+        Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName() + " order by when");
+        List<DbEvaluation> evals = (List<DbEvaluation>) query.execute();
+
+        Map<Long,Integer> evalsPerWeek = Maps.newHashMap();
+        Map<Long,Integer> newIssuesPerWeek = Maps.newHashMap();
+        Multimap<String,String> issuesByPkg = HashMultimap.create();
+        Set<String> seenIssues = Sets.newHashSet();
+        Map<String, Integer> evalsByPkg = Maps.newHashMap();
+        for (DbEvaluation eval : evals) {
+            String epkg = getPackageName(eval.getIssue().getPrimaryClass());
+            if (epkg == null)
+                continue;
+            if (!isPackageOrSubPackage(desiredPackage, epkg)) {
+                continue;
+            }
+            issuesByPkg.put(epkg, eval.getIssue().getHash());
+            increment(evalsByPkg, epkg);
+            long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
+            increment(evalsPerWeek, beginningOfWeek);
+            if (seenIssues.add(eval.getIssue().getHash()))
+                increment(newIssuesPerWeek, beginningOfWeek);
+        }
+        LineChart timelineChart = null;
+        BarChart subpkgChart = null;
+        if (evalsPerWeek.size() != 0) {
+            timelineChart = buildEvaluationTimeline("Evaluations & Issues - " + desiredPackage + " (recursive)",
+                                                      evalsPerWeek, newIssuesPerWeek);
+            if (evalsByPkg.size() > 1)
+                subpkgChart = buildByPkgChart(issuesByPkg, evalsByPkg);
+        }
+
+
+        resp.setStatus(200);
+        ServletOutputStream page = resp.getOutputStream();
+        page.print(
+                "<html>" +
+                "<head><title>" + StringEscapeUtils.escapeHtml(desiredPackage) + " - FindBugs Cloud Stats</title></head>" +
+                "<body>");
+
+        printPackageForm(req, resp, desiredPackage);
+
+        printPackageTree(req, resp, desiredPackage, evalsByPkg);
+
+        page.println("<br><br>");
+
+        if (timelineChart == null)
+            page.print("No evaluations for classes in " + StringEscapeUtils.escapeHtml(desiredPackage));
+        else
+            showChartImg(resp, timelineChart.toURLString());
+        if (subpkgChart != null)
+            showChartImg(resp, subpkgChart.toURLString());
+    }
+
+    private void printPackageForm(HttpServletRequest req, HttpServletResponse resp, String desiredPackage)
+            throws IOException {
+        resp.getOutputStream().println("<form action=\"" + req.getRequestURI() + "\" method=get>\n" +
+                                       "Package stats:  <input type=text name=package size=30 value=\""
+                                       + StringEscapeUtils.escapeHtml(desiredPackage) + "\">\n" +
+                                       "<input type=submit value=Go>\n" +
+                                       "</form>");
+    }
+
+    private void printPackageTree(HttpServletRequest req, HttpServletResponse resp,
+                                  String desiredPackage, Map<String, Integer> evalsByPkg) throws IOException {
+        ServletOutputStream page = resp.getOutputStream();
+        boolean isDefaultPackage = desiredPackage.equals("");
+        page.println("<ul>");
+        if (desiredPackage.contains("."))
+            page.println("<li> " + linkToPkg(req, desiredPackage.substring(0, desiredPackage.lastIndexOf('.'))));
+        else if (isDefaultPackage)
+            page.println("<li>");
+        else
+            page.println("<li> <a href=\"" + req.getRequestURI() + "?package=*\">&lt;default package&gt;</a>");
+        page.println("<ul>");
+        page.println("<li> " + (isDefaultPackage ? "&lt;default package&gt;" : StringEscapeUtils.escapeHtml(desiredPackage)));
+        page.println("<ul>");
+        Set<String> alreadyPrinted = Sets.newHashSet();
+        for (String pkg : Sets.newTreeSet(evalsByPkg.keySet())) {
+            if (pkg.equals(desiredPackage))
+                continue;
+            String remainder = isDefaultPackage ? pkg : pkg.substring(desiredPackage.length() + 1);
+            int dot = remainder.indexOf('.');
+            String subpkg;
+            if (dot != -1) {
+                subpkg = remainder.substring(0, dot);
+            } else {
+                subpkg = remainder;
+            }
+            String pkgToPrint = isDefaultPackage ? subpkg : desiredPackage + "." + subpkg;
+            if (!alreadyPrinted.add(pkgToPrint))
+                continue;
+            page.println("<li> " + linkToPkg(req, pkgToPrint)
+                         + " (" + getEvalCountForTree(evalsByPkg, pkgToPrint) + ")</li>");
+        }
+        page.println("</li>");
+        page.println("</li>");
+        page.println("</ul>");
+    }
+
+    private String linkToPkg(HttpServletRequest req, String pkg) {
+        String escaped = StringEscapeUtils.escapeHtml(pkg);
+        try {
+            return "<a href=\"" + req.getRequestURI() + "?package=" + URLEncoder.encode(escaped, "UTF-8") + "\">"
+                   + escaped + "</a>";
+        } catch (UnsupportedEncodingException e) {
+            LOGGER.log(Level.SEVERE, pkg, e);
+            return "(ERROR)";
+        }
+    }
+
+    private int getEvalCountForTree(Map<String, Integer> evalsByPkg, String rootPackage) {
+        int x = 0;
+        for (Entry<String, Integer> entry : evalsByPkg.entrySet()) {
+            if (isPackageOrSubPackage(rootPackage, entry.getKey()))
+                x += entry.getValue();
+        }
+        return x;
+    }
+
+    @SuppressWarnings({"SimplifiableIfStatement"})
+    private static boolean isPackageOrSubPackage(String possibleParent, String possibleChild) {
+        if (possibleParent.equals(""))
+            return true;
+        return possibleChild.equals(possibleParent) || possibleChild.startsWith(possibleParent + ".");
     }
 
     @SuppressWarnings({"unchecked"})
@@ -90,16 +227,9 @@ public class ReportServlet extends AbstractFlybushServlet {
         }
         query.closeAll();
 
-        Query userQuery = pm.newQuery("select from " + persistenceHelper.getDbUserClass().getName());
-        List<DbUser> userObjs = (List<DbUser>) userQuery.execute();
-        Set<String> users = Sets.newHashSet();
-        for (DbUser userObj : userObjs) {
-            users.add(userObj.getEmail());
-        }
-        userQuery.closeAll();
         LineChart chart = null;
         if (!evalsPerWeek.isEmpty())
-            chart = buildUserTimeline(email, evalsPerWeek, newIssuesByWeek);
+            chart = buildEvaluationTimeline("Evaluations over Time - " + email, evalsPerWeek, newIssuesByWeek);
 
         resp.setStatus(200);
         resp.getOutputStream().print(
@@ -107,15 +237,30 @@ public class ReportServlet extends AbstractFlybushServlet {
                 "<head><title>" + StringEscapeUtils.escapeHtml(email) + " - FindBugs Cloud Stats</title></head>" +
                 "<body>");
 
+        Set<String> users = getAllUserEmails(pm);
         printUserStatsSelector(req, resp, users, email);
 
-        if (chart != null)
-            showChartImg(resp, chart.toURLString());
-        else
+        if (chart == null) {
             resp.getOutputStream().println("Oops! No evaluations uploaded by " + StringEscapeUtils.escapeHtml(email));
+            return;
+        }
+        showChartImg(resp, chart.toURLString());
     }
 
-    private LineChart buildUserTimeline(String email, Map<Long, Integer> evalsPerWeek, Map<Long, Integer> newIssuesByWeek) {
+    @SuppressWarnings({"unchecked"})
+    private Set<String> getAllUserEmails(PersistenceManager pm) {
+        Query userQuery = pm.newQuery("select from " + persistenceHelper.getDbUserClass().getName());
+        List<DbUser> userObjs = (List<DbUser>) userQuery.execute();
+        Set<String> users = Sets.newHashSet();
+        for (DbUser userObj : userObjs) {
+            users.add(userObj.getEmail());
+        }
+        userQuery.closeAll();
+        return users;
+    }
+
+    private LineChart buildEvaluationTimeline(String title,
+                                              Map<Long, Integer> evalsPerWeek, Map<Long, Integer> newIssuesByWeek) {
         int maxEvalsPerWeek = Collections.max(evalsPerWeek.values());
         List<Double> evalsData = Lists.newArrayList();
         List<String> labels = Lists.newArrayList();
@@ -139,7 +284,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         LineChart chart = GCharts.newLineChart(evalsLine, issuesLine);
         chart.addXAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
         chart.addYAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, maxEvalsPerWeek));
-        chart.setTitle("Evaluations over Time - " + email);
+        chart.setTitle(title);
         chart.setDataEncoding(DataEncoding.TEXT);
         chart.setSize(800, 350);
         return chart;
@@ -179,10 +324,8 @@ public class ReportServlet extends AbstractFlybushServlet {
             increment(totalCountByUser, email);
             issueCountByUser.put(email, issuesByUser.get(email).size());
 
-            String pkg = issue.getPrimaryClass();
-            if (pkg != null && pkg.indexOf('.') != -1) {
-                // get package name
-                pkg = pkg.substring(0, pkg.lastIndexOf('.'));
+            String pkg = getPackageName(issue.getPrimaryClass());
+            if (pkg != null) {
                 increment(evalCountByPkg, pkg);
                 issuesByPkg.put(pkg, issueHash);
             }
@@ -220,12 +363,24 @@ public class ReportServlet extends AbstractFlybushServlet {
         page.println("<br><br>");
 
         printUserStatsSelector(req, resp, seenUsers, null);
+        printPackageForm(req, resp, "");
 
         showChartImg(resp, evalsByPkgChart.toURLString());
         page.println("<br><br>");
         showChartImg(resp, evalsByUserChart.toURLString());
         page.println("<br><br>");
         showChartImg(resp, histogram.toURLString());
+    }
+
+    private String getPackageName(String className) {
+        if (className == null) {
+            return null;
+        }
+        int lastDot = className.lastIndexOf('.');
+        if (lastDot == -1) {
+            return null;
+        }
+        return className.substring(0, lastDot);
     }
 
     private void printUserStatsSelector(HttpServletRequest req, HttpServletResponse resp,

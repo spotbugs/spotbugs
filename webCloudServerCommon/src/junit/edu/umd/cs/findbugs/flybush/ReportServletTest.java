@@ -300,6 +300,38 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         assertTrue(chd, chd.contains("|100.0,96.6,93.1"));
     }
 
+    public void testGraphEvalsByPackageOverTime() throws Exception {
+        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
+        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
+        DbIssue foundIssue3 = createDbIssue("fad4", persistenceHelper);
+        foundIssue1.setPrimaryClass("net.kano.test.Blah");
+        foundIssue2.setPrimaryClass("net.kano.test.Blah2");
+        foundIssue3.setPrimaryClass("net.kano.test2.Blah");
+        // week 1
+        createEvaluation(foundIssue1, "someone", days(2));
+        createEvaluation(foundIssue1, "someone-else", days(2));
+        createEvaluation(foundIssue1, "someone", days(3));
+
+        // week 2
+        createEvaluation(foundIssue2, "someone3", days(9));
+        createEvaluation(foundIssue1, "someone3", days(10));
+
+        // week 4
+        createEvaluation(foundIssue3, "someone3", days(24));
+        createEvaluation(foundIssue1, "someone3", days(25));
+        createEvaluation(foundIssue2, "someone3", days(25));
+
+        getPersistenceManager().makePersistentAll(foundIssue1, foundIssue2, foundIssue3);
+
+        prepareRequestAndResponse("/stats", null);
+        Mockito.when(mockRequest.getParameter("package")).thenReturn("net.kano.test");
+        servlet.doGet(mockRequest, mockResponse);
+
+        String url = generatedCharts.get(0);
+        checkParam(url, "chxl", "1:|3/14/10|3/21/10|3/28/10|4/4/10|4/11/10");
+        checkParam(url, "chd", "t:0.0,100.0,66.7,0.0,66.7|0.0,33.3,33.3,0.0,0.0");
+    }
+
     // =============================== end of tests ==================================
     
     private void checkParam(String url, String pname, String expectedValue)
