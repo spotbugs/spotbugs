@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.JumpInfo;
 
 /**
  * Base class for Detectors that want to scan the bytecode
@@ -32,11 +33,24 @@ import edu.umd.cs.findbugs.OpcodeStack;
  */
 abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
 
+	/**
+     * @author pwilliam
+     */
+    public abstract static class WithCustomJumpInfo extends OpcodeStackDetector {
+    	public abstract JumpInfo customJumpInfo();
+    }
+
 	protected OpcodeStack stack;
 	
 	
+	public boolean shouldVisitCode(Code obj) {
+		return true;
+	}
+	
 	@Override
 	public void visitCode(Code obj) {
+		if (!shouldVisitCode(obj))
+			return;
 		stack = new OpcodeStack();
 		stack.resetForMethodEntry(this);
 		super.visitCode(obj);

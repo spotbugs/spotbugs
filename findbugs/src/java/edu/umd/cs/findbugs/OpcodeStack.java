@@ -57,6 +57,7 @@ import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -2142,7 +2143,7 @@ public class OpcodeStack implements Constants2
 	 private Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
 	 private Map<Integer, List<Item>> jumpStackEntries = new HashMap<Integer, List<Item>>();
 	 private BitSet jumpEntryLocations = new BitSet();
-	 static class JumpInfo {
+	 public static class JumpInfo {
 		 final Map<Integer, List<Item>> jumpEntries;
 		 final Map<Integer, List<Item>> jumpStackEntries;
 		 final BitSet jumpEntryLocations;
@@ -2164,17 +2165,30 @@ public class OpcodeStack implements Constants2
         	JavaClass jclass = getJavaClass(analysisCache, descriptor.getClassDescriptor());
     		
     		Code code = method.getCode();
-    		final OpcodeStack stack = new OpcodeStack();
     		if (code == null) {
     			return null;
     		}
+    		final OpcodeStack stack = new OpcodeStack();
+    		
     		DismantleBytecode branchAnalysis = new DismantleBytecode() {
 				@Override
 				public void sawOpcode(int seen) {
 					stack.sawOpcode(this, seen);
 				}
     		};
-    		branchAnalysis.setupVisitorForClass(jclass);
+    		return computeJumpInfo(jclass, method, stack, branchAnalysis);
+        }
+
+		/**
+         * @param jclass
+         * @param method
+         * @param stack
+         * @param branchAnalysis
+         * @return
+         */
+        public static JumpInfo computeJumpInfo(JavaClass jclass, Method method, final OpcodeStack stack,
+                DismantleBytecode branchAnalysis) {
+	        branchAnalysis.setupVisitorForClass(jclass);
     		int oldCount = 0;
     		while (true) {
 			   stack.resetForMethodEntry0(ClassName.toSlashedClassName(jclass.getClassName()), method);
@@ -2238,7 +2252,8 @@ public void initialize() {
 	registerTestedFoundToBeNonnegative = -1;
 	setReachOnlyByBranch(false);
 }
-	 public int resetForMethodEntry(final DismantleBytecode visitor) {
+
+	public int resetForMethodEntry(final DismantleBytecode visitor) {
 		this.v = visitor;
 		initialize();
 
@@ -2248,20 +2263,33 @@ public void initialize() {
 			return result;
 
 		if (useIterativeAnalysis) {
-			IAnalysisCache analysisCache = Global.getAnalysisCache();
-			XMethod xMethod = XFactory.createXMethod(v.getThisClass(), v.getMethod());
-			try {
-				JumpInfo jump = analysisCache.getMethodAnalysis(JumpInfo.class, xMethod.getMethodDescriptor());
-				if (jump != null) {
-					learnFrom(jump);
-				}
-			} catch (CheckedAnalysisException e) {
-				AnalysisContext.logError("Error getting jump information", e);
+			JumpInfo jump = null;
+			if (visitor instanceof OpcodeStackDetector.WithCustomJumpInfo) {
+				jump = ((OpcodeStackDetector.WithCustomJumpInfo)visitor).customJumpInfo();
 			}
+			
+			if (jump == null)
+				jump = getJumpInfo();
+			if (jump != null) {
+				learnFrom(jump);
+			}
+
 		}
 
 		return result;
 
+	}
+
+
+	private JumpInfo getJumpInfo() {
+		IAnalysisCache analysisCache = Global.getAnalysisCache();
+		XMethod xMethod = XFactory.createXMethod(v.getThisClass(), v.getMethod());
+		try {
+			return  analysisCache.getMethodAnalysis(JumpInfo.class, xMethod.getMethodDescriptor());
+		} catch (CheckedAnalysisException e) {
+			AnalysisContext.logError("Error getting jump information", e);
+			return null;
+		}
 	}
 
 	 private int resetForMethodEntry0(PreorderVisitor visitor) {
