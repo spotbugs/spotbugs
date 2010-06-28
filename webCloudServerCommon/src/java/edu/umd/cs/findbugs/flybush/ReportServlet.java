@@ -162,6 +162,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         Map<Long, Integer> evalsByWeek = Maps.newHashMap();
         Map<Long, Integer> issueCountByWeek = Maps.newHashMap();
         Map<Long, Integer> userCountByWeek = Maps.newHashMap();
+        Map<String,Integer> evalCountByPkg = Maps.newHashMap();
         Set<String> seenIssues = Sets.newHashSet();
         Set<String> seenUsers = Sets.newHashSet();
 
@@ -170,10 +171,18 @@ public class ReportServlet extends AbstractFlybushServlet {
             if (email == null)
                 continue;
 
-            String issueHash = eval.getIssue().getHash();
+            DbIssue issue = eval.getIssue();
+            String issueHash = issue.getHash();
             issuesByUser.put(email, issueHash);
             increment(totalCountByUser, email);
             issueCountByUser.put(email, issuesByUser.get(email).size());
+
+            String pkg = issue.getPrimaryClass();
+            if (pkg != null && pkg.indexOf('.') != -1) {
+                // get package name
+                pkg = pkg.substring(0, pkg.lastIndexOf('.'));
+                increment(evalCountByPkg, pkg);
+            }
 
             long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
             increment(evalsByWeek, beginningOfWeek);
@@ -188,6 +197,8 @@ public class ReportServlet extends AbstractFlybushServlet {
         BarChart histogram = buildEvaluatorsHistogram(issuesByUser);
 
         BarChart evalsByUserChart = buildByUserChart(totalCountByUser, issueCountByUser);
+
+        BarChart evalsByPkgChart = buildByPkgChart(evalCountByPkg);
 
         LineChart evalsOverTimeChart = createTimelineChart(evalsByWeek, issueCountByWeek, userCountByWeek);
 
@@ -207,6 +218,8 @@ public class ReportServlet extends AbstractFlybushServlet {
 
         printUserStatsSelector(req, resp, seenUsers, null);
 
+        showChartImg(resp, evalsByPkgChart.toURLString());
+        page.println("<br><br>");
         showChartImg(resp, evalsByUserChart.toURLString());
         page.println("<br><br>");
         showChartImg(resp, histogram.toURLString());
@@ -443,13 +456,39 @@ public class ReportServlet extends AbstractFlybushServlet {
         return weekCal.getTimeInMillis();
     }
 
+    private BarChart buildByPkgChart(Map<String, Integer> evalCountByPkg) {
+        List<String> labels = Lists.newArrayList();
+        List<Double> data = Lists.newArrayList();
+        int maxPerPkg = Collections.max(evalCountByPkg.values());
+        int count = 0;
+        List<Entry<String, Integer>> entries = sortEntriesByValue(evalCountByPkg.entrySet());
+        Collections.reverse(entries);
+        for (Entry<String, Integer> entry : entries) {
+            labels.add(entry.getKey());
+            data.add(entry.getValue() * 100.0 / maxPerPkg);
+            if (count++ >= 19)
+                 break;
+        }
+        Collections.reverse(labels);
+        BarChart chart = GCharts.newBarChart(Plots.newBarChartPlot(Data.newData(data), Color.ORCHID, "Initial evaluation"));
+
+        chart.setTitle("Evaluations Per Package");
+        chart.setGrid(5 / (maxPerPkg / 100.0), 100, 4, 1);
+        chart.addYAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
+        chart.setBarWidth(BarChart.AUTO_RESIZE);
+        chart.setSize(600, 500);
+        chart.setHorizontal(true);
+        chart.setDataEncoding(DataEncoding.TEXT);
+        return chart;
+    }
+
     private BarChart buildByUserChart(Map<String, Integer> totalCountByUser,
                                       Map<String, Integer> issueCountByUser) {
         List<String> labels = Lists.newArrayList();
         List<Double> totals = Lists.newArrayList();
         List<Double> issues = Lists.newArrayList();
         int max = Collections.max(totalCountByUser.values());
-        for (Entry<String, Integer> entry : sortEntries(totalCountByUser.entrySet())) {
+        for (Entry<String, Integer> entry : sortEntriesByValue(totalCountByUser.entrySet())) {
             String email = entry.getKey();
             int issueCount = issueCountByUser.get(email);
             int evalCount = entry.getValue();
@@ -475,7 +514,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         return chart;
     }
 
-    private List<Entry<String, Integer>> sortEntries(Collection<Entry<String, Integer>> entries) {
+    private List<Entry<String, Integer>> sortEntriesByValue(Collection<Entry<String, Integer>> entries) {
         List<Entry<String, Integer>> result = new ArrayList<Entry<String, Integer>>(entries);
         Collections.sort(result, new Comparator<Entry<String, Integer>>() {
             public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {

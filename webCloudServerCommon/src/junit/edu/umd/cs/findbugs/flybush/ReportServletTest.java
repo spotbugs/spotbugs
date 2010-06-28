@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.flybush;
 
+import com.google.common.collect.Lists;
 import org.mockito.Mockito;
 
 import javax.servlet.http.HttpServletResponse;
@@ -50,7 +51,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
 
         executeGet("/stats");
 
-        String url = generatedCharts.get(2);
+        String url = generatedCharts.get(3);
         checkParam(url, "chxl", "0:|someone-else|someone|someone3");
         checkParam(url, "chd", "t:50.0,50.0,25.0|50.0,25.0,0.0");
     }
@@ -69,7 +70,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
 
         executeGet("/stats");
 
-        String url = generatedCharts.get(2);
+        String url = generatedCharts.get(3);
         checkParam(url, "chxl", "0:|someone-else|someone|lots");
         checkParam(url, "chd", "t:0.8,0.8,0.8|99.2,0.8,0.0");
     }
@@ -159,7 +160,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
 
         executeGet("/stats");
 
-        String url = generatedCharts.get(3);
+        String url = generatedCharts.get(4);
         checkParam(url, "chxl", "1:|1|2|3|4|5|2:|No. of evaluators");
         checkParam(url, "chd", "t:100.0,0.0,66.7,0.0,33.3");
     }
@@ -235,12 +236,6 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
 
         executeGet("/stats");
 
-        // list of recent evals
-        // upload project name, invocation end time
-        // store invocation per issue
-        // remove comment field
-        
-
         int last = 0;
         String page = outputCollector.toString();
         for (String email : Arrays.asList("someone", "someone-else", "someone3")) {
@@ -248,6 +243,53 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
             assertTrue("could not find combo box item for " + email + ": " + page,
                        last != -1);
         }
+    }
+
+    public void testGraphEvalsByPackage() throws Exception {
+        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
+        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
+        DbIssue foundIssue3 = createDbIssue("fad4", persistenceHelper);
+
+        // two in same package, one in its own
+        foundIssue1.setPrimaryClass("edu.umd.cs.findbugs.MyClass");
+        foundIssue2.setPrimaryClass("edu.umd.cs.findbugs.OtherClass");
+        foundIssue3.setPrimaryClass("edu.umd.cs.findbugs.sub.SomeClass");
+
+        createEvaluation(foundIssue1, "someone", days(2));
+        createEvaluation(foundIssue1, "someone-else", days(2));
+        createEvaluation(foundIssue1, "someone", days(2));
+
+        createEvaluation(foundIssue2, "someone3", days(2));
+        createEvaluation(foundIssue2, "someone3", days(2));
+
+        createEvaluation(foundIssue3, "someone3", days(2));
+
+        getPersistenceManager().makePersistentAll(foundIssue1, foundIssue2, foundIssue3);
+
+        executeGet("/stats");
+
+        String url = generatedCharts.get(2);
+        checkParam(url, "chxl", "0:|edu.umd.cs.findbugs.sub|edu.umd.cs.findbugs");
+        checkParam(url, "chd", "t:100.0,20.0");
+    }
+
+    public void testGraphEvalsByPackageMoreThan20() throws Exception {
+        List<DbIssue> issues = Lists.newArrayList();
+        for (int i = 0; i < 30; i++) {
+            DbIssue issue = createDbIssue("fad2", persistenceHelper);
+            issue.setPrimaryClass("edu.umd.cs.findbugs.sub" + i + ".MyClass");
+            createEvaluation(issue, "someone", days(2));
+            issues.add(issue);
+        }
+        getPersistenceManager().makePersistentAll(issues);
+
+        executeGet("/stats");
+
+        String url = generatedCharts.get(2);
+        Map<String, List<String>> params = getParams(url);
+        List<String> pvalue = params.get("chxl");
+        // assert that there are only 20 packages shown
+        assertEquals(21, pvalue.get(0).split("\\|").length);
     }
 
     // =============================== end of tests ==================================
