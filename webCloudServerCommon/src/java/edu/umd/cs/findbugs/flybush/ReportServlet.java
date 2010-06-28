@@ -93,10 +93,13 @@ public class ReportServlet extends AbstractFlybushServlet {
         Set<String> seenIssues = Sets.newHashSet();
         Map<String, Integer> evalsByPkg = Maps.newHashMap();
         List<String> lines = Lists.newArrayList();
+        int parentEvals = 0;
         for (DbEvaluation eval : evals) {
             String epkg = getPackageName(eval.getIssue().getPrimaryClass());
             if (epkg == null)
                 continue;
+            if (isParentOrCousin(epkg, desiredPackage))
+                parentEvals++;
             if (!isPackageOrSubPackage(desiredPackage, epkg)) {
                 continue;
             }
@@ -128,7 +131,7 @@ public class ReportServlet extends AbstractFlybushServlet {
 
         printPackageForm(req, resp, desiredPackage);
 
-        printPackageTree(req, resp, desiredPackage, evalsByPkg);
+        printPackageTree(req, resp, desiredPackage, parentEvals, evalsByPkg);
 
         page.println("<br><br>");
 
@@ -140,6 +143,14 @@ public class ReportServlet extends AbstractFlybushServlet {
             showChartImg(resp, subpkgChart.toURLString());
 
         printEvalsTable(resp, lines);
+    }
+
+    private static boolean isParentOrCousin(String possibleParent, String pkg) {
+        int dot = pkg.lastIndexOf('.');
+        if (dot == -1)
+            return false;
+        String parent = pkg.substring(0, dot);
+        return possibleParent.equals(parent) || possibleParent.startsWith(parent + ".");
     }
 
     private String backButton(HttpServletRequest req) {
@@ -156,18 +167,22 @@ public class ReportServlet extends AbstractFlybushServlet {
     }
 
     private void printPackageTree(HttpServletRequest req, HttpServletResponse resp,
-                                  String desiredPackage, Map<String, Integer> evalsByPkg) throws IOException {
+                                  String desiredPackage, int parentPkgEvalCount,
+                                  Map<String, Integer> evalsByPkg) throws IOException {
         ServletOutputStream page = resp.getOutputStream();
         boolean isDefaultPackage = desiredPackage.equals("");
         page.println("<ul>");
         if (desiredPackage.contains("."))
-            page.println("<li> " + linkToPkg(req, desiredPackage.substring(0, desiredPackage.lastIndexOf('.'))));
+            page.println("<li> " + linkToPkg(req, desiredPackage.substring(0, desiredPackage.lastIndexOf('.')))
+                         + " (" + parentPkgEvalCount + ")");
         else if (isDefaultPackage)
             page.println("<li>");
         else
-            page.println("<li> <a href=\"" + req.getRequestURI() + "?package=*\">&lt;default package&gt;</a>");
+            page.println("<li> <a href=\"" + req.getRequestURI() + "?package=*\">&lt;default package&gt;</a> ("
+                         + parentPkgEvalCount + ")");
         page.println("<ul>");
-        page.println("<li> " + (isDefaultPackage ? "&lt;default package&gt;" : escapeHtml(desiredPackage)));
+        page.println("<li> " + (isDefaultPackage ? "&lt;default package&gt;" : escapeHtml(desiredPackage))
+                     + " (" + sum(evalsByPkg.values()) + ")");
         page.println("<ul>");
         Set<String> alreadyPrinted = Sets.newHashSet();
         for (String pkg : Sets.newTreeSet(evalsByPkg.keySet())) {
@@ -190,6 +205,14 @@ public class ReportServlet extends AbstractFlybushServlet {
         page.println("</li>");
         page.println("</li>");
         page.println("</ul>");
+    }
+
+    private int sum(Iterable<Integer> values) {
+        int x = 0;
+        for (Integer value : values) {
+            x += value;
+        }
+        return x;
     }
 
     private String linkToPkg(HttpServletRequest req, String pkg) {
