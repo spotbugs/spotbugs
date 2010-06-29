@@ -170,7 +170,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 						List<? extends ReferenceType> bP = bG.getParameters();
 						if (aP.size() != bP.size())
 							break;
-						ArrayList<ReferenceType> result = new ArrayList(aP.size());
+						ArrayList<ReferenceType> result = new ArrayList<ReferenceType>(aP.size());
 						for(int i = 0; i < aP.size(); i++)
 							result.add(mergeReferenceTypes(aP.get(i), bP.get(i)));
 							
