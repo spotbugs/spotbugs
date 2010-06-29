@@ -207,11 +207,13 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		try {
 			XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, operandClass);
         		
-        	String sig = xclass.getSourceSignature();
-        	if (sig == null) return false;
-        	int j = sig.indexOf('>');
-        	sig = sig.substring(j+1);
-        			
+        	String sig0 = xclass.getSourceSignature();
+        	if (sig0 == null) return false;
+        	int j = sig0.indexOf('>');
+        	String sig = sig0.substring(j+1);
+        	
+        	AnalysisContext.logError("Call to " + this.getClass().getSimpleName() + ".isGenericCollection( " + operandClass + ")"
+        				+", sig=" + sig0);
         	for(String s : GenericUtilities.split(sig)) {
         		int i = s.indexOf('<');
         		if (i < 0) continue;
