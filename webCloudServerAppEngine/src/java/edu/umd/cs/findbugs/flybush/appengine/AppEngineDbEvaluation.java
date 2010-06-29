@@ -11,6 +11,7 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import java.util.Set;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class AppEngineDbEvaluation implements DbEvaluation {
@@ -29,6 +30,7 @@ public class AppEngineDbEvaluation implements DbEvaluation {
     @Persistent private AppEngineDbIssue issue;
     @Persistent private long when;
     @Persistent private String primaryClass;
+    @Persistent private Set<String> packages;
 
     public Comparable<?> getWho() {
 		return who;
@@ -58,6 +60,16 @@ public class AppEngineDbEvaluation implements DbEvaluation {
     @Override
     public void setPrimaryClass(String primaryClass) {
         this.primaryClass = primaryClass;
+    }
+
+    @Override
+    public Set<String> getPackages() {
+        return packages;
+    }
+
+    @Override
+    public void setPackages(Set<String> packages) {
+        this.packages = packages;
     }
 
     public void setInvocation(DbInvocation invocation) {

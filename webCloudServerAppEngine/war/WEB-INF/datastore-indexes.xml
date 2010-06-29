@@ -4,4 +4,8 @@
         <property name="email" direction="asc"/>
         <property name="when" direction="asc"/>
     </datastore-index>
+    <datastore-index kind="AppEngineDbEvaluation" ancestor="false" source="auto">
+        <property name="packages" direction="asc"/>
+        <property name="when" direction="asc"/>
+    </datastore-index>
 </datastore-indexes>

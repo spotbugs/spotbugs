@@ -1,5 +1,7 @@
 package edu.umd.cs.findbugs.flybush;
 
+import java.util.Set;
+
 public interface DbEvaluation extends Comparable<DbEvaluation> {
 
     String getDesignation();
@@ -23,6 +25,9 @@ public interface DbEvaluation extends Comparable<DbEvaluation> {
 
     String getPrimaryClass();
     void setPrimaryClass(String primaryClass);
+
+    Set<String> getPackages();
+    void setPackages(Set<String> packages);
 
     void setInvocation(DbInvocation invocation);
     Object getInvocationKey();

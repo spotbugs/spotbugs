@@ -165,6 +165,8 @@ public abstract class AbstractFlybushServletTest extends TestCase {
         eval.setIssue(issue);
         eval.setWhen(when);
         eval.setWho(user.createKeyObject());
+        eval.setPrimaryClass(issue.getPrimaryClass());
+        eval.setPackages(UpdateServlet.buildPackageList(issue.getPrimaryClass()));
         eval.setEmail(who);
         issue.addEvaluation(eval);
         return eval;

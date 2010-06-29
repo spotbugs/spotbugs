@@ -43,6 +43,8 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
@@ -84,8 +86,9 @@ public class ReportServlet extends AbstractFlybushServlet {
         if (desiredPackage.equals("*"))
             desiredPackage = "";
 
-        Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName() + " order by when");
-        List<DbEvaluation> evals = (List<DbEvaluation>) query.execute();
+        Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName()
+                                  + " where packages.contains(:pkg)" + " order by when");
+        List<DbEvaluation> evals = (List<DbEvaluation>) query.execute(desiredPackage);
 
         Map<Long,Integer> evalsPerWeek = Maps.newHashMap();
         Map<Long,Integer> newIssuesPerWeek = Maps.newHashMap();
@@ -93,13 +96,10 @@ public class ReportServlet extends AbstractFlybushServlet {
         Set<String> seenIssues = Sets.newHashSet();
         Map<String, Integer> evalsByPkg = Maps.newHashMap();
         List<String> lines = Lists.newArrayList();
-        int parentEvals = 0;
         for (DbEvaluation eval : evals) {
             String epkg = getPackageName(eval.getPrimaryClass());
             if (epkg == null)
                 continue;
-            if (isParentOrCousin(epkg, desiredPackage))
-                parentEvals++;
             if (!isPackageOrSubPackage(desiredPackage, epkg)) {
                 continue;
             }
@@ -134,7 +134,7 @@ public class ReportServlet extends AbstractFlybushServlet {
 
         printPackageForm(req, resp, desiredPackage);
 
-        printPackageTree(req, resp, desiredPackage, parentEvals, evalsByPkg);
+        printPackageTree(req, resp, desiredPackage, evalsByPkg);
 
         page.println("<br><br>");
 
@@ -146,14 +146,6 @@ public class ReportServlet extends AbstractFlybushServlet {
             showChartImg(resp, subpkgChart.toURLString());
 
         printEvalsTable(resp, lines);
-    }
-
-    private static boolean isParentOrCousin(String possibleParent, String pkg) {
-        int dot = pkg.lastIndexOf('.');
-        if (dot == -1)
-            return false;
-        String parent = pkg.substring(0, dot);
-        return possibleParent.equals(parent) || possibleParent.startsWith(parent + ".");
     }
 
     private String backButton(HttpServletRequest req) {
@@ -170,19 +162,16 @@ public class ReportServlet extends AbstractFlybushServlet {
     }
 
     private void printPackageTree(HttpServletRequest req, HttpServletResponse resp,
-                                  String desiredPackage, int parentPkgEvalCount,
-                                  Map<String, Integer> evalsByPkg) throws IOException {
+                                  String desiredPackage, Map<String, Integer> evalsByPkg) throws IOException {
         ServletOutputStream page = resp.getOutputStream();
         boolean isDefaultPackage = desiredPackage.equals("");
         page.println("<ul>");
         if (desiredPackage.contains("."))
-            page.println("<li> " + linkToPkg(req, desiredPackage.substring(0, desiredPackage.lastIndexOf('.')))
-                         + " (" + parentPkgEvalCount + ")");
+            page.println("<li> " + linkToPkg(req, desiredPackage.substring(0, desiredPackage.lastIndexOf('.'))));
         else if (isDefaultPackage)
             page.println("<li>");
         else
-            page.println("<li> <a href=\"" + req.getRequestURI() + "?package=*\">&lt;default package&gt;</a> ("
-                         + parentPkgEvalCount + ")");
+            page.println("<li> <a href=\"" + req.getRequestURI() + "?package=*\">&lt;default package&gt;</a>");
         page.println("<ul>");
         page.println("<li> " + (isDefaultPackage ? "&lt;default package&gt;" : escapeHtml(desiredPackage))
                      + " (" + sum(evalsByPkg.values()) + ")");
@@ -299,7 +288,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         page.println("<br><br>Evaluation history:");
         page.println("<div style='overflow:auto;height:400px;border:2px solid black'>\n" +
                      "<table cellspacing=0 border=1 cellpadding=6>\n" +
-                     "<tr><th>Date (UTC)</th><th>User</th><th>Pattern&amp;Class</th><th>Designation</th><th>Comment</th></tr>");
+                     "<tr><th>Date (UTC)</th><th>User</th><th>Class</th><th>Designation</th><th>Comment</th></tr>");
         Collections.reverse(table);
         int odd = 0;
         for (String line : table) {
@@ -311,17 +300,17 @@ public class ReportServlet extends AbstractFlybushServlet {
 
     private static String createEvalsTableEntry(HttpServletRequest req, DbEvaluation eval) {
         return String.format("<td>%s</td>" +
-                                "<td><a href='%s'>%s</a></td>" +
-                                "<td>%s<br>%s</td>" +
-                                "<td>%s</td>" +
-                                "<td>%s</td>",
-                                DATE_TIME_FORMAT.format(new Date(eval.getWhen())).replaceAll(" UTC", ""),
-                                req.getRequestURI() + "?user=" + escapeHtml(eval.getEmail()),
-                                escapeHtml(eval.getEmail()),
-                                ""/*eval.getIssue().getBugPattern()*/,
-                                printPackageLinks(req, eval.getPrimaryClass()),
-                                escapeHtml(eval.getDesignation()),
-                               escapeHtml(eval.getComment()));
+                             "<td><a href='%s'>%s</a></td>" +
+                             "<td>%s</td>" +
+                             "<td>%s</td>" +
+                             "<td>%s</td>",
+                             DATE_TIME_FORMAT.format(new Date(eval.getWhen())).replaceAll(" UTC", ""),
+                             req.getRequestURI() + "?user=" + escapeHtml(eval.getEmail()),
+                             escapeHtml(eval.getEmail()),
+                             /*eval.getIssue().getBugPattern(),*/
+                             printPackageLinks(req, eval.getPrimaryClass()),
+                             escapeHtml(eval.getDesignation()),
+                             escapeHtml(eval.getComment()));
     }
 
     @SuppressWarnings({"StringConcatenationInsideStringBufferAppend"})
@@ -792,7 +781,17 @@ public class ReportServlet extends AbstractFlybushServlet {
 
     /** protected for testing */
     protected void showChartImg(HttpServletResponse resp, String url) throws IOException {
-        resp.getOutputStream().print("<img src='" + url + "'>");
+        Matcher m = Pattern.compile("&chs=(\\d+)x(\\d+)").matcher(url);
+        String width, height;
+        if (m.find()) {
+            width = m.group(1);
+            height = m.group(2);
+        } else {
+            width = "auto";
+            height = "auto";
+        }
+
+        resp.getOutputStream().print("<img src='" + url + "' style=width:" + width + "px;height:" + height + "px>");
     }
 
     @Override

@@ -110,7 +110,8 @@ public class LocalPersistenceHelper implements PersistenceHelper {
     public void convertToOldCommentStyleForTesting(DbEvaluation eval) {
     }
 
-    public void convertToNewCommentStyle(DbEvaluation eval) {
+    public boolean convertToNewCommentStyle(DbEvaluation eval) {
+        return false;
     }
 
     public String getEmail(PersistenceManager pm, Comparable<?> who) {

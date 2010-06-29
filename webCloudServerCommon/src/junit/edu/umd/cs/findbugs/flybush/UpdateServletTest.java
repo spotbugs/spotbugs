@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.flybush;
 
+import com.google.common.collect.Sets;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
@@ -78,6 +79,21 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         executeGet("/update-db-jun29");
         getPersistenceManager().refreshAll(issue);
         assertEquals("my.class", eval.getPrimaryClass());
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public void testUpdateDbJune29Package() throws Exception {
+        DbIssue issue = createDbIssue("fad2");
+        issue.setPrimaryClass("a.b.c.D");
+        DbEvaluation eval = createEvaluation(issue, "someone", 200);
+        eval.setPackages(Sets.<String>newHashSet());
+        getPersistenceManager().makePersistentAll(issue);
+
+        executeGet("/update-db-jun29");
+        getPersistenceManager().refreshAll(issue);
+        assertTrue(eval.getPackages().contains("a"));
+        assertTrue(eval.getPackages().contains("a.b"));
+        assertTrue(eval.getPackages().contains("a.b.c"));
     }
 
     @SuppressWarnings({"unchecked"})
@@ -325,6 +341,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 		createCloudSession(555);
 
         DbIssue dbIssue = createDbIssue("fad");
+        dbIssue.setPrimaryClass("a.b.c.D");
         getPersistenceManager().makePersistent(dbIssue);
 		Evaluation protoEval = createProtoEvaluation();
 		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
@@ -343,7 +360,11 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
 		assertEquals(protoEval.getWhen(), dbEval.getWhen());
 		assertEquals("my@email.com", getDbUser(dbEval.getWho()).getEmail());
-        assertEquals("my.class", dbEval.getPrimaryClass());
+        assertEquals("a.b.c.D", dbEval.getPrimaryClass());
+        assertTrue(dbEval.getPackages().contains("a"));
+        assertTrue(dbEval.getPackages().contains("a.b"));
+        assertTrue(dbEval.getPackages().contains("a.b.c"));
+        assertFalse(dbEval.getPackages().contains("a.b.c.D"));
 		assertNull(dbEval.getInvocationKey());
 	}
 

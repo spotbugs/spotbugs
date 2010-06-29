@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.flybush;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
@@ -33,6 +34,19 @@ public class UpdateServlet extends AbstractFlybushServlet {
     static final int ONE_DAY_IN_MILLIS = 1000*60*60*24;
     @SuppressWarnings({"deprecation"})
     private static final long FINDBUGS_FIRST_RELEASE = new Date("Jan 23, 1996").getTime();
+
+    /** package-private for testing */
+    static Set<String> buildPackageList(String cls) {
+        Set<String> list = Sets.newHashSet();
+        while (true) {
+            int dot = cls.lastIndexOf('.');
+            if (dot == -1)
+                break;
+            cls = cls.substring(0, dot);
+            list.add(cls);
+        }
+        return list;
+    }
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -92,6 +106,10 @@ public class UpdateServlet extends AbstractFlybushServlet {
                 String cls = primaryClasses.get(eval.getIssue().getHash());
                 if (cls != null && !cls.equals(eval.getPrimaryClass())) {
                     eval.setPrimaryClass(cls);
+                    changed = true;
+                }
+                if (cls != null && eval.getPackages() == null || eval.getPackages().isEmpty()) {
+                    eval.setPackages(buildPackageList(cls));
                     changed = true;
                 }
                 if (changed) {
@@ -297,6 +315,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
             dbEvaluation.setIssue(issue);
             issue.addEvaluation(dbEvaluation);
             dbEvaluation.setPrimaryClass(issue.getPrimaryClass());
+            dbEvaluation.setPackages(buildPackageList(issue.getPrimaryClass()));
             pm.makePersistent(issue);
 
             tx.commit();
