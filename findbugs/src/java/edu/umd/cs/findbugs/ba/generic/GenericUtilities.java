@@ -359,18 +359,30 @@ public class GenericUtilities {
 		return types;
 	}
 	
-	public static final List<String>  split(String signature) {
+	public static final List<String>  split(String signature, boolean skipInitialAngleBracket) {
 		List<String> result = new ArrayList<String>();
+		if (signature.charAt(0) != '<')
+			skipInitialAngleBracket = false;
 		int depth = 0;
 		int start = 0;
 		for(int pos = start; pos < signature.length(); pos++) 
 			switch(signature.charAt(pos)) {
-			case '<' : depth++; break;
-			case '>' : depth--; break;
-			case ';' : 
-				if (depth > 0)  break;
-				result.add(signature.substring(start,pos+1));
-				start = pos+1;
+			case '<':
+				depth++;
+				break;
+			case '>':
+				depth--;
+				if (depth == 0 && skipInitialAngleBracket) {
+					skipInitialAngleBracket = false;
+					start = pos + 1;
+				}
+				break;
+			case ';':
+				if (depth > 0)
+					break;
+				String substring = signature.substring(start, pos + 1);
+				result.add(substring);
+				start = pos + 1;
 			}
 		if (depth != 0)
 			throw new IllegalArgumentException("Unbalanced signature: " + signature);
