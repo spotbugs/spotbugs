@@ -603,11 +603,16 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 					GenericSignatureParser p = new GenericSignatureParser(m.getSourceSignature());
 					String rv = p.getReturnTypeSignature();
 					if (rv.charAt(0) != 'T') {
+						try {
 						Type t = GenericUtilities.getType(rv);
 						if (t != null) {
 							assert t.getType() != T_VOID;
 							result = typeMerger.mergeTypes(result, t);
 							foundSomething = true;
+						}
+						} catch (RuntimeException e) {
+							AnalysisContext.logError("Problem analyzing call to " + m, e);
+							break;
 						}
 					}
 				}
