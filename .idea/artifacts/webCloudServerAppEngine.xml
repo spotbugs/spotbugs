@@ -9,10 +9,8 @@
           <element id="module-output" name="webCloudProtocol" />
         </element>
         <element id="directory" name="lib">
-          <element id="file-copy" path="$PROJECT_DIR$/webCloudServerAppEngine/lib/appengine-api-labs-1.3.1.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/webCloudServerAppEngine/lib/jetty-util-6.1.19.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/webCloudServerAppEngine/lib/dyuproject-util-1.1.6.jar" />
-          <element id="file-copy" path="$PROJECT_DIR$/webCloudServerAppEngine/lib/datanucleus-appengine-1.0.5.final.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/webCloudServerAppEngine/lib/geronimo-jpa_3.0_spec-1.1.1.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/webCloudServerAppEngine/lib/protobuf-java-2.3.0.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/webCloudServerAppEngine/lib/datanucleus-core-1.1.5.jar" />
@@ -20,7 +18,6 @@
           <element id="file-copy" path="$PROJECT_DIR$/webCloudServerAppEngine/lib/appengine-api-stubs.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/webCloudServerAppEngine/lib/jdo2-api-2.3-eb.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/webCloudServerAppEngine/lib/datanucleus-jpa-1.1.5.jar" />
-          <element id="file-copy" path="$PROJECT_DIR$/webCloudServerAppEngine/lib/appengine-api-1.0-sdk-1.3.1.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/webCloudServerAppEngine/lib/dyuproject-openid-1.1.6.jar" />
           <element id="library" level="module" name="jetty-util-6.1.19.jar" module-name="webCloudServerCommon" />
           <element id="library" level="module" name="dyuproject-openid-1.1.6.jar" module-name="webCloudServerCommon" />
@@ -32,8 +29,10 @@
           <element id="library" level="module" name="protobuf-java-2.3.0.jar" module-name="webCloudProtocol" />
           <element id="library" level="module" name="wsdl4j-1.5.1.jar" module-name="webCloudClient" />
           <element id="file-copy" path="$PROJECT_DIR$/webCloudServerCommon/lib/guava-r05.jar" />
-          <element id="library" level="module" name="commons-lang" module-name="webCloudServerCommon" />
           <element id="library" level="module" name="commons-lang-2.5.jar" module-name="webCloudServerCommon" />
+          <element id="file-copy" path="$PROJECT_DIR$/webCloudServerAppEngine/lib/appengine-api-1.0-sdk-1.3.4.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/webCloudServerAppEngine/lib/datanucleus-appengine-1.0.7.final.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/webCloudServerAppEngine/lib/appengine-api-labs.jar" />
         </element>
       </element>
       <element id="javaee-facet-resources" facet="webCloudServerAppEngine/web/Web" />
