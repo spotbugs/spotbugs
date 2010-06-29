@@ -46,7 +46,8 @@ public class GenericSignatureParser {
 
 		public boolean hasNext() {
 			return index < signature.length()
-					&& signature.charAt(index) != ')';
+					&& signature.charAt(index) != ')'
+					&& signature.charAt(index) != '^';
 		}
 
 		public String next() {
@@ -105,6 +106,9 @@ public class GenericSignatureParser {
 					done = false;
 					break;
 
+				case ')':
+				case '^':
+					throw new NoSuchElementException("Should have already thrown NoSuchElementException");
 				case 'V':
 				default:
 					throw new IllegalStateException("Invalid method signature: '" + signature + "' : " + signature.substring(index) + " " + result);
