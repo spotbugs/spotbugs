@@ -95,7 +95,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         List<String> lines = Lists.newArrayList();
         int parentEvals = 0;
         for (DbEvaluation eval : evals) {
-            String epkg = getPackageName(eval.getIssue().getPrimaryClass());
+            String epkg = getPackageName(eval.getPrimaryClass());
             if (epkg == null)
                 continue;
             if (isParentOrCousin(epkg, desiredPackage))
@@ -103,23 +103,26 @@ public class ReportServlet extends AbstractFlybushServlet {
             if (!isPackageOrSubPackage(desiredPackage, epkg)) {
                 continue;
             }
-            issuesByPkg.put(epkg, eval.getIssue().getHash());
+            String issueHash = eval.getIssue().getHash();
+            issuesByPkg.put(epkg, issueHash);
             increment(evalsByPkg, epkg);
             long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
             increment(evalsPerWeek, beginningOfWeek);
-            if (seenIssues.add(eval.getIssue().getHash()))
+            if (seenIssues.add(issueHash))
                 increment(newIssuesPerWeek, beginningOfWeek);
             lines.add(createEvalsTableEntry(req, eval));
         }
+        query.closeAll();
+
         LineChart timelineChart = null;
         BarChart subpkgChart = null;
         if (evalsPerWeek.size() != 0) {
-            timelineChart = buildEvaluationTimeline("Evaluations & Issues - " + desiredPackage + " (recursive)",
-                                                      evalsPerWeek, newIssuesPerWeek);
+            timelineChart = buildEvaluationTimeline(
+                    "Evaluations & Issues - " + desiredPackage + " (recursive)",
+                    evalsPerWeek, newIssuesPerWeek);
             if (evalsByPkg.size() > 1)
                 subpkgChart = buildByPkgChart(issuesByPkg, evalsByPkg);
         }
-
 
         resp.setStatus(200);
         ServletOutputStream page = resp.getOutputStream();
@@ -315,8 +318,8 @@ public class ReportServlet extends AbstractFlybushServlet {
                                 DATE_TIME_FORMAT.format(new Date(eval.getWhen())).replaceAll(" UTC", ""),
                                 req.getRequestURI() + "?user=" + escapeHtml(eval.getEmail()),
                                 escapeHtml(eval.getEmail()),
-                                eval.getIssue().getBugPattern(),
-                                printPackageLinks(req, eval.getIssue().getPrimaryClass()),
+                                ""/*eval.getIssue().getBugPattern()*/,
+                                printPackageLinks(req, eval.getPrimaryClass()),
                                 escapeHtml(eval.getDesignation()),
                                escapeHtml(eval.getComment()));
     }
@@ -414,13 +417,12 @@ public class ReportServlet extends AbstractFlybushServlet {
             if (email == null)
                 continue;
 
-            DbIssue issue = eval.getIssue();
-            String issueHash = issue.getHash();
+            String issueHash = eval.getIssue().getHash();
             issuesByUser.put(email, issueHash);
             increment(totalCountByUser, email);
             issueCountByUser.put(email, issuesByUser.get(email).size());
 
-            String pkg = getPackageName(issue.getPrimaryClass());
+            String pkg = getPackageName(eval.getPrimaryClass());
             if (pkg != null) {
                 increment(evalCountByPkg, pkg);
                 issuesByPkg.put(pkg, issueHash);
