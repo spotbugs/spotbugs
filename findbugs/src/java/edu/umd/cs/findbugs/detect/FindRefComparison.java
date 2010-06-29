@@ -551,7 +551,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 
 		@Override
-		protected Type mergeReferenceTypes(ReferenceType aRef, ReferenceType bRef) throws DataflowAnalysisException {
+		protected ReferenceType mergeReferenceTypes(ReferenceType aRef, ReferenceType bRef) throws DataflowAnalysisException {
 			byte aType = aRef.getType();
 			byte bType = bRef.getType();
 

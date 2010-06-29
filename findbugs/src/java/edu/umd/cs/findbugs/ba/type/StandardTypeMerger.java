@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
@@ -29,6 +32,8 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
+import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 
 /**
  * A TypeMerger which applies standard Java semantics
@@ -130,7 +135,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 	 * @param bRef a ReferenceType
 	 * @return the merged Type
 	 */
-	protected Type mergeReferenceTypes(ReferenceType aRef, ReferenceType bRef) throws DataflowAnalysisException {
+	protected ReferenceType mergeReferenceTypes(ReferenceType aRef, ReferenceType bRef) throws DataflowAnalysisException {
 		if (aRef.equals(bRef)) return aRef;
 		byte aType = aRef.getType();
 		byte bType = bRef.getType();
@@ -148,9 +153,41 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 				updateExceptionSet(union, (ObjectType) aRef);
 				updateExceptionSet(union, (ObjectType) bRef);
 
-				return ExceptionObjectType.fromExceptionSet(union);
+				Type t = ExceptionObjectType.fromExceptionSet(union);
+				if (t instanceof ReferenceType) 
+					return (ReferenceType) t;
+				
 			}
 
+			if (aRef instanceof GenericObjectType && bRef instanceof GenericObjectType 
+					&& aRef.getSignature().equals(bRef.getSignature())) {
+				GenericObjectType aG = (GenericObjectType) aRef;
+				GenericObjectType bG = (GenericObjectType) bRef;
+				if (aG.getTypeCategory() == bG.getTypeCategory()) {
+					switch (aG.getTypeCategory()) {
+					case PARAMETERIZED:
+						List<? extends ReferenceType> aP = aG.getParameters();
+						List<? extends ReferenceType> bP = bG.getParameters();
+						if (aP.size() != bP.size())
+							break;
+						ArrayList<ReferenceType> result = new ArrayList(aP.size());
+						for(int i = 0; i < aP.size(); i++)
+							result.add(mergeReferenceTypes(aP.get(i), bP.get(i)));
+							
+						GenericObjectType rOT = GenericUtilities.getType(aG.getClassName(), result);
+						return rOT;
+						
+					}
+				
+					
+				}
+				
+				
+			} else if (aRef instanceof GenericObjectType) {
+				aRef = ObjectTypeFactory.getInstance( aRef.getSignature());
+			} else if (bRef instanceof GenericObjectType) {
+				bRef = ObjectTypeFactory.getInstance( bRef.getSignature());
+			}
 			if (Subtypes2.ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES) {
 				return AnalysisContext.currentAnalysisContext().getSubtypes2().getFirstCommonSuperclass(aRef, bRef);
 			} else {
