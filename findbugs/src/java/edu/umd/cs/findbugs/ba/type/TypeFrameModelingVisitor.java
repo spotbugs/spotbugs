@@ -628,10 +628,12 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			}
 			
 			
+		} catch (RuntimeException e) {
+			AnalysisContext.logError("Problem analyzing call to " + className + "." + methodName + signature, e);
 		} catch (DataflowAnalysisException e) {
-			AnalysisContext.logError("Ooops", e);
+			AnalysisContext.logError("Problem analyzing call to " + className + "." + methodName + signature, e);
 		} catch (ClassNotFoundException e) {
-			AnalysisContext.logError("Ooops", e);
+			AnalysisContext.logError("Problem analyzing call to " + className + "." + methodName + signature, e);
 		}
 		
 		consumeStack(obj);
