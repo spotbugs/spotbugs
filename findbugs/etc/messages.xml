@@ -2259,7 +2259,7 @@ will need to be changed in order to compile it in later versions of Java.</p>
 
 <BugPattern type="DP_DO_INSIDE_DO_PRIVILEGED">
     <ShortDescription>Method invoked that should be only be invoked inside a doPrivileged block</ShortDescription>
-    <LongDescription>{1} invokes {2}, which should be invoked from within a doPrivileged block</LongDescription>
+    <LongDescription>invocation of {2}, which should be invoked from within a doPrivileged block, in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> This code invokes a method that requires a security permission check.
@@ -2270,7 +2270,7 @@ will need to be changed in order to compile it in later versions of Java.</p>
   </BugPattern>
 <BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED"> <!-- misspelled for backward compatibility -->
     <ShortDescription>Method invoked that should be only be invoked inside a doPrivileged block</ShortDescription>
-    <LongDescription>{1} invokes {2}, which should be invoked from within a doPrivileged block</LongDescription>
+    <LongDescription>invocation of {2}, which should be invoked from within a doPrivileged block, in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> This code invokes a method that requires a security permission check.
@@ -2342,7 +2342,7 @@ Consider using <code>java.net.URI</code> instead.
   </BugPattern>
   <BugPattern type="DMI_BLOCKING_METHODS_ON_URL">
     <ShortDescription>The equals and hashCode methods of URL are blocking</ShortDescription>
-    <LongDescription>{1} invokes {2}, which blocks to do domain name resolution</LongDescription>
+    <LongDescription>invocation of {2}, which blocks to do domain name resolution, in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> The equals and hashCode
@@ -2355,7 +2355,7 @@ Consider using <code>java.net.URI</code> instead.
   </BugPattern>
   <BugPattern type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION">
     <ShortDescription>Can't use reflection to check for presence of annotation without runtime retention</ShortDescription>
-    <LongDescription>{1} uses reflection to check for the presence the annotation {3} which doesn't have runtime retention</LongDescription>
+    <LongDescription>use of reflection to check for the presence the annotation {3} which doesn't have runtime retention, in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> Unless an annotation has itself been annotated with  @Retention(RetentionPolicy.RUNTIME), the annotation can't be observed using reflection
@@ -2771,7 +2771,7 @@ method.
 
   <BugPattern type="FI_EXPLICIT_INVOCATION">
     <ShortDescription>Explicit invocation of finalizer</ShortDescription>
-    <LongDescription>{1} explicitly invokes {2}</LongDescription>
+    <LongDescription>explicit invocation of {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> This method contains an explicit invocation of the <code>finalize()</code>
@@ -4875,7 +4875,7 @@ signals unexpected behavior by returning an atypical return value.
 
   <BugPattern type="RV_EXCEPTION_NOT_THROWN">
     <ShortDescription>Exception created and dropped rather than thrown</ShortDescription>
-    <LongDescription>{1} forgets to throw {2.givenClass}</LongDescription>
+    <LongDescription>{2.givenClass} not thrown in {1}</LongDescription>
     <Details>
 <![CDATA[
    <p> This code creates an exception (or error) object, but doesn't do anything with it. For example,
@@ -4901,7 +4901,7 @@ if (x &lt; 0)
 
   <BugPattern type="RV_RETURN_VALUE_IGNORED2">
     <ShortDescription>Method ignores return value</ShortDescription>
-    <LongDescription>{1} ignores return value of {2}</LongDescription>
+    <LongDescription>return value of {2} ignored in {1}</LongDescription>
     <Details>
 <![CDATA[
    <p> The return value of this method should be checked. One common
@@ -6382,7 +6382,7 @@ less confusing to explicitly check pointer equality using <code>==</code>.
   </BugPattern>
   <BugPattern type="EC_INCOMPATIBLE_ARRAY_COMPARE">
     <ShortDescription>equals(...) used to compare incompatible arrays</ShortDescription>
-    <LongDescription>{1} uses equals to compare a {2} and a {3}</LongDescription>
+    <LongDescription>using equals to compare a {2} and a {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7540,7 +7540,7 @@ for oddness, consider using x &amp; 1 == 1, or x % 2 != 0.
   </BugPattern>
   <BugPattern type="DMI_BAD_MONTH">
     <ShortDescription>Bad constant value for month</ShortDescription>
-    <LongDescription>{1} passes a bad month value of {2} to {3}</LongDescription>
+    <LongDescription>bad month value of {2} passed to {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7563,7 +7563,7 @@ This code invokes substring(0) on a String, which returns the original value.
   </BugPattern>
   <BugPattern type="DMI_CALLING_NEXT_FROM_HASNEXT">
     <ShortDescription>hasNext method invokes next</ShortDescription>
-    <LongDescription>{1} invokes {3}</LongDescription>
+    <LongDescription>{1} invokes {3.givenClass}</LongDescription>
     <Details>
 <![CDATA[
 <p>

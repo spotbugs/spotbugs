@@ -49,6 +49,9 @@ public class FindBugsMessageFormat {
 		this.pattern = pattern;
 	}
 
+	public String format(BugAnnotation[] args, ClassAnnotation primaryClass) {
+		return format(args, primaryClass, false);
+	}
 	/**
 	 * Format the message using the given array of BugAnnotations as arguments
 	 * to bind to the placeholders in the pattern string.
@@ -57,7 +60,7 @@ public class FindBugsMessageFormat {
 	 * @param primaryClass TODO
 	 * @return the formatted message
 	 */
-	public String format(BugAnnotation[] args, ClassAnnotation primaryClass) {
+	public String format(BugAnnotation[] args, ClassAnnotation primaryClass, boolean abridgedMessages) {
 		String pat = pattern;
 		StringBuilder result = new StringBuilder();
 
@@ -82,7 +85,8 @@ public class FindBugsMessageFormat {
 			if (dot >= 0) {
 				key = substPat.substring(dot + 1);
 				substPat = substPat.substring(0, dot);
-			}
+			} else if (abridgedMessages && primaryClass != null) 
+				key = "givenClass";
 
 			int fieldNum;
 			try {

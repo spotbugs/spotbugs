@@ -1684,7 +1684,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 		}
 		try {
 			FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
+			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass(), true);
 		} catch (RuntimeException e) {
 			AnalysisContext.logError("Error generating bug msg ", e);
 			return shortPattern + " [Error3 generating customized description]";
