@@ -107,10 +107,17 @@ public class LocalPersistenceHelper implements PersistenceHelper {
         return map;
     }
 
-    public void convertToOldStyleForTesting(DbEvaluation eval) {
+    public void convertToOldCommentStyleForTesting(DbEvaluation eval) {
+    }
+
+    public void convertToNewCommentStyle(DbEvaluation eval) {
     }
 
     public String getEmail(PersistenceManager pm, Comparable<?> who) {
         return ((LocalDbUser) who).getEmail();
+    }
+
+    public boolean isOldCommentStyle(DbEvaluation eval) {
+        return false;
     }
 }

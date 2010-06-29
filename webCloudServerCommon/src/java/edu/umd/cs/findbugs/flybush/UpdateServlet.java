@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.flybush;
 
+import com.google.common.collect.Maps;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
@@ -23,6 +24,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -42,6 +44,9 @@ public class UpdateServlet extends AbstractFlybushServlet {
 
             } else if (req.getRequestURI().equals("/update-evaluation-emails")) {
                 updateEvaluationEmails(resp, pm);
+
+            } else if (req.getRequestURI().equals("/update-db-jun29")) {
+                updateDatabaseJun29(resp, pm);
 
             } else {
                 super.doGet(req, resp);
@@ -69,6 +74,65 @@ public class UpdateServlet extends AbstractFlybushServlet {
         } else if (uri.equals("/set-bug-link")) {
             setBugLink(req, resp, pm);
         }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void updateDatabaseJun29(HttpServletResponse resp, PersistenceManager pm) throws IOException {
+        Map<String, String> primaryClasses = buildPrimaryClassMap(pm);
+
+        int count = 0;
+        int skipped = 0;
+        try {
+            Query eq = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName());
+            List<DbEvaluation> evals = (List<DbEvaluation>) eq.execute();
+            for (DbEvaluation eval : evals) {
+                boolean changed = false;
+                if (persistenceHelper.convertToNewCommentStyle(eval))
+                    changed = true;
+                String cls = primaryClasses.get(eval.getIssue().getHash());
+                if (cls != null && !cls.equals(eval.getPrimaryClass())) {
+                    eval.setPrimaryClass(cls);
+                    changed = true;
+                }
+                if (changed) {
+                    Transaction tx = pm.currentTransaction();
+                    tx.begin();
+                    try {
+                        pm.makePersistent(eval);
+                        tx.commit();
+                        count++;
+                    } finally {
+                        if (tx.isActive()) tx.rollback();
+                    }
+                } else {
+                    skipped++;
+                }
+            }
+        } catch (Exception e) {
+            String msg = "Could not update all evals - did " + count + " (" + skipped + " skipped)";
+            LOGGER.log(Level.SEVERE, msg, e);
+            resp.setStatus(200);
+            resp.getOutputStream().println("Error - " + msg);
+            throw new IllegalStateException(e);
+        }
+        String msg = "Updated " + count + " evaluations " + " (" + skipped + " skipped)";
+        LOGGER.info(msg);
+
+        resp.setStatus(200);
+        resp.getOutputStream().println(msg);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private Map<String, String> buildPrimaryClassMap(PersistenceManager pm) {
+        Query iq = pm.newQuery("select from " + persistenceHelper.getDbIssueClass().getName()
+                                   + " where hasEvaluations");
+        List<DbIssue> issues = (List<DbIssue>) iq.execute();
+        Map<String,String> primaryClasses = Maps.newHashMap();
+        for (DbIssue issue : issues) {
+            primaryClasses.put(issue.getHash(), issue.getPrimaryClass());
+        }
+        iq.closeAll();
+        return primaryClasses;
     }
 
     @SuppressWarnings({"unchecked"})
@@ -232,6 +296,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
             }
             dbEvaluation.setIssue(issue);
             issue.addEvaluation(dbEvaluation);
+            dbEvaluation.setPrimaryClass(issue.getPrimaryClass());
             pm.makePersistent(issue);
 
             tx.commit();

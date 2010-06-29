@@ -26,6 +26,7 @@ public class LocalDbEvaluation implements DbEvaluation {
     @Persistent(columns = @Column(sqlType = "longvarchar")) private String comment;
     @Persistent private LocalDbIssue issue;
     @Persistent private long when;
+    @Persistent private String primaryClass;
 
     public Comparable<?> getWho() {
 		return who;
@@ -45,6 +46,14 @@ public class LocalDbEvaluation implements DbEvaluation {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPrimaryClass() {
+        return primaryClass;
+    }
+
+    public void setPrimaryClass(String primaryClass) {
+        this.primaryClass = primaryClass;
     }
 
     public void setInvocation(DbInvocation invocation) {

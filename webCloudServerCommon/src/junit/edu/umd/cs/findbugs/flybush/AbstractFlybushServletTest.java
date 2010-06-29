@@ -2,6 +2,8 @@ package edu.umd.cs.findbugs.flybush;
 
 import com.dyuproject.openid.OpenIdUser;
 import com.dyuproject.openid.ext.AxSchemaExtension;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import junit.framework.TestCase;
 import org.junit.Assert;
 import org.mockito.Mockito;
@@ -22,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
+
 public abstract class AbstractFlybushServletTest extends TestCase {
 
 	protected HttpServletResponse mockResponse;
@@ -33,6 +37,7 @@ public abstract class AbstractFlybushServletTest extends TestCase {
     protected PersistenceHelper persistenceHelper;
 
     protected FlybushServletTestHelper testHelper;
+    protected static final long SAMPLE_TIMESTAMP = 1270061080000L;
 
     @Override
 	protected void setUp() throws Exception {
@@ -173,6 +178,28 @@ public abstract class AbstractFlybushServletTest extends TestCase {
         Assert.assertNotNull(user);
         return persistenceHelper.getObjectById(getPersistenceManager(),
                                                persistenceHelper.getDbUserClass(), user);
+    }
+
+    protected DbIssue createDbIssue(String patternAndHash) {
+        patternAndHash = AppEngineProtoUtil.normalizeHash(patternAndHash);
+        DbIssue foundIssue = persistenceHelper.createDbIssue();
+        foundIssue.setHash(patternAndHash);
+        foundIssue.setBugPattern(patternAndHash);
+        foundIssue.setPriority(2);
+        foundIssue.setPrimaryClass("my.class");
+        foundIssue.setFirstSeen(SAMPLE_TIMESTAMP +100);
+        foundIssue.setLastSeen(SAMPLE_TIMESTAMP +200);
+        foundIssue.setBugLinkType("JIRA");
+        foundIssue.setBugLink("http://bug.link");
+        return foundIssue;
+    }
+
+    protected static void checkIssuesEqualExceptTimestamps(DbIssue dbIssue, Issue protoIssue) {
+        assertEquals(dbIssue.getHash(), decodeHash(protoIssue.getHash()));
+        assertEquals(dbIssue.getBugPattern(), protoIssue.getBugPattern());
+        assertEquals(dbIssue.getPriority(), protoIssue.getPriority());
+        assertEquals(dbIssue.getPrimaryClass(), protoIssue.getPrimaryClass());
+        assertEquals(dbIssue.getBugLink(), protoIssue.hasBugLink() ? protoIssue.getBugLink() : null);
     }
 }
 

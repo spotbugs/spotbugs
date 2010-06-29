@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.createDbIssue;
-
 @SuppressWarnings({"unused"})
 public abstract class ReportServletTest extends AbstractFlybushServletTest {
     private List<String> generatedCharts;
@@ -36,8 +34,8 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
     }
 
     public void testGraphEvalsByUser() throws Exception {
-        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
-        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
+        DbIssue foundIssue1 = createDbIssue("fad2");
+        DbIssue foundIssue2 = createDbIssue("fad3");
         createEvaluation(foundIssue1, "someone", 100);
         createEvaluation(foundIssue1, "someone-else", 200);
         createEvaluation(foundIssue2, "someone", 300);
@@ -57,7 +55,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
     }
 
     public void testGraphEvalsByUserOver100() throws Exception {
-        DbIssue foundIssue = createDbIssue("fad2", persistenceHelper);
+        DbIssue foundIssue = createDbIssue("fad2");
         createEvaluation(foundIssue, "someone", 100);
         createEvaluation(foundIssue, "someone-else", 200);
         createEvaluation(foundIssue, "someone", 300);
@@ -76,9 +74,9 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
     }
 
     public void testGraphEvalsByDate() throws Exception {
-        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
-        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
-        DbIssue foundIssue3 = createDbIssue("fad4", persistenceHelper);
+        DbIssue foundIssue1 = createDbIssue("fad2");
+        DbIssue foundIssue2 = createDbIssue("fad3");
+        DbIssue foundIssue3 = createDbIssue("fad4");
         // week 1
         createEvaluation(foundIssue1, "someone", days(2));
         createEvaluation(foundIssue1, "someone-else", days(2));
@@ -102,9 +100,9 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
     }
 
     public void testCumulativeTimelineGraph() throws Exception {
-        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
-        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
-        DbIssue foundIssue3 = createDbIssue("fad4", persistenceHelper);
+        DbIssue foundIssue1 = createDbIssue("fad2");
+        DbIssue foundIssue2 = createDbIssue("fad3");
+        DbIssue foundIssue3 = createDbIssue("fad4");
         // week 1
         createEvaluation(foundIssue1, "someone", days(2));
         createEvaluation(foundIssue1, "someone-else", days(2));
@@ -128,12 +126,12 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
     }
 
     public void testGraphIssuesByEvaluatorCount() throws Exception {
-        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
-        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
-        DbIssue foundIssue3 = createDbIssue("fad4", persistenceHelper);
-        DbIssue foundIssue4 = createDbIssue("fad5", persistenceHelper);
-        DbIssue foundIssue5 = createDbIssue("fad6", persistenceHelper);
-        DbIssue foundIssue6 = createDbIssue("fad7", persistenceHelper);
+        DbIssue foundIssue1 = createDbIssue("fad2");
+        DbIssue foundIssue2 = createDbIssue("fad3");
+        DbIssue foundIssue3 = createDbIssue("fad4");
+        DbIssue foundIssue4 = createDbIssue("fad5");
+        DbIssue foundIssue5 = createDbIssue("fad6");
+        DbIssue foundIssue6 = createDbIssue("fad7");
         createEvaluation(foundIssue1, "a", 100);
         createEvaluation(foundIssue1, "b", 200);
         createEvaluation(foundIssue1, "c", 300);
@@ -166,9 +164,9 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
     }
 
     public void testGraphUserEvalsByDate() throws Exception {
-        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
-        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
-        DbIssue foundIssue3 = createDbIssue("fad4", persistenceHelper);
+        DbIssue foundIssue1 = createDbIssue("fad2");
+        DbIssue foundIssue2 = createDbIssue("fad3");
+        DbIssue foundIssue3 = createDbIssue("fad4");
         // week 1
         createEvaluation(foundIssue1, "someone", days(2));
         createEvaluation(foundIssue1, "someone-else", days(2));
@@ -195,7 +193,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
     }
 
     public void testGraphUserEvalsByDateJustOneWeek() throws Exception {
-        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
+        DbIssue foundIssue1 = createDbIssue("fad2");
         // week 1
         createEvaluation(foundIssue1, "someone", days(2));
         createEvaluation(foundIssue1, "someone2", days(2));
@@ -215,9 +213,9 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
     }
 
     public void testUserSelectionComboBox() throws Exception {
-        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
-        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
-        DbIssue foundIssue3 = createDbIssue("fad4", persistenceHelper);
+        DbIssue foundIssue1 = createDbIssue("fad2");
+        DbIssue foundIssue2 = createDbIssue("fad3");
+        DbIssue foundIssue3 = createDbIssue("fad4");
         // week 1
         createEvaluation(foundIssue1, "someone", days(2));
         createEvaluation(foundIssue1, "someone-else", days(2));
@@ -246,9 +244,9 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
     }
 
     public void testGraphEvalsByPackage() throws Exception {
-        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
-        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
-        DbIssue foundIssue3 = createDbIssue("fad4", persistenceHelper);
+        DbIssue foundIssue1 = createDbIssue("fad2");
+        DbIssue foundIssue2 = createDbIssue("fad3");
+        DbIssue foundIssue3 = createDbIssue("fad4");
 
         // two in same package, one in its own
         foundIssue1.setPrimaryClass("edu.umd.cs.findbugs.MyClass");
@@ -276,7 +274,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
     public void testGraphEvalsByPackageMoreThan20() throws Exception {
         List<DbIssue> issues = Lists.newArrayList();
         for (int i = 0; i < 30; i++) {
-            DbIssue issue = createDbIssue("fad2", persistenceHelper);
+            DbIssue issue = createDbIssue("fad2");
             issue.setPrimaryClass("edu.umd.cs.findbugs.sub" + i + ".MyClass");
             for (int j = 0; j < i; j++)
                 createEvaluation(issue, "someone", days(j));
@@ -301,9 +299,9 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
     }
 
     public void testGraphEvalsByPackageOverTime() throws Exception {
-        DbIssue foundIssue1 = createDbIssue("fad2", persistenceHelper);
-        DbIssue foundIssue2 = createDbIssue("fad3", persistenceHelper);
-        DbIssue foundIssue3 = createDbIssue("fad4", persistenceHelper);
+        DbIssue foundIssue1 = createDbIssue("fad2");
+        DbIssue foundIssue2 = createDbIssue("fad3");
+        DbIssue foundIssue3 = createDbIssue("fad4");
         foundIssue1.setPrimaryClass("net.kano.test.Blah");
         foundIssue2.setPrimaryClass("net.kano.test.Blah2");
         foundIssue3.setPrimaryClass("net.kano.test2.Blah");

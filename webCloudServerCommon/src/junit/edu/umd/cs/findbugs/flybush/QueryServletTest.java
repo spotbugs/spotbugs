@@ -11,9 +11,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHashes;
-import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.SAMPLE_TIMESTAMP;
-import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.checkIssuesEqualExceptTimestamps;
-import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.createDbIssue;
 
 @SuppressWarnings({"UnusedDeclaration"})
 public abstract class QueryServletTest extends AbstractFlybushServletTest {
@@ -24,7 +21,7 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
     }
 
 	public void testFindIssuesOneFoundNoEvaluations() throws Exception {
-		DbIssue foundIssue = createDbIssue("FAD1", persistenceHelper);
+		DbIssue foundIssue = createDbIssue("FAD1");
         getPersistenceManager().makePersistent(foundIssue);
 
 		FindIssuesResponse result = findIssues("FAD1", "FAD2");
@@ -35,7 +32,7 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
     }
 
     public void testFindIssuesWithEvaluations() throws Exception {
-		DbIssue foundIssue = createDbIssue("fad2", persistenceHelper);
+		DbIssue foundIssue = createDbIssue("fad2");
 		DbEvaluation eval = createEvaluation(foundIssue, "someone", 100);
 
 		// apparently the evaluation is automatically persisted. throws
@@ -50,9 +47,9 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 	}
 
     public void testFindIssuesWithOldStyleEvaluation() throws Exception {
-		DbIssue foundIssue = createDbIssue("fad2", persistenceHelper);
+		DbIssue foundIssue = createDbIssue("fad2");
 		DbEvaluation eval = createEvaluation(foundIssue, "someone", 100);
-        persistenceHelper.convertToOldStyleForTesting(eval);
+        persistenceHelper.convertToOldCommentStyleForTesting(eval);
 
 		// apparently the evaluation is automatically persisted. throws
 		// exception when attempting to persist the eval with the issue.
@@ -66,7 +63,7 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 	}
 
     public void testFindIssuesOnlyShowsLatestEvaluationFromEachPerson() throws Exception {
-		DbIssue foundIssue = createDbIssue("fad1", persistenceHelper);
+		DbIssue foundIssue = createDbIssue("fad1");
 		createEvaluation(foundIssue, "first", 100);
 		DbEvaluation eval2 = createEvaluation(foundIssue, "second", 200);
 		DbEvaluation eval3 = createEvaluation(foundIssue, "first", 300);
@@ -84,7 +81,7 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 
     //TODO: updated bug links should be included in this list!
 	public void testGetRecentEvaluations() throws Exception {
-		DbIssue issue = createDbIssue("fad", persistenceHelper);
+		DbIssue issue = createDbIssue("fad");
 		createEvaluation(issue, "someone1", 100);
 		DbEvaluation eval2 = createEvaluation(issue, "someone2", 200);
 		DbEvaluation eval3 = createEvaluation(issue, "someone3", 300);
@@ -107,7 +104,7 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 	}
 
 	public void testGetRecentEvaluationsOnlyShowsLatestFromEachPerson() throws Exception {
-		DbIssue issue = createDbIssue("fad", persistenceHelper);
+		DbIssue issue = createDbIssue("fad");
 		createEvaluation(issue, "first",  100);
 		createEvaluation(issue, "second", 200);
 		createEvaluation(issue, "first",  300);
@@ -132,7 +129,7 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
 	}
 
 	public void testGetRecentEvaluationsNoneFound() throws Exception {
-		DbIssue issue = createDbIssue("fad", persistenceHelper);
+		DbIssue issue = createDbIssue("fad");
 		createEvaluation(issue, "someone", 100);
 		createEvaluation(issue, "someone", 200);
 		createEvaluation(issue, "someone", 300);

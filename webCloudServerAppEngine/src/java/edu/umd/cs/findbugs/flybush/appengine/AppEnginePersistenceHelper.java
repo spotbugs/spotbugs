@@ -115,14 +115,24 @@ public class AppEnginePersistenceHelper implements PersistenceHelper {
         return map;
     }
 
-    public void convertToOldStyleForTesting(DbEvaluation eval) {
+    public void convertToOldCommentStyleForTesting(DbEvaluation eval) {
         AppEngineDbEvaluation aede = (AppEngineDbEvaluation) eval;
         aede.setShortComment(aede.getLongComment().getValue());
         aede.setLongComment(null);
     }
 
+    @Override
+    public boolean convertToNewCommentStyle(DbEvaluation eval) {
+        return ((AppEngineDbEvaluation)eval).convertToNewCommentStyle();
+    }
+
     public String getEmail(PersistenceManager pm, Comparable<?> who) {
         //noinspection RedundantCast
         return pm.getObjectById(getDbUserClass(), (Key) who).getEmail();
+    }
+
+    @Override
+    public boolean isOldCommentStyle(DbEvaluation eval) {
+        return ((AppEngineDbEvaluation) eval).getShortComment() != null;
     }
 }

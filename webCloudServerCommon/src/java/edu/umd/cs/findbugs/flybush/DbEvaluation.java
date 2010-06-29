@@ -21,6 +21,9 @@ public interface DbEvaluation extends Comparable<DbEvaluation> {
     String getEmail();
     void setEmail(String email);
 
+    String getPrimaryClass();
+    void setPrimaryClass(String primaryClass);
+
     void setInvocation(DbInvocation invocation);
     Object getInvocationKey();
 }

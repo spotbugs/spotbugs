@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
-import static edu.umd.cs.findbugs.flybush.FlybushServletTestUtil.SAMPLE_TIMESTAMP;
 import static edu.umd.cs.findbugs.flybush.UpdateServlet.ONE_DAY_IN_MILLIS;
 
 @SuppressWarnings({"UnusedDeclaration"})
@@ -53,6 +52,32 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 
         assertEquals(0, findSqlSession(100).size());
         assertEquals("recent@test.com", getDbUser(findSqlSession(101).get(0).getUser()).getEmail());
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public void testUpdateDbJune29CommentStyle() throws Exception {
+        DbIssue issue = createDbIssue("fad2");
+        DbEvaluation eval = createEvaluation(issue, "someone", 200);
+        persistenceHelper.convertToOldCommentStyleForTesting(eval);
+        getPersistenceManager().makePersistentAll(issue);
+        assertTrue(persistenceHelper.isOldCommentStyle(eval));
+
+        executeGet("/update-db-jun29");
+        getPersistenceManager().refreshAll(issue);
+        assertFalse(persistenceHelper.isOldCommentStyle(eval));
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public void testUpdateDbJune29PrimaryClass() throws Exception {
+        DbIssue issue = createDbIssue("fad2");
+        DbEvaluation eval = createEvaluation(issue, "someone", 200);
+        eval.setPrimaryClass(null);
+        assertNull(eval.getPrimaryClass());        
+        getPersistenceManager().makePersistentAll(issue);
+
+        executeGet("/update-db-jun29");
+        getPersistenceManager().refreshAll(issue);
+        assertEquals("my.class", eval.getPrimaryClass());
     }
 
     @SuppressWarnings({"unchecked"})
@@ -95,8 +120,8 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         createCloudSession(555);
 
         PersistenceManager pm = getPersistenceManager();
-        DbIssue issue1 = FlybushServletTestUtil.createDbIssue("fad1", persistenceHelper);
-        DbIssue issue2 = FlybushServletTestUtil.createDbIssue("fad2", persistenceHelper);
+        DbIssue issue1 = createDbIssue("fad1");
+        DbIssue issue2 = createDbIssue("fad2");
         pm.makePersistentAll(issue1, issue2);
 
         UpdateIssueTimestamps tsCmd = UpdateIssueTimestamps.newBuilder()
@@ -118,8 +143,8 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         createCloudSession(555);
 
         PersistenceManager pm = getPersistenceManager();
-        DbIssue issue1 = FlybushServletTestUtil.createDbIssue("fad1", persistenceHelper);
-        DbIssue issue2 = FlybushServletTestUtil.createDbIssue("fad2", persistenceHelper);
+        DbIssue issue1 = createDbIssue("fad1");
+        DbIssue issue2 = createDbIssue("fad2");
         issue2.setFirstSeen(0);
         pm.makePersistentAll(issue1, issue2);
 
@@ -142,7 +167,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         createCloudSession(555);
 
         PersistenceManager pm = getPersistenceManager();
-        DbIssue issue1 = FlybushServletTestUtil.createDbIssue("fad1", persistenceHelper);
+        DbIssue issue1 = createDbIssue("fad1");
         pm.makePersistentAll(issue1, issue1);
 
         UpdateIssueTimestamps tsCmd = UpdateIssueTimestamps.newBuilder()
@@ -162,8 +187,8 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         createCloudSession(555);
 
         PersistenceManager pm = getPersistenceManager();
-        DbIssue issue1 = FlybushServletTestUtil.createDbIssue("fad1", persistenceHelper);
-        DbIssue issue2 = FlybushServletTestUtil.createDbIssue("fad2", persistenceHelper);
+        DbIssue issue1 = createDbIssue("fad1");
+        DbIssue issue2 = createDbIssue("fad2");
         pm.makePersistentAll(issue1, issue2);
 
         UpdateIssueTimestamps tsCmd = UpdateIssueTimestamps.newBuilder()
@@ -190,8 +215,8 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         createCloudSession(555);
 
         PersistenceManager pm = getPersistenceManager();
-        DbIssue issue1 = FlybushServletTestUtil.createDbIssue("fad1", persistenceHelper);
-        DbIssue issue2 = FlybushServletTestUtil.createDbIssue("fad2", persistenceHelper);
+        DbIssue issue1 = createDbIssue("fad1");
+        DbIssue issue2 = createDbIssue("fad2");
         issue2.setFirstSeen(SAMPLE_TIMESTAMP +25);
         pm.makePersistentAll(issue1, issue2);
 
@@ -237,7 +262,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 		assertEquals(1, dbIssues.size());
 
         DbIssue dbIssue = dbIssues.get(0);
-        FlybushServletTestUtil.checkIssuesEqualExceptTimestamps(dbIssue, issue);
+        checkIssuesEqualExceptTimestamps(dbIssue, issue);
         assertEquals(issue.getFirstSeen(), dbIssue.getFirstSeen());
         assertEquals(issue.getFirstSeen(), dbIssue.getLastSeen()); // upon initial upload, should be identical
 	}
@@ -258,14 +283,14 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 				.newQuery("select from " + persistenceHelper.getDbIssueClass().getName()).execute();
 		assertEquals(2, dbIssues.size());
 
-        FlybushServletTestUtil.checkIssuesEqualExceptTimestamps(dbIssues.get(0), issue1);
-        FlybushServletTestUtil.checkIssuesEqualExceptTimestamps(dbIssues.get(1), issue2);
+        checkIssuesEqualExceptTimestamps(dbIssues.get(0), issue1);
+        checkIssuesEqualExceptTimestamps(dbIssues.get(1), issue2);
     }
 
 	@SuppressWarnings("unchecked")
 	public void testUploadIssuesWhichAlreadyExist() throws Exception {
     	createCloudSession(555);
-        DbIssue oldDbIssue = FlybushServletTestUtil.createDbIssue("fad1", persistenceHelper);
+        DbIssue oldDbIssue = createDbIssue("fad1");
         getPersistenceManager().makePersistent(oldDbIssue);
 		Issue oldIssue = createProtoIssue("fad1");
 		Issue newIssue = createProtoIssue("fad2");
@@ -299,7 +324,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 	public void testUploadEvaluationWithoutFindIssuesFirst() throws Exception {
 		createCloudSession(555);
 
-        DbIssue dbIssue = FlybushServletTestUtil.createDbIssue("fad", persistenceHelper);
+        DbIssue dbIssue = createDbIssue("fad");
         getPersistenceManager().makePersistent(dbIssue);
 		Evaluation protoEval = createProtoEvaluation();
 		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
@@ -314,16 +339,18 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 		assertEquals(1, dbIssue.getEvaluations().size());
 		DbEvaluation dbEval = dbIssue.getEvaluations().iterator().next();
 		assertEquals(protoEval.getComment(), dbEval.getComment());
+        assertFalse("should be new comment style", persistenceHelper.isOldCommentStyle(dbEval));
 		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
 		assertEquals(protoEval.getWhen(), dbEval.getWhen());
 		assertEquals("my@email.com", getDbUser(dbEval.getWho()).getEmail());
+        assertEquals("my.class", dbEval.getPrimaryClass());
 		assertNull(dbEval.getInvocationKey());
 	}
 
 	public void testUploadEvaluationMoreThan500chars() throws Exception {
 		createCloudSession(555);
 
-        DbIssue dbIssue = FlybushServletTestUtil.createDbIssue("fad", persistenceHelper);
+        DbIssue dbIssue = createDbIssue("fad");
         getPersistenceManager().makePersistent(dbIssue);
         char[] array = new char[600];
         Arrays.fill(array, 'x');
@@ -345,6 +372,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
 		assertEquals(protoEval.getWhen(), dbEval.getWhen());
 		assertEquals("my@email.com", getDbUser(dbEval.getWho()).getEmail());
+        assertEquals("my.class", dbEval.getPrimaryClass());
 		assertNull(dbEval.getInvocationKey());
 	}
 
@@ -372,7 +400,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 
         // execute upload-evaluation
 		initServletAndMocks();
-        DbIssue dbIssue = FlybushServletTestUtil.createDbIssue("fad", persistenceHelper);
+        DbIssue dbIssue = createDbIssue("fad");
         getPersistenceManager().makePersistent(dbIssue);
 		Evaluation protoEval = createProtoEvaluation();
 		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
@@ -493,7 +521,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
     public void BROKEN_testClearAllData() throws Exception {
     	createCloudSession(555);
 
-        DbIssue foundIssue = FlybushServletTestUtil.createDbIssue("fad1", persistenceHelper);
+        DbIssue foundIssue = createDbIssue("fad1");
         DbEvaluation eval1 = createEvaluation(foundIssue, "first", 100);
         DbEvaluation eval2 = createEvaluation(foundIssue, "second", 200);
         DbEvaluation eval3 = createEvaluation(foundIssue, "first", 300);

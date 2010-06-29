@@ -29,7 +29,9 @@ public interface PersistenceHelper {
 
     Map<String, DbIssue> findIssues(PersistenceManager pm, Iterable<String> hashes);
 
-    void convertToOldStyleForTesting(DbEvaluation eval);
-
     String getEmail(PersistenceManager pm, Comparable<?> who);
+
+    boolean isOldCommentStyle(DbEvaluation eval);
+    void convertToOldCommentStyleForTesting(DbEvaluation eval);
+    boolean convertToNewCommentStyle(DbEvaluation eval);
 }

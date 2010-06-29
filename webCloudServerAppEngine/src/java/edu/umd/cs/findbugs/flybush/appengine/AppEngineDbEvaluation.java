@@ -28,6 +28,7 @@ public class AppEngineDbEvaluation implements DbEvaluation {
     @Persistent private Text commentLong;
     @Persistent private AppEngineDbIssue issue;
     @Persistent private long when;
+    @Persistent private String primaryClass;
 
     public Comparable<?> getWho() {
 		return who;
@@ -47,6 +48,16 @@ public class AppEngineDbEvaluation implements DbEvaluation {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public String getPrimaryClass() {
+        return primaryClass;
+    }
+
+    @Override
+    public void setPrimaryClass(String primaryClass) {
+        this.primaryClass = primaryClass;
     }
 
     public void setInvocation(DbInvocation invocation) {
@@ -122,7 +133,26 @@ public class AppEngineDbEvaluation implements DbEvaluation {
         this.comment = comment;
     }
 
+    public String getShortComment() {
+        return comment;
+    }
+
     public void setLongComment(Text comment) {
         this.commentLong = comment;
+    }
+
+    public boolean convertToNewCommentStyle() {
+        if (commentLong != null && comment == null) {
+            // already converted
+            return false;
+        }
+        if (comment != null) {
+            if (commentLong == null) {
+                commentLong = new Text(comment);
+            }
+            this.comment = null;
+            return true;
+        }
+        return false;
     }
 }
