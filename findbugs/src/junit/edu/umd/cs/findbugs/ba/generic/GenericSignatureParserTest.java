@@ -30,5 +30,9 @@ public class GenericSignatureParserTest extends TestCase {
 		GenericSignatureParser parser = new GenericSignatureParser("(Lcom/sleepycat/persist/EntityJoin<TPK;TE;>.JoinForwardCursor<TV;>;)V");
 		assertEquals(1,parser.getNumParameters());
 	}
+	public void test2() {
+		GenericSignatureParser parser = new GenericSignatureParser("(Ljava/lang/String;^TE1;^TE2;^TE3;)V");
+		assertEquals(1,parser.getNumParameters());
+	}
 
 }
