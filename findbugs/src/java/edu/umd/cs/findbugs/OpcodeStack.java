@@ -2422,13 +2422,12 @@ public void initialize() {
 		  }
 			  
 		 try {
-			 if (DEBUG) System.out.println("pushByIntMath: " + rhs.getConstant()  + " " + lhs.getConstant() );
+			 if (DEBUG) System.out.println("pushByIntMath " + dbc.getFullyQualifiedMethodName() +" @ " + dbc.getPC() + " : " + lhs + OPCODE_NAMES[seen] + rhs   );
 				
 		if (rhs.getConstant() != null && lhs.getConstant() != null) {
 			int lhsValue = constantToInt(lhs);
 			int rhsValue = constantToInt(rhs);
 			if ((seen == IDIV || seen == IREM) && rhsValue == 0) {
-				AnalysisContext.logError("Saw 0" + (seen == IDIV ? "/" : "%") + "0 at PC " + dbc.getPC() + " in " + dbc.getFullyQualifiedMethodName(), new ArithmeticException());
 				  push(newValue);
 				  return;
 			}
