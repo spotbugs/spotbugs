@@ -274,6 +274,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 	public static boolean isInjectionAttribute(@DottedClassName String annotationClass) {
 		if ( annotationClass.startsWith("javax.annotation.") 
 				|| annotationClass.startsWith("javax.ejb")
+				|| annotationClass.equals("org.apache.tapestry5.annotations.Persist")  
 				|| annotationClass.equals("org.jboss.seam.annotations.In")  
 				|| annotationClass.startsWith("javax.persistence")
 				|| annotationClass.endsWith("SpringBean")
