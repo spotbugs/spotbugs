@@ -2217,7 +2217,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 				summaryTopPanel.add(bugSummaryComponent(bug.getAbridgedMessage(), bug));
 				
-				for(BugAnnotation b : bug.getAnnotationsForMessage(false)) 
+				for(BugAnnotation b : bug.getAnnotationsForMessage(true)) 
 					summaryTopPanel.add(bugSummaryComponent(b, bug));
 
 				summaryHtmlArea.setText(bug.getBugPattern().getDetailHTML());
