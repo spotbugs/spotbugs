@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs;
 
 
+import org.apache.bcel.classfile.Code;
+
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
@@ -45,6 +47,17 @@ public class BytecodeScanningDetector extends DismantleBytecode implements Detec
 		return classContext;
 	}
 
+	
+	/** 
+	 * Check see if the Code for this method should be visited.
+	 * 
+	 * @param obj Code attribute
+	 * @return true if the Code should be visited
+	 */
+	public boolean shouldVisitCode(Code obj) {
+		return true;
+	}
+	
 	public void report() {
 	}
 }
