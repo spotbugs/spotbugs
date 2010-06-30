@@ -28,8 +28,11 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -185,7 +188,9 @@ public class GenericObjectType extends ObjectType {
 	 * @return the underlying ObjectType for this Generic Object
 	 */
 	public ObjectType getObjectType() {
-		return (ObjectType) Type.getType(getSignature());
+		@DottedClassName String c = ClassName.toDottedClassName(
+				ClassName.fromFieldSignature(getSignature()));
+		return  ObjectTypeFactory.getInstance(c);
 	}
 
 	/**

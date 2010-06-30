@@ -52,6 +52,8 @@ public class ObjectTypeFactory {
 		if (FindBugs.DEBUG && s.startsWith("[")) {
 			throw new IllegalArgumentException("Cannot create an ObjectType to represent an array type: " + s);
 		}
+		if (s.endsWith(";"))
+			throw new IllegalArgumentException(s);
 		if (s.indexOf("/") >= 0) {
 			s = s.replace('/','.');
 		}

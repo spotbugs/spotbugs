@@ -156,7 +156,6 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 				Type t = ExceptionObjectType.fromExceptionSet(union);
 				if (t instanceof ReferenceType) 
 					return (ReferenceType) t;
-				
 			}
 
 			if (aRef instanceof GenericObjectType && bRef instanceof GenericObjectType 
@@ -183,11 +182,12 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 				}
 				
 				
-			} else if (aRef instanceof GenericObjectType) {
-				aRef = ObjectTypeFactory.getInstance( aRef.getSignature());
-			} else if (bRef instanceof GenericObjectType) {
-				bRef = ObjectTypeFactory.getInstance( bRef.getSignature());
 			}
+			if (aRef instanceof GenericObjectType) 
+				aRef = ((GenericObjectType) aRef).getObjectType();
+			if (bRef instanceof GenericObjectType) 
+				bRef = ((GenericObjectType) bRef).getObjectType();
+			
 			if (Subtypes2.ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES) {
 				return AnalysisContext.currentAnalysisContext().getSubtypes2().getFirstCommonSuperclass(aRef, bRef);
 			} else {
