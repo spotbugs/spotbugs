@@ -611,7 +611,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 							foundSomething = true;
 						}
 						} catch (RuntimeException e) {
-							AnalysisContext.logError("Problem analyzing call to " + m, e);
+							AnalysisContext.logError("Problem analyzing call to " + m + " with source signature" + m.getSourceSignature(), e);
 							break;
 						}
 					}
