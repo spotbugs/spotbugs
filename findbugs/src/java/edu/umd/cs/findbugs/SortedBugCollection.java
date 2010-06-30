@@ -961,7 +961,11 @@ public class SortedBugCollection implements BugCollection {
 			assert false : "Bad class name " + className;
 			return;
 		}
-		missingClassSet.add(className);
+		if (className.endsWith(";"))
+			addError("got signature rather than classname: " + className, 
+					new IllegalArgumentException());
+		else 
+			missingClassSet.add(className);
 	}
 
 	public Iterator<AnalysisError> errorIterator() {
