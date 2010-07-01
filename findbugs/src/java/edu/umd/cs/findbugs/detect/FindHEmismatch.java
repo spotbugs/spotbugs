@@ -46,10 +46,12 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.EqualsKindSummary;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 public class FindHEmismatch extends OpcodeStackDetector implements
 		StatelessDetector {
@@ -462,20 +464,22 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 
 	@Override
 	public void sawOpcode(int seen) {
-		if (seen == INVOKEVIRTUAL) {
+		if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
 			String className = getClassConstantOperand();
 			if (className.equals("java/util/Map") || className.equals("java/util/HashMap") 
 					|| className.equals("java/util/LinkedHashMap")
-					|| className.equals("java/util/concurrent/ConcurrentHashMap") ) {
+					|| className.equals("java/util/concurrent/ConcurrentHashMap")
+					|| className.contains("Hash") &&  Subtypes2.instanceOf(ClassName.toDottedClassName(className), "java.util.Map")) {
 				if (getNameConstantOperand().equals("put")
 						&& getSigConstantOperand()
 						.equals("(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
 						&& stack.getStackDepth() >= 3) check(1);
 				else if ((getNameConstantOperand().equals("get") || getNameConstantOperand().equals("remove"))
 						&& getSigConstantOperand()
-						.equals("(Ljava/lang/Object;)Ljava/lang/Object;")
+						.startsWith("(Ljava/lang/Object;)")
 						&& stack.getStackDepth() >= 2) check(0);
-			}	else if (className.equals("java/util/Set") || className.equals("java/util/HashSet")  ) {
+			}	else if (className.equals("java/util/Set") || className.equals("java/util/HashSet")  
+					|| className.contains("Hash") && Subtypes2.instanceOf(ClassName.toDottedClassName(className), "java.util.Set")  ) {
 				if (getNameConstantOperand().equals("add") || getNameConstantOperand().equals("contains") || getNameConstantOperand().equals("remove")
 						&& getSigConstantOperand()
 						.equals("(Ljava/lang/Object;)Z")
