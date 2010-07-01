@@ -24,13 +24,14 @@ import org.apache.bcel.classfile.CodeException;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDetector {
 
-	BugReporter bugReporter;
+	final BugReporter bugReporter;
 
 	public SynchronizingOnContentsOfFieldToProtectField(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -62,13 +63,13 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
 		if (countDown == 2 && seen == GOTO) {
 			CodeException tryBlock = getSurroundingTryBlock(getPC());
 			if (tryBlock != null && tryBlock.getEndPC() == getPC())
-				pendingBug.setPriority(Priorities.NORMAL_PRIORITY);
+				pendingBug.lowerPriority();
 		}
 		if (countDown > 0) {
 			countDown--;
 			if (countDown == 0) {
 				if (seen == MONITOREXIT)
-					pendingBug.setPriority(Priorities.NORMAL_PRIORITY);
+					pendingBug.lowerPriority();
 				
 				bugReporter.reportBug(pendingBug);
 				pendingBug = null;
@@ -77,7 +78,11 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
 		if (seen == PUTFIELD) {
 			
 			if (syncField != null && getPrevOpcode(1) != ALOAD_0 && syncField.equals(getXFieldOperand())) {
-	            pendingBug = new BugInstance(this, "ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD", Priorities.HIGH_PRIORITY).addClassAndMethod(this)
+				OpcodeStack.Item value = stack.getStackItem(0);
+				int priority = Priorities.HIGH_PRIORITY;
+				 if (value.isNull())
+					 priority = Priorities.NORMAL_PRIORITY;
+	            pendingBug = new BugInstance(this, "ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD", priority).addClassAndMethod(this)
 				        .addField(syncField).addSourceLine(this);
 	            countDown = 2;
 	            
