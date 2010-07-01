@@ -182,11 +182,11 @@ public class I18N {
 		}
 		catch(MissingResourceException mre){
 			if(DEBUG)
-				return "TRANSLATE(key=" + key + ") (param={0}}";
+				return "TRANSLATE(" + key + ") (param={0}}";
 			else try {
 				return englishAnnotationDescriptionBundle.getString(key);
 			} catch(MissingResourceException mre2){
-					return key;
+					return key + " {0}";
 				}
 
 		}
