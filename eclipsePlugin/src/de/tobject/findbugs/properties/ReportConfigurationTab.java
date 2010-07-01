@@ -122,6 +122,10 @@ public class ReportConfigurationTab extends Composite {
 		cloudCombo.select(0);
 		int i = 1;
 		for (CloudPlugin cloud : CloudFactory.getRegisteredClouds().values()) {
+			if (cloud.isHidden() && !cloud.getId().equals(cloudid)) {
+				continue;
+			}
+			
 			cloudCombo.add(cloud.getDescription());
 			clouds.add(cloud);
 			if (cloud.getId().equals(cloudid)) {
