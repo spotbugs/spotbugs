@@ -26,6 +26,7 @@ import java.util.regex.PatternSyntaxException;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class BadSyntaxForRegularExpression 
@@ -90,14 +91,21 @@ extends OpcodeStackDetector {
 		try {
 			Pattern.compile(regex, flags);
 		} catch (PatternSyntaxException e) {
-		  bugReporter.reportBug(new BugInstance(this, "RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION", 
-				HIGH_PRIORITY)
-								.addClassAndMethod(this)
-								.addCalledMethod(this)
-								.addString(regex)
-								.addInt(flags)
-								.addSourceLine(this)
-				);
+			String message = e.getMessage();
+			int eol = message.indexOf('\n');
+			if (eol > 0)
+				message = message.substring(0, eol);
+			BugInstance bug = new BugInstance(this, "RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION", 
+					HIGH_PRIORITY)
+			.addClassAndMethod(this)
+			.addCalledMethod(this)
+			.addString(message).describe(StringAnnotation.ERROR_MSG_ROLE)
+			.addString(regex).describe(StringAnnotation.REGEX_ROLE);
+			String options = getOptions(flags);
+			if (options.length() > 0)
+				bug.addString("Regex flags: " + options).describe(StringAnnotation.STRING_MESSAGE);
+			bug.addSourceLine(this);
+			bugReporter.reportBug(bug);
 		}
 	}
 
@@ -164,4 +172,26 @@ extends OpcodeStackDetector {
 
 	}
 
+	static void appendOption(StringBuilder b, int flags, int mask, String name) {
+		if ((flags & mask) == 0) 
+			return;
+		if (b.length() > 0)
+			b.append(" | ");
+		b.append("Pattern." + name);
+	
+	}
+	static String getOptions(int flags) {
+		
+		StringBuilder b = new StringBuilder();
+		appendOption(b, flags, Pattern.CANON_EQ, "CANON_EQ");
+		appendOption(b, flags, Pattern.CASE_INSENSITIVE, "CASE_INSENSITIVE");
+		appendOption(b, flags, Pattern.COMMENTS, "COMMENTS");
+		appendOption(b, flags, Pattern.DOTALL, "DOTALL");
+		appendOption(b, flags, Pattern.LITERAL, "LITERAL");
+		appendOption(b, flags, Pattern.MULTILINE, "MULTILINE");
+		appendOption(b, flags, Pattern.UNICODE_CASE, "UNICODE_CASE");
+		appendOption(b, flags, Pattern.UNIX_LINES, "UNIX_LINES");
+		
+		return b.toString();
+		}
 }
