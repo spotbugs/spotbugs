@@ -47,9 +47,11 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.util.SubtypeTypeMatcher;
 import edu.umd.cs.findbugs.visitclass.Util;
 
 public class FindPuzzlers extends OpcodeStackDetector {
@@ -518,7 +520,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 					}
 
 					bugAccumulator.accumulateBug(new BugInstance(this, "IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD",
-					        NORMAL_PRIORITY).addClassAndMethod(this), this);
+					       extendsThread(getThisClass()) ?  NORMAL_PRIORITY : LOW_PRIORITY).addClassAndMethod(this), this);
 						
 					}
 				
@@ -559,10 +561,10 @@ public class FindPuzzlers extends OpcodeStackDetector {
 
 		}
 	boolean implementsRunnable(JavaClass obj) {
-		if (obj.getSuperclassName().equals("java.lang.Thread")) return true;
-		for(String s : obj.getInterfaceNames())
-			if (s.equals("java.lang.Runnable")) return true;
-		return false;
+		return Subtypes2.instanceOf(obj, "java.lang.Runnable");
+	}
+	boolean extendsThread(JavaClass obj) {
+		return Subtypes2.instanceOf(obj, "java.lang.Thread");
 	}
 
 }
