@@ -25,16 +25,19 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 
 /**
  * 
  */
 public class LaunchBrowser {
 
-	public static final boolean launchFirefox = SystemProperties.getBoolean("findbugs.launchFirefox")
+	private static Pattern validExec  = Pattern.compile("[a-zA-Z0-9/]+");
+	public static final String execCommand = SystemProperties.getProperty("findbugs.execCommand");
+	public static final boolean launchViaExec = execCommand != null 
+				&& validExec.matcher(execCommand).matches()
 				&& "Linux".equals(SystemProperties.getProperty("os.name"));
 	private static Object desktopObject;
 	private static Method desktopBrowseMethod;
@@ -82,7 +85,7 @@ public class LaunchBrowser {
 
 	
 	static boolean showDocumentViaExec(URL url) {
-		if (launchFirefox && !launchViaExecFailed) {
+		if (launchViaExec && !launchViaExecFailed) {
 			try {
 				Process p = launchFirefox(url);
 				Thread.sleep(20);
@@ -107,6 +110,7 @@ public class LaunchBrowser {
 	    Process p = builder.start();
 	    return p;
     }
+	
 	/** 
 	 * attempt to show the given URL.
 	 * will first attempt via the JNLP api, then will try showViaExec().
@@ -115,11 +119,12 @@ public class LaunchBrowser {
 	 */
 	public static boolean showDocument(URL url) {
 		
-		if (showDocumentViaExec(url))
-			return true;
+
 		if (showDocumentViaDesktop(url))
 			return true;
 		if (JavaWebStart.showViaWebStart(url))
+			return true;
+		if (showDocumentViaExec(url))
 			return true;
 		return false;
 	

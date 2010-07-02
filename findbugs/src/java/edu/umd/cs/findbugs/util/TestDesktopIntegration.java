@@ -199,7 +199,7 @@ public class TestDesktopIntegration extends JPanel {
 			top.add(jnlp);
 		}
 
-		if (LaunchBrowser.launchFirefox) {
+		if (LaunchBrowser.launchViaExec) {
 			JButton exec = new JButton("exec firefox");
 			exec.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
