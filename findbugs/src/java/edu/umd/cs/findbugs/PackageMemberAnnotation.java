@@ -23,6 +23,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Abstract base class for BugAnnotations describing constructs
@@ -109,13 +110,15 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
 	public final String format(String key, ClassAnnotation primaryClass) {
 		if (key.equals("class.givenClass"))
 			return shorten(primaryClass.getPackageName(), className);
+		if (key.equals("simpleClass"))
+			return ClassName.extractSimpleName(className);
 		if (key.equals("class"))
 			return className;
-		else if (key.equals("package"))
+		if (key.equals("package"))
 			return getPackageName();
-		else if (key.equals("") && FindBugsDisplayFeatures.isAbridgedMessages() && primaryClass != null)
+		if (key.equals("") && FindBugsDisplayFeatures.isAbridgedMessages() && primaryClass != null)
 			return formatPackageMember("givenClass", primaryClass);
-		else return formatPackageMember(key, primaryClass);
+		return formatPackageMember(key, primaryClass);
 	}
 
 	public void setDescription(String description) {

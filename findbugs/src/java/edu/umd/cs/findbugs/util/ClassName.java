@@ -116,10 +116,14 @@ public abstract class ClassName {
 		if (i < 0) return "";
 		return className.substring(0, i);
 	}
-	public static @DottedClassName String extractSimpleName(@DottedClassName String className) {
-		int i = className.lastIndexOf('.');
-		if (i < 0) return className;
-		return className.substring(i+1);
+	public static String extractSimpleName(@DottedClassName String className) {
+		int i = className.lastIndexOf('$');
+		if (i > 0)
+			return className.substring(i+1);
+		i = className.lastIndexOf('.');
+		if (i > 0)
+			return className.substring(i+1);
+		return className;
 	}
 	/**
 	 * Return whether or not the given class name is valid.
