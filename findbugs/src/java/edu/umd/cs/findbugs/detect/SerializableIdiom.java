@@ -218,7 +218,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
 		} catch (CheckedAnalysisException e) {
-	       bugReporter.logError("huh", e);
+			AnalysisContext.logError("Error while analyzing " + obj.getClassName(), e);
         }
 
 

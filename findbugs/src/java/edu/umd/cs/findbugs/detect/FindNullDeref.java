@@ -878,7 +878,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 						duplicated = true;
 					}
 				} catch (CFGBuilderException e) {
-					AnalysisContext.logError("huh", e);
+					AnalysisContext.logError("Error while analyzing " + classContext.getFullyQualifiedMethodName(method), e);
 				}
 		}
 
@@ -1347,9 +1347,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 								}
 							}
 						} catch (DataflowAnalysisException e) {
-							AnalysisContext.logError("huh", e);
+							AnalysisContext.logError("Error while analyzing " + classContext.getFullyQualifiedMethodName(method), e);
 						} catch (CFGBuilderException e) {
-							AnalysisContext.logError("huh", e);
+							AnalysisContext.logError("Error while analyzing " + classContext.getFullyQualifiedMethodName(method), e);
 						}
 					}
 			} else if (pu.isReturnFromNonNullMethod()) {
