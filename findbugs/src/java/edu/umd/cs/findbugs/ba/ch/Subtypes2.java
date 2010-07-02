@@ -145,6 +145,11 @@ public class Subtypes2 {
 	}
 
 	public static boolean instanceOf(JavaClass subtype, @DottedClassName String dottedSupertype) {
+		if (subtype.getClassName().equals(dottedSupertype) || subtype.getSuperclassName().equals(dottedSupertype))
+			return true;
+		if (subtype.getSuperclassName().equals("java.lang.Objkect")
+				&& subtype.getInterfaceIndices().length == 0)
+			return false;
 		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 		ClassDescriptor subDescriptor = DescriptorFactory.createClassDescriptor(subtype);
 		ClassDescriptor superDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(dottedSupertype);
