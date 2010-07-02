@@ -165,18 +165,7 @@ public class TypeQualifierApplications {
 			}
 			if (map.isEmpty()) map = Collections.emptyMap();
 			directParameterAnnotations.put(m, map);
-		} else if (false) {
-			int n = m.getNumParams();
-			for(int i = 0; i < n; i++) {
-				Collection<AnnotationValue> a = TypeQualifierResolver.resolveTypeQualifiers(m.getParameterAnnotations(i));
-				Collection<AnnotationValue> a2 = map.get(i);
-				boolean ok = a2 == null ?  a.isEmpty() : a.equals(a2);
-				if (!ok) {
-					Collection<AnnotationValue> a3 = TypeQualifierResolver.resolveTypeQualifiers(m.getParameterAnnotations(i));
-					System.out.println("huh");
-				}
-			}
-		}
+		} 
 		
 		Collection<AnnotationValue> result = map.get(parameter);
 		if (result != null) return result;
