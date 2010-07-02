@@ -309,12 +309,12 @@ public class PluginLoader {
 		plugin.setEnabled(pluginEnabled);
 
 		// Set provider and website, if specified
-		String provider = pluginDescriptor.valueOf("/FindbugsPlugin/@provider");
+		String provider = pluginDescriptor.valueOf("/FindbugsPlugin/@provider").trim();
 		if (!provider.equals(""))
-			plugin.setProvider(provider.trim());
-		String website = pluginDescriptor.valueOf("/FindbugsPlugin/@website");
+			plugin.setProvider(provider);
+		String website = pluginDescriptor.valueOf("/FindbugsPlugin/@website").trim();
 		if (!website.equals(""))
-			plugin.setWebsite(website.trim());
+			plugin.setWebsite(website);
 
 		// Set short description, if specified
 		Node pluginShortDesc = null;
