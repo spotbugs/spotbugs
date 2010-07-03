@@ -122,7 +122,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		}
 		designationComboBox.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				if (theBug != null) {
+				if (theBug != null && theBug.getBugInstance() != null) {
 					final int selectionIndex = designationComboBox.getSelectionIndex();
 					executor.submit(new Runnable() {
 						public void run() {
@@ -161,7 +161,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		userAnnotationTextField.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
-				if (theBug != null) {
+				if (theBug != null && theBug.getBugInstance() != null) {
 					final String txt = userAnnotationTextField.getText();
 					executor.submit(new Runnable() {
 						public void run() {
@@ -199,6 +199,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		if (lastCloud != null) {
 			lastCloud.removeListener(cloudListener);
 		}
+		signinStatusBox.dispose();
 		super.dispose();
 	}
 

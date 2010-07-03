@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -40,11 +42,19 @@ public class SigninStatusBox extends Composite {
 			}
 		};
 		createControls();
-
+		parent.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				dispose();
+			}
+		});
 	}
 
 	@Override
 	public void dispose() {
+		if(statusLine.isDisposed()){
+			return;
+		}
+		statusLine.getCursor().dispose();
 		super.dispose();
 		if (this.cloud != null) {
 			this.cloud.removeStatusListener(cloudStatusListener);
@@ -125,7 +135,7 @@ public class SigninStatusBox extends Composite {
 	private void updateLabel() {
 		FindbugsPlugin.getShell().getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				if (statusLine != null) {
+				if (statusLine != null && !statusLine.isDisposed()) {
 					if (cloud != null) {
 						statusLine.setText(cloud.getPlugin().getDescription()
 								+ "\n" + cloud.getSigninState()
