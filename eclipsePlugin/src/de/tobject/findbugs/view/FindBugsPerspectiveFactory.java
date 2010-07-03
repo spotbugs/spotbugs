@@ -50,6 +50,7 @@ public class FindBugsPerspectiveFactory implements IPerspectiveFactory {
 
 		bottomRight.addView(IPageLayout.ID_PROP_SHEET);
 		bottomRight.addView(IPageLayout.ID_PROBLEM_VIEW);
+		bottomRight.addView(FindbugsPlugin.USER_ANNOTATIONS_VIEW_ID);
 	}
 
 }
