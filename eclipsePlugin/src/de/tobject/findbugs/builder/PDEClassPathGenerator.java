@@ -31,6 +31,7 @@ import org.eclipse.jdt.core.IClasspathContainer;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.launching.JREContainer;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.osgi.service.resolver.BundleDescription;
 import org.eclipse.pde.core.plugin.IPluginModelBase;
@@ -80,24 +81,24 @@ public class PDEClassPathGenerator {
 					.computeDefaultRuntimeClassPath(javaProject);
 			classPath.addAll(Arrays.asList(defaultClassPath));
 
-			if (false) {
 			// add CPE_CONTAINER classpathes
 			IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
 			for (IClasspathEntry entry : rawClasspath) {
 				if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
 					IClasspathContainer classpathContainer = JavaCore
 							.getClasspathContainer(entry.getPath(), javaProject);
-					if (classpathContainer != null) {
+					if (classpathContainer != null && !(classpathContainer instanceof JREContainer)) {
 						IClasspathEntry[] classpathEntries = classpathContainer
 								.getClasspathEntries();
 						for (IClasspathEntry iClasspathEntry : classpathEntries) {
-							classPath.add(iClasspathEntry.getPath().toOSString());
+							IPath path = iClasspathEntry.getPath();
+							if(path != null && path.toFile().exists()) {
+								classPath.add(path.toOSString());
+							}
 						}
 					}
 				}
 			}
-			}
-
 		} catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e,
 					"Could not compute aux. classpath for project " + javaProject);
