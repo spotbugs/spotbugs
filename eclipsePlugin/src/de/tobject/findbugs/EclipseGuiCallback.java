@@ -28,12 +28,10 @@ import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
-import edu.umd.cs.findbugs.cloud.Cloud.CloudStatusListener;
 
 public class EclipseGuiCallback implements IGuiCallback {
-		private final AbstractExecutorService guiExecutor = new EclipseDisplayThreadExecutor();
+	private final AbstractExecutorService guiExecutor = new EclipseDisplayThreadExecutor();
 	private CloudListener cloudListener;
-	private CloudStatusListener cloudStatusListener;
 
 	public void registerCloud(Project project, BugCollection collection, final Cloud cloud) {
 		cloudListener = new CloudListener() {
@@ -68,7 +66,6 @@ public class EclipseGuiCallback implements IGuiCallback {
 
 	public void unregisterCloud(Project project, BugCollection collection, Cloud cloud) {
 		cloud.removeListener(cloudListener);
-		cloud.removeStatusListener(cloudStatusListener);
 	}
 
 	public String showQuestionDialog(String message, String title, String defaultValue) {
@@ -140,30 +137,25 @@ public class EclipseGuiCallback implements IGuiCallback {
 		});
 	}
 
-	private final class EclipseDisplayThreadExecutor extends AbstractExecutorService {
+	private final static class EclipseDisplayThreadExecutor extends AbstractExecutorService {
 		public boolean awaitTermination(long timeout, TimeUnit unit)
 				throws InterruptedException {
-			// TODO Auto-generated method stub
 			return false;
 		}
 
 		public boolean isShutdown() {
-			// TODO Auto-generated method stub
 			return false;
 		}
 
 		public boolean isTerminated() {
-			// TODO Auto-generated method stub
 			return false;
 		}
 
 		public void shutdown() {
-			// TODO Auto-generated method stub
-
+			return;
 		}
 
 		public List<Runnable> shutdownNow() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
