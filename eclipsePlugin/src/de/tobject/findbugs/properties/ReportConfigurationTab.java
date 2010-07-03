@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.TabItem;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
@@ -107,7 +108,7 @@ public class ReportConfigurationTab extends Composite {
 		cloudCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 
 		enableOrDisableCloudControls();
-		IProject eclipseProj = propertyPage.getProject();
+		final IProject eclipseProj = propertyPage.getProject();
 		String cloudid = null;
 		if (eclipseProj != null) {
 			SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
@@ -125,7 +126,7 @@ public class ReportConfigurationTab extends Composite {
 			if (cloud.isHidden() && !cloud.getId().equals(cloudid)) {
 				continue;
 			}
-			
+
 			cloudCombo.add(cloud.getDescription());
 			clouds.add(cloud);
 			if (cloud.getId().equals(cloudid)) {
@@ -137,12 +138,12 @@ public class ReportConfigurationTab extends Composite {
 		cloudCombo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				IProject eclipseProj = propertyPage.getProject();
 				if (eclipseProj != null) {
 					SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
+					Project project = collection.getProject();
 					CloudPlugin item = clouds.get(cloudCombo.getSelectionIndex());
-					if (item != null && !item.getId().equals(collection.getProject().getCloudId())) {
-						collection.getProject().setCloudId(item.getId());
+					if (item != null && project != null && !item.getId().equals(project.getCloudId())) {
+						project.setCloudId(item.getId());
 						collection.reinitializeCloud();
 					}
 				}

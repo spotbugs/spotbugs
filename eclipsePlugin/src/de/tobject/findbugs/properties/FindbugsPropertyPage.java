@@ -34,6 +34,10 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.IPreferencePage;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -65,6 +69,7 @@ import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
+
 /**
  * Project properties page for setting FindBugs properties.
  *
@@ -85,7 +90,9 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 	private Button chkEnableFindBugs;
 	private Button chkRunAtFullBuild;
 	private Button restoreDefaultsButton;
+	private ComboViewer effortViewer;
 	private TabFolder tabFolder;
+	private DetectorConfigurationTab detectorTab;
 	private FilterFilesTab filterFilesTab;
 	private ReportConfigurationTab reportConfigurationTab;
 	private final Map<DetectorFactory, Boolean> visibleDetectors;
@@ -177,6 +184,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		layoutData.verticalIndent = -5;
 		tabFolder.setLayoutData(layoutData);
 
+		detectorTab = createDetectorConfigurationTab(tabFolder);
 		reportConfigurationTab = createReportConfigurationTab(tabFolder);
 		filterFilesTab = createFilterFilesTab(tabFolder);
 	}
@@ -255,6 +263,24 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		layoutData.horizontalIndent = -5;
 		layoutData.verticalIndent = -5;
 		prioGroup.setLayoutData(layoutData);
+
+		// effort
+		Label effortLabel = new Label(prioGroup, SWT.NULL);
+		effortLabel.setText(getMessage("property.effort"));
+		effortViewer = new ComboViewer(prioGroup, SWT.DROP_DOWN	| SWT.READ_ONLY);
+		effortViewer.add(Effort.values());
+
+		String effortLevel = currentUserPreferences.getEffort();
+		effortViewer.setSelection(new StructuredSelection(Effort.getEffort(effortLevel)), true);
+		effortViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				Effort placeHolder = (Effort) ((IStructuredSelection) event
+						.getSelection()).getFirstElement();
+				currentUserPreferences.setEffort(placeHolder.getEffortLevel());
+			}
+		});
+		effortLabel.setToolTipText("Set FindBugs analysis effort (minimal is faster but less precise)");
+		effortViewer.getCombo().setToolTipText("Set FindBugs analysis effort (minimal is faster but less precise)");
 	}
 
     private void createWorkspaceButtons(Composite parent) {
@@ -302,6 +328,8 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 
     protected void refreshUI(UserPreferences prefs) {
     	visibleDetectors.clear();
+		effortViewer.setSelection(new StructuredSelection(Effort.getEffort(prefs.getEffort())), true);
+		detectorTab.refreshUI(prefs);
 		filterFilesTab.refreshUI(prefs);
 		reportConfigurationTab.refreshUI(prefs);
 	}
@@ -339,9 +367,11 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
     	if(enableProjectCheck != null) {
 			workspaceSettingsLink.setEnabled(!selection);
 		}
+        detectorTab.setEnabled(selection);
         filterFilesTab.setEnabled(selection);
         reportConfigurationTab.setEnabled(selection);
         restoreDefaultsButton.setEnabled(selection);
+        effortViewer.getCombo().setEnabled(selection);
     }
 
     protected static Button createLabeledCheck(String title, String tooltip, boolean value, Composite defPanel) {
@@ -486,7 +516,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		while (iterator.hasNext()) {
 			DetectorFactory factory = iterator.next();
 			// Only compare non-hidden factories
-			if (factory.isHidden()) {
+			if (factory.isHidden() && !detectorTab.isHiddenVisible()) {
 				continue;
 			}
 			if(pref1.isDetectorEnabled(factory) ^ pref2.isDetectorEnabled(factory)){
@@ -580,7 +610,50 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		return visibleDetectors;
 	}
 
+	/**
+	 * @return the detectorTab
+	 */
+	DetectorConfigurationTab getDetectorTab() {
+		return detectorTab;
+	}
+
+	/**
+	 * Enum to hold an effort level and internationalizable label value.
+	 */
+	public enum Effort {
+
+		MIN(UserPreferences.EFFORT_MIN, "property.effortmin"),
+		DEFAULT(UserPreferences.EFFORT_DEFAULT, "property.effortdefault"),
+		MAX(UserPreferences.EFFORT_MAX, "property.effortmax");
+
+		private final String effortLevel;
+		private final String message;
+		private Effort(String level, String messageKey){
+			effortLevel = level;
+			message = getMessage(messageKey);
+		}
+
 		@Override
+		public String toString() {
+			return message;
+		}
+
+		public String getEffortLevel() {
+			return effortLevel;
+		}
+
+		static Effort getEffort(String level){
+			Effort[] efforts = values();
+			for (Effort effort : efforts) {
+				if(effort.getEffortLevel().equals(level)){
+					return effort;
+				}
+			}
+			return DEFAULT;
+		}
+	}
+
+	@Override
 	public void setErrorMessage(String newMessage) {
 		setValid(newMessage == null);
 		super.setErrorMessage(newMessage);
@@ -596,6 +669,14 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 
 	protected Button getEnableProjectCheck() {
 		return enableProjectCheck;
+	}
+
+	protected ComboViewer getEffortViewer() {
+		return effortViewer;
+	}
+
+	protected DetectorConfigurationTab createDetectorConfigurationTab(TabFolder parentTabFolder) {
+		return new DetectorConfigurationTab(parentTabFolder, this, SWT.NONE);
 	}
 
 	protected ReportConfigurationTab createReportConfigurationTab(TabFolder parentTabFolder) {
