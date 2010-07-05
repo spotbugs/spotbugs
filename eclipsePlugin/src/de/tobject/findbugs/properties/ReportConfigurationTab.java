@@ -38,6 +38,9 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.navigator.CommonNavigator;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import edu.umd.cs.findbugs.I18N;
@@ -318,6 +321,14 @@ public class ReportConfigurationTab extends Composite {
 			if (item != null && project != null && !item.getId().equals(project.getCloudId())) {
 				project.setCloudId(item.getId());
 				collection.reinitializeCloud();
+				IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
+				if (page != null) {
+					IViewPart view = page.findView("de.tobject.findbugs.view.bugtreeview");
+					if (view != null && view instanceof CommonNavigator) {
+						CommonNavigator nav = ((CommonNavigator) view);
+						nav.getCommonViewer().refresh(true);
+					}
+				}
 			}
 		}
 	}
