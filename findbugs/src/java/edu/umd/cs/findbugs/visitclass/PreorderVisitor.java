@@ -194,7 +194,15 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 		Attribute[] attributes = obj.getAttributes();
 		for (Attribute attribute : attributes)
 			attribute.accept(this);
+		visitAfter(obj);
 		code = null;
+	}
+
+	/**
+	 * Called after visiting a code attribute
+	 * @param obj Code that was just visited
+	 */
+	public void visitAfter(Code obj) {
 	}
 
 	// Constants
