@@ -51,7 +51,7 @@ public class FindUnconditionalWait extends BytecodeScanningDetector implements S
 	}
 
 	@Override
-		 public void sawOffset(int offset) {
+		 public void sawBranchTo(int target) {
 		if (stage == 1) stage = 0;
 	}
 

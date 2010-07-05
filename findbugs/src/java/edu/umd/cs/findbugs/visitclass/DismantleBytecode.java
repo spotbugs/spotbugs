@@ -753,10 +753,8 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 					int prevOffset = i - PC;
 					for (int o = 0; o <= switchHigh - switchLow; o++) {
 						sawBranchTo(switchOffsets[o] + PC);
-						sawOffset(switchOffsets[o] - prevOffset);
 						prevOffset = switchOffsets[o];
 					}
-					sawOffset(defaultSwitchOffset - prevOffset);
 					sawBranchTo(defaultSwitchOffset + PC);
 				} else if (opcode == LOOKUPSWITCH) {
 					sawInt(switchOffsets.length);
@@ -766,7 +764,6 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 						prevOffset = switchOffsets[o];
 						sawInt(switchLabels[o]);
 					}
-					sawOffset(defaultSwitchOffset - prevOffset);
 					sawBranchTo(defaultSwitchOffset + PC);
 				} else
 					for (int k = 0; k < TYPE_OF_OPERANDS[opcode].length; k++) {
@@ -774,10 +771,6 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 						switch (m) {
 						case M_BR:
 							sawBranchTo(branchOffset + PC);
-							if (branchOffset > 0)
-								sawOffset(branchOffset - (i - PC));
-							else
-								sawOffset(branchOffset);
 							break;
 						case M_CP:
 							if (constantRefOperand instanceof ConstantInteger)
@@ -837,8 +830,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
 	public void sawBranchTo(int seen) {
 	}
-	public void sawOffset(int seen) {
-	}
+
 
 	/** return false if we should skip calling sawOpcode */
 	public boolean beforeOpcode(int seen) { return true; }
