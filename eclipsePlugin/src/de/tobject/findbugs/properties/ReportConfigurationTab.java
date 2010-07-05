@@ -60,6 +60,7 @@ public class ReportConfigurationTab extends Composite {
 	private Combo minPriorityCombo;
 	private Combo cloudCombo;
 	private Label cloudLabel;
+	private List<CloudPlugin> clouds;
 
 
 	/**
@@ -117,7 +118,7 @@ public class ReportConfigurationTab extends Composite {
 			}
 		}
 
-		final List<CloudPlugin> clouds = new ArrayList<CloudPlugin>();
+		clouds = new ArrayList<CloudPlugin>();
 		clouds.add(null);
 		cloudCombo.add("");
 		cloudCombo.select(0);
@@ -134,21 +135,6 @@ public class ReportConfigurationTab extends Composite {
 			}
 			i++;
 		}
-
-		cloudCombo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (eclipseProj != null) {
-					SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
-					Project project = collection.getProject();
-					CloudPlugin item = clouds.get(cloudCombo.getSelectionIndex());
-					if (item != null && project != null && !item.getId().equals(project.getCloudId())) {
-						project.setCloudId(item.getId());
-						collection.reinitializeCloud();
-					}
-				}
-			}
-		});
 	}
 
 	private IProject enableOrDisableCloudControls() {
@@ -321,6 +307,19 @@ public class ReportConfigurationTab extends Composite {
 
 	protected List<Button> getChkEnableBugCategoryList() {
 		return chkEnableBugCategoryList;
+	}
+
+	public void performOk() {
+		IProject eclipseProj = propertyPage.getProject();
+		if (eclipseProj != null) {
+			SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
+			Project project = collection.getProject();
+			CloudPlugin item = clouds.get(cloudCombo.getSelectionIndex());
+			if (item != null && project != null && !item.getId().equals(project.getCloudId())) {
+				project.setCloudId(item.getId());
+				collection.reinitializeCloud();
+			}
+		}
 	}
 }
 

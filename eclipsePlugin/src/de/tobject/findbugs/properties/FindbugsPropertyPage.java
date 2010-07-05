@@ -413,6 +413,8 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 	 */
 	@Override
 	public boolean performOk() {
+		reportConfigurationTab.performOk();
+		
 		// Have user preferences for project changed?
 		// If so, write them to the user preferences file & re-run builder
 		if (!currentUserPreferences.equals(origUserPreferences)) {
