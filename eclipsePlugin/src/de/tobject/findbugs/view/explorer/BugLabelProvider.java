@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -43,12 +45,15 @@ import org.eclipse.ui.navigator.IDescriptionProvider;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.cloud.BugCollectionStorageCloud;
+import edu.umd.cs.findbugs.cloud.Cloud;
 
 /**
  * @author Andrei
  */
-public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, ICommonLabelProvider,
-	IColorProvider {
+public class BugLabelProvider implements /*IStyledLabelProvider, */ILabelProvider, IDescriptionProvider,
+    ICommonLabelProvider, IColorProvider {
 
 	private final WorkbenchLabelProvider wbProvider;
 	private BugContentProvider provider;
@@ -81,17 +86,78 @@ public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, I
 	boolean isStandalone(){
 		return provider == null;
 	}
-
+/*
+	public StyledString getStyledText(Object element) {
+		if (element instanceof BugGroup) {
+			BugGroup group = (BugGroup) element;
+			String cloudName = null;
+			if (group.getType() == GroupType.Project) {
+				IProject project = (IProject) group.getData();
+				try {
+					SortedBugCollection bc = FindbugsPlugin.getBugCollection(project, null);
+					Cloud cloud = bc.getCloud();
+					if (!(cloud instanceof BugCollectionStorageCloud)) {
+						cloudName = cloud.getCloudName();
+					}
+				} catch (CoreException e) {
+					// ignore
+				}
+			}
+			if(isStandalone()){
+				return new StyledString(group.getShortDescription());
+			}
+			int filtered = getFilteredMarkersCount(group);
+			String filterCount = filtered > 0? "/" + filtered + " filtered" : "";
+			String str = group.getShortDescription() + " ("
+					+ (group.getMarkersCount() - filtered) + filterCount + ")";
+			StyledString ss = new StyledString(str);
+			if (cloudName != null) {
+				ss.append(" [" + cloudName + "]", StyledString.DECORATIONS_STYLER);
+			}
+			return ss;
+		}
+		if(element instanceof IMarker){
+			IMarker marker = (IMarker) element;
+			if(!marker.exists()){
+				return null;
+			}
+		}
+		if(element instanceof IStructuredSelection){
+			return new StyledString(getDescriptionAndBugCount(((IStructuredSelection)element).toArray()));
+		}
+		if(element instanceof Object[]){
+			return new StyledString(getDescriptionAndBugCount((Object[]) element));
+		}
+		return new StyledString(wbProvider.getText(element));
+	}
+*/
 	public String getText(Object element) {
 		if (element instanceof BugGroup) {
 			BugGroup group = (BugGroup) element;
+			String cloudName = null;
+			if (group.getType() == GroupType.Project) {
+				IProject project = (IProject) group.getData();
+				try {
+					SortedBugCollection bc = FindbugsPlugin.getBugCollection(project, null);
+					Cloud cloud = bc.getCloud();
+					if (!(cloud instanceof BugCollectionStorageCloud)) {
+						cloudName = cloud.getCloudName();
+					}
+				} catch (CoreException e) {
+					// ignore
+				}
+			}
 			if(isStandalone()){
 				return group.getShortDescription();
 			}
 			int filtered = getFilteredMarkersCount(group);
 			String filterCount = filtered > 0? "/" + filtered + " filtered" : "";
-			return group.getShortDescription() + " ("
+			String str = group.getShortDescription() + " ("
 					+ (group.getMarkersCount() - filtered) + filterCount + ")";
+			if (cloudName != null) {
+				str += " - " + cloudName;
+			}
+			return str;
 		}
 		if(element instanceof IMarker){
 			IMarker marker = (IMarker) element;
