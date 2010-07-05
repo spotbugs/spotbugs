@@ -110,11 +110,9 @@ public class BugLoader {
 	public static BugSet loadBugsHelper(BugCollection collection)
 	{
 		ArrayList<BugLeafNode> bugList=new ArrayList<BugLeafNode>();
-		Iterator<BugInstance> i=collection.iterator();
-		while (i.hasNext())
-		{
-			bugList.add(new BugLeafNode(i.next()));
-		}
+		for(BugInstance b : collection) 
+			bugList.add(new BugLeafNode(b));
+		
 
 		return new BugSet(bugList);
 
@@ -131,12 +129,12 @@ public class BugLoader {
 		try {
 	        col.readXML(source);
 	        initiateCommunication(col);
-	        MainFrame.getInstance().setProjectAndBugCollectionInSwingThread(project, col);
+	        addDeadBugMatcher(project);   
         } catch (Exception e) {
         	e.printStackTrace();
         	JOptionPane.showMessageDialog(mainFrame,"Could not read " +  source+ "; " + e.getMessage());
         }
-		addDeadBugMatcher(project);
+        MainFrame.getInstance().setProjectAndBugCollectionInSwingThread(project, col);
 		return col;
 	}
 
@@ -153,8 +151,19 @@ public class BugLoader {
 		
 		SortedBugCollection col=new SortedBugCollection(project);
 		try {
+			if (MainFrame.DEBUG) {
+				System.out.println("loading from: " + url);
+				JOptionPane.showMessageDialog(mainFrame,"loading from: " + url);
+	        	
+			}
 	        col.readXML(url);
+	        if (MainFrame.DEBUG) {
+				System.out.println("finished reading: " + url);
+				JOptionPane.showMessageDialog(mainFrame,"loaded: " + url);
+	        }
 	        initiateCommunication(col);
+	        addDeadBugMatcher(project);
+	       
         } catch (Exception e) {
         	String msg = SystemProperties.getOSDependentProperty("findbugs.unableToLoadViaURL");
         	if (msg == null)
@@ -165,7 +174,7 @@ public class BugLoader {
         	if (SystemProperties.getBoolean("findbugs.failIfUnableToLoadViaURL"))
         		System.exit(1);
         }
-		addDeadBugMatcher(project);
+        MainFrame.getInstance().setProjectAndBugCollectionInSwingThread(project, col);
 		return col;
 	}
 		
