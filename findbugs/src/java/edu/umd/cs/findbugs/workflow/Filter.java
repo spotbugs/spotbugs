@@ -1,5 +1,5 @@
 /*
- * FindBugs - Find bugs in Java programs
+  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003-2005 William Pugh
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -42,14 +42,15 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.ExcludingHashesBugReporter;
+import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.PackageStats;
+import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.PackageStats.ClassStats;
-import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -77,6 +78,9 @@ public class Filter {
 		long before;
 		String beforeAsString; 
 		int maxRank = Integer.MAX_VALUE;
+		
+		long maybeMutated;
+		String maybeMutatedAsString;
 
 		long last;
 		String lastAsString; 
@@ -160,6 +164,7 @@ public class Filter {
 			addOption("-fixed", "when", "allow only warnings that last occurred in the previous version (clobbers last)");
 			addOption("-present", "when", "allow only warnings present in this version");
 			addOption("-absent", "when", "allow only warnings absent in this version");
+			addOption("-maybeMutated", "when", "allow only warnings that might have mutated/fixed/born in this version");
 			addSwitchWithOptionalExtraPart("-hasField", "truth", "allow only warnings that are annotated with a field");
 			addSwitchWithOptionalExtraPart("-hasLocal", "truth", "allow only warnings that are annotated with a local variable");
 			addSwitchWithOptionalExtraPart("-active", "truth", "allow only warnings alive in the last sequence number");
@@ -253,6 +258,7 @@ public class Filter {
 				minFirstSeen = collection.getAnalysisTimestamp() - maxAge * MILLISECONDS_PER_DAY;
 			}
 			first = getVersionNum(versions, timeStamps, firstAsString, true, v.getSequenceNumber());
+			maybeMutated = getVersionNum(versions, timeStamps, maybeMutatedAsString, true, v.getSequenceNumber());
 			last = getVersionNum(versions, timeStamps, lastAsString, true,  v.getSequenceNumber());
 			before = getVersionNum(versions, timeStamps, beforeAsString, true,  v.getSequenceNumber());
 			after = getVersionNum(versions, timeStamps, afterAsString, false,  v.getSequenceNumber());
@@ -325,6 +331,13 @@ public class Filter {
 			if (className != null && !className.matcher(bug.getPrimaryClass().getClassName()).find())
 					return false;
 
+			if (maybeMutatedAsString != null
+					&& !(atMutationPoint(bug)
+					&& mutationPoints.contains(getBugLocation(bug)))) 
+					return false;
+				
+	
+			
 			BugPattern thisBugPattern = bug.getBugPattern();
 			if (!categoryKey.isEmpty() && thisBugPattern != null && !categoryKey.contains(thisBugPattern.getCategory()))
 				return false;
@@ -364,6 +377,9 @@ public class Filter {
 					shouldFix != (collection.getCloud().getConsensusDesignation(bug).score() > 0))
 				return false;
 			
+			
+			
+
 			return true;
 		}
 
@@ -436,6 +452,8 @@ public class Filter {
 			
 			else if (option.equals("-first")) 
 				firstAsString = argument;
+			else if (option.equals("-maybeMutated")) 
+				maybeMutatedAsString = argument;
 			else if (option.equals("-last")) 
 				lastAsString = argument;
 			else if (option.equals("-trimToVersion")) 
@@ -487,6 +505,49 @@ public class Filter {
 			} else throw new IllegalArgumentException("can't handle command line argument of " + option);
 			
 		}
+
+		HashSet<String> mutationPoints;
+		/**
+         * @param origCollection
+         */
+        public void getReady(SortedBugCollection origCollection) {
+	        if (maybeMutatedAsString != null) {
+	        		mutationPoints = new HashSet<String>();
+	        		for(BugInstance b : origCollection) 
+	        			if (atMutationPoint(b)) {
+	        				String point = getBugLocation(b);
+	        				if (point != null)
+	        				   mutationPoints.add(point);
+	        			}
+	        }
+	        
+        }
+
+		/**
+         * @param b
+         * @return
+         */
+        private boolean atMutationPoint(BugInstance b) {
+	        return b.getFirstVersion() == maybeMutated 
+	        		|| b.getLastVersion() == maybeMutated -1;
+        }
+
+		/**
+         * @param b
+         * @return
+         */
+        private String getBugLocation(BugInstance b) {
+	        String point;
+	        MethodAnnotation m = b.getPrimaryMethod();
+	        FieldAnnotation f = b.getPrimaryField();
+	        if (m != null) 
+	        	point = m.toString();
+	        else if (f != null)
+	        	point = f.toString();
+	        else 
+	        	point = null;
+	        return point;
+        }
 
 
 
@@ -562,6 +623,8 @@ public class Filter {
 		if (commandLine.maxAgeSpecified || commandLine.notAProblemSpecified ||
 				commandLine.shouldFixSpecified)
 			origCollection.getCloud().waitUntilIssueDataDownloaded();
+		
+		commandLine.getReady(origCollection);
 		
 		for (BugInstance bug : origCollection.getCollection())
 			if (commandLine.accept(origCollection, bug)) {
