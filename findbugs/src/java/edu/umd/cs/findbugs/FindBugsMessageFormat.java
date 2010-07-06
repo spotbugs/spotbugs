@@ -76,7 +76,7 @@ public class FindBugsMessageFormat {
 
 			int end = pat.indexOf('}');
 			if (end < 0)
-				throw new IllegalStateException("bad pattern " + pattern);
+				throw new IllegalStateException("unmatched { in " + pat);
 
 			String substPat = pat.substring(0, end);
 
@@ -92,7 +92,7 @@ public class FindBugsMessageFormat {
 			try {
 				fieldNum = Integer.parseInt(substPat);
 			} catch (NumberFormatException e) {
-				throw new IllegalArgumentException("bad pattern " + pattern);
+				throw new IllegalArgumentException("Bad integer value " + substPat + " in " + pattern);
 			}
 
 			// System.out.println("fn: " + fieldNum);
