@@ -7563,7 +7563,7 @@ This code invokes substring(0) on a String, which returns the original value.
   </BugPattern>
   <BugPattern type="DMI_CALLING_NEXT_FROM_HASNEXT">
     <ShortDescription>hasNext method invokes next</ShortDescription>
-    <LongDescription>{1} invokes {3.givenClass}</LongDescription>
+    <LongDescription>{1} invokes {2.givenClass}</LongDescription>
     <Details>
 <![CDATA[
 <p>
