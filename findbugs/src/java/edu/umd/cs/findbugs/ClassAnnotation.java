@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -41,6 +42,8 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	private static final String DEFAULT_ROLE = "CLASS_DEFAULT";
 	public static final String SUBCLASS_ROLE = "CLASS_SUBCLASS";
 	public static final String SUPERCLASS_ROLE =  "CLASS_SUPERCLASS";
+	public static final String RECOMMENDED_SUPERCLASS_ROLE =  "CLASS_RECOMMENDED_SUPERCLASS";
+	
 	public static final String IMPLEMENTED_INTERFACE_ROLE =  "CLASS_IMPLEMENTED_INTERFACE";
 	public static final String INTERFACE_ROLE =  "INTERFACE_TYPE";
 	public static final String ANNOTATION_ROLE = "CLASS_ANNOTATION";
@@ -87,6 +90,8 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 			return shorten(primaryClass.getPackageName(), className);
 		else if (key.equals("excludingPackage"))
 			return shorten(getPackageName(), className);
+		else if (key.equals("simpleClass") || key.equals("simpleName")  )
+			return ClassName.extractSimpleName(className);
 		else
 			throw new IllegalArgumentException("unknown key " + key);
 	}
