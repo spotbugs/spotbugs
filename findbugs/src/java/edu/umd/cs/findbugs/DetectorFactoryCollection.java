@@ -185,6 +185,14 @@ public class DetectorFactoryCollection {
 	}
 
 	/**
+	 * Return an Iterable over the DetectorFactory objects for all
+	 * registered Detectors.
+	 */
+	public Iterable<DetectorFactory> getFactories() {
+		ensureLoaded();
+		return factoryList;
+	}
+	/**
 	 * Look up a DetectorFactory by its short name.
 	 *
 	 * @param name the short name

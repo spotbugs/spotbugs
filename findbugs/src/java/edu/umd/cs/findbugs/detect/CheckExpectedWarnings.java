@@ -36,6 +36,8 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -44,6 +46,7 @@ import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -209,7 +212,15 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 	}
 	
 	public void finishPass() {
-		// Nothing to do
+		HashSet<BugPattern> claimedReported = new HashSet<BugPattern>();
+		for(DetectorFactory d : DetectorFactoryCollection.instance().getFactories()) 
+			claimedReported.addAll(d.getReportedBugPatterns());
+		for(BugPattern b : I18N.instance().getBugPatterns()) {
+	        String category = b.getCategory();
+	        if (!b.isDeprecated() && !category.equals("EXPERIMENTAL") && !claimedReported.contains(b))
+			  AnalysisContext.logError("No detector claims " + b.getType());
+        }
+		
 	}
 
 	public String getDetectorClassName() {
