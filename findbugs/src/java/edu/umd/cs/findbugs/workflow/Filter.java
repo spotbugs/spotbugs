@@ -508,17 +508,22 @@ public class Filter {
 
 		HashSet<String> mutationPoints;
 		/**
+		 * Do any prep work needed to perform bug filtering
+		 * 
          * @param origCollection
          */
         public void getReady(SortedBugCollection origCollection) {
-	        if (maybeMutatedAsString != null) {
-	        		mutationPoints = new HashSet<String>();
+          	if (maybeMutatedAsString != null) {
+	        		HashSet<String> addedIssues = new HashSet<String>();
+	        		HashSet<String> removedIssues = new HashSet<String>();
 	        		for(BugInstance b : origCollection) 
-	        			if (atMutationPoint(b)) {
-	        				String point = getBugLocation(b);
-	        				if (point != null)
-	        				   mutationPoints.add(point);
-	        			}
+	        			if (b.getFirstVersion() == maybeMutated) 
+	        				addedIssues.add(getBugLocation(b));
+	        			else if (b.getLastVersion() == maybeMutated -1)
+	        				removedIssues.add(getBugLocation(b));
+	        		addedIssues.remove(null);
+	        		addedIssues.retainAll(removedIssues);
+	        		mutationPoints = addedIssues;
 	        }
 	        
         }
