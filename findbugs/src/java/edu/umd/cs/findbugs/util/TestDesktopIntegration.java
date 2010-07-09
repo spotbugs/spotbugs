@@ -131,17 +131,14 @@ public class TestDesktopIntegration extends JPanel {
 		 */
 		@Override
 		public void write(char[] cbuf, int off, int len) throws IOException {
-
 			console.append(new String(cbuf, off, len));
-
 		}
-
 	}
 
 	PrintWriter writer = new PrintWriter(new ConsoleWriter());
 
-	static final boolean SHOW_CONSOLE = false;
-	static final boolean SHOW_FILE_CHOOSER = false;
+	static final boolean SHOW_CONSOLE = SystemProperties.getBoolean("showConsole");
+	static final boolean SHOW_FILE_CHOOSER = SystemProperties.getBoolean("showFileChooser");
 
 	public TestDesktopIntegration() {
 		setLayout(new BorderLayout());
@@ -177,6 +174,9 @@ public class TestDesktopIntegration extends JPanel {
 				}
 			});
 			top.add(desktop);
+		} else {
+			writer.println("Desktop unavailable");
+			LaunchBrowser.desktopException.printStackTrace(writer);
 		}
 		if (LaunchBrowser.webstartFeasible()) {
 			JButton jnlp = new JButton("Use jnlp");
@@ -199,26 +199,30 @@ public class TestDesktopIntegration extends JPanel {
 			top.add(jnlp);
 		}
 
+		JButton exec = new JButton("exec " + LaunchBrowser.execCommand);
+		top.add(exec);
 		if (LaunchBrowser.launchViaExec) {
-			JButton exec = new JButton("exec firefox");
 			exec.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
-						writer.println("Launch via exec firefox " + url);
-						Process p = LaunchBrowser.launchFirefox(url);
+						writer.println("Launch via exec " +  LaunchBrowser.execCommand);
+						writer.println("url: " + url);
+						Process p = LaunchBrowser.launchViaExec(url);
 						Thread.sleep(3000);
 						int exitValue = p.exitValue();
 						writer.println("Exit code: " + exitValue);
-						writer.println("Launch via exec firefox completed");
+						writer.println("Launch via exec completed");
 
 					} catch (Throwable e1) {
-						writer.println("Launch via exec firefox threw exception");
+						writer.println("Launch via exec threw exception");
 						e1.printStackTrace(writer);
 					}
 					writer.flush();
 				}
 			});
-			top.add(exec);
+
+		} else {
+			exec.disable();
 		}
 
 		if (SHOW_FILE_CHOOSER) {

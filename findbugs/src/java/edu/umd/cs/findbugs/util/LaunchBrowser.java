@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.SystemProperties;
  */
 public class LaunchBrowser {
 
-	private static Pattern validExec  = Pattern.compile("[a-zA-Z0-9/]+");
+	private static Pattern validExec  = Pattern.compile("[a-zA-Z0-9-_/]+");
 	public static final String execCommand = SystemProperties.getProperty("findbugs.execCommand");
 	public static final boolean launchViaExec = execCommand != null 
 				&& validExec.matcher(execCommand).matches()
@@ -43,15 +43,19 @@ public class LaunchBrowser {
 	private static Method desktopBrowseMethod;
 	private static boolean launchViaExecFailed = false;
 	
+	static final  Exception desktopException;
+
 	static {
+		Exception toStore = null;
 		try {
-			Class <?> desktopClass = Class.forName("java.awt.Desktop");
+			Class<?> desktopClass = Class.forName("java.awt.Desktop");
 			desktopObject = desktopClass.getMethod("getDesktop").invoke(null);
 			desktopBrowseMethod = desktopClass.getMethod("browse", URI.class);
-		}  catch (Exception e) {
-			assert true;
-		} 
-			}
+		} catch (Exception e) {
+			toStore = e;
+		}
+		desktopException = toStore;
+	}
 
 	static boolean desktopFeasible() {
 		return desktopObject != null && desktopBrowseMethod != null;
@@ -87,7 +91,7 @@ public class LaunchBrowser {
 	static boolean showDocumentViaExec(URL url) {
 		if (launchViaExec && !launchViaExecFailed) {
 			try {
-				Process p = launchFirefox(url);
+				Process p = launchViaExec(url);
 				Thread.sleep(20);
 				int exitValue = p.exitValue();
 				if (exitValue != 0) {
@@ -105,8 +109,8 @@ public class LaunchBrowser {
 	
 	}
 
-	static Process launchFirefox(URL url) throws IOException {
-	    ProcessBuilder builder = new ProcessBuilder("firefox", url.toString() );
+	static Process launchViaExec(URL url) throws IOException {
+	    ProcessBuilder builder = new ProcessBuilder(execCommand, url.toString() );
 	    Process p = builder.start();
 	    return p;
     }
