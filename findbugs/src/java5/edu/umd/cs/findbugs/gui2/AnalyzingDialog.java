@@ -67,11 +67,13 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 				MainFrame instance = MainFrame.getInstance();
 				assert results.getProject() == project;
 				instance.setBugCollection(results);
+				instance.releaseDisplayWait();
 			}
 
 			public void analysisInterrupted() {
 				MainFrame instance = MainFrame.getInstance();
 				instance.updateProjectAndBugCollection(null, null, null);
+				instance.releaseDisplayWait();
 			}
 		}, false);
 	}
@@ -90,11 +92,16 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 		this.project = project;
 		this.callback = callback;
 		initComponents();
-		MainFrame.getInstance().showWaitCard();
+		MainFrame.getInstance().acquireDisplayWait();
+		try {
 		analysisThread.start();
 		if (joinThread)
 			try {analysisThread.join();} 
 			catch (InterruptedException e) {}
+		} finally {
+			MainFrame.getInstance().releaseDisplayWait();
+			
+		}
 	}
 
 	public void initComponents()

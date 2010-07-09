@@ -327,9 +327,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 		{
 			if (TRACE) 
 				System.out.println("rebuilding bug tree model");
-			PreferencesFrame.getInstance().freeze();
-			st.freezeOrder();
-			MainFrame.getInstance().setRebuilding(true);
+			
 			NewFilterFromBug.closeAll();
 
 			//If this thread is not interrupting a previous thread, set the paths to be opened when the new tree is complete
@@ -340,7 +338,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 				setOldSelectedBugs();
 
 			Debug.println("Please Wait called right before starting rebuild thread");
-			pleaseWait();
+			MainFrame.getInstance().acquireDisplayWait();
 			rebuildingThread = new Thread("Rebuilding thread")
 			{
 				 BugTreeModel newModel;
@@ -363,12 +361,9 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 								JTree newTree = new JTree(newModel);
 								newModel.tree = newTree;
 								MainFrame.getInstance().newTree(newTree,newModel);
+								MainFrame.getInstance().releaseDisplayWait();
 								}
 						getOffListenerList();
-						MainFrame.getInstance().setRebuilding(false);
-						PreferencesFrame.getInstance().thaw();
-						//st.thawOrder should be the last thing that happens, otherwise a very determined user could slip a new order in before we allow him to rebuild the tree, things get out of sync, nothing bad happens, it just looks wrong until he resorts.
-						st.thawOrder();
 							}});
 					}
 				}
@@ -707,14 +702,6 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 			}
 		}		
 
-		static void pleaseWait()
-		{
-			pleaseWait(null);
-		}
-		static void pleaseWait(final String message)
-		{
-			MainFrame.getInstance().showWaitCard();
-		}
 
 		public TreeModelEvent restructureBranch(ArrayList<String> stringsToBranch, boolean removing) throws BranchOperationException
 		{

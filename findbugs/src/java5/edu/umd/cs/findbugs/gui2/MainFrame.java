@@ -527,6 +527,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				System.out.println("Setting bug collection; contains " + bugCollection.getCollection().size() + " bugs");
 			
 		}
+		acquireDisplayWait();
+		try {
 		if (project != null) {
 			Filter suppressionMatcher = project.getSuppressionFilter();
 			if (suppressionMatcher != null) {
@@ -546,7 +548,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
         }
 		// setRebuilding(false);
 		if (bugCollection != null) {
-			showTreeCard();
 			setProject(project);
 			this.bugCollection = bugCollection;
 			displayer.clearCache();
@@ -577,10 +578,16 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
     		runnable.run();
     	else
     		SwingUtilities.invokeLater(runnable);
+    	
+		} finally {
+			releaseDisplayWait();
+		}
 		
 		
 	}
 	private void updateBugTree() {
+		acquireDisplayWait();
+		try {
 	    BugTreeModel model = (BugTreeModel) getTree().getModel();
         if (bugCollection != null) {
             BugSet bs = new BugSet(bugCollection);
@@ -593,6 +600,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
         updateStatusBar();
         changeTitle();
+		} finally {
+			releaseDisplayWait();
+		}
     }
 
 	void resetViewCache() {
@@ -605,7 +615,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	        
         }};
 	void updateProjectAndBugCollection(Project project, BugCollection bugCollection, BugTreeModel previousModel) {
-		setRebuilding(false);
+		
 		if (bugCollection != null) {
 			displayer.clearCache();
 			BugSet bs = new BugSet(bugCollection);
@@ -1648,27 +1658,55 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
     		return SaveReturn.SAVE_SUCCESSFUL;
     }
     
-    
-	static final String TREECARD = "Tree";
-	static final String WAITCARD = "Wait";
+    enum BugCard  {TREECARD, WAITCARD};
 
+	
+	
+	int waitCount = 0;
+	
+	final Object waitLock = new Object();
 
-	public void showWaitCard() {
-		showCard(WAITCARD, new Cursor(Cursor.WAIT_CURSOR));
+	public void acquireDisplayWait() {
+		synchronized(waitLock) {
+			waitCount++;
+			if (DEBUG)
+				new RuntimeException("acquiring display wait, count " + waitCount).printStackTrace(System.out);
+			if (waitCount == 1)
+				showCard(BugCard.WAITCARD, new Cursor(Cursor.WAIT_CURSOR));
+		}
 	}
-
-	public void showTreeCard() {
-		showCard(TREECARD, new Cursor(Cursor.DEFAULT_CURSOR));
+	public void releaseDisplayWait() {
+		synchronized(waitLock) {
+			if (waitCount <= 0)
+				throw new AssertionError("Can't decrease wait count; already zero");
+			waitCount--;
+			if (DEBUG)
+				new RuntimeException("releasing display wait, count " + waitCount).printStackTrace(System.out);
+			if (waitCount == 1)
+				showCard(BugCard.TREECARD, new Cursor(Cursor.DEFAULT_CURSOR));
+		}
 	}
-
-	private void showCard(final String c, final Cursor cursor) {
-		if (DEBUG)
-			System.out.println("Setting bug tree card to " + c);
+	
+//	public void acquireDisplayLock() {
+//		acquireDisplayWait();
+//	}
+//	public void releaseDisplayLock() {
+//		releaseDisplayWait();
+//	}
+	
+	private void showCard(final BugCard card, final Cursor cursor) {
 		Runnable doRun = new Runnable() {
 			public void run() {
+				recentMenu.setEnabled(card == BugCard.TREECARD);
+				tableheader.setReorderingAllowed(card == BugCard.TREECARD);
+				enablePreferences(card == BugCard.TREECARD);
 				setCursor(cursor);
 				CardLayout layout = (CardLayout) cardPanel.getLayout();
-				layout.show(cardPanel, c);
+				layout.show(cardPanel, card.name());
+				if (card == BugCard.TREECARD)
+					SorterDialog.getInstance().thaw();
+				else
+					SorterDialog.getInstance().freeze();
 			}
 		};
 		if (SwingUtilities.isEventDispatchThread())
@@ -1836,11 +1874,12 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
     	waitPanel.add(new JLabel("Please wait..."));
     	waitStatusLabel = new JLabel();
 		waitPanel.add(waitStatusLabel);
-    	cardPanel.add(topPanel, TREECARD);
-    	cardPanel.add(waitPanel, WAITCARD);
+    	cardPanel.add(topPanel, BugCard.TREECARD.name());
+    	cardPanel.add(waitPanel,  BugCard.WAITCARD.name());
     	return cardPanel;
     }
 	JTextField textFieldForPackagesToDisplay;
+	
 	public void newTree(final JTree newTree, final BugTreeModel newModel)
 	{
 		SwingUtilities.invokeLater(new Runnable()
@@ -1851,7 +1890,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 				tree.setLargeModel(true);
 				tree.setCellRenderer(new BugRenderer());
-				showTreeCard();
 				treePanel.remove(treeScrollPane);
 				treeScrollPane = new JScrollPane(newTree);
 				treePanel.add(treeScrollPane);
@@ -2444,7 +2482,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				try {
 					loadFromURL = SystemProperties.rewriteURLAccordingToProperties(loadFromURL);
 					URL url = new URL(loadFromURL);
-					BugTreeModel.pleaseWait(edu.umd.cs.findbugs.L10N.getLocalString("msg.loading_bugs_over_network_txt", "Loading bugs over network..."));
 					loadAnalysis(url);
 				} catch (MalformedURLException e1) {
 					JOptionPane.showMessageDialog(MainFrame.this, "Error loading "  + loadFromURL);
@@ -2801,22 +2838,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		curProject=p;
 	}
 
-	@SwingThread
-	public void setRebuilding(boolean b)
-	{
-		tableheader.setReorderingAllowed(!b);
-		enablePreferences(!b);
-		if (b) {
-			SorterDialog.getInstance().freeze();
-			showWaitCard();
-		}
-		else {
-			SorterDialog.getInstance().thaw();
-			showTreeCard();
-		}
-		recentMenu.setEnabled(!b);
-	}
-
 	public void setSorting(boolean b) {
 		tableheader.setReorderingAllowed(b);
 	}
@@ -2948,17 +2969,22 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	
 	public void openBugCollection(SortedBugCollection bugs){
 		
-		prepareForFileLoad(null, null);
-	
-		Project project = bugs.getProject();
-		project.setGuiCallback(MainFrame.this);
-		BugLoader.addDeadBugMatcher(project);
-		setProjectAndBugCollectionInSwingThread(project, bugs);
+		acquireDisplayWait();
+		try {
+			prepareForFileLoad(null, null);
+
+			Project project = bugs.getProject();
+			project.setGuiCallback(MainFrame.this);
+			BugLoader.addDeadBugMatcher(project);
+			setProjectAndBugCollectionInSwingThread(project, bugs);
+		} finally {
+			releaseDisplayWait();
+		}
 
 	}
 	
 	private void prepareForFileLoad(File f, SaveType saveType) {
-	    setRebuilding(true);
+	    
 		//This creates a new filters and suppressions so don't use the previoues one.
         createProjectSettings();
 
@@ -2978,13 +3004,17 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 		Runnable runnable = new Runnable() {
 			public void run() {
-
-				Project project = new Project();
-				project.setGuiCallback(MainFrame.this);
-				project.setCurrentWorkingDirectory(file.getParentFile());
-				BugLoader.loadBugs(MainFrame.this, project, file);
-				project.getSourceFinder(); // force source finder to be initialized
-				updateBugTree();
+				acquireDisplayWait();
+				try {
+					Project project = new Project();
+					project.setGuiCallback(MainFrame.this);
+					project.setCurrentWorkingDirectory(file.getParentFile());
+					BugLoader.loadBugs(MainFrame.this, project, file);
+					project.getSourceFinder(); // force source finder to be initialized
+					updateBugTree();
+				} finally {
+					releaseDisplayWait();
+				}
 			}
 		};
 		if (EventQueue.isDispatchThread())
@@ -2998,11 +3028,17 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 		Runnable runnable = new Runnable() {
 			public void run() {
-				Project project = new Project();
-				project.setGuiCallback(MainFrame.this);
-				BugLoader.loadBugs(MainFrame.this, project, url);
-				project.getSourceFinder(); // force source finder to be initialized
-				updateBugTree();
+				acquireDisplayWait();
+				try {
+					Project project = new Project();
+					project.setGuiCallback(MainFrame.this);
+					BugLoader.loadBugs(MainFrame.this, project, url);
+					project.getSourceFinder(); // force source finder to be
+											   // initialized
+					updateBugTree();
+				} finally {
+					releaseDisplayWait();
+				}
 			}
 		};
 		if (EventQueue.isDispatchThread())
@@ -3038,15 +3074,19 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	void redoAnalysis() {
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 
-		showWaitCard();
+		acquireDisplayWait();
 		new Thread()
 		{
 			@Override
 			public void run()
 			{
-				updateDesignationDisplay();
-				BugCollection  bc=BugLoader.redoAnalysisKeepComments(getProject());
-				updateProjectAndBugCollection(getProject(), bc, null);
+				try {
+					updateDesignationDisplay();
+					BugCollection  bc=BugLoader.redoAnalysisKeepComments(getProject());
+					updateProjectAndBugCollection(getProject(), bc, null);
+				} finally {
+					releaseDisplayWait();
+				}
 			}
 		}.start();
 	}
@@ -3056,9 +3096,13 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	private void mergeAnalysis() {
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 
-		showWaitCard();
+		acquireDisplayWait();
+		try {
 		BugCollection bc=BugLoader.combineBugHistories();
 		setBugCollection(bc);
+		} finally {
+			releaseDisplayWait();
+		}
 
 	}
 
