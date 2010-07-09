@@ -27,6 +27,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.regex.Pattern;
 
+import javax.swing.JOptionPane;
+
 import edu.umd.cs.findbugs.SystemProperties;
 
 /**
@@ -42,6 +44,7 @@ public class LaunchBrowser {
 	private static Object desktopObject;
 	private static Method desktopBrowseMethod;
 	private static boolean launchViaExecFailed = false;
+	static boolean DEBUG = SystemProperties.getBoolean("findbugs.launchBrowser.debug");
 	
 	static final  Exception desktopException;
 
@@ -67,7 +70,9 @@ public class LaunchBrowser {
 	static boolean showDocumentViaDesktop(URL u) {
 		
 		if (desktopObject != null && desktopBrowseMethod != null) try { 
+			 if (DEBUG) JOptionPane.showMessageDialog(null, "Trying desktop browse");
 			 viaDesktop(u.toURI());
+			 if (DEBUG) JOptionPane.showMessageDialog(null, "desktop browse succeeded");
 			 return true;
 		} catch (InvocationTargetException ite) {
 			assert true;
@@ -90,6 +95,8 @@ public class LaunchBrowser {
 	
 	static boolean showDocumentViaExec(URL url) {
 		if (launchViaExec && !launchViaExecFailed) {
+			 if (DEBUG) JOptionPane.showMessageDialog(null, "Trying exec browse");
+				
 			try {
 				Process p = launchViaExec(url);
 				Thread.sleep(90);
@@ -97,12 +104,17 @@ public class LaunchBrowser {
 				int exitValue = p.exitValue();
 				if (exitValue != 0) {
 					launchViaExecFailed = true;
+					if (DEBUG) 
+						JOptionPane.showMessageDialog(null, "exec browse launch failed with exit code " + exitValue);
 					return false;
 				} 
+				 if (DEBUG) JOptionPane.showMessageDialog(null, "exec browse succeeded");
 				return true;
 			} catch (IllegalThreadStateException e) {
+				if (DEBUG) JOptionPane.showMessageDialog(null, "exec browse succeeded but not done");
 				return true;
 			} catch (Exception e) {
+				if (DEBUG) JOptionPane.showMessageDialog(null, "exec browse failed" + e.getMessage());
 				launchViaExecFailed = true;
 			}
 		}

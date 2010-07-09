@@ -24,6 +24,8 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.swing.JOptionPane;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
@@ -88,8 +90,16 @@ public class JavaWebStart {
 
 	static boolean showViaWebStart(URL url) {
     	if (JavaWebStart.jnlpShowDocumentMethod != null) try {
+    		if (LaunchBrowser.DEBUG) 
+    			JOptionPane.showMessageDialog(null, "Trying browse via webstart");
+			
     		Boolean b = viaWebStart(url);
-    		return b != null && b.booleanValue();
+    		boolean success = b != null && b.booleanValue();
+    		
+    		if (LaunchBrowser.DEBUG) 
+    			JOptionPane.showMessageDialog(null, " browse via webstart: " + success);
+    		return success;
+    			
     	} catch (InvocationTargetException ite) {
     		assert true;
     	} catch (IllegalAccessException iae) {
