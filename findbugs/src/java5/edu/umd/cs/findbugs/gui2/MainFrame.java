@@ -420,9 +420,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 					SaveType st = SaveType.forFile(f);
 					boolean result = true;
 					switch(st){
-					case PROJECT:
-						openProject(f);
-						break;
 					case XML_ANALYSIS:
 						result = openAnalysis(f, st);
 						break;
@@ -523,6 +520,13 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 	@SwingThread
 	private void setProjectAndBugCollection(@CheckForNull Project project, @CheckForNull BugCollection bugCollection) {
+		if (DEBUG) {
+			if (bugCollection == null) 
+				System.out.println("Setting bug collection to null");
+			else 
+				System.out.println("Setting bug collection; contains " + bugCollection.getCollection().size() + " bugs");
+			
+		}
 		if (project != null) {
 			Filter suppressionMatcher = project.getSuppressionFilter();
 			if (suppressionMatcher != null) {
@@ -1337,18 +1341,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			}
 			
 			switch (fileType) {
-			case PROJECT:
-				File xmlFile = OriginalGUI2ProjectFile.fileContainingXMLData(f);
-				
-				if (!xmlFile.exists())
-				{
-					JOptionPane.showMessageDialog(saveOpenFileChooser, edu.umd.cs.findbugs.L10N.getLocalString("dlg.no_xml_data_lbl", "This directory does not contain saved bug XML data, please choose a different directory."));
-					loading=true;
-					continue tryAgain;
-				}
-
-				openProject(f);
-				break;
 			case XML_ANALYSIS:
 				if(!f.getName().endsWith(".xml")){
 					JOptionPane.showMessageDialog(saveOpenFileChooser, edu.umd.cs.findbugs.L10N.getLocalString("dlg.not_xml_data_lbl", "This is not a saved bug XML data file."));
@@ -1516,11 +1508,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 							edu.umd.cs.findbugs.L10N.getLocalString("dlg.analysis_exists_lbl", "This analysis already exists.\nReplace it?"),
 							edu.umd.cs.findbugs.L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 					break;
-				case PROJECT:
-					response = JOptionPane.showConfirmDialog(saveOpenFileChooser, 
-							edu.umd.cs.findbugs.L10N.getLocalString("dlg.proj_already_exists_lbl", "This project already exists.\nDo you want to replace it?"),
-							edu.umd.cs.findbugs.L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-					break;
 				case FBP_FILE:
 					response = JOptionPane.showConfirmDialog(saveOpenFileChooser, 
 							edu.umd.cs.findbugs.L10N.getLocalString("FB Project File already exists", "This FB project file already exists.\nDo you want to replace it?"),
@@ -1545,9 +1532,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			SaveReturn successful = SaveReturn.SAVE_ERROR;
 
 			switch(fileType){
-			case PROJECT:
-				successful = saveProject(f);
-				break;
+
 			case XML_ANALYSIS:
 				successful = saveAnalysis(f);
 				break;
@@ -1571,11 +1556,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		saveMenuItem.setEnabled(false);
 		setSaveType(fileType);
 		saveFile = f;
-		File xmlFile;
-		if (getSaveType()==SaveType.PROJECT)
-			xmlFile=new File(f.getAbsolutePath() + File.separator + f.getName() + ".xml");
-		else
-			xmlFile=f;
+		File xmlFile=f;
 
 		addFileToRecent(xmlFile, getSaveType());
 
@@ -1598,12 +1579,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	 * OriginalGUI2ProjectFile.fileContainingXMLData(f).exists
 	 */
 	private boolean fileAlreadyExists(File f, SaveType fileType){
-		if(fileType == SaveType.PROJECT){
-			/*File xmlFile=new File(f.getAbsolutePath() + File.separator + f.getName() + ".xml");
-			File fasFile=new File(f.getAbsolutePath() + File.separator + f.getName() + ".fas");
-			return xmlFile.exists() || fasFile.exists();*/
-			return (OriginalGUI2ProjectFile.fileContainingXMLData(f).exists());
-		}
 
 		return f.exists();
 	}
@@ -1612,9 +1587,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	 * If f is not of type FileType will convert file so it is.
 	 */
 	private File convertFile(File f, SaveType fileType){
-		//WARNING: This assumes the filefilter for project is working so f can only be a directory.
-		if(fileType == SaveType.PROJECT)
-			return f;
 
 		//Checks that it has the correct file extension, makes a new file if it doesn't.
 		if(!f.getName().endsWith(fileType.getFileExtension()))
@@ -1632,9 +1604,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		SaveReturn result = SaveReturn.SAVE_ERROR;
 		
 		switch(getSaveType()){
-		case PROJECT:
-			result = saveProject(sFile);
-			break;
+
 		case XML_ANALYSIS:
 			result = saveAnalysis(sFile);
 			break;
@@ -1690,19 +1660,21 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	public void showTreeCard() {
 		showCard(TREECARD, new Cursor(Cursor.DEFAULT_CURSOR));
 	}
+
 	private void showCard(final String c, final Cursor cursor) {
-		if (SwingUtilities.isEventDispatchThread()) {
-			setCursor(cursor);
-			CardLayout layout = (CardLayout) cardPanel.getLayout();
-			layout.show(cardPanel, c);
-		} else
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					setCursor(cursor);
-					CardLayout layout = (CardLayout) cardPanel.getLayout();
-					layout.show(cardPanel, c);
-				}
-			});
+		if (DEBUG)
+			System.out.println("Setting bug tree card to " + c);
+		Runnable doRun = new Runnable() {
+			public void run() {
+				setCursor(cursor);
+				CardLayout layout = (CardLayout) cardPanel.getLayout();
+				layout.show(cardPanel, c);
+			}
+		};
+		if (SwingUtilities.isEventDispatchThread())
+			doRun.run();
+		else
+			SwingUtilities.invokeLater(doRun);
 	}
 
 	JPanel waitPanel, cardPanel;
@@ -2425,7 +2397,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			saveOpenFileChooser = new FBFileChooser();
 			saveOpenFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			saveOpenFileChooser.setAcceptAllFileFilterUsed(false);
-			saveOpenFileChooser.addChoosableFileFilter(FindBugsProjectFileFilter.INSTANCE);
 			saveOpenFileChooser.addChoosableFileFilter(FindBugsAnalysisFileFilter.INSTANCE);
 			saveOpenFileChooser.addChoosableFileFilter(FindBugsFBPFileFilter.INSTANCE);
 			saveOpenFileChooser.addChoosableFileFilter(FindBugsFBAFileFilter.INSTANCE);
@@ -3091,63 +3062,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 	}
 
-	/**
-	 * This takes a directory and opens it as a project.
-	 * @param dir
-	 */
-	private void openProject(final File dir){
-		File xmlFile= new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");
-		File fasFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
-
-		if (!fasFile.exists())
-		{
-			JOptionPane.showMessageDialog(MainFrame.this, edu.umd.cs.findbugs.L10N.getLocalString(
-					"dlg.filter_settings_not_found_lbl", "Filter settings not found, using default settings."));
-
-            createProjectSettings();
-
-        }
-		else
-		{
-			try 
-			{
-                loadProjectSettings(fasFile);
-            } catch (FileNotFoundException e)
-			{
-				//Impossible.
-				if (MainFrame.DEBUG) System.err.println(".fas file not found, using default settings");
-                createProjectSettings();
-            }
-		}
-		final File extraFinalReferenceToXmlFile=xmlFile;
-		new Thread(new Runnable(){
-			public void run()
-			{
-				try {
-	                BugTreeModel.pleaseWait();
-	                MainFrame.this.setRebuilding(true);
-	                Project project = new Project();
-	                project.setGuiCallback(MainFrame.this); // for status msg callbacks during init
-	                BugLoader.loadBugs(MainFrame.this, project, extraFinalReferenceToXmlFile);
-	                updateBugTree();
-                } catch (Exception e) {
-                	LOGGER.log(Level.SEVERE, "Error loading project", e);
-                }
-			}
-		}, "GUI analysis loader thread").start();
-
-//		addFileToRecent(xmlFile, SaveType.PROJECT);
-		addFileToRecent(dir, SaveType.PROJECT);
-
-		clearSourcePane();
-		clearSummaryTab();
-		comments.setUserCommentInputEnable(false);
-
-		setProjectChanged(false);
-		setSaveType(SaveType.PROJECT);
-		saveFile = dir;
-		changeTitle();
-	}
 
     @SuppressWarnings({"deprecation"})
     private ProjectSettings getProjectSettings() {

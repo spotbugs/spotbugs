@@ -23,12 +23,10 @@ import java.io.File;
 
 public final class FindBugsAnalysisFileFilter extends FindBugsFileFilter {
 
-	public static final  FindBugsAnalysisFileFilter INSTANCE = new FindBugsAnalysisFileFilter();
+	public static final FindBugsAnalysisFileFilter INSTANCE = new FindBugsAnalysisFileFilter();
 	@Override
 	public boolean accept(File arg0) {
-		boolean accept = arg0.getName().endsWith(".xml") || 
-		(OriginalGUI2ProjectFile.fileContainingXMLData(arg0).exists()) ||
-		arg0.isDirectory();
+		boolean accept = arg0.getName().endsWith(".xml") ||  arg0.getName().endsWith(".xml.gz");
 		return accept;
 	}
 

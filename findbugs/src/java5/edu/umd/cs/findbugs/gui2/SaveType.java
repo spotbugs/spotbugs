@@ -23,11 +23,9 @@ import java.io.File;
 
 import edu.umd.cs.findbugs.util.Util;
 
-enum SaveType {NOT_KNOWN, PROJECT, XML_ANALYSIS, FBP_FILE, FBA_FILE;
+enum SaveType {NOT_KNOWN, XML_ANALYSIS, FBP_FILE, FBA_FILE;
 public FindBugsFileFilter getFilter() {
 	switch (this) {
-	case PROJECT:
-		return FindBugsProjectFileFilter.INSTANCE;
 	case XML_ANALYSIS:
 		return FindBugsAnalysisFileFilter.INSTANCE;
 	case FBP_FILE:
@@ -39,17 +37,14 @@ public FindBugsFileFilter getFilter() {
 	}
 }
 public boolean isValid(File f) {
-	if (this == PROJECT) {
-		return OriginalGUI2ProjectFile.isValid(f);
-	}
+
 	if (f.isDirectory()) return false;
 	FindBugsFileFilter filter = getFilter();
 	return filter.accept(f);
 }
 public String getFileExtension() {
 	switch (this) {
-	case PROJECT:
-		return "";
+
 	case XML_ANALYSIS:
 		return ".xml";
 	case FBP_FILE:
@@ -62,10 +57,12 @@ public String getFileExtension() {
 }
 public static SaveType forFile(File f) {
 	String extension = Util.getFileExtension(f);
-	if (OriginalGUI2ProjectFile.isValid(f)) return PROJECT;
+
 	if (extension.equals("fbp")) return FBP_FILE;
 	if (extension.equals("fba")) return FBA_FILE;
 	if (extension.equals("xml")) return XML_ANALYSIS;
+	if (f.getName().toLowerCase().endsWith("xml.gz"))
+		return XML_ANALYSIS;
 	return NOT_KNOWN;
 }
 }
