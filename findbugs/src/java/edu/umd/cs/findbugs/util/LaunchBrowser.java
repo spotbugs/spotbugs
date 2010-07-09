@@ -92,7 +92,8 @@ public class LaunchBrowser {
 		if (launchViaExec && !launchViaExecFailed) {
 			try {
 				Process p = launchViaExec(url);
-				Thread.sleep(20);
+				Thread.sleep(90);
+				
 				int exitValue = p.exitValue();
 				if (exitValue != 0) {
 					launchViaExecFailed = true;
@@ -126,10 +127,11 @@ public class LaunchBrowser {
 
 		if (showDocumentViaDesktop(url))
 			return true;
-		if (JavaWebStart.showViaWebStart(url))
-			return true;
 		if (showDocumentViaExec(url))
 			return true;
+		if (JavaWebStart.showViaWebStart(url))
+			return true;
+
 		return false;
 	
 
