@@ -666,14 +666,14 @@ public abstract class AbstractCloud implements Cloud {
 		SourceLineAnnotation src = b.getPrimarySourceLineAnnotation();
 		String fileName = src.getSourcePath();
 		int startLine = src.getStartLine();
-
+		int endLine = src.getEndLine();
 		java.util.regex.Matcher m = sourceFileLinkPattern.matcher(fileName);
 		boolean isMatch = m.matches();
 		if (isMatch)
 			try {
 				URL link;
 				if (startLine > 0)
-					link = new URL(String.format(sourceFileLinkFormatWithLine, m.group(1), startLine, startLine - 10));
+					link = new URL(String.format(sourceFileLinkFormatWithLine, m.group(1), startLine, startLine - 10, endLine));
 				else
 					link = new URL(String.format(sourceFileLinkFormat, m.group(1)));
 				return link;
