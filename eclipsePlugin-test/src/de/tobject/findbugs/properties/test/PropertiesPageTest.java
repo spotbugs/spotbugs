@@ -32,6 +32,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.properties.FindbugsPropertyPage.Effort;
 import de.tobject.findbugs.test.AbstractFindBugsTest;
 import de.tobject.findbugs.test.TestScenario;
 import de.tobject.findbugs.util.ProjectUtilities;
@@ -42,7 +43,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * This class tests the FindbugsPropertyPage and related classes.
- *
+ * 
  * @author Tomás Pollak
  */
 public class PropertiesPageTest extends AbstractFindBugsTest {
@@ -210,6 +211,26 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 	}
 
 	@Test
+	public void testDisableAllDetectors() throws CoreException {
+		// Enable all detectors
+		getProjectPreferences().enableAllDetectors(true);
+		assertAllVisibleDetectorsEnabled(true);
+
+		// Create the properties page and the dialog
+		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
+
+		// Disable all detectors
+		page.getDetectorTab().disableAllDetectors();
+
+		// Accept the dialog
+		dialog.okPressed();
+
+		// Check that all detectors are disabled
+		assertAllVisibleDetectorsEnabled(false);
+	}
+
+	@Test
 	public void testDisableFindBugs() throws CoreException {
 		// Set the nature
 		ProjectUtilities.addFindBugsNature(getProject(), new NullProgressMonitor());
@@ -286,6 +307,27 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 	}
 
 	@Test
+	public void testEnableOneDetector() throws CoreException {
+		// Disable all detectors
+		getProjectPreferences().enableAllDetectors(false);
+		assertAllVisibleDetectorsEnabled(false);
+
+		// Create the properties page and the dialog
+		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
+
+		// Enable one detector
+		String detectorShortName = "FindReturnRef";
+		page.getDetectorTab().enableDetector(detectorShortName);
+
+		// Accept the dialog
+		dialog.okPressed();
+
+		// Check that the expected detector is enabled
+		assertOnlyVisibleDetectorEnabled(detectorShortName);
+	}
+
+	@Test
 	public void testOpenProjectPreferencePage() throws CoreException {
 		// Create the preferences page and the dialog
 		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
@@ -353,6 +395,26 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 
 		// Check that one category is selected
 		assertOnlySelectedBugCategory(category);
+	}
+
+	@Test
+	public void testSetEffort() throws CoreException {
+		// Reset the effort
+		getProjectPreferences().setEffort(UserPreferences.EFFORT_DEFAULT);
+		assertEquals(UserPreferences.EFFORT_DEFAULT, getProjectPreferences().getEffort());
+
+		// Create the properties page and the dialog
+		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
+
+		// Set 'max' effort
+		page.setEffort(Effort.MAX);
+
+		// Accept the dialog
+		dialog.okPressed();
+
+		// Check the effort has been stored
+		assertEquals(UserPreferences.EFFORT_MAX, getProjectPreferences().getEffort());
 	}
 
 	private void addAllBugCategories() {
