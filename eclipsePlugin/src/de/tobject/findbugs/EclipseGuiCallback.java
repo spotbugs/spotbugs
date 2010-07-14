@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
@@ -98,11 +97,11 @@ public class EclipseGuiCallback implements IGuiCallback {
 		FindbugsPlugin.getShell().getDisplay().syncExec(new Runnable() {
 			public void run() {
 				MessageDialog dialog = new MessageDialog(FindbugsPlugin.getShell(), title, null, message,
-						MessageDialog.NONE, new String[] { ok, cancel }, 0) {
-					{
+						MessageDialog.NONE, new String[] { ok, cancel }, 0) /*{
+					{	// the code below requires Eclipse 3.5
 						setShellStyle(getShellStyle() | SWT.SHEET);
 					}
-				};
+				}*/;
 				result.set(dialog.open());
 			}
 		});
