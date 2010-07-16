@@ -191,6 +191,15 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			}
 			System.setProperty("findbugs.home", findBugsHome);
 		}
+		if (System.getProperty("findbugs.cloud.default") == null) {
+			// TODO hardcore workaround for findbugs default cloud property
+			// - see edu.umd.cs.findbugs.cloud.CloudFactory
+			String defCloud = "edu.umd.cs.findbugs.cloud.Local";
+			if (DEBUG) {
+				logInfo("Using default local cloud: " + defCloud);
+			}
+			System.setProperty("findbugs.cloud.default", defCloud);
+		}
 
 		// Register our save participant
 		FindbugsSaveParticipant saveParticipant = new FindbugsSaveParticipant();

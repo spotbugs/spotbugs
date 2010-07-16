@@ -64,6 +64,7 @@ public class ReportConfigurationTab extends Composite {
 	private Combo cloudCombo;
 	private Label cloudLabel;
 	private List<CloudPlugin> clouds;
+	private int defaultCloudIdx;
 
 
 	/**
@@ -112,32 +113,52 @@ public class ReportConfigurationTab extends Composite {
 		cloudCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 
 		enableOrDisableCloudControls();
+		String cloudid = getCloudIdFromCollection();
+
+		clouds = new ArrayList<CloudPlugin>();
+		defaultCloudIdx = populateCloudsCombo(cloudid);
+	}
+
+	private int populateCloudsCombo(String cloudid) {
+		int i = 0;
+		boolean cloudSelected = false;
+		int defaultIndex = -1;
+		for (CloudPlugin cloud : CloudFactory.getRegisteredClouds().values()) {
+			if (cloud.isHidden() && !cloud.getId().equals(cloudid)) {
+				continue;
+			}
+			cloudCombo.add(cloud.getDescription());
+			clouds.add(cloud);
+			if (cloud.getId().equals(cloudid)) {
+				cloudCombo.select(i);
+				cloudSelected = true;
+			}
+			if (cloud.getId().equals(CloudFactory.DEFAULT_CLOUD)) {
+				defaultIndex = i;
+			}
+			i++;
+		}
+		if(!cloudSelected && cloudid != null && cloudid.trim().length() > 0) {
+			if (defaultIndex != -1) {
+				cloudCombo.select(defaultIndex);
+			} else {
+				// should not happen: default local cloud should be available
+				FindbugsPlugin.getDefault().logWarning("Failed to find default local cloud (edu.umd.cs.findbugs.cloud.Local)");
+			}
+		}
+		return defaultIndex;
+	}
+
+	private String getCloudIdFromCollection() {
 		final IProject eclipseProj = propertyPage.getProject();
-		String cloudid = null;
+		String cloudid =  CloudFactory.DEFAULT_CLOUD;
 		if (eclipseProj != null) {
 			SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
 			if (collection != null) {
 				cloudid = collection.getCloud().getPlugin().getId();
 			}
 		}
-
-		clouds = new ArrayList<CloudPlugin>();
-		clouds.add(null);
-		cloudCombo.add("");
-		cloudCombo.select(0);
-		int i = 1;
-		for (CloudPlugin cloud : CloudFactory.getRegisteredClouds().values()) {
-			if (cloud.isHidden() && !cloud.getId().equals(cloudid)) {
-				continue;
-			}
-
-			cloudCombo.add(cloud.getDescription());
-			clouds.add(cloud);
-			if (cloud.getId().equals(cloudid)) {
-				cloudCombo.select(i);
-			}
-			i++;
-		}
+		return cloudid;
 	}
 
 	private IProject enableOrDisableCloudControls() {
@@ -301,11 +322,16 @@ public class ReportConfigurationTab extends Composite {
 	void refreshUI(UserPreferences prefs) {
 		ProjectFilterSettings filterSettings = prefs.getFilterSettings();
 		minRankSlider.setSelection(filterSettings.getMinRank());
+		updateRankValueLabel();
 		minPriorityCombo.setText(filterSettings.getMinPriority());
 		for (Button checkBox: chkEnableBugCategoryList) {
 			checkBox.setSelection(filterSettings.containsCategory((String) checkBox.getData()));
 		}
 		syncSelectedCategories();
+		String cloudid = getCloudIdFromCollection();
+		cloudCombo.removeAll();
+		clouds.clear();
+		populateCloudsCombo(cloudid);
 	}
 
 	protected List<Button> getChkEnableBugCategoryList() {
@@ -314,20 +340,24 @@ public class ReportConfigurationTab extends Composite {
 
 	public void performOk() {
 		IProject eclipseProj = propertyPage.getProject();
-		if (eclipseProj != null) {
-			SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
-			Project project = collection.getProject();
-			CloudPlugin item = clouds.get(cloudCombo.getSelectionIndex());
-			if (item != null && project != null && !item.getId().equals(project.getCloudId())) {
-				project.setCloudId(item.getId());
-				collection.reinitializeCloud();
-				IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
-				if (page != null) {
-					IViewPart view = page.findView("de.tobject.findbugs.view.bugtreeview");
-					if (view != null && view instanceof CommonNavigator) {
-						CommonNavigator nav = ((CommonNavigator) view);
-						nav.getCommonViewer().refresh(true);
-					}
+		if (eclipseProj == null) {
+			return;
+		}
+		SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
+		if(collection == null){
+			return;
+		}
+		Project project = collection.getProject();
+		CloudPlugin item = clouds.get(cloudCombo.getSelectionIndex());
+		if (item != null && project != null && !item.getId().equals(project.getCloudId())) {
+			project.setCloudId(item.getId());
+			collection.reinitializeCloud();
+			IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
+			if (page != null) {
+				IViewPart view = page.findView(FindbugsPlugin.TREE_VIEW_ID);
+				if (view instanceof CommonNavigator) {
+					CommonNavigator nav = ((CommonNavigator) view);
+					nav.getCommonViewer().refresh(true);
 				}
 			}
 		}
