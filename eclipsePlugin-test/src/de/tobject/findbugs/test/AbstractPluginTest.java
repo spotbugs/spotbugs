@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tomás Pollak
+ * Copyright (C) 2009, Tomï¿½s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,6 +34,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -42,11 +43,14 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.junit.buildpath.BuildPathSupport;
 import org.eclipse.jdt.testplugin.JavaProjectHelper;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.junit.After;
 import org.junit.Before;
+import org.osgi.framework.Bundle;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.FindbugsTestPlugin;
@@ -70,8 +74,8 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * returned by getTestScenario(). The fixture may be shared by all tests in the same
  * class, if the tests don't modify the project or are independent from the modifications.
  * </li>
- * 
- * @author Tomás Pollak
+ *
+ * @author Tomï¿½s Pollak
  */
 public abstract class AbstractPluginTest {
 
@@ -98,7 +102,7 @@ public abstract class AbstractPluginTest {
 
 	/**
 	 * Returns the Java project for this test.
-	 * 
+	 *
 	 * @return An IJavaProject.
 	 */
 	protected static IJavaProject getJavaProject() {
@@ -107,7 +111,7 @@ public abstract class AbstractPluginTest {
 
 	/**
 	 * Returns the project for this test.
-	 * 
+	 *
 	 * @return An IProject.
 	 */
 	protected static IProject getProject() {
@@ -134,26 +138,47 @@ public abstract class AbstractPluginTest {
 		addExtraClassPathEntries(scenario);
 
 		// Copy test workspace
-		importResources(getProject().getFolder(SRC), FindbugsTestPlugin.getDefault()
-				.getBundle(), testFilesPaths[0]); // Import default 'src'
+		Bundle testBundle = FindbugsTestPlugin.getDefault().getBundle();
+
+		importResources(getProject().getFolder(SRC), testBundle, testFilesPaths[0]); // Import default 'src'
 		for (int i = 1; i < testFilesPaths.length; i++) { // Import extra 'srcx'
-			importResources(getProject().getFolder(SRC + (i + 1)), FindbugsTestPlugin
-					.getDefault().getBundle(), testFilesPaths[i]);
+			importResources(getProject().getFolder(SRC + (i + 1)), testBundle, testFilesPaths[i]);
 		}
 
+		importResources(getProject(), testBundle, "/testresources");
+
 		// Compile project
-		getProject().getProject().build(IncrementalProjectBuilder.FULL_BUILD, null);
+		getProject().refreshLocal(IResource.DEPTH_INFINITE, null);
+		getProject().build(IncrementalProjectBuilder.FULL_BUILD, null);
+		processUiEvents();
+		waitForJobs();
 		performDummySearch();
+		waitForJobs();
+		processUiEvents();
 	}
 
 	/**
 	 * Delete the Java project used for this test.
-	 * 
+	 *
 	 * @throws CoreException
 	 */
 	protected static void tearDownTestProject() throws CoreException {
 		// Delete the test project
 		delete(getJavaProject());
+		waitForJobs();
+		processUiEvents();
+	}
+
+	protected static void waitForJobs(){
+		while(!Job.getJobManager().isIdle()){
+			processUiEvents();
+		}
+	}
+
+	protected static void processUiEvents(){
+		while(Display.getDefault().readAndDispatch()){
+        	;
+        }
 	}
 
 	public AbstractPluginTest() {
@@ -164,17 +189,26 @@ public abstract class AbstractPluginTest {
 	public void setUp() throws Exception {
 		// Start with a clean FindBugs state
 		clearBugsState();
+		IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		activePage.closeAllEditors(false);
+		IViewPart view = activePage.findView("org.eclipse.ui.internal.introview");
+		if(view != null){
+			activePage.hideView(view);
+		}
+        processUiEvents();
+        waitForJobs();
 	}
 
 	@After
 	public void tearDown() throws CoreException {
 		// Clean the FindBugs state
 		clearBugsState();
+		processUiEvents();
 	}
 
 	/**
 	 * Assert the total number of bugs in the given resource.
-	 * 
+	 *
 	 * @param expected
 	 *            The expected number of bugs.
 	 * @param project
@@ -182,7 +216,7 @@ public abstract class AbstractPluginTest {
 	 * @throws CoreException
 	 */
 	protected void assertBugsCount(int expected, IProject project) throws CoreException {
-		SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null);
+		SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null, false);
 		assertEquals(expected, bugs.getCollection().size());
 	}
 
@@ -212,7 +246,7 @@ public abstract class AbstractPluginTest {
 	/**
 	 * Asserts that the number of present markers of the given type match the given
 	 * expected count.
-	 * 
+	 *
 	 * @param expectedBugType
 	 *            The expected bug type.
 	 * @param expectedBugCount
@@ -246,7 +280,7 @@ public abstract class AbstractPluginTest {
 	/**
 	 * Asserts that the number of detected bugs of the given type match the given expected
 	 * count.
-	 * 
+	 *
 	 * @param expectedBugType
 	 *            The expected bug type.
 	 * @param expectedBugCount
@@ -258,7 +292,7 @@ public abstract class AbstractPluginTest {
 	protected void assertReportedBugs(String expectedBugType, int expectedBugCount,
 			IProject project) throws CoreException {
 		int seenBugCount = 0;
-		SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null);
+		SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null, false);
 		for (BugInstance bug : bugs) {
 			if (expectedBugType.equals(bug.getType())) {
 				seenBugCount++;
@@ -270,7 +304,7 @@ public abstract class AbstractPluginTest {
 
 	protected void clearBugsState() throws CoreException {
 		MarkerUtil.removeMarkers(getProject());
-		FindbugsPlugin.getBugCollection(getProject(), null).clearBugInstances();
+		FindbugsPlugin.getBugCollection(getProject(), null, false).clearBugInstances();
 	}
 
 	protected FindBugsWorker createFindBugsWorker() throws CoreException {
@@ -318,9 +352,9 @@ public abstract class AbstractPluginTest {
 	/**
 	 * Suspend the calling thread until all the background jobs belonging to the given
 	 * family are done.
-	 * 
+	 *
 	 * @see org.eclipse.core.runtime.jobs.Job#belongsTo(Object)
-	 * 
+	 *
 	 * @param family
 	 *            The family object that groups the jobs.
 	 */
@@ -359,6 +393,8 @@ public abstract class AbstractPluginTest {
 	protected void work(FindBugsWorker worker, IJavaElement element) throws CoreException {
 		worker.work(Collections.singletonList(new WorkItem(element)));
 		joinJobFamily(FindbugsPlugin.class); // wait for RefreshJob
+		processUiEvents();
+		waitForJobs();
 	}
 
 	/**
@@ -366,5 +402,7 @@ public abstract class AbstractPluginTest {
 	 */
 	protected void work(FindBugsWorker worker, IResource resource) throws CoreException {
 		worker.work(Collections.singletonList(new WorkItem(resource)));
+		processUiEvents();
+		waitForJobs();
 	}
 }

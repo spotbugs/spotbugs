@@ -68,7 +68,7 @@ public class JavaProjectHelper {
 
 	/**
 	 * Creates a IJavaProject.
-	 * 
+	 *
 	 * @param projectName
 	 *            The name of the project
 	 * @param binFolderName
@@ -116,7 +116,7 @@ public class JavaProjectHelper {
 
 	/**
 	 * Sets the compiler options to 1.5 for the given project.
-	 * 
+	 *
 	 * @param project
 	 *            the java project
 	 */
@@ -128,7 +128,7 @@ public class JavaProjectHelper {
 
 	/**
 	 * Sets the compiler options to 1.5
-	 * 
+	 *
 	 * @param options
 	 *            The compiler options to configure
 	 */
@@ -142,7 +142,7 @@ public class JavaProjectHelper {
 
 	/**
 	 * Removes a IJavaElement
-	 * 
+	 *
 	 * @param elem
 	 *            The element to remove
 	 * @throws CoreException
@@ -181,7 +181,7 @@ public class JavaProjectHelper {
 
 	/**
 	 * Removes all files in the project and sets the given classpath
-	 * 
+	 *
 	 * @param jproject
 	 *            The project to clear
 	 * @param entries
@@ -223,7 +223,7 @@ public class JavaProjectHelper {
 
 	/**
 	 * Adds a source container to a IJavaProject.
-	 * 
+	 *
 	 * @param jproject
 	 *            The parent project
 	 * @param containerName
@@ -239,7 +239,7 @@ public class JavaProjectHelper {
 
 	/**
 	 * Adds a source container to a IJavaProject.
-	 * 
+	 *
 	 * @param jproject
 	 *            The parent project
 	 * @param containerName
@@ -257,7 +257,7 @@ public class JavaProjectHelper {
 
 	/**
 	 * Adds a source container to a IJavaProject.
-	 * 
+	 *
 	 * @param jproject
 	 *            The parent project
 	 * @param containerName
@@ -295,7 +295,7 @@ public class JavaProjectHelper {
 	/**
 	 * Adds a source container to a IJavaProject and imports all files contained in the
 	 * given ZIP file.
-	 * 
+	 *
 	 * @param jproject
 	 *            The parent project
 	 * @param containerName
@@ -323,7 +323,7 @@ public class JavaProjectHelper {
 	/**
 	 * Adds a source container to a IJavaProject and imports all files contained in the
 	 * given ZIP file.
-	 * 
+	 *
 	 * @param jproject
 	 *            The parent project
 	 * @param containerName
@@ -363,7 +363,7 @@ public class JavaProjectHelper {
 
 	/**
 	 * Adds a library entry to a IJavaProject.
-	 * 
+	 *
 	 * @param jproject
 	 *            The parent project
 	 * @param path
@@ -378,7 +378,7 @@ public class JavaProjectHelper {
 
 	/**
 	 * Adds a library entry with source attachment to a IJavaProject.
-	 * 
+	 *
 	 * @param jproject
 	 *            The parent project
 	 * @param path
@@ -400,7 +400,7 @@ public class JavaProjectHelper {
 
 	/**
 	 * Copies the library into the project and adds it as library entry.
-	 * 
+	 *
 	 * @param jproject
 	 *            The parent project
 	 * @param jarPath
@@ -435,7 +435,7 @@ public class JavaProjectHelper {
 
 	/**
 	 * Creates and adds a class folder to the class path.
-	 * 
+	 *
 	 * @param jproject
 	 *            The parent project
 	 * @param containerName
@@ -469,7 +469,7 @@ public class JavaProjectHelper {
 	/**
 	 * Creates and adds a class folder to the class path and imports all files contained
 	 * in the given ZIP file.
-	 * 
+	 *
 	 * @param jproject
 	 *            The parent project
 	 * @param containerName
@@ -504,7 +504,7 @@ public class JavaProjectHelper {
 	 * options.
 	 * <p>
 	 * Currently, the compiler compliance level is 1.5.
-	 * 
+	 *
 	 * @param jproject
 	 *            target
 	 * @return the new package fragment root
@@ -520,7 +520,7 @@ public class JavaProjectHelper {
 	/**
 	 * Adds a variable entry with source attachment to a IJavaProject. Can return null if
 	 * variable can not be resolved.
-	 * 
+	 *
 	 * @param jproject
 	 *            The parent project
 	 * @param path
@@ -549,7 +549,7 @@ public class JavaProjectHelper {
 	 * Adds a variable entry pointing to a current JRE (stubs only) and sets the compiler
 	 * compliance level on the project accordingly. The arguments specify the names of the
 	 * variables to be used. Currently, the compiler compliance level is set to 1.5.
-	 * 
+	 *
 	 * @param jproject
 	 *            the project to add the variable RT JAR
 	 * @param libVarName
@@ -575,7 +575,7 @@ public class JavaProjectHelper {
 	 * Adds a variable entry pointing to a current JRE (stubs only). The arguments specify
 	 * the names of the variables to be used. Clients must not forget to set the right
 	 * compiler compliance level on the project.
-	 * 
+	 *
 	 * @param jproject
 	 *            the project to add the variable RT JAR
 	 * @param rtStubsPath
@@ -615,7 +615,7 @@ public class JavaProjectHelper {
 
 	/**
 	 * Sets auto-building state for the test workspace.
-	 * 
+	 *
 	 * @param state
 	 *            The new auto building state
 	 * @return The previous state
@@ -686,12 +686,12 @@ public class JavaProjectHelper {
 
 	/**
 	 * Imports resources from <code>bundleSourcePath</code> to <code>importTarget</code>.
-	 * 
+	 *
 	 * @param importTarget
 	 *            the parent container
 	 * @param bundleSourcePath
 	 *            the path to a folder containing resources
-	 * 
+	 *
 	 * @throws CoreException
 	 *             import failed
 	 * @throws IOException
@@ -699,7 +699,7 @@ public class JavaProjectHelper {
 	 */
 	public static void importResources(IContainer importTarget, Bundle bundle,
 			String bundleSourcePath) throws CoreException, IOException {
-		Enumeration entryPaths = bundle.getEntryPaths(bundleSourcePath);
+		Enumeration<?> entryPaths = bundle.getEntryPaths(bundleSourcePath);
 		while (entryPaths.hasMoreElements()) {
 			String path = (String) entryPaths.nextElement();
 			IPath name = new Path(path.substring(bundleSourcePath.length()));
