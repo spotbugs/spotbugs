@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tomás Pollak
+ * Copyright (C) 2009, Tomï¿½s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,6 +18,7 @@
  */
 package de.tobject.findbugs.test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 import org.eclipse.core.resources.IResource;
@@ -32,8 +33,8 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * Base class for the default test scenario of the FindBugs UI tests.
- * 
- * @author Tomás Pollak
+ *
+ * @author Tomï¿½s Pollak
  */
 public abstract class AbstractFindBugsTest extends AbstractPluginTest {
 
@@ -42,7 +43,7 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
 
 	/**
 	 * Returns the bug file path of the test project.
-	 * 
+	 *
 	 * @return The absolute filesystem path of the bugs file.
 	 */
 	protected String getBugsFileLocation() {
@@ -71,7 +72,7 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
 
 	/**
 	 * Returns the filter file path of the test project.
-	 * 
+	 *
 	 * @return The absolute path of the filter file.
 	 */
 	protected String getFilterFileLocation() {
@@ -86,24 +87,35 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
 
 	/**
 	 * Configures the test project to use the baseline bugs file.
+	 * @param b
 	 */
-	protected void setBaselineBugsFile() throws CoreException {
+	protected void setBaselineBugsFile(boolean on) throws CoreException {
 		// per default, workspace settings are used. We enable project settings here
 		FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
 		UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
-		preferences.setExcludeBugsFiles(Collections.singletonList(getBugsFileLocation()));
+		if(on) {
+			preferences.setExcludeBugsFiles(Collections.singletonList(getBugsFileLocation()));
+		} else {
+			preferences.setExcludeBugsFiles(new ArrayList<String>());
+		}
 		FindbugsPlugin.saveUserPreferences(getProject(), preferences);
 	}
 
 	/**
 	 * Configures the test project to use the filter file.
 	 */
-	protected void setFilterFile() throws CoreException {
+	protected void setFilterFile(boolean on) throws CoreException {
 		// per default, workspace settings are used. We enable project settings here
 		FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
 		UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
-		preferences.setExcludeFilterFiles(Collections
-				.singletonList(getFilterFileLocation()));
+		if(on) {
+			preferences.setExcludeFilterFiles(Collections
+					.singletonList(getFilterFileLocation()));
+		} else {
+			preferences.setExcludeFilterFiles(new ArrayList<String>());
+		}
 		FindbugsPlugin.saveUserPreferences(getProject(), preferences);
 	}
+
+
 }

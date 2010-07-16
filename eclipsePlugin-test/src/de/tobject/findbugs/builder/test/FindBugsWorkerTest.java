@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tomás Pollak
+ * Copyright (C) 2009, Tomï¿½s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 package de.tobject.findbugs.builder.test;
 
 import static junit.framework.Assert.*;
+import static org.eclipse.jdt.testplugin.JavaProjectHelper.*;
 
 import java.io.IOException;
 
@@ -30,14 +31,15 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.tobject.findbugs.FindbugsTestPlugin;
 import de.tobject.findbugs.builder.FindBugsWorker;
 import de.tobject.findbugs.test.AbstractFindBugsTest;
 import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the public methods for FindBugsWorker.
- * 
- * @author Tomás Pollak
+ *
+ * @author Tomï¿½s Pollak
  */
 public class FindBugsWorkerTest extends AbstractFindBugsTest {
 	@BeforeClass
@@ -58,8 +60,9 @@ public class FindBugsWorkerTest extends AbstractFindBugsTest {
 	public void testBaselineBugs() throws CoreException, IOException {
 		assertNoBugs();
 
-		setBaselineBugsFile();
+		setBaselineBugsFile(true);
 		work(createFindBugsWorker());
+		setBaselineBugsFile(false);
 
 		assertExpectedBugsWithBaseline();
 	}
@@ -68,8 +71,9 @@ public class FindBugsWorkerTest extends AbstractFindBugsTest {
 	public void testFilter() throws CoreException, IOException {
 		assertNoBugs();
 
-		setFilterFile();
+		setFilterFile(true);
 		work(createFindBugsWorker());
+		setFilterFile(false);
 
 		assertExpectedBugsWithFilter();
 	}

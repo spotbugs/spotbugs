@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tomás Pollak
+ * Copyright (C) 2009, Tomï¿½s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,8 +43,8 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * This class tests the FindbugsPropertyPage and related classes.
- * 
- * @author Tomás Pollak
+ *
+ * @author Tomï¿½s Pollak
  */
 public class PropertiesPageTest extends AbstractFindBugsTest {
 	@BeforeClass
@@ -354,7 +354,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 	@Test
 	public void testRemoveFileFromExcludeFilter() throws CoreException {
 		// Set the initial preferences with one filter
-		setFilterFile();
+		setFilterFile(true);
 
 		// Check that the filters are populated
 		assertEmptyFilter(getProjectPreferences().getIncludeFilterFiles());

@@ -149,34 +149,18 @@ public class JavaProjectHelper {
 	 *             Removing failed
 	 * @see #ASSERT_NO_MIXED_LINE_DELIMIERS
 	 */
-	public static void delete(final IJavaElement elem) throws CoreException {
+	public static void delete(final IResource elem) throws CoreException {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
-				performDummySearch();
-				if (elem instanceof IJavaProject) {
-					IJavaProject jproject = (IJavaProject) elem;
-					jproject.setRawClasspath(new IClasspathEntry[0], jproject
-							.getProject().getFullPath(), null);
-				}
-				for (int i = 0; i < MAX_RETRY; i++) {
-					try {
-						elem.getResource().delete(true, null);
-						i = MAX_RETRY;
-					} catch (CoreException e) {
-						if (i == MAX_RETRY - 1) {
-							JavaPlugin.log(e);
-							throw e;
-						}
-						try {
-							Thread.sleep(1000); // sleep a second
-						} catch (InterruptedException e1) {
-						}
-					}
+				try {
+					elem.delete(true, monitor);
+				} catch (CoreException e) {
+					JavaPlugin.log(e);
+					throw e;
 				}
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, null);
-
 	}
 
 	/**
@@ -707,12 +691,19 @@ public class JavaProjectHelper {
 				continue; // Ignore SVN folders
 			} else if (path.endsWith("/")) {
 				IFolder folder = importTarget.getFolder(name);
-				folder.create(false, true, null);
+				if(folder.exists()) {
+					folder.delete(true, null);
+				}
+				folder.create(true, true, null);
 				importResources(folder, bundle, path);
 			} else {
 				URL url = bundle.getEntry(path);
 				IFile file = importTarget.getFile(name);
-				file.create(url.openStream(), true, null);
+				if(!file.exists()) {
+					file.create(url.openStream(), true, null);
+				} else {
+					file.setContents(url.openStream(), true, false, null);
+				}
 			}
 		}
 	}

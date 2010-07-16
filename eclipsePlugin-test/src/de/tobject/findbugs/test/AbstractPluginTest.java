@@ -164,7 +164,8 @@ public abstract class AbstractPluginTest {
 	 */
 	protected static void tearDownTestProject() throws CoreException {
 		// Delete the test project
-		delete(getJavaProject());
+		waitForJobs();
+		delete(getJavaProject().getProject());
 		waitForJobs();
 		processUiEvents();
 	}
