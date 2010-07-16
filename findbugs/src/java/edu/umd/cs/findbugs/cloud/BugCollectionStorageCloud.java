@@ -42,7 +42,11 @@ public class BugCollectionStorageCloud extends AbstractCloud {
                                "no description", "no details");
     }
 
-    BugCollectionStorageCloud(CloudPlugin plugin, BugCollection bc, Properties properties) {
+    /**
+     * Constructor is not protected to allow CloudFactory.createCloudWithoutInitializing()
+     * create a new instance of this cloud
+     */
+    public BugCollectionStorageCloud(CloudPlugin plugin, BugCollection bc, Properties properties) {
         super(plugin, bc, properties);
         setSigninState(SigninState.NO_SIGNIN_REQUIRED);
     }
