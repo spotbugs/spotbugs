@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.util.Collection;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.filter.AndMatcher;
 import edu.umd.cs.findbugs.filter.BugMatcher;
@@ -31,9 +29,12 @@ import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.filter.OrMatcher;
 import edu.umd.cs.findbugs.filter.PriorityMatcher;
+import edu.umd.cs.findbugs.filter.RankMatcher;
 import edu.umd.cs.findbugs.filter.RelationalOp;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 import edu.umd.cs.findbugs.util.NotImplementedYetException;
+
+import java.util.Collection;
 
 /**
  * @author pugh
@@ -117,6 +118,8 @@ public class FilterFactory {
 		Sortables s = sv.key;
 		String value = sv.value;
 		switch (s) {
+        case BUG_RANK:
+            return new RankMatcher(value);
 		case BUGCODE:
 			return new BugMatcher(value, null, null);
 		case CATEGORY:
