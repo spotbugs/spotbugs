@@ -57,6 +57,11 @@ public class DetectorFactory {
 				// Ignore
 			}
 		}
+		
+		@Override
+		public String toString() {
+			return detectorClass.getSimpleName();
+		}
 
 		public Detector createDetector(BugReporter bugReporter) {
 			try {
@@ -141,6 +146,10 @@ public class DetectorFactory {
 		this.hidden = false;
 	}
 
+	@Override
+	public String toString() {
+		return detectorCreator.toString();
+	}
 	/**
 	 * Set the overall position in which this detector was specified
 	 * in the plugin descriptor.
