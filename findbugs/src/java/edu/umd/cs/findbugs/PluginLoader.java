@@ -174,14 +174,17 @@ public class PluginLoader {
 	private URL getResource(String name) {
 		URL url = null;
 		
-		if (false && loadedFrom != null && loadedFrom.toString().endsWith(".jar"))
+		if ( loadedFrom != null && loadedFrom.toString().endsWith(".jar"))
 	        try {
 	            URL u = new URL("jar:" + loadedFrom.toString() +"!/" + name);
+	            System.out.println("Trying " + u);
 	            InputStream i = u.openStream();
 	            int firstByte = i.read();
 	            i.close();
-	            if (firstByte >= 0)
+	            if (firstByte >= 0) {
+	            	System.out.println("Got it");
 	            	return u;
+	            }
             } catch (MalformedURLException e) {
             	e.printStackTrace();
             } catch (IOException e) {
@@ -289,7 +292,8 @@ public class PluginLoader {
 		
 		if (jarName != null 
 				&& !findbugsXML_URL.toString().contains(jarName)) {
-			throw new PluginDoesntContainMetadataException("plugin doesn't contain findbugs.xml: " + loadedFrom + "; got " + findbugsXML_URL);
+			throw new PluginDoesntContainMetadataException("plugin doesn't contain findbugs.xml: " + jarName + "; got " + findbugsXML_URL 
+					+ " from " + classLoader.getClass().getName());
 		}
 		SAXReader reader = new SAXReader();
 		
