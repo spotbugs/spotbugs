@@ -271,10 +271,12 @@ public  class DBCloud extends AbstractCloud {
 	}
 	
 	public boolean availableForInitialization() {
+		 String msg = String.format("%s %s %s %s", sqlDriver, dbUser, url, dbPassword);
+		 if (CloudFactory.DEBUG) {
+	            System.out.println("DB properties: " + msg);
+		 }
 		if (sqlDriver == null || dbUser == null || url == null || dbPassword == null) {
 			if (CloudFactory.DEBUG) {
-	            String msg = String.format("%s %s %s %s", sqlDriver, dbUser, url, dbPassword);
-	            System.out.println("DB properties: " + msg);
 	            bugCollection.getProject().getGuiCallback().showMessageDialog(msg);
             }
 			
@@ -590,7 +592,15 @@ public  class DBCloud extends AbstractCloud {
 		loadBugComponents();
 		Connection c = null;
 		try {
-			plugin.getClassLoader().loadClass(sqlDriver);
+			Class driverClass;
+			try {
+				driverClass = this.getClass().getClassLoader().loadClass(sqlDriver);
+			} catch (ClassNotFoundException e) {
+				driverClass = plugin.getClassLoader().loadClass(sqlDriver);
+			}
+			if (CloudFactory.DEBUG) {
+				System.out.println("Loaded " + driverClass.getName());
+			}
 			c = getConnection();
 			Statement stmt = c.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) from  findbugs_issue");
