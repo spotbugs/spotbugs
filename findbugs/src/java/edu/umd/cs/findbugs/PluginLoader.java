@@ -88,6 +88,7 @@ public class PluginLoader {
 	private final boolean corePlugin;
 	
 	private final URL loadedFrom;
+	private final String jarName;
 
 	/**
 	 * Constructor.
@@ -98,9 +99,21 @@ public class PluginLoader {
 	public PluginLoader(URL url) throws PluginException {
 		this.classLoader = new URLClassLoader(new URL[]{url});
 		loadedFrom = url;
+		jarName = getJarName(url);
 		corePlugin = false;
 		init();
 	}
+
+	/**
+     * @param url
+     * @return
+     */
+    private String getJarName(URL url) {
+	    String location = url.getPath();
+		int i = location.lastIndexOf("/");
+		location =  location.substring(i+1);
+	    return location;
+    }
 
 	/**
 	 * Constructor.
@@ -111,6 +124,7 @@ public class PluginLoader {
 	public PluginLoader(URL url, ClassLoader parent) throws PluginException {
 		this.classLoader = new URLClassLoader(new URL[]{url}, parent);
 		loadedFrom = url;
+		jarName = getJarName(url);
 		corePlugin = false;
 		init();
 	}
@@ -126,6 +140,7 @@ public class PluginLoader {
 		this.classLoader = this.getClass().getClassLoader();
 		corePlugin = true;
 		loadedFrom = null;
+		jarName = null;
 	}
 	
 	/**
@@ -159,7 +174,7 @@ public class PluginLoader {
 	private URL getResource(String name) {
 		URL url = null;
 		
-		if (loadedFrom != null && loadedFrom.toString().endsWith(".jar"))
+		if (false && loadedFrom != null && loadedFrom.toString().endsWith(".jar"))
 	        try {
 	            URL u = new URL("jar:" + loadedFrom.toString() +"!/" + name);
 	            InputStream i = u.openStream();
@@ -272,8 +287,8 @@ public class PluginLoader {
 			System.out.println("PluginLoader found " + name + " at: " + findbugsXML_URL);
 		
 		
-		if (loadedFrom != null 
-				&& !findbugsXML_URL.toString().contains(loadedFrom.toString())) {
+		if (jarName != null 
+				&& !findbugsXML_URL.toString().contains(jarName)) {
 			throw new PluginDoesntContainMetadataException("plugin doesn't contain findbugs.xml: " + loadedFrom + "; got " + findbugsXML_URL);
 		}
 		SAXReader reader = new SAXReader();
