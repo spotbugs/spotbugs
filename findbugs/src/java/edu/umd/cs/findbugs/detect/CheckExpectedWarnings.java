@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugCollectionBugReporter;
 import edu.umd.cs.findbugs.BugInstance;
@@ -141,6 +142,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 					
 					Collection<BugPattern> reportedPatterns = factory.getReportedBugPatterns();
 					for (BugPattern pattern : reportedPatterns) {
+						possibleBugCodes.add(pattern.getType());
 						possibleBugCodes.add(pattern.getAbbrev());
 					}
 				}
@@ -176,11 +178,10 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 				System.out.println("*** Found " + annotation + " annotation");
 			}
 			String expectedBugCodes = (String) expect.getValue("value");
-			boolean matchBugPattern = falseIfNull((Boolean) expect.getValue("bugPattern"));
 			StringTokenizer tok = new StringTokenizer(expectedBugCodes, ",");
 			while (tok.hasMoreTokens()) {
 				String bugCode = tok.nextToken();
-				Collection<SourceLineAnnotation> bugs = countWarnings(xmethod.getMethodDescriptor(), bugCode, matchBugPattern);
+				Collection<SourceLineAnnotation> bugs = countWarnings(xmethod.getMethodDescriptor(), bugCode);
 				if (expectWarnings && bugs.isEmpty() && possibleBugCodes.contains(bugCode)) {
 					reporter.reportBug(new BugInstance(this, "FB_MISSING_EXPECTED_WARNING", priority).addClassAndMethod(xmethod.getMethodDescriptor()).
 							addString(bugCode));
@@ -192,9 +193,16 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 		}
 	}
 
-	private Collection<SourceLineAnnotation> countWarnings(MethodDescriptor methodDescriptor, String bugCode, boolean matchPattern) {
+	private Collection<SourceLineAnnotation> countWarnings(MethodDescriptor methodDescriptor, String bugCode) {
 		Collection<BugInstance> warnings = warningsByMethod.get(methodDescriptor);
 		Collection<SourceLineAnnotation> matching = new HashSet<SourceLineAnnotation>();
+		I18N i18n = I18N.instance();
+		BugCode potentialBugCode = i18n.getBugCode(bugCode);
+		BugPattern potentialBugPattern = i18n.lookupBugPattern(bugCode);
+		boolean matchPattern = false;
+		if (potentialBugPattern != null)
+			matchPattern = true;
+
 		if (warnings != null) {
 			for (BugInstance warning : warnings) {
 				BugPattern pattern = warning.getBugPattern();

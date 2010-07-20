@@ -17,8 +17,10 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.CLASS)
 public @interface NoWarning {
-	// Comma-separated list of bug codes (e.g., "NP") not expected
-	// in the annotated method.
+	/**
+	 * The value indicates the bug code (e.g., NP) or bug pattern (e.g., IL_INFINITE_LOOP)
+	 * that should not be reported
+	 */
 	public String value();
-	public boolean bugPattern() default false;
+	
 }

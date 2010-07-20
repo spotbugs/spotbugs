@@ -47,8 +47,8 @@ public class Ideas_2010_02_24 {
 
 
 	
-	@ExpectWarning(value = "NP_NULL_ON_SOME_PATH_EXCEPTION", bugPattern = true)
-	@NoWarning(value = "NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH", bugPattern = true)
+	@ExpectWarning(value = "NP_NULL_ON_SOME_PATH_EXCEPTION")
+	@NoWarning(value = "NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH")
 	public static void falsePositive() {
 		String str = null;
 		for (int i = 0; i < 2; i++) {
@@ -63,7 +63,7 @@ public class Ideas_2010_02_24 {
 			str = null;
 		}
 	}
-	@ExpectWarning(value = "NP_NULL_ON_SOME_PATH", bugPattern = true)
+	@ExpectWarning(value = "NP_NULL_ON_SOME_PATH")
 	public static void truePositive(boolean b) {
 		String str = null;
 		for (int i = 0; i < 2; i++) {

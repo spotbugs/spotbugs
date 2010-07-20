@@ -12,14 +12,15 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation indicating that <em>no</em> FindBugs warning of the specified type
- * is desired.
+ * is not desired.
  * 
  * @author David Hovemeyer
  */
 @Retention(RetentionPolicy.CLASS)
 public @interface DesireNoWarning {
-	// Comma-separated list of bug codes (e.g., "NP") not desired
-	// in the annotated method.
+	/**
+	 * The value indicates the bug code (e.g., NP) or bug pattern (e.g., IL_INFINITE_LOOP)
+	 * that is desired to not be reported
+	 */
 	public String value();
-	public boolean bugPattern() default false;
 }

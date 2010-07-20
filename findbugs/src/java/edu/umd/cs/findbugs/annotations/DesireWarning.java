@@ -17,7 +17,9 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.CLASS)
 public @interface DesireWarning {
-	// The value indicates the bug code (e.g., NP) of the desired warning.
+	/**
+	 * The value indicates the bug code (e.g., NP) or bug pattern (e.g., IL_INFINITE_LOOP)
+	 * of the desired warning 
+	 */
 	public String value();
-	public boolean bugPattern() default false;
 }
