@@ -596,11 +596,16 @@ public  class DBCloud extends AbstractCloud {
 			try {
 				driverClass = this.getClass().getClassLoader().loadClass(sqlDriver);
 			} catch (ClassNotFoundException e) {
-				driverClass = plugin.getClassLoader().loadClass(sqlDriver);
+				try {
+					driverClass = plugin.getClassLoader().loadClass(sqlDriver);
+				} catch (ClassNotFoundException e2) {
+					driverClass = Class.forName(sqlDriver);
+				}
 			}
 			if (CloudFactory.DEBUG) {
 				System.out.println("Loaded " + driverClass.getName());
 			}
+			DriverManager.registerDriver(new DriverShim((java.sql.Driver)driverClass.newInstance()));
 			c = getConnection();
 			Statement stmt = c.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) from  findbugs_issue");
