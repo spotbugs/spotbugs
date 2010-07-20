@@ -53,6 +53,7 @@ import edu.umd.cs.findbugs.plan.DetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
 import edu.umd.cs.findbugs.plan.ReportingDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.SingleDetectorFactorySelector;
+import edu.umd.cs.findbugs.util.JavaWebStart;
 
 /**
  * Loader for a FindBugs plugin.
@@ -175,7 +176,7 @@ public class PluginLoader {
 	private URL getResource(String name) {
 		URL url = null;
 		
-		if ( loadedFrom != null && loadedFrom.toString().endsWith(".jar"))
+		if (JavaWebStart.isRunningViaJavaWebstart() &&  loadedFrom != null && loadedFrom.toString().endsWith(".jar"))
 	        try {
 	            URL u = new URL("jar:" + loadedFrom.toString() +"!/" + name);
 	            System.out.println("Trying " + u);
@@ -189,7 +190,7 @@ public class PluginLoader {
             } catch (MalformedURLException e) {
             	e.printStackTrace();
             } catch (IOException e) {
-	            e.printStackTrace();
+	            assert true;
             }
 
 		if (classLoader instanceof URLClassLoader) {

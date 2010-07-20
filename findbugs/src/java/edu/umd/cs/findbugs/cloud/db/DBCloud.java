@@ -272,8 +272,11 @@ public  class DBCloud extends AbstractCloud {
 	
 	public boolean availableForInitialization() {
 		if (sqlDriver == null || dbUser == null || url == null || dbPassword == null) {
-			if (CloudFactory.DEBUG) 
-				bugCollection.getProject().getGuiCallback().showMessageDialog(String.format("%s %s %s %s", sqlDriver, dbUser, url, dbPassword));
+			if (CloudFactory.DEBUG) {
+	            String msg = String.format("%s %s %s %s", sqlDriver, dbUser, url, dbPassword);
+	            System.out.println("DB properties: " + msg);
+	            bugCollection.getProject().getGuiCallback().showMessageDialog(msg);
+            }
 			
 			if (THROW_EXCEPTION_IF_CANT_CONNECT)
 				throw new RuntimeException("Unable to load database properties");
