@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -292,8 +293,12 @@ public class PluginLoader {
 		
 		if (jarName != null 
 				&& !findbugsXML_URL.toString().contains(jarName)) {
+			String classloaderName =  classLoader.getClass().getName();
+			if (classLoader instanceof URLClassLoader) {
+				classloaderName += Arrays.asList(((URLClassLoader)classLoader).getURLs());
+			}
 			throw new PluginDoesntContainMetadataException("plugin doesn't contain findbugs.xml: " + jarName + "; got " + findbugsXML_URL 
-					+ " from " + classLoader.getClass().getName());
+					+ " from " + classloaderName);
 		}
 		SAXReader reader = new SAXReader();
 		
