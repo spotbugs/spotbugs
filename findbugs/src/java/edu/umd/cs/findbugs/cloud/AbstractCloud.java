@@ -453,7 +453,7 @@ public abstract class AbstractCloud implements Cloud {
 			
 			count++;
 			HashSet<String> reviewers = new HashSet<String>();
-			String status  = supportsBugLinks() ? getBugStatus(bd) : null;
+			String status  = supportsBugLinks()  && getBugLinkStatus(bd).bugIsFiled() ? getBugStatus(bd) : null;
 			if (status != null)
 				bugStatus.add(status);
 			
