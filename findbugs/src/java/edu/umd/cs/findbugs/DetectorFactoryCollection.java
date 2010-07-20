@@ -403,7 +403,6 @@ public class DetectorFactoryCollection {
 	        try {
 			System.setSecurityManager(null);
 	        } catch (Throwable e) {
-	        	e.printStackTrace();
 	        	assert true; // keep going
 	        }
 			      

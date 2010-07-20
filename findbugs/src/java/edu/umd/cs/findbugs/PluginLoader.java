@@ -179,12 +179,10 @@ public class PluginLoader {
 		if (JavaWebStart.isRunningViaJavaWebstart() &&  loadedFrom != null && loadedFrom.toString().endsWith(".jar"))
 	        try {
 	            URL u = new URL("jar:" + loadedFrom.toString() +"!/" + name);
-	            System.out.println("Trying " + u);
 	            InputStream i = u.openStream();
 	            int firstByte = i.read();
 	            i.close();
 	            if (firstByte >= 0) {
-	            	System.out.println("Got it");
 	            	return u;
 	            }
             } catch (MalformedURLException e) {
