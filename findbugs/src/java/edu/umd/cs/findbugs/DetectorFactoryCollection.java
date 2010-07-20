@@ -400,8 +400,12 @@ public class DetectorFactoryCollection {
 			// http://lopica.sourceforge.net/faq.html
 	        //	URL policyUrl = Thread.currentThread().getContextClassLoader().getResource("my.java.policy");
 	       // 	Policy.getPolicy().refresh();
-	        	
+	        try {
 			System.setSecurityManager(null);
+	        } catch (Throwable e) {
+	        	e.printStackTrace();
+	        	assert true; // keep going
+	        }
 			      
 		 }
 		      
