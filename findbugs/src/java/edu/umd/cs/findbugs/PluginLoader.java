@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -157,6 +158,20 @@ public class PluginLoader {
 	 */
 	private URL getResource(String name) {
 		URL url = null;
+		
+		if (loadedFrom != null && loadedFrom.toString().endsWith(".jar"))
+	        try {
+	            URL u = new URL("jar:" + loadedFrom.toString() +"!/" + name);
+	            InputStream i = u.openStream();
+	            int firstByte = i.read();
+	            i.close();
+	            if (firstByte >= 0)
+	            	return u;
+            } catch (MalformedURLException e) {
+            	e.printStackTrace();
+            } catch (IOException e) {
+	            e.printStackTrace();
+            }
 
 		if (classLoader instanceof URLClassLoader) {
 			URLClassLoader urlClassLoader = (URLClassLoader) classLoader;
@@ -259,7 +274,7 @@ public class PluginLoader {
 		
 		if (loadedFrom != null 
 				&& !findbugsXML_URL.toString().contains(loadedFrom.toString())) {
-			throw new PluginDoesntContainMetadataException("plugin doesn't contain findbugs.xml: " + loadedFrom);
+			throw new PluginDoesntContainMetadataException("plugin doesn't contain findbugs.xml: " + loadedFrom + "; got " + findbugsXML_URL);
 		}
 		SAXReader reader = new SAXReader();
 		
