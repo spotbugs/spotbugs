@@ -1686,7 +1686,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			waitCount--;
 			if (DEBUG)
 				new RuntimeException("releasing display wait, count " + waitCount).printStackTrace(System.out);
-			if (waitCount == 1)
+			if (waitCount == 0)
 				showCard(BugCard.TREECARD, new Cursor(Cursor.DEFAULT_CURSOR));
 		}
 	}
