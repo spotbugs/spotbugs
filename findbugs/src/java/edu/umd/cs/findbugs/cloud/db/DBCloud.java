@@ -1561,7 +1561,10 @@ public  class DBCloud extends AbstractCloud {
 
     @Override
     protected String getBugStatus(BugInstance b) {
-        return getBugData(b).bugStatus;
+        String status = getBugData(b).bugStatus;
+        if (status != null)
+        	return status;
+        return "Unknown";
     }
 
     private boolean pendingStatusHasExpired(long whenFiled) {
