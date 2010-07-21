@@ -197,12 +197,13 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 		Collection<BugInstance> warnings = warningsByMethod.get(methodDescriptor);
 		Collection<SourceLineAnnotation> matching = new HashSet<SourceLineAnnotation>();
 		I18N i18n = I18N.instance();
-		BugCode potentialBugCode = i18n.getBugCode(bugCode);
-		BugPattern potentialBugPattern = i18n.lookupBugPattern(bugCode);
 		boolean matchPattern = false;
-		if (potentialBugPattern != null)
+		try {
+			i18n.getBugCode(bugCode);
+		} catch (IllegalArgumentException e) {
 			matchPattern = true;
-
+		}
+		
 		if (warnings != null) {
 			for (BugInstance warning : warnings) {
 				BugPattern pattern = warning.getBugPattern();
