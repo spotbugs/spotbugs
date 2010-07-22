@@ -1994,9 +1994,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     		add(fallback);
     	return this;
     }
-    public static @CheckForNull BugAnnotation getFieldOrMethodValueSource(@CheckForNull OpcodeStack.Item item) {
-    	if (item == null) 
-    		return null;
+
+	public static @CheckForNull
+	BugAnnotation getFieldOrMethodValueSource(@CheckForNull OpcodeStack.Item item) {
+		if (item == null)
+			return null;
 		XField xField = item.getXField();
 		if (xField != null) {
 			FieldAnnotation a = FieldAnnotation.fromXField(xField);

@@ -40,9 +40,7 @@ import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.ATHROW;
-import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.IFNULL;
@@ -53,7 +51,6 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.ReturnInstruction;
-import org.jaxen.expr.DefaultAbsoluteLocationPath;
 import org.objectweb.asm.Type;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -79,7 +76,6 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowValueChooser;
 import edu.umd.cs.findbugs.ba.DefaultNullnessAnnotations;
 import edu.umd.cs.findbugs.ba.Edge;
-import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
@@ -1018,9 +1014,20 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 		boolean valueIsNull = true;
 		String warning;
 		int pc = location.getHandle().getPosition();
-		OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
-		OpcodeStack.Item item1 = stack.getStackItem(0);
+		OpcodeStack stack = null;
+		OpcodeStack.Item item1 = null;
+		
 		OpcodeStack.Item item2 = null;
+		try {
+			stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
+		
+			item1 = stack.getStackItem(0);
+		} catch (RuntimeException e) {
+			if (SystemProperties.ASSERTIONS_ENABLED) {
+				AnalysisContext.logError("Error getting stack at specific PC", e);
+			}
+			assert true;
+		}
 		if (redundantBranch.secondValue == null) {
 			if (redundantBranch.firstValue.isDefinitelyNull()) {
 				warning = "RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE";
@@ -1032,7 +1039,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 			}
 
 		} else {
-			item2 = stack.getStackItem(1);
+			if (stack != null)
+				item2 = stack.getStackItem(1);
 			boolean bothNull = redundantBranch.firstValue.isDefinitelyNull() && redundantBranch.secondValue.isDefinitelyNull();
 			if (redundantBranch.secondValue.isChecked())
 				isChecked = true;
