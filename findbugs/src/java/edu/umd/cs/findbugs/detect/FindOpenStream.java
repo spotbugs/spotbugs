@@ -79,6 +79,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 	static final ObjectType[] streamBaseList =
 			{ObjectTypeFactory.getInstance("java.io.InputStream"),
 			 ObjectTypeFactory.getInstance("java.io.OutputStream"),
+			 ObjectTypeFactory.getInstance("java.util.zip.ZipFile"),
 			 ObjectTypeFactory.getInstance("java.io.Reader"),
 			 ObjectTypeFactory.getInstance("java.io.Writer"),
 			 ObjectTypeFactory.getInstance("java.sql.Connection"),
@@ -96,16 +97,15 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 		ArrayList<StreamFactory> streamFactoryCollection = new ArrayList<StreamFactory>();
 
 		// Examine InputStreams, OutputStreams, Readers, and Writers,
-		// ignoring byte array, object stream, char array, and String variants.
+		// ignoring byte array, char array, and String variants.
+		// What about object streams? We had ignored them. Why?
 		streamFactoryCollection.add(new IOStreamFactory("java.io.InputStream",
 				new String[]{"java.io.ByteArrayInputStream", "java.io.StringBufferInputStream",  "java.io.PipedInputStream"
-				,"java.io.ObjectInputStream"
 				},
 				"OS_OPEN_STREAM"));
 		streamFactoryCollection.add(new IOStreamFactory("java.io.OutputStream",
 				new String[]{"java.io.ByteArrayOutputStream", "java.io.PipedOutputStream"
-				 , "java.io.ObjectOutputStream"
-				},
+				 },
 				"OS_OPEN_STREAM"));
 		streamFactoryCollection.add(new IOStreamFactory("java.io.Reader",
 				new String[]{"java.io.StringReader", "java.io.CharArrayReader", "java.io.PipedReader"},
@@ -113,7 +113,9 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 		streamFactoryCollection.add(new IOStreamFactory("java.io.Writer",
 				new String[]{"java.io.StringWriter", "java.io.CharArrayWriter", "java.io.PipedWriter"},
 				"OS_OPEN_STREAM"));
-
+		streamFactoryCollection.add(new IOStreamFactory("java.util.zip.ZipFile",
+				new String[0],
+				"OS_OPEN_STREAM"));
 		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.lang.Class",
 				"getResourceAsStream", "(Ljava/lang/String;)Ljava/io/InputStream;",
 				"OS_OPEN_STREAM"));
@@ -271,7 +273,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 	// class containing one of these words, then we don't run the
 	// detector on the class.
 	private static final String[] PRESCREEN_CLASS_LIST =
-		{ "Stream", "Reader", "Writer", "DriverManager", "Connection", "Statement" }; 
+		{ "Stream", "Reader", "Writer", "ZipFile", "JarFile","DriverManager", "Connection", "Statement" }; 
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
