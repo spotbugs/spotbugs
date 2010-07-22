@@ -32,8 +32,8 @@ import java.util.TreeSet;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
-import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.DefaultInformationControl.IInformationPresenterExtension;
+import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -639,10 +639,10 @@ public class FilterBugsDialog extends SelectionDialog {
 
 	private boolean shouldReportMissing(BugPattern bugPattern) {
 		return !bugPattern.isDeprecated()
-			// not reported but defined. TODO ask Bill to clarify what is the state of it
-			&& !"VA_FORMAT_STRING_ARG_MISMATCH".equals(bugPattern.getType())
 			// reported many times by some test code
 			&& !"UNKNOWN".equals(bugPattern.getType())
+			// reported many times by some test code
+			&& !"EXPERIMENTAL".equals(bugPattern.getCategory())
 			// reported by FindBugs2 itself (no one detector factory exists):
 			&& !"SKIPPED_CLASS_TOO_BIG".equals(bugPattern.getType()
 					);
