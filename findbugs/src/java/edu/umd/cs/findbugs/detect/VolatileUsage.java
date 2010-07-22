@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 
 public class VolatileUsage extends BytecodeScanningDetector {
 	enum IncrementState { START, GETFIELD, LOADCONSTANT, ADD };
@@ -126,9 +127,10 @@ public class VolatileUsage extends BytecodeScanningDetector {
 
 	@Override
 	public void report() {
+		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
 		for (XField f : AnalysisContext.currentXFactory().allFields())
-			if (isVolatileArray(f)) {
+			if (isVolatileArray(f) && subtypes2.isApplicationClass(f.getClassDescriptor())) {
 				int priority = LOW_PRIORITY;
 				if (initializationWrites.contains(f) && !otherWrites.contains(f))
 					priority = NORMAL_PRIORITY;
