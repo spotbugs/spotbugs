@@ -200,6 +200,8 @@ public interface Cloud {
 
 	UserDesignation getConsensusDesignation(BugInstance b);
 
+	boolean overallClassificationIsNotAProblem(BugInstance b);
+
 	/** Update user designation and evaluation from information in bug instance and push to database */
 	void storeUserAnnotation(BugInstance bugInstance);
 

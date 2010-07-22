@@ -25,12 +25,9 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -356,7 +353,13 @@ public abstract class AbstractCloud implements Cloud {
 		return UserDesignation.NEEDS_STUDY;
 
 	}
-	public  double getClassificationScore(BugInstance b) {
+
+    public boolean overallClassificationIsNotAProblem(BugInstance b) {
+        UserDesignation consensusDesignation = getConsensusDesignation(b);
+        return consensusDesignation != UserDesignation.UNCLASSIFIED && consensusDesignation.score() < 0;
+    }
+
+    public  double getClassificationScore(BugInstance b) {
 
 		int count = 0;
 		double total = 0.0;
