@@ -375,9 +375,9 @@ public class DetectorFactoryCollection {
         List<URL> plugins;
 		
         if (JavaWebStart.isRunningViaJavaWebstart()) {
-        	plugins = determineWebStartPlugins();
+        	plugins = new ArrayList<URL>(determineWebStartPlugins());
         } else {
-        	plugins = determineInstalledPlugins();
+        	plugins = new ArrayList<URL>(determineInstalledPlugins());
         }
 		Set<Entry<Object, Object>> entrySet = SystemProperties.getAllProperties().entrySet();
 		for(Map.Entry<?,?> e : entrySet) {
