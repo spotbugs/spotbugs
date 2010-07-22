@@ -320,8 +320,8 @@ public class NewProjectWizard extends FBDialog
 			for (String i : curProject.getFileList()) 
 				analyzeModel.addElement(i);
 			//If the project had no classes in it, disable the finish button until classes are added.
-			if (curProject.getFileList().size()==0)
-				this.finishButton.setEnabled(false);
+			//if (curProject.getFileList().size()==0)
+				//this.finishButton.setEnabled(false);
 			for (String i : curProject.getAuxClasspathEntryList())
 				auxModel.addElement(i);
 			for (String i : curProject.getSourceDirList())
@@ -477,8 +477,8 @@ public class NewProjectWizard extends FBDialog
 				for (Object i : list.getSelectedValues())
 					listModel.removeElement(i);
 				//If this is the primary class directories remove button, set it to disable finish when there are no class files being analyzed
-				if (listModel.size()==0 && label.equals(edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl", "Class archives and directories to analyze:")))
-					finishButton.setEnabled(false);
+				//if (listModel.size()==0 && label.equals(edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl", "Class archives and directories to analyze:")))
+					//finishButton.setEnabled(false);
 			}
 		});
 		return myPanel;
