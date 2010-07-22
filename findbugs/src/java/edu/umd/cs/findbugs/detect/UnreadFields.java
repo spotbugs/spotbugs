@@ -891,7 +891,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 					);
 		}
 
-		for (XField f : writeOnlyFields) {
+		writeOnlyFields: for (XField f : writeOnlyFields) {
 			String fieldName = f.getName();
 			String className = f.getClassName();
 			int lastDollar =
@@ -916,6 +916,14 @@ public class UnreadFields extends OpcodeStackDetector  {
 				String outerClassName = className.substring(0, lastDollar);
 
 				try {
+					XClass thisClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, f.getClassDescriptor());
+					
+					if (isAnonymousInnerClass)
+						for (XField f2 : thisClass.getXFields()) {
+							if (f2 != f && f2.isPrivate() && f2.isSynthetic() && !f2.getName().startsWith("this$")
+							        && f2.getName().contains("$"))
+								continue writeOnlyFields;
+						}
 					JavaClass outerClass = Repository.lookupClass(outerClassName);
 					if (classHasParameter(outerClass))
 						continue;
@@ -923,7 +931,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 					ClassDescriptor cDesc = DescriptorFactory.createClassDescriptorFromDottedClassName(outerClassName);
 
 					XClass outerXClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, cDesc);
-					XClass thisClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, f.getClassDescriptor());
+					
 					AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
 				 	  
 					Subtypes2 subtypes2 = analysisContext.getSubtypes2();
