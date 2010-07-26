@@ -191,11 +191,11 @@ public  class DBCloud extends AbstractCloud {
 	Date attemptedResync;
 	IPAddressLookup ipAddressLookup;
 	int resyncCount;
-	Map<String, BugData> instanceMap = new HashMap<String, BugData>();
+	final Map<String, BugData> instanceMap = new HashMap<String, BugData>();
 
-	Map<Integer, BugData> idMap = new HashMap<Integer, BugData>();
+	final Map<Integer, BugData> idMap = new HashMap<Integer, BugData>();
 
-	IdentityHashMap<BugDesignation, Integer> bugDesignationId
+	final IdentityHashMap<BugDesignation, Integer> bugDesignationId
 		= new IdentityHashMap<BugDesignation, Integer>();
 	
 	BugData getBugData(String instanceHash) {
@@ -645,7 +645,12 @@ public  class DBCloud extends AbstractCloud {
 	}
 
     public void waitUntilIssueDataDownloaded() {
-        //TODO
+    	initiateCommunication();
+    	try {
+	        initialSyncDone.await();
+        } catch (InterruptedException e) {
+	       throw new RuntimeException(e);
+        }
     }
 
     private boolean tryInitialization() throws IOException {
@@ -1690,7 +1695,10 @@ public  class DBCloud extends AbstractCloud {
 
     @Override
     protected Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd) {
-	    return instanceMap.get(bd.getInstanceHash()).getUniqueDesignations();
+	    BugData bugData = instanceMap.get(bd.getInstanceHash());
+	    if (bugData == null)
+			return Collections.emptyList();
+		return bugData.getUniqueDesignations();
     }
 
     @Override
