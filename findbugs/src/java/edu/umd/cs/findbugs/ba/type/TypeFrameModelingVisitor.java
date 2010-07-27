@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Signature;
 import org.apache.bcel.generic.*;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -461,6 +462,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		return false;
 
 	}
+	
+	
+	private static final boolean DEBUG = SystemProperties.getBoolean("tfmv.debug");
 	public void visitInvokeInstructionCommon(InvokeInstruction obj) {
 		TypeFrame frame = getFrame();
 
@@ -595,6 +599,10 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			Set<XMethod> targets = Hierarchy2.resolveMethodCallTargets(obj, frame, cpg);
 			
 			for(XMethod m : targets) {
+				if (DEBUG) {
+					System.out.println("Call target: " + m);
+					System.out.println("  source signature: " + m.getSourceSignature());
+				}
 				boolean foundSomething = false;
 				XMethod m2 = m.bridgeTo();
 				if (m2 != null)
@@ -608,6 +616,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 						if (t != null) {
 							assert t.getType() != T_VOID;
 							result = typeMerger.mergeTypes(result, t);
+							if (DEBUG) {
+								System.out.println("Merged " + t + ", got " + result);
+							}
 							foundSomething = true;
 						}
 						} catch (RuntimeException e) {
@@ -623,6 +634,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 					Type t = Type.getType(rv);
 					result = typeMerger.mergeTypes(result, t);
+					if (DEBUG) {
+						System.out.println("Merged " + t + ", got " + result);
+					}
 					foundSomething = true;
 					
 				}
