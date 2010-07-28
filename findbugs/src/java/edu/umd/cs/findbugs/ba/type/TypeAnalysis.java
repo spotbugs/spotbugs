@@ -232,6 +232,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		this(method, methodGen, cfg, dfs,
 				typeMerger, new TypeFrameModelingVisitor(methodGen.getConstantPool(), typeMerger),
 				lookupFailureCallback, exceptionSetFactory);
+		if (TypeFrameModelingVisitor.DEBUG) 
+			System.out.println(methodGen.getClassName() + "." + methodGen.getName() + " " + methodGen.getSignature());
 	}
 
 	/**

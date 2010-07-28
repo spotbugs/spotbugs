@@ -464,7 +464,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	}
 	
 	
-	private static final boolean DEBUG = SystemProperties.getBoolean("tfmv.debug");
+	public static final boolean DEBUG = SystemProperties.getBoolean("tfmv.debug");
 	public void visitInvokeInstructionCommon(InvokeInstruction obj) {
 		TypeFrame frame = getFrame();
 
@@ -601,7 +601,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			for(XMethod m : targets) {
 				if (DEBUG) {
 					System.out.println("Call target: " + m);
-					System.out.println("  source signature: " + m.getSourceSignature());
+					if (m.getSourceSignature() != null)
+					  System.out.println("  source signature: " + m.getSourceSignature());
 				}
 				boolean foundSomething = false;
 				XMethod m2 = m.bridgeTo();
@@ -615,10 +616,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 						Type t = GenericUtilities.getType(rv);
 						if (t != null) {
 							assert t.getType() != T_VOID;
-							result = typeMerger.mergeTypes(result, t);
-							if (DEBUG) {
-								System.out.println("Merged " + t + ", got " + result);
-							}
+							result = merge(result, t);
 							foundSomething = true;
 						}
 						} catch (RuntimeException e) {
@@ -633,10 +631,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 					String rv = p.getReturnTypeSignature();
 
 					Type t = Type.getType(rv);
-					result = typeMerger.mergeTypes(result, t);
-					if (DEBUG) {
-						System.out.println("Merged " + t + ", got " + result);
-					}
+					result = merge(result, t);
 					foundSomething = true;
 					
 				}
@@ -660,6 +655,23 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			pushReturnType(obj);
 		else
 			pushValue(result);
+	}
+	
+	private  Type merge(Type prevType, Type newType) throws DataflowAnalysisException {
+		if (prevType.equals(TopType.instance())) {
+			
+			if (DEBUG)
+				System.out.println("Got " + newType);
+			return newType;
+		} else if (prevType.equals(newType)) {
+			return prevType;
+		} else {
+			Type result = typeMerger.mergeTypes(prevType, newType);
+			if (DEBUG) {
+				System.out.println("Merged " + newType + ", got " + result);
+			}
+			return result;
+		}
 	}
 
 	private boolean handleToArray(InvokeInstruction obj) {
