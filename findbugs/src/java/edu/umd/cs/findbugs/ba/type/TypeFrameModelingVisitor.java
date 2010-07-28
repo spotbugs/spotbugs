@@ -600,7 +600,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			
 			for(XMethod m : targets) {
 				if (DEBUG) {
-					System.out.println("Call target: " + m);
+					System.out.println(" Call target: " + m);
 					if (m.getSourceSignature() != null)
 					  System.out.println("  source signature: " + m.getSourceSignature());
 				}
@@ -637,6 +637,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				}
 				if (!foundSomething) {
 					result = TopType.instance();
+					if (DEBUG)
+						System.out.println(" giving up");
 					break;
 				}
 			}
