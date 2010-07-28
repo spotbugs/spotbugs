@@ -482,6 +482,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		if (!(returnTypeOfMethod instanceof ReferenceType)) {
 			consumeStack(obj);
 			pushReturnType(obj);
+			return;
 		}
 
 		if (methodName.equals("cast") && className.equals("java.lang.Class")) {
