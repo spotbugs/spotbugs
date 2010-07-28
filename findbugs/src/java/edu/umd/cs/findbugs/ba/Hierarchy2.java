@@ -355,7 +355,7 @@ public class Hierarchy2 {
 		 return resolveVirtualMethodCallTargets(target.getClassDescriptor(), target.getName(), target.getSignature(), receiverTypeIsExact,  invokeSpecial);
 	 }
 	 
-	 private static final boolean OPEN_WORLD = SystemProperties.getBoolean("findbugs.openworld");
+	 private static final boolean OPEN_WORLD = SystemProperties.getBoolean("findbugs.openworld", true);
 			    
     public static Set<XMethod> resolveVirtualMethodCallTargets(ClassDescriptor  receiverDesc, String methodName, String methodSig,
             boolean receiverTypeIsExact, boolean invokeSpecial) throws ClassNotFoundException {
