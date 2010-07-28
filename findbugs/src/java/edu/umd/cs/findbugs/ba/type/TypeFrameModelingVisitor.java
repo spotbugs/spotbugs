@@ -597,7 +597,10 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		Type result = TopType.instance();
 		try {
 			Set<XMethod> targets = Hierarchy2.resolveMethodCallTargets(obj, frame, cpg);
-			
+			if (DEBUG) {
+				System.out.println(" For call to " + className +"." + methodName + signature);
+				System.out.println("   for " + targets.size() + " targets: " + targets);
+			}
 			for(XMethod m : targets) {
 				if (DEBUG) {
 					System.out.println(" Call target: " + m);
