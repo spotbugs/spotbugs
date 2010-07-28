@@ -38,6 +38,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.type.NullType;
@@ -354,6 +355,7 @@ public class Hierarchy2 {
 		 return resolveVirtualMethodCallTargets(target.getClassDescriptor(), target.getName(), target.getSignature(), receiverTypeIsExact,  invokeSpecial);
 	 }
 	 
+	 private static final boolean OPEN_WORLD = SystemProperties.getBoolean("findbugs.openworld");
 			    
     public static Set<XMethod> resolveVirtualMethodCallTargets(ClassDescriptor  receiverDesc, String methodName, String methodSig,
             boolean receiverTypeIsExact, boolean invokeSpecial) throws ClassNotFoundException {
@@ -384,22 +386,18 @@ public class Hierarchy2 {
 			   (upperBound == null || !upperBound.isFinal())
 			&& !receiverTypeIsExact && !invokeSpecial;
 
-		if (virtualCall) {
-			if (!receiverDesc.getClassName().equals("java/lang/Object")) {
+		if (virtualCall && !receiverDesc.getClassName().equals("java/lang/Object")) {
 
 			// This is a true virtual call: assume that any concrete
 			// subtype method may be called.
 			Set<ClassDescriptor> subTypeSet = analysisContext.getSubtypes2().getSubtypes(receiverDesc);
 			for (ClassDescriptor subtype : subTypeSet) {
 				XMethod concreteSubtypeMethod = findMethod(subtype, methodName, methodSig, false);
-				if (concreteSubtypeMethod != null && !concreteSubtypeMethod.isAbstract() ) {
+				if (concreteSubtypeMethod != null && (OPEN_WORLD || !concreteSubtypeMethod.isAbstract()) ) {
 					result.add(concreteSubtypeMethod);
 				}
 			}
-			if (false && subTypeSet.size() > 500)
-				new RuntimeException(receiverDesc + " has " + subTypeSet.size() + " subclasses, " + result.size() + " of which implement " + methodName+methodSig).printStackTrace(System.out);
 			
-			}
 		}
 		return result;
     }
