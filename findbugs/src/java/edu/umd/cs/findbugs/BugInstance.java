@@ -1887,8 +1887,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 	}
 
 	private static final String ELEMENT_NAME = "BugInstance";
-	private static final String USER_ANNOTATION_ELEMENT_NAME = "UserAnnotation";
-
+	
 	/* ----------------------------------------------------------------------
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
