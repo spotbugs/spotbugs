@@ -191,9 +191,8 @@ public class FindBadCast2 implements Detector {
 
 			if (!(ins instanceof CHECKCAST) && !(ins instanceof INSTANCEOF))
 				continue;
-			if (handle.getNext() == null) continue;
-			Instruction nextIns = handle.getNext().getInstruction();
-
+			
+			
 			boolean isCast = ins instanceof CHECKCAST;
 			String kind = isCast ? "checkedCast" : "instanceof";
 			int occurrences = cfg.getLocationsContainingInstructionWithOffset(
@@ -205,7 +204,8 @@ public class FindBadCast2 implements Detector {
 			}
 
 			IsNullValueFrame nullFrame = isNullDataflow.getFactAtLocation(location);
-			if (!nullFrame.isValid()) continue;
+			if (!nullFrame.isValid()) 
+				continue;
 			IsNullValue operandNullness = nullFrame.getTopValue();
 			if (DEBUG) {
 				System.out
@@ -367,6 +367,8 @@ public class FindBadCast2 implements Detector {
 							|| refJavaClass.isFinal()
 							|| castJavaClass.isFinal();
 					if (DEBUG) {
+						System.out.println(" In " + classContext.getFullyQualifiedMethodName(method));
+						System.out.println("At pc: " + handle.getPosition());
 						System.out.println("cast from " + refName + " to "
 								+ castName);
 						System.out.println("  is downcast: " + downcast);
@@ -377,6 +379,10 @@ public class FindBadCast2 implements Detector {
 						System.out.println("  isParameter: "
 								+ valueNumber);
 						System.out.println("  score: " + rank);
+						if (handle.getPrev() == null)
+							System.out.println("  prev is null");
+						else 
+							System.out.println("  prev is " + handle.getPrev());
 					}
 					if (!downcast && completeInformation || operandTypeIsExact) {
 						BugAnnotation source = BugInstance.getSourceForTopStackValue(classContext, method, location);
