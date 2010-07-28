@@ -20,18 +20,13 @@
 package edu.umd.cs.findbugs;
 
 import java.io.File;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Stack;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
 import edu.umd.cs.findbugs.ba.ClassHash;
-import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 import edu.umd.cs.findbugs.filter.AndMatcher;
 import edu.umd.cs.findbugs.filter.BugMatcher;
 import edu.umd.cs.findbugs.filter.ClassMatcher;
@@ -50,6 +45,9 @@ import edu.umd.cs.findbugs.filter.RankMatcher;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.Strings;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Build a BugCollection based on SAX events.
@@ -234,7 +232,42 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 							oldInstanceHash = getOptionalAttribute(attributes, "oldInstanceHash");
 						if (oldInstanceHash != null) {
 							bugInstance.setOldInstanceHash(oldInstanceHash);
-						} 
+						}
+
+						String ageInDays = getOptionalAttribute(attributes, "ageInDays");
+						if (ageInDays != null) {
+							bugInstance.getXmlProps().setAgeInDays(Integer.parseInt(ageInDays));
+						}
+
+						String firstSeen = getOptionalAttribute(attributes, "firstSeen");
+						if (firstSeen != null) {
+                            try {
+                                bugInstance.getXmlProps().setFirstSeen(BugInstance.FIRST_SEEN_XML_FORMAT.parse(firstSeen));
+                            } catch (ParseException e) {
+                                LOGGER.warning("Could not parse first seen entry: " + firstSeen);
+                                // ignore
+                            }
+                        }
+
+						String reviewCount = getOptionalAttribute(attributes, "reviews");
+						if (reviewCount != null) {
+							bugInstance.getXmlProps().setReviewCount(Integer.parseInt(reviewCount));
+						}
+
+						String consensus = getOptionalAttribute(attributes, "consensus");
+						if (consensus != null) {
+							bugInstance.getXmlProps().setConsensus(consensus);
+						}
+
+						String notAProblem = getOptionalAttribute(attributes, "notAProblem");
+						if (notAProblem != null) {
+							bugInstance.getXmlProps().setNotAProblem(Boolean.parseBoolean(notAProblem));
+						}
+
+						String shouldFix = getOptionalAttribute(attributes, "shouldFix");
+						if (shouldFix != null) {
+							bugInstance.getXmlProps().setShouldFix(Boolean.parseBoolean(shouldFix));
+						}
 
 
 					} else if (qName.equals("FindBugsSummary")) {

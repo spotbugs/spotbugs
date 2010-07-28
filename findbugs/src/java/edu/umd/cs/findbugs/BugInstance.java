@@ -27,6 +27,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -35,18 +36,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.Nonnull;
-
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.Type;
-import org.objectweb.asm.tree.ClassNode;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -80,6 +72,15 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.Type;
+import org.objectweb.asm.tree.ClassNode;
 
 /**
  * An instance of a bug pattern.
@@ -120,6 +121,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 	private int instanceOccurrenceNum;
 	private int instanceOccurrenceMax;
 	private DetectorFactory detectorFactory;
+    private AtomicReference<XmlProps> xmlProps = new AtomicReference<XmlProps>();
 
 
 	/*
@@ -144,8 +146,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 	private static boolean adjustExperimental = false;
 
 	private static Set<String> missingBugTypes = Collections.synchronizedSet(new HashSet<String>());
-	
-	/**
+    public static final DateFormat FIRST_SEEN_XML_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT);
+
+
+    /**
 	 * Constructor.
 	 *
 	 * @param type     the bug type
@@ -660,13 +664,21 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 		return result;
 	}
 
+    public XmlProps getXmlProps() {
+        XmlProps props = xmlProps.get();
+        if (props != null)
+            return props;
+
+        props = new XmlProps();
+        while (xmlProps.get() == null)
+            xmlProps.compareAndSet(null, props);
+        return xmlProps.get();
+    }
 
 
-
-
-	/* ----------------------------------------------------------------------
-	 * Property accessors
-	 * ---------------------------------------------------------------------- */
+    /* ----------------------------------------------------------------------
+      * Property accessors
+      * ---------------------------------------------------------------------- */
 
 	private class BugPropertyIterator implements Iterator<BugProperty> {
 		private BugProperty prev, cur;
@@ -1801,7 +1813,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 			if (age < 0) age = 0;
 			int ageInDays = (int)(age / 1000 / 3600 / 24);
 			attributeList.addAttribute("ageInDays", Integer.toString(ageInDays));
-			attributeList.addAttribute("firstSeen", DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT).format(firstSeen));
+			attributeList.addAttribute("firstSeen", FIRST_SEEN_XML_FORMAT.format(firstSeen));
 			int reviews = cloud.getNumberReviewers(this);
 			if (reviews > 0) {
 				attributeList.addAttribute("reviews", Integer.toString(reviews));
@@ -2282,6 +2294,70 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 		}
 		return result;
 	}
+
+    /**
+     * These are properties read from an analysis XML file. These properties
+     * should not take precedence over information from the
+     * Cloud - rather, this should be used when the cloud is unavailable, or
+     * when communicating with it is not desired
+     * for performance or complexity reasons.
+     */
+    public class XmlProps {
+        private int ageInDays = 0;
+        private Date firstSeen = null;
+        private int reviewCount = 0;
+        private String consensus;
+        private boolean shouldFix = false;
+        private boolean notAProblem = false;
+
+        public int getAgeInDays() {
+            return ageInDays;
+        }
+
+        public Date getFirstSeen() {
+            return firstSeen;
+        }
+
+        public int getReviewCount() {
+            return reviewCount;
+        }
+
+        public String getConsensus() {
+            return consensus;
+        }
+
+        public boolean isShouldFix() {
+            return shouldFix;
+        }
+
+        public boolean isNotAProblem() {
+            return notAProblem;
+        }
+
+        public void setAgeInDays(int ageInDays) {
+            this.ageInDays = ageInDays;
+        }
+
+        public void setFirstSeen(Date firstSeen) {
+            this.firstSeen = firstSeen;
+        }
+
+        public void setReviewCount(int reviewCount) {
+            this.reviewCount = reviewCount;
+        }
+
+        public void setConsensus(String consensus) {
+            this.consensus = consensus;
+        }
+
+        public void setShouldFix(boolean shouldFix) {
+            this.shouldFix = shouldFix;
+        }
+
+        public void setNotAProblem(boolean notAProblem) {
+            this.notAProblem = notAProblem;
+        }
+    }
 }
 
 // vim:ts=4
