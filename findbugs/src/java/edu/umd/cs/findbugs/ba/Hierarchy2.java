@@ -356,7 +356,8 @@ public class Hierarchy2 {
 	 }
 	 
 	 private static final boolean OPEN_WORLD = SystemProperties.getBoolean("findbugs.openworld", true);
-			    
+	 private static final boolean OPEN_WORLD_DEBUG = SystemProperties.getBoolean("findbugs.openworld.debug", false);
+				    
     public static Set<XMethod> resolveVirtualMethodCallTargets(ClassDescriptor  receiverDesc, String methodName, String methodSig,
             boolean receiverTypeIsExact, boolean invokeSpecial) throws ClassNotFoundException {
 	    // Figure out the upper bound for the method.
@@ -381,6 +382,11 @@ public class Hierarchy2 {
 			result.add(upperBound);
 		}
 
+		if (OPEN_WORLD_DEBUG) {
+			System.out.println("OWD: " + receiverDesc + "." + methodName + methodSig);
+			if (upperBound != null)
+				System.out.println("  upper bound:" + upperBound);
+		}
 		// Is this a virtual call site?
 		boolean virtualCall =
 			   (upperBound == null || !upperBound.isFinal())
@@ -394,6 +400,9 @@ public class Hierarchy2 {
 			for (ClassDescriptor subtype : subTypeSet) {
 				XMethod concreteSubtypeMethod = findMethod(subtype, methodName, methodSig, false);
 				if (concreteSubtypeMethod != null && (OPEN_WORLD || !concreteSubtypeMethod.isAbstract()) ) {
+					if (OPEN_WORLD_DEBUG)
+						System.out.println("  -> " + concreteSubtypeMethod);
+					
 					result.add(concreteSubtypeMethod);
 				}
 			}
