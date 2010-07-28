@@ -151,16 +151,35 @@ public class Hierarchy2 {
         }
 	}
 
-	/**
-     * @throws ClassNotFoundException  never
-     */
 	public static @CheckForNull XMethod findInvocationLeastUpperBound(
+			XClass jClass, String methodName, String methodSig, boolean invokeStatic,
+	        boolean invokeInterface) {
+		XMethod result = findMethod(jClass.getClassDescriptor(), methodName, methodSig, invokeStatic);
+		if (result != null)
+			return result;
+		ClassDescriptor sClass = jClass.getSuperclassDescriptor();
+		if (sClass != null) {
+			result = findInvocationLeastUpperBound(sClass, methodName, methodSig, invokeStatic, invokeInterface);
+			if (result != null)
+				return result;
+		}
+
+		for (ClassDescriptor i : jClass.getInterfaceDescriptorList()) {
+			result = findInvocationLeastUpperBound(i, methodName, methodSig, invokeStatic, invokeInterface);
+			if (result != null)
+				return result;
+		}
+
+		return null;
+	}
+
+	public static @CheckForNull XMethod findInvocationLeastUpperBound0(
 			XClass jClass, String methodName, String methodSig, 
 			boolean invokeStatic,
-			boolean invokeInterface) throws ClassNotFoundException {
+			boolean invokeInterface)  {
 		XMethod result = findMethod(jClass.getClassDescriptor(), methodName, methodSig, invokeStatic);
 		if (result != null) return result;
-		if (invokeInterface )
+		if (invokeInterface)
 			for(ClassDescriptor i : jClass.getInterfaceDescriptorList()) {
 				result = findInvocationLeastUpperBound(i, methodName, methodSig, invokeStatic, invokeInterface);
 				if (result != null) 
@@ -172,9 +191,10 @@ public class Hierarchy2 {
 				return findInvocationLeastUpperBound(sClass, methodName, methodSig, invokeStatic, invokeInterface);
 		}
 		return null;
-		
 	}
 
+
+	
 	public static Set<XMethod> findSuperMethods(XMethod m) {
 		Set<XMethod> result = new HashSet<XMethod>();
 		
