@@ -234,11 +234,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 							bugInstance.setOldInstanceHash(oldInstanceHash);
 						}
 
-						String ageInDays = getOptionalAttribute(attributes, "ageInDays");
-						if (ageInDays != null) {
-							bugInstance.getXmlProps().setAgeInDays(Integer.parseInt(ageInDays));
-						}
-
 						String firstSeen = getOptionalAttribute(attributes, "firstSeen");
 						if (firstSeen != null) {
                             try {
@@ -257,16 +252,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						String consensus = getOptionalAttribute(attributes, "consensus");
 						if (consensus != null) {
 							bugInstance.getXmlProps().setConsensus(consensus);
-						}
-
-						String notAProblem = getOptionalAttribute(attributes, "notAProblem");
-						if (notAProblem != null) {
-							bugInstance.getXmlProps().setNotAProblem(Boolean.parseBoolean(notAProblem));
-						}
-
-						String shouldFix = getOptionalAttribute(attributes, "shouldFix");
-						if (shouldFix != null) {
-							bugInstance.getXmlProps().setShouldFix(Boolean.parseBoolean(shouldFix));
 						}
 
 

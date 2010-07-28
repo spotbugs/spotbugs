@@ -1832,6 +1832,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
 		xmlOutput.openTag(ELEMENT_NAME, attributeList);
 
+        // write out the user's designation & comment
 		if (userDesignation != null) {
 			userDesignation.writeXML(xmlOutput);
 		}
@@ -2302,16 +2303,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * for performance or complexity reasons.
      */
     public class XmlProps {
-        private int ageInDays = 0;
         private Date firstSeen = null;
         private int reviewCount = 0;
         private String consensus;
-        private boolean shouldFix = false;
-        private boolean notAProblem = false;
-
-        public int getAgeInDays() {
-            return ageInDays;
-        }
 
         public Date getFirstSeen() {
             return firstSeen;
@@ -2325,18 +2319,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             return consensus;
         }
 
-        public boolean isShouldFix() {
-            return shouldFix;
-        }
-
-        public boolean isNotAProblem() {
-            return notAProblem;
-        }
-
-        public void setAgeInDays(int ageInDays) {
-            this.ageInDays = ageInDays;
-        }
-
         public void setFirstSeen(Date firstSeen) {
             this.firstSeen = firstSeen;
         }
@@ -2347,14 +2329,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
         public void setConsensus(String consensus) {
             this.consensus = consensus;
-        }
-
-        public void setShouldFix(boolean shouldFix) {
-            this.shouldFix = shouldFix;
-        }
-
-        public void setNotAProblem(boolean notAProblem) {
-            this.notAProblem = notAProblem;
         }
     }
 }
