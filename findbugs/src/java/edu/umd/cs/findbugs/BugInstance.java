@@ -1804,31 +1804,34 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 			attributeList.addAttribute("introducedByChange", "true");
 		if (removedByChangeOfPersistingClass) 
 			attributeList.addAttribute("removedByChange", "true");
-		
-		if (addMessages && bugCollection != null) {
-			Cloud cloud = bugCollection.getCloud();
-			
-			long firstSeen = cloud.getFirstSeen(this);
-			long age = bugCollection.getAnalysisTimestamp() - firstSeen;
-			if (age < 0) age = 0;
-			int ageInDays = (int)(age / 1000 / 3600 / 24);
-			attributeList.addAttribute("ageInDays", Integer.toString(ageInDays));
-			attributeList.addAttribute("firstSeen", FIRST_SEEN_XML_FORMAT.format(firstSeen));
-			int reviews = cloud.getNumberReviewers(this);
-			if (reviews > 0) {
-				attributeList.addAttribute("reviews", Integer.toString(reviews));
-				UserDesignation d = cloud.getConsensusDesignation(this);
-				
-				if (d != UserDesignation.UNCLASSIFIED) {
-					attributeList.addAttribute("consensus", d.toString());
-					if (d.score() < 0)
-						attributeList.addAttribute("notAProblem", "true");
-					else if (d.score() > 0)
-						attributeList.addAttribute("shouldFix", "true");
-				}
-			}
 
-		}
+        if (bugCollection != null) {
+            Cloud cloud = bugCollection.getCloud();
+            long firstSeen = cloud.getFirstSeen(this);
+            attributeList.addAttribute("firstSeen", FIRST_SEEN_XML_FORMAT.format(firstSeen));
+            int reviews = cloud.getNumberReviewers(this);
+            UserDesignation consensus = cloud.getConsensusDesignation(this);
+            if (reviews > 0) {
+                attributeList.addAttribute("reviews", Integer.toString(reviews));
+
+                if (consensus != UserDesignation.UNCLASSIFIED)
+                    attributeList.addAttribute("consensus", consensus.toString());
+
+            }
+            if (addMessages) {
+                long age = bugCollection.getAnalysisTimestamp() - firstSeen;
+                if (age < 0) age = 0;
+                int ageInDays = (int)(age / 1000 / 3600 / 24);
+                attributeList.addAttribute("ageInDays", Integer.toString(ageInDays));
+                if (reviews > 0 && consensus != UserDesignation.UNCLASSIFIED) {
+                    if (consensus.score() < 0)
+                        attributeList.addAttribute("notAProblem", "true");
+                    if (consensus.score() > 0)
+                        attributeList.addAttribute("shouldFix", "true");
+                }
+
+            }
+        }
 
 		xmlOutput.openTag(ELEMENT_NAME, attributeList);
 
