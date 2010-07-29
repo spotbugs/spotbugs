@@ -174,12 +174,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 	public @CheckForNull
 	XMethod getXMethodOperand() {
 		if (getReferencedXClass() != null && referencedXMethod == null) {
-			try {
-	            referencedXMethod = Hierarchy2.findInvocationLeastUpperBound(getReferencedXClass(), nameConstantOperand, sigConstantOperand, opcode == INVOKESTATIC, opcode == INVOKEINTERFACE);
-            } catch (ClassNotFoundException e) {
-	            AnalysisContext.reportMissingClass(e);
-            }
-
+	        referencedXMethod = Hierarchy2.findInvocationLeastUpperBound(getReferencedXClass(), nameConstantOperand, sigConstantOperand, opcode == INVOKESTATIC, opcode == INVOKEINTERFACE);
 		}
 		
 		return referencedXMethod;

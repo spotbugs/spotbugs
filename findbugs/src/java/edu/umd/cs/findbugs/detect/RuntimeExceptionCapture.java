@@ -248,9 +248,7 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
 					bugReporter.reportMissingClass(e.getClassDescriptor());
 				} catch (CheckedAnalysisException e) {
 					bugReporter.logError("Error looking up " + className, e);
-				} catch (ClassNotFoundException e) {
-					bugReporter.reportMissingClass(e);
-                }
+				}
 				break;
 			default:
 				break;
