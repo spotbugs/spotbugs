@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -146,7 +147,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 	private static boolean adjustExperimental = false;
 
 	private static Set<String> missingBugTypes = Collections.synchronizedSet(new HashSet<String>());
-    public static final DateFormat FIRST_SEEN_XML_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT);
+    public static final DateFormat FIRST_SEEN_XML_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT, Locale.ENGLISH);
 
 
     /**
