@@ -26,6 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -409,6 +410,7 @@ public class OpcodeStack implements Constants2
 		  public Item(Item it, String signature) {
 			  this(it);
 			  this.signature =  DescriptorFactory.canonicalizeString(signature);
+			  this.specialKind = it.specialKind;
 			 }
 		 public Item(Item it, int reg) {
 			 this(it);
@@ -1163,6 +1165,7 @@ public class OpcodeStack implements Constants2
 					 if (castTo.charAt(0) != '[') 
 						 castTo = "L" + castTo + ";";
 					 it = pop();
+					
 					 if (!it.signature.equals(castTo)) {
 						 it = new Item(it, castTo);
 					 }
@@ -1896,6 +1899,15 @@ public class OpcodeStack implements Constants2
 			push(it);
 		}
 	}
+	
+	static final HashSet<String> boxedTypes = new HashSet<String>();
+	static private void addBoxedType(Class<?>... clss) {
+		for(Class <?> c : clss)
+			boxedTypes.add(ClassName.toSlashedClassName(c.getName()));
+	}
+	static {
+		addBoxedType(Integer.class, Long.class, Double.class, Short.class, Float.class, Boolean.class, Character.class, Byte.class);
+	}
 
 	private void processMethodCall(DismantleBytecode dbc, int seen) {
 		 String clsName = dbc.getClassConstantOperand();
@@ -1910,6 +1922,18 @@ public class OpcodeStack implements Constants2
 			 topItem = getStackItem(0);
 		 
 		 int numberArguments = PreorderVisitor.getNumberArguments(signature);
+		 
+		 if (boxedTypes.contains(clsName)
+			 && topItem != null
+			 && (methodName.equals("valueOf") || methodName.endsWith("Value"))
+			 && !signature.contains("String")) {
+			 // boxing/unboxing conversion
+			 int specialKind = topItem.getSpecialKind();
+			 pushByInvoke(dbc, seen != INVOKESTATIC);
+			 Item result = getStackItem(0);
+			 result.setSpecialKind(specialKind);
+			 return;
+		 }
 		 int firstArgument = seen == INVOKESTATIC ? 0 : 1;
 		 for(int i = firstArgument; i < firstArgument + numberArguments; i++) {
 			 if (i >= getStackDepth()) 
