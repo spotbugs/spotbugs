@@ -478,6 +478,36 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			return;
 		}
 		
+		if (methodName.equals("isInstance")) {
+			if (className.equals("java.lang.Class") && valueNumberDataflow != null) {
+				// Record the value number of the value checked by this
+				// instruction,
+				// and the type the value was compared to.
+				try {
+					ValueNumberFrame vnaFrame = valueNumberDataflow.getFactAtLocation(getLocation());
+					if (vnaFrame.isValid()) {
+						ValueNumber stackValue = vnaFrame.getStackValue(1);
+						if (stackValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
+							String c = valueNumberDataflow.getClassName(stackValue);
+							if (c != null) {
+								if (c.charAt(0) != '[' && !c.endsWith(";"))
+									c = "L" + c.replace('.', '/') + ";";
+								Type type = Type.getType(c);
+								if (type instanceof ReferenceType) {
+									instanceOfValueNumber = vnaFrame.getTopValue();
+									instanceOfType = (ReferenceType) type;
+									sawEffectiveInstanceOf = true;
+								}
+							}
+						}
+
+					}
+				} catch (DataflowAnalysisException e) {
+					// Ignore
+				}
+			}
+		}
+
 		Type returnTypeOfMethod = obj.getType(cpg);
 		if (!(returnTypeOfMethod instanceof ReferenceType)) {
 			consumeStack(obj);
@@ -558,35 +588,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			return;
 
 
-		if (methodName.equals("isInstance")) {
-			if (className.equals("java.lang.Class") && valueNumberDataflow != null) {
-				// Record the value number of the value checked by this
-				// instruction,
-				// and the type the value was compared to.
-				try {
-					ValueNumberFrame vnaFrame = valueNumberDataflow.getFactAtLocation(getLocation());
-					if (vnaFrame.isValid()) {
-						ValueNumber stackValue = vnaFrame.getStackValue(1);
-						if (stackValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
-							String c = valueNumberDataflow.getClassName(stackValue);
-							if (c != null) {
-								if (c.charAt(0) != '[' && !c.endsWith(";"))
-									c = "L" + c.replace('.', '/') + ";";
-								Type type = Type.getType(c);
-								if (type instanceof ReferenceType) {
-									instanceOfValueNumber = vnaFrame.getTopValue();
-									instanceOfType = (ReferenceType) type;
-									sawEffectiveInstanceOf = true;
-								}
-							}
-						}
-
-					}
-				} catch (DataflowAnalysisException e) {
-					// Ignore
-				}
-			}
-		}
 		if (methodName.equals("initCause") && signature.equals("(Ljava/lang/Throwable;)Ljava/lang/Throwable;")
 		        && className.endsWith("Exception")) {
 			try {
