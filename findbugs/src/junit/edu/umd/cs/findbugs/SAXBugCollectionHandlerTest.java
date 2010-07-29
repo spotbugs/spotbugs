@@ -135,7 +135,6 @@ public class SAXBugCollectionHandlerTest extends TestCase {
                 "</BugCollection>"));
         // write it out
         ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
-        origBC.setWithMessages(true);
         origBC.writeXML(outBytes);
 
         // read it back in
