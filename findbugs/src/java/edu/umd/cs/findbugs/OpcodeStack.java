@@ -240,7 +240,7 @@ public class OpcodeStack implements Constants2
 			buf.append(signature);
 			switch(specialKind) {
 			case SIGNED_BYTE:
-				buf.append(", byte_array_load");
+				buf.append(", signed_byte");
 				break;
 			case  RANDOM_INT:
 				buf.append(", random_int");
@@ -410,7 +410,6 @@ public class OpcodeStack implements Constants2
 		  public Item(Item it, String signature) {
 			  this(it);
 			  this.signature =  DescriptorFactory.canonicalizeString(signature);
-			  this.specialKind = it.specialKind;
 			 }
 		 public Item(Item it, int reg) {
 			 this(it);
@@ -1923,17 +1922,24 @@ public class OpcodeStack implements Constants2
 		 
 		 int numberArguments = PreorderVisitor.getNumberArguments(signature);
 		 
-		 if (boxedTypes.contains(clsName)
-			 && topItem != null
-			 && (methodName.equals("valueOf") || methodName.endsWith("Value"))
-			 && !signature.contains("String")) {
-			 // boxing/unboxing conversion
-			 int specialKind = topItem.getSpecialKind();
-			 pushByInvoke(dbc, seen != INVOKESTATIC);
-			 Item result = getStackItem(0);
-			 result.setSpecialKind(specialKind);
-			 return;
+		if (boxedTypes.contains(clsName) && topItem != null && (methodName.equals("valueOf") || methodName.endsWith("Value"))
+		        && !signature.contains("String")) {
+			// boxing/unboxing conversion
+			Item value = pop();
+			String newSignature = Type.getReturnType(signature).getSignature();
+			Item newValue = new Item(value, newSignature);
+			if (newValue.source == null)
+				newValue.source = XFactory.createReferencedXMethod(dbc);
+			if (newValue.specialKind == Item.NOT_SPECIAL) {
+				if (newSignature.equals("B") || newSignature.equals("Ljava/lang/Boolean;"))
+					newValue.specialKind = Item.SIGNED_BYTE;
+				else if (newSignature.equals("C") || newSignature.equals("Ljava/lang/Character;"))
+					newValue.specialKind = Item.NON_NEGATIVE;
+			}
+			push(newValue);
+			return;
 		 }
+				
 		 int firstArgument = seen == INVOKESTATIC ? 0 : 1;
 		 for(int i = firstArgument; i < firstArgument + numberArguments; i++) {
 			 if (i >= getStackDepth()) 
@@ -2701,12 +2707,17 @@ public void initialize() {
 	}
 
 	private void pushBySignature(String s, DismantleBytecode dbc) {
-		 if ("V".equals(s))
-			 return;
-		  Item item = new Item(s, (Object) null);
-		  if (dbc != null) item.setPC(dbc.getPC());
+		if ("V".equals(s))
+			return;
+		Item item = new Item(s, (Object) null);
+		if (dbc != null)
+			item.setPC(dbc.getPC());
+		if ("B".equals(s))
+			item.setSpecialKind(Item.SIGNED_BYTE);
+		else if ("C".equals(s))
+			item.setSpecialKind(Item.NON_NEGATIVE);
 		push(item);
-	 }
+	}
 
 	 private void pushByLocalStore(int register) {
 		Item it = pop();
