@@ -894,6 +894,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				.addSomeSourceForTopTwoStackValues(classContext, method, location),
 				SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle)
 				);
+				return;
 			}
 			if (lhsType.equals(ObjectType.OBJECT)
 					&& rhsType.equals(ObjectType.OBJECT))
@@ -1102,7 +1103,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			String lhsSig = lhsType_.getSignature();
 			String rhsSig = rhsType_.getSignature();
 			boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, new HashSet<XMethod>());
-			if (!allOk)
+			if (allOk)
+				priorityModifier += 2;
 			bugAccumulator.accumulateBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
 			.addFoundAndExpectedType(rhsType_, lhsType_)
