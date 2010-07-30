@@ -1,5 +1,32 @@
 package edu.umd.cs.findbugs.flybush;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.google.common.base.Supplier;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
@@ -21,36 +48,12 @@ import com.googlecode.charts4j.LineChart;
 import com.googlecode.charts4j.Plots;
 import org.apache.commons.lang.StringEscapeUtils;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 public class ReportServlet extends AbstractFlybushServlet {
-    private static final DateFormat DATE_FORMAT = DateFormat.getDateInstance(DateFormat.SHORT);
     private static final DateFormat DATE_TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG);
+    private static final SimpleDateFormat DF_M_D_Y = new SimpleDateFormat("M/d/yy");
+    private static final SimpleDateFormat DF_M_D = new SimpleDateFormat("M/d");
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
@@ -353,6 +356,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         List<Double> evalsData = Lists.newArrayList();
         List<String> labels = Lists.newArrayList();
         List<Double> newIssuesData = Lists.newArrayList();
+        boolean first = true;
         for (Calendar cal : iterateByWeek(evalsPerWeek.keySet())) {
             Integer evalsThisWeek = evalsPerWeek.get(cal.getTimeInMillis());
             if (evalsThisWeek == null)
@@ -362,7 +366,8 @@ public class ReportServlet extends AbstractFlybushServlet {
                 newIssuesThisWeek = 0;
             evalsData.add(evalsThisWeek * 100.0 / maxEvalsPerWeek);
             newIssuesData.add(newIssuesThisWeek * 100.0 / maxEvalsPerWeek);
-            labels.add(DATE_FORMAT.format(new Date(cal.getTimeInMillis())));
+            labels.add(formatDate(cal, first));
+            first = false;
         }
 
         Line evalsLine = Plots.newLine(Data.newData(evalsData), Color.LIGHTPINK, "Updated evaluations");
@@ -543,6 +548,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         List<String> timelineLabels = Lists.newArrayList();
         int issuesCount = 0;
         int userCount = 0;
+        boolean first = true;
         for (Calendar cal : iterateByWeek(evalsByWeek.keySet())) {
             Integer evalsThisWeek = evalsByWeek.get(cal.getTimeInMillis());
             Integer issuesThisWeek = issueCountByWeek.get(cal.getTimeInMillis());
@@ -566,7 +572,8 @@ public class ReportServlet extends AbstractFlybushServlet {
             evalsData.add(evalsThisWeek * 100.0 / maxEvalsPerWeek);
             userCountData.add(newUsersThisWeek * 100.0 / maxEvalsPerWeek);
             newIssuesData.add(newIssuesThisWeek * 100.0 / maxEvalsPerWeek);
-            timelineLabels.add(DATE_FORMAT.format(new Date(cal.getTimeInMillis())));
+            timelineLabels.add(formatDate(cal, first));
+            first = false;
         }
 
         Line evalsLine = Plots.newLine(Data.newData(evalsData), Color.LIGHTPINK, "New evals for existing issues");
@@ -604,6 +611,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         int issuesCount = 0;
         int userCount = 0;
         int evalCount = 0;
+        boolean first = true;
         for (Calendar cal : iterateByWeek(evalsByWeek.keySet())) {
             long time = cal.getTimeInMillis();
             Integer issuesThisWeek = issueCountByWeek.get(time);
@@ -615,10 +623,11 @@ public class ReportServlet extends AbstractFlybushServlet {
             Integer evalsThisWeek = evalsByWeek.get(time);
             if (evalsThisWeek != null)
                 evalCount += evalsThisWeek;
-            labels.add(DATE_FORMAT.format(new Date(time)));
+            labels.add(formatDate(time, first));
             issuesData.add(issuesCount * 100.0 / totalEvals);
             usersData.add(userCount * 100.0 / totalUsers);
             evalsData.add(evalCount * 100.0 / totalEvals);
+            first = false;
         }
 
         Line evalsLine = Plots.newLine(Data.newData(evalsData), Color.LIGHTPINK, "Total Evaluations");
@@ -645,6 +654,20 @@ public class ReportServlet extends AbstractFlybushServlet {
         rightLabels.setAxisStyle(AxisStyle.newAxisStyle(Color.STEELBLUE, 10, AxisTextAlignment.LEFT));
         chart.addRightAxisLabels(rightLabels);
         return chart;
+    }
+
+    private String formatDate(Calendar cal, boolean firstDateSoFar) {
+        if (firstDateSoFar || cal.get(Calendar.MONTH) == Calendar.JANUARY) {
+            return DF_M_D_Y.format(new Date(cal.getTimeInMillis()));
+        } else {
+            return DF_M_D.format(new Date(cal.getTimeInMillis()));
+        }
+    }
+
+    private String formatDate(long time, boolean firstDateSoFar) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(time);
+        return formatDate(cal, firstDateSoFar);
     }
 
     private Iterable<Calendar> iterateByWeek(Set<Long> unixtimes) {
