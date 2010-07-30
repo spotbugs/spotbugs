@@ -72,6 +72,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * arguments:
  * <ul>
  * <li>adjustExperimental (boolean default false)
+ * <li>adjustPriority     (passed to -adjustPriority)
  * <li>applySuppression   (exclude any warnings that match a suppression filter supplied in a project file)
  * <li>auxAnalyzepath     (class, jar, zip files or directories containing classes to analyze)
  * <li>auxClasspath       (classpath or classpathRef)
@@ -137,6 +138,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	private boolean workHard;
 	private boolean relaxed;
 	private boolean adjustExperimental;
+	private String adjustPriority;
 	private File projectFile ;
 	private File baselineBugs ;
 	private boolean applySuppression;
@@ -218,8 +220,12 @@ public class FindBugsTask extends AbstractFindBugsTask {
 		this.adjustExperimental = adjustExperimental;
 	}
 
+	public void setAdjustPriority(String adjustPriorityString) {
+		this.adjustPriority = adjustPriorityString;
+	}
+
 	/**
-	 * Set the specific visitors to use 
+	 * Set the specific visitors to use
 	 */
 	public void setVisitors(String commaSeperatedString) {
 		this.visitors = commaSeperatedString;
@@ -605,6 +611,11 @@ public class FindBugsTask extends AbstractFindBugsTask {
 		if ( effort != null ) {
 			addArg("-effort:" + effort);
 		}
+
+        if ( adjustPriority != null ) {
+            addArg("-adjustPriority");
+            addArg(adjustPriority);
+        }
 
 		if ( sorted ) addArg("-sortByClass");
 		if ( timestampNow ) addArg("-timestampNow");
