@@ -42,9 +42,13 @@ public class ClassSummary {
 	}
 
 	public void checksForEqualTo(ClassDescriptor checker, ClassDescriptor checkee) {
-		if (map.containsKey(checker))
+		ClassDescriptor existing = map.get(checker);
+		if (checkee.equals(existing))
+			return;
+		else if (existing != null)
 			veryFunky.add(checker);
-		else map.put(checker, checkee);
+		else 
+			map.put(checker, checkee);
 	}
 
 
