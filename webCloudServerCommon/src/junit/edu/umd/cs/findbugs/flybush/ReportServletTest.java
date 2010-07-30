@@ -1,9 +1,5 @@
 package edu.umd.cs.findbugs.flybush;
 
-import com.google.common.collect.Lists;
-import org.mockito.Mockito;
-
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -12,6 +8,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.common.collect.Lists;
+import org.mockito.Mockito;
 
 @SuppressWarnings({"unused"})
 public abstract class ReportServletTest extends AbstractFlybushServletTest {
@@ -95,7 +96,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         executeGet("/stats");
 
         String url = generatedCharts.get(0);
-        checkParam(url, "chxl", "1:|3/14/10|3/21/10|3/28/10|4/4/10|4/11/10");
+        checkParam(url, "chxl", "1:|3/14/10|3/21|3/28|4/4|4/11");
         checkParam(url, "chd", "t:0.0,100.0,66.7,0.0,66.7|0.0,33.3,33.3,0.0,33.3|0.0,66.7,33.3,0.0,0.0");
     }
 
@@ -121,7 +122,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         executeGet("/stats");
 
         String url = generatedCharts.get(1);
-        checkParam(url, "chxl", "2:|3/14/10|3/21/10|3/28/10|4/4/10|4/11/10");
+        checkParam(url, "chxl", "2:|3/14/10|3/21|3/28|4/4|4/11");
         checkParam(url, "chd", "t:0.0,42.9,71.4,71.4,100.0|0.0,14.3,28.6,28.6,42.9|0.0,66.7,100.0,100.0,100.0");
     }
 
@@ -188,7 +189,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         servlet.doGet(mockRequest, mockResponse);
 
         String url = generatedCharts.get(0);
-        checkParam(url, "chxl", "1:|3/21/10|3/28/10|4/4/10|4/11/10");
+        checkParam(url, "chxl", "1:|3/21/10|3/28|4/4|4/11");
         checkParam(url, "chd", "t:0.0,66.7,0.0,100.0|0.0,66.7,0.0,33.3");
     }
 
@@ -208,7 +209,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         servlet.doGet(mockRequest, mockResponse);
 
         String url = generatedCharts.get(0);
-        checkParam(url, "chxl", "1:|3/14/10|3/21/10");
+        checkParam(url, "chxl", "1:|3/14/10|3/21");
         checkParam(url, "chd", "t:0.0,100.0|0.0,100.0");
     }
 
@@ -326,7 +327,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         servlet.doGet(mockRequest, mockResponse);
 
         String url = generatedCharts.get(0);
-        checkParam(url, "chxl", "1:|3/14/10|3/21/10|3/28/10|4/4/10|4/11/10");
+        checkParam(url, "chxl", "1:|3/14/10|3/21|3/28|4/4|4/11");
         checkParam(url, "chd", "t:0.0,100.0,66.7,0.0,66.7|0.0,33.3,33.3,0.0,0.0");
     }
 
