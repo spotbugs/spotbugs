@@ -225,10 +225,10 @@ public abstract class AbstractCloud implements Cloud {
 		if (canSeeCommentsByOthers && supportsBugLinks()) {
 			BugFilingStatus bugLinkStatus = getBugLinkStatus(b);
 			if (bugLinkStatus != null && bugLinkStatus.bugIsFiled()) {
-				//if (bugLinkStatus.)
+				
 				builder.append("\nBug status is ").append(getBugStatus(b));
-				//else
-				//	builder.append("\nBug assigned to " + bd.bugAssignedTo + ", status is " + bd.bugStatus);
+				if (getBugIsUnassigned(b))
+				  builder.append("\nBug is unassigned");
 
 				builder.append("\n\n");
 			}
@@ -248,7 +248,7 @@ public abstract class AbstractCloud implements Cloud {
 		return builder.toString();
 	}
 
-	protected String getBugStatus(BugInstance b) {
+	public String getBugStatus(BugInstance b) {
 		return null;
 	}
 	protected abstract Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd);

@@ -34,7 +34,10 @@ import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
 import edu.umd.cs.findbugs.cloud.Cloud.Mode;
+import edu.umd.cs.findbugs.cloud.db.DBCloud;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -429,6 +432,41 @@ public enum Sortables implements Comparator<SortableValue>
 		}
 	},
 	
+	BUG_STATUS(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_bugstatus", "Status"))
+	{
+		@Override
+		public String getFrom(BugInstance bug)
+		{
+
+			 BugCollection bugCollection = MainFrame.getInstance().bugCollection;
+			
+			Cloud cloud =  bugCollection.getCloud();
+			assert cloud != null;
+			BugFilingStatus status = cloud.getBugLinkStatus(bug);
+			if (status == BugFilingStatus.VIEW_BUG) {
+				String bugStatus = cloud.getBugStatus(bug);
+				if (bugStatus != null)
+					return bugStatus;
+			}
+			return CONSENSUS.getFrom(bug);
+		}
+
+		@Override
+		public String formatValue(String value)
+		{
+			return value;
+		}
+		@Override
+		public boolean isAvailable(MainFrame mf) {
+			BugCollection bugCollection = mf.bugCollection;
+			if (bugCollection == null || bugCollection.getCloud() != null)
+				return false;
+			return bugCollection.getCloud().supportsBugLinks() &&  bugCollection.getCloud().getMode() == Mode.COMMUNAL;
+			
+		}
+	},
+	
+
 	
 	PROJECT(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_project", "Project")) {
 

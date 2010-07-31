@@ -123,11 +123,16 @@ public interface Cloud {
 
     void signOut();
 
-	/* Supports links to a bug database */ 
+	/** Supports links to a bug database */ 
 	boolean supportsBugLinks();
 
-	/* get the bug filing status for a bug instance */ 
+	/** get the bug filing status for a bug instance */ 
 	BugFilingStatus getBugLinkStatus(BugInstance b);
+	
+	/**
+	 * A textual description of the bug status (e.g., FIX_LATER, ASSIGNED, OBSOLETE, WILL_NOT_FIX)
+	 */
+	String getBugStatus(BugInstance b);
 	
 	/** has the issue been marked "will not be fixed" in a bug tracker */
 	boolean getWillNotBeFixed(BugInstance b);

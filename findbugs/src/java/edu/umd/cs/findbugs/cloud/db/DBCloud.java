@@ -1583,7 +1583,7 @@ public  class DBCloud extends AbstractCloud {
     }
 
     @Override
-    protected String getBugStatus(BugInstance b) {
+    public String getBugStatus(BugInstance b) {
         String status = getBugData(b).bugStatus;
         if (status != null)
         	return status;
@@ -1658,16 +1658,22 @@ public  class DBCloud extends AbstractCloud {
 	   return bd != null && findbugsUser.equals(bd.bugAssignedTo);
     }
     
+    @Override
     public boolean getBugIsUnassigned(BugInstance b) {
 		BugData bd = getBugData(b);
 		return bd != null && bd.inDatabase && getBugLinkStatus(b) == BugFilingStatus.VIEW_BUG
 		        && ("NEW".equals(bd.bugStatus) || bd.bugAssignedTo == null || bd.bugAssignedTo.length() == 0);
 	}
 
-	public boolean getWillNotBeFixed(BugInstance b) {
+	@Override
+    public boolean getWillNotBeFixed(BugInstance b) {
 		BugData bd = getBugData(b);
 		return bd != null && bd.inDatabase && getBugLinkStatus(b) == BugFilingStatus.VIEW_BUG
-		        && "WILL_NOT_FIX".equals(bd.bugStatus);
+		        && ("WILL_NOT_FIX".equals(bd.bugStatus)
+		        	||	"OBSOLETE".equals(bd.bugStatus)
+		        	||	"WORKS_AS_INTENDED".equals(bd.bugStatus)
+		        	||	"NOT_FEASIBLE".equals(bd.bugStatus));
+		        
 	}
 
     @Override
