@@ -102,7 +102,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 	}
 
 	@Override
-		 public void visitClassContext(ClassContext classContext) {
+	public void visitClassContext(ClassContext classContext) {
 		classContext.getJavaClass().accept(this);
 		flush();
 	}
