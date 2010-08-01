@@ -459,7 +459,7 @@ public enum Sortables implements Comparator<SortableValue>
 		@Override
 		public boolean isAvailable(MainFrame mf) {
 			BugCollection bugCollection = mf.bugCollection;
-			if (bugCollection == null || bugCollection.getCloud() != null)
+			if (bugCollection == null || bugCollection.getCloud() == null)
 				return false;
 			return bugCollection.getCloud().supportsBugLinks() &&  bugCollection.getCloud().getMode() == Mode.COMMUNAL;
 			
