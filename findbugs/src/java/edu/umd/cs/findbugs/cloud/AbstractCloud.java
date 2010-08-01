@@ -292,6 +292,8 @@ public abstract class AbstractCloud implements Cloud {
 
 
 	public UserDesignation getConsensusDesignation(BugInstance b) {
+		if (b == null) 
+			throw new NullPointerException("null bug instance");
 		Multiset<UserDesignation> designations = new Multiset<UserDesignation>();
 		int count = 0;
 		int totalCount = 0;
