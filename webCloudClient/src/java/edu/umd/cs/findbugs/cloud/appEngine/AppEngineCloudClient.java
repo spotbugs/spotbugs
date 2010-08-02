@@ -337,7 +337,7 @@ public class AppEngineCloudClient extends AbstractCloud {
     // ================================ bug filing =====================================
 
     @Override
-    protected String getBugStatus(final BugInstance b) {
+    public String getBugStatus(final BugInstance b) {
         final String hash = b.getInstanceHash();
         String status = bugStatusCache.get(hash);
         if (status != null) {
