@@ -155,6 +155,14 @@ public class UnreadFields extends OpcodeStackDetector  {
 		context.setUnreadFields(this);
 	}
 
+	HashSet<ClassDescriptor> toldStrongEvidenceForIntendedSerialization = new HashSet<ClassDescriptor>();
+	
+	public void strongEvidenceForIntendedSerialization(ClassDescriptor c) {
+		toldStrongEvidenceForIntendedSerialization.add(c);
+	}
+	public boolean existsStrongEvidenceForIntendedSerialization(ClassDescriptor c) {
+		return toldStrongEvidenceForIntendedSerialization.contains(c);
+	}
 
 	@Override
 		 public void visit(JavaClass obj) {

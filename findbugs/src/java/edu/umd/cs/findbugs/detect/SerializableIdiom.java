@@ -279,8 +279,9 @@ public class SerializableIdiom extends OpcodeStackDetector
 		}
 	}
 	
-	private boolean strongEvidenceForIntendedSerialization() {
-		return implementsSerializableDirectly ||  sawReadObject || sawReadResolve || sawWriteObject || seenTransientField;
+		private boolean strongEvidenceForIntendedSerialization() {
+		return implementsSerializableDirectly ||  sawReadObject || sawReadResolve || sawWriteObject || seenTransientField
+		  ||AnalysisContext.currentAnalysisContext().getUnreadFields().existsStrongEvidenceForIntendedSerialization(this.getClassDescriptor());
 	}
 
 	@Override
