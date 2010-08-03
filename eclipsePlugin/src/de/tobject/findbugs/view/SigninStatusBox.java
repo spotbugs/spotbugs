@@ -52,14 +52,12 @@ public class SigninStatusBox extends Composite {
 		addControlListener(new ControlListener() {
 
 			public void controlResized(ControlEvent e) {
-				Point a = statusLine.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-				statusLine.setSize(a);
-				Point b = computeSize(SWT.DEFAULT, SWT.DEFAULT);
-				setSize(b);
-
+				statusLine.pack(true);
+				SigninStatusBox.this.pack(true);
 			}
 
 			public void controlMoved(ControlEvent e) {
+				// noop
 			}
 		});
 	}
@@ -88,10 +86,10 @@ public class SigninStatusBox extends Composite {
 	}
 
 	private void createControls() {
-		this.setLayout(new GridLayout());
+		this.setLayout(new GridLayout(1, true));
 		statusLine = new Label(this, SWT.NONE);
-		statusLine.setLayoutData(new GridData(GridData.CENTER, GridData.CENTER,
-				false, false));
+		statusLine.setLayoutData(new GridData(SWT.RIGHT, GridData.CENTER,
+				true, false));
 		statusLine.setAlignment(SWT.CENTER);
 		statusLine.setCursor(new Cursor(null, SWT.CURSOR_HAND));
 		statusLine.addMouseListener(new MouseAdapter() {
@@ -158,10 +156,8 @@ public class SigninStatusBox extends Composite {
 							text += ": " + cloud.getUser();
 						}
 						statusLine.setText(text);
-						Point a = statusLine.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-						statusLine.setSize(a);
-						Point b = computeSize(SWT.DEFAULT, SWT.DEFAULT);
-						setSize(b);
+						statusLine.pack(true);
+						SigninStatusBox.this.pack(true);
 					} else {
 						statusLine.setText("");
 					}

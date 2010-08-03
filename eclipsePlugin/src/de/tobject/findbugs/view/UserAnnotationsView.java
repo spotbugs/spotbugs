@@ -26,6 +26,8 @@ import java.util.concurrent.Executors;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.SelectionEvent;
@@ -38,6 +40,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
+import org.eclipse.ui.IWorkbenchPart;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
@@ -97,6 +100,8 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		}
 	};
 
+	private IWorkbenchPart contributingPart;
+
 	public UserAnnotationsView() {
 		super();
 		userAnnotation = "";
@@ -104,15 +109,12 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		cloudText = "";
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
-	 */
 	@Override
 	public Composite createRootControl(Composite parent) {
 		Composite main = new Composite(parent, SWT.VERTICAL);
 		main.setLayout(new GridLayout(2, false));
+
+//		main.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, true));
 		designationComboBox = new Combo(main, SWT.LEFT | SWT.DROP_DOWN
 				| SWT.READ_ONLY);
 		designationComboBox.setToolTipText("User-specified bug designation");
@@ -122,16 +124,17 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		}
 		designationComboBox.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				if (theBug != null && theBug.getBugInstance() != null) {
-					final int selectionIndex = designationComboBox.getSelectionIndex();
-					executor.submit(new Runnable() {
-						public void run() {
-							theBug.getBugInstance().setUserDesignationKeyIndex(
-									selectionIndex, theBug.getBugCollection());
-						}
-					});
-
+				final BugInstance bugInstance = theBug.getBugInstance();
+				if (bugInstance == null) {
+					return;
 				}
+				final int selectionIndex = designationComboBox.getSelectionIndex();
+				executor.submit(new Runnable() {
+					public void run() {
+						bugInstance.setUserDesignationKeyIndex(
+								selectionIndex, theBug.getBugCollection());
+					}
+				});
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -174,10 +177,15 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		});
 		Label cloudLabel = new Label(main, SWT.LEFT);
 		cloudLabel.setText("Comments:");
+		GridData lData = new GridData(SWT.LEFT, SWT.TOP, true, false);
+		lData.horizontalSpan = 2;
+		cloudLabel.setLayoutData(lData);
 
 		cloudTextField = new Text(main, SWT.LEFT | SWT.WRAP
 				| SWT.BORDER | SWT.READ_ONLY);
-		cloudTextField.setLayoutData(uatfData);
+		GridData ctfData = new GridData(GridData.FILL_BOTH);
+		ctfData.horizontalSpan = 2;
+		cloudTextField.setLayoutData(ctfData);
 
 		// Add selection listener to detect click in problems view or bug tree
 		// view
@@ -200,6 +208,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 			lastCloud.removeListener(cloudListener);
 		}
 		signinStatusBox.dispose();
+		contributingPart = null;
 		super.dispose();
 	}
 
@@ -272,13 +281,16 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 	/**
 	 * Show the details of a FindBugs marker in the view. Brings the
 	 * view to the foreground.
+	 * @param thePart
 	 *
 	 * @param marker
 	 *            the FindBugs marker containing the bug pattern to show details
 	 *            for
 	 */
 	private void showInView(IMarker marker) {
-
+		if (marker == null) {
+			return;
+		}
 		String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
 		BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
 		if (pattern == null) {
@@ -292,14 +304,9 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 
 	}
 
-	void showMarker(IMarker marker) {
-		if (marker != null) {
-			showInView(marker);
-		}
-	}
-
-	public void markerSelected(IMarker newMarker) {
-		showMarker(newMarker);
+	public void markerSelected(IWorkbenchPart thePart, IMarker newMarker) {
+		contributingPart = thePart;
+		showInView(newMarker);
 		if (!isVisible()) {
 			activate();
 		}
@@ -341,5 +348,9 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 	@Override
 	protected void fillLocalToolBar(IToolBarManager manager) {
 		// noop
+	}
+
+	public IWorkbenchPart getContributingPart() {
+		return contributingPart;
 	}
 }

@@ -35,6 +35,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
+import org.eclipse.ui.part.IContributedContentsView;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
@@ -43,7 +44,7 @@ import de.tobject.findbugs.FindbugsPlugin;
 /**
  * @author Andrei Loskutov
  */
-public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSelectionHandler {
+public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSelectionHandler, IContributedContentsView {
 	static final String DETAILS_VIEW_IMG = "detailsView.png";
 	static final String USER_ANNOTATIONS_VIEW_IMG = "annotationsView.png";
 	static final String TREE_VIEW_IMG = "treeView.png";
@@ -194,6 +195,14 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
 			manager.add(actionShowAnnotationsView);
 		}
 		manager.add(actionShowBugTreeView);
+	}
+
+	@Override
+	public Object getAdapter(Class adapter) {
+		if(adapter == IContributedContentsView.class) {
+			return this;
+		}
+		return super.getAdapter(adapter);
 	}
 
 	protected void hookDoubleClickAction() {

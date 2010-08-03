@@ -854,7 +854,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		}
 		if(view instanceof IMarkerSelectionHandler){
 			IMarkerSelectionHandler handler = (IMarkerSelectionHandler) view;
-			handler.markerSelected(marker);
+			handler.markerSelected(source, marker);
 		} else if(DETAILS_VIEW_ID.equals(viewId) && view instanceof ISelectionListener){
 			ISelectionListener listener = (ISelectionListener) view;
 			listener.selectionChanged(source, new StructuredSelection(marker));

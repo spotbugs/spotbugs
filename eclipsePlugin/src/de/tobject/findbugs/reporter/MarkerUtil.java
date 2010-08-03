@@ -56,7 +56,9 @@ import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.FindbugsPlugin;
@@ -670,7 +672,7 @@ public final class MarkerUtil {
 	 *         or null if we can't find the BugInstance
 	 */
 	public static @CheckForNull BugCollectionAndInstance findBugCollectionAndInstanceForMarker(IMarker marker) {
-	
+
 		IResource resource = marker.getResource();
 		IProject project = resource.getProject();
 		if (project == null) {
@@ -820,6 +822,20 @@ public final class MarkerUtil {
 	}
 
 	public static IMarker getMarkerFromSingleSelection(ISelection selection) {
+		if(selection instanceof ITextSelection){
+			IEditorPart editor = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+			if(!(editor instanceof ITextEditor)) {
+				return null;
+			}
+			IMarker marker = MarkerUtil.getMarkerFromEditor(
+					(ITextSelection) selection, (ITextEditor) editor);
+			if(marker != null) {
+				selection = new StructuredSelection(marker);
+			} else {
+				selection = new StructuredSelection();
+			}
+		}
+
 		if(!(selection instanceof IStructuredSelection)){
 			return null;
 		}

@@ -46,6 +46,7 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.view.AbstractFindbugsView;
 import de.tobject.findbugs.view.BugExplorerView;
 import de.tobject.findbugs.view.explorer.BugGroup;
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -261,7 +262,8 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (adapterType == IPropertySheetPage.class){
 			if (adaptableObject instanceof BugExplorerView
-					|| adaptableObject instanceof JavaEditor) {
+					|| adaptableObject instanceof JavaEditor
+					|| adaptableObject instanceof AbstractFindbugsView) {
 				return new BugPropertySheetPage();
 			}
 		}

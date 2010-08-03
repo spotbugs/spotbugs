@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.XMLMemento;
@@ -73,7 +74,7 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
 		return getSite().getPage().isPartVisible(this);
 	}
 
-	public void markerSelected(IMarker marker) {
+	public void markerSelected(IWorkbenchPart part, IMarker marker) {
 		BugContentProvider provider = BugContentProvider.getProvider(getNavigatorContentService());
 		CommonViewer commonViewer = getCommonViewer();
 		if(provider.isFiltered(marker)){

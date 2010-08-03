@@ -19,12 +19,14 @@
 package de.tobject.findbugs.view;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.ui.IWorkbenchPart;
 
 public interface IMarkerSelectionHandler {
 	/**
+	 * @param thePart non null part in which the marker was selected
 	 * @param marker non null, existing FindBugs marker
 	 */
-	void markerSelected(IMarker marker);
+	void markerSelected(IWorkbenchPart thePart, IMarker marker);
 
 	/**
 	 * @return true if the handler part is visible to user

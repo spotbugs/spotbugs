@@ -990,6 +990,11 @@
            <adapter type="org.eclipse.ui.views.properties.IPropertySheetPage" />
        </factory>
        <factory
+             adaptableType="de.tobject.findbugs.view.AbstractFindbugsView"
+             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
+           <adapter type="org.eclipse.ui.views.properties.IPropertySheetPage" />
+       </factory>
+       <factory
              adaptableType="org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor"
              class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
           <adapter type="org.eclipse.ui.views.properties.IPropertySheetPage" />
