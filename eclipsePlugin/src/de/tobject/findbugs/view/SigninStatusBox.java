@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -45,6 +47,19 @@ public class SigninStatusBox extends Composite {
 		parent.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				dispose();
+			}
+		});
+		addControlListener(new ControlListener() {
+
+			public void controlResized(ControlEvent e) {
+				Point a = statusLine.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+				statusLine.setSize(a);
+				Point b = computeSize(SWT.DEFAULT, SWT.DEFAULT);
+				setSize(b);
+
+			}
+
+			public void controlMoved(ControlEvent e) {
 			}
 		});
 	}
@@ -137,9 +152,12 @@ public class SigninStatusBox extends Composite {
 			public void run() {
 				if (statusLine != null && !statusLine.isDisposed()) {
 					if (cloud != null) {
-						statusLine.setText(cloud.getPlugin().getDescription()
-								+ "\n" + cloud.getSigninState()
-								+ ": " + cloud.getUser());
+						String text = cloud.getPlugin().getDescription()
+														+ "\n" + cloud.getSigninState();
+						if (cloud.getUser() != null) {
+							text += ": " + cloud.getUser();
+						}
+						statusLine.setText(text);
 						Point a = statusLine.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 						statusLine.setSize(a);
 						Point b = computeSize(SWT.DEFAULT, SWT.DEFAULT);
