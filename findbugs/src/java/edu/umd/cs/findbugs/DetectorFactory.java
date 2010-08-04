@@ -293,7 +293,7 @@ public class DetectorFactory {
 	}
 
 	/**
-	 * Get list of bug pattern codes reported by the detector: blank if unknown.
+	 * Get list of bug pattern codes reported by the detector: empty if unknown.
 	 */
 	public String getReportedBugPatternCodes() {
 		return reports;
