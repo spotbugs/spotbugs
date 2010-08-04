@@ -127,7 +127,7 @@ public class ViewFilter {
 		}
 
 		public boolean show(MainFrame mf, BugInstance b) {
-			Cloud c = mf.bugCollection.getCloud();
+			Cloud c = mf.getBugCollection().getCloud();
 			return show((Cloud) c, b);
 
 		}
@@ -254,7 +254,7 @@ public class ViewFilter {
 		}
 	       
         public boolean show(MainFrame mf, BugInstance b) {
-	        Cloud c = mf.bugCollection.getCloud();
+	        Cloud c = mf.getBugCollection().getCloud();
 	        return show(c, b);
         }
         @Override
@@ -286,7 +286,7 @@ public class ViewFilter {
 		}
 
 		public boolean show(MainFrame mf, BugInstance b) {
-			long firstSeen = mf.bugCollection.getCloud().getFirstSeen(b);
+			long firstSeen = mf.getBugCollection().getCloud().getFirstSeen(b);
 			long time = System.currentTimeMillis() - firstSeen;
 			long days = TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS) / 3600 / 24;
 			return days < this.maxDays;

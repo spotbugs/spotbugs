@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.Color;
-import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.SoftReference;
@@ -29,15 +28,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
-import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 import javax.swing.text.StyledDocument;
 
 import edu.umd.cs.findbugs.BugAnnotation;
-import edu.umd.cs.findbugs.BugAnnotationWithSourceLines;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -158,9 +154,9 @@ public final class SourceCodeDisplay implements Runnable {
 			final SourceLineAnnotation thisSource = mySourceLine;
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					frame.sourceCodeTextPane.setEditorKit(src.getEditorKit());
+					frame.getSourceCodeTextPane().setEditorKit(src.getEditorKit());
 					StyledDocument document = src.getDocument();
-					frame.sourceCodeTextPane.setDocument(document);
+					frame.getSourceCodeTextPane().setDocument(document);
 					String sourceFile = thisSource.getSourceFile();
 					if (sourceFile == null || sourceFile.equals("<Unknown>")) {
 						sourceFile = thisSource.getSimpleClassName();
@@ -171,23 +167,23 @@ public final class SourceCodeDisplay implements Runnable {
 					
 					int originLine = (startLine + endLine) / 2;
 					LinkedList<Integer> otherLines = new LinkedList<Integer>();
-					//show(frame.sourceCodeTextPane, document, thisSource);
+					//show(frame.getSourceCodeTextPane(), document, thisSource);
 					for(Iterator<BugAnnotation> i = thisBug.annotationIterator(); i.hasNext(); ) {
 						BugAnnotation annotation = i.next();
 						if (annotation instanceof SourceLineAnnotation) {
 							SourceLineAnnotation sourceAnnotation = (SourceLineAnnotation) annotation;
 							if (sourceAnnotation != thisSource) {
-								//show(frame.sourceCodeTextPane, document, sourceAnnotation);
+								//show(frame.getSourceCodeTextPane(), document, sourceAnnotation);
 								int otherLine = sourceAnnotation.getStartLine();
 								if (otherLine > originLine) otherLine = sourceAnnotation.getEndLine();
 								otherLines.add(otherLine);
 							}
 						}
 					}
-					//show(frame.sourceCodeTextPane, document, thisSource);
+					//show(frame.getSourceCodeTextPane(), document, thisSource);
 					
 					if (startLine >= 0 && endLine >= 0)
-						frame.sourceCodeTextPane.scrollLinesToVisible(startLine, endLine, otherLines);
+						frame.getSourceCodeTextPane().scrollLinesToVisible(startLine, endLine, otherLines);
 				}
 			});
 		} catch (Exception e) {
@@ -216,8 +212,8 @@ public final class SourceCodeDisplay implements Runnable {
 	public void foundItem(int lineNum) {
 		myDocument.getHighlightInformation().updateFoundLineNum(lineNum);
 		myDocument.getHighlightInformation().setHighlight(lineNum, FOUND_HIGHLIGHT);
-		frame.sourceCodeTextPane.scrollLineToVisible(lineNum);
-		frame.sourceCodeTextPane.updateUI();
+		frame.getSourceCodeTextPane().scrollLineToVisible(lineNum);
+		frame.getSourceCodeTextPane().updateUI();
 	}
 
 	private int search(JavaSourceDocument document, String target, int start, Boolean backwards)
@@ -265,9 +261,9 @@ public final class SourceCodeDisplay implements Runnable {
 		try
 		{
 			for(int i=1; true; i++){
-				if(frame.sourceCodeTextPane.getLineOffset(i) > charNum)
+				if(frame.getSourceCodeTextPane().getLineOffset(i) > charNum)
 					return i-1;
-				else if(frame.sourceCodeTextPane.getLineOffset(i) == -1)
+				else if(frame.getSourceCodeTextPane().getLineOffset(i) == -1)
 					return -1;
 			}
 		}
@@ -276,8 +272,7 @@ public final class SourceCodeDisplay implements Runnable {
 
 	public int find(String target)
 	{
-		int charFoundAt = search(myDocument, target, 0, false);
-		currentChar = charFoundAt;
+        currentChar = search(myDocument, target, 0, false);
 		//System.out.println(currentChar);
 		//System.out.println(charToLineNum(currentChar));
 		return charToLineNum(currentChar);
@@ -285,8 +280,7 @@ public final class SourceCodeDisplay implements Runnable {
 
 	public int findNext(String target)
 	{
-		int charFoundAt = search(myDocument, target, currentChar+1, false);
-		currentChar = charFoundAt;
+        currentChar = search(myDocument, target, currentChar+1, false);
 		//System.out.println(currentChar);
 		//System.out.println(charToLineNum(currentChar));
 		return charToLineNum(currentChar);
@@ -294,38 +288,14 @@ public final class SourceCodeDisplay implements Runnable {
 
 	public int findPrevious(String target)
 	{
-		int charFoundAt = search(myDocument, target, currentChar-1, true);
-		currentChar = charFoundAt;
+        currentChar = search(myDocument, target, currentChar-1, true);
 		//System.out.println(currentChar);
 		//System.out.println(charToLineNum(currentChar));
 		return charToLineNum(currentChar);
 	}
 
-	private void show(JTextPane pane, Document src, SourceLineAnnotation sourceAnnotation) {
-
-		int startLine = sourceAnnotation.getStartLine();
-		if (startLine == -1) return;
-		frame.sourceCodeTextPane.scrollLineToVisible(startLine);
-		/*
-		Element element = src.getDefaultRootElement().getElement(sourceAnnotation.getStartLine()-1);
-		if (element == null) {
-			if (MainFrame.DEBUG) {
-			System.out.println("Couldn't display line " + sourceAnnotation.getStartLine() + " of " + sourceAnnotation.getSourceFile());
-			System.out.println("It only seems to have " + src.getDefaultRootElement().getElementCount() + " lines");
-			}
-			return;
-		}
-		pane.setCaretPosition(element.getStartOffset());
-		*/
-	}
-
 	public void showLine(int line) {
-		frame.sourceCodeTextPane.scrollLineToVisible(line);
-		/*
-		JTextPane pane = frame.sourceCodeTextPane;
-		Document doc = pane.getDocument();
-		Element element = doc.getDefaultRootElement().getElement(line-1);
-		pane.setCaretPosition(element.getStartOffset());
-		*/
+		frame.getSourceCodeTextPane().scrollLineToVisible(line);
+
 	}
 }

@@ -249,7 +249,7 @@ public class PreferencesFrame extends FBDialog {
 
 		if(tabSize != GUISaveState.getInstance().getTabSize()){
 			GUISaveState.getInstance().setTabSize(tabSize);
-			MainFrame.getInstance().displayer.clearCache();
+			MainFrame.getInstance().getSourceCodeDisplayer().clearCache();
 			//This causes the GUI to redisplay the current code
 			MainFrame.getInstance().syncBugInformation();
 		}

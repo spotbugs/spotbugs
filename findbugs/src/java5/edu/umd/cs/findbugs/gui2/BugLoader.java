@@ -22,9 +22,6 @@ package edu.umd.cs.findbugs.gui2;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -46,7 +43,6 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
@@ -107,19 +103,6 @@ public class BugLoader {
 		return engine;
 	}
 
-	public static BugSet loadBugsHelper(BugCollection collection)
-	{
-		ArrayList<BugLeafNode> bugList=new ArrayList<BugLeafNode>();
-		for(BugInstance b : collection) 
-			bugList.add(new BugLeafNode(b));
-		
-
-		return new BugSet(bugList);
-
-	}
-
-
-
 	public static @CheckForNull SortedBugCollection loadBugs(MainFrame mainFrame, Project project, File source) {
 		if (!source.isFile() || !source.canRead()) {
 			JOptionPane.showMessageDialog(mainFrame,"Unable to read " + source);
@@ -151,13 +134,13 @@ public class BugLoader {
 		
 		SortedBugCollection col=new SortedBugCollection(project);
 		try {
-			if (MainFrame.DEBUG) {
+			if (MainFrame.GUI2_DEBUG) {
 				System.out.println("loading from: " + url);
 				JOptionPane.showMessageDialog(mainFrame,"loading from: " + url);
 	        	
 			}
 	        col.readXML(url);
-	        if (MainFrame.DEBUG) {
+	        if (MainFrame.GUI2_DEBUG) {
 				System.out.println("finished reading: " + url);
 				JOptionPane.showMessageDialog(mainFrame,"loaded: " + url);
 	        }
@@ -196,7 +179,7 @@ public class BugLoader {
 			if (suppressionMatcher != null) {
 				suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
 			}
-			project.setGuiCallback(mainFrame);
+			project.setGuiCallback(mainFrame.getGuiCallback());
 			return project;
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(mainFrame,"Could not read " + f + "; " + e.getMessage());
@@ -286,7 +269,7 @@ public class BugLoader {
 			throw new NullPointerException("null project");
 
 		BugSet oldSet=BugSet.getMainBugSet();
-		BugCollection current=MainFrame.getInstance().bugCollection;//Now we should no longer get this December 31st 1969 business.
+		BugCollection current= MainFrame.getInstance().getBugCollection();//Now we should no longer get this December 31st 1969 business.
 		// Sourceforge bug 1800962 indicates 'current' can be null here
 		if(current != null) for (BugLeafNode node: oldSet)
 		{

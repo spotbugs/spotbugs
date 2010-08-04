@@ -66,7 +66,7 @@ public enum Sortables implements Comparator<SortableValue>
          * @return
          */
         private long getFirstSeen(BugInstance bug) {
-	        BugCollection bugCollection = MainFrame.getInstance().bugCollection;
+	        BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
 			long firstSeen = bugCollection.getCloud().getFirstSeen(bug);
 	        return firstSeen;
         }
@@ -87,7 +87,7 @@ public enum Sortables implements Comparator<SortableValue>
 		
 		@Override
 		public boolean isAvailable(MainFrame mainframe) {
-			BugCollection bugCollection = mainframe.bugCollection;
+			BugCollection bugCollection = mainframe.getBugCollection();
 			return bugCollection != null;			
 		}
 	},
@@ -104,7 +104,7 @@ public enum Sortables implements Comparator<SortableValue>
 		public String formatValue(String value)
 		{	
 			int seqNum = Integer.parseInt(value);
-			BugCollection bugCollection = MainFrame.getInstance().bugCollection;
+			BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
 			if (bugCollection == null) return "--";
 			AppVersion appVersion = bugCollection.getAppVersionFromSequenceNumber(seqNum);
 			String appendItem = "";
@@ -127,7 +127,7 @@ public enum Sortables implements Comparator<SortableValue>
 		
 		@Override
 		public boolean isAvailable(MainFrame mainframe) {
-			BugCollection bugCollection = mainframe.bugCollection;
+			BugCollection bugCollection = mainframe.getBugCollection();
 			if (bugCollection == null) {
 				return true;
 			}
@@ -152,7 +152,7 @@ public enum Sortables implements Comparator<SortableValue>
 			if(value.equals("-1"))
 				return "";
 			int seqNum = Integer.parseInt(value);
-			BugCollection bugCollection = MainFrame.getInstance().bugCollection;
+			BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
 			if (bugCollection == null) return "--";
 			AppVersion appVersion = bugCollection.getAppVersionFromSequenceNumber(seqNum);
 			String appendItem = "";
@@ -183,7 +183,7 @@ public enum Sortables implements Comparator<SortableValue>
 		
 		@Override
 		public boolean isAvailable(MainFrame mainframe) {
-			BugCollection bugCollection = mainframe.bugCollection;
+			BugCollection bugCollection = mainframe.getBugCollection();
 			if (bugCollection == null)
 				return true;
 			return bugCollection.getCurrentAppVersion().getSequenceNumber() > 0;
@@ -386,7 +386,7 @@ public enum Sortables implements Comparator<SortableValue>
 		@Override
 		public String getFrom(BugInstance bug)
 		{
-			 BugCollection bugCollection = MainFrame.getInstance().bugCollection;
+			 BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
 				
 			return bugCollection.getCloud().getConsensusDesignation(bug)
 			     .name();
@@ -400,7 +400,7 @@ public enum Sortables implements Comparator<SortableValue>
 		
 		@Override
 		public boolean isAvailable(MainFrame mf) {
-			BugCollection bugCollection = mf.bugCollection;
+			BugCollection bugCollection = mf.getBugCollection();
 			if (bugCollection == null || bugCollection.getCloud() == null)
 				return false;
 			return bugCollection.getCloud().getMode() == Mode.COMMUNAL;
@@ -472,7 +472,7 @@ public enum Sortables implements Comparator<SortableValue>
 
 		@Override
         public String getFrom(BugInstance bug) {
-	        ProjectPackagePrefixes p = MainFrame.getInstance().projectPackagePrefixes;
+	        ProjectPackagePrefixes p = MainFrame.getInstance().getProjectPackagePrefixes();
 	        Collection<String> projects = p.getProjects(bug.getPrimaryClass().getClassName());
 	        if (projects.size() == 0)
 	        	return "unclassified";
@@ -483,7 +483,7 @@ public enum Sortables implements Comparator<SortableValue>
 		
 		@Override 
 		public boolean isAvailable(MainFrame mf) {
-			return mf.projectPackagePrefixes.size() > 0;
+			return mf.getProjectPackagePrefixes().size() > 0;
 		}
 		
 	},

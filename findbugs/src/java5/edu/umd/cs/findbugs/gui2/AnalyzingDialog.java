@@ -72,7 +72,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 
 			public void analysisInterrupted() {
 				MainFrame instance = MainFrame.getInstance();
-				instance.updateProjectAndBugCollection(null, null, null);
+				instance.updateProjectAndBugCollection(null);
 				instance.releaseDisplayWait();
 			}
 		}, false);

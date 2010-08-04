@@ -19,21 +19,9 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.BugCollectionStorageCloud;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
-import edu.umd.cs.findbugs.util.LaunchBrowser;
-
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -46,6 +34,28 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.BugCollectionStorageCloud;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
+import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 /**
  * @author pugh
@@ -86,7 +96,7 @@ public class CommentsArea {
 	 * Create center panel that holds the user input combo boxes and TextArea.
 	 */
 	JPanel createCommentsInputPanel() {
-		BugCollection bc = getMainFrame().bugCollection;
+		BugCollection bc = getMainFrame().getBugCollection();
 		
 		Cloud cloud = bc == null ? null : bc.getCloud();
 		
@@ -137,12 +147,12 @@ public class CommentsArea {
 		fileBug.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent e) {
-                if (frame.currentSelectedBugLeaf == null) {
+                if (frame.getCurrentSelectedBugLeaf() == null) {
                     return;
                 }
                 saveComments();
-                BugInstance bug = frame.currentSelectedBugLeaf.getBug();
-                Cloud cloud1 = getMainFrame().bugCollection.getCloud();
+                BugInstance bug = frame.getCurrentSelectedBugLeaf().getBug();
+                Cloud cloud1 = getMainFrame().getBugCollection().getCloud();
                 if (!cloud1.supportsBugLinks())
                     return;
                 try {
@@ -184,9 +194,9 @@ public class CommentsArea {
 				.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.select_designation", "Select a user designation for this bug"));
 		designationComboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				if (frame.userInputEnabled
+				if (frame.isUserInputEnabled()
 						&& e.getStateChange() == ItemEvent.SELECTED) {
-					if (frame.currentSelectedBugLeaf == null)
+					if (frame.getCurrentSelectedBugLeaf() == null)
 						setDesignationNonLeaf(designationComboBox
 								.getSelectedItem().toString());
 					else if (!alreadySelected())
@@ -203,7 +213,7 @@ public class CommentsArea {
 			private boolean alreadySelected() {
 				return designationKeys.get(
 						designationComboBox.getSelectedIndex()).equals(
-						frame.currentSelectedBugLeaf.getBug()
+						frame.getCurrentSelectedBugLeaf().getBug()
 								.getUserDesignationKey());
 			}
 		});
@@ -291,7 +301,7 @@ public class CommentsArea {
 	 * @param isEnabled
 	 */
 	void setUserCommentInputEnableFromSwingThread(final boolean isEnabled) {
-		frame.userInputEnabled = isEnabled;
+		frame.setUserInputEnabled(isEnabled);
 		if (!isEnabled) {
 //			This so if already saved doesn't make it seem project changed
 			boolean b = frame.getProjectChanged();
@@ -386,7 +396,7 @@ public class CommentsArea {
 		// may talk to server - should run in background
 		backgroundExecutor.execute(new Runnable() {
 	        public void run() {
-                bug.setAnnotationText(comments, MainFrame.getInstance().bugCollection);
+                bug.setAnnotationText(comments, MainFrame.getInstance().getBugCollection());
                 setCommentsChanged(true);
 		        changed = false;
 		        addToPrevComments(comments);
@@ -443,8 +453,8 @@ public class CommentsArea {
 	 */
 
 	public void saveComments() {
-		saveComments(frame.currentSelectedBugLeaf,
-				frame.currentSelectedBugAspects);
+		saveComments(frame.getCurrentSelectedBugLeaf(),
+				frame.getCurrentSelectedBugAspects());
 	}
 
 	public void saveComments(BugLeafNode theNode, BugAspects theAspects) {
@@ -568,24 +578,24 @@ public class CommentsArea {
 
 		toggleItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (frame.currentSelectedBugLeaf == null)
+				if (frame.getCurrentSelectedBugLeaf() == null)
 					setDesignationNonLeaf(menuName);
 				else
 					setDesignation(menuName);
 			}
 		});
-		MainFrame.attachAcceleratorKey(toggleItem, keyEvent);
+		MainFrameHelper.attachAcceleratorKey(toggleItem, keyEvent);
 		menu.add(toggleItem);
 	}
 
 	void setDesignation(String designationName) {
-		if (frame.currentSelectedBugLeaf == null)
+		if (frame.getCurrentSelectedBugLeaf() == null)
 			return;
 		String designationKey = convertDesignationNameToDesignationKey(designationName);
 		if (designationKey == null)
 			return;
-		BugCollection bugCollection = MainFrame.getInstance().bugCollection;
-		BugInstance bug = frame.currentSelectedBugLeaf.getBug();
+		BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
+		BugInstance bug = frame.getCurrentSelectedBugLeaf().getBug();
 		String oldValue = bug.getUserDesignationKey();
 		if (designationKey.equals(oldValue))
 			return;
@@ -604,7 +614,7 @@ public class CommentsArea {
 					designationKey = "MUST_FIX";	
 			}
 		}
-		if (changeDesignationOfBug(frame.currentSelectedBugLeaf, designationKey)){
+		if (changeDesignationOfBug(frame.getCurrentSelectedBugLeaf(), designationKey)){
 			if (plugin != null && plugin.supportsCloudReports()) {
 				String report = plugin.getCloudReport(bug);
 				reportText.setText(report);
@@ -619,16 +629,16 @@ public class CommentsArea {
 		if (nonleafUpdateDepth > 0)
 			return;
 		String designationKey = convertDesignationNameToDesignationKey(designationName);
-		if (designationKey == null || frame.currentSelectedBugAspects == null)
+		if (designationKey == null || frame.getCurrentSelectedBugAspects()== null)
 			return;
-		Cloud cloud = getMainFrame().bugCollection.getCloud();
+		Cloud cloud = getMainFrame().getBugCollection().getCloud();
 		if (cloud.getMode() == Cloud.Mode.VOTING) {
 			JOptionPane.showMessageDialog(frame, "FindBugs is configured in voting mode; no mass updates allowed");
 			return;
 		}
 		
 
-		BugSet filteredSet = frame.currentSelectedBugAspects
+		BugSet filteredSet = frame.getCurrentSelectedBugAspects()
 				.getMatchingBugs(BugSet.getMainBugSet());
 		for (BugLeafNode nextNode : filteredSet)
 			if (changeDesignationOfBug(nextNode, designationKey)){
@@ -646,18 +656,18 @@ public class CommentsArea {
 			return false;
 		backgroundExecutor.execute(new Runnable() {
 	        public void run() {
-                bug.setUserDesignationKey(selection, MainFrame.getInstance().bugCollection);
+                bug.setUserDesignationKey(selection, MainFrame.getInstance().getBugCollection());
             }
         });
 		return true;
 	}
 
 	protected void updateDesignationComboBox() {
-		if (frame.currentSelectedBugLeaf == null)
-			updateCommentsFromNonLeafInformationFromSwingThread(frame.currentSelectedBugAspects);
+		if (frame.getCurrentSelectedBugLeaf() == null)
+			updateCommentsFromNonLeafInformationFromSwingThread(frame.getCurrentSelectedBugAspects());
 		else {
-			Cloud cloud = getMainFrame().bugCollection.getCloud();
-			BugInstance bug = frame.currentSelectedBugLeaf.getBug();
+			Cloud cloud = getMainFrame().getBugCollection().getCloud();
+			BugInstance bug = frame.getCurrentSelectedBugLeaf().getBug();
 			if (!cloud.canStoreUserAnnotation(bug)) {
 				designationComboBox.setEnabled(false);
 				designationComboBox.setSelectedIndex(0);
@@ -742,72 +752,9 @@ public class CommentsArea {
 				return;
 				}
 		}
-		if (MainFrame.DEBUG) 
+		if (MainFrame.GUI2_DEBUG)
 			System.out.println("Couldn't find combo box for " + designationKey);
 	}
-
-	@SuppressWarnings({"deprecation"})
-    public void moveNodeAccordingToDesignation(BugLeafNode theNode,
-			String selection) {
-
-		if (!getSorter().getOrder().contains(Sortables.DESIGNATION)) {
-			// designation not sorted on at all
-
-            theNode.getBug().setUserDesignationKey(
-                    selection,  MainFrame.getInstance().bugCollection);
-
-        } else if (getSorter().getOrderBeforeDivider().contains(
-				Sortables.DESIGNATION)) {
-
-			BugTreeModel model = getModel();
-			TreePath path = model.getPathToBug(theNode.getBug());
-			if (path == null) {
-                theNode.getBug().setUserDesignationKey(
-                        selection,  MainFrame.getInstance().bugCollection);
-                return;
-			}
-			Object[] objPath = path.getParentPath().getPath();
-			ArrayList<Object> reconstruct = new ArrayList<Object>();
-			ArrayList<TreePath> listOfNodesToReconstruct = new ArrayList<TreePath>();
-            for (Object o : objPath) {
-                reconstruct.add(o);
-                if (o instanceof BugAspects) {
-                    if (((BugAspects) o).getCount() == 1) {
-                        // Debug.println((BugAspects)(o));
-                        break;
-                    }
-                }
-                TreePath pathToNode = new TreePath(reconstruct.toArray());
-                listOfNodesToReconstruct.add(pathToNode);
-            }
-
-            theNode.getBug().setUserDesignationKey(
-                    selection,  MainFrame.getInstance().bugCollection);
-            model.bugTreeFilterListener.suppressBug(path);
-			TreePath unsuppressPath = model.getPathToBug(theNode.getBug());
-			if (unsuppressPath != null)// If choosing their designation has not
-										// moved the bug under any filters
-			{
-				model.bugTreeFilterListener.unsuppressBug(unsuppressPath);
-				// tree.setSelectionPath(unsuppressPath);
-			}
-			for (TreePath pathToNode : listOfNodesToReconstruct) {
-				model.treeNodeChanged(pathToNode);
-			}
-			setCommentsChanged(true);
-		} else if (getSorter().getOrderAfterDivider().contains(
-				Sortables.DESIGNATION)) {
-
-            theNode.getBug().setUserDesignationKey(
-                    selection,  MainFrame.getInstance().bugCollection);
-            BugTreeModel model = getModel();
-			TreePath path = model.getPathToBug(theNode.getBug());
-			if (path != null)
-				model.sortBranch(path.getParentPath());
-
-		}
-	}
-	
 
 	protected @CheckForNull String convertDesignationNameToDesignationKey(String name) {
 		/*
@@ -845,7 +792,7 @@ public class CommentsArea {
 	}
 
 	BugTreeModel getModel() {
-		return (BugTreeModel) frame.tree.getModel();
+		return (BugTreeModel) frame.getTree().getModel();
 	}
 
 	public boolean hasFocus() {
@@ -857,7 +804,7 @@ public class CommentsArea {
      */
     private @CheckForNull Cloud getCloud() {
 	    MainFrame instance = MainFrame.getInstance();
-		BugCollection bugCollection = instance.bugCollection;
+		BugCollection bugCollection = instance.getBugCollection();
 		if (bugCollection == null)
 			return null;
 		return bugCollection.getCloud();

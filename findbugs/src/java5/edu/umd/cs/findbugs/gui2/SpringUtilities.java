@@ -21,7 +21,7 @@ public class SpringUtilities {
 	 * minimum, preferred, and maximum sizes.
 	 */
 	public static void printSizes(Component c) {
-		if (MainFrame.DEBUG)  {
+		if (MainFrame.GUI2_DEBUG)  {
 		System.out.println("minimumSize = " + c.getMinimumSize());
 		System.out.println("preferredSize = " + c.getPreferredSize());
 		System.out.println("maximumSize = " + c.getMaximumSize());
@@ -50,7 +50,7 @@ public class SpringUtilities {
 		try {
 			layout = (SpringLayout)parent.getLayout();
 		} catch (ClassCastException exc) {
-			if (MainFrame.DEBUG) System.err.println("The first argument to makeGrid must use SpringLayout.");
+			if (MainFrame.GUI2_DEBUG) System.err.println("The first argument to makeGrid must use SpringLayout.");
 			return;
 		}
 
@@ -154,7 +154,7 @@ public class SpringUtilities {
 		try {
 			layout = (SpringLayout)parent.getLayout();
 		} catch (ClassCastException exc) {
-			if (MainFrame.DEBUG) System.err.println("The first argument to makeCompactGrid must use SpringLayout.");
+			if (MainFrame.GUI2_DEBUG) System.err.println("The first argument to makeCompactGrid must use SpringLayout.");
 			return;
 		}
 

@@ -73,7 +73,7 @@ public class PropertiesDialog extends FBDialog {
 			{
 				if(Integer.decode(tabTextField.getText()).intValue() != GUISaveState.getInstance().getTabSize()){
 					GUISaveState.getInstance().setTabSize(Integer.decode(tabTextField.getText()).intValue());
-					MainFrame.getInstance().displayer.clearCache();
+					MainFrame.getInstance().getSourceCodeDisplayer().clearCache();
 					MainFrame.getInstance().syncBugInformation(); //This causes the GUI to redisplay the current code
 				}
 

@@ -98,7 +98,7 @@ public class NavigableTextPane extends JTextPane {
 			int y = lineToY(line);
 			scrollYToVisibleImpl(y, margin);
 		} catch (BadLocationException ble) {
-			if (MainFrame.DEBUG) ble.printStackTrace();
+			if (MainFrame.GUI2_DEBUG) ble.printStackTrace();
 		}
 	}
 
@@ -122,7 +122,7 @@ public class NavigableTextPane extends JTextPane {
 		try {
 			startY = lineToY(startLine);
 		} catch (BadLocationException ble) {
-			if (MainFrame.DEBUG) ble.printStackTrace();
+			if (MainFrame.GUI2_DEBUG) ble.printStackTrace();
 			return; // give up
 		}
 		try {

@@ -403,8 +403,8 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 						if (path == null)
 							continue;
 						Debug.printf("Opening %s\n", path);
-						MainFrame.getInstance().tree.expandPath(path.getParentPath());
-						MainFrame.getInstance().tree.addSelectionPath(path);
+						MainFrame.getInstance().getTree().expandPath(path.getParentPath());
+						MainFrame.getInstance().getTree().addSelectionPath(path);
 					}
 					catch(RuntimeException e)
 					{
@@ -638,7 +638,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 				if (index==-1)
 				{
-					if (MainFrame.DEBUG) System.err.println("Node does not exist in the tree");//For example, not a bug bugs are filtered, they set a bug to be not a bug it filters out
+					if (MainFrame.GUI2_DEBUG) System.err.println("Node does not exist in the tree");//For example, not a bug bugs are filtered, they set a bug to be not a bug it filters out
 					return null;
 				}
 

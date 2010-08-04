@@ -270,7 +270,7 @@ public class GUISaveState{
 				sortColumns[x]=Sortables.getSortableByPrettyName(p.get(sortKeys[x], "*none*"));
 				if (sortColumns[x]==null)
 				{
-					if (MainFrame.DEBUG) System.err.println("Sort order was corrupted, using default sort order");
+					if (MainFrame.GUI2_DEBUG) System.err.println("Sort order was corrupted, using default sort order");
 					newInstance.useDefault=true;
 				}
 			}

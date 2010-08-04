@@ -30,8 +30,6 @@ import java.util.List;
 
 import javax.annotation.WillClose;
 
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
 
@@ -95,12 +93,12 @@ public class ProjectSettings implements Serializable
 		}
 		catch (ClassNotFoundException e)
 		{
-			if (MainFrame.DEBUG) System.err.println("Error in deserializing Settings:");
+			if (MainFrame.GUI2_DEBUG) System.err.println("Error in deserializing Settings:");
 			Debug.println(e);
 		}
 		catch (IOException e)
 		{
-			if (MainFrame.DEBUG) System.err.println("IO error in deserializing Settings:");
+			if (MainFrame.GUI2_DEBUG) System.err.println("IO error in deserializing Settings:");
 			Debug.println(e);
 			instance=newInstance();
 		} finally {
@@ -120,7 +118,7 @@ public class ProjectSettings implements Serializable
 		}
 		catch (IOException e)
 		{
-			if (MainFrame.DEBUG) System.err.println("Error serializing Settings:");
+			if (MainFrame.GUI2_DEBUG) System.err.println("Error serializing Settings:");
 			Debug.println(e);
 		} finally {
 			try {

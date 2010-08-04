@@ -84,7 +84,7 @@ public class RecentMenu{
 			Debug.println(f);
 			if (!f.exists())
 			{
-				if (MainFrame.DEBUG) System.err.println("a recent project was not found, removing it from menu");
+				if (MainFrame.GUI2_DEBUG) System.err.println("a recent project was not found, removing it from menu");
 				continue;
 			}
 
