@@ -410,6 +410,7 @@ public class OpcodeStack implements Constants2
 		  public Item(Item it, String signature) {
 			  this(it);
 			  this.signature =  DescriptorFactory.canonicalizeString(signature);
+			  setSpecialKindFromSignature();
 			 }
 		 public Item(Item it, int reg) {
 			 this(it);
@@ -417,6 +418,7 @@ public class OpcodeStack implements Constants2
 		 }
 		 public Item(String signature, FieldAnnotation f) {
 			this.signature = DescriptorFactory.canonicalizeString(signature);
+			setSpecialKindFromSignature();
 			if (f != null)
 				source = XFactory.createXField(f);
 			fieldLoadedFromRegister = -1;
@@ -450,6 +452,7 @@ public class OpcodeStack implements Constants2
 
 		 public Item(String signature, Object constantValue) {
 			 this.signature = DescriptorFactory.canonicalizeString(signature);
+			 setSpecialKindFromSignature();
 			 constValue = constantValue;
 			 if (constantValue instanceof Integer) {
 				 int value = ((Integer) constantValue).intValue();
@@ -467,7 +470,16 @@ public class OpcodeStack implements Constants2
 
 		 }
 
-		 public Item() {
+		private void setSpecialKindFromSignature() {
+			if (specialKind != NOT_SPECIAL)
+				return;
+			if (signature.equals("B"))
+				specialKind = SIGNED_BYTE;
+			else if (signature.equals("C"))
+				specialKind = NON_NEGATIVE;
+		}
+
+		public Item() {
 			 signature = "Ljava/lang/Object;";
 			 constValue = null;
 			 setNull(true);
@@ -1899,10 +1911,18 @@ public class OpcodeStack implements Constants2
 		}
 	}
 	
-	static final HashSet<String> boxedTypes = new HashSet<String>();
+	static final HashMap<String, String> boxedTypes = new HashMap<String, String>();
 	static private void addBoxedType(Class<?>... clss) {
-		for(Class <?> c : clss)
-			boxedTypes.add(ClassName.toSlashedClassName(c.getName()));
+		for(Class <?> c : clss) {
+			Class<?> primitiveType;
+            try {
+	            primitiveType = (Class<?>) c.getField("TYPE").get(null);
+	            boxedTypes.put(ClassName.toSlashedClassName(c.getName()), primitiveType.getName());
+            } catch (Exception e) {
+	           throw new AssertionError(e);
+            }
+			
+		}
 	}
 	static {
 		addBoxedType(Integer.class, Long.class, Double.class, Short.class, Float.class, Boolean.class, Character.class, Byte.class);
@@ -1922,8 +1942,9 @@ public class OpcodeStack implements Constants2
 		 
 		 int numberArguments = PreorderVisitor.getNumberArguments(signature);
 		 
-		if (boxedTypes.contains(clsName) && topItem != null && (methodName.equals("valueOf") || methodName.endsWith("Value"))
-		        && !signature.contains("String")) {
+		if (boxedTypes.containsKey(clsName) && topItem != null 
+				&& (methodName.equals("valueOf")  && !signature.contains("String")
+						|| methodName.equals(boxedTypes.get(clsName)+"Value"))) {
 			// boxing/unboxing conversion
 			Item value = pop();
 			String newSignature = Type.getReturnType(signature).getSignature();
