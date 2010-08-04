@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -128,6 +129,18 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		String className = visitor.getDottedClassConstantOperand();
 		String methodName = visitor.getNameConstantOperand();
 		String methodSig = visitor.getSigConstantOperand();
+		
+		if (visitor instanceof OpcodeStackDetector 
+				&& visitor.getOpcode() != OpcodeStackDetector.INVOKESTATIC) {
+			int params = PreorderVisitor.getNumberArguments(methodSig);
+			OpcodeStackDetector oVisitor = (OpcodeStackDetector) visitor;
+			if (!oVisitor.getStack().isTop() && oVisitor.getStack().getStackDepth() > params) {
+				OpcodeStack.Item item = oVisitor.getStack().getStackItem(params);
+				className = ClassName.fromFieldSignature(item.getSignature());
+				
+			}
+			
+		}
 
 		return fromCalledMethod(className, methodName, methodSig,
 				visitor.getOpcode() == Constants.INVOKESTATIC);

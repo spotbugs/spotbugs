@@ -42,6 +42,10 @@ abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
 
 	protected OpcodeStack stack;
 	
+	public OpcodeStack getStack() {
+		return stack;
+	}
+	
 	@Override
 	public void visitCode(Code obj) {
 		if (!shouldVisitCode(obj))

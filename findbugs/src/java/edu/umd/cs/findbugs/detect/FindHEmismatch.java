@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class FindHEmismatch extends OpcodeStackDetector implements
 		StatelessDetector {
@@ -498,7 +499,11 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		}
 		if (type == null) return;
 		 int priority = NORMAL_PRIORITY;
-		if (getClassConstantOperand().indexOf("Hash") >= 0) priority--;
+		 
+		OpcodeStack.Item collection = stack.getStackItem(PreorderVisitor.getNumberArguments(getSigConstantOperand()));
+		String collectionSignature = collection.getSignature();
+		if (collectionSignature.indexOf("Hash") >= 0) 
+			priority--;
 		if (!AnalysisContext.currentAnalysisContext()/*.getSubtypes()*/.isApplicationClass(type)) priority++;
 
 		if (type.isAbstract() || type.isInterface()) priority++;
@@ -506,7 +511,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 				new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",priority)
 		.addClassAndMethod(this)
 		.addTypeOfNamedClass(type.getClassName()).describe(TypeAnnotation.UNHASHABLE_ROLE)
-		.addTypeOfNamedClass(getDottedClassConstantOperand())
+		.addCalledMethod(this)
 		.addSourceLine(this));
 	}
 
