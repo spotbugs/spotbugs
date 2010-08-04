@@ -45,24 +45,19 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TreeSet;
-import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
@@ -74,11 +69,9 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
@@ -87,7 +80,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
@@ -96,8 +88,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolTip;
 import javax.swing.JTree;
-import javax.swing.ProgressMonitor;
-import javax.swing.ProgressMonitorInputStream;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
@@ -122,6 +112,7 @@ import javax.swing.text.html.StyleSheet;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import edu.umd.cs.findbugs.AbstractSwingGuiCallback;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugAnnotationWithSourceLines;
 import edu.umd.cs.findbugs.BugCollection;
@@ -176,6 +167,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
     private final MyGuiCallback guiCallback = new MyGuiCallback();
 
+    private BugCollection bugCollection;
     private BugAspects currentSelectedBugAspects;
 	private Project curProject = new Project();
 	private boolean newProject = false;
@@ -192,13 +184,11 @@ public class MainFrame extends FBFrame implements LogSync {
     private CloudListener userAnnotationListener = new MyCloudListener();
     private Cloud.CloudStatusListener cloudStatusListener = new MyCloudStatusListener();
 
-    private AbstractExecutorService bugUpdateExecutor = new EventQueueExecutor();
     private ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
 	private final CountDownLatch mainFrameInitialized = new CountDownLatch(1);
     private int waitCount = 0;
     private final Object waitLock = new Object();
     private final Runnable updateStatusBarRunner = new statusBarUpdater();
-    private BugCollection bugCollection;
 
     private volatile String errorMsg = "";
 
@@ -2527,242 +2517,74 @@ public class MainFrame extends FBFrame implements LogSync {
 			text.paste();
 		}
 	}
-   
-   class ShownBugsIterator implements Iterator<BugInstance> {
-	   Iterator<BugInstance> base = getBugCollection().getCollection().iterator();
-	   boolean nextKnown;
-	   BugInstance next;
-	/* (non-Javadoc)
-     * @see java.util.Iterator#hasNext()
-     */
-    public boolean hasNext() {
-	   if (!nextKnown) {
-		   nextKnown = true;
-		   while (base.hasNext()) {
-			   next = base.next();
-			   if (shouldDisplayIssue(next)) 
-				   return true;
-		   }
-		   next = null;
-		   return false;
-	   }
-	   return next != null;
-    }
-	/* (non-Javadoc)
-     * @see java.util.Iterator#next()
-     */
-    public BugInstance next() {
-	    if (!hasNext())
-	    	throw new NoSuchElementException();
-	    BugInstance result = next;
-	    next = null;
-	    nextKnown = false;
-	    return result;
-	    
-    }
-	/* (non-Javadoc)
-     * @see java.util.Iterator#remove()
-     */
-    public void remove() {
-	    throw new UnsupportedOperationException();
-	    
-    }
 
-	   
-   }
-/* (non-Javadoc)
- * @see edu.umd.cs.findbugs.IGuiCallback#showQuestionDialog(java.lang.String, java.lang.String, java.lang.String)
- */
+    class ShownBugsIterator implements Iterator<BugInstance> {
+        Iterator<BugInstance> base = getBugCollection().getCollection().iterator();
+        boolean nextKnown;
+        BugInstance next;
 
-    /* (non-Javadoc)
- * @see edu.umd.cs.findbugs.IGuiCallback#showDocument(java.net.URL)
- */
-
-    private static class EventQueueExecutor extends AbstractExecutorService {
-        public void shutdown() {
-        }
-
-        public List<Runnable> shutdownNow() {
-            return Collections.emptyList();
-        }
-
-        public boolean isShutdown() {
-            return true;
-        }
-
-        public boolean isTerminated() {
-            return true;
-        }
-
-        public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-            return true;
-        }
-
-        public void execute(Runnable command) {
-            if (SwingUtilities.isEventDispatchThread()) {
-                command.run();
-                return;
+        public boolean hasNext() {
+            if (!nextKnown) {
+                nextKnown = true;
+                while (base.hasNext()) {
+                    next = base.next();
+                    if (shouldDisplayIssue(next))
+                        return true;
+                }
+                next = null;
+                return false;
             }
-            try {
-                SwingUtilities.invokeAndWait(command);
-            } catch (InterruptedException e) {
-                throw new IllegalStateException(e);
-            } catch (InvocationTargetException e) {
-                throw new IllegalStateException(e);
-            }
+            return next != null;
+        }
+
+        public BugInstance next() {
+            if (!hasNext())
+                throw new NoSuchElementException();
+            BugInstance result = next;
+            next = null;
+            nextKnown = false;
+            return result;
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+
         }
     }
 
-    private class MyGuiCallback implements IGuiCallback {
+    private class MyGuiCallback extends AbstractSwingGuiCallback {
+        private MyGuiCallback() {
+            super(MainFrame.this);
+        }
+
         public void registerCloud(Project project, BugCollection collection, Cloud plugin) {
             assert collection.getCloud() == plugin;
             if (MainFrame.this.bugCollection == collection) {
                 plugin.addListener(userAnnotationListener);
-plugin.addStatusListener(cloudStatusListener);
+                plugin.addStatusListener(cloudStatusListener);
             }
             // setProjectAndBugCollectionInSwingThread(project, collection);
-}
+        }
 
         public void unregisterCloud(Project project, BugCollection collection, Cloud plugin) {
             assert collection.getCloud() == plugin;
             if (MainFrame.this.bugCollection == collection) {
                 plugin.removeListener(userAnnotationListener);
-plugin.removeStatusListener(cloudStatusListener);
+                plugin.removeStatusListener(cloudStatusListener);
             }
             // Don't think we need to do this
-// setProjectAndBugCollectionInSwingThread(project, collection);
-}
-
-        public ExecutorService getBugUpdateExecutor() {
-            return bugUpdateExecutor;
+            // setProjectAndBugCollectionInSwingThread(project, collection);
         }
 
         public void setErrorMessage(String errorMsg) {
             MainFrame.this.errorMsg = errorMsg;
-            SwingUtilities.invokeLater(new Runnable(){
-
+            SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     updateStatusBar();
-}});
-        }
-
-        public void showMessageDialogAndWait(final String message) throws InterruptedException {
-            if (SwingUtilities.isEventDispatchThread())
-                JOptionPane.showMessageDialog(MainFrame.this, message);
-            else
-                try {
-                    SwingUtilities.invokeAndWait(new Runnable() {
-                        public void run() {
-                            JOptionPane.showMessageDialog(MainFrame.this, message);
-                        }
-                    });
-                } catch (InvocationTargetException e) {
-                    throw new IllegalStateException(e);
                 }
+            });
         }
 
-        public void showMessageDialog(final String message) {
-            if (SwingUtilities.isEventDispatchThread())
-                JOptionPane.showMessageDialog(MainFrame.this, message);
-            else
-                SwingUtilities.invokeLater(new Runnable(){
-                    public void run() {
-                        JOptionPane.showMessageDialog(MainFrame.this, message);
-                    }});
-        }
-
-        public int showConfirmDialog(String message, String title, String ok, String cancel) {
-            return JOptionPane.showOptionDialog(MainFrame.this, message, title,
-                                                JOptionPane.OK_CANCEL_OPTION,
-                                                JOptionPane.PLAIN_MESSAGE, null,
-                                                new Object[] { ok, cancel }, ok);
-        }
-
-        public InputStream getProgressMonitorInputStream(InputStream in, int length, String msg) {
-            ProgressMonitorInputStream pmin = new ProgressMonitorInputStream(MainFrame.this, msg, in);
-            ProgressMonitor pm = pmin.getProgressMonitor();
-
-            if (length > 0)
-                pm.setMaximum(length);
-            return pmin;
-        }
-
-        public void displayNonmodelMessage(String title, String message) {
-           DisplayNonmodelMessage.displayNonmodelMessage(title, message, MainFrame.this, true);
-        }
-
-        public String showQuestionDialog(String message, String title, String defaultValue) {
-            return (String) JOptionPane.showInputDialog(MainFrame.this, message, title, JOptionPane.QUESTION_MESSAGE, null, null, defaultValue);
-        }
-
-        public List<String> showForm(String message, String title, List<FormItem> items) {
-            JPanel panel = new JPanel();
-            panel.setLayout(new GridBagLayout());
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.fill = GridBagConstraints.BOTH;
-            gbc.weightx = 1;
-            gbc.weighty = 0;
-            gbc.gridwidth = 2;
-            gbc.gridy = 1;
-            gbc.insets = new Insets(5,5,5,5);
-            panel.add(new JLabel(message), gbc);
-            gbc.gridwidth = 1;
-            for (FormItem item : items) {
-                gbc.gridy++;
-                panel.add(new JLabel(item.getLabel()), gbc);
-                String defaultValue = item.getDefaultValue();
-                if (item.getPossibleValues() != null) {
-                    DefaultComboBoxModel model = new DefaultComboBoxModel();
-                    JComboBox box = new JComboBox(model);
-                    item.setField(box);
-                    for (String possibleValue : item.getPossibleValues()) {
-                        model.addElement(possibleValue);
-                    }
-                    if (defaultValue == null)
-                        model.setSelectedItem(model.getElementAt(0));
-                    else
-                        model.setSelectedItem(defaultValue);
-                    panel.add(box, gbc);
-
-                } else {
-                    JTextField field = (item.isPassword() ? new JPasswordField() : new JTextField());
-                    if (defaultValue != null) {
-                        field.setText(defaultValue);
-                    }
-                    item.setField(field);
-                    panel.add(field, gbc);
-                }
-            }
-
-            int result = JOptionPane.showConfirmDialog(MainFrame.this, panel, title, JOptionPane.OK_CANCEL_OPTION);
-            if (result != JOptionPane.OK_OPTION)
-                return null;
-            List<String> results = new ArrayList<String>();
-            for (FormItem item : items) {
-                JComponent field = item.getField();
-                if (field instanceof JTextComponent) {
-                    JTextComponent textComponent = (JTextComponent) field;
-                    results.add(textComponent.getText());
-                } else if (field instanceof JComboBox) {
-                    JComboBox box = (JComboBox) field;
-                    results.add((String) box.getSelectedItem());
-                }
-            }
-            return results;
-        }
-
-        public boolean showDocument(URL u) {
-            return LaunchBrowser.showDocument(u);
-        }
-
-        public boolean isHeadless() {
-            return false;
-        }
-
-        public void invokeInGUIThread(Runnable r) {
-            SwingUtilities.invokeLater(r);
-
-        }
     }
 
     private class MyCloudListener implements CloudListener {

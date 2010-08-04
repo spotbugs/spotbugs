@@ -37,7 +37,6 @@ import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
 import edu.umd.cs.findbugs.cloud.Cloud.Mode;
-import edu.umd.cs.findbugs.cloud.db.DBCloud;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -438,7 +437,7 @@ public enum Sortables implements Comparator<SortableValue>
 		public String getFrom(BugInstance bug)
 		{
 
-			 BugCollection bugCollection = MainFrame.getInstance().bugCollection;
+			 BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
 			
 			Cloud cloud =  bugCollection.getCloud();
 			assert cloud != null;
@@ -458,7 +457,7 @@ public enum Sortables implements Comparator<SortableValue>
 		}
 		@Override
 		public boolean isAvailable(MainFrame mf) {
-			BugCollection bugCollection = mf.bugCollection;
+			BugCollection bugCollection = mf.getBugCollection();
 			if (bugCollection == null || bugCollection.getCloud() == null)
 				return false;
 			return bugCollection.getCloud().supportsBugLinks() &&  bugCollection.getCloud().getMode() == Mode.COMMUNAL;
