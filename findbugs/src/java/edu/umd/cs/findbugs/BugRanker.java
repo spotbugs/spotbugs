@@ -95,11 +95,13 @@ public class BugRanker {
 			return !adjustment.containsKey(key) || isRelative.contains(key);
 		}
 		void storeAdjustment(String key, String value) {
-			int v = Integer.parseInt(value);
-			char firstChar = value.charAt(0);
-			adjustment.put(key, v);
-			if (firstChar == '+' || firstChar == '-')
-				isRelative.add(key);
+			for(String k : key.split(",")) {
+				int v = Integer.parseInt(value);
+				char firstChar = value.charAt(0);
+				adjustment.put(k, v);
+				if (firstChar == '+' || firstChar == '-')
+					isRelative.add(k);
+			}
 		}
 	}
 	
