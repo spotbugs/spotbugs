@@ -85,7 +85,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private boolean setExitCode = false;
 	private boolean noClassOk = false;
 	private int priorityThreshold = Detector.NORMAL_PRIORITY;
-	private int rankThreshold = 20;
+	private int rankThreshold = SystemProperties.getInt("findbugs.maxRank", 20);
 	private PrintStream outputStream = null;
 	private Set<String> bugCategorySet = null;
 	private UserPreferences userPreferences;
