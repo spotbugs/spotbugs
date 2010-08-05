@@ -27,10 +27,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.config.CommandLine;
+import edu.umd.cs.findbugs.util.Bag;
 
 
 /**
@@ -38,9 +41,7 @@ import edu.umd.cs.findbugs.config.CommandLine;
  * to the output stream.
  */
 public class PrintingBugReporter extends TextUIBugReporter {
-	private String stylesheet = null;
-	private boolean annotationUploadFormat = false;
-	  private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
+		  private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
 	public void observeClass(ClassDescriptor classDescriptor) {
 		// Don't need to do anything special, since we won't be
@@ -60,10 +61,16 @@ public class PrintingBugReporter extends TextUIBugReporter {
 	}
 
 	class PrintingCommandLine extends CommandLine {
+		private String stylesheet = null;
+		private boolean annotationUploadFormat = false;
+		private int maxRank = 20;
+		private boolean summarizeLowRank = false;
 
 		public PrintingCommandLine() {
 			addSwitch("-longBugCodes", "use long bug codes when generating text");
 			addSwitch("-rank", "list rank when generating text");
+			addOption("-maxRank", "max rank", "only list bugs of this rank or less");
+			addSwitch("-summarizeLowRank", "summarize low rank bugs");
 			addSwitch("-designations", "report user designations for each bug");
 			addSwitch("-history", "report first and last versions for each bug");
 			addSwitch("-applySuppression", "exclude any bugs that match suppression filters");
@@ -82,6 +89,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 				setUseLongBugCodes(true);
 			else if (option.equals("-rank"))
 				setShowRank(true);
+			else if (option.equals("-summarizeLowRank"))
+				summarizeLowRank = true;
 			else if (option.equals("-designations"))
 				setReportUserDesignations(true);
 			else if (option.equals("-applySuppression"))
@@ -113,6 +122,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 				}
 
 				DetectorFactoryCollection.rawInstance().setPluginList(pluginList.toArray(new URL[pluginList.size()]));
+			} else if (option.equals("-maxRank")) {
+				maxRank = Integer.parseInt(argument);
 			} else {
 				throw new IllegalStateException();
 			}
@@ -130,9 +141,9 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		// Load plugins, in order to get message files
 		DetectorFactoryCollection.instance();
 
-		if (reporter.stylesheet != null) {
+		if (commandLine.stylesheet != null) {
 			// actually do xsl via HTMLBugReporter instead of PrintingBugReporter
-			xslt(reporter.stylesheet, reporter.isApplySuppressions(), args, argCount);
+			xslt(commandLine.stylesheet, reporter.isApplySuppressions(), args, argCount);
 			return;
 		}
 
@@ -145,7 +156,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		if (argCount < args.length)
 			reporter.setOutputStream(new PrintStream(new FileOutputStream(args[argCount++]), true));
 		RuntimeException storedException = null;
-		if (reporter.annotationUploadFormat) {
+		if (commandLine.annotationUploadFormat) {
 			bugCollection.computeBugHashes();
 			for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
 				BugInstance warning = i.next();
@@ -171,17 +182,30 @@ public class PrintingBugReporter extends TextUIBugReporter {
 					storedException = e;
 				}
 			}
-		}
-		else {
-		for (BugInstance warning :  bugCollection.getCollection())
-		    if (!reporter.isApplySuppressions() || !bugCollection.getProject().getSuppressionFilter().match(warning) ){
-			try {
-			reporter.printBug(warning);
-			} catch (RuntimeException e) {
-				if (storedException == null) 
-				storedException = e;
+		} else {
+
+			Bag<String> lowRank = new Bag<String>(new TreeMap<String, Integer>());
+			for (BugInstance warning : bugCollection.getCollection())
+				if (!reporter.isApplySuppressions() || !bugCollection.getProject().getSuppressionFilter().match(warning)) {
+					int rank = warning.getBugRank();
+					BugPattern pattern = warning.getBugPattern();
+					if (rank > commandLine.maxRank) {
+						lowRank.add(pattern.getCategory());
+					} else
+						try {
+
+							reporter.printBug(warning);
+						} catch (RuntimeException e) {
+							if (storedException == null)
+								storedException = e;
+						}
+				}
+			if (commandLine.summarizeLowRank) {
+				for (Map.Entry<String, Integer> e : lowRank.entrySet()) {
+					System.out.printf("%4d low ranked %s issues%n", e.getValue(), I18N.instance()
+					        .getBugCategoryDescription(e.getKey()));
+				}
 			}
-		}
 		}
 		if (storedException != null) throw storedException;
 
