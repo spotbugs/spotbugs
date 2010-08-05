@@ -75,7 +75,7 @@ This plugin contains all of the standard FindBugs detectors.
   </BugCategory>
 
   <BugCategory category="STYLE">
-    <Description>Dodgy</Description>
+    <Description>Dodgy code</Description>
     <Abbreviation>D</Abbreviation>
     <Details>code that is confusing, anomalous, or
             written in a way that leads itself to errors.
