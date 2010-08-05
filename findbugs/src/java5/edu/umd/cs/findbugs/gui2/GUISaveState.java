@@ -101,6 +101,10 @@ public class GUISaveState{
 	private LinkedList<String> previousComments;
 	private boolean useDefault=false;
 	private SorterTableColumnModel starterTable;
+	private Sortables [] sortColumns;
+	
+	
+	
 	private ArrayList<File> recentFiles;
 	//private ArrayList<File> recentAnalyses;
 	private byte[] dockingLayout;
@@ -151,8 +155,13 @@ public class GUISaveState{
 
 	SorterTableColumnModel getStarterTable()
 	{
-		if (useDefault || (starterTable == null))
+		if (starterTable != null)
+			return starterTable;
+		
+		if (useDefault ||  sortColumns == null)
 			starterTable=new SorterTableColumnModel(GUISaveState.DEFAULT_COLUMN_HEADERS);
+		else
+			starterTable=new SorterTableColumnModel(sortColumns);
 
 		return starterTable;
 	}
@@ -263,24 +272,25 @@ public class GUISaveState{
 		int sorterSize=p.getInt(GUISaveState.SORTERTABLELENGTH,-1);
 		if (sorterSize!=-1)
 		{
-			Sortables[] sortColumns=new Sortables[sorterSize];
+			ArrayList<Sortables> sortColumns=new ArrayList<Sortables>();
 			String[] sortKeys=GUISaveState.generateSorterKeys(sorterSize);
 			for (int x=0;x<sorterSize;x++)
 			{
-				sortColumns[x]=Sortables.getSortableByPrettyName(p.get(sortKeys[x], "*none*"));
-				if (sortColumns[x]==null)
-				{
+				Sortables s = Sortables.getSortableByPrettyName(p.get(sortKeys[x], "*none*"));
+				
+				if (s == null) {
 					if (MainFrame.GUI2_DEBUG) System.err.println("Sort order was corrupted, using default sort order");
 					newInstance.useDefault=true;
-				}
+					break;
+				} 
+				sortColumns.add(s);
 			}
 			if(!newInstance.useDefault) {
-                // the beauty of Java
+                // add in default columns
                 Set<Sortables> missingSortColumns = new HashSet<Sortables>(Arrays.asList(DEFAULT_COLUMN_HEADERS));
-                List<Sortables> sortColumnsWithMissingCols = new ArrayList<Sortables>(Arrays.asList(sortColumns));
-                missingSortColumns.removeAll(sortColumnsWithMissingCols);
-                sortColumnsWithMissingCols.addAll(missingSortColumns);
-                newInstance.starterTable=new SorterTableColumnModel(sortColumnsWithMissingCols);
+                missingSortColumns.removeAll(sortColumns);
+                sortColumns.addAll(missingSortColumns);
+                newInstance.sortColumns= sortColumns.toArray(new Sortables[sortColumns.size()]);
             }
 		}
 		else

@@ -66,10 +66,12 @@ public class SorterTableColumnModel implements TableColumnModel {
 	}
 	public SorterTableColumnModel(Sortables[] columnHeaders){
 
-		MainFrame mainFrame =  MainFrame.isAvailable() ? MainFrame.getInstance() : null;
+		
+		MainFrame mainFrame = MainFrame.getInstance();
 		int x = 0;
 		for(Sortables c : columnHeaders) {
-			if (MainFrame.isAvailable()  && !c.isAvailable(mainFrame)) continue;
+			if (!c.isAvailable(mainFrame)) 
+				continue;
 			shown.add(c);
 
 			TableColumn tc = makeTableColumn(x, c);

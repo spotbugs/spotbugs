@@ -436,8 +436,8 @@ public enum Sortables implements Comparator<SortableValue>
 		@Override
 		public String getFrom(BugInstance bug)
 		{
-
-			 BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
+			
+			BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
 			
 			Cloud cloud =  bugCollection.getCloud();
 			assert cloud != null;
@@ -447,6 +447,7 @@ public enum Sortables implements Comparator<SortableValue>
 				if (bugStatus != null)
 					return bugStatus;
 			}
+			
 			return CONSENSUS.getFrom(bug);
 		}
 
@@ -460,7 +461,9 @@ public enum Sortables implements Comparator<SortableValue>
 			BugCollection bugCollection = mf.getBugCollection();
 			if (bugCollection == null || bugCollection.getCloud() == null)
 				return false;
-			return bugCollection.getCloud().supportsBugLinks() &&  bugCollection.getCloud().getMode() == Mode.COMMUNAL;
+			boolean a = bugCollection.getCloud().supportsBugLinks() 
+				&&  bugCollection.getCloud().getMode() == Mode.COMMUNAL;
+			return a;
 			
 		}
 	},

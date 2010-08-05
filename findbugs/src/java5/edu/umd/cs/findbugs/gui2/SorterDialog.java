@@ -109,7 +109,7 @@ public class SorterDialog extends FBDialog {
 		preview.setColumnModel(new SorterTableColumnModel(sortables));
 
 		
-		for(Sortables s : sortables){
+		for(Sortables s : sortables) if (s != Sortables.DIVIDER){
 			checkBoxSortList.add(new SortableCheckBox(s));
 		}
 
