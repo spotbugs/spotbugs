@@ -10,12 +10,17 @@ import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.program.Program;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -67,9 +72,22 @@ public class EclipseGuiCallback implements IGuiCallback {
 		cloud.removeListener(cloudListener);
 	}
 
-	public String showQuestionDialog(String message, String title, String defaultValue) {
-		System.out.println(message);
-		return defaultValue;
+	public String showQuestionDialog(String message, String title, final String defaultValue) {
+		final AtomicReference<Text> textBoxRef = new AtomicReference<Text>();
+		MessageDialog dlg = new MessageDialog(FindbugsPlugin.getShell(), title, null, message,
+				MessageDialog.QUESTION, new String[] {"OK", "Cancel"}, 1) {
+					@Override
+					protected Control createCustomArea(Composite parent) {
+						Text text = new Text(parent, SWT.SINGLE);
+						text.setText(defaultValue);
+						textBoxRef.set(text);
+						return text;
+					}
+
+		};
+
+		dlg.open();
+		return textBoxRef.get().getText();
 	}
 
 	public void showMessageDialogAndWait(String message) throws InterruptedException {

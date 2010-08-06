@@ -26,8 +26,6 @@ import java.util.concurrent.Executors;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.SelectionEvent;
@@ -43,11 +41,9 @@ import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbenchPart;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.reporter.MarkerUtil.BugCollectionAndInstance;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
@@ -117,7 +113,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 //		main.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, true));
 		designationComboBox = new Combo(main, SWT.LEFT | SWT.DROP_DOWN
 				| SWT.READ_ONLY);
-		designationComboBox.setToolTipText("User-specified bug designation");
+		designationComboBox.setToolTipText("My bug designation");
 		designationComboBox.setLayoutData(new GridData());
 		for (String s : I18N.instance().getUserDesignationKeys(true)) {
 			designationComboBox.add(I18N.instance().getUserDesignation(s));
@@ -155,8 +151,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 
 		userAnnotationTextField = new Text(main, SWT.LEFT | SWT.WRAP
 				| SWT.BORDER);
-		userAnnotationTextField
-				.setToolTipText("Type comments about the selected bug here");
+		userAnnotationTextField.setToolTipText("My bug comments");
 		userAnnotationTextField.setEnabled(false);
 		GridData uatfData = new GridData(GridData.FILL_BOTH);
 		uatfData.horizontalSpan = 2;
@@ -273,7 +268,9 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 			if (lastCloud != null) {
 				lastCloud.removeListener(cloudListener);
 			}
-			cloud.addListener(cloudListener);
+			if (cloud != null) {
+				cloud.addListener(cloudListener);
+			}
 			lastCloud = cloud;
 		}
 	}
@@ -288,17 +285,11 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 	 *            for
 	 */
 	private void showInView(IMarker marker) {
-		if (marker == null) {
-			return;
-		}
-		String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
-		BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
-		if (pattern == null) {
-			return;
-		}
-		BugCollectionAndInstance bci = MarkerUtil.findBugCollectionAndInstanceForMarker(marker);
+		//if (marker == null) {
+			//return;
+		//}
 
-
+		BugCollectionAndInstance bci = marker == null ? null : MarkerUtil.findBugCollectionAndInstanceForMarker(marker);
 
 		setContent(bci);
 

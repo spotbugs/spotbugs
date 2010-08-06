@@ -38,8 +38,8 @@ final class MarkerSelectionListener implements ISelectionListener {
 			return;
 		}
 		IMarker marker = MarkerUtil.getMarkerFromSingleSelection(theSelection);
-		if (marker != null) {
+		//if (marker != null) {
 			handler.markerSelected(thePart, marker);
-		}
+		//}
 	}
 }
