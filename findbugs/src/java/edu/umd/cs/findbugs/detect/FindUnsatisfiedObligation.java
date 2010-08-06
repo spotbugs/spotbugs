@@ -659,16 +659,16 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 
 					SourceLineAnnotation sourceLine =
 						SourceLineAnnotation.fromVisitedInstruction(methodDescriptor, new Location(handle, curBlock));
-
+					sourceLine.setDescription(
+							isCreation ? SourceLineAnnotation.ROLE_OBLIGATION_CREATED : SourceLineAnnotation.ROLE_PATH_CONTINUES);
+						
 					boolean isInteresting = (sourceLine.getStartLine() > 0) &&
-						(lastSourceLine == null || !sourceLine.equals(lastSourceLine));
+						(lastSourceLine == null || sourceLine.getStartLine() != lastSourceLine.getStartLine());
 
 					if (REPORT_PATH_DEBUG) {
 						System.out.println("  " + handle.getPosition() + " --> " + sourceLine + (isInteresting ? " **" : ""));
 					}
 					if (isInteresting) {
-						sourceLine.setDescription(
-							isCreation ? SourceLineAnnotation.ROLE_OBLIGATION_CREATED : SourceLineAnnotation.ROLE_PATH_CONTINUES);
 						bugInstance.add(sourceLine);
 						lastSourceLine = sourceLine;
 						if (isCreation) {
