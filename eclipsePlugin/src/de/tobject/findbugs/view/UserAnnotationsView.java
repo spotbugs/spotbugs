@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
+import edu.umd.cs.findbugs.cloud.Cloud.CloudTask;
 
 /**
  * View which shows bug annotations.
@@ -93,6 +94,11 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 			if (theBug != null && bug.equals(theBug.getBugInstance())) {
 				updateBugInfo();
 			}
+		}
+
+		public void taskStarted(CloudTask task) {
+			// TODO Auto-generated method stub
+			
 		}
 	};
 
