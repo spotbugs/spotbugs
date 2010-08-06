@@ -83,4 +83,8 @@ public class MutableCloudTask implements Cloud.CloudTask {
         listeners.clear();
         defaultListener = null;
     }
+
+    public boolean isUsingDefaultListener() {
+        return listeners.isEmpty();
+    }
 }

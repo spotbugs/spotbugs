@@ -1,5 +1,11 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.cloud.Cloud;
@@ -10,13 +16,6 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluatio
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import org.mockito.Mockito;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -99,7 +98,8 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         checkStoredEvaluationMatches(lastEval, cloud.getPrimaryDesignation(foundIssue));
         cloud.checkStatusBarHistory(
                 "Checking FindBugs Cloud for updates",
-                "Checking FindBugs Cloud for updates...found 1");
+                "",
+                "FindBugs Cloud: found 1 updated bug evaluations");
     }
 
     @SuppressWarnings("deprecation")
@@ -133,7 +133,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         // verify
         cloud.checkStatusBarHistory(
                 "Checking FindBugs Cloud for updates",
-                "Checking FindBugs Cloud for updates...failed - server returned error code 500 null");
+                "Checking FindBugs Cloud for updates: FAILED - server returned error code 500 null");
     }
 
     @SuppressWarnings({"deprecation", "ThrowableInstanceNeverThrown"})
@@ -157,7 +157,8 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         verify(cloud.mockGuiCallback).showMessageDialog(matches("(?s).*error.*signed out.*Cloud.*"));
         cloud.checkStatusBarHistory(
                 "Checking FindBugs Cloud for updates",
-                "Signed out of FindBugs Cloud");
+                "Signed out of FindBugs Cloud",
+                "");
     }
 
     @SuppressWarnings({"deprecation", "ThrowableInstanceNeverThrown"})
@@ -180,7 +181,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
                 .showMessageDialog(Mockito.anyString());
         cloud.checkStatusBarHistory(
                 "Checking FindBugs Cloud for updates",
-                "Checking FindBugs Cloud for updates...failed - blah");
+                "Checking FindBugs Cloud for updates: FAILED - blah");
     }
 
     public void testGetRecentEvaluationsOverwritesOldEvaluationsFromSamePerson()
