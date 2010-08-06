@@ -119,7 +119,6 @@ public class EvaluationsFromXmlUploader {
             return false;
         return !loaded.getDesignationKey().equals(inCloud.getDesignationKey())
                 || !Util.nullSafeEquals(loaded.getAnnotationText(), inCloud.getAnnotationText());
-
     }
 
     private Multiset<String> getAuthors(
@@ -168,16 +167,11 @@ public class EvaluationsFromXmlUploader {
             String statusMsg = designationsLoadedFromXML.size() + " issues from XML uploaded to cloud";
             System.out.println(statusMsg);
             cloud.setStatusMsg(statusMsg);
-        } catch (Exception e) {
-            final String errorMsg = "Unable to upload " + (designationsLoadedFromXML.size() - uploaded)
-                    + " issues from XML to cloud due to error\n" + e.getMessage();
-            cloud.getGuiCallback().invokeInGUIThread(new Runnable() {
-                public void run() {
-                    cloud.getGuiCallback().showMessageDialog(
-                            errorMsg);
 
-                }
-            });
+        } catch (Exception e) {
+            cloud.getGuiCallback().showMessageDialog(
+                    "Unable to upload " + (designationsLoadedFromXML.size() - uploaded)
+                            + " issues from XML to cloud due to error\n" + e.getMessage());
 
 
         }

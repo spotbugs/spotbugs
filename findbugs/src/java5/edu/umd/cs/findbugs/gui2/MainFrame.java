@@ -2598,6 +2598,9 @@ public class MainFrame extends FBFrame implements LogSync {
         public void statusUpdated() {
             SwingUtilities.invokeLater(updateStatusBarRunner);
         }
+
+        public void taskStarted(Cloud.CloudTask task) {
+        }
     }
 
     private class MyCloudStatusListener implements Cloud.CloudStatusListener {

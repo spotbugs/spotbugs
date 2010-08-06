@@ -1,5 +1,20 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+
 import com.google.common.collect.Lists;
 import com.google.protobuf.GeneratedMessage;
 import edu.umd.cs.findbugs.BugCollection;
@@ -13,23 +28,6 @@ import junit.framework.Assert;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Properties;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.matches;
@@ -166,6 +164,9 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
                 synchronized (statusMsgLock) {
                     statusMsgLock.notifyAll();
                 }
+            }
+
+            public void taskStarted(CloudTask task) {
             }
         });
     }

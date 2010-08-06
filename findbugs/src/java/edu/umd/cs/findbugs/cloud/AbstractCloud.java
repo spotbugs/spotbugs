@@ -407,7 +407,8 @@ public abstract class AbstractCloud implements Cloud {
 	public int getNumberReviewers(BugInstance b) {
 		int count = 0;
 		Iterable<BugDesignation> designations = getLatestDesignationFromEachUser(b);
-		for (BugDesignation designation : designations) {
+        //noinspection UnusedDeclaration
+        for (BugDesignation designation : designations) {
 			count++;
 		}
 		return count;
@@ -642,6 +643,28 @@ public abstract class AbstractCloud implements Cloud {
 
 	}
 
+    public MutableCloudTask createTask(final String name) {
+        MutableCloudTask task = new MutableCloudTask(name);
+        for (CloudListener listener : listeners) {
+            listener.taskStarted(task);
+        }
+        setStatusMsg(name);
+        task.setDefaultListener(new CloudTaskListener() {
+            public void taskStatusUpdated(String statusLine, double percentCompleted) {
+                setStatusMsg(name + ": " + statusLine);
+            }
+
+            public void taskFinished() {
+                setStatusMsg(name + ": Done");
+            }
+
+            public void taskFailed(String message) {
+                setStatusMsg(name + ": FAILED - " + message);
+            }
+        });
+        return task;
+    }
+
 	public void setStatusMsg(String newMsg) {
 		this.statusMsg = newMsg;
 		updatedStatus();
@@ -714,4 +737,5 @@ public abstract class AbstractCloud implements Cloud {
 			result.add(d.getUser());
 		return result;
 	}
+
 }

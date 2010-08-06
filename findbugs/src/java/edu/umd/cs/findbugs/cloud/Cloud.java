@@ -228,11 +228,27 @@ public interface Cloud {
     interface CloudListener {
 		void issueUpdated(BugInstance bug);
 		void statusUpdated();
+        void taskStarted(CloudTask task);
 	}
 
-    public interface CloudStatusListener {
+    interface CloudStatusListener {
         void handleIssueDataDownloadedEvent();
         void handleStateChange(SigninState oldState, SigninState state);
+    }
+
+    interface CloudTask {
+        String getName();
+        String getStatusLine();
+        double getPercentCompleted();
+        void addListener(CloudTaskListener listener);
+        void removeListener(CloudTaskListener listener);
+        boolean isFinished();
+    }
+
+    interface CloudTaskListener {
+        void taskStatusUpdated(String statusLine, double percentCompleted);
+        void taskFinished();
+        void taskFailed(String message);
     }
 
 	enum SigninState {

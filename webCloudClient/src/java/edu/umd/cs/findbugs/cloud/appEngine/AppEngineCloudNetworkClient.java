@@ -1,28 +1,55 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import com.google.protobuf.GeneratedMessage;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.SignInCancelledException;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.*;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps.IssueGroup;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.Builder;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.google.protobuf.GeneratedMessage;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.MutableCloudTask;
+import edu.umd.cs.findbugs.cloud.SignInCancelledException;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps.IssueGroup;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.Builder;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
 
@@ -142,7 +169,7 @@ public class AppEngineCloudNetworkClient {
         }
     }
 
-    public void generateHashCheckRunnables(final List<String> hashes,
+    public void generateHashCheckRunnables(final MutableCloudTask task, final List<String> hashes,
                                            List<Callable<Object>> tasks,
                                            final ConcurrentMap<String, BugInstance> bugsByHash) {
         final int numBugs = hashes.size();
@@ -153,8 +180,8 @@ public class AppEngineCloudNetworkClient {
                 public Object call() throws Exception {
                     checkHashesPartition(partition, bugsByHash);
                     numberOfBugsCheckedSoFar.addAndGet(partition.size());
-                    cloudClient.setStatusMsg("Checking " + numBugs + " bugs against the FindBugs Cloud..."
-                                             + (numberOfBugsCheckedSoFar.get() * 100 / numBugs) + "%");
+                    int sofar = numberOfBugsCheckedSoFar.get();
+                    task.update("Checked " + sofar + " of " + numBugs, (sofar * 100.0 / numBugs));
                     return null;
                 }
             });
@@ -165,11 +192,11 @@ public class AppEngineCloudNetworkClient {
         return timestampsToUpdate;
     }
 
-    public void generateUpdateTimestampRunnables(List<Callable<Object>> callables) throws SignInCancelledException {
+    public MutableCloudTask generateUpdateTimestampRunnables(List<Callable<Object>> callables) throws SignInCancelledException {
         List<String> timestamps = new ArrayList<String>(timestampsToUpdate);
-        int bugCount = timestamps.size();
+        final int bugCount = timestamps.size();
         if (bugCount == 0)
-            return;
+            return null;
 
         final List<BugInstance> bugs = new ArrayList<BugInstance>();
         long biggestDiffMs = 0;
@@ -192,7 +219,7 @@ public class AppEngineCloudNetworkClient {
         }
         if (!someZeroOnCloud && biggestDiffMs < 1000 * 60)
             // less than 1 minute off
-            return;
+            return null;
 
         // if some bugs have a zero timestamp, let's not bother telling the user anything specific
         String durationStr;
@@ -222,7 +249,7 @@ public class AppEngineCloudNetworkClient {
                 "(If you're not sure the time and time zone are correct, click Cancel.)",
                 "FindBugs Cloud", "Update", "Cancel");
         if (result != 0)
-            return;
+            return null;
 
         cloudClient.signInIfNecessary(null);
 
@@ -238,25 +265,31 @@ public class AppEngineCloudNetworkClient {
             }
         });
 
+        final MutableCloudTask task = cloudClient.createTask("Updating bug timestamps on FindBugs Cloud");
+        final AtomicInteger soFar = new AtomicInteger(0);
         for (int i = 0; i < bugCount; i += BUG_UPDATE_PARTITION_SIZE) {
             final List<BugInstance> partition = bugs.subList(i, Math.min(bugCount, i + BUG_UPLOAD_PARTITION_SIZE));
 
             callables.add(new Callable<Object>() {
                 public Object call() throws Exception {
                     updateTimestampsNow(partition);
+                    int updated = soFar.addAndGet(partition.size());
+                    task.update(updated + " of " + bugCount, updated * 100.0 / bugCount);
                     return null;
                 }
             });
         }
+        return task;
     }
 
-    public void generateUploadRunnables(final List<BugInstance> newBugs, List<Callable<Object>> callables)
+    public MutableCloudTask generateUploadRunnables(final List<BugInstance> newBugs, List<Callable<Object>> callables)
             throws SignInCancelledException {
         final int bugCount = newBugs.size();
         if (bugCount == 0)
-            return;
+            return null;
         cloudClient.signInIfNecessary("Some bugs were not found on the FindBugs Cloud service.\n" +
                                       "Would you like to sign in and upload them to the Cloud?");
+        final MutableCloudTask task = cloudClient.createTask("Uploading issues to the FindBugs Cloud");
         final AtomicInteger bugsUploaded = new AtomicInteger(0);
         for (int i = 0; i < bugCount; i += BUG_UPLOAD_PARTITION_SIZE) {
             final List<BugInstance> partition = newBugs.subList(i, Math.min(bugCount, i + BUG_UPLOAD_PARTITION_SIZE));
@@ -264,12 +297,14 @@ public class AppEngineCloudNetworkClient {
                 public Object call() throws Exception {
                     uploadNewBugsPartition(partition);
                     bugsUploaded.addAndGet(partition.size());
-                    cloudClient.setStatusMsg("Uploading " + bugCount + " new bugs to the FindBugs Cloud..."
-                                             + (bugsUploaded.get() * 100 / bugCount) + "%");
+                    int uploaded = bugsUploaded.get();
+                    task.update("Uploaded " + uploaded + " of " + bugCount,
+                                uploaded * 100.0 / bugCount);
                     return null;
                 }
             });
         }
+        return task;
     }
 
     public long getFirstSeenFromCloud(BugInstance b) {

@@ -1,21 +1,5 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import com.google.gdata.client.authn.oauth.OAuthException;
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.AbstractCloud;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.SignInCancelledException;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
-import edu.umd.cs.findbugs.util.Util;
-
-import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -44,6 +28,24 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.xml.rpc.ServiceException;
+
+import com.google.gdata.client.authn.oauth.OAuthException;
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.MutableCloudTask;
+import edu.umd.cs.findbugs.cloud.SignInCancelledException;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import edu.umd.cs.findbugs.util.Util;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 
@@ -142,7 +144,6 @@ public class AppEngineCloudClient extends AbstractCloud {
             if (networkClient.initialize()) {
 
                 setSigninState(SigninState.SIGNED_IN);
-                setStatusMsg("");
 
             } else {
                 // soft init didn't work
@@ -260,21 +261,24 @@ public class AppEngineCloudClient extends AbstractCloud {
             if (getSigninState() == SigninState.SIGNED_IN)
                 return;
             setSigninState(SigninState.SIGNING_IN);
-            setStatusMsg("Signing into FindBugs Cloud");
+            MutableCloudTask task = createTask("Signing into the FindBugs Cloud");
             try {
-                networkClient.signIn(true);
-                networkClient.logIntoCloudForce();
-            } catch (IOException e) {
-                setSigninState(SigninState.SIGNIN_FAILED);
-                throw e;
+                try {
+                    networkClient.signIn(true);
+                    networkClient.logIntoCloudForce();
+                } catch (IOException e) {
+                    setSigninState(SigninState.SIGNIN_FAILED);
+                    throw e;
 
-            } catch (RuntimeException e) {
-                setSigninState(SigninState.SIGNIN_FAILED);
-                throw e;
+                } catch (RuntimeException e) {
+                    setSigninState(SigninState.SIGNIN_FAILED);
+                    throw e;
+                }
+
+                setSigninState(SigninState.SIGNED_IN);
+            } finally {
+                task.finished();
             }
-
-            setSigninState(SigninState.SIGNED_IN);
-            setStatusMsg("");
         }
         SigninState newState = getSigninState();
         if (oldState == SigninState.SIGNED_OUT && newState == SigninState.SIGNED_IN) {
@@ -540,23 +544,25 @@ public class AppEngineCloudClient extends AbstractCloud {
 		}
 
         int numBugs = bugsByHash.size();
-        String msg = "Checking " + numBugs + " bugs against the FindBugs Cloud...";
-        LOGGER.info(msg);
-        setStatusMsg(msg);
-
-        
+        MutableCloudTask task = createTask("Checking " + numBugs + " bugs against the FindBugs Cloud");
         try {
-            List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
-            networkClient.generateHashCheckRunnables(new ArrayList<String>(bugsByHash.keySet()), tasks, bugsByHash);
-            executeAndWaitForAll(tasks);
-        } finally {
-        	issueDataDownloaded.countDown();
-            fireIssueDataDownloadedEvent();
-        }
+            LOGGER.info("Checking " + numBugs + " bugs against the FindBugs Cloud...");
 
-        if (getSigninState() == SigninState.SIGNIN_FAILED) {
-            markNewIssuesUploaded();
-            return;
+            try {
+                List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
+                networkClient.generateHashCheckRunnables(task, new ArrayList<String>(bugsByHash.keySet()), tasks, bugsByHash);
+                executeAndWaitForAll(tasks);
+            } finally {
+                issueDataDownloaded.countDown();
+                fireIssueDataDownloadedEvent();
+            }
+
+            if (getSigninState() == SigninState.SIGNIN_FAILED) {
+                markNewIssuesUploaded();
+                return;
+            }
+        } finally {
+            task.finished();
         }
 
         Collection<BugInstance> newBugs = bugsByHash.values();
@@ -599,13 +605,13 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     /** package-private for testing */
 	void updateEvaluationsFromServer() throws IOException {
-		setStatusMsg("Checking FindBugs Cloud for updates");
+		MutableCloudTask task = createTask("Checking FindBugs Cloud for updates");
 
 		RecentEvaluations evals;
 		try {
 			evals = networkClient.getRecentEvaluationsFromServer();
 		} catch (ServerReturnedErrorCodeException e) {
-            setStatusMsg("Checking FindBugs Cloud for updates...failed - " + e.getMessage());
+            task.failed(e.getMessage());
 			throw e;
         } catch (IOException e) {
             if (getSigninState() == SigninState.SIGNED_IN) {
@@ -621,17 +627,17 @@ public class AppEngineCloudClient extends AbstractCloud {
                         "of the FindBugs window. Any changes you make while offline will be uploaded\n" +
                         "to the server upon signin.");
             } else {
-                setStatusMsg("Checking FindBugs Cloud for updates...failed - " + e.getMessage());
+                task.failed(e.getMessage());
             }
             throw e;
         } catch (RuntimeException e) {
-            setStatusMsg("Checking FindBugs Cloud for updates...failed - " + e.getMessage());
+            task.failed(e.getMessage());
 			throw e;
-		}
+		} finally {
+            task.finished();
+        }
 		if (evals.getIssuesCount() > 0)
-			setStatusMsg("Checking FindBugs Cloud for updates...found " + evals.getIssuesCount());
-		else
-			setStatusMsg("");
+			setStatusMsg("FindBugs Cloud: found " + evals.getIssuesCount() + " updated bug evaluations");
 		for (Issue updatedIssue : evals.getIssuesList()) {
             String protoHash = decodeHash(updatedIssue.getHash());
             Issue existingIssue = networkClient.getIssueByHash(protoHash);
@@ -655,17 +661,23 @@ public class AppEngineCloudClient extends AbstractCloud {
         backgroundExecutorService.execute(new Runnable() {
             public void run() {
                 List<Callable<Object>> callables = new ArrayList<Callable<Object>>();
+                MutableCloudTask taskA = null;
+                MutableCloudTask taskB = null;
                 try {
-                    networkClient.generateUploadRunnables(newBugs, callables);
-                    networkClient.generateUpdateTimestampRunnables(callables);
+                    taskA = networkClient.generateUploadRunnables(newBugs, callables);
+                    taskB = networkClient.generateUpdateTimestampRunnables(callables);
                     executeAndWaitForAll(callables);
 
                 } catch (SignInCancelledException e) {
                     // OK!
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "", e);
+                } finally {
+                    if (taskA != null)
+                        taskA.finished();
+                    if (taskB != null)
+                        taskB.finished();
                 }
-                setStatusMsg("");
                 markNewIssuesUploaded();
             }
         });
