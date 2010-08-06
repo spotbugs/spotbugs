@@ -261,7 +261,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             if (getSigninState() == SigninState.SIGNED_IN)
                 return;
             setSigninState(SigninState.SIGNING_IN);
-            MutableCloudTask task = createTask("Signing into the FindBugs Cloud");
+            MutableCloudTask task = createTask("Signing into FindBugs Cloud");
             try {
                 try {
                     networkClient.signIn(true);
@@ -537,14 +537,14 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     private void actuallyCheckBugsAgainstCloud()
             throws ExecutionException, InterruptedException {
-    	 ConcurrentHashMap<String, BugInstance> bugsByHash = new ConcurrentHashMap<String, BugInstance>();
+    	ConcurrentHashMap<String, BugInstance> bugsByHash = new ConcurrentHashMap<String, BugInstance>();
 
 		for(BugInstance b : bugCollection.getCollection()) {
 			bugsByHash.put(b.getInstanceHash(), b);
 		}
 
         int numBugs = bugsByHash.size();
-        MutableCloudTask task = createTask("Checking " + numBugs + " bugs against the FindBugs Cloud");
+        MutableCloudTask task = createTask("Checking FindBugs Cloud");
         try {
             LOGGER.info("Checking " + numBugs + " bugs against the FindBugs Cloud...");
 

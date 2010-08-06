@@ -12,6 +12,7 @@ public class MutableCloudTask implements Cloud.CloudTask {
     /** A listener used only if no other listeners are present. */
     private Cloud.CloudTaskListener defaultListener;
     private boolean finished = false;
+    private boolean useDefaultListener = true;
 
     public MutableCloudTask(String name) {
         this.name = name;
@@ -39,6 +40,10 @@ public class MutableCloudTask implements Cloud.CloudTask {
 
     public boolean isFinished() {
         return finished;
+    }
+
+    public void setUseDefaultListener(boolean enabled) {
+        this.useDefaultListener = enabled;
     }
 
     public void update(String substatus, double percentDone) {
@@ -72,7 +77,7 @@ public class MutableCloudTask implements Cloud.CloudTask {
 
     private List<Cloud.CloudTaskListener> getListeners() {
         List<Cloud.CloudTaskListener> myListeners = new ArrayList<Cloud.CloudTaskListener>(listeners);
-        if (myListeners.isEmpty() && defaultListener != null) {
+        if (useDefaultListener && myListeners.isEmpty() && defaultListener != null) {
             myListeners.add(defaultListener);
         }
         return myListeners;

@@ -243,6 +243,7 @@ public interface Cloud {
         void addListener(CloudTaskListener listener);
         void removeListener(CloudTaskListener listener);
         boolean isFinished();
+        void setUseDefaultListener(boolean enabled);
     }
 
     interface CloudTaskListener {

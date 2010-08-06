@@ -265,7 +265,7 @@ public class AppEngineCloudNetworkClient {
             }
         });
 
-        final MutableCloudTask task = cloudClient.createTask("Updating bug timestamps on FindBugs Cloud");
+        final MutableCloudTask task = cloudClient.createTask("Updating FindBugs Cloud");
         final AtomicInteger soFar = new AtomicInteger(0);
         for (int i = 0; i < bugCount; i += BUG_UPDATE_PARTITION_SIZE) {
             final List<BugInstance> partition = bugs.subList(i, Math.min(bugCount, i + BUG_UPLOAD_PARTITION_SIZE));
@@ -274,7 +274,7 @@ public class AppEngineCloudNetworkClient {
                 public Object call() throws Exception {
                     updateTimestampsNow(partition);
                     int updated = soFar.addAndGet(partition.size());
-                    task.update(updated + " of " + bugCount, updated * 100.0 / bugCount);
+                    task.update("Updated " + updated + " of " + bugCount + " timestamps", updated * 100.0 / bugCount);
                     return null;
                 }
             });
@@ -289,7 +289,7 @@ public class AppEngineCloudNetworkClient {
             return null;
         cloudClient.signInIfNecessary("Some bugs were not found on the FindBugs Cloud service.\n" +
                                       "Would you like to sign in and upload them to the Cloud?");
-        final MutableCloudTask task = cloudClient.createTask("Uploading issues to the FindBugs Cloud");
+        final MutableCloudTask task = cloudClient.createTask("Uploading to the FindBugs Cloud");
         final AtomicInteger bugsUploaded = new AtomicInteger(0);
         for (int i = 0; i < bugCount; i += BUG_UPLOAD_PARTITION_SIZE) {
             final List<BugInstance> partition = newBugs.subList(i, Math.min(bugCount, i + BUG_UPLOAD_PARTITION_SIZE));
@@ -298,7 +298,7 @@ public class AppEngineCloudNetworkClient {
                     uploadNewBugsPartition(partition);
                     bugsUploaded.addAndGet(partition.size());
                     int uploaded = bugsUploaded.get();
-                    task.update("Uploaded " + uploaded + " of " + bugCount,
+                    task.update("Uploaded " + uploaded + " of " + bugCount + " issues",
                                 uploaded * 100.0 / bugCount);
                     return null;
                 }
