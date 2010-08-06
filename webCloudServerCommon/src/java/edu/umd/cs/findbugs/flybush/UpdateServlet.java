@@ -1,23 +1,5 @@
 package edu.umd.cs.findbugs.flybush;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps.IssueGroup;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
-
-import javax.jdo.JDOObjectNotFoundException;
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-import javax.jdo.Transaction;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -28,6 +10,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+
+import javax.jdo.JDOObjectNotFoundException;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.jdo.Transaction;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps.IssueGroup;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 
 @SuppressWarnings("serial")
 public class UpdateServlet extends AbstractFlybushServlet {
@@ -297,6 +298,10 @@ public class UpdateServlet extends AbstractFlybushServlet {
             setResponse(resp, 403, "not authenticated");
             return;
         }
+
+        LOGGER.info("Evaluation from " + session.getEmail() + ": "
+                + uploadEvalMsg.getEvaluation().getDesignation() 
+                + " - " + uploadEvalMsg.getEvaluation().getComment());
 
         DbEvaluation dbEvaluation = createDbEvaluation(uploadEvalMsg.getEvaluation());
         dbEvaluation.setWho(session.getUser());
