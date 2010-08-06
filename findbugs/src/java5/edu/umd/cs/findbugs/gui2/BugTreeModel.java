@@ -272,18 +272,6 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 		}
 
 
-		private static SortableValue[] getValues(Sortables key)
-		{
-			String[] values= key.getAllSorted();
-			SortableValue[] result = new SortableValue[values.length];
-			for (int i = 0; i < values.length; i++)
-			{
-				result[i] = new SortableValue(key, values[i]);
-			}
-			return result;
-
-		}
-
 		public void columnAdded(TableColumnModelEvent e)
 		{
 			sortsAddedOrRemoved=true;
