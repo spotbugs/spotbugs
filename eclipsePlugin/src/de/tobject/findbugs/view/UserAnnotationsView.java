@@ -88,6 +88,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 
 	private final CloudListener cloudListener = new CloudListener() {
 		public void statusUpdated() {
+			// noop
 		}
 
 		public void issueUpdated(BugInstance bug) {
@@ -97,8 +98,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		}
 
 		public void taskStarted(CloudTask task) {
-			// TODO Auto-generated method stub
-			
+			// noop
 		}
 	};
 
@@ -287,18 +287,12 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 	 * @param thePart
 	 *
 	 * @param marker
-	 *            the FindBugs marker containing the bug pattern to show details
+	 *            may be null, or marker containing the bug pattern to show details
 	 *            for
 	 */
 	private void showInView(IMarker marker) {
-		//if (marker == null) {
-			//return;
-		//}
-
 		BugCollectionAndInstance bci = marker == null ? null : MarkerUtil.findBugCollectionAndInstanceForMarker(marker);
-
 		setContent(bci);
-
 	}
 
 	public void markerSelected(IWorkbenchPart thePart, IMarker newMarker) {

@@ -77,7 +77,9 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
 	public void markerSelected(IWorkbenchPart part, IMarker marker) {
 		BugContentProvider provider = BugContentProvider.getProvider(getNavigatorContentService());
 		CommonViewer commonViewer = getCommonViewer();
-		if(provider.isFiltered(marker)){
+		if(marker == null) {
+			commonViewer.setSelection(new StructuredSelection(), false);
+		} else if(provider.isFiltered(marker)){
 			Object parent = provider.getParent(marker);
 			if(parent != null) {
 				commonViewer.setSelection(new StructuredSelection(parent), true);

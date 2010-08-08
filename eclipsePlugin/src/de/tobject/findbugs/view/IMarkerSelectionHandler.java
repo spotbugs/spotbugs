@@ -24,7 +24,7 @@ import org.eclipse.ui.IWorkbenchPart;
 public interface IMarkerSelectionHandler {
 	/**
 	 * @param thePart non null part in which the marker was selected
-	 * @param marker non null, existing FindBugs marker
+	 * @param marker may be null or existing FindBugs marker
 	 */
 	void markerSelected(IWorkbenchPart thePart, IMarker marker);
 
