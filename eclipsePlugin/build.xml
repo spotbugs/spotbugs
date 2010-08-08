@@ -220,7 +220,7 @@
 	</target>
 
 	<!-- Build source distribution.  Must have 'svnant.home' set properly. -->
-	<target name="srcdist" depends="clean,classes,version,dist">
+	<target name="srcdist" depends="clean,classes,version,dist" unless="doNotExportSrc">
 		<echo message="Creating FindBugs Eclipse plugin source distribution"/>
 		<fail unless="svnant.home"
 			message="Please specify path to the svnant-1.2.1 root folder in local.properties file, like svnant.home=F:\\java\\libs\\svnant-1.2.1"/>
