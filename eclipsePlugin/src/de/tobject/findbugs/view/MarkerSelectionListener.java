@@ -26,7 +26,7 @@ import org.eclipse.ui.views.properties.PropertySheet;
 
 import de.tobject.findbugs.reporter.MarkerUtil;
 
-final class MarkerSelectionListener implements ISelectionListener {
+class MarkerSelectionListener implements ISelectionListener {
 	private final IMarkerSelectionHandler handler;
 
 	public MarkerSelectionListener(IMarkerSelectionHandler handler) {

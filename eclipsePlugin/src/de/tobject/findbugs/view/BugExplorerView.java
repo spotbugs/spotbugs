@@ -55,6 +55,8 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
 
 	private IMemento viewMemento;
 
+	protected boolean selectionInProgress;
+
 	public BugExplorerView() {
 		super();
 	}
@@ -65,7 +67,14 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
 		// Add selection listener to detect click in problems view or in tree view
 		ISelectionService theService = getSite().getWorkbenchWindow()
 				.getSelectionService();
-		selectionListener = new MarkerSelectionListener(this);
+		selectionListener = new MarkerSelectionListener(this) {
+			@Override
+			public void selectionChanged(IWorkbenchPart thePart, ISelection theSelection) {
+				selectionInProgress = true;
+				super.selectionChanged(thePart, theSelection);
+				selectionInProgress = false;
+			}
+		};
 		theService.addSelectionListener(selectionListener);
 		getCommonViewer().addSelectionChangedListener(this);
 	}
@@ -75,6 +84,9 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
 	}
 
 	public void markerSelected(IWorkbenchPart part, IMarker marker) {
+		if(selectionInProgress) {
+			return;
+		}
 		BugContentProvider provider = BugContentProvider.getProvider(getNavigatorContentService());
 		CommonViewer commonViewer = getCommonViewer();
 		if(marker == null) {
