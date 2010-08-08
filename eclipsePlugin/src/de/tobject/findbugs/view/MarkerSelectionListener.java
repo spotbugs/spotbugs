@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.views.properties.PropertySheet;
 
 import de.tobject.findbugs.reporter.MarkerUtil;
 
@@ -38,8 +39,11 @@ final class MarkerSelectionListener implements ISelectionListener {
 			return;
 		}
 		IMarker marker = MarkerUtil.getMarkerFromSingleSelection(theSelection);
-		//if (marker != null) {
-			handler.markerSelected(thePart, marker);
-		//}
+		// ignore selections from property view: if this view shows our bug,
+		// we simply can't switch to any other Property view pane or select some text...
+		if (marker == null && thePart instanceof PropertySheet) {
+			return;
+		}
+		handler.markerSelected(thePart, marker);
 	}
 }
