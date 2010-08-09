@@ -64,13 +64,13 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		private String stylesheet = null;
 		private boolean annotationUploadFormat = false;
 		private int maxRank = 20;
-		private boolean summarizeLowRank = false;
-
+		private int summarizeMaxRank = 20;
+		
 		public PrintingCommandLine() {
 			addSwitch("-longBugCodes", "use long bug codes when generating text");
 			addSwitch("-rank", "list rank when generating text");
 			addOption("-maxRank", "max rank", "only list bugs of this rank or less");
-			addSwitch("-summarizeLowRank", "summarize low rank bugs");
+			addOption("-summarizeMaxRank", "max rank", "summary bugs with of this rank or less");
 			addSwitch("-designations", "report user designations for each bug");
 			addSwitch("-history", "report first and last versions for each bug");
 			addSwitch("-applySuppression", "exclude any bugs that match suppression filters");
@@ -89,8 +89,6 @@ public class PrintingBugReporter extends TextUIBugReporter {
 				setUseLongBugCodes(true);
 			else if (option.equals("-rank"))
 				setShowRank(true);
-			else if (option.equals("-summarizeLowRank"))
-				summarizeLowRank = true;
 			else if (option.equals("-designations"))
 				setReportUserDesignations(true);
 			else if (option.equals("-applySuppression"))
@@ -124,6 +122,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 				DetectorFactoryCollection.rawInstance().setPluginList(pluginList.toArray(new URL[pluginList.size()]));
 			} else if (option.equals("-maxRank")) {
 				maxRank = Integer.parseInt(argument);
+			} else if (option.equals("-summarizeMaxRank")) {
+				summarizeMaxRank = Integer.parseInt(argument);
 			} else {
 				throw new IllegalStateException();
 			}
@@ -189,25 +189,27 @@ public class PrintingBugReporter extends TextUIBugReporter {
 				if (!reporter.isApplySuppressions() || !bugCollection.getProject().getSuppressionFilter().match(warning)) {
 					int rank = warning.getBugRank();
 					BugPattern pattern = warning.getBugPattern();
-					if (rank > commandLine.maxRank) {
-						lowRank.add(pattern.getCategory());
-					} else
+					if (rank <= commandLine.maxRank) {
 						try {
-
 							reporter.printBug(warning);
 						} catch (RuntimeException e) {
 							if (storedException == null)
 								storedException = e;
 						}
+					} else if (rank <= commandLine.summarizeMaxRank) {
+						lowRank.add(pattern.getCategory());
+					}
+
 				}
-			if (commandLine.summarizeLowRank) {
-				for (Map.Entry<String, Integer> e : lowRank.entrySet()) {
-					System.out.printf("%4d low ranked %s issues%n", e.getValue(), I18N.instance()
-					        .getBugCategoryDescription(e.getKey()));
-				}
+
+			for (Map.Entry<String, Integer> e : lowRank.entrySet()) {
+				System.out.printf("%4d low ranked %s issues%n", e.getValue(),
+				        I18N.instance().getBugCategoryDescription(e.getKey()));
 			}
+
 		}
-		if (storedException != null) throw storedException;
+		if (storedException != null)
+			throw storedException;
 
 	}
 
