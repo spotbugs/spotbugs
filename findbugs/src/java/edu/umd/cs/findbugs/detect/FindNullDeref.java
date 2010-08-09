@@ -811,6 +811,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 				int priority = definitelyNull ? HIGH_PRIORITY : NORMAL_PRIORITY;
 				if (caught)
 					priority++;
+				if (m.isPrivate() && priority == HIGH_PRIORITY)
+					priority = NORMAL_PRIORITY;
 				String description = definitelyNull ? "INT_NULL_ARG" : "INT_MAYBE_NULL_ARG";
 				BugInstance warning = new BugInstance(this, "NP_NONNULL_PARAM_VIOLATION", priority).addClassAndMethod(
 				        classContext.getJavaClass(), method).addMethod(m).describe(MethodAnnotation.METHOD_CALLED)
