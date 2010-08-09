@@ -855,6 +855,11 @@ public class TypeQualifierApplications {
 		// System.out.println("Looking for default " + typeQualifierValue + " annotation of parameters of " + xmethod);
 		if (xmethod.getName().equals("<init>") && xmethod.getClassDescriptor().isAnonymousClass())
 			return null; // constructors for anonymous inner classes don't get default annotations
+		
+		/** private methods don't inherit from class or package scope */
+		if (xmethod.isPrivate()) 
+			stopAtMethodScope = true;
+		
 		AnnotatedObject o = xmethod;
 		while (true) {
 			o =  o.getContainingScope();
