@@ -22,7 +22,6 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.views.properties.PropertySheet;
 
 import de.tobject.findbugs.reporter.MarkerUtil;
 
@@ -39,9 +38,12 @@ class MarkerSelectionListener implements ISelectionListener {
 			return;
 		}
 		IMarker marker = MarkerUtil.getMarkerFromSingleSelection(theSelection);
-		// ignore selections from property view: if this view shows our bug,
-		// we simply can't switch to any other Property view pane or select some text...
-		if (marker == null && thePart instanceof PropertySheet) {
+		// only handle a null if it's from the bug explorer. this way if the user
+		// selects a bug pattern or other "folder" in the tree, the annotation view
+		// and the property view are cleared. BUT if the user clicks into 
+		// the editor, or some other view, it stays up. not quite sure what the
+		// best behavior is here but for now this works. -Keiths
+		if (marker == null && !(thePart instanceof BugExplorerView)) {
 			return;
 		}
 		handler.markerSelected(thePart, marker);
