@@ -90,7 +90,7 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
 	/**
 	 * Get the package name.
 	 */
-	public final String getPackageName() {
+	public final @DottedClassName String getPackageName() {
 		int lastDot = className.lastIndexOf('.');
 		if (lastDot < 0)
 			return "";
