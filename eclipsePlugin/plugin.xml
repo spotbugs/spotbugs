@@ -725,7 +725,7 @@
             class="de.tobject.findbugs.decorators.ResourceBugCountDecorator"
             id="de.tobject.findbugs.decorators.ProjectBugCountDecorator"
             label="Bug count decorator (Project)"
-            state="false">
+            state="true">
          <enablement>
             <objectClass
                   name="org.eclipse.jdt.core.IJavaProject">
@@ -741,7 +741,7 @@
             class="de.tobject.findbugs.decorators.ResourceBugCountDecorator"
             id="de.tobject.findbugs.decorators.FolderBugCountDecorator"
             label="Bug count decorator (Folder)"
-            state="false">
+            state="true">
          <enablement>
             <objectClass
                   name="org.eclipse.jdt.core.IPackageFragment">
@@ -757,7 +757,7 @@
             class="de.tobject.findbugs.decorators.ResourceBugCountDecorator"
             id="de.tobject.findbugs.decorators.FileBugCountDecorator"
             label="Bug count decorator (File)"
-            state="false">
+            state="true">
          <enablement>
             <or>
                 <objectClass
