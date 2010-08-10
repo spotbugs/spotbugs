@@ -74,7 +74,10 @@ public class CopyBuggySource {
 		Project project = origCollection.getProject();
 		SourceFinder sourceFinder = new SourceFinder(project);
 		HashSet<String> copied = new HashSet<String>();
+		HashSet<String> couldNotFind = new HashSet<String>();
 		HashSet<String> couldNotCreate = new HashSet<String>();
+		
+		int copyCount = 0;
 		for (BugInstance bug : origCollection.getCollection()) {
 			for (Iterator<BugAnnotation> i = bug.annotationIterator(); i
 					.hasNext();) {
@@ -114,7 +117,7 @@ public class CopyBuggySource {
 						if (!parent.mkdirs() && !parent.isDirectory()) {
 							String path = parent.getPath();
 							if (couldNotCreate.add(path))
-							System.out.println("Can't to create directory for " 
+							System.out.println("Can't create directory for " 
 									+ path);
 							in.close();
 							continue;
@@ -127,11 +130,15 @@ public class CopyBuggySource {
 							out.write(buf, 0, sz);
 						}
 						System.out.println("Copied " + file);
+						copyCount++;
 					} catch (FileNotFoundException e) {
-						System.out.println("Did not find " + file);
+						if (couldNotFind.add(file.getPath()))
+						  System.out.println("Did not find " + file);
 					} catch (IOException e) {	
-						System.out.println("Problem copying " + file);
-						e.printStackTrace(System.out);
+						if (couldNotFind.add(file.getPath())) {
+							System.out.println("Problem copying " + file);
+							e.printStackTrace(System.out);
+						}
 					} finally {
 						close(in);
 						close(out);
@@ -140,6 +147,8 @@ public class CopyBuggySource {
 				}
 			}
 		}
+		
+		System.out.printf("All done. %d files not found, %d files copies\n", couldNotFind.size(), copyCount);
 	}
 
 	public static void close(InputStream in) {
