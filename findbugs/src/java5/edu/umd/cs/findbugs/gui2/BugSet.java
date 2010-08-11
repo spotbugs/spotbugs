@@ -31,8 +31,7 @@ import java.util.List;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.filter.Filter;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
@@ -212,6 +211,14 @@ public class BugSet implements Iterable<BugLeafNode>{
 		final List<Sortables> order = MainFrame.getInstance().getSorter().getOrderAfterDivider();
 
 		Collections.sort(mainList, new Comparator<BugLeafNode>(){
+			int compare(int one, int two) {
+				if (one > two)
+					return 1;
+				else if (one < two)
+					return -1;
+				return 0;
+			}
+			
 			public int compare(BugLeafNode one, BugLeafNode two)
 			{
 				for (Sortables i : order)
@@ -220,12 +227,36 @@ public class BugSet implements Iterable<BugLeafNode>{
 					if (result != 0)
 						return result;
 				}
-				// If still here, they're really equal
-				return 0;
+				SourceLineAnnotation oneSource = one.getBug().getPrimarySourceLineAnnotation();
+				SourceLineAnnotation twoSource = one.getBug().getPrimarySourceLineAnnotation();
+				if (oneSource != null && twoSource != null) {
+					int result = oneSource.getClassName().compareTo(twoSource.getClassName());
+					if (result != 0)
+						return result;
+					result = compare(oneSource.getStartLine(), twoSource.getStartLine());
+					if (result != 0)
+						return result;
+					result = compare(oneSource.getEndLine(), twoSource.getEndLine());
+					if (result != 0)
+						return result;
+					result = compare(oneSource.getStartBytecode(), twoSource.getStartBytecode());
+					if (result != 0)
+						return result;
+					result = compare(oneSource.getEndBytecode(), twoSource.getEndBytecode());
+					if (result != 0)
+						return result;
+					
+				}
+				if (oneSource != null)
+					return 1;
+				if (twoSource != null)
+					return -1;
+				return one.getBug().getPrimaryClass().getClassName().compareTo(two.getBug().getPrimaryClass().getClassName());
 			}
 		});
 	}
 
+	
 	/**
 	 * 
 	 * Contains takes a key/value pair
