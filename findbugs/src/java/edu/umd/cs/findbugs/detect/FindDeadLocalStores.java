@@ -518,8 +518,14 @@ public class FindDeadLocalStores implements Detector {
 				 
 
 					// Report the warning
-					BugInstance bugInstance = new BugInstance(this, storeOfNull ? "DLS_DEAD_LOCAL_STORE_OF_NULL"
-							: "DLS_DEAD_LOCAL_STORE", NORMAL_PRIORITY).addClassAndMethod(
+					String bugPattern;
+					if (storeOfNull) 
+						bugPattern = "DLS_DEAD_LOCAL_STORE_OF_NULL";
+					else if (shadowedField != null) 
+						bugPattern = "DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD";
+					else
+						bugPattern = "DLS_DEAD_LOCAL_STORE";
+					BugInstance bugInstance = new BugInstance(this, bugPattern, NORMAL_PRIORITY).addClassAndMethod(
 									methodGen,
 									sourceFileName).add(lvAnnotation);
 

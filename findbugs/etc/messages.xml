@@ -5567,9 +5567,27 @@ an <code>IllegalMonitorStateException</code> being thrown.</p>
     </Details>
   </BugPattern>
 
+  <BugPattern type="SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD">
+    <ShortDescription>Self assignment of local rather than assignment to field</ShortDescription>
+    <LongDescription>Self assignment of {2} rather than assigned to field in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method contains a self assignment of a local variable, and there
+is a field with an identical name.
+assignment appears to have been ; e.g.</p>
+<pre>
+  int foo;
+  public void setFoo(int foo) {
+    foo = foo;
+  }
+</pre>
+<p>The assignment is useless. Did you mean to assign to the field instead?</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="SA_LOCAL_SELF_ASSIGNMENT">
     <ShortDescription>Self assignment of local variable</ShortDescription>
-    <LongDescription>Self assignment of local variable in {1}</LongDescription>
+    <LongDescription>Self assignment of {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method contains a self assignment of a local variable; e.g.</p>
@@ -6455,6 +6473,23 @@ the caller.
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD">
+    <ShortDescription>Dead store to local variable that shadows field</ShortDescription>
+    <LongDescription>Dead store to {2} rather than field with same name an {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This instruction assigns a value to a local variable,
+but the value is not read or used in any subsequent instruction.
+Often, this indicates an error, because the value computed is never
+used. There is a field with the same name as the local variable. Did you 
+mean to assign to that variable instead?
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="DLS_DEAD_LOCAL_STORE">
     <ShortDescription>Dead store to local variable</ShortDescription>
     <LongDescription>Dead store to {2} in {1}</LongDescription>
@@ -6474,6 +6509,8 @@ there is no easy way to eliminate these false positives.
 ]]>
     </Details>
   </BugPattern>
+
+
   <BugPattern type="DLS_DEAD_LOCAL_STORE_IN_RETURN">
     <ShortDescription>Useless assignment in return statement</ShortDescription>
     <LongDescription>Useless assignment in return from {1}</LongDescription>
