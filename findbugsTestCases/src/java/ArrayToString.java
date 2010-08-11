@@ -13,23 +13,23 @@ public class ArrayToString {
 		a.print3();
 	}
 	
-	@DesireWarning("DMI")
+	@DesireWarning("USELESS_STRING")
 	public void print0(String args[]) {
 		System.out.println(args.toString());
 	}
 
-	@DesireWarning("DMI")
+	@DesireWarning("USELESS_STRING")
 	public void print1() {
 		String [] args2 = new String[] {"Hello", "there"};
 		System.out.println(args2.toString());
 	}
 
-	@DesireWarning("DMI")
+	@DesireWarning("DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY")
 	public void print2() {
 		System.out.println((new String[] {"one","two"}).toString());		
 	}
 
-	@DesireWarning("DMI")
+	@DesireWarning("DMI_INVOKING_TOSTRING_ON_ARRAY")
 	public void print3() {
 		System.out.println(gargs.toString());
 	}
