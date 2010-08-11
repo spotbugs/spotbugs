@@ -79,12 +79,6 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 			OpcodeStack.Item top = stack.getStackItem(0);
 			
 			if (pendingBug != null) {
-
-				 bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", isSyncOnBoolean ? HIGH_PRIORITY : NORMAL_PRIORITY)
-				          .addClassAndMethod(this).addString("Getting lock while holding lock on shared object")
-				          .addSourceLine(this, monitorEnterPC).describe(SourceLineAnnotation.ROLE_LOCK_OBTAINED_AT)
-				          .addType(syncSignature)
-						 .addValueSource(top, this), this);
 				 accumulateBug();
 			}
 			monitorEnterPC = getPC();
@@ -120,25 +114,6 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 		case MONITOREXIT:
 
 			accumulateBug();
-			break;
-		case INVOKEINTERFACE:
-		case INVOKEVIRTUAL:
-		case INVOKESPECIAL:
-		case INVOKESTATIC:
-			if (pendingBug != null && !getClassConstantOperand().equals(ClassName.fromFieldSignature(syncSignature))) {
-				if (getClassConstantOperand().startsWith("java/lang/String"))
-					break;
-				if (getClassConstantOperand().startsWith("java/util/logging"))
-					break;
-				int priority =  isSyncOnBoolean ? HIGH_PRIORITY : NORMAL_PRIORITY;
-				if (getClassConstantOperand().startsWith("java"))
-					priority++;
-				bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", priority).addClassAndMethod(this)
-						.addString("Holding lock on shared object while calling method that might obtain other locks")
-						.addSourceLine(this, monitorEnterPC).describe(SourceLineAnnotation.ROLE_LOCK_OBTAINED_AT)
-						 .addType(syncSignature)
-						.addCalledMethod(this), this);
-			}
 			
 			break;
 			
@@ -150,9 +125,10 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 	/**
      * 
      */
-    private void accumulateBug() {
-    		if (pendingBug == null) return;
-	    bugAccumulator.accumulateBug(pendingBug, SourceLineAnnotation.fromVisitedInstruction(this, monitorEnterPC));
-	    pendingBug = null;
+	private void accumulateBug() {
+		if (pendingBug == null)
+			return;
+		bugAccumulator.accumulateBug(pendingBug, SourceLineAnnotation.fromVisitedInstruction(this, monitorEnterPC));
+		pendingBug = null;
     }
 }
