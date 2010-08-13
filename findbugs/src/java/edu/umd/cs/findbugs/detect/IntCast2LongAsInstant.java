@@ -62,7 +62,13 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
 				if (item.getSpecialKind() == OpcodeStack.Item.RESULT_OF_I2L) {
 					ParameterProperty property = database.getProperty(getMethodDescriptorOperand());
 					if (property != null && property.hasProperty(i)) {
-						BugInstance bug = new BugInstance(this, "ICAST_INT_2_LONG_AS_INSTANT", HIGH_PRIORITY).addClassAndMethod(this)
+						int priority = NORMAL_PRIORITY;
+						
+						if (getPrevOpcode(1) == I2L && getPrevOpcode(2) == IMUL && getPrevOpcode(3) == SIPUSH) {
+							 priority = HIGH_PRIORITY;
+							
+						}
+						BugInstance bug = new BugInstance(this, "ICAST_INT_2_LONG_AS_INSTANT", priority).addClassAndMethod(this)
 						        .addCalledMethod(this).addValueSource(item, this).addSourceLine(this);
 						bugReporter.reportBug(bug);
 					}

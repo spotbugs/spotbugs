@@ -56,7 +56,8 @@ public class BooleanReturnNull extends OpcodeStackDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		if (seen == ARETURN && getPrevOpcode(1) == ACONST_NULL)
-			bugAccumulator.accumulateBug(new BugInstance(this, "NP_BOOLEAN_RETURN_NULL", NORMAL_PRIORITY)
+			bugAccumulator.accumulateBug(new BugInstance(this, "NP_BOOLEAN_RETURN_NULL", 
+					getMethodName().startsWith("is") ? HIGH_PRIORITY : NORMAL_PRIORITY)
 			.addClassAndMethod(this), this);
 
 
