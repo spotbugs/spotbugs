@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import org.apache.bcel.classfile.ClassFormatException;
 import org.dom4j.DocumentException;
@@ -47,6 +48,8 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
+import edu.umd.cs.findbugs.bugReporter.BugReporterDecorator;
+import edu.umd.cs.findbugs.bugReporter.BugReporterPlugin;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -64,6 +67,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.detect.NoteSuppressedWarnings;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.log.YourKitController;
@@ -79,7 +83,7 @@ import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
  *
  * @author David Hovemeyer
  */
-public class FindBugs2 implements IFindBugsEngine2 {
+public class FindBugs2 implements IFindBugsEngine {
 	private static final boolean LIST_ORDER = SystemProperties.getBoolean("findbugs.listOrder");
 
 	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs.verbose");
@@ -91,7 +95,9 @@ public class FindBugs2 implements IFindBugsEngine2 {
 
 	private int rankThreshold;
 	private List<IClassObserver> classObserverList;
-	private ErrorCountingBugReporter bugReporter;
+	private BugReporter bugReporter;
+	private ErrorCountingBugReporter errorCountingBugReporter;
+	
 	private Project project;
 	private IClassFactory classFactory;
 	private IClassPath classPath;
@@ -210,9 +216,16 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			// Create the execution plan (which passes/detectors to execute)
 			createExecutionPlan();
 
+			
+			for(Plugin p : detectorFactoryCollection.plugins()) {
+				for(BugReporterPlugin brp : p.getBugReporterPlugins()) {
+					if (brp.isEnabledByDefault() && !brp.isNamed(explicitlyDisabledBugReporterDecorators)
+							|| brp.isNamed(explicitlyEnabledBugReporterDecorators))
+						bugReporter = BugReporterDecorator.construct(brp, bugReporter);
+				}
+			}
 			if (!classScreener.vacuous()) {
-				final BugReporter origBugReporter = bugReporter.getDelegate();
-				BugReporter filterBugReporter = new DelegatingBugReporter(origBugReporter) {
+				bugReporter = new DelegatingBugReporter(bugReporter) {
 
 					@Override
 					public void reportBug(BugInstance bugInstance) {
@@ -223,9 +236,14 @@ public class FindBugs2 implements IFindBugsEngine2 {
 						}
 					}
 				};
-				bugReporter.setDelegate(filterBugReporter);
 			}
 
+			if (executionPlan.isActive(NoteSuppressedWarnings.class)) {
+				SuppressionMatcher m = AnalysisContext.currentAnalysisContext().getSuppressionMatcher();
+				bugReporter = new FilterBugReporter(bugReporter, m, false);
+			}
+			
+			
 			if (appClassList.size() == 0) {
 				if (analysisOptions.noClassOk) {
 					System.err.println("No classfiles specified; output will have no warnings");
@@ -316,13 +334,13 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addFilter(java.lang.String, boolean)
 	 */
 	public void addFilter(String filterFileName, boolean include) throws IOException, FilterException {
-		FindBugs.configureFilter(bugReporter, filterFileName, include);
+		bugReporter = FindBugs.configureFilter(bugReporter, filterFileName, include);
 	}
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.IFindBugsEngine#addBaselineBugs(java.lang.String)
      */
     public void excludeBaselineBugs(String baselineBugs) throws IOException, DocumentException {
-    		FindBugs.configureBaselineFilter(bugReporter, baselineBugs);
+    		bugReporter = FindBugs.configureBaselineFilter(bugReporter, baselineBugs);
     		}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingInput(java.lang.String)
@@ -342,7 +360,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugCount()
 	 */
 	public int getBugCount() {
-		return bugReporter.getBugCount();
+		return errorCountingBugReporter.getBugCount();
 	}
 
 	/* (non-Javadoc)
@@ -356,14 +374,14 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getErrorCount()
 	 */
 	public int getErrorCount() {
-		return bugReporter.getErrorCount();
+		return errorCountingBugReporter.getErrorCount();
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getMissingClassCount()
 	 */
 	public int getMissingClassCount() {
-		return bugReporter.getMissingClassCount();
+		return errorCountingBugReporter.getMissingClassCount();
 	}
 
 	/* (non-Javadoc)
@@ -392,7 +410,8 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setBugReporter(edu.umd.cs.findbugs.BugReporter)
 	 */
 	public void setBugReporter(BugReporter bugReporter) {
-		this.bugReporter = new ErrorCountingBugReporter(bugReporter);
+		 this.bugReporter = this.errorCountingBugReporter = new ErrorCountingBugReporter(bugReporter);
+		
 		addClassObserver(bugReporter);
 	}
 
@@ -730,9 +749,9 @@ public class FindBugs2 implements IFindBugsEngine2 {
 		// Based on referenced packages, add any resolvable package-info classes
 		// to the set of referenced classes.
 		if (PROGRESS) {
-		referencedPackageSet.remove("");
-		System.out.println("Added " + count + " referenced classes");
-		System.out.println("Total of " + referencedPackageSet.size() + " packages");
+			referencedPackageSet.remove("");
+			System.out.println("Added " + count + " referenced classes");
+			System.out.println("Total of " + referencedPackageSet.size() + " packages");
 		}
 
 		// TODO the block below seems to be an old workaround which does not add any value
@@ -1103,10 +1122,18 @@ public class FindBugs2 implements IFindBugsEngine2 {
     
     public void finishSettings() {
 		if (analysisOptions.applySuppression) {
-			BugReporter origBugReporter = bugReporter.getDelegate();
-			BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, getProject().getSuppressionFilter(), false);
-			bugReporter.setDelegate(filterBugReporter);
+			bugReporter = new FilterBugReporter(bugReporter, getProject().getSuppressionFilter(), false);
 		}
 	}
+
+	
+    @Nonnull Set<String> explicitlyEnabledBugReporterDecorators = Collections.emptySet();
+    @Nonnull Set<String> explicitlyDisabledBugReporterDecorators = Collections.emptySet();
+    
+    public void setBugReporterDecorators(Set<String> explicitlyEnabled,
+            Set<String> explicitlyDisabled) {
+    	explicitlyEnabledBugReporterDecorators = explicitlyEnabled;
+    	explicitlyDisabledBugReporterDecorators = explicitlyDisabled;
+    }
 
 }

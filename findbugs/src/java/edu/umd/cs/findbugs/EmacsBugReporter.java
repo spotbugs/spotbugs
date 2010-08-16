@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -124,13 +126,11 @@ public class EmacsBugReporter extends TextUIBugReporter {
 		outputStream.close();
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
-	 */
-	@Override
-	public BugReporter getRealBugReporter() {
-		return this;
-	}
+	public @CheckForNull BugCollection getBugCollection() {
+	    return null;
+    }
+
+	
 }
 
 /*

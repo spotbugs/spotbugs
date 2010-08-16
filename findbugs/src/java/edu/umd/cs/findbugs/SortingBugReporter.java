@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs;
 
 import java.util.Iterator;
 
+import javax.annotation.Nonnull;
+
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
@@ -50,6 +52,10 @@ public class SortingBugReporter extends TextUIBugReporter {
 
 		outputStream.close();
 	}
+
+	public @Nonnull BugCollection getBugCollection() {
+	   return bugCollection;
+    }
 }
 
 // vim:ts=4

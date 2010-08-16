@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +62,7 @@ import edu.umd.cs.findbugs.util.JavaWebStart;
  * @see DetectorFactory
  */
 public class DetectorFactoryCollection {
-	private HashMap<String, Plugin> pluginByIdMap = new HashMap<String, Plugin>();
+	private HashMap<String, Plugin> pluginByIdMap = new LinkedHashMap<String, Plugin>();
 	private Plugin corePlugin;
 	private BugRanker adjustmentBugRanker;
 	private ArrayList<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();

@@ -20,10 +20,10 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.util.Set;
 
 import org.dom4j.DocumentException;
 
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IClassObserver;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -284,4 +284,11 @@ public interface IFindBugsEngine {
 	public void setApplySuppression(boolean applySuppression);
 	
 	public void finishSettings();
+	
+	void setRankThreshold(int rankThreshold);
+	
+
+	void setBugReporterDecorators(Set<String> explicitlyEnabled,
+			Set<String> explicitlyDisabled);
+			
 }

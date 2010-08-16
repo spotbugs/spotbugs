@@ -555,6 +555,7 @@
     <mkdir dir="${sampleoutput.dir}"/>
     <findbugs home="."
               output="xml:withMessages"
+		cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
 			  jvmargs="-ea -Xmx900m"
 			  excludeFilter="findbugsExclude.xml"
 			  projectName="FindBugs"

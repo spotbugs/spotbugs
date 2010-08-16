@@ -34,6 +34,23 @@ This plugin contains all of the standard FindBugs detectors.
 	<Details>Information about bug history and evaluations are stored in an SQL database; user name gotten from system properties</Details>
 	</Cloud>
 
+  <BugReporterDecorator
+    id="edu.umd.cs.findbugs.bugReporter.SuppressMultithreaded">
+    <Description>Suppress multithreaded correctness issues</Description>
+    <Details>Suppress all multithreaded correctness issues</Details>
+    </BugReporterDecorator>
+
+  <BugReporterDecorator
+    id="edu.umd.cs.findbugs.bugReporter.SuppressI18N">
+    <Description>Suppress internationalization issues</Description>
+    <Details>Suppress all internationalization issues</Details>
+    </BugReporterDecorator>
+  <BugReporterDecorator
+    id="edu.umd.cs.findbugs.bugReporter.SuppressMalicious">
+    <Description>Suppress warnings about vunerabilities to malicious code</Description>
+    <Details>Suppress warnings about vunerabilities to malicious code</Details>
+    </BugReporterDecorator>
+  
   <!--
   **********************************************************************
   Categories (replacing the BugCategoryDescriptions.properties file)

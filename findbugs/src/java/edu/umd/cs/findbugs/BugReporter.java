@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.classfile.IClassObserver;
@@ -93,14 +95,12 @@ public interface BugReporter extends RepositoryLookupFailureCallback, IClassObse
 	 */
 	public ProjectStats getProjectStats();
 
+		
 	/**
-	 * Get the real bug reporter at the end of a chain of delegating bug reporters.
-	 * All non-delegating bug reporters should simply "return this".
-	 * 
-	 * @return the real bug reporter at the end of the chain, or
-	 *          this object if there is no delegation
+	 * Get the bug collection (if any) associated with this bug reporter
+	 * @return
 	 */
-	public BugReporter getRealBugReporter();
+	public @CheckForNull BugCollection getBugCollection();
 }
 
 // vim:ts=4

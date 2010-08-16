@@ -47,6 +47,23 @@
 		<xsd:attribute name="hidden" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>
 
+	<xsd:complexType name="BugReporterDecoratorType">
+		<xsd:sequence>
+			<xsd:element name="Property" minOccurs="0" maxOccurs="unbounded" >
+				<xsd:complexType>
+					<xsd:simpleContent>
+						<xsd:extension base="xsd:string">
+							<xsd:attribute name="key" type="xsd:string" />
+						</xsd:extension>
+					</xsd:simpleContent>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="id" type="ClassType"/>
+		<xsd:attribute name="decoratorClass" type="ClassType"/>
+		<xsd:attribute name="disabled" type="xsd:boolean" use="optional"/>
+	</xsd:complexType>
+	
 	<xsd:complexType name="DetectorType">
 		<xsd:attribute name="class" type="ClassType"/>
 		<xsd:attribute name="speed" type="SpeedType" use="optional"/>
@@ -123,6 +140,7 @@
 	<xsd:complexType name="FindBugsPluginType" mixed="true">
 		<xsd:sequence>
 			<xsd:element name="Cloud" type="CloudType" minOccurs="0" maxOccurs="unbounded"/>			
+			<xsd:element name="BugReporterDecorator" type="BugReporterDecoratorType" minOccurs="0" maxOccurs="unbounded"/>			
 			<xsd:element
 				name="OrderingConstraints"
 				type="OrderingConstraintListType"

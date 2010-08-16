@@ -21,15 +21,12 @@ package edu.umd.cs.findbugs;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * A DetectorFactory is responsible for creating instances of Detector objects
@@ -370,7 +367,7 @@ public class DetectorFactory {
 	 * Get the full name of the detector.
 	 * This is the name of the detector class, with package qualification.
 	 */
-	public String getFullName() {
+	public @DottedClassName String getFullName() {
 		return detectorCreator.getDetectorClass().getName();
 	}
 }

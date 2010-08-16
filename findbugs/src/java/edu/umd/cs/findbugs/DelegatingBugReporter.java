@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -41,26 +43,10 @@ public class DelegatingBugReporter implements BugReporter {
 		this.delegate = delegate;
 	}
 
-	public BugReporter getRealBugReporter() {
-		return delegate.getRealBugReporter();
-	}
-
-	/**
-	 * Set BugReporter to delegate reported BugInstances to.
-	 * 
-	 * @param delegate BugReporter to delegate all BugReporter methods to
-	 */
-	public void setDelegate(BugReporter delegate) {
-		this.delegate = delegate;
-	}
-
-	public BugReporter getDelegate() {
+	
+	protected BugReporter getDelegate() {
 		return this.delegate;
 	}
-
-//	public void setEngine(FindBugs engine) {
-//		delegate.setEngine(engine);
-//	}
 
 	public void setErrorVerbosity(int level) {
 		delegate.setErrorVerbosity(level);
@@ -86,9 +72,6 @@ public class DelegatingBugReporter implements BugReporter {
 		delegate.reportMissingClass(ex);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
-	 */
 	public void reportMissingClass(ClassDescriptor classDescriptor) {
 		delegate.reportMissingClass(classDescriptor);
 	}
@@ -110,7 +93,8 @@ public class DelegatingBugReporter implements BugReporter {
 	}
 
 	public void logError(String message, Throwable e) {
-		if (e instanceof MethodUnprofitableException) return;
+		if (e instanceof MethodUnprofitableException) 
+			return;
 		delegate.logError(message, e);
 	}
 	/**
@@ -120,6 +104,11 @@ public class DelegatingBugReporter implements BugReporter {
 	public void reportSkippedAnalysis(MethodDescriptor method) {
 		delegate.reportSkippedAnalysis(method);
 	}
+
+	
+    public @CheckForNull BugCollection getBugCollection() {
+	   return delegate.getBugCollection();
+    }
 }
 
 // vim:ts=4

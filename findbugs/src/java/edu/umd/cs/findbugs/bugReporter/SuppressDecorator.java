@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2008, University of Maryland
+ * Copyright (C) 2003-2008 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,17 +17,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.bugReporter;
 
-import java.io.IOException;
-import java.util.Map;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
 
 /**
- * Additional capabilities which can be supported by FindBugs engine classes.
- * This is probably not a stable API.
- * 
- * @author David Hovemeyer
+ * @author pugh
  */
-public interface IFindBugsEngine2 extends IFindBugsEngine {
-	 void setRankThreshold(int rankThreshold);
+public class SuppressDecorator extends BugReporterDecorator {
+
+	final String category;
+
+	public SuppressDecorator(BugReporterPlugin plugin, BugReporter delegate) {
+		super(plugin, delegate);
+		category = plugin.getProperties().getProperty("category");
+	}
+
+	@Override
+    public void reportBug(BugInstance bug) {
+		String cat = bug.getBugPattern().getCategory();
+		if (cat.equals(category))
+			return;
+		super.reportBug(bug);
+
+	}
+
 }

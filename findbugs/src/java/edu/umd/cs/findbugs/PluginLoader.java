@@ -43,6 +43,8 @@ import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.bugReporter.BugReporterDecorator;
+import edu.umd.cs.findbugs.bugReporter.BugReporterPlugin;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
@@ -411,6 +413,41 @@ public class PluginLoader {
 		
 		// Create a DetectorFactory for all Detector nodes
 		if (!FindBugs.noAnalysis) try {
+			
+			List<Node> filterNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/BugReporterDecorator");
+			for(Node filterNode : filterNodeList) {
+				
+				String filterClassname = filterNode.valueOf("@decoratorClass");
+				String filterId = filterNode.valueOf("@id");
+				String propertiesLocation = filterNode.valueOf("@properties");
+				boolean disabled = Boolean.valueOf(filterNode.valueOf("@disabled"));
+				
+
+				Class<? extends BugReporterDecorator> cloudClass = getClass(classLoader, filterClassname, BugReporterDecorator.class);
+				
+				Node filterMessageNode = findMessageNode(messageCollectionList,
+						"/MessageCollection/BugReporterDecorator[@id='" + filterId + "']",
+						"Missing Cloud description for cloud " + filterId);
+				String description = getChildText(filterMessageNode, "Description").trim();
+				String details = getChildText(filterMessageNode, "Details").trim();
+				PropertyBundle properties = new PropertyBundle();
+				if (propertiesLocation != null && propertiesLocation.length() > 0) {
+					URL properiesURL = classLoader.getResource(propertiesLocation);
+					if (properiesURL == null)
+						continue;
+					properties.loadPropertiesFromURL(properiesURL);
+				}
+				List<Node> propertyNodes = filterNode.selectNodes("Property");
+				for(Node node :  propertyNodes ) {
+					String key = node.valueOf("@key");
+					String value = node.getText();
+					properties.setProperty(key, value);
+				}
+				
+				BugReporterPlugin bugReporterPlugin = new BugReporterPlugin(filterId, classLoader, cloudClass,  properties,!disabled, description, details);
+				plugin.addBugReporterPlugin(bugReporterPlugin);
+			}
+
 			List<Node> detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
 			int detectorCount = 0;
 			for (Node detectorNode : detectorNodeList) {

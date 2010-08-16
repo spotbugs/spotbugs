@@ -60,7 +60,7 @@ public class DetectorsTest {
 
 	private BugCollectionBugReporter bugReporter;
 
-	private IFindBugsEngine2 engine;
+	private IFindBugsEngine engine;
 
 	@Before
 	public void setUp() throws Exception {

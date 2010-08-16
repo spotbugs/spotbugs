@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
 
+import javax.annotation.Nonnull;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -209,6 +211,10 @@ public class XDocsBugReporter extends TextUIBugReporter {
 		System.out.println(y);
 	}
 */
+
+	 public @Nonnull BugCollection getBugCollection() {
+	    return bugCollection;
+    }
 
 }
 

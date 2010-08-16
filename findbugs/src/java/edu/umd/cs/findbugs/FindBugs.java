@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -34,8 +33,8 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
-import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
+import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
 
@@ -449,12 +448,11 @@ public abstract class FindBugs  {
 	 * @throws java.io.IOException
 	 * @throws edu.umd.cs.findbugs.filter.FilterException
 	 */
-	public static void configureFilter(DelegatingBugReporter bugReporter, String filterFileName, boolean include)
+	public static BugReporter configureFilter(BugReporter bugReporter, String filterFileName, boolean include)
 			throws IOException, FilterException {
 		Filter filter = new Filter(filterFileName);
-		BugReporter origBugReporter = bugReporter.getDelegate();
-		BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, filter, include);
-		bugReporter.setDelegate(filterBugReporter);
+		return new FilterBugReporter(bugReporter, filter, include);
+		
 	}
 	
 	/**
@@ -465,11 +463,9 @@ public abstract class FindBugs  {
 	 * @throws java.io.IOException
 	 * @throws org.dom4j.DocumentException
 	 */
-	public static void configureBaselineFilter(DelegatingBugReporter bugReporter, String baselineFileName)
+	public static BugReporter configureBaselineFilter(BugReporter bugReporter, String baselineFileName)
 			throws IOException, DocumentException  {
-		BugReporter origBugReporter = bugReporter.getDelegate();
-		BugReporter filterBugReporter = new ExcludingHashesBugReporter(origBugReporter, baselineFileName);
-		bugReporter.setDelegate(filterBugReporter);
+		return  new ExcludingHashesBugReporter(bugReporter, baselineFileName);
 	}
 	
 	/**
@@ -479,24 +475,24 @@ public abstract class FindBugs  {
 	 * @param findBugs the IFindBugsEngine
 	 */
 	public static void configureBugCollection(IFindBugsEngine findBugs) {
-		BugReporter realBugReporter = findBugs.getBugReporter().getRealBugReporter();
+		BugCollection bugs =   findBugs.getBugReporter().getBugCollection();
 
-		if (realBugReporter instanceof BugCollectionBugReporter) {
-			BugCollectionBugReporter bugCollectionBugReporter =
-				(BugCollectionBugReporter) realBugReporter;
-
-			bugCollectionBugReporter = (BugCollectionBugReporter) realBugReporter;
-
-			bugCollectionBugReporter.getBugCollection().setReleaseName(findBugs.getReleaseName());
+		if (bugs != null) {
+			bugs.setReleaseName(findBugs.getReleaseName());
 
 			Project project = findBugs.getProject();
 
-			if (project.getProjectName() == null)
-				project.setProjectName(findBugs.getProjectName());
+			String projectName = project.getProjectName();
+			
+			if (projectName == null) {
+				projectName = findBugs.getProjectName();
+				project.setProjectName(projectName);
+			}
+			
 			long timestamp = project.getTimestamp();
 			if (FindBugs.validTimestamp(timestamp)) {
-				bugCollectionBugReporter.getBugCollection().setTimestamp(timestamp);
-				bugCollectionBugReporter.getBugCollection().getProjectStats().setTimestamp(timestamp);
+				bugs.setTimestamp(timestamp);
+				bugs.getProjectStats().setTimestamp(timestamp);
 			}
 
 		}

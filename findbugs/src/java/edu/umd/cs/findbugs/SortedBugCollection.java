@@ -19,31 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.MissingClassException;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.CloudFactory;
-import edu.umd.cs.findbugs.log.Profiler;
-import edu.umd.cs.findbugs.model.ClassFeatureSet;
-import edu.umd.cs.findbugs.util.Util;
-import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
-import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
-import edu.umd.cs.findbugs.xml.XMLAttributeList;
-import edu.umd.cs.findbugs.xml.XMLOutput;
-import edu.umd.cs.findbugs.xml.XMLOutputUtil;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.WillClose;
-import javax.xml.transform.TransformerException;
 import java.awt.GraphicsEnvironment;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -76,6 +51,34 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.WillClose;
+import javax.annotation.WillNotClose;
+import javax.xml.transform.TransformerException;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.MissingClassException;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.CloudFactory;
+import edu.umd.cs.findbugs.log.Profiler;
+import edu.umd.cs.findbugs.model.ClassFeatureSet;
+import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 
 /**
  * An implementation of {@link BugCollection} that keeps the BugInstances
@@ -719,7 +722,7 @@ public class SortedBugCollection implements BugCollection {
 
 	
 	
-	private void checkInputStream(InputStream in) throws IOException {
+	private void checkInputStream(@WillNotClose InputStream in) throws IOException {
 		if (!in.markSupported())
 			return;
 

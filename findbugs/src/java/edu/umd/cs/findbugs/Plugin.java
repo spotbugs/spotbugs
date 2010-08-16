@@ -21,45 +21,58 @@ package edu.umd.cs.findbugs;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+import edu.umd.cs.findbugs.bugReporter.BugReporterPlugin;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
 
 /**
- * A FindBugs plugin.
- * A plugin contains executable Detector classes, as well as meta
- * information decribing those detectors (such as human-readable
- * detector and bug descriptions).
- *
+ * A FindBugs plugin. A plugin contains executable Detector classes, as well as
+ * meta information decribing those detectors (such as human-readable detector
+ * and bug descriptions).
+ * 
  * @see PluginLoader
  * @author David Hovemeyer
  */
 public class Plugin {
 	private String pluginId;
+
 	private String provider;
+
 	private String website;
+
 	private String shortDescription;
+
 	private ArrayList<DetectorFactory> detectorFactoryList;
+
 	private ArrayList<BugPattern> bugPatternList;
+
 	private ArrayList<BugCode> bugCodeList;
+
+	private Map<String,BugReporterPlugin> filterPlugins = new LinkedHashMap<String, BugReporterPlugin>();
+
 	private boolean enabled;
+
 	private BugRanker bugRanker;
 
 	// Ordering constraints
 	private ArrayList<DetectorOrderingConstraint> interPassConstraintList;
+
 	private ArrayList<DetectorOrderingConstraint> intraPassConstraintList;
-	
+
 	// Optional: engine registrar class
 	private Class<? extends IAnalysisEngineRegistrar> engineRegistrarClass;
-	
+
 	// PluginLoader that loaded this plugin
 	private final PluginLoader pluginLoader;
 
 	/**
-	 * Constructor.
-	 * Creates an empty plugin object.
-	 *
-	 * @param pluginId the plugin's unique identifier
+	 * Constructor. Creates an empty plugin object.
+	 * 
+	 * @param pluginId
+	 *            the plugin's unique identifier
 	 */
 	public Plugin(String pluginId, PluginLoader pluginLoader) {
 		this.pluginId = pluginId;
@@ -71,10 +84,15 @@ public class Plugin {
 		this.pluginLoader = pluginLoader;
 	}
 
+	@Override
+	public String toString() {
+		return this.getClass().getSimpleName() + ":" + pluginId;
+	}
 	/**
 	 * Set whether or not this Plugin is enabled.
-	 *
-	 * @param enabled true if the Plugin is enabled, false if not
+	 * 
+	 * @param enabled
+	 *            true if the Plugin is enabled, false if not
 	 */
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
@@ -82,7 +100,7 @@ public class Plugin {
 
 	/**
 	 * Return whether or not the Plugin is enabled.
-	 *
+	 * 
 	 * @return true if the Plugin is enabled, false if not
 	 */
 	public boolean isEnabled() {
@@ -91,8 +109,9 @@ public class Plugin {
 
 	/**
 	 * Set plugin provider.
-	 *
-	 * @param provider the plugin provider
+	 * 
+	 * @param provider
+	 *            the plugin provider
 	 */
 	public void setProvider(String provider) {
 		this.provider = provider;
@@ -100,7 +119,7 @@ public class Plugin {
 
 	/**
 	 * Get the plugin provider.
-	 *
+	 * 
 	 * @return the provider, or null if the provider was not specified
 	 */
 	public String getProvider() {
@@ -109,8 +128,9 @@ public class Plugin {
 
 	/**
 	 * Set plugin website.
-	 *
-	 * @param website the plugin website
+	 * 
+	 * @param website
+	 *            the plugin website
 	 */
 	public void setWebsite(String website) {
 		this.website = website;
@@ -118,7 +138,7 @@ public class Plugin {
 
 	/**
 	 * Get the plugin website.
-	 *
+	 * 
 	 * @return the website, or null if the was not specified
 	 */
 	public String getWebsite() {
@@ -127,8 +147,9 @@ public class Plugin {
 
 	/**
 	 * Set plugin short (one-line) text description.
-	 *
-	 * @param shortDescription the plugin short text description
+	 * 
+	 * @param shortDescription
+	 *            the plugin short text description
 	 */
 	public void setShortDescription(String shortDescription) {
 		this.shortDescription = shortDescription;
@@ -136,9 +157,9 @@ public class Plugin {
 
 	/**
 	 * Get the plugin short (one-line) description.
-	 *
-	 * @return the short description, or null if the 
-	 *         short description was not specified
+	 * 
+	 * @return the short description, or null if the short description was not
+	 *         specified
 	 */
 	public String getShortDescription() {
 		return shortDescription;
@@ -147,7 +168,8 @@ public class Plugin {
 	/**
 	 * Add a DetectorFactory for a Detector implemented by the Plugin.
 	 * 
-	 * @param factory the DetectorFactory
+	 * @param factory
+	 *            the DetectorFactory
 	 */
 	public void addDetectorFactory(DetectorFactory factory) {
 		detectorFactoryList.add(factory);
@@ -173,8 +195,9 @@ public class Plugin {
 
 	/**
 	 * Add an inter-pass Detector ordering constraint.
-	 *
-	 * @param constraint the inter-pass Detector ordering constraint
+	 * 
+	 * @param constraint
+	 *            the inter-pass Detector ordering constraint
 	 */
 	public void addInterPassOrderingConstraint(DetectorOrderingConstraint constraint) {
 		interPassConstraintList.add(constraint);
@@ -182,8 +205,9 @@ public class Plugin {
 
 	/**
 	 * Add an intra-pass Detector ordering constraint.
-	 *
-	 * @param constraint the intra-pass Detector ordering constraint
+	 * 
+	 * @param constraint
+	 *            the intra-pass Detector ordering constraint
 	 */
 	public void addIntraPassOrderingConstraint(DetectorOrderingConstraint constraint) {
 		intraPassConstraintList.add(constraint);
@@ -191,8 +215,9 @@ public class Plugin {
 
 	/**
 	 * Look up a DetectorFactory by short name.
-	 *
-	 * @param shortName the short name
+	 * 
+	 * @param shortName
+	 *            the short name
 	 * @return the DetectorFactory
 	 */
 	public DetectorFactory getFactoryByShortName(final String shortName) {
@@ -205,8 +230,9 @@ public class Plugin {
 
 	/**
 	 * Look up a DetectorFactory by full name.
-	 *
-	 * @param fullName the full name
+	 * 
+	 * @param fullName
+	 *            the full name
 	 * @return the DetectorFactory
 	 */
 	public DetectorFactory getFactoryByFullName(final String fullName) {
@@ -264,42 +290,41 @@ public class Plugin {
 	public String getPluginId() {
 		return pluginId;
 	}
-	
+
 	/**
-	 * Set the analysis engine registrar class that,
-	 * when instantiated, can be used to register the plugin's
-	 * analysis engines with the analysis cache.
+	 * Set the analysis engine registrar class that, when instantiated, can be
+	 * used to register the plugin's analysis engines with the analysis cache.
 	 * 
-     * @param engineRegistrarClass The engine registrar class to set.
-     */
-    public void setEngineRegistrarClass(Class<? extends IAnalysisEngineRegistrar> engineRegistrarClass) {
-	    this.engineRegistrarClass = engineRegistrarClass;
-    }
-    
-    /**
-	 * Get the analysis engine registrar class that,
-	 * when instantiated, can be used to register the plugin's
-	 * analysis engines with the analysis cache.
+	 * @param engineRegistrarClass
+	 *            The engine registrar class to set.
+	 */
+	public void setEngineRegistrarClass(Class<? extends IAnalysisEngineRegistrar> engineRegistrarClass) {
+		this.engineRegistrarClass = engineRegistrarClass;
+	}
+
+	/**
+	 * Get the analysis engine registrar class that, when instantiated, can be
+	 * used to register the plugin's analysis engines with the analysis cache.
 	 * 
-     * @return Returns the engine registrar class.
-     */
-    public Class<? extends IAnalysisEngineRegistrar> getEngineRegistrarClass() {
-	    return engineRegistrarClass;
-    }
-    
-    /**
-     * @return Returns the pluginLoader.
-     */
-    public PluginLoader getPluginLoader() {
-	    return pluginLoader;
-    }
+	 * @return Returns the engine registrar class.
+	 */
+	public Class<? extends IAnalysisEngineRegistrar> getEngineRegistrarClass() {
+		return engineRegistrarClass;
+	}
+
+	/**
+	 * @return Returns the pluginLoader.
+	 */
+	public PluginLoader getPluginLoader() {
+		return pluginLoader;
+	}
 
 	private interface FactoryChooser {
 		public boolean choose(DetectorFactory factory);
 	}
 
 	private DetectorFactory chooseFactory(FactoryChooser chooser) {
-		for (Iterator<DetectorFactory> i = detectorFactoryIterator(); i.hasNext(); ) {
+		for (Iterator<DetectorFactory> i = detectorFactoryIterator(); i.hasNext();) {
 			DetectorFactory factory = i.next();
 			if (chooser.choose(factory))
 				return factory;
@@ -308,22 +333,33 @@ public class Plugin {
 	}
 
 	/**
-     * @param ranker
-     */
-    public void setBugRanker(BugRanker ranker) {
-	   this.bugRanker = ranker;
-    }
-    
-    public BugRanker getBugRanker() {
- 	   return bugRanker;
-     }
-  
-    public int rankBug(BugInstance bug) {
-    	if (bugRanker == null)
-    		return 29;
-    	return bugRanker.rankBug(bug);
-    	
-    }
+	 * @param ranker
+	 */
+	public void setBugRanker(BugRanker ranker) {
+		this.bugRanker = ranker;
+	}
+
+	public BugRanker getBugRanker() {
+		return bugRanker;
+	}
+
+	public int rankBug(BugInstance bug) {
+		if (bugRanker == null)
+			return 20;
+		return bugRanker.rankBug(bug);
+
+	}
+	
+	void addBugReporterPlugin(BugReporterPlugin filter) {
+		filterPlugins.put(filter.getId(), filter);
+	}
+	
+	public Iterable<BugReporterPlugin> getBugReporterPlugins() {
+		return filterPlugins.values();
+	}
+	public BugReporterPlugin getBugReporterPlugin(String name) {
+		return filterPlugins.get(name);
+	}
 }
 
 // vim:ts=4

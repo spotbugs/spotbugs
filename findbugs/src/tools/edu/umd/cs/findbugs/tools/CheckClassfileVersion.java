@@ -81,6 +81,7 @@ public class CheckClassfileVersion {
 				}
 				zipIn.close();
 			}
+			z.close();
 		}
 		if (fail)
 			System.exit(1);

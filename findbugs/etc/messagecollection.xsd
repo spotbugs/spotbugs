@@ -20,6 +20,14 @@
 		</xsd:sequence>
 	</xsd:complexType>
 
+	<xsd:complexType name="BugReporterDecoratorType">
+		<xsd:sequence>
+			<xsd:element name="Description" type="xsd:string"  minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="Details" type="xsd:string"  minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+		<xsd:attribute name="id" type="ClassType"/>							
+	</xsd:complexType>
+
 	<xsd:complexType name="CloudType">
 		<xsd:sequence>
 			<xsd:element name="Description" type="xsd:string"  minOccurs="1" maxOccurs="1"/>
@@ -63,6 +71,7 @@
 		<xsd:sequence>
 			<xsd:element name="Plugin" type="PluginType"/>
 			<xsd:element name="Cloud" type="CloudType" minOccurs="0" maxOccurs="unbounded"/>			
+			<xsd:element name="BugReporterDecorator" type="BugReporterDecoratorType" minOccurs="0" maxOccurs="unbounded"/>			
 			<xsd:element name="BugCategory" type="BugCategoryType" minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:element name="Detector" type="DetectorType" minOccurs="1" maxOccurs="unbounded"/>
 			<xsd:element name="BugPattern" type="BugPatternType" minOccurs="1" maxOccurs="unbounded"/>

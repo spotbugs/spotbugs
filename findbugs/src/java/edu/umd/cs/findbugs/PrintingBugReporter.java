@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.util.Bag;
@@ -232,6 +234,10 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		Exception e = reporter.getFatalException();
 		if (e != null) throw e;
 	}
+
+	public @CheckForNull BugCollection getBugCollection() {
+	    return null;
+    }
 }
 
 // vim:ts=4

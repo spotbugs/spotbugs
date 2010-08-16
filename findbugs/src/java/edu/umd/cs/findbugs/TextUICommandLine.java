@@ -26,8 +26,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -82,6 +82,10 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private List<String> includeFilterFile = new LinkedList<String>();
 	private List<String> excludeFilterFile = new LinkedList<String>();
 	private List<String> excludeBugFile = new LinkedList<String>();
+	private Set<String> enabledBugReporterDecorators 
+	  = new LinkedHashSet<String>();
+	private Set<String> disabledBugReporterDecorators 
+	  = new LinkedHashSet<String>();
 	private boolean setExitCode = false;
 	private boolean noClassOk = false;
 	private int priorityThreshold = Detector.NORMAL_PRIORITY;
@@ -164,7 +168,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		addSwitch("-xargs", "get list of classfiles/jarfiles from standard input rather than command line");
 		addOption("-cloud", "id", "set cloud id");
 		addOption("-cloudProperty", "key=value", "set cloud property");
-
+		addOption("-bugReporters", "name,name2,-name3", "bug reporter decorators to explicitly enable/disable");
 		}
 
 	@Override
@@ -312,6 +316,14 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			String key = argument.substring(0, e);
 			String value = argument.substring(e+1);
 			project.getCloudProperties().setProperty(key, value);
+			
+		} else if (option.equals("-bugReporters")) {
+			for(String s : argument.split(",")) {
+				if (s.charAt(0)== '-')
+					disabledBugReporterDecorators.add(s.substring(1));
+				else
+					enabledBugReporterDecorators.add(s);
+			}
 			
 		} else if (option.equals("-maxRank")) {
 			this.rankThreshold = Integer.parseInt(argument);
@@ -515,8 +527,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		textuiBugReporter.setRankThreshold(rankThreshold);
 		textuiBugReporter.setUseLongBugCodes(useLongBugCodes);
 
-		if (findBugs instanceof IFindBugsEngine2) 
-			((IFindBugsEngine2)findBugs).setRankThreshold(rankThreshold);
+		findBugs.setRankThreshold(rankThreshold);
 		if (outputStream != null)
 			textuiBugReporter.setOutputStream(outputStream);
 
@@ -571,6 +582,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		findBugs.setScanNestedArchives(scanNestedArchives);
 		findBugs.setNoClassOk(noClassOk);
 
+		findBugs.setBugReporterDecorators(enabledBugReporterDecorators, disabledBugReporterDecorators);
 		if (applySuppression)
 			findBugs.setApplySuppression(true);
 		
