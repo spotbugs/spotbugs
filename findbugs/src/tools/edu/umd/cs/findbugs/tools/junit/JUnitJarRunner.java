@@ -107,6 +107,7 @@ public class JUnitJarRunner {
 					suite.addTestSuite(jarClass);
 			}
 		}
+		jarFile.close();
 
 		return suite;
 	}

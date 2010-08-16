@@ -28,54 +28,72 @@ import edu.umd.cs.findbugs.cloud.username.NameLookup;
 public class CloudPlugin {
 
 	public CloudPlugin(String cloudid, ClassLoader classLoader, Class<? extends Cloud> cloudClass,
-            Class<? extends NameLookup> usernameClass, PropertyBundle properties, String description, String details) {
+	        Class<? extends NameLookup> usernameClass, PropertyBundle properties, String description, String details) {
 		this(cloudid, classLoader, cloudClass, usernameClass, false, properties, description, details);
-    }
+	}
+
 	public CloudPlugin(String cloudid, ClassLoader classLoader, Class<? extends Cloud> cloudClass,
-            Class<? extends NameLookup> usernameClass, boolean hidden, PropertyBundle properties, String description, String details) {
-	    this.cloudid = cloudid;
-	    this.classLoader = classLoader;
-	    this.cloudClass = cloudClass;
-	    this.usernameClass = usernameClass;
-	    this.properties = properties;
-	    this.description = description;
-	    this.details = details;
-	    this.hidden = hidden;
-    }
+	        Class<? extends NameLookup> usernameClass, boolean hidden, PropertyBundle properties, String description,
+	        String details) {
+		this.cloudid = cloudid;
+		this.classLoader = classLoader;
+		this.cloudClass = cloudClass;
+		this.usernameClass = usernameClass;
+		this.properties = properties;
+		this.description = description;
+		this.details = details;
+		this.hidden = hidden;
+	}
+
 	public String getId() {
-    	return cloudid;
-    }
+		return cloudid;
+	}
+
 	public ClassLoader getClassLoader() {
-    	return classLoader;
-    }
+		return classLoader;
+	}
+
 	public Class<? extends Cloud> getCloudClass() {
-    	return cloudClass;
-    }
+		return cloudClass;
+	}
+
 	public Class<? extends NameLookup> getUsernameClass() {
-    	return usernameClass;
-    }
+		return usernameClass;
+	}
+
 	public boolean isHidden() {
 		return hidden;
 	}
+
 	public PropertyBundle getProperties() {
-    	return properties;
-    }
+		return properties;
+	}
+
 	public String getDescription() {
-    	return description;
-    }
+		return description;
+	}
+
 	public String getDetails() {
-    	return details;
-    }
-	
+		return details;
+	}
+
 	public String toString() {
 		return getDescription();
 	}
+
 	final String cloudid;
+
 	final ClassLoader classLoader;
+
 	final Class<? extends Cloud> cloudClass;
+
 	final Class<? extends NameLookup> usernameClass;
+
 	final PropertyBundle properties;
+
 	final String description;
+
 	final String details;
+
 	final boolean hidden;
 }

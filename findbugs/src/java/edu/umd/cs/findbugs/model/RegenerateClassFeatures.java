@@ -69,6 +69,7 @@ public class RegenerateClassFeatures {
 			Repository.addClass(javaClass);
 			classList.add(javaClass);
 		}
+		zipFile.close();
 
 		for (JavaClass javaClass : classList) {
 			ClassFeatureSet classFeatureSet = new ClassFeatureSet().initialize(javaClass);

@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryChooser;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -38,6 +39,7 @@ import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.graph.DepthFirstSearch;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * A plan for executing Detectors on an application.
@@ -100,6 +102,13 @@ public class ExecutionPlan {
 		this.factoryChooser = factoryChooser;
 	}
 
+	
+	public boolean isActive(@DottedClassName String detectorClass) {
+		return factoryMap.containsKey(detectorClass);
+	}
+	public boolean isActive(Class<? extends Detector> detectorClass) {
+		return isActive(detectorClass.getName());
+	}
 	/**
 	 * Add a Plugin whose Detectors should be added to the execution plan.
 	 */

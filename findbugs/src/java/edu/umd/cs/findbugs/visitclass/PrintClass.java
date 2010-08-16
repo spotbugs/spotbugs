@@ -112,6 +112,7 @@ public class PrintClass {
 
 
 				}
+				z.close();
 			} else
 				for (int i = 0; i < files; i++)
 					if (file_name[i].endsWith(".class")) {

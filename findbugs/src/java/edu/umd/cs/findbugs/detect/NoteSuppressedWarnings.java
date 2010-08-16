@@ -24,79 +24,58 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.ArrayElementValue;
 import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.SimpleElementValue;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.ClassWarningSuppressor;
-import edu.umd.cs.findbugs.DelegatingBugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FieldWarningSuppressor;
-import edu.umd.cs.findbugs.FilterBugReporter;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.MethodWarningSuppressor;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.PackageWarningSuppressor;
 import edu.umd.cs.findbugs.ParameterWarningSuppressor;
 import edu.umd.cs.findbugs.SuppressionMatcher;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 public class NoteSuppressedWarnings
 		extends AnnotationVisitor
 		implements Detector, NonReportingDetector {
 
-	private  Set<String> packages = new HashSet<String>();
+	private final Set<String> packages = new HashSet<String>();
 
-	private SuppressionMatcher suppressionMatcher;
-
-	private NoteSuppressedWarnings recursiveDetector;
+	private final SuppressionMatcher suppressionMatcher;
 
 	public NoteSuppressedWarnings(BugReporter bugReporter) {
-		this(bugReporter, false);
-	}
-
-	public NoteSuppressedWarnings(BugReporter bugReporter, boolean recursive) {
-		if (!recursive) {
-			DelegatingBugReporter b = (DelegatingBugReporter) bugReporter;
-			BugReporter origBugReporter = b.getDelegate();
-			suppressionMatcher = new SuppressionMatcher();
-			BugReporter filterBugReporter = new FilterBugReporter(origBugReporter,
-					suppressionMatcher, false);
-			b.setDelegate(filterBugReporter);
-			recursiveDetector = new NoteSuppressedWarnings(bugReporter, true);
-			recursiveDetector.suppressionMatcher = suppressionMatcher;
-		}
+		suppressionMatcher = AnalysisContext.currentAnalysisContext().getSuppressionMatcher();
 	}
 
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass javaClass = classContext.getJavaClass();
-		if  (!BCELUtil.preTiger(javaClass)) javaClass.accept(this);
-	}
-
-	@Override
-	public void visit(JavaClass obj) {
-		if (recursiveDetector == null)
-			return;
-		try {
-			if (getClassName().endsWith("package-info"))
-				return;
-			String packageName = getPackageName().replace('/', '.');
-			if (!packages.add(packageName))
-				return;
-			String packageInfo = "package-info";
-			if (packageName.length() > 0)
-				packageInfo = packageName + "." + packageInfo;
-
-			JavaClass packageInfoClass = Repository.lookupClass(packageInfo);
-			recursiveDetector.visitJavaClass(packageInfoClass);
-		} catch (ClassNotFoundException e) {
-			// ignore
+		if  (!BCELUtil.preTiger(javaClass)) {
+			@DottedClassName String name = javaClass.getClassName();
+			int i = name.lastIndexOf('.');
+			String packageName = i < 0 ? "" : name.substring(0, i);
+			if (name.endsWith(".package-info")) {
+				if (!packages.add(packageName))
+					return;
+			} else if (packages.add(packageName)) {
+				JavaClass packageInfoClass;
+				try {
+					packageInfoClass = Repository.lookupClass(packageName + ".package-info");
+					packageInfoClass.accept(this);
+				} catch (ClassNotFoundException e) {
+					assert true;
+				}
+			}
+			javaClass.accept(this);
 		}
 	}
 
@@ -139,7 +118,7 @@ public class NoteSuppressedWarnings
 	private void suppressWarning(String pattern) {
 		String className = getDottedClassName();
 		ClassAnnotation clazz = new ClassAnnotation(className);
-		if (className.endsWith("package-info") && recursiveDetector == null)
+		if (className.endsWith(".package-info"))
 			suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern,
 					getPackageName().replace('/', '.')));
 		else if (visitingMethod())

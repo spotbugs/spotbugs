@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SuppressionMatcher;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
@@ -225,18 +226,6 @@ public abstract class AnalysisContext {
 		if (this.unreadFields != null) throw new IllegalStateException("UnreadFields detector already set");
 		this.unreadFields = unreadFields;
 	}
-	
-	/*
-	private DirectlyRelevantTypeQualifiersDatabase directlyRelevantTypeQualifiersDatabase;
-	public DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase() {
-		if (directlyRelevantTypeQualifiersDatabase == null) throw new IllegalStateException("DirectlyRelevantTypeQualifiersDatabase  not set");
-		return directlyRelevantTypeQualifiersDatabase;
-	}
-	public void setDirectlyRelevantTypeQualifiersDatabase(@NonNull DirectlyRelevantTypeQualifiersDatabase directlyRelevantTypeQualifiersDatabase) {
-		if (this.directlyRelevantTypeQualifiersDatabase != null) throw new IllegalStateException("DirectlyRelevantTypeQualifiersDatabase  already set");
-		this.directlyRelevantTypeQualifiersDatabase = directlyRelevantTypeQualifiersDatabase;
-	}
-	*/
 	
 	public abstract DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase();
 	
@@ -763,6 +752,11 @@ public abstract class AnalysisContext {
 	public abstract @CheckForNull XMethod getBridgeFrom(MethodInfo m);
 	public abstract void setBridgeMethod(MethodInfo from, MethodInfo to);
 	
+	
+	private final SuppressionMatcher suppressionMatcher = new SuppressionMatcher();
+	public SuppressionMatcher getSuppressionMatcher() {
+		return suppressionMatcher;
+	}
 }
 
 // vim:ts=4

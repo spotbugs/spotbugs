@@ -68,7 +68,7 @@ import edu.umd.cs.findbugs.plan.ExecutionPlan;
 public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("cew.debug");
 	
-	private BugCollectionBugReporter reporter;
+	private BugReporter reporter;
 	private Set<String> possibleBugCodes;
 	private Map<MethodDescriptor, Collection<BugInstance>> warningsByMethod;
 	
@@ -80,9 +80,8 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 	private boolean warned;
 	
 	public CheckExpectedWarnings(BugReporter bugReporter) {
-		BugReporter realBugReporter = bugReporter.getRealBugReporter();
-		if (realBugReporter instanceof BugCollectionBugReporter) {
-			reporter = (BugCollectionBugReporter) realBugReporter;
+		if (bugReporter.getBugCollection() != null) {
+			reporter = bugReporter;
 			expectWarning = DescriptorFactory.createClassDescriptor(ExpectWarning.class);
 			noWarning = DescriptorFactory.createClassDescriptor(NoWarning.class);
 			desireWarning = DescriptorFactory.createClassDescriptor(DesireWarning.class);
