@@ -997,7 +997,7 @@
           <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE_IN_RETURN" category="STYLE"/>
           <BugPattern abbrev="DLS" type="DLS_DEAD_STORE_OF_CLASS_LITERAL" category="CORRECTNESS"/>
           <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE" category="STYLE"/>
-          <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD" category="CORRECTNESS"/>
+          <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD" category="STYLE"/>
           <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE_OF_NULL" category="STYLE"/>
           <BugPattern abbrev="IP" type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN" category="CORRECTNESS"
                     cweid="563"/>
