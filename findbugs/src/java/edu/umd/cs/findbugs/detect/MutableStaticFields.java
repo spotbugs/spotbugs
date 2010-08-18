@@ -237,7 +237,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
             } catch (CheckedAnalysisException e) {
             	assert true;
             }
-			boolean isHashtable = fieldSig.equals("Ljava.util.Hashtable;");
+			boolean isHashtable = fieldSig.equals("Ljava/util/Hashtable;");
 			boolean isArray = fieldSig.charAt(0) == '['
 					&& unsafeValue.contains(f);
 			boolean isReadAnywhere = readAnywhere.contains(f);
