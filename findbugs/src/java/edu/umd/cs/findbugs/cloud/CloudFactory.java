@@ -52,6 +52,8 @@ public class CloudFactory {
     		String cloudId = bc.getProject().getCloudId();
     		if (cloudId != null) {
     			plugin = registeredClouds.get(cloudId);
+				if (plugin == null)
+					throw new IllegalArgumentException();
     		}
     		boolean usedDefaultCloud = false;
     		if (plugin == null)  {

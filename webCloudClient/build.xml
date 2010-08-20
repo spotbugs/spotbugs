@@ -1,8 +1,5 @@
 <project name="webCloudClient" default="install">
 
-  <property file="local.properties" />
-
-
     <property name="src.dir" value="src/java"/>
     <property name="gsrc.dir" value="generated-src"/>
     <property name="classes.dir" value="build/classes"/>
@@ -10,19 +7,19 @@
     <property name="findbugs.home" value="../findbugs"/>
     <property name="protocol.home" value="../webCloudProtocol"/>
 
-        <path id="client.classpath">
-		<fileset dir="${lib.dir}">
-			<include name="**/*.jar"/>
-		      </fileset>
-		<fileset dir="${findbugs.home}/lib">
-			<include name="*.jar"/>
-		      </fileset>
-		<fileset dir="${protocol.home}/lib">
-			<include name="*.jar"/>
-		      </fileset>
-		<pathelement location="${protocol.home}/build"/>
+    <path id="client.classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${findbugs.home}/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${protocol.home}/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement location="${protocol.home}/build/classes"/>
 
-        </path>
+    </path>
 
 
     <target name="validate">
@@ -33,43 +30,75 @@
         </xmlvalidate>
     </target>
 
-   <target name="classes">
-	<mkdir dir="${classes.dir}"/>
-        <javac
-		destdir="${classes.dir}"
-		source="1.5"
-		target="1.5"
-		includeantruntime="false"
-		encoding="ISO-8859-1"
-		deprecation="off"
-		debug="on">
-	<src path="${src.dir}"/>
-	<src path="${gsrc.dir}"/>
- 	<classpath refid="client.classpath"/>
-	</javac>
-	</target>
-                                        
+    <target name="classes">
+        <ant dir="../webCloudProtocol" target="classes"/>
+        <mkdir dir="${classes.dir}"/>
+        <javac  destdir="${classes.dir}"
+                source="1.5"
+                target="1.5"
+                includeantruntime="false"
+                encoding="ISO-8859-1"
+                deprecation="off"
+                debug="on">
+            <src path="${src.dir}"/>
+            <src path="${gsrc.dir}"/>
+            <classpath refid="client.classpath"/>
+        </javac>
+    </target>
 
-      
 
     <target name="plugin" depends="classes">
-        <jar destfile="build/webCloudClient.jar"
-             manifest="etc/MANIFEST.MF">
+        <jar destfile="build/webCloudClient.jar">
             <fileset dir="etc">
                 <include name="*.xml"/>
             </fileset>
             <fileset dir="${classes.dir}">
                 <include name="**/*.class"/>
             </fileset>
-            <fileset dir="../webCloudProtocol/build">
+            <fileset dir="../webCloudProtocol/build/classes">
                 <include name="**/*.class"/>
             </fileset>
         </jar>
     </target>
-    <target name="install" depends="plugin">
+
+    <target name="fulljar" depends="plugin">
+        <jar destfile="build/webCloudClient-full.jar">
+            <zipfileset src="../webCloudProtocol/lib/protobuf-java-2.3.0.jar"/>
+            <fileset dir="../webCloudProtocol/build/classes"/>
+
+            <zipfileset src="build/webCloudClient.jar"/>
+
+            <zipfileset src="lib/gdata-client-1.0.jar"/>
+            <zipfileset src="lib/gdata-core-1.0.jar"/>
+            <zipfileset src="lib/gdata-projecthosting-2.1.jar"/>
+            <zipfileset src="lib/gdata-projecthosting-meta-2.1.jar"/>
+            <zipfileset src="lib/google-collect-1.0-rc1.jar"/>
+            <zipfileset src="lib/mockito-all-1.8.2.jar"/>
+
+            <zipfileset src="lib/axis/axis.jar"/>
+            <zipfileset src="lib/axis/commons-discovery-0.2.jar"/>
+            <zipfileset src="lib/axis/commons-logging-1.0.4.jar"/>
+            <zipfileset src="lib/axis/jaxrpc.jar"/>
+            <zipfileset src="lib/axis/saaj.jar"/>
+            <zipfileset src="lib/axis/wsdl4j-1.5.1.jar"/>
+        </jar>
+    </target>
+
+    <target name="fulljar-with-findbugs" depends="fulljar">
+        <ant dir="../findbugs" antfile="../findbugs/build.xml" target="fulljar">
+            <property name="fullJarName" value="findbugs-fulljar-temp-for-webCloudClient.jar"/>
+        </ant>
+        <jar destfile="build/findbugs-with-webCloudClient-full.jar">
+            <zipfileset src="build/webCloudClient-full.jar"/>
+
+            <zipfileset src="../findbugs/lib/findbugs-fulljar-temp-for-webCloudClient.jar"/>
+        </jar>
+    </target>
+
+    <target name="install" depends="fulljar">
         <copy todir="${findbugs.home}/plugin" flatten="true">
             <fileset dir="build">
-                <include name="*.jar"/>
+                <include name="webCloudClient-full.jar"/>
             </fileset>
         </copy>
         <copy todir="${findbugs.home}/jnlp" flatten="true">
@@ -77,6 +106,7 @@
                 <include name="*.jnlp"/>
             </fileset>
         </copy>
+<!--
         <copy todir="${findbugs.home}/plugin/webCloudClient" flatten="true">
             <fileset dir="lib">
                 <include name="**/*.jar"/>
@@ -86,6 +116,7 @@
                 <include name="**/*.jar"/>
             </fileset>
         </copy>
+-->
     </target>
 
 </project>
