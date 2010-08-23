@@ -63,7 +63,8 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 				throw new ZipException("Can't read file zip file: " + file);
 			if (!file.isFile())
 				throw new ZipException("Zip file isn't a normal file: " + file);
-			throw new ZipException("Error opening " + file);
+			System.err.println("Cannot open zip file " + file);
+			throw e;
 		}
 	}
 
