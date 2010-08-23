@@ -36,12 +36,6 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.Node;
-import org.dom4j.io.SAXReader;
-
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.bugReporter.BugReporterDecorator;
 import edu.umd.cs.findbugs.bugReporter.BugReporterPlugin;
@@ -49,6 +43,7 @@ import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.CloudPluginBuilder;
 import edu.umd.cs.findbugs.cloud.username.NameLookup;
 import edu.umd.cs.findbugs.plan.ByInterfaceDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.DetectorFactorySelector;
@@ -56,6 +51,11 @@ import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
 import edu.umd.cs.findbugs.plan.ReportingDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.SingleDetectorFactorySelector;
 import edu.umd.cs.findbugs.util.JavaWebStart;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
 
 /**
  * Loader for a FindBugs plugin.
@@ -81,7 +81,8 @@ public class PluginLoader {
 
 	// ClassLoader used to load classes and resources
 	private ClassLoader classLoader;
-	
+	private ClassLoader classLoaderForResources;
+
 	// Keep a count of how many plugins we've seen without a
 	// "pluginid" attribute, so we can assign them all unique ids.
 	private static int nextUnknownId;
@@ -102,6 +103,7 @@ public class PluginLoader {
 	 */
 	public PluginLoader(URL url) throws PluginException {
 		this.classLoader = new URLClassLoader(new URL[]{url});
+		this.classLoaderForResources = classLoader;
 		loadedFrom = url;
 		jarName = getJarName(url);
 		corePlugin = false;
@@ -127,6 +129,7 @@ public class PluginLoader {
 	 */
 	public PluginLoader(URL url, ClassLoader parent) throws PluginException {
 		this.classLoader = new URLClassLoader(new URL[]{url}, parent);
+		this.classLoaderForResources = new URLClassLoader(new URL[]{url});
 		loadedFrom = url;
 		jarName = getJarName(url);
 		corePlugin = false;
@@ -142,6 +145,7 @@ public class PluginLoader {
 	 */
 	public PluginLoader() {
 		this.classLoader = this.getClass().getClassLoader();
+		this.classLoaderForResources = classLoader;
 		corePlugin = true;
 		loadedFrom = null;
 		jarName = null;
@@ -193,17 +197,17 @@ public class PluginLoader {
 	            assert true;
             }
 
-		if (classLoader instanceof URLClassLoader) {
-			URLClassLoader urlClassLoader = (URLClassLoader) classLoader;
+		if (classLoaderForResources instanceof URLClassLoader) {
+			URLClassLoader urlClassLoader = (URLClassLoader) classLoaderForResources;
 			url = urlClassLoader.findResource(name);
 			if (url == null)
 				url = urlClassLoader.findResource("/" + name);
 		}
 
 		if (url == null) {
-			url = classLoader.getResource(name);
+			url = classLoaderForResources.getResource(name);
 			if (url == null)
-				url = classLoader.getResource("/" + name);
+				url = classLoaderForResources.getResource("/" + name);
 		}
 
 		if (url != null)
@@ -377,6 +381,7 @@ public class PluginLoader {
 			String cloudClassname = cloudNode.valueOf("@cloudClass");
 			String cloudId = cloudNode.valueOf("@id");
 			String usernameClassname =  cloudNode.valueOf("@usernameClass");
+			boolean onlineStorage =  Boolean.valueOf(cloudNode.valueOf("@onlineStorage"));
 			String propertiesLocation = cloudNode.valueOf("@properties");
 			boolean disabled = Boolean.valueOf(cloudNode.valueOf("@disabled"))
 					&& !cloudId.equals(CloudFactory.DEFAULT_CLOUD);
@@ -406,8 +411,18 @@ public class PluginLoader {
 				String value = node.getText();
 				properties.setProperty(key, value);
 			}
-			
-			CloudPlugin cloudPlugin = new CloudPlugin(cloudId, classLoader, cloudClass, usernameClass, hidden, properties, description, details);
+
+			CloudPlugin cloudPlugin = new CloudPluginBuilder()
+					.setCloudid(cloudId)
+					.setClassLoader(classLoader)
+					.setCloudClass(cloudClass)
+					.setUsernameClass(usernameClass)
+					.setHidden(hidden)
+					.setProperties(properties)
+					.setDescription(description)
+					.setDetails(details)
+					.setOnlineStorage(onlineStorage)
+					.createCloudPlugin();
 			CloudFactory.registerCloud(cloudPlugin, pluginEnabled);
 		}
 		
@@ -432,7 +447,7 @@ public class PluginLoader {
 				String details = getChildText(filterMessageNode, "Details").trim();
 				PropertyBundle properties = new PropertyBundle();
 				if (propertiesLocation != null && propertiesLocation.length() > 0) {
-					URL properiesURL = classLoader.getResource(propertiesLocation);
+					URL properiesURL = classLoaderForResources.getResource(propertiesLocation);
 					if (properiesURL == null)
 						continue;
 					properties.loadPropertiesFromURL(properiesURL);

@@ -21,18 +21,18 @@ This plugin contains all of the standard FindBugs detectors.
 
 
   <Cloud id="edu.umd.cs.findbugs.cloud.Local">
-	<Description>Bug history information stored in XML</Description>
-	<Details>Information about bug history and evaluations are stored in the XML that also contains the analysis results</Details>
-	</Cloud>
+	<Description>Analysis XML File</Description>
+	<Details>Comments are stored in the analysis XML file itself</Details>
+    </Cloud>
 
   <Cloud id="edu.umd.cs.findbugs.cloud.db.Default" >
-	<Description>Bug history information stored in a SQL database hosted at UMD</Description>
-	<Details>Information about bug history and evaluations are stored in a MySql database hosted at UMD</Details>
-	</Cloud>
+	<Description>MySQL - Univ. of Maryland</Description>
+	<Details>Comments are stored in a MySQL database hosted at UMD</Details>
+    </Cloud>
   <Cloud id="edu.umd.cs.findbugs.cloud.db.DB-UserName" >
-	<Description>Bug history information stored in a SQL database and uses system user name</Description>
-	<Details>Information about bug history and evaluations are stored in an SQL database; user name gotten from system properties</Details>
-	</Cloud>
+	<Description>MySQL - Univ. of Maryland (uses system user name)</Description>
+	<Details>Comments are stored in an SQL database; user name gotten from system properties</Details>
+    </Cloud>
 
   <BugReporterDecorator
     id="edu.umd.cs.findbugs.bugReporter.SuppressMultithreaded">

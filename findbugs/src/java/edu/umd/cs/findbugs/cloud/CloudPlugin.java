@@ -28,11 +28,6 @@ import edu.umd.cs.findbugs.cloud.username.NameLookup;
 public class CloudPlugin {
 
 	public CloudPlugin(String cloudid, ClassLoader classLoader, Class<? extends Cloud> cloudClass,
-	        Class<? extends NameLookup> usernameClass, PropertyBundle properties, String description, String details) {
-		this(cloudid, classLoader, cloudClass, usernameClass, false, properties, description, details);
-	}
-
-	public CloudPlugin(String cloudid, ClassLoader classLoader, Class<? extends Cloud> cloudClass,
 	        Class<? extends NameLookup> usernameClass, boolean hidden, PropertyBundle properties, String description,
 	        String details) {
 		this.cloudid = cloudid;

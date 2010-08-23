@@ -1,5 +1,13 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.prefs.Preferences;
+
 import com.google.gdata.client.authn.oauth.GoogleOAuthHelper;
 import com.google.gdata.client.authn.oauth.GoogleOAuthParameters;
 import com.google.gdata.client.authn.oauth.OAuthException;
@@ -15,19 +23,11 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.CloudPluginBuilder;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Properties;
-import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.prefs.Preferences;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.JiraBugFiler.processJiraDashboardUrl;
 import static org.mockito.Mockito.doAnswer;
@@ -51,7 +51,7 @@ public class BugFilingTest extends TestCase {
         super.setUp();
         mockCloudClient = mock(AppEngineCloudClient.class);
         when(mockCloudClient.getPlugin()).thenReturn(
-                new CloudPlugin("BugFilingTest", null, null, null, new PropertyBundle(), null, null));
+				new CloudPluginBuilder().setCloudid("BugFilingTest").setClassLoader(null).setCloudClass(null).setUsernameClass(null).setProperties(new PropertyBundle()).setDescription(null).setDetails(null).createCloudPlugin());
         mockNetworkClient = mock(AppEngineCloudNetworkClient.class);
         when(mockCloudClient.getNetworkClient()).thenReturn(mockNetworkClient);
         projectHostingService = mock(ProjectHostingService.class);

@@ -1,13 +1,5 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.PropertyBundle;
-import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
-import junit.framework.TestCase;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,12 +9,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
-import java.util.logging.Filter;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import static org.mockito.Mockito.mock;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.CloudPluginBuilder;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
+import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import junit.framework.TestCase;
+
 import static org.mockito.Mockito.when;
 
 public abstract class AbstractAppEngineCloudTest extends TestCase {
@@ -43,9 +40,7 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
         foundIssue.setInstanceHash("fad2");
         addMissingIssue = false;
         bugCollection = new SortedBugCollection();
-        plugin = new CloudPlugin("AbstractAppEngineCloudTest", AppEngineCloudClient.class.getClassLoader(),
-                                 AppEngineCloudClient.class, AppEngineNameLookup.class,
-                                 new PropertyBundle(), "none", "none");
+        plugin = new CloudPluginBuilder().setCloudid("AbstractAppEngineCloudTest").setClassLoader(AppEngineCloudClient.class.getClassLoader()).setCloudClass(AppEngineCloudClient.class).setUsernameClass(AppEngineNameLookup.class).setProperties(new PropertyBundle()).setDescription("none").setDetails("none").createCloudPlugin();
 //        Logger logger = Logger.getLogger("edu.umd.cs.findbugs.cloud");
 //        logger.setLevel(Level.FINEST);
 //        logHandler = new ConsoleHandler();

@@ -591,13 +591,23 @@ public abstract class AbstractCloud implements Cloud {
 	// ==================== end of public methods ==================
 
 	protected void updatedStatus() {
-		for (CloudListener listener : listeners)
-			listener.statusUpdated();
+		for (CloudListener listener : listeners) {
+			try {
+				listener.statusUpdated();
+			} catch (Exception e) {
+				LOGGER.log(Level.SEVERE, "Error executing callback " + listener, e);
+			}
+		}
 	}
 
 	public void updatedIssue(BugInstance bug) {
-		for (CloudListener listener : listeners)
-			listener.issueUpdated(bug);
+		for (CloudListener listener : listeners) {
+			try {
+				listener.issueUpdated(bug);
+			} catch (Exception e) {
+				LOGGER.log(Level.SEVERE, "Error executing callback " + listener, e);
+			}
+		}
 	}
 
 	protected void fireIssueDataDownloadedEvent() {

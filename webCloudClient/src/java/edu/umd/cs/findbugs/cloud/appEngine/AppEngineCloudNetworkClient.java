@@ -419,8 +419,15 @@ public class AppEngineCloudNetworkClient {
             final long oldSessionId = sessionId;
             Runnable logoutRequest = new Runnable() {
                 public void run() {
-                    openPostUrl("/log-out/" + oldSessionId, null);
-                }
+					try {
+						openPostUrl("/log-out/" + oldSessionId, null);
+					} catch (Exception e) {
+						getGuiCallback().showMessageDialog(
+								"A network error occurred while attempting to sign out of the FindBugs Cloud. \n" +
+										"Please check your internet settings and try again.\n\n" + e.getMessage());
+						LOGGER.log(Level.SEVERE, "Could not sign out", e);
+					}
+				}
             };
             if (background)
                 cloudClient.getBackgroundExecutor().execute(logoutRequest);

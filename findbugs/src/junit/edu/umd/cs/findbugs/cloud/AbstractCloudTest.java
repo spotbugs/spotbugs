@@ -1,6 +1,5 @@
 package edu.umd.cs.findbugs.cloud;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -10,7 +9,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -43,8 +41,7 @@ public class AbstractCloudTest extends TestCase {
     public void setUp() {
 		projectStats = new ProjectStats();
 		bugCollection = new SortedBugCollection(projectStats);
-        plugin = new CloudPlugin("myAbstractCloud", this.getClass().getClassLoader(), MyAbstractCloud.class,
-                                 NoNameLookup.class, new PropertyBundle(), "no description", "no details");
+        plugin = new CloudPluginBuilder().setCloudid("myAbstractCloud").setClassLoader(this.getClass().getClassLoader()).setCloudClass(MyAbstractCloud.class).setUsernameClass(NoNameLookup.class).setProperties(new PropertyBundle()).setDescription("no description").setDetails("no details").createCloudPlugin();
         cloud = new MyAbstractCloud(plugin, bugCollection, new Properties());
         summary = new StringWriter();
 		timestampCounter = 0;
