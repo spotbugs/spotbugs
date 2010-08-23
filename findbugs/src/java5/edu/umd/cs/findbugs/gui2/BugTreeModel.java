@@ -171,7 +171,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 				for(int i = 0; i < queryDepth; i++) {
 					Sortables treeSortable = st.getOrderBeforeDivider().get(i);
 					Sortables querySortable = a.get(i).key;
-					assert treeSortable.equals(querySortable);
+					assert treeSortable.equals(querySortable) : treeSortable + " vs " + querySortable;
 				}
 
 			try {

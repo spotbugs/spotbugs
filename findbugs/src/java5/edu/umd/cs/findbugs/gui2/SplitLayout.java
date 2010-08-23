@@ -19,9 +19,10 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import edu.umd.cs.findbugs.L10N;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -34,6 +35,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
+
+import edu.umd.cs.findbugs.L10N;
 
 
 /**
@@ -80,7 +83,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 		viewSource.setEnabled(false);
 		
 		topLeftSPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, 
-				frame.bugListPanel(), frame.createCommentsInputPanel());
+				frame.mainFrameTree.bugListPanel(), frame.createCommentsInputPanel());
 		topLeftSPane.setOneTouchExpandable(true);
 		topLeftSPane.setDividerLocation(GUISaveState.getInstance().getSplitTreeComments());
         removeSplitPaneBorders(topLeftSPane);

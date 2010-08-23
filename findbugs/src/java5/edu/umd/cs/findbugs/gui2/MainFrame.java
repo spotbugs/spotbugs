@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -39,7 +38,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -63,11 +61,9 @@ import java.util.logging.Level;
 import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -84,7 +80,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolTip;
 import javax.swing.JTree;
@@ -92,25 +87,15 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.TextAction;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 
 import edu.umd.cs.findbugs.AbstractSwingGuiCallback;
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -134,8 +119,6 @@ import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
 import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
-import edu.umd.cs.findbugs.filter.Matcher;
-import edu.umd.cs.findbugs.gui2.BugTreeModel.TreeModification;
 import edu.umd.cs.findbugs.log.ConsoleLogger;
 import edu.umd.cs.findbugs.log.LogSync;
 import edu.umd.cs.findbugs.log.Logger;
@@ -205,10 +188,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
 	private final FindBugsLayoutManager guiLayout;
 
-	private JTree tree;
-    private final CommentsArea comments;
-	private SorterTableColumnModel sorter;
-	private JTableHeader tableheader;
+	private final CommentsArea comments;
 	private JLabel statusBarLabel = new JLabel();
     private JLabel signedInLabel;
 	private JTextField sourceSearchTextField = new JTextField(SEARCH_TEXT_FIELD_SIZE);
@@ -219,19 +199,11 @@ public class MainFrame extends FBFrame implements LogSync {
     private JPanel summaryTopPanel;
     private JEditorPane summaryHtmlArea = new JEditorPane();
 	private JScrollPane summaryHtmlScrollPane = new JScrollPane(summaryHtmlArea);
-	private BugLeafNode currentSelectedBugLeaf;
-	private JPanel treePanel;
-	private JScrollPane treeScrollPane;
 	private SourceCodeDisplay displayer = new SourceCodeDisplay(this);
 	private ViewFilter viewFilter = new ViewFilter(this);
-    private JPanel cardPanel;
-	private JTextField textFieldForPackagesToDisplay;
-	private JLabel waitStatusLabel;
 
     private JMenuItem reconfigMenuItem = MainFrameHelper.newJMenuItem("menu.reconfig", "Reconfigure...", KeyEvent.VK_F);
     private JMenuItem redoAnalysis;
-	private JPopupMenu bugPopupMenu;
-	private JPopupMenu branchPopupMenu;
 	private RecentMenu recentMenuCache;
 	private JMenu recentMenu;
 	private JMenuItem preferencesMenuItem;
@@ -243,9 +215,10 @@ public class MainFrame extends FBFrame implements LogSync {
     private ImageIcon signedInIcon;
     private ImageIcon warningIcon;
     private MainFrameLoadSaveHelper mainFrameLoadSaveHelper;
+	final MainFrameTree mainFrameTree = new MainFrameTree(this);
 
 
-    public static void makeInstance(FindBugsLayoutManagerFactory factory) {
+	public static void makeInstance(FindBugsLayoutManagerFactory factory) {
 		if (instance != null) 
 			throw new IllegalStateException();
 		instance=new MainFrame(factory);
@@ -297,7 +270,7 @@ public class MainFrame extends FBFrame implements LogSync {
                 Thread.dumpStack();
             }
 			if (waitCount == 1)
-				showCard(BugCard.WAITCARD, new Cursor(Cursor.WAIT_CURSOR));
+				mainFrameTree.showCard(BugCard.WAITCARD, new Cursor(Cursor.WAIT_CURSOR), this);
 		}
 	}
 	public void releaseDisplayWait() {
@@ -310,38 +283,13 @@ public class MainFrame extends FBFrame implements LogSync {
                 Thread.dumpStack();
             }
 			if (waitCount == 0)
-				showCard(BugCard.TREECARD, new Cursor(Cursor.DEFAULT_CURSOR));
+				mainFrameTree.showCard(BugCard.TREECARD, new Cursor(Cursor.DEFAULT_CURSOR), this);
 		}
 	}
 	
 	public void newTree(final JTree newTree, final BugTreeModel newModel)
 	{
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				tree = newTree;
-				tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-				tree.setLargeModel(true);
-				tree.setCellRenderer(new BugRenderer());
-				treePanel.remove(treeScrollPane);
-				treeScrollPane = new JScrollPane(newTree);
-				treePanel.add(treeScrollPane);
-				setFontSizeHelper(Driver.getFontSize(), treeScrollPane);
-				tree.setRowHeight((int)(Driver.getFontSize() + 7));
-				MainFrame.this.getContentPane().validate();
-				MainFrame.this.getContentPane().repaint();
-
-				setupTreeListeners();
-				newModel.openPreviouslySelected(((BugTreeModel)(tree.getModel())).getOldSelectedBugs());
-				MainFrame.this.expandTree(10);
-				MainFrame.this.expandToFirstLeaf(14);
-				MainFrame.this.getSorter().addColumnModelListener(newModel);
-				FilterActivity.addFilterListener(newModel.bugTreeFilterListener);
-				MainFrame.this.setSorting(true);
-
-			}
-		});
+		mainFrameTree.newTree(newTree, newModel);
 	}
 
 	public void waitUntilReady() throws InterruptedException {
@@ -365,22 +313,18 @@ public class MainFrame extends FBFrame implements LogSync {
 			}
 		}
 
-		bugPopupMenu.setFont(bugPopupMenu.getFont().deriveFont(size));
-		setFontSizeHelper(size, bugPopupMenu.getComponents());
-
-		branchPopupMenu.setFont(branchPopupMenu.getFont().deriveFont(size));
-		setFontSizeHelper(size, branchPopupMenu.getComponents());
+		mainFrameTree.updateFonts(size);
 
 	}
 
 	public JTree getTree()
 	{
-		return tree;
+		return mainFrameTree.getTree();
 	}
 	
 	public BugTreeModel getBugTreeModel() {
-		return (BugTreeModel)getTree().getModel();
-	}	
+		return mainFrameTree.getBugTreeModel();
+	}
 
 	/**
 	 * @return never null
@@ -476,15 +420,8 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 	
     public Sortables[] getAvailableSortables() {
-    	Sortables[] sortables;
-    	ArrayList<Sortables> a = new ArrayList<Sortables>(Sortables.values().length);
-    	for(Sortables s : Sortables.values()) 
-    		if (s.isAvailable(this))
-    			a.add(s);
-    	sortables = new Sortables[a.size()];
-    	a.toArray(sortables);
-    	return sortables;
-    }
+		return mainFrameTree.getAvailableSortables();
+	}
     
 	/**
 	 * Show About
@@ -500,7 +437,7 @@ public class MainFrame extends FBFrame implements LogSync {
 	 * Show Preferences
 	 */
 	void preferences() {
-		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
+		saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
 		PreferencesFrame.getInstance().setLocationRelativeTo(this);
 		PreferencesFrame.getInstance().setVisible(true);
 	}
@@ -511,7 +448,7 @@ public class MainFrame extends FBFrame implements LogSync {
 	 * the exit menuItem or by clicking on the window's system menu.
 	 */
 	void callOnClose(){
-		comments.saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
+		comments.saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
 		
 		if(projectChanged && !SystemProperties.getBoolean("findbugs.skipSaveChangesWarning")){
 			int value = JOptionPane.showConfirmDialog(this, getActionWithoutSavingMsg("closing"),
@@ -637,7 +574,7 @@ public class MainFrame extends FBFrame implements LogSync {
 			displayer.clearCache();
 			BugSet bs = new BugSet(bugCollection);
 			//Dont clear data, the data's correct, just get the tree off the listener lists.
-			BugTreeModel model = (BugTreeModel) tree.getModel();
+			BugTreeModel model = (BugTreeModel) mainFrameTree.getTree().getModel();
 			model.getOffListenerList();
 			model.changeSet(bs);
 			//curProject=BugLoader.getLoadedProject();
@@ -675,121 +612,16 @@ public class MainFrame extends FBFrame implements LogSync {
 			newProject=false;
 		}		
 	}
-	/**
-     * 
-     * @return
-     */
-    JPanel bugListPanel()
-    {
-    	tableheader = new JTableHeader();
-        tableheader.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
-    	//Listener put here for when user double clicks on sorting
-    	//column header SorterDialog appears.
-    	tableheader.addMouseListener(new MouseAdapter(){
-    
-    		@Override
-    		public void mouseClicked(MouseEvent e) {
-    			Debug.println("tableheader.getReorderingAllowed() = " + tableheader.getReorderingAllowed());
-    			if (!tableheader.getReorderingAllowed())
-    				return;
-    			if (e.getClickCount()==2)
-    				SorterDialog.getInstance().setVisible(true);
-    		}
-    
-    		@Override
-    		public void mouseReleased(MouseEvent arg0) {
-    			if (!tableheader.getReorderingAllowed())
-    				return;
-    			BugTreeModel bt=(BugTreeModel) (MainFrame.this.getTree().getModel());
-    			bt.checkSorter();
-    		}
-    	});
-    	sorter = GUISaveState.getInstance().getStarterTable();
-    	tableheader.setColumnModel(sorter);
-    	tableheader.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.reorder_message", "Drag to reorder tree folder and sort order"));
-    
-    	tree = new JTree();
-    	tree.setLargeModel(true);
-    	tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-    	tree.setCellRenderer(new BugRenderer());
-    	tree.setRowHeight((int)(Driver.getFontSize() + 7));
-    	tree.setModel(new BugTreeModel(tree, sorter, new BugSet(new ArrayList<BugLeafNode>())));
-    	setupTreeListeners();
-    	setProject(new Project());
-    
-    
-    	treeScrollPane = new JScrollPane(tree);
-    	
-    	treePanel = new JPanel(new BorderLayout());
-    	treePanel.add(treeScrollPane, BorderLayout.CENTER);
-    	JTable t = new JTable(new DefaultTableModel(0, sortables().length));
-    	t.setTableHeader(tableheader);
-
-    	textFieldForPackagesToDisplay = new JTextField();
-        ActionListener filterAction = new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    viewFilter.setPackagesToDisplay(textFieldForPackagesToDisplay.getText());
-                    resetViewCache();
-                } catch (IllegalArgumentException err) {
-                    JOptionPane.showMessageDialog(MainFrame.this, err.getMessage(), "Bad class search string", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        };
-        textFieldForPackagesToDisplay.addActionListener(filterAction);
-        JButton filterButton = new JButton("Filter");
-        filterButton.addActionListener(filterAction);
-        JPanel filterPanel = new JPanel();
-        filterPanel.setLayout(new GridBagLayout());
-        
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridy = 1;
-        filterPanel.add(textFieldForPackagesToDisplay, gbc);
-
-        gbc.weightx = 0;
-        gbc.fill = GridBagConstraints.NONE;
-        filterPanel.add(filterButton, gbc);
-    
-    	filterPanel.setToolTipText("Only show classes containing the word(s) you specify");
-
-        JPanel sortablePanel = new JPanel(new GridBagLayout());
-        JLabel sortableLabel = new JLabel("Group bugs by:");
-        sortableLabel.setLabelFor(tableheader);
-        gbc = new GridBagConstraints();
-        gbc.weightx = 0;
-        gbc.gridy = 1;
-        gbc.insets = new Insets(3,3,3,3);
-        gbc.fill = GridBagConstraints.BOTH;
-        sortablePanel.add(sortableLabel, gbc);
-        gbc.weightx = 1;
-        sortablePanel.add(tableheader, gbc);
-
-        tableheader.setBorder(new LineBorder(Color.BLACK));
-
-    	JPanel topPanel = makeNavigationPanel("Class name filter:", filterPanel, sortablePanel, treePanel);
-    	cardPanel = new JPanel(new CardLayout());
-        JPanel waitPanel = new JPanel();
-    	waitPanel.setLayout(new BoxLayout(waitPanel, BoxLayout.Y_AXIS));
-    	waitPanel.add(new JLabel("Please wait..."));
-    	waitStatusLabel = new JLabel();
-		waitPanel.add(waitStatusLabel);
-    	cardPanel.add(topPanel, BugCard.TREECARD.name());
-    	cardPanel.add(waitPanel,  BugCard.WAITCARD.name());
-    	return cardPanel;
-    }
 
 
 	void syncBugInformation (){
 		boolean prevProjectChanged = projectChanged;
-		if (currentSelectedBugLeaf != null)  {
-			BugInstance bug  = currentSelectedBugLeaf.getBug();
+		if (mainFrameTree.getCurrentSelectedBugLeaf() != null)  {
+			BugInstance bug  = mainFrameTree.getCurrentSelectedBugLeaf().getBug();
 			displayer.displaySource(bug, bug.getPrimarySourceLineAnnotation());
 			updateDesignationDisplay();
-			comments.updateCommentsFromLeafInformation(currentSelectedBugLeaf);
-			updateSummaryTab(currentSelectedBugLeaf);
+			comments.updateCommentsFromLeafInformation(mainFrameTree.getCurrentSelectedBugLeaf());
+			updateSummaryTab(mainFrameTree.getCurrentSelectedBugLeaf());
 		} else if (currentSelectedBugAspects != null) {
 			updateDesignationDisplay();
 			comments.updateCommentsFromNonLeafInformation(currentSelectedBugAspects);
@@ -949,7 +781,7 @@ public class MainFrame extends FBFrame implements LogSync {
         signedInLabel.setVisible(showLoggedInStatus);
 		if (errorMsg != null && errorMsg.length() > 0)
 			msg = join(msg, errorMsg);
-        waitStatusLabel.setText(msg); // should not be the URL
+        mainFrameTree.setWaitStatusLabelText(msg); // should not be the URL
 		if (msg.length() == 0)
 			msg = "http://findbugs.sourceforge.net";
         statusBarLabel.setText(msg);
@@ -1109,14 +941,14 @@ public class MainFrame extends FBFrame implements LogSync {
 	 */
 	SorterTableColumnModel getSorter()
 	{
-		return sorter;
+		return mainFrameTree.getSorter();
 	}
 
 	/**
 	 * Redo the analysis
 	 */
 	void redoAnalysis() {
-		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
+		saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
 
 		acquireDisplayWait();
 		new Thread()
@@ -1150,7 +982,7 @@ public class MainFrame extends FBFrame implements LogSync {
 	/**
 	 * enable/disable preferences menu
 	 */
-    private void enablePreferences(boolean b) {
+	public void enablePreferences(boolean b) {
 		preferencesMenuItem.setEnabled(b);
 		if (MAC_OS_X) {
 			if (osxPrefsEnableMethod != null) {
@@ -1172,18 +1004,6 @@ public class MainFrame extends FBFrame implements LogSync {
     	if (msg != null) return msg;
 	    return edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_"+action+"_txt", "You are "+action) + " " +
 	    		edu.umd.cs.findbugs.L10N.getLocalString("msg.without_saving_txt", "without saving. Do you want to save?");
-    }
-
-    private void rebuildBugTreeIfSortablesDependOnCloud() {
-        BugTreeModel bt=(BugTreeModel) (this.getTree().getModel());
-        List<Sortables> sortables = sorter.getOrderBeforeDivider();
-        if (sortables.contains(Sortables.DESIGNATION)
-            || sortables.contains(Sortables.FIRST_SEEN)
-            || sortables.contains(Sortables.FIRSTVERSION)
-            || sortables.contains(Sortables.LASTVERSION)) {
-
-            bt.rebuild();
-        }
     }
 
 	@SwingThread
@@ -1223,7 +1043,7 @@ public class MainFrame extends FBFrame implements LogSync {
 				plugin.addListener(userAnnotationListener);
                 plugin.addStatusListener(cloudStatusListener);
 			}
-			updateBugTree();
+			mainFrameTree.updateBugTree();
 		}
 		setProjectChanged(false);
 		Runnable runnable = new Runnable() {
@@ -1239,7 +1059,7 @@ public class MainFrame extends FBFrame implements LogSync {
 	    		/* This is here due to a threading issue. It can only be called after
 	    		 * curProject has been changed. Since this method is called by both open methods
 	    		 * it is put here.*/
-	    		changeTitle();
+	    		updateTitle();
 	    	}};
     	if (SwingUtilities.isEventDispatchThread()) 
     		runnable.run();
@@ -1253,34 +1073,18 @@ public class MainFrame extends FBFrame implements LogSync {
 		
 	}
 	public void updateBugTree() {
-		acquireDisplayWait();
-		try {
-	    BugTreeModel model = (BugTreeModel) getTree().getModel();
-        if (getBugCollection() != null) {
-            BugSet bs = new BugSet(getBugCollection());
-            model.getOffListenerList();
-            model.changeSet(bs);
-            if (bs.size() == 0 && bs.sizeUnfiltered() > 0) {
-                warnUserOfFilters();
-            }
-        }
+		mainFrameTree.updateBugTree();
+	}
 
-        updateStatusBar();
-        changeTitle();
-		} finally {
-			releaseDisplayWait();
-		}
-    }
-
-	private void resetViewCache() {
-		 ((BugTreeModel) getTree().getModel()).clearViewCache();
+	public void resetViewCache() {
+		 ((BugTreeModel) mainFrameTree.getTree().getModel()).clearViewCache();
 	}
 
 	/**
 	 * Changes the title based on curProject and saveFile.
 	 *
 	 */
-    private void changeTitle(){
+	public void updateTitle(){
 		Project project = getProject();
 		String name = project == null ? null : project.getProjectName();
 		if(name == null && saveFile != null)
@@ -1294,43 +1098,6 @@ public class MainFrame extends FBFrame implements LogSync {
         this.setTitle(newTitle);
 	}
 
-	/**
-	 * Creates popup menu for bugs on tree.
-	 * @return
-	 */
-	private JPopupMenu createBugPopupMenu() {
-		JPopupMenu popupMenu = new JPopupMenu();
-
-		
-		JMenuItem filterMenuItem = MainFrameHelper.newJMenuItem("menu.filterBugsLikeThis", "Filter bugs like this");
-
-		filterMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-				new NewFilterFromBug(currentSelectedBugLeaf.getBug());
-
-				setProjectChanged(true);
-				MainFrame.getInstance().getTree().setSelectionRow(0);//Selects the top of the Jtree so the CommentsArea syncs up.
-			}
-		});
-
-		popupMenu.add(filterMenuItem);
-
-		JMenu changeDesignationMenu = MainFrameHelper.newJMenu("menu.changeDesignation", "Change bug designation");
-
-		int i = 0;
-		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, 
-                KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
-		for(String key :  I18N.instance().getUserDesignationKeys(true)) {
-			String name = I18N.instance().getUserDesignation(key);
-			comments.addDesignationItem(changeDesignationMenu, name, keyEvents[i++]);
-		}
-
-		popupMenu.add(changeDesignationMenu);
-
-		return popupMenu;
-	}
-
 	@SuppressWarnings({"SimplifiableIfStatement"})
     private boolean shouldDisplayIssueIgnoringPackagePrefixes(BugInstance b) {
 		Project project = getProject();
@@ -1339,88 +1106,6 @@ public class MainFrame extends FBFrame implements LogSync {
 			return false;
         return viewFilter.showIgnoringPackagePrefixes(b);
     }
-	/**
-	 * Creates the branch pop up menu that ask if the user wants 
-	 * to hide all the bugs in that branch.
-	 * @return
-	 */
-	private JPopupMenu createBranchPopUpMenu(){
-		JPopupMenu popupMenu = new JPopupMenu();
-
-		JMenuItem filterMenuItem = MainFrameHelper.newJMenuItem("menu.filterTheseBugs", "Filter these bugs");
-
-		filterMenuItem.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				//TODO This code does a smarter version of filtering that is only possible for branches, and does so correctly
-				//However, it is still somewhat of a hack, because if we ever add more tree listeners than simply the bugtreemodel,
-				//They will not be called by this code.  Using FilterActivity to notify all listeners will however destroy any
-				//benefit of using the smarter deletion method.
-				
-				try {
-				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-				int startCount;
-				TreePath path=MainFrame.getInstance().getTree().getSelectionPath();
-				TreePath deletePath=path;
-				startCount=((BugAspects)(path.getLastPathComponent())).getCount();
-				int count=((BugAspects)(path.getParentPath().getLastPathComponent())).getCount();
-				while(count==startCount)
-				{
-					deletePath=deletePath.getParentPath();
-					if (deletePath.getParentPath()==null)//We are at the top of the tree, don't let this be removed, rebuild tree from root.
-					{
-						Matcher m = currentSelectedBugAspects.getMatcher();
-						Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
-						suppressionFilter.addChild(m);
-						PreferencesFrame.getInstance().updateFilterPanel();
-						FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
-						return;
-					}
-					count=((BugAspects)(deletePath.getParentPath().getLastPathComponent())).getCount();
-				} 
-/*				 
-				deletePath should now be a path to the highest 
-				ancestor branch with the same number of elements
-				as the branch to be deleted
-				in other words, the branch that we actually have 
-				to remove in order to correctly remove the selected branch.
-*/
-				BugTreeModel model=MainFrame.getInstance().getBugTreeModel();
-				TreeModelEvent event=new TreeModelEvent(this,deletePath.getParentPath(),
-					new int[]{model.getIndexOfChild(deletePath.getParentPath().getLastPathComponent(),deletePath.getLastPathComponent())},
-					new Object[]{deletePath.getLastPathComponent()});
-				Matcher m = currentSelectedBugAspects.getMatcher();
-				Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
-				suppressionFilter.addChild(m);
-				PreferencesFrame.getInstance().updateFilterPanel();
-				model.sendEvent(event, TreeModification.REMOVE);
-//				FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
-				
-				setProjectChanged(true);
-				
-				MainFrame.getInstance().getTree().setSelectionRow(0);//Selects the top of the Jtree so the CommentsArea syncs up.
-				} catch (RuntimeException e) {
-					MainFrame.getInstance().showMessageDialog("Unable to create filter: " + e.getMessage());
-				}
-			}
-		});
-
-		popupMenu.add(filterMenuItem);
-
-		JMenu changeDesignationMenu = MainFrameHelper.newJMenu("menu.changeDesignation", "Change bug designation");
-
-		int i = 0;
-		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
-		for(String key :  I18N.instance().getUserDesignationKeys(true)) {
-			String name = I18N.instance().getUserDesignation(key);
-			addDesignationItem(changeDesignationMenu, name, keyEvents[i++]);
-		}
-
-		popupMenu.add(changeDesignationMenu);
-
-		return popupMenu;
-	}
 
 	/**
 	 * Creates the MainFrame's menu bar.
@@ -1473,7 +1158,7 @@ public class MainFrame extends FBFrame implements LogSync {
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
-				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
+				saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
 				new NewProjectWizard(curProject);
 			}
 		});
@@ -1577,7 +1262,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
 		sortMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
-				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
+				saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
 				SorterDialog.getInstance().setLocationRelativeTo(MainFrame.this);
 				SorterDialog.getInstance().setVisible(true);
 			}
@@ -1617,7 +1302,7 @@ public class MainFrame extends FBFrame implements LogSync {
 		setViewMenu();
 		menuBar.add(viewMenu);
 
-		final ActionMap map = tree.getActionMap();
+		final ActionMap map = mainFrameTree.getTree().getActionMap();
 
 		JMenu navMenu = MainFrameHelper.newJMenu("menu.navigation", "Navigation");
 
@@ -1680,7 +1365,7 @@ public class MainFrame extends FBFrame implements LogSync {
 		if (choice == null)
 			return;
 
-		textFieldForPackagesToDisplay.setText(choice.filter);
+		mainFrameTree.setFieldForPackagesToDisplayText(choice.filter);
 		viewFilter.setPackagesToDisplay(choice.filter);
 		resetViewCache();
 
@@ -1792,136 +1477,16 @@ public class MainFrame extends FBFrame implements LogSync {
 	 */
 	private void addNavItem(final ActionMap map, JMenu navMenu, String menuNameKey, String menuNameDefault, String actionName, int keyEvent) {
 		JMenuItem toggleItem = MainFrameHelper.newJMenuItem(menuNameKey, menuNameDefault);
-		toggleItem.addActionListener(treeActionAdapter(map, actionName));	
+		toggleItem.addActionListener(mainFrameTree.treeActionAdapter(map, actionName));
 		MainFrameHelper.attachAcceleratorKey(toggleItem, keyEvent);
 		navMenu.add(toggleItem);
 	}
-	private ActionListener treeActionAdapter(ActionMap map, String actionName) {
-		final Action selectPrevious = map.get(actionName);
-		return new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				e.setSource(tree);	
-				selectPrevious.actionPerformed(e);	
-			}};
-	}
-	@SwingThread
-    private void expandTree(int max) {
-		Debug.printf("expandTree(%d)\n", max);
-		JTree jTree = getTree();
-		int i = 0;
-		while (true) {
-			int rows = jTree.getRowCount();
-			if (i >=  rows || rows >= max)
-				break;
-			jTree.expandRow(i++);
-		}
-	}
-	
-	
-	@SwingThread
-    private boolean leavesShown() {
-		JTree jTree = getTree();
-
-		int rows = jTree.getRowCount();
-		for(int i = 0; i < rows; i++) {
-			TreePath treePath = jTree.getPathForRow(i);
-			Object lastPathComponent = treePath.getLastPathComponent();
-			if (lastPathComponent instanceof BugLeafNode) 
-				return true;
-		}
-		return false;
-	}
-	@SwingThread
-    private void expandToFirstLeaf(int max) {
-		Debug.println("expand to first leaf");
-		if (leavesShown())
-			return;
-		JTree jTree = getTree();
-		int i = 0;
-		while (true) {
-			int rows = jTree.getRowCount();
-			if (i >=  rows || rows >= max)
-				break;
-			TreePath treePath = jTree.getPathForRow(i);
-			Object lastPathComponent = treePath.getLastPathComponent();
-			if (lastPathComponent instanceof BugLeafNode) return;
-			jTree.expandRow(i++);
-		}
-	}
-	
-	
-	private void showCard(final BugCard card, final Cursor cursor) {
-		Runnable doRun = new Runnable() {
-			public void run() {
-				recentMenu.setEnabled(card == BugCard.TREECARD);
-				tableheader.setReorderingAllowed(card == BugCard.TREECARD);
-				enablePreferences(card == BugCard.TREECARD);
-				setCursor(cursor);
-				CardLayout layout = (CardLayout) cardPanel.getLayout();
-				layout.show(cardPanel, card.name());
-				if (card == BugCard.TREECARD)
-					SorterDialog.getInstance().thaw();
-				else
-					SorterDialog.getInstance().freeze();
-			}
-		};
-		if (SwingUtilities.isEventDispatchThread())
-			doRun.run();
-		else
-			SwingUtilities.invokeLater(doRun);
-	}
-	
-	private JPanel makeNavigationPanel(String packageSelectorLabel,
-			JComponent packageSelector, JComponent treeHeader, JComponent tree) {
-		JPanel topPanel = new JPanel();
-		topPanel.setMinimumSize(new Dimension(150,150));
-		
-		topPanel.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		c.ipadx = c.ipady = 3;
-		c.insets = new Insets(6,6,6,6);
-		c.gridx = 0;
-		c.gridy = 0;
-		c.fill=GridBagConstraints.NONE;
-		JLabel label = new JLabel(packageSelectorLabel);
-		topPanel.add(label, c);
-		
-		c.gridx = 1;
-		c.fill=GridBagConstraints.HORIZONTAL;
-		c.weightx = 1;		
-		topPanel.add(packageSelector, c);
-		
-		c.gridx = 0;
-		c.gridwidth=2;
-		c.gridy++;
-		c.ipadx = c.ipady = 2;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		topPanel.add(treeHeader, c);
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.gridy++;
-		c.weighty = 1;
-		c.ipadx = c.ipady = 0;
-		c.insets = new Insets(0,0,0,0);
-		topPanel.add(tree, c);
-		return topPanel;
-	}
-
-	private void setupTreeListeners() {
-        //noinspection ConstantIfStatement
-        if (false)
-			tree.addTreeExpansionListener(new MyTreeExpansionListener());
-		tree.addTreeSelectionListener(new MyTreeSelectionListener());
-
-		tree.addMouseListener(new TreeMouseListener());
-	}
-
 
 
 	/**
 	 * @param b
 	 */
-	private void setUserCommentInputEnable(boolean b) {
+	public void setUserCommentInputEnable(boolean b) {
 		comments.setUserCommentInputEnable(b);
 
 	}
@@ -2137,10 +1702,6 @@ public class MainFrame extends FBFrame implements LogSync {
 		 component.setToolTipText("");
 	 }
 
-	private void setSorting(boolean b) {
-		tableheader.setReorderingAllowed(b);
-	}
-
 	private void setSaveMenu() {
 		File s = saveFile;
 		saveMenuItem.setEnabled(projectChanged && s != null && getSaveType() != SaveType.FBP_FILE && s.exists());
@@ -2160,7 +1721,7 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     public void saveComments2() {
-        saveComments(getCurrentSelectedBugLeaf(), getCurrentSelectedBugAspects());
+        saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), getCurrentSelectedBugAspects());
     }
 
     /**
@@ -2184,20 +1745,14 @@ public class MainFrame extends FBFrame implements LogSync {
 	}
 
 	private void newProjectMenu() {
-		comments.saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
+		comments.saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
 		new NewProjectWizard();
 
 		newProject = true;
 	}
     
-	private void addDesignationItem(JMenu menu, final String menuName,  int keyEvent) {
+	public void addDesignationItem(JMenu menu, final String menuName,  int keyEvent) {
 		comments.addDesignationItem(menu, menuName, keyEvent);
-	}
-
-	private void warnUserOfFilters() {
-		JOptionPane.showMessageDialog(this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.everything_is_filtered",
-				"All bugs in this project appear to be filtered out.  \nYou may wish to check your filter settings in the preferences menu."),
-				"Warning",JOptionPane.WARNING_MESSAGE);
 	}
 
     public void setSaveType(SaveType saveType) {
@@ -2209,10 +1764,6 @@ public class MainFrame extends FBFrame implements LogSync {
     public SaveType getSaveType() {
 	    return saveType;
     }
-	private Sortables[] sortables() {
-    	return Sortables.values();
-    }
-
 
     private void displayCloudReport() {
 	  Cloud cloud = this.bugCollection.getCloud();
@@ -2239,8 +1790,8 @@ public class MainFrame extends FBFrame implements LogSync {
    }
 
     public BugLeafNode getCurrentSelectedBugLeaf() {
-        return currentSelectedBugLeaf;
-    }
+		return mainFrameTree.getCurrentSelectedBugLeaf();
+	}
 
     public boolean isUserInputEnabled() {
         return userInputEnabled;
@@ -2302,7 +1853,20 @@ public class MainFrame extends FBFrame implements LogSync {
         return projectPackagePrefixes;
     }
 
-    enum BugCard  {TREECARD, WAITCARD}
+	public void enableRecentMenu(boolean enable) {
+		recentMenu.setEnabled(enable);
+	}
+
+	public void setCurrentSelectedBugAspects(BugAspects currentSelectedBugAspects) {
+		this.currentSelectedBugAspects = currentSelectedBugAspects;
+	}
+
+	public ViewFilter getViewFilter() {
+		return viewFilter;
+	}
+
+
+	enum BugCard  {TREECARD, WAITCARD}
 	
 	static class ProjectSelector {
         public ProjectSelector(String projectName, String filter, int count) {
@@ -2357,8 +1921,8 @@ public class MainFrame extends FBFrame implements LogSync {
 					throw new Error(e);
 				}
 			}
-			bugPopupMenu = createBugPopupMenu();
-			branchPopupMenu = createBranchPopUpMenu();
+			mainFrameTree.setBugPopupMenu(mainFrameTree.createBugPopupMenu());
+			mainFrameTree.setBranchPopupMenu(mainFrameTree.createBranchPopUpMenu());
 			comments.loadPrevCommentsList(GUISaveState.getInstance().getPreviousComments().toArray(new String[GUISaveState.getInstance().getPreviousComments().size()]));
 			updateStatusBar();
 			setBounds(GUISaveState.getInstance().getFrameBounds()); 
@@ -2370,7 +1934,7 @@ public class MainFrame extends FBFrame implements LogSync {
             mainFrameLoadSaveHelper = new MainFrameLoadSaveHelper(MainFrame.this);
 
 			//Sets the size of the tooltip to match the rest of the GUI. - Kristin
-			JToolTip tempToolTip = tableheader.createToolTip();
+			JToolTip tempToolTip = mainFrameTree.getTableheader().createToolTip();
 			UIManager.put( "ToolTip.font", new FontUIResource(tempToolTip.getFont().deriveFont(Driver.getFontSize())));
 
 			if (MAC_OS_X)
@@ -2590,9 +2154,9 @@ public class MainFrame extends FBFrame implements LogSync {
     private class MyCloudListener implements CloudListener {
 
         public void issueUpdated(BugInstance bug) {
-            if (currentSelectedBugLeaf != null
-                    && currentSelectedBugLeaf.getBug() == bug)
-                comments.updateCommentsFromLeafInformation(currentSelectedBugLeaf);
+            if (mainFrameTree.getCurrentSelectedBugLeaf() != null
+                    && mainFrameTree.getCurrentSelectedBugLeaf().getBug() == bug)
+                comments.updateCommentsFromLeafInformation(mainFrameTree.getCurrentSelectedBugLeaf());
         }
 
         public void statusUpdated() {
@@ -2605,11 +2169,11 @@ public class MainFrame extends FBFrame implements LogSync {
 
     private class MyCloudStatusListener implements Cloud.CloudStatusListener {
         public void handleIssueDataDownloadedEvent() {
-            rebuildBugTreeIfSortablesDependOnCloud();
+			mainFrameTree.rebuildBugTreeIfSortablesDependOnCloud();
         }
 
         public void handleStateChange(SigninState oldState, SigninState state) {
-            rebuildBugTreeIfSortablesDependOnCloud();
+			mainFrameTree.rebuildBugTreeIfSortablesDependOnCloud();
         }
     }
 
@@ -2619,107 +2183,4 @@ public class MainFrame extends FBFrame implements LogSync {
         }
     }
 
-    private class TreeMouseListener implements MouseListener {
-
-        public void mouseClicked(MouseEvent e) {
-            TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-
-            if(path == null)
-                return;
-
-            if ((e.getButton() == MouseEvent.BUTTON3) || 
-                    (e.getButton() == MouseEvent.BUTTON1 && e.isControlDown())){
-
-                if (tree.getModel().isLeaf(path.getLastPathComponent())){
-                    tree.setSelectionPath(path);
-                    bugPopupMenu.show(tree, e.getX(), e.getY());
-                }
-                else{
-                    tree.setSelectionPath(path);
-                    if (!(path.getParentPath()==null))//If the path's parent path is null, the root was selected, dont allow them to filter out the root.
-                        branchPopupMenu.show(tree, e.getX(), e.getY());
-                }
-            }		
-        }
-
-        public void mousePressed(MouseEvent arg0) {}
-
-        public void mouseReleased(MouseEvent arg0) {}
-
-        public void mouseEntered(MouseEvent arg0) {}
-
-        public void mouseExited(MouseEvent arg0) {}
-    }
-
-    private class MyTreeSelectionListener implements TreeSelectionListener {
-        public void valueChanged(TreeSelectionEvent selectionEvent) {
-
-            TreePath path = selectionEvent.getNewLeadSelectionPath();
-            if (path != null)
-            {
-                saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-
-                Object lastPathComponent = path.getLastPathComponent();
-                if (lastPathComponent instanceof BugLeafNode)
-                {	
-                    boolean beforeProjectChanged = projectChanged;
-                    currentSelectedBugLeaf = (BugLeafNode)lastPathComponent;
-                    currentSelectedBugAspects = null;
-                    syncBugInformation();
-                    setProjectChanged(beforeProjectChanged);
-                }
-                else
-                {
-                    boolean beforeProjectChanged = projectChanged;
-                    updateDesignationDisplay();
-                    currentSelectedBugLeaf = null;
-                    currentSelectedBugAspects = (BugAspects)lastPathComponent;
-                    syncBugInformation();
-                    setProjectChanged(beforeProjectChanged);
-                }
-            }
-
-
-//				Debug.println("Tree selection count:" + tree.getSelectionCount());
-            if (tree.getSelectionCount() !=1)
-            {
-                Debug.println("Tree selection count not equal to 1, disabling comments tab" + selectionEvent);
-
-                MainFrame.this.setUserCommentInputEnable(false);
-            }
-        }
-    }
-
-    private class MyTreeExpansionListener implements TreeExpansionListener {
-
-        public void treeExpanded(TreeExpansionEvent event) {
-            System.out.println("Tree expanded");
-            TreePath path = event.getPath();
-            Object lastPathComponent = path.getLastPathComponent();
-            int children = tree.getModel().getChildCount(lastPathComponent);
-            if (children == 1) {
-                Object o = tree.getModel().getChild(lastPathComponent, 0);
-                if (o instanceof BugAspects) {
-                    final TreePath p = path.pathByAddingChild(o);
-                    SwingUtilities.invokeLater(new Runnable() {
-
-                        public void run() {
-                            try {
-                                System.out.println("auto expanding " + p);
-                                tree.expandPath(p);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    });
-                }
-
-            }
-        }
-
-        public void treeCollapsed(TreeExpansionEvent event) {
-            // do nothing
-        }
-    }
 }
