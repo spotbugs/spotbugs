@@ -391,7 +391,7 @@ public class MainFrameTree implements Serializable {
 		getTree().getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		getTree().setCellRenderer(new BugRenderer());
 		getTree().setRowHeight((int)(Driver.getFontSize() + 7));
-		getTree().setModel(new BugTreeModel(getTree(), getSorter(), new BugSet(new ArrayList<BugLeafNode>())));
+		getTree().setModel(new BugTreeModel(mainFrame, getTree(), getSorter(), new BugSet(new ArrayList<BugLeafNode>())));
 		setupTreeListeners();
     	mainFrame.setProject(new Project());
 
@@ -484,7 +484,7 @@ public class MainFrameTree implements Serializable {
 			public void run() {
 				mainFrame.enableRecentMenu(card == MainFrame.BugCard.TREECARD);
 				getTableheader().setReorderingAllowed(card == MainFrame.BugCard.TREECARD);
-				mainFrame.enablePreferences(card == MainFrame.BugCard.TREECARD);
+				mainFrame.getMainFrameMenu().enablePreferencesMenuItem(card == MainFrame.BugCard.TREECARD);
 				window.setCursor(cursor);
 				CardLayout layout = (CardLayout) cardPanel.getLayout();
 				layout.show(cardPanel, card.name());
@@ -545,7 +545,6 @@ public class MainFrameTree implements Serializable {
 	}
 
 	private class TreeMouseListener implements MouseListener {
-
 		public void mouseClicked(MouseEvent e) {
 			TreePath path = tree.getPathForLocation(e.getX(), e.getY());
 

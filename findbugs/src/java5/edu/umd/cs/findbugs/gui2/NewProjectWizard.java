@@ -166,7 +166,7 @@ public class NewProjectWizard extends FBDialog
 		wizardComponents[2] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.source_dirs_lbl", "Source directories:"), sourceList, sourceModel, JFileChooser.FILES_AND_DIRECTORIES, null, "Choose Source Directories", true);
 
 		JPanel cloudPanel = new JPanel(new BorderLayout());
-		cloudPanel.add(new JLabel("Bug cloud"), BorderLayout.NORTH);
+		cloudPanel.add(new JLabel("Store comments in:"), BorderLayout.NORTH);
 		cloudPanel.add(cloudSelector, BorderLayout.CENTER);
 		
 		wizardComponents[3] = cloudPanel;
@@ -344,8 +344,7 @@ public class NewProjectWizard extends FBDialog
 		loadAllPanels(mainPanel);
 		add(mainPanel, BorderLayout.CENTER);
 		add(south, BorderLayout.SOUTH);
-		add(createTextFieldPanel("Project name (i.e., description)", projectName), 
-				BorderLayout.NORTH);
+		add(createTextFieldPanel("Project name", projectName), BorderLayout.NORTH);
 
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 

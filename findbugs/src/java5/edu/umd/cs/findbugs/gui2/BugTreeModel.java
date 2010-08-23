@@ -95,10 +95,12 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 		private volatile Thread rebuildingThread;
 		private boolean sortOrderChanged;
 		private boolean sortsAddedOrRemoved;
+		private final MainFrame mainFrame;
 
 
-		public BugTreeModel(JTree tree, SorterTableColumnModel st, BugSet data)
+		public BugTreeModel(MainFrame mainFrame, JTree tree, SorterTableColumnModel st, BugSet data)
 		{
+			this.mainFrame = mainFrame;
 			st.addColumnModelListener(this);
 			this.tree = tree;
 			this.st = st;
@@ -112,30 +114,26 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 					public void treeNodesChanged(TreeModelEvent arg0) {
 						System.out.println("Tree nodes changed");
 						System.out.println("  " + arg0.getTreePath());
-
 					}
 
 					public void treeNodesInserted(TreeModelEvent arg0) {
 						System.out.println("Tree nodes inserted");
 						System.out.println("  " + arg0.getTreePath());
-
 					}
 
 					public void treeNodesRemoved(TreeModelEvent arg0) {
 						System.out.println("Tree nodes removed");
 						System.out.println("  " + arg0.getTreePath());
-
 					}
 
 					public void treeStructureChanged(TreeModelEvent arg0) {
 						System.out.println("Tree structure changed");
 						System.out.println("  " + arg0.getTreePath());
-
 					}});
 		}
 
-		public BugTreeModel(BugTreeModel other)
-		{
+		public BugTreeModel(BugTreeModel other) {
+			this.mainFrame = other.mainFrame;
 			this.root = new BugAspects(other.root);
 			this.st = other.st;
 			this.bugSet = new BugSet(other.bugSet);
@@ -143,8 +141,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 			this.tree = other.tree;
 		}
 
-		public void getOffListenerList()
-		{
+		public void getOffListenerList() {
 			FilterActivity.removeFilterListener(bugTreeFilterListener);
 			st.removeColumnModelListener(this);
 			tree.removeTreeExpansionListener(this);
@@ -153,22 +150,21 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 		public void clearViewCache() {
 			bugSet.clearCache();
 		}
-		public Object getRoot()
-		{
+
+		public Object getRoot() {
 			return root;
 		}
 		
-		public  Object getChild(Object o, int index)
-		{
+		public Object getChild(Object o, int index) {
 			BugAspects a = (BugAspects) o;
 			int treeLevels = st.getOrderBeforeDivider().size();
 			int queryDepth = a.size();
 			assert queryDepth <= treeLevels;
-			
-			if (treeLevels==0 && a.size()==0)//Root without any sortables
+
+			if (treeLevels == 0 && a.size() == 0)//Root without any sortables
 				return bugSet.get(index);
-			if (SystemProperties.ASSERTIONS_ENABLED) 
-				for(int i = 0; i < queryDepth; i++) {
+			if (SystemProperties.ASSERTIONS_ENABLED)
+				for (int i = 0; i < queryDepth; i++) {
 					Sortables treeSortable = st.getOrderBeforeDivider().get(i);
 					Sortables querySortable = a.get(i).key;
 					assert treeSortable.equals(querySortable) : treeSortable + " vs " + querySortable;
@@ -179,12 +175,10 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 					BugAspects child = a.addToNew(enumsThatExist(a).get(index));
 					child.setCount(bugSet.query(child).size());
 					return child;
-				}	
-			else
-				return bugSet.query(a).get(index);
+				} else
+					return bugSet.query(a).get(index);
 			}
-			catch (IndexOutOfBoundsException e)
-			{
+			catch (IndexOutOfBoundsException e) {
 				assert false;
 				return null;
 			}
@@ -326,7 +320,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 				setOldSelectedBugs();
 
 			Debug.println("Please Wait called right before starting rebuild thread");
-			MainFrame.getInstance().acquireDisplayWait();
+			mainFrame.acquireDisplayWait();
 			rebuildingThread = new Thread("Rebuilding thread")
 			{
 				 BugTreeModel newModel;
@@ -348,8 +342,8 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 								if (newModel != null) {
 								JTree newTree = new JTree(newModel);
 								newModel.tree = newTree;
-								MainFrame.getInstance().newTree(newTree,newModel);
-								MainFrame.getInstance().releaseDisplayWait();
+								mainFrame.newTree(newTree,newModel);
+								mainFrame.releaseDisplayWait();
 								}
 						getOffListenerList();
 							}});
@@ -391,8 +385,8 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 						if (path == null)
 							continue;
 						Debug.printf("Opening %s\n", path);
-						MainFrame.getInstance().getTree().expandPath(path.getParentPath());
-						MainFrame.getInstance().getTree().addSelectionPath(path);
+						mainFrame.getTree().expandPath(path.getParentPath());
+						mainFrame.getTree().addSelectionPath(path);
 					}
 					catch(RuntimeException e)
 					{
