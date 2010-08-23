@@ -27,7 +27,10 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
+import java.util.ResourceBundle;
 import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -318,27 +321,33 @@ public class MainFrame extends FBFrame implements LogSync {
 	private String updateCloudSigninStatus(String msg) {
 		boolean showLoggedInStatus = false;
 		if (getBugCollection() != null) {
-			Cloud plugin = getBugCollection().getCloud();
-			if (plugin != null) {
-				String pluginMsg = plugin.getStatusMsg();
+			Cloud cloud = getBugCollection().getCloud();
+			if (cloud != null) {
+				String pluginMsg = cloud.getStatusMsg();
 				if (pluginMsg != null && pluginMsg.length() > 1)
 					msg = join(msg, pluginMsg);
 
-				SigninState state = plugin.getSigninState();
+				SigninState state = cloud.getSigninState();
+				String userStr = cloud.getUser() != null ? " - " + cloud.getUser() : "";
+				signedInLabel.setText("<html>FindBugs Cloud:<br>" + state.toString() + userStr);
+				ResourceBundle bundle = ResourceBundle.getBundle(Cloud.class.getName(), Locale.getDefault());
+				String tooltip;
+				try {
+					tooltip = bundle.getString("tooltip." + state.name());
+				} catch (MissingResourceException e) {
+					tooltip = "";
+				}
+				signedInLabel.setToolTipText(tooltip);
                 if (state == SigninState.SIGNING_IN) {
-                    signedInLabel.setText("<html>FindBugs Cloud:<br> signing in");
                     signedInLabel.setIcon(null);
                     showLoggedInStatus = true;
                 } else if (state == SigninState.SIGNED_IN) {
-                    signedInLabel.setText("<html>FindBugs Cloud:<br> signed in as " + plugin.getUser());
                     signedInLabel.setIcon(signedInIcon);
                     showLoggedInStatus = true;
                 } else if (state == SigninState.SIGNIN_FAILED) {
-                    signedInLabel.setText("<html>FindBugs Cloud:<br> sign-in failed");
                     signedInLabel.setIcon(warningIcon);
                     showLoggedInStatus = true;
                 } else if (state == SigninState.SIGNED_OUT || state == SigninState.UNAUTHENTICATED) {
-                    signedInLabel.setText("<html>FindBugs Cloud:<br> not signed in");
                     signedInLabel.setIcon(null);
                     showLoggedInStatus = true;
                 }
