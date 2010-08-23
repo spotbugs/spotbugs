@@ -559,6 +559,9 @@
           <Detector class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings"
                     reports="FB_UNEXPECTED_WARNING,FB_MISSING_EXPECTED_WARNING" disabled="true"
                     hidden="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.DefaultEncodingDetector" speed="fast"
+                    reports="DM_DEFAULT_ENCODING"/>
+
           <!-- Bug Codes -->
           <BugCode abbrev="USELESS_STRING"/>
           <BugCode abbrev="DMI" cweid="440"/>
@@ -1106,4 +1109,5 @@
                     category="MT_CORRECTNESS"/>
           <BugPattern abbrev="LG" type="LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE"
                     category="EXPERIMENTAL"/>
+          <BugPattern abbrev="Dm" type="DM_DEFAULT_ENCODING" category="BAD_PRACTICE" />
 </FindbugsPlugin>
