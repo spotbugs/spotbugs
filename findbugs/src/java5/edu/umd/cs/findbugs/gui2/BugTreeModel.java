@@ -246,6 +246,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 				{
 					//XXX-Threading difficulties-stringpairs is null somehow
 					Debug.println("Stringpairs is null on getIndexOfChild!  Error!");
+					//noinspection ConstantConditions
 					assert(false);
 					return -1; 
 				}
@@ -334,27 +335,26 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 						newModel.resetData();
 						newModel.bugSet.sortList();
 					}
-					finally
-					{
+					finally {
 						rebuildingThread = null;
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
 								if (newModel != null) {
-								JTree newTree = new JTree(newModel);
-								newModel.tree = newTree;
-								mainFrame.newTree(newTree,newModel);
-								mainFrame.releaseDisplayWait();
+									JTree newTree = new JTree(newModel);
+									newModel.tree = newTree;
+									mainFrame.mainFrameTree.newTree(newTree, newModel);
+									mainFrame.releaseDisplayWait();
 								}
-						getOffListenerList();
-							}});
+								getOffListenerList();
+							}
+						});
 					}
 				}
 			};
 			rebuildingThread.start();
 		}
 
-		public void crawl(final ArrayList<BugAspects> path, final int depth)
-		{
+		public void crawl(final ArrayList<BugAspects> path, final int depth) {
 			for (int i = 0; i < getChildCount(path.get(path.size() - 1)); i++)
 				if (depth > 0)
 				{

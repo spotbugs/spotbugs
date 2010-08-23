@@ -818,7 +818,7 @@ public class CommentsArea {
 		Cloud cloud = getCloud();
 		if (fileBug != null) 
 			fileBug.setEnabled(cloud.supportsBugLinks());
-		
-		MainFrame.getInstance().resetCommentsInputPane();
+
+		MainFrame.getInstance().getGuiLayout().resetCommentsInputPane();
 	}
 }

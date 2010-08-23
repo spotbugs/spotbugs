@@ -19,33 +19,11 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -54,57 +32,35 @@ import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
-import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
-import javax.swing.JToolTip;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.plaf.FontUIResource;
-import javax.swing.plaf.basic.BasicSplitPaneDivider;
-import javax.swing.plaf.basic.BasicSplitPaneUI;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.StyleSheet;
 
 import edu.umd.cs.findbugs.AbstractSwingGuiCallback;
 import edu.umd.cs.findbugs.BugAnnotation;
-import edu.umd.cs.findbugs.BugAnnotationWithSourceLines;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
 import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
@@ -114,7 +70,6 @@ import edu.umd.cs.findbugs.log.ConsoleLogger;
 import edu.umd.cs.findbugs.log.LogSync;
 import edu.umd.cs.findbugs.log.Logger;
 import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
-import edu.umd.cs.findbugs.util.LaunchBrowser;
 import edu.umd.cs.findbugs.util.Multiset;
 
 @SuppressWarnings("serial")
@@ -122,7 +77,7 @@ import edu.umd.cs.findbugs.util.Multiset;
 /*
  * This is where it all happens... seriously... all of it...
  * All the menus are set up, all the listeners, all the frames, dockable window functionality
- * There is no one style used, no one naming convention, its all just kinda here.  This is another one of those 
+ * There is no one style used, no one naming convention, its all just kinda here.  This is another one of those
  * classes where no one knows quite why it works.
  * <p>
  * The MainFrame is just that, the main application window where just about everything happens.
@@ -131,11 +86,10 @@ public class MainFrame extends FBFrame implements LogSync {
     public static final boolean GUI2_DEBUG = SystemProperties.getBoolean("gui2.debug");
     public static final boolean MAC_OS_X = SystemProperties.getProperty("os.name").toLowerCase().startsWith("mac os x");
 
-    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(MainFrame.class.getName());
     private static final int SEARCH_TEXT_FIELD_SIZE = 32;
     public static final String TITLE_START_TXT = "FindBugs: ";
 	private final static String WINDOW_MODIFIED = "windowModified";
-    private static final boolean USE_WINDOWS_LAF = false;
+    public static final boolean USE_WINDOWS_LAF = false;
 
 	private static MainFrame instance;
 
@@ -159,13 +113,10 @@ public class MainFrame extends FBFrame implements LogSync {
 	private final CountDownLatch mainFrameInitialized = new CountDownLatch(1);
     private int waitCount = 0;
     private final Object waitLock = new Object();
-    private final Runnable updateStatusBarRunner = new statusBarUpdater();
+    private final Runnable updateStatusBarRunner = new StatusBarUpdater();
 
     private volatile String errorMsg = "";
 
-    private URL sourceLink;
-
-    private boolean listenerAdded = false;
     private boolean userInputEnabled;
 
     /* To change this value must use setProjectChanged(boolean b).
@@ -185,7 +136,7 @@ public class MainFrame extends FBFrame implements LogSync {
 	private JButton findPreviousButton = MainFrameHelper.newButton("button.findPrev", "Previous");
 	private NavigableTextPane sourceCodeTextPane = new NavigableTextPane();
     private JPanel summaryTopPanel;
-    private JEditorPane summaryHtmlArea = new JEditorPane();
+    JEditorPane summaryHtmlArea = new JEditorPane();
 	private JScrollPane summaryHtmlScrollPane = new JScrollPane(summaryHtmlArea);
 	private SourceCodeDisplay displayer = new SourceCodeDisplay(this);
 	private ViewFilter viewFilter = new ViewFilter(this);
@@ -194,9 +145,10 @@ public class MainFrame extends FBFrame implements LogSync {
 
     private ImageIcon signedInIcon;
     private ImageIcon warningIcon;
-    private MainFrameLoadSaveHelper mainFrameLoadSaveHelper;
+    private MainFrameLoadSaveHelper mainFrameLoadSaveHelper = new MainFrameLoadSaveHelper(this);
 	final MainFrameTree mainFrameTree = new MainFrameTree(this);
 	final MainFrameMenu mainFrameMenu = new MainFrameMenu(this);
+	private final MainFrameComponentFactory mainFrameComponentFactory = new MainFrameComponentFactory(this);
 
 	public static void makeInstance(FindBugsLayoutManagerFactory factory) {
 		if (instance != null)
@@ -224,17 +176,9 @@ public class MainFrame extends FBFrame implements LogSync {
         return guiCallback.showConfirmDialog(message, title, ok, cancel);
     }
 
-    public boolean showDocument(URL u) {
-        return guiCallback.showDocument(u);
-    }
-
-    public IGuiCallback getGuiCallback() {
+	public IGuiCallback getGuiCallback() {
         return guiCallback;
     }
-
-	public void resetCommentsInputPane() {
-		guiLayout.resetCommentsInputPane();
-	}
 
 	public void acquireDisplayWait() {
 		synchronized(waitLock) {
@@ -247,6 +191,7 @@ public class MainFrame extends FBFrame implements LogSync {
 				mainFrameTree.showCard(BugCard.WAITCARD, new Cursor(Cursor.WAIT_CURSOR), this);
 		}
 	}
+	
 	public void releaseDisplayWait() {
 		synchronized(waitLock) {
 			if (waitCount <= 0)
@@ -261,38 +206,12 @@ public class MainFrame extends FBFrame implements LogSync {
 		}
 	}
 
-	public void newTree(final JTree newTree, final BugTreeModel newModel)
-	{
-		mainFrameTree.newTree(newTree, newModel);
-	}
-
 	public void waitUntilReady() throws InterruptedException {
 		mainFrameInitialized.await();
 	}
 
-	/*
-	 * This is overridden for changing the font size
-	 */
-	@Override
-	public void addNotify(){
-		super.addNotify();
 
-		float size = Driver.getFontSize();
-
-		getJMenuBar().setFont(getJMenuBar().getFont().deriveFont(size));
-		for(int i = 0; i < getJMenuBar().getMenuCount(); i++){
-			for(int j = 0; j < getJMenuBar().getMenu(i).getMenuComponentCount(); j++){
-				Component temp = getJMenuBar().getMenu(i).getMenuComponent(j);
-				temp.setFont(temp.getFont().deriveFont(size));
-			}
-		}
-
-		mainFrameTree.updateFonts(size);
-
-	}
-
-	public JTree getTree()
-	{
+	public JTree getTree() {
 		return mainFrameTree.getTree();
 	}
 
@@ -300,10 +219,7 @@ public class MainFrame extends FBFrame implements LogSync {
 		return mainFrameTree.getBugTreeModel();
 	}
 
-	/**
-	 * @return never null
-	 */
-	public synchronized Project getProject() {
+	public synchronized @Nonnull Project getProject() {
 		if(curProject == null){
 			curProject = new Project();
 		}
@@ -326,8 +242,6 @@ public class MainFrame extends FBFrame implements LogSync {
 
 		projectChanged = b;
 		mainFrameMenu.setSaveMenu(this);
-//		if(projectDirectory != null && projectDirectory.exists())
-//			saveProjectMenuItem.setEnabled(b);
 
 		getRootPane().putClientProperty(WINDOW_MODIFIED, b);
 
@@ -345,48 +259,11 @@ public class MainFrame extends FBFrame implements LogSync {
 	}
 
 	/**
-	 * Write a message to the console window.
-	 *
-	 * @param message the message to write
+	 * Write a message to stdout.
 	 */
 	public void writeToLog(String message) {
 		if (GUI2_DEBUG)
 			System.out.println(message);
-		//		consoleMessageArea.append(message);
-		//		consoleMessageArea.append("\n");
-	}
-
-	/**
-	 * Opens the analysis. Also clears the source and summary panes. Makes comments enabled false.
-	 * Sets the saveType and adds the file to the recent menu.
-	 * @param f
-	 * @return whether the operation was successful
-	 */
-	public boolean openAnalysis(File f, SaveType saveType){
-		if (!f.exists() || !f.canRead()) {
-			throw new IllegalArgumentException("Can't read " + f.getPath());
-		}
-
-        mainFrameLoadSaveHelper.prepareForFileLoad(f, saveType);
-
-        mainFrameLoadSaveHelper.loadAnalysis(f);
-		return true;
-	}
-
-	public void openBugCollection(SortedBugCollection bugs){
-
-		acquireDisplayWait();
-		try {
-            mainFrameLoadSaveHelper.prepareForFileLoad(null, null);
-
-			Project project = bugs.getProject();
-			project.setGuiCallback(guiCallback);
-			BugLoader.addDeadBugMatcher(project);
-			setProjectAndBugCollectionInSwingThread(project, bugs);
-		} finally {
-			releaseDisplayWait();
-		}
-
 	}
 
     public int showConfirmDialog(String message, String title, int optionType) {
@@ -397,25 +274,79 @@ public class MainFrame extends FBFrame implements LogSync {
 		return mainFrameTree.getAvailableSortables();
 	}
 
-	/**
-	 * Show About
+	// ============================== listeners ============================
+
+	/*
+	 * This is overridden for changing the font size
 	 */
-	void about() {
-		AboutDialog dialog = new AboutDialog(this, logger, true);
-		dialog.setSize(600, 554);
-		dialog.setLocationRelativeTo(this);
-		dialog.setVisible(true);
+	@Override
+	public void addNotify(){
+		super.addNotify();
+
+		float size = Driver.getFontSize();
+
+		getJMenuBar().setFont(getJMenuBar().getFont().deriveFont(size));
+		for(int i = 0; i < getJMenuBar().getMenuCount(); i++){
+			for(int j = 0; j < getJMenuBar().getMenu(i).getMenuComponentCount(); j++){
+				Component temp = getJMenuBar().getMenu(i).getMenuComponent(j);
+				temp.setFont(temp.getFont().deriveFont(size));
+			}
+		}
+
+		mainFrameTree.updateFonts(size);
 	}
 
-	/**
-	 * Show Preferences
-	 */
-	void preferences() {
-		saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
-		PreferencesFrame.getInstance().setLocationRelativeTo(this);
-		PreferencesFrame.getInstance().setVisible(true);
+	@SwingThread
+	void updateStatusBar() {
+		int countFilteredBugs = BugSet.countFilteredBugs();
+		String msg = "";
+		if (countFilteredBugs == 1) {
+	         msg = "  1 " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bug_hidden", "bug hidden by filters");
+	    } else 	if (countFilteredBugs > 1) {
+	        msg = "  " + countFilteredBugs + " " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden by filters");
+        }
+		msg = updateCloudSigninStatus(msg);
+		if (errorMsg != null && errorMsg.length() > 0)
+			msg = join(msg, errorMsg);
+
+        mainFrameTree.setWaitStatusLabelText(msg); // should not be the URL
+		if (msg.length() == 0)
+			msg = "http://findbugs.sourceforge.net";
+        statusBarLabel.setText(msg);
 	}
 
+	private String updateCloudSigninStatus(String msg) {
+		boolean showLoggedInStatus = false;
+		if (getBugCollection() != null) {
+			Cloud plugin = getBugCollection().getCloud();
+			if (plugin != null) {
+				String pluginMsg = plugin.getStatusMsg();
+				if (pluginMsg != null && pluginMsg.length() > 1)
+					msg = join(msg, pluginMsg);
+
+				SigninState state = plugin.getSigninState();
+                if (state == SigninState.SIGNING_IN) {
+                    signedInLabel.setText("<html>FindBugs Cloud:<br> signing in");
+                    signedInLabel.setIcon(null);
+                    showLoggedInStatus = true;
+                } else if (state == SigninState.SIGNED_IN) {
+                    signedInLabel.setText("<html>FindBugs Cloud:<br> signed in as " + plugin.getUser());
+                    signedInLabel.setIcon(signedInIcon);
+                    showLoggedInStatus = true;
+                } else if (state == SigninState.SIGNIN_FAILED) {
+                    signedInLabel.setText("<html>FindBugs Cloud:<br> sign-in failed");
+                    signedInLabel.setIcon(warningIcon);
+                    showLoggedInStatus = true;
+                } else if (state == SigninState.SIGNED_OUT || state == SigninState.UNAUTHENTICATED) {
+                    signedInLabel.setText("<html>FindBugs Cloud:<br> not signed in");
+                    signedInLabel.setIcon(null);
+                    showLoggedInStatus = true;
+                }
+			}
+		}
+		signedInLabel.setVisible(showLoggedInStatus);
+		return msg;
+	}
 
 	/**
 	 * This method is called when the application is closing. This is either by
@@ -442,10 +373,11 @@ public class MainFrame extends FBFrame implements LogSync {
 			}
 		}
 
-		GUISaveState.getInstance().setPreviousComments(comments.prevCommentsList);
+		GUISaveState guiSaveState = GUISaveState.getInstance();
+		guiSaveState.setPreviousComments(comments.prevCommentsList);
 		guiLayout.saveState();
-		GUISaveState.getInstance().setFrameBounds( getBounds() );
-		GUISaveState.getInstance().save();
+		guiSaveState.setFrameBounds( getBounds() );
+		guiSaveState.save();
 		if (this.bugCollection != null) {
 			Cloud cloud = this.bugCollection.getCloud();
 			if (cloud != null)
@@ -454,418 +386,51 @@ public class MainFrame extends FBFrame implements LogSync {
 		System.exit(0);
 	}
 
-	/*
-	 * A lot of if(false) here is for switching from special cases based on localSaveType
-	 * to depending on the SaveType.forFile(f) method. Can delete when sure works.
-	 */
-	JMenuItem createRecentItem(final File f, final SaveType localSaveType)
-	{
+	// ========================== misc junk ====================================
 
+	JMenuItem createRecentItem(final File f, final SaveType localSaveType) {
 		return mainFrameMenu.createRecentItem(f, localSaveType);
+	}
+
+	/**
+	 * Opens the analysis. Also clears the source and summary panes. Makes comments enabled false.
+	 * Sets the saveType and adds the file to the recent menu.
+	 * @param f
+	 * @return whether the operation was successful
+	 */
+	public boolean openAnalysis(File f, SaveType saveType){
+		if (!f.exists() || !f.canRead()) {
+			throw new IllegalArgumentException("Can't read " + f.getPath());
+		}
+
+        mainFrameLoadSaveHelper.prepareForFileLoad(f, saveType);
+
+        mainFrameLoadSaveHelper.loadAnalysis(f);
+		return true;
+	}
+
+	public void openBugCollection(SortedBugCollection bugs){
+		acquireDisplayWait();
+		try {
+            mainFrameLoadSaveHelper.prepareForFileLoad(null, null);
+
+			Project project = bugs.getProject();
+			project.setGuiCallback(guiCallback);
+			BugLoader.addDeadBugMatcher(project);
+			setProjectAndBugCollectionInSwingThread(project, bugs);
+		} finally {
+			releaseDisplayWait();
+		}
+
 	}
 
 	@SwingThread
 	void setBugCollection(BugCollection bugCollection) {
 		setProjectAndBugCollection(bugCollection.getProject(), bugCollection);
 	}
-	void updateProjectAndBugCollection(BugCollection bugCollection) {
-
-		if (bugCollection != null) {
-			displayer.clearCache();
-			BugSet bs = new BugSet(bugCollection);
-			//Dont clear data, the data's correct, just get the tree off the listener lists.
-			BugTreeModel model = (BugTreeModel) mainFrameTree.getTree().getModel();
-			model.getOffListenerList();
-			model.changeSet(bs);
-			//curProject=BugLoader.getLoadedProject();
-			setProjectChanged(true);
-		}
-		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-	}
-
-	@SuppressWarnings({"SimplifiableIfStatement"})
-    boolean shouldDisplayIssue(BugInstance b) {
-		Project project = getProject();
-		Filter suppressionFilter = project.getSuppressionFilter();
-		if (null == getBugCollection() || suppressionFilter.match(b))
-			return false;
-		return viewFilter.show(b);
-		}
-
-	void newProject(){
-		clearSourcePane();
-		if (!FindBugs.noAnalysis) {
-			if (curProject == null)
-				mainFrameMenu.getRedoAnalysisItem().setEnabled(false);
-			else {
-				List<String> fileList = curProject.getFileList();
-				mainFrameMenu.getRedoAnalysisItem().setEnabled(!fileList.isEmpty());
-			}
-		}
-
-		if(newProject){
-			setProjectChanged(true);
-//			setTitle(TITLE_START_TXT + Project.UNNAMED_PROJECT);
-			saveFile = null;
-			mainFrameMenu.getSaveMenuItem().setEnabled(false);
-			mainFrameMenu.getReconfigMenuItem().setEnabled(true);
-			newProject=false;
-		}
-	}
-
-	void syncBugInformation (){
-		boolean prevProjectChanged = projectChanged;
-		if (mainFrameTree.getCurrentSelectedBugLeaf() != null)  {
-			BugInstance bug  = mainFrameTree.getCurrentSelectedBugLeaf().getBug();
-			displayer.displaySource(bug, bug.getPrimarySourceLineAnnotation());
-			updateDesignationDisplay();
-			comments.updateCommentsFromLeafInformation(mainFrameTree.getCurrentSelectedBugLeaf());
-			updateSummaryTab(mainFrameTree.getCurrentSelectedBugLeaf());
-		} else if (currentSelectedBugAspects != null) {
-			updateDesignationDisplay();
-			comments.updateCommentsFromNonLeafInformation(currentSelectedBugAspects);
-			displayer.displaySource(null, null);
-			clearSummaryTab();
-		} else {
-			displayer.displaySource(null, null);
-			clearSummaryTab();
-		}
-		setProjectChanged(prevProjectChanged);
-	}
-
-	/**
-	 * Clears the source code text pane.
-	 *
-	 */
-	 void clearSourcePane(){
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				setSourceTab("", null);
-				sourceCodeTextPane.setDocument(SourceCodeDisplay.SOURCE_NOT_RELEVANT);
-			}
-		});
-	}
-
-	JPanel statusBar()
-	{
-		JPanel statusBar = new JPanel();
-		// statusBar.setBackground(Color.WHITE);
-
-		statusBar.setBorder(new BevelBorder(BevelBorder.LOWERED));
-		statusBar.setLayout(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.anchor = GridBagConstraints.WEST;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridy = 0;
-        constraints.weightx = 1;
-        statusBar.add(statusBarLabel, constraints.clone());
-
-        constraints.weightx = 0;
-        constraints.fill = GridBagConstraints.NONE;
-
-        try {
-            signedInIcon = loadImageResource("greencircle.png", 16, 16);
-            warningIcon = loadImageResource("warningicon.png", 16, 16);
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Could not load status icons", e);
-            signedInIcon = null;
-            warningIcon = null;
-        }
-        signedInLabel = new JLabel();
-        signedInLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        signedInLabel.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				JPopupMenu menu = new JPopupMenu();
-				SigninState signinState = getBugCollection().getCloud().getSigninState();
-				boolean isSignedIn = signinState == Cloud.SigninState.SIGNED_IN;
-				final JCheckBoxMenuItem signInAuto = new JCheckBoxMenuItem("Sign in automatically");
-				signInAuto.setToolTipText("Saves your Cloud session for the next time you run FindBugs. "
-				        + "No personal information or passwords are saved.");
-				signInAuto.setSelected(getBugCollection().getCloud().isSavingSignInInformationEnabled());
-				signInAuto.setEnabled(isSignedIn);
-				signInAuto.addChangeListener(new ChangeListener() {
-					public void stateChanged(ChangeEvent e) {
-						boolean checked = signInAuto.isSelected();
-						if (checked != getBugCollection().getCloud().isSavingSignInInformationEnabled()) {
-							System.out.println("checked: " + checked);
-							getBugCollection().getCloud().setSaveSignInInformation(checked);
-						}
-					}
-				});
-				menu.add(signInAuto);
-
-				switch (signinState) {
-				case SIGNED_OUT:
-				case UNAUTHENTICATED:
-				case SIGNIN_FAILED:
-					menu.add(new AbstractAction("Sign in") {
-						public void actionPerformed(ActionEvent e) {
-							try {
-								getBugCollection().getCloud().signIn();
-							} catch (IOException e1) {
-								guiCallback.showMessageDialog("Sign-in error: " + e1.getMessage());
-								LOGGER.log(Level.SEVERE, "Could not sign in", e1);
-							}
-						}
-					});
-					break;
-				default:
-					menu.add(new AbstractAction("Sign out") {
-						public void actionPerformed(ActionEvent e) {
-							getBugCollection().getCloud().signOut();
-						}
-					}).setEnabled(isSignedIn);
-				}
-				menu.show(e.getComponent(), e.getX(), e.getY());
-			}
-		});
-        constraints.anchor = GridBagConstraints.EAST;
-        constraints.insets = new Insets(0,5,0,5);
-        statusBar.add(signedInLabel, constraints.clone());
-
-        signedInLabel.setVisible(false);
-
-		JLabel logoLabel = new JLabel();
-
-        constraints.insets = new Insets(0,0,0,0);
-		ImageIcon logoIcon = new ImageIcon(MainFrame.class.getResource("logo_umd.png"));
-		logoLabel.setIcon(logoIcon);
-        logoLabel.setPreferredSize(new Dimension(logoIcon.getIconWidth(), logoIcon.getIconHeight()));
-        constraints.anchor = GridBagConstraints.WEST;
-		statusBar.add(logoLabel, constraints.clone());
-
-		return statusBar;
-	}
-
-	@SwingThread
-	void updateStatusBar() {
-		int countFilteredBugs = BugSet.countFilteredBugs();
-		String msg = "";
-		if (countFilteredBugs == 1) {
-	         msg = "  1 " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bug_hidden", "bug hidden by filters");
-	    } else 	if (countFilteredBugs > 1) {
-	        msg = "  " + countFilteredBugs + " " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden by filters");
-        }
-        boolean showLoggedInStatus = false;
-		if (getBugCollection() != null) {
-			Cloud plugin = getBugCollection().getCloud();
-			if (plugin != null) {
-				String pluginMsg = plugin.getStatusMsg();
-				if (pluginMsg != null && pluginMsg.length() > 1)
-					msg = join(msg, pluginMsg);
-                SigninState state = plugin.getSigninState();
-                if (state == SigninState.SIGNING_IN) {
-                    signedInLabel.setText("<html>FindBugs Cloud:<br> signing in");
-                    signedInLabel.setIcon(null);
-                    showLoggedInStatus = true;
-                } else if (state == Cloud.SigninState.SIGNED_IN) {
-                    signedInLabel.setText("<html>FindBugs Cloud:<br> signed in as " + plugin.getUser());
-                    signedInLabel.setIcon(signedInIcon);
-                    showLoggedInStatus = true;
-                } else if (state == SigninState.SIGNIN_FAILED) {
-                    signedInLabel.setText("<html>FindBugs Cloud:<br> sign-in failed");
-                    signedInLabel.setIcon(warningIcon);
-                    showLoggedInStatus = true;
-                } else if (state == SigninState.SIGNED_OUT || state == SigninState.UNAUTHENTICATED) {
-                    signedInLabel.setText("<html>FindBugs Cloud:<br> not signed in");
-                    signedInLabel.setIcon(null);
-                    showLoggedInStatus = true;
-                }
-			}
-		}
-        signedInLabel.setVisible(showLoggedInStatus);
-		if (errorMsg != null && errorMsg.length() > 0)
-			msg = join(msg, errorMsg);
-        mainFrameTree.setWaitStatusLabelText(msg); // should not be the URL
-		if (msg.length() == 0)
-			msg = "http://findbugs.sourceforge.net";
-        statusBarLabel.setText(msg);
-	}
-
-	JSplitPane summaryTab() {
-		int fontSize = (int) Driver.getFontSize();
-		summaryTopPanel = new JPanel();
-		summaryTopPanel.setLayout(new GridLayout(0,1));
-		summaryTopPanel.setBorder(BorderFactory.createEmptyBorder(2,4,2,4));
-		summaryTopPanel.setMinimumSize(new Dimension(fontSize * 50, fontSize*5));
-
-		JPanel summaryTopOuter = new JPanel(new BorderLayout());
-		summaryTopOuter.add(summaryTopPanel, BorderLayout.NORTH);
-
-		summaryHtmlArea.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.longer_description", "This gives a longer description of the detected bug pattern"));
-		summaryHtmlArea.setContentType("text/html");
-		summaryHtmlArea.setEditable(false);
-		summaryHtmlArea.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
-				public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
-					AboutDialog.editorPaneHyperlinkUpdate(evt);
-				}
-			});
-		setStyleSheets();
-		//JPanel temp = new JPanel(new BorderLayout());
-		//temp.add(summaryTopPanel, BorderLayout.CENTER);
-		JScrollPane summaryScrollPane = new JScrollPane(summaryTopOuter);
-		summaryScrollPane.getVerticalScrollBar().setUnitIncrement( (int)Driver.getFontSize() );
-
-		JSplitPane splitP = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false,
-				summaryScrollPane, summaryHtmlScrollPane);
-		splitP.setDividerLocation(GUISaveState.getInstance().getSplitSummary());
-        splitP.setOneTouchExpandable(true);
-        splitP.setUI(new BasicSplitPaneUI() {
-            @Override
-            public BasicSplitPaneDivider createDefaultDivider() {
-                return new BasicSplitPaneDivider(this) {
-                    @Override
-                    public void setBorder(Border b) {
-                    }
-                };
-            }
-        });
-        splitP.setBorder(null);
-        return splitP;
-    }
-
-	JPanel createCommentsInputPanel() {
-		return comments.createCommentsInputPanel();
-	}
-
-	/**
-	 * Creates the source code panel, but does not put anything in it.
-	 */
-	JPanel createSourceCodePanel()
-	{
-		Font sourceFont = new Font("Monospaced", Font.PLAIN, (int)Driver.getFontSize());
-		sourceCodeTextPane.setFont(sourceFont);
-		sourceCodeTextPane.setEditable(false);
-		sourceCodeTextPane.getCaret().setSelectionVisible(true);
-		sourceCodeTextPane.setDocument(SourceCodeDisplay.SOURCE_NOT_RELEVANT);
-        JScrollPane sourceCodeScrollPane = new JScrollPane(sourceCodeTextPane);
-		sourceCodeScrollPane.getVerticalScrollBar().setUnitIncrement(20);
-
-		JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout());
-		panel.add(sourceCodeScrollPane, BorderLayout.CENTER);
-
-		panel.revalidate();
-		if (GUI2_DEBUG) System.out.println("Created source code panel");
-		return panel;
-	}
-
-	JPanel createSourceSearchPanel() {
-		GridBagLayout gridbag = new GridBagLayout();
-		GridBagConstraints c = new GridBagConstraints();
-		JPanel thePanel = new JPanel();
-		thePanel.setLayout(gridbag);
-		findButton.setToolTipText("Find first occurrence");
-		findNextButton.setToolTipText("Find next occurrence");
-		findPreviousButton.setToolTipText("Find previous occurrence");
-		c.gridx = 0;
-		c.gridy = 0;
-		c.weightx = 1.0;
-		c.insets = new Insets(0, 5, 0, 5);
-		c.fill = GridBagConstraints.HORIZONTAL;
-		gridbag.setConstraints(sourceSearchTextField, c);
-		thePanel.add(sourceSearchTextField);
-		//add the buttons
-		findButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				searchSource(0);
-			}
-		});
-		c.gridx = 1;
-		c.weightx = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		gridbag.setConstraints(findButton, c);
-		thePanel.add(findButton);
-		findNextButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				searchSource(1);
-			}
-		});
-		c.gridx = 2;
-		c.weightx = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		gridbag.setConstraints(findNextButton, c);
-		thePanel.add(findNextButton);
-		findPreviousButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				searchSource(2);
-			}
-		});
-		c.gridx = 3;
-		c.weightx = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		gridbag.setConstraints(findPreviousButton, c);
-		thePanel.add(findPreviousButton);
-		return thePanel;
-	}
-
-	/**
-	 * Sets the title of the source tabs for either docking or non-docking
-	 * versions.
-	 */
-	 void setSourceTab(String title, @CheckForNull BugInstance bug){
-		JComponent label = guiLayout.getSourceViewComponent();
-		if (label != null) {
-			URL u = null;
-			if (bug != null) {
-				Cloud plugin = this.bugCollection.getCloud();
-				if (plugin.supportsSourceLinks())
-					u = plugin.getSourceLink(bug);
-			}
-			if (u != null)
-				 addLink(label, u);
-			else
-				removeLink(label);
-
-		}
-		guiLayout.setSourceTitle(title);
-	}
-
-	SorterTableColumnModel getSorter() {
-		return mainFrameTree.getSorter();
-	}
-
-	/**
-	 * Redo the analysis
-	 */
-	void redoAnalysis() {
-		saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
-
-		acquireDisplayWait();
-		new Thread()
-		{
-			@Override
-			public void run()
-			{
-				try {
-					updateDesignationDisplay();
-					BugCollection  bc=BugLoader.redoAnalysisKeepComments(getProject());
-					updateProjectAndBugCollection(bc);
-				} finally {
-					releaseDisplayWait();
-				}
-			}
-		}.start();
-	}
-
-	void updateDesignationDisplay() {
-		comments.updateDesignationComboBox();
-	}
 
     void setProjectAndBugCollectionInSwingThread(final Project project, final BugCollection bc) {
 	    setProjectAndBugCollection(project, bc);
-    }
-
-	private void initializeGUI() {
-		SwingUtilities.invokeLater(new InitializeGUI());
-	}
-
-    private String getActionWithoutSavingMsg(String action) {
-    	String msg = edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_"+action+"_without_saving_txt", null);
-    	if (msg != null) return msg;
-	    return edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_"+action+"_txt", "You are "+action) + " " +
-	    		edu.umd.cs.findbugs.L10N.getLocalString("msg.without_saving_txt", "without saving. Do you want to save?");
     }
 
 	@SwingThread
@@ -927,13 +492,192 @@ public class MainFrame extends FBFrame implements LogSync {
     		runnable.run();
     	else
     		SwingUtilities.invokeLater(runnable);
-
 		} finally {
 			releaseDisplayWait();
 		}
-
-
 	}
+	void updateProjectAndBugCollection(BugCollection bugCollection) {
+
+		if (bugCollection != null) {
+			displayer.clearCache();
+			BugSet bs = new BugSet(bugCollection);
+			//Dont clear data, the data's correct, just get the tree off the listener lists.
+			BugTreeModel model = (BugTreeModel) mainFrameTree.getTree().getModel();
+			model.getOffListenerList();
+			model.changeSet(bs);
+			//curProject=BugLoader.getLoadedProject();
+			setProjectChanged(true);
+		}
+		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	}
+
+	@SuppressWarnings({"SimplifiableIfStatement"})
+    boolean shouldDisplayIssue(BugInstance b) {
+		Project project = getProject();
+		Filter suppressionFilter = project.getSuppressionFilter();
+		if (null == getBugCollection() || suppressionFilter.match(b))
+			return false;
+		return viewFilter.show(b);
+	}
+
+	// ============================= menu actions ===============================
+
+	public void createNewProjectFromMenuItem() {
+		comments.saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
+		new NewProjectWizard();
+
+		newProject = true;
+	}
+	void newProject(){
+		clearSourcePane();
+		if (!FindBugs.noAnalysis) {
+			if (curProject == null)
+				mainFrameMenu.getRedoAnalysisItem().setEnabled(false);
+			else {
+				List<String> fileList = curProject.getFileList();
+				mainFrameMenu.getRedoAnalysisItem().setEnabled(!fileList.isEmpty());
+			}
+		}
+
+		if(newProject){
+			setProjectChanged(true);
+//			setTitle(TITLE_START_TXT + Project.UNNAMED_PROJECT);
+			saveFile = null;
+			mainFrameMenu.getSaveMenuItem().setEnabled(false);
+			mainFrameMenu.getReconfigMenuItem().setEnabled(true);
+			newProject=false;
+		}
+	}
+
+	void about() {
+		AboutDialog dialog = new AboutDialog(this, logger, true);
+		dialog.setSize(600, 554);
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
+	}
+
+	void preferences() {
+		saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
+		PreferencesFrame.getInstance().setLocationRelativeTo(this);
+		PreferencesFrame.getInstance().setVisible(true);
+	}
+
+    public void displayCloudReport() {
+	  Cloud cloud = this.bugCollection.getCloud();
+		if (cloud == null) {
+			JOptionPane.showMessageDialog(this, "There is no cloud");
+            return;
+        }
+        cloud.waitUntilIssueDataDownloaded();
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter writer = new PrintWriter(stringWriter);
+        cloud.printCloudSummary(writer, getDisplayedBugs(), viewFilter.getPackagePrefixes());
+        writer.close();
+        String report = stringWriter.toString();
+        DisplayNonmodelMessage.displayNonmodelMessage("Cloud summary", report, this, false);
+
+    }
+
+	void redoAnalysis() {
+		saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
+
+		acquireDisplayWait();
+		new Thread()
+		{
+			@Override
+			public void run()
+			{
+				try {
+					updateDesignationDisplay();
+					BugCollection  bc=BugLoader.redoAnalysisKeepComments(getProject());
+					updateProjectAndBugCollection(bc);
+				} finally {
+					releaseDisplayWait();
+				}
+			}
+		}.start();
+	}
+
+	// ================================== misc junk 2 ==============================
+
+	void syncBugInformation (){
+		boolean prevProjectChanged = projectChanged;
+		if (mainFrameTree.getCurrentSelectedBugLeaf() != null)  {
+			BugInstance bug  = mainFrameTree.getCurrentSelectedBugLeaf().getBug();
+			displayer.displaySource(bug, bug.getPrimarySourceLineAnnotation());
+			updateDesignationDisplay();
+			comments.updateCommentsFromLeafInformation(mainFrameTree.getCurrentSelectedBugLeaf());
+			updateSummaryTab(mainFrameTree.getCurrentSelectedBugLeaf());
+		} else if (currentSelectedBugAspects != null) {
+			updateDesignationDisplay();
+			comments.updateCommentsFromNonLeafInformation(currentSelectedBugAspects);
+			displayer.displaySource(null, null);
+			clearSummaryTab();
+		} else {
+			displayer.displaySource(null, null);
+			clearSummaryTab();
+		}
+		setProjectChanged(prevProjectChanged);
+	}
+
+	 void clearSourcePane(){
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				mainFrameComponentFactory.setSourceTab("", null);
+				sourceCodeTextPane.setDocument(SourceCodeDisplay.SOURCE_NOT_RELEVANT);
+			}
+		});
+	}
+
+	// =============================== component creation ==================================
+
+	private void initializeGUI() {
+		mainFrameComponentFactory.initializeGUI();
+	}
+
+	JPanel statusBar() {
+		return mainFrameComponentFactory.statusBar();
+	}
+
+	JSplitPane summaryTab() {
+		return mainFrameComponentFactory.summaryTab();
+	}
+
+	JPanel createCommentsInputPanel() {
+		return mainFrameComponentFactory.createCommentsInputPanel();
+	}
+
+	JPanel createSourceCodePanel() {
+		return mainFrameComponentFactory.createSourceCodePanel();
+	}
+
+	JPanel createSourceSearchPanel() {
+		return mainFrameComponentFactory.createSourceSearchPanel();
+	}
+
+	/**
+	 * Sets the title of the source tabs for either docking or non-docking
+	 * versions.
+	 */
+	 void setSourceTab(String title, @CheckForNull BugInstance bug){
+		mainFrameComponentFactory.setSourceTab(title, bug);
+	}
+
+	SorterTableColumnModel getSorter() {
+		return mainFrameTree.getSorter();
+	}
+
+	void updateDesignationDisplay() {
+		comments.updateDesignationComboBox();
+	}
+
+    private String getActionWithoutSavingMsg(String action) {
+    	String msg = edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_"+action+"_without_saving_txt", null);
+    	if (msg != null) return msg;
+	    return edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_"+action+"_txt", "You are "+action) + " " +
+	    		edu.umd.cs.findbugs.L10N.getLocalString("msg.without_saving_txt", "without saving. Do you want to save?");
+    }
+
 	public void updateBugTree() {
 		mainFrameTree.updateBugTree();
 	}
@@ -944,7 +688,6 @@ public class MainFrame extends FBFrame implements LogSync {
 
 	/**
 	 * Changes the title based on curProject and saveFile.
-	 *
 	 */
 	public void updateTitle(){
 		Project project = getProject();
@@ -1006,11 +749,7 @@ public class MainFrame extends FBFrame implements LogSync {
 		comments.setUserCommentInputEnable(b);
 	}
 
-    private ImageIcon loadImageResource(String filename, int width, int height) throws IOException {
-        return new ImageIcon(ImageIO.read(MainFrame.class.getResource(filename)).getScaledInstance(width, height, Image.SCALE_SMOOTH));
-    }
-
-    private String join(String s1, String s2) {
+    private static String join(String s1, String s2) {
 		if (s1 == null || s1.length() == 0) return s2;
 		if (s2 == null || s2.length() == 0) return s1;
 		return s1 + "; " + s2;
@@ -1023,10 +762,10 @@ public class MainFrame extends FBFrame implements LogSync {
 			public void run(){
 				summaryTopPanel.removeAll();
 
-				summaryTopPanel.add(bugSummaryComponent(bug.getAbridgedMessage(), bug));
+				summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(bug.getAbridgedMessage(), bug));
 
 				for(BugAnnotation b : bug.getAnnotationsForMessage(true))
-					summaryTopPanel.add(bugSummaryComponent(b, bug));
+					summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(b, bug));
 
 				summaryHtmlArea.setText(bug.getBugPattern().getDetailHTML());
 
@@ -1048,125 +787,7 @@ public class MainFrame extends FBFrame implements LogSync {
 		summaryTopPanel.revalidate();
 	}
 
-    /**
-	 * Creates bug summary component. If obj is a string will create a JLabel
-	 * with that string as it's text and return it. If obj is an annotation
-	 * will return a JLabel with the annotation's toString(). If that
-	 * annotation is a SourceLineAnnotation or has a SourceLineAnnotation
-	 * connected to it and the source file is available will attach
-	 * a listener to the label.
-	 * @return
-	 */
-	private Component bugSummaryComponent(String str, BugInstance bug){
-		JLabel label = new JLabel();
-		label.setFont(label.getFont().deriveFont(Driver.getFontSize()));
-		label.setFont(label.getFont().deriveFont(Font.PLAIN));
-		label.setForeground(Color.BLACK);
-
-		label.setText(str);
-
-		SourceLineAnnotation link = bug.getPrimarySourceLineAnnotation();
-		if (link != null)
-			label.addMouseListener(new BugSummaryMouseListener(bug, label, link));
-
-		return label;
-	}
-
-	private Component bugSummaryComponent(BugAnnotation value, BugInstance bug){
-		JLabel label = new JLabel();
-		label.setFont(label.getFont().deriveFont(Driver.getFontSize()));
-		label.setFont(label.getFont().deriveFont(Font.PLAIN));
-		label.setForeground(Color.BLACK);
-		ClassAnnotation primaryClass = bug.getPrimaryClass();
-
-		String sourceCodeLabel = edu.umd.cs.findbugs.L10N.getLocalString("summary.source_code", "source code.");
-		String summaryLine = edu.umd.cs.findbugs.L10N.getLocalString("summary.line", "Line");
-		String summaryLines = edu.umd.cs.findbugs.L10N.getLocalString("summary.lines", "Lines");
-		String clickToGoToText = edu.umd.cs.findbugs.L10N.getLocalString("tooltip.click_to_go_to", "Click to go to");
-		if (value instanceof SourceLineAnnotation) {
-			final SourceLineAnnotation link = (SourceLineAnnotation) value;
-			if (sourceCodeExists(link)) {
-				String srcStr = "";
-				int start = link.getStartLine();
-				int end = link.getEndLine();
-				if (start < 0 && end < 0)
-					srcStr = sourceCodeLabel;
-				else if (start == end)
-					srcStr = " [" + summaryLine + " " + start + "]";
-				else if (start < end)
-					srcStr = " [" + summaryLines + " " + start + " - " + end  + "]";
-
-				label.setToolTipText(clickToGoToText + " " + srcStr);
-
-				label.addMouseListener(new BugSummaryMouseListener(bug, label, link));
-			}
-
-			label.setText(link.toString());
-		} else if (value instanceof BugAnnotationWithSourceLines) {
-			BugAnnotationWithSourceLines note = (BugAnnotationWithSourceLines) value;
-			final SourceLineAnnotation link = note.getSourceLines();
-			String srcStr = "";
-			if (link != null && sourceCodeExists(link)) {
-				int start = link.getStartLine();
-				int end = link.getEndLine();
-				if (start < 0 && end < 0)
-					srcStr = sourceCodeLabel;
-				else if (start == end)
-					srcStr = " [" + summaryLine + " " + start + "]";
-				else if (start < end)
-					srcStr = " [" + summaryLines + " " + start + " - " + end + "]";
-
-				if (!srcStr.equals("")) {
-					label.setToolTipText(clickToGoToText + " " + srcStr);
-					label.addMouseListener(new BugSummaryMouseListener(bug, label, link));
-				}
-			}
-			String noteText;
-			if (note == bug.getPrimaryMethod() || note == bug.getPrimaryField())
-				noteText = note.toString();
-			else
-				noteText = note.toString(primaryClass);
-			if (!srcStr.equals(sourceCodeLabel))
-				label.setText(noteText + srcStr);
-			else
-				label.setText(noteText);
-		} else {
-			label.setText(value.toString(primaryClass));
-		}
-
-		return label;
-	}
-
-	/**
-	 * Checks if source code file exists/is available
-	 * @param note
-	 * @return
-	 */
-	private boolean sourceCodeExists(@Nonnull SourceLineAnnotation note){
-		try{
-			getProject().getSourceFinder().findSourceFile(note);
-		}catch(FileNotFoundException e){
-			return false;
-		}catch(IOException e){
-			return false;
-		}
-		return true;
-	}
-
-	private void setStyleSheets() {
-		StyleSheet styleSheet = new StyleSheet();
-		styleSheet.addRule("body {font-size: " + Driver.getFontSize() +"pt}");
-		styleSheet.addRule("H1 {color: red;  font-size: 120%; font-weight: bold;}");
-		styleSheet.addRule("code {font-family: courier; font-size: " + Driver.getFontSize() +"pt}");
-		styleSheet.addRule(" a:link { color: #0000FF; } ");
-		styleSheet.addRule(" a:visited { color: #800080; } ");
-		styleSheet.addRule(" a:active { color: #FF0000; text-decoration: underline; } ");
-        HTMLEditorKit htmlEditorKit = new HTMLEditorKit();
-        htmlEditorKit.setStyleSheet(styleSheet);
-		summaryHtmlArea.setEditorKit(htmlEditorKit);
-	}
-
-	private void searchSource(int type) {
+	public void searchSource(int type) {
 		int targetLineNum = -1;
 		String targetString = sourceSearchTextField.getText();
 		switch(type)
@@ -1182,39 +803,13 @@ public class MainFrame extends FBFrame implements LogSync {
 			displayer.foundItem(targetLineNum);
 	}
 
-	 private void addLink(JComponent component, URL source) {
-         this.sourceLink = source;
-		 component.setEnabled(true);
-		 if (!listenerAdded) {
-			 listenerAdded = true;
-			 component.addMouseListener(new MouseAdapter(){
-				    @Override
-                    public void mouseClicked(MouseEvent e) {
-				    	URL u = sourceLink;
-				    	if (u != null)
-	                        LaunchBrowser.showDocument(u);
-
-
-				    }
-			 });
-		 }
-		 component.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		 Cloud plugin = this.bugCollection.getCloud();
-			if (plugin != null)
-				 component.setToolTipText(plugin.getSourceLinkToolTip(null));
-
-
-	 }
-	 private void removeLink(JComponent component) {
-         this.sourceLink = null;
-		 component.setEnabled(false);
-		 component.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		 component.setToolTipText("");
-	 }
-
 	void saveComments() {
 		comments.saveComments();
 	}
+
+    public void saveComments2() {
+        saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), getCurrentSelectedBugAspects());
+    }
 
 	public void saveComments(BugLeafNode theNode, BugAspects theAspects) {
 		comments.saveComments(theNode, theAspects);
@@ -1225,25 +820,14 @@ public class MainFrame extends FBFrame implements LogSync {
         ProjectSettings.newInstance();
     }
 
-    public void saveComments2() {
-        saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), getCurrentSelectedBugAspects());
-    }
-
 	/*
-	 * If the file already existed, its already in the preferences, as well as 
-	 * the recent projects menu items, only add it if they change the name, 
-	 * otherwise everything we're storing is still accurate since all we're 
+	 * If the file already existed, its already in the preferences, as well as
+	 * the recent projects menu items, only add it if they change the name,
+	 * otherwise everything we're storing is still accurate since all we're
 	 * storing is the location of the file.
 	 */
 	public void addFileToRecent(File xmlFile){
 		mainFrameMenu.addFileToRecent(xmlFile);
-	}
-
-	public void createNewProjectFromMenuItem() {
-		comments.saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
-		new NewProjectWizard();
-
-		newProject = true;
 	}
 
 	public void addDesignationItem(JMenu menu, final String menuName,  int keyEvent) {
@@ -1260,22 +844,6 @@ public class MainFrame extends FBFrame implements LogSync {
 	    return saveType;
     }
 
-    public void displayCloudReport() {
-	  Cloud cloud = this.bugCollection.getCloud();
-		if (cloud == null) {
-			JOptionPane.showMessageDialog(this, "There is no cloud");
-            return;
-        }
-        cloud.waitUntilIssueDataDownloaded();
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
-        cloud.printCloudSummary(writer, getDisplayedBugs(), viewFilter.getPackagePrefixes());
-        writer.close();
-        String report = stringWriter.toString();
-        DisplayNonmodelMessage.displayNonmodelMessage("Cloud summary", report, this, false);
-
-    }
-
 	private Iterable<BugInstance> getDisplayedBugs() {
 		return new Iterable<BugInstance>() {
 			public Iterator<BugInstance> iterator() {
@@ -1283,6 +851,8 @@ public class MainFrame extends FBFrame implements LogSync {
 			}
 		};
    }
+
+	// =================================== misc accessors for helpers ==========================
 
     public BugLeafNode getCurrentSelectedBugLeaf() {
 		return mainFrameTree.getCurrentSelectedBugLeaf();
@@ -1384,9 +954,65 @@ public class MainFrame extends FBFrame implements LogSync {
 		return mainFrameMenu;
 	}
 
+	public JEditorPane getSummaryHtmlArea() {
+		return summaryHtmlArea;
+	}
+
+	public JLabel getStatusBarLabel() {
+		return statusBarLabel;
+	}
+
+	public JButton getFindNextButton() {
+		return findNextButton;
+	}
+
+	public JScrollPane getSummaryHtmlScrollPane() {
+		return summaryHtmlScrollPane;
+	}
+
+	public JButton getFindPreviousButton() {
+		return findPreviousButton;
+	}
+
+	public JTextField getSourceSearchTextField() {
+		return sourceSearchTextField;
+	}
+
+	public JButton getFindButton() {
+		return findButton;
+	}
+
+	public JPanel getSummaryTopPanel() {
+		return summaryTopPanel;
+	}
+
+	public JLabel getSignedInLabel() {
+		return signedInLabel;
+	}
+
+	public void setSignedInIcon(ImageIcon signedInIcon) {
+		this.signedInIcon = signedInIcon;
+	}
+
+	public void setSummaryTopPanel(JPanel summaryTopPanel) {
+		this.summaryTopPanel = summaryTopPanel;
+	}
+
+	public void setSignedInLabel(JLabel signedInLabel) {
+		this.signedInLabel = signedInLabel;
+	}
+
+	public void setWarningIcon(ImageIcon warningIcon) {
+		this.warningIcon = warningIcon;
+	}
+
+	void waitForMainFrameInitialized() {
+		mainFrameInitialized.countDown();
+	}
+
 	enum BugCard  {TREECARD, WAITCARD}
 
-	static class ProjectSelector {
+	private static class ProjectSelector {
         public ProjectSelector(String projectName, String filter, int count) {
 	        this.projectName = projectName;
 	        this.filter = filter;
@@ -1401,150 +1027,7 @@ public class MainFrame extends FBFrame implements LogSync {
 		}
 	}
 
-	private final class InitializeGUI implements Runnable {
-		public void run()
-		{
-			setTitle("FindBugs");
-			//noinspection ConstantConditions
-			if (USE_WINDOWS_LAF && System.getProperty("os.name").toLowerCase().contains("windows")) {
-                try {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Could not load Windows Look&Feel", e);
-                }
-            }
-
-			try {
-				guiLayout.initialize();
-			} catch(Exception e) {
-				// If an exception was encountered while initializing, this may
-				// be because of a bug in the particular look-and-feel selected
-				// (as in sourceforge bug 1899648).  In an attempt to recover
-				// gracefully, this code reverts to the cross-platform look-
-				// and-feel and attempts again to initialize the layout.
-				if(!UIManager.getLookAndFeel().getName().equals("Metal")) {
-					System.err.println("Exception caught initializing GUI; reverting to CrossPlatformLookAndFeel");
-					try {
-						UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-					} catch(Exception e2) {
-						System.err.println("Exception while setting CrossPlatformLookAndFeel: " + e2);
-						throw new Error(e2);
-					}
-					guiLayout.initialize();
-				} else {
-					throw new Error(e);
-				}
-			}
-			mainFrameTree.setBugPopupMenu(mainFrameTree.createBugPopupMenu());
-			mainFrameTree.setBranchPopupMenu(mainFrameTree.createBranchPopUpMenu());
-			comments.loadPrevCommentsList(GUISaveState.getInstance().getPreviousComments().toArray(new String[GUISaveState.getInstance().getPreviousComments().size()]));
-			updateStatusBar();
-			setBounds(GUISaveState.getInstance().getFrameBounds());
-			Toolkit.getDefaultToolkit().setDynamicLayout(true);
-			setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-			setJMenuBar(mainFrameMenu.createMainMenuBar());
-			setVisible(true);
-
-            mainFrameLoadSaveHelper = new MainFrameLoadSaveHelper(MainFrame.this);
-
-			//Sets the size of the tooltip to match the rest of the GUI. - Kristin
-			JToolTip tempToolTip = mainFrameTree.getTableheader().createToolTip();
-			UIManager.put( "ToolTip.font", new FontUIResource(tempToolTip.getFont().deriveFont(Driver.getFontSize())));
-
-			setupOSX();
-
-			String loadFromURL = SystemProperties.getOSDependentProperty("findbugs.loadBugsFromURL");
-
-			if (loadFromURL != null) {
-				try {
-					loadFromURL = SystemProperties.rewriteURLAccordingToProperties(loadFromURL);
-					URL url = new URL(loadFromURL);
-                    mainFrameLoadSaveHelper.loadAnalysis(url);
-				} catch (MalformedURLException e1) {
-					JOptionPane.showMessageDialog(MainFrame.this, "Error loading "  + loadFromURL);
-				}
-			}
-
-			addComponentListener(new ComponentAdapter(){
-				@Override
-				public void componentResized(ComponentEvent e){
-					comments.resized();
-				}
-			});
-
-			addWindowListener(new WindowAdapter(){
-				@Override
-				public void windowClosing(WindowEvent e) {
-					if(comments.hasFocus())
-						setProjectChanged(true);
-					callOnClose();
-				}
-			});
-
-			Driver.removeSplashScreen();
-			mainFrameInitialized.countDown();
-		}
-
-		private void setupOSX() {
-			if (MAC_OS_X) {
-				 try {
-					mainFrameMenu.initOSX();
-					mainFrameMenu.enablePreferencesMenuItem(true);
-				} catch (NoClassDefFoundError e) {
-					// This will be thrown first if the OSXAdapter is loaded on a system without the EAWT
-					// because OSXAdapter extends ApplicationAdapter in its def
-					System.err.println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled (" + e + ")");
-				} catch (ClassNotFoundException e) {
-					// This shouldn't be reached; if there's a problem with the OSXAdapter we should get the
-					// above NoClassDefFoundError first.
-					System.err.println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled (" + e + ")");
-				} catch (Exception e) {
-					System.err.println("Exception while loading the OSXAdapter: " + e);
-					e.printStackTrace();
-					if (GUI2_DEBUG) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-	}
-	/**
-	 * Listens for when cursor is over the label and when it is clicked.
-	 * When the cursor is over the label will make the label text blue
-	 * and the cursor the hand cursor. When clicked will take the
-	 * user to the source code tab and to the lines of code connected
-	 * to the SourceLineAnnotation.
-	 * @author Kristin Stephens
-	 *
-	 */
-	private class BugSummaryMouseListener extends MouseAdapter{
-		private final BugInstance bugInstance;
-		private final JLabel label;
-		private final SourceLineAnnotation note;
-
-		BugSummaryMouseListener(@NonNull BugInstance bugInstance, @NonNull JLabel label,  @NonNull SourceLineAnnotation link){
-			this.bugInstance = bugInstance;
-			this.label = label;
-			this.note = link;
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			displayer.displaySource(bugInstance, note);
-		}
-		@Override
-		public void mouseEntered(MouseEvent e){
-			label.setForeground(Color.blue);
-			setCursor(new Cursor(Cursor.HAND_CURSOR));
-		}
-		@Override
-		public void mouseExited(MouseEvent e){
-			label.setForeground(Color.black);
-			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		}
-	}
-
-	class ShownBugsIterator implements Iterator<BugInstance> {
+	private class ShownBugsIterator implements Iterator<BugInstance> {
         Iterator<BugInstance> base = getBugCollection().getCollection().iterator();
         boolean nextKnown;
         BugInstance next;
@@ -1606,7 +1089,6 @@ public class MainFrame extends FBFrame implements LogSync {
                 }
             });
         }
-
     }
 
     private class MyCloudListener implements CloudListener {
@@ -1634,7 +1116,7 @@ public class MainFrame extends FBFrame implements LogSync {
         }
     }
 
-    private class statusBarUpdater implements Runnable {
+    private class StatusBarUpdater implements Runnable {
         public void run() {
             updateStatusBar();
         }
