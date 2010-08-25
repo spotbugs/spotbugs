@@ -52,6 +52,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 
 	@Override
 	public void visit(Code code) {
+		isPlainText = false;
 		super.visit(code);
 		map.clear();
 		accumulator.reportAccumulatedBugs();
@@ -74,6 +75,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 		accumulator.accumulateBug(bug, this);
 	}
 	OpcodeStack.Item replaceTop = null;
+	boolean isPlainText;
 	@Override
 	public void sawOpcode(int seen) {
 		if (replaceTop != null) {
@@ -104,7 +106,12 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 			String calledClassName = getClassConstantOperand();
 			String calledMethodName = getNameConstantOperand();
 			String calledMethodSig = getSigConstantOperand();
-			if (calledClassName.equals("javax/servlet/http/HttpSession") && calledMethodName.equals("setAttribute")) {
+			if (calledClassName.equals("javax/servlet/http/HttpServletResponse") && calledMethodName.equals("setContentType")) {
+				OpcodeStack.Item writing = stack.getStackItem(0);
+				if ("text/plain".equals(writing.getConstant())) {
+					isPlainText = true;
+				}
+			} else if (calledClassName.equals("javax/servlet/http/HttpSession") && calledMethodName.equals("setAttribute")) {
 				
 				OpcodeStack.Item value = stack.getStackItem(0);
 				OpcodeStack.Item name = stack.getStackItem(1);
@@ -137,7 +144,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 				}
 			}
 
-		} else if (seen == INVOKEVIRTUAL) {
+		} else if (seen == INVOKEVIRTUAL && !isPlainText) {
 			String calledClassName = getClassConstantOperand();
 			String calledMethodName = getNameConstantOperand();
 			String calledMethodSig = getSigConstantOperand();
