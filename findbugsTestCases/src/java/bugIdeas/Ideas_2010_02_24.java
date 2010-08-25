@@ -2,7 +2,9 @@ package bugIdeas;
 
 import java.util.Date;
 
+import org.joda.time.DateTimeConstants;
 import org.joda.time.Instant;
+import org.joda.time.Interval;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
@@ -25,7 +27,26 @@ public class Ideas_2010_02_24 {
 	public Instant bad4(int x) {
 		return new Instant(x * 1000);
 	}
+	@ExpectWarning("ICAST_INT_2_LONG_AS_INSTANT")
+	public Date bad5(int x) {
+		return new Date(x);
+	}
+	
+	@ExpectWarning("ICAST_INT_2_LONG_AS_INSTANT")
+	public java.sql.Date bad6(int x) {
+		return new java.sql.Date(x);
+	}
+	@ExpectWarning("ICAST_INT_2_LONG_AS_INSTANT")
+	public Instant bad7(int x) {
+		return new Instant(x);
+	}
 
+	public Interval maybeOK(int x) {
+		return new Interval(x * DateTimeConstants.MILLIS_PER_HOUR, (x+1) * DateTimeConstants.MILLIS_PER_HOUR  );
+	}
+	public Interval bad8(int x, int y) {
+		return new Interval(x * 1000, y*1000  );
+	}
 	public static void main(String args[]) {
 		long x = System.currentTimeMillis();
 		System.out.println(Long.toHexString(x));

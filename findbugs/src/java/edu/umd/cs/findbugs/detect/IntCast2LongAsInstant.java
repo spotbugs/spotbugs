@@ -40,7 +40,8 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class IntCast2LongAsInstant extends OpcodeStackDetector {
 
-	BugReporter bugReporter;
+	final BugReporter bugReporter;
+	int lastConstantForSIPUSH;
 
 	TrainLongInstantfParams.LongInstantParameterDatabase database = new TrainLongInstantfParams.LongInstantParameterDatabase();
 
@@ -52,6 +53,9 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
 
 	@Override
     public void sawOpcode(int seen) {
+		if (seen == SIPUSH) {
+			lastConstantForSIPUSH = getIntConstant();
+		}
 		if (seen == INVOKEINTERFACE || seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKESTATIC) {
 			String signature = getSigConstantOperand();
 
@@ -64,9 +68,11 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
 					if (property != null && property.hasProperty(i)) {
 						int priority = NORMAL_PRIORITY;
 						
-						if (getPrevOpcode(1) == I2L && getPrevOpcode(2) == IMUL && getPrevOpcode(3) == SIPUSH) {
+						if (getPrevOpcode(1) == I2L && getPrevOpcode(2) == IMUL && getPrevOpcode(3) == SIPUSH && lastConstantForSIPUSH == 1000) {
 							 priority = HIGH_PRIORITY;
 							
+						} else if (getPrevOpcode(1) == I2L && getPrevOpcode(2) == IMUL && getPrevOpcode(4) == SIPUSH  && lastConstantForSIPUSH == 1000) {
+							 priority = HIGH_PRIORITY;
 						}
 						BugInstance bug = new BugInstance(this, "ICAST_INT_2_LONG_AS_INSTANT", priority).addClassAndMethod(this)
 						        .addCalledMethod(this).addValueSource(item, this).addSourceLine(this);
