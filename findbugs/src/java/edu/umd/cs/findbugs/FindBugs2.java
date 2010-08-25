@@ -91,8 +91,6 @@ public class FindBugs2 implements IFindBugsEngine {
 	public static final boolean PROGRESS = DEBUG || SystemProperties.getBoolean("findbugs.progress");
 	private static final boolean SCREEN_FIRST_PASS_CLASSES = SystemProperties.getBoolean("findbugs.screenFirstPass");
 	
-	private static final boolean DEBUG_UA = SystemProperties.getBoolean("ua.debug");
-
 	private int rankThreshold;
 	private List<IClassObserver> classObserverList;
 	private BugReporter bugReporter;
