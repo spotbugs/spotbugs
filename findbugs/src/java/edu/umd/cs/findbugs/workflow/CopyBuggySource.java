@@ -148,7 +148,7 @@ public class CopyBuggySource {
 			}
 		}
 		
-		System.out.printf("All done. %d files not found, %d files copies%n", couldNotFind.size(), copyCount);
+		System.out.printf("All done. %d files not found, %d files copied%n", couldNotFind.size(), copyCount);
 	}
 
 	public static void close(InputStream in) {
