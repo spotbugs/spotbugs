@@ -168,7 +168,7 @@ public class BugRanker {
 		int priorityAdjustment = priorityAdjustment(priority);
 		if (rankBugPattern > 20)
 			return rankBugPattern + priorityAdjustment;
-		return Math.min(rankBugPattern + priorityAdjustment, 20);
+		return Math.max(1,Math.min(rankBugPattern + priorityAdjustment, 20));
     }
 
     private static int rankBugPattern(BugPattern bugPattern, BugRanker... rankers) {
