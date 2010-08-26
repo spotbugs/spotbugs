@@ -442,7 +442,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		 
 			}
 		} else if (option.equals("-bugCategories")) {
-			this.bugCategorySet = FindBugs.handleBugCategories(getUserPreferences(), argument);
+			this.bugCategorySet = FindBugs.handleBugCategories(argument);
 		} else if (option.equals("-onlyAnalyze")) {
 			// The argument is a comma-separated list of classes and packages
 			// to select to analyze.  (If a list item ends with ".*",

@@ -34,7 +34,6 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
-import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
 
@@ -265,14 +264,12 @@ public abstract class FindBugs  {
 
 	/**
 	 * Process -bugCategories option.
-	 * 
-	 * @param userPreferences
-	 *            UserPreferences representing which Detectors are enabled
 	 * @param categories
 	 *            comma-separated list of bug categories
+	 * 
 	 * @return Set of categories to be used
 	 */
-	public static Set<String> handleBugCategories(UserPreferences userPreferences, String categories) {
+	public static Set<String> handleBugCategories(String categories) {
 		// Parse list of bug categories
 		Set<String> categorySet = new HashSet<String>();
 		StringTokenizer tok = new StringTokenizer(categories, ",");
