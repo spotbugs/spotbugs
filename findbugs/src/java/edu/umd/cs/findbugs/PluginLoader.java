@@ -425,7 +425,7 @@ public class PluginLoader {
 		}
 		
 		// Create a DetectorFactory for all Detector nodes
-		if (!FindBugs.noAnalysis) try {
+		 try {
 			
 				List<Node> filterNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/BugReporterDecorator");
 				for (Node filterNode : filterNodeList) {
@@ -435,8 +435,11 @@ public class PluginLoader {
 						String propertiesLocation = filterNode.valueOf("@properties");
 						boolean disabled = Boolean.valueOf(filterNode.valueOf("@disabled"));
 
-						Class<? extends BugReporterDecorator> cloudClass = getClass(classLoader, filterClassname,
+						Class<? extends BugReporterDecorator> decoratorClass  = null;
+						if (!FindBugs.noAnalysis) {
+							decoratorClass = getClass(classLoader, filterClassname,
 						        BugReporterDecorator.class);
+						}
 
 						Node filterMessageNode = findMessageNode(messageCollectionList,
 						        "/MessageCollection/BugReporterDecorator[@id='" + filterId + "']",
@@ -457,7 +460,7 @@ public class PluginLoader {
 							properties.setProperty(key, value);
 						}
 
-						BugReporterPlugin bugReporterPlugin = new BugReporterPlugin(plugin, filterId, classLoader, cloudClass,
+						BugReporterPlugin bugReporterPlugin = new BugReporterPlugin(plugin, filterId, classLoader, decoratorClass,
 						        properties, !disabled, description, details);
 						plugin.addBugReporterPlugin(bugReporterPlugin);
 					} catch (RuntimeException e) {
@@ -480,10 +483,13 @@ public class PluginLoader {
 				//System.out.println("Found detector: class="+className+", disabled="+disabled);
 
 				// Create DetectorFactory for the detector
-				Class<?> detectorClass = classLoader.loadClass(className);
-				if (!Detector.class.isAssignableFrom(detectorClass)
-						&& !Detector2.class.isAssignableFrom(detectorClass))
-					throw new PluginException("Class " + className + " does not implement Detector or Detector2");
+				Class<?> detectorClass = null;
+				if (!FindBugs.noAnalysis) {
+					detectorClass = classLoader.loadClass(className);
+
+					if (!Detector.class.isAssignableFrom(detectorClass) && !Detector2.class.isAssignableFrom(detectorClass))
+						throw new PluginException("Class " + className + " does not implement Detector or Detector2");
+				}
 				DetectorFactory factory = new DetectorFactory(
 						plugin,
 						detectorClass, !disabled.equals("true"),
