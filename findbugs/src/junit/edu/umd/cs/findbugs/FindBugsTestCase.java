@@ -158,7 +158,7 @@ public abstract class FindBugsTestCase extends TestCase {
 					new DetectorFactory(fakePlugin, JUnitDetectorAdapter.class, true, "fast", "", "");
 				fakePlugin.addDetectorFactory(detectorFactory);
 				dfc.registerDetector(detectorFactory);
-				if (!dfc.factoryIterator().hasNext() || !fakePlugin.detectorFactoryIterator().hasNext()) {
+				if (!dfc.factoryIterator().hasNext() || fakePlugin.getDetectorFactories().isEmpty()) {
 					throw new IllegalStateException();
 				}
 

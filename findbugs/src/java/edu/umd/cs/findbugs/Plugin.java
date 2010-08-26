@@ -20,9 +20,14 @@
 package edu.umd.cs.findbugs;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.bugReporter.BugReporterPlugin;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
@@ -47,9 +52,9 @@ public class Plugin {
 
 	private ArrayList<DetectorFactory> detectorFactoryList;
 
-	private ArrayList<BugPattern> bugPatternList;
+	private LinkedHashSet<BugPattern> bugPatterns;
 
-	private ArrayList<BugCode> bugCodeList;
+	private LinkedHashSet<BugCode> bugCodeList;
 
 	private Map<String,BugReporterPlugin> filterPlugins = new LinkedHashMap<String, BugReporterPlugin>();
 
@@ -77,8 +82,8 @@ public class Plugin {
 	public Plugin(String pluginId, PluginLoader pluginLoader) {
 		this.pluginId = pluginId;
 		this.detectorFactoryList = new ArrayList<DetectorFactory>();
-		this.bugPatternList = new ArrayList<BugPattern>();
-		this.bugCodeList = new ArrayList<BugCode>();
+		this.bugPatterns = new LinkedHashSet<BugPattern>();
+		this.bugCodeList = new LinkedHashSet<BugCode>();
 		this.interPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
 		this.intraPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
 		this.pluginLoader = pluginLoader;
@@ -181,7 +186,7 @@ public class Plugin {
 	 * @param bugPattern
 	 */
 	public void addBugPattern(BugPattern bugPattern) {
-		bugPatternList.add(bugPattern);
+		bugPatterns.add(bugPattern);
 	}
 
 	/**
@@ -248,26 +253,26 @@ public class Plugin {
 	 * 
 	 * @return Iterator over DetectorFactory objects
 	 */
-	public Iterator<DetectorFactory> detectorFactoryIterator() {
-		return detectorFactoryList.iterator();
+	public Collection<DetectorFactory> getDetectorFactories() {
+		return detectorFactoryList;
 	}
+
+	
 
 	/**
-	 * Get Iterator over BugPattern objects in the Plugin.
+	 * Get the set of BugPatterns
 	 * 
-	 * @return Iterator over BugPattern objects
 	 */
-	public Iterator<BugPattern> bugPatternIterator() {
-		return bugPatternList.iterator();
+	public Set<BugPattern> getBugPatterns() {
+		return bugPatterns;
 	}
-
 	/**
 	 * Get Iterator over BugCode objects in the Plugin.
 	 * 
 	 * @return Iterator over BugCode objects
 	 */
-	public Iterator<BugCode> bugCodeIterator() {
-		return bugCodeList.iterator();
+	public Set<BugCode> getBugCodes() {
+		return bugCodeList;
 	}
 
 	/**
@@ -323,9 +328,8 @@ public class Plugin {
 		public boolean choose(DetectorFactory factory);
 	}
 
-	private DetectorFactory chooseFactory(FactoryChooser chooser) {
-		for (Iterator<DetectorFactory> i = detectorFactoryIterator(); i.hasNext();) {
-			DetectorFactory factory = i.next();
+	private @CheckForNull DetectorFactory chooseFactory(FactoryChooser chooser) {
+		for (DetectorFactory factory : getDetectorFactories()) {
 			if (chooser.choose(factory))
 				return factory;
 		}

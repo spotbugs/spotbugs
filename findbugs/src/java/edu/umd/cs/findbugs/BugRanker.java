@@ -238,9 +238,15 @@ public class BugRanker {
           List<BugRanker> rankers = new ArrayList<BugRanker>();
           rankers.add(getAdjustmentBugRanker());
           for (Plugin plugin : factory.plugins()) {
-            if (plugin != corePlugin) {
-              rankers.add(plugin.getBugRanker());
-            }
+        	if (plugin == corePlugin)  
+        		  continue;
+        	for(DetectorFactory df : plugin.getDetectorFactories()) {
+        		if (df.getReportedBugPatterns().contains(pattern)) {
+        			 rankers.add(plugin.getBugRanker());
+        			 break;
+        		}
+        	}
+         
           }
           rankers.add(getCoreRanker());
 

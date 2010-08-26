@@ -124,8 +124,7 @@ public class ExecutionPlan {
 		copyTo(plugin.intraPassConstraintIterator(), intraPassConstraintList);
 
 		// Add detector factories
-		for (Iterator<DetectorFactory> i = plugin.detectorFactoryIterator(); i.hasNext(); ) {
-			DetectorFactory factory = i.next();
+		for (DetectorFactory factory : plugin.getDetectorFactories() ) {
 			if (DEBUG) {
 				System.out.println("  Detector factory " + factory.getShortName());
 			}

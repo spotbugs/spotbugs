@@ -249,12 +249,16 @@ public class PluginLoader {
 	public static @CheckForNull
 	URL loadFromFindBugsPluginDir(String name) {
 
+		URL u = DetectorFactoryCollection.instance().lookForExplicitPluginFile(name);
+		if (u != null)
+			return u;
+		
 		String findBugsHome = DetectorFactoryCollection.getFindBugsHome();
 		if (findBugsHome != null) {
 			File f = new File(new File(new File(findBugsHome), "plugin"), name);
 			if (f.canRead())
 				try {
-					return f.toURL();
+					return f.toURI().toURL();
 				} catch (MalformedURLException e) {
 					// ignore it
 				}

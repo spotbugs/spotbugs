@@ -34,7 +34,6 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,6 +46,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
 import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -227,15 +227,31 @@ public class DetectorFactoryCollection {
 		factoriesByDetectorClassName.put(factory.getFullName(), factory);
 	}
 
+	/**
+	 * Look for a name in the list of explicitly specified plugin files
+	 * @param name must match the suffix of the URL path
+	 */
+	public @CheckForNull URL lookForExplicitPluginFile(String name) {
+		if (this.pluginList != null) 
+			for(URL u : this.pluginList) 
+				if (u.getPath().endsWith(name))
+					return u;
+		return null;
+	
+	}
 	private List<URL> determineInstalledPlugins() {
-		if (this.pluginList != null)
-			return Arrays.asList(this.pluginList);
+		ArrayList<URL> plugins = new ArrayList<URL>();
 
+		if (this.pluginList != null) {
+			for(URL u : this.pluginList) 
+				if (u.getPath().endsWith(".jar"))
+					plugins.add(u);
+			return plugins;
+		}
+		
 		String homeDir = getFindBugsHome();
 		if (homeDir == null)
 			return Collections.emptyList();
-
-		ArrayList<URL> plugins = new ArrayList<URL>();
 
 		//
 		// See what plugins are available in the ${findbugs.home}/plugin
@@ -529,8 +545,7 @@ public class DetectorFactoryCollection {
 
 		// Register all of the detectors that this plugin contains
 		boolean show = !pluginLoader.isCorePlugin();
-		for (Iterator<DetectorFactory> j = plugin.detectorFactoryIterator(); j.hasNext();) {
-			DetectorFactory factory = j.next();
+		for (DetectorFactory factory :  plugin.getDetectorFactories()) {
 			if (show) {
 				jawsDebugMessage("Loading detector for " + factory.getFullName());
 				show = false;
@@ -541,14 +556,12 @@ public class DetectorFactoryCollection {
 		I18N i18n = I18N.instance();
 
 		// Register the BugPatterns
-		for (Iterator<BugPattern> j = plugin.bugPatternIterator(); j.hasNext();) {
-			BugPattern bugPattern = j.next();
+		for (BugPattern bugPattern :  plugin.getBugPatterns()) {
 			i18n.registerBugPattern(bugPattern);
 		}
 
 		// Register the BugCodes
-		for (Iterator<BugCode> j = plugin.bugCodeIterator(); j.hasNext();) {
-			BugCode bugCode = j.next();
+		for (BugCode bugCode : plugin.getBugCodes()) {
 			i18n.registerBugCode(bugCode);
 		}
 	}
