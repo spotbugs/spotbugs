@@ -81,6 +81,8 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class BugRanker {
 	
+	static final boolean PLUGIN_DEBUG = Boolean.getBoolean("bugranker.plugin.debug");
+	
 	static class Scorer {
 		private final HashMap<String, Integer> adjustment = new HashMap<String, Integer>();
 		private final HashSet<String> isRelative = new  HashSet<String>();
@@ -237,15 +239,25 @@ public class BugRanker {
 
           List<BugRanker> rankers = new ArrayList<BugRanker>();
           rankers.add(getAdjustmentBugRanker());
-          for (Plugin plugin : factory.plugins()) {
+          pluginLoop: for (Plugin plugin : factory.plugins()) {
         	if (plugin == corePlugin)  
         		  continue;
+        	if (false) {
+        		 rankers.add(plugin.getBugRanker());
+    			 continue pluginLoop;
+        	}
         	for(DetectorFactory df : plugin.getDetectorFactories()) {
+        		
         		if (df.getReportedBugPatterns().contains(pattern)) {
+        			 if (PLUGIN_DEBUG)
+        				 System.out.println("Bug rank match " + plugin + " " + df + " for " + pattern);
         			 rankers.add(plugin.getBugRanker());
-        			 break;
+        			 continue pluginLoop;
         		}
         	}
+        	if (PLUGIN_DEBUG)
+				 System.out.println("plugin " + plugin + " doesn't match " + pattern);
+			 
          
           }
           rankers.add(getCoreRanker());
@@ -254,8 +266,7 @@ public class BugRanker {
 	}
 
     public static void trimToMaxRank(BugCollection origCollection, int maxRank) {
-	    if (maxRank < 20) 
-	    	for(Iterator<BugInstance> i = origCollection.getCollection().iterator(); i.hasNext(); ) {
+	    for(Iterator<BugInstance> i = origCollection.getCollection().iterator(); i.hasNext(); ) {
 	    		BugInstance b = i.next();
 	    		if (BugRanker.findRank(b) > maxRank)
 	    			i.remove();
