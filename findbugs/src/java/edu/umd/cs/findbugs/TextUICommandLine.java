@@ -27,9 +27,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -112,6 +114,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		addSwitch("-showPlugins", "show list of available detector plugins");
 
 		startOptionGroup("Output options:");
+		addSwitch("-justListOptions", "throw an exception that lists the provided options");
+		makeOptionUnlisted("-justListOptions");
+		
 		addSwitch("-timestampNow", "set timestamp of results to be current time");
 		addSwitch("-quiet", "suppress error messages");
 		addSwitch("-longBugCodes", "report long bug codes");
@@ -194,9 +199,11 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		return applySuppression;
 	}
 	
+	Map<String,String> parsedOptions = new LinkedHashMap<String,String>();
 	@SuppressWarnings("DM_EXIT")
 	@Override
 	protected void handleOption(String option, String optionExtraPart) {
+		parsedOptions.put(option, optionExtraPart);
 		if (DEBUG) {
 			if (optionExtraPart != null)
 				System.out.println("option "  + option + ":" + optionExtraPart);
@@ -294,6 +301,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			noClassOk = true;
 		} else if (option.equals("-xargs")) {
 			xargs = true;
+		} else if (option.equals("-justListOptions")) {
+				throw new RuntimeException("textui options are: " + parsedOptions);
 		} else {
 			super.handleOption(option, optionExtraPart);
 		}
@@ -302,6 +311,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	@SuppressWarnings("DM_EXIT")
 	@Override
 	protected void handleOptionWithArgument(String option, String argument) throws IOException {
+		parsedOptions.put(option, argument);
+		
 		if (DEBUG) {
 			System.out.println("option "  + option + " is " + argument);
 		}
