@@ -903,7 +903,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			String rhs = SignatureConverter.convert(rhsType.getSignature());
 
 			if (lhs.equals("java.lang.String") || rhs.equals("java.lang.String")) {
-				handleStringComparison(jclass, methodGen, visitor, stringComparisonList, location, lhsType, rhsType);
+				handleStringComparison(jclass, method, methodGen, visitor, stringComparisonList, location, lhsType, rhsType);
 			} else if (suspiciousSet.contains(lhs) ) {
 				handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, lhs, (ReferenceType) lhsType, (ReferenceType)rhsType);
 			} else if ( suspiciousSet.contains(rhs)) {
@@ -914,12 +914,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 	private void handleStringComparison(
 			JavaClass jclass,
+			Method method,
 			MethodGen methodGen,
 			RefComparisonTypeFrameModelingVisitor visitor,
 			List<WarningWithProperties> stringComparisonList,
 			Location location,
-			Type lhsType,
-			Type rhsType) {
+			Type lhsType, Type rhsType) {
 		if (DEBUG) {
 	        System.out.println("String/String comparison at " + location.getHandle());
         }
@@ -963,6 +963,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			new BugInstance(this, bugPattern, BASE_ES_PRIORITY)
 		.addClassAndMethod(methodGen, sourceFile)
 		.addType("Ljava/lang/String;").describe(TypeAnnotation.FOUND_ROLE);
+		// .addSomeSourceForTopTwoStackValues(classContext, method, location);
 		SourceLineAnnotation sourceLineAnnotation =
 			SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, location.getHandle());
 		if (sourceLineAnnotation != null) {

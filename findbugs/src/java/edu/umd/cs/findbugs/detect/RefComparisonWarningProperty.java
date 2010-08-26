@@ -33,10 +33,10 @@ public class RefComparisonWarningProperty extends AbstractWarningProperty {
 
 	/** There is a call to equals() in the method. */
 	public static final RefComparisonWarningProperty SAW_CALL_TO_EQUALS =
-		new RefComparisonWarningProperty("SAW_CALL_TO_EQUALS", PriorityAdjustment.AT_MOST_LOW);
+		new RefComparisonWarningProperty("SAW_CALL_TO_EQUALS", PriorityAdjustment.AT_MOST_MEDIUM);
 	/** Method is private (or package-protected). */
 	public static final RefComparisonWarningProperty PRIVATE_METHOD =
-		new RefComparisonWarningProperty("PRIVATE_METHOD", PriorityAdjustment.LOWER_PRIORITY);
+		new RefComparisonWarningProperty("PRIVATE_METHOD", PriorityAdjustment.AT_MOST_MEDIUM);
 	/** Compare inside test case */
 	public static final RefComparisonWarningProperty COMPARE_IN_TEST_CASE =
 		new RefComparisonWarningProperty("COMPARE_IN_TEST_CASE", PriorityAdjustment.FALSE_POSITIVE);
