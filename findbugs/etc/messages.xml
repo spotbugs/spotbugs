@@ -46,6 +46,11 @@ This plugin contains all of the standard FindBugs detectors.
     <Details>Suppress all internationalization issues</Details>
     </BugReporterDecorator>
   <BugReporterDecorator
+    id="edu.umd.cs.findbugs.bugReporter.SelectivelySuppressI18N">
+    <Description>Suppress internationalization issues in all but selected packages</Description>
+    <Details>Suppress all internationalization issues except those specified in the i18n.properties resource</Details>
+    </BugReporterDecorator>
+  <BugReporterDecorator
     id="edu.umd.cs.findbugs.bugReporter.SuppressMalicious">
     <Description>Suppress warnings about vunerabilities to malicious code</Description>
     <Details>Suppress warnings about vunerabilities to malicious code</Details>
@@ -1897,7 +1902,7 @@ consider using a commercial static analysis or pen-testing tool.
   </BugPattern>
 
   <BugPattern type="XSS_REQUEST_PARAMETER_TO_SEND_ERROR">
-    <ShortDescription>Servlet reflected cross site scripting vulnerability</ShortDescription>
+    <ShortDescription>Servlet reflected cross site scripting vulnerability in error page</ShortDescription>
     <LongDescription>HTTP parameter written to Servlet error page in {1}</LongDescription>
 <Details>
 <![CDATA[

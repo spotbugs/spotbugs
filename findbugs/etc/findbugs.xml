@@ -20,6 +20,12 @@
                     disabled="true">
                     <Property key="category">I18N</Property>
           </BugReporterDecorator>
+          <BugReporterDecorator id="edu.umd.cs.findbugs.bugReporter.SelectivelySuppressI18N"
+                    decoratorClass="edu.umd.cs.findbugs.bugReporter.SuppressDecorator"
+                    disabled="true">
+                    <Property key="category">I18N</Property>
+                    <Property key="source">i18n.properties</Property>
+          </BugReporterDecorator>
           <BugReporterDecorator id="edu.umd.cs.findbugs.bugReporter.SuppressMultithreaded"
                     decoratorClass="edu.umd.cs.findbugs.bugReporter.SuppressDecorator"
                     disabled="true">
@@ -384,8 +390,6 @@
                     hidden="true" reports="IS_INCONSISTENT_SYNC"/>
           <Detector class="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays" speed="fast"
                     reports="PZLA_PREFER_ZERO_LENGTH_ARRAYS"/>
-          <Detector class="edu.umd.cs.findbugs.detect.EqStringTest" speed="fast" disabled="true"
-                    hidden="true" reports="ES_COMPARING_STRINGS_WITH_EQ"/>
           <Detector class="edu.umd.cs.findbugs.detect.SynchronizingOnContentsOfFieldToProtectField"
                     speed="fast" reports="ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD"/>
           <Detector class="edu.umd.cs.findbugs.detect.MutableLock" speed="fast"
