@@ -19,25 +19,26 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.math.BigDecimal;
+import java.util.Iterator;
 
 import org.apache.bcel.classfile.Code;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.OpcodeStack.Item;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.FieldSummary;
-import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class TestingGround extends OpcodeStackDetector {
 
-	BugReporter bugReporter;
+	final BugReporter bugReporter;
+	final BugAccumulator accumulator;
 
 	public TestingGround(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.accumulator = new BugAccumulator(bugReporter);
 	}
 
 	@Override
@@ -47,28 +48,34 @@ public class TestingGround extends OpcodeStackDetector {
 			// initialize any variables we want to initialize for the method
 			super.visit(code); // make callbacks to sawOpcode for all opcodes
 		}
+		accumulator.reportAccumulatedBugs();
 	}
 
 	@Override
 	public void sawOpcode(int seen) {
-		if (seen == INVOKESPECIAL 
-				&& getClassConstantOperand().equals("java/math/BigDecimal")
-				&& getNameConstantOperand().equals("<init>")
-				&& getSigConstantOperand().equals("(D)V")) {
-			OpcodeStack.Item top = stack.getStackItem(0);
-			Object value = top.getConstant();
-			if (value instanceof Double) {
-				double arg = ((Double) value).doubleValue();
-				String dblString = Double.toString(arg);
-				String bigDecimalString = new BigDecimal(arg).toString();
-				boolean ok = dblString.equals(bigDecimalString) || dblString.equals(bigDecimalString + ".0");
-				
-				if (!ok) {
-					boolean scary = dblString.length() <= 8 && dblString.toUpperCase().indexOf("E") == -1;
-					bugReporter.reportBug(new BugInstance(this, "TESTING", scary ? NORMAL_PRIORITY : LOW_PRIORITY )
-							.addClassAndMethod(this).addString(dblString).addSourceLine(this));
+		if (seen == INVOKESTATIC 
+				&& getClassConstantOperand().equals("com/google/common/base/Preconditions")
+				&& getNameConstantOperand().startsWith("check")) {
+			SignatureParser parser = new SignatureParser(getSigConstantOperand());
+			int count = 0;
+			for(Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext(); count++) {
+				String parameter = i.next();
+				if (parameter.equals("Ljava/lang/Object;")) {
+					OpcodeStack.Item item = stack.getStackItem(parser.getNumParameters() - 1 - count);
+					XMethod m =  item.getReturnValueOf();
+					if (m == null) 
+						continue;
+					if (!m.getName().equals("toString"))
+						continue;
+					if (!m.getClassName().startsWith("java.lang.StringB"))
+						continue;
+					accumulator.accumulateBug(new BugInstance(this,
+							"TESTING", NORMAL_PRIORITY)
+					.addClassAndMethod(this)
+					.addCalledMethod(this), this);
 				}
-			}
+					
+			}		
 			
 		}
 				

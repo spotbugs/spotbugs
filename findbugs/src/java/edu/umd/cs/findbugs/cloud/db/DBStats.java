@@ -192,7 +192,7 @@ public class DBStats {
 	public static void main(String args[]) throws Exception {
 		 Map<String,String> officeLocation = new HashMap<String,String>();
 		
-		URL u = DetectorFactoryCollection.instance().getCoreResource("offices.properties");
+		URL u = DetectorFactoryCollection.getCoreResource("offices.properties");
 		if (u != null) {
 			BufferedReader in = new BufferedReader(new InputStreamReader(u.openStream()));
 			while(true) {

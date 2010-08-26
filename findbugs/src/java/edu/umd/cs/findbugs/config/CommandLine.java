@@ -185,7 +185,7 @@ public abstract class CommandLine {
 
 	public static ArrayList<String> getAnalysisOptionProperties(boolean ignoreComments, boolean ignoreBlankLines) {
 	    ArrayList<String> resultList = new ArrayList<String>();
-		URL u = DetectorFactoryCollection.instance().getCoreResource("analysisOptions.properties");
+		URL u = DetectorFactoryCollection.getCoreResource("analysisOptions.properties");
 		if (u != null) {
 			BufferedReader reader = null;
 			try {

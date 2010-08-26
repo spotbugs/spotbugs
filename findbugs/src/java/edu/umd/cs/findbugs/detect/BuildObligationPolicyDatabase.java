@@ -127,7 +127,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 	
 		database = new ObligationPolicyDatabase();
 		addBuiltInPolicies();
-		URL u = DetectorFactoryCollection.instance().getCoreResource("obligationPolicy.db");
+		URL u = DetectorFactoryCollection.getCoreResource("obligationPolicy.db");
 		try {
 		if (u != null) {
 			AuxilaryObligationPropertyDatabase db = new AuxilaryObligationPropertyDatabase();

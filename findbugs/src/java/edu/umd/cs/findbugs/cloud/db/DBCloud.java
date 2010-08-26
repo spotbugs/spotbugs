@@ -443,7 +443,7 @@ public  class DBCloud extends AbstractCloud {
 					SortedBugCollection sbc = (SortedBugCollection) bugCollection;
 					long findbugsStartTime = sbc.getTimeStartedLoading() - StartTime.START_TIME;
 
-					URL findbugsURL = DetectorFactoryCollection.instance().getCoreResource("findbugs.xml");
+					URL findbugsURL = DetectorFactoryCollection.getCoreResource("findbugs.xml");
 					String loadURL = findbugsURL == null ? "" : findbugsURL.toString();
 
 					long initialLoadTime = sbc.getTimeFinishedLoading() - sbc.getTimeStartedLoading();
@@ -682,7 +682,7 @@ public  class DBCloud extends AbstractCloud {
 	}
 	private void loadBugComponents(){
 		try {
-	    URL u = DetectorFactoryCollection.instance().getCoreResource("bugComponents.properties");
+	    URL u = DetectorFactoryCollection.getCoreResource("bugComponents.properties");
 		if (u != null) {
 			BufferedReader in = new BufferedReader(new InputStreamReader(u.openStream()));
 			while(true) {

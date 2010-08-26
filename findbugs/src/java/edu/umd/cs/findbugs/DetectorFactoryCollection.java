@@ -74,6 +74,7 @@ public class DetectorFactoryCollection {
 	private static final Object lock = new Object();
 	private boolean loaded = false;
 
+	static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
 	private URL[] pluginList;
 
 	/**
@@ -116,7 +117,11 @@ public class DetectorFactoryCollection {
 			theInstance = instance;
 		}
 	}
-
+	static boolean isLoaded() {
+		synchronized (lock) {
+			return theInstance != null && theInstance.loaded;
+		}
+	}
 	/**
 	 * Get the single instance of DetectorFactoryCollection.
 	 */
@@ -340,6 +345,8 @@ public class DetectorFactoryCollection {
 	}
 	public void ensureLoaded() {
 		if (loaded) return;
+		if (DEBUG)
+			new RuntimeException("DetectorFactoryCollection loaded").printStackTrace();
 		loadPlugins();
 	}
 	
@@ -361,11 +368,14 @@ public class DetectorFactoryCollection {
 	
 	
 	@CheckForNull
-    public URL getCoreResource(String name) {
-		URL u = lookForExplicitPluginFile(name);
-		if (u != null)
-			return u;
-		u = PluginLoader.getCoreResource(name);
+	public static URL getCoreResource(String name) {
+
+		if (isLoaded()) {
+			URL u = instance().lookForExplicitPluginFile(name);
+			if (u != null)
+				return u;
+		}
+		URL u = PluginLoader.getCoreResource(name);
 		return u;
 	}
 	/**
