@@ -1113,5 +1113,5 @@
                     category="MT_CORRECTNESS"/>
           <BugPattern abbrev="LG" type="LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE"
                     category="EXPERIMENTAL"/>
-          <BugPattern abbrev="Dm" type="DM_DEFAULT_ENCODING" category="BAD_PRACTICE" />
+          <BugPattern abbrev="Dm" type="DM_DEFAULT_ENCODING" category="I18N" />
 </FindbugsPlugin>
