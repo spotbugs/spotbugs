@@ -16,23 +16,23 @@
                     cloudClass="edu.umd.cs.findbugs.cloud.db.DBCloud"
                     usernameClass="edu.umd.cs.findbugs.cloud.username.LocalNameLookup" hidden="true"/>
           <BugReporterDecorator id="edu.umd.cs.findbugs.bugReporter.SuppressI18N"
-                    decoratorClass="edu.umd.cs.findbugs.bugReporter.SuppressDecorator"
+                    decoratorClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
                     disabled="true">
                     <Property key="category">I18N</Property>
           </BugReporterDecorator>
           <BugReporterDecorator id="edu.umd.cs.findbugs.bugReporter.SelectivelySuppressI18N"
-                    decoratorClass="edu.umd.cs.findbugs.bugReporter.SuppressDecorator"
+                    decoratorClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
                     disabled="true">
                     <Property key="category">I18N</Property>
-                    <Property key="source">i18n.properties</Property>
+                    <Property key="packageSource">i18n.properties</Property>
           </BugReporterDecorator>
           <BugReporterDecorator id="edu.umd.cs.findbugs.bugReporter.SuppressMultithreaded"
-                    decoratorClass="edu.umd.cs.findbugs.bugReporter.SuppressDecorator"
+                    decoratorClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
                     disabled="true">
                     <Property key="category">MT_CORRECTNESS</Property>
           </BugReporterDecorator>
           <BugReporterDecorator id="edu.umd.cs.findbugs.bugReporter.SuppressMalicious"
-                    decoratorClass="edu.umd.cs.findbugs.bugReporter.SuppressDecorator"
+                    decoratorClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
                     disabled="true">
                     <Property key="category">MALICIOUS_CODE</Property>
           </BugReporterDecorator>
