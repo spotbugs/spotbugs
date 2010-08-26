@@ -440,7 +440,7 @@ public class PluginLoader {
 
 						Node filterMessageNode = findMessageNode(messageCollectionList,
 						        "/MessageCollection/BugReporterDecorator[@id='" + filterId + "']",
-						        "Missing Cloud description for cloud " + filterId);
+						        "Missing Cloud description for BugReporterDecorator " + filterId);
 						String description = getChildText(filterMessageNode, "Description").trim();
 						String details = getChildText(filterMessageNode, "Details").trim();
 						PropertyBundle properties = new PropertyBundle();
