@@ -244,13 +244,25 @@ public class SortedBugCollection implements BugCollection {
 		project.setCurrentWorkingDirectory(file.getParentFile());
 		dataSource = file.getAbsolutePath();
 		InputStream in = progessMonitoredInputStream(file, "Loading analysis");
+		try {
 		readXML(in, file);
+		} catch (IOException e) {
+			throw new IOException("Failing reading " + file, e);
+		} catch (DocumentException e) {
+			throw new DocumentException("Failing reading " + file, e);
+		}
 	}
 	public void readXML(URL u)
 	throws IOException, DocumentException {
 		InputStream in = progessMonitoredInputStream(u.openConnection(), "Loading analysis");
 		dataSource = u.toString();
-		readXML(in);
+		try {
+			readXML(in);
+		} catch (IOException e) {
+			throw new IOException("Failing reading " + u, e);
+		} catch (DocumentException e) {
+			throw new DocumentException("Failing reading " + u, e);
+		}
 	}
 	/**
 	 * Read XML data from given input stream into this

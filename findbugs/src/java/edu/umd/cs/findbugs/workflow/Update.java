@@ -442,7 +442,7 @@ public class Update {
 				}
 				origCollection.readXML(origFilename);
 				break;
-			} catch (IOException e) {
+			} catch (Exception e) {
 				if (verbose) {
 					System.out.println("Error reading " + origFilename);
 					e.printStackTrace(System.out);
