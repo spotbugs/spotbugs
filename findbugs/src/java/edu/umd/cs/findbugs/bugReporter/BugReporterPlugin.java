@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.bugReporter;
 
 import java.util.Set;
 
+import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PropertyBundle;
 
 /**
@@ -28,8 +29,9 @@ import edu.umd.cs.findbugs.PropertyBundle;
  */
 public class BugReporterPlugin {
 
-	public BugReporterPlugin(String filterId, ClassLoader classLoader, Class<? extends BugReporterDecorator> filterClass,
-	         PropertyBundle properties, boolean enabledByDefault, String description, String details) {
+	public BugReporterPlugin(Plugin plugin, String filterId, ClassLoader classLoader,
+	         Class<? extends BugReporterDecorator> filterClass, PropertyBundle properties, boolean enabledByDefault, String description, String details) {
+		this.plugin = plugin;
 		this.id = filterId;
 		int i = filterId.lastIndexOf('.');
 		this.shortId = filterId.substring(i+1);
@@ -69,15 +71,20 @@ public class BugReporterPlugin {
 		return details;
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return getDescription();
 	}
 	
+	public Plugin getPlugin() {
+		return plugin;
+	}
 	public boolean isNamed(Set<String> names) {
 		return names.contains(id) ||  names.contains(shortId);
 		
 	}
 
+	final Plugin plugin;
 	final String id;
 	final String shortId;
 

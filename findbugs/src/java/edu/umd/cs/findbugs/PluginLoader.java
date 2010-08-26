@@ -179,7 +179,7 @@ public class PluginLoader {
 	 * @param name resource to get
 	 * @return URL for the resource, or null if it could not be found
 	 */
-	private URL getResource(String name) {
+	public URL getResource(String name) {
 		URL url = null;
 		
 		if (JavaWebStart.isRunningViaJavaWebstart() &&  loadedFrom != null && loadedFrom.toString().endsWith(".jar"))
@@ -332,7 +332,6 @@ public class PluginLoader {
 		boolean pluginEnabled = defaultEnabled.equals("") || Boolean.valueOf(defaultEnabled).booleanValue();
 
 		// Load the message collections
-			//Locale locale = Locale.getDefault();
 			Locale locale = I18N.defaultLocale;
 			String language = locale.getLanguage();
 			String country = locale.getCountry();
@@ -429,39 +428,43 @@ public class PluginLoader {
 		// Create a DetectorFactory for all Detector nodes
 		if (!FindBugs.noAnalysis) try {
 			
-			List<Node> filterNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/BugReporterDecorator");
-			for(Node filterNode : filterNodeList) {
-				
-				String filterClassname = filterNode.valueOf("@decoratorClass");
-				String filterId = filterNode.valueOf("@id");
-				String propertiesLocation = filterNode.valueOf("@properties");
-				boolean disabled = Boolean.valueOf(filterNode.valueOf("@disabled"));
-				
+				List<Node> filterNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/BugReporterDecorator");
+				for (Node filterNode : filterNodeList) {
+					String filterClassname = filterNode.valueOf("@decoratorClass");
+					String filterId = filterNode.valueOf("@id");
+					try {
+						String propertiesLocation = filterNode.valueOf("@properties");
+						boolean disabled = Boolean.valueOf(filterNode.valueOf("@disabled"));
 
-				Class<? extends BugReporterDecorator> cloudClass = getClass(classLoader, filterClassname, BugReporterDecorator.class);
-				
-				Node filterMessageNode = findMessageNode(messageCollectionList,
-						"/MessageCollection/BugReporterDecorator[@id='" + filterId + "']",
-						"Missing Cloud description for cloud " + filterId);
-				String description = getChildText(filterMessageNode, "Description").trim();
-				String details = getChildText(filterMessageNode, "Details").trim();
-				PropertyBundle properties = new PropertyBundle();
-				if (propertiesLocation != null && propertiesLocation.length() > 0) {
-					URL properiesURL = classLoaderForResources.getResource(propertiesLocation);
-					if (properiesURL == null)
-						continue;
-					properties.loadPropertiesFromURL(properiesURL);
+						Class<? extends BugReporterDecorator> cloudClass = getClass(classLoader, filterClassname,
+						        BugReporterDecorator.class);
+
+						Node filterMessageNode = findMessageNode(messageCollectionList,
+						        "/MessageCollection/BugReporterDecorator[@id='" + filterId + "']",
+						        "Missing Cloud description for cloud " + filterId);
+						String description = getChildText(filterMessageNode, "Description").trim();
+						String details = getChildText(filterMessageNode, "Details").trim();
+						PropertyBundle properties = new PropertyBundle();
+						if (propertiesLocation != null && propertiesLocation.length() > 0) {
+							URL properiesURL = classLoaderForResources.getResource(propertiesLocation);
+							if (properiesURL == null)
+								continue;
+							properties.loadPropertiesFromURL(properiesURL);
+						}
+						List<Node> propertyNodes = filterNode.selectNodes("Property");
+						for (Node node : propertyNodes) {
+							String key = node.valueOf("@key");
+							String value = node.getText();
+							properties.setProperty(key, value);
+						}
+
+						BugReporterPlugin bugReporterPlugin = new BugReporterPlugin(plugin, filterId, classLoader, cloudClass,
+						        properties, !disabled, description, details);
+						plugin.addBugReporterPlugin(bugReporterPlugin);
+					} catch (RuntimeException e) {
+						AnalysisContext.logError("Unable to load BugReporterPlugin " + filterId + " : " + filterClassname, e);
+					}
 				}
-				List<Node> propertyNodes = filterNode.selectNodes("Property");
-				for(Node node :  propertyNodes ) {
-					String key = node.valueOf("@key");
-					String value = node.getText();
-					properties.setProperty(key, value);
-				}
-				
-				BugReporterPlugin bugReporterPlugin = new BugReporterPlugin(filterId, classLoader, cloudClass,  properties,!disabled, description, details);
-				plugin.addBugReporterPlugin(bugReporterPlugin);
-			}
 
 			List<Node> detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
 			int detectorCount = 0;
