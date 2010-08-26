@@ -61,6 +61,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		public void choose(boolean enable, String what);
 	}
 
+	private static final boolean DEBUG = Boolean.getBoolean("textui.debug");
 	private static final int PRINTING_REPORTER = 0;
 	private static final int SORTING_REPORTER = 1;
 	private static final int XML_REPORTER = 2;
@@ -196,6 +197,12 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	@SuppressWarnings("DM_EXIT")
 	@Override
 	protected void handleOption(String option, String optionExtraPart) {
+		if (DEBUG) {
+			if (optionExtraPart != null)
+				System.out.println("option "  + option + ":" + optionExtraPart);
+			else
+				System.out.println("option "  + option );
+		}
 		if (option.equals("-showPlugins")) {
 			System.out.println("Available plugins:");
 			int count = 0;
@@ -295,6 +302,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	@SuppressWarnings("DM_EXIT")
 	@Override
 	protected void handleOptionWithArgument(String option, String argument) throws IOException {
+		if (DEBUG) {
+			System.out.println("option "  + option + " is " + argument);
+		}
 		if (option.equals("-outputFile") || option.equals("-output")) {
 			File outputFile = new File(argument);
 			String extension = Util.getFileExtension(outputFile);

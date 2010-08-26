@@ -308,9 +308,13 @@ public class SortedBugCollection implements BugCollection {
 		
 			xr.parse(new InputSource(reader));
 		} catch (SAXParseException e) {
+			if (base != null)
+				throw new DocumentException("Parse error at line " + e.getLineNumber() + " : " + e.getColumnNumber() + " of " + base, e);
 			throw new DocumentException("Parse error at line " + e.getLineNumber() + " : " + e.getColumnNumber(), e);
 		} catch (SAXException e) {
 			// FIXME: throw SAXException from method?
+			if (base != null)
+				throw new DocumentException("Sax error while parsing " + base, e);
 			throw new DocumentException("Sax error ", e);
 		} finally {
 			Util.closeSilently(reader);
