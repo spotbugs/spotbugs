@@ -342,6 +342,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			for(String s : argument.split(",")) {
 				if (s.charAt(0)== '-')
 					disabledBugReporterDecorators.add(s.substring(1));
+				else if (s.charAt(0)== '+')
+					enabledBugReporterDecorators.add(s.substring(1));
 				else
 					enabledBugReporterDecorators.add(s);
 			}
