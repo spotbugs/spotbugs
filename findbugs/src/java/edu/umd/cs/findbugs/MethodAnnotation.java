@@ -136,7 +136,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			OpcodeStackDetector oVisitor = (OpcodeStackDetector) visitor;
 			if (!oVisitor.getStack().isTop() && oVisitor.getStack().getStackDepth() > params) {
 				OpcodeStack.Item item = oVisitor.getStack().getStackItem(params);
-				className = ClassName.fromFieldSignature(item.getSignature());
+				String cName = ClassName.fromFieldSignature(item.getSignature());
+				if (cName != null)
+					className = cName;
 				
 			}
 			
