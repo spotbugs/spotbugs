@@ -378,7 +378,6 @@ public class PluginLoader {
 		}
 
 		List<Node> cloudNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Cloud");
-		int cloudCount = 0;
 		for(Node cloudNode : cloudNodeList) {
 			
 			String cloudClassname = cloudNode.valueOf("@cloudClass");
