@@ -51,6 +51,12 @@ This plugin contains all of the standard FindBugs detectors.
     <Details>Suppress all internationalization issues except those specified in the i18n.properties resource</Details>
     </BugReporterDecorator>
   <BugReporterDecorator
+    id="edu.umd.cs.findbugs.bugReporter.MaxRank14">
+    <Description>Suppress all issues with rank higher than 14</Description>
+    <Details>Suppress all issues with rank higher than 14</Details>
+    </BugReporterDecorator>
+          
+  <BugReporterDecorator
     id="edu.umd.cs.findbugs.bugReporter.SuppressMalicious">
     <Description>Suppress warnings about vunerabilities to malicious code</Description>
     <Details>Suppress warnings about vunerabilities to malicious code</Details>

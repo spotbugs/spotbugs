@@ -20,6 +20,11 @@
                     disabled="true">
                     <Property key="category">I18N</Property>
           </BugReporterDecorator>
+          <BugReporterDecorator id="edu.umd.cs.findbugs.bugReporter.MaxRank14"
+                    decoratorClass="edu.umd.cs.findbugs.bugReporter.MaxRankDecorator"
+                    disabled="true">
+                    <Property key="maxRank">14</Property>
+          </BugReporterDecorator>
           <BugReporterDecorator id="edu.umd.cs.findbugs.bugReporter.SelectivelySuppressI18N"
                     decoratorClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
                     disabled="true">
