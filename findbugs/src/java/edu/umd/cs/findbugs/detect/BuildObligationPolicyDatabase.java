@@ -33,6 +33,7 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -126,7 +127,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 	
 		database = new ObligationPolicyDatabase();
 		addBuiltInPolicies();
-		URL u = PluginLoader.getCoreResource("obligationPolicy.db");
+		URL u = DetectorFactoryCollection.instance().getCoreResource("obligationPolicy.db");
 		try {
 		if (u != null) {
 			AuxilaryObligationPropertyDatabase db = new AuxilaryObligationPropertyDatabase();

@@ -67,7 +67,7 @@ public class SystemProperties {
 	
 	private static void loadPropertiesFromConfigFile()  {
 		
-	    URL systemProperties = PluginLoader.getCoreResource("systemProperties.properties");
+	    URL systemProperties = DetectorFactoryCollection.instance().getCoreResource("systemProperties.properties");
 	   loadPropertiesFromURL(systemProperties);
 		String u = System.getProperty("findbugs.loadPropertiesFrom");
 		if (u != null)

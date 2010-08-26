@@ -39,6 +39,7 @@ import java.util.TreeSet;
 
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
@@ -191,7 +192,7 @@ public class DBStats {
 	public static void main(String args[]) throws Exception {
 		 Map<String,String> officeLocation = new HashMap<String,String>();
 		
-		URL u = PluginLoader.getCoreResource("offices.properties");
+		URL u = DetectorFactoryCollection.instance().getCoreResource("offices.properties");
 		if (u != null) {
 			BufferedReader in = new BufferedReader(new InputStreamReader(u.openStream()));
 			while(true) {

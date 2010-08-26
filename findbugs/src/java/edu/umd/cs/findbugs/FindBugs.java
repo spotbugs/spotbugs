@@ -428,7 +428,6 @@ public abstract class FindBugs  {
 	 * @param commandLine the TextUICommandLine whose options should be printed
 	 */
 	public static void showCommandLineOptions(TextUICommandLine commandLine) {
-		System.out.println("Command line options:");
 		commandLine.printUsage(System.out);
 	}
 

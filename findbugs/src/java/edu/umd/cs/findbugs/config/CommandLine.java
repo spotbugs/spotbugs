@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -184,7 +185,7 @@ public abstract class CommandLine {
 
 	public static ArrayList<String> getAnalysisOptionProperties(boolean ignoreComments, boolean ignoreBlankLines) {
 	    ArrayList<String> resultList = new ArrayList<String>();
-		URL u = PluginLoader.getCoreResource("analysisOptions.properties");
+		URL u = DetectorFactoryCollection.instance().getCoreResource("analysisOptions.properties");
 		if (u != null) {
 			BufferedReader reader = null;
 			try {

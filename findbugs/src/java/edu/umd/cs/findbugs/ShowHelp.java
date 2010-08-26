@@ -33,7 +33,7 @@ public class ShowHelp {
 		FindBugsCommandLine guiCmd = new FindBugsCommandLine(true){};
 		guiCmd.printUsage(System.out);
 		System.out.println();
-		System.out.println("Command line Options:");
+		System.out.println("TextUI Options:");
 		FindBugs.showCommandLineOptions();
 	}
 

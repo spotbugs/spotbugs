@@ -359,14 +359,21 @@ public class DetectorFactoryCollection {
 		loaded = true;
 	}
 	
+	
+	@CheckForNull
+    public URL getCoreResource(String name) {
+		URL u = lookForExplicitPluginFile(name);
+		if (u != null)
+			return u;
+		u = PluginLoader.getCoreResource(name);
+		return u;
+	}
 	/**
 	 * Load all plugins. If a setPluginList() has been called, then those
 	 * plugins are loaded. Otherwise, the "findbugs.home" property is checked to
 	 * determine where FindBugs is installed, and the plugin files are
 	 * dynamically loaded from the plugin directory.
 	 */
-
-	
 	
 	void loadPlugins() {
 		if (loaded) 
@@ -382,7 +389,7 @@ public class DetectorFactoryCollection {
 			throw new IllegalStateException("Warning: could not load FindBugs core plugin: " + e.toString(), e);
 		}
 		
-		URL u = PluginLoader.getCoreResource(BugRanker.ADJUST_FILENAME);
+		URL u = getCoreResource(BugRanker.ADJUST_FILENAME);
 		
 		try {
 			adjustmentBugRanker = new BugRanker(u);
@@ -465,7 +472,7 @@ public class DetectorFactoryCollection {
      */
     private List<URL>  determineWebStartPlugins() {
     	List<URL> plugins = new LinkedList<URL>();
-	    URL pluginListProperties = PluginLoader.getCoreResource("pluginlist.properties");
+	    URL pluginListProperties = getCoreResource("pluginlist.properties");
 	    if (pluginListProperties != null) {
 	    	try {
 

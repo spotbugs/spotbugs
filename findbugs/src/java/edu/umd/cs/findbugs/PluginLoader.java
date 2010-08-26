@@ -215,7 +215,7 @@ public class PluginLoader {
 		return null;
 	}
 
-	public static @CheckForNull
+	static @CheckForNull
 	URL getCoreResource(String name) {
 		URL u = loadFromFindBugsPluginDir(name);
 		if (u != null) 
@@ -249,10 +249,6 @@ public class PluginLoader {
 	public static @CheckForNull
 	URL loadFromFindBugsPluginDir(String name) {
 
-		URL u = DetectorFactoryCollection.instance().lookForExplicitPluginFile(name);
-		if (u != null)
-			return u;
-		
 		String findBugsHome = DetectorFactoryCollection.getFindBugsHome();
 		if (findBugsHome != null) {
 			File f = new File(new File(new File(findBugsHome), "plugin"), name);

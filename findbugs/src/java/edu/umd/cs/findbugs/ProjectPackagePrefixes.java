@@ -186,7 +186,7 @@ public class ProjectPackagePrefixes {
 	}
 
 	public ProjectPackagePrefixes() {
-		URL u = PluginLoader.getCoreResource("projectPaths.properties");
+		URL u = DetectorFactoryCollection.instance().getCoreResource("projectPaths.properties");
 		if (u != null) {
 
 			try {

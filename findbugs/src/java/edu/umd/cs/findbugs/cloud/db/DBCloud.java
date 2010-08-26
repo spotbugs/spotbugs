@@ -64,6 +64,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
@@ -442,7 +443,7 @@ public  class DBCloud extends AbstractCloud {
 					SortedBugCollection sbc = (SortedBugCollection) bugCollection;
 					long findbugsStartTime = sbc.getTimeStartedLoading() - StartTime.START_TIME;
 
-					URL findbugsURL = PluginLoader.getCoreResource("findbugs.xml");
+					URL findbugsURL = DetectorFactoryCollection.instance().getCoreResource("findbugs.xml");
 					String loadURL = findbugsURL == null ? "" : findbugsURL.toString();
 
 					long initialLoadTime = sbc.getTimeFinishedLoading() - sbc.getTimeStartedLoading();
@@ -681,7 +682,7 @@ public  class DBCloud extends AbstractCloud {
 	}
 	private void loadBugComponents(){
 		try {
-	    URL u = PluginLoader.getCoreResource("bugComponents.properties");
+	    URL u = DetectorFactoryCollection.instance().getCoreResource("bugComponents.properties");
 		if (u != null) {
 			BufferedReader in = new BufferedReader(new InputStreamReader(u.openStream()));
 			while(true) {
