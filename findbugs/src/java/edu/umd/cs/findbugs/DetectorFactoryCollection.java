@@ -466,7 +466,14 @@ public class DetectorFactoryCollection {
 				if (FindBugs.DEBUG)
 					e.printStackTrace();
 			} catch (PrivilegedActionException e) {
-				jawsErrorMessage("Warning: could not load plugin " + url + ": " + e.toString());
+				Throwable e2 = e;
+				while (true) {
+					Throwable e3 = e2.getCause();
+					if (e3 == null) break;
+					e2 = e3;
+				}
+				e2.printStackTrace();
+				jawsErrorMessage("Warning: could not load plugin " + url + ": " + e2.toString());
 				if (FindBugs.DEBUG)
 					e.printStackTrace();
 			}
