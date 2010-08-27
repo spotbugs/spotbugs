@@ -134,7 +134,7 @@ public class DetectorFactory {
 						   Class<?> detectorClass, boolean enabled, String speed, String reports,
 						   String requireJRE) {
 		this.plugin = plugin;
-		this.detectorCreator = new ReflectionDetectorCreator(detectorClass);
+		this.detectorCreator = FindBugs.noAnalysis ? null : new ReflectionDetectorCreator(detectorClass);
 		this.defEnabled = enabled;
 		this.speed = speed;
 		this.reports = reports;
