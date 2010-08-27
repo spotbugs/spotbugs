@@ -27,6 +27,9 @@
     <Class name="~edu.umd.cs.findbugs.gui.*"/>
   </Match>
   <Match>
+    <Class name="~edu.umd.cs.findbugs.*Test"/>
+  </Match>
+  <Match>
     <BugCode name="Se"/>
     <Class name="~edu.umd.cs.findbugs.gui2.*"/>
   </Match>
