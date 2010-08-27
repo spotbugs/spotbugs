@@ -492,8 +492,8 @@ public class PluginLoader {
 				}
 				DetectorFactory factory = new DetectorFactory(
 						plugin,
-						detectorClass, !disabled.equals("true"),
-						speed, reports, requireJRE);
+						className, detectorClass,
+						!disabled.equals("true"), speed, reports, requireJRE);
 				if (Boolean.valueOf(hidden).booleanValue())
 					factory.setHidden(true);
 				factory.setPositionSpecifiedInPluginDescriptor(detectorCount++);

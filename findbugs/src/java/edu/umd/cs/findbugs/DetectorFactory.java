@@ -107,6 +107,7 @@ public class DetectorFactory {
 
 	private Plugin plugin;
 	private final ReflectionDetectorCreator detectorCreator;
+	private final @DottedClassName String className;
 	private int positionSpecifiedInPluginDescriptor;
 	private boolean defEnabled;
 	private final String speed;
@@ -121,6 +122,7 @@ public class DetectorFactory {
 	 * Constructor.
 	 *
 	 * @param plugin        the Plugin the Detector is part of
+	 * @param className TODO
 	 * @param detectorClass the Class object of the Detector
 	 * @param enabled       true if the Detector is enabled by default, false if disabled
 	 * @param speed         a string describing roughly how expensive the analysis performed
@@ -131,9 +133,10 @@ public class DetectorFactory {
 	 *                      the detector: e.g., "1.5"
 	 */
 	public DetectorFactory(Plugin plugin,
-						   Class<?> detectorClass, boolean enabled, String speed, String reports,
-						   String requireJRE) {
+						   String className, Class<?> detectorClass, boolean enabled, String speed,
+						   String reports, String requireJRE) {
 		this.plugin = plugin;
+		this.className = className;
 		this.detectorCreator = FindBugs.noAnalysis ? null : new ReflectionDetectorCreator(detectorClass);
 		this.defEnabled = enabled;
 		this.speed = speed;
@@ -356,10 +359,9 @@ public class DetectorFactory {
 	 * This is the name of the detector class without the package qualification.
 	 */
 	public String getShortName() {
-		String className = detectorCreator.getDetectorClass().getName();
 		int endOfPkg = className.lastIndexOf('.');
 		if (endOfPkg >= 0)
-			className = className.substring(endOfPkg + 1);
+			return className.substring(endOfPkg + 1);
 		return className;
 	}
 
@@ -368,7 +370,7 @@ public class DetectorFactory {
 	 * This is the name of the detector class, with package qualification.
 	 */
 	public @DottedClassName String getFullName() {
-		return detectorCreator.getDetectorClass().getName();
+		return className;
 	}
 }
 

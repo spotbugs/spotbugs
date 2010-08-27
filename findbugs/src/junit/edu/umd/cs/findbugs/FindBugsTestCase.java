@@ -155,7 +155,7 @@ public abstract class FindBugsTestCase extends TestCase {
 				dfc.setPlugins(new Plugin[]{fakePlugin});
 
 				DetectorFactory detectorFactory =
-					new DetectorFactory(fakePlugin, JUnitDetectorAdapter.class, true, "fast", "", "");
+					new DetectorFactory(fakePlugin, JUnitDetectorAdapter.class.getName(), JUnitDetectorAdapter.class, true, "fast", "", "");
 				fakePlugin.addDetectorFactory(detectorFactory);
 				dfc.registerDetector(detectorFactory);
 				if (!dfc.factoryIterator().hasNext() || fakePlugin.getDetectorFactories().isEmpty()) {
