@@ -951,6 +951,7 @@
 					</fileset>
 					<fileset dir="${plugin.dir}">
 						<include name="*.properties"/>
+						<include name="*.txt"/>
 					</fileset>
 			</jar>
 		<input message="Enter keystore password:"  addproperty="password"/>
