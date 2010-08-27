@@ -156,8 +156,10 @@ public class FilterFilesTab extends Composite {
 		private void addSelectedPaths(FileDialog dialog) {
 			String[] names = getFileNames(dialog);
 			String filterPath = getFilterPath(dialog);
+			Path baseDir = new Path(filterPath);
+			setLastUsedPath(baseDir);
 			for (String fileName : names) {
-				IPath path = new Path(filterPath).append(fileName);
+				IPath path = baseDir.append(fileName);
 				PathElement pathElt = new PathElement(path, Status.OK_STATUS);
 				if(!paths.contains(pathElt)) {
 					paths.add(pathElt);
@@ -407,7 +409,7 @@ public class FilterFilesTab extends Composite {
 		Set<String>result = new LinkedHashSet<String>();
 		for (PathElement path : paths) {
 			IPath filterPath = FindBugsWorker.toFilterPath(path.getPath(), project);
-			result.add(filterPath.toOSString());
+			result.add(filterPath.toPortableString());
 		}
 		return result;
 	}
