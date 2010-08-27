@@ -146,6 +146,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 		return resourceDelta != null
 				&& resourceDelta.findMember(new Path(".project")) == null
 				&& resourceDelta.findMember(new Path(".classpath")) == null
-				&& resourceDelta.findMember(new Path(".fbprefs")) == null;
+				&& resourceDelta.findMember(FindbugsPlugin.DEPRECATED_PREFS_PATH) == null
+				&& resourceDelta.findMember(FindbugsPlugin.DEFAULT_PREFS_PATH) == null;
 	}
 }

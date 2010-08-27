@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dom4j.DocumentException;
+import org.eclipse.core.internal.preferences.EclipsePreferences;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -46,6 +47,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
@@ -93,6 +95,13 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionLoader;
 	*/
 public class FindbugsPlugin extends AbstractUIPlugin {
 	public static final String ICON_PATH = "icons/";
+	public static final String PREFS_NAME = ".fbprefs";
+
+	@java.lang.SuppressWarnings("restriction")
+	public static final IPath DEFAULT_PREFS_PATH = new Path(
+			EclipsePreferences.DEFAULT_PREFERENCES_DIRNAME).append(PREFS_NAME);
+
+	public static final IPath DEPRECATED_PREFS_PATH = new Path(PREFS_NAME);
 
 	public static final String DETAILS_VIEW_ID = IPageLayout.ID_PROP_SHEET;
 	public static final String USER_ANNOTATIONS_VIEW_ID = "de.tobject.findbugs.view.userannotationsview";
@@ -618,7 +627,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * if the real file does not exist yet
 	 */
 	private static IFile getUserPreferencesFile(IProject project) {
-		return project.getFile(".fbprefs");
+		IFile defaultFile = project.getFile(DEFAULT_PREFS_PATH);
+		IFile oldFile = project.getFile(DEPRECATED_PREFS_PATH);
+		if(defaultFile.isAccessible() || !oldFile.isAccessible()) {
+		    return defaultFile;
+		}
+		return oldFile;
 	}
 
 	public static boolean isProjectSettingsEnabled(IProject project){
@@ -711,7 +725,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	}
 
 	private static UserPreferences getWorkspacePreferences() {
-		IPath path = getDefault().getStateLocation().append(".fbprefs");
+		IPath path = getDefault().getStateLocation().append(PREFS_NAME);
 		// create initially default settings
 		UserPreferences userPrefs = FindBugsPreferenceInitializer.createDefaultUserPreferences();
 		File prefsFile = path.toFile();
@@ -765,10 +779,18 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			IFile userPrefsFile = getUserPreferencesFile(project);
 			ensureReadWrite(userPrefsFile);
 			IO.writeFile(userPrefsFile, userPrefsOutput, null);
+			if(project.getFile(DEPRECATED_PREFS_PATH).equals(userPrefsFile)) {
+				String message = "Found old style FindBugs preferences for project '"
+						+ project.getName()
+						+ "'. This preferences are not at the default location: '"
+						+ DEFAULT_PREFS_PATH + "'." + " Please move '"
+						+ DEPRECATED_PREFS_PATH + "' to '" + DEFAULT_PREFS_PATH + "'.";
+				getDefault().logWarning(message);
+			}
 		} else {
 			// write file to the workspace area
 			IPath path = getDefault().getStateLocation();
-			path = path.append(".fbprefs");
+			path = path.append(PREFS_NAME);
 			IO.writeFile(path.toFile(), userPrefsOutput, null);
 		}
 	}
