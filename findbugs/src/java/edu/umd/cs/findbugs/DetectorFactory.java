@@ -148,7 +148,7 @@ public class DetectorFactory {
 
 	@Override
 	public String toString() {
-		return detectorCreator.toString();
+		return getShortName();
 	}
 	/**
 	 * Set the overall position in which this detector was specified
@@ -187,6 +187,8 @@ public class DetectorFactory {
 	 * @return true if the detector class is a subtype of the given class or interface
 	 */
 	public boolean isDetectorClassSubtypeOf(Class<?> otherClass) {
+		if (FindBugs.noAnalysis)
+			throw new IllegalStateException("No analysis specified");
 		return otherClass.isAssignableFrom(detectorCreator.getDetectorClass());
 	}
 
@@ -341,6 +343,8 @@ public class DetectorFactory {
 	 */
 	@Deprecated
 	public Detector create(BugReporter bugReporter) {
+		if (FindBugs.noAnalysis)
+			throw new IllegalStateException("No analysis specified");
 		return detectorCreator.createDetector(bugReporter);
 	}
 
@@ -351,6 +355,8 @@ public class DetectorFactory {
 	 * @return the Detector2
 	 */
 	public Detector2 createDetector2(BugReporter bugReporter) {
+		if (FindBugs.noAnalysis)
+			throw new IllegalStateException("No analysis specified");
 		return detectorCreator.createDetector2(bugReporter);
 	}
 
