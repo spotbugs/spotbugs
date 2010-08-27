@@ -371,7 +371,6 @@ public class FindBugsWorker {
 		if(path.isAbsolute()) {
 			return path;
 		}
-		IPath wspLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation();
 		if(project != null) {
 			// try first project relative location
 			IPath newPath = project.getLocation().append(path);
@@ -380,11 +379,12 @@ public class FindBugsWorker {
 			}
 		}
 
-			// try to resolve relative to workspace (if we use workspace properties for project)
+		// try to resolve relative to workspace (if we use workspace properties for project)
+		IPath wspLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation();
 		IPath newPath = wspLocation.append(path);
-			if(newPath.toFile().exists()){
-				return newPath;
-			}
+		if(newPath.toFile().exists()){
+			return newPath;
+		}
 
 		// something which we have no idea what it can be (or missing/wrong file path)
 		return path;
@@ -406,9 +406,12 @@ public class FindBugsWorker {
 		IPath commonPath;
 		if(project != null){
 			commonPath = project.getLocation();
-		} else {
-			commonPath = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+			IPath relativePath = getRelativePath(path, commonPath);
+			if(!relativePath.equals(path)) {
+				return relativePath;
+			}
 		}
+		commonPath = ResourcesPlugin.getWorkspace().getRoot().getLocation();
 		return getRelativePath(path, commonPath);
 	}
 
