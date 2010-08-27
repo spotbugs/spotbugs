@@ -20,6 +20,7 @@
 	<property name="jar.dir" value="lib"/>
 	<property name="plugin.dir" value="plugin"/>
 	<property name="build.dir" value="build"/>
+	<property name="junit.dir" value="build/junit"/>
 	<property name="classes.dir" value="build/classes"/>
 	<property name="eclipseClasses.dir" value="classesEclipse"/>
 	<property name="junitclasses.dir" value="build/junitclasses"/>
@@ -136,9 +137,7 @@
 
 	<!-- Compile Java source files, and copy other files (properties,
 		images, html, XSL stylesheets) that need to be part of the codebase. -->
-	<target name="classes">
-		<mkdir dir="${classes.dir}"/>
-		<mkdir dir="${junitclasses.dir}"/>
+	<target name="classes" depends="init">
 		
 		<!-- Compile Java source files. -->
 		<echo level="info" message="compiling findbugs"/>
@@ -253,7 +252,7 @@
 					</jar>
 		</target>
 
-	<target name="jars" depends="classes, validate,version">
+	<target name="jars" depends="classes,validate,version">
 		<copy todir="${eclipseClasses.dir}" overwrite="true">
 		    <fileset dir="${etc.dir}">
                                 <include name="*.xsd"/>
@@ -263,7 +262,7 @@
                         </fileset>
 		     </copy>
 
-		<mkdir dir="${plugin.dir}"/>
+		
 		<!-- Main engine and command line jar file. -->
 		<jar destfile="${engine.jar}"
 				manifest="etc/MANIFEST-findbugs.MF">
@@ -368,7 +367,7 @@
 	</target>
 	
 	<!-- Generate front-end scripts. -->
-	<target name="scripts" depends="checkscripts" 
+	<target name="scripts" depends="init,checkscripts" 
 				unless="scripts.uptodate"
 				>
 		<loadproperties srcFile="${scripts.props}"/>
@@ -399,8 +398,6 @@
 			<fileset dir="${scriptsrc.dir}/experimental"/>
 			<filterset refid="script.filters"/>
 		</copy>
-
-		<mkdir dir="${build.dir}"/>
 
 		<!-- Make the Unix scripts executable. -->
 		<chmod dir="${scripts.dir}" perm="a+x" includes="**/*" excludes="**/*.bat"/>
@@ -498,7 +495,6 @@
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
     <taskdef name="convertXmlToText" classname="edu.umd.cs.findbugs.anttask.ConvertXmlToTextTask" classpath="${anttask.jar}"/>
     <taskdef name="setBugDatabaseInfo" classname="edu.umd.cs.findbugs.anttask.SetBugDatabaseInfoTask" classpath="${anttask.jar}"/>
-    <mkdir dir="${sampleoutput.dir}"/>
     <findbugs home="."
               output="xml:withMessages"
 			  jvmargs="-ea -Xmx900m"
@@ -553,10 +549,9 @@
 	/>
   </target>
 
-  <target name="findbugscheck" depends="anttask,classes,junittests,jars">
+  <target name="findbugscheck" depends="anttask,junittests,jars">
    <property name="findbugs.home" value="." />
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
-    <mkdir dir="${sampleoutput.dir}"/>
     <findbugs home="."
               output="xml:withMessages"
 		cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
@@ -571,10 +566,9 @@
     </findbugs>
   </target>
 
-  <target name="findbugsTestCases" depends="anttask,classes,junittests,jars">
+  <target name="findbugsTestCases" depends="anttask,junittests,jars">
    <property name="findbugs.home" value="." />
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
-    <mkdir dir="${sampleoutput.dir}"/>
     <findbugs home="."
               output="xml"
 			  jvmargs="-ea -Xmx900m"
@@ -589,10 +583,9 @@
 	     as a check for whether changes to FindBugs have broken its
 	     interface with plugins.  Note that the generated .xml file is
 	     kept in the ${sampleoutput.dir} for later perusal. -->
-	<target name="plugincheck" depends="anttask,classes">
+	<target name="plugincheck" depends="anttask">
 		<property name="findbugs.home" value="." />
 		<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
-		<mkdir dir="${sampleoutput.dir}"/>
 		<!-- download the plugin -->
 		<echo message="curl ${plugincheck.jar} -o ${plugin.dir}/${plugincheck.jar}"/>
 		<!-- won't work everywhere, but I can't find an easy alternative -->
@@ -609,7 +602,7 @@
 	</target>
 
 	<!-- Check for plugin fb-contrib-3.2.5.jar -->
-	<target name="plugincheck_fbcontrib" depends="">
+	<target name="plugincheck_fbcontrib" depends="anttask">
 		<delete file="${plugin.dir}/fb-contrib-3.2.5.jar" quiet="true"/>
 		<antcall target="runanttask"/>
 		<move file="${sampleoutput.dir}/bcel.xml" tofile="${sampleoutput.dir}/bcel.xml.core"/>
@@ -622,9 +615,9 @@
 	<!-- Run JUnit test cases -->
 	<target name="runjunit" depends="junittests,jars">
 		<echo>Running JUnit test cases for FindBugs...</echo>
-		<delete dir="build/junit"/>
-		<mkdir dir="build/junit"/>	
-		<junit fork="yes">
+		<delete dir="${junit.dir}"/>
+		<mkdir dir="${junit.dir}"/>
+		<junit fork="yes" printsummary="true">
 			<jvmarg value="-ea"/>
 			<jvmarg value="-Dfindbugs.home=."/>
 			<formatter type="xml"/>   <!-- Hudson reads generated xml -->
@@ -633,7 +626,7 @@
 				<pathelement path="${junitclasses.dir}"/>
 			</classpath>
 			<!-- junit needs fileset to point to .java files (not .class) -->
-			<batchtest todir="build/junit">
+			<batchtest todir="${junit.dir}">
 				<fileset dir="${junitsrc.dir}">
 					<include name="**/*Test.java"/>
 					<include name="**/Test*.java"/>
@@ -648,7 +641,8 @@
 	<!-- Get version properties.  -->
 	<target name="version" depends="version0" >
 		<loadproperties srcfile="${version.props.file}"/>
-		</target>
+    </target>
+	
 	<target name="version0" depends="classes">
 		<java classpathref="tools.classpath"
 			output="${version.props.file}"
@@ -674,17 +668,20 @@
 			<param name="docoutput.dir" value="${doc.dir}"/>
 			<param name="googleanalytics.fragment" value=""/>
 		</antcall>
+		<property name="webdocs.uptodate" value="true"/>
 		
 		<!-- Generate HTML version of manual. -->
 		<antcall target="generatemanual">
 			<param name="docoutput.dir" value="${doc.dir}"/>
 			<param name="googleanalytics.fragment" value=""/>
 		</antcall>
+		<property name="manual.uptodate" value="true"/>
 		
 		<!-- Generate PDF version of manual. -->
 		<antcall target="generatepdfmanual">
 			<param name="docoutput.dir" value="${doc.dir}"/>
 		</antcall>
+		<property name="pdfmanual.uptodate" value="true"/>
 	</target>
 
 	<target name="checkweb">
@@ -700,10 +697,14 @@
 			<param name="docoutput.dir" value="${web.dir}"/>
 			<param name="googleanalytics.fragment" value="${doc.html.googleanalytics}"/>
 		</antcall>
+		<property name="webdocs.uptodate" value="true"/>
+		
 		<antcall target="generatemanual">
 			<param name="docoutput.dir" value="${web.dir}"/>
 			<param name="googleanalytics.fragment" value="${doc.html.googleanalytics}"/>
 		</antcall>
+		<property name="manual.uptodate" value="true"/>
+		
 		<!-- move javadocs from 'apiJavadoc' target (could use <copy/> instead of <move/>, but slower) -->
 		<move todir="${web.dir}/api">
 			<fileset dir="${apiDoc.dir}"/>
@@ -716,13 +717,10 @@
 		</copy>
 	</target>
 
-	<target name="checkbugdesc">
-	</target>
-
 	<!--
 		Generate all bug description HTML files.
 	-->
-	<target name="bugdesc" depends="checkbugdesc" unless="bugdesc.uptodate">
+	<target name="bugdesc" depends="jars" unless="bugdesc.uptodate">
 		<loadproperties srcFile="${doc.props.file}"/>
 		<!-- Generate bug descriptions. -->
 		<antcall target="generatebugdesc">
@@ -749,7 +747,7 @@
 		bugdesc.unabridged	- true if generating all bug descriptions,
 							  false if only default-enabled
 	-->
-	<target name="generatebugdesc" depends="jars">
+	<target name="generatebugdesc">
 		<java classname="edu.umd.cs.findbugs.tools.html.PrettyPrintBugDescriptions"
 			fork="true"
 			logError="true"
@@ -778,7 +776,7 @@
 		googleanalytics.fragment	- HTML fragment for google analytics
 									  (empty if not formatting for website)
 	-->
-	<target name="generatedocs">
+	<target name="generatedocs" unless="webdocs.uptodate">
 		<mkdir dir="${docoutput.dir}"/>
         <mkdir dir="${docoutput.dir}/ja"/>
 
@@ -841,7 +839,7 @@
 		docoutput.dir - the directory containing the generated HTML/XML/XSL files
 						(must be a child of the project root directory)
 	-->
-	<target name="generatemanual">
+	<target name="generatemanual" unless="manual.uptodate">
 		<echo>Generating HTML version of manual</echo>
 		<echo>Running saxon: ${saxon.home}/saxon.jar</echo>
 		<java fork="true" dir="${docoutput.dir}" failonerror="true" classname="com.icl.saxon.StyleSheet" >
@@ -861,7 +859,6 @@
             <arg value="../manual_ja.xml" />
             <arg value="../manual.xsl" />
         </java>
-
 	</target>
 	
 	<!--
@@ -873,7 +870,7 @@
 		docoutput.dir - the directory containing the generated HTML/XML/XSL files
 						(must be a child of the project root directory)
 	-->
-	<target name="generatepdfmanual" if="doc.generate.pdf">
+	<target name="generatepdfmanual" if="doc.generate.pdf" unless="pdfmanual.uptodate">
 		<echo>Generating PDF version of manual</echo>
 		<!--
 		<echo>Running saxon: ${saxon.home}/saxon.jar</echo>
@@ -909,8 +906,6 @@
 			<arg value="manual-raw.tex"/>
 		</exec>
 		<echo>Running pdflatex...</echo>
-		<antcall target="pdflatex-manual"/>
-		<antcall target="pdflatex-manual"/>
 		<antcall target="pdflatex-manual"/>
 		<echo>Done.</echo>
 	</target>
@@ -966,6 +961,7 @@
 			<arg value="jnlp"/>
 		</java>
 	</target>
+	
 	<target name="sign" depends="jars">
 		<input message="Enter keystore password:"  addproperty="password"/>
 		<signjar keystore="findbugs.keystore" alias="findbugs" storepass="${password}" keypass="${password}">
@@ -1052,7 +1048,7 @@
 	</target>
 
 	<!-- Build source distribution. -->
-	<target name="srcdist" description="Source distribution">
+	<target name="srcdist" description="Source distribution" unless="doNotExportSrc">
 		<echo>
 			${svnant.home}
 		</echo>
@@ -1079,16 +1075,45 @@
 	<!-- Delete generated files. -->
 	<target name="clean">
 		<delete dir="${scripts.dir}"/>
-		<delete dir="build"/>
+		<delete dir="${build.dir}"/>
 		<delete dir="${doc.dir}"/>
 		<delete dir="${web.dir}"/>
+        <delete dir="${apiDoc.dir}"/>
 		<delete file="${engine.jar}"/>
+        <delete dir="${annotationDoc.dir}"/>
 		<delete file="${anttask.jar}" failonerror="false"/>
 	</target>
+	
+	<target name="init" depends="properties">
+		<mkdir dir="${scripts.dir}"/>
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${doc.dir}"/>
+		<mkdir dir="${web.dir}"/>
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${junitclasses.dir}"/>		
+        <mkdir dir="${apiDoc.dir}"/>
+        <mkdir dir="${annotationDoc.dir}"/>
+		<mkdir dir="${plugin.dir}"/>
+		<mkdir dir="${sampleoutput.dir}"/>
+	</target>
 
-    <target name="apiJavadoc" depends="version">
-       <delete dir="${apiDoc.dir}"/>
-       <mkdir dir="${apiDoc.dir}"/>
+	<target name="properties">
+      <!-- set different doc targets if the global doc property is set -->
+	  <condition property="webdocs.uptodate">
+	      <isset property="docs.uptodate"/>
+	   </condition>
+	  <condition property="manual.uptodate">
+	      <isset property="docs.uptodate"/>
+	   </condition>
+	  <condition property="pdfmanual.uptodate">
+	      <isset property="docs.uptodate"/>
+	   </condition>
+	  <condition property="apidoc.uptodate">
+	      <isset property="docs.uptodate"/>
+	   </condition>
+	</target>
+	
+    <target name="apiJavadoc" depends="version" unless="apidoc.uptodate">
       <javadoc access="protected" 
        author="true" 
 	    packagenames="*"
@@ -1104,8 +1129,6 @@
 		</target>
 
     <target name="annotationJavadoc">
-       <delete dir="${annotationDoc.dir}"/>
-       <mkdir dir="${annotationDoc.dir}"/>
       <javadoc access="public" 
        classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-1.6.1.jar:lib/jsr305.jar:lib/AppleJavaExtensions.jar"
         destdir="${annotationDoc.dir}" 
