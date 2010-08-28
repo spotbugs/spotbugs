@@ -32,6 +32,7 @@ import java.util.Set;
 import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -456,7 +457,7 @@ public class FindBugsWorker {
 
 		// get the default location => relative to wsp
 		IPath defaultOutputLocation = ResourceUtils.relativeToAbsolute(javaProject.getOutputLocation());
-
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		// path to the project without project name itself
 		IClasspathEntry entries[] = javaProject.getResolvedClasspath(true);
 		for (int i = 0; i < entries.length; i++) {
@@ -464,6 +465,12 @@ public class FindBugsWorker {
 			if (classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
 				IPath outputLocation = ResourceUtils.getOutputLocation(classpathEntry,
 						defaultOutputLocation);
+				IResource resource = root.findMember(classpathEntry.getPath());
+				// patch from 2891041: do not analyze derived "source" folders
+				// because they probably contain auto-generated classes
+				if (resource != null && resource.isDerived()) {
+					continue;
+				}
 				// TODO not clear if it is absolute in workspace or in global FS
 				IPath srcLocation = ResourceUtils.relativeToAbsolute(classpathEntry.getPath());
 				srcToOutputMap.put(srcLocation, outputLocation);
