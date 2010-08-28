@@ -37,8 +37,8 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.Lookup;
-import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -159,8 +159,9 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 							bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(
 							        classContext.getJavaClass(), method)
 							        .addString("Calling wait or notify on a util.concurrent object that supports await")
-							        .addCalledMethod(cpg, iv).addSourceLine(classContext,
-							        method, location));
+							        .addCalledMethod(cpg, iv)
+							        .addType(classDescriptor).describe(TypeAnnotation.FOUND_ROLE)
+							        .addSourceLine(classContext, method, location));
 
 					} catch (CheckedAnalysisException e) {
 						AnalysisContext.logError("Coult not get Type dataflow", e);

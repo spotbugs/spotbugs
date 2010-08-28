@@ -631,7 +631,8 @@ public class SerializableIdiom extends OpcodeStackDetector
 							.addClass(getThisClass().getClassName()));
 						else if (isSerializable < 0.9) fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
 							.addClass(getThisClass().getClassName())
-							.addField(getDottedClassName(), obj.getName(), fieldSig, false));
+							.addField(getDottedClassName(), obj.getName(), fieldSig, false)
+							.addType(fieldSig).describe("TYPE_FOUND"));
 				} else if (!isGUIClass && !isEjbImplClass && obj.getName().equals("this$0"))
 					fieldWarningList.add(new BugInstance(this, "SE_INNER_CLASS",
 							implementsSerializableDirectly ? NORMAL_PRIORITY : LOW_PRIORITY)
