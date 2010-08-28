@@ -208,6 +208,14 @@
                  menubarPath="findbugs/save">
            </action>
            <action
+                 class="de.tobject.findbugs.actions.OpenXMLResultsAction"
+                 enablesFor="1"
+                 icon="platform:/plugin/org.eclipse.ui/icons/full/obj16/file_obj.gif"
+                 id="de.tobject.findbugs.openXml"
+                 label="Open Analysis Results in Editor"
+                 menubarPath="findbugs/save">
+           </action>
+           <action
                  class="de.tobject.findbugs.actions.SaveXmlAction"
                  enablesFor="1"
                  icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/saveas_edit.gif"
