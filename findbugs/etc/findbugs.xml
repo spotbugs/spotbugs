@@ -1037,7 +1037,7 @@
           <BugPattern abbrev="NP" type="BC_NULL_INSTANCEOF" category="CORRECTNESS" deprecated="true"
                     experimental="true"/>
           <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
-          <BugPattern abbrev="BC" type="DMI_RANDOM_USED_ONLY_ONCE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="DMI" type="DMI_RANDOM_USED_ONLY_ONCE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="DMI" type="DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="BC" type="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS"

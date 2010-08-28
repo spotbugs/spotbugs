@@ -7885,8 +7885,8 @@ for some collections, might throw a <code>ConcurrentModificationException</code>
   </BugPattern>
 
 <BugPattern type="STCAL_STATIC_CALENDAR_INSTANCE">
-<ShortDescription>Static Calendar</ShortDescription>
-<LongDescription>Found static field of type java.util.Calendar in {1}</LongDescription>
+<ShortDescription>Static Calendar field</ShortDescription>
+<LongDescription>{1} is static field of type java.util.Calendar, which isn't thread safe</LongDescription>
 <Details>
 <![CDATA[
 <p>Even though the JavaDoc does not contain a hint about it, Calendars are inherently unsafe for multihtreaded use. 
@@ -7918,7 +7918,7 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
 
 <BugPattern type="STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE">
 <ShortDescription>Static DateFormat</ShortDescription>
-<LongDescription>Found static field of type java.text.DateFormat in {1}</LongDescription>
+<LongDescription>{1} is a static field of type java.text.DateFormat, which isn't thread safe</LongDescription>
 <Details>
 <![CDATA[
 <p>As the JavaDoc states, DateFormats are inherently unsafe for multithreaded use. 
