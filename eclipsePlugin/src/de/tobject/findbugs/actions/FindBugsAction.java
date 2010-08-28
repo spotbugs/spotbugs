@@ -25,6 +25,8 @@ import java.util.Map;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -32,6 +34,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
@@ -97,23 +100,34 @@ public class FindBugsAction implements IObjectActionDelegate {
 	}
 
 	public void run(final IAction action) {
-		if (!selection.isEmpty()) {
-			if (selection instanceof IStructuredSelection) {
-				IStructuredSelection sSelection = (IStructuredSelection) selection;
+		if (selection.isEmpty()) {
+			return;
+		}
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceDescription description = workspace.getDescription();
+		if (!description.isAutoBuilding() && getClass().equals(FindBugsAction.class)) {
+			boolean confirm = MessageDialog.openConfirm(null,
+				"Project -> 'Build Automatically' disabled",
+				"You are going to run FindBugs analysis on a not compiled or partially compiled project.\n\n" +
+				"To get reliable analysis results, you should make sure that project is compiled first.\n\n" +
+				"Continue with FindBugs analysis?");
+			if(!confirm) {
+				return;
+			}
+		}
 
-				if (selection.isEmpty()) {
-					return;
-				}
-				dialogAlreadyShown = false;
+		if (selection instanceof IStructuredSelection) {
+			IStructuredSelection sSelection = (IStructuredSelection) selection;
 
-				Map<IProject, List<WorkItem>> projectMap =
-					ResourceUtils.getResourcesPerProject(sSelection);
+			dialogAlreadyShown = false;
 
-				jobsRunning = projectMap.size();
+			Map<IProject, List<WorkItem>> projectMap =
+				ResourceUtils.getResourcesPerProject(sSelection);
 
-				for(Map.Entry<IProject, List<WorkItem>> e : projectMap.entrySet()) {
-					work(e.getKey(), e.getValue());
-				}
+			jobsRunning = projectMap.size();
+
+			for(Map.Entry<IProject, List<WorkItem>> e : projectMap.entrySet()) {
+				work(e.getKey(), e.getValue());
 			}
 		}
 	}
