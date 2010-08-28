@@ -347,12 +347,6 @@ public class Plugin {
 		return bugRanker;
 	}
 
-	public int rankBug(BugInstance bug) {
-		if (bugRanker == null)
-			return 20;
-		return bugRanker.rankBug(bug);
-
-	}
 	
 	void addBugReporterPlugin(BugReporterPlugin filter) {
 		filterPlugins.put(filter.getId(), filter);

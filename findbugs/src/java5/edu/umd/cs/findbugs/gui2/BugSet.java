@@ -221,16 +221,24 @@ public class BugSet implements Iterable<BugLeafNode>{
 			
 			public int compare(BugLeafNode one, BugLeafNode two)
 			{
+				if (one == two)
+					return 0;
+				int result;
 				for (Sortables i : order)
 				{
-					int result = i.getBugLeafNodeComparator().compare(one, two);
+					 result = i.getBugLeafNodeComparator().compare(one, two);
 					if (result != 0)
 						return result;
 				}
-				SourceLineAnnotation oneSource = one.getBug().getPrimarySourceLineAnnotation();
-				SourceLineAnnotation twoSource = one.getBug().getPrimarySourceLineAnnotation();
+				BugInstance bugOne = one.getBug();
+				BugInstance bugTwo = two.getBug();
+				result = bugOne.getPrimaryClass().getClassName().compareTo(bugTwo.getPrimaryClass().getClassName());
+			    if (result != 0)
+					 return result;
+				SourceLineAnnotation oneSource = bugOne.getPrimarySourceLineAnnotation();
+				SourceLineAnnotation twoSource = bugTwo.getPrimarySourceLineAnnotation();
 				if (oneSource != null && twoSource != null) {
-					int result = oneSource.getClassName().compareTo(twoSource.getClassName());
+					 result = oneSource.getClassName().compareTo(twoSource.getClassName());
 					if (result != 0)
 						return result;
 					result = compare(oneSource.getStartLine(), twoSource.getStartLine());
@@ -251,7 +259,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 					return 1;
 				if (twoSource != null)
 					return -1;
-				return one.getBug().getPrimaryClass().getClassName().compareTo(two.getBug().getPrimaryClass().getClassName());
+				return 0;
 			}
 		});
 	}

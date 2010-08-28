@@ -34,7 +34,7 @@ public class SortableStringComparator implements Comparator<String> {
 		mySortable = theSortable;
 	}
 	public int compare(String one, String two) {
-		return mySortable.compare(new SortableValue(mySortable, one), new SortableValue(mySortable, two));
+		return mySortable.compare(one,  two);
 	}
 
 }
