@@ -54,7 +54,8 @@ extends OpcodeStackDetector {
 			  Object topValue = top.getConstant();
 			  if (topValue instanceof String) {
 				  String replacementString = (String) topValue;
-				  if (replacementString.toLowerCase().equals("x") || replacementString.equals("-") || replacementString.equals("*") || replacementString.equals("\\*")) 
+				  if (replacementString.toLowerCase().equals("x") || replacementString.equals("-") 
+						  || replacementString.equals("*") || replacementString.equals(" ") || replacementString.equals("\\*")) 
 					  return;
 				  if (replacementString.length() == 1 && getMethodName().toLowerCase().indexOf("pass") >= 0)
 					  priority = LOW_PRIORITY;
