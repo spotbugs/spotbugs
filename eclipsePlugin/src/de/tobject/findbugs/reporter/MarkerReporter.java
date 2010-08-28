@@ -107,10 +107,19 @@ public class MarkerReporter implements IWorkspaceRunnable {
 		if (bugId == null) {
 			return null;
 		}
+		Object line = attributes.get(FindBugsMarker.PRIMARY_LINE);
 		for (IMarker marker : existingMarkers) {
 			Object idAttribute = marker.getAttribute(FindBugsMarker.UNIQUE_ID);
 			if (bugId.equals(idAttribute)) {
-				return marker;
+				// Fix for issue 3054146: we filter too much. Different bugs
+				// from the same method and same type have equal hashes, as they
+				// do not include source line info to the hash calculation
+				// So we must compare source lines to to avoid too much filtering.
+				Object primaryLine = marker.getAttribute(FindBugsMarker.PRIMARY_LINE);
+				if ((line == null && primaryLine == null)
+						|| (line != null && line.equals(primaryLine))) {
+					return marker;
+				}
 			}
 		}
 		return null;
