@@ -444,7 +444,7 @@
                     reports="LI_LAZY_INIT_STATIC,LI_LAZY_INIT_UPDATE_STATIC" disabled="false"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter" speed="moderate"
                     requirejre="1.5"
-                    reports="JLM_JSR166_LOCK_MONITORENTER,JLM_JSR166_UTILCONCURRENT_MONITORENTER"/>
+                    reports="JLM_JSR166_LOCK_MONITORENTER,JLM_JSR166_UTILCONCURRENT_MONITORENTER,JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindUncalledPrivateMethods" speed="fast"
                     reports="UPM_UNCALLED_PRIVATE_METHOD"/>
           <Detector class="edu.umd.cs.findbugs.detect.UncallableMethodOfAnonymousClass" speed="fast"
@@ -974,6 +974,8 @@
           <BugPattern abbrev="LI" type="LI_LAZY_INIT_UPDATE_STATIC" category="MT_CORRECTNESS"
                     cweid="543"/>
           <BugPattern abbrev="JLM" type="JLM_JSR166_UTILCONCURRENT_MONITORENTER"
+                    category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="JLM" type="JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT"
                     category="MT_CORRECTNESS"/>
           <BugPattern abbrev="JLM" type="JLM_JSR166_LOCK_MONITORENTER" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="UPM" type="UPM_UNCALLED_PRIVATE_METHOD" category="PERFORMANCE"/>

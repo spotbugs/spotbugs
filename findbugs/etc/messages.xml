@@ -6135,6 +6135,25 @@ than using the <code>synchronized (...)</code> construct.
 ]]>
 </Details>
   </BugPattern>
+  <BugPattern type="JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT">
+    <ShortDescription>Using monitor style wait methods on util.concurrent abstraction</ShortDescription>
+    <LongDescription>Calling {2.name} rather than {3.name} in {1}</LongDescription>
+<Details>
+<![CDATA[
+<p> This method calls 
+<code>wait()</code>,
+<code>notify()</code> or
+<code>notifyAll()()</code>
+on an object that also provides an 
+<code>await()</code>, 
+<code>signal()</code>,
+<code>signalAll()</code> method (such as util.concurrent Condition objects).
+This probably isn't what you want, and even if you do want it, you should consider changing
+your design, as other developers will find it exceptionally confusing.
+</p>
+]]>
+</Details>
+  </BugPattern>
 
   <BugPattern type="JLM_JSR166_UTILCONCURRENT_MONITORENTER">
     <ShortDescription>Synchronization performed on util.concurrent instance</ShortDescription>

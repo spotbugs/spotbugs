@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.Lookup;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -154,12 +155,29 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 						if (!classDescriptor.getClassName().startsWith("java/util/concurrent"))
 							continue;
 						XClass c = Lookup.getXClass(classDescriptor);
-						XMethod m = c.findMethod("await", "()V", false);
+						XMethod m;
+						int priority = NORMAL_PRIORITY;
+						if (methodName.equals("wait")) {
+							m = c.findMethod("await", "()V", false);
+							priority = HIGH_PRIORITY;
+						} else if (methodName.equals("notify")) {
+								m = c.findMethod("signal", "()V", false);
+								if (m == null)
+									m =  c.findMethod("countDown", "()V", false);
+						} else if (methodName.equals("notifyAll")) {
+								m = c.findMethod("signalAll", "()V", false);
+								if (m == null)
+									m =  c.findMethod("countDown", "()V", false);
+						}
+						else
+							throw new IllegalStateException("Unexpected methodName: " + methodName);
+						
 						if (m != null && m.isPublic() && c.isPublic())
-							bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(
+							
+							bugReporter.reportBug(new BugInstance(this, "JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT", priority).addClassAndMethod(
 							        classContext.getJavaClass(), method)
-							        .addString("Calling wait or notify on a util.concurrent object that supports await")
 							        .addCalledMethod(cpg, iv)
+							        .addMethod(m).describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET)
 							        .addType(classDescriptor).describe(TypeAnnotation.FOUND_ROLE)
 							        .addSourceLine(classContext, method, location));
 
