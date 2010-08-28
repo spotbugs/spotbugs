@@ -23,15 +23,12 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.Comparator;
-import java.util.Map;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.objectweb.asm.commons.SerialVersionUIDAdder;
 
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -258,10 +255,10 @@ public class Profiler implements XMLWriteable {
 			long v1 = profiler.getProfile(c1).totalTime.get();
 			long v2 = profiler.getProfile(c2).totalTime.get();
 			if (v1 < v2) {
-				return -1;
+				return 1;
 			}
 			if (v1 > v2) {
-				return 1;
+				return -1;
 			}
 			return super.compare(c1, c2);
 		}
@@ -279,10 +276,10 @@ public class Profiler implements XMLWriteable {
 			long time1 = profile1.totalTime.get() / profile1.totalCalls.get();
 			long time2 = profile2.totalTime.get() / profile2.totalCalls.get();			
 			if (time1 < time2) {
-				return -1;
+				return 1;
 			}
 			if (time1 > time2) {
-				return 1;
+				return -1;
 			}
 			return super.compare(c1, c2);
 		}
@@ -300,10 +297,10 @@ public class Profiler implements XMLWriteable {
 			int calls1 = profile1.totalCalls.get();
 			int calls2 = profile2.totalCalls.get();			
 			if (calls1 < calls2) {
-				return -1;
+				return 1;
 			}
 			if (calls1 > calls2) {
-				return 1;
+				return -1;
 			}
 			return super.compare(c1, c2);
 		}
@@ -388,12 +385,21 @@ public class Profiler implements XMLWriteable {
 		xmlOutput.stopTag(false);
 		TreeSet<Class<?>> treeSet = new TreeSet<Class<?>>(new TotalTimeComparator(this));
 		treeSet.addAll(profile.keySet());
+		long totalTime = 0;
+		for(Profile p : profile.values())
+			totalTime += p.totalTime.get();
+		
+		long accumulatedTime = 0;
+		
 
 		for (Class<?> c : treeSet) {
 			Profile p = getProfile(c);
 			if (p == null)
 				continue;
 			p.writeXML(xmlOutput);
+			accumulatedTime += p.totalTime.get();
+			if (accumulatedTime > totalTime/2)
+				break;
 		}
 		xmlOutput.closeTag("FindBugsProfile");
 	}
