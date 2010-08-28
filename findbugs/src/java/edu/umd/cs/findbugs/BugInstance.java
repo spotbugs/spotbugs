@@ -2275,7 +2275,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 		if ( primeMethod != null && (showContext || !primeMethod.getDescription().equals(MethodAnnotation.DEFAULT_ROLE))) 
 			result.add(primeMethod);
 		
-		
+		optionalAdd(result, primeField);
 		
 		String fieldClass = "";
 		String methodClass = "";
