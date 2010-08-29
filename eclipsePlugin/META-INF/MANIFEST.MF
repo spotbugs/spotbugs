@@ -45,9 +45,12 @@ Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: de.tobject.findbugs,
  de.tobject.findbugs.actions,
+ de.tobject.findbugs.adapters,
  de.tobject.findbugs.builder,
  de.tobject.findbugs.decorators,
+ de.tobject.findbugs.io,
  de.tobject.findbugs.marker,
+ de.tobject.findbugs.nature,
  de.tobject.findbugs.preferences,
  de.tobject.findbugs.properties,
  de.tobject.findbugs.reporter,
