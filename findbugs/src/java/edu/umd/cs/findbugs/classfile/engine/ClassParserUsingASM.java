@@ -160,6 +160,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 					if (cBuilder instanceof ClassInfo.Builder) {
 						ClassDescriptor outerClassDescriptor = DescriptorFactory.createClassDescriptor(outerName);
 						((ClassInfo.Builder)cBuilder).setImmediateEnclosingClass(outerClassDescriptor);
+						((ClassInfo.Builder)cBuilder).setAccessFlags(access);
 					}
 
 				}

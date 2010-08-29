@@ -38,8 +38,10 @@ import edu.umd.cs.findbugs.ba.InnerClassAccess;
 import edu.umd.cs.findbugs.ba.InnerClassAccessMap;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
@@ -860,6 +862,18 @@ public class TypeQualifierApplications {
 		if (xmethod.isPrivate()) 
 			stopAtMethodScope = true;
 		
+		boolean stopAtClassScope = false;
+		
+		if ( !xmethod.isPublic() && !xmethod.isProtected() && 
+				(xmethod.isStatic() || xmethod.getName().equals("<init>"))) {
+			try {
+	            XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, xmethod.getClassDescriptor());
+	            stopAtClassScope = xclass.isPrivate();
+            } catch (CheckedAnalysisException e) {
+            	AnalysisContext.logError("Problem resolving class for " + xmethod);
+            }
+		}
+		
 		AnnotatedObject o = xmethod;
 		while (true) {
 			o =  o.getContainingScope();
@@ -884,6 +898,8 @@ public class TypeQualifierApplications {
 					System.out.println("Found default of " + tqa + " @ " + o);
 				return tqa;
 			}
+			if (stopAtClassScope && o instanceof XClass)
+				return null;
 		}
 
 	}
