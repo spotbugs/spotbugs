@@ -123,8 +123,11 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 
 	@Override
 	public boolean prescreen(Method method, ClassContext classContext) {
+		if (method.getName().equals("<clinit>"))
+			return false;
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
 		if (bytecodeSet == null) return false;
+
 		// The pattern requires a get/put pair accessing the same field.
 		boolean hasGetStatic = bytecodeSet.get(Constants.GETSTATIC);
 		boolean hasPutStatic = bytecodeSet.get(Constants.PUTSTATIC);
