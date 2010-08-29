@@ -18,10 +18,22 @@
  */
 package de.tobject.findbugs.preferences;
 
-import static de.tobject.findbugs.preferences.FindBugsConstants.*;
+import static de.tobject.findbugs.preferences.FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH;
+import static de.tobject.findbugs.preferences.FindBugsConstants.DISABLED_CATEGORIES;
+import static de.tobject.findbugs.preferences.FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD;
+import static de.tobject.findbugs.preferences.FindBugsConstants.EXPORT_SORT_ORDER;
+import static de.tobject.findbugs.preferences.FindBugsConstants.ORDER_BY_NAME;
+import static de.tobject.findbugs.preferences.FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY;
+import static de.tobject.findbugs.preferences.FindBugsConstants.PRIO_LOW_MARKER_SEVERITY;
+import static de.tobject.findbugs.preferences.FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY;
+import static de.tobject.findbugs.preferences.FindBugsConstants.RUN_ANALYSIS_AUTOMATICALLY;
+import static de.tobject.findbugs.preferences.FindBugsConstants.RUN_ANALYSIS_ON_FULL_BUILD;
+import static de.tobject.findbugs.preferences.FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS;
+import static de.tobject.findbugs.preferences.FindBugsConstants.decodeIds;
 
 import java.util.Set;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
@@ -45,6 +57,9 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
         store.setDefault(RUN_ANALYSIS_ON_FULL_BUILD, false);
         store.setDefault(ASK_ABOUT_PERSPECTIVE_SWITCH, true);
         store.setDefault(SWITCH_PERSPECTIVE_AFTER_ANALYSIS, true);
+        store.setDefault(PRIO_LOW_MARKER_SEVERITY, IMarker.SEVERITY_WARNING);
+        store.setDefault(PRIO_NORMAL_MARKER_SEVERITY, IMarker.SEVERITY_WARNING);
+        store.setDefault(PRIO_HIGH_MARKER_SEVERITY, IMarker.SEVERITY_WARNING);
         // disabled to be able to distinguish between default and current value
         // store.setDefault(PROJECT_PROPS_DISABLED, true);
 	}
@@ -77,6 +92,9 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
 		store.setToDefault(RUN_ANALYSIS_ON_FULL_BUILD);
 		store.setToDefault(ASK_ABOUT_PERSPECTIVE_SWITCH);
 		store.setToDefault(SWITCH_PERSPECTIVE_AFTER_ANALYSIS);
+		store.setToDefault(PRIO_LOW_MARKER_SEVERITY);
+		store.setToDefault(PRIO_NORMAL_MARKER_SEVERITY);
+		store.setToDefault(PRIO_HIGH_MARKER_SEVERITY);
 	}
 
 }

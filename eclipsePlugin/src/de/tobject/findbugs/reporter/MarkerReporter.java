@@ -31,12 +31,12 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
@@ -47,7 +47,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  */
 public class MarkerReporter implements IWorkspaceRunnable {
 	private final BugCollection collection;
-	private static final boolean EXPERIMENTAL_BUGS = false;
+
 	private final List<MarkerParameter> mpList;
 	private final IProject project;
 
@@ -62,25 +62,31 @@ public class MarkerReporter implements IWorkspaceRunnable {
 	public void run(IProgressMonitor monitor) throws CoreException {
 		UserPreferences userPrefs = FindbugsPlugin.getUserPreferences(project);
 		ProjectFilterSettings filterSettings = userPrefs.getFilterSettings();
+		IPreferenceStore store = FindbugsPlugin.getPluginPreferences(project);
 		for (MarkerParameter mp : mpList) {
+			if(mp.markerType == null) {
+				continue;
+			}
 			if(!MarkerUtil.shouldDisplayWarning(mp.bug, filterSettings)){
 				continue;
 			}
-			String markerType = getMarkerType(mp.bug);
-			if(markerType == null) {
-				continue;
-			}
+			updateMarkerSeverity(store, mp);
 			// This triggers resource update on IResourceChangeListener's (BugTreeView)
-			addMarker(markerType, mp);
+			addMarker(mp);
 		}
-
 	}
 
-	private void addMarker(String markerType, MarkerParameter mp) throws CoreException {
+	private void updateMarkerSeverity(IPreferenceStore store, MarkerParameter mp) {
+		String markerSeverityStr = store.getString(mp.markerType);
+		mp.markerSeverity = MarkerSeverity.get(markerSeverityStr).value;
+	}
+
+	private void addMarker(MarkerParameter mp) throws CoreException {
 		IResource markerTarget = mp.resource.getMarkerTarget();
-		IMarker[] existingMarkers = markerTarget.findMarkers(markerType,
+		IMarker[] existingMarkers = markerTarget.findMarkers(mp.markerType,
 				true, IResource.DEPTH_ZERO);
 		Map<String, Object> attributes = createMarkerAttributes(mp);
+
 
 		// XXX Workaround for bug 2785257 (has to be solved better)
 		// see http://sourceforge.net/tracker/?func=detail&atid=614693&aid=2785257&group_id=96405
@@ -96,7 +102,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 				oldMarker.delete();
 			}
 		}
-		IMarker newMarker = markerTarget.createMarker(markerType);
+		IMarker newMarker = markerTarget.createMarker(mp.markerType);
 		setAttributes(newMarker, attributes);
 	}
 
@@ -123,39 +129,6 @@ public class MarkerReporter implements IWorkspaceRunnable {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * @param bug
-	 * @return null if marker shouldn't be generated
-	 */
-	private String getMarkerType(BugInstance bug) {
-		String markerType;
-		switch (bug.getPriority()) {
-		case Priorities.HIGH_PRIORITY:
-			markerType = FindBugsMarker.NAME_HIGH;
-			break;
-		case Priorities.NORMAL_PRIORITY:
-			markerType = FindBugsMarker.NAME_NORMAL;
-			break;
-		case Priorities.LOW_PRIORITY:
-			markerType = FindBugsMarker.NAME_LOW;
-			break;
-		case Priorities.EXP_PRIORITY:
-			if (!EXPERIMENTAL_BUGS) {
-				return null;
-			}
-			markerType = FindBugsMarker.NAME_EXPERIMENTAL;
-			break;
-		case Priorities.IGNORE_PRIORITY:
-			FindbugsPlugin.getDefault().logError("Bug with ignore priority ");
-			return null;
-		default:
-			FindbugsPlugin.getDefault().logError(
-					"Bug with unknown priority " + bug.getPriority());
-			return null;
-		}
-		return markerType;
 	}
 
 	/**
@@ -190,7 +163,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 					"Error generating msg for " + mp.bug.getType());
 			attributes.put(IMarker.MESSAGE, "??? " + mp.bug.getType());
 		}
-		attributes.put(IMarker.SEVERITY, Integer.valueOf(IMarker.SEVERITY_WARNING));
+		attributes.put(IMarker.SEVERITY, mp.markerSeverity);
 		attributes.put(FindBugsMarker.PRIORITY_TYPE, mp.bug.getPriorityTypeString());
 
 		switch (mp.bug.getPriority()) {

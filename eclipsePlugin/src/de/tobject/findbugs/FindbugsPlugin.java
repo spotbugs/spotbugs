@@ -51,6 +51,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -677,7 +678,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Get the preferences for given project. This method can return workspace preferences
+	 * Get the FindBugs core preferences for given project. This method can return workspace preferences
 	 * if project preferences are not created yet or they are disabled.
 	 *
 	 * @param project
@@ -685,9 +686,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @param forceRead
 	 *            true to enforce reading properties from disk
 	 *
-	 * @return the preferences for the project or user prefs from workspace
+	 * @return the preferences for the project or prefs from workspace
 	 */
-	public static UserPreferences getUserPreferences(IProject project, boolean forceRead) {
+	public static UserPreferences getCorePreferences(IProject project, boolean forceRead) {
 		if(project == null || !isProjectSettingsEnabled(project)){
 			// read workspace (user) settings from instance area
 			return getWorkspacePreferences();
@@ -695,6 +696,28 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
 		// use project settings
 		return getProjectPreferences(project, forceRead);
+	}
+
+	/**
+	 * Get the Eclipse plugin preferences for given project. This method can return
+	 * workspace preferences if project preferences are not created yet or they are
+	 * disabled.
+	 *
+	 * @param project
+	 *            the project (if null, workspace settings are used)
+	 *
+	 * @return the preferences for the project or prefs from workspace
+	 */
+	public static IPreferenceStore getPluginPreferences(IProject project) {
+		if(project == null || !isProjectSettingsEnabled(project)){
+			// read workspace (user) settings from instance area
+			return new ScopedPreferenceStore(new InstanceScope(),
+					FindbugsPlugin.PLUGIN_ID);
+		}
+
+		// use project settings
+		return  new ScopedPreferenceStore(new ProjectScope(project),
+				FindbugsPlugin.PLUGIN_ID);
 	}
 
 	/**
@@ -751,7 +774,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @return the UserPreferences for the project
 	 */
 	public static UserPreferences getUserPreferences(IProject project) {
-		return getUserPreferences(project, false);
+		return getCorePreferences(project, false);
 	}
 
 

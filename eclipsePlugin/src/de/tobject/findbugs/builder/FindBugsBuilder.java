@@ -106,7 +106,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 		if(incremental) {
 			IResourceDelta resourceDelta = getDelta(project);
 			boolean configChanged = !isConfigUnchanged(resourceDelta);
-			boolean fullBuildEnabled = FindbugsPlugin.getUserPreferences(getProject(),
+			boolean fullBuildEnabled = FindbugsPlugin.getCorePreferences(getProject(),
 					configChanged).isRunAtFullBuild();
 			if (configChanged && fullBuildEnabled) {
 				files = new ArrayList<WorkItem>();

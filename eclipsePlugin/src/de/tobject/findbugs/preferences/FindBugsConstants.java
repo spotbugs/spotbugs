@@ -21,6 +21,8 @@ package de.tobject.findbugs.preferences;
 import java.util.Set;
 import java.util.TreeSet;
 
+import de.tobject.findbugs.marker.FindBugsMarker;
+
 /**
  * @author Andrei
  */
@@ -30,6 +32,15 @@ public final class FindBugsConstants {
 		// never call this
 	}
 
+	/** marker severity to use for bugs with low prio */
+	public final static String PRIO_LOW_MARKER_SEVERITY = FindBugsMarker.NAME_LOW;
+
+	/** marker severity to use for bugs with normal prio */
+	public final static String PRIO_NORMAL_MARKER_SEVERITY = FindBugsMarker.NAME_NORMAL;
+
+	/** marker severity to use for bugs with high prio */
+	public final static String PRIO_HIGH_MARKER_SEVERITY = FindBugsMarker.NAME_HIGH;
+
 	/** comma separated list of bug patterns which should be omitted on export operation */
 	public final static String LAST_USED_EXPORT_FILTER = "lastUsedExportFilter";
 
@@ -37,6 +48,7 @@ public final class FindBugsConstants {
 	public final static String EXPORT_SORT_ORDER = "exportSortOrder";
 
 	public final static String ORDER_BY_NAME = "byName";
+
 
 	public final static String ORDER_BY_OVERALL_BUGS_COUNT = "byOverallBugsCount";
 

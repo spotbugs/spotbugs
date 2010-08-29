@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2008, Andrei Loskutov
+ * Copyright (C) 2010, Andrei Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -43,6 +44,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.navigator.CommonNavigator;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.preferences.FindBugsConstants;
+import de.tobject.findbugs.reporter.MarkerSeverity;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -64,13 +67,13 @@ public class ReportConfigurationTab extends Composite {
 	private Combo cloudCombo;
 	private Label cloudLabel;
 	private List<CloudPlugin> clouds;
-	private int defaultCloudIdx;
+	private Combo normalPrioCombo;
+	private MarkerSeverity initialNormalPrio;
+	private Combo highPrioCombo;
+	private MarkerSeverity initialHighPrio;
+	private Combo lowPrioCombo;
+	private MarkerSeverity initialLowPrio;
 
-
-	/**
-	 * @param parent
-	 * @param style
-	 */
 	public ReportConfigurationTab(TabFolder parent, FindbugsPropertyPage page, int style) {
 		super(parent, style);
 		this.propertyPage = page;
@@ -81,12 +84,62 @@ public class ReportConfigurationTab extends Composite {
 		tabDetector.setControl(this);
 		tabDetector.setToolTipText("Configure bugs reported to the UI");
 
-		createRankGroup(this);
-		createPriorityGroup(this);
-		createBugCategoriesGroup(this, page.getProject());
+		Composite rankAndPrioGroup = new Composite(this, SWT.NONE);
+		rankAndPrioGroup.setLayout(new GridLayout(2, false));
+
+		createRankGroup(rankAndPrioGroup);
+		createPriorityGroup(rankAndPrioGroup);
+
+		createBugCategoriesGroup(rankAndPrioGroup, page.getProject());
+		createBugSeverityGroup(rankAndPrioGroup);
 	}
 
-	private void createPriorityGroup(ReportConfigurationTab parent) {
+	private void createBugSeverityGroup(Composite parent) {
+		IPreferenceStore store = propertyPage.getPreferenceStore();
+		MarkerSeverity[] markerSeverities = MarkerSeverity.values();
+
+		Group prioGroup = new Group(parent, SWT.NONE);
+		prioGroup.setLayout(new GridLayout(2, false));
+		prioGroup.setText("Mark bugs with ... priority as:");
+		prioGroup.setLayoutData(new GridData(SWT.BEGINNING, SWT.TOP, true, true));
+
+
+		Label bugSeverityLabel = new Label(prioGroup, SWT.NONE);
+		bugSeverityLabel.setText("High Priority:");
+
+		highPrioCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+		for (MarkerSeverity markerSeverity : markerSeverities) {
+			highPrioCombo.add(markerSeverity.name());
+		}
+		initialHighPrio = MarkerSeverity.get(
+				store.getString(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY));
+		highPrioCombo.setText(initialHighPrio.name());
+
+		bugSeverityLabel = new Label(prioGroup, SWT.NONE);
+		bugSeverityLabel.setText("Medium Priority:");
+
+		normalPrioCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+		for (MarkerSeverity markerSeverity : markerSeverities) {
+			normalPrioCombo.add(markerSeverity.name());
+		}
+		initialNormalPrio = MarkerSeverity.get(
+				store.getString(FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY));
+		normalPrioCombo.setText(initialNormalPrio.name());
+
+		bugSeverityLabel = new Label(prioGroup, SWT.NONE);
+		bugSeverityLabel.setText("Low Priority:");
+
+		lowPrioCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+		for (MarkerSeverity markerSeverity : markerSeverities) {
+			lowPrioCombo.add(markerSeverity.name());
+		}
+		initialLowPrio = MarkerSeverity.get(
+				store.getString(FindBugsConstants.PRIO_LOW_MARKER_SEVERITY));
+		lowPrioCombo.setText(initialLowPrio.name());
+
+	}
+
+	private void createPriorityGroup(Composite parent) {
 		Composite prioGroup = new Composite(parent, SWT.NONE);
 		prioGroup.setLayout(new GridLayout(2, false));
 
@@ -116,7 +169,7 @@ public class ReportConfigurationTab extends Composite {
 		String cloudid = getCloudIdFromCollection();
 
 		clouds = new ArrayList<CloudPlugin>();
-		defaultCloudIdx = populateCloudsCombo(cloudid);
+		populateCloudsCombo(cloudid);
 	}
 
 	private int populateCloudsCombo(String cloudid) {
@@ -167,7 +220,7 @@ public class ReportConfigurationTab extends Composite {
 		if (eclipseProj == null) {
 			cloudLabel.setEnabled(false);
 			cloudCombo.setEnabled(false);
-			cloudLabel.setText(txt + " (only configurable at the project-specific level)");
+			cloudLabel.setText(txt + "\n(only configurable at the project level)");
 		} else {
 			cloudLabel.setEnabled(true);
 			cloudCombo.setEnabled(true);
@@ -177,7 +230,7 @@ public class ReportConfigurationTab extends Composite {
 	}
 
 
-	private void createRankGroup(ReportConfigurationTab parent) {
+	private void createRankGroup(Composite parent) {
 		Composite prioGroup = new Composite(parent, SWT.NONE);
 		prioGroup.setLayout(new GridLayout(2, false));
 
@@ -246,6 +299,7 @@ public class ReportConfigurationTab extends Composite {
 		Group checkBoxGroup = new Group(parent, SWT.SHADOW_ETCHED_OUT);
 		checkBoxGroup.setText(getMessage("property.categoriesGroup"));
 		checkBoxGroup.setLayout(new GridLayout(1, true));
+		checkBoxGroup.setLayoutData(new GridData(SWT.BEGINNING, SWT.TOP, true, true));
 
 		List<String> bugCategoryList = new LinkedList<String>(I18N.instance().getBugCategories());
 		chkEnableBugCategoryList = new LinkedList<Button>();
@@ -289,9 +343,6 @@ public class ReportConfigurationTab extends Composite {
 		propertyPage.getVisibleDetectors().clear();
 	}
 
-	/**
-	 * @return
-	 */
 	protected UserPreferences getCurrentProps() {
 		return propertyPage.getCurrentUserPreferences();
 	}
@@ -299,6 +350,9 @@ public class ReportConfigurationTab extends Composite {
 	@Override
 	public void setEnabled(boolean enabled) {
 		minPriorityCombo.setEnabled(enabled);
+		lowPrioCombo.setEnabled(enabled);
+		normalPrioCombo.setEnabled(enabled);
+		highPrioCombo.setEnabled(enabled);
 		minRankSlider.setEnabled(enabled);
 		if (enabled) {
 			enableOrDisableCloudControls();
@@ -319,7 +373,25 @@ public class ReportConfigurationTab extends Composite {
 		return minRankSlider.getSelection();
 	}
 
+	public boolean isMarkerSeveritiesChanged() {
+		IPreferenceStore store = propertyPage.getPreferenceStore();
+		String highPrio = store.getString(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY);
+		String normalPrio = store.getString(FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY);
+		String lowPrio = store.getString(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY);
+		return !initialHighPrio.name().equals(highPrio)
+				|| !initialNormalPrio.name().equals(normalPrio)
+				|| !initialLowPrio.name().equals(lowPrio);
+	}
+
 	void refreshUI(UserPreferences prefs) {
+		IPreferenceStore store = propertyPage.getPreferenceStore();
+		highPrioCombo.setText(MarkerSeverity.get(
+				store.getString(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY)).name());
+		normalPrioCombo.setText(MarkerSeverity.get(
+				store.getString(FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY)).name());
+		lowPrioCombo.setText(MarkerSeverity.get(
+				store.getString(FindBugsConstants.PRIO_LOW_MARKER_SEVERITY)).name());
+
 		ProjectFilterSettings filterSettings = prefs.getFilterSettings();
 		minRankSlider.setSelection(filterSettings.getMinRank());
 		updateRankValueLabel();
@@ -339,6 +411,16 @@ public class ReportConfigurationTab extends Composite {
 	}
 
 	public void performOk() {
+		IPreferenceStore store = propertyPage.getPreferenceStore();
+		String highPrio = highPrioCombo.getText();
+		store.setValue(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY, highPrio);
+
+		String normalPrio = normalPrioCombo.getText();
+		store.setValue(FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY, normalPrio);
+
+		String lowPrio = lowPrioCombo.getText();
+		store.setValue(FindBugsConstants.PRIO_LOW_MARKER_SEVERITY, lowPrio);
+
 		IProject eclipseProj = propertyPage.getProject();
 		if (eclipseProj == null) {
 			return;
@@ -362,6 +444,8 @@ public class ReportConfigurationTab extends Composite {
 			}
 		}
 	}
+
+
 }
 
 

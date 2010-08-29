@@ -69,9 +69,22 @@ import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
-
 /**
- * Project properties page for setting FindBugs properties.
+ * Combined workspace/project properties page for setting FindBugs properties.
+ * <p>
+ * There are two different preference files: FindBugs core preferences, saved in the
+ * "*.fbprefs" file, and Eclipse plugin preferences, saved in the
+ * "edu.umd.cs.findbugs.plugin.eclipse.prefs" file. The difference is, that FB core prefs
+ * are saved/read by the FB core API and there should go all FB engine settings and none
+ * of Eclipse related stuff.
+ * <p>
+ * To retrieve FB core preferences, one should use {@link #getOriginalUserPreferences()}
+ * and {@link #getCurrentUserPreferences()}.
+ * <p>
+ * To retrieve Eclipse plugin preferences, one should use {@link #getPreferenceStore()}.
+ * <p>
+ * In both cases project settings are only available in the context of the project
+ * properties page if the project settings are enabled, global settings are used otherwise.
  *
  * @author Andrei Loskutov
  * @author Peter Friese
@@ -113,10 +126,6 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		visibleDetectors = new HashMap<DetectorFactory, Boolean>();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
 	@Override
 	protected Control createContents(Composite parent) {
 
@@ -166,7 +175,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 	private UserPreferences loadPreferences(IProject currProject) {
 		// Get current user preferences for project
 		if(currProject == null){
-			origUserPreferences = FindbugsPlugin.getUserPreferences(null, true);
+			origUserPreferences = FindbugsPlugin.getCorePreferences(null, true);
 		} else {
 			origUserPreferences = FindbugsPlugin.getProjectPreferences(currProject, true);
 		}
@@ -174,9 +183,6 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		return currentUserPreferences;
 	}
 
-	/**
-	 * @param composite
-	 */
 	private void createConfigurationTabFolder(Composite composite) {
 		tabFolder = new TabFolder(composite, SWT.TOP);
 		GridData layoutData = new GridData(GridData.FILL_HORIZONTAL
@@ -189,9 +195,6 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		filterFilesTab = createFilterFilesTab(tabFolder);
 	}
 
-	/**
-	 * @param composite
-	 */
 	private void createDefaultsButton(Composite composite) {
 		restoreDefaultsButton = new Button(composite, SWT.NONE);
 		restoreDefaultsButton.setText(getMessage("property.restoreSettings"));
@@ -204,10 +207,6 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		});
 	}
 
-
-	/**
-	 * @param parent
-	 */
 	private void createGlobalElements(Composite parent) {
 		if(getProject() != null) {
 			createWorkspaceButtons(parent);
@@ -414,7 +413,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 	@Override
 	public boolean performOk() {
 		reportConfigurationTab.performOk();
-		
+
 		// Have user preferences for project changed?
 		// If so, write them to the user preferences file & re-run builder
 		if (!currentUserPreferences.equals(origUserPreferences)) {
@@ -436,7 +435,9 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		boolean reporterSettingsChanged = !currentUserPreferences.getFilterSettings()
 			.equals(origUserPreferences.getFilterSettings());
 
-		boolean needRedisplayMarkers = reporterSettingsChanged;
+		boolean markerSeveritiesChanged = reportConfigurationTab.isMarkerSeveritiesChanged();
+
+		boolean needRedisplayMarkers = markerSeveritiesChanged || reporterSettingsChanged;
 		if(getProject() != null) {
 			boolean builderEnabled = chkEnableFindBugs.getSelection();
 
@@ -592,15 +593,10 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		return FindbugsPlugin.getDefault().getMessage(key);
 	}
 
-	/**
-	 * @return the currentUserPreferences
-	 */
 	protected UserPreferences getCurrentUserPreferences() {
 		return currentUserPreferences;
 	}
-	/**
-	 * @return the origUserPreferences
-	 */
+
 	UserPreferences getOriginalUserPreferences() {
 		return origUserPreferences;
 	}
@@ -612,9 +608,6 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		return visibleDetectors;
 	}
 
-	/**
-	 * @return the detectorTab
-	 */
 	DetectorConfigurationTab getDetectorTab() {
 		return detectorTab;
 	}
