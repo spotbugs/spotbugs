@@ -138,7 +138,7 @@ public class PackageStats implements XMLWriteable {
 		this.packageName = packageName;
 	}
 	public PackageStats(String packageName, int numClasses, int size) {
-		this.packageName = packageName;
+		this(packageName);
 		this.numClasses = numClasses;
 		this.size = size;
 	}
@@ -151,6 +151,9 @@ public class PackageStats implements XMLWriteable {
 	}
 	public int size() {
 		return size;
+	}
+	public void setSize(int size) {
+		this.size = size;
 	}
 	public int getBugsAtPriority(int p) {
 		return nBugs[p];
@@ -187,14 +190,10 @@ public class PackageStats implements XMLWriteable {
 
 
 	public void addClass(String name, String sourceFile, boolean isInterface, int size) {
-		if (packageMembers.isEmpty()) {
-			this.size = 0;
-			this.numClasses = 0;
-		}
 		ClassStats classStats = getClassStats(name, sourceFile);
 		classStats.setInterface(isInterface);
 		classStats.setSize(size);
-		this.size += size;
+		addClass(classStats);
 	}
 
 	public void addClass(ClassStats classStats) {

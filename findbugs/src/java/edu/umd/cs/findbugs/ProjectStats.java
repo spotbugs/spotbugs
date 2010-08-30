@@ -428,7 +428,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		}
 		return stat;
 	}
-	public void putIfAbsentPackageStats(String packageName, int numClasses, int size) {
+	public void putPackageStats(String packageName, int numClasses, int size) {
 		hasPackageStats = true;
 		PackageStats stat = packageStatsMap.get(packageName);
 		if (stat == null) {
@@ -437,6 +437,12 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 			totalClassesFromPackageStats += numClasses;
 			packageStatsMap.put(packageName, stat);
 			
+		} else {
+			totalSizeFromPackageStats += size - stat.size();
+			totalClassesFromPackageStats += numClasses - stat.getNumClasses();
+			
+			stat.setNumClasses(numClasses);
+			stat.setSize(size);
 		}
 	}
 	/**

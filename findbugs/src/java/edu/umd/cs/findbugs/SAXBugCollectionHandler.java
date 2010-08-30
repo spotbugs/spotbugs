@@ -296,7 +296,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 							getRequiredAttribute(attributes, "total_types", qName));
 					int size = Integer.valueOf(
 							getRequiredAttribute(attributes, "total_size", qName));
-					bugCollection.getProjectStats().putIfAbsentPackageStats(packageName, numClasses, size);
+					bugCollection.getProjectStats().putPackageStats(packageName, numClasses, size);
 					
 				} else if (outerElement.equals("PackageStats")) {
 					if (qName.equals("ClassStats")) {
