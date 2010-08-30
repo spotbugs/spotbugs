@@ -530,5 +530,13 @@ public class AbstractCloudTest extends TestCase {
 			}
 			return map.values();
 		}
+
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.cloud.Cloud#waitUntilNewIssuesUploaded()
+         */
+        public void waitUntilNewIssuesUploaded() {
+	       
+	        
+        }
     }
 }

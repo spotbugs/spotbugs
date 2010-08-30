@@ -199,4 +199,12 @@ public class BugCollectionStorageCloud extends AbstractCloud {
         
         return Math.min(fromXmlTime, computed);        
     }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#waitUntilNewIssuesUploaded()
+     */
+    public void waitUntilNewIssuesUploaded() {
+	    // TODO Auto-generated method stub
+	    
+    }
 }

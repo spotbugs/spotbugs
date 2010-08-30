@@ -38,10 +38,10 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.BugRankCategory;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.util.FractionalMultiset;
@@ -121,16 +121,6 @@ public class DBStats {
 		}
 	}
 
-	enum Rank { SCARIEST, SCARY, TROUBLING, OF_CONCERN, UNRANKED;
-	  static Rank getRank(int rank) {
-		  if (rank <= 4) return SCARIEST;
-		  if (rank <= 9) return SCARY;
-		  if (rank <= 14) return TROUBLING;
-		  if (rank <= 20) return OF_CONCERN;
-		  return UNRANKED;
-	  }
-	}
-	
 	static Timestamp bucketByHour(Timestamp t) {
 		Timestamp result = new Timestamp(t.getTime());
 		result.setSeconds(0);
@@ -220,7 +210,7 @@ public class DBStats {
 		cloud.initialize();
 		Connection c = cloud.getConnection();
 		
-		Map<Integer,Rank> bugRank = new HashMap<Integer, Rank>();
+		Map<Integer,BugRankCategory> bugRank = new HashMap<Integer, BugRankCategory>();
 		Map<Integer,String> bugPattern = new HashMap<Integer, String>();
 		Map<String, Integer> detailedBugRank = new HashMap<String, Integer>();
 		
@@ -235,7 +225,7 @@ public class DBStats {
 			BugPattern pattern = i18n.lookupBugPattern(bugType);
 			if (pattern != null) {
 				int rank = BugRanker.findRank(pattern, priority);
-				bugRank.put(id, Rank.getRank(rank));
+				bugRank.put(id, BugRankCategory.getRank(rank));
 				detailedBugRank.put(hash, rank);
 				bugPattern.put(id, pattern.getType());
 			}
@@ -320,7 +310,7 @@ public class DBStats {
 			
 			reviewsForIssue.add(issueId);
 			Timestamp when = rs.getTimestamp(col++);
-			Rank rank = bugRank.get(issueId);
+			BugRankCategory rank = bugRank.get(issueId);
 			reviewers.put(who, when);
 			String issueReviewer = who+"-" + issueId;
 			if (issueReviews.add(issueReviewer)) {

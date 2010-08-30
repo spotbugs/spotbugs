@@ -71,6 +71,11 @@ public interface Cloud {
 	 */
 	public boolean initialize() throws IOException;
 
+	/**
+	 * Waits until all new issues have been uploaded 
+	 */
+	public void waitUntilNewIssuesUploaded();
+	    
     /** Waits until all data about this bug collection has been received from the cloud. */
     void waitUntilIssueDataDownloaded();
 

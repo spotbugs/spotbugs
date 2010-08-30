@@ -55,6 +55,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 
@@ -1725,5 +1726,18 @@ public  class DBCloud extends AbstractCloud {
     @Override
     public URL fileBug(BugInstance bug) {
 	    return null;
+    }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#waitUntilNewIssuesUploaded()
+     */
+    public void waitUntilNewIssuesUploaded() {
+    	try {
+    		initiateCommunication();
+    		initialSyncDone.await();
+    	} catch (InterruptedException e) {
+        
+        }
+	    
     }
 }
