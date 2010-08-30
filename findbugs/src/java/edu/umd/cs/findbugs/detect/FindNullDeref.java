@@ -1452,7 +1452,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 			}
 
 			// Report it
-//			System.out.println(bugInstance.getMessage());
 			bugReporter.reportBug(bugInstance);
 		}
 	}
@@ -1592,7 +1591,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 		if (catchSize < 5)
 			return true;
 		return false;
-
 	}
 }
 
