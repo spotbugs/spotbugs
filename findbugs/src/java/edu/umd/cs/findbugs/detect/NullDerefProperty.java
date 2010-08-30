@@ -54,5 +54,5 @@ public class NullDerefProperty extends AbstractWarningProperty {
 	public static final NullDerefProperty DEREFS_ARE_INLINED_FINALLY_BLOCKS =
 		new NullDerefProperty("DEREFS_ARE_INLINED_FINALLY_BLOCKS", PriorityAdjustment.AT_MOST_MEDIUM);
 	public static final NullDerefProperty DEREFS_IN_CATCH_BLOCKS =
-		new NullDerefProperty("DEREFS_IN_CATCH_BLOCKS", PriorityAdjustment.RAISE_PRIORITY);
+		new NullDerefProperty("DEREFS_IN_CATCH_BLOCKS", PriorityAdjustment.AT_MOST_LOW);
 }
