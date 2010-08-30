@@ -262,9 +262,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		
 		getPackageStats().clear();
 	}
-	public void recomputeFromClassStats() {
+	public void recomputeFromComponents() {
 		if (!hasClassStats || !hasPackageStats)
-			throw new IllegalStateException();
+			return;
 		for(int i = 0; i < totalErrors.length; i++)
 			totalErrors[i] = 0;
 		totalSize = 0;
@@ -273,7 +273,8 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		totalClassesFromPackageStats = 0;
 		
 		for (PackageStats stats : packageStatsMap.values()) {
-			stats.recomputeFromClassStats();
+			if (hasClassStats) 
+				stats.recomputeFromClassStats();
 			totalSize += stats.size();
 			totalClasses += stats.getNumClasses();
 			for(int i = 0; i < totalErrors.length; i++)

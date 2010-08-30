@@ -667,8 +667,9 @@ public class Filter {
 						i.remove();
 				}
 			}
-			projectStats.recomputeFromClassStats();
+			
 		}
+		projectStats.recomputeFromComponents();
 		if (argCount == args.length) {
 			assert !verbose;
 			resultCollection.writeXML(System.out);
