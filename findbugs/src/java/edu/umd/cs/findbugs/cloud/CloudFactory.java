@@ -53,7 +53,7 @@ public class CloudFactory {
     		if (cloudId != null) {
     			plugin = registeredClouds.get(cloudId);
 				if (plugin == null)
-					throw new IllegalArgumentException();
+					throw new IllegalArgumentException("Cannot find registered cloud for " + cloudId);
     		}
     		boolean usedDefaultCloud = false;
     		if (plugin == null)  {
