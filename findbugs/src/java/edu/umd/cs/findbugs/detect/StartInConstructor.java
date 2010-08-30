@@ -70,7 +70,10 @@ public class StartInConstructor extends BytecodeScanningDetector implements Stat
 				&& getSigConstantOperand().equals("()V")) {
 			try {
 				if (Hierarchy.isSubtype(getDottedClassConstantOperand(), "java.lang.Thread")) {
-					BugInstance bug = new BugInstance(this, "SC_START_IN_CTOR", Priorities.NORMAL_PRIORITY)
+					int priority = Priorities.NORMAL_PRIORITY;
+					if (getPC() + 4 >= getCode().getCode().length)
+						priority = Priorities.LOW_PRIORITY;
+					BugInstance bug = new BugInstance(this, "SC_START_IN_CTOR",priority)
 							.addClassAndMethod(this)
 							.addCalledMethod(this);
 					 Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
