@@ -436,10 +436,21 @@ public class UnreadFields extends OpcodeStackDetector  {
 		else if (seen == PUTSTATIC 
 			&& !getMethod().isStatic()) {
 			XField f = XFactory.createReferencedXField(this);
-					if (f.getName().indexOf("class$") != 0) {
+			if (f.getName().indexOf("class$") != 0) {
 				int priority = LOW_PRIORITY;				
-				if (!publicOrProtectedConstructor)
+				if (!publicOrProtectedConstructor) {
 					priority--;
+				} else {
+					// Possible fix for bug #3056289 (false positive on singleton assignment in constructor)
+					// do not report bug for the code "if(singleton == null) singleton = this;"
+					// or "if(singleton != null) throw Exception else singleton = this;"
+					if(f.isReferenceType()) {
+						FieldDescriptor fieldInfo = f.getFieldDescriptor();
+						if(fieldInfo.getSlashedClassName().equals(getClassName()) && nullTested.contains(f)){
+							priority ++;
+						}
+					}
+				}
 				if (seenMonitorEnter)
 					priority++;
 				if (!seenInvokeStatic 
