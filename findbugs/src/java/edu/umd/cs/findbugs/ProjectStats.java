@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.WillClose;
@@ -233,12 +234,32 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	}
 	
 	public void purgeClassesThatDontMatch(Pattern classPattern) {
-		for(Iterator<Map.Entry<String,PackageStats>> i = packageStatsMap.entrySet().iterator(); i.hasNext(); ) {
-			Map.Entry<String,PackageStats> e = i.next();
-			PackageStats stats = e.getValue();
-			stats.purgeClassesThatDontMatch(classPattern);
-			if (stats.getClassStats().isEmpty())
-				i.remove();
+		if (hasClassStats)
+			for (Iterator<Map.Entry<String, PackageStats>> i = packageStatsMap.entrySet().iterator(); i.hasNext();) {
+				Map.Entry<String, PackageStats> e = i.next();
+				PackageStats stats = e.getValue();
+				stats.purgeClassesThatDontMatch(classPattern);
+				if (stats.getClassStats().isEmpty())
+					i.remove();
+			}
+		else if (hasPackageStats) {
+			boolean matchAny = false;
+			for (String packageName : packageStatsMap.keySet()) {
+				Matcher m = classPattern.matcher(packageName);
+				if (m.lookingAt()) {
+					matchAny = true;
+					break;
+				}
+			}
+			if (matchAny)
+				for (Iterator<String> i = packageStatsMap.keySet().iterator(); i.hasNext();) {
+					String packageName = i.next();
+					Matcher m = classPattern.matcher(packageName);
+					if (!m.lookingAt()) {
+						i.remove();
+					}
+
+				}
 		}
 	}
 	
@@ -263,7 +284,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		getPackageStats().clear();
 	}
 	public void recomputeFromComponents() {
-		if (!hasClassStats || !hasPackageStats)
+		if (!hasClassStats && !hasPackageStats)
 			return;
 		for(int i = 0; i < totalErrors.length; i++)
 			totalErrors[i] = 0;
@@ -458,6 +479,11 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		totalClasses += stats2.getNumClasses();
 		for(int i = 0; i < totalErrors.length; i++)
 			totalErrors[i] += stats2.totalErrors[i];
+		
+		if (stats2.hasPackageStats)
+			hasPackageStats = true;
+		if (stats2.hasClassStats)
+			hasClassStats = true;
 		
 		for (Map.Entry<String,PackageStats> entry : stats2.packageStatsMap.entrySet()) {
 			String key = entry.getKey();
