@@ -179,16 +179,12 @@ public class PackageStats implements XMLWriteable {
 		++nBugs[0];
 
 		
-		getClassStats(source.getClassName(), source.getSourceFile()).addError(bug);
+		ClassStats classStats = getClassStatsOrNull(source.getClassName());
+		if (classStats != null)
+			classStats.addError(bug);
 	}
 
-	/**
-     * @deprecated Use {@link #addClass(String,String,boolean,int)} instead
-     */
-    @Deprecated
-    public void addClass(String name, boolean isInterface, int size) {
-        addClass(name, null, isInterface, size);
-    }
+
 
 	public void addClass(String name, String sourceFile, boolean isInterface, int size) {
 		if (packageMembers.isEmpty()) {

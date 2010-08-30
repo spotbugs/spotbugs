@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.config.CommandLine;
@@ -591,9 +592,10 @@ public class Filter {
 		if (commandLine.hashChangedSpecified)
 			origCollection.computeBugHashes();
 		commandLine.adjustFilter(project, resultCollection);
-		resultCollection.getProjectStats().clearBugCounts();
+		ProjectStats projectStats = resultCollection.getProjectStats();
+		projectStats.clearBugCounts();
 		if (commandLine.className != null) {
-			resultCollection.getProjectStats().purgeClassesThatDontMatch(commandLine.className);
+			projectStats.purgeClassesThatDontMatch(commandLine.className);
 		}
 		sourceSearcher = new SourceSearcher(project);
 		
@@ -644,7 +646,7 @@ public class Filter {
 				}
 				resultCollection.add(bug, false);
 				if (!bug.isDead())
-					resultCollection.getProjectStats().addBug(bug);
+					projectStats.addBug(bug);
 				passed++;
 			} else
 				dropped++;
@@ -654,8 +656,8 @@ public class Filter {
 		if (verbose)
 			System.out.println(passed + " warnings passed through, " + dropped
 				+ " warnings dropped");
-		if (commandLine.withSourceSpecified && commandLine.withSource && !commandLine.dontUpdateStats) {
-			for(PackageStats stats : resultCollection.getProjectStats().getPackageStats()) {
+		if (commandLine.withSourceSpecified && commandLine.withSource && !commandLine.dontUpdateStats && projectStats.hasClassStats()) {
+			for(PackageStats stats : projectStats.getPackageStats()) {
 				Iterator<ClassStats> i = stats.getClassStats().iterator();
 				while (i.hasNext()) {
 					String className = i.next().getName();
@@ -665,7 +667,7 @@ public class Filter {
 						i.remove();
 				}
 			}
-			resultCollection.getProjectStats().recomputeFromClassStats();
+			projectStats.recomputeFromClassStats();
 		}
 		if (argCount == args.length) {
 			assert !verbose;

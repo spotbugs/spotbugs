@@ -258,6 +258,14 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					} else if (qName.equals("FindBugsSummary")) {
 						String timestamp = getRequiredAttribute(attributes, "timestamp", qName);
 						String vmVersion = getOptionalAttribute(attributes, "vm_version");
+						String totalClasses = getOptionalAttribute(attributes, "total_classes");
+						if (totalClasses != null && totalClasses.length() > 0)
+							bugCollection.getProjectStats().setTotalClasses(Integer.parseInt(totalClasses));
+						
+						String totalSize = getOptionalAttribute(attributes, "total_size");
+						if (totalSize != null && totalSize.length() > 0)
+							bugCollection.getProjectStats().setTotalSize(Integer.parseInt(totalSize));
+					
 						String referencedClasses = getOptionalAttribute(attributes, "referenced_classes");
 						if (referencedClasses != null && referencedClasses.length() > 0)
 							bugCollection.getProjectStats().setReferencedClasses(Integer.parseInt(referencedClasses));

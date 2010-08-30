@@ -72,6 +72,8 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	private int totalSizeFromPackageStats;
 	private int totalClassesFromPackageStats;
 	private Date analysisTimestamp;
+	private boolean hasClassStats;
+	private boolean hasPackageStats;
 	private Footprint baseFootprint;
 	private String java_vm_version = SystemProperties.getProperty("java.vm.version");
 	private final Profiler profiler;
@@ -79,7 +81,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	@Override
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
-		buf.append(totalClasses).append(" classes: ");
+		buf.append(getNumClasses()).append(" classes: ");
 		for(PackageStats pStats : getPackageStats())
 			for(ClassStats cStats : pStats.getSortedClassStats()) 
 				buf.append(cStats.getName()).append(" ");
@@ -96,6 +98,13 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		this.profiler = new Profiler();
 	}
 
+	
+	public boolean hasClassStats() {
+		return hasClassStats;
+	}
+	public boolean hasPackageStats() {
+		return hasPackageStats;
+	}
 	@Override
 	public Object clone() {
 		try {
@@ -107,9 +116,10 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	}
 
 	public int getCodeSize() {
-		if (totalSize > 0)
-			return totalSize;
-		return totalSizeFromPackageStats;
+		if (totalSizeFromPackageStats > 0)
+			return totalSizeFromPackageStats;
+		return totalSize;
+		
 	}
 	public int getTotalBugs() {
 		return totalErrors[0];
@@ -139,9 +149,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 * Get the number of classes analyzed.
 	 */
 	public int getNumClasses() {
-		if (totalClasses > 0)
-			return totalClasses;
-		return totalClassesFromPackageStats;
+		if (totalClassesFromPackageStats > 0)
+			return totalClassesFromPackageStats;
+		return totalClasses;
 	}
 
 	/**
@@ -151,19 +161,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	    return baseFootprint;
     }
 	
-	/**
-     * Report that a class has been analyzed.
-     *
-     * @param className   the full name of the class
-     * @param isInterface true if the class is an interface
-     * @param size        a normalized class size value;
-     *                    see detect/FindBugsSummaryStats.
-     * @deprecated Use {@link #addClass(String,String,boolean,int)} instead
-     */
-	@Deprecated
-    public void addClass(@DottedClassName String className, boolean isInterface, int size) {
-        addClass(className, null, isInterface, size);
-    }
+
 
 	/**
 	 * Report that a class has been analyzed.
@@ -175,6 +173,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 *                    see detect/FindBugsSummaryStats.
 	 */
 	public void addClass(@DottedClassName String className, @CheckForNull String sourceFile, boolean isInterface, int size) {
+		hasClassStats = true;
 		String packageName;
 		int lastDot = className.lastIndexOf('.');
 		if (lastDot < 0)
@@ -185,6 +184,8 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		stat.addClass(className, sourceFile, isInterface, size);
 		totalClasses++;
 		totalSize += size;
+		totalClassesFromPackageStats = 0;
+		totalSizeFromPackageStats = 0;
 	}
 	
 	/**
@@ -193,6 +194,8 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 * @param className   the full name of the class
 	 */
 	public @CheckForNull ClassStats getClassStats(@DottedClassName String className) {
+		if (hasClassStats)
+			return null;
 		String packageName;
 		int lastDot = className.lastIndexOf('.');
 		if (lastDot < 0)
@@ -238,17 +241,44 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 				i.remove();
 		}
 	}
+	
+	public void purgeClassStats() {
+		hasClassStats = false;
+		if (totalClassesFromPackageStats == 0)
+			totalClassesFromPackageStats = totalClasses;
+		if (totalSizeFromPackageStats == 0)
+			totalSizeFromPackageStats = totalSize;
+		
+		for(PackageStats ps : getPackageStats()) {
+			ps.getClassStats().clear();
+		}
+	}
+	public void purgePackageStats() {
+		hasPackageStats = false;
+		if (totalClassesFromPackageStats == 0)
+			totalClassesFromPackageStats = totalClasses;
+		if (totalSizeFromPackageStats == 0)
+			totalSizeFromPackageStats = totalSize;
+		
+		getPackageStats().clear();
+	}
 	public void recomputeFromClassStats() {
+		if (!hasClassStats || !hasPackageStats)
+			throw new IllegalStateException();
 		for(int i = 0; i < totalErrors.length; i++)
 			totalErrors[i] = 0;
 		totalSize = 0;
+		totalClasses = 0;
+		totalSizeFromPackageStats = 0;
+		totalClassesFromPackageStats = 0;
+		
 		for (PackageStats stats : packageStatsMap.values()) {
 			stats.recomputeFromClassStats();
 			totalSize += stats.size();
+			totalClasses += stats.getNumClasses();
 			for(int i = 0; i < totalErrors.length; i++)
 				totalErrors[i] += stats.getBugsAtPriority(i);
 		}
-		
 	}
 	FileBugHash fileBugHashes;
 	public void computeFileStats(BugCollection bugs) {
@@ -270,11 +300,11 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 
 		xmlOutput.addAttribute("timestamp",
 				new SimpleDateFormat(TIMESTAMP_FORMAT, Locale.ENGLISH).format(analysisTimestamp));
-		xmlOutput.addAttribute("total_classes", String.valueOf(totalClasses));
+		xmlOutput.addAttribute("total_classes", String.valueOf(getNumClasses()));
 		xmlOutput.addAttribute("referenced_classes", String.valueOf(referencedClasses));
 		
 		xmlOutput.addAttribute("total_bugs", String.valueOf(totalErrors[0]));
-		xmlOutput.addAttribute("total_size", String.valueOf(totalSize));
+		xmlOutput.addAttribute("total_size", String.valueOf(getCodeSize()));
 		xmlOutput.addAttribute("num_packages", String.valueOf(packageStatsMap.size()));
 
 		if (java_vm_version != null)
@@ -399,6 +429,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		return stat;
 	}
 	public void putIfAbsentPackageStats(String packageName, int numClasses, int size) {
+		hasPackageStats = true;
 		PackageStats stat = packageStatsMap.get(packageName);
 		if (stat == null) {
 			stat = new PackageStats(packageName, numClasses, size);
@@ -412,10 +443,12 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 * @param stats2
 	 */
 	public void addStats(ProjectStats stats2) {
+		if (totalSize == totalSizeFromPackageStats) 
+			totalSizeFromPackageStats += stats2.getCodeSize();
 		totalSize += stats2.getCodeSize();
-		totalSizeFromPackageStats += stats2.getCodeSize();
+		if (totalClasses == totalClassesFromPackageStats)
+			totalClassesFromPackageStats += stats2.getNumClasses();
 		totalClasses += stats2.getNumClasses();
-		totalClassesFromPackageStats += stats2.getNumClasses();
 		for(int i = 0; i < totalErrors.length; i++)
 			totalErrors[i] += stats2.totalErrors[i];
 		
@@ -449,5 +482,18 @@ public class ProjectStats implements XMLWriteable, Cloneable {
      */
     public Profiler getProfiler() {
 	    return profiler;
+    }
+	/**
+     * @param parseInt
+     */
+    public void setTotalClasses(int totalClasses) {
+	   this.totalClasses = totalClasses;
+    }
+    
+    /**
+     * @param parseInt
+     */
+    public void setTotalSize(int totalSize) {
+	   this.totalSize = totalSize;
     }
 }
