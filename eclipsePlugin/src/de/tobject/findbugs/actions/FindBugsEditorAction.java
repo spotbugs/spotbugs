@@ -55,7 +55,7 @@ public class FindBugsEditorAction extends FindBugsAction implements IEditorActio
 			IFile file = ((FileEditorInput)(currentEditor.getEditorInput())).getFile();
 			List<WorkItem> list = new ArrayList<WorkItem>();
 			list.add(new WorkItem(file));
-			work(file.getProject(), list);
+			work(currentEditor, file.getProject(), list);
 		}
 	}
 

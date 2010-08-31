@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
+import org.eclipse.ui.IWorkbenchPart;
 
 import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.builder.WorkItem;
@@ -45,13 +46,12 @@ public class ClearMarkersAction extends FindBugsAction {
 	 * Clear the FindBugs markers on each project in the given selection, displaying a progress monitor.
 	 */
 	@Override
-	protected void work(IProject project, final List<WorkItem> resources) {
+	protected void work(final IWorkbenchPart part, IProject project, final List<WorkItem> resources) {
 		FindBugsJob clearMarkersJob = new ClearMarkersJob(project, resources);
 		clearMarkersJob.addJobChangeListener(new JobChangeAdapter(){
 			@Override
 			public void done(IJobChangeEvent event) {
-				refreshViewer(resources);
-				targetPart = null;
+				refreshViewer(part, resources);
 			}
 		});
 		clearMarkersJob.scheduleInteractive();

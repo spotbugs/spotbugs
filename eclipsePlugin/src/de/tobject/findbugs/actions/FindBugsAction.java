@@ -77,18 +77,17 @@ public class FindBugsAction implements IObjectActionDelegate {
 	/** true if this action is used from editor */
 	protected boolean usedInEditor;
 
-	protected IWorkbenchPart targetPart;
+	private IWorkbenchPart targetPart;
 
-	volatile private int jobsRunning;
-	volatile private boolean dialogAlreadyShown;
+	private static boolean dialogAlreadyShown;
 
 	public final void setActivePart(final IAction action,
 			final IWorkbenchPart targetPart) {
 		this.targetPart = targetPart;
 	}
 
-	public boolean isFindBugsPerspectiveActive() {
-		IPerspectiveDescriptor perspective = getWindow().getActivePage().getPerspective();
+	public static boolean isFindBugsPerspectiveActive(IWorkbenchPart part) {
+		IPerspectiveDescriptor perspective = getWindow(part).getActivePage().getPerspective();
 		return perspective != null && FindBugsPerspectiveFactory.ID.equals(perspective.getId());
 	}
 
@@ -100,7 +99,7 @@ public class FindBugsAction implements IObjectActionDelegate {
 	}
 
 	public void run(final IAction action) {
-		if (selection.isEmpty()) {
+		if (selection == null || selection.isEmpty()) {
 			return;
 		}
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -124,11 +123,11 @@ public class FindBugsAction implements IObjectActionDelegate {
 			Map<IProject, List<WorkItem>> projectMap =
 				ResourceUtils.getResourcesPerProject(sSelection);
 
-			jobsRunning = projectMap.size();
-
 			for(Map.Entry<IProject, List<WorkItem>> e : projectMap.entrySet()) {
-				work(e.getKey(), e.getValue());
+				work(targetPart, e.getKey(), e.getValue());
 			}
+			targetPart = null;
+			selection = null;
 		}
 	}
 
@@ -159,16 +158,17 @@ public class FindBugsAction implements IObjectActionDelegate {
 	/**
 	 * Run a FindBugs analysis on the given resource, displaying a progress
 	 * monitor.
+	 * @param part
 	 *
 	 * @param resources The resource to run the analysis on.
 	 */
-	protected void work(final IProject project, final List<WorkItem> resources) {
+	protected void work(IWorkbenchPart part, final IProject project, final List<WorkItem> resources) {
 		FindBugsJob runFindBugs = new StartedFromViewJob("Finding bugs in "
-				+ project.getName() + "...", project, resources);
+				+ project.getName() + "...", project, resources, part);
 		runFindBugs.scheduleInteractive();
 	}
 
-	protected void refreshViewer(final List<WorkItem> resources) {
+	protected static void refreshViewer(IWorkbenchPart targetPart, final List<WorkItem> resources) {
 		if(targetPart == null){
 			return;
 		}
@@ -179,10 +179,13 @@ public class FindBugsAction implements IObjectActionDelegate {
 		final TreeViewer viewer = (TreeViewer) selProvider;
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
+				if(viewer.getControl().isDisposed()) {
+					return;
+				}
 				for (WorkItem workItem : resources) {
 					if(workItem.getMarkerTarget() instanceof IProject){
 						// this element has to be refreshed manually, because there is no one real
-						// resource assotiated with it => no resource change notification after
+						// resource associated with it => no resource change notification after
 						// creating a marker...
 						viewer.refresh(workItem.getCorespondingJavaElement(), true);
 					}
@@ -191,7 +194,7 @@ public class FindBugsAction implements IObjectActionDelegate {
 		});
 	}
 
-	protected void askUserToSwitch(int warningsNumber) {
+	protected static void askUserToSwitch(IWorkbenchPart part, int warningsNumber) {
 		final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
 		String message = "FindBugs analysis finished, " + warningsNumber
 				+ " warnings found.\n\nSwitch to the FindBugs perspective?";
@@ -208,7 +211,7 @@ public class FindBugsAction implements IObjectActionDelegate {
 			if (remember) {
 				store.setValue(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS, true);
 			}
-			switchPerspective();
+			switchPerspective(part);
 		} else if (returnCode == IDialogConstants.NO_ID) {
 			if (remember) {
 				store.setValue(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS,	false);
@@ -216,9 +219,9 @@ public class FindBugsAction implements IObjectActionDelegate {
 		}
 	}
 
-	protected IWorkbenchWindow getWindow(){
+	protected static IWorkbenchWindow getWindow(IWorkbenchPart part){
 		IWorkbenchWindow window;
-		IWorkbenchPartSite currentSite = targetPart != null? targetPart.getSite() : null;
+		IWorkbenchPartSite currentSite = part != null? part.getSite() : null;
 		if(currentSite != null){
 			window = currentSite.getWorkbenchWindow();
 		} else {
@@ -227,8 +230,8 @@ public class FindBugsAction implements IObjectActionDelegate {
 		return window;
 	}
 
-	protected void switchPerspective() {
-		IWorkbenchWindow window = getWindow();
+	protected static void switchPerspective(IWorkbenchPart part) {
+		IWorkbenchWindow window = getWindow(part);
 		IWorkbenchPage page = window.getActivePage();
 		IAdaptable input;
 		if (page != null) {
@@ -244,15 +247,17 @@ public class FindBugsAction implements IObjectActionDelegate {
 		}
 	}
 
-	private final class StartedFromViewJob extends FindBugsJob {
+	private final static class StartedFromViewJob extends FindBugsJob {
 		private final List<WorkItem> resources;
 		private final IProject project;
+		private final IWorkbenchPart targetPart;
 
 		private StartedFromViewJob(String name, IProject project,
-				List<WorkItem> resources) {
+				List<WorkItem> resources, IWorkbenchPart targetPart) {
 			super(name, project);
 			this.resources = resources;
 			this.project = project;
+			this.targetPart = targetPart;
 		}
 
 		@Override
@@ -261,19 +266,13 @@ public class FindBugsAction implements IObjectActionDelegate {
 
 			worker.work(resources);
 
-			refreshViewer(resources);
+			refreshViewer(targetPart, resources);
 
 			checkPerspective();
-
-			jobsRunning --;
-			if(jobsRunning == 0){
-				targetPart = null;
-				selection = null;
-			}
 		}
 
 		private void checkPerspective() {
-			if(isFindBugsPerspectiveActive()){
+			if(isFindBugsPerspectiveActive(targetPart)){
 				return;
 			}
 			final IMarker[] allMarkers = MarkerUtil.getAllMarkers(project);
@@ -283,20 +282,22 @@ public class FindBugsAction implements IObjectActionDelegate {
 
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
-					if(isFindBugsPerspectiveActive()){
+					if(isFindBugsPerspectiveActive(targetPart)){
 						return;
 					}
 					final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
 					final boolean ask = store.getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
 					if (ask && !dialogAlreadyShown) {
 						dialogAlreadyShown = true;
-						askUserToSwitch(allMarkers.length);
+						askUserToSwitch(targetPart, allMarkers.length);
 					} else if (store.getBoolean(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS)) {
-						switchPerspective();
+						switchPerspective(targetPart);
 					}
 				}
 			});
 		}
+
+
 	}
 
 }
