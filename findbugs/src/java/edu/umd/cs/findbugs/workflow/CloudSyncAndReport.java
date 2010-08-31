@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.workflow;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -45,6 +46,8 @@ public class CloudSyncAndReport {
 	public static class CSPoptions {
 
 		public String analysisFile;
+		
+		public String cloudSummary;
 
 		public String cloudId;
 		
@@ -59,7 +62,7 @@ public class CloudSyncAndReport {
 			this.options = options;
 			addOption("-cloud", "id", "id of the cloud to use");
 			addOption("-recent", "hours", "maximum age in hours for an issue to be recent");
-			
+			addOption("-cloudSummary", "file", "write a cloud summary to thie file");
 				}
 
 		/* (non-Javadoc)
@@ -81,6 +84,8 @@ public class CloudSyncAndReport {
 	    	  options.cloudId = argument;
 	      } else if (option.equals("-recent")) {
 	    	  options.ageInHours = Integer.parseInt(argument);  
+	      }else if (option.equals("-cloudSummary")) {
+	    	  options.cloudSummary = argument; 
 	      } else
 	    	  throw new IllegalArgumentException("Unknown option : " + option);
         }
@@ -148,13 +153,15 @@ public class CloudSyncAndReport {
     	Cloud cloud = bugCollection.getCloud();
     	cloud.setMode(Cloud.Mode.COMMUNAL);
     	
-    	out.printf("Cloud sync and summary report%n");
+    	out.printf("Cloud sync and summary report for %s%n", bugCollection.getProject().getProjectName());
+    	
     	out.printf("Code dated %s%n", new Date(bugCollection.getTimestamp()));
     	out.printf("Code analyzed %s%n", new Date(bugCollection.getAnalysisTimestamp()));
     	
     	out.printf("%6d total classes%n", projectStats.getNumClasses());
     	out.printf("%6d total issues%n", bugs.size());
     	long recentTimestamp = System.currentTimeMillis() - options.ageInHours * 3600 * 1000L;
+    	int allRecentIssues = 0;
     	
     	for(BugInstance b : bugs) {
     		Stats s = stats.get(BugRankCategory.getRank(b.getBugRank()));
@@ -163,21 +170,35 @@ public class CloudSyncAndReport {
     			stats.put(BugRankCategory.getRank(b.getBugRank()), s);
     		}
     		s.total++;
-    		if (cloud.getFirstSeen(b) > recentTimestamp) {
+    		long firstSeen = cloud.getFirstSeen(b);
+			if (firstSeen > recentTimestamp) {
     			s.recent++;
+    			allRecentIssues++;
     		}
+		
     	}
-    	out.println();
-    	out.printf("%6s %6s %s%n", "recent", "total", "Rank category");
-    	for(Entry<BugRankCategory, Stats> e : stats.entrySet()) {
-    		Stats s = e.getValue();
-    		if (s.total > 0)
-    		  out.printf("%6d %6d %s%n", s.recent, s.total, e.getKey());
-    	}
-    	if (cloud.supportsCloudSummaries()) {
-    		out.println();
-    		cloud.printCloudSummary(out, bugs, null);
+    	out.printf("%6d recent issues%n", allRecentIssues);
     	
+    	
+    	
+    	if (options.cloudSummary != null && cloud.supportsCloudSummaries()) {
+    		try {
+				PrintWriter cs = new PrintWriter(new FileWriter(options.cloudSummary));
+				cs.printf("%6s %6s %s%n", "recent", "total", "Rank category");
+		    	for(Entry<BugRankCategory, Stats> e : stats.entrySet()) {
+		    		Stats s = e.getValue();
+		    		if (s.total > 0)
+		    		  cs.printf("%6d %6d %s%n", s.recent, s.total, e.getKey());
+		    	}
+		    	cs.println();
+				cloud.printCloudSummary(cs, bugs, null);
+				cs.close();
+			} catch (Exception e) {
+				out.println("Error writing cloud summary to " + options.cloudSummary);
+    			e.printStackTrace(out);
+    		}
+    	
+    		
     	}
     
     }
