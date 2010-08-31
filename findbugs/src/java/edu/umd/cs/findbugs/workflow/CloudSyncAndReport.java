@@ -158,8 +158,8 @@ public class CloudSyncAndReport {
     	out.printf("Code dated %s%n", new Date(bugCollection.getTimestamp()));
     	out.printf("Code analyzed %s%n", new Date(bugCollection.getAnalysisTimestamp()));
     	
-    	out.printf("%6d total classes%n", projectStats.getNumClasses());
-    	out.printf("%6d total issues%n", bugs.size());
+    	out.printf("%7d total classes%n", projectStats.getNumClasses());
+    	out.printf("%7d total issues%n", bugs.size());
     	long recentTimestamp = System.currentTimeMillis() - options.ageInHours * 3600 * 1000L;
     	int allRecentIssues = 0;
     	
@@ -177,7 +177,7 @@ public class CloudSyncAndReport {
     		}
 		
     	}
-    	out.printf("%6d recent issues%n", allRecentIssues);
+    	out.printf("%7d recent issues%n", allRecentIssues);
     	
     	
     	
