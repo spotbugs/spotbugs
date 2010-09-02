@@ -44,16 +44,15 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
 		state = 0;
 		countDown = 0;
 		super.visit(code); // make callbacks to sawOpcode for all opcodes
-		syncField = field = putField = null;
+		syncField = field = null;
 		pendingBug  = null;
 
 	}
 	
 	 int state = 0;
 
-	XField field, putField;
+	XField field;
 	XField syncField;
-	int putPC;
 	BugInstance pendingBug;
 	int countDown = 0;
 
