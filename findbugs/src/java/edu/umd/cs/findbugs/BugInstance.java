@@ -2308,7 +2308,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * when communicating with it is not desired
      * for performance or complexity reasons.
      */
-    public class XmlProps {
+    static public class XmlProps {
         private Date firstSeen = null;
         private int reviewCount = 0;
         private String consensus;

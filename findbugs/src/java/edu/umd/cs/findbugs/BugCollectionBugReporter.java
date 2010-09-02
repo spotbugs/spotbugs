@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import javax.annotation.Nonnull;
+
 import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.MissingClassException;
@@ -39,7 +41,7 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 		return project;
 	}
 
-	public BugCollection getBugCollection() {
+	public @Nonnull BugCollection getBugCollection() {
 		return bugCollection;
 	}
 
