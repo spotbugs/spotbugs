@@ -527,7 +527,7 @@ public class MainFrameMenu implements Serializable {
 		osxPrefsEnableMethod = osxAdapter.getDeclaredMethod("enablePrefs", defArgs);
 	}
 
-	class CutAction extends TextAction {
+	static class CutAction extends TextAction {
 
 		public CutAction() {
 			super(L10N.getLocalString("txt.cut", "Cut"));

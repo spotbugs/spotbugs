@@ -73,10 +73,10 @@ public class CheckClassfileVersion {
 				int minorVersion = zipIn.readUnsignedShort();
 				int majorVersion = zipIn.readUnsignedShort();
 				if (magic != 0xCAFEBABE) {
-					System.out.printf("bad magic %x: %s %s\n", magic, jarFileName, name);
+					System.out.printf("bad magic %x: %s %s%n", magic, jarFileName, name);
 					fail = true;
 				} else if (minorVersion >= 60) {
-					System.out.printf("bad version %d:%s %s\n", minorVersion, jarFileName, name);
+					System.out.printf("bad version %d:%s %s%n", minorVersion, jarFileName, name);
 					fail = true;
 				}
 				zipIn.close();
