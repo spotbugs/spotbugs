@@ -1,5 +1,8 @@
 package sfBugs;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 /**
  * Don't report UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR
  * http://sourceforge.net/tracker/index.php?func=detail&aid=1678229&group_id=96405&atid=614693
@@ -11,10 +14,12 @@ public class Bug1678229 {
 	private static String staticDevice;
 	private static StringBuffer staticDeviceFactory;
 
+	@ExpectWarning("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
 	public void registerDeviceFactory(StringBuffer factory) {
 		staticDeviceFactory = factory;
 	}
 
+	@NoWarning("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
 	public int open() {
 		if (staticDevice == null) {
 			staticDevice = staticDeviceFactory.toString();

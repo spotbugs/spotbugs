@@ -27,18 +27,17 @@ class BadRandomInt {
 		return (int) (100 * r.nextDouble());
 	}
 
-	// FIXME: We should generate a warning here about single-use random number generates
-	@DesireWarning("BC")
+	@DesireWarning("DMI")
 	static int randomInt(int n) {
 		Random ran = new Random();  
 		return  ran.nextInt(n);
 	}
 
-	@ExpectWarning("BC")
+	@ExpectWarning("DMI")
 	static int randomInt2(int n) {
 		return  new Random().nextInt(n);
 	}
-	@ExpectWarning("BC")
+	@ExpectWarning("DMI")
 	static int randomInt3() {
 		return  new Random().nextInt();
 	}
