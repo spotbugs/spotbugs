@@ -33,8 +33,8 @@ import java.util.Comparator;
  * @see BasicBlock
  */
 public class ReverseDFSOrder extends AbstractBlockOrder {
-	public ReverseDepthFirstSearch rdfs;
-	public DepthFirstSearch dfs;
+	public final ReverseDepthFirstSearch rdfs;
+	public final DepthFirstSearch dfs;
 	private static class ReverseDFSComparator implements Comparator<BasicBlock> {
 		public ReverseDepthFirstSearch rdfs;
 		public DepthFirstSearch dfs;
