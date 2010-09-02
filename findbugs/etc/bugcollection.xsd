@@ -201,9 +201,14 @@
 						<xs:attribute name="removedByChange" type="xs:boolean" use="optional"/>
 						<xs:attribute name="first" type="xs:unsignedInt" use="optional"/>
 						<xs:attribute name="introducedByChange" type="xs:boolean" use="optional"/>
-						<xs:attribute name="rank" type="xs:unsignedInt" use="optional"/>
 						<xs:attribute name="ageInDays" type="xs:unsignedInt" use="optional"/>
+						<xs:attribute name="reviews" type="xs:unsignedInt" use="optional"/>
 						<xs:attribute name="firstSeen" type="xs:string" use="optional"/>
+						<xs:attribute name="rank" type="xs:unsignedInt" use="optional"/>
+						<xs:attribute name="consensus" type="xs:string" use="optional"/>
+						<xs:attribute name="notAProblem" type="xs:boolean" use="optional"/>
+						<xs:attribute name="shouldFix" type="xs:boolean" use="optional"/>
+						
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="BugCategory" minOccurs="0" maxOccurs="unbounded">
