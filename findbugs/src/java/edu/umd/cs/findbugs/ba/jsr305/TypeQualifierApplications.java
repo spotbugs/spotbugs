@@ -870,7 +870,7 @@ public class TypeQualifierApplications {
 	            XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, xmethod.getClassDescriptor());
 	            stopAtClassScope = xclass.isPrivate();
             } catch (CheckedAnalysisException e) {
-            	AnalysisContext.logError("Problem resolving class for " + xmethod);
+            		AnalysisContext.logError("Problem resolving class for " + xmethod, e);
             }
 		}
 		

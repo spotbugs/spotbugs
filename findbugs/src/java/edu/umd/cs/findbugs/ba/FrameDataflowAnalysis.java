@@ -48,6 +48,29 @@ public abstract class FrameDataflowAnalysis <ValueType, FrameType extends Frame<
 		return fact1.sameAs(fact2);
 	}
 
+	/**
+	 * Get the dataflow fact representing the point just before given Location.
+	 * Note "before" is meant in the logical sense, so for backward analyses,
+	 * before means after the location in the control flow sense.
+	 *
+	 * @param location the location
+	 * @return the fact at the point just before the location
+	 */
+	
+	public FrameType getFactAtPC(CFG cfg, int pc) throws DataflowAnalysisException {
+		FrameType result = createFact();
+		makeFactTop(result);
+		
+		for(Location l : cfg.locations()) {
+			if (l.getHandle().getPosition() == pc) {
+				FrameType fact = getFactAtLocation(l);
+				if (isFactValid(fact))
+					mergeInto(fact, result);	
+			}
+		}
+		return result;
+	}
+	
 	@Override
 		 public boolean isFactValid(FrameType fact) {
 		return fact.isValid();

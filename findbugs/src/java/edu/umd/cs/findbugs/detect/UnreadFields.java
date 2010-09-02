@@ -59,6 +59,13 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
+import edu.umd.cs.findbugs.ba.npe.IsNullValue;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
+import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -436,8 +443,33 @@ public class UnreadFields extends OpcodeStackDetector  {
 		else if (seen == PUTSTATIC 
 			&& !getMethod().isStatic()) {
 			XField f = XFactory.createReferencedXField(this);
-			if (f.getName().indexOf("class$") != 0) {
-				int priority = LOW_PRIORITY;				
+			checkWriteToStaticFromInstanceMethod: if (f.getName().indexOf("class$") != 0) {
+				int priority = LOW_PRIORITY;		
+				if (f.isReferenceType())
+					try {
+				ValueNumberDataflow vnaDataflow = getClassContext().getValueNumberDataflow(getMethod());
+				IsNullValueDataflow invDataflow = getClassContext().getIsNullValueDataflow(getMethod());
+				ValueNumberFrame vFrame = vnaDataflow.getAnalysis().getFactAtPC(vnaDataflow.getCFG(), getPC());
+				IsNullValueFrame iFrame = invDataflow.getAnalysis().getFactAtPC(invDataflow.getCFG(), getPC());
+				AvailableLoad l = new AvailableLoad(f);
+				ValueNumber[] availableLoads = vFrame.getAvailableLoad(l);
+				if (availableLoads != null)
+				for(ValueNumber v : availableLoads) {
+					IsNullValue knownValue = iFrame.getKnownValue(v);
+					if (knownValue == null) continue;
+					if (knownValue.isDefinitelyNotNull()) {
+						priority--;
+						break;
+					} else if (knownValue.isDefinitelyNull()){
+						break checkWriteToStaticFromInstanceMethod;
+					}
+				}
+				
+				
+				} catch (CheckedAnalysisException e) {
+	                AnalysisContext.logError("foo", e);
+                } 
+				
 				if (!publicOrProtectedConstructor) {
 					priority--;
 				} else {
@@ -465,7 +497,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 				if (getClassName().indexOf('$') != -1 || getMethod().isSynthetic() || f.isSynthetic() || f.getName().indexOf('$') >= 0)
 					priority++;
 
-				// Decrease priority for boolean fileds used to control debug/test settings
+				// Decrease priority for boolean fields used to control debug/test settings
 				if(f.getName().indexOf("DEBUG") >= 0 || f.getName().indexOf("VERBOSE") >= 0
 						&& f.getSignature().equals("Z")){
 					priority ++;

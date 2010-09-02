@@ -261,10 +261,14 @@ public class IsNullValueAnalysis
 		startTransfer();
 		super.transfer(basicBlock, end, start, result);
 		endTransfer(basicBlock, end, result);
-		ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(Location.getLastLocation(basicBlock));
-		// purge stale information
-		if (!vnaFrameAfter.isTop())
-			result.cleanStaleKnowledge(vnaFrameAfter);
+
+		if (end == null) {
+			ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(Location.getLastLocation(basicBlock));
+			// purge stale information
+			if (!vnaFrameAfter.isTop())
+				result.cleanStaleKnowledge(vnaFrameAfter);
+		}
+
 	}
 
 	public void startTransfer() throws DataflowAnalysisException {
