@@ -56,7 +56,7 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
         store.setDefault(RUN_ANALYSIS_AUTOMATICALLY, false);
         store.setDefault(RUN_ANALYSIS_ON_FULL_BUILD, false);
         store.setDefault(ASK_ABOUT_PERSPECTIVE_SWITCH, true);
-        store.setDefault(SWITCH_PERSPECTIVE_AFTER_ANALYSIS, true);
+        store.setDefault(SWITCH_PERSPECTIVE_AFTER_ANALYSIS, false);
         store.setDefault(PRIO_LOW_MARKER_SEVERITY, IMarker.SEVERITY_WARNING);
         store.setDefault(PRIO_NORMAL_MARKER_SEVERITY, IMarker.SEVERITY_WARNING);
         store.setDefault(PRIO_HIGH_MARKER_SEVERITY, IMarker.SEVERITY_WARNING);

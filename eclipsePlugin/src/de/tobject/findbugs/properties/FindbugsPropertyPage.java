@@ -116,6 +116,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 	private ScopedPreferenceStore projectStore;
 	/** never null */
 	private ScopedPreferenceStore workspaceStore;
+	private WorkspaceSettingsTab workspaceSettingsTab;
 
 
 	/**
@@ -193,6 +194,14 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		detectorTab = createDetectorConfigurationTab(tabFolder);
 		reportConfigurationTab = createReportConfigurationTab(tabFolder);
 		filterFilesTab = createFilterFilesTab(tabFolder);
+		if(getProject() == null) {
+			// workspace settings
+			workspaceSettingsTab = createWorkspaceSettings(tabFolder);
+		}
+	}
+
+	private WorkspaceSettingsTab createWorkspaceSettings(TabFolder parentTabFolder) {
+		return new WorkspaceSettingsTab(parentTabFolder, this, SWT.NONE);
 	}
 
 	private void createDefaultsButton(Composite composite) {
@@ -331,6 +340,9 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		detectorTab.refreshUI(prefs);
 		filterFilesTab.refreshUI(prefs);
 		reportConfigurationTab.refreshUI(prefs);
+		if(workspaceSettingsTab != null) {
+			workspaceSettingsTab.refreshUI(prefs);
+		}
 	}
 
 	private Link createLink(Composite composite, String text) {
