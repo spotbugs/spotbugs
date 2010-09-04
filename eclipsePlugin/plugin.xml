@@ -187,6 +187,34 @@
 
    <extension
          point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            id="de.tobject.findbugs.WorkingSetElementActions"
+            objectClass="org.eclipse.ui.IWorkingSet">
+         <menu
+               id="findbugs"
+               label="Find Bugs"
+               path="group.build"/>
+         <action
+               class="de.tobject.findbugs.actions.ClearMarkersAction"
+               icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/delete_edit.gif"
+               id="de.tobject.findbugs.removeMarkersOnWorkingSet"
+               label="%menu.clearMarkers"
+               menubarPath="findbugs/additions"
+               tooltip="%menu.clearMarkersPopup"/>
+
+         <action
+               class="de.tobject.findbugs.actions.FindBugsAction"
+               icon="icons/runFindbugs.png"
+               id="de.tobject.findbugs.findBugsOnWorkingSet"
+               label="&amp;Find Bugs"
+               menubarPath="findbugs/additions"
+               tooltip="%menu.findBugsPopup"/>
+      </objectContribution>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.popupMenus">
       <!-- Special case context menu for simple projects that have java natures -->
       <objectContribution
             adaptable="true"

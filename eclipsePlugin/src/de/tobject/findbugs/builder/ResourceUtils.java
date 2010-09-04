@@ -23,9 +23,11 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IContainer;
@@ -41,6 +43,8 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.team.internal.core.subscribers.ChangeSet;
+import org.eclipse.ui.IAggregateWorkingSet;
+import org.eclipse.ui.IWorkingSet;
 
 import de.tobject.findbugs.util.ProjectUtilities;
 import de.tobject.findbugs.util.Util;
@@ -184,8 +188,14 @@ public class ResourceUtils {
 		Map<IProject, List<WorkItem>> projectsMap = new HashMap<IProject, List<WorkItem>>();
 		for (Iterator<?> iter = structuredSelection.iterator(); iter.hasNext();) {
 			Object element = iter.next();
-			WorkItem resource = getWorkItem(element);
-			if (resource == null) {
+			WorkItem workItem = getWorkItem(element);
+			if (workItem == null) {
+				IWorkingSet wset = getWorkingSet(element);
+				if(wset != null) {
+					mapResources(wset, projectsMap);
+					continue;
+				}
+
 				// Support for active changesets
 				ChangeSet set = (ChangeSet) ((IAdaptable) element)
 						.getAdapter(ChangeSet.class);
@@ -194,9 +204,48 @@ public class ResourceUtils {
 				}
 				continue;
 			}
-			mapResource(resource, projectsMap, false);
+			mapResource(workItem, projectsMap, false);
 		}
 		return projectsMap;
+	}
+
+	private static void mapResources(IWorkingSet wset,
+			Map<IProject, List<WorkItem>> projectsMap) {
+		Set<WorkItem> set = getResources(wset);
+		for (WorkItem item : set) {
+			mapResource(item, projectsMap, true);
+		}
+	}
+
+	private static Set<WorkItem> getResources(IWorkingSet wset) {
+		Set<WorkItem> set = new HashSet<WorkItem>();
+		boolean aggregateWorkingSet = wset.isAggregateWorkingSet();
+		if(aggregateWorkingSet) {
+			IAggregateWorkingSet aggr = (IAggregateWorkingSet) wset;
+			IWorkingSet[] sets = aggr.getComponents();
+			for (IWorkingSet iWorkingSet : sets) {
+				set.addAll(getResources(iWorkingSet));
+			}
+		} else {
+			IAdaptable[] elements = wset.getElements();
+			for (IAdaptable iAdaptable : elements) {
+				WorkItem item = getWorkItem(iAdaptable);
+				if(item != null) {
+					set.add(item);
+				}
+			}
+		}
+		return set;
+	}
+
+	private static IWorkingSet getWorkingSet(Object element) {
+		if(element instanceof IWorkingSet) {
+			return (IWorkingSet) element;
+		}
+		if(element instanceof IAdaptable) {
+			return (IWorkingSet) ((IAdaptable) element).getAdapter(IWorkingSet.class);
+		}
+		return null;
 	}
 
 	/**
