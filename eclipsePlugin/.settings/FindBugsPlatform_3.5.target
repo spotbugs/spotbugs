@@ -1,23 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.5"?>
+<?pde version="3.6"?>
 
-<target name="Eclipse 3.5">
+<target includeMode="feature" name="Eclipse3.5">
 <locations>
-<location id="org.eclipse.cvs.source" path="F:\java\eclipse35M6" type="Feature"/>
-<location id="org.eclipse.cvs" path="F:\java\eclipse35M6" type="Feature"/>
-<location id="org.eclipse.equinox.p2.user.ui.source" path="F:\java\eclipse35M6" type="Feature"/>
-<location id="org.eclipse.equinox.p2.user.ui" path="F:\java\eclipse35M6" type="Feature"/>
-<location id="org.eclipse.help.source" path="F:\java\eclipse35M6" type="Feature"/>
-<location id="org.eclipse.help" path="F:\java\eclipse35M6" type="Feature"/>
-<location id="org.eclipse.jdt.source" path="F:\java\eclipse35M6" type="Feature"/>
-<location id="org.eclipse.jdt" path="F:\java\eclipse35M6" type="Feature"/>
-<location id="org.eclipse.pde.source" path="F:\java\eclipse35M6" type="Feature"/>
-<location id="org.eclipse.pde" path="F:\java\eclipse35M6" type="Feature"/>
-<location id="org.eclipse.platform.source" path="F:\java\eclipse35M6" type="Feature"/>
-<location id="org.eclipse.platform" path="F:\java\eclipse35M6" type="Feature"/>
-<location id="org.eclipse.rcp.source" path="F:\java\eclipse35M6" type="Feature"/>
-<location id="org.eclipse.rcp" path="F:\java\eclipse35M6" type="Feature"/>
-<location id="org.eclipse.sdk" path="F:\java\eclipse35M6" type="Feature"/>
+<!-- <location path="${system_property:user.dir}/bin/MylynPlugins" type="Directory"/> -->
+<location path="${system_property:user.dir}/bin/Eclipse35" type="Directory"/>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 <launcherArgs>
