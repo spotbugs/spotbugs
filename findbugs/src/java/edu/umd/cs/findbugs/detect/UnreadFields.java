@@ -444,7 +444,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 			&& !getMethod().isStatic()) {
 			XField f = XFactory.createReferencedXField(this);
 			checkWriteToStaticFromInstanceMethod: if (f.getName().indexOf("class$") != 0) {
-				int priority = LOW_PRIORITY;		
+				int priority = LOW_PRIORITY;				
 				if (f.isReferenceType())
 					try {
 				ValueNumberDataflow vnaDataflow = getClassContext().getValueNumberDataflow(getMethod());
@@ -519,6 +519,7 @@ public class UnreadFields extends OpcodeStackDetector  {
                     			// the code "plugin = this;" unfortunately exists in the
                     			// template for new Eclipse plugin classes, so nearly every one
                     			// plugin has this pattern => decrease to very low prio
+                    			priority ++;
                     			priority ++;
                     		}
                     	}
