@@ -220,7 +220,8 @@ public class ResourceUtils {
 	private static Set<WorkItem> getResources(IWorkingSet wset) {
 		Set<WorkItem> set = new HashSet<WorkItem>();
 		boolean aggregateWorkingSet = wset.isAggregateWorkingSet();
-		if(aggregateWorkingSet) {
+		// IAggregateWorkingSet was introduced in Eclipse 3.5
+		if(aggregateWorkingSet && wset instanceof IAggregateWorkingSet) {
 			IAggregateWorkingSet aggr = (IAggregateWorkingSet) wset;
 			IWorkingSet[] sets = aggr.getComponents();
 			for (IWorkingSet iWorkingSet : sets) {
