@@ -247,11 +247,21 @@ public class SortedBugCollection implements BugCollection {
 		try {
 		readXML(in, file);
 		} catch (IOException e) {
-			throw new IOException("Failing reading " + file, e);
+			throw newIOException(file, e);
 		} catch (DocumentException e) {
 			throw new DocumentException("Failing reading " + file, e);
 		}
 	}
+	/**
+     * @param file
+     * @param e
+     * @return
+     */
+    private IOException newIOException(Object file, IOException e) {
+    	IOException result = new IOException("Failing reading " + file);
+    	result.initCause(e);
+    	return result;
+    }
 	public void readXML(URL u)
 	throws IOException, DocumentException {
 		InputStream in = progessMonitoredInputStream(u.openConnection(), "Loading analysis");
@@ -259,7 +269,7 @@ public class SortedBugCollection implements BugCollection {
 		try {
 			readXML(in);
 		} catch (IOException e) {
-			throw new IOException("Failing reading " + u, e);
+			throw newIOException(u, e);
 		} catch (DocumentException e) {
 			throw new DocumentException("Failing reading " + u, e);
 		}
