@@ -100,7 +100,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
 	@java.lang.SuppressWarnings("restriction")
 	public static final IPath DEFAULT_PREFS_PATH = new Path(
-			EclipsePreferences.DEFAULT_PREFERENCES_DIRNAME).append(PREFS_NAME);
+			EclipsePreferences.DEFAULT_PREFERENCES_DIRNAME).append("edu.umd.cs.findbugs.core.prefs");
 
 	public static final IPath DEPRECATED_PREFS_PATH = new Path(PREFS_NAME);
 
