@@ -44,7 +44,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 
 import de.tobject.findbugs.builder.FindBugsWorker;
-import de.tobject.findbugs.properties.FilterFilesTab.FilterKind;
 
 abstract class PathsProvider extends SelectionAdapter implements IStructuredContentProvider {
 	private static IPath lastUsedPath;
@@ -54,8 +53,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
 	protected final FindbugsPropertyPage propertyPage;
 	private final ListenerList listeners;
 
-	protected PathsProvider(ListViewer viewer, FilterKind kind,
-			FindbugsPropertyPage propertyPage) {
+	protected PathsProvider(ListViewer viewer, FindbugsPropertyPage propertyPage) {
 		this.propertyPage = propertyPage;
 		this.paths = new ArrayList<PathElement>();
 		this.viewer = viewer;

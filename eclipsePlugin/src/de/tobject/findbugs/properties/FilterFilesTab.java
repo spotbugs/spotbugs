@@ -81,7 +81,7 @@ public class FilterFilesTab extends Composite {
 
 		protected FilterProvider(ListViewer viewer, FilterKind kind,
 				FindbugsPropertyPage propertyPage) {
-			super(viewer, kind, propertyPage);
+			super(viewer, propertyPage);
 			this.kind = kind;
 			setFilters(propertyPage.getCurrentUserPreferences());
 		}
