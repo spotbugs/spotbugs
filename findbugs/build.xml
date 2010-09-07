@@ -560,7 +560,7 @@
 			  excludeFilter="findbugsExclude.xml"
 			  projectName="FindBugs"
     		  timeout="1800000"
-              outputFile="${sampleoutput.dir}/findbugs.xml" >
+              outputFile="${build.dir}/findbugscheck.xml" >
       <class location="${classes.dir}" />
       <sourcePath path="src/java:src/java5:src/junit:src/tools"/>
 	  <auxClasspath refid="tools.classpath"/>
