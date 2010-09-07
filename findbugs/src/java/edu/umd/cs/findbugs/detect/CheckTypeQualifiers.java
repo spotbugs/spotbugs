@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
 
 import org.apache.bcel.classfile.Method;
@@ -467,6 +468,13 @@ public class CheckTypeQualifiers extends CFGDetector {
 			.addClassAndMethod(methodDescriptor);
 		annotateWarningWithTypeQualifier(warning, typeQualifierValue);
 
+		Set<SourceSinkInfo> sinkSet = (backward == FlowValue.ALWAYS) ? backwardsFact.getWhereAlways(vn) : backwardsFact.getWhereNever(vn);
+		
+		Location sinkLocation = getSinkLocation(sinkSet);
+		 if (sinkLocation == null) {
+			 AnalysisContext.logError("Unable to compute sink location for " + methodDescriptor);
+			 return;
+		 }
 		// Hopefully we can find the conflicted value in a local variable
 		if (locationWhereDoomedValueIsObserved != null) {
 			Method method = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor); 
@@ -476,6 +484,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 				localVariable.setDescription(localVariable.isSignificant() ? "LOCAL_VARIABLE_VALUE_DOOMED_NAMED" : "LOCAL_VARIABLE_VALUE_DOOMED");
 				warning.add(localVariable);
 			}
+			if (!sinkLocation.equals(locationToReport)) {
 			// Report where we observed the value.
 			// Note that for conflicts detected on control edges,
 			// we REPORT the edge source location
@@ -487,18 +496,10 @@ public class CheckTypeQualifiers extends CFGDetector {
 			SourceLineAnnotation observedLocation = SourceLineAnnotation.fromVisitedInstruction(methodDescriptor, locationToReport);
 			observedLocation.setDescription("SOURCE_LINE_VALUE_DOOMED");
 			warning.add(observedLocation);
+			}
 		}
-
-		/*
-		// Add value sources
-		Set<SourceSinkInfo> sourceSet = (forward == FlowValue.ALWAYS) ? forwardsFact.getWhereAlways(vn) : forwardsFact.getWhereNever(vn);
-		for (SourceSinkInfo source : sourceSet) {
-			annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, source);
-		}
-		*/
 
 		// Add value sinks
-		Set<SourceSinkInfo> sinkSet = (backward == FlowValue.ALWAYS) ? backwardsFact.getWhereAlways(vn) : backwardsFact.getWhereNever(vn);
 		for (SourceSinkInfo sink : sinkSet) {
 			annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, sink);
 		}
@@ -567,11 +568,34 @@ public class CheckTypeQualifiers extends CFGDetector {
 		case ARGUMENT_TO_CALLED_METHOD:
 		case RETURN_VALUE:
 		case FIELD_STORE:
-			warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation()).describe("SOURCE_LINE_VALUE_SINK");
+			warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation());
 			return;
 
 		default:
 			throw new IllegalStateException();
 		}
+	}
+	private @CheckForNull Location getSinkLocation(SourceSinkInfo sourceSinkInfo) {
+		switch (sourceSinkInfo.getType()) {
+		
+		case ARGUMENT_TO_CALLED_METHOD:
+		case RETURN_VALUE:
+		case FIELD_STORE:
+			return  sourceSinkInfo.getLocation();
+
+
+		default:
+			return null;
+		}
+	}
+
+	private @CheckForNull
+	Location getSinkLocation(Iterable<SourceSinkInfo> info) {
+		for (SourceSinkInfo s : info) {
+			Location l = getSinkLocation(s);
+			if (l != null) return l;
+			
+		}
+		return null;
 	}
 }
