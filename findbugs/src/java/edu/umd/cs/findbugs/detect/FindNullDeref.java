@@ -188,7 +188,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 		if (CLASS != null && !className.equals(CLASS))
 			return;
 
-		for (Method method : classContext.getMethodsInCallOrder()) {
+		List<Method> methodsInCallOrder = classContext.getMethodsInCallOrder();
+		for (Method method : methodsInCallOrder) {
 			try {
 				if (method.isAbstract() || method.isNative() || method.getCode() == null)
 					continue;
@@ -579,7 +580,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 	        InvokeInstruction invokeInstruction, BitSet nullArgSet, BitSet definitelyNullArgSet)
 	        throws DataflowAnalysisException, ClassNotFoundException {
 
-		boolean caught = inCatchNullBlock(location);
+		if (inExplictCatchNullBlock(location))
+			return;
+		boolean caught = inIndirectCatchNullBlock(location);
 		if (caught && skipIfInsideCatchNull())
 			return;
 
@@ -777,7 +780,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 	private void checkNonNullParam(Location location, ConstantPoolGen cpg, TypeDataflow typeDataflow,
 	        InvokeInstruction invokeInstruction, BitSet nullArgSet, BitSet definitelyNullArgSet) throws ClassNotFoundException {
 
-		boolean caught = inCatchNullBlock(location);
+		if (inExplictCatchNullBlock(location))
+			return;
+		boolean caught = inIndirectCatchNullBlock(location);
 		if (caught && skipIfInsideCatchNull())
 			return;
 
@@ -880,7 +885,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 				}
 		}
 
-		boolean caught = inCatchNullBlock(location);
+		if (inExplictCatchNullBlock(location))
+			return;
+		boolean caught = inIndirectCatchNullBlock(location);
 		if (caught && skipIfInsideCatchNull())
 			return;
 
@@ -1465,13 +1472,24 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 	private void addPropertiesForDereferenceLocations(WarningPropertySet<WarningProperty> propertySet,
 	        Collection<Location> derefLocationSet, boolean isConsistent) {
 		boolean derefOutsideCatchBlock = false;
+		boolean derefOutsideCatchNullBlock = false;
 		boolean allDerefsAtDoomedLocations = true;
+		
+		
 		for (Location loc : derefLocationSet) {
-			if (!inCatchNullBlock(loc))
-				derefOutsideCatchBlock = true;
+			if (!inExplictCatchNullBlock(loc)) {
+				derefOutsideCatchNullBlock = true;
+				if (!inIndirectCatchNullBlock(loc))
+					derefOutsideCatchBlock = true;
+			}
 
 			if (!isDoomed(loc))
 				allDerefsAtDoomedLocations = false;
+		}
+		
+		if (!derefOutsideCatchNullBlock) {
+			propertySet.addProperty(GeneralWarningProperty.FALSE_POSITIVE);
+			return;
 		}
 
 		if (allDerefsAtDoomedLocations) {
@@ -1572,13 +1590,17 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
 	}
 
-	boolean inCatchNullBlock(Location loc) {
+	boolean inExplictCatchNullBlock(Location loc) {
 		int pc = loc.getHandle().getPosition();
 		int catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
 		        "java/lang/NullPointerException", pc);
 		if (catchSize < Integer.MAX_VALUE)
 			return true;
-		catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
+		return false;
+	}
+	boolean inIndirectCatchNullBlock(Location loc) {
+		int pc = loc.getHandle().getPosition();
+		int catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
 		        "java/lang/Exception", pc);
 		if (catchSize < 5)
 			return true;
