@@ -158,6 +158,11 @@ public class PatternMatcher implements DFSEdgeTypes {
 		private boolean canFork;
 		private final int parentPath;
 		private final int path;
+		
+		@Override
+        public String toString() {
+			return patternElement + " : " + instructionIterator + " :: " + currentMatch;
+		}
 
 		/**
 		 * Constructor.
@@ -337,7 +342,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 		 * Return Iterator over states representing dominated instructions
 		 * that continue the match.
 		 */
-		public Iterator<State> dominatedInstructionStateIterator() throws DataflowAnalysisException {
+		public Iterable<State> dominatedInstructionStateIterable() throws DataflowAnalysisException {
 			if (!lookForDominatedInstruction()) throw new IllegalStateException();
 			LinkedList<State> stateList = new LinkedList<State>();
 
@@ -347,30 +352,34 @@ public class PatternMatcher implements DFSEdgeTypes {
 				// Find the referenced instruction.
 				PatternElementMatch dominator = currentMatch.getFirstLabeledMatch(patternElement.getDominatedBy());
 				BasicBlock domBlock = dominator.getBasicBlock();
-
+				InstructionHandle domInstruction = dominator.getMatchedInstructionInstructionHandle();
 				// Find all basic blocks dominated by the dominator block.
 				for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
 					BasicBlock block = i.next();
-					if (block == domBlock)
-						continue;
+					boolean includeInstructions = block != domBlock;
 
 					BitSet dominators = domAnalysis.getResultFact(block);
-					if (dominators.get(domBlock.getLabel())) {
+					if (block == domBlock || dominators.get(domBlock.getLabel())) {
 						// This block is dominated by the dominator block.
-						// Each instruction in the block which matches the current pattern
+						// Each instruction in the block which matches the
+						// current pattern
 						// element is a new state continuing the match.
 						for (Iterator<InstructionHandle> j = block.instructionIterator(); j.hasNext();) {
-							MatchResult matchResult = dup.matchLocation(new Location(j.next(), block));
-							if (matchResult != null) {
-								stateList.add(dup);
-								dup = this.duplicate();
-							}
+							InstructionHandle next = j.next();
+							if (includeInstructions) {
+								MatchResult matchResult = dup.matchLocation(new Location(next, block));
+								if (matchResult != null) {
+									stateList.add(dup);
+									dup = this.duplicate();
+								}
+							} else if (next.equals(domInstruction))
+								includeInstructions = true;
 						}
 					}
 				}
 			}
 
-			return stateList.iterator();
+			return stateList;
 		}
 
 		private MatchResult matchLocation(Location location) throws DataflowAnalysisException {
@@ -381,17 +390,15 @@ public class PatternMatcher implements DFSEdgeTypes {
 			// Try to match the instruction against the pattern element.
 			boolean debug = DEBUG && (!(patternElement instanceof Wild) || SHOW_WILD);
 			if (debug) {
-				if (parentPath >= 0) {
-					System.out.print(parentPath + "->");
-				}
-				System.out.println(path + ": Match " + patternElement +
+				
+				debug((parentPath >= 0 ? parentPath + "->" : "") + path + ": Match " + patternElement +
 						" against " + location.getHandle() + " " +
 						(bindingSet != null ? bindingSet.toString() : "[]") + "...");
 			}
 			MatchResult matchResult = patternElement.match(location.getHandle(),
 					cpg, before, after, bindingSet);
 			if (debug)
-				System.out.println("\t" +
+				debug("\t" +
 						((matchResult != null) ? " ==> MATCH" : " ==> NOT A MATCH"));
 			if (matchResult != null) {
 				// Successful match!
@@ -406,6 +413,12 @@ public class PatternMatcher implements DFSEdgeTypes {
 		}
 	}
 
+	private void debug(String s) {
+		if (!DEBUG)
+			throw new IllegalStateException("Only call if DEBUG is true");
+		System.out.print("                                            ".substring(0,depth));
+		System.out.println(s);
+	}
 	/**
 	 * Match a sequence of pattern elements, starting at the given one.
 	 * The InstructionIterator should generally be positioned just before
@@ -414,15 +427,22 @@ public class PatternMatcher implements DFSEdgeTypes {
 	 * that we will try to continue the match in the non-backedge successors
 	 * of the basic block.
 	 */
+	
+	int depth = 0;
 	private void work(State state) throws DataflowAnalysisException {
+		depth++;
+		try {
 		// Have we reached the end of the pattern?
 		if (state.isComplete()) {
 			// This is a complete match.
-			if (DEBUG) System.out.println("FINISHED A MATCH!");
+			if (DEBUG) debug("FINISHED A MATCH!");
 			resultList.add(state.getResult());
 			return;
 		}
 
+		if (DEBUG) {
+			debug("Matching " + state.getPatternElement() + " against " + state.currentMatch);
+		}
 		// If we've reached the minimum number of occurrences for this
 		// pattern element, we can advance to the next pattern element without trying
 		// to match this instruction again.  We make sure that we only advance to
@@ -442,8 +462,12 @@ public class PatternMatcher implements DFSEdgeTypes {
 		// Are we looking for an instruction dominated by an earlier
 		// matched instruction?
 		if (state.lookForDominatedInstruction()) {
-			for (Iterator<State> i = state.dominatedInstructionStateIterator(); i.hasNext();)
-				work(i.next());
+			Iterable<State> dominatedInstructions = state.dominatedInstructionStateIterable();
+			for (State s : dominatedInstructions) {
+				if (DEBUG) 
+					debug("trying " + s);
+				work(s);
+			}
 			return;
 		}
 
@@ -485,6 +509,9 @@ public class PatternMatcher implements DFSEdgeTypes {
 					work(succState);
 				}
 			}
+		}
+		} finally {
+			depth--;
 		}
 
 	}

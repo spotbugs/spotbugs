@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -28,6 +29,15 @@ public class ByteCodePatternMatch {
 	private BindingSet bindingSet;
 	private PatternElementMatch lastElementMatch;
 	private LinkedList<PatternElementMatch> patternElementMatchList;
+	
+	@Override
+    public String toString() {
+		ArrayList<Integer> lst = new ArrayList<Integer>();
+		for(PatternElementMatch m : patternElementMatchList) {
+			lst.add(m.getMatchedInstructionInstructionHandle().getPosition());
+		}
+		return lst.toString();
+	}
 
 	public ByteCodePatternMatch(BindingSet bindingSet, PatternElementMatch lastElementMatch) {
 		this.bindingSet = bindingSet;

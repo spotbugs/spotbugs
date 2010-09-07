@@ -23,6 +23,8 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
@@ -170,14 +172,14 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 	/**
 	 * Get the first instruction in the basic block.
 	 */
-	public InstructionHandle getFirstInstruction() {
+	public @CheckForNull InstructionHandle getFirstInstruction() {
 		return firstInstruction;
 	}
 
 	/**
 	 * Get the last instruction in the basic block.
 	 */
-	public InstructionHandle getLastInstruction() {
+	public @CheckForNull InstructionHandle getLastInstruction() {
 		return lastInstruction;
 	}
 
@@ -187,7 +189,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 	 * @return the instruction's successor, or null if the instruction
 	 *         is the last in the basic block
 	 */
-	public InstructionHandle getSuccessorOf(InstructionHandle handle) {
+	public @CheckForNull InstructionHandle getSuccessorOf(InstructionHandle handle) {
 		if (VERIFY_INTEGRITY) {
 			if (!containsInstruction(handle))
 				throw new IllegalStateException();
@@ -287,8 +289,13 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 			StringBuilder buf = new StringBuilder();
 			buf.append("[basicBlock=");
 			buf.append(getBasicBlock().getLabel());
-			buf.append(", index=");
-			buf.append(next == null ? "end" : String.valueOf(next.getPosition()));
+			if (next != null) {
+				buf.append(", next=" + next);
+			} else if (getBasicBlock().isExceptionThrower()) {
+				buf.append(", check for" +getBasicBlock().getExceptionThrower());
+			} else  {
+				buf.append(", end");
+			}
 			buf.append(']');
 			return buf.toString();
 		}
