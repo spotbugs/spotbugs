@@ -171,8 +171,7 @@
 		 should happen in an earlier pass than FindNullDeref. -->
                     <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"/>
-                              <Later
-                                        class="edu.umd.cs.findbugs.detect.TrainUnconditionalDerefParams"
+                              <Later class="edu.umd.cs.findbugs.detect.TrainUnconditionalDerefParams"
                               />
                     </SplitPass>
                     <SplitPass>
@@ -184,13 +183,20 @@
                               <Later class="edu.umd.cs.findbugs.detect.FindInconsistentSync2"/>
                     </SplitPass>
                     <WithinPass>
-                              <Earlier
-                                        class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
+                              <Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
                               <Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
                     </WithinPass>
                     <WithinPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues"/>
                               <Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues"/>
+                              <Later class="edu.umd.cs.findbugs.detect.UnreadFields"/>
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
+                              <Later class="edu.umd.cs.findbugs.detect.UnreadFields"/>
                     </WithinPass>
                     <WithinPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
@@ -206,8 +212,7 @@
                     </WithinPass>
                     <WithinPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
-                              <Later
-                                        class="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass"
+                              <Later class="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass"
                               />
                     </WithinPass>
                     <SplitPass>
