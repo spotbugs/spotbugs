@@ -65,7 +65,7 @@ public class Naming extends PreorderVisitor implements Detector {
 		}
 
 		public static final NamingProperty METHOD_IS_CALLED = new NamingProperty("CONFUSING_METHOD_IS_CALLED",
-		        PriorityAdjustment.LOWER_PRIORITY);
+		        PriorityAdjustment.AT_MOST_MEDIUM);
 
 		public static final NamingProperty METHOD_IS_DEPRECATED = new NamingProperty("CONFUSING_METHOD_IS_DEPRECATED",
 		        PriorityAdjustment.LOWER_PRIORITY);
