@@ -219,8 +219,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 			if (detectorFactory != null) {
 				this.priority += detectorFactory.getPriorityAdjustment();
 				boundPriority();
-				if (SystemProperties.ASSERTIONS_ENABLED && !detectorFactory.getReportedBugPatterns().contains(getBugPattern()))
-					  AnalysisContext.logError(detectorFactory.getShortName() + " doesn't note that it reports " + getBugPattern());
+				BugPattern bugPattern = getBugPattern();
+				if (SystemProperties.ASSERTIONS_ENABLED 
+						&& !bugPattern.getCategory().equals("EXPERIMENTAL")
+						&& !detectorFactory.getReportedBugPatterns().contains(bugPattern))
+					  AnalysisContext.logError(detectorFactory.getShortName() + " doesn't note that it reports " + bugPattern);
 
 			}
 		}
