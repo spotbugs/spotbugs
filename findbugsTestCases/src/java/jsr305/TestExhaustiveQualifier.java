@@ -37,13 +37,13 @@ public class TestExhaustiveQualifier {
 	
 	@ExpectWarning("TQ")
 	public void report3(@NeverBlue Object v) {
-		// santity check - should see a warning here
+		// Sanity check - should see a warning here
 		blueField = v;
 	}
 	
 	@ExpectWarning("TQ")
 	public void report4(@ExhaustiveQualifier(value=ExhaustiveQualifier.Color.BLUE, when=When.NEVER) Object v) {
-		// santity check - should see a warning here
+		// Sanity check - should see a warning here
 		blueField = v;
 	}
 }

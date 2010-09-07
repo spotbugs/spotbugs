@@ -1,5 +1,7 @@
 package bugIdeas;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class Regression_2009_04_22 {
 
 	
@@ -12,10 +14,19 @@ public class Regression_2009_04_22 {
 		return "Y";
 	}
 	
-	void check() {
+	void check1() {
 		Object x = alwaysNonNull();
 		if (x == null) 
 			System.out.println("huh");
+	}
+	void check2() {
+		Object x = alwaysNonNull();
+		System.out.println(x.hashCode());
+		if (x == null) 
+			System.out.println("huh");
+	}
+	@ExpectWarning("RCN")
+	void check3() {
 		Object y = sometimesNull();
 		System.out.println(y.hashCode());
 		if (y == null) 
