@@ -5,13 +5,13 @@
 
 package edu.umd.cs.findbugs.annotations;
 
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
  * Annotation indicating that a FindBugs warning is expected.
+ *
+ * See http://code.google.com/p/findbugs/wiki/FindbugsTestCases
  * 
  * @author David Hovemeyer
  */

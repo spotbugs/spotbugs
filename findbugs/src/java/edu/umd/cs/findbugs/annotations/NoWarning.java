@@ -12,6 +12,8 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation indicating that <em>no</em> FindBugs warning is expected.
+ *
+ * See http://code.google.com/p/findbugs/wiki/FindbugsTestCases
  * 
  * @author David Hovemeyer
  */

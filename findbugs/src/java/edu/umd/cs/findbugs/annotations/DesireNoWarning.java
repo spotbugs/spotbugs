@@ -13,6 +13,8 @@ import java.lang.annotation.Target;
 /**
  * Annotation indicating that <em>no</em> FindBugs warning of the specified type
  * is not desired.
+ *
+ * See http://code.google.com/p/findbugs/wiki/FindbugsTestCases
  * 
  * @author David Hovemeyer
  */
