@@ -196,9 +196,11 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 				else if (adj == PriorityAdjustment.RAISE_PRIORITY)
 					--priority;
 				else if (adj == PriorityAdjustment.RAISE_PRIORITY_TO_AT_LEAST_NORMAL) {
-
 					--priority;
 					atLeastMedium = true;
+				} else if (adj == PriorityAdjustment.LOWER_PRIORITY_TO_AT_MOST_NORMAL) {
+					++priority;
+					atMostMedium = true;
 				} else if (adj == PriorityAdjustment.RAISE_PRIORITY_TO_HIGH) {
 
 					return Detector.HIGH_PRIORITY;
