@@ -55,7 +55,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 
@@ -67,7 +66,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.StartTime;
@@ -1719,7 +1717,11 @@ public  class DBCloud extends AbstractCloud {
 	    return projectMapping.getProjects(className);
     }
 
-    public String getCloudName() {
+	public boolean isInCloud(BugInstance b) {
+		return instanceMap.get(b.getInstanceHash()).inDatabase;
+	}
+
+	public String getCloudName() {
         return "FindBugs SQL Cloud";
     }
 

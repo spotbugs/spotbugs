@@ -124,6 +124,7 @@ public interface Cloud {
 
 	/** Set voting mode */
 	void setMode(Mode m);
+
 	/** Does the cloud support source lines  (e.g., to FishEye) */
 	boolean supportsSourceLinks();
 
@@ -142,6 +143,9 @@ public interface Cloud {
     Collection<String> getProjects(String className);
 
     // ===================================== bug instances =============================
+
+	/** returns whether the bug is stored remotely or not. for bug collection storage, always returns true */
+	boolean isInCloud(BugInstance b);
 
 	/** has the user said they will fix this bug */
 	boolean getIWillFix(BugInstance b);

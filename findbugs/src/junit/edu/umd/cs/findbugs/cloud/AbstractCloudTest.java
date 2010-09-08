@@ -477,7 +477,11 @@ public class AbstractCloudTest extends TestCase {
             return Collections.emptyList();
         }
 
-        public String getCloudName() {
+		public boolean isInCloud(BugInstance b) {
+			return true;
+		}
+
+		public String getCloudName() {
             return "test";
         }
 

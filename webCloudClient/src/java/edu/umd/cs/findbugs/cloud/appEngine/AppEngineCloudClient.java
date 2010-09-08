@@ -454,7 +454,11 @@ public class AppEngineCloudClient extends AbstractCloud {
 		return Collections.emptyList();
 	}
 
-    // ============================== misc =====================================
+	public boolean isInCloud(BugInstance b) {
+		return networkClient.getIssueByHash(b.getInstanceHash()) != null;
+	}
+
+	// ============================== misc =====================================
 
     public ExecutorService getBackgroundExecutor() {
         return backgroundExecutorService;

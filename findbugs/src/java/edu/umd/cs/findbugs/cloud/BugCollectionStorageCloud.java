@@ -163,7 +163,11 @@ public class BugCollectionStorageCloud extends AbstractCloud {
 	    return Collections.emptyList();
     }
 
-    public String getCloudName() {
+	public boolean isInCloud(BugInstance b) {
+		return true;
+	}
+
+	public String getCloudName() {
         return "local storage cloud";
     }
 
