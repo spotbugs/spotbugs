@@ -14,7 +14,6 @@ public class Bug1678229 {
 	private static String staticDevice;
 	private static StringBuffer staticDeviceFactory;
 
-	@ExpectWarning("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
 	public void registerDeviceFactory(StringBuffer factory) {
 		staticDeviceFactory = factory;
 	}
@@ -27,6 +26,10 @@ public class Bug1678229 {
 		return staticDevice.hashCode();
 	}
 
+	@NoWarning("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
+	public int reuse() {
+		return staticDevice.hashCode();
+	}
 	private  String device;
 	private  StringBuffer deviceFactory;
 
@@ -34,13 +37,17 @@ public class Bug1678229 {
 		deviceFactory = factory;
 	}
 
+	@ExpectWarning("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
 	public int open2() {
 		if (device == null) {
 			device = deviceFactory.toString();
         }
 		return device.hashCode();
 	}
-
+	@ExpectWarning("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
+	public int reuse2() {
+		return device.hashCode();
+	}
 
 
 }
