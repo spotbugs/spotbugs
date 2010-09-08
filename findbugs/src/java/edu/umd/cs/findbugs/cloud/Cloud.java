@@ -46,18 +46,24 @@ public interface Cloud {
 	
 	CloudPlugin getPlugin();
 
+    String getCloudName();
+
 	BugCollection getBugCollection();
 
 	/** Get a status message for the cloud; information about any errors, and
 	 * information about database synchronization 
 	 */
 	String getStatusMsg();
+	
+	public void printCloudSummary(PrintWriter w, Iterable<BugInstance> bugs, String[] packagePrefixes);
 
 	public void addListener(CloudListener listener);
 	public void removeListener(CloudListener listener);
 
     public void addStatusListener(CloudStatusListener cloudStatusListener);
     public void removeStatusListener(CloudStatusListener cloudStatusListener);
+
+    // ========================== initialization ====================================
 
     /** Do we have the configuration information needed to try initializing the cloud;
 	 * calling this method should have no side effects and not display any dialogs
@@ -93,25 +99,8 @@ public interface Cloud {
 	/** Shutdown the cloud, note termination of session, close connections */
 	public void shutdown();
 
-	/** Get voting mode */
-	Mode getMode();
+    // ================ signin / signout =================
 
-	/** Set voting mode */
-	void setMode(Mode m);
-
-	/** has the user said they will fix this bug */
-	boolean getIWillFix(BugInstance b);
-
-	/** Does the cloud support source lines  (e.g., to FishEye) */
-	boolean supportsSourceLinks();
-
-	/** Tool tip text for "view source" button */
-	String getSourceLinkToolTip(@CheckForNull BugInstance b);
-
-	/** URL to view the source for a bug instance */
-	URL getSourceLink(BugInstance b);
-
-	/** Get user name */
 	String getUser();
 
     SigninState getSigninState();
@@ -128,8 +117,40 @@ public interface Cloud {
 
     void signOut();
 
-	/** Supports links to a bug database */ 
+    // ================================= misc settings =============================
+
+	/** Get voting mode */
+	Mode getMode();
+
+	/** Set voting mode */
+	void setMode(Mode m);
+	/** Does the cloud support source lines  (e.g., to FishEye) */
+	boolean supportsSourceLinks();
+
+	/** Supports links to a bug database */
 	boolean supportsBugLinks();
+
+	/** Supports textual summaries about the status of a bug */
+	boolean supportsCloudReports();
+
+	/** Supports allowing users to claim a bug */
+	boolean supportsClaims();
+
+	boolean supportsCloudSummaries();
+
+	/** Get a list of names of FB projects that the given class "may be a part of." Used for filing bugs. */
+    Collection<String> getProjects(String className);
+
+    // ===================================== bug instances =============================
+
+	/** has the user said they will fix this bug */
+	boolean getIWillFix(BugInstance b);
+
+	/** Tool tip text for "view source" button */
+	String getSourceLinkToolTip(@CheckForNull BugInstance b);
+
+	/** URL to view the source for a bug instance */
+	URL getSourceLink(BugInstance b);
 
 	/** get the bug filing status for a bug instance */ 
 	BugFilingStatus getBugLinkStatus(BugInstance b);
@@ -145,12 +166,12 @@ public interface Cloud {
 	/** does the issue have an unassigned issue in the bug tracker */
 	boolean getBugIsUnassigned(BugInstance b);
 
-	
-
 	/** Get link for bug, either to file one or to view it */
 	URL getBugLink(BugInstance b);
 
-    URL fileBug(BugInstance bug);
+    String getBugLinkType(BugInstance instance);
+
+    URL fileBug(BugInstance b);
 
 	/** Note that we've initiated or completed a request to file a bug;
 	 * @param b bug against which bug was filed
@@ -158,31 +179,18 @@ public interface Cloud {
 	 */
 	void bugFiled(BugInstance b, @CheckForNull Object bugLink);
 
-    
-
-	/** Supports textual summaries about the status of a bug */
-	boolean supportsCloudReports();
-
-	/**
-	 * 
-	 * Get the cloud report for a bug 
-	 */
 	String getCloudReport(BugInstance b);
 
-	/** Supports allowing users to claim a bug */
-	boolean supportsClaims();
-
 	/** Get the user who has claimed a bug; null if no one has */
-	@CheckForNull
-	String claimedBy(BugInstance b);
+	@CheckForNull String claimedBy(BugInstance b);
 	
 	/**
-	 * Claim the bug; true if no one else has already done so 
+	 * Claim the bug
+	 * @return true if no one else has already done so
 	 */
 	boolean claim(BugInstance b);
 
 	/** Return the time the user last changed their evaluation of this bug */
-	
 	long getUserTimestamp(BugInstance b);
 	Date getUserDate(BugInstance b);
 
@@ -194,8 +202,7 @@ public interface Cloud {
 
 	/** Get free text evaluation of the bug */
 	String getUserEvaluation(BugInstance b);
-	
-	
+
 	double getClassificationScore(BugInstance b);
 
 	double getClassificationVariance(BugInstance b);
@@ -212,23 +219,20 @@ public interface Cloud {
 
 	boolean overallClassificationIsNotAProblem(BugInstance b);
 
-	/** Update user designation and evaluation from information in bug instance and push to database */
-	void storeUserAnnotation(BugInstance bugInstance);
+	// =========================== mutators ===========================
 
 	/** Is this bug one that gets persisted to the cloud?
-	 * We may decide that we don't persist low confidence issues to the 
+	 * We may decide that we don't persist low confidence issues to the
 	 * database to avoid overloading it */
 	boolean canStoreUserAnnotation(BugInstance bugInstance);
 
-	public void printCloudSummary(PrintWriter w, Iterable<BugInstance> bugs, String[] packagePrefixes);
+	/** Update user designation and evaluation from information in bug instance and push to database */
+	void storeUserAnnotation(BugInstance bugInstance);
 
-	public boolean supportsCloudSummaries();
+	// ========================= statistics ===========================
 
-    Collection<String> getProjects(String className);
 
-    String getCloudName();
 
-    String getBugLinkType(BugInstance instance);
 
     interface CloudListener {
 		void issueUpdated(BugInstance bug);
