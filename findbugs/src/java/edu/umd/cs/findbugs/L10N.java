@@ -26,17 +26,12 @@
 
 package edu.umd.cs.findbugs;
 
-import java.awt.event.KeyEvent;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-
-import javax.swing.AbstractButton;
-
-import edu.umd.cs.findbugs.gui.AnnotatedString;
 
 public class L10N {
 	private static final boolean DEBUG = SystemProperties.getBoolean("i18n.debug");
@@ -93,25 +88,4 @@ public class L10N {
 		}
 	}
 
-	/**
-	 * Localise the given AbstractButton, setting the text and optionally mnemonic
-	 * Note that AbstractButton includes menus and menu items.
-	 * @param button		The button to localise
-	 * @param key		   The key to look up in resource bundle
-	 * @param defaultString default String to use if key not found
-	 * @param setMnemonic	whether or not to set the mnemonic. According to Sun's
-	 *					  guidelines, default/cancel buttons should not have mnemonics
-	 *					  but instead should use Return/Escape
-	 */
-	public static void localiseButton(AbstractButton button, String key, String defaultString,
-								boolean setMnemonic) {
-		AnnotatedString as = new AnnotatedString(getLocalString(key, defaultString));
-		button.setText(as.toString());
-		int mnemonic;
-		if (setMnemonic &&
-			(mnemonic = as.getMnemonic()) != KeyEvent.VK_UNDEFINED) {
-			button.setMnemonic(mnemonic);
-			button.setDisplayedMnemonicIndex(as.getMnemonicIndex());
-		}
-	}
 }

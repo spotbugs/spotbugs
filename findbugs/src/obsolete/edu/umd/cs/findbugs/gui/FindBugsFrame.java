@@ -2428,7 +2428,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 */
 	private void localiseButton(AbstractButton button, String key, String defaultString,
 								boolean setMnemonic) {
-		L10N.localiseButton(button, key, defaultString, setMnemonic);
+		AnnotatedString.localiseButton(button, key, defaultString, setMnemonic);
 	}
 
 	/* ----------------------------------------------------------------------

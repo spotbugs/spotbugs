@@ -8,16 +8,18 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
+import edu.umd.cs.findbugs.gui.AnnotatedString;
+
 public class MainFrameHelper {
     public static JButton newButton(String key, String name) {
 		JButton b = new JButton();
-		edu.umd.cs.findbugs.L10N.localiseButton(b, key, name, false);
+		AnnotatedString.localiseButton(b, key, name, false);
 		return b;
 	}
 
     public static JMenuItem newJMenuItem(String key, String string, int vkF) {
 		JMenuItem m = new JMenuItem();
-		edu.umd.cs.findbugs.L10N.localiseButton(m, key, string, false);
+		AnnotatedString.localiseButton(m, key, string, false);
 		m.setMnemonic(vkF);
 		return m;
 
@@ -25,14 +27,14 @@ public class MainFrameHelper {
 
     public static JMenuItem newJMenuItem(String key, String string) {
 		JMenuItem m = new JMenuItem();
-		edu.umd.cs.findbugs.L10N.localiseButton(m, key, string, true);
+		AnnotatedString.localiseButton(m, key, string, true);
 		return m;
 
 	}
 
     public static JMenu newJMenu(String key, String string) {
 		JMenu m = new JMenu();
-		edu.umd.cs.findbugs.L10N.localiseButton(m, key, string, true);
+		AnnotatedString.localiseButton(m, key, string, true);
 		return m;
 	}
 

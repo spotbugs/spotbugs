@@ -144,7 +144,7 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
 		analysisMenuBar.setFont(new java.awt.Font("Dialog", 0, 12));
 		editMenu.setText("Edit");
 		editMenu.setFont(new java.awt.Font("Dialog", 0, 12));
-		L10N.localiseButton(editMenu, "menu.edit_menu", "&Edit", true);
+		AnnotatedString.localiseButton(editMenu, "menu.edit_menu", "&Edit", true);
 		editMenu.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				editMenuActionPerformed(evt);
@@ -154,7 +154,7 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
 		selectAllMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
 		selectAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 12));
 		selectAllMenuItem.setText("Select All");
-		L10N.localiseButton(selectAllMenuItem, "menu.selectall_item", "Select &All", true);
+		AnnotatedString.localiseButton(selectAllMenuItem, "menu.selectall_item", "Select &All", true);
 		selectAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				selectAllItemActionListener(evt);
@@ -166,7 +166,7 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
 		copyMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
 		copyMenuItem.setFont(new java.awt.Font("Dialog", 0, 12));
 		copyMenuItem.setText("Copy");
-		L10N.localiseButton(copyMenuItem, "menu.copy_item", "Copy", true);
+		AnnotatedString.localiseButton(copyMenuItem, "menu.copy_item", "Copy", true);
 		copyMenuItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				copyMenuItemActionPerformed(evt);
