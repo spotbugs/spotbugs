@@ -257,7 +257,6 @@ public class UnreadFields extends OpcodeStackDetector  {
 		XField f = XFactory.createXField(this);
 		allMyFields.add(f);
 		String signature = obj.getSignature();
-		int flags = obj.getAccessFlags();
 		if (!getFieldName().equals("serialVersionUID")) {
 
 			myFields.add(f);
@@ -443,28 +442,33 @@ public class UnreadFields extends OpcodeStackDetector  {
 		else if (seen == PUTSTATIC 
 			&& !getMethod().isStatic()) {
 			XField f = XFactory.createReferencedXField(this);
+			OpcodeStack.Item valuePut = getStack().getStackItem(0);
+			
 			checkWriteToStaticFromInstanceMethod: if (f.getName().indexOf("class$") != 0) {
 				int priority = LOW_PRIORITY;				
-				if (f.isReferenceType())
+				if (f.isReferenceType() )
 					try {
-				ValueNumberDataflow vnaDataflow = getClassContext().getValueNumberDataflow(getMethod());
-				IsNullValueDataflow invDataflow = getClassContext().getIsNullValueDataflow(getMethod());
-				ValueNumberFrame vFrame = vnaDataflow.getAnalysis().getFactAtPC(vnaDataflow.getCFG(), getPC());
-				IsNullValueFrame iFrame = invDataflow.getAnalysis().getFactAtPC(invDataflow.getCFG(), getPC());
-				AvailableLoad l = new AvailableLoad(f);
-				ValueNumber[] availableLoads = vFrame.getAvailableLoad(l);
-				if (availableLoads != null)
-				for(ValueNumber v : availableLoads) {
-					IsNullValue knownValue = iFrame.getKnownValue(v);
-					if (knownValue == null) continue;
-					if (knownValue.isDefinitelyNotNull()) {
-						priority--;
-						break;
-					} else if (knownValue.isDefinitelyNull()){
-						break checkWriteToStaticFromInstanceMethod;
-					}
-				}
-				
+						ValueNumberDataflow vnaDataflow = getClassContext().getValueNumberDataflow(getMethod());
+						IsNullValueDataflow invDataflow = getClassContext().getIsNullValueDataflow(getMethod());
+						ValueNumberFrame vFrame = vnaDataflow.getAnalysis().getFactAtPC(vnaDataflow.getCFG(), getPC());
+						IsNullValueFrame iFrame = invDataflow.getAnalysis().getFactAtPC(invDataflow.getCFG(), getPC());
+						AvailableLoad l = new AvailableLoad(f);
+						ValueNumber[] availableLoads = vFrame.getAvailableLoad(l);
+						if (availableLoads != null)
+							for (ValueNumber v : availableLoads) {
+								IsNullValue knownValue = iFrame.getKnownValue(v);
+								if (knownValue == null)
+									continue;
+								if (knownValue.isDefinitelyNotNull()) {
+									if (valuePut.isNull())
+										priority++;
+									else
+										priority--;
+									break;
+								} else if (knownValue.isDefinitelyNull()) {
+									break checkWriteToStaticFromInstanceMethod;
+								}
+							}
 				
 				} catch (CheckedAnalysisException e) {
 	                AnalysisContext.logError("foo", e);
@@ -472,17 +476,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 				
 				if (!publicOrProtectedConstructor) {
 					priority--;
-				} else {
-					// Possible fix for bug #3056289 (false positive on singleton assignment in constructor)
-					// do not report bug for the code "if(singleton == null) singleton = this;"
-					// or "if(singleton != null) throw Exception else singleton = this;"
-					if(f.isReferenceType()) {
-						FieldDescriptor fieldInfo = f.getFieldDescriptor();
-						if(fieldInfo.getSlashedClassName().equals(getClassName()) && nullTested.contains(f)){
-							priority ++;
-						}
-					}
-				}
+				} 
 				if (seenMonitorEnter)
 					priority++;
 				if (!seenInvokeStatic 
@@ -598,7 +592,7 @@ public class UnreadFields extends OpcodeStackDetector  {
                 }
 				}
 
-		if (seen == GETFIELD || seen == INVOKEVIRTUAL 
+		computePlacesAssumedNonnull: if (seen == GETFIELD || seen == INVOKEVIRTUAL 
 				|| seen == INVOKEINTERFACE
 				|| seen == INVOKESPECIAL || seen == PUTFIELD 
 				|| seen == IALOAD || seen == AALOAD || seen == BALOAD || seen == CALOAD || seen == SALOAD
@@ -634,26 +628,37 @@ public class UnreadFields extends OpcodeStackDetector  {
 			default: throw new RuntimeException("Impossible");
 			}
 			if (stack.getStackDepth() >= pos) {
-			OpcodeStack.Item item = stack.getStackItem(pos);
-			XField f = item.getXField();
-			if (DEBUG) System.out.println("RRR: " + f + " " + nullTested.contains(f)  + " " + writtenInConstructorFields.contains(f) + " " +  writtenNonNullFields.contains(f));
-			if (f != null && !nullTested.contains(f) 
-					&& ! ((writtenInConstructorFields.contains(f) || writtenInInitializationFields.contains(f))
-						 && writtenNonNullFields.contains(f))
-					) {
-				ProgramPoint p = new ProgramPoint(this);
-				Set <ProgramPoint> s = assumedNonNull.get(f);
-				if (s == null)
-					s = Collections.singleton(p);
-				else 
-					s = Util.addTo(s, p);
-				assumedNonNull.put(f,s);
-				if (DEBUG)
-				System.out.println(f + " assumed non-null in " +
-					getFullyQualifiedMethodName());
+				OpcodeStack.Item item = stack.getStackItem(pos);
+				XField f = item.getXField();
+				if (f != null && !f.isStatic() &&  !nullTested.contains(f)
+				        && !((writtenInConstructorFields.contains(f) || writtenInInitializationFields.contains(f)) && writtenNonNullFields
+				                .contains(f))) {
+					try {
+						IsNullValueDataflow invDataflow = getClassContext().getIsNullValueDataflow(getMethod());
+						IsNullValueFrame iFrame = invDataflow.getAnalysis().getFactBeforeExceptionCheck(invDataflow.getCFG(), getPC());
+						if (!iFrame.isValid() || iFrame.getStackValue(pos).isDefinitelyNotNull()) 
+							break computePlacesAssumedNonnull;
+			
+
+					} catch (CheckedAnalysisException e) {
+						AnalysisContext.logError("foo", e);
+					}
+					if (DEBUG)
+						System.out.println("RRR: " + f + " " + nullTested.contains(f) + " "
+						        + writtenInConstructorFields.contains(f) + " " + writtenNonNullFields.contains(f));
+
+					ProgramPoint p = new ProgramPoint(this);
+					Set<ProgramPoint> s = assumedNonNull.get(f);
+					if (s == null)
+						s = Collections.singleton(p);
+					else
+						s = Util.addTo(s, p);
+					assumedNonNull.put(f, s);
+					if (DEBUG)
+						System.out.println(f + " assumed non-null in " + getFullyQualifiedMethodName());
 				}
 			}
-			}
+		}
 
 
 
@@ -779,7 +784,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 		TreeSet<XField> notInitializedInConstructors =
 				new TreeSet<XField>(declaredFields);
 		notInitializedInConstructors.retainAll(readFields);
-		notInitializedInConstructors.retainAll(writtenFields);
+		notInitializedInConstructors.retainAll(writtenNonNullFields);
 		notInitializedInConstructors.retainAll(assumedNonNull.keySet());
 		notInitializedInConstructors.removeAll(writtenInConstructorFields);
 		notInitializedInConstructors.removeAll(writtenInInitializationFields);
@@ -849,24 +854,32 @@ public class UnreadFields extends OpcodeStackDetector  {
 		nullOnlyFields.removeAll(assumeReflective);
 		notInitializedInConstructors.removeAll(assumeReflective);
 		
+		Bag<String> notInitializedUses = new Bag<String>();
 		for (XField f : notInitializedInConstructors) {
-			String fieldName = f.getName();
 			String className = f.getClassName();
+			Set<ProgramPoint> assumedNonnullAt = assumedNonNull.get(f);
+			notInitializedUses.add(className, assumedNonnullAt.size());
+		}
+		for (XField f : notInitializedInConstructors) {
+			String className = f.getClassName();
+			if (notInitializedUses.getCount(className) >= 8)
+				continue;
 			String fieldSignature = f.getSignature();
 			if (f.isResolved()
 					&& !fieldsOfNativeClasses.contains(f)
-					&& (fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '[')
-					) {
+					&& (fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '[')) {
 				int priority = LOW_PRIORITY;
-				if (assumedNonNull.containsKey(f)) 
-				  bugReporter.reportBug(new BugInstance(this,
-						"UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR",
-						priority)
-						.addClass(className)
-						.addField(f));
+
+				Set<ProgramPoint> assumedNonnullAt = assumedNonNull.get(f);
+				if (assumedNonnullAt.size() < 4)
+					for (ProgramPoint p : assumedNonnullAt) {
+						BugInstance bug = new BugInstance(this, "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", priority).addClass(
+						        className).addField(f).addMethod(p.getMethodAnnotation());
+						bugAccumulator.accumulateBug(bug, p.getSourceLineAnnotation());
+					}
+
 			}
 		}
-
 
 		for (XField f : readOnlyFields) {
 			String fieldName = f.getName();
