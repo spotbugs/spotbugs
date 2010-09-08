@@ -172,14 +172,14 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 	/**
 	 * Get the first instruction in the basic block.
 	 */
-	public @CheckForNull InstructionHandle getFirstInstruction() {
+	public InstructionHandle getFirstInstruction() {
 		return firstInstruction;
 	}
 
 	/**
 	 * Get the last instruction in the basic block.
 	 */
-	public @CheckForNull InstructionHandle getLastInstruction() {
+	public InstructionHandle getLastInstruction() {
 		return lastInstruction;
 	}
 

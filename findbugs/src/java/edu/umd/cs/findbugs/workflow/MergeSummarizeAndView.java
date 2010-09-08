@@ -46,10 +46,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.cloud.BugCollectionStorageCloud;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.config.CommandLine;
-import edu.umd.cs.findbugs.gui2.FindBugsLayoutManagerFactory;
-import edu.umd.cs.findbugs.gui2.GUISaveState;
-import edu.umd.cs.findbugs.gui2.MainFrame;
-import edu.umd.cs.findbugs.gui2.SplitLayout;
+import edu.umd.cs.findbugs.launchGUI.LaunchGUI;
 
 /**
  * Compute the union of two sets of bug results, preserving annotations.
@@ -355,7 +352,7 @@ public class MergeSummarizeAndView {
 
 	private boolean report() {
 
-		boolean isCloudManagedByGui = false;
+		assert cloud == results.getCloud();
 		boolean hasScaryBugs = !scaryBugs.getCollection().isEmpty();
 		if (hasScaryBugs) {
 			System.out.printf("%4s%n", "days");
@@ -386,25 +383,15 @@ public class MergeSummarizeAndView {
 		if (hasScaryBugs || (options.alwaysShowGui && results.getCollection().size() > 0)) {
 			if (GraphicsEnvironment.isHeadless()) {
 				System.out.println("Running in GUI headless mode, can't open GUI");
-				return isCloudManagedByGui;
+				return false;
 			}
-			GUISaveState.loadInstance();
 			cloud.setMode(originalMode);
-			try {
-				FindBugsLayoutManagerFactory factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
-				MainFrame.makeInstance(factory);
-				MainFrame instance = MainFrame.getInstance();
-				instance.waitUntilReady();
-
-				instance.openBugCollection(results);
-				isCloudManagedByGui = true;
-			} catch (RuntimeException e) {
-				throw e;
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
+			
+			LaunchGUI.launchGUI(results);
+			return true;
 		}
-		return isCloudManagedByGui;
+		return false;
+
 
 	}
 

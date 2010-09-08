@@ -4736,26 +4736,13 @@ dereferencing this value will generate a null pointer exception.
 
 
 
-  <BugPattern type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" deprecated="true">  <!-- deprecated in favor of UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR -->
-    <ShortDescription>Read of field not initialized in constructor</ShortDescription>
-    <LongDescription>Read of field not initialized in constructor at {1}</LongDescription>
-    <Details>
-<![CDATA[
-  <p> This is a read of a field is never initialized within any constructor, and is therefore could be null after
-the object is initialized. This might be a coding error, or else the class containing the field
-is written in a way that depends upon methods being called in some specific order (a little bit dodgy,
-but not necessarily wrong).
-</p>
-]]>
-    </Details>
-  </BugPattern>
   <BugPattern type="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
-    <ShortDescription>Field not initialized in constructor</ShortDescription>
-    <LongDescription>{1.givenClass} not initialized in constructor</LongDescription>
+    <ShortDescription>Field not initialized in constructor but dereferenced without null check</ShortDescription>
+    <LongDescription>{1.givenClass} not initialized in constructor and dereferenced in {2}</LongDescription>
     <Details>
 <![CDATA[
   <p> This field is never initialized within any constructor, and is therefore could be null after
-the object is constructed.
+the object is constructed. Elsewhere, it is loaded and dereferenced without a null check.
 This could be a either an error or a questionable design, since
 it means a null pointer exception will be generated if that field is dereferenced
 before being initialized.

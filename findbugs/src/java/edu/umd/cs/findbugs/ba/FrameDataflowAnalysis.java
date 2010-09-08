@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.Iterator;
+
 import edu.umd.cs.findbugs.annotations.Nullable;
 
 /**
@@ -70,6 +72,33 @@ public abstract class FrameDataflowAnalysis <ValueType, FrameType extends Frame<
 		}
 		return result;
 	}
+	/**
+	 * Get the dataflow fact representing the point just before given Location.
+	 * Note "before" is meant in the logical sense, so for backward analyses,
+	 * before means after the location in the control flow sense.
+	 *
+	 * @param location the location
+	 * @return the fact at the point just before the location
+	 */
+	
+	public FrameType getFactBeforeExceptionCheck(CFG cfg, int pc) throws DataflowAnalysisException {
+		FrameType result = createFact();
+		makeFactTop(result);
+		
+		for(BasicBlock b : cfg.getBlocksContainingInstructionWithOffset(pc)) 
+			if (b.getFirstInstruction() != null && b.getFirstInstruction().getPosition() == pc) {
+				BasicBlock b2 = cfg.getPredecessorWithEdgeType(b, Edge.FALL_THROUGH_EDGE);
+				for(Iterator<Edge> i = cfg.incomingEdgeIterator(b2); i.hasNext(); ) {
+					Edge e = i.next();
+					FrameType fact = getFactOnEdge(e);
+					if (isFactValid(fact))
+						mergeInto(fact, result);	
+				}
+				
+		}
+		return result;
+	}
+	
 	
 	@Override
 		 public boolean isFactValid(FrameType fact) {

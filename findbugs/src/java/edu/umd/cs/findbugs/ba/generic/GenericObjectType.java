@@ -188,8 +188,12 @@ public class GenericObjectType extends ObjectType {
 	 * @return the underlying ObjectType for this Generic Object
 	 */
 	public ObjectType getObjectType() {
+		String cName = ClassName.fromFieldSignature(getSignature());
+		if (cName == null) {
+			throw new IllegalStateException("Can't provide ObjectType for " + this);
+		}
 		@DottedClassName String c = ClassName.toDottedClassName(
-				ClassName.fromFieldSignature(getSignature()));
+				cName);
 		return  ObjectTypeFactory.getInstance(c);
 	}
 

@@ -69,6 +69,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("cew.debug");
 	
 	private BugReporter reporter;
+	private BugCollection bugCollection;
 	private Set<String> possibleBugCodes;
 	private Map<MethodDescriptor, Collection<BugInstance>> warningsByMethod;
 	
@@ -80,7 +81,8 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 	private boolean warned;
 	
 	public CheckExpectedWarnings(BugReporter bugReporter) {
-		if (bugReporter.getBugCollection() != null) {
+		bugCollection = bugReporter.getBugCollection();
+		if (bugCollection != null) {
 			reporter = bugReporter;
 			expectWarning = DescriptorFactory.createClassDescriptor(ExpectWarning.class);
 			noWarning = DescriptorFactory.createClassDescriptor(NoWarning.class);
@@ -107,7 +109,6 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 			//
 			
 			warningsByMethod = new HashMap<MethodDescriptor, Collection<BugInstance>>();
-			BugCollection bugCollection = reporter.getBugCollection();
 			
 			for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); ){
 				BugInstance warning = i.next();
@@ -165,11 +166,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 
 	}
 
-	private static boolean falseIfNull(Boolean b) {
-		if (b == null)
-			return false;
-		return b;
-	}
+
 	private void check(XMethod xmethod, ClassDescriptor annotation, boolean expectWarnings, int priority) {
 		AnnotationValue expect = xmethod.getAnnotation(annotation);
 		if (expect != null) {

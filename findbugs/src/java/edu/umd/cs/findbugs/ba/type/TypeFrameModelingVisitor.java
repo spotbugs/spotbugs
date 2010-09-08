@@ -608,17 +608,18 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				System.out.println("   for " + targets.size() + " targets: " + targets);
 			}
 			for(XMethod m : targets) {
+				String sourceSignature = m.getSourceSignature();
 				if (DEBUG) {
 					System.out.println(" Call target: " + m);
-					if (m.getSourceSignature() != null)
-					  System.out.println("  source signature: " + m.getSourceSignature());
+					if (sourceSignature != null)
+					  System.out.println("  source signature: " + sourceSignature);
 				}
 				boolean foundSomething = false;
 				XMethod m2 = m.bridgeTo();
 				if (m2 != null)
 					m = m2;
-				if (m.getSourceSignature() != null && !m.getSourceSignature().equals(m.getSignature())) {
-					GenericSignatureParser p = new GenericSignatureParser(m.getSourceSignature());
+				if (sourceSignature != null && !sourceSignature.equals(m.getSignature())) {
+					GenericSignatureParser p = new GenericSignatureParser(sourceSignature);
 					String rv = p.getReturnTypeSignature();
 					if (rv.charAt(0) != 'T') {
 						try {
@@ -629,7 +630,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 							foundSomething = true;
 						}
 						} catch (RuntimeException e) {
-							AnalysisContext.logError("Problem analyzing call to " + m + " with source signature" + m.getSourceSignature(), e);
+							AnalysisContext.logError("Problem analyzing call to " + m + " with source signature" + sourceSignature, e);
 							break;
 						}
 					}

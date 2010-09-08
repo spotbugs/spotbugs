@@ -259,7 +259,12 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	public Iterator<BasicBlock> blockIterator() {
 		return vertexIterator();
 	}
-
+	 /*
+	  * * Get an Iteratable over the nodes (BasicBlocks) of the control flow graph.
+	 */
+	public Iterable<BasicBlock> blocks() {
+		return vertices();
+	}
 	/**
 	 * Get an Iterator over the Locations in the control flow graph.
 	 */

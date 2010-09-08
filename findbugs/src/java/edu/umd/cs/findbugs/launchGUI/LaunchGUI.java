@@ -17,53 +17,36 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.log;
+package edu.umd.cs.findbugs.launchGUI;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.awt.GraphicsEnvironment;
+
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.gui2.FindBugsLayoutManagerFactory;
+import edu.umd.cs.findbugs.gui2.GUISaveState;
+import edu.umd.cs.findbugs.gui2.MainFrame;
+import edu.umd.cs.findbugs.gui2.SplitLayout;
 
 /**
  * @author pugh
  */
-public class YourKitController {
-
-	Object controller;
-
-	Method advanceGeneration, captureMemorySnapshot;
-
-	public YourKitController() {
+public class LaunchGUI {
+	
+	public static void launchGUI(SortedBugCollection bugs) {
+		if (GraphicsEnvironment.isHeadless()) {
+			throw new IllegalStateException("Running in GUI headless mode, can't open GUI");
+		}
+		GUISaveState.loadInstance();
 		try {
-			Class<?> c = Class.forName("com.yourkit.api.Controller");
-			controller = c.newInstance();
-			advanceGeneration = c.getMethod("advanceGeneration", String.class);
-			captureMemorySnapshot = c.getMethod("captureMemorySnapshot");
+			FindBugsLayoutManagerFactory factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
+			MainFrame.makeInstance(factory);
+			MainFrame instance = MainFrame.getInstance();
+			instance.waitUntilReady();
+			instance.openBugCollection(bugs);
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
-			controller = null;
-		}
-
-	}
-
-	public void advanceGeneration(String name) {
-		if (controller == null)
-			return;
-		try {
-			advanceGeneration.invoke(controller, name);
-		} catch (Exception e) {
-			assert true;
-		}
-	}
-
-	public void captureMemorySnapshot() {
-		if (controller == null)
-			return;
-		try {
-			captureMemorySnapshot.invoke(controller);
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			assert true;
+			throw new RuntimeException(e);
 		}
 	}
 

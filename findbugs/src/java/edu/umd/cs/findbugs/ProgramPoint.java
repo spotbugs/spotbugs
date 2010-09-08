@@ -29,6 +29,39 @@ public class ProgramPoint {
 
 	public final XMethod method;
 	
+	/* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+	    final int prime = 31;
+	    int result = 1;
+	    result = prime * result + ((method == null) ? 0 : method.hashCode());
+	    result = prime * result + pc;
+	    return result;
+    }
+	/* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+	    if (this == obj)
+		    return true;
+	    if (obj == null)
+		    return false;
+	    if (getClass() != obj.getClass())
+		    return false;
+	    ProgramPoint other = (ProgramPoint) obj;
+	    if (method == null) {
+		    if (other.method != null)
+			    return false;
+	    } else if (!method.equals(other.method))
+		    return false;
+	    if (pc != other.pc)
+		    return false;
+	    return true;
+    }
+
 	public final int pc;
 
 	public MethodAnnotation getMethodAnnotation() {

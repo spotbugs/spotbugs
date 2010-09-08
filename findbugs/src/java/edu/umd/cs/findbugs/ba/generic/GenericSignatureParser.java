@@ -257,7 +257,8 @@ public class GenericSignatureParser {
 			System.out.println("-~- " + t);
 			if (t instanceof ObjectType)
 				System.out.println("-~- " + ( (ObjectType) t).toString());
-			System.out.println("-~- " + t.getClass());
+			if (t != null) 
+				System.out.println("-~- " + t.getClass());
 		}
 		System.out.println(parser.getNumParameters() + " parameter(s)");
 

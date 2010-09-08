@@ -146,6 +146,9 @@ public abstract class AbstractGraph
 	public Iterator<VertexType> vertexIterator() {
 		return vertexList.iterator();
 	}
+	public Iterable<VertexType> vertices() {
+		return vertexList;
+	}
 
 	public void addVertex(VertexType v) {
 		vertexList.add(v);
