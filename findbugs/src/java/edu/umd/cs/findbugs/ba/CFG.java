@@ -214,7 +214,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	 * @throws IllegalStateException if there is already an edge in the CFG
 	 *                               with the same source and destination block
 	 */
-	public Edge createEdge(BasicBlock source, BasicBlock dest, int type) {
+	public Edge createEdge(BasicBlock source, BasicBlock dest, @Edge.Type int type) {
 		Edge edge = createEdge(source, dest);
 		edge.setType(type);
 		return edge;

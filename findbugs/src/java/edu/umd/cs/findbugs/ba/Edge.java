@@ -19,10 +19,14 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.generic.InstructionHandle;
 
@@ -37,11 +41,16 @@ import edu.umd.cs.findbugs.graph.AbstractEdge;
  */
 public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, Debug {
 
+	@Documented
+	@TypeQualifier(applicableTo=Integer.class)
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface Type {}
+	
 	/* ----------------------------------------------------------------------
 	 * Fields
 	 * ---------------------------------------------------------------------- */
 
-	private int type;
+	@Type private int type;
 	private int flags;
 
 	/* ----------------------------------------------------------------------
@@ -65,14 +74,14 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 	/**
 	 * Get the type of edge.
 	 */
-	public int getType() {
+	public @Type int getType() {
 		return type;
 	}
 
 	/**
 	 * Set the type of edge.
 	 */
-	public void setType(int type) {
+	public void setType(@Type int type) {
 		this.type = type;
 	}
 
@@ -209,7 +218,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 	/**
 	 * Get string representing given edge type.
 	 */
-	public static String edgeTypeToString(int edgeType) {
+	public static String edgeTypeToString(@Type int edgeType) {
 		switch (edgeType) {
 		case FALL_THROUGH_EDGE:
 			return "FALL_THROUGH";
@@ -246,7 +255,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 	/**
 	 * Get numeric edge type from string representation.
 	 */
-	public static int stringToEdgeType(String s) {
+	public static @Type int stringToEdgeType(String s) {
 		s = s.toUpperCase(Locale.ENGLISH);
 
 		if (s.equals("FALL_THROUGH"))

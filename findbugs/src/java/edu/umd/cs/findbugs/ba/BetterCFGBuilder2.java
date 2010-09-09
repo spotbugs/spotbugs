@@ -143,7 +143,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		/**
 		 * Get the edge type.
 		 */
-		public int getEdgeType() {
+		public @Edge.Type int getEdgeType() {
 			return edgeType;
 		}
 	}
