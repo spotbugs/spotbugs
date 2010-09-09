@@ -87,6 +87,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * <li>failOnError        (boolean - default false)
  * <li>home               (findbugs install dir)
  * <li>includeFilter      (filter filename)
+ * <li>maxRank            (maximum rank issue to be reported)
  * <li>jvm                (Set the command used to start the VM)
  * <li>jvmargs            (any additional jvm arguments)
  * <li>omitVisitors       (collection - comma seperated)
@@ -134,6 +135,8 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	private boolean quietErrors;
 	private String warningsProperty ;
 	private String cloudId;
+	private int maxRank;
+	
 	private String projectName ;
 	private boolean workHard;
 	private boolean relaxed;
@@ -312,7 +315,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	public void setCloud(String cloudId) {
 		this.cloudId = cloudId.trim();
 	}
-
+	public void setMaxRank(int maxRank) {
+		this.maxRank = maxRank;
+	}
 	/**
 	 * Set project name
 	 * 
@@ -611,7 +616,10 @@ public class FindBugsTask extends AbstractFindBugsTask {
 		if ( effort != null ) {
 			addArg("-effort:" + effort);
 		}
-
+		if ( maxRank < 20) {
+			addArg("-maxRank ");
+			addArg(Integer.toString(maxRank));
+		}
         if ( adjustPriority != null ) {
             addArg("-adjustPriority");
             addArg(adjustPriority);
