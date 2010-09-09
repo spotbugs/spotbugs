@@ -1079,6 +1079,13 @@
                 type="org.eclipse.ui.views.properties.IPropertySource">
           </adapter>
        </factory>
+       <factory
+             adaptableType="edu.umd.cs.findbugs.BugInstance$XmlProps"
+             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
+          <adapter
+                type="org.eclipse.ui.views.properties.IPropertySource">
+          </adapter>
+       </factory>
     </extension>
 
     <extension
