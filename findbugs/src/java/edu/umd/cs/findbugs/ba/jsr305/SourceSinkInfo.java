@@ -37,6 +37,9 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	private final When when;
 	private int parameter;
 	private int local;
+	private Object constantValue;
+	
+
 	private boolean interproc;
 
 	/**
@@ -145,28 +148,66 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	public int compareTo(SourceSinkInfo o) {
 		return this.location.compareTo(o.location);
 	}
+	public Object getConstantValue() {
+    	return constantValue;
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return location.hashCode();
-	}
+	public void setConstantValue(Object constantValue) {
+    	this.constantValue = constantValue;
+    }
+	
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != this.getClass()) {
-			return false;
-		}
-		SourceSinkInfo other = (SourceSinkInfo) obj;
-		return this.type.equals(other.type)
-			&& this.vn.equals(other.vn)
-			&& this.location.equals(other.location);
-	}
+    public int hashCode() {
+	    final int prime = 31;
+	    int result = 1;
+	    result = prime * result + ((constantValue == null) ? 0 : constantValue.hashCode());
+	    result = prime * result + (interproc ? 1231 : 1237);
+	    result = prime * result + local;
+	    result = prime * result + ((location == null) ? 0 : location.hashCode());
+	    result = prime * result + parameter;
+	    result = prime * result + ((type == null) ? 0 : type.hashCode());
+	    result = prime * result + ((vn == null) ? 0 : vn.hashCode());
+	    result = prime * result + ((when == null) ? 0 : when.hashCode());
+	    return result;
+    }
+
+	@Override
+    public boolean equals(Object obj) {
+	    if (this == obj)
+		    return true;
+	    if (obj == null)
+		    return false;
+	    if (getClass() != obj.getClass())
+		    return false;
+	    SourceSinkInfo other = (SourceSinkInfo) obj;
+	    if (constantValue == null) {
+		    if (other.constantValue != null)
+			    return false;
+	    } else if (!constantValue.equals(other.constantValue))
+		    return false;
+	    if (interproc != other.interproc)
+		    return false;
+	    if (local != other.local)
+		    return false;
+	    if (location == null) {
+		    if (other.location != null)
+			    return false;
+	    } else if (!location.equals(other.location))
+		    return false;
+	    if (parameter != other.parameter)
+		    return false;
+	    if (type != other.type)
+		    return false;
+	    if (vn == null) {
+		    if (other.vn != null)
+			    return false;
+	    } else if (!vn.equals(other.vn))
+		    return false;
+	    if (when != other.when)
+		    return false;
+	    return true;
+    }
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -468,6 +469,10 @@ public class CheckTypeQualifiers extends CFGDetector {
 			.addClassAndMethod(methodDescriptor);
 		annotateWarningWithTypeQualifier(warning, typeQualifierValue);
 
+		Set<SourceSinkInfo> sourceSet = (forward == FlowValue.ALWAYS) ? forwardsFact.getWhereAlways(vn) : forwardsFact.getWhereNever(vn);
+		for (SourceSinkInfo sink : sourceSet) {
+			annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, sink);
+		}
 		Set<SourceSinkInfo> sinkSet = (backward == FlowValue.ALWAYS) ? backwardsFact.getWhereAlways(vn) : backwardsFact.getWhereNever(vn);
 		
 		Location sinkLocation = getSinkLocation(sinkSet);
@@ -558,6 +563,16 @@ public class CheckTypeQualifiers extends CFGDetector {
 			} catch (CheckedAnalysisException e) {
 				warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation()).describe("SOURCE_LINE_VALUE_SOURCE");
 			}
+			break;
+
+		case CONSTANT_VALUE:
+			Object constantValue = sourceSinkInfo.getConstantValue(); 
+			if (constantValue instanceof String){
+				warning.addString((String)constantValue).describe(StringAnnotation.STRING_CONSTANT_ROLE);
+			} else if (constantValue instanceof Integer){
+				warning.addInt((Integer)constantValue).describe(IntAnnotation.INT_VALUE);
+			} else 
+				warning.addString(constantValue.toString()).describe(StringAnnotation.STRING_CONSTANT_ROLE);
 			break;
 
 		case RETURN_VALUE_OF_CALLED_METHOD:

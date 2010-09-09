@@ -26,7 +26,9 @@ import javax.annotation.meta.When;
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.LDC;
 
 import edu.umd.cs.findbugs.ba.BlockOrder;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -95,16 +97,30 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 	private void registerInstructionSources() throws DataflowAnalysisException {
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
-			short opcode = location.getHandle().getInstruction().getOpcode();
+			Instruction instruction = location.getHandle().getInstruction();
+			short opcode = instruction.getOpcode();
 			
-			if (location.getHandle().getInstruction() instanceof InvokeInstruction) {
+			if (instruction instanceof InvokeInstruction) {
 				// Model return value
 				registerReturnValueSource(location);
 			} else if (opcode == Constants.GETFIELD || opcode == Constants.GETSTATIC) {
 				// Model field loads
 				registerFieldLoadSource(location);
-			}
+			} else if (instruction instanceof LDC) {
+				// Model field loads
+				registerLDCValueSource(location);
+			} 
 		}
+	}
+	private void registerLDCValueSource(Location location) throws DataflowAnalysisException {
+		
+		LDC instruction = (LDC) location.getHandle().getInstruction();
+		Object constantValue = instruction.getValue(cpg);
+		if (!typeQualifierValue.canValidate(constantValue))
+			return;
+		When w = typeQualifierValue.validate(constantValue);
+		
+		registerTopOfStackSource(SourceSinkType.CONSTANT_VALUE, location, w, false, constantValue);
 	}
 
 	private void registerReturnValueSource(Location location) throws DataflowAnalysisException {
@@ -132,7 +148,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 			}
 			
 			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
-			registerTopOfStackSource(SourceSinkType.RETURN_VALUE_OF_CALLED_METHOD, location, when, interproc);
+			registerTopOfStackSource(SourceSinkType.RETURN_VALUE_OF_CALLED_METHOD, location, when, interproc, null);
 		}
 	}
 
@@ -142,18 +158,19 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 			TypeQualifierAnnotation tqa =
 				TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(loadedField, typeQualifierValue);
 			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
-			registerTopOfStackSource(SourceSinkType.FIELD_LOAD, location, when, false);
+			registerTopOfStackSource(SourceSinkType.FIELD_LOAD, location, when, false, null);
 		}
 
 	}
 
-	private void registerTopOfStackSource(SourceSinkType sourceSinkType, Location location, When when, boolean interproc)
+	private void registerTopOfStackSource(SourceSinkType sourceSinkType, Location location, When when, boolean interproc, Object constantValue)
 			throws DataflowAnalysisException {
 		ValueNumberFrame vnaFrameAfterInstruction = vnaDataflow.getFactAfterLocation(location);
 		if (vnaFrameAfterInstruction.isValid()) {
 			ValueNumber tosValue = vnaFrameAfterInstruction.getTopValue();
 			SourceSinkInfo sourceSinkInfo = new SourceSinkInfo(sourceSinkType, location, tosValue, when);
 			sourceSinkInfo.setInterproc(interproc);
+			sourceSinkInfo.setConstantValue(constantValue);
 			registerSourceSink(sourceSinkInfo);
 		}
 	}

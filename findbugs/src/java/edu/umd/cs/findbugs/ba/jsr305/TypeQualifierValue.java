@@ -19,6 +19,15 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
+
+import javax.annotation.meta.TypeQualifierValidator;
+import javax.annotation.meta.When;
+
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -30,13 +39,9 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 import edu.umd.cs.findbugs.util.Util;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
 
 /**
  * A TypeQualifierValue is a pair specifying a type qualifier annotation
@@ -57,16 +62,70 @@ public class TypeQualifierValue {
 	
 	public final ClassDescriptor typeQualifier;
 	public final @CheckForNull Object value;
-	private boolean isStrict;
-	private boolean isExclusive;
-	private boolean isExhaustive;
+	private final boolean isStrict;
+	private final boolean isExclusive;
+	private final boolean isExhaustive;
+	private final @CheckForNull TypeQualifierValidator validator;
+	private final static ClassLoader validatorLoader = new ValidatorClassLoader();
 
 	private TypeQualifierValue(ClassDescriptor typeQualifier, @CheckForNull Object value) {
 		this.typeQualifier =  typeQualifier;
 		this.value = value;
-		this.isStrict = false; // will be set to true if this is a strict type qualifier value
-		this.isExclusive = false; // will be set to true if this is an exclusive type qualifier value
-		this.isExhaustive = false; // will be set to true if this is an exhaustive type qualifier value
+		boolean isStrict = false; // will be set to true if this is a strict type qualifier value
+		boolean isExclusive = false; // will be set to true if this is an exclusive type qualifier value
+		boolean isExhaustive = false; // will be set to true if this is an exhaustive type qualifier value
+		TypeQualifierValidator validator = null;
+		 try {
+			XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, typeQualifier);
+			
+			// Annotation elements appear as abstract methods in the annotation class (interface).
+			// So, if the type qualifier annotation has specified a default When value,
+			// it will appear as an abstract method called "when".
+			XMethod whenMethod = xclass.findMethod("when", "()Ljavax/annotation/meta/When;", false);
+			if (whenMethod == null) {
+				isStrict = true;
+			}
+			for (XMethod xmethod : xclass.getXMethods()) {
+				if (xmethod.getName().equals("value") && xmethod.getSignature().startsWith("()")) {
+					isExhaustive = xmethod.getAnnotation(EXHAUSTIVE_ANNOTATION) != null;
+					if (isExhaustive) {
+						// exhaustive qualifiers are automatically exclusive
+						isExclusive = true;
+					} else {
+						// see if there is an explicit @Exclusive annotation
+						isExclusive = xmethod.getAnnotation(EXCLUSIVE_ANNOTATION) != null;
+					}
+					
+					break;
+				}
+			}
+		} catch (MissingClassException e) {
+			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassNotFoundException());
+		} catch (CheckedAnalysisException e) {
+			AnalysisContext.logError("Error looking up annotation class " + typeQualifier.toDottedClassName(), e);
+		}
+		this.isStrict = isStrict;
+		this.isExclusive = isExclusive;
+		this.isExhaustive = isExhaustive;
+		ClassDescriptor  checkerName = DescriptorFactory.createClassDescriptor(typeQualifier.getClassName() + "$Checker");
+		try {
+			Global.getAnalysisCache().getClassAnalysis(ClassData.class, checkerName);
+			// found it.
+			Class c = validatorLoader.loadClass(checkerName.getDottedClassName());
+			Class<? extends TypeQualifierValidator> checkerClass = c.asSubclass(TypeQualifierValidator.class);
+			if (TypeQualifierValidator.class.isAssignableFrom(checkerClass)) {
+				validator = checkerClass.newInstance();
+			}
+		} catch (ClassNotFoundException e) {
+			assert true; // ignore
+		} catch (CheckedAnalysisException e) {
+        		assert true; // ignore
+        } catch (InstantiationException e) {
+	       AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName, e);
+        } catch (IllegalAccessException e) {
+        	   AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName, e);
+        } 
+        this.validator = validator;		
 	}
 
 	static class Data {
@@ -94,6 +153,14 @@ public class TypeQualifierValue {
 		instance.remove();
 	}
 
+	public boolean canValidate(Object constantValue) {
+		if (validator == null)
+			return false;
+		return true;
+	}
+	public When validate(Object constantValue) {
+		return validator.forConstantValue(null, constantValue);
+	}
 	/**
 	 * Given a ClassDescriptor/value pair, return the
 	 * interned TypeQualifierValue representing that pair.
@@ -107,8 +174,6 @@ public class TypeQualifierValue {
 		TypeQualifierValue result = map.get(desc, value);
 		if (result != null) return result;
 		result = new TypeQualifierValue(desc, value);
-		determineIfQualifierIsStrict(desc, result);
-		determineIfQualifierIsExclusiveOrExhaustive(desc, result);
 		map.put(desc, value, result);
 		instance.get().allKnownTypeQualifiers.add(result);
 		return result;
@@ -166,83 +231,6 @@ public class TypeQualifierValue {
 		return count > 1;
 	}
 	
-	private static void determineIfQualifierIsStrict(ClassDescriptor desc, TypeQualifierValue result) {
-		if (DEBUG) {
-			System.out.print("Checking to see if " + desc + " requires strict checking...");
-		}
-		// Check to see if the type qualifier should be checked strictly
-		try {
-			XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc);
-
-			// Annotation elements appear as abstract methods in the annotation class (interface).
-			// So, if the type qualifier annotation has specified a default When value,
-			// it will appear as an abstract method called "when".
-			XMethod whenMethod = xclass.findMethod("when", "()Ljavax/annotation/meta/When;", false);
-			if (whenMethod == null) {
-				result.setIsStrict();
-			}
-		} catch (MissingClassException e) {
-			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassNotFoundException());
-		} catch (CheckedAnalysisException e) {
-			AnalysisContext.logError("Error looking up annotation class " + desc.toDottedClassName(), e);
-		}
-		if (DEBUG) {
-			System.out.println(result.isStrictQualifier() ? "yes" : "no");
-		}
-	}
-	
-	private static void determineIfQualifierIsExclusiveOrExhaustive(ClassDescriptor desc, TypeQualifierValue result) {
-		if (DEBUG) {
-			System.out.print("Checking to see if " + desc + " is exclusive or exhaustive...");
-		}
-		
-		boolean isExclusive = false;
-		boolean isExhaustive = false;
-		
-		try {
-			XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc); 
-
-			// If the value() method is annotated as @Exhaustive, the type qualifier is exhaustive and exclusive.
-			// If the value() method is annotated as @Exclusive, the type qualifier is exclusive.
-			for (XMethod xmethod : xclass.getXMethods()) {
-				if (xmethod.getName().equals("value") && xmethod.getSignature().startsWith("()")) {
-					isExhaustive = xmethod.getAnnotation(EXHAUSTIVE_ANNOTATION) != null;
-					if (isExhaustive) {
-						// exhaustive qualifiers are automatically exclusive
-						isExclusive = true;
-					} else {
-						// see if there is an explicit @Exclusive annotation
-						isExclusive = xmethod.getAnnotation(EXCLUSIVE_ANNOTATION) != null;
-					}
-					
-					break;
-				}
-			}
-		} catch (MissingClassException e) {
-			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassNotFoundException());
-		} catch (CheckedAnalysisException e) {
-			AnalysisContext.logError("Error looking up annotation class " + desc.toDottedClassName(), e);
-		}
-		
-		if (isExclusive) {
-			result.setIsExclusive();
-		}
-		if (isExhaustive) {
-			result.setIsExhaustive();
-		}
-		
-		if (DEBUG) {
-			//System.out.println(result.isExclusiveQualifier() ? "yes" : "no");
-			if (isExhaustive) {
-				System.out.println("exhaustive,exclusive");
-			} else if (isExclusive) {
-				System.out.println("exclusive");
-			} else {
-				System.out.println("neither");
-			}
-		}
-	}
-
 	/**
 	 * Get the ClassDescriptor which specifies the type qualifier annotation.
 	 *
@@ -252,13 +240,7 @@ public class TypeQualifierValue {
 		return typeQualifier;
 	}
 
-	/**
-	 * Mark this as a type qualifier value that should
-	 * be checked strictly.
-	 */
-	private void setIsStrict() {
-		this.isStrict = true;
-	}
+	
 
 	/**
 	 * Return whether or not this TypeQualifierValue denotes
@@ -270,9 +252,7 @@ public class TypeQualifierValue {
 		return isStrict;
 	}
 	
-	private void setIsExclusive() {
-		this.isExclusive = true;
-	}
+	
 	
 	/**
 	 * Return whether or not this TypeQualifierValue denotes
@@ -285,10 +265,6 @@ public class TypeQualifierValue {
 	}
 
 	
-	private void setIsExhaustive() {
-		this.isExhaustive = true;
-	}
-
 	/**
 	 * Return whether or not this TypeQualifierValue denotes
 	 * an exhaustive qualifier.
