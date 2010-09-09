@@ -398,7 +398,7 @@ public class Profiler implements XMLWriteable {
 				continue;
 			p.writeXML(xmlOutput);
 			accumulatedTime += p.totalTime.get();
-			if (accumulatedTime > totalTime/2)
+			if (accumulatedTime > 3*totalTime/4)
 				break;
 		}
 		xmlOutput.closeTag("FindBugsProfile");
