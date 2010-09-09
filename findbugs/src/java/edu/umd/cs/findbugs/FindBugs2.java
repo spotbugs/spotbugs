@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
@@ -716,6 +717,10 @@ public class FindBugs2 implements IFindBugsEngine {
 					if (addedToWorkList.add(ifaceDesc))
 						workList.addLast(ifaceDesc);
 				}
+				
+				ClassDescriptor enclosingClass = classNameAndInfo.getImmediateEnclosingClass();
+				if (enclosingClass != null && addedToWorkList.add(enclosingClass)) 
+					workList.addLast(enclosingClass);
 
 			} catch (RuntimeException e) {
 				bugReporter.logError("Error scanning " + classDesc + " for referenced classes", e);
@@ -743,35 +748,21 @@ public class FindBugs2 implements IFindBugsEngine {
 		for(ClassDescriptor d : DescriptorFactory.instance().getAllClassDescriptors()) {
 	        referencedPackageSet.add(d.getPackageName());
         }
-
+		referencedClassSet = new ArrayList<ClassDescriptor>(DescriptorFactory.instance().getAllClassDescriptors());
+		
 		// Based on referenced packages, add any resolvable package-info classes
 		// to the set of referenced classes.
 		if (PROGRESS) {
 			referencedPackageSet.remove("");
 			System.out.println("Added " + count + " referenced classes");
 			System.out.println("Total of " + referencedPackageSet.size() + " packages");
+			for(ClassDescriptor d : referencedClassSet)
+				System.out.println("  " + d);
+			
 		}
 
-		// TODO the block below seems to be an old workaround which does not add any value
-		// except even more "package-info not found" exceptions
-		if(Boolean.getBoolean("fb.addPackageInfo"))
-		for (String pkg : referencedPackageSet) {
-			ClassDescriptor pkgInfoDesc = DescriptorFactory.instance().getClassDescriptorForDottedClassName(pkg + ".package-info");
-			if (DEBUG) {
-				System.out.println("Checking package " + pkg + " for package-info...");
-			}
-			try {
-				analysisCache.getClassAnalysis(ClassData.class, pkgInfoDesc); // check that data is there
-				analysisCache.getClassAnalysis(XClass.class, pkgInfoDesc);
-				if (DEBUG) {
-					System.out.println("   Adding " + pkgInfoDesc + " to referenced classes");
-				}
-			} catch (CheckedAnalysisException e) {
-				// Ignore
-			}
+		
 		}
-		referencedClassSet = new ArrayList<ClassDescriptor>(DescriptorFactory.instance().getAllClassDescriptors());
-	}
 
 	 public List<ClassDescriptor> sortByCallGraph(Collection<ClassDescriptor> classList, OutEdges<ClassDescriptor> outEdges) {
 		List<ClassDescriptor> evaluationOrder = edu.umd.cs.findbugs.util.TopologicalSort.sortByCallGraph(classList, outEdges);
