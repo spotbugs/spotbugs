@@ -71,7 +71,7 @@ public class FilterFilesTab extends Composite {
 			if (exclFiles.contains(path)) {
 				return FindbugsPlugin.createErrorStatus("Filter selected in a conflicting list", null);
 			}
-			return FindbugsPlugin.createStatus(IStatus.OK, "", null);
+			return Status.OK_STATUS;
 		}
 	}
 
@@ -141,18 +141,17 @@ public class FilterFilesTab extends Composite {
 
 		Link label = new Link(this, SWT.NONE);
 		label.setText("Filter files may be used to include or exclude bug detection for particular classes and methods.\n" +
-				"<a href=\"http://findbugs.sourceforge.net/manual/filter.html\">Details...</a>");
-		label.addSelectionListener(new SelectionListener() {
+				"<a href=\"http://findbugs.sourceforge.net/manual/filter.html\">Details...</a>\n");
 
+		label.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				Program.launch(e.text);
 			}
-
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// noop
 			}
 		});
-		label.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, true, true, 2, 1));
+		label.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, true, false, 2, 1));
 
 		TabItem tabDetector = new TabItem(parent, SWT.NONE);
 		tabDetector.setText(getMessage("property.filterFilesTab"));
@@ -171,7 +170,8 @@ public class FilterFilesTab extends Composite {
 
 		ManagePathsWidget excl2 = new ManagePathsWidget(this);
 		viewer = excl2.createViewer(getMessage(FilterKind.EXCLUDE_BUGS.propertyName),
-				"You can include past FindBugs result XML files here to exclude those bugs from analysis.");
+				"You can include past FindBugs result XML files here to exclude those bugs from analysis. " +
+				"<a href=\"http://findbugs.sourceforge.net/manual/filter.html\">Details...</a>");
 		filterExclBugs = createFilterProvider(viewer, FilterKind.EXCLUDE_BUGS);
 		excl2.createButtonsArea(filterExclBugs);
 

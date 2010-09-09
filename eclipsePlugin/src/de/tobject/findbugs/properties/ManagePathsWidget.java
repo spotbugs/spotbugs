@@ -22,11 +22,15 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 
 import de.tobject.findbugs.FindbugsPlugin;
 
@@ -55,9 +59,17 @@ public class ManagePathsWidget extends Composite {
 		titleLabel.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true, false, 2, 1));
 
 		if (linkText != null) {
-			Label details = new Label(this, SWT.NULL);
+			Link details = new Link(this, SWT.NULL);
 			details.setText(linkText);
 			details.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true, false, 2, 1));
+			details.addSelectionListener(new SelectionListener() {
+				public void widgetSelected(SelectionEvent e) {
+					Program.launch(e.text);
+				}
+				public void widgetDefaultSelected(SelectionEvent e) {
+					// noop
+				}
+			});
 		}
 
 		viewer = new ListViewer(this, SWT.MULTI | SWT.BORDER
