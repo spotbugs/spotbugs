@@ -19,9 +19,9 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
  * 
  */
 public class Ideas_2010_04_29 {
-
-	@ExpectWarning(value = "NP_NULL_ON_SOME_PATH_EXCEPTION")
-	@NoWarning(value = "NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH")
+	
+	@ExpectWarning("NP_NULL_ON_SOME_PATH_EXCEPTION")
+	@NoWarning("NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH")
 	public void test1() {
 		String str = null;
 		for (int i = 0; i < 2; i++) {
@@ -30,14 +30,15 @@ public class Ideas_2010_04_29 {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			str.charAt(i); // Error : "Null pointer access: The
+			str.charAt(i); 
+			// Eclipse Error : "Null pointer access: The
 			// variable str can only be null at
 			// this location"
 			str = null;
 		}
 	}
-	@ExpectWarning(value = "NP_NULL_ON_SOME_PATH_EXCEPTION")
-	@NoWarning(value = "NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH")
+
+	@NoWarning("NP")
 	public void test2() {
 		String str = null;
 		for (int i = 0; i < 2; i++) {
@@ -46,7 +47,8 @@ public class Ideas_2010_04_29 {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			str.charAt(i); // Error : "Null pointer access: The
+			str.charAt(i); 
+			// Error : "Null pointer access: The
 			// variable str can only be null at
 			// this location"
 
@@ -55,7 +57,7 @@ public class Ideas_2010_04_29 {
 
 	static class Test3 {
 
-		@NoWarning(value = "NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH")
+		@NoWarning("NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH")
 		void m() throws SQLException {
 			Connection conn = null;
 			try {
@@ -82,15 +84,15 @@ public class Ideas_2010_04_29 {
 		}
 	}
 
-	@NoWarning(value = "NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH")
+	@NoWarning("NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH")
 	public void test4() {
 		String dummy = null;
 		for (int i = 0; i < 10; i++) {
-			if (i % 2 == 1) {
+			if (i % 2 != 0) {
 				dummy = "Foo";
 			}
 			System.out.println("Hello");
-			if (i % 2 == 1) {
+			if (i % 2 != 0) {
 				System.out.println(dummy.toLowerCase());
 			}
 			dummy = null;
@@ -100,18 +102,18 @@ public class Ideas_2010_04_29 {
 	public void test4a() {
 		String dummy = null;
 		for (int i = 0; i < 10; i++) {
-			if (i % 2 == 1) {
+			if (i % 2 != 0) {
 				dummy = "Foo";
 			}
 			System.out.println("Hello");
-			if (dummy != null && i % 2 == 1) {
+			if (dummy != null && i % 2 != 0) {
 				System.out.println(dummy.toLowerCase());
 			}
 			dummy = null;
 		}
 	}
 
-	@NoWarning(value = "NP_ALWAYS_NULL")
+	@NoWarning("NP_ALWAYS_NULL")
 	private void test5() {
 		String tblVarRpl = null;
 		while (true) {
@@ -120,14 +122,14 @@ public class Ideas_2010_04_29 {
 			if (isOpenVariableMortageRateProduct) {
 				if (tblVarRplAllElementAddedIndicator == false)
 					tblVarRpl = "";
-				tblVarRpl.substring(1); // Can only be null???
+				tblVarRpl = tblVarRpl.substring(1); // Can only be null???
 				return;
 			}
 		}
 	}
 	
 	
-	@NoWarning(value = "NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH")
+	@NoWarning("NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH")
 	public void test8(boolean fail) throws Exception {
 		Object v = null;
 		try {
@@ -142,6 +144,7 @@ public class Ideas_2010_04_29 {
 		}
 	}
 
+	@ExpectWarning("NP_LOAD_OF_KNOWN_NULL_VALUE")
 	void test9(boolean b) {
 		Object o = null;
 		for (int i = 0; i < 25; i++) {
