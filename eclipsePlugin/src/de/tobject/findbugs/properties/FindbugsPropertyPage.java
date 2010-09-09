@@ -425,6 +425,14 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 	@Override
 	public boolean performOk() {
 		reportConfigurationTab.performOk();
+		boolean analysisSettingsChanged = false;
+		boolean reporterSettingsChanged = false;
+		boolean needRedisplayMarkers = false;
+		boolean pluginsChanged = false;
+		if(workspaceSettingsTab != null) {
+			workspaceSettingsTab.performOK();
+			pluginsChanged = workspaceSettingsTab.arePluginsChanged();
+		}
 
 		// Have user preferences for project changed?
 		// If so, write them to the user preferences file & re-run builder
@@ -441,15 +449,15 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 			}
 		}
 
-		boolean analysisSettingsChanged = areAnalysisPrefsChanged(
+		analysisSettingsChanged = pluginsChanged || areAnalysisPrefsChanged(
 				currentUserPreferences, origUserPreferences);
 
-		boolean reporterSettingsChanged = !currentUserPreferences.getFilterSettings()
-			.equals(origUserPreferences.getFilterSettings());
+		reporterSettingsChanged = !currentUserPreferences.getFilterSettings()
+				.equals(origUserPreferences.getFilterSettings());
 
 		boolean markerSeveritiesChanged = reportConfigurationTab.isMarkerSeveritiesChanged();
 
-		boolean needRedisplayMarkers = markerSeveritiesChanged || reporterSettingsChanged;
+		needRedisplayMarkers = pluginsChanged || markerSeveritiesChanged || reporterSettingsChanged;
 		if(getProject() != null) {
 			boolean builderEnabled = chkEnableFindBugs.getSelection();
 
@@ -479,7 +487,12 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 				}
 			}
 		} else {
-			// workspace change, nothing to do
+			if (analysisSettingsChanged) {
+				// workspace change
+				if(!getPreferenceStore().getBoolean(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD)){
+					remindAboutFullBuild();
+				}
+			}
 		}
 
 		if (needRedisplayMarkers) {

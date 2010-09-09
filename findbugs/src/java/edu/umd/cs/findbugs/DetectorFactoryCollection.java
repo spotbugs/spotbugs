@@ -97,6 +97,20 @@ public class DetectorFactoryCollection {
 		this.pluginList = new URL[pluginList.length];
 		System.arraycopy(pluginList, 0, this.pluginList, 0, pluginList.length);
 	}
+	
+	/**
+     * @return Returns the copy of currently loaded pluginList, never null. 
+     * Core plugin might be not in the list. If there are no additional plugins
+     * or plugins are not loaded yet, returns an empty array.
+     */
+    public URL[] getPluginList() {
+    	if(pluginList == null) {
+    		return new URL[0];
+    	}
+    	URL[] myPlugins = new URL[pluginList.length];
+		System.arraycopy(pluginList, 0, myPlugins, 0, pluginList.length);
+	    return myPlugins;
+    }
 
 	/**
 	 * Set the instance that should be returned as the singleton instance.
@@ -112,16 +126,26 @@ public class DetectorFactoryCollection {
 		}
 	}
 	
-	static void resetInstance(DetectorFactoryCollection instance) {
+	/**
+	 * Reset the factory singleton.
+	 * <p> 
+	 * <b>Implementation note:</b> This method is public only to allow Eclipse 
+	 * plugin install and uninstall additional bug detector packages without
+	 * restarting the JVM
+	 * @param instance can be null
+	 */
+	public static void resetInstance(DetectorFactoryCollection instance) {
 		synchronized (lock) {
 			theInstance = instance;
 		}
 	}
-	static boolean isLoaded() {
+	
+	public static boolean isLoaded() {
 		synchronized (lock) {
 			return theInstance != null && theInstance.loaded;
 		}
 	}
+	
 	/**
 	 * Get the single instance of DetectorFactoryCollection.
 	 */

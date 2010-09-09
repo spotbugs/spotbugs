@@ -32,6 +32,11 @@ public final class FindBugsConstants {
 		// never call this
 	}
 
+	/**
+	 * Prefix for the (enumerated) custom detector package keys
+	 */
+	public final static String KEY_CUSTOM_DETECTORS = "customDetectors";
+
 	/** marker severity to use for bugs with low prio */
 	public final static String PRIO_LOW_MARKER_SEVERITY = FindBugsMarker.NAME_LOW;
 

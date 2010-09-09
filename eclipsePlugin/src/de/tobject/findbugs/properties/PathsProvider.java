@@ -20,9 +20,9 @@ package de.tobject.findbugs.properties;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
@@ -62,12 +62,12 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
 		viewer.setContentProvider(this);
 	}
 
-	public static void setLastUsedPath(IPath lastUsed) {
+	static void setLastUsedPath(IPath lastUsed) {
 		// TODO write to preferences
 		lastUsedPath = lastUsed;
 	}
 
-	public static IPath getLastUsedPath() {
+	static IPath getLastUsedPath() {
 		// TODO read from preferences
 		return lastUsedPath;
 	}
@@ -202,9 +202,9 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
 		}
 	}
 
-	protected Set<String> pathsToStrings() {
+	protected SortedSet<String> pathsToStrings() {
 		IProject project = propertyPage.getProject();
-		Set<String>result = new LinkedHashSet<String>();
+		SortedSet<String>result = new TreeSet<String>();
 		for (PathElement path : paths) {
 			IPath filterPath = FindBugsWorker.toFilterPath(path.getPath(), project);
 			result.add(filterPath.toPortableString());

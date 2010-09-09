@@ -537,6 +537,9 @@ public final class MarkerUtil {
 		FindBugsJob job = new FindBugsJob("Refreshing FindBugs markers", project){
 			@Override
 			protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
+				// TODO in case we removed some of previously available detectors, we should
+				// throw away bugs reported by them
+
 				// Get the saved bug collection for the project
 				SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project,
 						monitor);

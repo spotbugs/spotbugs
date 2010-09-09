@@ -25,14 +25,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dom4j.DocumentException;
@@ -51,6 +55,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -78,11 +83,14 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.nature.FindBugsNature;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.preferences.FindBugsPreferenceInitializer;
+import de.tobject.findbugs.preferences.PrefsUtil;
+import de.tobject.findbugs.properties.DetectorValidator;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.view.IMarkerSelectionHandler;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
 import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -214,6 +222,53 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		// Register our save participant
 		FindbugsSaveParticipant saveParticipant = new FindbugsSaveParticipant();
 		ResourcesPlugin.getWorkspace().addSaveParticipant(this, saveParticipant);
+
+		// do not start job (and do not load FB core) if there are no custom detectors
+		final SortedSet<String> detectorPaths = PrefsUtil.readDetectorPaths(getPreferenceStore());
+		if(!detectorPaths.isEmpty()) {
+			Job job = new Job("Applying custom detectors") {
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					applyCustomDetectors(detectorPaths, false);
+					return Status.OK_STATUS;
+				}
+			};
+			job.schedule();
+		}
+	}
+
+	/**
+	 * @param detectorPaths list of possible detector plugins
+	 * @param force true if we MUST set plugins even if the given list is empty
+	 */
+	public static void applyCustomDetectors(SortedSet<String> detectorPaths, boolean force) {
+		List<URL> pluginList = new ArrayList<URL>();
+		DetectorValidator validator = new DetectorValidator();
+		for (String path : detectorPaths) {
+			URL url;
+			try {
+				url = new File(path).toURI().toURL();
+			} catch (MalformedURLException e) {
+				getDefault().logException(e,
+						"Failed to create URL list for custom detector: "	+ path);
+				continue;
+			}
+			IStatus status = validator.validate(path);
+			if(status.isOK()) {
+				pluginList.add(url);
+			} else {
+				getDefault().getLog().log(status);
+			}
+		}
+		if(pluginList.isEmpty() && !force) {
+			return;
+		}
+		if(DetectorFactoryCollection.isLoaded()) {
+			DetectorFactoryCollection.resetInstance(null);
+		}
+		DetectorFactoryCollection dfc = DetectorFactoryCollection.rawInstance();
+		dfc.setPluginList(pluginList.toArray(new URL[pluginList.size()]));
+		DetectorFactoryCollection.resetInstance(dfc);
 	}
 
 	@Override
