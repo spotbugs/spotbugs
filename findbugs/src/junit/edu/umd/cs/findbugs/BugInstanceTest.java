@@ -95,7 +95,7 @@ public class BugInstanceTest extends TestCase {
     public void testWriteCloudPropertiesWithoutMessagesEnabled() throws Exception {
         BugInstance inst = new BugInstance("ABC", 2);
         inst.getXmlProps().setConsensus("NOT_A_BUG");
-        inst.getXmlProps().setFirstSeen(BugInstance.FIRST_SEEN_XML_FORMAT.parse("4/11/10 2:00 PM"));
+        inst.getXmlProps().setFirstSeen(BugInstance.firstSeenXMLFormat().parse("4/11/10 2:00 PM"));
         inst.getXmlProps().setReviewCount(3);
 
         SortedBugCollection bc = new SortedBugCollection();
@@ -115,7 +115,7 @@ public class BugInstanceTest extends TestCase {
         BugInstance inst = new BugInstance("ABC", 2);
         inst.addClass("my.class");
         inst.getXmlProps().setConsensus("NOT_A_BUG");
-        inst.getXmlProps().setFirstSeen(BugInstance.FIRST_SEEN_XML_FORMAT.parse("4/11/10 2:00 PM"));
+        inst.getXmlProps().setFirstSeen(BugInstance.firstSeenXMLFormat().parse("4/11/10 2:00 PM"));
         inst.getXmlProps().setReviewCount(3);
 
         SortedBugCollection bc = new SortedBugCollection();

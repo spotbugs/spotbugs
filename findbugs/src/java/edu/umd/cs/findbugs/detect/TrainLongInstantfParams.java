@@ -62,11 +62,8 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
 	}
 
 	}
-	BugReporter bugReporter;
-	
 	LongInstantParameterDatabase database = new LongInstantParameterDatabase();
 	public TrainLongInstantfParams(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
 	}
 
 	@Override

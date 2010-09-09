@@ -224,9 +224,8 @@ public class BugSet implements Iterable<BugLeafNode>{
 				if (one == two)
 					return 0;
 				int result;
-				for (Sortables i : order)
-				{
-					 result = i.getBugLeafNodeComparator().compare(one, two);
+				for (Sortables i : order) {
+					result = i.getBugLeafNodeComparator().compare(one, two);
 					if (result != 0)
 						return result;
 				}
@@ -237,29 +236,21 @@ public class BugSet implements Iterable<BugLeafNode>{
 					 return result;
 				SourceLineAnnotation oneSource = bugOne.getPrimarySourceLineAnnotation();
 				SourceLineAnnotation twoSource = bugTwo.getPrimarySourceLineAnnotation();
-				if (oneSource != null && twoSource != null) {
-					 result = oneSource.getClassName().compareTo(twoSource.getClassName());
-					if (result != 0)
-						return result;
-					result = compare(oneSource.getStartLine(), twoSource.getStartLine());
-					if (result != 0)
-						return result;
-					result = compare(oneSource.getEndLine(), twoSource.getEndLine());
-					if (result != 0)
-						return result;
-					result = compare(oneSource.getStartBytecode(), twoSource.getStartBytecode());
-					if (result != 0)
-						return result;
-					result = compare(oneSource.getEndBytecode(), twoSource.getEndBytecode());
-					if (result != 0)
-						return result;
-					
-				}
-				if (oneSource != null)
-					return 1;
-				if (twoSource != null)
-					return -1;
-				return 0;
+				result = oneSource.getClassName().compareTo(twoSource.getClassName());
+				if (result != 0)
+					return result;
+				result = compare(oneSource.getStartLine(), twoSource.getStartLine());
+				if (result != 0)
+					return result;
+				result = compare(oneSource.getEndLine(), twoSource.getEndLine());
+				if (result != 0)
+					return result;
+				result = compare(oneSource.getStartBytecode(), twoSource.getStartBytecode());
+				if (result != 0)
+					return result;
+				result = compare(oneSource.getEndBytecode(), twoSource.getEndBytecode());
+				return result;
+				
 			}
 		});
 	}

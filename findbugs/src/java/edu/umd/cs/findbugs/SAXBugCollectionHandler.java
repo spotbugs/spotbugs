@@ -237,7 +237,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						String firstSeen = getOptionalAttribute(attributes, "firstSeen");
 						if (firstSeen != null) {
                             try {
-                                bugInstance.getXmlProps().setFirstSeen(BugInstance.FIRST_SEEN_XML_FORMAT.parse(firstSeen));
+                                bugInstance.getXmlProps().setFirstSeen(BugInstance.firstSeenXMLFormat().parse(firstSeen));
                             } catch (ParseException e) {
                                 LOGGER.warning("Could not parse first seen entry: " + firstSeen);
                                 // ignore

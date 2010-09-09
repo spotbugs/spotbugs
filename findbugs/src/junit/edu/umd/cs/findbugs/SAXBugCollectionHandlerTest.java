@@ -34,7 +34,7 @@ public class SAXBugCollectionHandlerTest extends TestCase {
         BugInstance bug = bc.getCollection().iterator().next();
         assertEquals("1acc5c5b9b7ab9efacede805afe1e53a", bug.getInstanceHash());
         assertEquals(16, bug.getBugRank());
-        assertEquals("4/11/10 11:24 AM", BugInstance.FIRST_SEEN_XML_FORMAT.format(bug.getXmlProps().getFirstSeen()));
+        assertEquals("4/11/10 11:24 AM", BugInstance.firstSeenXMLFormat().format(bug.getXmlProps().getFirstSeen()));
         Cloud cloud = bc.getCloud();
         assertFalse(cloud.overallClassificationIsNotAProblem(bug));
         assertEquals(0, cloud.getNumberReviewers(bug));
@@ -68,7 +68,7 @@ public class SAXBugCollectionHandlerTest extends TestCase {
         BugInstance bug = bc.getCollection().iterator().next();
         assertEquals("1acc5c5b9b7ab9efacede805afe1e53a", bug.getInstanceHash());
         assertEquals(16, bug.getBugRank());
-        assertEquals("4/11/10 11:24 AM", BugInstance.FIRST_SEEN_XML_FORMAT.format(bug.getXmlProps().getFirstSeen()));
+        assertEquals("4/11/10 11:24 AM", BugInstance.firstSeenXMLFormat().format(bug.getXmlProps().getFirstSeen()));
         Cloud cloud = bc.getCloud();
         assertTrue(cloud.overallClassificationIsNotAProblem(bug));
         assertEquals(4, cloud.getNumberReviewers(bug));
@@ -102,7 +102,7 @@ public class SAXBugCollectionHandlerTest extends TestCase {
         BugInstance bug = bc.getCollection().iterator().next();
         assertEquals("1acc5c5b9b7ab9efacede805afe1e53a", bug.getInstanceHash());
         assertEquals(16, bug.getBugRank());
-        assertEquals("4/11/10 11:24 AM", BugInstance.FIRST_SEEN_XML_FORMAT.format(bug.getXmlProps().getFirstSeen()));
+        assertEquals("4/11/10 11:24 AM", BugInstance.firstSeenXMLFormat().format(bug.getXmlProps().getFirstSeen()));
         Cloud cloud = bc.getCloud();
         assertFalse(cloud.overallClassificationIsNotAProblem(bug));
         assertEquals(4, cloud.getNumberReviewers(bug));
@@ -147,7 +147,7 @@ public class SAXBugCollectionHandlerTest extends TestCase {
         assertEquals("1acc5c5b9b7ab9efacede805afe1e53a", bug.getInstanceHash());
         assertEquals(16, bug.getBugRank());
         Cloud cloud = bc.getCloud();
-        assertEquals("4/11/10 11:24 AM", BugInstance.FIRST_SEEN_XML_FORMAT.format(cloud.getFirstSeen(bug)));
+        assertEquals("4/11/10 11:24 AM", BugInstance.firstSeenXMLFormat().format(cloud.getFirstSeen(bug)));
         assertFalse(cloud.overallClassificationIsNotAProblem(bug));
         assertEquals(4, cloud.getNumberReviewers(bug));
         assertEquals(Cloud.UserDesignation.SHOULD_FIX, cloud.getConsensusDesignation(bug));

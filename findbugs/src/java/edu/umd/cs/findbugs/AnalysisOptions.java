@@ -76,11 +76,6 @@ public class AnalysisOptions {
 	 */
 	public boolean noClassOk;
 
-	/**
-	 * 
-	 */
-	public boolean userAnnotationSync;
-
 	 String releaseName;
 	 String projectName;
 	/**

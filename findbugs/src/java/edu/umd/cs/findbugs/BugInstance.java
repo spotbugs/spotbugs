@@ -148,7 +148,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 	private static boolean adjustExperimental = false;
 
 	private static Set<String> missingBugTypes = Collections.synchronizedSet(new HashSet<String>());
-    public static final DateFormat FIRST_SEEN_XML_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT, Locale.ENGLISH);
+	public static  DateFormat firstSeenXMLFormat() {
+		return  DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT, Locale.ENGLISH);
+	}
 
 
     /**
@@ -1814,7 +1816,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         if (bugCollection != null) {
             Cloud cloud = bugCollection.getCloud();
             long firstSeen = cloud.getFirstSeen(this);
-            attributeList.addAttribute("firstSeen", FIRST_SEEN_XML_FORMAT.format(firstSeen));
+            attributeList.addAttribute("firstSeen", firstSeenXMLFormat().format(firstSeen));
             int reviews = cloud.getNumberReviewers(this);
             UserDesignation consensus = cloud.getConsensusDesignation(this);
             if (reviews > 0) {

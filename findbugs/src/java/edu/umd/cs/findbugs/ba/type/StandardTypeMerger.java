@@ -167,6 +167,8 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 					case PARAMETERIZED:
 						List<? extends ReferenceType> aP = aG.getParameters();
 						List<? extends ReferenceType> bP = bG.getParameters();
+						assert aP != null;
+						assert bP != null;
 						if (aP.size() != bP.size())
 							break;
 						ArrayList<ReferenceType> result = new ArrayList<ReferenceType>(aP.size());
