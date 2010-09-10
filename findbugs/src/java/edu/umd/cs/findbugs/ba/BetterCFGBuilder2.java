@@ -119,7 +119,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 	 */
 	private static class EscapeTarget {
 		private final InstructionHandle target;
-		private final int edgeType;
+		private final @Edge.Type int edgeType;
 
 		/**
 		 * Constructor.
@@ -128,7 +128,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		 * @param edgeType the type of edge that should be created when the
 		 *                 subroutine is inlined into its calling context
 		 */
-		public EscapeTarget(InstructionHandle target, int edgeType) {
+		public EscapeTarget(InstructionHandle target,  @Edge.Type int edgeType) {
 			this.target = target;
 			this.edgeType = edgeType;
 		}
