@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -39,7 +40,9 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
+import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -158,8 +161,22 @@ public class TypeQualifierValue {
 			return false;
 		return true;
 	}
+
 	public When validate(Object constantValue) {
-		return validator.forConstantValue(null, constantValue);
+		if (validator == null)
+			throw new IllegalStateException("No validator");
+		IAnalysisCache analysisCache = Global.getAnalysisCache();
+		Profiler profiler = analysisCache.getProfiler();		
+		profiler.start(validator.getClass());
+		try {
+			return validator.forConstantValue(null, constantValue);
+		} catch (Exception e) {
+			AnalysisContext.logError("Error executing custom validator for " + typeQualifier + " " + constantValue, e);
+			return When.UNKNOWN;
+		} finally {
+			profiler.end(validator.getClass());
+			
+		}
 	}
 	/**
 	 * Given a ClassDescriptor/value pair, return the
