@@ -22,16 +22,20 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.classfile.ClassElementValue;
 import org.apache.bcel.classfile.ElementValue;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
+import edu.umd.cs.findbugs.ba.CheckReturnValueAnnotation;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
+import edu.umd.cs.findbugs.ba.AnnotationDatabase.Target;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 /**
@@ -82,24 +86,19 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 		if (n == null) {
 			if (annotationClass.startsWith("DefaultAnnotation")) {
 
-				Object v = map.get("value");
-				
-				if (v == null || !(v instanceof Object[]))
+				ElementValue v = map.get("value");
+				if (!(v instanceof ClassElementValue))
 					return;
-				annotationClass = annotationClass.substring("DefaultAnnotation"
-						.length());
+				ClassElementValue value = (ClassElementValue) v;
+				annotationClass = annotationClass.substring("DefaultAnnotation".length());
 
 				AnnotationDatabase.Target annotationTarget = defaultKind.get(annotationClass);
 
-				if (annotationTarget != null)
-					for (Object aClass : (Object[]) v) {
-						n = NullnessAnnotation.Parser.parse((String) aClass);
-						if (n != null)
-							database
-									.addDefaultAnnotation(annotationTarget,
-											getDottedClassName(), n);
-					}
-
+				if (annotationTarget != null) {
+					n = NullnessAnnotation.Parser.parse(value.getClassString());
+					if (n != null)
+						database.addDefaultAnnotation(annotationTarget, getDottedClassName(), n);
+				}
 			}
 		}
 		else if (visitingMethod())

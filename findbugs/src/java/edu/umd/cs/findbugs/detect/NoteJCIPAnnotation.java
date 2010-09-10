@@ -70,7 +70,8 @@ public class NoteJCIPAnnotation extends AnnotationVisitor implements
 
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass javaClass = classContext.getJavaClass();
-		if  (!BCELUtil.preTiger(javaClass)) javaClass.accept(this);
+		if  (!BCELUtil.preTiger(javaClass)) 
+			javaClass.accept(this);
 
 	}
 

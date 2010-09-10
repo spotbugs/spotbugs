@@ -19,13 +19,12 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.lang.annotation.ElementType;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.meta.When;
-
+import org.apache.bcel.classfile.ClassElementValue;
 import org.apache.bcel.classfile.ElementValue;
+import org.apache.bcel.classfile.EnumElementValue;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
@@ -73,33 +72,33 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 
 		if (annotationClassSimpleName.startsWith("DefaultAnnotation")) {
 
-			Object v = map.get("value");
-			if (v == null || !(v instanceof Object[]))
+			ElementValue v = map.get("value");
+			if (!(v instanceof ClassElementValue))
 				return;
+			ClassElementValue value = (ClassElementValue) v;
 			annotationClassSimpleName = annotationClassSimpleName.substring("DefaultAnnotation".length());
 
 			Target annotationTarget = defaultKind.get(annotationClassSimpleName);
 			if (annotationTarget != Target.METHOD)
 				return;
 
-			if (annotationTarget != null)
-				for (Object aClass : (Object[]) v) {
-					if (aClass instanceof String && simpleClassName((String) aClass).equals("CheckReturnValue")) {
-						CheckReturnValueAnnotation n = CheckReturnValueAnnotation.parse(getAnnotationParameterAsString(map, "priority"));
-						if (n != null)
-							AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase().addDefaultAnnotation(
-						        annotationTarget, getDottedClassName(), n);
-					}
-				}
+			if (simpleClassName(value.getClassString()).equals("CheckReturnValue")) {
+				CheckReturnValueAnnotation n = CheckReturnValueAnnotation.parse(getAnnotationParameterAsString(map, "priority"));
+				if (n != null)
+					AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase().addDefaultAnnotation(
+					        annotationTarget, getDottedClassName(), n);
+
+			}
 
 		}
 
 		CheckReturnValueAnnotation n;
 
 		if (annotationClassName.equals(javax.annotation.CheckReturnValue.class.getName())) {
-			Object when = map.get("when");
-			if (when instanceof String) {
-				String w = simpleClassName((String)when);
+			ElementValue v = map.get("when");
+			if (v instanceof EnumElementValue) {
+			EnumElementValue when = (EnumElementValue) v;
+				String w = simpleClassName(when.getEnumValueString());
 				if (w.equals("NEVER") || w.equals("UNKNOWN"))
 					n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE;
 				else if (w.equals("MAYBE")) 
