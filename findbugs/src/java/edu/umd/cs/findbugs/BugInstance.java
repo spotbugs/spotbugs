@@ -57,7 +57,6 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
-import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -1819,6 +1818,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             attributeList.addAttribute("firstSeen", firstSeenXMLFormat().format(firstSeen));
             int reviews = cloud.getNumberReviewers(this);
             UserDesignation consensus = cloud.getConsensusDesignation(this);
+			if (!cloud.isInCloud(this)) {
+				attributeList.addAttribute("isInCloud", "false");
+			}
             if (reviews > 0) {
                 attributeList.addAttribute("reviews", Integer.toString(reviews));
 
@@ -2316,6 +2318,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     static public class XmlProps {
         private Date firstSeen = null;
         private int reviewCount = 0;
+        private boolean isInCloud = true;
         private String consensus;
 
         public Date getFirstSeen() {
@@ -2330,7 +2333,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             return consensus;
         }
 
-        public void setFirstSeen(Date firstSeen) {
+		public boolean isInCloud() {
+			return isInCloud;
+		}
+
+		public void setFirstSeen(Date firstSeen) {
             this.firstSeen = firstSeen;
         }
 
@@ -2341,7 +2348,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         public void setConsensus(String consensus) {
             this.consensus = consensus;
         }
-    }
+
+		public void setIsInCloud(boolean inCloud) {
+			isInCloud = inCloud;
+		}
+	}
 }
 
 // vim:ts=4

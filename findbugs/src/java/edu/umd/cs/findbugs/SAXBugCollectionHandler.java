@@ -244,6 +244,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                             }
                         }
 
+						String isInCloud = getOptionalAttribute(attributes, "isInCloud");
+						if (isInCloud != null)
+							bugInstance.getXmlProps().setIsInCloud(Boolean.parseBoolean(isInCloud));
+
+
 						String reviewCount = getOptionalAttribute(attributes, "reviews");
 						if (reviewCount != null) {
 							bugInstance.getXmlProps().setReviewCount(Integer.parseInt(reviewCount));

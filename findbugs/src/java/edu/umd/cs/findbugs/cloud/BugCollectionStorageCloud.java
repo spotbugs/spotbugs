@@ -164,7 +164,7 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     }
 
 	public boolean isInCloud(BugInstance b) {
-		return true;
+		return b.getXmlProps().isInCloud();
 	}
 
 	public String getCloudName() {
