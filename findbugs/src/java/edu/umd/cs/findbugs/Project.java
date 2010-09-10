@@ -50,12 +50,6 @@ import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.dom4j.DocumentException;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
@@ -67,6 +61,14 @@ import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
+import org.apache.commons.lang.SystemUtils;
+import org.dom4j.DocumentException;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeElementList;
 
 /**
  * A project in the GUI.
@@ -675,7 +677,7 @@ public class Project implements XMLWriteable {
 		OutputStream out  = new FileOutputStream(f);
 		XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
 		try {
-			writeXML(xmlOutput);
+			writeXML(xmlOutput, f);
 		} finally {
 			xmlOutput.finish();
 		}
@@ -766,7 +768,8 @@ public class Project implements XMLWriteable {
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		writeXML(xmlOutput, null);
 	}
-		public void writeXML(XMLOutput xmlOutput, @CheckForNull Object destination) throws IOException {
+
+	public void writeXML(XMLOutput xmlOutput, @CheckForNull File destination) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList();
 		if (getProjectName() != null) {
 	        attributeList = attributeList.addAttribute(PROJECTNAME_ATTRIBUTE_NAME, getProjectName());
@@ -776,10 +779,15 @@ public class Project implements XMLWriteable {
 				attributeList
 				);
 
-		XMLOutputUtil.writeElementList(xmlOutput, JAR_ELEMENT_NAME, analysisTargets);
-		XMLOutputUtil.writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
-		XMLOutputUtil.writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, srcDirList);
-		XMLOutputUtil.writeFileList(xmlOutput, WRK_DIR_ELEMENT_NAME, currentWorkingDirectoryList);
+		String base = destination.getParent();
+		writeElementList(xmlOutput, JAR_ELEMENT_NAME, convertToRelative(analysisTargets, base));
+		writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, convertToRelative(auxClasspathEntryList, base));
+		writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, convertToRelative(srcDirList, base));
+
+		List<String> cwdStrings = new ArrayList<String>();
+		for (File file : currentWorkingDirectoryList)
+			cwdStrings.add(file.getPath());
+		XMLOutputUtil.writeElementList(xmlOutput, WRK_DIR_ELEMENT_NAME, convertToRelative(cwdStrings, base));
 		if (suppressionFilter != null && !suppressionFilter.isEmpty()) {
 			xmlOutput.openTag("SuppressionFilter");
 			suppressionFilter.writeBodyAsXML(xmlOutput);
@@ -805,32 +813,6 @@ public class Project implements XMLWriteable {
 		xmlOutput.closeTag(BugCollection.PROJECT_ELEMENT_NAME);
 	}
 
-	List<String> makeRelative(List<String> files, @CheckForNull Object destination) {
-		if (destination == null) {
-	        return files;
-        }
-		if (currentWorkingDirectoryList.isEmpty()) {
-	        return files;
-        }
-		if (destination instanceof File) {
-			File where = (File)destination;
-			if (where.getParentFile().equals(currentWorkingDirectoryList.get(0))) {
-				List<String> result = new ArrayList<String>(files.size());
-				String root = where.getParent();
-				for(String s : files) {
-					if (s.startsWith(root)) {
-	                    result.add(s.substring(root.length()));
-                    } else {
-	                    result.add(s);
-                    }
-				}
-				return result;
-			}
-		}
-		return files;
-	}
-	
-
 	/**
 	 * Hack for whether files are case insensitive.
 	 * For now, we'll assume that Windows is the only
@@ -839,6 +821,14 @@ public class Project implements XMLWriteable {
 	 */
 	private static final boolean FILE_IGNORE_CASE =
 			SystemProperties.getProperty("os.name", "unknown").startsWith("Windows");
+
+	private Iterable<String> convertToRelative(List<String> paths, String base) {
+		List<String> newList = new ArrayList<String>(paths.size());
+		for (String path : paths) {
+			newList.add(convertToRelative(path, base));
+		}
+		return newList;
+	}
 
 	/**
 	 * Converts a full path to a relative path if possible

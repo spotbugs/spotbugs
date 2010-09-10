@@ -636,11 +636,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			} else if (outerElement.equals(PROJECT)) {
 				//System.out.println("Adding project element " + qName + ": " + getTextContents());
 				if (qName.equals("Jar"))
-					project.addFile(getTextContents());
+					project.addFile(makeAbsolute(getTextContents()));
 				else if (qName.equals("SrcDir"))
-					project.addSourceDir(getTextContents());
+					project.addSourceDir(makeAbsolute(getTextContents()));
 				else if (qName.equals("AuxClasspathEntry"))
-					project.addAuxClasspathEntry(getTextContents());
+					project.addAuxClasspathEntry(makeAbsolute(getTextContents()));
 			}	else if (outerElement.equals(Project.CLOUD_ELEMENT_NAME) && qName.equals(Project.CLOUD_PROPERTY_ELEMENT_NAME)) {
 					assert cloudPropertyKey != null;
 					project.getCloudProperties().setProperty(cloudPropertyKey, getTextContents());
@@ -681,12 +681,21 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		elementStack.remove(elementStack.size() - 1);
 	}
 
+	private String makeAbsolute(String possiblyRelativePath) {
+		if (base == null)
+			return possiblyRelativePath;
+		if (new File(possiblyRelativePath).isAbsolute())
+			return possiblyRelativePath;
+
+		return new File(base.getParentFile(), possiblyRelativePath).getAbsolutePath();
+	}
+
 	@Override
 	public void characters(char[] ch, int start, int length) {
 		textBuffer.append(ch, start, length);
 	}
 
-	private  String getRequiredAttribute(Attributes attributes, String attrName, String elementName)
+	private String getRequiredAttribute(Attributes attributes, String attrName, String elementName)
 		throws SAXException {
 		String value = attributes.getValue(attrName);
 		if (value == null)
