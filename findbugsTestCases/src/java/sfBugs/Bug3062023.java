@@ -11,23 +11,22 @@ public class Bug3062023 {
 	private void noWarning(E e) {
 		switch (e) {
 			case A:
-				something();
+				something(1);
 				break;
 			case B:
 				//Nothing to report
 				break;
 			case C:
-				something();
+				something(2);
 				break;
 			case D:
-				something();
 				break;
 			default:
-				something();
+				something(10);
 				break;
 		}
 	}
 
-	private void something() {
+	private void something(int i) {
 	}
 }
