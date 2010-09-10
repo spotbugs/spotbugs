@@ -40,6 +40,7 @@ public class CloudFactory {
     
     private static final String FINDBUGS_NAMELOOKUP_CLASSNAME = "findbugs.namelookup.classname";
     private static final String FINDBUGS_NAMELOOKUP_REQUIRED = "findbugs.namelookup.required";
+	private static final boolean FAIL_IF_CLOUD_NOT_FOUND = SystemProperties.getBoolean("findbugs.failIfCloudNotFound", false);
 
 	public static boolean DEBUG = SystemProperties.getBoolean("findbugs.cloud.debug",false);
 	public static String DEFAULT_CLOUD = SystemProperties.getProperty("findbugs.cloud.default");
@@ -47,12 +48,12 @@ public class CloudFactory {
     private static final Logger LOGGER = Logger.getLogger(CloudFactory.class.getName());
 
 
-    public static Cloud createCloudWithoutInitializing(BugCollection bc) {
+	public static Cloud createCloudWithoutInitializing(BugCollection bc) {
     		CloudPlugin plugin = null;
     		String cloudId = bc.getProject().getCloudId();
     		if (cloudId != null) {
     			plugin = registeredClouds.get(cloudId);
-				if (plugin == null)
+				if (plugin == null && FAIL_IF_CLOUD_NOT_FOUND)
 					throw new IllegalArgumentException("Cannot find registered cloud for " + cloudId);
     		}
     		boolean usedDefaultCloud = false;

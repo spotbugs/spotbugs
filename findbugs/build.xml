@@ -556,7 +556,7 @@
     <findbugs home="."
               output="xml:withMessages"
 		cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
-			  jvmargs="-ea -Xmx900m"
+			  jvmargs="-ea -Xmx900m -Dfindbugs.failIfCloudNotFound=true"
 			  excludeFilter="findbugsExclude.xml"
 			  projectName="FindBugs"
 			  maxRank="18"
