@@ -19,31 +19,16 @@
 
 package edu.umd.cs.findbugs.internalAnnotations;
 
-import java.util.regex.Matcher;
-
-import junit.framework.TestCase;
-
+import java.util.regex.Pattern;
 
 /**
  * @author pugh
  */
-public class SlashedClassNameTest extends TestCase {
-	
+public abstract class SlashedPattern {
 
-	public void testFoo() {
-		Matcher m = SlashedPattern.simplePattern.matcher("Foo");
-		assertTrue(m.matches());
-	}
-	public void testFooBar() {
-		Matcher m = SlashedPattern.simplePattern.matcher("foo.Bar");
-		assertFalse(m.matches());
-		m = SlashedPattern.pattern.matcher("foo.Bar");
-		assertTrue(!m.matches());
-	}
-	public void testFoo1Bar2() {
-		Matcher m = SlashedPattern.simplePattern.matcher("foo1.Bar2");
-		assertFalse(m.matches());
-		m = SlashedPattern.pattern.matcher("foo1.Bar2");
-		assertTrue(!m.matches());
-	}
+	final static String simpleName = "(\\p{javaJavaIdentifierStart}(\\p{javaJavaIdentifierPart}|\\$)*)";
+	final static String slashedClassName = simpleName + "(/" + simpleName +")*";
+	final static Pattern simplePattern = Pattern.compile(simpleName);
+	final static Pattern pattern = Pattern.compile(slashedClassName);
+	
 }

@@ -23,7 +23,6 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import javax.annotation.RegEx;
@@ -39,24 +38,17 @@ import javax.annotation.meta.When;
 @TypeQualifier(applicableTo=CharSequence.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SlashedClassName {
-	final static String simpleName = "(\\p{javaJavaIdentifierStart}(\\p{javaJavaIdentifierPart}|\\$)*)";
-	final static String slashedClassName = simpleName + "(/" + simpleName +")*";
-	final static Pattern simplePattern = Pattern.compile(simpleName);
-	final static Pattern pattern = Pattern.compile(slashedClassName);
-				
 	When when() default When.ALWAYS;
-	 static class Checker implements TypeQualifierValidator<SlashedClassName> {
+	static class Checker implements TypeQualifierValidator<SlashedClassName> {
 
-	        public When forConstantValue(SlashedClassName annotation, Object value) {
-	            if (!(value instanceof String))
-	                return When.NEVER;
+		public When forConstantValue(SlashedClassName annotation, Object value) {
+			if (!(value instanceof String))
+				return When.NEVER;
 
-	          if (pattern.matcher((String) value).matches())
-	        	  	return When.ALWAYS;
-	          
-	          return When.NEVER;
+			if (SlashedPattern.pattern.matcher((String) value).matches())
+				return When.ALWAYS;
 
-	        }
-
-	    }
+			return When.NEVER;
+		}
+	}
 }
