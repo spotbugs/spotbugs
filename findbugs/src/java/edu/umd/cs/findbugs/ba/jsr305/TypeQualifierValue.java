@@ -115,8 +115,8 @@ public class TypeQualifierValue {
 			Global.getAnalysisCache().getClassAnalysis(ClassData.class, checkerName);
 			// found it.
 			Class c = validatorLoader.loadClass(checkerName.getDottedClassName());
-			Class<? extends TypeQualifierValidator> checkerClass = c.asSubclass(TypeQualifierValidator.class);
-			if (TypeQualifierValidator.class.isAssignableFrom(checkerClass)) {
+			if (TypeQualifierValidator.class.isAssignableFrom(c)) {
+				Class<? extends TypeQualifierValidator> checkerClass = c.asSubclass(TypeQualifierValidator.class);
 				validator = checkerClass.newInstance();
 			}
 		} catch (ClassNotFoundException e) {
