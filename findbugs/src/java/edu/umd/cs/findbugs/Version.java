@@ -105,7 +105,9 @@ public class Version {
 		try {
 			Properties versionProperties = new Properties();
 			 in = Version.class.getResourceAsStream("version.properties");
-			 versionProperties.load(in);
+			 if(in != null) {
+				 versionProperties.load(in);
+			 }
 			 release = (String) versionProperties.get("release.number");
 			 date = (String) versionProperties.get("release.date");
 			 if (release == null) 
