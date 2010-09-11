@@ -689,6 +689,10 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	private boolean handleToArray(InvokeInstruction obj) {
 		try {
 			TypeFrame frame = getFrame();
+			if(frame.getStackDepth() == 0) {
+				// operand stack is empty
+				return false;
+			}
 			Type topValue = frame.getTopValue();
 			if (obj.getName(getCPG()).equals("toArray")) {
 				ReferenceType target = obj.getReferenceType(getCPG());
