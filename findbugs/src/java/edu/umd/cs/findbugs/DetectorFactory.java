@@ -37,6 +37,13 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  */
 public class DetectorFactory {
 	private static final boolean DEBUG_JAVA_VERSION = SystemProperties.getBoolean("findbugs.debug.javaversion");
+	
+	// Backwards-compatibility: if the Detector has a setAnalysisContext()
+	// method, call it, passing the current AnalysisContext.  We do this
+	// because some released versions of FindBugs had a Detector
+	// interface which specified this method (and ensured it was called
+	// before the Detector was used to analyze any code).
+	private static final boolean SUPPORT_OLD_DETECTOR_INTERFACE = SystemProperties.getBoolean("findbugs.support.old.detector.interface");
 
 	private static final Class<?>[] constructorArgTypes = new Class<?>[]{BugReporter.class};
 
@@ -46,7 +53,7 @@ public class DetectorFactory {
 
 		ReflectionDetectorCreator(Class<?> detectorClass) {
 			this.detectorClass = detectorClass;
-
+			if(SUPPORT_OLD_DETECTOR_INTERFACE)
 			try {
 				setAnalysisContext = detectorClass.getDeclaredMethod(
 						"setAnalysisContext", new Class[]{AnalysisContext.class});
