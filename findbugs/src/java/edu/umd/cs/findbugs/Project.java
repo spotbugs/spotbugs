@@ -779,15 +779,23 @@ public class Project implements XMLWriteable {
 				attributeList
 				);
 
-		String base = destination.getParent();
-		writeElementList(xmlOutput, JAR_ELEMENT_NAME, convertToRelative(analysisTargets, base));
-		writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, convertToRelative(auxClasspathEntryList, base));
-		writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, convertToRelative(srcDirList, base));
-
-		List<String> cwdStrings = new ArrayList<String>();
-		for (File file : currentWorkingDirectoryList)
-			cwdStrings.add(file.getPath());
-		XMLOutputUtil.writeElementList(xmlOutput, WRK_DIR_ELEMENT_NAME, convertToRelative(cwdStrings, base));
+		if(destination != null) {
+			String base = destination.getParent();
+			writeElementList(xmlOutput, JAR_ELEMENT_NAME, convertToRelative(analysisTargets, base));
+			writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, convertToRelative(auxClasspathEntryList, base));
+			writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, convertToRelative(srcDirList, base));
+			List<String> cwdStrings = new ArrayList<String>();
+			for (File file : currentWorkingDirectoryList)
+				cwdStrings.add(file.getPath());
+			XMLOutputUtil.writeElementList(xmlOutput, WRK_DIR_ELEMENT_NAME, convertToRelative(cwdStrings, base));
+		} else {
+			// TODO to allow relative paths: refactor the code which uses null file arguments
+			writeElementList(xmlOutput, JAR_ELEMENT_NAME, analysisTargets);
+			writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
+			writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, srcDirList);
+			XMLOutputUtil.writeFileList(xmlOutput, WRK_DIR_ELEMENT_NAME, currentWorkingDirectoryList);
+		}
+		
 		if (suppressionFilter != null && !suppressionFilter.isEmpty()) {
 			xmlOutput.openTag("SuppressionFilter");
 			suppressionFilter.writeBodyAsXML(xmlOutput);
