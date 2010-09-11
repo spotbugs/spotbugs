@@ -33,11 +33,11 @@ import static de.tobject.findbugs.preferences.FindBugsConstants.decodeIds;
 
 import java.util.Set;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.reporter.MarkerSeverity;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer {
@@ -57,9 +57,9 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
         store.setDefault(RUN_ANALYSIS_ON_FULL_BUILD, false);
         store.setDefault(ASK_ABOUT_PERSPECTIVE_SWITCH, true);
         store.setDefault(SWITCH_PERSPECTIVE_AFTER_ANALYSIS, false);
-        store.setDefault(PRIO_LOW_MARKER_SEVERITY, IMarker.SEVERITY_WARNING);
-        store.setDefault(PRIO_NORMAL_MARKER_SEVERITY, IMarker.SEVERITY_WARNING);
-        store.setDefault(PRIO_HIGH_MARKER_SEVERITY, IMarker.SEVERITY_WARNING);
+        store.setDefault(PRIO_LOW_MARKER_SEVERITY, MarkerSeverity.Warning.name());
+        store.setDefault(PRIO_NORMAL_MARKER_SEVERITY, MarkerSeverity.Warning.name());
+        store.setDefault(PRIO_HIGH_MARKER_SEVERITY, MarkerSeverity.Warning.name());
         // disabled to be able to distinguish between default and current value
         // store.setDefault(PROJECT_PROPS_DISABLED, true);
 	}
