@@ -92,7 +92,8 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		}
 
 		public void issueUpdated(BugInstance bug) {
-			if (theBug != null && bug.equals(theBug.getBugInstance())) {
+			BugCollectionAndInstance bug2 = theBug;
+			if (bug2 != null && bug.equals(bug2.getBugInstance())) {
 				updateBugInfo();
 			}
 		}
@@ -126,7 +127,11 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		}
 		designationComboBox.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				final BugInstance bugInstance = theBug.getBugInstance();
+				final BugCollectionAndInstance bug = theBug;
+				if(bug == null) {
+					return;
+				}
+				final BugInstance bugInstance = bug.getBugInstance();
 				if (bugInstance == null) {
 					return;
 				}
@@ -134,7 +139,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 				executor.submit(new Runnable() {
 					public void run() {
 						bugInstance.setUserDesignationKeyIndex(
-								selectionIndex, theBug.getBugCollection());
+								selectionIndex, bug.getBugCollection());
 					}
 				});
 			}
@@ -165,12 +170,13 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		userAnnotationTextField.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
-				if (theBug != null && theBug.getBugInstance() != null) {
+				final BugCollectionAndInstance bug = theBug;
+				if (bug != null && bug.getBugInstance() != null) {
 					final String txt = userAnnotationTextField.getText();
 					executor.submit(new Runnable() {
 						public void run() {
-							theBug.getBugInstance().setAnnotationText(
-									txt, theBug.getBugCollection());
+							bug.getBugInstance().setAnnotationText(
+									txt, bug.getBugCollection());
 						}
 					});
 				}
@@ -230,7 +236,8 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 	}
 
 	private void updateBugInfo() {
-		if (theBug == null) {
+		BugCollectionAndInstance theBug2 = theBug;
+		if (theBug2 == null) {
 			setCloud(null);
 			this.userAnnotationTextField.setEnabled(false);
 			this.designationComboBox.setEnabled(false);
@@ -240,21 +247,21 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 
 		} else {
 
-			BugInstance bug = theBug.getBugInstance();
-			long timestamp = theBug.getBugCollection().getAppVersionFromSequenceNumber(bug.getFirstVersion()).getTimestamp();
+			BugInstance bug = theBug2.getBugInstance();
+			long timestamp = theBug2.getBugCollection().getAppVersionFromSequenceNumber(bug.getFirstVersion()).getTimestamp();
 
 			String firstVersion = "Bug present since: "	+ convertTimestamp(timestamp);
 
-			Cloud cloud = theBug.getBugCollection().getCloud();
+			Cloud cloud = theBug2.getBugCollection().getCloud();
 			String userDesignation = cloud.getUserEvaluation(bug);
 			this.userAnnotation = (userDesignation == null) ? "" : userDesignation.trim();
 			this.firstVersionText = firstVersion.trim();
 			this.cloudText = cloud.getCloudReport(bug);
-			this.userAnnotationTextField.setEnabled(theBug != null);
-			this.designationComboBox.setEnabled(theBug != null);
+			this.userAnnotationTextField.setEnabled(true);
+			this.designationComboBox.setEnabled(true);
 			setCloud(cloud);
 
-			int comboIndex = theBug.getBugInstance().getUserDesignationKeyIndex();
+			int comboIndex = bug.getUserDesignationKeyIndex();
 			if (comboIndex == -1) {
 				FindbugsPlugin.getDefault()
 						.logError("Cannot find user designation");
