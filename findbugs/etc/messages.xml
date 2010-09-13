@@ -1365,15 +1365,6 @@ to double and then perform the division.
 ]]>
     </Details>
   </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.FindBadCast">
-    <Details>
-<![CDATA[
-<p>
-This detector looks for bad casts of object references.
-</p>
-]]>
-    </Details>
-  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2">
     <Details>
@@ -1469,20 +1460,6 @@ factory pattern to create these objects.</p>
 <p></p>
 ]]>
     </Details>
-  </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindBadEqualsImplementation">
-   <Details>
-      <![CDATA[
-      <p>
-      This detector looks for equals(Object) method implementations which
-      unconditionally dereference their parameter.  This violates the contract
-      defined by java.lang.Object.equals(), which states that if the parameter
-      is null, the method must return null.
-      </p>
-      <p>It is a slow detector.</p>
-      ]]>
-   </Details>
   </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.UselessSubclassMethod">

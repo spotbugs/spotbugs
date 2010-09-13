@@ -226,13 +226,6 @@
                               />
                     </SplitPass>
 
-                    <!-- NoteUnconditionalParamDerefs should come before FindBadEqualsImplementation. -->
-                    <SplitPass>
-                              <Earlier
-                                        class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
-                              <Later class="edu.umd.cs.findbugs.detect.FindBadEqualsImplementation"
-                              />
-                    </SplitPass>
 
                     <!--
 		Make CheckExpectedWarnings run in a separate pass, after all
@@ -502,9 +495,6 @@
                     reports="RV_RETURN_VALUE_IGNORED,RV_RETURN_VALUE_IGNORED_BAD_PRACTICE,RV_EXCEPTION_NOT_THROWN"/>
           <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble" speed="fast"
                     reports="ICAST_IDIV_CAST_TO_DOUBLE,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL,ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND"/>
-          <Detector class="edu.umd.cs.findbugs.detect.FindBadCast" speed="fast" disabled="true"
-                    hidden="true"
-                    reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_IMPOSSIBLE_CAST,BC_IMPOSSIBLE_DOWNCAST,BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY,BC_IMPOSSIBLE_INSTANCEOF"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2" speed="fast"
                     reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_IMPOSSIBLE_CAST,BC_IMPOSSIBLE_INSTANCEOF,BC_VACUOUS_INSTANCEOF,NP_NULL_INSTANCEOF,BC_IMPOSSIBLE_DOWNCAST,BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY"
           /> /> <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableStoreIntoSession"
@@ -527,8 +517,6 @@
                     reports="DB_DUPLICATE_BRANCHES,DB_DUPLICATE_SWITCH_CLAUSES"/>
           <Detector class="edu.umd.cs.findbugs.detect.XMLFactoryBypass" speed="fast"
                     reports="XFB_XML_FACTORY_BYPASS"/>
-          <Detector class="edu.umd.cs.findbugs.detect.FindBadEqualsImplementation" speed="slow"
-                    disabled="true" hidden="true" reports="NP_DOES_NOT_HANDLE_NULL"/>
           <Detector class="edu.umd.cs.findbugs.detect.UselessSubclassMethod" speed="fast"
                     disabled="true"
                     reports="USM_USELESS_SUBCLASS_METHOD,USM_USELESS_ABSTRACT_METHOD"/>
