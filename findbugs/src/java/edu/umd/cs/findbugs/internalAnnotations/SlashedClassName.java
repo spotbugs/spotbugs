@@ -23,6 +23,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import javax.annotation.RegEx;
@@ -31,24 +32,34 @@ import javax.annotation.meta.TypeQualifierValidator;
 import javax.annotation.meta.When;
 
 /**
- * * Denotes a class name or package name where the / character is used to separate package/class name components. 
+ * * Denotes a class name or package name where the / character is used to
+ * separate package/class name components.
+ * 
  * @author pugh
  */
 @Documented
-@TypeQualifier(applicableTo=CharSequence.class)
+@TypeQualifier(applicableTo = CharSequence.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SlashedClassName {
+
 	When when() default When.ALWAYS;
+
 	static class Checker implements TypeQualifierValidator<SlashedClassName> {
+		final static String simpleName = "(\\p{javaJavaIdentifierStart}(\\p{javaJavaIdentifierPart}|\\$)*)";
+		final static String slashedClassName = simpleName + "(/" + simpleName + ")*";
+		final static Pattern simplePattern = Pattern.compile(simpleName);
+		final static Pattern pattern = Pattern.compile(slashedClassName);
 
 		public When forConstantValue(SlashedClassName annotation, Object value) {
 			if (!(value instanceof String))
 				return When.NEVER;
 
-			if (SlashedPattern.pattern.matcher((String) value).matches())
+			if (pattern.matcher((String) value).matches())
 				return When.ALWAYS;
 
 			return When.NEVER;
+
 		}
+
 	}
 }

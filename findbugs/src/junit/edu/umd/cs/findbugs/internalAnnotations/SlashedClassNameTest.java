@@ -31,19 +31,19 @@ public class SlashedClassNameTest extends TestCase {
 	
 
 	public void testFoo() {
-		Matcher m = SlashedPattern.simplePattern.matcher("Foo");
+		Matcher m = SlashedClassName.Checker.simplePattern.matcher("Foo");
 		assertTrue(m.matches());
 	}
 	public void testFooBar() {
-		Matcher m = SlashedPattern.simplePattern.matcher("foo.Bar");
+		Matcher m = SlashedClassName.Checker.simplePattern.matcher("foo.Bar");
 		assertFalse(m.matches());
-		m = SlashedPattern.pattern.matcher("foo.Bar");
+		m = SlashedClassName.Checker.pattern.matcher("foo.Bar");
 		assertTrue(!m.matches());
 	}
 	public void testFoo1Bar2() {
-		Matcher m = SlashedPattern.simplePattern.matcher("foo1.Bar2");
+		Matcher m = SlashedClassName.Checker.simplePattern.matcher("foo1.Bar2");
 		assertFalse(m.matches());
-		m = SlashedPattern.pattern.matcher("foo1.Bar2");
+		m = SlashedClassName.Checker.pattern.matcher("foo1.Bar2");
 		assertTrue(!m.matches());
 	}
 }
