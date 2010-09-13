@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.classfile.ArrayElementValue;
 import org.apache.bcel.classfile.ClassElementValue;
 import org.apache.bcel.classfile.ElementValue;
 
@@ -72,7 +73,17 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 		return className.substring(i + 1);
 	}
 
-
+	  /*
+	   * * @param value
+	     * @param map
+	     * @param annotationTarget
+	     */
+	    private void handleClassElementValue(ClassElementValue value, Target annotationTarget) {
+	    	NullnessAnnotation n = NullnessAnnotation.Parser.parse(value.getClassString());
+			if (n != null)
+				database.addDefaultAnnotation(annotationTarget, getDottedClassName(), n);
+		    
+	    }
 	@Override
 	public void visitAnnotation(String annotationClass,
 			Map<String, ElementValue> map, boolean runtimeVisible) {
@@ -85,21 +96,25 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 		annotationClass = lastPortion(annotationClass);
 		if (n == null) {
 			if (annotationClass.startsWith("DefaultAnnotation")) {
-
-				ElementValue v = map.get("value");
-				if (!(v instanceof ClassElementValue))
-					return;
-				ClassElementValue value = (ClassElementValue) v;
 				annotationClass = annotationClass.substring("DefaultAnnotation".length());
 
-				AnnotationDatabase.Target annotationTarget = defaultKind.get(annotationClass);
-
-				if (annotationTarget != null) {
-					n = NullnessAnnotation.Parser.parse(value.getClassString());
-					if (n != null)
-						database.addDefaultAnnotation(annotationTarget, getDottedClassName(), n);
+				Target annotationTarget = defaultKind.get(annotationClass);
+				if (annotationTarget != Target.METHOD)
+					return;
+				
+				ElementValue v = map.get("value");
+				if (v instanceof ClassElementValue) {
+					handleClassElementValue((ClassElementValue) v, annotationTarget);
+				} else if (v instanceof ArrayElementValue) {
+					for(ElementValue v2 : ((ArrayElementValue)v).getElementValuesArray()) {
+						if (v2 instanceof ClassElementValue)
+							handleClassElementValue((ClassElementValue) v2, annotationTarget);
+					}
 				}
+				
+				return;
 			}
+			
 		}
 		else if (visitingMethod())
 			database.addDirectAnnotation(

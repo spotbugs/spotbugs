@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.classfile.ArrayElementValue;
 import org.apache.bcel.classfile.ClassElementValue;
 import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.EnumElementValue;
@@ -71,25 +72,23 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 		String annotationClassSimpleName = simpleClassName(annotationClassName);
 
 		if (annotationClassSimpleName.startsWith("DefaultAnnotation")) {
-
-			ElementValue v = map.get("value");
-			if (!(v instanceof ClassElementValue))
-				return;
-			ClassElementValue value = (ClassElementValue) v;
 			annotationClassSimpleName = annotationClassSimpleName.substring("DefaultAnnotation".length());
 
 			Target annotationTarget = defaultKind.get(annotationClassSimpleName);
 			if (annotationTarget != Target.METHOD)
 				return;
-
-			if (simpleClassName(value.getClassString()).equals("CheckReturnValue")) {
-				CheckReturnValueAnnotation n = CheckReturnValueAnnotation.parse(getAnnotationParameterAsString(map, "priority"));
-				if (n != null)
-					AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase().addDefaultAnnotation(
-					        annotationTarget, getDottedClassName(), n);
-
+			
+			ElementValue v = map.get("value");
+			if (v instanceof ClassElementValue) {
+				handleClassElementValue((ClassElementValue) v, map, annotationTarget);
+			} else if (v instanceof ArrayElementValue) {
+				for(ElementValue v2 : ((ArrayElementValue)v).getElementValuesArray()) {
+					if (v2 instanceof ClassElementValue)
+						handleClassElementValue((ClassElementValue) v2, map, annotationTarget);
+				}
 			}
-
+			
+			return;
 		}
 
 		CheckReturnValueAnnotation n;
@@ -126,5 +125,20 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 					 Target.METHOD, getDottedClassName(), n);
 			
 	}
+
+	/**
+     * @param value
+     * @param map
+     * @param annotationTarget
+     */
+    private void handleClassElementValue(ClassElementValue value, Map<String, ElementValue> map, Target annotationTarget) {
+	    if (simpleClassName(value.getClassString()).equals("CheckReturnValue")) {
+	    	CheckReturnValueAnnotation n = CheckReturnValueAnnotation.parse(getAnnotationParameterAsString(map, "priority"));
+	    	if (n != null)
+	    		AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase().addDefaultAnnotation(
+	    		        annotationTarget, getDottedClassName(), n);
+
+	    }
+    }
 
 }
