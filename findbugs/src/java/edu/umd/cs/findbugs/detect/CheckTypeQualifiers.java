@@ -470,8 +470,11 @@ public class CheckTypeQualifiers extends CFGDetector {
 		annotateWarningWithTypeQualifier(warning, typeQualifierValue);
 
 		Set<SourceSinkInfo> sourceSet = (forward == FlowValue.ALWAYS) ? forwardsFact.getWhereAlways(vn) : forwardsFact.getWhereNever(vn);
-		for (SourceSinkInfo sink : sourceSet) {
-			annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, sink);
+		boolean foundParameter = false;
+		for (SourceSinkInfo source : sourceSet) {
+			annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, source);
+			if (source.getType() == SourceSinkType.PARAMETER)
+				foundParameter = true;
 		}
 		Set<SourceSinkInfo> sinkSet = (backward == FlowValue.ALWAYS) ? backwardsFact.getWhereAlways(vn) : backwardsFact.getWhereNever(vn);
 		
@@ -482,25 +485,29 @@ public class CheckTypeQualifiers extends CFGDetector {
 		 }
 		// Hopefully we can find the conflicted value in a local variable
 		if (locationWhereDoomedValueIsObserved != null) {
-			Method method = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor); 
-			LocalVariableAnnotation localVariable =
-				ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, locationWhereDoomedValueIsObserved, vn, vnaFrame);
-			if (localVariable != null) {
-				localVariable.setDescription(localVariable.isSignificant() ? "LOCAL_VARIABLE_VALUE_DOOMED_NAMED" : "LOCAL_VARIABLE_VALUE_DOOMED");
-				warning.add(localVariable);
+			Method method = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor);
+			if (!foundParameter) {
+				LocalVariableAnnotation localVariable = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method,
+				        locationWhereDoomedValueIsObserved, vn, vnaFrame);
+				if (localVariable != null) {
+					localVariable.setDescription(localVariable.isSignificant() ? "LOCAL_VARIABLE_VALUE_DOOMED_NAMED"
+					        : "LOCAL_VARIABLE_VALUE_DOOMED");
+					warning.add(localVariable);
+				}
 			}
 			if (!sinkLocation.equals(locationToReport)) {
-			// Report where we observed the value.
-			// Note that for conflicts detected on control edges,
-			// we REPORT the edge source location
-			// rather than the target location, even though it is the
-			// target location where the conflict is detected.
-			// The only reason to use a different reporting location
-			// is to produce a more informative report for the user,
-			// since the edge source is where the branch is found.
-			SourceLineAnnotation observedLocation = SourceLineAnnotation.fromVisitedInstruction(methodDescriptor, locationToReport);
-			observedLocation.setDescription("SOURCE_LINE_VALUE_DOOMED");
-			warning.add(observedLocation);
+				// Report where we observed the value.
+				// Note that for conflicts detected on control edges,
+				// we REPORT the edge source location
+				// rather than the target location, even though it is the
+				// target location where the conflict is detected.
+				// The only reason to use a different reporting location
+				// is to produce a more informative report for the user,
+				// since the edge source is where the branch is found.
+				SourceLineAnnotation observedLocation = SourceLineAnnotation.fromVisitedInstruction(methodDescriptor,
+				        locationToReport);
+				observedLocation.setDescription("SOURCE_LINE_VALUE_DOOMED");
+				warning.add(observedLocation);
 			}
 		}
 
