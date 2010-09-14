@@ -21,7 +21,7 @@ package de.tobject.findbugs.properties;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 
-final class PathElement {
+public final class PathElement {
 
 	private final IPath path;
 	private IStatus status;

@@ -27,10 +27,11 @@ import org.eclipse.swt.widgets.TabFolder;
 
 import de.tobject.findbugs.properties.FilterFilesTab;
 import de.tobject.findbugs.properties.FindbugsPropertyPage;
+import de.tobject.findbugs.properties.PathElement;
 
 /**
  * Test subclass of FilterFilesTab that provides methods for testing purposes.
- * 
+ *
  * @author Tomás Pollak
  */
 public class FilterFilesTabTestSubclass extends FilterFilesTab {
@@ -65,8 +66,8 @@ public class FilterFilesTabTestSubclass extends FilterFilesTab {
 	}
 
 	@Override
-	protected FilterProvider createFilterProvider(ListViewer viewer, FilterKind kind) {
-		return new FilterProviderTestSubclass(viewer, kind);
+	protected FilterProvider createFilterProvider(ListViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
+		return new FilterProviderTestSubclass(viewer, kind, page);
 	}
 
 	private class FilterProviderTestSubclass extends FilterProvider {
@@ -75,8 +76,8 @@ public class FilterFilesTabTestSubclass extends FilterFilesTab {
 		private String parentPath;
 		private String fileName;
 
-		protected FilterProviderTestSubclass(ListViewer viewer, FilterKind kind) {
-			super(viewer, kind);
+		protected FilterProviderTestSubclass(ListViewer viewer, FilterKind kind, FindbugsPropertyPage propertyPage) {
+			super(viewer, kind, propertyPage);
 		}
 
 		public void addFile(String fileLocation) {

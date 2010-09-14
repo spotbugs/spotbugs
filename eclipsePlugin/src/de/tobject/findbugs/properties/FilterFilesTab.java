@@ -75,7 +75,7 @@ public class FilterFilesTab extends Composite {
 		}
 	}
 
-	static class FilterProvider extends PathsProvider {
+	public static class FilterProvider extends PathsProvider {
 
 		private final FilterKind kind;
 
@@ -160,19 +160,19 @@ public class FilterFilesTab extends Composite {
 
 		ManagePathsWidget incl = new ManagePathsWidget(this);
 		ListViewer viewer = incl.createViewer(getMessage(FilterKind.INCLUDE.propertyName), null);
-		filterIncl = createFilterProvider(viewer, FilterKind.INCLUDE);
+		filterIncl = createFilterProvider(viewer, FilterKind.INCLUDE, page);
 		incl.createButtonsArea(filterIncl);
 
 		ManagePathsWidget excl = new ManagePathsWidget(this);
 		viewer = excl.createViewer(getMessage(FilterKind.EXCLUDE.propertyName), null);
-		filterExcl = createFilterProvider(viewer, FilterKind.EXCLUDE);
+		filterExcl = createFilterProvider(viewer, FilterKind.EXCLUDE, page);
 		excl.createButtonsArea(filterExcl);
 
 		ManagePathsWidget excl2 = new ManagePathsWidget(this);
 		viewer = excl2.createViewer(getMessage(FilterKind.EXCLUDE_BUGS.propertyName),
 				"You can include past FindBugs result XML files here to exclude those bugs from analysis. " +
 				"<a href=\"http://findbugs.sourceforge.net/manual/filter.html\">Details...</a>");
-		filterExclBugs = createFilterProvider(viewer, FilterKind.EXCLUDE_BUGS);
+		filterExclBugs = createFilterProvider(viewer, FilterKind.EXCLUDE_BUGS, page);
 		excl2.createButtonsArea(filterExclBugs);
 
 		refreshTables();
@@ -194,7 +194,7 @@ public class FilterFilesTab extends Composite {
 		return FindbugsPlugin.getDefault().getMessage(key);
 	}
 
-	protected FilterProvider createFilterProvider(ListViewer viewer, FilterKind kind) {
+	protected FilterProvider createFilterProvider(ListViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
 		FilterProvider filterProvider = new FilterProvider(viewer, kind, propertyPage);
 		filterProvider.addListener(new Listener() {
 			public void handleEvent(Event event) {
@@ -204,7 +204,7 @@ public class FilterFilesTab extends Composite {
 		return filterProvider;
 	}
 
-	static enum FilterKind {
+	public static enum FilterKind {
 		INCLUDE("property.includefilter") {
 			@Override
 			Collection<String> selectedPaths(UserPreferences u) {

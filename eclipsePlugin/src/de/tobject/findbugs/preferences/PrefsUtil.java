@@ -37,7 +37,7 @@ public class PrefsUtil {
 		int counter = 0;
 		while (keyFound) {
 			String property = prefs.getString(keyPrefix + counter);
-			if (property != null && !property.isEmpty()) {
+			if (property != null && property.length() > 0) {
 				set.add(property);
 				counter++;
 			} else {
@@ -59,7 +59,7 @@ public class PrefsUtil {
 		while (keyFound) {
 			String key = keyPrefix + counter;
 			String property = prefs.getString(key);
-			if (property == null || property.isEmpty()) {
+			if (property == null || property.length() > 0) {
 				keyFound = false;
 			} else {
 				prefs.setValue(key, "");
