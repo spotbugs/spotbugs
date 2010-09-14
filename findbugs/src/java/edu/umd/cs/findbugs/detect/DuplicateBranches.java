@@ -210,7 +210,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 
 		HashMap<BigInteger, Collection<Integer>> map = new HashMap<BigInteger,Collection<Integer>>();
 		for (int i = 0; i < idx; i++) {
-			if (switchPos[i]+1 >= switchPos[i+1]) continue; // why the +1 on lhs?
+			if (switchPos[i]+7 >= switchPos[i+1]) continue; // ignore small switch clauses
 
 			int endPos = switchPos[i+1];
 		   InstructionHandle last = prevHandle.get(switchPos[i+1]);

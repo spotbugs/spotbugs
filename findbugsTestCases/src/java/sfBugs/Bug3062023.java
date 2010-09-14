@@ -1,14 +1,14 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3062023 {
-	private enum E {
+	public enum E {
 		A, B, C, D
 	}
 
-	@DesireNoWarning("DB_DUPLICATE_SWITCH_CLAUSES")
-	private void noWarning(E e) {
+	@NoWarning("DB_DUPLICATE_SWITCH_CLAUSES")
+	public void noWarning(E e) {
 		switch (e) {
 			case A:
 				something(1);
