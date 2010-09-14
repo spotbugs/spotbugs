@@ -6363,7 +6363,7 @@ correctly.
 
   <BugPattern type="EC_ARRAY_AND_NONARRAY">
     <ShortDescription>equals() used to compare array and nonarray</ShortDescription>
-    <LongDescription>{1} uses equals to compare an array and nonarray</LongDescription>
+    <LongDescription>Calling {2.simpleClass}.equals({3.simpleClass}) in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6379,7 +6379,7 @@ contents of the arrays, use java.util.Arrays.equals(Object[], Object[]).
   </BugPattern>
   <BugPattern type="EC_BAD_ARRAY_COMPARE">
     <ShortDescription>Invocation of equals() on an array, which is equivalent to ==</ShortDescription>
-    <LongDescription>{1} invokes equals() on an array, which is equivalent to ==</LongDescription>
+    <LongDescription>Using .equals to compare two {2.simpleClass}'s, (equivalent to ==) in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6394,7 +6394,7 @@ less confusing to explicitly check pointer equality using <code>==</code>.
   </BugPattern>
   <BugPattern type="EC_INCOMPATIBLE_ARRAY_COMPARE">
     <ShortDescription>equals(...) used to compare incompatible arrays</ShortDescription>
-    <LongDescription>using equals to compare a {2} and a {3} in {1}</LongDescription>
+    <LongDescription>using equals to compare a {2.simpleClass} and a {3.simpleClass} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
