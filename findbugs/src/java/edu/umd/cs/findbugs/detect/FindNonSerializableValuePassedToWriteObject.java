@@ -115,14 +115,13 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
 			if (refType.equals(NullType.instance())) {
 				continue;
 			}
-			String refSig = refType.getSignature();
-
+			
 			try {
 
-				double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(refSig);
+				double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(refType);
 
 				if (isSerializable < 0.9) {
-					double isRemote = DeepSubtypeAnalysis.isDeepRemote(refSig);
+					double isRemote = DeepSubtypeAnalysis.isDeepRemote(refType);
 					if (isSerializable < isRemote)
 						isSerializable = isRemote;
 				}
@@ -140,7 +139,7 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
 											: isSerializable > 0.5 ? LOW_PRIORITY
 													: NORMAL_PRIORITY)
 									.addClassAndMethod(methodGen, sourceFile)
-									.addClass(DeepSubtypeAnalysis.getComponentClass(refSig))
+									.addClass(DeepSubtypeAnalysis.getComponentClass(refType))
 									.addSourceLine(sourceLineAnnotation)
 									);
 				}

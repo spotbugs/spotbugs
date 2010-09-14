@@ -1,8 +1,10 @@
 package edu.umd.cs.findbugs;
 
 import java.util.Set;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.generic.ReferenceType;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
@@ -45,7 +47,10 @@ public class DeepSubtypeAnalysis {
 				return true;
 		return false;
 	}
+	public static double isDeepSerializable(ReferenceType type) throws ClassNotFoundException {
+		return isDeepSerializable(type.getSignature());
 
+	}
 	public static double isDeepSerializable(@DottedClassName String refSig)
 			throws ClassNotFoundException {
 		if (storedException != null)
@@ -61,11 +66,14 @@ public class DeepSubtypeAnalysis {
 		String refName = getComponentClass(refSig);
 		if (refName.equals("java.lang.Object"))
 			return 0.99;
+	
 
 		JavaClass refJavaClass = Repository.lookupClass(refName);
 		return isDeepSerializable(refJavaClass);
 	}
-
+	public static double isDeepRemote(ReferenceType refType) {
+		return isDeepRemote(refType.getSignature());
+	}
 	public static double isDeepRemote(String refSig) {
 		if (remote == null) return 0.1;
 
@@ -97,6 +105,9 @@ public class DeepSubtypeAnalysis {
 		return c >= refSig.length() || refSig.charAt(c) != 'L';
 	}
 
+	public static String getComponentClass(ReferenceType refType) {
+		return getComponentClass(refType.getSignature());
+	}
 	public static String getComponentClass(String refSig) {
 		while (refSig.charAt(0) == '[')
 			refSig = refSig.substring(1);
@@ -123,6 +134,10 @@ public class DeepSubtypeAnalysis {
 		}
 		
 		if (x.isFinal()) return result;
+		
+		if (x.isInterface() || x.isAbstract()) {
+			result = Math.max(result, Analyze.deepInstanceOf(x, collection)*0.95);
+		}
 		ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor(x);
 		
 		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
