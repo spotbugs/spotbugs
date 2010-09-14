@@ -20,9 +20,9 @@ Install the plug-in
             +- lib
             |  |
             |  +- annotations.jar
-            |     asm-3.2.jar
-            |     asm-commons-3.2.jar
-            |     asm-tree-3.2.jar
+            |     asm-3.3.jar
+            |     asm-commons-3.3.jar
+            |     asm-tree-3.3.jar
             |     bcel.jar
             |     commons-lang-2.4.jar
             |     dom4j-1.6.1.jar
