@@ -287,6 +287,17 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 				ObligationPolicyDatabaseActionType.ADD,
 				ObligationPolicyDatabaseEntryType.STRONG,
 				javaIoInputStreamObligation));
+		Obligation javaIoOutputStreamObligation = database.getFactory().getObligationByName("java.io.OutputStream");
+		database.addEntry(new MatchMethodEntry(
+				new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.util.logging.StreamHandler")),
+				new ExactStringMatcher("setOutputStream"),
+				new ExactStringMatcher("(Ljava/io/OutputStream;)V"),
+				false,
+				ObligationPolicyDatabaseActionType.DEL,
+				ObligationPolicyDatabaseEntryType.STRONG,
+				javaIoOutputStreamObligation));
+		
+		
 		// Database obligation types
 		Obligation connection = database.getFactory().addObligation("java.sql.Connection");
 		Obligation statement = database.getFactory().addObligation("java.sql.Statement");
