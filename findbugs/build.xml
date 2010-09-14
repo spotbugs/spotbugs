@@ -506,7 +506,7 @@
     <findbugs home="."
               output="xml:withMessages"
               cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
-              jvmargs="-ea -Xmx900m -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
+              jvmargs="-ea -Xmx900m"
               projectName="Byte code Engineering Library (BCEL)"
               outputFile="${sampleoutput.dir}/bcel-cloud-appengine.xml" >
       <class location="${jar.dir}/bcel.jar" />
