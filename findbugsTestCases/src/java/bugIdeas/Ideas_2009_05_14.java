@@ -35,6 +35,7 @@ public class Ideas_2009_05_14 {
 	}
 	@ExpectWarning("LI_LAZY_INIT_UPDATE_STATIC")
 	static Set<String> getFoo() {
+		int x = 1;
 		if (foo == null) {
 			foo = newHashSet();
 			foo.add("a");
