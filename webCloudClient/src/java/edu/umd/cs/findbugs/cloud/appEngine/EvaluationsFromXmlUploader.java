@@ -42,7 +42,6 @@ public class EvaluationsFromXmlUploader {
             public void run() {
                 cloud.waitUntilIssueDataDownloaded();
                 removeIssuesThatShouldNotBeUploaded();
-                System.out.println("Issues to upload: " + localAnnotations.size());
                 if (localAnnotations.isEmpty())
                     return;
 
