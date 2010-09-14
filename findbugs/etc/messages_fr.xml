@@ -2892,17 +2892,7 @@ String s = buf.toString();
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="UOE_USE_OBJECT_EQUALS">
-  <ShortDescription>Appel de equals sur une classe finale qui ne surcharge pas la version d'Object</ShortDescription>
-  <LongDescription>Appels de equals sur une classe finale qui ne surcharge pas la version d'Object</LongDescription>
-  <Details>
-<![CDATA[
-<p>Cette méthode invoque la méthode <code>equals(Object o)</code> d'une classe finale qui ne surcharge pas la méthode de la classe <code>Object</code>, et donc qui agit comme le test d'identité <code>==</code>. Il est correcte d'utiliser la méthode <code>equals()</code>, mais vous devriez envisager de surcharger cette méthode dans la classe.</p>
-<p>[Bill Pugh] : désolé, je ne pense pas que cela doive déclencher une alarme et le code est bon. Les utilisateurs du code ne doivent pas avoir à s'intéresser à la façon dont est implémentée <code>equals()</code> et ne devrait jamais dépendre de <code>==</code> pour comparer des instances puisque ça court-circuite la capacité des librairies à contrôler la façon dont les objets sont comparés.</p>
-]]>
-  </Details>
- </BugPattern>
- <BugPattern type="STI_INTERRUPTED_ON_CURRENTTHREAD">
+  <BugPattern type="STI_INTERRUPTED_ON_CURRENTTHREAD">
   <ShortDescription>Utilisation superflue d'un appel à currentThread() pour appeler interrupted()</ShortDescription>
   <LongDescription>La méthode {1} invoque inutilement currentThread() juste pour appeler interrupted()</LongDescription>
   <Details>

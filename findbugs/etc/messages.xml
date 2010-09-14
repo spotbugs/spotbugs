@@ -1196,17 +1196,6 @@ before the init() method, these methods will fail in the constructor.
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.UseObjectEquals">
-    <Details>
-<![CDATA[
-<p>
-This detector looks calls to equals(java.lang.Object) on arrays, or final classes that do not
-override the equals method in the Object class. This means that equals semantics is the same as
-==, and probably a mistake.
-</p>
-]]>
-    </Details>
-  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted">
     <Details>
 <![CDATA[
@@ -2515,7 +2504,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
 
   <BugPattern type="DM_CONVERT_CASE">
     <ShortDescription>Consider using Locale parameterized version of invoked method</ShortDescription>
-    <LongDescription>Use of non-localized String.toUpperCase() or String.toLowerCase</LongDescription>
+    <LongDescription>Use of non-localized String.toUpperCase() or String.toLowerCase in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> A String is being converted to upper or lowercase, using the platform's default encoding. This may
@@ -2664,7 +2653,7 @@ SQL injection attacks.
 
   <BugPattern type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING">
     <ShortDescription>A prepared statement is generated from a nonconstant String</ShortDescription>
-    <LongDescription>A prepared statement is generated from a nonconstant String at {1} </LongDescription>
+    <LongDescription>A prepared statement is generated from a nonconstant String in {1} </LongDescription>
     <Details>
 <![CDATA[
   <p>The code creates an SQL prepared statement from a nonconstant String.
@@ -2703,7 +2692,7 @@ be used to make the prepared statement do something unexpected and undesirable.
 
   <BugPattern type="FI_FINALIZER_NULLS_FIELDS">
     <ShortDescription>Finalizer nulls fields</ShortDescription>
-    <LongDescription>{3} is set to null inside finalize method</LongDescription>
+    <LongDescription>{3} is set to null inside finalize method in {1.class}</LongDescription>
 	<Details>
 <![CDATA[
   <p> This finalizer nulls out fields.  This is usually an error, as it does not aid garbage collection,
@@ -3067,7 +3056,7 @@ equal objects have equal hashCodes.
   </BugPattern>
   <BugPattern type="HE_USE_OF_UNHASHABLE_CLASS">
     <ShortDescription>Use of class without a hashCode() method in a hashed data structure</ShortDescription>
-    <LongDescription>{2} doesn't define a hashCode() method but is used in a hashed data structure</LongDescription>
+    <LongDescription>{2} doesn't define a hashCode() method but is used in a hashed data structure in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> A class defines an equals(Object)  method but not a hashCode() method,
@@ -4815,7 +4804,7 @@ to use that non-null value. Calling readLine again will give you a different lin
 
   <BugPattern type="RV_RETURN_VALUE_IGNORED">
     <ShortDescription>Method ignores return value</ShortDescription>
-    <LongDescription>{1} ignores return value of {2}</LongDescription>
+    <LongDescription>return value of {2.givenClass} ignored in {1}</LongDescription>
     <Details>
 <![CDATA[
    <p> The return value of this method should be checked. One common
@@ -4843,7 +4832,7 @@ dateString = dateString.trim();
   </BugPattern>
   <BugPattern type="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE">
     <ShortDescription>Method ignores exceptional return value</ShortDescription>
-    <LongDescription>{1} ignores exceptional return value of {2}</LongDescription>
+    <LongDescription>exceptional return value of {2} ignored in {1}</LongDescription>
     <Details>
 <![CDATA[
    <p> This method returns a value that is not checked. The return value should be checked
@@ -4940,7 +4929,7 @@ something that should be closed.
 
   <BugPattern type="NP_STORE_INTO_NONNULL_FIELD">
     <ShortDescription>Store of null value into field annotated NonNull</ShortDescription>
-    <LongDescription>Store of null value into field {2.givenClass} annotated NonNull at {1}</LongDescription>
+    <LongDescription>Store of null value into field {2.givenClass} annotated NonNull in {1}</LongDescription>
     <Details>
       <![CDATA[
 <p> A value that could be null is stored into a field that has been annotated as NonNull. </p>
@@ -5054,7 +5043,7 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
 
   <BugPattern type="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS">
    <ShortDescription>Method call passes null for nonnull parameter</ShortDescription>
-   <LongDescription>Method call in {1} passes null for nonnull parameter of {2.givenClass}</LongDescription>
+   <LongDescription>Null passed for nonnull parameter of {2.givenClass} in {1}</LongDescription>
    <Details>
       <![CDATA[
       <p>
@@ -5070,7 +5059,7 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
 
   <BugPattern type="NP_NULL_PARAM_DEREF">
    <ShortDescription>Method call passes null for nonnull parameter</ShortDescription>
-   <LongDescription>Method call in {1} passes null for nonnull parameter of {2.givenClass}</LongDescription>
+   <LongDescription>Null passed for nonnull parameter of {2.givenClass} in {1}</LongDescription>
    <Details>
       <![CDATA[
       <p>
@@ -5085,7 +5074,7 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
 
   <BugPattern type="NP_NONNULL_PARAM_VIOLATION">
    <ShortDescription>Method call passes null to a nonnull parameter </ShortDescription>
-   <LongDescription>Method call in {1} passes null to a nonnull parameter of {2.givenClass}</LongDescription>
+   <LongDescription>Null passed for nonnull parameter of {2.givenClass} in {1}</LongDescription>
    <Details>
       <![CDATA[
       <p>
@@ -5452,7 +5441,7 @@ different types.  The result of this comparison will always be false at runtime.
   </BugPattern>
   <BugPattern type="EC_UNRELATED_TYPES">
     <ShortDescription>Call to equals() comparing different types</ShortDescription>
-    <LongDescription>Call to equals() comparing different types in {1}</LongDescription>
+    <LongDescription>Call to {3.simpleClass}.equals({2.simpleClass}) in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method calls equals(Object) on two references of different
@@ -5473,7 +5462,7 @@ the result of this comparison will always be false at runtime.
 
   <BugPattern type="EC_UNRELATED_INTERFACES">
     <ShortDescription>Call to equals() comparing different interface types</ShortDescription>
-    <LongDescription>Call to equals() comparing different interface types in {1}</LongDescription>
+    <LongDescription>Call to {3.simpleClass}.equals({2.simpleClass}) in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method calls equals(Object) on two references of unrelated
@@ -5495,7 +5484,7 @@ the result of this comparison will always be false at runtime.
 
   <BugPattern type="EC_UNRELATED_CLASS_AND_INTERFACE">
    <ShortDescription>Call to equals() comparing unrelated class and interface</ShortDescription>
-   <LongDescription>Call to equals() comparing unrelated class and interface in {1}</LongDescription>
+   <LongDescription>Call to {3.simpleClass}.equals({2.simpleClass}) in {1}</LongDescription>
    <Details>
       <![CDATA[
 <p>
@@ -5518,8 +5507,8 @@ the result of this comparison will always be false at runtime.
 
 
   <BugPattern type="EC_NULL_ARG">
-    <ShortDescription>Call to equals() with null argument</ShortDescription>
-    <LongDescription>Call to equals() with null argument in {1}</LongDescription>
+    <ShortDescription>Call to equals(null)</ShortDescription>
+    <LongDescription>Call to equals(null) in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method calls equals(Object), passing a null value as
@@ -6413,25 +6402,6 @@ This method invokes the .equals(Object o) to compare two arrays, but the arrays 
 of incompatible types (e.g., String[] and StringBuffer[], or String[] and int[]).
 They will never be equal. In addition, when equals(...) is used to compare arrays it
 only checks to see if they are the same array, and ignores the contents of the arrays.
-</p>
-]]>
-    </Details>
-  </BugPattern>
-
-  <BugPattern type="UOE_USE_OBJECT_EQUALS">
-    <ShortDescription>Calls to equals on a final class that doesn't override Object's equals method</ShortDescription>
-    <LongDescription>Calls to equals on a final class that doesn't override Object's equals method</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-This method invokes the .equals(Object o) method on a final class that doesn't override the equals method
-in the Object class, effectively making the equals method test for sameness, like ==. It is good to use
-the .equals method, but you should consider adding an .equals method in this class.
-</p>
-<p>[Bill Pugh]: Sorry, but I strongly disagree that this should be a warning, and I think your code
-is just fine. Users of your code shouldn't care how you've implemented equals(), and they should never
-depend on == to compare instances, since that bypasses the libraries ability to control how objects
-are compared.
 </p>
 ]]>
     </Details>

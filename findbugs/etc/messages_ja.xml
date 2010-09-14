@@ -6562,26 +6562,7 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
     </Details>
   </BugPattern>
 
-  <BugPattern type="UOE_USE_OBJECT_EQUALS">
-    <ShortDescription>Object の equals メソッドをオーバーライドしていない final クラスの equals メソッドを呼び出している</ShortDescription>
-    <LongDescription>Object の equals メソッドをオーバーライドしていない final クラスの equals メソッドを呼び出しています。</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-このメソッドは、Object の <code>equals</code> メソッドをオーバーライドしていない final クラスの <code>equals</code> メソッドを呼び出しています。
-有効な <code>equals</code> メソッドを作って、<code>==</code> のような同一性のためのテストをしてください。
-Object の <code>.equals</code> を使うことは良いことですが、このクラスでは <code>.equals</code> メソッドを追加することを検討すべきです。
-</p>
-<p>
-[Bill Pugh]<br>
-すみません。私はこれが警告しなければならないというのはまったく賛成できません。あなたのコードは素晴らしいと思います。
-あなたのコードのユーザは、<code>equals</code> メソッドの実装を気にすべきではありません。
-オブジェクトがどう比較されるのか制御するライブラリの能力を無視してしまうので、インスタンスを比較するために <code>==</code> に決して頼るべきではありません。
-</p>
-]]>
-    </Details>
-  </BugPattern>
-
+ 
   <BugPattern type="STI_INTERRUPTED_ON_CURRENTTHREAD">
     <ShortDescription>interrupted メソッドを呼び出すための不必要な currentThread メソッドの呼び出し</ShortDescription>
     <LongDescription>メソッド {1} は、interrupted メソッドを呼び出すために不必要な currentThread メソッドを呼び出しています。</LongDescription>
