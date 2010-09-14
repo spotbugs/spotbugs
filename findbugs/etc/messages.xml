@@ -3039,21 +3039,6 @@ that classfile. See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=
    </Details>
   </BugPattern>
 
-  <BugPattern type="NP_DOES_NOT_HANDLE_NULL">
-   <ShortDescription>equals() method does not check for null parameter</ShortDescription>
-   <LongDescription>{1} does not check for null parameter</LongDescription>
-   <Details>
-      <![CDATA[
-      <p>
-      This implementation of equals(Object) violates the contract defined
-      by java.lang.Object.equals() because it does not check for null
-      being passed as the parameter.  All equals() methods should return
-      false if passed a null value.
-      </p>
-      ]]>
-   </Details>
-  </BugPattern>
-
   <BugPattern type="CO_SELF_NO_OBJECT">
     <ShortDescription>Covariant compareTo() method defined</ShortDescription>
     <LongDescription>{0} defines compareTo({0.givenClass}) method but not compareTo(Object)</LongDescription>

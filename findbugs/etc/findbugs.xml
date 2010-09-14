@@ -195,6 +195,10 @@
                               <Later class="edu.umd.cs.findbugs.detect.UnreadFields"/>
                     </WithinPass>
                     <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
+                              <Later class="edu.umd.cs.findbugs.detect.DontIgnoreResultOfPutIfAbsent"/>
+                    </WithinPass>
+                    <WithinPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
                               <Later class="edu.umd.cs.findbugs.detect.UnreadFields"/>
                     </WithinPass>
@@ -723,7 +727,6 @@
           <BugPattern abbrev="Eq" type="EQ_OTHER_USE_OBJECT" category="CORRECTNESS"/>
           <BugPattern abbrev="Eq" type="EQ_OTHER_NO_OBJECT" category="CORRECTNESS"/>
           <BugPattern abbrev="Eq" type="EQ_SELF_NO_OBJECT" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="NP" type="NP_DOES_NOT_HANDLE_NULL" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Co" type="CO_SELF_NO_OBJECT" category="BAD_PRACTICE"/>
           <BugPattern abbrev="ES" type="ES_COMPARING_STRINGS_WITH_EQ" category="BAD_PRACTICE"/>
           <BugPattern abbrev="ES" type="ES_COMPARING_PARAMETER_STRING_WITH_EQ"

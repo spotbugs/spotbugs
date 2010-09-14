@@ -110,27 +110,27 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
-      <library name="asm-3.2.jar">
+      <library name="asm-3.3.jar">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/asm-3.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/asm-3.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
-      <library name="asm-commons-3.2.jar">
+      <library name="asm-commons-3.3.jar">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/asm-commons-3.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/asm-commons-3.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
-      <library name="asm-tree-3.2.jar">
+      <library name="asm-tree-3.3.jar">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/asm-tree-3.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/asm-tree-3.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
