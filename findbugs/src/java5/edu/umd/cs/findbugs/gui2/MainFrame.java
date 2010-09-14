@@ -194,17 +194,24 @@ public class MainFrame extends FBFrame implements LogSync {
 		}
 	}
 	
+	volatile Exception previousDecrementToZero;
 	public void releaseDisplayWait() {
 		synchronized(waitLock) {
-			if (waitCount <= 0)
-				throw new AssertionError("Can't decrease wait count; already zero");
+			if (waitCount <= 0) {
+				if (previousDecrementToZero != null)
+					throw new IllegalStateException("Can't decrease wait count; already zero", previousDecrementToZero);
+				else
+					throw new IllegalStateException("Can't decrease wait count; never incremented");
+			}
 			waitCount--;
 			if (GUI2_DEBUG) {
                 System.err.println("releasing display wait, count " + waitCount);
                 Thread.dumpStack();
             }
-			if (waitCount == 0)
+			if (waitCount == 0) {
 				mainFrameTree.showCard(BugCard.TREECARD, new Cursor(Cursor.DEFAULT_CURSOR), this);
+				previousDecrementToZero = new Exception("Previously decremented at");
+			}
 		}
 	}
 
