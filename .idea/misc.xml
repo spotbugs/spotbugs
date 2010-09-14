@@ -7,12 +7,10 @@
     <scope name="App Engine" pattern="file[AppEngineCloudClient]:*//*||file[AppEngineCloudProtocol]:*//*||file[AppEngineCloudServer]:*//*||file[cloudServlet]:*//*||file[localCloud]:*//*" />
     <scope name="FindBugs Core" pattern="file[findbugs]:*//*||file[findbugsTestCases]:*//*" />
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
-    <unnamed_scope value="src[findbugs]:edu.umd.cs.findbugs..*" />
-    <unnamed_scope value="src[findbugs]:edu.umd.cs.findbugs.gui..*" />
-    <unnamed_scope value="src[findbugs]:edu.umd.cs.findbugs.gui2..*" />
+    <unnamed_scope value="src[findbugs]:edu.umd.cs.findbugs..*&amp;&amp;!src[findbugs]:edu.umd.cs.findbugs.gui..*&amp;&amp;!src[findbugs]:edu.umd.cs.findbugs.gui2..*" />
     <deny_rule from_scope="FindBugs Core" to_scope="App Engine" is_deny="true" />
-    <deny_rule from_scope="src[findbugs]:edu.umd.cs.findbugs..*" to_scope="src[findbugs]:edu.umd.cs.findbugs.gui2..*" is_deny="true" />
-    <deny_rule from_scope="src[findbugs]:edu.umd.cs.findbugs..*" to_scope="src[findbugs]:edu.umd.cs.findbugs.gui..*" is_deny="true" />
+    <deny_rule from_scope="src[findbugs]:edu.umd.cs.findbugs..*&amp;&amp;!src[findbugs]:edu.umd.cs.findbugs.gui..*&amp;&amp;!src[findbugs]:edu.umd.cs.findbugs.gui2..*" to_scope="src[findbugs]:edu.umd.cs.findbugs.gui2..*" is_deny="true" />
+    <deny_rule from_scope="src[findbugs]:edu.umd.cs.findbugs..*&amp;&amp;!src[findbugs]:edu.umd.cs.findbugs.gui..*&amp;&amp;!src[findbugs]:edu.umd.cs.findbugs.gui2..*" to_scope="src[findbugs]:edu.umd.cs.findbugs.gui..*" is_deny="true" />
   </component>
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
