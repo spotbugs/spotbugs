@@ -614,8 +614,12 @@
 		</antcall>
 	</target>
 	
+	<target name="compileFindbugsTestCases">
+    		<ant dir="../findbugsTestCases" target="classes" inheritAll="false" />
+	</target>
+
 	<!-- Run JUnit test cases -->
-	<target name="runjunit" depends="junittests,jars">
+	<target name="runjunit" depends="junittests,jars,compileFindbugsTestCases">
 		<echo>Running JUnit test cases for FindBugs...</echo>
 		<delete dir="${junit.dir}"/>
 		<mkdir dir="${junit.dir}"/>
