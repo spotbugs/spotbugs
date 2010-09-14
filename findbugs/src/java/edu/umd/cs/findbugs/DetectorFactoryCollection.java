@@ -47,6 +47,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -184,8 +185,10 @@ public class DetectorFactoryCollection {
 		return pluginByIdMap.values();
 	}
 	
-	Plugin getCorePlugin() {
+	@Nonnull Plugin getCorePlugin() {
 		ensureLoaded();
+		if (corePlugin == null)
+			throw new IllegalStateException("No core plugin");
 		return corePlugin;
 	}
 	
@@ -368,7 +371,11 @@ public class DetectorFactoryCollection {
 
 	}
 	public void ensureLoaded() {
-		if (loaded) return;
+		if (loaded) {
+			if (corePlugin == null)
+				throw new NullPointerException("Loaded but null core plugin");
+			return;
+		}
 		if (DEBUG)
 			new RuntimeException("DetectorFactoryCollection loaded").printStackTrace();
 		loadPlugins();
@@ -384,6 +391,7 @@ public class DetectorFactoryCollection {
 		if (loaded) {
 			throw new IllegalStateException();
 		}
+		loadCorePlugin();
 		for (Plugin plugin : plugins) {
 			pluginByIdMap.put(plugin.getPluginId(), plugin);
 		}
@@ -412,24 +420,7 @@ public class DetectorFactoryCollection {
 	void loadPlugins() {
 		if (loaded) 
 			throw new IllegalStateException("plugins already loaded");
-		//
-		// Load the core plugin.
-		//
-		PluginLoader corePluginLoader = new PluginLoader();
-		try {
-			loadPlugin(corePluginLoader);
-			corePlugin = corePluginLoader.getPlugin();
-		} catch (PluginException e) {
-			throw new IllegalStateException("Warning: could not load FindBugs core plugin: " + e.toString(), e);
-		}
-		
-		URL u = getCoreResource(BugRanker.ADJUST_FILENAME);
-		
-		try {
-			adjustmentBugRanker = new BugRanker(u);
-        } catch (IOException e1) {
-	       AnalysisContext.logError("Unable to parse " + u, e1);
-        }
+		loadCorePlugin();
         List<URL> plugins;
 		
         if (JavaWebStart.isRunningViaJavaWebstart()) {
@@ -507,6 +498,32 @@ public class DetectorFactoryCollection {
 
 		
 	}
+
+	/**
+     * 
+     */
+    private void loadCorePlugin() {
+	    //
+		// Load the core plugin.
+		//
+		PluginLoader corePluginLoader = new PluginLoader();
+		try {
+			loadPlugin(corePluginLoader);
+			corePlugin = corePluginLoader.getPlugin();
+			if (corePlugin == null)
+				throw new NullPointerException("Null corePlugin");
+		} catch (PluginException e) {
+			throw new IllegalStateException("Warning: could not load FindBugs core plugin: " + e.toString(), e);
+		}
+		
+		URL u = getCoreResource(BugRanker.ADJUST_FILENAME);
+		
+		try {
+			adjustmentBugRanker = new BugRanker(u);
+        } catch (IOException e1) {
+	       AnalysisContext.logError("Unable to parse " + u, e1);
+        }
+    }
 
 	/**
      * @param plugins

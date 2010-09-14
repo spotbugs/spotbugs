@@ -196,9 +196,11 @@ public class BugRanker {
     	DetectorFactoryCollection factory = DetectorFactoryCollection.instance();
 		return factory.getAdjustmentBugRanker();
     }
-    private static BugRanker getCoreRanker() {
-    	DetectorFactoryCollection factory = DetectorFactoryCollection.instance();
-		return factory.getCorePlugin().getBugRanker();
+
+	private static BugRanker getCoreRanker() {
+		DetectorFactoryCollection factory = DetectorFactoryCollection.instance();
+		Plugin corePlugin = factory.getCorePlugin();
+		return corePlugin.getBugRanker();
 	}
 
 	public static int findRank(BugInstance bug) {

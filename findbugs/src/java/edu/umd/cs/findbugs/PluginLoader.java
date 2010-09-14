@@ -297,7 +297,8 @@ public class PluginLoader {
 		
 		
 		if (jarName != null 
-				&& !findbugsXML_URL.toString().contains(jarName)) {
+				&& !findbugsXML_URL.toString().contains(jarName) 
+				&& !(corePlugin && findbugsXML_URL.toString().endsWith("classesEclipse/findbugs.xml") )) {
 			String classloaderName =  classLoader.getClass().getName();
 			if (classLoader instanceof URLClassLoader) {
 				classloaderName += Arrays.asList(((URLClassLoader)classLoader).getURLs());
