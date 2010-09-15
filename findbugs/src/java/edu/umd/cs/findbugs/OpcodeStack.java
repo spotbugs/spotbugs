@@ -142,15 +142,18 @@ public class OpcodeStack implements Constants2
 		public static final @SpecialKind int HASHCODE_INT_REMAINDER = 9;
 		public static final @SpecialKind int FILE_SEPARATOR_STRING = 10;
 		public static final @SpecialKind int MATH_ABS = 11;
-		public static final @SpecialKind int NON_NEGATIVE = 12;
-		public static final @SpecialKind int NASTY_FLOAT_MATH = 13;
-		public static final @SpecialKind int FILE_OPENED_IN_APPEND_MODE = 14;
-		public static final @SpecialKind int SERVLET_REQUEST_TAINTED = 15;
-		public static final @SpecialKind int NEWLY_ALLOCATED  = 16;
-		public static final @SpecialKind int ZERO_MEANS_NULL  = 17;
-		public static final @SpecialKind int NONZERO_MEANS_NULL  = 18;
-		public static final @SpecialKind int RESULT_OF_I2L = 19;
-		public static final @SpecialKind int RESULT_OF_L2I = 20;
+		public static final @SpecialKind int MATH_ABS_OF_RANDOM = 12;
+		public static final @SpecialKind int MATH_ABS_OF_HASHCODE = 13;
+		
+		public static final @SpecialKind int NON_NEGATIVE = 14;
+		public static final @SpecialKind int NASTY_FLOAT_MATH = 15;
+		public static final @SpecialKind int FILE_OPENED_IN_APPEND_MODE = 16;
+		public static final @SpecialKind int SERVLET_REQUEST_TAINTED = 17;
+		public static final @SpecialKind int NEWLY_ALLOCATED  = 18;
+		public static final @SpecialKind int ZERO_MEANS_NULL  = 19;
+		public static final @SpecialKind int NONZERO_MEANS_NULL  = 20;
+		public static final @SpecialKind int RESULT_OF_I2L = 21;
+		public static final @SpecialKind int RESULT_OF_L2I = 22;
 		
 		public static HashMap<Integer, String> specialKindNames = new HashMap<Integer, String>();
 		
@@ -268,6 +271,12 @@ public class OpcodeStack implements Constants2
 				break;
 			case  RANDOM_INT_REMAINDER:
 				buf.append(", random_int_rem");
+				break;
+			case	MATH_ABS_OF_RANDOM:
+				buf.append(", abs_of_random");
+				break;
+			case	MATH_ABS_OF_HASHCODE:
+				buf.append(", abs_of_hashcode");
 				break;
 			case  FILE_SEPARATOR_STRING:
 				buf.append(", file_separator_string");
@@ -632,14 +641,47 @@ public class OpcodeStack implements Constants2
 			return !isNonNegative() && (getSpecialKind() == Item.RANDOM_INT 
 					|| getSpecialKind() == Item.SIGNED_BYTE 
 					|| getSpecialKind() == Item.HASHCODE_INT 
-					|| getSpecialKind() == Item.RANDOM_INT_REMAINDER || getSpecialKind() == Item.HASHCODE_INT_REMAINDER);
+					|| getSpecialKind() == Item.RANDOM_INT_REMAINDER 
+					|| getSpecialKind() == Item.HASHCODE_INT_REMAINDER
+					|| getSpecialKind() == Item.MATH_ABS_OF_RANDOM
+					|| getSpecialKind() == Item.MATH_ABS_OF_HASHCODE
+					);
 
 		}
-
+	
+		public int getSpecialKindForAbs() {
+			switch (getSpecialKind()) {
+			case Item.HASHCODE_INT:
+				return Item.MATH_ABS_OF_HASHCODE;
+			case Item.RANDOM_INT:
+				return Item.MATH_ABS_OF_RANDOM;
+			default:
+					return Item.MATH_ABS;
+			}
+		}
+		
+		public int getSpecialKindForRemainder() {
+			switch (getSpecialKind()) {
+			case Item.HASHCODE_INT:
+				return Item.HASHCODE_INT_REMAINDER;
+			case Item.RANDOM_INT:
+				return Item.RANDOM_INT_REMAINDER;
+			default:
+					return Item.NOT_SPECIAL;
+			}
+		}
+		/** Value could be Integer.MIN_VALUE */
 		public boolean checkForIntegerMinValue() {
 			return !isNonNegative() && (getSpecialKind() == Item.RANDOM_INT 
 					|| getSpecialKind() == Item.HASHCODE_INT 
 					);
+		}
+		
+		/** The result of applying Math.abs to a checkForIntegerMinValue()  value */
+		public boolean mightRarelyBeNegative() {
+			return !isNonNegative() && (
+					getSpecialKind() == Item.MATH_ABS_OF_RANDOM 
+					|| getSpecialKind() == Item.MATH_ABS_OF_HASHCODE);
 		}
 		/**
 		 * @param isInitialParameter The isInitialParameter to set.
@@ -862,7 +904,7 @@ public class OpcodeStack implements Constants2
 		 Item it, it2;
 		 Constant cons;
 	
-		 // System.out.printf("%3d %3d %s\n", dbc.getPC(), registerTestedFoundToBeNonnegative, OPCODE_NAMES[seen]);
+//		  System.out.printf("%3d %12s%s%n", dbc.getPC(), OPCODE_NAMES[seen], this);
 		 if (dbc.isRegisterStore()) 
 			 setLastUpdate(dbc.getRegisterOperand(), dbc.getPC());
 		 
@@ -1029,18 +1071,29 @@ public class OpcodeStack implements Constants2
 					pop();
 					push(new Item("I"));
 				break;
+				 case IFNONNULL:
+			case IFNULL: {
+				Item topItem = pop();
+				if (seen == IFNONNULL && topItem.isNull())
+					break;
+				seenTransferOfControl = true;
+				addJumpValue(dbc.getPC(), dbc.getBranchTarget());
+
+				break;
+			}
+
 				case IFEQ:
 				 case IFNE:
 				 case IFLT:
 				 case IFLE:
 				 case IFGT:
 				 case IFGE:
-				 case IFNONNULL:
-				 case IFNULL:
+				
 				seenTransferOfControl = true;
 				 {
 					 Item topItem = pop();
 
+//					 System.out.printf("%4d %10s %s%n", dbc.getPC(),OPCODE_NAMES[seen], topItem);
 					 if (seen == IFLT || seen == IFLE ) {
 						 registerTestedFoundToBeNonnegative = topItem.registerNumber;
 					 }
@@ -1050,9 +1103,9 @@ public class OpcodeStack implements Constants2
 							&& (seen == IFLT || seen == IFLE || seen == IFGT || seen == IFGE)) {
 						int specialKind = topItem.getSpecialKind();
 						for(Item item : stack) if (item != null && item.getSpecialKind() == specialKind) 
-							item.setSpecialKind(0);
+							item.setSpecialKind(Item.NOT_SPECIAL);
 						for(Item item : lvValues) if (item != null && item.getSpecialKind() == specialKind) 
-							item.setSpecialKind(0);
+							item.setSpecialKind(Item.NOT_SPECIAL);
 
 					}
 				 }
@@ -1102,11 +1155,11 @@ public class OpcodeStack implements Constants2
 					seenTransferOfControl = true;
 					Item right = pop();
 					Item left = pop();
-					if (right.hasConstantValue(Integer.MIN_VALUE) && left.checkForIntegerMinValue() 
-							|| left.hasConstantValue(Integer.MIN_VALUE) && right.checkForIntegerMinValue() ) {
-						for(Item i : stack) if (i != null && i.checkForIntegerMinValue()) 
+					if (right.hasConstantValue(Integer.MIN_VALUE) && left.mightRarelyBeNegative() 
+							|| left.hasConstantValue(Integer.MIN_VALUE) && right.mightRarelyBeNegative() ) {
+						for(Item i : stack) if (i != null && i.mightRarelyBeNegative()) 
 							i.setSpecialKind(Item.NOT_SPECIAL);
-						for(Item i : lvValues) if (i != null && i.checkForIntegerMinValue()) 
+						for(Item i : lvValues) if (i != null && i.mightRarelyBeNegative()) 
 							i.setSpecialKind(Item.NOT_SPECIAL);
 					 }  
 					 int branchTarget = dbc.getBranchTarget();
@@ -2129,9 +2182,14 @@ public class OpcodeStack implements Constants2
 			Item i = pop();
 			i.setSpecialKind(Item.RANDOM_INT);
 			push(i);
-		} else if (clsName.equals("java/lang/Math") && methodName.equals("abs")) {
+		} else if (ClassName.isMathClass(clsName) && methodName.equals("abs")) {
 			Item i = pop();
-			i.setSpecialKind(Item.MATH_ABS);
+			if (i.getSpecialKind() == Item.HASHCODE_INT)
+				i.setSpecialKind(Item.MATH_ABS_OF_HASHCODE);
+			else if (i.getSpecialKind() == Item.RANDOM_INT)
+				i.setSpecialKind(Item.MATH_ABS_OF_RANDOM);
+			else
+				i.setSpecialKind(Item.MATH_ABS);
 			push(i);
 		}
 		else if (seen == INVOKEVIRTUAL && methodName.equals("hashCode") && signature.equals("()I")
@@ -2586,6 +2644,14 @@ public void initialize() {
 			newValue.setSpecialKind(Item.HASHCODE_INT_REMAINDER);
 		if (seen == IREM && lhs.getSpecialKind() == Item.RANDOM_INT)
 			newValue.setSpecialKind(Item.RANDOM_INT_REMAINDER);
+		if (seen == IREM && lhs.checkForIntegerMinValue()) {
+			if ( rhs.getConstant() != null ) {
+				int rhsValue = constantToInt(rhs);
+				if (!Util.isPowerOfTwo(rhsValue))
+					newValue.setSpecialKind(lhs.getSpecialKindForRemainder());
+			} else
+				newValue.setSpecialKind(lhs.getSpecialKindForRemainder());
+		}
 		 if (DEBUG) System.out.println("push: " + newValue);
 		 newValue.setPC(dbc.getPC());
 		 push(newValue);
