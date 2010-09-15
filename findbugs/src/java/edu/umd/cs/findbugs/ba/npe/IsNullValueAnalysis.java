@@ -294,6 +294,9 @@ public class IsNullValueAnalysis
 	@Override
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, IsNullValueFrame fact)
 			throws DataflowAnalysisException {
+		
+		if (!fact.isValid())
+			return;
 
 		// If this is the last instruction in the block,
 		// save the result immediately before the instruction.
@@ -312,6 +315,9 @@ public class IsNullValueAnalysis
 		Instruction ins = handle.getInstruction();
 		visitor.analyzeInstruction(ins);
 
+		if (!fact.isValid())
+			return;
+		
 		// Special case:
 		// The instruction may have produced previously seen values
 		// about which new is-null information is known.

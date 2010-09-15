@@ -90,8 +90,13 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	 */
 	@Override
 	public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
+		if (!getFrame().isValid() )
+			return;
 		slotContainingNewNullValue = -1;
 		super.analyzeInstruction(ins);
+		if (!getFrame().isValid() )
+			return;
+		
 		if (!NO_ASSERT_HACK) {
             if (assertionMethods.isAssertionHandle(getLocation().getHandle(), cpg)) {
                     IsNullValueFrame frame = getFrame();

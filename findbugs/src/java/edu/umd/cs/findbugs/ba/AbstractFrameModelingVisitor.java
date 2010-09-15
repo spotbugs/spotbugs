@@ -72,6 +72,7 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 	 *                                   for the method being analyzed is invalid
 	 */
 	public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
+		if (frame.isValid()) 
 		try {
 			ins.accept(this);
 		} catch (InvalidBytecodeException e) {
