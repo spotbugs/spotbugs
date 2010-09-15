@@ -5,6 +5,7 @@ Release 1.3.10
 - feature: allow to specify custom detector packages from Eclipse UI as workspace preference (Andrei Loskutov)
 - feature: use ".settings/edu.umd.cs.findbugs.core.prefs" as a name for the FB *core* preferences, instead of ".fbprefs"  (Andrei Loskutov)
 - feature: allow to run FB analysis on working sets (Andrei Loskutov)
+- feature: decorate working sets and source root directories with bug counts (Andrei Loskutov)
 - feature: show some previously hidden FB workspace preferences and allow user to change them easily (Andrei Loskutov)
 - feature: exported some findbugs packages as requested by 2974281 (Andrei Loskutov)
 - feature: added context menu on project to open FB analysis results xml in the Eclipse editor (Andrei Loskutov)

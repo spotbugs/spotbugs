@@ -18,12 +18,16 @@
  */
 package de.tobject.findbugs.decorators;
 
+import java.util.Set;
+
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.IWorkingSet;
 
 import de.tobject.findbugs.builder.ResourceUtils;
 import de.tobject.findbugs.builder.WorkItem;
+import de.tobject.findbugs.util.Util;
 
 /**
  * A simple decorator which adds (in currently hardcoded way) bug counts to the resources.
@@ -41,13 +45,29 @@ public class ResourceBugCountDecorator implements ILabelDecorator {
 	public String decorateText(String text, Object element) {
 		WorkItem item = ResourceUtils.getWorkItem(element);
 		if(item == null) {
+			IWorkingSet workingSet = Util.getAdapter(IWorkingSet.class, element);
+			if(workingSet != null) {
+				return decorateText(text, workingSet);
+			}
 			return text;
 		}
-		int markerCount = item.getMarkerCount(false);
+		return decorateText(text, item.getMarkerCount(false));
+	}
+
+	private static String decorateText(String text, int markerCount) {
 		if(markerCount == 0){
 			return text;
 		}
 		return text + " (" + markerCount + ")";
+	}
+
+	private static String decorateText(String text, IWorkingSet workingSet) {
+		Set<WorkItem> resources = ResourceUtils.getResources(workingSet);
+		int markerCount = 0;
+		for (WorkItem workItem : resources) {
+			markerCount += workItem.getMarkerCount(true);
+		}
+		return decorateText(text, markerCount);
 	}
 
 	public void addListener(ILabelProviderListener listener) {

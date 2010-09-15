@@ -759,6 +759,22 @@
       <decorator
             adaptable="true"
             class="de.tobject.findbugs.decorators.ResourceBugCountDecorator"
+            id="de.tobject.findbugs.decorators.WorkingSetBugCountDecorator"
+            label="Bug count decorator (Working Set)"
+            state="true">
+         <enablement>
+            <objectClass
+                  name="org.eclipse.ui.IWorkingSet">
+            </objectClass>
+         </enablement>
+         <description>
+            Decorates working sets with bug counts for all contained java resources
+         </description>
+      </decorator>
+
+      <decorator
+            adaptable="true"
+            class="de.tobject.findbugs.decorators.ResourceBugCountDecorator"
             id="de.tobject.findbugs.decorators.ProjectBugCountDecorator"
             label="Bug count decorator (Project)"
             state="true">
@@ -779,9 +795,14 @@
             label="Bug count decorator (Folder)"
             state="true">
          <enablement>
-            <objectClass
-                  name="org.eclipse.jdt.core.IPackageFragment">
-            </objectClass>
+            <or>
+                <objectClass
+                      name="org.eclipse.jdt.core.IPackageFragment">
+                </objectClass>
+                <objectClass
+                      name="org.eclipse.jdt.core.IPackageFragmentRoot">
+                </objectClass>
+            </or>
          </enablement>
          <description>
             Decorates java related resources with bug counts for all contained java classes

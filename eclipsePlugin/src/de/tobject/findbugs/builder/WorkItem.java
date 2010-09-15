@@ -22,9 +22,11 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Pattern;
+
+import javax.annotation.CheckForNull;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -46,7 +48,6 @@ import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.util.Archive;
 
@@ -271,7 +272,7 @@ public class WorkItem {
 	public Set<IMarker> getMarkers(boolean recursive){
 		IResource res = getCorespondingResource();
 		if(res != null){
-			if(res.getType() == IResource.PROJECT){
+			if(res.getType() == IResource.PROJECT || javaElt instanceof IPackageFragmentRoot){
 				// for project, depth_one does not make any sense here
 				recursive = true;
 			}
