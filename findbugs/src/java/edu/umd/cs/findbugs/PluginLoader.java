@@ -303,7 +303,8 @@ public class PluginLoader {
 			if (classLoader instanceof URLClassLoader) {
 				classloaderName += Arrays.asList(((URLClassLoader)classLoader).getURLs());
 			}
-			throw new PluginDoesntContainMetadataException("plugin doesn't contain findbugs.xml: " + jarName + "; got " + findbugsXML_URL 
+			throw new PluginDoesntContainMetadataException((corePlugin ? "Core plugin" : "Plugin ") 
+					+ jarName + " doesn't contain findbugs.xml; got " + findbugsXML_URL 
 					+ " from " + classloaderName);
 		}
 		SAXReader reader = new SAXReader();
