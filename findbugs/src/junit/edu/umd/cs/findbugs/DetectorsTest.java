@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +71,7 @@ public class DetectorsTest {
 	@Test
 	public void testAllRegressionFiles() throws IOException,
 			InterruptedException {
-		setUpEngine();
+		setUpEngine("../findbugsTestCases/build/classes/");
 
 		engine.execute();
 
@@ -78,8 +79,22 @@ public class DetectorsTest {
 		assertFalse(
 				"No bugs were reported. Something is wrong with the configuration",
 				bugReporter.getBugCollection().getCollection().isEmpty());
+	}
+	@Test
+	public void testBug3053867() throws IOException,
+			InterruptedException {
+		setUpEngine("../findbugsTestCases/build/classes/sfBugs/Bug3053867.class", "../findbugsTestCases/build/classes/sfBugs/Bug3053867$Foo.class");
 
-		
+		engine.execute();
+
+		// If there are zero bugs, then something's wrong
+		assertFalse(
+				"No bugs were reported. Something is wrong with the configuration",
+				bugReporter.getBugCollection().getCollection().isEmpty());
+	}
+	
+	@After
+	public void checkForUnexpectedBugs() {
 		List<BugInstance> unexpectedBugs = new ArrayList<BugInstance>();
 		for (BugInstance bug : bugReporter.getBugCollection()) {
 			if (isUnexpectedBug(bug) && bug.getPriority() == Priorities.HIGH_PRIORITY) {
@@ -92,8 +107,6 @@ public class DetectorsTest {
 		if (!unexpectedBugs.isEmpty())
 		  Assert.fail("Unexpected bugs (" + unexpectedBugs.size() + "):"+ getBugsLocations(unexpectedBugs));
 	}
-
-	
 
 	/**
 	 * Returns a printable String concatenating bug locations.
@@ -132,7 +145,7 @@ public class DetectorsTest {
 				"findbugs/build/lib/findbugs.jar");
 		URL[] pluginList = new URL[] { findbugsJar.toURI().toURL() };
 		DetectorFactoryCollection dfc = new DetectorFactoryCollection();
-		dfc.setPluginList(pluginList);
+//		dfc.setPluginList(pluginList);
 		DetectorFactoryCollection.resetInstance(dfc);
 	}
 
@@ -141,7 +154,7 @@ public class DetectorsTest {
 	 * all the available detectors and reports all the bug categories. Uses a
 	 * normal priority threshold.
 	 */
-	private void setUpEngine() {
+	private void setUpEngine(String ... analyzeMe) {
 		this.engine = new FindBugs2();
 		Project project = new Project();
 		project.setProjectName("findbugsTestCases");
@@ -163,7 +176,9 @@ public class DetectorsTest {
 
 
 		// This is ugly. We should think how to improve this.
-		project.addFile("../findbugsTestCases/build/classes/");
+		for(String s : analyzeMe) 
+			project.addFile(s);
+		
 		project.addAuxClasspathEntry("../findbugsTestCases/lib/j2ee.jar");
 		project.addAuxClasspathEntry("lib/junit.jar");
 		project.addAuxClasspathEntry("../findbugs/lib/jsr305.jar");

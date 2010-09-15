@@ -49,6 +49,9 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 				continue;
 
 			try {
+				if (classContext.getClassDescriptor().getClassName().equals("sfBugs/Bug3053867")
+						&& method.getName().equals("storeMap"))
+						new RuntimeException("found it").printStackTrace();
 				analyzeMethod(classContext, method);
 			} catch (CFGBuilderException e) {
 				bugReporter.logError("Detector " + this.getClass().getName()

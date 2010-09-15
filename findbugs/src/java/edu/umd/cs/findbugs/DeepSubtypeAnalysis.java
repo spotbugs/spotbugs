@@ -135,8 +135,14 @@ public class DeepSubtypeAnalysis {
 		
 		if (x.isFinal()) return result;
 		
+		double collectionResult = Analyze.deepInstanceOf(x, collection);
+		double mapResult = Analyze.deepInstanceOf(x, map);
+		
 		if (x.isInterface() || x.isAbstract()) {
-			result = Math.max(result, Analyze.deepInstanceOf(x, collection)*0.95);
+			result = Math.max(result, Math.max(mapResult,collectionResult)*0.95);
+			if (result >= 0.9) {
+				return result;
+			}
 		}
 		ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor(x);
 		
@@ -160,14 +166,15 @@ public class DeepSubtypeAnalysis {
 			return result;
 		}
 		
-		result = Math.max(result, confidence * Analyze.deepInstanceOf(x, collection));
+		confidence = (1+confidence)/2;
+		result = Math.max(result, confidence * collectionResult);
 		if (result >= 0.9) {
 			if(DEBUG) {
 				System.out.println("High collection result: " + result);
 			}
 			return result;
 		}
-		result = Math.max(result, confidence * Analyze.deepInstanceOf(x, map));
+		result = Math.max(result, confidence * mapResult);
 		if (result >= 0.9) {
 			if(DEBUG) {
 				System.out.println("High map result: " + result);
