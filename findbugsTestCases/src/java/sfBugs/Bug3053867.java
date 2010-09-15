@@ -1,16 +1,27 @@
 package sfBugs;
 
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
 import edu.umd.cs.findbugs.annotations.DesireWarning;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3053867 {
 
 	static class Foo {
-		int x;
+		 int x;
+
+
+        public int getX() {
+        	return x;
+        }
+
+        public void setX(int x) {
+        	this.x = x;
+        }
 	}
 
 	HttpSession session;
@@ -24,10 +35,17 @@ public class Bug3053867 {
 	public void storeMap(Map<String, String> map) {
 		session.setAttribute("map", map);
 	}
-
-	@DesireWarning("J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION")
-	public void storeMap(Foo foo) {
+	@NoWarning("J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION")
+	public void storeSet(Set<String> set) {
+		session.setAttribute("set", set);
+	}
+	@ExpectWarning("J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION")
+	public void storeFoo(Foo foo) {
 		session.setAttribute("foo", foo);
+	}
+	@DesireWarning("J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION")
+	public void storeFooSet(Set<Foo> fooSet) {
+		session.setAttribute("fooSet", fooSet);
 	}
 
 }
