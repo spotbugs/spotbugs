@@ -22,6 +22,7 @@ package de.tobject.findbugs.reporter;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -113,9 +114,6 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.AbstractBugReporter#doReportBug(edu.umd.cs.findbugs.BugInstance)
-	 */
 	@Override
 	protected void doReportBug(BugInstance bug) {
 		synchronized (bugCollection) {
@@ -129,9 +127,6 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.AbstractBugReporter#reportQueuedErrors()
-	 */
 	@Override
 	public void reportQueuedErrors() {
 		// Report unique errors in order of their sequence
@@ -169,21 +164,34 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 		if (DEBUG) {
 			System.out.println("Finish: Found " + bugCount + " bugs."); //$NON-NLS-1$//$NON-NLS-2$
 		}
-		if(!isStreamReportingEnabled()){
-			return;
-		}
 		Cloud cloud = bugCollection.getCloud();
 		if (cloud != null) {
 			cloud.bugsPopulated();
 		}
+		reportResultsToConsole();
+	}
+
+	/**
+	 * If there is a FB console opened, report results and statistics to it.
+	 */
+	private void reportResultsToConsole() {
+		if(!isStreamReportingEnabled()){
+			return;
+		}
 		printToStream("finished, found: " + bugCount + " bugs");
 		ConfigurableXmlOutputStream xmlStream = new ConfigurableXmlOutputStream(stream, true);
 		ProjectStats stats = bugCollection.getProjectStats();
-//				stats.writeXML(output);
+
 		printToStream(new Footprint(stats.getBaseFootprint()).toString());
 
 		Profiler profiler = stats.getProfiler();
-		PrintStream printStream = new PrintStream(stream);
+		PrintStream printStream;
+		try {
+			printStream = new PrintStream(stream, false, "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			// can never happen with UTF-8
+			return;
+		}
 
 		printToStream("Total time:");
 		profiler.report(new Profiler.TotalTimeComparator(profiler),
