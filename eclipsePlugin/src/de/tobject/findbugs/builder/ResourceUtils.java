@@ -49,6 +49,7 @@ import org.eclipse.ui.IWorkingSet;
 import de.tobject.findbugs.util.ProjectUtilities;
 import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * @author Andrei
@@ -328,11 +329,13 @@ public class ResourceUtils {
 	 * @param element an IAdaptable object which may provide an adapter for IResource
 	 * @return resource object or null
 	 */
+	@CheckForNull
 	public static WorkItem getWorkItem(Object element) {
 		if(element instanceof IResource) {
 			IResource resource = (IResource) element;
-			if(resource.getType() == IResource.FILE && !Util.isJavaArtifact(resource)){
-				// Ignore non java files
+			if(resource.getType() == IResource.FILE && !Util.isJavaArtifact(resource)
+					|| !resource.isAccessible()){
+				// Ignore non java files or deleted/closed files/projects
 				return null;
 			}
 			return new WorkItem((IResource) element);
@@ -345,8 +348,9 @@ public class ResourceUtils {
 			Object adapter = ((IAdaptable) element).getAdapter(IResource.class);
 			if(adapter instanceof IResource){
 				IResource resource = (IResource) element;
-				if (resource.getType() == IResource.FILE && !Util.isJavaArtifact(resource)) {
-					// Ignore non java files
+				if (resource.getType() == IResource.FILE && !Util.isJavaArtifact(resource)
+						|| !resource.isAccessible()) {
+					// Ignore non java files or deleted/closed files/projects
 					return null;
 				}
 				return new WorkItem(resource);

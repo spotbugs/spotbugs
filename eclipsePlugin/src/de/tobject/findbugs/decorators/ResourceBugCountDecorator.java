@@ -40,6 +40,9 @@ public class ResourceBugCountDecorator implements ILabelDecorator {
 
 	public String decorateText(String text, Object element) {
 		WorkItem item = ResourceUtils.getWorkItem(element);
+		if(item == null) {
+			return text;
+		}
 		int markerCount = item.getMarkerCount(false);
 		if(markerCount == 0){
 			return text;
