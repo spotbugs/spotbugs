@@ -20,10 +20,13 @@
 package de.tobject.findbugs.util;
 
 import java.util.Iterator;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
+
+import javax.annotation.CheckForNull;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -185,6 +188,22 @@ public class Util {
 				cb.dispose();
 			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@CheckForNull
+	public static <V> V getAdapter(Class<V> adapter, Object obj) {
+		if(obj == null) {
+			return null;
+		}
+		if(adapter.isAssignableFrom(obj.getClass())){
+			return (V) obj;
+		}
+		if(obj instanceof IAdaptable){
+			IAdaptable adaptable = (IAdaptable) obj;
+			return (V) adaptable.getAdapter(adapter);
+		}
+		return null;
 	}
 
 }

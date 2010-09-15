@@ -29,7 +29,6 @@ import java.util.TreeSet;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jface.text.ITextSelection;
@@ -46,6 +45,7 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.util.Util;
 import de.tobject.findbugs.view.AbstractFindbugsView;
 import de.tobject.findbugs.view.BugExplorerView;
 import de.tobject.findbugs.view.explorer.BugGroup;
@@ -258,7 +258,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (adapterType == IPropertySheetPage.class){
 			if (adaptableObject instanceof BugExplorerView
@@ -275,13 +275,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 					|| adaptableObject instanceof BugAnnotation) {
 				return new PropertySource(adaptableObject);
 			}
-			IMarker marker = null;
-			if (adaptableObject instanceof IMarker) {
-				marker = (IMarker) adaptableObject;
-			} else if (adaptableObject instanceof IAdaptable) {
-				marker = (IMarker) ((IAdaptable) adaptableObject)
-						.getAdapter(IMarker.class);
-			}
+			IMarker marker = Util.getAdapter(IMarker.class, adaptableObject);
 			if (!MarkerUtil.isFindBugsMarker(marker)) {
 				return null;
 			}
@@ -290,7 +284,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Class[] getAdapterList() {
 		return new Class[] { IPropertySheetPage.class, IPropertySource.class };
 	}

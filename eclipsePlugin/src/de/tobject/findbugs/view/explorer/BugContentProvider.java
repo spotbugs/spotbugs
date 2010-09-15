@@ -24,8 +24,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -742,14 +742,4 @@ public class BugContentProvider implements ICommonContentProvider {
 		return supported;
 	}
 
-	public Object getAdapter(Class<?> adapter, Object obj) {
-		if(adapter.isAssignableFrom(obj.getClass())){
-			return obj;
-		}
-		if(obj instanceof IAdaptable){
-			IAdaptable adaptable = (IAdaptable) obj;
-			return adaptable.getAdapter(adapter);
-		}
-		return null;
-	}
 }

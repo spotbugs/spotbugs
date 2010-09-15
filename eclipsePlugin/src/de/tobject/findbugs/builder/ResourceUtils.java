@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -49,7 +51,6 @@ import org.eclipse.ui.IWorkingSet;
 import de.tobject.findbugs.util.ProjectUtilities;
 import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * @author Andrei
@@ -191,15 +192,14 @@ public class ResourceUtils {
 			Object element = iter.next();
 			WorkItem workItem = getWorkItem(element);
 			if (workItem == null) {
-				IWorkingSet wset = getWorkingSet(element);
+				IWorkingSet wset = Util.getAdapter(IWorkingSet.class, element);
 				if(wset != null) {
 					mapResources(wset, projectsMap);
 					continue;
 				}
 
 				// Support for active changesets
-				ChangeSet set = (ChangeSet) ((IAdaptable) element)
-						.getAdapter(ChangeSet.class);
+				ChangeSet set = Util.getAdapter(ChangeSet.class, element);
 				for (WorkItem change : getResources(set)) {
 					mapResource(change, projectsMap, true);
 				}
@@ -218,7 +218,11 @@ public class ResourceUtils {
 		}
 	}
 
-	private static Set<WorkItem> getResources(IWorkingSet wset) {
+	/**
+	 * @param wset non null working set
+	 * @return non null set with work items, which may be empty
+	 */
+	public static Set<WorkItem> getResources(IWorkingSet wset) {
 		Set<WorkItem> set = new HashSet<WorkItem>();
 		boolean aggregateWorkingSet = wset.isAggregateWorkingSet();
 		// IAggregateWorkingSet was introduced in Eclipse 3.5
@@ -238,16 +242,6 @@ public class ResourceUtils {
 			}
 		}
 		return set;
-	}
-
-	private static IWorkingSet getWorkingSet(Object element) {
-		if(element instanceof IWorkingSet) {
-			return (IWorkingSet) element;
-		}
-		if(element instanceof IAdaptable) {
-			return (IWorkingSet) ((IAdaptable) element).getAdapter(IWorkingSet.class);
-		}
-		return null;
 	}
 
 	/**
@@ -367,18 +361,12 @@ public class ResourceUtils {
 	 * @param element an IAdaptable object which may provide an adapter for IResource
 	 * @return resource object or null
 	 */
+	@javax.annotation.CheckForNull
 	public static IResource getResource(Object element) {
-		if(element instanceof IResource) {
-			return (IResource) element;
-		}
 		if(element instanceof IJavaElement) {
 			return ((IJavaElement) element).getResource();
 		}
 
-		if(element instanceof IAdaptable) {
-			return (IResource) ((IAdaptable) element).getAdapter(IResource.class);
-		}
-
-		return null;
+		return Util.getAdapter(IResource.class, element);
 	}
 }
