@@ -26,13 +26,14 @@ import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ConditionCheck.ch
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
+
+import javax.annotation.CheckForNull;
 
 import org.eclipse.ui.IMarkerResolution;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * The <CODE>BugResolutionAssociations</CODE> is the container for the loaded

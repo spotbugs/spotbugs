@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -48,7 +49,6 @@ import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.util.Archive;
 
 /**
@@ -244,7 +244,7 @@ public class WorkItem {
 	 *         resource must exist, and the return value can not be null. The return value
 	 *         can be absolutely unrelated to the {@link #getCorespondingResource()}.
 	 */
-	public @NonNull IResource getMarkerTarget(){
+	public @Nonnull IResource getMarkerTarget(){
 		IResource res = getCorespondingResource();
 		if(res != null){
 			return res;

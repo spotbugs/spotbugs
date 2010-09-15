@@ -23,6 +23,8 @@ import java.util.Calendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.annotation.CheckForNull;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
@@ -45,7 +47,6 @@ import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.reporter.MarkerUtil.BugCollectionAndInstance;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
 import edu.umd.cs.findbugs.cloud.Cloud.CloudTask;

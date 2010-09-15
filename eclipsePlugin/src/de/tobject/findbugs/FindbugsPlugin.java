@@ -94,7 +94,6 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionAssociations;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionLoader;
@@ -341,7 +340,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		return resourceBundle;
 	}
 
-	@SuppressWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
 	public void configurePluginDebugOptions() {
 		if (isDebugging()) {
 			// debugging for the plugin itself

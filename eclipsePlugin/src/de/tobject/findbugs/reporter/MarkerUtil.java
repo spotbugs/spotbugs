@@ -29,6 +29,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -75,8 +78,6 @@ import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 
 /**
@@ -375,7 +376,7 @@ public final class MarkerUtil {
 	}
 
 	private static void completeInnerClassInfo(String qualifiedClassName,
-			String innerName, @NonNull IType type, BugInstance bug) throws JavaModelException {
+			String innerName, @Nonnull IType type, BugInstance bug) throws JavaModelException {
 		int lineNbr = findChildSourceLine(type, innerName, bug);
 		// should be always first line, if not found
 		lineNbr = lineNbr <= 0 ? 1 : lineNbr;

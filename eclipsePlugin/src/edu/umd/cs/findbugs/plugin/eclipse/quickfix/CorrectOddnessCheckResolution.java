@@ -2,19 +2,19 @@
  * Contributions to FindBugs
  * Copyright (C) 2006, Institut for Software
  * An Institut of the University of Applied Sciences Rapperswil
- * 
+ *
  * Author: Marco Busarello, Thierry Wyss
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -26,6 +26,8 @@ import static java.lang.Integer.parseInt;
 import static org.eclipse.jdt.core.dom.InfixExpression.Operator.EQUALS;
 import static org.eclipse.jdt.core.dom.InfixExpression.Operator.REMAINDER;
 
+import javax.annotation.CheckForNull;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -36,7 +38,6 @@ import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 
 /**
@@ -44,7 +45,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  * negative numbers. The <CODE>CorrectOddnessCheckResolution</CODE> provides a
  * resolution to replace this bad check by an <CODE>expression</CODE> that
  * works also for negative numbers.
- * 
+ *
  * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#IM_BAD_CHECK_FOR_ODD">IM_BAD_CHECK_FOR_ODD</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
@@ -92,7 +93,7 @@ public abstract class CorrectOddnessCheckResolution extends BugResolution {
 	/**
 	 * Creates and returns a correct <CODE>expression</CODE> that checks if a
 	 * value is odd or not.
-     * 
+     *
 	 * @param ast
 	 *            the <CODE>AST</CODE> instance under which the created <CODE>InfixExpression</CODE>
 	 *            will be created.
