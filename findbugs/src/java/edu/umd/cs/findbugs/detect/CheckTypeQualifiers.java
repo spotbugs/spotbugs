@@ -470,11 +470,8 @@ public class CheckTypeQualifiers extends CFGDetector {
 		annotateWarningWithTypeQualifier(warning, typeQualifierValue);
 
 		Set<SourceSinkInfo> sourceSet = (forward == FlowValue.ALWAYS) ? forwardsFact.getWhereAlways(vn) : forwardsFact.getWhereNever(vn);
-		boolean foundParameter = false;
 		for (SourceSinkInfo source : sourceSet) {
 			annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, source);
-			if (source.getType() == SourceSinkType.PARAMETER)
-				foundParameter = true;
 		}
 		Set<SourceSinkInfo> sinkSet = (backward == FlowValue.ALWAYS) ? backwardsFact.getWhereAlways(vn) : backwardsFact.getWhereNever(vn);
 		
@@ -483,17 +480,18 @@ public class CheckTypeQualifiers extends CFGDetector {
 			 AnalysisContext.logError("Unable to compute sink location for " + methodDescriptor);
 			 return;
 		 }
+		 
 		// Hopefully we can find the conflicted value in a local variable
 		if (locationWhereDoomedValueIsObserved != null) {
 			Method method = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor);
-			if (!foundParameter) {
-				LocalVariableAnnotation localVariable = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method,
-				        locationWhereDoomedValueIsObserved, vn, vnaFrame);
-				if (localVariable != null) {
-					localVariable.setDescription(localVariable.isSignificant() ? "LOCAL_VARIABLE_VALUE_DOOMED_NAMED"
-					        : "LOCAL_VARIABLE_VALUE_DOOMED");
-					warning.add(localVariable);
-				}
+
+			LocalVariableAnnotation localVariable = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method,
+					locationWhereDoomedValueIsObserved, vn, vnaFrame);
+			if (localVariable != null && !localVariable.equals(warning.getPrimaryLocalVariableAnnotation())) {
+				localVariable.setDescription(localVariable.isSignificant() ? "LOCAL_VARIABLE_VALUE_DOOMED_NAMED"
+						: "LOCAL_VARIABLE_VALUE_DOOMED");
+				warning.add(localVariable);
+
 			}
 			if (!sinkLocation.equals(locationToReport)) {
 				// Report where we observed the value.
