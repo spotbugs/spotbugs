@@ -59,9 +59,9 @@ public class TypeQualifierValue {
 	public static final boolean DEBUG = SystemProperties.getBoolean("tqv.debug");
 	
 	private static final ClassDescriptor EXCLUSIVE_ANNOTATION =
-		DescriptorFactory.instance().getClassDescriptor("javax/annotation/meta/Exclusive");
+		DescriptorFactory.instance().getClassDescriptor(javax.annotation.meta.Exclusive.class);
 	private static final ClassDescriptor EXHAUSTIVE_ANNOTATION =
-		DescriptorFactory.instance().getClassDescriptor("javax/annotation/meta/Exhaustive");
+		DescriptorFactory.instance().getClassDescriptor(javax.annotation.meta.Exhaustive.class);
 	
 	public final ClassDescriptor typeQualifier;
 	public final @CheckForNull Object value;
