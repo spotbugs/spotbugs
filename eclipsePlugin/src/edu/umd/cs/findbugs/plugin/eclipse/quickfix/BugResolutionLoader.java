@@ -31,9 +31,10 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import javax.annotation.WillClose;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -107,12 +108,16 @@ public class BugResolutionLoader {
 	}
 	public BugResolutionAssociations loadBugResolutions() {
 		InputStream is = BugResolutionLoader.class.getResourceAsStream("findbugs-resolutions.xml");
+		if(is == null) {
+			return null;
+		}
 		Document doc = parseDocument(is);
 		if (doc == null) {
 			return null;
 		}
 		return loadBugResolutions(doc, null);
 	}
+
 	public BugResolutionAssociations loadBugResolutions(Document document) {
 		return loadBugResolutions(document, null);
 	}
@@ -313,7 +318,7 @@ public class BugResolutionLoader {
 			FindbugsPlugin.getDefault().logError("Need file '" + xmlFile.getPath() + "' but it isn't readable");
 			return null;
 		}
-		
+
 		try {
             if (builder == null) {
 				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -330,9 +335,10 @@ public class BugResolutionLoader {
             return null;
 		}
 	}
+
 	@CheckForNull
-	private Document parseDocument(InputStream is) {
-			
+	private Document parseDocument(@WillClose InputStream is) {
+
 		try {
             if (builder == null) {
 				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
