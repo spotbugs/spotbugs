@@ -34,6 +34,10 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  * @author David Hovemeyer
  */
 public abstract class ClassName {
+	
+	public static boolean isMathClass(@SlashedClassName String className) {
+		return className.equals("java/lang/Math") || className.equals("java/lang/StrictMath");
+	}
 
 	public static String toSignature(@SlashedClassName String className) {
 		if (className.length() == 0)

@@ -499,4 +499,23 @@ public class Util {
     		throw new Error("Unable to get MD5 digest", e);
     	}
     }
+
+	public static boolean isPowerOfTwo(int i) {
+    	if (i <= 0) {
+    		return false;
+    	}
+    	if ((i | (i-1))+1 == 2*i) {
+    		return true;
+    	}
+    	return false;
+    }
+	public static boolean isPowerOfTwo(long i) {
+    	if (i <= 0) {
+    		return false;
+    	}
+    	if ((i | (i-1))+1 == 2*i) {
+    		return true;
+    	}
+    	return false;
+    }
 }
