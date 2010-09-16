@@ -24,6 +24,14 @@
         </javac>
     </target>
 
+    <target name="fulljar" depends="classes">
+        <mkdir dir="build"/>
+        <jar file="build/webCloudProtocol-full.jar">
+            <zipfileset src="lib/protobuf-java-2.3.0.jar"/>
+            <fileset dir="${classes.dir}"/>
+        </jar>
+    </target>
+
 
 </project>
       

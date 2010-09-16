@@ -1,5 +1,9 @@
 package edu.umd.cs.findbugs.flybush.local;
 
+import java.util.Arrays;
+
+import javax.jdo.PersistenceManagerFactory;
+
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -9,9 +13,6 @@ import org.datanucleus.store.rdbms.SchemaTool;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
-
-import javax.jdo.PersistenceManagerFactory;
-import java.util.Arrays;
 
 public class LocalFindBugsCloud {
     public static void main(String[] args) throws Exception {
@@ -33,9 +34,9 @@ public class LocalFindBugsCloud {
 
     private static void initLogging() {
         Logger logger = Logger.getRootLogger();
-        logger.setLevel(Level.WARN);
+        logger.setLevel(Level.DEBUG);
         ConsoleAppender appender = new ConsoleAppender(new SimpleLayout());
-        appender.setThreshold(Priority.INFO);
+        appender.setThreshold(Priority.DEBUG);
         logger.addAppender(appender);
     }
 

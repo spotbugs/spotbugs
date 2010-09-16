@@ -5,6 +5,7 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          version="2.5">
     <display-name>Flybush</display-name>
+
     <filter>
         <filter-name>openid-filter</filter-name>
         <filter-class>com.dyuproject.openid.OpenIdServletFilter</filter-class>
@@ -37,6 +38,10 @@
         <servlet-name>UpdateServlet</servlet-name>
         <servlet-class>edu.umd.cs.findbugs.flybush.UpdateServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ReportServlet</servlet-name>
+        <servlet-class>edu.umd.cs.findbugs.flybush.ReportServlet</servlet-class>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>AuthServlet</servlet-name>
@@ -59,16 +64,23 @@
         <url-pattern>/upload-evaluation</url-pattern>
         <url-pattern>/set-bug-link</url-pattern>
         <url-pattern>/expire-sql-sessions</url-pattern>
-        <url-pattern>/update-evaluation-emails</url-pattern>
     </servlet-mapping>
-
+    <servlet-mapping>
+        <servlet-name>ReportServlet</servlet-name>
+        <url-pattern>/stats</url-pattern>
+    </servlet-mapping>
+<!--
     <security-constraint>
         <web-resource-collection>
-            <web-resource-name>Remote API</web-resource-name>
-            <url-pattern>/remote_api</url-pattern>
+            <web-resource-name>Stats</web-resource-name>
+            <url-pattern>/stats</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>Expire SQL Sessions</web-resource-name>
+            <url-pattern>/expire-sql-sessions</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>admin</role-name>
         </auth-constraint>
-    </security-constraint>
+    </security-constraint>-->
 </web-app>

@@ -8,6 +8,13 @@
             <include name="deps/jdo2-api-2.3-eb.jar"/>
         </fileset>
     </path>
+    <path id="localCloud.classpath">
+        <path location="../../webCloudServerCommon/build/webCloudServerCommon-full.jar"/>
+        <fileset dir="lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
     <target name="enhance">
         <taskdef name="datanucleusenhancer" classpathref="enhancer.classpath"
                  classname="org.datanucleus.enhancer.tools.EnhancerTask"/>
@@ -20,5 +27,88 @@
                 <include name="**/*.class"/>
             </fileset>
         </datanucleusenhancer>
+    </target>
+
+    <target name="compile-classes" depends="enhance">
+        <ant dir="../../webCloudServerCommon" target="fulljar" inheritall="false" />
+        <mkdir dir="classes-ant"/>
+        <javac srcdir="src/java" destdir="classes-ant" classpathref="localCloud.classpath"/>
+    </target>
+
+    <target name="fulljar-uptodate-check" depends="compile-classes">
+        <uptodate property="localCloud-fulljar-uptodate" targetfile="build/localCloud.jar">
+            <srcfiles dir="classes-ant"/>
+        </uptodate>
+    </target>
+
+    <target name="fulljar" depends="fulljar-uptodate-check,compile-classes"
+            unless="localCloud-fulljar-uptodate">
+        <mkdir dir="build"/>
+        <jar file="build/localCloud.jar" manifest="etc/manifest.txt">
+            <fileset dir="classes-ant"/>
+
+            <zipfileset src="../../webCloudServerCommon/build/webCloudServerCommon-full.jar"/>
+            <zipfileset src="lib/hsqldb.jar"/>
+
+            <zipfileset src="lib/hsqldb.jar"/>
+            <zipfileset src="lib/jetty-6.1.22.jar"/>
+
+            <zipfileset src="lib/datanucleus/deps/asm-3.1.jar"/>
+            <zipfileset src="lib/datanucleus/deps/commons-collections-3.1.jar"/>
+            <zipfileset src="lib/datanucleus/deps/commons-dbcp-1.2.1.jar"/>
+            <zipfileset src="lib/datanucleus/deps/commons-pool-1.2.jar"/>
+            <zipfileset src="lib/datanucleus/deps/db4o-7.4.63.11890-java5.jar"/>
+            <zipfileset src="lib/datanucleus/deps/ehcache-1.1.jar"/>
+            <zipfileset src="lib/datanucleus/deps/flexjson-1.7.jar"/>
+            <zipfileset src="lib/datanucleus/deps/geronimo-jpa_3.0_spec-1.1.1.jar"/>
+            <zipfileset src="lib/datanucleus/deps/jaxb-api-2.1.jar"/>
+            <zipfileset src="lib/datanucleus/deps/jaxb-impl-2.1.jar"/>
+            <zipfileset src="lib/datanucleus/deps/jdo2-api-2.3-eb.jar"/>
+            <zipfileset src="lib/datanucleus/deps/log4j-1.2.8.jar"/>
+            <zipfileset src="lib/datanucleus/deps/neodatis-odb-1.9.jar"/>
+            <zipfileset src="lib/datanucleus/deps/odfdom-0.6.16.jar"/>
+            <zipfileset src="lib/datanucleus/deps/poi-3.2-FINAL.jar"/>
+            <zipfileset src="lib/datanucleus/deps/shared-asn1-0.9.13.jar"/>
+            <zipfileset src="lib/datanucleus/deps/shared-ldap-0.9.13.jar"/>
+            <zipfileset src="lib/datanucleus/deps/shared-ldap-constants-0.9.13.jar"/>
+            <zipfileset src="lib/datanucleus/deps/slf4j-api-1.3.1.jar"/>
+            <zipfileset src="lib/datanucleus/deps/slf4j-log4j12-1.3.1.jar"/>
+            <zipfileset src="lib/datanucleus/deps/xercesImpl-2.8.1.jar"/>
+
+            <zipfileset src="lib/jetty-jsp/ant-1.6.5.jar"/>
+            <zipfileset src="lib/jetty-jsp/commons-el-1.0.jar"/>
+            <zipfileset src="lib/jetty-jsp/jasper-compiler-5.5.15.jar"/>
+            <zipfileset src="lib/jetty-jsp/jasper-compiler-jdt-5.5.15.jar"/>
+            <zipfileset src="lib/jetty-jsp/jasper-runtime-5.5.15.jar"/>
+            <zipfileset src="lib/jetty-jsp/jcl104-over-slf4j-1.3.1.jar"/>
+            <zipfileset src="lib/jetty-jsp/jsp-api-2.0.jar"/>
+            <zipfileset src="lib/jetty-jsp/xmlParserAPIs-2.6.2.jar"/>
+        </jar>
+    </target>
+
+    <target name="dist" depends="fulljar">
+        <mkdir dir="dist" />
+        <mkdir dir="dist/lib" />
+        <mkdir dir="dist/web-root" />
+
+        <copy todir="dist">
+            <fileset dir="build" includes="localCloud.jar"/>
+            <fileset dir="etc" includes="fbcloud.*"/>
+            <fileset dir="etc" includes="jdo.properties"/>
+            <fileset dir="etc" includes="logging.properties"/>
+        </copy>
+        <copy todir="dist/lib">
+            <fileset dir="lib/datanucleus" includes="datanucleus-core-1.1.6.jar"/>
+            <fileset dir="lib/datanucleus" includes="datanucleus-rdbms-1.1.6.jar"/>
+        </copy>
+        <copy todir="dist/web-root">
+            <fileset dir="war"/>
+        </copy>
+    </target>
+
+    <target name="clean">
+        <delete dir="dist"/>
+        <delete dir="build"/>
+        <delete dir="classes-ant"/>
     </target>
 </project>
