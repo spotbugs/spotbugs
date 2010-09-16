@@ -2486,7 +2486,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
   </BugPattern>
   <BugPattern type="DM_FP_NUMBER_CTOR">
     <ShortDescription>Method invokes inefficient floating-point Number constructor; use static valueOf instead</ShortDescription>
-    <LongDescription>Method {1} invokes inefficient {3} constructor; use {4} instead</LongDescription>
+    <LongDescription>Method {1} invokes inefficient {2} constructor; use {3} instead</LongDescription>
     <Details>
       <![CDATA[
       <p>
