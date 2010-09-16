@@ -1,2 +1,2 @@
 Main-Class: edu.umd.cs.findbugs.flybush.local.LocalFindBugsCloud
-Class-Path: lib/datanucleus-core-1.1.6.jar:lib/datanucleus-rdbms-1.1.6.jar
+Class-Path: lib/datanucleus-core-1.1.6.jar lib/datanucleus-rdbms-1.1.6.jar
