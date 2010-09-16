@@ -115,9 +115,11 @@
 
     <target name="compile-tests" depends="enhance,compile-classes">
         <mkdir dir="classes-tests-ant"/>
+        <ant dir="../../webCloudServerCommon" target="compile-tests" inheritall="false"/>
         <javac srcdir="src/junit" destdir="classes-tests-ant">
             <classpath refid="localCloud.classpath"/>
             <classpath path="classes-ant"/>
+            <classpath path="classes"/>
             <classpath path="../../webCloudServerCommon/classes-tests-ant"/>
         </javac>
     </target>
