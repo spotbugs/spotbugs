@@ -10,6 +10,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.util.ClassName;
 
 public class IDivResultCastToDouble extends BytecodeScanningDetector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("idcd.debug");
@@ -44,7 +45,7 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
 
 		if ((prevOpCode  == I2D || prevOpCode == L2D)
 						&& seen == INVOKESTATIC
-								&& getClassConstantOperand().equals("java/lang/Math")
+								&& ClassName.isMathClass(getClassConstantOperand())
 								&& getNameConstantOperand().equals("ceil")) {
 			bugAccumulator.accumulateBug(new BugInstance(this, 
 				"ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", 
@@ -54,7 +55,7 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
 		}
 		else if ((prevOpCode  == I2F || prevOpCode == L2F)
 				&& seen == INVOKESTATIC
-						&& getClassConstantOperand().equals("java/lang/Math")
+						&& ClassName.isMathClass(getClassConstantOperand())
 						&& getNameConstantOperand().equals("round")) {
 			bugAccumulator.accumulateBug(new BugInstance(this, 
 					"ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND", 

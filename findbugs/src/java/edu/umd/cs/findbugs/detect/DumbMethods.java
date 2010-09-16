@@ -58,6 +58,8 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.Util;
 
 public class DumbMethods extends OpcodeStackDetector  {
 
@@ -154,16 +156,6 @@ public class DumbMethods extends OpcodeStackDetector  {
 
 	boolean freshRandomOnTos = false;
 	boolean freshRandomOneBelowTos = false;
-	static boolean isPowerOfTwo(int i) {
-		if (i <= 0) {
-			return false;
-		}
-		if ((i | (i-1))+1 == 2*i) {
-			return true;
-		}
-		return false;
-	}
-
 	@Override
 	public void sawOpcode(int seen) {
 
@@ -203,6 +195,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 		if (seen == IFLT && stack.getStackDepth() > 0 && stack.getStackItem(0).getSpecialKind() == OpcodeStack.Item.SIGNED_BYTE) {
 			sawCheckForNonNegativeSignedByte = getPC();
 		}
+		
 		if (pendingAbsoluteValueBug != null) {
 			if (opcodesSincePendingAbsoluteValueBug == 0) {
 				opcodesSincePendingAbsoluteValueBug++;
@@ -210,9 +203,16 @@ public class DumbMethods extends OpcodeStackDetector  {
 				if (seen == IREM) {
 					OpcodeStack.Item top = stack.getStackItem(0);
 					Object constantValue = top.getConstant();
-					if (constantValue instanceof Number && isPowerOfTwo(((Number) constantValue).intValue())) {
+					if (constantValue instanceof Number && Util.isPowerOfTwo(((Number) constantValue).intValue())) {
 						pendingAbsoluteValueBug.setPriority(Priorities.LOW_PRIORITY);
 					}
+				}
+				if (false)
+				try {
+				pendingAbsoluteValueBug.addString(OPCODE_NAMES[getPrevOpcode(1)] + ":" + OPCODE_NAMES[seen] + ":" + OPCODE_NAMES[getNextOpcode()]);
+				} catch (Exception e) {
+					pendingAbsoluteValueBug.addString(OPCODE_NAMES[getPrevOpcode(1)] + ":" + OPCODE_NAMES[seen]);
+					
 				}
 				accumulator.accumulateBug(pendingAbsoluteValueBug, pendingAbsoluteValueBugSourceLine);
 				pendingAbsoluteValueBug = null;
@@ -383,8 +383,8 @@ public class DumbMethods extends OpcodeStackDetector  {
 
 		}
 
-		if (seen == INVOKESTATIC &&
-				( getClassConstantOperand().equals("java/lang/Math") || getClassConstantOperand().equals("java/lang/StrictMath"))
+		if (seen == INVOKESTATIC 
+				&& ClassName.isMathClass(getClassConstantOperand())
 				&& getNameConstantOperand().equals("abs")
 				&& getSigConstantOperand().equals("(I)I")) {
 			OpcodeStack.Item item0 = stack.getStackItem(0);
@@ -610,7 +610,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 				&& getClassConstantOperand().equals("java/util/Random")
 				&& getNameConstantOperand().equals("nextDouble")
 			   || seen == INVOKESTATIC
-				&& getClassConstantOperand().equals("java/lang/Math")
+				&& ClassName.isMathClass(getClassConstantOperand())
 				&& getNameConstantOperand().equals("random")) {
 				randomNextIntState = 1;
 			}
