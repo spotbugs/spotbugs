@@ -1,11 +1,21 @@
 <project name="webCloudServerCommon" default="compile">
+    <path id="common.classpath">
+        <path location="../webCloudProtocol/build/webCloudProtocol-full.jar"/>
+        <fileset dir="lib" includes="*.jar"/>
+    </path>
+
     <target name="compile">
         <ant dir="../webCloudProtocol" target="fulljar" inheritall="false"/>
         <mkdir dir="classes-ant"/>
-        <javac srcdir="src/java" destdir="classes-ant">
+        <javac srcdir="src/java" destdir="classes-ant" classpathref="common.classpath" />
+    </target>
+
+    <target name="compile-tests" depends="compile">
+        <mkdir dir="classes-tests-ant"/>
+        <javac srcdir="src/junit" destdir="classes-tests-ant">
             <classpath>
-                <path location="../webCloudProtocol/build/webCloudProtocol-full.jar"/>
-                <fileset dir="lib" includes="*.jar"/>
+                <path refid="common.classpath"/>
+                <path location="classes-ant"/>
             </classpath>
         </javac>
     </target>

@@ -106,6 +106,37 @@
         </copy>
     </target>
 
+    <target name="compile-tests" depends="compile-classes">
+        <mkdir dir="classes-tests-ant"/>
+        <javac srcdir="src/junit" destdir="classes-tests-ant">
+            <classpath refid="localCloud.classpath"/>
+            <classpath path="classes-ant"/>
+            <classpath path="../../webCloudServerCommon/classes-tests-ant"/>
+        </javac>
+    </target>
+
+    <target name="test" depends="compile-tests">
+        <mkdir dir="build"/>
+        <mkdir dir="build/tests"/>
+        <junit fork="yes" printsummary="true">
+            <jvmarg value="-ea"/>
+            <formatter type="xml"/>   <!-- Hudson reads generated xml -->
+
+            <classpath refid="localCloud.classpath"/>
+            <classpath path="classes-ant"/>
+            <classpath path="classes-tests-ant"/>
+            <classpath path="../../webCloudServerCommon/classes-tests-ant"/>
+
+            <!-- junit needs fileset to point to .java files (not .class) -->
+            <batchtest todir="build/tests">
+                <fileset dir="src/junit">
+                    <include name="**/*Test.java"/>
+                    <include name="**/Test*.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
     <target name="clean">
         <delete dir="dist"/>
         <delete dir="build"/>
