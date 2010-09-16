@@ -103,6 +103,8 @@ public class BugContentProvider implements ICommonContentProvider {
 		setGrouping(Grouping.restoreFrom(saved));
 		saved = store.getString(FindBugsConstants.LAST_USED_WORKING_SET);
 		initWorkingSet(saved);
+		// make sure it's initialized
+		FindbugsPlugin.applyCustomDetectors(false);
 	}
 
 	public Object[] getChildren(Object parent) {

@@ -121,6 +121,10 @@ public class FindBugsWorker {
 			System.out.println(resources);
 		}
 		st = new StopTimer();
+		st.newPoint("initPlugins");
+
+		// make sure it's initialized
+		FindbugsPlugin.applyCustomDetectors(false);
 
 		st.newPoint("clearMarkers");
 

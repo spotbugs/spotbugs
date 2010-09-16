@@ -8,8 +8,8 @@ import java.net.URL;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
-import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.DefaultInformationControl.IInformationPresenterExtension;
+import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -47,6 +47,8 @@ import de.tobject.findbugs.view.explorer.BugGroup;
 import de.tobject.findbugs.view.explorer.GroupType;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.Plugin;
 
 /**
  * @author Andrei
@@ -270,10 +272,24 @@ public class BugPatternSection extends AbstractPropertySection {
 		text.append(titleProvider.getDetails(pattern));
 		text.append("<br><br>");
 		text.append(pattern.getDetailText());
-		String html = text.toString();
-		if (hasBug) {
-			html = "<b>Bug:</b> " + toSafeHtml(bug.getAbridgedMessage()) + "<br>\n" + html;
+		if (!hasBug) {
+			return text.toString();
 		}
+		DetectorFactory factory = bug.getDetectorFactory();
+		if(factory != null) {
+			Plugin plugin = factory.getPlugin();
+			text.append("<p><small><i>Reported by: ").append(factory.getFullName());
+			text.append("<br>Contributed by plugin: ").append(plugin.getPluginId());
+			text.append("<br>Provider: ").append(plugin.getProvider());
+			String website = plugin.getWebsite();
+			if(website != null && website.length() > 0) {
+				text.append(" (<a href=\"").append(website).append("\">");
+				text.append(website).append("</a>)");
+			}
+			text.append("</i></small>");
+		}
+		String html = text.toString();
+		html = "<b>Bug:</b> " + toSafeHtml(bug.getAbridgedMessage()) + "<br>\n" + html;
 		return html;
 	}
 

@@ -65,6 +65,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -80,12 +81,10 @@ public class DetectorConfigurationTab extends Composite {
 		BUG_CATEGORIES,
 		DETECTOR_NAME,
 		DETECTOR_SPEED,
+		PLUGIN,
 		UNKNOWN
 	}
 
-	/**
-	 * @author Andrei
-	 */
 	private static final class BugPatternTableSorter
 		extends ViewerSorter
 		implements Comparator<DetectorFactory> {
@@ -115,6 +114,10 @@ public class DetectorConfigurationTab extends Composite {
 				s1 = factory1.getSpeed();
 				s2 = factory2.getSpeed();
 				break;
+			case PLUGIN:
+				s1 = factory1.getPlugin().getPluginId();
+				s2 = factory2.getPlugin().getPluginId();
+				break;
 			case BUG_CATEGORIES:
 				s1 = tab.getBugsCategories(factory1);
 				s2 = tab.getBugsCategories(factory2);
@@ -125,7 +128,12 @@ public class DetectorConfigurationTab extends Composite {
 				s2 = factory2.getShortName();
 				break;
 			}
-
+			if(s1 == null) {
+				s1 = "";
+			}
+			if(s2 == null) {
+				s2 = "";
+			}
 			result = s1.compareTo(s2);
 
 			// second sort if elements are equals - on only 2 criterias
@@ -153,7 +161,9 @@ public class DetectorConfigurationTab extends Composite {
 		@Override
 		public boolean isSorterProperty(Object element, String property) {
 			return property.equals(COLUMN.DETECTOR_NAME.name())
-				|| property.equals(COLUMN.BUG_CODES.name());
+				|| property.equals(COLUMN.BUG_CODES.name())
+				|| property.equals(COLUMN.DETECTOR_SPEED.name())
+				|| property.equals(COLUMN.PLUGIN.name());
 		}
 
 		/**
@@ -173,31 +183,19 @@ public class DetectorConfigurationTab extends Composite {
 		}
 	}
 
-
-
-	/**
-	 * @author Andrei
-	 */
 	private static final class DetectorFactoriesContentProvider
 		implements IStructuredContentProvider {
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
-		 */
 		public void dispose() {
 			// ignored
 		}
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
-		 */
+
 		public void inputChanged(
 			Viewer viewer,
 			Object oldInput,
 			Object newInput) {
 			// ignored
 		}
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
-		 */
+
 		public Object[] getElements(Object inputElement) {
 			if (inputElement instanceof List) {
 				List<?> list = (List<?>) inputElement;
@@ -207,9 +205,6 @@ public class DetectorConfigurationTab extends Composite {
 		}
 	}
 
-	/**
-	 * @author Andrei
-	 */
 	private static final class DetectorFactoryLabelProvider
 		implements ITableLabelProvider, IColorProvider {
 		private final DetectorConfigurationTab tab;
@@ -251,6 +246,12 @@ public class DetectorConfigurationTab extends Composite {
 					return tab.getBugsAbbreviation(factory);
 				case DETECTOR_SPEED:
 					return factory.getSpeed();
+				case PLUGIN:
+				String provider = factory.getPlugin().getProvider();
+				if(provider.endsWith(" project")) {
+					return provider.substring(0, provider.length() - " project".length());
+				}
+				return provider;
 				case BUG_CATEGORIES:
 					return tab.getBugsCategories(factory);
 				case DETECTOR_NAME :
@@ -399,6 +400,17 @@ public class DetectorConfigurationTab extends Composite {
 		if(patterns.isEmpty()){
 			sb.append("none");
 		}
+		sb.append(getPluginDescription(factory.getPlugin()));
+		return sb.toString();
+	}
+
+	private static String getPluginDescription(Plugin plugin) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n\nPlugin: ").append(plugin.getPluginId());
+		sb.append("\nProvider: ").append(plugin.getProvider());
+		if(plugin.getWebsite() != null && plugin.getWebsite().length() > 0) {
+			sb.append(" (").append(plugin.getWebsite()).append(")");
+		}
 		return sb.toString();
 	}
 
@@ -544,18 +556,23 @@ public class DetectorConfigurationTab extends Composite {
 
 
 		TableColumn factoryNameColumn = createColumn(currentColumnIdx, factoriesTable,
-				getMessage("property.detectorName"), 250, COLUMN.DETECTOR_NAME);
+				getMessage("property.detectorName"), 230, COLUMN.DETECTOR_NAME);
 		addColumnSelectionListener(sorter, factoryNameColumn, COLUMN.DETECTOR_NAME);
 
 		currentColumnIdx++;
 		TableColumn bugsAbbrevColumn = createColumn(currentColumnIdx, factoriesTable,
-				getMessage("property.bugCodes"), 100, COLUMN.BUG_CODES);
+				getMessage("property.bugCodes"), 75, COLUMN.BUG_CODES);
 		addColumnSelectionListener(sorter, bugsAbbrevColumn, COLUMN.BUG_CODES);
 
 		currentColumnIdx++;
 		TableColumn speedColumn = createColumn(currentColumnIdx, factoriesTable,
-				getMessage("property.speed"), 75, COLUMN.DETECTOR_SPEED);
+				getMessage("property.speed"), 70, COLUMN.DETECTOR_SPEED);
 		addColumnSelectionListener(sorter, speedColumn, COLUMN.DETECTOR_SPEED);
+
+		currentColumnIdx++;
+		TableColumn pluginColumn = createColumn(currentColumnIdx, factoriesTable,
+				getMessage("property.provider"), 100, COLUMN.PLUGIN);
+		addColumnSelectionListener(sorter, pluginColumn, COLUMN.PLUGIN);
 
 		currentColumnIdx++;
 		TableColumn categoryColumn = createColumn(currentColumnIdx, factoriesTable,

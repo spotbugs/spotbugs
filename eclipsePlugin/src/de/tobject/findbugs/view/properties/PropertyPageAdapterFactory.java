@@ -52,6 +52,8 @@ import de.tobject.findbugs.view.explorer.BugGroup;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.Plugin;
 
 public class PropertyPageAdapterFactory implements IAdapterFactory {
 
@@ -270,6 +272,8 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 		if (adapterType == IPropertySource.class) {
 			if (adaptableObject instanceof BugPattern
 					|| adaptableObject instanceof BugInstance
+					|| adaptableObject instanceof DetectorFactory
+					|| adaptableObject instanceof Plugin
 					|| adaptableObject instanceof BugInstance.XmlProps
 					|| adaptableObject instanceof BugGroup
 					|| adaptableObject instanceof BugAnnotation) {

@@ -72,6 +72,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.Plugin;
 
 /**
  * @author Andrei
@@ -200,6 +201,7 @@ public class FilterBugsDialog extends SelectionDialog {
 	private final Set<BugCode> allowedTypes;
 	private final Map<BugCode, Set<BugPattern>> codeToPattern;
 	private final Map<BugPattern, Set<DetectorFactory>> patternToFactory;
+	private final Map<BugPattern, Set<Plugin>> patternToPlugin;
 
 	private ContainerCheckedTreeViewer checkList;
 	private TextPresentation presentation;
@@ -228,6 +230,7 @@ public class FilterBugsDialog extends SelectionDialog {
 		super(parentShell);
 		codeToPattern = new HashMap<BugCode, Set<BugPattern>>();
 		patternToFactory = new HashMap<BugPattern, Set<DetectorFactory>>();
+		patternToPlugin = new HashMap<BugPattern, Set<Plugin>>();
 		allowedPatterns = FindbugsPlugin.getKnownPatterns();
 		allowedTypes = FindbugsPlugin.getKnownPatternTypes();
 		preSelectedPatterns = filteredPatterns;
@@ -291,6 +294,17 @@ public class FilterBugsDialog extends SelectionDialog {
 					patternToFactory.put(pattern, set);
 				}
 				set.add(factory);
+
+				Set<Plugin> pset = patternToPlugin.get(pattern);
+				if(pset == null){
+					pset = new TreeSet<Plugin>(new Comparator<Plugin>(){
+						public int compare(Plugin f1, Plugin f2) {
+							return f1.getPluginId().compareTo(f2.getPluginId());
+						}
+					});
+					patternToPlugin.put(pattern, pset);
+				}
+				pset.add(factory.getPlugin());
 			}
 		}
 	}
@@ -588,7 +602,7 @@ public class FilterBugsDialog extends SelectionDialog {
 		String txt = "";
 		if(element instanceof BugPattern){
 			BugPattern pattern = (BugPattern) element;
-			txt = pattern.getDetailText();
+			txt = getPatternDescription(pattern);
 		} else if(element instanceof BugCode) {
 			BugCode code = (BugCode) element;
 			txt = getPatternTypeDescription(code);
@@ -601,6 +615,24 @@ public class FilterBugsDialog extends SelectionDialog {
 	}
 
 
+
+	private String getPatternDescription(BugPattern pattern) {
+		StringBuilder sb = new StringBuilder(pattern.getDetailText());
+		Set<Plugin> plugins = patternToPlugin.get(pattern);
+		for (Plugin plugin : plugins) {
+			sb.append("<p>");
+			appendPluginDescription(sb, plugin);
+		}
+		return sb.toString();
+	}
+
+	private void appendPluginDescription(StringBuilder sb, Plugin plugin) {
+		sb.append("<p>Contributed by plugin: ").append(plugin.getPluginId());
+		sb.append("<p>Provider: ").append(plugin.getProvider());
+		if(plugin.getWebsite() != null && plugin.getWebsite().length() > 0) {
+			sb.append(" (").append(plugin.getWebsite()).append(")");
+		}
+	}
 
 	private String getPatternTypeDescription(BugCode code) {
 		StringBuilder sb = new StringBuilder(code.getDescription());
@@ -630,7 +662,9 @@ public class FilterBugsDialog extends SelectionDialog {
 		}
 		sb.append("<p>Reported by:<br>");
 		for (DetectorFactory factory : allFactories) {
-			sb.append(factory.getFullName()).append("<br>");
+			sb.append(factory.getFullName());
+			appendPluginDescription(sb, factory.getPlugin());
+			sb.append("<p><p>");
 		}
 		return sb.toString();
 	}

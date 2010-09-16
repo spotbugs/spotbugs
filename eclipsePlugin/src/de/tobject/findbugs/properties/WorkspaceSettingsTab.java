@@ -225,7 +225,7 @@ public class WorkspaceSettingsTab extends Composite {
 		} else if(detectorPaths.isEmpty()) {
 			return;
 		}
-		FindbugsPlugin.applyCustomDetectors(detectorPaths, true);
+		FindbugsPlugin.applyCustomDetectors(true);
 		pluginsChanged = true;
 	}
 

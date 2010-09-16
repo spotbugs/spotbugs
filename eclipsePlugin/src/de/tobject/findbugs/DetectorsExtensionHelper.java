@@ -62,12 +62,12 @@ public class DetectorsExtensionHelper {
 		if (contributedDetectors != null) {
 			return contributedDetectors;
 		}
-		contributedDetectors = new TreeSet<String>();
+		TreeSet<String> set = new TreeSet<String>();
 
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IExtensionPoint point = registry.getExtensionPoint(EXTENSION_POINT_ID);
 		if (point == null) {
-			return contributedDetectors;
+			return set;
 		}
 		IExtension[] extensions = point.getExtensions();
 		for (IExtension extension : extensions) {
@@ -86,7 +86,7 @@ public class DetectorsExtensionHelper {
 						throw new IllegalArgumentException(
 								"Failed to resolve library path: " + libPathAsString);
 					}
-					contributedDetectors.add(libPathAsString);
+					set.add(libPathAsString);
 				} catch (Throwable e) {
 					String cName = contributor != null ? contributor.getName()
 							: "unknown contributor";
@@ -99,7 +99,7 @@ public class DetectorsExtensionHelper {
 
 			}
 		}
-
+		contributedDetectors = set;
 		return contributedDetectors;
 	}
 

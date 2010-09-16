@@ -181,9 +181,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		plugin = this;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
-	 */
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
@@ -222,27 +219,27 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		FindbugsSaveParticipant saveParticipant = new FindbugsSaveParticipant();
 		ResourcesPlugin.getWorkspace().addSaveParticipant(this, saveParticipant);
 
-		// do not start job (and do not load FB core) if there are no custom detectors
-		final SortedSet<String> detectorPaths = PrefsUtil.readDetectorPaths(getPreferenceStore());
-//		if(!detectorPaths.isEmpty()) {
-			Job job = new Job("Applying custom detectors") {
-				@Override
-				protected IStatus run(IProgressMonitor monitor) {
-					applyCustomDetectors(detectorPaths, false);
-					return Status.OK_STATUS;
-				}
-			};
-			job.schedule();
-//		}
+		// we shouldn't do long operations on startup, but reading custom detectors
+		// might take some time => always start this in a job
+		Job job = new Job("Applying custom detectors") {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				applyCustomDetectors(false);
+				return Status.OK_STATUS;
+			}
+		};
+		job.schedule();
 	}
 
 	/**
 	 * @param detectorPaths list of possible detector plugins
 	 * @param force true if we MUST set plugins even if the given list is empty
 	 */
-	public static void applyCustomDetectors(SortedSet<String> detectorPaths, boolean force) {
+	public static synchronized void applyCustomDetectors(boolean force) {
 		List<URL> pluginList = new ArrayList<URL>();
 		DetectorValidator validator = new DetectorValidator();
+		final SortedSet<String> detectorPaths = PrefsUtil.readDetectorPaths(getDefault()
+				.getPreferenceStore());
 		detectorPaths.addAll(DetectorsExtensionHelper.getContributedDetectors());
 		for (String path : detectorPaths) {
 			URL url;
@@ -264,6 +261,23 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			return;
 		}
 		if(DetectorFactoryCollection.isLoaded()) {
+			DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
+			URL[] pluginArr = dfc.getPluginList();
+			boolean shouldReplace = pluginArr.length != detectorPaths.size();
+			if(!shouldReplace) {
+				// check if both lists are really identical
+				for (URL url : pluginArr) {
+					String file = url.getFile();
+					IPath filterPath = FindBugsWorker.getFilterPath(file, null);
+					if(!detectorPaths.contains(filterPath.toPortableString())) {
+						shouldReplace = true;
+						break;
+					}
+				}
+			}
+			if(!shouldReplace && !force) {
+				return;
+			}
 			DetectorFactoryCollection.resetInstance(null);
 		}
 		DetectorFactoryCollection dfc = DetectorFactoryCollection.rawInstance();

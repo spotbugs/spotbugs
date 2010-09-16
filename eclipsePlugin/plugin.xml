@@ -1108,6 +1108,20 @@
                 type="org.eclipse.ui.views.properties.IPropertySource">
           </adapter>
        </factory>
+       <factory
+             adaptableType="edu.umd.cs.findbugs.DetectorFactory"
+             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
+          <adapter
+                type="org.eclipse.ui.views.properties.IPropertySource">
+          </adapter>
+       </factory>
+       <factory
+             adaptableType="edu.umd.cs.findbugs.Plugin"
+             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
+          <adapter
+                type="org.eclipse.ui.views.properties.IPropertySource">
+          </adapter>
+       </factory>
     </extension>
 
     <extension
