@@ -1067,20 +1067,22 @@ public class OpcodeStack implements Constants2
 					 pushByConstant(dbc, cons);
 				break;
 
-				case INSTANCEOF:
-					pop();
-					push(new Item("I"));
+			case INSTANCEOF:
+				pop();
+				push(new Item("I"));
 				break;
-				 case IFNONNULL:
-			case IFNULL: {
-				Item topItem = pop();
-				if (seen == IFNONNULL && topItem.isNull())
-					break;
-				seenTransferOfControl = true;
-				addJumpValue(dbc.getPC(), dbc.getBranchTarget());
-
-				break;
-			}
+				
+			case IFNONNULL:
+			case IFNULL: 
+//			{
+//				Item topItem = pop();
+//				if (seen == IFNONNULL && topItem.isNull())
+//					break;
+//				seenTransferOfControl = true;
+//				addJumpValue(dbc.getPC(), dbc.getBranchTarget());
+//
+//				break;
+//			}
 
 				case IFEQ:
 				 case IFNE:
