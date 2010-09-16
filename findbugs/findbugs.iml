@@ -16,10 +16,6 @@
       <excludeFolder url="file://$MODULE_DIR$/classesEclipse" />
     </content>
     <content url="file://$CODE_DIR$/findbugs/sandbox">
-      <excludeFolder url="file://$CODE_DIR$/findbugs/sandbox/appEngineCloud" />
-      <excludeFolder url="file://$CODE_DIR$/findbugs/sandbox/appEngineCloudClient" />
-      <excludeFolder url="file://$CODE_DIR$/findbugs/sandbox/appEngineCloudProtocol" />
-      <excludeFolder url="file://$CODE_DIR$/findbugs/sandbox/cloudServlet" />
       <excludeFolder url="file://$CODE_DIR$/findbugs/sandbox/localCloud" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
@@ -161,6 +157,7 @@
     <option name="_detectors">
       <map>
         <entry key="AppendingToAnObjectOutputStream" value="true" />
+        <entry key="AtomicityProblem" value="true" />
         <entry key="BCPMethodReturnCheck" value="false" />
         <entry key="BadAppletConstructor" value="false" />
         <entry key="BadResultSetAccess" value="true" />
@@ -251,6 +248,7 @@
         <entry key="InheritanceUnsafeGetResource" value="true" />
         <entry key="InitializationChain" value="true" />
         <entry key="InstantiateStaticClass" value="true" />
+        <entry key="IntCast2LongAsInstant" value="true" />
         <entry key="InvalidJUnitTest" value="true" />
         <entry key="IteratorIdioms" value="true" />
         <entry key="LazyInit" value="true" />
@@ -300,7 +298,9 @@
         <entry key="TestASM" value="false" />
         <entry key="TestDataflowAnalysis" value="false" />
         <entry key="TestingGround" value="false" />
+        <entry key="TestingGround2" value="false" />
         <entry key="TrainFieldStoreTypes" value="true" />
+        <entry key="TrainLongInstantfParams" value="true" />
         <entry key="TrainNonNullAnnotations" value="true" />
         <entry key="TrainUnconditionalDerefParams" value="true" />
         <entry key="URLProblems" value="true" />
