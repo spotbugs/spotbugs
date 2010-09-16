@@ -2263,6 +2263,9 @@ public class OpcodeStack implements Constants2
 			 this.jumpStackEntries = jumpStackEntries;
 			 this.jumpEntryLocations = jumpEntryLocations;
 		 }
+		 public int getNextJump(int pc) {
+			 return jumpEntryLocations.nextSetBit(pc);
+		 }
 	 }
 	 
 	 public static class JumpInfoFactory extends AnalysisFactory<JumpInfo> {

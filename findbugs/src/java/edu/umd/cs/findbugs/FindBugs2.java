@@ -928,7 +928,8 @@ public class FindBugs2 implements IFindBugsEngine {
 				AnalysisContext.currentXFactory().canonicalizeAll();
 				if (PROGRESS || LIST_ORDER) {
 					System.out.println("Pass " + (passCount) + ": " + classCollection.size() + " classes");
-					XFactory.profile();
+					if (DEBUG) 
+						XFactory.profile();
 				}
 				if (!isNonReportingFirstPass) {
 					OutEdges<ClassDescriptor> outEdges = new OutEdges<ClassDescriptor>() {

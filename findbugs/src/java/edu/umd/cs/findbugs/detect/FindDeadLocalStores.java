@@ -200,7 +200,7 @@ public class FindDeadLocalStores implements Detector {
 		}
 
 		JavaClass javaClass = classContext.getJavaClass();
-		BitSet linesMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
+		BitSet linesMentionedMultipleTimes = classContext.linesMentionedMultipleTimes(method);
 		BugAccumulator accumulator = new BugAccumulator(bugReporter);
 		Dataflow<BitSet, LiveLocalStoreAnalysis> llsaDataflow = classContext.getLiveLocalStoreDataflow(method);
 

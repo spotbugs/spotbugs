@@ -171,8 +171,6 @@ public class DescriptorFactory {
 		for(Map.Entry<MethodDescriptor, MethodDescriptor> e : methodDescriptorMap.entrySet()) {
 			total++;
 			if (e.getKey() instanceof MethodInfo) keys++;
-			else if (total - keys < 10)
-				System.out.println(e.getKey());
 			if (e.getValue() instanceof MethodInfo) values++;
 		}
 		System.out.printf("Descriptor factory: %d/%d/%d%n", keys, values, total);

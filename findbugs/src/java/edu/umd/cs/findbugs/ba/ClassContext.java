@@ -42,6 +42,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.OpcodeStack.JumpInfo;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -63,6 +64,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.engine.SelfMethodCalls;
@@ -722,28 +724,54 @@ public class ClassContext {
 	}
 
 
-	public static BitSet linesMentionedMultipleTimes(Method method) {
-
+	public BitSet linesMentionedMultipleTimes(Method method) {
+		IAnalysisCache analysisCache = Global.getAnalysisCache();
+		XMethod xMethod = XFactory.createXMethod(jclass, method);
+		JumpInfo jumpInfo = null;
+		try {
+			jumpInfo =  analysisCache.getMethodAnalysis(JumpInfo.class, xMethod.getMethodDescriptor());
+		} catch (CheckedAnalysisException e) {
+			AnalysisContext.logError("Error getting jump information", e);
+		}
 		BitSet lineMentionedMultipleTimes = new BitSet();
+		BitSet pcInFinallyBlock = new BitSet();
+		
 		Code code = method.getCode();
-		if (code == null) return lineMentionedMultipleTimes;
+		if (code == null) 
+			return lineMentionedMultipleTimes;
 		CodeException[] exceptionTable = code.getExceptionTable();
-		if (exceptionTable == null || exceptionTable.length == 0) return lineMentionedMultipleTimes;
+		if (exceptionTable == null || exceptionTable.length == 0) 
+			return lineMentionedMultipleTimes;
 		int firstHandler = Integer.MAX_VALUE;
 		for(CodeException e : exceptionTable) if (e.getCatchType() == 0){
-			firstHandler = Math.min(firstHandler, e.getHandlerPC());
+			int pc = e.getHandlerPC();
+			firstHandler = Math.min(firstHandler,pc);
+			if (jumpInfo != null) {
+				int end = jumpInfo.getNextJump(pc+1);
+				if (end >= pc)
+					 pcInFinallyBlock.set(pc, end);
+			}
 		}
 		BitSet foundOnce = new BitSet();
 		BitSet afterHandler = new BitSet();
 		LineNumberTable lineNumberTable = method.getLineNumberTable();
 		int lineNum = -1;
+		int prevStartPc = -1;
 		if (lineNumberTable != null) 
 			for(LineNumber  line : lineNumberTable.getLineNumberTable()) {
 				int newLine = line.getLineNumber();
-				if (newLine == lineNum || newLine == -1) continue;
-				lineNum = newLine;
+				if (newLine == lineNum || newLine == -1) 
+					continue;
+				if (prevStartPc >= 0) {
+					int nextPcInFinallyBlock = pcInFinallyBlock.nextSetBit(prevStartPc);
+					if (nextPcInFinallyBlock < line.getStartPC())
+						lineMentionedMultipleTimes.set(lineNum);
+				}
 				if (line.getStartPC() >= firstHandler)
 					afterHandler.set(lineNum);
+				
+				lineNum = newLine;
+				prevStartPc = line.getStartPC();
 				if (foundOnce.get(lineNum)  ) {
 					lineMentionedMultipleTimes.set(lineNum);
 				}

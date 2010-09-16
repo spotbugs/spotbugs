@@ -437,7 +437,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 		if (table == null)
 			uniqueDereferenceLocations = true;
 		else {
-			BitSet linesMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
+			BitSet linesMentionedMultipleTimes = classContext.linesMentionedMultipleTimes(method);
 			for(Location loc : derefLocationSet) {
 			  int lineNumber = table.getSourceLine(loc.getHandle().getPosition());
 			  if (!linesMentionedMultipleTimes.get(lineNumber)) uniqueDereferenceLocations = true;

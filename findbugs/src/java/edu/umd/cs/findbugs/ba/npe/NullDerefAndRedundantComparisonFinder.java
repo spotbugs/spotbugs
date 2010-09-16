@@ -119,7 +119,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		this.collector = collector;
 		this.findGuaranteedDerefs = classContext.getAnalysisContext().getBoolProperty(
 				AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS);
-		this.lineMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
+		this.lineMentionedMultipleTimes = classContext.linesMentionedMultipleTimes(method);
 
 		this.redundantBranchList = new LinkedList<RedundantBranch>();
 		this.definitelySameBranchSet = new BitSet();

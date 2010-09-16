@@ -1531,7 +1531,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 		if (table == null)
 			uniqueDereferenceLocations = true;
 		else {
-			BitSet linesMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
+			BitSet linesMentionedMultipleTimes = classContext.linesMentionedMultipleTimes(method);
 			for (Location loc : derefLocationSet) {
 				int lineNumber = table.getSourceLine(loc.getHandle().getPosition());
 				if (lineNumber > 0 && !linesMentionedMultipleTimes.get(lineNumber))

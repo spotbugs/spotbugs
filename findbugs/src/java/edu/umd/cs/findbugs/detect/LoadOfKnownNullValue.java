@@ -65,7 +65,7 @@ public class LoadOfKnownNullValue implements Detector {
 
 	private void analyzeMethod(ClassContext classContext, Method method)
 			throws CFGBuilderException, DataflowAnalysisException {
-		BitSet lineMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
+		BitSet lineMentionedMultipleTimes = classContext.linesMentionedMultipleTimes(method);
 		BitSet linesWithLoadsOfNotDefinitelyNullValues = null;
 
 		CFG cfg = classContext.getCFG(method);

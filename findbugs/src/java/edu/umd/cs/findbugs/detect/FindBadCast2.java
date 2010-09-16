@@ -179,7 +179,7 @@ public class FindBadCast2 implements Detector {
 					haveMultipleInstanceOf.add(sourceLineAnnotation);
 			}
 		}
-		BitSet linesMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
+		BitSet linesMentionedMultipleTimes = classContext.linesMentionedMultipleTimes(method);
 		LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
 
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
