@@ -49,9 +49,6 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 				continue;
 
 			try {
-				if (classContext.getClassDescriptor().getClassName().equals("sfBugs/Bug3053867")
-						&& method.getName().equals("storeMap"))
-						new RuntimeException("found it").printStackTrace();
 				analyzeMethod(classContext, method);
 			} catch (CFGBuilderException e) {
 				bugReporter.logError("Detector " + this.getClass().getName()
@@ -120,16 +117,16 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 			if (refType.equals(NullType.instance())) {
 				continue;
 			}
-			String refSig = refType.getSignature();
-
+			
 			try {
 
-				double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(refSig);
+				double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(refType);
 
 				if (isSerializable < 0.9) {
 					SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
 							.fromVisitedInstruction(classContext, methodGen,
 									sourceFile, handle);
+					String refSig = refType.getSignature();
 
 					bugAccumulator
 							.accumulateBug(new BugInstance(
