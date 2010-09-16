@@ -15,7 +15,7 @@
         </fileset>
     </path>
 
-    <target name="enhance">
+    <target name="enhance" depends="compile-classes">
         <mkdir dir="classes"/> <!-- so datanucleus enhancer doesn't complain-->
         <ant dir="../../webCloudServerCommon" target="compile" inheritall="false" />
         <taskdef name="datanucleusenhancer" classpathref="enhancer.classpath"
@@ -36,19 +36,19 @@
         </datanucleusenhancer>
     </target>
 
-    <target name="compile-classes" depends="enhance">
+    <target name="compile-classes">
         <ant dir="../../webCloudServerCommon" target="fulljar" inheritall="false" />
         <mkdir dir="classes-ant"/>
         <javac srcdir="src/java" destdir="classes-ant" classpathref="localCloud.classpath"/>
     </target>
 
-    <target name="fulljar-uptodate-check" depends="compile-classes">
+    <target name="fulljar-uptodate-check" depends="enhance,compile-classes">
         <uptodate property="localCloud-fulljar-uptodate" targetfile="build/localCloud.jar">
             <srcfiles dir="classes-ant"/>
         </uptodate>
     </target>
 
-    <target name="fulljar" depends="fulljar-uptodate-check,compile-classes"
+    <target name="fulljar" depends="fulljar-uptodate-check,enhance,compile-classes"
             unless="localCloud-fulljar-uptodate">
         <mkdir dir="build"/>
         <jar file="build/localCloud.jar" manifest="etc/manifest.txt">
@@ -113,7 +113,7 @@
         </copy>
     </target>
 
-    <target name="compile-tests" depends="compile-classes">
+    <target name="compile-tests" depends="enhance,compile-classes">
         <mkdir dir="classes-tests-ant"/>
         <javac srcdir="src/junit" destdir="classes-tests-ant">
             <classpath refid="localCloud.classpath"/>

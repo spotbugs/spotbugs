@@ -106,19 +106,8 @@
                 <include name="*.jnlp"/>
             </fileset>
         </copy>
-<!--
-        <copy todir="${findbugs.home}/plugin/webCloudClient" flatten="true">
-            <fileset dir="lib">
-                <include name="**/*.jar"/>
-                <exclude name="mockito-all-1.8.2.jar"/>
-            </fileset>
-            <fileset dir="../webCloudProtocol/lib">
-                <include name="**/*.jar"/>
-            </fileset>
-        </copy>
--->
-    </target>
 
+    </target>
 </project>
 
       
