@@ -16,6 +16,7 @@
     </path>
 
     <target name="enhance">
+        <ant dir="../../webCloudServerCommon" target="compile" inheritall="false" />
         <taskdef name="datanucleusenhancer" classpathref="enhancer.classpath"
                  classname="org.datanucleus.enhancer.tools.EnhancerTask"/>
 
