@@ -16,15 +16,21 @@
     </path>
 
     <target name="enhance">
+        <mkdir dir="classes"/> <!-- so datanucleus enhancer doesn't complain-->
         <ant dir="../../webCloudServerCommon" target="compile" inheritall="false" />
         <taskdef name="datanucleusenhancer" classpathref="enhancer.classpath"
                  classname="org.datanucleus.enhancer.tools.EnhancerTask"/>
 
-        <datanucleusenhancer classpathref="enhancer.classpath" classpath="classes"
-                             failonerror="true" verbose="true">
+        <datanucleusenhancer failonerror="true" verbose="true">
+            <classpath refid="enhancer.classpath"/>
+            <classpath path="classes" />
+            <classpath path="classes-ant" />
             <classpath path="../../webCloudServerCommon/classes"/>
             <jvmarg line="-Dlog4j.configuration=etc/logging.properties"/>
             <fileset dir="classes">
+                <include name="**/*.class"/>
+            </fileset>
+            <fileset dir="classes-ant">
                 <include name="**/*.class"/>
             </fileset>
         </datanucleusenhancer>
