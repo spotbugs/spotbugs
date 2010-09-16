@@ -125,10 +125,15 @@ public class DeepSubtypeAnalysis {
 
 		if (x.getClassName().equals("java.lang.Object"))
 			return 0.4;
+		
+		if(DEBUG) {
+			System.out.println("checking " + x.getClassName());
+		}
+
 		double result = Analyze.deepInstanceOf(x, serializable);
 		if (result >= 0.9) {
 			if(DEBUG) {
-				System.out.println("High serializable result: " + result);
+				System.out.println("Direct high serializable result: " + result);
 			}
 			return result;
 		}
