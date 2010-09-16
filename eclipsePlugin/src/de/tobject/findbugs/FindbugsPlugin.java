@@ -224,7 +224,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
 		// do not start job (and do not load FB core) if there are no custom detectors
 		final SortedSet<String> detectorPaths = PrefsUtil.readDetectorPaths(getPreferenceStore());
-		if(!detectorPaths.isEmpty()) {
+//		if(!detectorPaths.isEmpty()) {
 			Job job = new Job("Applying custom detectors") {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
@@ -233,7 +233,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 				}
 			};
 			job.schedule();
-		}
+//		}
 	}
 
 	/**
@@ -243,6 +243,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	public static void applyCustomDetectors(SortedSet<String> detectorPaths, boolean force) {
 		List<URL> pluginList = new ArrayList<URL>();
 		DetectorValidator validator = new DetectorValidator();
+		detectorPaths.addAll(DetectorsExtensionHelper.getContributedDetectors());
 		for (String path : detectorPaths) {
 			URL url;
 			try {

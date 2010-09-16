@@ -3,6 +3,7 @@ Release 1.3.10
 - feature: Bug Annotations view is now called Bug Comments view and can work with the cloud (Keith Lea)
 - feature: bug rank settings control for Eclipse plugin (Keith Lea)
 - feature: allow to specify custom detector packages from Eclipse UI as workspace preference (Andrei Loskutov)
+- feature: added "detectorPlugins" extension point for custom detector Eclipse plugins (Andrei Loskutov)
 - feature: use ".settings/edu.umd.cs.findbugs.core.prefs" as a name for the FB *core* preferences, instead of ".fbprefs"  (Andrei Loskutov)
 - feature: allow to run FB analysis on working sets (Andrei Loskutov)
 - feature: decorate working sets and source root directories with bug counts (Andrei Loskutov)

@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="edu.umd.cs.findbugs.plugin.eclipse" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="edu.umd.cs.findbugs.plugin.eclipse" id="detectorPlugins" name="Custom FindBugs detector plugins"/>
+      </appInfo>
+      <documentation>
+         Extension point can be used to contribute custom plugins for the FindBugs engine.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="detectorPlugin" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="detectorPlugin">
+      <complexType>
+         <attribute name="libraryPath" type="string" use="default" value=".">
+            <annotation>
+               <documentation>
+                  Detector library (usually *.jar file) path, relative to the plugin installation directory. Default value is &quot;.&quot; and should be used if the plugin jar itself represents the valid FindBugs detector package. If a custom library path is used, forward slash &quot;/&quot; must be used as file separator.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         1.3.10
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         Example contribution for detector plugins which are deployed as a single Eclipse plugin archive (*.jar) file:
+&lt;pre&gt;
+   &lt;extension point=&quot;edu.umd.cs.findbugs.plugin.eclipse.detectorPlugins&quot;&gt;
+      &lt;detectorPlugin libraryPath=&quot;.&quot; /&gt;
+   &lt;/extension&gt;
+&lt;/pre&gt;
+Example contribution for two detector plugins which are deployed as a part (*.jar library) of an Eclipse plugin. The plugin is deployed as a directory containing one or more *.jar files:
+&lt;pre&gt;
+   &lt;extension point=&quot;edu.umd.cs.findbugs.plugin.eclipse.detectorPlugins&quot;&gt;
+      &lt;detectorPlugin libraryPath=&quot;lib/myDetectorsPlugin.jar&quot; /&gt;
+      &lt;detectorPlugin libraryPath=&quot;lib/thirdPartyDetectorsPlugin.jar&quot; /&gt;      
+   &lt;/extension&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiinfo"/>
+      </appInfo>
+      <documentation>
+         A valid FindBugs detector package is a jar file containing bugrank.txt, findbugs.xml, messages.xml and at least one class file.
+      </documentation>
+   </annotation>
+
+
+
+</schema>
