@@ -96,7 +96,9 @@ public class PrintClass {
 			System.err.println("list: No input files specified");
 		} else {
 
-			if (files == 0 && zip_file != null) {
+			if (zip_file != null) {
+				for (int i = 0; i < files; i++) 
+					file_name[i] = file_name[i].replace('.','/');
 				ZipFile z = new ZipFile(zip_file);
 				TreeSet<ZipEntry> zipEntries = new TreeSet<ZipEntry>(
 						new ZipEntryComparator());
@@ -106,8 +108,14 @@ public class PrintClass {
 
 				for (ZipEntry ze : zipEntries) {
 					String name = ze.getName();
-					if (name.endsWith(".class")) 
-						printClass(new ClassParser(z.getInputStream(ze), name));
+					if (!name.endsWith(".class")) continue;
+					checkMatch: if (files > 0) {
+						for (int i = 0; i < files; i++) 
+							if (name.indexOf(file_name[i]) >= 0)
+								break checkMatch;
+						continue;
+					}
+					printClass(new ClassParser(z.getInputStream(ze), name));
 
 
 
