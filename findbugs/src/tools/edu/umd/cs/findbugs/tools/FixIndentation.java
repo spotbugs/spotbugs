@@ -36,7 +36,7 @@ import java.util.Set;
  * @author pugh
  */
 public class FixIndentation {
-    static final String SPACES = "                                                     ";
+    static final String SPACES = "                                                                                                                                            ";
 
     public static void main(String args[]) throws Exception {
         recursiveFix(new File(args[0]), true);
@@ -84,6 +84,8 @@ public class FixIndentation {
                 break;
         }
 
+        if (pos >= s.length())
+            return "";
         return SPACES.substring(0, indentation) + s.substring(pos).trim();
 
     }
