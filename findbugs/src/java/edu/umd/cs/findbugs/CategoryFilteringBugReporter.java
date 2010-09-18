@@ -32,16 +32,17 @@ public class CategoryFilteringBugReporter extends DelegatingBugReporter {
     public CategoryFilteringBugReporter(BugReporter realBugReporter, Set<String> categorySet) {
         super(realBugReporter);
         this.categorySet = categorySet;
-	}
+    }
 
     @Override
     public void reportBug(BugInstance bugInstance) {
         BugPattern bugPattern = bugInstance.getBugPattern();
-		String category = bugPattern.getCategory();
+        String category = bugPattern.getCategory();
         if (categorySet.contains(category)) {
             getDelegate().reportBug(bugInstance);
         } else {
-		    if(DEBUG) System.out.println("CategoryFilteringBugReporter: filtered due to category " + category);
+            if (DEBUG)
+                System.out.println("CategoryFilteringBugReporter: filtered due to category " + category);
         }
     }
 }

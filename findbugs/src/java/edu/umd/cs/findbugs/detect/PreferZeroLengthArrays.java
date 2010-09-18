@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -31,40 +30,38 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 
-public class PreferZeroLengthArrays extends BytecodeScanningDetector implements  StatelessDetector {
+public class PreferZeroLengthArrays extends BytecodeScanningDetector implements StatelessDetector {
     boolean nullOnTOS = false;
+
     private BugReporter bugReporter;
 
     public PreferZeroLengthArrays(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
-
-
     Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
+
     @Override
     public void visit(Code obj) {
-		found.clear();
+        found.clear();
         // Solution to sourceforge bug 1765925; returning null is the
         // convention used by java.io.File.listFiles()
-        if(getMethodName().equals("listFiles")) {
-		    return;
+        if (getMethodName().equals("listFiles")) {
+            return;
         }
         String returnType = getMethodSig().substring(getMethodSig().indexOf(")") + 1);
         if (returnType.startsWith("[")) {
-			nullOnTOS = false;
+            nullOnTOS = false;
             super.visit(obj);
             if (!found.isEmpty()) {
-                BugInstance bug = new BugInstance(this, "PZLA_PREFER_ZERO_LENGTH_ARRAYS", LOW_PRIORITY)
-						.addClassAndMethod(this);
-                for(SourceLineAnnotation s : found)
+                BugInstance bug = new BugInstance(this, "PZLA_PREFER_ZERO_LENGTH_ARRAYS", LOW_PRIORITY).addClassAndMethod(this);
+                for (SourceLineAnnotation s : found)
                     bug.add(s);
                 bugReporter.reportBug(bug);
-				found.clear();
+                found.clear();
             }
         }
     }
-
 
     @Override
     public void sawOpcode(int seen) {
@@ -72,11 +69,11 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
         switch (seen) {
         case ACONST_NULL:
             nullOnTOS = true;
-			return;
+            return;
         case ARETURN:
             if (nullOnTOS) {
-                SourceLineAnnotation sourceLineAnnotation =
-					SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, getPC());
+                SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this,
+                        getPC());
                 if (sourceLineAnnotation != null)
                     found.add(sourceLineAnnotation);
             }
@@ -84,5 +81,5 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
             break;
         }
         nullOnTOS = false;
-	}
+    }
 }

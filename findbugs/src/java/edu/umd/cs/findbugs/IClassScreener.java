@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 
 /**
  * Screen class files to decide which subset of them to analyze.
- *
+ * 
  * @author David Hovemeyer
  */
 public interface IClassScreener {
@@ -29,10 +29,11 @@ public interface IClassScreener {
     /**
      * Does the class screener always return true?
      */
-	public boolean vacuous();
+    public boolean vacuous();
+
     /**
      * Return whether or not the name of the given file matches.
      */
-	public boolean matches(String fileName);
+    public boolean matches(String fileName);
 
 }

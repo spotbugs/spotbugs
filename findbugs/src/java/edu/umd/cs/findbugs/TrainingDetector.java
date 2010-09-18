@@ -19,9 +19,8 @@
 package edu.umd.cs.findbugs;
 
 /**
- * Interface to mark Detector classes which are used only as
- * a training pass.
- *
+ * Interface to mark Detector classes which are used only as a training pass.
+ * 
  * @author David Hovemeyer
  */
 public interface TrainingDetector {

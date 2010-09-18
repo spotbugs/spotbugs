@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Method analysis engine to produce BCEL Method objects.
- *
+ * 
  * @author David Hovemeyer
  */
 public class MethodFactory extends AnalysisFactory<Method> {
@@ -38,35 +38,43 @@ public class MethodFactory extends AnalysisFactory<Method> {
         super("Method factory", Method.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public Method analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public Method analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, descriptor.getClassDescriptor());
         Method[] methodList = jclass.getMethods();
 
-		Method result = null;
+        Method result = null;
 
         // As a side-effect, cache all of the Methods for this JavaClass
         for (Method method : methodList) {
-			MethodDescriptor methodDescriptor =
-                DescriptorFactory.instance().getMethodDescriptor(descriptor.getSlashedClassName(), method.getName(), method.getSignature(), method.isStatic());
+            MethodDescriptor methodDescriptor = DescriptorFactory.instance().getMethodDescriptor(
+                    descriptor.getSlashedClassName(), method.getName(), method.getSignature(), method.isStatic());
 
             // Put in cache eagerly
-			analysisCache.eagerlyPutMethodAnalysis(Method.class, methodDescriptor, method);
+            analysisCache.eagerlyPutMethodAnalysis(Method.class, methodDescriptor, method);
 
             if (methodDescriptor.equals(descriptor)) {
                 result = method;
-			}
+            }
         }
 
         return result;
-	}
+    }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
+     * .findbugs.classfile.IAnalysisCache)
      */
-	@Override
+    @Override
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerMethodAnalysisEngine(Method.class, this);
     }

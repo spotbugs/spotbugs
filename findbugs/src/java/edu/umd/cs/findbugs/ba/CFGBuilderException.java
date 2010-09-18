@@ -25,7 +25,7 @@ public class CFGBuilderException extends CheckedAnalysisException {
     /**
      *
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     public CFGBuilderException(String message) {
         super(message);

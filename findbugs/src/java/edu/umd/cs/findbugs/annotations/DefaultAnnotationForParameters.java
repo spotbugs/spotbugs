@@ -27,25 +27,24 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that all members of the class or package should be
- * annotated with the default value of the supplied annotation class.
- *
+ * Indicates that all members of the class or package should be annotated with
+ * the default value of the supplied annotation class.
+ * 
  * This would be used for behavior annotations such as @NonNull, @CheckForNull,
  * or @CheckReturnValue.
- *
- * In particular, you can use @DefaultAnnotation(NonNull.class) on a class or package,
- * and then use @Nullable only on those parameters, methods or fields that you want
- * to allow to be null.
- *
+ * 
+ * In particular, you can use @DefaultAnnotation(NonNull.class) on a class or
+ * package, and then use @Nullable only on those parameters, methods or fields
+ * that you want to allow to be null.
+ * 
  * @author William Pugh
  */
 
 @Documented
-@Target({ElementType.TYPE, ElementType.PACKAGE})
+@Target({ ElementType.TYPE, ElementType.PACKAGE })
 @Retention(RetentionPolicy.CLASS)
-
 public @interface DefaultAnnotationForParameters {
     Class<? extends Annotation>[] value();
+
     Priority priority() default Priority.MEDIUM;
 }
-

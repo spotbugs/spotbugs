@@ -47,34 +47,35 @@ public class CbeckMustOverrideSuperAnnotation extends OpcodeStackDetector {
     @Override
     public void visit(Code code) {
         if (getMethod().isStatic() || getMethod().isPrivate())
-			return;
+            return;
         XMethod overrides = Lookup.findSuperImplementorAsXMethod(getThisClass(), getMethodName(), getMethodSig(), bugReporter);
 
         if (overrides == null)
             return;
         AnnotationValue annotation = overrides.getAnnotation(mustOverrideAnnotation);
-		if (annotation == null)
+        if (annotation == null)
             return;
         sawCallToSuper = false;
         super.visit(code);
-		if (!sawCallToSuper)
-            bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this).addString("Method must invoke override method in superclass"));
+        if (!sawCallToSuper)
+            bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this).addString(
+                    "Method must invoke override method in superclass"));
     }
 
     /*
      * (non-Javadoc)
-     *
-	 * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
+     * 
+     * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
      */
     @Override
     public void sawOpcode(int seen) {
-		if (seen != INVOKESPECIAL)
+        if (seen != INVOKESPECIAL)
             return;
 
         String calledClassName = getClassConstantOperand();
         String calledMethodName = getNameConstantOperand();
         String calledMethodSig = getSigConstantOperand();
-		if (calledClassName.equals(getSuperclassName()) && calledMethodName.equals(getMethodName())
+        if (calledClassName.equals(getSuperclassName()) && calledMethodName.equals(getMethodName())
                 && calledMethodSig.equals(getMethodSig())) {
             sawCallToSuper = true;
         }

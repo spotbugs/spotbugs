@@ -26,14 +26,16 @@ public class AnnotationRetentionDatabase {
 
     public boolean hasRuntimeRetention(String dottedClassName) {
         Boolean result = annotationRetention.get(dottedClassName);
-        if (result == null) return false;
-		return result;
+        if (result == null)
+            return false;
+        return result;
     }
 
     /** return false if it has class retention *or* if the retention is unknown */
     public boolean lacksRuntimeRetention(String dottedClassName) {
         Boolean result = annotationRetention.get(dottedClassName);
-		if (result == null) return false;
+        if (result == null)
+            return false;
         return !result;
     }
 

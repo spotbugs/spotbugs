@@ -35,18 +35,17 @@ public abstract class AbstractField extends AbstractClassMember implements XFiel
         return (getAccessFlags() & Constants.ACC_VOLATILE) != 0;
     }
 
-    public final  boolean isSynthetic() {
+    public final boolean isSynthetic() {
         return (getAccessFlags() & Constants.ACC_SYNTHETIC) != 0;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.XField#getFieldDescriptor()
      */
-	public FieldDescriptor getFieldDescriptor() {
-        return DescriptorFactory.instance().getFieldDescriptor(
-                getClassDescriptor().getClassName(),
-                getName(),
-				getSignature(),
+    public FieldDescriptor getFieldDescriptor() {
+        return DescriptorFactory.instance().getFieldDescriptor(getClassDescriptor().getClassName(), getName(), getSignature(),
                 isStatic());
     }
 }

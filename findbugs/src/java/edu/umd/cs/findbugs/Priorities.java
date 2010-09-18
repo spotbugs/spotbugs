@@ -24,28 +24,28 @@ package edu.umd.cs.findbugs;
  */
 public interface Priorities {
     /**
-     *  priority for bug instances that should be ignored
+     * priority for bug instances that should be ignored
      */
-	public static final int IGNORE_PRIORITY = 5;	
+    public static final int IGNORE_PRIORITY = 5;
+
     /**
      * Experimental priority for bug instances.
      */
-	public static final int EXP_PRIORITY = 4;	
+    public static final int EXP_PRIORITY = 4;
 
     /**
      * Low priority for bug instances.
      */
-	public static final int LOW_PRIORITY = 3;
+    public static final int LOW_PRIORITY = 3;
 
     /**
      * Normal priority for bug instances.
      */
-	public static final int NORMAL_PRIORITY = 2;
+    public static final int NORMAL_PRIORITY = 2;
 
     /**
      * High priority for bug instances.
      */
-	public static final int HIGH_PRIORITY = 1;
-
+    public static final int HIGH_PRIORITY = 1;
 
 }

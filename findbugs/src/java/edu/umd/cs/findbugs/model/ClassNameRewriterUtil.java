@@ -27,19 +27,21 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 
 /**
  * Utility methods for using a ClassNameRewriter.
- *
+ * 
  * @author David Hovemeyer
  */
 public abstract class ClassNameRewriterUtil {
 
     /**
      * Rewrite a method signature.
-     *
-	 * @param classNameRewriter a ClassNameRewriter
-     * @param methodSignature   a method signature
+     * 
+     * @param classNameRewriter
+     *            a ClassNameRewriter
+     * @param methodSignature
+     *            a method signature
      * @return the rewritten method signature
      */
-	public static String rewriteMethodSignature(ClassNameRewriter classNameRewriter, String methodSignature) {
+    public static String rewriteMethodSignature(ClassNameRewriter classNameRewriter, String methodSignature) {
         if (classNameRewriter != IdentityClassNameRewriter.instance()) {
             SignatureParser parser = new SignatureParser(methodSignature);
 
@@ -48,7 +50,7 @@ public abstract class ClassNameRewriterUtil {
             buf.append('(');
             for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {
                 buf.append(rewriteSignature(classNameRewriter, i.next()));
-			}
+            }
 
             buf.append(')');
             buf.append(rewriteSignature(classNameRewriter, parser.getReturnTypeSignature()));
@@ -61,14 +63,15 @@ public abstract class ClassNameRewriterUtil {
 
     /**
      * Rewrite a signature.
-     *
-	 * @param classNameRewriter a ClassNameRewriter
-     * @param signature         a signature (parameter, return type, or field)
+     * 
+     * @param classNameRewriter
+     *            a ClassNameRewriter
+     * @param signature
+     *            a signature (parameter, return type, or field)
      * @return rewritten signature with class name updated if required
      */
-	public static String rewriteSignature(ClassNameRewriter classNameRewriter, String signature) {
-        if (classNameRewriter != IdentityClassNameRewriter.instance()
-                && signature.startsWith("L")) {
+    public static String rewriteSignature(ClassNameRewriter classNameRewriter, String signature) {
+        if (classNameRewriter != IdentityClassNameRewriter.instance() && signature.startsWith("L")) {
 
             String className = signature.substring(1, signature.length() - 1).replace('/', '.');
             className = classNameRewriter.rewriteClassName(className);
@@ -80,43 +83,43 @@ public abstract class ClassNameRewriterUtil {
     }
 
     /**
-     * Rewrite a MethodAnnotation to update the class name,
-     * and any class names mentioned in the method signature.
-	 * 
-     * @param classNameRewriter a ClassNameRewriter
-     * @param annotation        a MethodAnnotation
+     * Rewrite a MethodAnnotation to update the class name, and any class names
+     * mentioned in the method signature.
+     * 
+     * @param classNameRewriter
+     *            a ClassNameRewriter
+     * @param annotation
+     *            a MethodAnnotation
      * @return the possibly-rewritten MethodAnnotation
-	 */
+     */
     public static MethodAnnotation convertMethodAnnotation(ClassNameRewriter classNameRewriter, MethodAnnotation annotation) {
 
         if (classNameRewriter != IdentityClassNameRewriter.instance()) {
-            annotation = new MethodAnnotation(
-                    classNameRewriter.rewriteClassName(annotation.getClassName()),
-					annotation.getMethodName(),
-                    rewriteMethodSignature(classNameRewriter, annotation.getMethodSignature()),
+            annotation = new MethodAnnotation(classNameRewriter.rewriteClassName(annotation.getClassName()),
+                    annotation.getMethodName(), rewriteMethodSignature(classNameRewriter, annotation.getMethodSignature()),
                     annotation.isStatic());
         }
-		return annotation;
+        return annotation;
     }
 
     /**
-     * Rewrite a FieldAnnotation to update the class name
-     * and field signature, if needed.
-	 * 
-     * @param classNameRewriter a ClassNameRewriter
-     * @param annotation        a FieldAnnotation
+     * Rewrite a FieldAnnotation to update the class name and field signature,
+     * if needed.
+     * 
+     * @param classNameRewriter
+     *            a ClassNameRewriter
+     * @param annotation
+     *            a FieldAnnotation
      * @return the possibly-rewritten FieldAnnotation
-	 */
+     */
     public static FieldAnnotation convertFieldAnnotation(ClassNameRewriter classNameRewriter, FieldAnnotation annotation) {
 
         if (classNameRewriter != IdentityClassNameRewriter.instance()) {
-            annotation = new FieldAnnotation(
-                    classNameRewriter.rewriteClassName(annotation.getClassName()),
-					annotation.getFieldName(),
-                    rewriteSignature(classNameRewriter, annotation.getFieldSignature()),
+            annotation = new FieldAnnotation(classNameRewriter.rewriteClassName(annotation.getClassName()),
+                    annotation.getFieldName(), rewriteSignature(classNameRewriter, annotation.getFieldSignature()),
                     annotation.isStatic());
         }
-		return annotation;
+        return annotation;
     }
 
 }

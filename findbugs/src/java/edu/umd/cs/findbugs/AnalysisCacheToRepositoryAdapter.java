@@ -31,74 +31,93 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
- * An implementation of org.apache.bcel.util.Repository that
- * uses the AnalysisCache as its backing store.
- *
+ * An implementation of org.apache.bcel.util.Repository that uses the
+ * AnalysisCache as its backing store.
+ * 
  * @author David Hovemeyer
  */
 public class AnalysisCacheToRepositoryAdapter implements Repository {
     /**
      * Constructor.
      */
-	public AnalysisCacheToRepositoryAdapter() {
+    public AnalysisCacheToRepositoryAdapter() {
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.bcel.util.Repository#clear()
      */
-	public void clear() {
+    public void clear() {
         throw new UnsupportedOperationException();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.bcel.util.Repository#findClass(java.lang.String)
      */
-	public JavaClass findClass(String className) {
-        @SlashedClassName String slashedClassName = ClassName.toSlashedClassName(className);
+    public JavaClass findClass(String className) {
+        @SlashedClassName
+        String slashedClassName = ClassName.toSlashedClassName(className);
         ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(slashedClassName);
         return Global.getAnalysisCache().probeClassAnalysis(JavaClass.class, classDescriptor);
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.bcel.util.Repository#getClassPath()
      */
-	public ClassPath getClassPath() {
+    public ClassPath getClassPath() {
         throw new UnsupportedOperationException();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.bcel.util.Repository#loadClass(java.lang.String)
      */
-	public JavaClass loadClass(String className) throws ClassNotFoundException {
+    public JavaClass loadClass(String className) throws ClassNotFoundException {
         if (className.length() == 0)
             throw new IllegalArgumentException("Request to load empty class");
         className = ClassName.toSlashedClassName(className);
-		ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(className);
+        ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(className);
         try {
             return Global.getAnalysisCache().getClassAnalysis(JavaClass.class, classDescriptor);
         } catch (CheckedAnalysisException e) {
-			throw new ClassNotFoundException("Exception while looking for class " + className, e);
+            throw new ClassNotFoundException("Exception while looking for class " + className, e);
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.bcel.util.Repository#loadClass(java.lang.Class)
      */
-	public JavaClass loadClass(Class cls) throws ClassNotFoundException {
+    public JavaClass loadClass(Class cls) throws ClassNotFoundException {
         return loadClass(cls.getName());
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.bcel.util.Repository#removeClass(org.apache.bcel.classfile.JavaClass)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.bcel.util.Repository#removeClass(org.apache.bcel.classfile
+     * .JavaClass)
      */
-	public void removeClass(JavaClass arg0) {
+    public void removeClass(JavaClass arg0) {
         throw new UnsupportedOperationException();
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.bcel.util.Repository#storeClass(org.apache.bcel.classfile.JavaClass)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.bcel.util.Repository#storeClass(org.apache.bcel.classfile.
+     * JavaClass)
      */
-	public void storeClass(JavaClass cls) {
+    public void storeClass(JavaClass cls) {
         throw new UnsupportedOperationException();
     }
 }

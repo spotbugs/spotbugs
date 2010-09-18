@@ -20,36 +20,40 @@
 package edu.umd.cs.findbugs.ba.bcp;
 
 /**
- * A set of Bindings, which are definitions of variables occuring
- * in a ByteCodePattern.  BindingSets are immutable; to add a binding,
- * a new cell is allocated.  (Are we CONSING yet?)
- *
+ * A set of Bindings, which are definitions of variables occuring in a
+ * ByteCodePattern. BindingSets are immutable; to add a binding, a new cell is
+ * allocated. (Are we CONSING yet?)
+ * 
  * @author David Hovemeyer
  * @see Binding
  */
 public class BindingSet {
     private final Binding binding;
+
     private final BindingSet parent;
 
     /**
      * Constructor; creates a new BindingSet as an extension of an existing one.
-     *
-	 * @param binding a variable binding
-     * @param parent  the parent BindingSet, containing other bindings
+     * 
+     * @param binding
+     *            a variable binding
+     * @param parent
+     *            the parent BindingSet, containing other bindings
      */
     public BindingSet(Binding binding, BindingSet parent) {
-		this.binding = binding;
+        this.binding = binding;
         this.parent = parent;
     }
 
     /**
      * Look for a Binding for given variable.
-     *
-	 * @param varName name of the variable
+     * 
+     * @param varName
+     *            name of the variable
      * @return the Binding, or null if no such Binding is present in the set
      */
     public Binding lookup(String varName) {
-		if (varName.equals(binding.getVarName()))
+        if (varName.equals(binding.getVarName()))
             return binding;
         return parent != null ? parent.lookup(varName) : null;
     }
@@ -57,15 +61,15 @@ public class BindingSet {
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-		BindingSet cur = this;
+        BindingSet cur = this;
         buf.append('[');
         while (cur != null) {
             if (cur != this)
-				buf.append(", ");
+                buf.append(", ");
             buf.append(cur.binding.toString());
             cur = cur.parent;
         }
-		buf.append(']');
+        buf.append(']');
         return buf.toString();
     }
 }

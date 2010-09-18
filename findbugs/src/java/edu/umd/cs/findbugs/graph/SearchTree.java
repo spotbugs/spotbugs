@@ -26,18 +26,19 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * SearchTree represents a search tree produced by a graph
- * search algorithm, such as BreadthFirstSearch or DepthFirstSearch.
+ * SearchTree represents a search tree produced by a graph search algorithm,
+ * such as BreadthFirstSearch or DepthFirstSearch.
  */
-public class SearchTree <VertexType extends GraphVertex<VertexType>> {
+public class SearchTree<VertexType extends GraphVertex<VertexType>> {
 
     private VertexType m_vertex;
+
     private ArrayList<SearchTree<VertexType>> m_childList;
 
     /**
      * Create a new search tree.
      */
-	public SearchTree(VertexType v) {
+    public SearchTree(VertexType v) {
         m_vertex = v;
         m_childList = new ArrayList<SearchTree<VertexType>>();
     }
@@ -45,29 +46,28 @@ public class SearchTree <VertexType extends GraphVertex<VertexType>> {
     /**
      * Get the vertex contained in this node.
      */
-	public VertexType getVertex() {
+    public VertexType getVertex() {
         return m_vertex;
     }
 
     /**
      * Add a child search tree.
      */
-	public void addChild(SearchTree<VertexType> child) {
+    public void addChild(SearchTree<VertexType> child) {
         m_childList.add(child);
     }
 
     /**
-     * Return collection of children of this search tree.
-     * (Elements returned are also SearchTree objects).
-	 */
+     * Return collection of children of this search tree. (Elements returned are
+     * also SearchTree objects).
+     */
     public Iterator<SearchTree<VertexType>> childIterator() {
         return m_childList.iterator();
     }
 
     /**
-     * Add all vertices contained in this search tree to the given
-     * set.
-	 */
+     * Add all vertices contained in this search tree to the given set.
+     */
     public void addVerticesToSet(Set<VertexType> set) {
         // Add the vertex for this object
         set.add(this.m_vertex);
@@ -75,7 +75,7 @@ public class SearchTree <VertexType extends GraphVertex<VertexType>> {
         // Add vertices for all children
         Iterator<SearchTree<VertexType>> i = childIterator();
         while (i.hasNext()) {
-			SearchTree<VertexType> child = i.next();
+            SearchTree<VertexType> child = i.next();
             child.addVerticesToSet(set);
         }
     }

@@ -33,17 +33,16 @@ public class FractionalMultiset<K> {
     final Map<K, Double> map;
 
     public FractionalMultiset() {
-		map = new HashMap<K, Double>();
+        map = new HashMap<K, Double>();
     }
 
-    public FractionalMultiset(Map<K,Double> map) {
+    public FractionalMultiset(Map<K, Double> map) {
         this.map = map;
     }
 
-
     public void clear() {
         map.clear();
-	}
+    }
 
     public int numKeys() {
         return map.size();
@@ -52,39 +51,41 @@ public class FractionalMultiset<K> {
     public void add(K k, double val) {
         Double v = map.get(k);
         if (v == null)
-			map.put(k, val);
+            map.put(k, val);
         else
             map.put(k, v + val);
     }
-	public double getValue(K k) {
+
+    public double getValue(K k) {
         Double v = map.get(k);
         if (v == null)
             return 0;
-		return v;
+        return v;
     }
 
     public void turnTotalIntoAverage(Multiset<K> counts) {
-		for(Map.Entry<K,Double> e : map.entrySet()) {
+        for (Map.Entry<K, Double> e : map.entrySet()) {
             int count = counts.getCount(e.getKey());
             if (count == 0)
                 e.setValue(Double.NaN);
-			else
-                e.setValue(e.getValue()/ count);
+            else
+                e.setValue(e.getValue() / count);
 
         }
-	}
+    }
+
     public Iterable<Map.Entry<K, Double>> entrySet() {
         return map.entrySet();
     }
 
-
     public Iterable<Map.Entry<K, Double>> entriesInDecreasingOrder() {
         TreeSet<Map.Entry<K, Double>> result = new TreeSet<Map.Entry<K, Double>>(new DecreasingOrderEntryComparator<K>());
-		result.addAll(map.entrySet());
+        result.addAll(map.entrySet());
         return result;
     }
+
     public Iterable<Map.Entry<K, Double>> entriesInIncreasingOrder() {
-		TreeSet<Map.Entry<K, Double>> result = new TreeSet<Map.Entry<K, Double>>(new DecreasingOrderEntryComparator<K>());
+        TreeSet<Map.Entry<K, Double>> result = new TreeSet<Map.Entry<K, Double>>(new DecreasingOrderEntryComparator<K>());
         result.addAll(map.entrySet());
         return result;
     }
@@ -92,23 +93,23 @@ public class FractionalMultiset<K> {
     private static <E> int compareValues(Entry<E, Double> o1, Entry<E, Double> o2) {
         double c1 = o1.getValue();
         double c2 = o2.getValue();
-		if (c1 < c2)
+        if (c1 < c2)
             return 1;
         if (c1 > c2)
             return -1;
-		return System.identityHashCode(o1.getKey()) - System.identityHashCode(o2.getKey());
+        return System.identityHashCode(o1.getKey()) - System.identityHashCode(o2.getKey());
     }
 
     static class DecreasingOrderEntryComparator<E> implements Comparator<Map.Entry<E, Double>>, Serializable {
         public int compare(Entry<E, Double> o1, Entry<E, Double> o2) {
             return compareValues(o1, o2);
-		}
+        }
     }
 
     static class IncreasingOrderEntryComparator<E> implements Comparator<Map.Entry<E, Double>>, Serializable {
         public int compare(Entry<E, Double> o1, Entry<E, Double> o2) {
             return -compareValues(o1, o2);
-		}
+        }
     }
 
 }

@@ -27,14 +27,13 @@ public class LongOrDoubleLocalVariable implements Variable {
     public LongOrDoubleLocalVariable(ValueNumber topValue, ValueNumber nextValue) {
         this.topValue = topValue;
         this.nextValue = nextValue;
-	}
+    }
 
     public boolean sameAs(Variable other) {
         if (!(other instanceof LongOrDoubleLocalVariable))
             return false;
-		LongOrDoubleLocalVariable otherLongOrDouble = (LongOrDoubleLocalVariable) other;
-        return topValue.equals(otherLongOrDouble.topValue)
-                && nextValue.equals(otherLongOrDouble.nextValue);
+        LongOrDoubleLocalVariable otherLongOrDouble = (LongOrDoubleLocalVariable) other;
+        return topValue.equals(otherLongOrDouble.topValue) && nextValue.equals(otherLongOrDouble.nextValue);
     }
 }
 

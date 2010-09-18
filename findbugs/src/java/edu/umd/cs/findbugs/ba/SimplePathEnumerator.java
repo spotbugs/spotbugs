@@ -26,23 +26,27 @@ import java.util.List;
 import edu.umd.cs.findbugs.SystemProperties;
 
 /**
- * Object to enumerate (some subset of) the simple paths in a CFG.
- * A simple path is a path from entry to exit, ignoring backedges
- * and unhandled exceptions.
+ * Object to enumerate (some subset of) the simple paths in a CFG. A simple path
+ * is a path from entry to exit, ignoring backedges and unhandled exceptions.
  * <p/>
- * <p> FIXME: instead of storing the simple paths,
- * should invoke a callback as each simple path is produced.
- * That would save memory.
- *
+ * <p>
+ * FIXME: instead of storing the simple paths, should invoke a callback as each
+ * simple path is produced. That would save memory.
+ * 
  * @author David Hovemeyer
  * @see CFG
  */
 public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
     private CFG cfg;
+
     private DepthFirstSearch dfs;
+
     private int maxPaths;
-	private int maxWork;
+
+    private int maxWork;
+
     private int work;
+
     private List<List<Edge>> pathList;
 
     private static final boolean DEBUG = SystemProperties.getBoolean("spe.debug");
@@ -50,51 +54,58 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
     /**
      * Default number of steps to be performed in path enumeration.
      */
-	public static final int DEFAULT_MAX_WORK = 200000;
+    public static final int DEFAULT_MAX_WORK = 200000;
 
     /**
      * Constructor.
-     *
-	 * @param cfg      the control flow graph to enumerate simple paths of
-     * @param maxPaths maximum number of simple paths to find
-     * @param maxWork  maximum number of steps to be performed in the path
-     *                 enumeration (to handle exponential blowup of search space)
-	 */
+     * 
+     * @param cfg
+     *            the control flow graph to enumerate simple paths of
+     * @param maxPaths
+     *            maximum number of simple paths to find
+     * @param maxWork
+     *            maximum number of steps to be performed in the path
+     *            enumeration (to handle exponential blowup of search space)
+     */
     public SimplePathEnumerator(CFG cfg, int maxPaths, int maxWork) {
         this.cfg = cfg;
         this.dfs = new DepthFirstSearch(cfg);
-		dfs.search();
+        dfs.search();
         this.maxPaths = maxPaths;
         this.maxWork = maxWork;
         this.work = 0;
-		this.pathList = new LinkedList<List<Edge>>();
+        this.pathList = new LinkedList<List<Edge>>();
     }
 
     /**
      * Constructor; max work is set to DEFAULT_MAX_WORK.
-     *
-	 * @param cfg      the control flow graph to enumerate simple paths of
-     * @param maxPaths maximum number of simple paths to find
+     * 
+     * @param cfg
+     *            the control flow graph to enumerate simple paths of
+     * @param maxPaths
+     *            maximum number of simple paths to find
      */
     public SimplePathEnumerator(CFG cfg, int maxPaths) {
-		this(cfg, maxPaths, DEFAULT_MAX_WORK);
+        this(cfg, maxPaths, DEFAULT_MAX_WORK);
     }
 
     /**
      * Enumerate the simple paths.
-     *
-	 * @return this object
+     * 
+     * @return this object
      */
     public SimplePathEnumerator enumerate() {
         Iterator<Edge> entryOut = cfg.outgoingEdgeIterator(cfg.getEntry());
-		if (!entryOut.hasNext()) throw new IllegalStateException();
+        if (!entryOut.hasNext())
+            throw new IllegalStateException();
         Edge entryEdge = entryOut.next();
 
         LinkedList<Edge> init = new LinkedList<Edge>();
         init.add(entryEdge);
 
         work(init);
-        if (DEBUG && work == maxWork) System.out.println("**** Reached max work! ****");
+        if (DEBUG && work == maxWork)
+            System.out.println("**** Reached max work! ****");
 
         return this;
     }
@@ -102,7 +113,7 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
     /**
      * Iterate over simple paths.
      */
-	public Iterator<List<Edge>> iterator() {
+    public Iterator<List<Edge>> iterator() {
         return pathList.iterator();
     }
 
@@ -115,13 +126,14 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
         // Is this a complete path?
         if (last.getTarget() == cfg.getExit()) {
             pathList.add(new LinkedList<Edge>(partialPath));
-			return;
+            return;
         }
 
-        // Look for non-backedge, non-unhandled-exception outgoing edges, and recur.
+        // Look for non-backedge, non-unhandled-exception outgoing edges, and
+        // recur.
         Iterator<Edge> i = cfg.outgoingEdgeIterator(last.getTarget());
         while (i.hasNext()) {
-			Edge outEdge = i.next();
+            Edge outEdge = i.next();
 
             // Ignore back edges and unhandled exception edges
             if (dfs.getDFSEdgeType(outEdge) == BACK_EDGE || outEdge.getType() == UNHANDLED_EXCEPTION_EDGE)
@@ -130,17 +142,17 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
             // Add the edge to the current partial path, and recur
             partialPath.add(outEdge);
             work(partialPath);
-			partialPath.removeLast();
+            partialPath.removeLast();
 
             // Have we done the maximum amount of work?
             if (work == maxWork)
                 return;
-			++work;
+            ++work;
 
             // Did we reach the maximum number of simple paths?
             if (pathList.size() == maxPaths)
                 return;
-		}
+        }
     }
 }
 

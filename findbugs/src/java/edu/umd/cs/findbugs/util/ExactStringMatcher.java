@@ -21,18 +21,19 @@ package edu.umd.cs.findbugs.util;
 
 /**
  * Exact String-matching predicate.
- *
+ * 
  * @author David Hovemeyer
  */
 public class ExactStringMatcher implements StringMatcher {
     private final String expected;
 
     /**
-	 * Constructor.
-     *
-     * @param expected the expected string value
+     * Constructor.
+     * 
+     * @param expected
+     *            the expected string value
      */
-	public ExactStringMatcher(String expected) {
+    public ExactStringMatcher(String expected) {
         this.expected = expected;
     }
 
@@ -43,5 +44,5 @@ public class ExactStringMatcher implements StringMatcher {
     @Override
     public String toString() {
         return expected;
-	}
+    }
 }

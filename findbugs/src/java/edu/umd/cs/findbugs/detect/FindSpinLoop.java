@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -33,69 +32,72 @@ public class FindSpinLoop extends BytecodeScanningDetector implements StatelessD
     private static final boolean DEBUG = SystemProperties.getBoolean("findspinloop.debug");
 
     int stage = 0;
+
     int start;
+
     private BugReporter bugReporter;
-	private FieldAnnotation lastFieldSeen;
+
+    private FieldAnnotation lastFieldSeen;
 
     public FindSpinLoop(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
-
-
     @Override
-         public void visit(Method obj) {
-        if (DEBUG) System.out.println("Saw " + getFullyQualifiedMethodName());
-		stage = 0;
+    public void visit(Method obj) {
+        if (DEBUG)
+            System.out.println("Saw " + getFullyQualifiedMethodName());
+        stage = 0;
     }
 
     @Override
-         public void sawOpcode(int seen) {
+    public void sawOpcode(int seen) {
 
         // System.out.println("PC: " + PC + ", stage: " + stage1);
         switch (seen) {
         case ALOAD_0:
-		case ALOAD_1:
+        case ALOAD_1:
         case ALOAD_2:
         case ALOAD_3:
         case ALOAD:
-			if (DEBUG) System.out.println("   ALOAD at PC " + getPC());
+            if (DEBUG)
+                System.out.println("   ALOAD at PC " + getPC());
             start = getPC();
             stage = 1;
             break;
-		case GETSTATIC:
-            if (DEBUG) System.out.println("   getfield in stage " + stage);
+        case GETSTATIC:
+            if (DEBUG)
+                System.out.println("   getfield in stage " + stage);
             lastFieldSeen = FieldAnnotation.fromReferencedField(this);
             start = getPC();
-			stage = 2;
+            stage = 2;
             break;
         case GETFIELD:
-            if (DEBUG) System.out.println("   getfield in stage " + stage);
-			lastFieldSeen = FieldAnnotation.fromReferencedField(this);
-            if (stage == 1 || stage == 2 ) {
+            if (DEBUG)
+                System.out.println("   getfield in stage " + stage);
+            lastFieldSeen = FieldAnnotation.fromReferencedField(this);
+            if (stage == 1 || stage == 2) {
                 stage = 2;
             } else
-				stage = 0;
+                stage = 0;
             break;
         case GOTO:
         case IFNE:
-		case IFEQ:
+        case IFEQ:
         case IFNULL:
         case IFNONNULL:
-            if (DEBUG) System.out.println("   conditional branch in stage " + stage + " to " + getBranchTarget());
-			if (stage == 2 && getBranchTarget() == start) {
-                bugReporter.reportBug(new BugInstance(this, "SP_SPIN_ON_FIELD", NORMAL_PRIORITY)
-                        .addClassAndMethod(this)
-                        .addReferencedField(lastFieldSeen)
-						.addSourceLine(this, start)
-                        );
+            if (DEBUG)
+                System.out.println("   conditional branch in stage " + stage + " to " + getBranchTarget());
+            if (stage == 2 && getBranchTarget() == start) {
+                bugReporter.reportBug(new BugInstance(this, "SP_SPIN_ON_FIELD", NORMAL_PRIORITY).addClassAndMethod(this)
+                        .addReferencedField(lastFieldSeen).addSourceLine(this, start));
                 stage = 0;
             } else if (getBranchTarget() < getPC())
-				stage = 0;
+                stage = 0;
             break;
         default:
             stage = 0;
-			break;
+            break;
         }
 
     }

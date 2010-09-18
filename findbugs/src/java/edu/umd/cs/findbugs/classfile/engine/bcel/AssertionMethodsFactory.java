@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 
 /**
  * Class analysis engine for creating AssertionMethods objects.
- *
+ * 
  * @author David Hovemeyer
  */
 public class AssertionMethodsFactory extends RecomputableClassAnalysisEngine<AssertionMethods> {
@@ -37,15 +37,17 @@ public class AssertionMethodsFactory extends RecomputableClassAnalysisEngine<Ass
     public AssertionMethods analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
         JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, descriptor);
         return new AssertionMethods(jclass);
-	}
-
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
-     */
-	public void registerWith(IAnalysisCache analysisCache) {
-        analysisCache.registerClassAnalysisEngine(AssertionMethods.class, this);
     }
 
-
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
+     * .findbugs.classfile.IAnalysisCache)
+     */
+    public void registerWith(IAnalysisCache analysisCache) {
+        analysisCache.registerClassAnalysisEngine(AssertionMethods.class, this);
+    }
 
 }

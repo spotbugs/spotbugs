@@ -23,12 +23,13 @@ import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 
 public class NonNullParamViolation {
     private JavaClassAndMethod classAndMethod;
+
     private int param;
 
     public NonNullParamViolation(JavaClassAndMethod classAndMethod, int param) {
         this.classAndMethod = classAndMethod;
         this.param = param;
-	}
+    }
 
     public JavaClassAndMethod getClassAndMethod() {
         return classAndMethod;

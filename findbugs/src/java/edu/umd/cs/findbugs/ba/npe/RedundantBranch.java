@@ -38,53 +38,52 @@ public class RedundantBranch {
 
     /**
      * Constructor.
-     *
-	 * @param location
+     * 
+     * @param location
      *            Location of ref comparison
      * @param lineNumber
      *            line number of ref comparison
-	 * @param firstValue
-     * 			first value compared
+     * @param firstValue
+     *            first value compared
      * @param secondValue
-     * 			second value compared
-	 */
-    public RedundantBranch(Location location, int lineNumber,
-            IsNullValue firstValue, IsNullValue secondValue) {
+     *            second value compared
+     */
+    public RedundantBranch(Location location, int lineNumber, IsNullValue firstValue, IsNullValue secondValue) {
         this.location = location;
-		this.lineNumber = lineNumber;
+        this.lineNumber = lineNumber;
         this.firstValue = firstValue;
         this.secondValue = secondValue;
     }
 
     /**
      * Constructor.
-     *
-	 * @param location
+     * 
+     * @param location
      *            Location of ref comparison
      * @param lineNumber
      *            line number of ref comparison
-	 * @param firstValue
-     * 			first value compared
+     * @param firstValue
+     *            first value compared
      */
-    public RedundantBranch(Location location, int lineNumber,
-			IsNullValue firstValue) {
+    public RedundantBranch(Location location, int lineNumber, IsNullValue firstValue) {
         this.location = location;
         this.lineNumber = lineNumber;
         this.firstValue = firstValue;
-		this.secondValue = null;
+        this.secondValue = null;
     }
 
     /**
      * Set the edge which has been determined to be infeasible.
-     *
-	 * @param infeasibleEdge The infeasibleEdge to set.
+     * 
+     * @param infeasibleEdge
+     *            The infeasibleEdge to set.
      */
     public void setInfeasibleEdge(Edge infeasibleEdge) {
         this.infeasibleEdge = infeasibleEdge;
-	}
+    }
 
     @Override
-         public String toString() {
+    public String toString() {
         return location.toString() + ": line " + lineNumber;
-	}
+    }
 }

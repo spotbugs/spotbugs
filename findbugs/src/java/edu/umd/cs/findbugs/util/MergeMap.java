@@ -35,7 +35,7 @@ public abstract class MergeMap<K, V> {
             if (oldValue.compareTo(newValue) > 0)
                 return newValue;
             return oldValue;
-		}
+        }
     }
 
     public static class MaxMap<K, V extends Comparable<? super V>> extends MergeMap<K, V> {
@@ -46,7 +46,7 @@ public abstract class MergeMap<K, V> {
             if (oldValue.compareTo(newValue) < 0)
                 return newValue;
             return oldValue;
-		}
+        }
     }
 
     final Map<K, V> map;
@@ -64,11 +64,11 @@ public abstract class MergeMap<K, V> {
     public V put(K k, V v) {
         V currentValue = map.get(k);
         if (currentValue == null) {
-			map.put(k, v);
+            map.put(k, v);
             return v;
         }
         V result = mergeValues(currentValue, v);
-		if (currentValue != result)
+        if (currentValue != result)
             map.put(k, v);
 
         return result;
@@ -81,7 +81,8 @@ public abstract class MergeMap<K, V> {
     public boolean containsKey(K k) {
         return map.containsKey(k);
     }
-	public Set<Map.Entry<K, V>> entrySet() {
+
+    public Set<Map.Entry<K, V>> entrySet() {
         return map.entrySet();
     }
 
@@ -92,7 +93,7 @@ public abstract class MergeMap<K, V> {
         m.put("a", 1);
         m.put("a", 2);
         m.put("b", 2);
-		m.put("b", 1);
+        m.put("b", 1);
         System.out.println(m.entrySet());
 
     }

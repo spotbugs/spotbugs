@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * Look for calls to methods where the return value is erroneously ignored. This
  * detector is meant as a simpler and faster replacement for
  * BCPMethodReturnCheck.
- *
+ * 
  * @author David Hovemeyer
  */
 public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotationDatabase {
@@ -58,7 +58,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
     private static final BitSet INVOKE_OPCODE_SET = new BitSet();
     static {
         INVOKE_OPCODE_SET.set(Constants.INVOKEINTERFACE);
-		INVOKE_OPCODE_SET.set(Constants.INVOKESPECIAL);
+        INVOKE_OPCODE_SET.set(Constants.INVOKESPECIAL);
         INVOKE_OPCODE_SET.set(Constants.INVOKESTATIC);
         INVOKE_OPCODE_SET.set(Constants.INVOKEVIRTUAL);
     }
@@ -66,6 +66,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
     boolean previousOpcodeWasNEW;
 
     private final BugReporter bugReporter;
+
     private final BugAccumulator bugAccumulator;
 
     private CheckReturnAnnotationDatabase checkReturnAnnotationDatabase;
@@ -81,29 +82,28 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
     public MethodReturnCheck(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
-	}
+    }
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        checkReturnAnnotationDatabase = AnalysisContext
-				.currentAnalysisContext().getCheckReturnAnnotationDatabase();
+        checkReturnAnnotationDatabase = AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase();
         super.visitClassContext(classContext);
     }
 
     @Override
     public void visit(Method method) {
         this.method = method;
-	}
+    }
 
     @Override
     public void visitCode(Code code) {
         // Prescreen to find methods with POP or POP2 instructions,
-		// and at least one method invocation
+        // and at least one method invocation
 
         if (DEBUG)
             System.out.println("Visiting " + method);
         super.visitCode(code);
-		bugAccumulator.reportAccumulatedBugs();
+        bugAccumulator.reportAccumulatedBugs();
     }
 
     @Override
@@ -112,7 +112,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
         if (DEBUG)
             System.out.printf("%3d %10s %3s %s%n", getPC(), OPCODE_NAMES[seen], state, stack);
 
-		checkForInitWithoutCopyOnStack: if (seen == INVOKESPECIAL && getNameConstantOperand().equals("<init>")) {
+        checkForInitWithoutCopyOnStack: if (seen == INVOKESPECIAL && getNameConstantOperand().equals("<init>")) {
             int arguments = PreorderVisitor.getNumberArguments(getSigConstantOperand());
             OpcodeStack.Item invokedOn = stack.getStackItem(arguments);
             if (invokedOn.isNewlyAllocated() && (!getMethodName().equals("<init>") || invokedOn.getRegisterNumber() != 0)) {
@@ -120,47 +120,40 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                 for (int i = arguments + 1; i < stack.getStackDepth(); i++) {
                     OpcodeStack.Item item = stack.getStackItem(i);
                     if (item.isNewlyAllocated() && item.getSignature().equals(invokedOn.getSignature()))
-						break checkForInitWithoutCopyOnStack;
+                        break checkForInitWithoutCopyOnStack;
                 }
 
                 callSeen = XFactory.createReferencedXMethod(this);
-				callPC = getPC();
+                callPC = getPC();
                 sawMethodCallWithIgnoredReturnValue();
 
             }
         }
 
-			
         if (state == SAW_INVOKE && isPop(seen))
             sawMethodCallWithIgnoredReturnValue();
         else if (INVOKE_OPCODE_SET.get(seen)) {
             callPC = getPC();
             callSeen = XFactory.createReferencedXMethod(this);
             state = SAW_INVOKE;
-			if (DEBUG) System.out.println("  invoking " + callSeen);
+            if (DEBUG)
+                System.out.println("  invoking " + callSeen);
         } else
             state = SCAN;
 
-
         if (seen == NEW) {
             previousOpcodeWasNEW = true;
-		} else {
+        } else {
             if (seen == INVOKESPECIAL && previousOpcodeWasNEW) {
-                CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase
-                        .getResolvedAnnotation(callSeen, false);
-				if (annotation != null
-                        && annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
+                CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase.getResolvedAnnotation(callSeen, false);
+                if (annotation != null && annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
                     int priority = annotation.getPriority();
-                    if (!checkReturnAnnotationDatabase
-							.annotationIsDirect(callSeen)
-                            && !callSeen.getSignature().endsWith(
-                                    callSeen.getClassName().replace('.', '/')
-                                            + ";"))
-						priority++;
-                    bugAccumulator.accumulateBug(new BugInstance(this,
-                            annotation.getPattern(), priority)
-                            .addClassAndMethod(this).addCalledMethod(this), this);
-				}
+                    if (!checkReturnAnnotationDatabase.annotationIsDirect(callSeen)
+                            && !callSeen.getSignature().endsWith(callSeen.getClassName().replace('.', '/') + ";"))
+                        priority++;
+                    bugAccumulator.accumulateBug(new BugInstance(this, annotation.getPattern(), priority).addClassAndMethod(this)
+                            .addCalledMethod(this), this);
+                }
 
             }
             previousOpcodeWasNEW = false;
@@ -173,39 +166,30 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
      */
     private void sawMethodCallWithIgnoredReturnValue() {
         {
-            CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase
-                    .getResolvedAnnotation(callSeen, false);
-			if (annotation != null
-                    && annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
+            CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase.getResolvedAnnotation(callSeen, false);
+            if (annotation != null && annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
                 int popPC = getPC();
                 if (DEBUG)
-					System.out.println("Saw POP @" + popPC);
+                    System.out.println("Saw POP @" + popPC);
                 int catchSize = getSizeOfSurroundingTryBlock(popPC);
 
                 int priority = annotation.getPriority();
                 if (catchSize <= 1)
                     priority += 2;
-				else if (catchSize <= 2)
+                else if (catchSize <= 2)
                     priority += 1;
                 if (!checkReturnAnnotationDatabase.annotationIsDirect(callSeen)
-                        && !callSeen.getSignature()
-								.endsWith(
-                                        callSeen.getClassName().replace('.',
-                                                '/')
-                                                + ";"))
-					priority++;
+                        && !callSeen.getSignature().endsWith(callSeen.getClassName().replace('.', '/') + ";"))
+                    priority++;
                 if (callSeen.isPrivate())
                     priority++;
                 String pattern = annotation.getPattern();
-				if (callSeen.getName().equals("<init>") 
-                        && (callSeen.getClassName().endsWith("Exception")
-                                || callSeen.getClassName().endsWith("Error")))
+                if (callSeen.getName().equals("<init>")
+                        && (callSeen.getClassName().endsWith("Exception") || callSeen.getClassName().endsWith("Error")))
                     pattern = "RV_EXCEPTION_NOT_THROWN";
-				BugInstance warning = new BugInstance(this,
-                        pattern, priority)
-                        .addClassAndMethod(this)
-                        .addMethod(callSeen).describe(MethodAnnotation.METHOD_CALLED);
-				bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(this, callPC));
+                BugInstance warning = new BugInstance(this, pattern, priority).addClassAndMethod(this).addMethod(callSeen)
+                        .describe(MethodAnnotation.METHOD_CALLED);
+                bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(this, callPC));
             }
             state = SCAN;
         }

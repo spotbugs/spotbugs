@@ -28,23 +28,25 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 /**
  * Eases access to a BCEL LocalVariable object
  */
-public class LVTHelper
-{
+public class LVTHelper {
     /**
      * returns the local variable at an index int the scope of PC
-     *
-	 * @param lvt the local variable table
-     * @param index the variable index
-     * @param pc the PC where the variable is used
+     * 
+     * @param lvt
+     *            the local variable table
+     * @param index
+     *            the variable index
+     * @param pc
+     *            the PC where the variable is used
      */
-	public static LocalVariable getLocalVariableAtPC(@NonNull LocalVariableTable lvt, int index, int pc) {
+    public static LocalVariable getLocalVariableAtPC(@NonNull LocalVariableTable lvt, int index, int pc) {
         int length = lvt.getTableLength();
         LocalVariable[] lvs = lvt.getLocalVariableTable();
 
-        for(int i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             if (lvs[i].getIndex() == index) {
                 int startPC = lvs[i].getStartPC();
-				if ((pc >= startPC) && (pc < (startPC + lvs[i].getLength())))
+                if ((pc >= startPC) && (pc < (startPC + lvs[i].getLength())))
                     return lvs[i];
             }
         }

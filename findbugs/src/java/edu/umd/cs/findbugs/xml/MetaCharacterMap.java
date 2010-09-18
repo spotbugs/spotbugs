@@ -24,51 +24,53 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Map of metacharacters that need to be escaped,
- * and what to replace them with.
- *
+ * Map of metacharacters that need to be escaped, and what to replace them with.
+ * 
  * @see QuoteMetaCharacters
  * @author David Hovemeyer
  */
 public class MetaCharacterMap {
     private BitSet metaCharacterSet;
+
     private Map<String, String> replacementMap;
 
     /**
-     * Constructor.
-     * Creates an empty object.
-	 */
+     * Constructor. Creates an empty object.
+     */
     public MetaCharacterMap() {
         this.metaCharacterSet = new BitSet();
         this.replacementMap = new HashMap<String, String>();
-	}
+    }
 
     /**
      * Add a metacharacter and its replacement.
-     *
-	 * @param meta        the metacharacter
-     * @param replacement the String to replace the metacharacter with
+     * 
+     * @param meta
+     *            the metacharacter
+     * @param replacement
+     *            the String to replace the metacharacter with
      */
     public void addMeta(char meta, String replacement) {
-		metaCharacterSet.set(meta);
-        replacementMap.put(new String(new char[]{meta}), replacement);
+        metaCharacterSet.set(meta);
+        replacementMap.put(new String(new char[] { meta }), replacement);
     }
 
     /**
      * Return whether or not given character is a metacharacter.
      */
-	boolean isMeta(char c) {
+    boolean isMeta(char c) {
         return metaCharacterSet.get(c);
     }
 
     /**
      * Get the replacement for a metacharacter.
-     *
-	 * @param c a String containing the metacharacter
+     * 
+     * @param c
+     *            a String containing the metacharacter
      */
     String getReplacement(String c) {
         return replacementMap.get(c);
-	}
+    }
 }
 
 // vim:ts=4

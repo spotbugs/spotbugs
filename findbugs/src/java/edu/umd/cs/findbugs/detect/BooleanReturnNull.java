@@ -41,28 +41,26 @@ public class BooleanReturnNull extends OpcodeStackDetector {
     @Override
     public void visit(Code code) {
         String s = getMethodSig();
-		SignatureParser sp = new SignatureParser(s);
-        //Check to see if the method has Boolean return type
+        SignatureParser sp = new SignatureParser(s);
+        // Check to see if the method has Boolean return type
         boolean interesting = "Ljava/lang/Boolean;".equals(sp.getReturnTypeSignature());
-        if (interesting)  {
-			super.visit(code); // make callbacks to sawOpcode for all opcodes
+        if (interesting) {
+            super.visit(code); // make callbacks to sawOpcode for all opcodes
             bugAccumulator.reportAccumulatedBugs();
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
      */
-	@Override
+    @Override
     public void sawOpcode(int seen) {
         if (seen == ARETURN && getPrevOpcode(1) == ACONST_NULL)
             bugAccumulator.accumulateBug(new BugInstance(this, "NP_BOOLEAN_RETURN_NULL",
-					getMethodName().startsWith("is") ? HIGH_PRIORITY : NORMAL_PRIORITY)
-            .addClassAndMethod(this), this);
-
-
+                    getMethodName().startsWith("is") ? HIGH_PRIORITY : NORMAL_PRIORITY).addClassAndMethod(this), this);
 
     }
-
 
 }

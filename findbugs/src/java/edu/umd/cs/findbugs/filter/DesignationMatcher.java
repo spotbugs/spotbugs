@@ -26,22 +26,20 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Match bug instances having one of given codes or patterns.
- *
+ * 
  * @author rafal@caltha.pl
  */
 public class DesignationMatcher implements Matcher {
     private StringSetMatch designations;
 
-
-
     /**
      * Constructor.
-     *
-	 * @param designations
+     * 
+     * @param designations
      *            comma-separated list of designations
      */
     public DesignationMatcher(String designations) {
-		this.designations = new StringSetMatch(designations);
+        this.designations = new StringSetMatch(designations);
     }
 
     public boolean match(BugInstance bugInstance) {
@@ -50,29 +48,34 @@ public class DesignationMatcher implements Matcher {
 
     @Override
     public String toString() {
-        return "Designations(designations=" + designations +")";
+        return "Designations(designations=" + designations + ")";
     }
+
     @Override
     public int hashCode() {
         return designations.hashCode();
     }
+
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof DesignationMatcher)) return false;
+        if (!(o instanceof DesignationMatcher))
+            return false;
         DesignationMatcher other = (DesignationMatcher) o;
         return designations.equals(other.designations);
-	}
+    }
+
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         xmlOutput.startTag("Designation");
-        if (disabled) xmlOutput.addAttribute("disabled","true");
-		addAttribute(xmlOutput, "designation", designations);
+        if (disabled)
+            xmlOutput.addAttribute("disabled", "true");
+        addAttribute(xmlOutput, "designation", designations);
         xmlOutput.stopTag(true);
     }
 
     public void addAttribute(XMLOutput xmlOutput, String name, StringSetMatch matches) throws IOException {
         String value = matches.toString();
         if (value.length() != 0)
-			xmlOutput.addAttribute(name, value);
+            xmlOutput.addAttribute(name, value);
     }
 
 }

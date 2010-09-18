@@ -32,7 +32,7 @@ public abstract class Condition {
     private Location location;
 
     public Condition(Location location) {
-        this.location= location;
+        this.location = location;
     }
 
     public Location getLocation() {

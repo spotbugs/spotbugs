@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -32,47 +31,47 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 public class FindRunInvocations extends BytecodeScanningDetector implements StatelessDetector {
 
     private final BugReporter bugReporter;
+
     private final BugAccumulator bugAccumulator;
+
     private boolean alreadySawStart;
 
     public FindRunInvocations(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
-	}
-
+    }
 
     private boolean isThread(String clazz) {
         try {
             return Hierarchy.isSubtype(clazz, "java.lang.Thread");
-		} catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
             return false;
         }
-	}
+    }
 
     @Override
-         public void visit(Code obj) {
+    public void visit(Code obj) {
         alreadySawStart = false;
-		super.visit(obj);
+        super.visit(obj);
         bugAccumulator.reportAccumulatedBugs();
     }
 
     @Override
-         public void sawOpcode(int seen) {
-        if (alreadySawStart) return;
-		if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-                && getSigConstantOperand().equals("()V")
-                && isThread(getDottedClassConstantOperand())
-        ) {
-			if (getNameConstantOperand().equals("start"))
+    public void sawOpcode(int seen) {
+        if (alreadySawStart)
+            return;
+        if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) && getSigConstantOperand().equals("()V")
+                && isThread(getDottedClassConstantOperand())) {
+            if (getNameConstantOperand().equals("start"))
                 alreadySawStart = true;
             else {
                 boolean isJustThread = !getDottedClassConstantOperand().equals("java.lang.Thread");
-                if (amVisitingMainMethod() && getPC() == getCode().getLength()-4  && isJustThread)
+                if (amVisitingMainMethod() && getPC() == getCode().getLength() - 4 && isJustThread)
                     return;
-	            else if (getNameConstantOperand().equals("run"))
-                    bugAccumulator.accumulateBug(new BugInstance(this, "RU_INVOKE_RUN", isJustThread ? HIGH_PRIORITY : NORMAL_PRIORITY)
-                            .addClassAndMethod(this), this);
+                else if (getNameConstantOperand().equals("run"))
+                    bugAccumulator.accumulateBug(new BugInstance(this, "RU_INVOKE_RUN", isJustThread ? HIGH_PRIORITY
+                            : NORMAL_PRIORITY).addClassAndMethod(this), this);
             }
         }
     }

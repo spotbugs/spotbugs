@@ -25,22 +25,26 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * Descriptor uniquely identifying a method in a class.
- *
+ * 
  * @author David Hovemeyer
  */
-public class MethodDescriptor
-        extends FieldOrMethodDescriptor {
+public class MethodDescriptor extends FieldOrMethodDescriptor {
 
     /**
-	 * Constructor.
-     *
-     * @param className       name of the class containing the method, in VM format (e.g., "java/lang/String")
-     * @param methodName      name of the method
-	 * @param methodSignature signature of the method
-     * @param isStatic        true if method is static, false otherwise
+     * Constructor.
+     * 
+     * @param className
+     *            name of the class containing the method, in VM format (e.g.,
+     *            "java/lang/String")
+     * @param methodName
+     *            name of the method
+     * @param methodSignature
+     *            signature of the method
+     * @param isStatic
+     *            true if method is static, false otherwise
      */
     public MethodDescriptor(@SlashedClassName String className, String methodName, String methodSignature, boolean isStatic) {
-		super(className, methodName, methodSignature, isStatic);
+        super(className, methodName, methodSignature, isStatic);
     }
 
 }

@@ -35,13 +35,13 @@ public class CallGraph extends AbstractGraph<CallGraphEdge, CallGraphNode> {
     public CallGraphEdge createEdge(CallGraphNode source, CallGraphNode target, CallSite callSite) {
         CallGraphEdge edge = createEdge(source, target);
         edge.setCallSite(callSite);
-		return edge;
+        return edge;
     }
 
     public CallGraphNode addNode(Method method) {
         CallGraphNode node = new CallGraphNode();
         addVertex(node);
-		node.setMethod(method);
+        node.setMethod(method);
         methodToNodeMap.put(method, node);
         return node;
     }
@@ -53,7 +53,7 @@ public class CallGraph extends AbstractGraph<CallGraphEdge, CallGraphNode> {
     @Override
     protected CallGraphEdge allocateEdge(CallGraphNode source, CallGraphNode target) {
         return new CallGraphEdge(source, target);
-	}
+    }
 }
 
 // vim:ts=4

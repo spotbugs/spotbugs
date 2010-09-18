@@ -23,23 +23,24 @@ import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.Plugin;
 
 /**
- * DetectorFactorySelector implementation that chooses detectors
- * based on an implemented interface or extended superclass.
- *
+ * DetectorFactorySelector implementation that chooses detectors based on an
+ * implemented interface or extended superclass.
+ * 
  * @author David Hovemeyer
  */
 public class ByInterfaceDetectorFactorySelector implements DetectorFactorySelector {
     private Plugin plugin;
+
     private Class detectorInterface;
 
     public ByInterfaceDetectorFactorySelector(Plugin plugin, Class detectorInterface) {
         this.plugin = plugin;
         this.detectorInterface = detectorInterface;
-	}
+    }
 
     public boolean selectFactory(DetectorFactory factory) {
         if (plugin != null && factory.getPlugin() != plugin)
             return false;
-		return factory.isDetectorClassSubtypeOf(detectorInterface);
+        return factory.isDetectorClassSubtypeOf(detectorInterface);
     }
 }

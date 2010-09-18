@@ -29,32 +29,28 @@ import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
-public class ConfusedInheritance extends PreorderVisitor  implements Detector {
+public class ConfusedInheritance extends PreorderVisitor implements Detector {
 
     private BugReporter bugReporter;
+
     private JavaClass cls;
 
     public ConfusedInheritance(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
-
-
     public void visitClassContext(ClassContext classContext) {
         cls = classContext.getJavaClass();
         if (cls.isFinal()) {
-			cls.accept(this);
+            cls.accept(this);
         }
     }
 
     @Override
-         public void visitField(Field obj) {
+    public void visitField(Field obj) {
         if (obj.isProtected()) {
-			bugReporter.reportBug( 
-                new BugInstance( this, "CI_CONFUSED_INHERITANCE", LOW_PRIORITY)
-                    .addClass(cls)
-                    .addField(
-						new FieldAnnotation(cls.getClassName(), obj.getName(), obj.getSignature(), obj.isStatic())));
+            bugReporter.reportBug(new BugInstance(this, "CI_CONFUSED_INHERITANCE", LOW_PRIORITY).addClass(cls).addField(
+                    new FieldAnnotation(cls.getClassName(), obj.getName(), obj.getSignature(), obj.isStatic())));
         }
     }
 

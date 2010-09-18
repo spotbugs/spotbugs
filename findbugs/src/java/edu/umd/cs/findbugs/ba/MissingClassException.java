@@ -24,48 +24,52 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
- * DataflowAnalysisException variant to report a class lookup failure
- * that caused dataflow analysis to abort.
- *
+ * DataflowAnalysisException variant to report a class lookup failure that
+ * caused dataflow analysis to abort.
+ * 
  * @author David Hovemeyer
  */
 public class MissingClassException extends DataflowAnalysisException {
     private static final long serialVersionUID = 1L;
 
-    private @DottedClassName String className;
+    private @DottedClassName
+    String className;
 
     private MissingClassException(String className) {
         super("Missing class" + (className != null ? ": " + className : ""));
         this.className = className;
-	}
+    }
 
     /**
      * Constructor.
-     *
-	 * @param exception the ClassNotFoundException that caused this exception
+     * 
+     * @param exception
+     *            the ClassNotFoundException that caused this exception
      */
     public MissingClassException(ClassNotFoundException exception) {
         this(ClassNotFoundExceptionParser.getMissingClassName(exception));
-		initCause(exception);
+        initCause(exception);
     }
 
     /**
      * Get the name of the missing class.
-     *
-	 * @return name of the missing class, or null if the missing class name is unknown
+     * 
+     * @return name of the missing class, or null if the missing class name is
+     *         unknown
      */
     public String getClassName() {
         return className;
-	}
+    }
 
     public ClassDescriptor getClassDescriptor() {
         return DescriptorFactory.createClassDescriptorFromDottedClassName(className);
     }
-	/**
+
+    /**
      * Get the ClassNotFoundException that caused this exception.
-     *
+     * 
      * @return the ClassNotFoundException that caused this exception
-	 */
+     */
     public ClassNotFoundException getClassNotFoundException() {
         return (ClassNotFoundException) getCause();
     }

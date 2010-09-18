@@ -33,10 +33,9 @@ import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 
 /**
- * Build a map of added class names to removed class names.
- * Serves as a ClassNameRewriter that can match up renamed classes
- * in two BugCollections.
- *
+ * Build a map of added class names to removed class names. Serves as a
+ * ClassNameRewriter that can match up renamed classes in two BugCollections.
+ * 
  * @author David Hovemeyer
  */
 public class MovedClassMap implements ClassNameRewriter {
@@ -44,13 +43,15 @@ public class MovedClassMap implements ClassNameRewriter {
     private static final boolean DEBUG = SystemProperties.getBoolean("movedClasses.debug");
 
     private BugCollection before;
+
     private BugCollection after;
-    private Map<String,String> rewriteMap;
+
+    private Map<String, String> rewriteMap;
 
     public MovedClassMap(BugCollection before, BugCollection after) {
-         this.before = before;
-         this.after = after;
-		 this.rewriteMap = new HashMap<String,String>();
+        this.before = before;
+        this.after = after;
+        this.rewriteMap = new HashMap<String, String>();
     }
 
     public MovedClassMap execute() {
@@ -63,19 +64,20 @@ public class MovedClassMap implements ClassNameRewriter {
         Set<String> addedClasses = new HashSet<String>(afterClasses);
         addedClasses.removeAll(beforeClasses);
 
-        Map<String,String> removedShortNameToFullNameMap = buildShortNameToFullNameMap(removedClasses);
+        Map<String, String> removedShortNameToFullNameMap = buildShortNameToFullNameMap(removedClasses);
 
         // Map names of added classes to names of removed classes if
         // they have the same short name.
         for (String fullAddedName : addedClasses) {
 
             // FIXME: could use a similarity metric to match added and removed
-            // classes.  Instead, we just match based on the short class name.
+            // classes. Instead, we just match based on the short class name.
 
             String shortAddedName = getShortClassName(fullAddedName);
             String fullRemovedName = removedShortNameToFullNameMap.get(shortAddedName);
             if (fullRemovedName != null) {
-				if (DEBUG) System.err.println(fullAddedName + " --> " + fullRemovedName);
+                if (DEBUG)
+                    System.err.println(fullAddedName + " --> " + fullRemovedName);
                 rewriteMap.put(fullAddedName, fullRemovedName);
             }
 
@@ -87,65 +89,66 @@ public class MovedClassMap implements ClassNameRewriter {
     public boolean isEmpty() {
         return rewriteMap.isEmpty();
     }
-	public String rewriteClassName(String className) {
+
+    public String rewriteClassName(String className) {
         String rewrittenClassName = rewriteMap.get(className);
         if (rewrittenClassName != null) {
             className = rewrittenClassName;
-		}
+        }
         return className;
     }
 
     /**
      * Find set of classes referenced in given BugCollection.
-     *
-	 * @param bugCollection
+     * 
+     * @param bugCollection
      * @return set of classes referenced in the BugCollection
      */
     private Set<String> buildClassSet(BugCollection bugCollection) {
-		Set<String> classSet = new HashSet<String>();
+        Set<String> classSet = new HashSet<String>();
 
-        for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); ) {
+        for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
             BugInstance warning = i.next();
             for (Iterator<BugAnnotation> j = warning.annotationIterator(); j.hasNext();) {
-				BugAnnotation annotation = j.next();
+                BugAnnotation annotation = j.next();
                 if (!(annotation instanceof ClassAnnotation))
                     continue;
-                classSet.add(((ClassAnnotation)annotation).getClassName());
-			}
+                classSet.add(((ClassAnnotation) annotation).getClassName());
+            }
         }
 
         return classSet;
     }
 
     /**
-     * Build a map of short class names (without package) to full
-     * class names.
-	 * 
-     * @param classSet set of fully-qualified class names
+     * Build a map of short class names (without package) to full class names.
+     * 
+     * @param classSet
+     *            set of fully-qualified class names
      * @return map of short class names to fully-qualified class names
      */
-	private Map<String, String> buildShortNameToFullNameMap(Set<String> classSet) {
-        Map<String,String> result = new HashMap<String,String>();
+    private Map<String, String> buildShortNameToFullNameMap(Set<String> classSet) {
+        Map<String, String> result = new HashMap<String, String>();
         for (String className : classSet) {
             String shortClassName = getShortClassName(className);
-			result.put(shortClassName, className);
+            result.put(shortClassName, className);
         }
         return result;
     }
 
     /**
      * Get a short class name (no package part).
-     *
-	 * @param className a class name
+     * 
+     * @param className
+     *            a class name
      * @return short class name
      */
     private String getShortClassName(String className) {
-		int lastDot = className.lastIndexOf('.');
+        int lastDot = className.lastIndexOf('.');
         if (lastDot >= 0) {
             className = className.substring(lastDot + 1);
         }
-		return className.toLowerCase(Locale.US).replace('+', '$');
+        return className.toLowerCase(Locale.US).replace('+', '$');
     }
-
 
 }

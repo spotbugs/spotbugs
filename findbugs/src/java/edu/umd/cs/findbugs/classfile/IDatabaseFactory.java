@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.classfile;
 
 /**
  * Interface for a database factory.
- *
+ * 
  * @author David Hovemeyer
  */
 public interface IDatabaseFactory<T> {

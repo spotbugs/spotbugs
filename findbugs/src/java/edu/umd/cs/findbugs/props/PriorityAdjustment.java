@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.props;
 /**
  * Enum representing how a particular warning property is expected to affect its
  * likelihood of being serious, benign, or a false positive.
- *
+ * 
  * @author David Hovemeyer
  */
 public class PriorityAdjustment {
@@ -34,7 +34,7 @@ public class PriorityAdjustment {
     @Override
     public String toString() {
         return value;
-	}
+    }
 
     /** No adjustment to the priority. */
     public static final PriorityAdjustment NO_ADJUSTMENT = new PriorityAdjustment("NO_ADJUSTMENT");
@@ -45,7 +45,8 @@ public class PriorityAdjustment {
     /** Raise the priority. */
     public static final PriorityAdjustment RAISE_PRIORITY_TO_AT_LEAST_NORMAL = new PriorityAdjustment(
             "RAISE_PRIORITY_TO_AT_LEAST_NORMAL");
-	/** lower the priority. */
+
+    /** lower the priority. */
     public static final PriorityAdjustment LOWER_PRIORITY_TO_AT_MOST_NORMAL = new PriorityAdjustment(
             "LOWER_PRIORITY_TO_AT_MOST_NORMAL");
 
@@ -58,15 +59,16 @@ public class PriorityAdjustment {
     /** Priority is at most medium. */
     public static final PriorityAdjustment AT_MOST_MEDIUM = new PriorityAdjustment("AT_MOST_MEDIUM");
 
-	/** Pegged high */
+    /** Pegged high */
     public static final PriorityAdjustment PEGGED_HIGH = new PriorityAdjustment("PEGGED_HIGH");
 
     /** Lower the priority. */
     public static final PriorityAdjustment LOWER_PRIORITY = new PriorityAdjustment("LOWER_PRIORITY");
-    /** Lower the priority a little*/
-	public static final PriorityAdjustment A_LITTLE_BIT_LOWER_PRIORITY = new PriorityAdjustment("A_LITTLE_BIT_LOWER_PRIORITY");
 
-    /** Raise the priority a little*/
+    /** Lower the priority a little */
+    public static final PriorityAdjustment A_LITTLE_BIT_LOWER_PRIORITY = new PriorityAdjustment("A_LITTLE_BIT_LOWER_PRIORITY");
+
+    /** Raise the priority a little */
     public static final PriorityAdjustment A_LITTLE_BIT_HIGHER_PRIORITY = new PriorityAdjustment("A_LITTLE_BIT_HIGHER_PRIORITY");
 
     /** Warning is likely to be a false positive. */

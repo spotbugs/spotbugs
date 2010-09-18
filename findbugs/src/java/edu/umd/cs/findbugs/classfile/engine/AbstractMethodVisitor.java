@@ -29,172 +29,231 @@ import org.objectweb.asm.MethodVisitor;
  */
 public abstract class AbstractMethodVisitor implements MethodVisitor {
 
-    public void visitSomeInsn() {}
+    public void visitSomeInsn() {
+    }
 
-    /* (non-Javadoc)
-	 * @see org.objectweb.asm.MethodVisitor#visitAnnotationDefault()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.objectweb.asm.MethodVisitor#visitAnnotationDefault()
      */
     public AnnotationVisitor visitAnnotationDefault() {
         // TODO Auto-generated method stub
-		return null;
+        return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.MethodVisitor#visitAttribute(org.objectweb.asm.Attribute)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.objectweb.asm.MethodVisitor#visitAttribute(org.objectweb.asm.Attribute
+     * )
      */
-	public void visitAttribute(Attribute attr) {
+    public void visitAttribute(Attribute attr) {
         // TODO Auto-generated method stub
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.objectweb.asm.MethodVisitor#visitCode()
      */
-	public void visitCode() {
+    public void visitCode() {
         // TODO Auto-generated method stub
 
     }
 
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.MethodVisitor#visitFieldInsn(int, java.lang.String, java.lang.String, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.objectweb.asm.MethodVisitor#visitFieldInsn(int,
+     * java.lang.String, java.lang.String, java.lang.String)
      */
-	public void visitFieldInsn(int opcode, String owner, String name, String desc) {
+    public void visitFieldInsn(int opcode, String owner, String name, String desc) {
         visitSomeInsn();
 
     }
 
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.MethodVisitor#visitFrame(int, int, java.lang.Object[], int, java.lang.Object[])
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.objectweb.asm.MethodVisitor#visitFrame(int, int,
+     * java.lang.Object[], int, java.lang.Object[])
      */
-	public void visitFrame(int type, int local, Object[] local2, int stack, Object[] stack2) {
+    public void visitFrame(int type, int local, Object[] local2, int stack, Object[] stack2) {
         // TODO Auto-generated method stub
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.objectweb.asm.MethodVisitor#visitIincInsn(int, int)
      */
-	public void visitIincInsn(int var, int increment) {
+    public void visitIincInsn(int var, int increment) {
         visitSomeInsn();
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.objectweb.asm.MethodVisitor#visitInsn(int)
      */
-	public void visitInsn(int opcode) {
+    public void visitInsn(int opcode) {
         visitSomeInsn();
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.objectweb.asm.MethodVisitor#visitIntInsn(int, int)
      */
-	public void visitIntInsn(int opcode, int operand) {
+    public void visitIntInsn(int opcode, int operand) {
         visitSomeInsn();
 
     }
 
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.MethodVisitor#visitJumpInsn(int, org.objectweb.asm.Label)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.objectweb.asm.MethodVisitor#visitJumpInsn(int,
+     * org.objectweb.asm.Label)
      */
-	public void visitJumpInsn(int opcode, Label label) {
+    public void visitJumpInsn(int opcode, Label label) {
         visitSomeInsn();
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.objectweb.asm.MethodVisitor#visitLabel(org.objectweb.asm.Label)
      */
-	public void visitLabel(Label label) {
+    public void visitLabel(Label label) {
         // TODO Auto-generated method stub
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.objectweb.asm.MethodVisitor#visitLdcInsn(java.lang.Object)
      */
-	public void visitLdcInsn(Object cst) {
+    public void visitLdcInsn(Object cst) {
         visitSomeInsn();
 
     }
 
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.MethodVisitor#visitLineNumber(int, org.objectweb.asm.Label)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.objectweb.asm.MethodVisitor#visitLineNumber(int,
+     * org.objectweb.asm.Label)
      */
-	public void visitLineNumber(int line, Label start) {
+    public void visitLineNumber(int line, Label start) {
         // TODO Auto-generated method stub
 
     }
 
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.MethodVisitor#visitLocalVariable(java.lang.String, java.lang.String, java.lang.String, org.objectweb.asm.Label, org.objectweb.asm.Label, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.objectweb.asm.MethodVisitor#visitLocalVariable(java.lang.String,
+     * java.lang.String, java.lang.String, org.objectweb.asm.Label,
+     * org.objectweb.asm.Label, int)
      */
-	public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
+    public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
         // TODO Auto-generated method stub
 
     }
 
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.MethodVisitor#visitLookupSwitchInsn(org.objectweb.asm.Label, int[], org.objectweb.asm.Label[])
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.objectweb.asm.MethodVisitor#visitLookupSwitchInsn(org.objectweb.asm
+     * .Label, int[], org.objectweb.asm.Label[])
      */
-	public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
+    public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
         visitSomeInsn();
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.objectweb.asm.MethodVisitor#visitMaxs(int, int)
      */
-	public void visitMaxs(int maxStack, int maxLocals) {
+    public void visitMaxs(int maxStack, int maxLocals) {
         // TODO Auto-generated method stub
 
     }
 
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.MethodVisitor#visitMethodInsn(int, java.lang.String, java.lang.String, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.objectweb.asm.MethodVisitor#visitMethodInsn(int,
+     * java.lang.String, java.lang.String, java.lang.String)
      */
-	public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+    public void visitMethodInsn(int opcode, String owner, String name, String desc) {
         visitSomeInsn();
 
     }
 
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.MethodVisitor#visitMultiANewArrayInsn(java.lang.String, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.objectweb.asm.MethodVisitor#visitMultiANewArrayInsn(java.lang.String,
+     * int)
      */
-	public void visitMultiANewArrayInsn(String desc, int dims) {
+    public void visitMultiANewArrayInsn(String desc, int dims) {
         visitSomeInsn();
 
     }
 
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.MethodVisitor#visitTableSwitchInsn(int, int, org.objectweb.asm.Label, org.objectweb.asm.Label[])
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.objectweb.asm.MethodVisitor#visitTableSwitchInsn(int, int,
+     * org.objectweb.asm.Label, org.objectweb.asm.Label[])
      */
-	public void visitTableSwitchInsn(int min, int max, Label dflt, Label[] labels) {
+    public void visitTableSwitchInsn(int min, int max, Label dflt, Label[] labels) {
         // TODO Auto-generated method stub
 
     }
 
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.MethodVisitor#visitTryCatchBlock(org.objectweb.asm.Label, org.objectweb.asm.Label, org.objectweb.asm.Label, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.objectweb.asm.MethodVisitor#visitTryCatchBlock(org.objectweb.asm.
+     * Label, org.objectweb.asm.Label, org.objectweb.asm.Label,
+     * java.lang.String)
      */
-	public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
+    public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
         // TODO Auto-generated method stub
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.objectweb.asm.MethodVisitor#visitTypeInsn(int, java.lang.String)
      */
-	public void visitTypeInsn(int opcode, String type) {
+    public void visitTypeInsn(int opcode, String type) {
         visitSomeInsn();
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.objectweb.asm.MethodVisitor#visitVarInsn(int, int)
      */
-	public void visitVarInsn(int opcode, int var) {
+    public void visitVarInsn(int opcode, int var) {
         visitSomeInsn();
 
     }

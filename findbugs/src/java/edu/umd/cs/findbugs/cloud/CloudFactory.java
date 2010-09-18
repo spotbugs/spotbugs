@@ -32,62 +32,65 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.SystemProperties;
 
-
 /**
  * @author pwilliam
  */
 public class CloudFactory {
 
     private static final String FINDBUGS_NAMELOOKUP_CLASSNAME = "findbugs.namelookup.classname";
+
     private static final String FINDBUGS_NAMELOOKUP_REQUIRED = "findbugs.namelookup.required";
+
     private static final boolean FAIL_IF_CLOUD_NOT_FOUND = SystemProperties.getBoolean("findbugs.failIfCloudNotFound", false);
 
-    public static boolean DEBUG = SystemProperties.getBoolean("findbugs.cloud.debug",false);
+    public static boolean DEBUG = SystemProperties.getBoolean("findbugs.cloud.debug", false);
+
     public static String DEFAULT_CLOUD = SystemProperties.getProperty("findbugs.cloud.default");
 
     private static final Logger LOGGER = Logger.getLogger(CloudFactory.class.getName());
 
-
     public static Cloud createCloudWithoutInitializing(BugCollection bc) {
-            CloudPlugin plugin = null;
-            String cloudId = bc.getProject().getCloudId();
-    		if (cloudId != null) {
-                plugin = registeredClouds.get(cloudId);
-                if (plugin == null && FAIL_IF_CLOUD_NOT_FOUND)
-                    throw new IllegalArgumentException("Cannot find registered cloud for " + cloudId);
-    		}
-            boolean usedDefaultCloud = false;
-            if (plugin == null)  {
-                if (DEFAULT_CLOUD != null)
-    				 LOGGER.log(Level.FINE, "Trying default cloud " + DEFAULT_CLOUD);
-                cloudId = DEFAULT_CLOUD;
-                plugin = registeredClouds.get(cloudId);
-                usedDefaultCloud = true;
-    			if (plugin == null) {
-                    LOGGER.log(Level.FINE, "default cloud " + DEFAULT_CLOUD + " not registered");
+        CloudPlugin plugin = null;
+        String cloudId = bc.getProject().getCloudId();
+        if (cloudId != null) {
+            plugin = registeredClouds.get(cloudId);
+            if (plugin == null && FAIL_IF_CLOUD_NOT_FOUND)
+                throw new IllegalArgumentException("Cannot find registered cloud for " + cloudId);
+        }
+        boolean usedDefaultCloud = false;
+        if (plugin == null) {
+            if (DEFAULT_CLOUD != null)
+                LOGGER.log(Level.FINE, "Trying default cloud " + DEFAULT_CLOUD);
+            cloudId = DEFAULT_CLOUD;
+            plugin = registeredClouds.get(cloudId);
+            usedDefaultCloud = true;
+            if (plugin == null) {
+                LOGGER.log(Level.FINE, "default cloud " + DEFAULT_CLOUD + " not registered");
 
-                  return getPlainCloud(bc);
-    			}
-
+                return getPlainCloud(bc);
             }
-             LOGGER.log(Level.FINE, "Using cloud plugin " + plugin.getId());;
- 			
+
+        }
+        LOGGER.log(Level.FINE, "Using cloud plugin " + plugin.getId());
+        ;
 
         try {
             Class<? extends Cloud> cloudClass = plugin.getCloudClass();
-			Properties properties = bc.getProject().getCloudProperties();
-            Constructor<? extends Cloud> constructor = cloudClass.getConstructor(CloudPlugin.class, BugCollection.class, Properties.class);
+            Properties properties = bc.getProject().getCloudProperties();
+            Constructor<? extends Cloud> constructor = cloudClass.getConstructor(CloudPlugin.class, BugCollection.class,
+                    Properties.class);
             Cloud cloud = constructor.newInstance(plugin, bc, properties);
             if (DEBUG)
-				bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloud.getClass().getName());
-             LOGGER.log(Level.FINE, "constructed cloud plugin " + plugin.getId());;
-             if (false && usedDefaultCloud)
-                 bc.getProject().setCloudId(plugin.getId());
-			return cloud;
+                bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloud.getClass().getName());
+            LOGGER.log(Level.FINE, "constructed cloud plugin " + plugin.getId());
+            ;
+            if (false && usedDefaultCloud)
+                bc.getProject().setCloudId(plugin.getId());
+            return cloud;
         } catch (Exception e) {
             if (DEBUG) {
                 bc.getProject().getGuiCallback().showMessageDialog("failed " + e.getMessage() + e.getClass().getName());
-			}
+            }
             LOGGER.log(Level.WARNING, "Could not load cloud plugin " + plugin, e);
             if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToCloud"))
                 System.exit(1);
@@ -96,7 +99,7 @@ public class CloudFactory {
 
     }
 
-	public static void initializeCloud(BugCollection bc, Cloud cloud) throws IOException {
+    public static void initializeCloud(BugCollection bc, Cloud cloud) throws IOException {
         IGuiCallback callback = bc.getProject().getGuiCallback();
 
         if (cloud.availableForInitialization()) {
@@ -114,27 +117,29 @@ public class CloudFactory {
         }
     }
 
-
     public static Cloud getPlainCloud(BugCollection bc) {
         BugCollectionStorageCloud cloud = new BugCollectionStorageCloud(bc);
-        if (cloud.initialize())	return cloud;
+        if (cloud.initialize())
+            return cloud;
         throw new IllegalStateException("Unable to initialize plain cloud");
     }
 
-    static  Map<String, CloudPlugin> registeredClouds = new LinkedHashMap<String, CloudPlugin>();
+    static Map<String, CloudPlugin> registeredClouds = new LinkedHashMap<String, CloudPlugin>();
 
-    public static  Map<String, CloudPlugin> getRegisteredClouds() {
-            return Collections.unmodifiableMap(registeredClouds);
+    public static Map<String, CloudPlugin> getRegisteredClouds() {
+        return Collections.unmodifiableMap(registeredClouds);
     }
+
     /**
      * @param cloudPlugin
-     * @param enabled TODO
+     * @param enabled
+     *            TODO
      */
     public static void registerCloud(CloudPlugin cloudPlugin, boolean enabled) {
-         LOGGER.log(Level.FINE, "Registering " + cloudPlugin.getId());
+        LOGGER.log(Level.FINE, "Registering " + cloudPlugin.getId());
 
         if (enabled)
-    		registeredClouds.put(cloudPlugin.getId(), cloudPlugin);
+            registeredClouds.put(cloudPlugin.getId(), cloudPlugin);
     }
 
 }

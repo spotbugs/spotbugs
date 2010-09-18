@@ -32,12 +32,14 @@ public class EqualsKindSummary {
     final Map<ClassAnnotation, EqualsKindSummary.KindOfEquals> kindMap = new HashMap<ClassAnnotation, EqualsKindSummary.KindOfEquals>();
 
     public static enum KindOfEquals {
-    OBJECT_EQUALS, ABSTRACT_INSTANCE_OF, INSTANCE_OF_EQUALS, COMPARE_EQUALS, CHECKED_CAST_EQUALS, RETURNS_SUPER, GETCLASS_GOOD_EQUALS, ABSTRACT_GETCLASS_GOOD_EQUALS, GETCLASS_BAD_EQUALS, DELEGATE_EQUALS, TRIVIAL_EQUALS, INVOKES_SUPER, ALWAYS_TRUE, ALWAYS_FALSE, UNKNOWN }
+        OBJECT_EQUALS, ABSTRACT_INSTANCE_OF, INSTANCE_OF_EQUALS, COMPARE_EQUALS, CHECKED_CAST_EQUALS, RETURNS_SUPER, GETCLASS_GOOD_EQUALS, ABSTRACT_GETCLASS_GOOD_EQUALS, GETCLASS_BAD_EQUALS, DELEGATE_EQUALS, TRIVIAL_EQUALS, INVOKES_SUPER, ALWAYS_TRUE, ALWAYS_FALSE, UNKNOWN
+    }
 
     public EqualsKindSummary.KindOfEquals get(ClassAnnotation c) {
         return kindMap.get(c);
     }
-	public  void put(ClassAnnotation c, EqualsKindSummary.KindOfEquals k) {
-         kindMap.put(c, k);
+
+    public void put(ClassAnnotation c, EqualsKindSummary.KindOfEquals k) {
+        kindMap.put(c, k);
     }
 }

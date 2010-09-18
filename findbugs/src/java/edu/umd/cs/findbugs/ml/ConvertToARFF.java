@@ -44,9 +44,9 @@ import org.dom4j.io.SAXReader;
 import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
- * Convert a BugCollection into ARFF format.
- * See Witten and Frank, <em>Data Mining</em>, ISBN 1-55860-552-5.
- *
+ * Convert a BugCollection into ARFF format. See Witten and Frank,
+ * <em>Data Mining</em>, ISBN 1-55860-552-5.
+ * 
  * @see edu.umd.cs.findbugs.BugCollection
  * @see edu.umd.cs.findbugs.BugInstance
  * @author David Hovemeyer
@@ -58,16 +58,21 @@ public class ConvertToARFF {
 
     private static class DataFile {
         private Document document;
+
         private String appName;
 
         public DataFile(Document document, String appName) {
             this.document = document;
             this.appName = appName;
-		}
+        }
 
-        public Document getDocument() { return document; }
+        public Document getDocument() {
+            return document;
+        }
 
-        public String getAppName() { return appName; }
+        public String getAppName() {
+            return appName;
+        }
     }
 
     private static class MissingNodeException extends Exception {
@@ -76,25 +81,27 @@ public class ConvertToARFF {
         public MissingNodeException(String msg) {
             super(msg);
         }
-	}
+    }
 
     public interface Attribute {
         public String getName();
-        public void scan(Element element, String appName)
-			throws MissingNodeException;
+
+        public void scan(Element element, String appName) throws MissingNodeException;
+
         public String getRange();
-        public String getInstanceValue(Element element, String appName)
-            throws MissingNodeException;
-	}
+
+        public String getInstanceValue(Element element, String appName) throws MissingNodeException;
+    }
 
     private abstract static class XPathAttribute implements Attribute {
         private String name;
+
         private String xpath;
 
         public XPathAttribute(String name, String xpath) {
             this.name = name;
             this.xpath = xpath;
-		}
+        }
 
         public String getName() {
             return name;
@@ -103,28 +110,26 @@ public class ConvertToARFF {
         public String getInstanceValue(Element element, String appName) throws MissingNodeException {
             Object value = element.selectObject(xpath);
             if (value == null)
-				throw new MissingNodeException("Could not get value from element (path=" +
-                    xpath + ")");
+                throw new MissingNodeException("Could not get value from element (path=" + xpath + ")");
             if (value instanceof List) {
                 List<?> list = (List<?>) value;
-				if (list.size() == 0)
-                    throw new MissingNodeException("Could not get value from element (path=" +
-                            xpath + ")");
+                if (list.size() == 0)
+                    throw new MissingNodeException("Could not get value from element (path=" + xpath + ")");
                 value = list.get(0);
-			}
+            }
 
             if (value instanceof Node) {
                 Node node = (Node) value;
                 return node.getText();
-			} else if (value instanceof String) {
+            } else if (value instanceof String) {
                 return (String) value;
             } else if (value instanceof Number) {
                 String s = value.toString();
-				if (s.endsWith(".0"))
+                if (s.endsWith(".0"))
                     s = s.substring(0, s.length() - 2);
                 return s;
             } else
-				throw new IllegalStateException("Unexpected object returned from xpath query: " + value);
+                throw new IllegalStateException("Unexpected object returned from xpath query: " + value);
         }
     }
 
@@ -134,12 +139,12 @@ public class ConvertToARFF {
         public NominalAttribute(String name, String xpath) {
             super(name, xpath);
             this.possibleValueSet = new TreeSet<String>();
-		}
+        }
 
         public void scan(Element element, String appName) {
             try {
                 possibleValueSet.add(getInstanceValue(element, appName));
-			} catch (MissingNodeException ignore) {
+            } catch (MissingNodeException ignore) {
                 // Ignore: we'll just use an n/a value for this instance
             }
         }
@@ -151,13 +156,13 @@ public class ConvertToARFF {
         @Override
         public String getInstanceValue(Element element, String appName) throws MissingNodeException {
             return "\"" + super.getInstanceValue(element, appName) + "\"";
-		}
+        }
     }
 
     public static class BooleanAttribute extends XPathAttribute {
         public BooleanAttribute(String name, String xpath) {
             super(name, xpath);
-		}
+        }
 
         public void scan(Element element, String appName) throws MissingNodeException {
             // Nothing to do.
@@ -167,45 +172,58 @@ public class ConvertToARFF {
             return "{true, false}";
         }
 
-
         @Override
         public String getInstanceValue(Element element, String appName) throws MissingNodeException {
             try {
-				String value = super.getInstanceValue(element, appName);
+                String value = super.getInstanceValue(element, appName);
                 return "\"" + Boolean.valueOf(value).toString() + "\"";
             } catch (MissingNodeException e) {
                 return "\"false\"";
-			}
+            }
         }
     }
 
     private static final int UNCLASSIFIED = 0;
+
     private static final int BUG = 1;
+
     private static final int NOT_BUG = 2;
-	private static final int HARMLESS = 4;
+
+    private static final int HARMLESS = 4;
+
     private static final int HARMLESS_BUG = HARMLESS | BUG;
 
     public static abstract class AbstractClassificationAttribute implements Attribute {
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getName()
          */
-		public String getName() {
+        public String getName() {
             return "classification";
         }
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#scan(org.dom4j.Element, java.lang.String)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#scan(org.dom4j.Element
+         * , java.lang.String)
          */
-		public void scan(Element element, String appName) throws MissingNodeException {
+        public void scan(Element element, String appName) throws MissingNodeException {
         }
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getInstanceValue(org.dom4j.Element, java.lang.String)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getInstanceValue(org
+         * .dom4j.Element, java.lang.String)
          */
-		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
+        public String getInstanceValue(Element element, String appName) throws MissingNodeException {
             String annotationText = element.valueOf("./UserAnnotation[text()]");
-            //System.out.println("annotationText=" + annotationText);
+            // System.out.println("annotationText=" + annotationText);
 
             int state = getBugClassification(annotationText);
             return bugToString(state);
@@ -218,16 +236,16 @@ public class ConvertToARFF {
     public static class ClassificationAttribute extends AbstractClassificationAttribute {
         public String getRange() {
             return "{bug,not_bug,harmless_bug}";
-		}
+        }
 
         @Override
         protected String bugToString(int state) throws MissingNodeException {
             if (state == NOT_BUG)
-				return "not_bug";
+                return "not_bug";
             else if (state == BUG)
                 return "bug";
             else if (state == HARMLESS_BUG)
-				return "harmless_bug";
+                return "harmless_bug";
             else
                 throw new MissingNodeException("Unclassified warning");
 
@@ -235,31 +253,37 @@ public class ConvertToARFF {
     }
 
     public static class BinaryClassificationAttribute extends AbstractClassificationAttribute {
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getRange()
-		 */
+         */
         public String getRange() {
             return "{bug, not_bug}";
         }
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.ml.ConvertToARFF.AbstractClassificationAttribute#bugToString(int)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.ml.ConvertToARFF.AbstractClassificationAttribute
+         * #bugToString(int)
          */
-		@Override
+        @Override
         protected String bugToString(int state) throws MissingNodeException {
             if (state == BUG)
                 return "bug";
-			else if (state == NOT_BUG || state == HARMLESS_BUG)
+            else if (state == NOT_BUG || state == HARMLESS_BUG)
                 return "not_bug";
             else
                 throw new MissingNodeException("unclassified warning");
-		}
+        }
     }
 
     public static class NumericAttribute extends XPathAttribute {
         public NumericAttribute(String name, String xpath) {
             super(name, xpath);
-		}
+        }
 
         public void scan(Element element, String appName) throws MissingNodeException {
         }
@@ -267,12 +291,12 @@ public class ConvertToARFF {
         public String getRange() {
             return "numeric";
         }
-	}
+    }
 
     public static class PriorityAttribute implements Attribute {
         public String getName() {
             return "priority";
-		}
+        }
 
         public void scan(Element element, String appName) throws MissingNodeException {
         }
@@ -283,50 +307,60 @@ public class ConvertToARFF {
 
         public String getInstanceValue(Element element, String appName) throws MissingNodeException {
             org.dom4j.Attribute attribute = element.attribute("priority");
-            if (attribute ==  null)
-				throw new MissingNodeException("Missing priority attribute");
+            if (attribute == null)
+                throw new MissingNodeException("Missing priority attribute");
             String value = attribute.getValue();
             try {
                 int prio = Integer.parseInt(value);
-				switch (prio) {
-                case 1: return "high";
-                case 2: return "medium";
-                case 3: return "low";
-				default: return "?";
+                switch (prio) {
+                case 1:
+                    return "high";
+                case 2:
+                    return "medium";
+                case 3:
+                    return "low";
+                default:
+                    return "?";
                 }
             } catch (NumberFormatException e) {
                 throw new MissingNodeException("Invalid priority value: " + value);
-			}
+            }
         }
     }
 
     /**
-     * An attribute that just gives each instance a unique id.
-     * The application name is prepended, so each unique id
-	 * really unique, even across applications.
-     * Obviously, this attribute shouldn't be used as input
-     * to a learning algorithm.
-     *
-	 * <p>Uses the Element's uid attribute if it has one.</p>
+     * An attribute that just gives each instance a unique id. The application
+     * name is prepended, so each unique id really unique, even across
+     * applications. Obviously, this attribute shouldn't be used as input to a
+     * learning algorithm.
+     * 
+     * <p>
+     * Uses the Element's uid attribute if it has one.
+     * </p>
      */
     public static class IdAttribute implements Attribute {
         private TreeSet<String> possibleValueSet = new TreeSet<String>();
 
         private boolean scanning = true;
+
         private int count = 0;
 
-        public String getName() { return "id"; }
+        public String getName() {
+            return "id";
+        }
 
         public void scan(Element element, String appName) throws MissingNodeException {
             possibleValueSet.add(instanceValue(element, appName));
         }
 
-        public String getRange() { return collectionToRange(possibleValueSet); }
+        public String getRange() {
+            return collectionToRange(possibleValueSet);
+        }
 
         public String getInstanceValue(Element element, String appName) throws MissingNodeException {
             if (scanning) {
                 count = 0;
-				scanning = false;
+                scanning = false;
             }
             return instanceValue(element, appName);
         }
@@ -334,10 +368,10 @@ public class ConvertToARFF {
         private String instanceValue(Element element, String appName) {
             String nextId;
 
-            org.dom4j.Attribute uidAttr= element.attribute("uid");
+            org.dom4j.Attribute uidAttr = element.attribute("uid");
             if (uidAttr != null) {
                 nextId = uidAttr.getValue();
-			} else {
+            } else {
                 nextId = String.valueOf(count++);
             }
 
@@ -347,36 +381,48 @@ public class ConvertToARFF {
 
     public static class IdStringAttribute implements Attribute {
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getName()
          */
-		public String getName() {
+        public String getName() {
             return "ids";
         }
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#scan(org.dom4j.Element, java.lang.String)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#scan(org.dom4j.Element
+         * , java.lang.String)
          */
-		public void scan(Element element, String appName) throws MissingNodeException {
+        public void scan(Element element, String appName) throws MissingNodeException {
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getRange()
          */
-		public String getRange() {
+        public String getRange() {
             return "string";
         }
 
         int count = 0;
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getInstanceValue(org.dom4j.Element, java.lang.String)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getInstanceValue(org
+         * .dom4j.Element, java.lang.String)
          */
-		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
+        public String getInstanceValue(Element element, String appName) throws MissingNodeException {
             String value;
             org.dom4j.Attribute uidAttr = element.attribute("uid");
             if (uidAttr == null) {
-				value = String.valueOf(count++);
+                value = String.valueOf(count++);
             } else {
                 value = uidAttr.getStringValue();
             }
@@ -386,25 +432,31 @@ public class ConvertToARFF {
 
     }
 
-    private static final String RANDOM_CHARS =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final String RANDOM_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     public static class RandomIdAttribute implements Attribute {
 
         private Random rng = new Random();
+
         private IdentityHashMap<Element, String> idMap = new IdentityHashMap<Element, String>();
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getName()
          */
-		public String getName() {
+        public String getName() {
             return "idr";
         }
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#scan(org.dom4j.Element, java.lang.String)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#scan(org.dom4j.Element
+         * , java.lang.String)
          */
-		public void scan(Element element, String appName) throws MissingNodeException {
+        public void scan(Element element, String appName) throws MissingNodeException {
             idMap.put(element, generateId());
         }
 
@@ -414,30 +466,36 @@ public class ConvertToARFF {
             for (int i = 0; i < 20; ++i) {
                 char c = RANDOM_CHARS.charAt(rng.nextInt(RANDOM_CHARS.length()));
                 buf.append(c);
-			}
+            }
 
             return buf.toString();
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getRange()
          */
-		public String getRange() {
+        public String getRange() {
             TreeSet<String> range = new TreeSet<String>();
             range.addAll(idMap.values());
             if (range.size() != idMap.size())
-				throw new IllegalStateException("id collision!");
+                throw new IllegalStateException("id collision!");
             return collectionToRange(range);
         }
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getInstanceValue(org.dom4j.Element, java.lang.String)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getInstanceValue(org
+         * .dom4j.Element, java.lang.String)
          */
-		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
+        public String getInstanceValue(Element element, String appName) throws MissingNodeException {
             String id = idMap.get(element);
             if (id == null)
                 throw new IllegalStateException("Element not scanned?");
-			return "\"" + id + "\"";
+            return "\"" + id + "\"";
         }
 
     }
@@ -449,29 +507,27 @@ public class ConvertToARFF {
             return "appname";
         }
 
-        public void scan(Element element, String appName)
-            throws MissingNodeException {
+        public void scan(Element element, String appName) throws MissingNodeException {
             appNameSet.add(appName);
-		}
+        }
 
         public String getRange() {
             return collectionToRange(appNameSet);
         }
 
-        public String getInstanceValue(Element element, String appName)
-            throws MissingNodeException {
+        public String getInstanceValue(Element element, String appName) throws MissingNodeException {
             return "\"" + appName + "\"";
-		}
+        }
     }
 
     public static String collectionToRange(Collection<String> collection) {
         StringBuilder buf = new StringBuilder();
         buf.append("{");
-		for (String aCollection : collection) {
+        for (String aCollection : collection) {
             if (buf.length() > 1)
                 buf.append(',');
             buf.append(aCollection);
-		}
+        }
         buf.append("}");
 
         return buf.toString();
@@ -492,9 +548,12 @@ public class ConvertToARFF {
     // ------------------------------------------------------------
 
     private List<Attribute> attributeList;
+
     private String nodeSelectionXpath;
+
     private boolean dropUnclassifiedWarnings;
-	private String appName;
+
+    private String appName;
 
     // ------------------------------------------------------------
     // Public methods
@@ -503,7 +562,7 @@ public class ConvertToARFF {
     public ConvertToARFF() {
         this.attributeList = new LinkedList<Attribute>();
         this.nodeSelectionXpath = DEFAULT_NODE_SELECTION_XPATH;
-		this.dropUnclassifiedWarnings = false;
+        this.dropUnclassifiedWarnings = false;
     }
 
     public void setAppName(String appName) {
@@ -512,12 +571,13 @@ public class ConvertToARFF {
 
     /**
      * Set the xpath expression used to select BugInstance nodes.
-     *
-	 * @param nodeSelectionXpath the node selection xpath expression
+     * 
+     * @param nodeSelectionXpath
+     *            the node selection xpath expression
      */
     public void setNodeSelectionXpath(String nodeSelectionXpath) {
         this.nodeSelectionXpath = nodeSelectionXpath;
-	}
+    }
 
     public int getNumAttributes() {
         return attributeList.size();
@@ -561,60 +621,65 @@ public class ConvertToARFF {
 
     /**
      * Convert a single Document to ARFF format.
-     *
-	 * @param relationName the relation name
-     * @param document     the Document
-     * @param appName      the application name
-     * @param out          Writer to write the ARFF output to
-	 */
-    public void convert(String relationName, Document document, String appName, final Writer out)
-            throws IOException, MissingNodeException {
+     * 
+     * @param relationName
+     *            the relation name
+     * @param document
+     *            the Document
+     * @param appName
+     *            the application name
+     * @param out
+     *            Writer to write the ARFF output to
+     */
+    public void convert(String relationName, Document document, String appName, final Writer out) throws IOException,
+            MissingNodeException {
         scan(document, appName);
-		generateHeader(relationName, out);
+        generateHeader(relationName, out);
         generateInstances(document, appName, out);
     }
 
     /**
-     * Scan a Document to find out the ranges of attributes.
-     * All Documents must be scanned before generating the ARFF
-	 * header and instances.
-     *
-     * @param document the Document
-     * @param appName  the application name
-	 */
+     * Scan a Document to find out the ranges of attributes. All Documents must
+     * be scanned before generating the ARFF header and instances.
+     * 
+     * @param document
+     *            the Document
+     * @param appName
+     *            the application name
+     */
     public void scan(Document document, final String appName) throws MissingNodeException, IOException {
         List<Element> bugInstanceList = getBugInstanceList(document);
 
         for (final Element element : bugInstanceList) {
             scanAttributeList(new AttributeCallback() {
                 public void apply(Attribute attribute) throws MissingNodeException {
-					attribute.scan(element, appName);
+                    attribute.scan(element, appName);
                 }
             });
         }
-	}
+    }
 
     /**
-     * Generate ARFF header.
-     * Documents must have already been scanned.
-	 *
-     * @param relationName the relation name
-     * @param out          Writer to write the ARFF output to
+     * Generate ARFF header. Documents must have already been scanned.
+     * 
+     * @param relationName
+     *            the relation name
+     * @param out
+     *            Writer to write the ARFF output to
      */
-	public void generateHeader(String relationName, final Writer out)
-            throws MissingNodeException, IOException {
+    public void generateHeader(String relationName, final Writer out) throws MissingNodeException, IOException {
         out.write("@relation ");
         out.write(relationName);
-		out.write("\n\n");
+        out.write("\n\n");
 
         scanAttributeList(new AttributeCallback() {
             public void apply(Attribute attribute) throws IOException {
                 out.write("@attribute ");
-				out.write(attribute.getName());
+                out.write(attribute.getName());
                 out.write(" ");
                 out.write(attribute.getRange());
                 out.write("\n");
-			}
+            }
         });
         out.write("\n");
 
@@ -622,15 +687,18 @@ public class ConvertToARFF {
     }
 
     /**
-     * Generate instances from given Document.
-     * Document should already have been scanned, and the ARFF header generated.
-	 *
-     * @param document the Document
-     * @param appName  the application name
-     * @param out      Writer to write the ARFF output to
-	 */
-    public void generateInstances(Document document, final String appName, final Writer out)
-            throws MissingNodeException, IOException {
+     * Generate instances from given Document. Document should already have been
+     * scanned, and the ARFF header generated.
+     * 
+     * @param document
+     *            the Document
+     * @param appName
+     *            the application name
+     * @param out
+     *            Writer to write the ARFF output to
+     */
+    public void generateInstances(Document document, final String appName, final Writer out) throws MissingNodeException,
+            IOException {
         List<Element> bugInstanceList = getBugInstanceList(document);
 
         for (final Element element : bugInstanceList) {
@@ -640,28 +708,28 @@ public class ConvertToARFF {
                 public void apply(Attribute attribute) throws IOException {
                     if (!first)
                         out.write(",");
-					first = false;
+                    first = false;
                     String value;
                     try {
                         value = attribute.getInstanceValue(element, appName);
-					} catch (MissingNodeException e) {
+                    } catch (MissingNodeException e) {
                         value = "?";
                     }
                     out.write(value);
-				}
+                }
             });
             out.write("\n");
         }
-	}
+    }
 
     /**
      * Apply a callback to all Attributes.
-     *
-	 * @param callback the callback
+     * 
+     * @param callback
+     *            the callback
      */
-    public void scanAttributeList(AttributeCallback callback)
-            throws MissingNodeException, IOException {
-		for (Attribute attribute : attributeList) {
+    public void scanAttributeList(AttributeCallback callback) throws MissingNodeException, IOException {
+        for (Attribute attribute : attributeList) {
             callback.apply(attribute);
         }
     }
@@ -678,51 +746,51 @@ public class ConvertToARFF {
         while (tok.hasMoreTokens()) {
             String s = tok.nextToken();
             if (s.equals("BUG"))
-				state |= BUG;
+                state |= BUG;
             else if (s.equals("NOT_BUG"))
                 state |= NOT_BUG;
             else if (s.equals("HARMLESS"))
-				state |= HARMLESS;
+                state |= HARMLESS;
         }
 
         if ((state & NOT_BUG) != 0)
             return NOT_BUG;
         else if ((state & BUG) != 0)
-			return ((state & HARMLESS) != 0) ? HARMLESS_BUG : BUG;
+            return ((state & HARMLESS) != 0) ? HARMLESS_BUG : BUG;
         else
             return UNCLASSIFIED;
     }
 
     @SuppressWarnings("unchecked")
     private List<Element> getBugInstanceList(Document document) {
-        List <Element>bugInstanceList = document.selectNodes(nodeSelectionXpath);
+        List<Element> bugInstanceList = document.selectNodes(nodeSelectionXpath);
         if (dropUnclassifiedWarnings) {
-            for (Iterator<Element> i = bugInstanceList.iterator(); i.hasNext(); ) {
-				Element element = i.next();
+            for (Iterator<Element> i = bugInstanceList.iterator(); i.hasNext();) {
+                Element element = i.next();
                 String annotationText = element.valueOf("./UserAnnotation[text()]");
                 int classification = getBugClassification(annotationText);
                 if (classification == UNCLASSIFIED)
-					i.remove();
+                    i.remove();
             }
         }
         return bugInstanceList;
-	}
+    }
 
     private static class C2ACommandLine extends CommandLine {
         private ConvertToARFF converter = new ConvertToARFF();
 
         public C2ACommandLine() {
-            addOption("-select","xpath expression","select BugInstance elements");
+            addOption("-select", "xpath expression", "select BugInstance elements");
             addSwitch("-train", "drop unclassified warnings");
-			addSwitch("-id", "add unique id attribute (as nominal)");
+            addSwitch("-id", "add unique id attribute (as nominal)");
             addSwitch("-ids", "add unique id attribute (as string)");
             addSwitch("-idr", "add random unique id attribtue (as nominal)");
             addSwitch("-app", "add application name attribute");
-			addOption("-nominal", "attrName,xpath", "add a nominal attribute");
+            addOption("-nominal", "attrName,xpath", "add a nominal attribute");
             addOption("-boolean", "attrName,xpath", "add a boolean attribute");
             addOption("-numeric", "attrName,xpath", "add a numeric attribute");
             addSwitch("-classification", "add bug classification attribute");
-			addSwitch("-binclass", "add binary (bug/not_bug) classification attribute");
+            addSwitch("-binclass", "add binary (bug/not_bug) classification attribute");
             addSwitch("-priority", "add priority attribute");
             addOption("-appname", "app name", "set application name of all tuples");
         }
@@ -732,25 +800,24 @@ public class ConvertToARFF {
         }
 
         @Override
-        protected void handleOption(String option, String optionExtraPart)
-                throws IOException {
-			if (option.equals("-train")) {
+        protected void handleOption(String option, String optionExtraPart) throws IOException {
+            if (option.equals("-train")) {
                 converter.dropUnclassifiedWarnings();
             } else if (option.equals("-id")) {
                 converter.addIdAttribute();
-			} else if (option.equals("-ids")) {
+            } else if (option.equals("-ids")) {
                 converter.addAttribute(new IdStringAttribute());
             } else if (option.equals("-idr")) {
                 converter.addAttribute(new RandomIdAttribute());
-			} else if (option.equals("-app")) {
+            } else if (option.equals("-app")) {
                 converter.addAppNameAttribute();
             } else if (option.equals("-classification")) {
                 converter.addClassificationAttribute();
-			} else if (option.equals("-binclass")) {
+            } else if (option.equals("-binclass")) {
                 converter.addAttribute(new BinaryClassificationAttribute());
             } else if (option.equals("-priority")) {
                 converter.addPriorityAttribute();
-			}
+            }
         }
 
         private interface XPathAttributeCreator {
@@ -758,49 +825,48 @@ public class ConvertToARFF {
         }
 
         @Override
-        protected void handleOptionWithArgument(String option, String argument)
-                throws IOException {
+        protected void handleOptionWithArgument(String option, String argument) throws IOException {
 
             if (option.equals("-select")) {
                 converter.setNodeSelectionXpath(argument);
             } else if (option.equals("-nominal")) {
-				addXPathAttribute(option, argument, new XPathAttributeCreator() {
-                    public Attribute create(String name,String xpath) {
+                addXPathAttribute(option, argument, new XPathAttributeCreator() {
+                    public Attribute create(String name, String xpath) {
                         return new NominalAttribute(name, xpath);
                     }
-				});
+                });
             } else if (option.equals("-boolean")) {
                 addXPathAttribute(option, argument, new XPathAttributeCreator() {
-                    public Attribute create(String name,String xpath) {
-						return new BooleanAttribute(name, xpath);
+                    public Attribute create(String name, String xpath) {
+                        return new BooleanAttribute(name, xpath);
                     }
                 });
             } else if (option.equals("-numeric")) {
-				addXPathAttribute(option, argument, new XPathAttributeCreator(){
-                    public Attribute create(String name,String xpath) {
+                addXPathAttribute(option, argument, new XPathAttributeCreator() {
+                    public Attribute create(String name, String xpath) {
                         return new NumericAttribute(name, xpath);
                     }
-				});
+                });
             } else if (option.equals("-appname")) {
                 converter.setAppName(argument);
             }
-		}
+        }
 
         protected void addXPathAttribute(String option, String argument, XPathAttributeCreator creator) {
             int comma = argument.indexOf(',');
             if (comma < 0) {
-				throw new IllegalArgumentException("Missing comma separating attribute name and xpath in " +
-                    option + " option: " + argument);
+                throw new IllegalArgumentException("Missing comma separating attribute name and xpath in " + option + " option: "
+                        + argument);
             }
             String attrName = argument.substring(0, comma);
-			String xpath = argument.substring(comma + 1);
+            String xpath = argument.substring(comma + 1);
             converter.addAttribute(creator.create(attrName, xpath));
         }
 
         public void printUsage(PrintStream out) {
-            out.println("Usage: " + ConvertToARFF.class.getName() +
-                " [options] <relation name> <output file> <findbugs results> [<findbugs results>...]");
-			super.printUsage(out);
+            out.println("Usage: " + ConvertToARFF.class.getName()
+                    + " [options] <relation name> <output file> <findbugs results> [<findbugs results>...]");
+            super.printUsage(out);
         }
     }
 
@@ -811,38 +877,37 @@ public class ConvertToARFF {
         // Remove file extension, if any
         int lastDot = fileName.lastIndexOf('.');
         if (lastDot >= 0)
-			fileName = fileName.substring(0, lastDot);
+            fileName = fileName.substring(0, lastDot);
         return fileName;
     }
 
     public static void main(String[] argv) throws Exception {
         // Expand any option files
         C2ACommandLine commandLine = new C2ACommandLine();
-		argv = commandLine.expandOptionFiles(argv, true, true);
+        argv = commandLine.expandOptionFiles(argv, true, true);
 
         // Parse command line arguments
         int argCount = commandLine.parse(argv);
         if (argCount > argv.length - 3) {
-			commandLine.printUsage(System.err);
+            commandLine.printUsage(System.err);
             System.exit(1);
         }
         String relationName = argv[argCount++];
-		String outputFileName = argv[argCount++];
+        String outputFileName = argv[argCount++];
 
         // Create the converter
         ConvertToARFF converter = commandLine.getConverter();
         if (converter.getNumAttributes() == 0) {
-			throw new IllegalArgumentException("No attributes specified!");
+            throw new IllegalArgumentException("No attributes specified!");
         }
 
         // Open output file
-        Writer out = new OutputStreamWriter(new BufferedOutputStream(
-            new FileOutputStream(outputFileName)));
+        Writer out = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(outputFileName)));
 
         // Read documents,
         // scan documents to find ranges of attributes
         List<DataFile> dataFileList = new ArrayList<DataFile>();
-		while (argCount < argv.length) {
+        while (argCount < argv.length) {
             String fileName = argv[argCount++];
 
             // Read input file as dom4j tree
@@ -861,7 +926,7 @@ public class ConvertToARFF {
         // Generate instances from each document
         for (DataFile dataFile : dataFileList) {
             converter.generateInstances(dataFile.getDocument(), dataFile.getAppName(), out);
-		}
+        }
 
         out.close();
     }

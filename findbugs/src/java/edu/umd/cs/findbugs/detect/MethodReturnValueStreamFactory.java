@@ -34,8 +34,8 @@ import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
 /**
- * StreamFactory for streams that are created as the result
- * of calling a method on an object.
+ * StreamFactory for streams that are created as the result of calling a method
+ * on an object.
  */
 public class MethodReturnValueStreamFactory implements StreamFactory {
     private static final BitSet invokeOpcodeSet = new BitSet();
@@ -43,54 +43,62 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
     static {
         invokeOpcodeSet.set(Constants.INVOKEINTERFACE);
         invokeOpcodeSet.set(Constants.INVOKESPECIAL);
-		invokeOpcodeSet.set(Constants.INVOKESTATIC);
+        invokeOpcodeSet.set(Constants.INVOKESTATIC);
         invokeOpcodeSet.set(Constants.INVOKEVIRTUAL);
     }
 
     private ObjectType baseClassType;
+
     private String methodName;
+
     private String methodSig;
-	private boolean isUninteresting;
+
+    private boolean isUninteresting;
+
     private String bugType;
 
     /**
-     * Constructor.
-     * The Streams created will be marked as uninteresting.
-	 *
-     * @param baseClass  base class through which the method will be
-     *                   called (we check instances of the base class and all subtypes)
-     * @param methodName name of the method called
-	 * @param methodSig  signature of the method called
+     * Constructor. The Streams created will be marked as uninteresting.
+     * 
+     * @param baseClass
+     *            base class through which the method will be called (we check
+     *            instances of the base class and all subtypes)
+     * @param methodName
+     *            name of the method called
+     * @param methodSig
+     *            signature of the method called
      */
     public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig) {
         this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
-		this.methodName = methodName;
+        this.methodName = methodName;
         this.methodSig = methodSig;
         this.isUninteresting = true;
     }
 
     /**
-     * Constructor.
-     * The Streams created will be marked as interesting.
-	 *
-     * @param baseClass  base class through which the method will be
-     *                   called (we check instances of the base class and all subtypes)
-     * @param methodName name of the method called
-	 * @param methodSig  signature of the method called
-     * @param bugType    the bug type that should be reported if
-     *                   the stream is not closed on all paths out of the method
+     * Constructor. The Streams created will be marked as interesting.
+     * 
+     * @param baseClass
+     *            base class through which the method will be called (we check
+     *            instances of the base class and all subtypes)
+     * @param methodName
+     *            name of the method called
+     * @param methodSig
+     *            signature of the method called
+     * @param bugType
+     *            the bug type that should be reported if the stream is not
+     *            closed on all paths out of the method
      */
-	public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig,
-                                          String bugType) {
+    public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig, String bugType) {
         this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
         this.methodName = methodName;
-		this.methodSig = methodSig;
+        this.methodSig = methodSig;
         this.isUninteresting = false;
         this.bugType = bugType;
     }
 
     public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-                               RepositoryLookupFailureCallback lookupFailureCallback) {
+            RepositoryLookupFailureCallback lookupFailureCallback) {
 
         try {
             Instruction ins = location.getHandle().getInstruction();
@@ -98,29 +106,29 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
             // For now, just support instance methods
             short opcode = ins.getOpcode();
             if (!invokeOpcodeSet.get(opcode))
-				return null;
+                return null;
 
             // Is invoked class a subtype of the base class we want
-            // FIXME: should test be different for INVOKESPECIAL and INVOKESTATIC?
+            // FIXME: should test be different for INVOKESPECIAL and
+            // INVOKESTATIC?
             InvokeInstruction inv = (InvokeInstruction) ins;
-			ReferenceType classType = inv.getReferenceType(cpg);
+            ReferenceType classType = inv.getReferenceType(cpg);
             if (!Hierarchy.isSubtype(classType, baseClassType))
                 return null;
 
             // See if method name and signature match
             String methodName = inv.getMethodName(cpg);
             String methodSig = inv.getSignature(cpg);
-			if (!this.methodName.equals(methodName) || !this.methodSig.equals(methodSig))
+            if (!this.methodName.equals(methodName) || !this.methodSig.equals(methodSig))
                 return null;
 
             String streamClass = type.getClassName();
-            Stream result = new Stream(location, streamClass, streamClass)
-                    .setIgnoreImplicitExceptions(true)
-					.setIsOpenOnCreation(true);
+            Stream result = new Stream(location, streamClass, streamClass).setIgnoreImplicitExceptions(true).setIsOpenOnCreation(
+                    true);
             if (!isUninteresting)
                 result.setInteresting(bugType);
             return result;
-		} catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             lookupFailureCallback.reportMissingClass(e);
         }
 

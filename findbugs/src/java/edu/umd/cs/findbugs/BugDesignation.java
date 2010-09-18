@@ -37,40 +37,45 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  */
 public class BugDesignation implements XMLWriteable, Serializable, Comparable<BugDesignation> {
 
-    /** The default key for the user designation.
-     *  Bad things could happen if this key isn't in getUserDesignations() */
+    /**
+     * The default key for the user designation. Bad things could happen if this
+     * key isn't in getUserDesignations()
+     */
     public static final String UNCLASSIFIED = UserDesignation.UNCLASSIFIED.name();
 
-
-    /** user designation -- value should be one of the keys
-     *  returned by I18N.getInstance().getUserDesignations() */
-    @NonNull private String designation = UNCLASSIFIED;
-
-
+    /**
+     * user designation -- value should be one of the keys returned by
+     * I18N.getInstance().getUserDesignations()
+     */
+    @NonNull
+    private String designation = UNCLASSIFIED;
 
     @Override
     public String toString() {
-        String result =  designation;
+        String result = designation;
         if (user != null)
             result += " by " + user;
-		if (annotationText != null && annotationText.length() > 0)
+        if (annotationText != null && annotationText.length() > 0)
             result += " : " + annotationText;
         return result;
     }
-	private boolean dirty;
+
+    private boolean dirty;
 
     public boolean isDirty() {
         return dirty;
-	}
+    }
+
     public void cleanDirty() {
         dirty = false;
     }
-	private @javax.annotation.CheckForNull String user;
 
+    private @javax.annotation.CheckForNull
+    String user;
 
-    public BugDesignation() {}
+    public BugDesignation() {
+    }
 
-	
     /**
      * @param designation
      * @param timestamp
@@ -81,76 +86,89 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
         this.designation = designation;
         this.timestamp = timestamp;
         this.annotationText = annotationText;
-	    this.user = user;
+        this.user = user;
     }
 
     public BugDesignation(BugDesignation that) {
         this(that.designation, that.timestamp, that.annotationText, that.user);
     }
+
     private long timestamp = System.currentTimeMillis();
 
     /** free text from the user */
-    //TODO: make this @CheckForNull
+    // TODO: make this @CheckForNull
     private String annotationText;
 
-    /** return the user designation
-     *  E.g., "MOSTLY_HARMLESS", "CRITICAL", "NOT_A_BUG", etc.
-     *
-	 *  Note that this is the key, suitable for writing to XML,
-     *  but not for showing to the user.
-     *  @see I18N#getUserDesignation(String key) */
-    @NonNull public String getDesignationKey() {
-		return designation;
+    /**
+     * return the user designation E.g., "MOSTLY_HARMLESS", "CRITICAL",
+     * "NOT_A_BUG", etc.
+     * 
+     * Note that this is the key, suitable for writing to XML, but not for
+     * showing to the user.
+     * 
+     * @see I18N#getUserDesignation(String key)
+     */
+    @NonNull
+    public String getDesignationKey() {
+        return designation;
     }
 
-    /** set the user designation
-     *  E.g., "MOSTLY_HARMLESS", "CRITICAL", "NOT_A_BUG", etc.
-     *
-	 *  If the argument is null, it will be treated as UNCLASSIFIED.
-     *
-     *  Note that this is the key, suitable for writing to XML,
-     *  but not what the user sees. Strange things could happen
-	 *  if designationKey is not one of the keys returned by
-     *  I18N.instance().getUserDesignations().
-     *  @see I18N#getUserDesignationKeys() */
+    /**
+     * set the user designation E.g., "MOSTLY_HARMLESS", "CRITICAL",
+     * "NOT_A_BUG", etc.
+     * 
+     * If the argument is null, it will be treated as UNCLASSIFIED.
+     * 
+     * Note that this is the key, suitable for writing to XML, but not what the
+     * user sees. Strange things could happen if designationKey is not one of
+     * the keys returned by I18N.instance().getUserDesignations().
+     * 
+     * @see I18N#getUserDesignationKeys()
+     */
     public void setDesignationKey(String designationKey) {
-		if (designation.equals(designationKey)) 
+        if (designation.equals(designationKey))
             return;
         dirty = true;
         timestamp = System.currentTimeMillis();
-		designation = (designationKey!=null ? designationKey : UNCLASSIFIED);
+        designation = (designationKey != null ? designationKey : UNCLASSIFIED);
     }
 
-
-    @CheckForNull public String getUser() {
+    @CheckForNull
+    public String getUser() {
         return user;
     }
-	public void setUser(String u) {
+
+    public void setUser(String u) {
         user = u;
     }
 
     public long getTimestamp() {
-            return timestamp;
+        return timestamp;
     }
-	public void setTimestamp(long ts) {
+
+    public void setTimestamp(long ts) {
         if (timestamp != ts) {
             timestamp = ts;
             dirty = true;
-		}
+        }
     }
 
-    @CheckForNull public String getAnnotationText() {
-            return annotationText;
+    @CheckForNull
+    public String getAnnotationText() {
+        return annotationText;
     }
-	@Nonnull public String getNonnullAnnotationText() {
+
+    @Nonnull
+    public String getNonnullAnnotationText() {
         if (annotationText == null)
             return "";
         return annotationText;
-}
+    }
+
     public void setAnnotationText(String s) {
         if (s.equals(annotationText))
             return;
-		dirty = true;
+        dirty = true;
         annotationText = s;
         timestamp = System.currentTimeMillis();
     }
@@ -158,44 +176,49 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList();
         // all three of these xml attributes are optional
-		if (designation != null && !UNCLASSIFIED.equals(designation))
+        if (designation != null && !UNCLASSIFIED.equals(designation))
             attributeList.addAttribute("designation", designation);
         if (user != null && !"".equals(user))
             attributeList.addAttribute("user", user);
-		if (timestamp > 0)
+        if (timestamp > 0)
             attributeList.addAttribute("timestamp", String.valueOf(timestamp));
 
         if ((annotationText != null && !"".equals(annotationText))) {
             xmlOutput.openTag("UserAnnotation", attributeList);
             xmlOutput.writeCDATA(annotationText);
-			xmlOutput.closeTag("UserAnnotation");
+            xmlOutput.closeTag("UserAnnotation");
         } else {
             xmlOutput.openCloseTag("UserAnnotation", attributeList);
         }
-	}
+    }
 
-    /** replace unset fields of this user designation with values set in the other */
+    /**
+     * replace unset fields of this user designation with values set in the
+     * other
+     */
     public void merge(@CheckForNull BugDesignation other) {
-        if (other == null) return;
-		boolean changed = false;
-        if ( (annotationText==null || annotationText.length()==0)
-                && other.annotationText!=null && other.annotationText.length()>0) {
+        if (other == null)
+            return;
+        boolean changed = false;
+        if ((annotationText == null || annotationText.length() == 0) && other.annotationText != null
+                && other.annotationText.length() > 0) {
             annotationText = other.annotationText;
-			dirty = true;
+            dirty = true;
             changed = true;
         }
-        if ( (designation==null || UNCLASSIFIED.equals(designation) || designation.length()==0)
-				&& other.designation!=null && other.designation.length()>0) {
+        if ((designation == null || UNCLASSIFIED.equals(designation) || designation.length() == 0) && other.designation != null
+                && other.designation.length() > 0) {
             designation = other.designation;
             dirty = true;
             changed = true;
-		}
-        if (!changed) return; // if no changes don't even try to copy user or timestamp
+        }
+        if (!changed)
+            return; // if no changes don't even try to copy user or timestamp
 
-        if ( (user==null || user.length()==0) && other.user!=null && other.user.length()>0) {
+        if ((user == null || user.length() == 0) && other.user != null && other.user.length() > 0) {
             user = other.user;
         }
-		if (timestamp==0 && other.timestamp!=0) {
+        if (timestamp == 0 && other.timestamp != 0) {
             timestamp = other.timestamp;
         }
     }
@@ -205,36 +228,37 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
         int hash = (int) this.timestamp;
         if (user != null)
             hash += user.hashCode();
-		if (designation != null)
+        if (designation != null)
             hash += designation.hashCode();
         if (annotationText != null)
             hash += annotationText.hashCode();
-		return hash;
+        return hash;
     }
 
-     @Override
+    @Override
     public boolean equals(Object o) {
-         if (!(o instanceof BugDesignation))
-             return false;
-         return this.compareTo((BugDesignation)o) == 0;
-	 }
+        if (!(o instanceof BugDesignation))
+            return false;
+        return this.compareTo((BugDesignation) o) == 0;
+    }
+
     public int compareTo(BugDesignation o) {
         if (this == o)
             return 0;
-        int result = - Util.compare(this.timestamp, o.timestamp);
-	    if (result != 0) 
+        int result = -Util.compare(this.timestamp, o.timestamp);
+        if (result != 0)
             return result;
 
         result = Util.nullSafeCompareTo(this.user, o.user);
-	    if (result != 0) 
-                return result;
+        if (result != 0)
+            return result;
 
         result = Util.nullSafeCompareTo(this.designation, o.designation);
-	    if (result != 0) 
-                return result;
+        if (result != 0)
+            return result;
         result = Util.nullSafeCompareTo(this.annotationText, o.annotationText);
         if (result != 0)
-	    		return result;
+            return result;
 
         return 0;
 

@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -46,24 +45,29 @@ import edu.umd.cs.findbugs.ba.XField;
 
 public class FindUninitializedGet extends BytecodeScanningDetector implements StatelessDetector {
     Set<FieldAnnotation> initializedFields = new HashSet<FieldAnnotation>();
+
     Set<FieldAnnotation> declaredFields = new HashSet<FieldAnnotation>();
+
     Set<FieldAnnotation> containerFields = new HashSet<FieldAnnotation>();
-	Collection<BugInstance> pendingBugs = new LinkedList<BugInstance>();
+
+    Collection<BugInstance> pendingBugs = new LinkedList<BugInstance>();
+
     BugInstance uninitializedFieldReadAndCheckedForNonnull;
+
     boolean inConstructor;
+
     boolean thisOnTOS = false;
-	private BugReporter bugReporter;
+
+    private BugReporter bugReporter;
 
     public FindUninitializedGet(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
-
-
     @Override
     public void visit(JavaClass obj) {
         pendingBugs.clear();
-		declaredFields.clear();
+        declaredFields.clear();
         containerFields.clear();
         super.visit(obj);
     }
@@ -71,66 +75,67 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
     @Override
     public void visit(Field obj) {
         super.visit(obj);
-		FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
+        FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
         declaredFields.add(f);
 
-
     }
+
     @Override
-    public void visitAnnotation(String annotationClass,
-			Map<String, ElementValue> map, boolean runtimeVisible) {
-        if (!visitingField()) return;
+    public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
+        if (!visitingField())
+            return;
         if (UnreadFields.isInjectionAttribute(annotationClass)) {
             containerFields.add(FieldAnnotation.fromVisitedField(this));
-		}
+        }
 
     }
 
     @Override
     public void visit(Method obj) {
         super.visit(obj);
-		initializedFields.clear();
+        initializedFields.clear();
 
         thisOnTOS = false;
-        inConstructor = getMethodName().equals("<init>")
-        && getMethodSig().indexOf(getClassName()) == -1;
+        inConstructor = getMethodName().equals("<init>") && getMethodSig().indexOf(getClassName()) == -1;
 
     }
 
-
     @Override
     public void visit(Code obj) {
-        if (!inConstructor) return;
-		uninitializedFieldReadAndCheckedForNonnull = null;
+        if (!inConstructor)
+            return;
+        uninitializedFieldReadAndCheckedForNonnull = null;
         super.visit(obj);
-        for(BugInstance bug : pendingBugs) {
+        for (BugInstance bug : pendingBugs) {
             bugReporter.reportBug(bug);
-		}
+        }
         pendingBugs.clear();
     }
 
     @Override
     public void sawBranchTo(int target) {
         Iterator<BugInstance> i = pendingBugs.iterator();
-		while (i.hasNext()) {
+        while (i.hasNext()) {
             BugInstance bug = i.next();
-            if (bug.getPrimarySourceLineAnnotation().getStartBytecode()>= target)
+            if (bug.getPrimarySourceLineAnnotation().getStartBytecode() >= target)
                 i.remove();
-		}
+        }
     }
+
     @Override
     public void sawOpcode(int seen) {
-		if (!inConstructor) return;
+        if (!inConstructor)
+            return;
         if (uninitializedFieldReadAndCheckedForNonnull != null) {
             if (seen == NEW && getClassConstantOperand().endsWith("Exception"))
                 uninitializedFieldReadAndCheckedForNonnull.raisePriority();
-			uninitializedFieldReadAndCheckedForNonnull = null;
+            uninitializedFieldReadAndCheckedForNonnull = null;
         }
 
         if (seen == ALOAD_0) {
             thisOnTOS = true;
             return;
-		}
+        }
 
         if (seen == PUTFIELD && getClassConstantOperand().equals(getClassName()))
             initializedFields.add(FieldAnnotation.fromReferencedField(this));
@@ -138,56 +143,45 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
         else if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName())) {
             UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
             XField xField = XFactory.createReferencedXField(this);
-			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
+            FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
             int nextOpcode = 0xff & codeBytes[getPC() + 3];
-            if (nextOpcode != POP
-                    && !initializedFields.contains(f)
-					&& declaredFields.contains(f)
-                    && !containerFields.contains(f)
+            if (nextOpcode != POP && !initializedFields.contains(f) && declaredFields.contains(f) && !containerFields.contains(f)
                     && !unreadFields.isContainerField(xField)) {
-                // System.out.println("Next opcode: " + OPCODE_NAMES[nextOpcode]);
-				LocalVariableAnnotation possibleTarget = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(), getMethod(), getNameConstantOperand(), xField.getSignature());
+                // System.out.println("Next opcode: " +
+                // OPCODE_NAMES[nextOpcode]);
+                LocalVariableAnnotation possibleTarget = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(),
+                        getMethod(), getNameConstantOperand(), xField.getSignature());
                 if (possibleTarget == null)
                     possibleTarget = LocalVariableAnnotation.findUniqueBestMatchingParameter(getClassContext(), getMethod(),
                             getNameConstantOperand(), getSigConstantOperand());
-				int priority = unreadFields.getReadFields().contains(xField)  ? NORMAL_PRIORITY : LOW_PRIORITY;
+                int priority = unreadFields.getReadFields().contains(xField) ? NORMAL_PRIORITY : LOW_PRIORITY;
                 boolean priorityLoweredBecauseOfIfNonnullTest = false;
                 if (possibleTarget != null)
                     priority--;
-				else {
+                else {
                     FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
                     if (fieldSummary.callsOverriddenMethodsFromSuperConstructor(getClassDescriptor()))
                         priority++;
-					else if (nextOpcode == IFNONNULL) {
+                    else if (nextOpcode == IFNONNULL) {
                         priority++;
                         priorityLoweredBecauseOfIfNonnullTest = true;
-                        }
-					}
+                    }
+                }
 
-                BugInstance bug = new BugInstance(this, "UR_UNINIT_READ", priority)
-                .addClassAndMethod(this)
-				.addField(f)
-                .addOptionalAnnotation(possibleTarget)
-                .addSourceLine(this);
+                BugInstance bug = new BugInstance(this, "UR_UNINIT_READ", priority).addClassAndMethod(this).addField(f)
+                        .addOptionalAnnotation(possibleTarget).addSourceLine(this);
                 pendingBugs.add(bug);
-				if (priorityLoweredBecauseOfIfNonnullTest) {
+                if (priorityLoweredBecauseOfIfNonnullTest) {
                     uninitializedFieldReadAndCheckedForNonnull = bug;
                 }
                 initializedFields.add(f);
-			}
-        } else if (
-                (seen == INVOKESPECIAL
-                        && !(getNameConstantOperand().equals("<init>")
-								&& !getClassConstantOperand().equals(getClassName()))
-                )
-                || (seen == INVOKESTATIC
-                        && getNameConstantOperand().equals("doPrivileged")
-						&& getClassConstantOperand().equals("java/security/AccessController")
-                )
-                || (seen == INVOKEVIRTUAL
-                        && getClassConstantOperand().equals(getClassName()))
-						|| (seen == INVOKEVIRTUAL
-                                && getNameConstantOperand().equals("start"))) {
+            }
+        } else if ((seen == INVOKESPECIAL && !(getNameConstantOperand().equals("<init>") && !getClassConstantOperand().equals(
+                getClassName())))
+                || (seen == INVOKESTATIC && getNameConstantOperand().equals("doPrivileged") && getClassConstantOperand().equals(
+                        "java/security/AccessController"))
+                || (seen == INVOKEVIRTUAL && getClassConstantOperand().equals(getClassName()))
+                || (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("start"))) {
 
             inConstructor = false;
         }

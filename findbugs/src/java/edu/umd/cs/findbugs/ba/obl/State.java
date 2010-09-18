@@ -22,47 +22,47 @@ package edu.umd.cs.findbugs.ba.obl;
 import edu.umd.cs.findbugs.ba.Path;
 
 /**
- * Error-handling obligation analysis state.
- * This is a set of obligations and a program path on which
- * they are outstanding (not cleaned up).
- *
- * <p>See Weimer and Necula,
- * <a href="http://doi.acm.org/10.1145/1028976.1029011"
- * >Finding and preventing run-time error handling mistakes</a>,
- * OOPSLA 2004.</p>
- *
+ * Error-handling obligation analysis state. This is a set of obligations and a
+ * program path on which they are outstanding (not cleaned up).
+ * 
+ * <p>
+ * See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011"
+ * >Finding and preventing run-time error handling mistakes</a>, OOPSLA 2004.
+ * </p>
+ * 
  * @author David Hovemeyer
  */
 public class State {
     private ObligationSet obligationSet;
+
     private Path path;
 
     private State() {
     }
 
-    public State(/*int maxObligationTypes, */ObligationFactory factory) {
-        this.obligationSet = new ObligationSet(/*maxObligationTypes, */factory);
+    public State(/* int maxObligationTypes, */ObligationFactory factory) {
+        this.obligationSet = new ObligationSet(/* maxObligationTypes, */factory);
         this.path = new Path();
-	}
+    }
 
     /**
      * @return Returns the obligationSet.
      */
-	public ObligationSet getObligationSet() {
+    public ObligationSet getObligationSet() {
         return obligationSet;
     }
 
     /**
      * @return Returns the path.
      */
-	public Path getPath() {
+    public Path getPath() {
         return path;
     }
 
     public State duplicate() {
         State dup = new State();
         dup.obligationSet = this.obligationSet.duplicate();
-		dup.path = this.path.duplicate();
+        dup.path = this.path.duplicate();
 
         return dup;
     }
@@ -70,25 +70,25 @@ public class State {
     @Override
     public boolean equals(Object o) {
         if (o == null || o.getClass() != this.getClass()) {
-			return false;
+            return false;
         }
         State other = (State) o;
         return this.obligationSet.equals(other.obligationSet) || this.path.equals(other.path);
-	}
+    }
 
     @Override
     public int hashCode() {
         return obligationSet.hashCode() + (1009 * path.hashCode());
-	}
+    }
 
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-		buf.append("[");
+        buf.append("[");
         buf.append(obligationSet.toString());
         buf.append(",");
         buf.append(path.toString());
-		buf.append("]");
+        buf.append("]");
         return buf.toString();
     }
 }

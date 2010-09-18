@@ -19,12 +19,17 @@
 
 package edu.umd.cs.findbugs;
 
-public enum BugRankCategory { SCARIEST, SCARY, TROUBLING, OF_CONCERN, UNRANKED;
-  static public BugRankCategory getRank(int rank) {
-      if (rank <= 4) return SCARIEST;
-      if (rank <= 9) return SCARY;
-      if (rank <= 14) return TROUBLING;
-	  if (rank <= 20) return OF_CONCERN;
-      return UNRANKED;
-  }
+public enum BugRankCategory {
+    SCARIEST, SCARY, TROUBLING, OF_CONCERN, UNRANKED;
+    static public BugRankCategory getRank(int rank) {
+        if (rank <= 4)
+            return SCARIEST;
+        if (rank <= 9)
+            return SCARY;
+        if (rank <= 14)
+            return TROUBLING;
+        if (rank <= 20)
+            return OF_CONCERN;
+        return UNRANKED;
+    }
 }

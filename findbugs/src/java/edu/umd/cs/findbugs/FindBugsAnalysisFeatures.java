@@ -25,56 +25,59 @@ import edu.umd.cs.findbugs.ba.AnalysisFeatures.AnalysisFeature;
 
 /**
  * Boolean-valued analysis properties for FindBugs.
- *
+ * 
  * @see edu.umd.cs.findbugs.ba.AnalysisContext#setBoolProperty(int, boolean)
  * @see edu.umd.cs.findbugs.ba.AnalysisContext#getBoolProperty(int)
  * @author David Hovemeyer
  */
 public abstract class FindBugsAnalysisFeatures {
     private static final int START;
-     static {
-         START = AnalysisFeatures.NUM_BOOLEAN_ANALYSIS_PROPERTIES;
-	 }
+    static {
+        START = AnalysisFeatures.NUM_BOOLEAN_ANALYSIS_PROPERTIES;
+    }
 
     /**
-     * "Relaxed" warning reporting mode.
-     * Rather than using hard-coded heuristics to decide when
-	 * to suppress a warning, report warnings freely and
-     * encode the heuristics as BugProperties (for consumption
-     * by a machine-learning-based ranking algorithm).
+     * "Relaxed" warning reporting mode. Rather than using hard-coded heuristics
+     * to decide when to suppress a warning, report warnings freely and encode
+     * the heuristics as BugProperties (for consumption by a
+     * machine-learning-based ranking algorithm).
      */
-	public static final  @AnalysisFeature int RELAXED_REPORTING_MODE = START + 0;
+    public static final @AnalysisFeature
+    int RELAXED_REPORTING_MODE = START + 0;
 
     /**
      * Enable interprocedural analysis.
      */
-	public static final  @AnalysisFeature int INTERPROCEDURAL_ANALYSIS = START + 1;
-    public static final  @AnalysisFeature int INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES = START + 2;
+    public static final @AnalysisFeature
+    int INTERPROCEDURAL_ANALYSIS = START + 1;
 
-    static void setProperty( @AnalysisFeature int property, boolean value) {
+    public static final @AnalysisFeature
+    int INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES = START + 2;
+
+    static void setProperty(@AnalysisFeature int property, boolean value) {
         AnalysisContext.currentAnalysisContext().setBoolProperty(property, value);
     }
 
-    static boolean getProperty( @AnalysisFeature int property) {
+    static boolean getProperty(@AnalysisFeature int property) {
         return AnalysisContext.currentAnalysisContext().getBoolProperty(property);
     }
 
     /**
      * Set relaxed reporting mode.
-     *
-	 * @param relaxedMode true if relaxed reporting mode should be enabled, false if not
+     * 
+     * @param relaxedMode
+     *            true if relaxed reporting mode should be enabled, false if not
      */
     public static void setRelaxedMode(boolean relaxedMode) {
         setProperty(RELAXED_REPORTING_MODE, relaxedMode);
-	}
-
+    }
 
     /**
      * Get relaxed reporting mode.
-     *
-	 * @return true if relaxed reporting mode should be enabled, false if not
+     * 
+     * @return true if relaxed reporting mode should be enabled, false if not
      */
     public static boolean isRelaxedMode() {
         return getProperty(RELAXED_REPORTING_MODE);
-	}
+    }
 }

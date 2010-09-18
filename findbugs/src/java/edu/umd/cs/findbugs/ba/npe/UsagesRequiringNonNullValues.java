@@ -38,17 +38,18 @@ public class UsagesRequiringNonNullValues {
 
     public static class Pair {
         public final ValueNumber vn;
+
         public final PointerUsageRequiringNonNullValue pu;
 
         Pair(ValueNumber vn, PointerUsageRequiringNonNullValue pu) {
             this.vn = vn;
             this.pu = pu;
-		}
+        }
 
         @Override
         public String toString() {
             return vn.toString();
-		}
+        }
     }
 
     MultiMap<Integer, Pair> map = new MultiMap<Integer, Pair>(LinkedList.class);
@@ -56,15 +57,15 @@ public class UsagesRequiringNonNullValues {
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-		for(Map.Entry<Integer, Collection<Pair>> e : map.asMap().entrySet())
-                buf.append(e).append("\n");
+        for (Map.Entry<Integer, Collection<Pair>> e : map.asMap().entrySet())
+            buf.append(e).append("\n");
         return buf.toString();
     }
 
     public void add(Location loc, ValueNumber vn, PointerUsageRequiringNonNullValue usage) {
         Pair p = new Pair(vn, usage);
         if (DerefFinder.DEBUG)
-			System.out.println("At " + loc + " adding dereference " + p);
+            System.out.println("At " + loc + " adding dereference " + p);
 
         map.add(loc.getHandle().getPosition(), p);
     }
@@ -72,21 +73,21 @@ public class UsagesRequiringNonNullValues {
     public @CheckForNull
     PointerUsageRequiringNonNullValue get(Location loc, ValueNumber vn, ValueNumberDataflow vnaDataflow) {
         // PointerUsageRequiringNonNullValue secondBest = null;
-		MergeTree mergeTree = vnaDataflow.getAnalysis().getMergeTree();
+        MergeTree mergeTree = vnaDataflow.getAnalysis().getMergeTree();
         for (Pair p : map.get(loc.getHandle().getPosition())) {
             if (p.vn.equals(vn))
                 return p.pu;
-			if (!p.vn.hasFlag(ValueNumber.PHI_NODE)) continue;
+            if (!p.vn.hasFlag(ValueNumber.PHI_NODE))
+                continue;
             BitSet inputs = mergeTree.getTransitiveInputSet(p.vn);
-            if (inputs.get(vn.getNumber())) return p.pu;
+            if (inputs.get(vn.getNumber()))
+                return p.pu;
         }
-		return null;
+        return null;
     }
 
     public Collection<? extends Pair> getPairs(Integer loc) {
         return map.get(loc);
     }
-
-
 
 }

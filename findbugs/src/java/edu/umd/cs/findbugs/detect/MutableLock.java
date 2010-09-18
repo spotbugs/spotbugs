@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,63 +31,62 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 
-public class MutableLock extends BytecodeScanningDetector implements  StatelessDetector {
+public class MutableLock extends BytecodeScanningDetector implements StatelessDetector {
     Set<String> setFields = new HashSet<String>();
+
     Set<String> finalFields = new HashSet<String>();
+
     boolean thisOnTOS = false;
-	private BugReporter bugReporter;
+
+    private BugReporter bugReporter;
 
     public MutableLock(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
-
     @Override
     public void visit(JavaClass obj) {
         finalFields.clear();
-		super.visit(obj);
+        super.visit(obj);
     }
 
     @Override
     public void visit(Field obj) {
-    super.visit(obj);
-	if (obj.isFinal()) finalFields.add(obj.getName());
-}
-    @Override
-         public void visit(Method obj) {
         super.visit(obj);
-		setFields.clear();
+        if (obj.isFinal())
+            finalFields.add(obj.getName());
+    }
+
+    @Override
+    public void visit(Method obj) {
+        super.visit(obj);
+        setFields.clear();
         thisOnTOS = false;
     }
 
     @Override
-         public void sawOpcode(int seen) {
+    public void sawOpcode(int seen) {
 
         switch (seen) {
         case ALOAD_0:
             thisOnTOS = true;
-			return;
+            return;
         case MONITOREXIT:
             setFields.clear();
             break;
-		case PUTFIELD:
+        case PUTFIELD:
             if (getClassConstantOperand().equals(getClassName()))
                 setFields.add(getNameConstantOperand());
             break;
-		case GETFIELD:
-            if (thisOnTOS && getClassConstantOperand().equals(getClassName())
-                    && setFields.contains(getNameConstantOperand())
-                    && asUnsignedByte(codeBytes[getPC() + 3]) == DUP
-					&& asUnsignedByte(codeBytes[getPC() + 5]) == MONITORENTER
+        case GETFIELD:
+            if (thisOnTOS && getClassConstantOperand().equals(getClassName()) && setFields.contains(getNameConstantOperand())
+                    && asUnsignedByte(codeBytes[getPC() + 3]) == DUP && asUnsignedByte(codeBytes[getPC() + 5]) == MONITORENTER
 
-                    && !finalFields.contains(getNameConstantOperand())
-            )
-                bugReporter.reportBug(new BugInstance(this, "ML_SYNC_ON_UPDATED_FIELD", NORMAL_PRIORITY)
-						.addClassAndMethod(this)
-                        .addReferencedField(this)
-                        .addSourceLine(this, getPC() + 5));
+                    && !finalFields.contains(getNameConstantOperand()))
+                bugReporter.reportBug(new BugInstance(this, "ML_SYNC_ON_UPDATED_FIELD", NORMAL_PRIORITY).addClassAndMethod(this)
+                        .addReferencedField(this).addSourceLine(this, getPC() + 5));
             break;
-		default:
+        default:
         }
         thisOnTOS = false;
     }

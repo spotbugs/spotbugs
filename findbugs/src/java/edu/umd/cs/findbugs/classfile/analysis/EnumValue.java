@@ -23,40 +23,38 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
- * Represents an enumeration value used with an application
- * of an annotation.
- *
+ * Represents an enumeration value used with an application of an annotation.
+ * 
  * @author William Pugh
  * @author David Hovemeyer
  */
 public class EnumValue {
     public final ClassDescriptor desc;
+
     public final String value;
 
     public EnumValue(String desc, String value) {
         this.desc = DescriptorFactory.createClassDescriptorFromSignature(desc);
         this.value = value;
-	}
+    }
 
     @Override
     public String toString() {
         return desc.getDottedClassName() + "." + value;
-	}
+    }
 
     @Override
     public int hashCode() {
         return desc.hashCode() + 37 * value.hashCode();
-	}
+    }
 
     @Override
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof EnumValue)) {
-			return false;
+            return false;
         }
         EnumValue other = (EnumValue) obj;
-        return this.desc.equals(other.desc)
-			&& this.value.equals(other.value);
+        return this.desc.equals(other.desc) && this.value.equals(other.value);
     }
-
 
 }

@@ -40,31 +40,31 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
     }
 
     @Override
-         public ResourceValue getDefaultValue() {
+    public ResourceValue getDefaultValue() {
         return ResourceValue.notInstance();
-	}
+    }
 
     /**
-     * Subclasses must override this to model the effect of the
-     * given instruction on the current frame.
-	 */
+     * Subclasses must override this to model the effect of the given
+     * instruction on the current frame.
+     */
     public abstract void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) throws DataflowAnalysisException;
 
     // Things to do:
     // Automatically detect when resource instances escape:
-    //   - putfield, putstatic
-	//   - parameters to invoke, but subclasses may override
-    //   - aastore; (conservative, since the dest array may not itself escape)
-    //   - return (areturn)
+    // - putfield, putstatic
+    // - parameters to invoke, but subclasses may override
+    // - aastore; (conservative, since the dest array may not itself escape)
+    // - return (areturn)
 
     private void handleFieldStore(FieldInstruction ins) {
         try {
             // If the resource instance is stored in a field, then it escapes
-			ResourceValueFrame frame = getFrame();
+            ResourceValueFrame frame = getFrame();
             ResourceValue topValue = frame.getTopValue();
             if (topValue.equals(ResourceValue.instance()))
                 frame.setStatus(ResourceValueFrame.ESCAPED);
-		} catch (DataflowAnalysisException e) {
+        } catch (DataflowAnalysisException e) {
             throw new InvalidBytecodeException("Stack underflow", e);
         }
 
@@ -79,7 +79,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
     private void handleArrayStore(ArrayInstruction ins) {
         try {
             // If the resource instance is stored in an array, then we consider
-            // it as having escaped.  This is conservative; ideally we would
+            // it as having escaped. This is conservative; ideally we would
             // check whether this array is a field or gets passed out of the
             // method.
             ResourceValueFrame frame = getFrame();
@@ -95,40 +95,42 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 
     @Override
     public void visitAASTORE(AASTORE arr) {
-	    handleArrayStore(arr);
+        handleArrayStore(arr);
     }
 
     @Override
-         public void visitPUTSTATIC(PUTSTATIC putstatic) {
+    public void visitPUTSTATIC(PUTSTATIC putstatic) {
         handleFieldStore(putstatic);
-	}
+    }
 
     /**
-     * Override this to check for methods that it is legal to
-     * pass the instance to without the instance escaping.
-	 * By default, we consider all methods to be possible escape routes.
-     *
-     * @param inv            the InvokeInstruction to which the resource instance
-     *                       is passed as an argument
-	 * @param instanceArgNum the first argument the instance is passed in
+     * Override this to check for methods that it is legal to pass the instance
+     * to without the instance escaping. By default, we consider all methods to
+     * be possible escape routes.
+     * 
+     * @param inv
+     *            the InvokeInstruction to which the resource instance is passed
+     *            as an argument
+     * @param instanceArgNum
+     *            the first argument the instance is passed in
      */
     protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {
         return true;
-	}
+    }
 
     private void handleInvoke(InvokeInstruction inv) {
         ResourceValueFrame frame = getFrame();
         int numSlots = frame.getNumSlots();
-		int numConsumed = getNumWordsConsumed(inv);
+        int numConsumed = getNumWordsConsumed(inv);
 
         // See if the resource instance is passed as an argument
         int instanceArgNum = -1;
         for (int i = numSlots - numConsumed, argCount = 0; i < numSlots; ++i, ++argCount) {
-			ResourceValue value = frame.getValue(i);
+            ResourceValue value = frame.getValue(i);
             if (value.equals(ResourceValue.instance())) {
                 instanceArgNum = argCount;
                 break;
-			}
+            }
         }
 
         if (instanceArgNum >= 0 && instanceEscapes(inv, instanceArgNum))
@@ -140,7 +142,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
     @Override
     public void visitCHECKCAST(CHECKCAST obj) {
         try {
-			ResourceValueFrame frame = getFrame();
+            ResourceValueFrame frame = getFrame();
             ResourceValue topValue;
 
             topValue = frame.getTopValue();
@@ -148,37 +150,38 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
             if (topValue.equals(ResourceValue.instance()))
                 frame.setStatus(ResourceValueFrame.ESCAPED);
         } catch (DataflowAnalysisException e) {
-			AnalysisContext.logError("Analysis error", e);
+            AnalysisContext.logError("Analysis error", e);
         }
     }
+
     @Override
-		 public void visitINVOKEVIRTUAL(INVOKEVIRTUAL inv) {
+    public void visitINVOKEVIRTUAL(INVOKEVIRTUAL inv) {
         handleInvoke(inv);
     }
 
     @Override
-         public void visitINVOKEINTERFACE(INVOKEINTERFACE inv) {
+    public void visitINVOKEINTERFACE(INVOKEINTERFACE inv) {
         handleInvoke(inv);
-	}
+    }
 
     @Override
-         public void visitINVOKESPECIAL(INVOKESPECIAL inv) {
+    public void visitINVOKESPECIAL(INVOKESPECIAL inv) {
         handleInvoke(inv);
-	}
+    }
 
     @Override
-         public void visitINVOKESTATIC(INVOKESTATIC inv) {
+    public void visitINVOKESTATIC(INVOKESTATIC inv) {
         handleInvoke(inv);
-	}
+    }
 
     @Override
-         public void visitARETURN(ARETURN ins) {
+    public void visitARETURN(ARETURN ins) {
         try {
-			ResourceValueFrame frame = getFrame();
+            ResourceValueFrame frame = getFrame();
             ResourceValue topValue = frame.getTopValue();
             if (topValue.equals(ResourceValue.instance()))
                 frame.setStatus(ResourceValueFrame.ESCAPED);
-		} catch (DataflowAnalysisException e) {
+        } catch (DataflowAnalysisException e) {
             throw new InvalidBytecodeException("Stack underflow", e);
         }
 

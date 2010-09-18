@@ -27,92 +27,113 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 
 /**
- * Abstract base class for implementations of IScannableCodeBase.
- * Provides an implementation of the
- * getCodeBaseLocator(), containsSourceFiles(),
+ * Abstract base class for implementations of IScannableCodeBase. Provides an
+ * implementation of the getCodeBaseLocator(), containsSourceFiles(),
  * setApplicationCodeBase(), and isApplicationCodeBase() methods.
- *
+ * 
  * @author David Hovemeyer
  */
 public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
     private ICodeBaseLocator codeBaseLocator;
+
     private boolean isAppCodeBase;
+
     private int howDiscovered;
-	private long lastModifiedTime;
+
+    private long lastModifiedTime;
+
     private Map<String, String> resourceNameTranslationMap;
 
     public AbstractScannableCodeBase(ICodeBaseLocator codeBaseLocator) {
         this.codeBaseLocator = codeBaseLocator;
         this.lastModifiedTime = -1L;
-		this.resourceNameTranslationMap = new HashMap<String, String>();
+        this.resourceNameTranslationMap = new HashMap<String, String>();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getCodeBaseLocator()
      */
-	public ICodeBaseLocator getCodeBaseLocator() {
+    public ICodeBaseLocator getCodeBaseLocator() {
         return codeBaseLocator;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#containsSourceFiles()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IScannableCodeBase#containsSourceFiles()
      */
-	public boolean containsSourceFiles()  {
+    public boolean containsSourceFiles() {
         return false;
 
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.ICodeBase#setApplicationCodeBase(boolean)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.ICodeBase#setApplicationCodeBase(boolean)
      */
-	public void setApplicationCodeBase(boolean isAppCodeBase) {
+    public void setApplicationCodeBase(boolean isAppCodeBase) {
         this.isAppCodeBase = isAppCodeBase;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#isApplicationCodeBase()
      */
-	public boolean isApplicationCodeBase() {
+    public boolean isApplicationCodeBase() {
         return isAppCodeBase;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#setHowDiscovered(int)
      */
-	public void setHowDiscovered(int howDiscovered) {
+    public void setHowDiscovered(int howDiscovered) {
         this.howDiscovered = howDiscovered;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getHowDiscovered()
      */
-	public int getHowDiscovered() {
+    public int getHowDiscovered() {
         return howDiscovered;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#setLastModifiedTime(long)
      */
-	public void setLastModifiedTime(long lastModifiedTime) {
+    public void setLastModifiedTime(long lastModifiedTime) {
         if (lastModifiedTime > 0 && FindBugs.validTimestamp(lastModifiedTime)) {
             this.lastModifiedTime = lastModifiedTime;
         }
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getLastModifiedTime()
      */
-	public long getLastModifiedTime() {
+    public long getLastModifiedTime() {
         return lastModifiedTime;
     }
 
     public void addResourceNameTranslation(String origResourceName, String newResourceName) {
         if (!origResourceName.equals(newResourceName))
-          resourceNameTranslationMap.put(origResourceName, newResourceName);
-	}
+            resourceNameTranslationMap.put(origResourceName, newResourceName);
+    }
 
     public String translateResourceName(String resourceName) {
         String translatedName = resourceNameTranslationMap.get(resourceName);
         return translatedName != null ? translatedName : resourceName;
-	}
+    }
 }

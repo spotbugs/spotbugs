@@ -16,10 +16,13 @@ public class DeepSubtypeAnalysis {
     static private JavaClass serializable;
 
     static private JavaClass collection;
+
     static private JavaClass comparator;
 
     static private JavaClass map;
+
     static private JavaClass remote;
+
     static private ClassNotFoundException storedException;
 
     private static final boolean DEBUG = SystemProperties.getBoolean("dsa.debug");
@@ -27,55 +30,59 @@ public class DeepSubtypeAnalysis {
     static {
         try {
             serializable = AnalysisContext.lookupSystemClass("java.io.Serializable");
-			collection = AnalysisContext.lookupSystemClass("java.util.Collection");
+            collection = AnalysisContext.lookupSystemClass("java.util.Collection");
             map = AnalysisContext.lookupSystemClass("java.util.Map");
             comparator = AnalysisContext.lookupSystemClass("java.util.Comparator");
 
         } catch (ClassNotFoundException e) {
             storedException = e;
         }
-		try {
+        try {
             remote = AnalysisContext.lookupSystemClass("java.rmi.Remote");
         } catch (ClassNotFoundException e) {
-            if (storedException == null) storedException = e;
-		}
+            if (storedException == null)
+                storedException = e;
+        }
     }
 
     private static boolean containsConcreteClasses(Set<JavaClass> s) {
         for (JavaClass c : s)
             if (!c.isInterface() && !c.isAbstract())
-				return true;
+                return true;
         return false;
     }
+
     public static double isDeepSerializable(ReferenceType type) throws ClassNotFoundException {
-		return isDeepSerializable(type.getSignature());
+        return isDeepSerializable(type.getSignature());
 
     }
-    public static double isDeepSerializable(@DottedClassName String refSig)
-            throws ClassNotFoundException {
-		if (storedException != null)
+
+    public static double isDeepSerializable(@DottedClassName String refSig) throws ClassNotFoundException {
+        if (storedException != null)
             throw storedException;
 
         if (isPrimitiveComponentClass(refSig)) {
-            if(DEBUG) {
+            if (DEBUG) {
                 System.out.println("regSig \"" + refSig + "\" is primitive component class");
-			}
+            }
             return 1.0;
         }
 
         String refName = getComponentClass(refSig);
         if (refName.equals("java.lang.Object"))
             return 0.99;
-	
 
         JavaClass refJavaClass = Repository.lookupClass(refName);
         return isDeepSerializable(refJavaClass);
     }
-	public static double isDeepRemote(ReferenceType refType) {
+
+    public static double isDeepRemote(ReferenceType refType) {
         return isDeepRemote(refType.getSignature());
     }
+
     public static double isDeepRemote(String refSig) {
-		if (remote == null) return 0.1;
+        if (remote == null)
+            return 0.1;
 
         String refName = getComponentClass(refSig);
         if (refName.equals("java.lang.Object"))
@@ -84,23 +91,23 @@ public class DeepSubtypeAnalysis {
         JavaClass refJavaClass;
         try {
             refJavaClass = Repository.lookupClass(refName);
-			return Analyze.deepInstanceOf(refJavaClass, remote);
+            return Analyze.deepInstanceOf(refJavaClass, remote);
         } catch (ClassNotFoundException e) {
             return 0.99;
         }
 
-
     }
+
     private static boolean isPrimitiveComponentClass(String refSig) {
         int c = 0;
-		while (c < refSig.length() && refSig.charAt(c) == '[') {
+        while (c < refSig.length() && refSig.charAt(c) == '[') {
             c++;
         }
 
         // If the string is now empty, then we evidently have
-        // an invalid type signature.  We'll return "true",
+        // an invalid type signature. We'll return "true",
         // which in turn will cause isDeepSerializable() to return
-		// 1.0, hopefully avoiding any warnings from being generated
+        // 1.0, hopefully avoiding any warnings from being generated
         // by whatever detector is calling us.
         return c >= refSig.length() || refSig.charAt(c) != 'L';
     }
@@ -108,127 +115,126 @@ public class DeepSubtypeAnalysis {
     public static String getComponentClass(ReferenceType refType) {
         return getComponentClass(refType.getSignature());
     }
-	public static String getComponentClass(String refSig) {
+
+    public static String getComponentClass(String refSig) {
         while (refSig.charAt(0) == '[')
             refSig = refSig.substring(1);
 
-        //TODO: This method now returns primitive type signatures, is this ok?
+        // TODO: This method now returns primitive type signatures, is this ok?
         if (refSig.charAt(0) == 'L')
             return refSig.substring(1, refSig.length() - 1).replace('/', '.');
-		return refSig;
+        return refSig;
     }
 
-    public static double isDeepSerializable(JavaClass x)
-            throws ClassNotFoundException {
+    public static double isDeepSerializable(JavaClass x) throws ClassNotFoundException {
         if (storedException != null)
-			throw storedException;
+            throw storedException;
 
         if (x.getClassName().equals("java.lang.Object"))
             return 0.4;
 
-		if(DEBUG) {
+        if (DEBUG) {
             System.out.println("checking " + x.getClassName());
         }
 
         double result = Analyze.deepInstanceOf(x, serializable);
         if (result >= 0.9) {
-            if(DEBUG) {
-				System.out.println("Direct high serializable result: " + result);
+            if (DEBUG) {
+                System.out.println("Direct high serializable result: " + result);
             }
             return result;
         }
-		
-        if (x.isFinal()) return result;
+
+        if (x.isFinal())
+            return result;
 
         double collectionResult = Analyze.deepInstanceOf(x, collection);
-		double mapResult = Analyze.deepInstanceOf(x, map);
+        double mapResult = Analyze.deepInstanceOf(x, map);
 
         if (x.isInterface() || x.isAbstract()) {
-            result = Math.max(result, Math.max(mapResult,collectionResult)*0.95);
-			if (result >= 0.9) {
+            result = Math.max(result, Math.max(mapResult, collectionResult) * 0.95);
+            if (result >= 0.9) {
                 return result;
             }
         }
-		ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor(x);
+        ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor(x);
 
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
-		double confidence = 0.6;
+        double confidence = 0.6;
         Set<ClassDescriptor> directSubtypes = subtypes2.getDirectSubtypes(classDescriptor);
         directSubtypes.remove(classDescriptor);
 
-		if (x.isAbstract() || x.isInterface()) {
+        if (x.isAbstract() || x.isInterface()) {
             confidence = 0.8;
             result = Math.max(result, 0.4);
         } else if (directSubtypes.isEmpty())
-			confidence = 0.2;
+            confidence = 0.2;
 
-        for(ClassDescriptor subtype : directSubtypes) {
+        for (ClassDescriptor subtype : directSubtypes) {
             JavaClass subJavaClass = Repository.lookupClass(subtype.getDottedClassName());
-			result = Math.max(result, confidence * isDeepSerializable(subJavaClass));
+            result = Math.max(result, confidence * isDeepSerializable(subJavaClass));
         }
         if (result >= 0.9) {
             return result;
-		}
+        }
 
-        confidence = (1+confidence)/2;
+        confidence = (1 + confidence) / 2;
         result = Math.max(result, confidence * collectionResult);
-		if (result >= 0.9) {
-            if(DEBUG) {
+        if (result >= 0.9) {
+            if (DEBUG) {
                 System.out.println("High collection result: " + result);
             }
-			return result;
+            return result;
         }
         result = Math.max(result, confidence * mapResult);
         if (result >= 0.9) {
-			if(DEBUG) {
+            if (DEBUG) {
                 System.out.println("High map result: " + result);
             }
             return result;
-		}
-        result = Math.max(result, confidence * 0.5*Analyze.deepInstanceOf(x, comparator));
+        }
+        result = Math.max(result, confidence * 0.5 * Analyze.deepInstanceOf(x, comparator));
         if (result >= 0.9) {
-            if(DEBUG) {
-				System.out.println("High comparator result: " + result);
+            if (DEBUG) {
+                System.out.println("High comparator result: " + result);
             }
             return result;
         }
-		if(DEBUG) {
+        if (DEBUG) {
             System.out.println("No high results; max: " + result);
         }
         return result;
-	}
+    }
 
     /**
      * Given two JavaClasses, try to estimate the probability that an reference
      * of type x is also an instance of type y. Will return 0 only if it is
-	 * impossible and 1 only if it is guaranteed.
-     *
+     * impossible and 1 only if it is guaranteed.
+     * 
      * @param x
      *            Known type of object
-	 * @param y
+     * @param y
      *            Type queried about
      * @return 0 - 1 value indicating probability
      */
 
-    public static double deepInstanceOf(@DottedClassName String x, @DottedClassName String y)
-    throws ClassNotFoundException {
+    public static double deepInstanceOf(@DottedClassName String x, @DottedClassName String y) throws ClassNotFoundException {
         return Analyze.deepInstanceOf(x, y);
-	}
+    }
 
     /**
      * Given two JavaClasses, try to estimate the probability that an reference
      * of type x is also an instance of type y. Will return 0 only if it is
-	 * impossible and 1 only if it is guaranteed.
-     *
+     * impossible and 1 only if it is guaranteed.
+     * 
      * @param x
      *            Known type of object
-	 * @param y
+     * @param y
      *            Type queried about
      * @return 0 - 1 value indicating probability
      */
-	public static double deepInstanceOf(JavaClass x, JavaClass y)
-            throws ClassNotFoundException {
+    public static double deepInstanceOf(JavaClass x, JavaClass y) throws ClassNotFoundException {
         return Analyze.deepInstanceOf(x, y);
 
     }

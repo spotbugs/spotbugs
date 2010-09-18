@@ -27,27 +27,29 @@ import org.apache.bcel.generic.InstructionHandle;
 
 public class ByteCodePatternMatch {
     private BindingSet bindingSet;
+
     private PatternElementMatch lastElementMatch;
+
     private LinkedList<PatternElementMatch> patternElementMatchList;
-	
+
     @Override
     public String toString() {
         ArrayList<Integer> lst = new ArrayList<Integer>();
-        for(PatternElementMatch m : patternElementMatchList) {
+        for (PatternElementMatch m : patternElementMatchList) {
             lst.add(m.getMatchedInstructionInstructionHandle().getPosition());
-		}
+        }
         return lst.toString();
     }
 
     public ByteCodePatternMatch(BindingSet bindingSet, PatternElementMatch lastElementMatch) {
         this.bindingSet = bindingSet;
         this.lastElementMatch = lastElementMatch;
-		this.patternElementMatchList = new LinkedList<PatternElementMatch>();
+        this.patternElementMatchList = new LinkedList<PatternElementMatch>();
 
         // The PatternElementMatch objects are stored in reverse order.
         // So, put them in a LinkedList to get them in the right order.
         while (lastElementMatch != null) {
-			patternElementMatchList.addFirst(lastElementMatch);
+            patternElementMatchList.addFirst(lastElementMatch);
             lastElementMatch = lastElementMatch.getPrev();
         }
     }
@@ -61,21 +63,15 @@ public class ByteCodePatternMatch {
     }
 
     public InstructionHandle getLabeledInstruction(String label) {
-        return lastElementMatch != null
-                ? lastElementMatch.getLabeledInstruction(label)
-				: null;
+        return lastElementMatch != null ? lastElementMatch.getLabeledInstruction(label) : null;
     }
 
     public PatternElementMatch getFirstLabeledMatch(String label) {
-        return lastElementMatch != null
-                ? lastElementMatch.getFirstLabeledMatch(label)
-				: null;
+        return lastElementMatch != null ? lastElementMatch.getFirstLabeledMatch(label) : null;
     }
 
     public PatternElementMatch getLastLabeledMatch(String label) {
-        return lastElementMatch != null
-                ? lastElementMatch.getLastLabeledMatch(label)
-				: null;
+        return lastElementMatch != null ? lastElementMatch.getLastLabeledMatch(label) : null;
     }
 }
 

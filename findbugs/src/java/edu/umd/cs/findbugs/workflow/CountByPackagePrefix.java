@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 /**
  * Java main application to compute update a historical bug collection with
  * results from another build/analysis.
- *
+ * 
  * @author William Pugh
  */
 
@@ -44,60 +44,58 @@ public class CountByPackagePrefix {
     /**
      *
      */
-	private static final String USAGE = "Usage: <cmd> "
-            + " <prefixLength> [<bugs.xml>]";
+    private static final String USAGE = "Usage: <cmd> " + " <prefixLength> [<bugs.xml>]";
 
-    public static void main(String[] args) throws IOException,
-            DocumentException {
+    public static void main(String[] args) throws IOException, DocumentException {
 
         DetectorFactoryCollection.instance();
         if (args.length != 1 && args.length != 2) {
             System.out.println(USAGE);
-			return;
+            return;
         }
 
         int prefixLength = Integer.parseInt(args[0]);
         BugCollection origCollection = new SortedBugCollection();
         if (args.length == 1)
-		  origCollection.readXML(System.in);
+            origCollection.readXML(System.in);
         else
             origCollection.readXML(args[1]);
-        Map<String, Integer> map = new TreeMap<String,Integer>();
-		Map<String, Integer> ncss = new TreeMap<String,Integer>();
+        Map<String, Integer> map = new TreeMap<String, Integer>();
+        Map<String, Integer> ncss = new TreeMap<String, Integer>();
 
-        for(BugInstance b : origCollection.getCollection()) {
+        for (BugInstance b : origCollection.getCollection()) {
             String prefix = ClassName.extractPackagePrefix(b.getPrimaryClass().getPackageName(), prefixLength);
-			Integer v = map.get(prefix);
+            Integer v = map.get(prefix);
             if (v == null)
-                map.put(prefix,1);
-            else map.put(prefix,v+1);
-		}
-        for(PackageStats ps : origCollection.getProjectStats().getPackageStats()) {
-            String prefix  = ClassName.extractPackagePrefix(ps.getPackageName(), prefixLength);
+                map.put(prefix, 1);
+            else
+                map.put(prefix, v + 1);
+        }
+        for (PackageStats ps : origCollection.getProjectStats().getPackageStats()) {
+            String prefix = ClassName.extractPackagePrefix(ps.getPackageName(), prefixLength);
 
             Integer v = ncss.get(prefix);
             if (v == null)
                 ncss.put(prefix, ps.size());
-			else 
+            else
                 ncss.put(prefix, v + ps.size());
 
         }
-		for(Map.Entry<String,Integer> e : map.entrySet()) {
+        for (Map.Entry<String, Integer> e : map.entrySet()) {
             String prefix = e.getKey();
             int warnings = e.getValue();
             if (warnings == 0)
-				continue;
+                continue;
             Integer v = ncss.get(prefix);
             if (v == null || v.intValue() == 0)
                 v = 1;
 
             int density = warnings * 1000000 / v;
             if (warnings < 3 || v < 2000)
-                System.out.printf("%4s %4d %4d %s%n"," ", warnings, v/1000, prefix);
-			else
-                System.out.printf("%4d %4d %4d %s%n",density, warnings, v/1000, prefix);
+                System.out.printf("%4s %4d %4d %s%n", " ", warnings, v / 1000, prefix);
+            else
+                System.out.printf("%4d %4d %4d %s%n", density, warnings, v / 1000, prefix);
         }
-
 
     }
 }

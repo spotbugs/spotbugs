@@ -25,10 +25,10 @@ import java.util.StringTokenizer;
 
 /**
  * Matches a string against a set of predefined values.
- *
+ * 
  * Value set is defined using a String containing a comma separated value list.
  * Heading an trailing whitespace on the values is ignored in matching.
- *
+ * 
  * @author rak
  */
 public class StringSetMatch {
@@ -38,44 +38,50 @@ public class StringSetMatch {
     public int hashCode() {
         return strings.hashCode();
     }
+
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof StringSetMatch)) return false;
-        return strings.equals(((StringSetMatch)o).strings);
+        if (!(o instanceof StringSetMatch))
+            return false;
+        return strings.equals(((StringSetMatch) o).strings);
     }
-	/**
+
+    /**
      * Constructor.
-     *
-     * @param strings comma-separated list of Strings
-	 */
+     * 
+     * @param strings
+     *            comma-separated list of Strings
+     */
     public StringSetMatch(String strings) {
         if (strings != null) {
             StringTokenizer tok = new StringTokenizer(strings, ",");
-			while (tok.hasMoreTokens()) {
+            while (tok.hasMoreTokens()) {
                 this.strings.add(tok.nextToken().trim());
             }
         }
-	}
+    }
 
     public boolean isEmpty() {
         return strings.isEmpty();
     }
-	/**
+
+    /**
      * Returns true if the given string is contained in the value set.
-     *
+     * 
      * @param string
-	 * @return true if the given string is contained in the value set
+     * @return true if the given string is contained in the value set
      */
     public boolean match(String string) {
         return strings.contains(string.trim());
-	}
+    }
 
     @Override
     public String toString() {
-		if (strings.isEmpty()) return "";
+        if (strings.isEmpty())
+            return "";
         StringBuilder result = new StringBuilder();
-        for(String s : strings)
+        for (String s : strings)
             result.append(s).append(",");
-		return result.substring(0, result.length()-1);
+        return result.substring(0, result.length() - 1);
     }
 }

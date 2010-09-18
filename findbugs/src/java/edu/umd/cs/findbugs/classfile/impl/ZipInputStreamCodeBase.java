@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.util.MapCache;
 
 /**
  * Implementation of ICodeBase to read from a zip file or jar file.
- *
+ * 
  * @author David Hovemeyer
  */
 public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
@@ -44,65 +44,65 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 
     final File file;
 
-    final MapCache<String, ZipInputStreamCodeBaseEntry> map
-      = new MapCache<String, ZipInputStreamCodeBaseEntry>(10000);
+    final MapCache<String, ZipInputStreamCodeBaseEntry> map = new MapCache<String, ZipInputStreamCodeBaseEntry>(10000);
 
     final HashSet<String> entries = new HashSet<String>();
 
     /**
      * Constructor.
-     *
-	 * @param codeBaseLocator the codebase locator for this codebase
-     * @param file the File containing the zip file (may be a temp file
-     *         if the codebase was copied from a nested zipfile in
-     *         another codebase)
-	 */
+     * 
+     * @param codeBaseLocator
+     *            the codebase locator for this codebase
+     * @param file
+     *            the File containing the zip file (may be a temp file if the
+     *            codebase was copied from a nested zipfile in another codebase)
+     */
     public ZipInputStreamCodeBase(ICodeBaseLocator codeBaseLocator, File file) throws IOException {
         super(codeBaseLocator);
 
         this.file = file;
         setLastModifiedTime(file.lastModified());
         ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
-		try {
+        try {
             ZipEntry ze;
 
             if (DEBUG) {
                 System.out.println("Reading zip input stream " + file);
             }
-			
+
             while ((ze = zis.getNextEntry()) != null) {
                 String name = ze.getName();
                 if (!ze.isDirectory()
-						&& (name.equals("META-INF/MANIFEST.MF") 
-                                || name.endsWith(".class")
-                                || Archive.isArchiveFileName(name)
-                                )) {
-					entries.add(name);
+                        && (name.equals("META-INF/MANIFEST.MF") || name.endsWith(".class") || Archive.isArchiveFileName(name))) {
+                    entries.add(name);
                     if (name.equals("META-INF/MANIFEST.MF")) {
                         map.put(name, build(zis, ze));
                     }
-				}
+                }
                 zis.closeEntry();
 
             }
         } finally {
             zis.close();
-		}
+        }
         if (DEBUG) {
             System.out.println("Done with zip input stream " + file);
         }
 
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
      */
-	public ICodeBaseEntry lookupResource(String resourceName) {
+    public ICodeBaseEntry lookupResource(String resourceName) {
 
         // Translate resource name, in case a resource name
         // has been overridden and the resource is being accessed
         // using the overridden name.
-		resourceName = translateResourceName(resourceName);
+        resourceName = translateResourceName(resourceName);
         if (!entries.contains(resourceName)) {
             return null;
         }
@@ -110,7 +110,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
         try {
             ZipInputStreamCodeBaseEntry z = map.get(resourceName);
             if (z != null) {
-	            return z;
+                return z;
             }
             ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
             try {
@@ -119,36 +119,36 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
                 boolean found = false;
                 int countDown = 20;
                 while ((ze = zis.getNextEntry()) != null && countDown >= 0) {
-					if (ze.getName().equals(resourceName)) {
+                    if (ze.getName().equals(resourceName)) {
                         found = true;
                     }
                     if (found) {
-						countDown--;
+                        countDown--;
                         if (map.containsKey(ze.getName())) {
                             continue;
                         }
-						z = build(zis, ze);
+                        z = build(zis, ze);
                         map.put(ze.getName(), z);
                     }
                     zis.closeEntry();
-				}
+                }
             } finally {
                 zis.close();
             }
-			z = map.get(resourceName);
+            z = map.get(resourceName);
             if (z == null) {
                 throw new AssertionError("Could not find " + resourceName);
             }
             return z;
         } catch (IOException e) {
             return null;
-		}
+        }
     }
 
     ZipInputStreamCodeBaseEntry build(ZipInputStream zis, ZipEntry ze) throws IOException {
         long sz = ze.getSize();
         ByteArrayOutputStream out;
-		if (sz < 0 || sz > Integer.MAX_VALUE) {
+        if (sz < 0 || sz > Integer.MAX_VALUE) {
             out = new ByteArrayOutputStream();
         } else {
             out = new ByteArrayOutputStream((int) sz);
@@ -156,7 +156,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
         IO.copy(zis, out);
         byte[] bytes = out.toByteArray();
         setLastModifiedTime(ze.getTime());
-		return new ZipInputStreamCodeBaseEntry(this, ze, bytes);
+        return new ZipInputStreamCodeBaseEntry(this, ze, bytes);
     }
 
     class MyIterator implements ICodeBaseIterator {
@@ -167,23 +167,25 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
         MyIterator() {
             try {
                 zis = new ZipInputStream(new FileInputStream(file));
-				ze = zis.getNextEntry();
+                ze = zis.getNextEntry();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-		}
+        }
 
         private void getNextEntry() throws IOException {
             ze = zis.getNextEntry();
             if (ze == null) {
-	            zis.close();
+                zis.close();
             }
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#hasNext()
          */
-		public boolean hasNext() throws InterruptedException {
+        public boolean hasNext() throws InterruptedException {
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }
@@ -191,10 +193,12 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
             return ze != null;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
          */
-		public ICodeBaseEntry next() throws InterruptedException {
+        public ICodeBaseEntry next() throws InterruptedException {
             try {
                 if (Thread.interrupted()) {
                     throw new InterruptedException();
@@ -202,11 +206,11 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
                 ZipInputStreamCodeBaseEntry z = build(zis, ze);
                 zis.closeEntry();
                 getNextEntry();
-				return z;
+                return z;
             } catch (IOException e) {
                 throw new RuntimeException("Failure getting next entry in " + file, e);
             }
-		}
+        }
 
     }
 
@@ -214,24 +218,30 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
         return new MyIterator();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
      */
-	public String getPathName() {
+    public String getPathName() {
         return file.getName();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
      */
-	public void close() {
+    public void close() {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
-	@Override
+    @Override
     public String toString() {
         return file.getName();
     }

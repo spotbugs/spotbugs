@@ -19,34 +19,31 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-
 /**
- * Iterator over the resources in an IScannableCodeBase.
- * Note that some of the methods can throw InterruptedException.
- * This occurs when the analysis is canceled by interrupting
- * the analysis thread.
- *
+ * Iterator over the resources in an IScannableCodeBase. Note that some of the
+ * methods can throw InterruptedException. This occurs when the analysis is
+ * canceled by interrupting the analysis thread.
+ * 
  * <p>
- * Note that the close() method must be called when done with
- * an ICodeBaseIterator object.
+ * Note that the close() method must be called when done with an
+ * ICodeBaseIterator object.
  * </p>
- *
+ * 
  * @author David Hovemeyer
  */
 public interface ICodeBaseIterator {
     /**
-     * Return true if there is another resource to be scanned,
-     * false otherwise.
-	 * 
-     * @return true if there is another resource to be scanned,
-     *          false otherwise
+     * Return true if there is another resource to be scanned, false otherwise.
+     * 
+     * @return true if there is another resource to be scanned, false otherwise
      */
-	public boolean hasNext() throws InterruptedException;
+    public boolean hasNext() throws InterruptedException;
 
     /**
      * Get the ICodeBaseEntry representing the next resource in the code base.
-     *
-	 * @return the ICodeBaseEntry representing the next resource in the code base
+     * 
+     * @return the ICodeBaseEntry representing the next resource in the code
+     *         base
      * @throws InterruptedException
      */
     public ICodeBaseEntry next() throws InterruptedException;

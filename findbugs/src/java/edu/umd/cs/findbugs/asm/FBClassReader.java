@@ -33,20 +33,19 @@ public class FBClassReader extends ClassReader {
 
     public FBClassReader(byte[] b) {
         super(b);
-        }
+    }
+
     public FBClassReader(byte[] b, int off, int len) {
         super(b, off, len);
     }
 
     @Override
-    public void accept(ClassVisitor cv, Attribute[] attrs, int flags)
-    {
+    public void accept(ClassVisitor cv, Attribute[] attrs, int flags) {
         super.accept(new MyClassAdapter(cv), attrs, flags);
     }
 
     @Override
-    protected Label readLabel(int offset, Label[] labels)
-    {
+    protected Label readLabel(int offset, Label[] labels) {
         // if (!needOffsets) return super.readLabel(offset, labels);
         if (labels[offset] == null) {
             for (int i = 0; i < labels.length; ++i) {
@@ -64,12 +63,11 @@ public class FBClassReader extends ClassReader {
         }
 
         @Override
-        public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions)
-        {
+        public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
             MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
             // needOffsets = mv instanceof MyMethodVisitor;
             if (mv instanceof FBMethodVisitor) {
-                mv = new MyMethodAdapter((FBMethodVisitor)mv);
+                mv = new MyMethodAdapter((FBMethodVisitor) mv);
             }
             return mv;
         }
@@ -82,8 +80,7 @@ public class FBClassReader extends ClassReader {
         }
 
         @Override
-        public void visitLabel(Label label)
-        {
+        public void visitLabel(Label label) {
             assert label instanceof MyLabel;
             MyLabel l = (MyLabel) label;
             ((FBMethodVisitor) mv).visitOffset(l.originalOffset);

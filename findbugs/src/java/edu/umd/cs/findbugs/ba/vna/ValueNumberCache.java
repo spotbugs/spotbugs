@@ -30,9 +30,9 @@ import edu.umd.cs.findbugs.util.Strings;
 
 /**
  * A cache mapping instructions and input values to the output values they
- * produce.  We must always produce the same output given identical
- * input, or else value number analysis will not terminate.
- *
+ * produce. We must always produce the same output given identical input, or
+ * else value number analysis will not terminate.
+ * 
  * @author David Hovemeyer
  * @see ValueNumberAnalysis
  */
@@ -40,60 +40,62 @@ public class ValueNumberCache {
     private static final boolean DEBUG = SystemProperties.getBoolean("vn.debug");
 
     /**
-     * An entry in the cache.
-     * It represents an instruction with specific input values.
-	 */
+     * An entry in the cache. It represents an instruction with specific input
+     * values.
+     */
     public static class Entry {
         public final InstructionHandle handle;
+
         public final ValueNumber[] inputValueList;
-		private int cachedHashCode;
+
+        private int cachedHashCode;
 
         @SuppressWarnings("EI2")
         public Entry(InstructionHandle handle, ValueNumber[] inputValueList) {
             this.handle = handle;
-			this.inputValueList = inputValueList;
+            this.inputValueList = inputValueList;
             this.cachedHashCode = 0;
         }
 
         @Override
-                 public boolean equals(Object o) {
+        public boolean equals(Object o) {
             if (!(o instanceof Entry))
-				return false;
+                return false;
             Entry other = (Entry) o;
             if (handle.getPosition() != other.handle.getPosition())
                 return false;
-			ValueNumber[] myList = inputValueList;
+            ValueNumber[] myList = inputValueList;
             ValueNumber[] otherList = other.inputValueList;
             if (myList.length != otherList.length)
                 return false;
-			for (int i = 0; i < myList.length; ++i)
+            for (int i = 0; i < myList.length; ++i)
                 if (!myList[i].equals(otherList[i]))
                     return false;
             return true;
-		}
+        }
 
         @Override
-                 public int hashCode() {
+        public int hashCode() {
             if (cachedHashCode == 0) {
-				int code = handle.getPosition();
+                int code = handle.getPosition();
                 for (ValueNumber aInputValueList : inputValueList) {
                     code *= 101;
                     ValueNumber valueNumber = aInputValueList;
-					code += valueNumber.hashCode();
+                    code += valueNumber.hashCode();
                 }
                 cachedHashCode = code;
             }
-			return cachedHashCode;
+            return cachedHashCode;
         }
 
         @Override
         public String toString() {
             StringBuilder buf = new StringBuilder();
-			buf.append(handle.toString());
+            buf.append(handle.toString());
             for (ValueNumber aInputValueList : inputValueList) {
                 buf.append(", ");
                 buf.append(aInputValueList.toString());
-			}
+            }
             return buf.toString();
         }
     }
@@ -101,34 +103,38 @@ public class ValueNumberCache {
     /**
      * Map of entries to output values.
      */
-	private HashMap<Entry, ValueNumber[]> entryToOutputMap = new HashMap<Entry, ValueNumber[]>();
+    private HashMap<Entry, ValueNumber[]> entryToOutputMap = new HashMap<Entry, ValueNumber[]>();
 
     /**
      * Look up cached output values for given entry.
-     *
-	 * @param entry the entry
+     * 
+     * @param entry
+     *            the entry
      * @return the list of output values, or null if there is no matching entry
      *         in the cache
      */
-	public ValueNumber[] lookupOutputValues(Entry entry) {
-        if (DEBUG) System.out.println("VN cache lookup: " + entry);
+    public ValueNumber[] lookupOutputValues(Entry entry) {
+        if (DEBUG)
+            System.out.println("VN cache lookup: " + entry);
         ValueNumber[] result = entryToOutputMap.get(entry);
-        if (DEBUG) System.out.println("   result ==> " + Arrays.toString(result));
-		return result;
+        if (DEBUG)
+            System.out.println("   result ==> " + Arrays.toString(result));
+        return result;
     }
 
     /**
-     * Add output values for given entry.
-     * Assumes that lookupOutputValues() has determined that the entry
-	 * is not in the cache.
-     *
-     * @param entry           the entry
-     * @param outputValueList the list of output values produced
-	 *                        by the entry's instruction and input values
+     * Add output values for given entry. Assumes that lookupOutputValues() has
+     * determined that the entry is not in the cache.
+     * 
+     * @param entry
+     *            the entry
+     * @param outputValueList
+     *            the list of output values produced by the entry's instruction
+     *            and input values
      */
     public void addOutputValues(Entry entry, ValueNumber[] outputValueList) {
         ValueNumber[] old = entryToOutputMap.put(entry, outputValueList);
-		if (old != null)
+        if (old != null)
             throw new IllegalStateException("overwriting output values for entry!");
     }
 

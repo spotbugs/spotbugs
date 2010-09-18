@@ -29,9 +29,9 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce DefinitelyNullSetDataflow objects
- * for analyzed methods.
- *
+ * Analysis engine to produce DefinitelyNullSetDataflow objects for analyzed
+ * methods.
+ * 
  * @author David Hovemeyer
  */
 public class DefinitelyNullSetDataflowFactory extends AnalysisFactory<DefinitelyNullSetDataflow> {
@@ -39,14 +39,19 @@ public class DefinitelyNullSetDataflowFactory extends AnalysisFactory<Definitely
         super("definitely null set dataflow", DefinitelyNullSetDataflow.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public DefinitelyNullSetDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public DefinitelyNullSetDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         CFG cfg = getCFG(analysisCache, descriptor);
-        DepthFirstSearch  dfs = getDepthFirstSearch(analysisCache, descriptor);
+        DepthFirstSearch dfs = getDepthFirstSearch(analysisCache, descriptor);
         ValueNumberDataflow vnaDataflow = getValueNumberDataflow(analysisCache, descriptor);
-		CompactLocationNumbering compactLocationNumbering = getCompactLocationNumbering(analysisCache, descriptor);
+        CompactLocationNumbering compactLocationNumbering = getCompactLocationNumbering(analysisCache, descriptor);
 
         DefinitelyNullSetAnalysis analysis = new DefinitelyNullSetAnalysis(dfs, vnaDataflow, compactLocationNumbering);
         DefinitelyNullSetDataflow dataflow = new DefinitelyNullSetDataflow(cfg, analysis);

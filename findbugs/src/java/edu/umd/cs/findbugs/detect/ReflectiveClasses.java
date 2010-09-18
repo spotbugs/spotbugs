@@ -39,31 +39,37 @@ public class ReflectiveClasses extends BytecodeScanningDetector implements NonRe
     }
 
     String constantString;
+
     @Override
     public void sawString(String s) {
         constantString = s;
-	}
+    }
+
     @Override
     public void sawClass() {
         int opcode = getOpcode();
-        if ((opcode == LDC) || (opcode == LDC_W)) process(getClassConstantOperand());
+        if ((opcode == LDC) || (opcode == LDC_W))
+            process(getClassConstantOperand());
     }
-	@Override
+
+    @Override
     public void sawOpcode(int seen) {
         if (seen == INVOKESTATIC) {
-            // System.out.println(getClassConstantOperand()+ "." + getNameConstantOperand());
-			if (constantString != null && getClassConstantOperand().equals("java/lang/Class") && getNameConstantOperand().equals("forName")) {
+            // System.out.println(getClassConstantOperand()+ "." +
+            // getNameConstantOperand());
+            if (constantString != null && getClassConstantOperand().equals("java/lang/Class")
+                    && getNameConstantOperand().equals("forName")) {
                 process(ClassName.toSlashedClassName(constantString));
-        }
+            }
 
-		}
+        }
         constantString = null;
     }
 
     private void process(@SlashedClassName String className) {
         ClassDescriptor d = DescriptorFactory.createClassDescriptor(className);
         AnalysisContext.currentXFactory().addReflectiveClasses(d);
-	}
+    }
 }
 
-//vim:ts=4
+// vim:ts=4

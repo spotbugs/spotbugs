@@ -29,51 +29,52 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
 /**
- * Stream factory for streams created by loading a value
- * from a static field.  This is mainly to handle
- * System.in, System.out, and System.err.
+ * Stream factory for streams created by loading a value from a static field.
+ * This is mainly to handle System.in, System.out, and System.err.
  */
 public class StaticFieldLoadStreamFactory implements StreamFactory {
     public String streamBaseClass;
+
     public String className;
+
     public String fieldName;
-	public String fieldSig;
+
+    public String fieldSig;
 
     /**
-     * Constructor.
-     * Created Stream objects will be marked as uninteresting.
-	 *
-     * @param streamBaseClass the base class of the stream objects created
-     *                        by the factory
-     * @param className       name of the class containing the static field
-	 * @param fieldName       name of the static field
-     * @param fieldSig        signature of the static field
+     * Constructor. Created Stream objects will be marked as uninteresting.
+     * 
+     * @param streamBaseClass
+     *            the base class of the stream objects created by the factory
+     * @param className
+     *            name of the class containing the static field
+     * @param fieldName
+     *            name of the static field
+     * @param fieldSig
+     *            signature of the static field
      */
-    public StaticFieldLoadStreamFactory(String streamBaseClass, String className,
-										String fieldName, String fieldSig) {
+    public StaticFieldLoadStreamFactory(String streamBaseClass, String className, String fieldName, String fieldSig) {
         this.streamBaseClass = streamBaseClass;
         this.className = className;
         this.fieldName = fieldName;
-		this.fieldSig = fieldSig;
+        this.fieldSig = fieldSig;
     }
 
     public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-                               RepositoryLookupFailureCallback lookupFailureCallback) {
+            RepositoryLookupFailureCallback lookupFailureCallback) {
 
         Instruction ins = location.getHandle().getInstruction();
         if (ins.getOpcode() != Constants.GETSTATIC)
             return null;
 
         GETSTATIC getstatic = (GETSTATIC) ins;
-        if (!className.equals(getstatic.getClassName(cpg))
-                || !fieldName.equals(getstatic.getName(cpg))
-				|| !fieldSig.equals(getstatic.getSignature(cpg)))
+        if (!className.equals(getstatic.getClassName(cpg)) || !fieldName.equals(getstatic.getName(cpg))
+                || !fieldSig.equals(getstatic.getSignature(cpg)))
             return null;
 
-        return new Stream(location, type.getClassName(), streamBaseClass)
-                .setIgnoreImplicitExceptions(true)
-                .setIsOpenOnCreation(true);
-	}
+        return new Stream(location, type.getClassName(), streamBaseClass).setIgnoreImplicitExceptions(true).setIsOpenOnCreation(
+                true);
+    }
 }
 
 // vim:ts=3

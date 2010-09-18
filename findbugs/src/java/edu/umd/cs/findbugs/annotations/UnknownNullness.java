@@ -32,11 +32,9 @@ import javax.annotation.meta.When;
  * unknown ways in subclasses.
  **/
 @Documented
-@Target({ElementType.FIELD, ElementType.METHOD,
-         ElementType.PARAMETER,
-         ElementType.LOCAL_VARIABLE})
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })
 @Retention(RetentionPolicy.CLASS)
-@javax.annotation.Nonnull(when=When.UNKNOWN)
+@javax.annotation.Nonnull(when = When.UNKNOWN)
 @TypeQualifierNickname
 public @interface UnknownNullness {
 

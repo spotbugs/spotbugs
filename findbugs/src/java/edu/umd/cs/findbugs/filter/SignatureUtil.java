@@ -29,34 +29,35 @@ public class SignatureUtil {
     public static String createMethodSignature(String params, String returns) {
         if (params == null) {
             if (returns == null)
-				return null;
+                return null;
             throw new NullPointerException("params is null but returns is nonnull");
         }
         if (returns == null)
-			throw new NullPointerException("returns is null but params is nonnull");
+            throw new NullPointerException("returns is null but params is nonnull");
         StringBuilder buf = new StringBuilder();
 
         buf.append('(');
         StringTokenizer tok = new StringTokenizer(params, " \t\n\r\f,");
         while (tok.hasMoreTokens()) {
-			String param = typeToSignature(tok.nextToken());
+            String param = typeToSignature(tok.nextToken());
             buf.append(param);
         }
         buf.append(')');
-		buf.append(typeToSignature(returns));
+        buf.append(typeToSignature(returns));
 
         return buf.toString();
     }
 
     public static String createFieldSignature(String type) {
-        if (type == null) return null;
+        if (type == null)
+            return null;
         return typeToSignature(type);
-	}
+    }
 
     private static String typeToSignature(String type) {
-        if(type.endsWith("[]")) {
+        if (type.endsWith("[]")) {
             return "[" + typeToSignature(type.substring(0, type.length() - 2));
-		} else {
+        } else {
             return scalarTypeToSiganture(type);
         }
     }
@@ -64,23 +65,23 @@ public class SignatureUtil {
     private static String scalarTypeToSiganture(String type) {
         if (type.equals("boolean"))
             return "Z";
-		else if (type.equals("byte"))
+        else if (type.equals("byte"))
             return "B";
         else if (type.equals("char"))
             return "C";
-		else if (type.equals("short"))
+        else if (type.equals("short"))
             return "S";
         else if (type.equals("int"))
             return "I";
-		else if (type.equals("long"))
+        else if (type.equals("long"))
             return "J";
         else if (type.equals("float"))
             return "F";
-		else if (type.equals("double"))
+        else if (type.equals("double"))
             return "D";
         else if (type.equals("void"))
             return "V";
-		else
+        else
             return "L" + type.replace('.', '/') + ";";
     }
 }

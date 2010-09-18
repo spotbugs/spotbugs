@@ -41,12 +41,13 @@ import edu.umd.cs.findbugs.ba.SignatureConverter;
 
 /**
  * This is just for debugging method call resolution.
- *
+ * 
  * @author David Hovemeyer
  */
 public class CheckCalls implements Detector, NonReportingDetector {
 
     private static final String METHOD = SystemProperties.getProperty("checkcalls.method");
+
     private static final String TARGET_METHOD = SystemProperties.getProperty("checkcalls.targetmethod");
 
     BugReporter bugReporter;
@@ -55,76 +56,75 @@ public class CheckCalls implements Detector, NonReportingDetector {
         this.bugReporter = bugReporter;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba
+     * .ClassContext)
      */
-	public void visitClassContext(ClassContext classContext) {
+    public void visitClassContext(ClassContext classContext) {
         Method[] methodList = classContext.getJavaClass().getMethods();
         for (Method method : methodList) {
             if (method.getCode() == null)
-				continue;
+                continue;
 
-            //System.out.println("--> " + method.getName());
+            // System.out.println("--> " + method.getName());
             if (METHOD != null && !method.getName().equals(METHOD))
                 continue;
 
             try {
-                System.out.println("Analyzing " +
-                        SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method)
-				);
+                System.out.println("Analyzing " + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
                 analyzeMethod(classContext, method);
             } catch (CFGBuilderException e) {
                 bugReporter.logError("Error", e);
-			} catch (DataflowAnalysisException e) {
+            } catch (DataflowAnalysisException e) {
                 bugReporter.logError("Error", e);
             } catch (ClassNotFoundException e) {
                 bugReporter.reportMissingClass(e);
-			}
+            }
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method)
-            throws CFGBuilderException, ClassNotFoundException, DataflowAnalysisException {
+    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, ClassNotFoundException,
+            DataflowAnalysisException {
         CFG cfg = classContext.getCFG(method);
-		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+        for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
             Instruction ins = location.getHandle().getInstruction();
 
             if (ins instanceof InvokeInstruction) {
                 if (TARGET_METHOD != null
-                        && !((InvokeInstruction)ins).getMethodName(classContext.getConstantPoolGen()).equals(TARGET_METHOD))
-					continue;
+                        && !((InvokeInstruction) ins).getMethodName(classContext.getConstantPoolGen()).equals(TARGET_METHOD))
+                    continue;
 
                 System.out.println("\n*******************************************************\n");
 
                 System.out.println("Method invocation: " + location.getHandle());
-                System.out.println("\tInvoking: " +
-                        SignatureConverter.convertMethodSignature((InvokeInstruction)ins,classContext.getConstantPoolGen()));
+                System.out.println("\tInvoking: "
+                        + SignatureConverter.convertMethodSignature((InvokeInstruction) ins, classContext.getConstantPoolGen()));
 
-                JavaClassAndMethod proto = Hierarchy.findInvocationLeastUpperBound(
-                        (InvokeInstruction) ins,
+                JavaClassAndMethod proto = Hierarchy.findInvocationLeastUpperBound((InvokeInstruction) ins,
                         classContext.getConstantPoolGen());
-				if (proto == null) {
+                if (proto == null) {
                     System.out.println("\tUnknown prototype method");
                 } else {
-                    System.out.println("\tPrototype method: class=" +
-							proto.getJavaClass().getClassName() + ", method=" +
-                            proto.getMethod());
+                    System.out.println("\tPrototype method: class=" + proto.getJavaClass().getClassName() + ", method="
+                            + proto.getMethod());
                 }
-                Set<JavaClassAndMethod> calledMethodSet = Hierarchy.resolveMethodCallTargets(
-						(InvokeInstruction) ins,
-                        classContext.getTypeDataflow(method).getFactAtLocation(location),
-                        classContext.getConstantPoolGen()
-                );
-				System.out.println("\tTarget method set: " + calledMethodSet);
+                Set<JavaClassAndMethod> calledMethodSet = Hierarchy.resolveMethodCallTargets((InvokeInstruction) ins,
+                        classContext.getTypeDataflow(method).getFactAtLocation(location), classContext.getConstantPoolGen());
+                System.out.println("\tTarget method set: " + calledMethodSet);
             }
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.Detector#report()
      */
-	public void report() {
+    public void report() {
     }
 
 }

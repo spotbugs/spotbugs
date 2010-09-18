@@ -22,13 +22,12 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
 /**
- * An exception that may be thrown by frame modeling visitor
- * classes to indicate that the method being analyzed contains
- * invalid bytecode.  For example, this can be thrown to indicate
- * that a method invocation requires more stack operands than
- * are available.  AbstractFrameModelingVisitor will catch
- * this exception and rethrow it as a checked DataflowAnalysisException.
- *
+ * An exception that may be thrown by frame modeling visitor classes to indicate
+ * that the method being analyzed contains invalid bytecode. For example, this
+ * can be thrown to indicate that a method invocation requires more stack
+ * operands than are available. AbstractFrameModelingVisitor will catch this
+ * exception and rethrow it as a checked DataflowAnalysisException.
+ * 
  * @author David Hovemeyer
  */
 public class InvalidBytecodeException extends RuntimeException {
@@ -36,48 +35,53 @@ public class InvalidBytecodeException extends RuntimeException {
 
     /**
      * Constructor.
-     *
-	 * @param msg reason for the exception
+     * 
+     * @param msg
+     *            reason for the exception
      */
     public InvalidBytecodeException(String msg) {
         super(msg);
-	}
+    }
 
     /**
      * Constructor.
-     *
-	 * @param msg   reason for the exception
-     * @param cause another exception that is the cause of this exception
+     * 
+     * @param msg
+     *            reason for the exception
+     * @param cause
+     *            another exception that is the cause of this exception
      */
     public InvalidBytecodeException(String msg, Throwable cause) {
-		super(msg, cause);
+        super(msg, cause);
     }
 
     /**
      * Constructor from method and instruction.
-     *
-	 * @param message   reason for the error
-     * @param methodGen the method
-     * @param handle    the instruction
+     * 
+     * @param message
+     *            reason for the error
+     * @param methodGen
+     *            the method
+     * @param handle
+     *            the instruction
      */
-	public InvalidBytecodeException(String message, MethodGen methodGen, InstructionHandle handle) {
+    public InvalidBytecodeException(String message, MethodGen methodGen, InstructionHandle handle) {
         super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle);
     }
 
     /**
      * Constructor from method and instruction.
-     *
-	 * @param message   reason for the error
-     * @param methodGen the method
-     * @param handle    the instruction
-     * @param cause     another exception that is the cause of this exception
-	 */
-    public InvalidBytecodeException(
-            String message,
-            MethodGen methodGen,
-			InstructionHandle handle,
-            Throwable cause) {
-        super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle,
-                cause);
-	}
+     * 
+     * @param message
+     *            reason for the error
+     * @param methodGen
+     *            the method
+     * @param handle
+     *            the instruction
+     * @param cause
+     *            another exception that is the cause of this exception
+     */
+    public InvalidBytecodeException(String message, MethodGen methodGen, InstructionHandle handle, Throwable cause) {
+        super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle, cause);
+    }
 }

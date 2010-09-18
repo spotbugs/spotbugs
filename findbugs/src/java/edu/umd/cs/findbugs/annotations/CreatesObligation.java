@@ -26,16 +26,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Mark a constructor or method as creating a resource
- * which requires cleanup.
- * The marked method must be a member of a class
- * marked with the CleanupObligation annotation.
- *
+ * Mark a constructor or method as creating a resource which requires cleanup.
+ * The marked method must be a member of a class marked with the
+ * CleanupObligation annotation.
+ * 
  * @author David Hovemeyer
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
+@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR })
 public @interface CreatesObligation {
 
 }

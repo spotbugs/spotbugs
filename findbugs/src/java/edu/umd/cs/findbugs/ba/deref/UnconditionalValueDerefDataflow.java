@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.ba.CFG;
 
 /**
  * Dataflow to find value numbers unconditionally dereferenced.
- *
+ * 
  * @author David Hovemeyer
  */
 public class UnconditionalValueDerefDataflow extends
@@ -32,11 +32,13 @@ public class UnconditionalValueDerefDataflow extends
 
     /**
      * Constructor.
-     *
-	 * @param cfg      the control flow graph
-     * @param analysis the analysis
+     * 
+     * @param cfg
+     *            the control flow graph
+     * @param analysis
+     *            the analysis
      */
     public UnconditionalValueDerefDataflow(CFG cfg, UnconditionalValueDerefAnalysis analysis) {
-		super(cfg, analysis);
+        super(cfg, analysis);
     }
 }

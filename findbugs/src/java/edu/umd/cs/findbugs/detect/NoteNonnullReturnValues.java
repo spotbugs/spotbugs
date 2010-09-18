@@ -28,20 +28,23 @@ import edu.umd.cs.findbugs.SystemProperties;
 /**
  * As a first scanning pass, make a note of unconditionally dereferenced
  * parameters for later use by FindNullDerefs.
- *
+ * 
  * @author David Hovemeyer
  */
-public class NoteNonnullReturnValues extends
-    BuildNonnullReturnDatabase implements Detector, NonReportingDetector, InterproceduralFirstPassDetector {
+public class NoteNonnullReturnValues extends BuildNonnullReturnDatabase implements Detector, NonReportingDetector,
+        InterproceduralFirstPassDetector {
 
     public NoteNonnullReturnValues(BugReporter bugReporter) {
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.Detector#report()
      */
-	public void report() {
-        if (SystemProperties.getBoolean("findbugs.statistics")) System.err.println(returnsNonNull + "/" + returnsReference + " methods return nonnull values");
+    public void report() {
+        if (SystemProperties.getBoolean("findbugs.statistics"))
+            System.err.println(returnsNonNull + "/" + returnsReference + " methods return nonnull values");
     }
 
 }

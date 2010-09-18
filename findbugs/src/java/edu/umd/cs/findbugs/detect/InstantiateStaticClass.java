@@ -40,11 +40,12 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         try {
-			if ((seen == INVOKESPECIAL) && getNameConstantOperand().equals("<init>") && getSigConstantOperand().equals("()V")) {
+            if ((seen == INVOKESPECIAL) && getNameConstantOperand().equals("<init>") && getSigConstantOperand().equals("()V")) {
                 XClass xClass = getXClassOperand();
-                if (xClass == null) return;
+                if (xClass == null)
+                    return;
                 String clsName = getClassConstantOperand();
-				if (clsName.equals("java/lang/Object"))
+                if (clsName.equals("java/lang/Object"))
                     return;
 
                 // ignore superclass synthesized ctor calls
@@ -58,42 +59,43 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
                 if (isStaticOnlyClass(xClass))
                     bugReporter.reportBug(new BugInstance(this, "ISC_INSTANTIATE_STATIC_CLASS", LOW_PRIORITY).addClassAndMethod(
                             this).addSourceLine(this));
-			}
+            }
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         }
-	}
+    }
 
     private boolean isStaticOnlyClass(XClass xClass) throws ClassNotFoundException {
 
-            if (xClass.getInterfaceDescriptorList().length > 0)
-                return false;
-            ClassDescriptor superclassDescriptor = xClass.getSuperclassDescriptor();
-			if (superclassDescriptor == null) return false;
-            String superClassName = superclassDescriptor.getClassName();
-            if (!superClassName.equals("java/lang/Object"))
-                return false;
-			int staticCount = 0;
+        if (xClass.getInterfaceDescriptorList().length > 0)
+            return false;
+        ClassDescriptor superclassDescriptor = xClass.getSuperclassDescriptor();
+        if (superclassDescriptor == null)
+            return false;
+        String superClassName = superclassDescriptor.getClassName();
+        if (!superClassName.equals("java/lang/Object"))
+            return false;
+        int staticCount = 0;
 
-            List<? extends XMethod> methods = xClass.getXMethods();
-            for (XMethod m : methods) {
-                if (m.isStatic()) {
-					staticCount++;
-                } else if (!m.getName().equals("<init>") || !m.getSignature().equals("()V"))
-                    return false;
-            }
-
-            List<? extends XField> fields = xClass.getXFields();
-            for (XField f : fields) {
-                if (f.isStatic()) {
-					staticCount++;
-                } else if (!f.isPrivate())
-                    return false;
-            }
-
-            if (staticCount == 0)
+        List<? extends XMethod> methods = xClass.getXMethods();
+        for (XMethod m : methods) {
+            if (m.isStatic()) {
+                staticCount++;
+            } else if (!m.getName().equals("<init>") || !m.getSignature().equals("()V"))
                 return false;
-            return true;
+        }
+
+        List<? extends XField> fields = xClass.getXFields();
+        for (XField f : fields) {
+            if (f.isStatic()) {
+                staticCount++;
+            } else if (!f.isPrivate())
+                return false;
+        }
+
+        if (staticCount == 0)
+            return false;
+        return true;
 
     }
 

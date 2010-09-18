@@ -22,17 +22,20 @@ package edu.umd.cs.findbugs;
 import java.io.PrintStream;
 
 /**
- * Display FindBugs progress in the terminal window
- * using ASCII codes.  We assume that the terminal
- * window is at least 80 characters wide.
- *
+ * Display FindBugs progress in the terminal window using ASCII codes. We assume
+ * that the terminal window is at least 80 characters wide.
+ * 
  * @author David Hovemeyer
  */
 public class TextUIProgressCallback implements FindBugsProgress {
     private PrintStream out;
+
     private int goal;
+
     private int count;
-	private int numPasses;
+
+    private int numPasses;
+
     private int pass;
 
     public TextUIProgressCallback(PrintStream out) {
@@ -42,7 +45,7 @@ public class TextUIProgressCallback implements FindBugsProgress {
     public void reportNumberOfArchives(int numArchives) {
         this.goal = numArchives;
         this.count = 0;
-		scanningArchives(0);
+        scanningArchives(0);
     }
 
     public void finishArchive() {
@@ -52,18 +55,18 @@ public class TextUIProgressCallback implements FindBugsProgress {
     public void predictPassCount(int[] classesPerPass) {
         out.println();
         printMessage(classesPerPass.length + " analysis passes to perform");
-		this.numPasses = classesPerPass.length;
+        this.numPasses = classesPerPass.length;
         this.pass = 0;
     }
 
     public void startAnalysis(int numClasses) {
         if (pass == 0) {
             out.println();
-		}
+        }
         this.goal = numClasses;
         this.count = 0;
         analyzingClasses(0);
-	}
+    }
 
     public void finishClass() {
         analyzingClasses(++count);
@@ -72,7 +75,7 @@ public class TextUIProgressCallback implements FindBugsProgress {
     public void finishPerClassAnalysis() {
         out.println();
         ++pass;
-		if (pass == numPasses) {
+        if (pass == numPasses) {
             out.println("Done with analysis");
         }
     }
@@ -80,17 +83,17 @@ public class TextUIProgressCallback implements FindBugsProgress {
     private void scanningArchives(int i) {
         String msg = String.format("Scanning archives (%d / %d)", i, goal);
         printMessage(msg);
-	}
+    }
 
     private void analyzingClasses(int i) {
-        String msg = String.format("Pass %d: Analyzing classes (%d / %d) - %02d%% complete", pass+1, i, goal, (i*100)/goal);
+        String msg = String.format("Pass %d: Analyzing classes (%d / %d) - %02d%% complete", pass + 1, i, goal, (i * 100) / goal);
         printMessage(msg);
-	}
+    }
 
     private void printMessage(String msg) {
         if (msg.length() > 79) {
             msg = msg.substring(0, 79);
-		}
+        }
         out.print("\r" + msg);
     }
 

@@ -35,93 +35,107 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Build the interprocedural call graph.
- *
- * NOTE: at the present time, this facility is only used
- * to find relevant type qualifiers.
- * It could become a more general-purpose facility if
- * there were a need.
- *
+ * 
+ * NOTE: at the present time, this facility is only used to find relevant type
+ * qualifiers. It could become a more general-purpose facility if there were a
+ * need.
+ * 
  * @author David Hovemeyer
  */
 public class BuildInterproceduralCallGraph extends BytecodeScanningDetector implements NonReportingDetector {
 
     private final InterproceduralCallGraph callGraph;
+
     private InterproceduralCallGraphVertex currentVertex;
 
     /**
      * Constructor.
-     *
-	 * @param bugReporter the BugReporter to use
+     * 
+     * @param bugReporter
+     *            the BugReporter to use
      */
     public BuildInterproceduralCallGraph(BugReporter bugReporter) {
         if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
-			return;
+            return;
         }
         callGraph = new InterproceduralCallGraph();
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.BytecodeScanningDetector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.BytecodeScanningDetector#visitClassContext(edu.umd
+     * .cs.findbugs.ba.ClassContext)
      */
-	@Override
+    @Override
     public void visitClassContext(ClassContext classContext) {
         if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
             return;
-		}
+        }
         super.visitClassContext(classContext);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.visitclass.BetterVisitor#visitMethod(org.apache.bcel.classfile.Method)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.visitclass.BetterVisitor#visitMethod(org.apache.bcel
+     * .classfile.Method)
      */
-	@Override
+    @Override
     public void visitMethod(Method obj) {
         currentVertex = findVertex(getXMethod());
         super.visitMethod(obj);
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.visitclass.DismantleBytecode#sawOpcode(int)
      */
-	@Override
+    @Override
     public void sawOpcode(int seen) {
         switch (seen) {
         case Constants.INVOKESTATIC:
-		case Constants.INVOKEVIRTUAL:
+        case Constants.INVOKEVIRTUAL:
         case Constants.INVOKEINTERFACE:
         case Constants.INVOKESPECIAL:
             MethodDescriptor called = getMethodDescriptorOperand();
-			XMethod calledXMethod = XFactory.createXMethod(called);
+            XMethod calledXMethod = XFactory.createXMethod(called);
             InterproceduralCallGraphVertex calledVertex = findVertex(calledXMethod);
             callGraph.createEdge(currentVertex, calledVertex);
         }
-	}
+    }
 
     /**
      * Find the InterproceduralCallGraphVertex for given XMethod.
-     *
-	 * @param xmethod an XMethod
+     * 
+     * @param xmethod
+     *            an XMethod
      * @return the XMethod's InterproceduralCallGraphVertex
      */
     private InterproceduralCallGraphVertex findVertex(XMethod xmethod) {
-		InterproceduralCallGraphVertex vertex;
+        InterproceduralCallGraphVertex vertex;
         vertex = callGraph.lookupVertex(xmethod.getMethodDescriptor());
         if (vertex == null) {
             vertex = new InterproceduralCallGraphVertex();
-			vertex.setXmethod(xmethod);
+            vertex.setXmethod(xmethod);
             callGraph.addVertex(vertex);
         }
         return vertex;
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.BytecodeScanningDetector#report()
      */
-	@Override
+    @Override
     public void report() {
         if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
             return;
-		}
+        }
         Global.getAnalysisCache().eagerlyPutDatabase(InterproceduralCallGraph.class, callGraph);
     }
 }

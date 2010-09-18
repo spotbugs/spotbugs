@@ -31,36 +31,39 @@ import edu.umd.cs.findbugs.cloud.db.DBCloud;
 public class PromptForNameLookup implements NameLookup {
 
     BugCollection bugCollection;
+
     String username;
+
     /*
-	 * (non-Javadoc)
-     *
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.cloud.NameLookup#getUserName()
      */
-	public boolean init() {
+    public boolean init() {
         Preferences prefs = Preferences.userNodeForPackage(DBCloud.class);
         String findbugsUser = prefs.get(USER_NAME, null);
-        findbugsUser = bugCollection.getProject().getGuiCallback().showQuestionDialog(
-		        "Name/handle/email for recording your evaluations?\n"
-                        + "(sorry, no authentication or confidentiality currently provided)",
-                "Name for recording your evaluations", findbugsUser == null ? "" : findbugsUser);
+        findbugsUser = bugCollection
+                .getProject()
+                .getGuiCallback()
+                .showQuestionDialog(
+                        "Name/handle/email for recording your evaluations?\n"
+                                + "(sorry, no authentication or confidentiality currently provided)",
+                        "Name for recording your evaluations", findbugsUser == null ? "" : findbugsUser);
         if (findbugsUser != null) {
-			prefs.put(USER_NAME, findbugsUser);
+            prefs.put(USER_NAME, findbugsUser);
             username = findbugsUser;
             return true;
         }
-		return false;
+        return false;
     }
 
     public String getUsername() {
         return username;
     }
-	
-
 
     public boolean signIn(CloudPlugin plugin, BugCollection bugCollection) {
         this.bugCollection = bugCollection;
         return true;
-	}
+    }
 
 }

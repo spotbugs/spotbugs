@@ -34,35 +34,34 @@ import javax.annotation.CheckForNull;
 import org.apache.bcel.generic.ReferenceType;
 
 /**
- * Policy database which defines which methods create and remove
- * obligations.
- *
- * <p>See Weimer and Necula,
- * <a href="http://doi.acm.org/10.1145/1028976.1029011"
- * >Finding and preventing run-time error handling mistakes</a>,
- * OOPSLA 2004.</p>
- *
+ * Policy database which defines which methods create and remove obligations.
+ * 
+ * <p>
+ * See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011"
+ * >Finding and preventing run-time error handling mistakes</a>, OOPSLA 2004.
+ * </p>
+ * 
  * @author David Hovemeyer
  */
 public class ObligationPolicyDatabase {
     public static final boolean DEBUG = SystemProperties.getBoolean("oa.debug.db");
 
     private ObligationFactory factory;
+
     private LinkedList<ObligationPolicyDatabaseEntry> entryList;
+
     private boolean strictChecking;
-	
+
     public ObligationPolicyDatabase() {
         this.factory = new ObligationFactory();
         this.entryList = new LinkedList<ObligationPolicyDatabaseEntry>();
-		
-
 
     }
 
     public ObligationFactory getFactory() {
         return factory;
     }
-	
+
     public void addEntry(ObligationPolicyDatabaseEntry entry) {
         entryList.add(entry);
     }
@@ -74,31 +73,32 @@ public class ObligationPolicyDatabase {
     public boolean isStrictChecking() {
         return strictChecking;
     }
-	
-    public void getActions(ReferenceType receiverType, String methodName, String signature, boolean isStatic, Collection<ObligationPolicyDatabaseAction> actionList) {
+
+    public void getActions(ReferenceType receiverType, String methodName, String signature, boolean isStatic,
+            Collection<ObligationPolicyDatabaseAction> actionList) {
         if (DEBUG) {
             System.out.println("Lookup for " + receiverType + "," + methodName + "," + signature + "," + isStatic + ": ");
-		}
+        }
         for (ObligationPolicyDatabaseEntry entry : entryList) {
 
             if (DEBUG) {
-				System.out.print("  Entry " + entry + "...");
+                System.out.print("  Entry " + entry + "...");
             }
 
             boolean matched = entry.getActions(receiverType, methodName, signature, isStatic, actionList);
-			
+
             if (DEBUG) {
                 System.out.println(matched ? " ==> MATCH" : " ==> no match");
             }
-		}
+        }
         if (DEBUG) {
             System.out.println("  ** Resulting action list: " + actionList);
         }
-	}
+    }
 
     public List<ObligationPolicyDatabaseEntry> getEntries() {
         return Collections.unmodifiableList(entryList);
-	}
+    }
 }
 
 // vim:ts=4

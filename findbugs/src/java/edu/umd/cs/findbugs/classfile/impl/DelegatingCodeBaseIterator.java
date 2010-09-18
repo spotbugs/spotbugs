@@ -25,32 +25,38 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 
 /**
- * An implementation of ICodeBaseIterator that delegates to
- * another codebase.  In particular, the codebase entries
- * it creates are DelegatingCodeBaseEntry objects.
- *
+ * An implementation of ICodeBaseIterator that delegates to another codebase. In
+ * particular, the codebase entries it creates are DelegatingCodeBaseEntry
+ * objects.
+ * 
  * @author David Hovemeyer
  */
 public class DelegatingCodeBaseIterator implements ICodeBaseIterator {
     private ICodeBase frontEndCodeBase;
+
     private ICodeBaseIterator delegateCodeBaseIterator;
 
-    public DelegatingCodeBaseIterator(ICodeBase frontEndCodeBase, IScannableCodeBase delegateCodeBase) throws InterruptedException {
+    public DelegatingCodeBaseIterator(ICodeBase frontEndCodeBase, IScannableCodeBase delegateCodeBase)
+            throws InterruptedException {
         this.frontEndCodeBase = frontEndCodeBase;
         this.delegateCodeBaseIterator = delegateCodeBase.iterator();
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#hasNext()
      */
-	public boolean hasNext() throws InterruptedException {
+    public boolean hasNext() throws InterruptedException {
         return delegateCodeBaseIterator.hasNext();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
      */
-	public ICodeBaseEntry next() throws InterruptedException {
+    public ICodeBaseEntry next() throws InterruptedException {
         ICodeBaseEntry delegateCodeBaseEntry = delegateCodeBaseIterator.next();
         return new DelegatingCodeBaseEntry(frontEndCodeBase, delegateCodeBaseEntry);
     }

@@ -44,15 +44,14 @@ public final class IPAddressLookup {
             public void run() {
                 BufferedReader in = null;
                 try {
-					URL u = new URL("http://www.whatismyip.org/");
+                    URL u = new URL("http://www.whatismyip.org/");
                     URLConnection c = u.openConnection();
 
-
-					 in = new BufferedReader(new InputStreamReader(c.getInputStream()));
+                    in = new BufferedReader(new InputStreamReader(c.getInputStream()));
                     ipAddress = in.readLine();
 
                 } catch (IOException e) {
-					assert true;
+                    assert true;
                 } finally {
 
                     latch.countDown();
@@ -62,16 +61,16 @@ public final class IPAddressLookup {
             }
         });
         t.setDaemon(true);
-		t.start();
+        t.start();
     }
 
     public String get() {
         try {
             latch.await(100, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             assert true;
         }
         return ipAddress;
-	}
+    }
 
 }

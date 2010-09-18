@@ -58,12 +58,12 @@ public class TestingGround {
         @Override
         public void handleOption(String option, String optionalExtraPart) {
             throw new IllegalArgumentException("unknown option: " + option);
-		}
+        }
 
         @Override
         public void handleOptionWithArgument(String option, String argument) {
             throw new IllegalArgumentException("unknown option: " + option);
-		}
+        }
     }
 
     public static void main(String[] args) throws Exception {
@@ -75,19 +75,19 @@ public class TestingGround {
         SortedBugCollection bugCollection = new SortedBugCollection();
         if (argCount < args.length)
             bugCollection.readXML(args[argCount++]);
-		else
+        else
             bugCollection.readXML(System.in);
         ArrayList<Bag<String>> live = new ArrayList<Bag<String>>();
         ArrayList<Bag<String>> died = new ArrayList<Bag<String>>();
-		Bag<String> allBugs = new Bag<String>();
+        Bag<String> allBugs = new Bag<String>();
         for (int i = 0; i <= bugCollection.getSequenceNumber(); i++) {
             live.add(new Bag<String>());
             died.add(new Bag<String>());
-		}
+        }
         for (BugInstance b : bugCollection) {
             int first = (int) b.getFirstVersion();
             int buried = (int) b.getLastVersion() + 1;
-			int finish = buried;
+            int finish = buried;
             if (finish == 0)
                 finish = (int) bugCollection.getSequenceNumber();
 
@@ -97,44 +97,41 @@ public class TestingGround {
             for (int i = first; i <= finish; i++)
                 live.get(i).add(bugPattern);
             if (buried > 0)
-				died.get(buried).add(bugPattern);
+                died.get(buried).add(bugPattern);
         }
         for (int i = 0; i < bugCollection.getSequenceNumber(); i++) {
             for (Map.Entry<String, Integer> e : died.get(i).entrySet()) {
-				Integer buried = e.getValue();
+                Integer buried = e.getValue();
                 int total = live.get(i).getCount(e.getKey());
                 if (buried > 30 && buried * 3 > total) {
                     System.out.printf("%d/%d died at %d for %s%n", buried, total, i, e.getKey());
-				}
+                }
             }
 
         }
         SortedBugCollection results = bugCollection.createEmptyCollectionWithMetadata();
         for (BugInstance b : bugCollection) {
-			int buried = (int) b.getLastVersion() + 1;
+            int buried = (int) b.getLastVersion() + 1;
             String bugPattern = b.getBugPattern().getType();
 
             if (buried > 0) {
                 int buriedCount = died.get(buried).getCount(bugPattern);
                 int total = live.get(buried).getCount(bugPattern);
-				if (buriedCount > 30 && buriedCount * 3 > total) 
+                if (buriedCount > 30 && buriedCount * 3 > total)
                     continue;
             }
-            int survied = live.get((int)bugCollection.getSequenceNumber()).getCount(bugPattern);
-			if (survied == 0 && allBugs.getCount(bugPattern) > 100)
+            int survied = live.get((int) bugCollection.getSequenceNumber()).getCount(bugPattern);
+            if (survied == 0 && allBugs.getCount(bugPattern) > 100)
                 continue;
 
             results.add(b, false);
-		}
+        }
         if (argCount == args.length) {
             results.writeXML(System.out);
-        }
-		else {
+        } else {
             results.writeXML(args[argCount++]);
 
         }
-
-
 
     }
 }

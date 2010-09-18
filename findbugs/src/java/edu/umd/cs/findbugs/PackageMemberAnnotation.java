@@ -26,98 +26,107 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
- * Abstract base class for BugAnnotations describing constructs
- * which are contained in a Java package.  Specifically,
- * this includes classes, methods, and fields.
- *
+ * Abstract base class for BugAnnotations describing constructs which are
+ * contained in a Java package. Specifically, this includes classes, methods,
+ * and fields.
+ * 
  * @author David Hovemeyer
  * @see BugAnnotation
  */
-public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLines  {
+public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLines {
     private static final long serialVersionUID = -8208567669352996892L;
 
-    protected final @DottedClassName String className;
-    protected  String description;
+    protected final @DottedClassName
+    String className;
+
+    protected String description;
+
     /**
-	 * Constructor.
-     *
-     * @param className name of the class
+     * Constructor.
+     * 
+     * @param className
+     *            name of the class
      */
-	protected PackageMemberAnnotation(@DottedClassName String className, String description) {
+    protected PackageMemberAnnotation(@DottedClassName String className, String description) {
         this(className, description, computeSourceFile(className));
     }
 
-	private static String computeSourceFile(String className) {
+    private static String computeSourceFile(String className) {
         AnalysisContext context = AnalysisContext.currentAnalysisContext();
 
         if (context != null)
-			return context.lookupSourceFile(className);
+            return context.lookupSourceFile(className);
         return SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
 
     }
-	/**
+
+    /**
      * Constructor.
-     *
-     * @param className name of the class
-	 */
+     * 
+     * @param className
+     *            name of the class
+     */
     protected PackageMemberAnnotation(@DottedClassName String className, String description, String sourceFileName) {
         if (className.length() == 0)
             throw new IllegalArgumentException("Empty classname not allowed");
-		if (className.indexOf('/') >= 0) {
-            assert false: "classname " + className + " should be dotted";
+        if (className.indexOf('/') >= 0) {
+            assert false : "classname " + className + " should be dotted";
             className = className.replace('/', '.');
         }
-		this.className = DescriptorFactory.canonicalizeString(className);
+        this.className = DescriptorFactory.canonicalizeString(className);
         this.sourceFileName = sourceFileName;
         if (description != null)
             description = description.intern();
-		this.description = description;
+        this.description = description;
     }
 
     /**
      * Get the class name.
      */
-	public final @DottedClassName String getClassName() {
+    public final @DottedClassName
+    String getClassName() {
         return className;
     }
+
     /**
-	 * Get the class name.
+     * Get the class name.
      */
     public final ClassDescriptor getClassDescriptor() {
         return DescriptorFactory.instance().getClassDescriptorForDottedClassName(className);
-	}
+    }
 
     /**
      * Get the package name.
      */
-	public final @DottedClassName String getPackageName() {
+    public final @DottedClassName
+    String getPackageName() {
         int lastDot = className.lastIndexOf('.');
         if (lastDot < 0)
             return "";
-		else
+        else
             return className.substring(0, lastDot);
     }
 
     /**
-     * Format the annotation.
-     * Note that this version (defined by PackageMemberAnnotation)
-	 * only handles the "class" and "package" keys, and calls
-     * formatPackageMember() for all other keys.
-     *
-     * @param key the key
-	 * @return the formatted annotation
+     * Format the annotation. Note that this version (defined by
+     * PackageMemberAnnotation) only handles the "class" and "package" keys, and
+     * calls formatPackageMember() for all other keys.
+     * 
+     * @param key
+     *            the key
+     * @return the formatted annotation
      */
     public final String format(String key, ClassAnnotation primaryClass) {
         if (key.equals("class.givenClass"))
-			return shorten(primaryClass.getPackageName(), className);
+            return shorten(primaryClass.getPackageName(), className);
         if (key.equals("simpleClass"))
             return ClassName.extractSimpleName(className);
         if (key.equals("class"))
-			return className;
+            return className;
         if (key.equals("package"))
             return getPackageName();
         if (key.equals("") && FindBugsDisplayFeatures.isAbridgedMessages() && primaryClass != null)
-			return formatPackageMember("givenClass", primaryClass);
+            return formatPackageMember("givenClass", primaryClass);
         return formatPackageMember(key, primaryClass);
     }
 
@@ -130,67 +139,70 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     }
 
     /**
-     * Shorten a type name of remove extraneous components.
-     * Candidates for shortening are classes in same package as this annotation and
-	 * classes in the <code>java.lang</code> package.
+     * Shorten a type name of remove extraneous components. Candidates for
+     * shortening are classes in same package as this annotation and classes in
+     * the <code>java.lang</code> package.
      */
     protected static String shorten(String pkgName, String typeName) {
         int index = typeName.lastIndexOf('.');
-		if (index >= 0) {
+        if (index >= 0) {
             String otherPkg = typeName.substring(0, index);
             if (otherPkg.equals(pkgName) || otherPkg.equals("java.lang"))
                 typeName = typeName.substring(index + 1);
-		}
-        return typeName;
-    }
-
-
-    protected static String removePackage( String typeName) {
-        int index = typeName.lastIndexOf('.');
-        if (index >= 0) {
-			return typeName.substring(index+1);
         }
         return typeName;
     }
-	/**
+
+    protected static String removePackage(String typeName) {
+        int index = typeName.lastIndexOf('.');
+        if (index >= 0) {
+            return typeName.substring(index + 1);
+        }
+        return typeName;
+    }
+
+    /**
      * Shorten a type name by removing the package name
      */
     protected static String removePackageName(String typeName) {
-		int index = typeName.lastIndexOf('.');
+        int index = typeName.lastIndexOf('.');
         if (index >= 0) {
             typeName = typeName.substring(index + 1);
         }
-		return typeName;
+        return typeName;
     }
-    /**
-     * Do default and subclass-specific formatting.
-	 *
-     * @param key the key specifying how to do the formatting
-     * @param primaryClass TODO
-     */
-	protected abstract String formatPackageMember(String key, ClassAnnotation primaryClass);
 
     /**
-     * All PackageMemberAnnotation object share a common toString() implementation.
-     * It uses the annotation description as a pattern for FindBugsMessageFormat,
-	 * passing a reference to this object as the single message parameter.
+     * Do default and subclass-specific formatting.
+     * 
+     * @param key
+     *            the key specifying how to do the formatting
+     * @param primaryClass
+     *            TODO
+     */
+    protected abstract String formatPackageMember(String key, ClassAnnotation primaryClass);
+
+    /**
+     * All PackageMemberAnnotation object share a common toString()
+     * implementation. It uses the annotation description as a pattern for
+     * FindBugsMessageFormat, passing a reference to this object as the single
+     * message parameter.
      */
     @Override
     public String toString() {
-		return toString(null);
+        return toString(null);
     }
-
 
     @Override
     public String toString(ClassAnnotation primaryClass) {
         String pattern = I18N.instance().getAnnotationDescription(description);
         FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-        return format.format(new BugAnnotation[]{this}, primaryClass);
-	}
+        return format.format(new BugAnnotation[] { this }, primaryClass);
+    }
+
     public boolean isSignificant() {
         return true;
     }
-
 
 }
 

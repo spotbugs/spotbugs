@@ -45,34 +45,35 @@ public class HTML {
     private static final class HTMLtoPlainTextWriter2 extends HTMLWriter {
 
         boolean inPre = false;
+
         boolean startingParagraph = false;
 
         /**
          * @param w
          * @param doc
-		 */
+         */
         public HTMLtoPlainTextWriter2(Writer w, HTMLDocument doc) {
             super(w, doc);
             setLineLength(80);
-			setCanWrapLines(true);
+            setCanWrapLines(true);
         }
 
         @Override
         protected void startTag(Element elem) throws IOException {
             String name = elem.getName();
-			startingParagraph = true;
+            startingParagraph = true;
             if (name.equals("ul")) {
                 super.incrIndent();
                 write("  ");
-			} else if (name.equals("pre")) {
+            } else if (name.equals("pre")) {
                 inPre = true;
             } else if (name.equals("li")) {
                 super.incrIndent();
-				write("* ");
+                write("* ");
             } else if (name.equals("p")) {
 
             }
-		};
+        };
 
         @Override
         protected void writeEmbeddedTags(AttributeSet attr) throws IOException {
@@ -82,19 +83,19 @@ public class HTML {
         @Override
         protected void endTag(Element elem) throws IOException {
             String name = elem.getName();
-			if (name.equals("p")) {
+            if (name.equals("p")) {
                 writeLineSeparator();
                 indent();
             } else if (name.equals("pre")) {
-				inPre = false;
+                inPre = false;
             } else if (name.equals("ul")) {
                 super.decrIndent();
                 writeLineSeparator();
-				indent();
+                indent();
             } else if (name.equals("li")) {
                 super.decrIndent();
                 writeLineSeparator();
-				indent();
+                indent();
             }
         }
 
@@ -109,28 +110,28 @@ public class HTML {
         @Override
         protected void emptyTag(Element elem) throws IOException, BadLocationException {
             if (elem.getName().equals("content"))
-				super.emptyTag(elem);
+                super.emptyTag(elem);
         };
 
         @Override
         protected void text(Element elem) throws IOException, BadLocationException {
             String contentStr = getText(elem);
-			if (!inPre) {
+            if (!inPre) {
                 contentStr = contentStr.replaceAll("\\s+", " ");
 
                 if (startingParagraph) {
                     while (contentStr.length() > 0 && contentStr.charAt(0) == ' ')
                         contentStr = contentStr.substring(1);
-				}
+                }
 
                 startingParagraph = false;
             }
             if (contentStr.length() > 0) {
-				
+
                 setCanWrapLines(!inPre);
                 write(contentStr);
             }
-		}
+        }
     }
 
     private HTML() {
@@ -151,9 +152,8 @@ public class HTML {
     public static String convertHtmlSnippetToText(String htmlSnippet) throws IOException, BadLocationException {
         StringWriter writer = new StringWriter();
         StringReader reader = new StringReader("<HTML><BODY>" + htmlSnippet + "</BODY></HTML>");
-		convertHtmlToText(reader, writer);
+        convertHtmlToText(reader, writer);
         return writer.toString();
     }
-
 
 }

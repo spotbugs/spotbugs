@@ -20,37 +20,41 @@
 package edu.umd.cs.findbugs.classfile;
 
 /**
- * Common superclass for all checked exceptions that can be
- * thrown while performing some kind of analysis.
- *
+ * Common superclass for all checked exceptions that can be thrown while
+ * performing some kind of analysis.
+ * 
  * @author David Hovemeyer
  */
 public class CheckedAnalysisException extends Exception {
     /**
      * Constructor.
      */
-	public CheckedAnalysisException() {
+    public CheckedAnalysisException() {
     }
 
     public CheckedAnalysisException(CheckedAnalysisException e) {
         super(e.getMessage(), e.getCause());
     }
-	/**
+
+    /**
      * Constructor.
-     *
-     * @param msg message
-	 */
+     * 
+     * @param msg
+     *            message
+     */
     public CheckedAnalysisException(String msg) {
         super(msg);
     }
 
     /**
      * Constructor.
-     *
-	 * @param msg   message
-     * @param cause root cause of this exception
+     * 
+     * @param msg
+     *            message
+     * @param cause
+     *            root cause of this exception
      */
     public CheckedAnalysisException(String msg, Throwable cause) {
-		super(msg, cause);
+        super(msg, cause);
     }
 }

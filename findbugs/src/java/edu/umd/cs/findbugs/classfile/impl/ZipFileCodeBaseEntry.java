@@ -29,80 +29,99 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 
 /**
  * Implementation of ICodeBaseEntry for resources in zipfile codebases.
- *
+ * 
  * @author David Hovemeyer
  */
 public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry {
     private final ZipFileCodeBase codeBase;
+
     private final ZipEntry zipEntry;
 
     public ZipFileCodeBaseEntry(ZipFileCodeBase codeBase, ZipEntry zipEntry) {
         this.codeBase = codeBase;
         this.zipEntry = zipEntry;
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
      */
-	public int getNumBytes() {
+    public int getNumBytes() {
         return (int) zipEntry.getSize();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
      */
-	public InputStream openResource() throws IOException {
+    public InputStream openResource() throws IOException {
         return codeBase.zipFile.getInputStream(zipEntry);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getCodeBase()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getCodeBase
+     * ()
      */
-	@Override
+    @Override
     public AbstractScannableCodeBase getCodeBase() {
         return codeBase;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getRealResourceName()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#
+     * getRealResourceName()
      */
-	@Override
+    @Override
     public String getRealResourceName() {
         return zipEntry.getName();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
      */
-	public ClassDescriptor getClassDescriptor() {
+    public ClassDescriptor getClassDescriptor() {
         return DescriptorFactory.createClassDescriptorFromResourceName(getResourceName());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
-	@Override
+    @Override
     public boolean equals(Object obj) {
         if (obj == null || obj.getClass() != this.getClass()) {
             return false;
-		}
+        }
         ZipFileCodeBaseEntry other = (ZipFileCodeBaseEntry) obj;
-        return this.codeBase.equals(other.codeBase)
-            && this.zipEntry.equals(other.zipEntry);
-	}
+        return this.codeBase.equals(other.codeBase) && this.zipEntry.equals(other.zipEntry);
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
-	@Override
+    @Override
     public int hashCode() {
         return 7919 * codeBase.hashCode() + zipEntry.hashCode();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
-	@Override
+    @Override
     public String toString() {
         return getCodeBase() + ":" + getResourceName();
     }

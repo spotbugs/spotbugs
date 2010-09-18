@@ -35,11 +35,10 @@ import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SystemProperties;
 
-
 /**
  * An interface for describing how a bug collection interacts with the FindBugs
  * Cloud.
- *
+ * 
  * Each Cloud instance is associated with a BugCollection.
  */
 public interface Cloud {
@@ -50,50 +49,65 @@ public interface Cloud {
 
     BugCollection getBugCollection();
 
-    /** Get a status message for the cloud; information about any errors, and
+    /**
+     * Get a status message for the cloud; information about any errors, and
      * information about database synchronization
      */
-	String getStatusMsg();
+    String getStatusMsg();
 
     public void printCloudSummary(PrintWriter w, Iterable<BugInstance> bugs, String[] packagePrefixes);
 
     public void addListener(CloudListener listener);
+
     public void removeListener(CloudListener listener);
 
     public void addStatusListener(CloudStatusListener cloudStatusListener);
+
     public void removeStatusListener(CloudStatusListener cloudStatusListener);
 
-    // ========================== initialization ====================================
+    // ========================== initialization
+    // ====================================
 
-    /** Do we have the configuration information needed to try initializing the cloud;
-     * calling this method should have no side effects and not display any dialogs
-     * or make any network connections.
+    /**
+     * Do we have the configuration information needed to try initializing the
+     * cloud; calling this method should have no side effects and not display
+     * any dialogs or make any network connections.
+     * 
      * @return true if we have the needed information
-	 */
+     */
     public boolean availableForInitialization();
 
-    /** Attempt to initialize the cloud
-	 * @return true if successful
+    /**
+     * Attempt to initialize the cloud
+     * 
+     * @return true if successful
      */
     public boolean initialize() throws IOException;
 
     /**
      * Waits until all new issues have been uploaded
      */
-	public void waitUntilNewIssuesUploaded();
+    public void waitUntilNewIssuesUploaded();
 
-    /** Waits until all data about this bug collection has been received from the cloud. */
+    /**
+     * Waits until all data about this bug collection has been received from the
+     * cloud.
+     */
     void waitUntilIssueDataDownloaded();
 
+    /**
+     * Called after the bugs in the bug collection are loaded; bugs should not
+     * be synchronized before this method is called
+     */
+    public void bugsPopulated();
 
-    /** Called after the bugs in the bug collection are loaded;
-     * bugs should not be synchronized before this method is called */
-	public void bugsPopulated();
-
-    /** Initiate communication with the cloud. Clouds can implement lazy communication, where they
-     * don't initiate communication with the cloud until a request for cloud data is seen, or a call
-	 * is made to {@link #waitUntilIssueDataDownloaded()}.
-     * A call to this method forces eager initiation of communication.*/
+    /**
+     * Initiate communication with the cloud. Clouds can implement lazy
+     * communication, where they don't initiate communication with the cloud
+     * until a request for cloud data is seen, or a call is made to
+     * {@link #waitUntilIssueDataDownloaded()}. A call to this method forces
+     * eager initiation of communication.
+     */
     public void initiateCommunication();
 
     /** Shutdown the cloud, note termination of session, close connections */
@@ -117,7 +131,8 @@ public interface Cloud {
 
     void signOut();
 
-    // ================================= misc settings =============================
+    // ================================= misc settings
+    // =============================
 
     /** Get voting mode */
     Mode getMode();
@@ -125,7 +140,7 @@ public interface Cloud {
     /** Set voting mode */
     void setMode(Mode m);
 
-    /** Does the cloud support source lines  (e.g., to FishEye) */
+    /** Does the cloud support source lines (e.g., to FishEye) */
     boolean supportsSourceLinks();
 
     /** Supports links to a bug database */
@@ -139,12 +154,19 @@ public interface Cloud {
 
     boolean supportsCloudSummaries();
 
-    /** Get a list of names of FB projects that the given class "may be a part of." Used for filing bugs. */
+    /**
+     * Get a list of names of FB projects that the given class
+     * "may be a part of." Used for filing bugs.
+     */
     Collection<String> getProjects(String className);
 
-    // ===================================== bug instances =============================
+    // ===================================== bug instances
+    // =============================
 
-    /** returns whether the bug is stored remotely or not. for bug collection storage, always returns true */
+    /**
+     * returns whether the bug is stored remotely or not. for bug collection
+     * storage, always returns true
+     */
     boolean isInCloud(BugInstance b);
 
     /** has the user said they will fix this bug */
@@ -159,15 +181,16 @@ public interface Cloud {
     /** get the bug filing status for a bug instance */
     BugFilingStatus getBugLinkStatus(BugInstance b);
 
-	/**
-     * A textual description of the bug status (e.g., FIX_LATER, ASSIGNED, OBSOLETE, WILL_NOT_FIX)
+    /**
+     * A textual description of the bug status (e.g., FIX_LATER, ASSIGNED,
+     * OBSOLETE, WILL_NOT_FIX)
      */
     String getBugStatus(BugInstance b);
-	
+
     /** has the issue been marked "will not be fixed" in a bug tracker */
     boolean getWillNotBeFixed(BugInstance b);
 
-	/** does the issue have an unassigned issue in the bug tracker */
+    /** does the issue have an unassigned issue in the bug tracker */
     boolean getBugIsUnassigned(BugInstance b);
 
     /** Get link for bug, either to file one or to view it */
@@ -177,31 +200,39 @@ public interface Cloud {
 
     URL fileBug(BugInstance b);
 
-    /** Note that we've initiated or completed a request to file a bug;
-     * @param b bug against which bug was filed
-     * @param bugLink if we have any information about the result of filing the bug, it should go here
-	 */
+    /**
+     * Note that we've initiated or completed a request to file a bug;
+     * 
+     * @param b
+     *            bug against which bug was filed
+     * @param bugLink
+     *            if we have any information about the result of filing the bug,
+     *            it should go here
+     */
     void bugFiled(BugInstance b, @CheckForNull Object bugLink);
 
     String getCloudReport(BugInstance b);
 
     /** Get the user who has claimed a bug; null if no one has */
-    @CheckForNull String claimedBy(BugInstance b);
+    @CheckForNull
+    String claimedBy(BugInstance b);
 
-	/**
+    /**
      * Claim the bug
+     * 
      * @return true if no one else has already done so
      */
-	boolean claim(BugInstance b);
+    boolean claim(BugInstance b);
 
     /** Return the time the user last changed their evaluation of this bug */
     long getUserTimestamp(BugInstance b);
+
     Date getUserDate(BugInstance b);
 
     /** Get the most recent BugDesignation from the current user */
     BugDesignation getPrimaryDesignation(BugInstance b);
 
-	/** Get the user's designation for the bug */
+    /** Get the user's designation for the bug */
     UserDesignation getUserDesignation(BugInstance b);
 
     /** Get free text evaluation of the bug */
@@ -216,7 +247,9 @@ public interface Cloud {
     double getPortionObsoleteClassifications(BugInstance b);
 
     int getNumberReviewers(BugInstance b);
+
     Set<String> getReviewers(BugInstance b);
+
     long getFirstSeen(BugInstance b);
 
     UserDesignation getConsensusDesignation(BugInstance b);
@@ -225,43 +258,56 @@ public interface Cloud {
 
     // =========================== mutators ===========================
 
-    /** Is this bug one that gets persisted to the cloud?
-     * We may decide that we don't persist low confidence issues to the
-     * database to avoid overloading it */
-	boolean canStoreUserAnnotation(BugInstance bugInstance);
+    /**
+     * Is this bug one that gets persisted to the cloud? We may decide that we
+     * don't persist low confidence issues to the database to avoid overloading
+     * it
+     */
+    boolean canStoreUserAnnotation(BugInstance bugInstance);
 
-    /** Update user designation and evaluation from information in bug instance and push to database */
+    /**
+     * Update user designation and evaluation from information in bug instance
+     * and push to database
+     */
     void storeUserAnnotation(BugInstance bugInstance);
 
     // ========================= statistics ===========================
 
-
-
-
     interface CloudListener {
         void issueUpdated(BugInstance bug);
+
         void statusUpdated();
+
         void taskStarted(CloudTask task);
     }
 
     interface CloudStatusListener {
         void handleIssueDataDownloadedEvent();
+
         void handleStateChange(SigninState oldState, SigninState state);
     }
 
     interface CloudTask {
         String getName();
+
         String getStatusLine();
+
         double getPercentCompleted();
+
         void addListener(CloudTaskListener listener);
+
         void removeListener(CloudTaskListener listener);
+
         boolean isFinished();
+
         void setUseDefaultListener(boolean enabled);
     }
 
     interface CloudTaskListener {
         void taskStatusUpdated(String statusLine, double percentCompleted);
+
         void taskFinished();
+
         void taskFailed(String message);
     }
 
@@ -272,25 +318,14 @@ public interface Cloud {
         @Override
         public String toString() {
             String value = names.getString(this.name());
-			if (value != null)
-              return value.trim();
+            if (value != null)
+                return value.trim();
             return this.name();
         }
-    	}
-
-
+    }
 
     enum UserDesignation {
-		UNCLASSIFIED,
-        NEEDS_STUDY,
-        BAD_ANALYSIS,
-        NOT_A_BUG,
-		MOSTLY_HARMLESS,
-        SHOULD_FIX,
-        MUST_FIX,
-        I_WILL_FIX,
-		OBSOLETE_CODE;
-
+        UNCLASSIFIED, NEEDS_STUDY, BAD_ANALYSIS, NOT_A_BUG, MOSTLY_HARMLESS, SHOULD_FIX, MUST_FIX, I_WILL_FIX, OBSOLETE_CODE;
 
         public int score() {
             switch (this) {
@@ -298,64 +333,65 @@ public interface Cloud {
             case BAD_ANALYSIS:
                 return -3;
             case NOT_A_BUG:
-			case OBSOLETE_CODE:
-                return  -2;
+            case OBSOLETE_CODE:
+                return -2;
             case MOSTLY_HARMLESS:
                 return -1;
-			case SHOULD_FIX:
-                return  1;
+            case SHOULD_FIX:
+                return 1;
             case MUST_FIX:
             case I_WILL_FIX:
-				return 2;
+                return 2;
             default:
                 return 0;
             }
-		}
+        }
 
         /**
          * @return
          */
-         public  boolean nonVoting() {
-            return this == UserDesignation.OBSOLETE_CODE
-              || this == UserDesignation.NEEDS_STUDY
-              || this == UserDesignation.UNCLASSIFIED;
+        public boolean nonVoting() {
+            return this == UserDesignation.OBSOLETE_CODE || this == UserDesignation.NEEDS_STUDY
+                    || this == UserDesignation.UNCLASSIFIED;
         }
     }
 
-    enum Mode { COMMUNAL, VOTING, SECRET }
+    enum Mode {
+        COMMUNAL, VOTING, SECRET
+    }
 
     enum BugFilingStatus {
         /** No bug yet filed */
         FILE_BUG(SystemProperties.getProperty("findbugs.filebug.label", "File bug")) {
-			@Override
+            @Override
             public boolean bugIsFiled() {
                 return false;
             }
-		},
+        },
         /** URL was sent to browser, but request has expired */
         FILE_AGAIN("File again"),
 
         /** Sent a URL to a browser to file a bug, no information yet */
         BUG_PENDING("Bug pending") {
             @Override
-			public boolean linkEnabled() {
+            public boolean linkEnabled() {
                 return false;
             }
         },
-		/** synchronized bug instance with bug database */
+        /** synchronized bug instance with bug database */
         VIEW_BUG(SystemProperties.getProperty("findbugs.viewbug.label", "View bug")),
 
         /* Not applicable, bug linking not supported */
         NA("") {
             @Override
-			public boolean linkEnabled() {
+            public boolean linkEnabled() {
                 return false;
             }
 
             @Override
             public boolean bugIsFiled() {
                 return false;
-			}
+            }
         };
 
         final String displayName;
@@ -375,7 +411,7 @@ public interface Cloud {
         @Override
         public String toString() {
             return displayName;
-		}
+        }
 
     }
 }

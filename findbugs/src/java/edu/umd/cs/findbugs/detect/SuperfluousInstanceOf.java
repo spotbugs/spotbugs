@@ -20,7 +20,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
@@ -33,81 +32,81 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
 
 /**
- * Find occurrences of a instanceof b where it can be determined
- * statically whether this is true or false. This may signal a misunderstanding
- * of the inheritance hierarchy in use, and potential bugs.
- *
+ * Find occurrences of a instanceof b where it can be determined statically
+ * whether this is true or false. This may signal a misunderstanding of the
+ * inheritance hierarchy in use, and potential bugs.
+ * 
  * @author Dave Brosius
  */
 public class SuperfluousInstanceOf extends BytecodeScanningDetector implements StatelessDetector {
 
     private static final int SEEN_NOTHING = 0;
+
     private static final int SEEN_ALOAD = 1;
 
     private BugReporter bugReporter;
+
     private LocalVariableTable varTable;
+
     private int state;
-	private int register;
+
+    private int register;
 
     public SuperfluousInstanceOf(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
-
-
     @Override
-         public void visit(Method obj) {
+    public void visit(Method obj) {
         state = SEEN_NOTHING;
-		varTable = obj.getLocalVariableTable();
+        varTable = obj.getLocalVariableTable();
         if (varTable != null)
             super.visit(obj);
     }
 
     @Override
-         public void visit(Code obj) {
+    public void visit(Code obj) {
         if (varTable != null)
-			super.visit(obj);
+            super.visit(obj);
     }
 
-
     @Override
-         public void sawOpcode(int seen) {
+    public void sawOpcode(int seen) {
         switch (state) {
-			case SEEN_NOTHING:
-                if (seen == ALOAD)
-                    register = getRegisterOperand();
-                else if ((seen >= ALOAD_0) && (seen <= ALOAD_3))
-					register = seen - ALOAD_0;
-                else
-                    return;
-                state = SEEN_ALOAD;
-			break;
+        case SEEN_NOTHING:
+            if (seen == ALOAD)
+                register = getRegisterOperand();
+            else if ((seen >= ALOAD_0) && (seen <= ALOAD_3))
+                register = seen - ALOAD_0;
+            else
+                return;
+            state = SEEN_ALOAD;
+            break;
 
-            case SEEN_ALOAD:
-                try {
-                    if (seen == INSTANCEOF) {
-						LocalVariable lv = LVTHelper.getLocalVariableAtPC(varTable, register, getPC());
-                        if (lv != null) {
-                            String objSignature = lv.getSignature();
-                            if (objSignature.charAt(0) == 'L') {
-								objSignature = objSignature.substring(1, objSignature.length()-1).replace('/', '.');
-                                String clsSignature = getDottedClassConstantOperand();
+        case SEEN_ALOAD:
+            try {
+                if (seen == INSTANCEOF) {
+                    LocalVariable lv = LVTHelper.getLocalVariableAtPC(varTable, register, getPC());
+                    if (lv != null) {
+                        String objSignature = lv.getSignature();
+                        if (objSignature.charAt(0) == 'L') {
+                            objSignature = objSignature.substring(1, objSignature.length() - 1).replace('/', '.');
+                            String clsSignature = getDottedClassConstantOperand();
 
-                                if (clsSignature.charAt(0) != '[') {
-                                    if (org.apache.bcel.Repository.instanceOf( objSignature, clsSignature )) {
-                                        bugReporter.reportBug(new BugInstance(this, "SIO_SUPERFLUOUS_INSTANCEOF", LOW_PRIORITY)
-											.addClassAndMethod(this)
-                                            .addSourceLine(this));
-                                    }
+                            if (clsSignature.charAt(0) != '[') {
+                                if (org.apache.bcel.Repository.instanceOf(objSignature, clsSignature)) {
+                                    bugReporter.reportBug(new BugInstance(this, "SIO_SUPERFLUOUS_INSTANCEOF", LOW_PRIORITY)
+                                            .addClassAndMethod(this).addSourceLine(this));
                                 }
-							}
+                            }
                         }
                     }
-                } catch (ClassNotFoundException cnfe) {
-					bugReporter.reportMissingClass(cnfe);
                 }
+            } catch (ClassNotFoundException cnfe) {
+                bugReporter.reportMissingClass(cnfe);
+            }
 
-                state = SEEN_NOTHING;
+            state = SEEN_NOTHING;
             break;
         }
 

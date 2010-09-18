@@ -34,5 +34,4 @@ public class FindBugsDisplayFeatures {
         abridgedMessages = b;
     }
 
-
 }

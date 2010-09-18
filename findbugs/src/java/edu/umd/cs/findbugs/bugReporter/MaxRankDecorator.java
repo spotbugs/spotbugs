@@ -45,13 +45,12 @@ public class MaxRankDecorator extends BugReporterDecorator {
     public MaxRankDecorator(BugReporterPlugin plugin, BugReporter delegate) {
         super(plugin, delegate);
         maxRank = Integer.parseInt(plugin.getProperties().getProperty("maxRank"));
-	}
-
+    }
 
     @Override
     public void reportBug(BugInstance bugInstance) {
         int rank = bugInstance.getBugRank();
-		if (rank <= maxRank)
+        if (rank <= maxRank)
             getDelegate().reportBug(bugInstance);
 
     }

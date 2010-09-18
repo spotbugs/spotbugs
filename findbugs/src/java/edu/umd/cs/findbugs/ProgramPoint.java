@@ -24,12 +24,14 @@ import edu.umd.cs.findbugs.ba.XMethod;
 public class ProgramPoint {
     public ProgramPoint(BytecodeScanningDetector v) {
         method = v.getXMethod();
-        pc =  v.getPC();
-	}
+        pc = v.getPC();
+    }
 
     public final XMethod method;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -37,10 +39,13 @@ public class ProgramPoint {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((method == null) ? 0 : method.hashCode());
-	    result = prime * result + pc;
+        result = prime * result + pc;
         return result;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -48,15 +53,15 @@ public class ProgramPoint {
         if (this == obj)
             return true;
         if (obj == null)
-		    return false;
+            return false;
         if (getClass() != obj.getClass())
             return false;
         ProgramPoint other = (ProgramPoint) obj;
-	    if (method == null) {
+        if (method == null) {
             if (other.method != null)
                 return false;
         } else if (!method.equals(other.method))
-		    return false;
+            return false;
         if (pc != other.pc)
             return false;
         return true;
@@ -67,11 +72,12 @@ public class ProgramPoint {
     public MethodAnnotation getMethodAnnotation() {
         return MethodAnnotation.fromXMethod(method);
     }
-	public SourceLineAnnotation getSourceLineAnnotation() {
+
+    public SourceLineAnnotation getSourceLineAnnotation() {
         return SourceLineAnnotation.fromVisitedInstruction(method.getMethodDescriptor(), pc);
     }
 
-	public String toString() {
+    public String toString() {
         return method.toString() + ":" + pc;
     }
 }

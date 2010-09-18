@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.config.CommandLine;
 /**
  * Java main application to compute update a historical bug collection with
  * results from another build/analysis.
- *
+ * 
  * @author William Pugh
  */
 
@@ -48,7 +48,7 @@ public class ListBugDatabaseInfo {
 
     static class ListBugDatabaseInfoCommandLine extends CommandLine {
 
-         boolean formatDates = false;
+        boolean formatDates = false;
 
         ListBugDatabaseInfoCommandLine() {
             addSwitch("-formatDates", "render dates in textual form");
@@ -57,7 +57,7 @@ public class ListBugDatabaseInfo {
         @Override
         public void handleOption(String option, String optionalExtraPart) {
             if (option.equals("-formatDates"))
-				formatDates = true;
+                formatDates = true;
             else
                 throw new IllegalArgumentException("unknown option: " + option);
         }
@@ -72,56 +72,56 @@ public class ListBugDatabaseInfo {
     public static void main(String[] args) throws IOException, DocumentException {
         FindBugs.setNoAnalysis();
         DetectorFactoryCollection.instance();
-		ListBugDatabaseInfoCommandLine commandLine = new ListBugDatabaseInfoCommandLine();
+        ListBugDatabaseInfoCommandLine commandLine = new ListBugDatabaseInfoCommandLine();
         int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, USAGE);
-
 
         PrintWriter out = new PrintWriter(System.out);
         if (argCount == args.length)
-            listVersion(out,null, commandLine.formatDates);
-		else {
+            listVersion(out, null, commandLine.formatDates);
+        else {
             out.println("version	time	classes	NCSS	total	high	medium	low	file");
             while (argCount < args.length) {
                 String fileName = args[argCount++];
-				listVersion(out, fileName, commandLine.formatDates);
-                }
+                listVersion(out, fileName, commandLine.formatDates);
+            }
         }
         out.close();
-	}
+    }
 
-    private static void listVersion(PrintWriter out, @CheckForNull String fileName, boolean formatDates) throws IOException, DocumentException {
+    private static void listVersion(PrintWriter out, @CheckForNull String fileName, boolean formatDates) throws IOException,
+            DocumentException {
         BugCollection origCollection;
         origCollection = new SortedBugCollection();
 
         if (fileName == null)
             origCollection.readXML(System.in);
-        else origCollection.readXML(fileName);
-		AppVersion appVersion = origCollection.getCurrentAppVersion();
+        else
+            origCollection.readXML(fileName);
+        AppVersion appVersion = origCollection.getCurrentAppVersion();
         ProjectStats stats = origCollection.getProjectStats();
         out.print(appVersion.getReleaseName());
         out.print('\t');
-		if (formatDates)
-            out.print("\""+ new Date(appVersion.getTimestamp()) + "\"");
+        if (formatDates)
+            out.print("\"" + new Date(appVersion.getTimestamp()) + "\"");
         else
             out.print(appVersion.getTimestamp());
-		out.print('\t');
+        out.print('\t');
 
         out.print(appVersion.getNumClasses());
         out.print('\t');
         out.print(appVersion.getCodeSize());
-		out.print('\t');
+        out.print('\t');
         out.print(stats.getTotalBugs());
         out.print('\t');
         out.print(stats.getBugsOfPriority(Detector.HIGH_PRIORITY));
-		out.print('\t');
+        out.print('\t');
         out.print(stats.getBugsOfPriority(Detector.NORMAL_PRIORITY));
         out.print('\t');
         out.print(stats.getBugsOfPriority(Detector.LOW_PRIORITY));
-		if (fileName != null) {
+        if (fileName != null) {
             out.print('\t');
             out.print(fileName);
         }
-
 
         out.println();
     }

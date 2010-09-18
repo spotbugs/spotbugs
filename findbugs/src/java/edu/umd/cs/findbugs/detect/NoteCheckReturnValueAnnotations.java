@@ -30,9 +30,7 @@ import edu.umd.cs.findbugs.bcel.BCELUtil;
 /**
  * Scan classes for @CheckReturnValue annotations
  */
-public class NoteCheckReturnValueAnnotations
-    extends BuildCheckReturnAnnotationDatabase
-    implements Detector, NonReportingDetector {
+public class NoteCheckReturnValueAnnotations extends BuildCheckReturnAnnotationDatabase implements Detector, NonReportingDetector {
 
     public NoteCheckReturnValueAnnotations(BugReporter bugReporter) {
     }
@@ -40,7 +38,8 @@ public class NoteCheckReturnValueAnnotations
     public void visitClassContext(ClassContext classContext) {
 
         JavaClass javaClass = classContext.getJavaClass();
-        if  (!BCELUtil.preTiger(javaClass)) javaClass.accept(this);
+        if (!BCELUtil.preTiger(javaClass))
+            javaClass.accept(this);
     }
 
     public void report() {

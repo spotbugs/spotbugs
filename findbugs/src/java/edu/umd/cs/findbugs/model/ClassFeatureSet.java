@@ -39,25 +39,29 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
- * Features of a class which may be used to identify it if it is renamed
- * or modified.
- *
+ * Features of a class which may be used to identify it if it is renamed or
+ * modified.
+ * 
  * @author David Hovemeyer
  */
 public class ClassFeatureSet implements XMLWriteable {
     public static final String CLASS_NAME_KEY = "Class:";
+
     public static final String METHOD_NAME_KEY = "Method:";
+
     public static final String CODE_LENGTH_KEY = "CodeLength:";
-	public static final String FIELD_NAME_KEY = "Field:";
+
+    public static final String FIELD_NAME_KEY = "Field:";
 
     private String className;
+
     private boolean isInterface;
+
     private Set<String> featureSet;
 
     /**
-     * Constructor.
-     * Creates an empty feature set.
-	 */
+     * Constructor. Creates an empty feature set.
+     */
     public ClassFeatureSet() {
         this.featureSet = new HashSet<String>();
     }
@@ -65,16 +69,17 @@ public class ClassFeatureSet implements XMLWriteable {
     /**
      * Minimum code length required to add a CodeLength feature.
      */
-	public static final int MIN_CODE_LENGTH = 10;
+    public static final int MIN_CODE_LENGTH = 10;
 
     /**
      * Initialize from given JavaClass.
-     *
-	 * @param javaClass the JavaClass
+     * 
+     * @param javaClass
+     *            the JavaClass
      * @return this object
      */
     public ClassFeatureSet initialize(JavaClass javaClass) {
-		this.className = javaClass.getClassName();
+        this.className = javaClass.getClassName();
         this.isInterface = javaClass.isInterface();
 
         addFeature(CLASS_NAME_KEY + transformClassName(javaClass.getClassName()));
@@ -89,17 +94,15 @@ public class ClassFeatureSet implements XMLWriteable {
 
                 Code code = method.getCode();
                 if (code != null && code.getCode() != null && code.getCode().length >= MIN_CODE_LENGTH) {
-                    addFeature(CODE_LENGTH_KEY + method.getName() + ":" + transformedMethodSignature +
-							":" + code.getCode().length);
+                    addFeature(CODE_LENGTH_KEY + method.getName() + ":" + transformedMethodSignature + ":"
+                            + code.getCode().length);
                 }
             }
         }
 
         for (Field field : javaClass.getFields()) {
             if (!isSynthetic(field)) {
-                addFeature(
-						FIELD_NAME_KEY + field.getName() + ":" +
-                        transformSignature(field.getSignature()));
+                addFeature(FIELD_NAME_KEY + field.getName() + ":" + transformSignature(field.getSignature()));
             }
         }
 
@@ -107,13 +110,17 @@ public class ClassFeatureSet implements XMLWriteable {
     }
 
     /**
-     * Determine if given method overrides a superclass or superinterface method.
-     *
-	 * @param javaClass class defining the method
-     * @param method    the method
-     * @return true if the method overrides a superclass/superinterface method, false if not
+     * Determine if given method overrides a superclass or superinterface
+     * method.
+     * 
+     * @param javaClass
+     *            class defining the method
+     * @param method
+     *            the method
+     * @return true if the method overrides a superclass/superinterface method,
+     *         false if not
      * @throws ClassNotFoundException
-	 */
+     */
     private boolean overridesSuperclassMethod(JavaClass javaClass, Method method) {
         if (method.isStatic())
             return false;
@@ -121,16 +128,16 @@ public class ClassFeatureSet implements XMLWriteable {
         try {
             JavaClass[] superclassList = javaClass.getSuperClasses();
             if (superclassList != null) {
-				JavaClassAndMethod match =
-                    Hierarchy.findMethod(superclassList, method.getName(), method.getSignature(), Hierarchy.INSTANCE_METHOD);
+                JavaClassAndMethod match = Hierarchy.findMethod(superclassList, method.getName(), method.getSignature(),
+                        Hierarchy.INSTANCE_METHOD);
                 if (match != null)
                     return true;
-			}
+            }
 
             JavaClass[] interfaceList = javaClass.getAllInterfaces();
             if (interfaceList != null) {
-                JavaClassAndMethod match =
-					Hierarchy.findMethod(interfaceList, method.getName(), method.getSignature(), Hierarchy.INSTANCE_METHOD);
+                JavaClassAndMethod match = Hierarchy.findMethod(interfaceList, method.getName(), method.getSignature(),
+                        Hierarchy.INSTANCE_METHOD);
                 if (match != null)
                     return true;
             }
@@ -138,17 +145,18 @@ public class ClassFeatureSet implements XMLWriteable {
             return false;
         } catch (ClassNotFoundException e) {
             return true;
-		}
+        }
     }
 
     /**
      * Figure out if a class member (field or method) is synthetic.
-     *
-	 * @param member a field or method
+     * 
+     * @param member
+     *            a field or method
      * @return true if the member is synthetic
      */
     private boolean isSynthetic(FieldOrMethod member) {
-		if (member.isSynthetic()) // this never works, but worth a try
+        if (member.isSynthetic()) // this never works, but worth a try
             return true;
 
         String name = member.getName();
@@ -165,28 +173,30 @@ public class ClassFeatureSet implements XMLWriteable {
     /**
      * @return Returns the className.
      */
-	public String getClassName() {
+    public String getClassName() {
         return className;
     }
 
     /**
-     * @param className The className to set.
+     * @param className
+     *            The className to set.
      */
-	public void setClassName(String className) {
+    public void setClassName(String className) {
         this.className = className;
     }
 
     /**
      * @return Returns the isInterface.
      */
-	public boolean isInterface() {
+    public boolean isInterface() {
         return isInterface;
     }
 
     /**
-     * @param isInterface The isInterface to set.
+     * @param isInterface
+     *            The isInterface to set.
      */
-	public void setInterface(boolean isInterface) {
+    public void setInterface(boolean isInterface) {
         this.isInterface = isInterface;
     }
 
@@ -208,48 +218,51 @@ public class ClassFeatureSet implements XMLWriteable {
 
     /**
      * Transform a class name by stripping its package name.
-     *
-	 * @param className a class name
+     * 
+     * @param className
+     *            a class name
      * @return the transformed class name
      */
     public static String transformClassName(String className) {
-		int lastDot = className.lastIndexOf('.');
+        int lastDot = className.lastIndexOf('.');
         if (lastDot >= 0) {
             String pkg = className.substring(0, lastDot);
             if (!isUnlikelyToBeRenamed(pkg)) {
-				className = className.substring(lastDot + 1);
+                className = className.substring(lastDot + 1);
             }
         }
         return className;
-	}
+    }
 
     /**
      * Return true if classes in the given package is unlikely to be renamed:
      * e.g., because they are part of a public API.
-	 * 
-     * @param pkg the package name
+     * 
+     * @param pkg
+     *            the package name
      * @return true if classes in the package is unlikely to be renamed
      */
-	public static boolean isUnlikelyToBeRenamed(String pkg) {
+    public static boolean isUnlikelyToBeRenamed(String pkg) {
         return pkg.startsWith("java.");
     }
 
     /**
-     * Transform a method signature to allow it to be compared even if
-     * any of its parameter types are moved to another package.
-	 * 
-     * @param signature a method signature
+     * Transform a method signature to allow it to be compared even if any of
+     * its parameter types are moved to another package.
+     * 
+     * @param signature
+     *            a method signature
      * @return the transformed signature
      */
-	public static String transformMethodSignature(String signature) {
+    public static String transformMethodSignature(String signature) {
         StringBuilder buf = new StringBuilder();
 
         buf.append('(');
 
         SignatureParser parser = new SignatureParser(signature);
-        for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext(); ) {
+        for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {
             String param = i.next();
-				param = transformSignature(param);
+            param = transformSignature(param);
             buf.append(param);
         }
 
@@ -261,23 +274,24 @@ public class ClassFeatureSet implements XMLWriteable {
     /**
      * Transform a field or method parameter signature to allow it to be
      * compared even if it is moved to another package.
-	 * 
-     * @param signature the signature
+     * 
+     * @param signature
+     *            the signature
      * @return the transformed signature
      */
-	public static String transformSignature(String signature) {
+    public static String transformSignature(String signature) {
         StringBuilder buf = new StringBuilder();
 
         int lastBracket = signature.lastIndexOf('[');
         if (lastBracket > 0) {
-            buf.append(signature.substring(0, lastBracket+1));
-			signature = signature.substring(lastBracket+1);
+            buf.append(signature.substring(0, lastBracket + 1));
+            signature = signature.substring(lastBracket + 1);
         }
 
         if (signature.startsWith("L")) {
             signature = signature.substring(1, signature.length() - 1).replace('/', '.');
             signature = transformClassName(signature);
-			signature = "L" + signature.replace('.', '/') +  ";";
+            signature = "L" + signature.replace('.', '/') + ";";
         }
         buf.append(signature);
 
@@ -285,26 +299,26 @@ public class ClassFeatureSet implements XMLWriteable {
     }
 
     /**
-     * Minimum number of features which must be present in order
-     * to declare two classes similar.
-	 */
+     * Minimum number of features which must be present in order to declare two
+     * classes similar.
+     */
     public static final int MIN_FEATURES = 5;
 
     /**
      * Minimum similarity required to declare two classes similar.
      */
-	public static final double MIN_MATCH = 0.60;
+    public static final double MIN_MATCH = 0.60;
 
     /**
-     * Similarity of classes which don't have enough features to match
-     * exactly, but whose class names match exactly.
-	 */
+     * Similarity of classes which don't have enough features to match exactly,
+     * but whose class names match exactly.
+     */
     public static final double EXACT_CLASS_NAME_MATCH = MIN_MATCH + 0.1;
 
     public static double similarity(ClassFeatureSet a, ClassFeatureSet b) {
         // Some features must match exactly
         if (a.isInterface() != b.isInterface())
-			return 0.0;
+            return 0.0;
 
         if (a.getNumFeatures() < MIN_FEATURES || b.getNumFeatures() < MIN_FEATURES)
             return a.getClassName().equals(b.getClassName()) ? EXACT_CLASS_NAME_MATCH : 0.0;
@@ -315,7 +329,7 @@ public class ClassFeatureSet implements XMLWriteable {
         for (Iterator<String> i = a.featureIterator(); i.hasNext();) {
             String feature = i.next();
             if (b.hasFeature(feature)) {
-				++numMatch;
+                ++numMatch;
             }
         }
 
@@ -330,7 +344,7 @@ public class ClassFeatureSet implements XMLWriteable {
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
             System.err.println("Usage: " + ClassFeatureSet.class.getName() + " <class 1> <class 2>");
-			System.exit(1);
+            System.exit(1);
         }
 
         JavaClass a = Repository.lookupClass(args[0]);
@@ -344,19 +358,22 @@ public class ClassFeatureSet implements XMLWriteable {
     }
 
     public static final String ELEMENT_NAME = "ClassFeatureSet";
+
     public static final String FEATURE_ELEMENT_NAME = "Feature";
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.xml.XMLWriteable#writeXML(edu.umd.cs.findbugs.xml.XMLOutput)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.xml.XMLWriteable#writeXML(edu.umd.cs.findbugs.xml
+     * .XMLOutput)
      */
-	public void writeXML(XMLOutput xmlOutput) throws IOException {
+    public void writeXML(XMLOutput xmlOutput) throws IOException {
         xmlOutput.openTag(ELEMENT_NAME, new XMLAttributeList().addAttribute("class", className));
-        for (Iterator<String> i = featureIterator(); i.hasNext(); ) {
+        for (Iterator<String> i = featureIterator(); i.hasNext();) {
             String feature = i.next();
-			xmlOutput.openCloseTag(
-                    FEATURE_ELEMENT_NAME,
-                    new XMLAttributeList().addAttribute("value", feature));
+            xmlOutput.openCloseTag(FEATURE_ELEMENT_NAME, new XMLAttributeList().addAttribute("value", feature));
         }
-		xmlOutput.closeTag(ELEMENT_NAME);
+        xmlOutput.closeTag(ELEMENT_NAME);
     }
 }

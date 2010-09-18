@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 
 /**
  * Codebase locator for files and directories in the filesystem.
- *
+ * 
  * @author David Hovemeyer
  */
 public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
@@ -36,76 +36,76 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
     public FilesystemCodeBaseLocator(String pathName) {
         File file = new File(pathName);
         try {
-			pathName = file.getCanonicalPath();
+            pathName = file.getCanonicalPath();
         } catch (IOException e) {
             assert true;
         }
-		this.pathName = pathName;
+        this.pathName = pathName;
     }
 
     /**
      * @return Returns the pathName.
      */
-	public String getPathName() {
+    public String getPathName() {
         return pathName;
     }
 
     /*
      * (non-Javadoc)
-     *
-	 * @see
+     * 
+     * @see
      * edu.umd.cs.findbugs.classfile.ICodeBaseLocator#createRelativeCodeBaseLocator
      * (java.lang.String)
      */
-	public ICodeBaseLocator createRelativeCodeBaseLocator(String relativePath) {
+    public ICodeBaseLocator createRelativeCodeBaseLocator(String relativePath) {
         File path = new File(pathName);
         if (!path.isDirectory()) {
             path = path.getParentFile();
-		}
+        }
         File relativeFile = new File(path, relativePath);
         return new FilesystemCodeBaseLocator(relativeFile.getPath());
     }
 
     /*
      * (non-Javadoc)
-     *
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseLocator#openCodeBase()
+     * 
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseLocator#openCodeBase()
      */
     public ICodeBase openCodeBase() throws IOException {
         return ClassFactory.createFilesystemCodeBase(this);
-	}
+    }
 
     /*
      * (non-Javadoc)
-     *
-	 * @see java.lang.Object#toString()
+     * 
+     * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-		return "filesystem:" + pathName;
+        return "filesystem:" + pathName;
     }
 
     /*
      * (non-Javadoc)
-     *
-	 * @see java.lang.Object#equals(java.lang.Object)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
     public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != this.getClass()) {
+        if (obj == null || obj.getClass() != this.getClass()) {
             return false;
         }
         FilesystemCodeBaseLocator other = (FilesystemCodeBaseLocator) obj;
-		return this.pathName.equals(other.pathName);
+        return this.pathName.equals(other.pathName);
     }
 
     /*
      * (non-Javadoc)
-     *
-	 * @see java.lang.Object#hashCode()
+     * 
+     * @see java.lang.Object#hashCode()
      */
     @Override
     public int hashCode() {
-		return pathName.hashCode();
+        return pathName.hashCode();
     }
 }

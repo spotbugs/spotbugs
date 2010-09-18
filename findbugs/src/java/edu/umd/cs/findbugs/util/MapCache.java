@@ -25,34 +25,35 @@ import java.util.Map;
 import org.apache.bcel.classfile.JavaClass;
 
 /**
- * Provide a HashMap that can only grow to a specified maximum capacity,
- * with entries discarded using a LRU policy to keep the size of the HashMap
- * within that bound.
- *
+ * Provide a HashMap that can only grow to a specified maximum capacity, with
+ * entries discarded using a LRU policy to keep the size of the HashMap within
+ * that bound.
+ * 
  * @author pugh
  */
-public class MapCache<K,V> extends LinkedHashMap<K,V> {
+public class MapCache<K, V> extends LinkedHashMap<K, V> {
     private static final long serialVersionUID = 0L;
+
     int maxCapacity;
+
     /**
-	 * Create a new MapCache
-     * @param maxCapacity - maximum number of entries in the map
+     * Create a new MapCache
+     * 
+     * @param maxCapacity
+     *            - maximum number of entries in the map
      */
     public MapCache(int maxCapacity) {
-		super(4*maxCapacity/3+5, 0.75f, true);
+        super(4 * maxCapacity / 3 + 5, 0.75f, true);
         this.maxCapacity = maxCapacity;
 
     }
 
-
     @Override
-    protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
+    protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
         boolean result = size() > maxCapacity;
-		if (false && result && eldest.getKey() instanceof JavaClass)
-                System.out.println("Dropping " + ((JavaClass)eldest.getKey()).getClassName());
+        if (false && result && eldest.getKey() instanceof JavaClass)
+            System.out.println("Dropping " + ((JavaClass) eldest.getKey()).getClassName());
         return result;
-     }
-
-
+    }
 
 }

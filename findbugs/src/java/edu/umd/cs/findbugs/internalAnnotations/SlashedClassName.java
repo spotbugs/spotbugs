@@ -34,7 +34,7 @@ import javax.annotation.meta.When;
 /**
  * * Denotes a class name or package name where the / character is used to
  * separate package/class name components.
- *
+ * 
  * @author pugh
  */
 @Documented
@@ -46,8 +46,11 @@ public @interface SlashedClassName {
 
     static class Checker implements TypeQualifierValidator<SlashedClassName> {
         final static String simpleName = "(\\p{javaJavaIdentifierStart}(\\p{javaJavaIdentifierPart}|\\$)*)";
+
         final static String slashedClassName = simpleName + "(/" + simpleName + ")*";
-		final static Pattern simplePattern = Pattern.compile(simpleName);
+
+        final static Pattern simplePattern = Pattern.compile(simpleName);
+
         final static Pattern pattern = Pattern.compile(slashedClassName);
 
         public When forConstantValue(SlashedClassName annotation, Object value) {

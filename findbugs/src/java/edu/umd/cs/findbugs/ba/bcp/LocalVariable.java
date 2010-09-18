@@ -31,14 +31,14 @@ public class LocalVariable implements Variable {
     public boolean sameAs(Variable other) {
         if (!(other instanceof LocalVariable))
             return false;
-		LocalVariable otherLocal = (LocalVariable) other;
+        LocalVariable otherLocal = (LocalVariable) other;
         return valueNumber.equals(otherLocal.valueNumber);
     }
 
     @Override
-         public String toString() {
+    public String toString() {
         return valueNumber.toString();
-	}
+    }
 }
 
 // vim:ts=4

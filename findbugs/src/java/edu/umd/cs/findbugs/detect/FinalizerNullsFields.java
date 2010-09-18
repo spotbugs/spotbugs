@@ -34,66 +34,66 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 public class FinalizerNullsFields extends BytecodeScanningDetector {
 
     final BugReporter bugReporter;
+
     final BugAccumulator bugAccumulator;
-    int state=0;
-	boolean sawAnythingElse;
+
+    int state = 0;
+
+    boolean sawAnythingElse;
 
     public FinalizerNullsFields(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
-	}
-
+    }
 
     boolean inFinalize;
+
     boolean sawFieldNulling;
+
     @Override
-	public void visit(Method obj) 
-    {
+    public void visit(Method obj) {
         if (obj.getName().equals("finalize"))
-            inFinalize=true;
-		else
-            inFinalize=false;
+            inFinalize = true;
+        else
+            inFinalize = false;
     }
 
-	@Override
-    public void visit(Field obj)
-    {
+    @Override
+    public void visit(Field obj) {
 
     }
-
 
     @Override
     public void visit(Code obj) {
-		state=0;
+        state = 0;
         sawAnythingElse = false;
         sawFieldNulling = false;
         if (inFinalize) {
-			super.visit(obj);
+            super.visit(obj);
             bugAccumulator.reportAccumulatedBugs();
             if (!sawAnythingElse && sawFieldNulling) {
-                BugInstance bug = new BugInstance(this, "FI_FINALIZER_ONLY_NULLS_FIELDS", HIGH_PRIORITY)
-				.addClassAndMethod(this);
+                BugInstance bug = new BugInstance(this, "FI_FINALIZER_ONLY_NULLS_FIELDS", HIGH_PRIORITY).addClassAndMethod(this);
                 bugReporter.reportBug(bug);
             }
         }
-	}
+    }
 
     @Override
     public void sawOpcode(int seen) {
-        if (state==0 && seen==ALOAD_0)
-			state++;
-        else if (state==1 && seen==ACONST_NULL)
+        if (state == 0 && seen == ALOAD_0)
             state++;
-        else if (state==2 && seen==PUTFIELD) {
-			bugAccumulator.accumulateBug(new BugInstance(this, "FI_FINALIZER_NULLS_FIELDS", NORMAL_PRIORITY)
-            .addClassAndMethod(this).addReferencedField(this), this);
+        else if (state == 1 && seen == ACONST_NULL)
+            state++;
+        else if (state == 2 && seen == PUTFIELD) {
+            bugAccumulator.accumulateBug(
+                    new BugInstance(this, "FI_FINALIZER_NULLS_FIELDS", NORMAL_PRIORITY).addClassAndMethod(this)
+                            .addReferencedField(this), this);
             sawFieldNulling = true;
-            state=0;
-		} else if (seen == RETURN) {
             state = 0;
-        }
-        else {
-			state=0;
+        } else if (seen == RETURN) {
+            state = 0;
+        } else {
+            state = 0;
             sawAnythingElse = true;
         }
     }

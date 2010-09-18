@@ -44,81 +44,91 @@ import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Interprocedural analysis summary
+ * 
  * @author pugh
  */
 public class FieldSummary {
     private Set<XField> writtenOutsideOfConstructor = new HashSet<XField>();
+
     private Map<XField, OpcodeStack.Item> summary = new HashMap<XField, OpcodeStack.Item>();
+
     private Map<XMethod, Set<XField>> fieldsWritten = new HashMap<XMethod, Set<XField>>();
-	private Map<XMethod, XMethod> nonVoidSuperConstructorsCalled = new HashMap<XMethod, XMethod>();
+
+    private Map<XMethod, XMethod> nonVoidSuperConstructorsCalled = new HashMap<XMethod, XMethod>();
 
     private Map<XMethod, Set<ProgramPoint>> selfMethodsCalledFromConstructor = new HashMap<XMethod, Set<ProgramPoint>>();
+
     private Set<ClassDescriptor> callsOverriddenMethodsFromConstructor = new HashSet<ClassDescriptor>();
 
     private boolean complete = false;
+
     public OpcodeStack.Item getSummary(XField field) {
         if (field == null)
-			return new OpcodeStack.Item();
+            return new OpcodeStack.Item();
         OpcodeStack.Item result = summary.get(field);
         if (result == null || field.isVolatile()) {
             String signature = field.getSignature();
-	        return new OpcodeStack.Item(signature);
+            return new OpcodeStack.Item(signature);
         }
         return result;
     }
 
-    public boolean  callsOverriddenMethodsFromConstructor(ClassDescriptor c) {
+    public boolean callsOverriddenMethodsFromConstructor(ClassDescriptor c) {
         return callsOverriddenMethodsFromConstructor.contains(c);
     }
 
     public boolean callsOverriddenMethodsFromSuperConstructor(ClassDescriptor c) {
         try {
             while (true) {
-				XClass cx = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
+                XClass cx = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
                 c = cx.getSuperclassDescriptor();
                 if (c == null)
                     return false;
-				if (callsOverriddenMethodsFromConstructor(c))
+                if (callsOverriddenMethodsFromConstructor(c))
                     return true;
             }
         } catch (CheckedAnalysisException e) {
-			return false;
+            return false;
         }
 
     }
-	public void setCalledFromSuperConstructor(ProgramPoint from, XMethod calledFromConstructor) {
-         Set<ProgramPoint> set = selfMethodsCalledFromConstructor.get(calledFromConstructor);
-         if (set == null) {
-             set = new HashSet<ProgramPoint>();
-			 selfMethodsCalledFromConstructor.put(calledFromConstructor, set);
-         }
-         set.add(from);
-         callsOverriddenMethodsFromConstructor.add(from.method.getClassDescriptor());
-		 
+
+    public void setCalledFromSuperConstructor(ProgramPoint from, XMethod calledFromConstructor) {
+        Set<ProgramPoint> set = selfMethodsCalledFromConstructor.get(calledFromConstructor);
+        if (set == null) {
+            set = new HashSet<ProgramPoint>();
+            selfMethodsCalledFromConstructor.put(calledFromConstructor, set);
+        }
+        set.add(from);
+        callsOverriddenMethodsFromConstructor.add(from.method.getClassDescriptor());
+
     }
+
     public Set<ProgramPoint> getCalledFromSuperConstructor(ClassDescriptor superClass, XMethod calledFromConstructor) {
 
-		if (!callsOverriddenMethodsFromConstructor.contains(superClass))
+        if (!callsOverriddenMethodsFromConstructor.contains(superClass))
             return Collections.emptySet();
-        for(Map.Entry<XMethod, Set<ProgramPoint>> e : selfMethodsCalledFromConstructor.entrySet()) {
+        for (Map.Entry<XMethod, Set<ProgramPoint>> e : selfMethodsCalledFromConstructor.entrySet()) {
             XMethod m = e.getKey();
-			if (m.getName().equals(calledFromConstructor.getName() )
+            if (m.getName().equals(calledFromConstructor.getName())
                     && m.getClassDescriptor().equals(calledFromConstructor.getClassDescriptor())) {
                 String sig1 = m.getSignature();
                 String sig2 = calledFromConstructor.getSignature();
-				sig1 = sig1.substring(0, sig1.indexOf(')'));
+                sig1 = sig1.substring(0, sig1.indexOf(')'));
                 sig2 = sig2.substring(0, sig2.indexOf(')'));
                 if (sig1.equals(sig2))
                     return e.getValue();
-			}
+            }
         }
 
         return Collections.emptySet();
 
     }
+
     public void setFieldsWritten(XMethod method, Collection<XField> fields) {
-        if (fields.isEmpty()) return;
-		if (fields.size() == 1) {
+        if (fields.isEmpty())
+            return;
+        if (fields.size() == 1) {
             fieldsWritten.put(method, Collections.singleton(Util.first(fields)));
             return;
         }
@@ -126,82 +136,84 @@ public class FieldSummary {
         fieldsWritten.put(method, Util.makeSmallHashSet(fields));
     }
 
-	public Set<XField> getFieldsWritten(XMethod method) {
+    public Set<XField> getFieldsWritten(XMethod method) {
         Set<XField> result = fieldsWritten.get(method);
-        if (result == null) return Collections.<XField>emptySet();
+        if (result == null)
+            return Collections.<XField> emptySet();
         return result;
-	}
+    }
+
     public boolean isWrittenOutsideOfConstructor(XField field) {
         if (field.isFinal())
             return false;
-		if (writtenOutsideOfConstructor.contains(field))
+        if (writtenOutsideOfConstructor.contains(field))
             return true;
         if (!AnalysisContext.currentAnalysisContext().unreadFieldsAvailable())
             return true;
-		UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
+        UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
         if (unreadFields.isReflexive(field))
             return true;
         return false;
-	}
-
+    }
 
     public boolean addWrittenOutsideOfConstructor(XField field) {
         return writtenOutsideOfConstructor.add(field);
-	}
+    }
 
     public void mergeSummary(XField fieldOperand, OpcodeStack.Item mergeValue) {
         if (SystemProperties.ASSERTIONS_ENABLED) {
             String mSignature = mergeValue.getSignature();
-			
+
             Type mergeType = Type.getType(mSignature);
             Type fieldType = Type.getType(fieldOperand.getSignature());
             IncompatibleTypes check = IncompatibleTypes.getPriorityForAssumingCompatible(mergeType, fieldType, false);
-			if (check.getPriority() <= Priorities.NORMAL_PRIORITY) {
+            if (check.getPriority() <= Priorities.NORMAL_PRIORITY) {
                 AnalysisContext.logError(fieldOperand + " not compatible with " + mergeValue,
                         new IllegalArgumentException(check.toString()));
             }
-			
+
         }
 
         OpcodeStack.Item oldSummary = summary.get(fieldOperand);
-		if (oldSummary != null) {
+        if (oldSummary != null) {
             Item newValue = OpcodeStack.Item.merge(mergeValue, oldSummary);
             newValue.clearNewlyAllocated();
             summary.put(fieldOperand, newValue);
-		} else { 
+        } else {
             if (mergeValue.isNewlyAllocated()) {
                 mergeValue = new OpcodeStack.Item(mergeValue);
                 mergeValue.clearNewlyAllocated();
-			}
+            }
             summary.put(fieldOperand, mergeValue);
         }
     }
 
-
     /**
-     * @param complete The complete to set.
+     * @param complete
+     *            The complete to set.
      */
     public void setComplete(boolean complete) {
         int fields = 0;
         int removed = 0;
         int retained = 0;
-	    this.complete = complete;
+        this.complete = complete;
         if (isComplete()) {
-            for(Iterator<Map.Entry<XField, OpcodeStack.Item>> i =  summary.entrySet().iterator(); i.hasNext(); ) {
+            for (Iterator<Map.Entry<XField, OpcodeStack.Item>> i = summary.entrySet().iterator(); i.hasNext();) {
                 Map.Entry<XField, OpcodeStack.Item> entry = i.next();
-	    		OpcodeStack.Item defaultItem = new OpcodeStack.Item(entry.getKey().getSignature());
+                OpcodeStack.Item defaultItem = new OpcodeStack.Item(entry.getKey().getSignature());
                 fields++;
                 Item value = entry.getValue();
                 value.makeCrossMethod();
-				if (defaultItem.equals(value)) {
+                if (defaultItem.equals(value)) {
                     i.remove();
                     removed++;
                 } else {
-	    			retained++;
+                    retained++;
                 }
             }
         }
     }
+
     /**
      * @return Returns the complete.
      */
@@ -217,14 +229,15 @@ public class FieldSummary {
         if (constructorInSuperClass == null || from == null)
             return;
         if (constructorInSuperClass.getSignature().equals("()V"))
-	    	return;
+            return;
         nonVoidSuperConstructorsCalled.put(from, constructorInSuperClass);
 
     }
 
-    public @CheckForNull XMethod getSuperCall(XMethod from) {
+    public @CheckForNull
+    XMethod getSuperCall(XMethod from) {
         return nonVoidSuperConstructorsCalled.get(from);
-	    
+
     }
 
 }

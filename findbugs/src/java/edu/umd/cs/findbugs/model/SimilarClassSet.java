@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * A set of classes considered similar because of their features.
- *
+ * 
  * @author David Hovemeyer
  */
 public class SimilarClassSet {
@@ -37,7 +37,7 @@ public class SimilarClassSet {
     public boolean shouldContain(ClassFeatureSet candidate) {
         for (ClassFeatureSet member : memberList) {
             if (candidate.similarTo(member))
-				return true;
+                return true;
         }
         return false;
     }
@@ -49,7 +49,7 @@ public class SimilarClassSet {
     public String getRepresentativeClassName() {
         if (memberList.isEmpty())
             throw new IllegalStateException();
-		return memberList.get(0).getClassName();
+        return memberList.get(0).getClassName();
     }
 
     public int size() {

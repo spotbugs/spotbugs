@@ -34,80 +34,76 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * BugReporter to output warnings in Emacs format.
- *
+ * 
  * @author David Li
  */
 public class EmacsBugReporter extends TextUIBugReporter {
 
     private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
-    private HashMap<String,String> sourceFileNameCache = new HashMap<String,String>();
+    private HashMap<String, String> sourceFileNameCache = new HashMap<String, String>();
 
     public void observeClass(ClassDescriptor classDescriptor) {
         try {
-            JavaClass javaClass = AnalysisContext.currentAnalysisContext().lookupClass(
-					classDescriptor.toDottedClassName());
+            JavaClass javaClass = AnalysisContext.currentAnalysisContext().lookupClass(classDescriptor.toDottedClassName());
             String sourceFileName = fileNameFor(javaClass.getPackageName(), javaClass.getSourceFileName());
             sourceFileNameCache.put(javaClass.getClassName(), sourceFileName);
         } catch (ClassNotFoundException e) {
-			// Ignore - should not happen
+            // Ignore - should not happen
         }
     }
 
     private String fileNameFor(final String packageName, final String sourceName) {
         String result;
         SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
-		try {
+        try {
             result = sourceFinder.findSourceFile(packageName, sourceName).getFullFileName();
         } catch (IOException e) {
             result = packageName.replace('.', File.separatorChar) + File.separatorChar + sourceName;
-		}
+        }
         return result;
     }
 
     @Override
     protected void printBug(BugInstance bugInstance) {
         int lineStart = 0;
-		int lineEnd = 0;
+        int lineEnd = 0;
         String fullPath = "???";
 
         SourceLineAnnotation line = bugInstance.getPrimarySourceLineAnnotation();
         if (line == null) {
             ClassAnnotation classInfo = bugInstance.getPrimaryClass();
-			if (classInfo != null) {
+            if (classInfo != null) {
                 fullPath = sourceFileNameCache.get(classInfo.getClassName());
             }
         } else {
-			lineStart = line.getStartLine();
+            lineStart = line.getStartLine();
             lineEnd = line.getEndLine();
             SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
             String pkgName = line.getPackageName();
-			try {
+            try {
                 fullPath = sourceFinder.findSourceFile(pkgName, line.getSourceFile()).getFullFileName();
             } catch (IOException e) {
                 if (pkgName.equals(""))
-					fullPath = line.getSourceFile();
+                    fullPath = line.getSourceFile();
                 else
                     fullPath = pkgName.replace('.', '/') + "/" + line.getSourceFile();
             }
-		}
-        outputStream.print(fullPath + ":"
-                + lineStart + ":"
-                + lineEnd + " "
-				+ bugInstance.getMessage());
+        }
+        outputStream.print(fullPath + ":" + lineStart + ":" + lineEnd + " " + bugInstance.getMessage());
 
         switch (bugInstance.getPriority()) {
         case Detector.EXP_PRIORITY:
             outputStream.print(" (E) ");
-			break;
+            break;
         case Detector.LOW_PRIORITY:
             outputStream.print(" (L) ");
             break;
-		case Detector.NORMAL_PRIORITY:
+        case Detector.NORMAL_PRIORITY:
             outputStream.print(" (M) ");
             break;
         case Detector.HIGH_PRIORITY:
-			outputStream.print(" (H) ");
+            outputStream.print(" (H) ");
             break;
         }
 
@@ -117,7 +113,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
     @Override
     protected void doReportBug(BugInstance bugInstance) {
         if (seenAlready.add(bugInstance)) {
-			printBug(bugInstance);
+            printBug(bugInstance);
             notifyObservers(bugInstance);
         }
     }
@@ -126,15 +122,13 @@ public class EmacsBugReporter extends TextUIBugReporter {
         outputStream.close();
     }
 
-    public @CheckForNull BugCollection getBugCollection() {
+    public @CheckForNull
+    BugCollection getBugCollection() {
         return null;
     }
-
 
 }
 
 /*
- * Local Variables:
- * eval: (c-set-style "bsd")
- * End:
+ * Local Variables: eval: (c-set-style "bsd") End:
  */

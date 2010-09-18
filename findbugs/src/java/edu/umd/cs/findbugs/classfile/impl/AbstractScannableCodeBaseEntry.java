@@ -29,17 +29,23 @@ public abstract class AbstractScannableCodeBaseEntry implements ICodeBaseEntry {
 
     public abstract String getRealResourceName();
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java
+     * .lang.String)
      */
-	public void overrideResourceName(String resourceName) {
+    public void overrideResourceName(String resourceName) {
         getCodeBase().addResourceNameTranslation(getRealResourceName(), resourceName);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
      */
-	public String getResourceName() {
+    public String getResourceName() {
         return getCodeBase().translateResourceName(getRealResourceName());
     }
 }

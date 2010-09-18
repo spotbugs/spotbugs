@@ -26,20 +26,21 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Match BugInstances for some feature.
- *
+ * 
  * @author David Hovemeyer
  */
 public interface Matcher {
     /**
-     * Determine whether or not the given BugInstance has the
-     * feature this Matcher tests for.
-	 * 
-     * @param bugInstance the BugInstance
+     * Determine whether or not the given BugInstance has the feature this
+     * Matcher tests for.
+     * 
+     * @param bugInstance
+     *            the BugInstance
      * @return true if the BugInstance matches, false if not
      */
-	public boolean match(BugInstance bugInstance);
+    public boolean match(BugInstance bugInstance);
 
-    public void writeXML(XMLOutput xmlOutput, boolean disabled)  throws IOException;
+    public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException;
 }
 
 // vim:ts=4

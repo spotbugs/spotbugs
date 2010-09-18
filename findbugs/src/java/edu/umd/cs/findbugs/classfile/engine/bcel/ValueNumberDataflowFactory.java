@@ -39,51 +39,54 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce ValueNumberDataflow objects
- * for analyzed methods.
- *
+ * Analysis engine to produce ValueNumberDataflow objects for analyzed methods.
+ * 
  * @author David Hovemeyer
  */
 public class ValueNumberDataflowFactory extends AnalysisFactory<ValueNumberDataflow> {
     /**
      * Constructor.
      */
-	public ValueNumberDataflowFactory() {
+    public ValueNumberDataflowFactory() {
         super("value number analysis", ValueNumberDataflow.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public ValueNumberDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public ValueNumberDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
         if (methodGen == null) {
             throw new MethodUnprofitableException(descriptor);
-		}
+        }
 
         DepthFirstSearch dfs = getDepthFirstSearch(analysisCache, descriptor);
         LoadedFieldSet loadedFieldSet = getLoadedFieldSet(analysisCache, descriptor);
-        ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen, dfs, loadedFieldSet,
-				AnalysisContext.currentAnalysisContext().getLookupFailureCallback());
+        ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen, dfs, loadedFieldSet, AnalysisContext
+                .currentAnalysisContext().getLookupFailureCallback());
         analysis.setMergeTree(new MergeTree(analysis.getFactory()));
         CFG cfg = getCFG(analysisCache, descriptor);
 
         ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, analysis);
         vnaDataflow.execute();
         if (ClassContext.DUMP_DATAFLOW_ANALYSIS) {
-			TreeSet<Location> tree = new TreeSet<Location>();
-            for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
+            TreeSet<Location> tree = new TreeSet<Location>();
+            for (Iterator<Location> locs = cfg.locationIterator(); locs.hasNext();) {
                 Location loc = locs.next();
                 tree.add(loc);
-			}
+            }
             System.out.println("\n\nValue number analysis for " + descriptor.getName() + descriptor.getSignature() + " {");
-            for(Location loc : tree) {
+            for (Location loc : tree) {
                 System.out.println("\nBefore: " + vnaDataflow.getFactAtLocation(loc));
-				System.out.println("Location: " + loc);
+                System.out.println("Location: " + loc);
                 System.out.println("After: " + vnaDataflow.getFactAfterLocation(loc));
             }
             System.out.println("}\n");
-		}
+        }
         return vnaDataflow;
     }
 }

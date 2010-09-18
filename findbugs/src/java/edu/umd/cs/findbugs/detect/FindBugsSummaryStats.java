@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import java.io.PrintStream;
 import java.util.BitSet;
 
@@ -39,79 +38,88 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
-public class FindBugsSummaryStats extends PreorderVisitor
-        implements Detector, BugReporterObserver, NonReportingDetector {
+public class FindBugsSummaryStats extends PreorderVisitor implements Detector, BugReporterObserver, NonReportingDetector {
     private ProjectStats stats;
 
-       BitSet lines = new BitSet(500);
-       int methods = 0;
-       int fields = 0;
-	   int classCodeSize;
-       int totalNCSS = 0;
-       int totalCodeSize = 0;
-       int totalMethods = 0;
-	   int totalFields = 0;
-       boolean sawLineNumbers;
+    BitSet lines = new BitSet(500);
 
+    int methods = 0;
 
-       @Override
-       public void visitJavaClass(JavaClass obj) {
-           if (AnalysisContext.currentAnalysisContext().isApplicationClass(obj))
-			   super.visitJavaClass(obj);
-       }
-       @Override
-            public void visit(JavaClass obj) {
+    int fields = 0;
+
+    int classCodeSize;
+
+    int totalNCSS = 0;
+
+    int totalCodeSize = 0;
+
+    int totalMethods = 0;
+
+    int totalFields = 0;
+
+    boolean sawLineNumbers;
+
+    @Override
+    public void visitJavaClass(JavaClass obj) {
+        if (AnalysisContext.currentAnalysisContext().isApplicationClass(obj))
+            super.visitJavaClass(obj);
+    }
+
+    @Override
+    public void visit(JavaClass obj) {
 
         lines.clear();
         methods = 0;
         fields = 0;
-		classCodeSize = 0;
-           sawLineNumbers = false;
-        }
-       @Override
-			public void visit(Method obj) {
+        classCodeSize = 0;
+        sawLineNumbers = false;
+    }
+
+    @Override
+    public void visit(Method obj) {
         methods++;
-        }
-       @Override
-			public void visit(Field obj) {
+    }
+
+    @Override
+    public void visit(Field obj) {
         fields++;
-        }
-       @Override
-			public void visit(Code obj) {
+    }
+
+    @Override
+    public void visit(Code obj) {
         classCodeSize += obj.getCode().length;
-        }
+    }
 
-       @Override
-            public void visitAfter(JavaClass obj) {
-           int linesNCSS = 1 + methods + fields;
-		   if (sawLineNumbers) 
-               linesNCSS += lines.cardinality();
-           else
-               linesNCSS += classCodeSize / 10;
-		   if (stats != null) 
-            stats.addClass(getDottedClassName(), obj.getSourceFileName(),
-                    obj.isInterface(), linesNCSS);
-            totalCodeSize += classCodeSize;
-			totalNCSS += linesNCSS;
-            totalMethods += methods;
-            totalFields += fields;
+    @Override
+    public void visitAfter(JavaClass obj) {
+        int linesNCSS = 1 + methods + fields;
+        if (sawLineNumbers)
+            linesNCSS += lines.cardinality();
+        else
+            linesNCSS += classCodeSize / 10;
+        if (stats != null)
+            stats.addClass(getDottedClassName(), obj.getSourceFileName(), obj.isInterface(), linesNCSS);
+        totalCodeSize += classCodeSize;
+        totalNCSS += linesNCSS;
+        totalMethods += methods;
+        totalFields += fields;
 
-        }
+    }
 
-       @Override
-            public void visit(LineNumber obj) {
-           sawLineNumbers = true;
-		int line = obj.getLineNumber();
+    @Override
+    public void visit(LineNumber obj) {
+        sawLineNumbers = true;
+        int line = obj.getLineNumber();
         lines.set(line);
-            }
-
+    }
 
     public FindBugsSummaryStats(BugReporter bugReporter) {
         this.stats = bugReporter.getProjectStats();
         bugReporter.addObserver(this);
-	}
+    }
+
     public FindBugsSummaryStats() {
-        this.stats =null;
+        this.stats = null;
     }
 
     public void visitClassContext(ClassContext classContext) {
@@ -120,18 +128,17 @@ public class FindBugsSummaryStats extends PreorderVisitor
 
     public void report() {
     }
+
     @Override
-		 public void report(PrintStream out) {
+    public void report(PrintStream out) {
         out.println("NCSS\t" + totalNCSS);
         out.println("codeSz\t" + totalCodeSize);
         out.println("methods\t" + totalMethods);
-		out.println("fields\t" + totalFields);
+        out.println("fields\t" + totalFields);
     }
 
     public void reportBug(BugInstance bug) {
         stats.addBug(bug);
     }
-
-
 
 }

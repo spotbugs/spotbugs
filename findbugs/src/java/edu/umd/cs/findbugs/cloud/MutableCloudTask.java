@@ -6,12 +6,18 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MutableCloudTask implements Cloud.CloudTask {
     private String name;
+
     private CopyOnWriteArrayList<Cloud.CloudTaskListener> listeners = new CopyOnWriteArrayList<Cloud.CloudTaskListener>();
+
     private String substatus = "";
+
     private double percentDone = 0;
+
     /** A listener used only if no other listeners are present. */
     private Cloud.CloudTaskListener defaultListener;
+
     private boolean finished = false;
+
     private boolean useDefaultListener = true;
 
     public MutableCloudTask(String name) {

@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 
 /**
  * An exception to indicate that a plugin could not be loaded.
- *
+ * 
  * @author David Hovemeyer
  * @see PluginLoader
  */
@@ -29,25 +29,28 @@ public class PluginException extends Exception {
     /**
      *
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructor.
-     *
-	 * @param msg message describing the exception
+     * 
+     * @param msg
+     *            message describing the exception
      */
     public PluginException(String msg) {
         super(msg);
-	}
+    }
 
     /**
      * Constructor.
-     *
-	 * @param msg   message describing the exception
-     * @param cause another Throwable object which is the cause of the exception
+     * 
+     * @param msg
+     *            message describing the exception
+     * @param cause
+     *            another Throwable object which is the cause of the exception
      */
     public PluginException(String msg, Throwable cause) {
-		super(msg, cause);
+        super(msg, cause);
     }
 }
 

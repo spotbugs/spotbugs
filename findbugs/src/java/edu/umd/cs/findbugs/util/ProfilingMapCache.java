@@ -24,43 +24,46 @@ import java.util.Map;
 /**
  * @author pugh
  */
-public class ProfilingMapCache<K,V> extends MapCache<K,V> {
+public class ProfilingMapCache<K, V> extends MapCache<K, V> {
 
     final String name;
 
     public ProfilingMapCache(int maxCapacity, String name) {
-		super(maxCapacity);
+        super(maxCapacity);
         this.name = name;
         count = new int[maxCapacity];
         Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
+            @Override
             public void run() {
                 System.out.println("Profile for map cache " + ProfilingMapCache.this.name);
-                for(int i = 0; i < count.length; i++)
+                for (int i = 0; i < count.length; i++)
                     System.out.printf("%4d %5d%n", i, count[i]);
-			}
+            }
         });
     }
-    int [] count;
-	@Override
+
+    int[] count;
+
+    @Override
     public V get(Object k) {
 
-        int age = count.length-1;
-        for(Map.Entry<K,V> e : entrySet()) {
+        int age = count.length - 1;
+        for (Map.Entry<K, V> e : entrySet()) {
             if (e.getKey().equals(k)) {
-				count[age]++;
+                count[age]++;
                 if (age > 20) {
                     new RuntimeException("Reusing value from " + age + " steps ago in " + name).printStackTrace(System.out);
                 }
-				break;
+                break;
             }
             age--;
         }
-		return super.get(k);
+        return super.get(k);
     }
+
     public String getStatistics() {
         StringBuilder b = new StringBuilder();
-		for(int c : count) 
+        for (int c : count)
             b.append(c).append(" ");
         return b.toString();
     }

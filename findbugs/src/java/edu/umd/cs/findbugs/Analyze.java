@@ -18,40 +18,43 @@ public class Analyze {
     static private JavaClass serializable;
 
     static private JavaClass collection;
+
     static private JavaClass comparator;
 
     static private JavaClass map;
+
     static private JavaClass remote;
+
     static private ClassNotFoundException storedException;
 
     static {
         try {
             serializable = AnalysisContext.lookupSystemClass("java.io.Serializable");
-			collection = AnalysisContext.lookupSystemClass("java.util.Collection");
+            collection = AnalysisContext.lookupSystemClass("java.util.Collection");
             map = AnalysisContext.lookupSystemClass("java.util.Map");
             comparator = AnalysisContext.lookupSystemClass("java.util.Comparator");
 
         } catch (ClassNotFoundException e) {
             storedException = e;
         }
-		try {
+        try {
             remote = AnalysisContext.lookupSystemClass("java.rmi.Remote");
         } catch (ClassNotFoundException e) {
-            if (storedException == null) storedException = e;
-		}
+            if (storedException == null)
+                storedException = e;
+        }
     }
 
     private static boolean containsConcreteClasses(Set<JavaClass> s) {
         for (JavaClass c : s)
             if (!c.isInterface() && !c.isAbstract())
-				return true;
+                return true;
         return false;
     }
 
-    public static double isDeepSerializable(String refSig)
-            throws ClassNotFoundException {
+    public static double isDeepSerializable(String refSig) throws ClassNotFoundException {
         if (storedException != null)
-			throw storedException;
+            throw storedException;
 
         if (isPrimitiveComponentClass(refSig))
             return 1.0;
@@ -65,7 +68,8 @@ public class Analyze {
     }
 
     public static double isDeepRemote(String refSig) {
-        if (remote == null) return 0.1;
+        if (remote == null)
+            return 0.1;
 
         String refName = getComponentClass(refSig);
         if (refName.equals("java.lang.Object"))
@@ -74,23 +78,23 @@ public class Analyze {
         JavaClass refJavaClass;
         try {
             refJavaClass = Repository.lookupClass(refName);
-			return deepInstanceOf(refJavaClass, remote);
+            return deepInstanceOf(refJavaClass, remote);
         } catch (ClassNotFoundException e) {
             return 0.99;
         }
 
-
     }
+
     private static boolean isPrimitiveComponentClass(String refSig) {
         int c = 0;
-		while (c < refSig.length() && refSig.charAt(c) == '[') {
+        while (c < refSig.length() && refSig.charAt(c) == '[') {
             c++;
         }
 
         // If the string is now empty, then we evidently have
-        // an invalid type signature.  We'll return "true",
+        // an invalid type signature. We'll return "true",
         // which in turn will cause isDeepSerializable() to return
-		// 1.0, hopefully avoiding any warnings from being generated
+        // 1.0, hopefully avoiding any warnings from being generated
         // by whatever detector is calling us.
         return c >= refSig.length() || refSig.charAt(c) != 'L';
     }
@@ -99,86 +103,84 @@ public class Analyze {
         while (refSig.charAt(0) == '[')
             refSig = refSig.substring(1);
 
-        //TODO: This method now returns primitive type signatures, is this ok?
+        // TODO: This method now returns primitive type signatures, is this ok?
         if (refSig.charAt(0) == 'L')
             return refSig.substring(1, refSig.length() - 1).replace('/', '.');
-		return refSig;
+        return refSig;
     }
 
-    public static double isDeepSerializable(JavaClass x)
-            throws ClassNotFoundException {
+    public static double isDeepSerializable(JavaClass x) throws ClassNotFoundException {
         if (storedException != null)
-			throw storedException;
+            throw storedException;
 
         double result = deepInstanceOf(x, serializable);
         if (result >= 0.9)
             return result;
-		result = Math.max(result, deepInstanceOf(x, collection));
+        result = Math.max(result, deepInstanceOf(x, collection));
         if (result >= 0.9)
             return result;
         result = Math.max(result, deepInstanceOf(x, map));
-		if (result >= 0.9)
-            return result;
-        result = Math.max(result, 0.5*deepInstanceOf(x, comparator));
         if (result >= 0.9)
-			return result;
+            return result;
+        result = Math.max(result, 0.5 * deepInstanceOf(x, comparator));
+        if (result >= 0.9)
+            return result;
         return result;
     }
 
     /**
      * Given two JavaClasses, try to estimate the probability that an reference
      * of type x is also an instance of type y. Will return 0 only if it is
-	 * impossible and 1 only if it is guaranteed.
-     *
+     * impossible and 1 only if it is guaranteed.
+     * 
      * @param x
      *            Known type of object
-	 * @param y
+     * @param y
      *            Type queried about
      * @return 0 - 1 value indicating probablility
      */
 
-    public static double deepInstanceOf(String x, String y)
-    throws ClassNotFoundException {
-        return deepInstanceOf(AnalysisContext.currentAnalysisContext().lookupClass(x),
-				AnalysisContext.currentAnalysisContext().lookupClass(y));
+    public static double deepInstanceOf(String x, String y) throws ClassNotFoundException {
+        return deepInstanceOf(AnalysisContext.currentAnalysisContext().lookupClass(x), AnalysisContext.currentAnalysisContext()
+                .lookupClass(y));
     }
 
     /**
      * Given two JavaClasses, try to estimate the probability that an reference
      * of type x is also an instance of type y. Will return 0 only if it is
-	 * impossible and 1 only if it is guaranteed.
-     *
+     * impossible and 1 only if it is guaranteed.
+     * 
      * @param x
      *            Known type of object
-	 * @param y
+     * @param y
      *            Type queried about
      * @return 0 - 1 value indicating probability
      */
-	public static double deepInstanceOf(JavaClass x, JavaClass y)
-            throws ClassNotFoundException {
+    public static double deepInstanceOf(JavaClass x, JavaClass y) throws ClassNotFoundException {
 
         if (x.equals(y))
             return 1.0;
-        if (y.getClassName().equals("java.lang.Object")) return 1.0;
-		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+        if (y.getClassName().equals("java.lang.Object"))
+            return 1.0;
+        Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         ClassDescriptor xDesc = DescriptorFactory.createClassDescriptor(x);
         ClassDescriptor yDesc = DescriptorFactory.createClassDescriptor(y);
 
-		boolean xIsSubtypeOfY = Repository.instanceOf(x, y);
+        boolean xIsSubtypeOfY = Repository.instanceOf(x, y);
         if (xIsSubtypeOfY)
             return 1.0;
         boolean yIsSubtypeOfX = Repository.instanceOf(y, x);
-		if (!yIsSubtypeOfX) {
+        if (!yIsSubtypeOfX) {
             if (x.isFinal() || y.isFinal())
                 return 0.0;
             if (!x.isInterface() && !y.isInterface())
-				return 0.0;
+                return 0.0;
         }
 
         Set<ClassDescriptor> transitiveCommonSubtypes = subtypes2.getTransitiveCommonSubtypes(xDesc, yDesc);
 
         if (transitiveCommonSubtypes.isEmpty()) {
-            for(ClassDescriptor c : subtypes2.getSubtypes(xDesc)) {
+            for (ClassDescriptor c : subtypes2.getSubtypes(xDesc)) {
                 XClass cx;
                 try {
                     cx = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
@@ -186,25 +188,27 @@ public class Analyze {
                     continue;
                 }
                 if (!cx.isAbstract() && !cx.isInterface()) {
-                    if (x.isAbstract() || x.isInterface()) return 0.2;
+                    if (x.isAbstract() || x.isInterface())
+                        return 0.2;
                     return 0.1;
-				}
+                }
             }
             return 0.3;
         }
 
         // exist classes that are both X and Y
-        Set<ClassDescriptor> xButNotY =  new HashSet<ClassDescriptor>(subtypes2.getSubtypes(xDesc));
+        Set<ClassDescriptor> xButNotY = new HashSet<ClassDescriptor>(subtypes2.getSubtypes(xDesc));
         xButNotY.removeAll(transitiveCommonSubtypes);
-		for(ClassDescriptor c : xButNotY) {
+        for (ClassDescriptor c : xButNotY) {
             XClass cx;
             try {
                 cx = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
             } catch (CheckedAnalysisException e) {
-               continue;
+                continue;
             }
-            if (!cx.isAbstract() && !cx.isInterface()) return 0.7;
+            if (!cx.isAbstract() && !cx.isInterface())
+                return 0.7;
         }
         return 0.99;
-	}
+    }
 }

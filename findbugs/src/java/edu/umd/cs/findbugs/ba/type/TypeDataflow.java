@@ -30,12 +30,13 @@ import edu.umd.cs.findbugs.ba.Location;
 public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
     public static class LocationAndFactPair {
         public final Location location;
+
         public final TypeFrame frame;
 
         LocationAndFactPair(Location location, TypeFrame frame) {
             this.location = location;
             this.frame = frame;
-		}
+        }
     }
 
     public TypeDataflow(CFG cfg, TypeAnalysis analysis) {
@@ -54,15 +55,15 @@ public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
         // Return the first valid frame at any of the returned Locations
         for (Location location : locations) {
             try {
-				TypeFrame frame = getFactAtLocation(location);
+                TypeFrame frame = getFactAtLocation(location);
                 if (frame.isValid()) {
                     result = new LocationAndFactPair(location, frame);
                     break;
-				}
+                }
             } catch (DataflowAnalysisException e) {
                 // Ignore
             }
-		}
+        }
 
         return result;
     }

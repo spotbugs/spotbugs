@@ -21,32 +21,36 @@ package edu.umd.cs.findbugs.graph;
 
 /**
  * GraphEdge implementation for use with AbstractGraph.
- *
+ * 
  * @see GraphEdge
  * @see AbstractGraph
  * @see AbstractVertex
  * @author David Hovemeyer
  */
-public class AbstractEdge
-        <
-        ActualEdgeType extends AbstractEdge<ActualEdgeType, VertexType>,
-        VertexType extends AbstractVertex<ActualEdgeType, VertexType>
-		> implements GraphEdge<ActualEdgeType, VertexType> {
+public class AbstractEdge<ActualEdgeType extends AbstractEdge<ActualEdgeType, VertexType>, VertexType extends AbstractVertex<ActualEdgeType, VertexType>>
+        implements GraphEdge<ActualEdgeType, VertexType> {
 
     private VertexType source;
+
     private VertexType target;
+
     private int label;
-	private ActualEdgeType nextOutgoingEdge;
+
+    private ActualEdgeType nextOutgoingEdge;
+
     private ActualEdgeType nextIncomingEdge;
 
     /**
      * Constructor.
-     * @param source the source vertex of the edge
-	 * @param target the target vertex of the edge
+     * 
+     * @param source
+     *            the source vertex of the edge
+     * @param target
+     *            the target vertex of the edge
      */
     public AbstractEdge(VertexType source, VertexType target) {
         this.source = source;
-		this.target = target;
+        this.target = target;
     }
 
     public VertexType getSource() {
@@ -67,20 +71,21 @@ public class AbstractEdge
 
     @Override
     public int hashCode() {
-        return source.hashCode() + target.hashCode()*3;
-	}
+        return source.hashCode() + target.hashCode() * 3;
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof AbstractEdge)) return false;
-		AbstractEdge other = (AbstractEdge) o;
+        if (!(o instanceof AbstractEdge))
+            return false;
+        AbstractEdge other = (AbstractEdge) o;
         return source.equals(other.source) && target.equals(other.target);
     }
 
     public int compareTo(ActualEdgeType other) {
         int cmp = source.compareTo(other.getSource());
         if (cmp != 0)
-			return cmp;
+            return cmp;
         return target.compareTo(other.getTarget());
     }
 

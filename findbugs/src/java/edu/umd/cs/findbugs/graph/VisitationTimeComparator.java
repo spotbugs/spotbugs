@@ -28,33 +28,36 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 /**
  * Comparator to compare GraphVertex objects by their visitation times in a
- * search; for example, it could compare the finishing times produced
- * by DepthFirstSearch.
+ * search; for example, it could compare the finishing times produced by
+ * DepthFirstSearch.
  */
-public class VisitationTimeComparator <VertexType extends GraphVertex<VertexType>> implements Comparator<VertexType>,
-Serializable {
+public class VisitationTimeComparator<VertexType extends GraphVertex<VertexType>> implements Comparator<VertexType>, Serializable {
     private static final long serialVersionUID = 0L;
+
     /**
      * Compare in ascending order.
-	 */
+     */
     public static final int ASCENDING = 0;
 
     /**
      * Compare in descending order.
      */
-	public static final int DESCENDING = 1;
+    public static final int DESCENDING = 1;
 
     private int[] m_visitationTimeList;
+
     private int m_direction;
 
     /**
      * Constructor.
-     *
-	 * @param visitationTimeList array of visitation times indexed by vertex label
-     * @param direction          either ASCENDING or DESCENDING
+     * 
+     * @param visitationTimeList
+     *            array of visitation times indexed by vertex label
+     * @param direction
+     *            either ASCENDING or DESCENDING
      */
     @SuppressWarnings("EI2")
-	public VisitationTimeComparator(int[] visitationTimeList, int direction) {
+    public VisitationTimeComparator(int[] visitationTimeList, int direction) {
         m_visitationTimeList = visitationTimeList;
         m_direction = direction;
 
@@ -69,7 +72,7 @@ Serializable {
         if (m_direction == ASCENDING)
             return f1 - f2;
         else
-			return f2 - f1;
+            return f2 - f1;
     }
 
 }

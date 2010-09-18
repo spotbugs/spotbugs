@@ -26,82 +26,90 @@ import java.util.Iterator;
 
 /**
  * Utility routines for writing to XMLOutput.
- *
+ * 
  * @see XMLOutput
  * @author David Hovemeyer
  */
 public abstract class XMLOutputUtil {
     /**
-     * Write a list of Strings to document as elements
-     * with given tag name.
-	 *
-     * @param xmlOutput  the XMLOutput object to write to
-     * @param tagName    the tag name
-     * @param listValues Collection of String values to write
-	 */
-    public static void writeElementList(XMLOutput xmlOutput, String tagName,
-            Iterable<String> listValues) throws IOException {
+     * Write a list of Strings to document as elements with given tag name.
+     * 
+     * @param xmlOutput
+     *            the XMLOutput object to write to
+     * @param tagName
+     *            the tag name
+     * @param listValues
+     *            Collection of String values to write
+     */
+    public static void writeElementList(XMLOutput xmlOutput, String tagName, Iterable<String> listValues) throws IOException {
         writeElementList(xmlOutput, tagName, listValues.iterator());
-	}
-
-    /**
-     * Write a list of Strings to document as elements
-     * with given tag name.
-	 *
-     * @param xmlOutput         the XMLOutput object to write to
-     * @param tagName           the tag name
-     * @param listValueIterator Iterator over String values to write
-	 */
-    public static void writeElementList(XMLOutput xmlOutput, String tagName,
-            Iterator<String> listValueIterator) throws IOException {
-        while (listValueIterator.hasNext()) {
-			xmlOutput.openTag(tagName);
-            xmlOutput.writeText(listValueIterator.next());
-            xmlOutput.closeTag(tagName);
-        }
-	}
-    /**
-     * Write a list of Strings to document as elements
-     * with given tag name.
-	 *
-     * @param xmlOutput  the XMLOutput object to write to
-     * @param tagName    the tag name
-     * @param listValues Collection of String values to write
-	 */
-    public static void writeFileList(XMLOutput xmlOutput, String tagName,
-            Iterable<File> listValues) throws IOException {
-        if (listValues != null)
-		  writeFileList(xmlOutput, tagName, listValues.iterator());
     }
 
     /**
-     * Write a list of Strings to document as elements
-     * with given tag name.
-	 *
-     * @param xmlOutput         the XMLOutput object to write to
-     * @param tagName           the tag name
-     * @param listValueIterator Iterator over String values to write
-	 */
-    public static void writeFileList(XMLOutput xmlOutput, String tagName,
-            Iterator<File> listValueIterator) throws IOException {
+     * Write a list of Strings to document as elements with given tag name.
+     * 
+     * @param xmlOutput
+     *            the XMLOutput object to write to
+     * @param tagName
+     *            the tag name
+     * @param listValueIterator
+     *            Iterator over String values to write
+     */
+    public static void writeElementList(XMLOutput xmlOutput, String tagName, Iterator<String> listValueIterator)
+            throws IOException {
         while (listValueIterator.hasNext()) {
-			xmlOutput.openTag(tagName);
+            xmlOutput.openTag(tagName);
+            xmlOutput.writeText(listValueIterator.next());
+            xmlOutput.closeTag(tagName);
+        }
+    }
+
+    /**
+     * Write a list of Strings to document as elements with given tag name.
+     * 
+     * @param xmlOutput
+     *            the XMLOutput object to write to
+     * @param tagName
+     *            the tag name
+     * @param listValues
+     *            Collection of String values to write
+     */
+    public static void writeFileList(XMLOutput xmlOutput, String tagName, Iterable<File> listValues) throws IOException {
+        if (listValues != null)
+            writeFileList(xmlOutput, tagName, listValues.iterator());
+    }
+
+    /**
+     * Write a list of Strings to document as elements with given tag name.
+     * 
+     * @param xmlOutput
+     *            the XMLOutput object to write to
+     * @param tagName
+     *            the tag name
+     * @param listValueIterator
+     *            Iterator over String values to write
+     */
+    public static void writeFileList(XMLOutput xmlOutput, String tagName, Iterator<File> listValueIterator) throws IOException {
+        while (listValueIterator.hasNext()) {
+            xmlOutput.openTag(tagName);
             xmlOutput.writeText(listValueIterator.next().getPath());
             xmlOutput.closeTag(tagName);
         }
-	}
+    }
+
     /**
      * Write a Collection of XMLWriteable objects.
-     *
-	 * @param xmlOutput  the XMLOutput object to write to
-     * @param collection Collection of XMLWriteable objects
+     * 
+     * @param xmlOutput
+     *            the XMLOutput object to write to
+     * @param collection
+     *            Collection of XMLWriteable objects
      */
-    public static void writeCollection(XMLOutput xmlOutput, Collection<? extends XMLWriteable> collection)
-			throws IOException {
+    public static void writeCollection(XMLOutput xmlOutput, Collection<? extends XMLWriteable> collection) throws IOException {
         for (XMLWriteable obj : collection) {
             obj.writeXML(xmlOutput);
         }
-	}
+    }
 }
 
 // vim:ts=4

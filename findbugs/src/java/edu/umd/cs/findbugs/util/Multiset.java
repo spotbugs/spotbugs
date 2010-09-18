@@ -34,21 +34,22 @@ public class Multiset<K> {
     final Map<K, Integer> map;
 
     public Multiset() {
-		map = new HashMap<K, Integer>();
+        map = new HashMap<K, Integer>();
     }
 
-    public Multiset(Map<K,Integer> map) {
+    public Multiset(Map<K, Integer> map) {
         this.map = map;
     }
-	public Multiset(Multiset<K> mset) {
-        this.map = new HashMap<K,Integer>(mset.map);
+
+    public Multiset(Multiset<K> mset) {
+        this.map = new HashMap<K, Integer>(mset.map);
     }
 
-	public void clear() {
+    public void clear() {
         map.clear();
     }
 
-	public boolean isEmpty() {
+    public boolean isEmpty() {
         return map.isEmpty();
     }
 
@@ -57,61 +58,65 @@ public class Multiset<K> {
     }
 
     public void add(K k) {
-        add(k,1);
+        add(k, 1);
     }
-	
+
     public boolean remove(K k) {
         Integer v = map.get(k);
         if (v == null || v.intValue() == 0)
-			return false;
+            return false;
         if (v.intValue() == 1) {
             map.remove(k);
             return true;
-		}
-        map.put(k, v.intValue() -1);
+        }
+        map.put(k, v.intValue() - 1);
         return true;
     }
-	public void add(K k, int val) {
+
+    public void add(K k, int val) {
         Integer v = map.get(k);
         if (v == null)
             map.put(k, val);
-		else
+        else
             map.put(k, v + val);
     }
+
     public void addAll(Iterable<K> c) {
-		for(K k : c)
+        for (K k : c)
             add(k);
     }
+
     public int getCount(K k) {
-		Integer v = map.get(k);
+        Integer v = map.get(k);
         if (v == null)
             return 0;
         return v;
-	}
+    }
 
     public Iterable<Map.Entry<K, Integer>> entrySet() {
         return map.entrySet();
-	}
+    }
 
     public Set<K> uniqueKeys() {
         return map.keySet();
     }
-	public Iterable<Map.Entry<K, Integer>> entriesInDecreasingFrequency() {
+
+    public Iterable<Map.Entry<K, Integer>> entriesInDecreasingFrequency() {
         TreeSet<Map.Entry<K, Integer>> result = new TreeSet<Map.Entry<K, Integer>>(new EntryComparator<K>());
         result.addAll(map.entrySet());
         return result;
-	}
+    }
 
     static class EntryComparator<E> implements Comparator<Map.Entry<E, Integer>>, Serializable {
 
         public int compare(Entry<E, Integer> o1, Entry<E, Integer> o2) {
             int c1 = o1.getValue();
             int c2 = o2.getValue();
-			if (c1 < c2)
+            if (c1 < c2)
                 return 1;
             if (c1 > c2)
                 return -1;
-			return System.identityHashCode(o1.getKey()) - System.identityHashCode(o2.getKey());
+            return System.identityHashCode(o1.getKey()) - System.identityHashCode(o2.getKey());
         }
 
     }

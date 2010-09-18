@@ -21,14 +21,17 @@ package edu.umd.cs.findbugs.ba;
 
 public class InnerClassAccess {
     private String methodName;
+
     private String methodSig;
+
     private XField field;
-	private boolean isLoad;
+
+    private boolean isLoad;
 
     public InnerClassAccess(String methodName, String methodSig, XField field, boolean isLoad) {
         this.methodName = methodName;
         this.methodSig = methodSig;
-		this.field = field;
+        this.field = field;
         this.isLoad = isLoad;
     }
 

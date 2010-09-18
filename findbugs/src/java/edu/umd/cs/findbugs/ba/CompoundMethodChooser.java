@@ -33,22 +33,24 @@ public class CompoundMethodChooser implements JavaClassAndMethodChooser {
     public boolean choose(JavaClassAndMethod javaClassAndMethod) {
         for (JavaClassAndMethodChooser chooser : conjunctList) {
             if (!chooser.choose(javaClassAndMethod))
-				return false;
+                return false;
         }
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.JavaClassAndMethodChooser#choose(edu.umd.cs.findbugs.ba.XMethod)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.JavaClassAndMethodChooser#choose(edu.umd.cs.findbugs
+     * .ba.XMethod)
      */
     public boolean choose(XMethod method) {
         for (JavaClassAndMethodChooser chooser : conjunctList) {
             if (!chooser.choose(method))
                 return false;
-		}
+        }
         return true;
     }
-
-
 
 }

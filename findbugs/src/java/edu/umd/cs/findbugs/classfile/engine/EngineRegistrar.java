@@ -27,34 +27,33 @@ import edu.umd.cs.findbugs.classfile.engine.asm.ClassReaderAnalysisEngine;
 
 /**
  * Register analysis engines with an analysis cache.
- *
+ * 
  * @author David Hovemeyer
  */
 public class EngineRegistrar implements IAnalysisEngineRegistrar {
-    private static IClassAnalysisEngine<?>[] classAnalysisEngineList = {
-            new ClassDataAnalysisEngine(),
-            new ClassInfoAnalysisEngine(),
-			new ClassNameAndSuperclassInfoAnalysisEngine(),
-            new ClassReaderAnalysisEngine()
-    };
+    private static IClassAnalysisEngine<?>[] classAnalysisEngineList = { new ClassDataAnalysisEngine(),
+            new ClassInfoAnalysisEngine(), new ClassNameAndSuperclassInfoAnalysisEngine(), new ClassReaderAnalysisEngine() };
 
-    private static IMethodAnalysisEngine<?>[] methodAnalysisEngineList = {
-    };
+    private static IMethodAnalysisEngine<?>[] methodAnalysisEngineList = {};
 
     /**
      * Constructor.
      */
-	public EngineRegistrar() {
+    public EngineRegistrar() {
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar#registerWith(edu
+     * .umd.cs.findbugs.classfile.IAnalysisCache)
      */
-	public void registerAnalysisEngines(IAnalysisCache analysisCache) {
+    public void registerAnalysisEngines(IAnalysisCache analysisCache) {
         for (IClassAnalysisEngine<?> engine : classAnalysisEngineList) {
             engine.registerWith(analysisCache);
         }
-		for (IMethodAnalysisEngine<?> engine : methodAnalysisEngineList) {
+        for (IMethodAnalysisEngine<?> engine : methodAnalysisEngineList) {
             engine.registerWith(analysisCache);
         }
     }

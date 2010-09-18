@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import java.util.Set;
 
 import org.apache.bcel.classfile.Constant;
@@ -40,125 +39,123 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 public class InheritanceUnsafeGetResource extends BytecodeScanningDetector implements StatelessDetector {
 
     private BugReporter bugReporter;
+
     private boolean classIsFinal;
-//	private boolean methodIsVisibleToOtherPackages;
+
+    // private boolean methodIsVisibleToOtherPackages;
     private boolean classIsVisibleToOtherPackages;
-//	private boolean methodIsFinal;
+
+    // private boolean methodIsFinal;
     private boolean methodIsStatic;
+
     int state = 0;
+
     int sawGetClass;
-	boolean reportedForThisClass;
+
+    boolean reportedForThisClass;
+
     String stringConstant;
+
     int prevOpcode;
 
     public InheritanceUnsafeGetResource(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
-
-
     @Override
     public void visit(JavaClass obj) {
         classIsFinal = obj.isFinal();
-		reportedForThisClass = false;
+        reportedForThisClass = false;
         classIsVisibleToOtherPackages = obj.isPublic() || obj.isProtected();
     }
 
     @Override
     public void visit(Method obj) {
         methodIsStatic = obj.isStatic();
-		state = 0;
+        state = 0;
         sawGetClass = -100;
     }
 
     @Override
     public void sawOpcode(int seen) {
-        if (reportedForThisClass) return;
-
+        if (reportedForThisClass)
+            return;
 
         switch (seen) {
         case LDC:
             Constant constantValue = getConstantRefOperand();
-			if (constantValue instanceof ConstantClass) 
+            if (constantValue instanceof ConstantClass)
                 sawGetClass = -100;
             else if (constantValue instanceof ConstantString) {
-                stringConstant = ((ConstantString)constantValue).getBytes(getConstantPool());
-			}
+                stringConstant = ((ConstantString) constantValue).getBytes(getConstantPool());
+            }
             break;
 
         case ALOAD_0:
             state = 1;
             break;
-		case INVOKEVIRTUAL:
+        case INVOKEVIRTUAL:
             if (getClassConstantOperand().equals("java/lang/Class")
-                    && (getNameConstantOperand().equals("getResource")
-                            || getNameConstantOperand().equals("getResourceAsStream"))
-					&& sawGetClass + 10 >= getPC()) {
+                    && (getNameConstantOperand().equals("getResource") || getNameConstantOperand().equals("getResourceAsStream"))
+                    && sawGetClass + 10 >= getPC()) {
                 int priority = NORMAL_PRIORITY;
-                if (prevOpcode == LDC && stringConstant != null
-                        && stringConstant.length() > 0 && stringConstant.charAt(0)=='/')
-					priority = LOW_PRIORITY;
+                if (prevOpcode == LDC && stringConstant != null && stringConstant.length() > 0 && stringConstant.charAt(0) == '/')
+                    priority = LOW_PRIORITY;
                 else {
                     priority = adjustPriority(priority);
                 }
-				bugReporter.reportBug(new BugInstance(this, "UI_INHERITANCE_UNSAFE_GETRESOURCE", 
-                        priority)
-                .addClassAndMethod(this)
-                .addSourceLine(this));
-				reportedForThisClass = true;
+                bugReporter.reportBug(new BugInstance(this, "UI_INHERITANCE_UNSAFE_GETRESOURCE", priority)
+                        .addClassAndMethod(this).addSourceLine(this));
+                reportedForThisClass = true;
 
-            } else if (state == 1
-                    && !methodIsStatic
-                    && !classIsFinal
-					&& classIsVisibleToOtherPackages
-                    && getNameConstantOperand().equals("getClass")
-                    && getSigConstantOperand().equals("()Ljava/lang/Class;")) {
+            } else if (state == 1 && !methodIsStatic && !classIsFinal && classIsVisibleToOtherPackages
+                    && getNameConstantOperand().equals("getClass") && getSigConstantOperand().equals("()Ljava/lang/Class;")) {
                 sawGetClass = getPC();
-			}
+            }
             state = 0;
             break;
         default:
-			state = 0;
+            state = 0;
             break;
         }
-        if (seen != LDC) stringConstant = null;
-		prevOpcode = seen;
+        if (seen != LDC)
+            stringConstant = null;
+        prevOpcode = seen;
 
     }
 
-
-
     /**
      * Adjust the priority of a warning about to be reported.
-     *
-     * @param priority initial priority
+     * 
+     * @param priority
+     *            initial priority
      * @return adjusted priority
      */
     private int adjustPriority(int priority) {
 
-            try {
-                Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+        try {
+            Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
-                if (!subtypes2.hasSubtypes(getClassDescriptor())) {
-                    priority++;
-                } else {
-	    			Set<ClassDescriptor> mySubtypes = subtypes2.getSubtypes(getClassDescriptor());
+            if (!subtypes2.hasSubtypes(getClassDescriptor())) {
+                priority++;
+            } else {
+                Set<ClassDescriptor> mySubtypes = subtypes2.getSubtypes(getClassDescriptor());
 
-                    String myPackagename = getThisClass().getPackageName();
+                String myPackagename = getThisClass().getPackageName();
 
-                    for (ClassDescriptor c : mySubtypes) {
-                        if (c.equals(getClassDescriptor())) {
-                            continue;
-	    				}
-                        if (!c.getPackageName().equals(myPackagename)) {
-                            priority--;
-                            break;
-	    				}
+                for (ClassDescriptor c : mySubtypes) {
+                    if (c.equals(getClassDescriptor())) {
+                        continue;
+                    }
+                    if (!c.getPackageName().equals(myPackagename)) {
+                        priority--;
+                        break;
                     }
                 }
-            } catch (ClassNotFoundException e) {
-	    		bugReporter.reportMissingClass(e);
             }
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        }
         return priority;
     }
 

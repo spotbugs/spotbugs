@@ -34,23 +34,20 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
-public class NoteAnnotationRetention extends AnnotationVisitor implements
-        Detector, NonReportingDetector, FirstPassDetector {
+public class NoteAnnotationRetention extends AnnotationVisitor implements Detector, NonReportingDetector, FirstPassDetector {
 
-        private boolean runtimeRetention;
-
+    private boolean runtimeRetention;
 
     public NoteAnnotationRetention(BugReporter bugReporter) {
     }
 
     @Override
-    public void visitAnnotation(String annotationClass,
-            Map<String, ElementValue> map, boolean runtimeVisible) {
+    public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
 
         if (!annotationClass.equals("java.lang.annotation.Retention"))
             return;
         EnumElementValue v = (EnumElementValue) map.get("value");
-		
+
         if ("RUNTIME".equals(v.getEnumValueString()))
             runtimeRetention = true;
     }
@@ -58,28 +55,26 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements
     @Override
     public void visit(JavaClass obj) {
         runtimeRetention = false;
-	}
+    }
 
     @Override
     public void visitAfter(JavaClass obj) {
         for (String i : obj.getInterfaceNames())
-			if (i.equals("java.lang.annotation.Annotation"))
-                AnalysisContext.currentAnalysisContext()
-                .getAnnotationRetentionDatabase().setRuntimeRetention(getDottedClassName(),
-                        runtimeRetention);
+            if (i.equals("java.lang.annotation.Annotation"))
+                AnalysisContext.currentAnalysisContext().getAnnotationRetentionDatabase()
+                        .setRuntimeRetention(getDottedClassName(), runtimeRetention);
 
     }
 
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
-        if  (!BCELUtil.preTiger(javaClass)) javaClass.accept(this);
+        if (!BCELUtil.preTiger(javaClass))
+            javaClass.accept(this);
 
     }
-
 
     public void report() {
 
     }
-
 
 }

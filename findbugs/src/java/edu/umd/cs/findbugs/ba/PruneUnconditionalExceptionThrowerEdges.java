@@ -44,160 +44,175 @@ import edu.umd.cs.findbugs.classfile.Global;
 
 public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
     private static final boolean DEBUG = SystemProperties.getBoolean("cfg.prune.throwers.debug");
+
     private static final boolean DEBUG_DIFFERENCES = SystemProperties.getBoolean("cfg.prune.throwers.differences.debug");
-    private static final String UNCONDITIONAL_THROWER_METHOD_NAMES = SystemProperties.getProperty("findbugs.unconditionalThrower", " ").replace(',', '|');
+
+    private static final String UNCONDITIONAL_THROWER_METHOD_NAMES = SystemProperties.getProperty(
+            "findbugs.unconditionalThrower", " ").replace(',', '|');
 
     private MethodGen methodGen;
+
     private CFG cfg;
+
     private ConstantPoolGen cpg;
-	private TypeDataflow typeDataflow;
+
+    private TypeDataflow typeDataflow;
+
     private AnalysisContext analysisContext;
+
     private boolean cfgModified;
 
     private static final Pattern unconditionalThrowerPattern;
-    private  static final BitSet RETURN_OPCODE_SET = new BitSet();
+
+    private static final BitSet RETURN_OPCODE_SET = new BitSet();
     static {
-		RETURN_OPCODE_SET.set(Constants.ARETURN);
+        RETURN_OPCODE_SET.set(Constants.ARETURN);
         RETURN_OPCODE_SET.set(Constants.IRETURN);
         RETURN_OPCODE_SET.set(Constants.LRETURN);
         RETURN_OPCODE_SET.set(Constants.DRETURN);
-		RETURN_OPCODE_SET.set(Constants.FRETURN);
+        RETURN_OPCODE_SET.set(Constants.FRETURN);
         RETURN_OPCODE_SET.set(Constants.RETURN);
         Pattern p;
         try {
-			p =  Pattern.compile(UNCONDITIONAL_THROWER_METHOD_NAMES);
+            p = Pattern.compile(UNCONDITIONAL_THROWER_METHOD_NAMES);
             if (DEBUG) {
-                System.out.println("Pattern is '" + p +"'");
+                System.out.println("Pattern is '" + p + "'");
                 System.out.println(p.matcher("showInvalidPage").matches());
-			}
+            }
         } catch (RuntimeException e) {
             AnalysisContext.logError("Error compiling unconditional thrower pattern " + UNCONDITIONAL_THROWER_METHOD_NAMES, e);
             p = Pattern.compile(" ");
-		}
+        }
         unconditionalThrowerPattern = p;
     }
 
-    public PruneUnconditionalExceptionThrowerEdges(/*ClassContext classContext,*/ JavaClass javaClass, Method method,
+    public PruneUnconditionalExceptionThrowerEdges(/* ClassContext classContext, */JavaClass javaClass, Method method,
             MethodGen methodGen, CFG cfg, ConstantPoolGen cpg, TypeDataflow typeDataflow, AnalysisContext analysisContext) {
-//		this.classContext = classContext;
+        // this.classContext = classContext;
         this.methodGen = methodGen;
         this.cfg = cfg;
         this.cpg = cpg;
-		this.typeDataflow = typeDataflow;
+        this.typeDataflow = typeDataflow;
         this.analysisContext = analysisContext;
     }
 
-    public void execute() throws  DataflowAnalysisException {
+    public void execute() throws DataflowAnalysisException {
         AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
         if (currentAnalysisContext.getBoolProperty(AnalysisFeatures.CONSERVE_SPACE))
-			throw new IllegalStateException("This should not happen");
+            throw new IllegalStateException("This should not happen");
         boolean foundInexact = false;
         Set<Edge> deletedEdgeSet = new HashSet<Edge>();
-//		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+        // TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 
         if (DEBUG)
-            System.out.println("PruneUnconditionalExceptionThrowerEdges: examining " +
-                    SignatureConverter.convertMethodSignature(methodGen));
+            System.out.println("PruneUnconditionalExceptionThrowerEdges: examining "
+                    + SignatureConverter.convertMethodSignature(methodGen));
 
         for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
             BasicBlock basicBlock = i.next();
             if (!basicBlock.isExceptionThrower())
-				continue;
+                continue;
 
             InstructionHandle instructionHandle = basicBlock.getExceptionThrower();
             Instruction exceptionThrower = instructionHandle.getInstruction();
             if (!(exceptionThrower instanceof InvokeInstruction))
-				continue;
+                continue;
 
             InvokeInstruction inv = (InvokeInstruction) exceptionThrower;
             boolean foundThrower = false;
             boolean foundNonThrower = false;
-			boolean isExact = true;
+            boolean isExact = true;
             XMethod primaryXMethod = XFactory.createXMethod(inv, cpg);
             final String methodName = primaryXMethod.getName();
             final boolean matches = unconditionalThrowerPattern.matcher(methodName).matches();
-			if (DEBUG) 
-                System.out.println("Checking '" + methodName + "' is " + matches );
+            if (DEBUG)
+                System.out.println("Checking '" + methodName + "' is " + matches);
 
             if (matches) {
-                if (DEBUG) System.out.println("\tmatched for " + instructionHandle + " : " + primaryXMethod);
+                if (DEBUG)
+                    System.out.println("\tmatched for " + instructionHandle + " : " + primaryXMethod);
 
                 foundThrower = true;
             } else if (inv instanceof INVOKEINTERFACE) {
                 continue;
-			} else if (inv instanceof INVOKESTATIC) {
+            } else if (inv instanceof INVOKESTATIC) {
                 foundThrower = isUnconditionalThrower(primaryXMethod);
             } else {
                 String className = inv.getClassName(cpg);
-				if (DEBUG) System.out.println("\tlooking up method for " + instructionHandle+ " : " + primaryXMethod);
+                if (DEBUG)
+                    System.out.println("\tlooking up method for " + instructionHandle + " : " + primaryXMethod);
 
                 Location loc = new Location(instructionHandle, basicBlock);
                 TypeFrame typeFrame = typeDataflow.getFactAtLocation(loc);
                 // if (primaryXMethod.isAbstract()) continue;
-				Set<XMethod> targetSet = null;
+                Set<XMethod> targetSet = null;
                 try {
 
                     if (className.startsWith("["))
                         continue;
                     String methodSig = inv.getSignature(cpg);
-					if (!methodSig.endsWith("V") && !methodSig.endsWith("Exception;") && !methodSig.endsWith("Error;"))
+                    if (!methodSig.endsWith("V") && !methodSig.endsWith("Exception;") && !methodSig.endsWith("Error;"))
                         continue;
 
                     targetSet = Hierarchy2.resolveMethodCallTargets(inv, typeFrame, cpg);
 
-                    for(XMethod xMethod : targetSet) {
-                        if (DEBUG) System.out.println("\tFound " + xMethod);
+                    for (XMethod xMethod : targetSet) {
+                        if (DEBUG)
+                            System.out.println("\tFound " + xMethod);
 
                         // Ignore abstract and native methods
-                        if (!( xMethod.isFinal() || xMethod.isStatic() || xMethod.isPrivate() )) try {
-                            isExact = false;
-							XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, xMethod.getClassDescriptor());
-                            if (xClass.isAbstract()) continue;
-                        } catch (CheckedAnalysisException e) {
-                            AnalysisContext.logError("Unable to resolve class for " + xMethod, e);
-						}
+                        if (!(xMethod.isFinal() || xMethod.isStatic() || xMethod.isPrivate()))
+                            try {
+                                isExact = false;
+                                XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,
+                                        xMethod.getClassDescriptor());
+                                if (xClass.isAbstract())
+                                    continue;
+                            } catch (CheckedAnalysisException e) {
+                                AnalysisContext.logError("Unable to resolve class for " + xMethod, e);
+                            }
                         boolean isUnconditionalThrower = isUnconditionalThrower(xMethod);
                         if (isUnconditionalThrower) {
                             foundThrower = true;
-							if (DEBUG) System.out.println("Found thrower");
-                        }
-                        else {
+                            if (DEBUG)
+                                System.out.println("Found thrower");
+                        } else {
                             foundNonThrower = true;
-							if (DEBUG) System.out.println("Found non thrower");
+                            if (DEBUG)
+                                System.out.println("Found non thrower");
                         }
 
                     }
                 } catch (ClassNotFoundException e) {
                     analysisContext.getLookupFailureCallback().reportMissingClass(e);
-				}
+                }
             }
             boolean newResult = foundThrower && !foundNonThrower;
             if (newResult) {
-				if (!isExact)
+                if (!isExact)
                     foundInexact = true;
                 // Method always throws an unhandled exception
                 // Remove the normal control flow edge from the CFG.
-				Edge fallThrough = cfg.getOutgoingEdgeWithType(basicBlock,
-                        FALL_THROUGH_EDGE);
+                Edge fallThrough = cfg.getOutgoingEdgeWithType(basicBlock, FALL_THROUGH_EDGE);
                 if (fallThrough != null) {
                     if (DEBUG) {
-						System.out.println("\tREMOVING normal return for: " + primaryXMethod);
+                        System.out.println("\tREMOVING normal return for: " + primaryXMethod);
                     }
                     deletedEdgeSet.add(fallThrough);
                 }
-			}
+            }
 
         }
 
         if (!deletedEdgeSet.isEmpty()) {
             cfgModified = true;
             if (foundInexact)
-				cfg.setFlag(CFG.FOUND_INEXACT_UNCONDITIONAL_THROWERS);
-        // Remove all edges marked for deletion
-        for (Edge edge : deletedEdgeSet) {
-            cfg.removeEdge(edge);
+                cfg.setFlag(CFG.FOUND_INEXACT_UNCONDITIONAL_THROWERS);
+            // Remove all edges marked for deletion
+            for (Edge edge : deletedEdgeSet) {
+                cfg.removeEdge(edge);
 
-        }
+            }
         }
     }
 
@@ -214,29 +229,30 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
      * @param javaClass
      * @param method
      * @return true if method unconditionally throws
-     * @deprecated Use {@link #doesMethodUnconditionallyThrowException(XMethod)} instead
+     * @deprecated Use {@link #doesMethodUnconditionallyThrowException(XMethod)}
+     *             instead
      */
     @Deprecated
-    static public  Boolean doesMethodUnconditionallyThrowException(XMethod xMethod, JavaClass javaClass, Method method) {
+    static public Boolean doesMethodUnconditionallyThrowException(XMethod xMethod, JavaClass javaClass, Method method) {
         return doesMethodUnconditionallyThrowException(xMethod);
     }
 
     /**
      * @param xMethod
      * @return true if method unconditionally throws
-	 */
-    static public  boolean doesMethodUnconditionallyThrowException(XMethod xMethod) {
+     */
+    static public boolean doesMethodUnconditionallyThrowException(XMethod xMethod) {
         return xMethod.isUnconditionalThrower();
     }
 
     /**
      * Return whether or not the CFG was modified.
-     *
-	 * @return true if CFG was modified, false otherwise
+     * 
+     * @return true if CFG was modified, false otherwise
      */
     public boolean wasCFGModified() {
         return cfgModified;
-	}
+    }
 }
 
-//vim:ts=4
+// vim:ts=4

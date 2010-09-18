@@ -24,20 +24,22 @@ import java.util.Iterator;
 import javax.annotation.Nullable;
 
 /**
- * An action applied by an entry in the ObligationPolicyDatabase.
- * Adds or removes an obligation.
- *
+ * An action applied by an entry in the ObligationPolicyDatabase. Adds or
+ * removes an obligation.
+ * 
  * @author David Hovemeyer
  */
 public class ObligationPolicyDatabaseAction {
     private final ObligationPolicyDatabaseActionType actionType;
+
     private final Obligation obligation;
 
-	public static final ObligationPolicyDatabaseAction CLEAR = new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.CLEAR, null);
+    public static final ObligationPolicyDatabaseAction CLEAR = new ObligationPolicyDatabaseAction(
+            ObligationPolicyDatabaseActionType.CLEAR, null);
 
     public ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType actionType, @Nullable Obligation obligation) {
         this.actionType = actionType;
-		this.obligation = obligation;
+        this.obligation = obligation;
     }
 
     public ObligationPolicyDatabaseActionType getActionType() {
@@ -47,29 +49,29 @@ public class ObligationPolicyDatabaseAction {
     public Obligation getObligation() {
         return obligation;
     }
-	
+
     public void apply(StateSet stateSet, int basicBlockId) throws ObligationAcquiredOrReleasedInLoopException {
         switch (actionType) {
-            case ADD:
-				stateSet.addObligation(obligation, basicBlockId);
-                break;
+        case ADD:
+            stateSet.addObligation(obligation, basicBlockId);
+            break;
 
-            case DEL:
-                stateSet.deleteObligation(obligation, basicBlockId);
-                break;
+        case DEL:
+            stateSet.deleteObligation(obligation, basicBlockId);
+            break;
 
-            case CLEAR:
-                stateSet.clear();
-                break;
-				
-            default:
-                assert false;
+        case CLEAR:
+            stateSet.clear();
+            break;
+
+        default:
+            assert false;
         }
-	}
+    }
 
     @Override
     public String toString() {
         return "[" + actionType + " " + obligation + "]";
-	}
+    }
 
 }

@@ -22,18 +22,17 @@
 package edu.umd.cs.findbugs.graph;
 
 /**
- * VertexChooser specifies an interface for objects that determine
- * whether or not a vertex is chosen for some purpose.
- * For example, in the DepthFirstSearch algorithm a VertexChooser
- * may be specified to select which vertices should be considered
- * by the search.
+ * VertexChooser specifies an interface for objects that determine whether or
+ * not a vertex is chosen for some purpose. For example, in the DepthFirstSearch
+ * algorithm a VertexChooser may be specified to select which vertices should be
+ * considered by the search.
  */
-public interface VertexChooser <VertexType extends GraphVertex<VertexType>> {
+public interface VertexChooser<VertexType extends GraphVertex<VertexType>> {
 
     /**
      * Determine whether the given GraphVertex should be chosen.
      */
-	public boolean isChosen(VertexType v);
+    public boolean isChosen(VertexType v);
 
 }
 

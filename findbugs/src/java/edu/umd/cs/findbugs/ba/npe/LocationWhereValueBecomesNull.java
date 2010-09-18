@@ -24,73 +24,81 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
  * A Location where a particular value number becomes null.
- *
+ * 
  * @author David Hovemeyer
  */
 public class LocationWhereValueBecomesNull implements Comparable<LocationWhereValueBecomesNull> {
     private Location location;
+
     private ValueNumber valueNumber;
 
     /**
      * Constructor.
-     *
-	 * @param location    the Location where a value becomes null
-     * @param valueNumber the value number
+     * 
+     * @param location
+     *            the Location where a value becomes null
+     * @param valueNumber
+     *            the value number
      */
     public LocationWhereValueBecomesNull(Location location, ValueNumber valueNumber) {
-		this.location = location;
+        this.location = location;
         this.valueNumber = valueNumber;
     }
 
     /**
      * @return Returns the location.
      */
-	public Location getLocation() {
+    public Location getLocation() {
         return location;
     }
 
     /**
      * @return Returns the valueNumber.
      */
-	public ValueNumber getValueNumber() {
+    public ValueNumber getValueNumber() {
         return valueNumber;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-	public int compareTo(LocationWhereValueBecomesNull o) {
+    public int compareTo(LocationWhereValueBecomesNull o) {
         int cmp = this.location.compareTo(o.location);
         if (cmp != 0) {
             return cmp;
-		}
+        }
         cmp = this.valueNumber.compareTo(o.valueNumber);
         return cmp;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
-	@Override
+    @Override
     public boolean equals(Object obj) {
         if (obj == null || obj.getClass() != this.getClass()) {
             return false;
-		}
+        }
         LocationWhereValueBecomesNull other = (LocationWhereValueBecomesNull) obj;
-        return this.location.equals(other.location)
-            && this.valueNumber.equals(other.valueNumber);
-	}
+        return this.location.equals(other.location) && this.valueNumber.equals(other.valueNumber);
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
-	@Override
+    @Override
     public int hashCode() {
         return location.hashCode() * 6563 + valueNumber.hashCode();
     }
 
     @Override
     public String toString() {
-        return valueNumber + " becomes null at " + location.getHandle().getPosition() +":" + location;
-	}
+        return valueNumber + " becomes null at " + location.getHandle().getPosition() + ":" + location;
+    }
 }

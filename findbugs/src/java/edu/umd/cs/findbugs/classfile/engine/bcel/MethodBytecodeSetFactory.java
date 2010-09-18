@@ -41,14 +41,18 @@ public class MethodBytecodeSetFactory extends AnalysisFactory<MethodBytecodeSet>
         super(analysisName, analysisClass);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public MethodBytecodeSet analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public MethodBytecodeSet analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
         Code code = method.getCode();
         if (code == null) {
-			return null;
+            return null;
         }
 
         byte[] instructionList = code.getCode();
@@ -61,18 +65,22 @@ public class MethodBytecodeSetFactory extends AnalysisFactory<MethodBytecodeSet>
         scanner.scan(instructionList, callback);
 
         UnpackedCode unpackedCode = callback.getUnpackedCode();
-        MethodBytecodeSet result =  null;
+        MethodBytecodeSet result = null;
         if (unpackedCode != null) {
-			result = unpackedCode.getBytecodeSet();
+            result = unpackedCode.getBytecodeSet();
         }
 
         return result;
-	}
+    }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
+     * .findbugs.classfile.IAnalysisCache)
      */
-	@Override
+    @Override
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerMethodAnalysisEngine(MethodBytecodeSet.class, this);
     }

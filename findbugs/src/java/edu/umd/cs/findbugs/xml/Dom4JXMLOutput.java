@@ -30,7 +30,7 @@ import org.dom4j.Element;
 
 /**
  * XMLOutput class to build all or part of a dom4j tree.
- *
+ * 
  * @see XMLOutput
  * @author David Hovemeyer
  */
@@ -39,12 +39,13 @@ public class Dom4JXMLOutput implements XMLOutput {
 
     /**
      * Constructor.
-     *
-	 * @param topLevel the Document or Element that is the root of
-     *                 the tree to be built
+     * 
+     * @param topLevel
+     *            the Document or Element that is the root of the tree to be
+     *            built
      */
     public Dom4JXMLOutput(Branch topLevel) {
-		this.stack = new LinkedList<Branch>();
+        this.stack = new LinkedList<Branch>();
         stack.addLast(topLevel);
     }
 
@@ -54,46 +55,45 @@ public class Dom4JXMLOutput implements XMLOutput {
     public void openTag(String tagName) {
         Branch top = stack.getLast();
         Element element = top.addElement(tagName);
-		stack.addLast(element);
+        stack.addLast(element);
     }
 
     public void openTag(String tagName, XMLAttributeList attributeList) {
         Branch top = stack.getLast();
         Element element = top.addElement(tagName);
-		stack.addLast(element);
+        stack.addLast(element);
 
-        for (Iterator<XMLAttributeList.NameValuePair> i= attributeList.iterator();
-            i.hasNext(); ) {
+        for (Iterator<XMLAttributeList.NameValuePair> i = attributeList.iterator(); i.hasNext();) {
             XMLAttributeList.NameValuePair pair = i.next();
-			element.addAttribute(pair.getName(), pair.getValue());
+            element.addAttribute(pair.getName(), pair.getValue());
         }
     }
 
     public void openCloseTag(String tagName) {
         openTag(tagName);
         closeTag(tagName);
-	}
+    }
 
     public void openCloseTag(String tagName, XMLAttributeList attributeList) {
         openTag(tagName, attributeList);
         closeTag(tagName);
-	}
+    }
 
     public void startTag(String tagName) {
         Branch top = stack.getLast();
         Element element = top.addElement(tagName);
-		stack.addLast(element);
+        stack.addLast(element);
     }
 
     public void addAttribute(String name, String value) {
         Element element = (Element) stack.getLast();
         element.addAttribute(name, value);
-	}
+    }
 
     public void stopTag(boolean close) {
-        if ( close ) {
+        if (close) {
             closeTag(null);
-		}
+        }
     }
 
     public void closeTag(String tagName) {
@@ -103,49 +103,53 @@ public class Dom4JXMLOutput implements XMLOutput {
     public void writeText(String text) {
         Element top = (Element) stack.getLast();
         top.addText(text);
-	}
+    }
 
     public void writeCDATA(String cdata) {
         Element top = (Element) stack.getLast();
         top.addCDATA(cdata);
-	}
+    }
 
     /**
-     * Add a list of Strings to document as elements
-     * with given tag name to the tree.
-	 *
-     * @param tagName    the tag name
-     * @param listValues Collection of String values to add
+     * Add a list of Strings to document as elements with given tag name to the
+     * tree.
+     * 
+     * @param tagName
+     *            the tag name
+     * @param listValues
+     *            Collection of String values to add
      */
-	public void writeElementList(String tagName, Collection<String> listValues) {
+    public void writeElementList(String tagName, Collection<String> listValues) {
         for (String listValue : listValues) {
             openTag(tagName);
             writeText(listValue);
-			closeTag(tagName);
+            closeTag(tagName);
         }
     }
 
     /**
      * Add given object to the tree.
-     *
-	 * @param obj the object
+     * 
+     * @param obj
+     *            the object
      */
     public void write(XMLWriteable obj) {
         try {
-			obj.writeXML(this);
+            obj.writeXML(this);
         } catch (java.io.IOException e) {
             // Can't really happen
         }
-	}
+    }
 
     /**
      * Add a Collection of XMLWriteable objects to the tree.
-     *
-	 * @param collection Collection of XMLWriteable objects
+     * 
+     * @param collection
+     *            Collection of XMLWriteable objects
      */
     public void writeCollection(Collection<? extends XMLWriteable> collection) {
         for (XMLWriteable obj : collection) {
-			write(obj);
+            write(obj);
         }
     }
 

@@ -29,23 +29,25 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 
 /**
  * An XMethod represents symbolic information about a particular method.
- *
+ * 
  * <p>
- * If the resolved() method returns true, then any information queried
- * from this object can be assumed to be accurate.
- * If the resolved() method returns false, then FindBugs can't
- * find the method and any information other than name/signature/etc.
- * cannot be trusted.
+ * If the resolved() method returns true, then any information queried from this
+ * object can be assumed to be accurate. If the resolved() method returns false,
+ * then FindBugs can't find the method and any information other than
+ * name/signature/etc. cannot be trusted.
  * </p>
- *
+ * 
  * @author David Hovemeyer
  * @author Bill Pugh
  */
 public interface XMethod extends ClassMember, AnnotatedObject {
     public boolean isNative();
+
     public boolean isAbstract();
+
     public boolean isSynchronized();
-	public int getNumParams();
+
+    public int getNumParams();
 
     /**
      * @return the MethodDescriptor identifying this object
@@ -53,7 +55,7 @@ public interface XMethod extends ClassMember, AnnotatedObject {
     public MethodDescriptor getMethodDescriptor();
 
     /**
-     *
+     * 
      * @return the exceptions this method is declared to throw
      */
     public String[] getThrownExceptions();
@@ -64,7 +66,8 @@ public interface XMethod extends ClassMember, AnnotatedObject {
     public boolean isUnconditionalThrower();
 
     /**
-     * @return does the method directly make use of concurrency/threads/synchronization?
+     * @return does the method directly make use of
+     *         concurrency/threads/synchronization?
      */
     public boolean usesConcurrency();
 
@@ -73,18 +76,23 @@ public interface XMethod extends ClassMember, AnnotatedObject {
      */
     public boolean isStub();
 
-    /** If nonnull, then this method is a synthetic method that overrides a
-     * method in a superclass. This method simply forwards the call to
-     * the method it bridges to, which is a method with an identical name
-     * and set of arguments, but a different return value.
+    /**
+     * If nonnull, then this method is a synthetic method that overrides a
+     * method in a superclass. This method simply forwards the call to the
+     * method it bridges to, which is a method with an identical name and set of
+     * arguments, but a different return value.
+     * 
      * @return
      */
-    public  @CheckForNull XMethod bridgeTo();
+    public @CheckForNull
+    XMethod bridgeTo();
 
-    public  @CheckForNull XMethod bridgeFrom();
+    public @CheckForNull
+    XMethod bridgeFrom();
 
     /**
-     * @return does this method unconditionally throw an UnsupportedOperationException?
+     * @return does this method unconditionally throw an
+     *         UnsupportedOperationException?
      */
     public boolean isUnsupported();
 
@@ -93,87 +101,91 @@ public interface XMethod extends ClassMember, AnnotatedObject {
      */
     public boolean isVarArgs();
 
-
     /**
      * @return true if method's return type is a reference type, false otherwise
      */
     public boolean isReturnTypeReferenceType();
 
     /**
-     * Get ClassDescriptors (annotation classes) of annotations applied
-     * directly to this method's parameters.
-	 * 
-     * @param param parameter number (0 for first parameter)
-     * @return ClassDescriptors of annotations applied directly to this method's parameters
+     * Get ClassDescriptors (annotation classes) of annotations applied directly
+     * to this method's parameters.
+     * 
+     * @param param
+     *            parameter number (0 for first parameter)
+     * @return ClassDescriptors of annotations applied directly to this method's
+     *         parameters
      */
     public Collection<ClassDescriptor> getParameterAnnotationDescriptors(int param);
 
     /**
-     * Get the AnnotationValue of annotation applied directly to given parameter.
-     *
-     * @param param parameter number (0 for first parameter)
-	 * @param desc  ClassDescriptor of the annotation class
-     * @return AnnotationValue annotating the parameter,
-     *         or null if parameter is not annotated with this kind of annotation
+     * Get the AnnotationValue of annotation applied directly to given
+     * parameter.
+     * 
+     * @param param
+     *            parameter number (0 for first parameter)
+     * @param desc
+     *            ClassDescriptor of the annotation class
+     * @return AnnotationValue annotating the parameter, or null if parameter is
+     *         not annotated with this kind of annotation
      */
-    public @CheckForNull AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc);
+    public @CheckForNull
+    AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc);
 
     /**
-     * Get collection of all AnnotationValues applied directly
-     * to given parameter.
-     *
-	 * @param param parameter number (0 for first parameter)
-     * @return Collection of all AnnotationValues applied directly
-     *         to given parameter
+     * Get collection of all AnnotationValues applied directly to given
+     * parameter.
+     * 
+     * @param param
+     *            parameter number (0 for first parameter)
+     * @return Collection of all AnnotationValues applied directly to given
+     *         parameter
      */
     public Collection<AnnotationValue> getParameterAnnotations(int param);
 
     /**
-     * Get ClassDescriptors (annotation classes) of annotations applied
-     * directly to this method.
-     *
-	 * @return ClassDescriptors of annotations applied directly to this method
+     * Get ClassDescriptors (annotation classes) of annotations applied directly
+     * to this method.
+     * 
+     * @return ClassDescriptors of annotations applied directly to this method
      */
     public Collection<ClassDescriptor> getAnnotationDescriptors();
 
     /**
      * Get the AnnotationValue of annotation applied directly to the method.
-     *
-     * @param desc  ClassDescriptor of the annotation class
-	 * @return AnnotationValue annotating the method,
-     *         or null if method is not annotated with this kind of annotation
+     * 
+     * @param desc
+     *            ClassDescriptor of the annotation class
+     * @return AnnotationValue annotating the method, or null if method is not
+     *         annotated with this kind of annotation
      */
     public AnnotationValue getAnnotation(ClassDescriptor desc);
 
     /**
-     * Get collection of all AnnotationValues applied directly
-     * to the method.
-     *
-	 * @return Collection of all AnnotationValues applied directly
-     *         to the method
+     * Get collection of all AnnotationValues applied directly to the method.
+     * 
+     * @return Collection of all AnnotationValues applied directly to the method
      */
     public Collection<AnnotationValue> getAnnotations();
 
     /**
      * Destructively add a parameter annotation.
-	 * 
-     * @param param           parameter (0 == first parameter)
-     * @param annotationValue an AnnotationValue representing a parameter annotation
+     * 
+     * @param param
+     *            parameter (0 == first parameter)
+     * @param annotationValue
+     *            an AnnotationValue representing a parameter annotation
      */
     public void addParameterAnnotation(int param, AnnotationValue annotationValue);
 
     /**
-     * Destructively add an annotation.
-     * We do this for "built-in" annotations that might not
-     * be directly evident in the code.
-	 * It's not a great idea in general, but we can
-     * get away with it as long as it's done early
-     * enough (i.e., before anyone asks what annotations
-     * this method has.)
-	 * 
-     * @param annotationValue an AnnotationValue representing a method annotation
+     * Destructively add an annotation. We do this for "built-in" annotations
+     * that might not be directly evident in the code. It's not a great idea in
+     * general, but we can get away with it as long as it's done early enough
+     * (i.e., before anyone asks what annotations this method has.)
+     * 
+     * @param annotationValue
+     *            an AnnotationValue representing a method annotation
      */
     public void addAnnotation(AnnotationValue annotationValue);
-
 
 }

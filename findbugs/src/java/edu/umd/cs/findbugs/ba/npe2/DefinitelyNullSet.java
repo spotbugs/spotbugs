@@ -25,17 +25,18 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
  * Set of values that is definitely known to be null.
- *
+ * 
  * @author David Hovemeyer
  */
-public class DefinitelyNullSet /*extends BitSet*/ {
+public class DefinitelyNullSet /* extends BitSet */{
     private BitSet contents;
+
     private int numValueNumbers;
 
     public DefinitelyNullSet(int numValueNumbers) {
         this.contents = new BitSet();
-        this.numValueNumbers  = numValueNumbers;
-	}
+        this.numValueNumbers = numValueNumbers;
+    }
 
     public NullnessValue getNulllessValue(ValueNumber valueNumber) {
         return getNullnessValue(valueNumber.getNumber());
@@ -47,7 +48,7 @@ public class DefinitelyNullSet /*extends BitSet*/ {
         int start = getStartIndex(vn);
         for (int i = 0; i < NullnessValue.FLAGS_MAX; i++) {
             if (contents.get(start + i)) {
-				flags |= (1 << i);
+                flags |= (1 << i);
             }
         }
 
@@ -60,7 +61,7 @@ public class DefinitelyNullSet /*extends BitSet*/ {
         int start = getStartIndex(valueNumber.getNumber());
         for (int i = 0; i < NullnessValue.FLAGS_MAX; i++) {
             contents.set(start + i, (flags & (1 << i)) != 0);
-		}
+        }
     }
 
     public void clear() {
@@ -70,7 +71,7 @@ public class DefinitelyNullSet /*extends BitSet*/ {
     public void setTop() {
         contents.clear();
         contents.set(lastUsedBit());
-	}
+    }
 
     public boolean isTop() {
         return contents.get(lastUsedBit());
@@ -79,7 +80,7 @@ public class DefinitelyNullSet /*extends BitSet*/ {
     public void setBottom() {
         contents.clear();
         contents.set(lastUsedBit() + 1);
-	}
+    }
 
     public boolean isBottom() {
         return contents.get(lastUsedBit() + 1);
@@ -92,17 +93,17 @@ public class DefinitelyNullSet /*extends BitSet*/ {
     public void makeSameAs(DefinitelyNullSet other) {
         contents.clear();
         contents.or(other.contents);
-	}
+    }
 
     public void mergeWith(DefinitelyNullSet other) {
         if (this.isBottom() || other.isTop()) {
             return;
-		}
+        }
 
         if (this.isTop() || other.isBottom()) {
             this.makeSameAs(other);
             return;
-		}
+        }
 
         // Result is intersection of sets
         this.contents.and(other.contents);
@@ -136,54 +137,60 @@ public class DefinitelyNullSet /*extends BitSet*/ {
         return lastUsedBit() + 1;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
-	@Override
+    @Override
     public int hashCode() {
         return contents.hashCode();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
-	@Override
+    @Override
     public boolean equals(Object obj) {
         if (obj == null || obj.getClass() != this.getClass()) {
             return false;
-		}
+        }
 
         DefinitelyNullSet other = (DefinitelyNullSet) obj;
         return this.contents.equals(other.contents);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
-	@Override
+    @Override
     public String toString() {
         if (isTop()) {
             return "[TOP]";
-		} else if (isBottom()) {
+        } else if (isBottom()) {
             return "[BOTTOM]";
         } else {
             StringBuilder buf = new StringBuilder();
-			boolean first = true;
+            boolean first = true;
 
             buf.append("{");
 
-            for (int i = 0; i < numValueNumbers; i++)  {
+            for (int i = 0; i < numValueNumbers; i++) {
                 NullnessValue val = getNullnessValue(i);
                 if (val.isDefinitelyNull() || val.isDefinitelyNotNull()) {
-					if (first) {
+                    if (first) {
                         first = false;
                     } else {
                         buf.append(", ");
-					}
+                    }
                     buf.append(i);
                     buf.append("->");
                     buf.append(val.toString());
-				}
+                }
             }
 
             buf.append("}");

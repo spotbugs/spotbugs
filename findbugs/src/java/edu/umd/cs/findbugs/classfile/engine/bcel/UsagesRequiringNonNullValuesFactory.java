@@ -33,14 +33,19 @@ public class UsagesRequiringNonNullValuesFactory extends AnalysisFactory<UsagesR
     public UsagesRequiringNonNullValuesFactory() {
         super("Dereference factory", UsagesRequiringNonNullValues.class);
     }
-	
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public UsagesRequiringNonNullValues analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
-        //ClassContext classContext = getClassContext(jclass);
+    public UsagesRequiringNonNullValues analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
+        // ClassContext classContext = getClassContext(jclass);
         ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, descriptor.getClassDescriptor());
         Method method = getMethod(analysisCache, descriptor);
-		return DerefFinder.getAnalysis(classContext, method);
+        return DerefFinder.getAnalysis(classContext, method);
     }
 }

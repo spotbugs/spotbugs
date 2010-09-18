@@ -24,18 +24,17 @@ package edu.umd.cs.findbugs.graph;
 /**
  * GraphVertex interface; represents a vertex in a graph.
  */
-public interface GraphVertex <ActualVertexType>
-        extends Comparable<ActualVertexType> {
+public interface GraphVertex<ActualVertexType> extends Comparable<ActualVertexType> {
 
     /**
      * Get the numeric label for this vertex.
      */
-	public int getLabel();
+    public int getLabel();
 
     /**
      * Set the numeric label for this vertex.
      */
-	public void setLabel(int label);
+    public void setLabel(int label);
 
 }
 

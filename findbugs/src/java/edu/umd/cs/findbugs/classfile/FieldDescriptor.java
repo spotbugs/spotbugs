@@ -23,27 +23,30 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * Descriptor uniquely identifying a field in a class.
- *
+ * 
  * @author David Hovemeyer
  */
-public class FieldDescriptor
-        extends FieldOrMethodDescriptor {
+public class FieldDescriptor extends FieldOrMethodDescriptor {
 
     /**
      * Constructor.
-     *
-	 * @param className      the name of the class the field belongs to
-     * @param fieldName      the name of the field
-     * @param fieldSignature the field signature (type)
-     * @param isStatic       true if field is static, false if not
-	 */
+     * 
+     * @param className
+     *            the name of the class the field belongs to
+     * @param fieldName
+     *            the name of the field
+     * @param fieldSignature
+     *            the field signature (type)
+     * @param isStatic
+     *            true if field is static, false if not
+     */
     public FieldDescriptor(@SlashedClassName String className, String fieldName, String fieldSignature, boolean isStatic) {
         super(className, fieldName, fieldSignature, isStatic);
     }
-	
+
     @Override
     public String toString() {
         return (isStatic() ? "static " : "") + getClassDescriptor().getDottedClassName() + "." + getName() + " " + getSignature();
-	}
+    }
 
 }

@@ -29,47 +29,49 @@ public class JCIPAnnotationDatabase {
 
     Map<String, Map<String, ElementValue>> classAnnotations = new HashMap<String, Map<String, ElementValue>>();
 
-
     public Object getClassAnnotation(String dottedClassName, String annotationClass) {
         assert dottedClassName.indexOf('/') == -1;
         return getEntryForClass(dottedClassName).get(annotationClass);
-	}
+    }
+
     public boolean hasClassAnnotation(String dottedClassName, String annotationClass) {
         assert dottedClassName.indexOf('/') == -1;
         return getEntryForClass(dottedClassName).containsKey(annotationClass);
-	}
+    }
+
     public Object getFieldAnnotation(XField field, String annotationClass) {
         return getEntryForClassMember(field).get(annotationClass);
     }
-	public boolean hasFieldAnnotation(XField field, String annotationClass) {
+
+    public boolean hasFieldAnnotation(XField field, String annotationClass) {
         return getEntryForClassMember(field).containsKey(annotationClass);
     }
+
     public Object getMethodAnnotation(XMethod method, String annotationClass) {
-		return getEntryForClassMember(method).get(annotationClass);
+        return getEntryForClassMember(method).get(annotationClass);
     }
+
     public boolean hasMethodAnnotation(XMethod method, String annotationClass) {
         return getEntryForClassMember(method).containsKey(annotationClass);
-	}
+    }
 
     public Map<String, ElementValue> getEntryForClassMember(ClassMember member) {
         Map<String, ElementValue> map = memberAnnotations.get(member);
         if (map == null) {
-			map = new HashMap<String, ElementValue>();
+            map = new HashMap<String, ElementValue>();
             memberAnnotations.put(member, map);
         }
         return map;
-	}
+    }
 
-    public
-     Map<String, ElementValue> getEntryForClass(String dottedClassName) {
+    public Map<String, ElementValue> getEntryForClass(String dottedClassName) {
         assert dottedClassName.indexOf('/') == -1;
-		Map<String, ElementValue> map = classAnnotations.get(dottedClassName);
+        Map<String, ElementValue> map = classAnnotations.get(dottedClassName);
         if (map == null) {
             map = new HashMap<String, ElementValue>(3);
             classAnnotations.put(dottedClassName, map);
-		}
+        }
         return map;
     }
-
 
 }

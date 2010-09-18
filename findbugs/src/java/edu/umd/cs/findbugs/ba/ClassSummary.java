@@ -33,23 +33,22 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.util.Util;
 
 public class ClassSummary {
-    private Map<ClassDescriptor,ClassDescriptor> map = new HashMap<ClassDescriptor,ClassDescriptor>();
-    private Set<ClassDescriptor> veryFunky = new HashSet<ClassDescriptor>();
+    private Map<ClassDescriptor, ClassDescriptor> map = new HashMap<ClassDescriptor, ClassDescriptor>();
 
+    private Set<ClassDescriptor> veryFunky = new HashSet<ClassDescriptor>();
 
     public boolean mightBeEqualTo(ClassDescriptor checker, ClassDescriptor checkee) {
         return checkee.equals(map.get(checker)) || veryFunky.contains(checker);
-	}
+    }
 
     public void checksForEqualTo(ClassDescriptor checker, ClassDescriptor checkee) {
         ClassDescriptor existing = map.get(checker);
         if (checkee.equals(existing))
-			return;
+            return;
         else if (existing != null)
             veryFunky.add(checker);
         else
-			map.put(checker, checkee);
+            map.put(checker, checkee);
     }
-
 
 }

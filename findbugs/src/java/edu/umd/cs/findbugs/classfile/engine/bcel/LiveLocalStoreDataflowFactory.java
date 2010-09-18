@@ -30,35 +30,39 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce LiveLocalStoreDataflow objects
- * for analyzed methods.
- *
+ * Analysis engine to produce LiveLocalStoreDataflow objects for analyzed
+ * methods.
+ * 
  * @author David Hovemeyer
  */
 public class LiveLocalStoreDataflowFactory extends AnalysisFactory<LiveLocalStoreDataflow> {
     /**
      * Constructor.
      */
-	public LiveLocalStoreDataflowFactory() {
+    public LiveLocalStoreDataflowFactory() {
         super("live local stores analysis", LiveLocalStoreDataflow.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public LiveLocalStoreDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public LiveLocalStoreDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
         if (methodGen == null) {
             return null;
-		}
+        }
         CFG cfg = getCFG(analysisCache, descriptor);
 
         ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(analysisCache, descriptor);
 
-        LiveLocalStoreAnalysis analysis =
-            new LiveLocalStoreAnalysis(methodGen, rdfs, getDepthFirstSearch(analysisCache, descriptor));
-        LiveLocalStoreDataflow dataflow =
-			new LiveLocalStoreDataflow(cfg, analysis);
+        LiveLocalStoreAnalysis analysis = new LiveLocalStoreAnalysis(methodGen, rdfs, getDepthFirstSearch(analysisCache,
+                descriptor));
+        LiveLocalStoreDataflow dataflow = new LiveLocalStoreDataflow(cfg, analysis);
 
         dataflow.execute();
         if (ClassContext.DUMP_DATAFLOW_ANALYSIS) {

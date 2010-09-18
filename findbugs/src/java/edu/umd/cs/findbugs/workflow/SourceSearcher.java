@@ -32,38 +32,45 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
  */
 public class SourceSearcher {
     final HashSet<String> sourceFound = new HashSet<String>();
+
     final HashSet<String> sourceNotFound = new HashSet<String>();
+
     private final SourceFinder sourceFinder;
 
     public SourceSearcher(Project project) {
         sourceFinder = new SourceFinder(project);
     }
 
-
     public boolean findSource(SourceLineAnnotation srcLine) {
-        if (srcLine == null) return false;
-		String cName = srcLine.getClassName();
-        if (sourceFound.contains(cName)) return true;
-        if (sourceNotFound.contains(cName)) return false;
+        if (srcLine == null)
+            return false;
+        String cName = srcLine.getClassName();
+        if (sourceFound.contains(cName))
+            return true;
+        if (sourceNotFound.contains(cName))
+            return false;
 
-		boolean result = sourceFinder.hasSourceFile(srcLine);
+        boolean result = sourceFinder.hasSourceFile(srcLine);
         return result;
     }
 
-	public boolean findSource0(SourceLineAnnotation srcLine) {
-        if (srcLine == null) return false;
+    public boolean findSource0(SourceLineAnnotation srcLine) {
+        if (srcLine == null)
+            return false;
         String cName = srcLine.getClassName();
-        if (sourceFound.contains(cName)) return true;
-		if (sourceNotFound.contains(cName)) return false;
+        if (sourceFound.contains(cName))
+            return true;
+        if (sourceNotFound.contains(cName))
+            return false;
 
         try {
             InputStream in = sourceFinder.openSource(srcLine);
             in.close();
-			sourceFound.add(cName);
+            sourceFound.add(cName);
             return true;
         } catch (IOException e1) {
             sourceNotFound.add(cName);
-			return false;
+            return false;
         }
     }
 

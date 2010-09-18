@@ -40,9 +40,8 @@ import edu.umd.cs.findbugs.ba.AnnotationDatabase.Target;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 /**
- * Scan application classes for
- * NonNull annotations.
- *
+ * Scan application classes for NonNull annotations.
+ * 
  * @author David Hovemeyer
  * @author William Pugh
  */
@@ -54,7 +53,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
     private static final Map<String, AnnotationDatabase.Target> defaultKind = new HashMap<String, AnnotationDatabase.Target>();
     static {
         defaultKind.put("", AnnotationDatabase.Target.ANY);
-		defaultKind.put("ForParameters", AnnotationDatabase.Target.PARAMETER);
+        defaultKind.put("ForParameters", AnnotationDatabase.Target.PARAMETER);
         defaultKind.put("ForMethods", AnnotationDatabase.Target.METHOD);
         defaultKind.put("ForFields", AnnotationDatabase.Target.FIELD);
 
@@ -69,24 +68,26 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
     static String lastPortion(String className) {
         int i = className.lastIndexOf(".");
         if (i < 0)
-			return className;
+            return className;
         return className.substring(i + 1);
     }
 
-      /*
-       * * @param value
-         * @param map
-	     * @param annotationTarget
-         */
-        private void handleClassElementValue(ClassElementValue value, Target annotationTarget) {
-            NullnessAnnotation n = NullnessAnnotation.Parser.parse(value.getClassString());
-			if (n != null)
-                database.addDefaultAnnotation(annotationTarget, getDottedClassName(), n);
+    /*
+     * * @param value
+     * 
+     * @param map
+     * 
+     * @param annotationTarget
+     */
+    private void handleClassElementValue(ClassElementValue value, Target annotationTarget) {
+        NullnessAnnotation n = NullnessAnnotation.Parser.parse(value.getClassString());
+        if (n != null)
+            database.addDefaultAnnotation(annotationTarget, getDottedClassName(), n);
 
-        }
-	@Override
-    public void visitAnnotation(String annotationClass,
-            Map<String, ElementValue> map, boolean runtimeVisible) {
+    }
+
+    @Override
+    public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
 
         if (database == null) {
             return;
@@ -95,38 +96,36 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
         NullnessAnnotation n = NullnessAnnotation.Parser.parse(annotationClass);
         annotationClass = lastPortion(annotationClass);
         if (n == null) {
-			if (annotationClass.startsWith("DefaultAnnotation")) {
+            if (annotationClass.startsWith("DefaultAnnotation")) {
                 annotationClass = annotationClass.substring("DefaultAnnotation".length());
 
                 Target annotationTarget = defaultKind.get(annotationClass);
                 if (annotationTarget != Target.METHOD)
                     return;
-				
+
                 ElementValue v = map.get("value");
                 if (v instanceof ClassElementValue) {
                     handleClassElementValue((ClassElementValue) v, annotationTarget);
-				} else if (v instanceof ArrayElementValue) {
-                    for(ElementValue v2 : ((ArrayElementValue)v).getElementValuesArray()) {
+                } else if (v instanceof ArrayElementValue) {
+                    for (ElementValue v2 : ((ArrayElementValue) v).getElementValuesArray()) {
                         if (v2 instanceof ClassElementValue)
                             handleClassElementValue((ClassElementValue) v2, annotationTarget);
-					}
+                    }
                 }
 
                 return;
-			}
+            }
 
-        }
-        else if (visitingMethod())
-			database.addDirectAnnotation(
-                            XFactory.createXMethod(this), n);
+        } else if (visitingMethod())
+            database.addDirectAnnotation(XFactory.createXMethod(this), n);
         else if (visitingField())
-            database.addDirectAnnotation(
-							XFactory.createXField(this), n);
+            database.addDirectAnnotation(XFactory.createXField(this), n);
 
     }
+
     @Override
     public void visitSyntheticParameterAnnotation(int p, boolean runtimeVisible) {
-		if (database == null) {
+        if (database == null) {
             return;
         }
 
@@ -134,37 +133,29 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
         XMethodParameter xparameter = new XMethodParameter(xmethod, p);
 
-        database.addDirectAnnotation(
-                        xparameter, NullnessAnnotation.UNKNOWN_NULLNESS);
+        database.addDirectAnnotation(xparameter, NullnessAnnotation.UNKNOWN_NULLNESS);
 
     }
 
-
     @Override
-    public void visitParameterAnnotation(int p, String annotationClass,
-            Map<String, ElementValue> map, boolean runtimeVisible) {
-		if (database == null) {
+    public void visitParameterAnnotation(int p, String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
+        if (database == null) {
             return;
         }
 
         NullnessAnnotation n = NullnessAnnotation.Parser.parse(annotationClass);
         annotationClass = lastPortion(annotationClass);
         if (n == null)
-			return;
+            return;
 
         XMethod xmethod = XFactory.createXMethod(this);
         if (DEBUG) {
-            System.out.println("Parameter "
-					+ p
-                    + " @"
-                    + annotationClass.substring(annotationClass
-                            .lastIndexOf('/') + 1) + " in "
-					+ xmethod.toString());
+            System.out.println("Parameter " + p + " @" + annotationClass.substring(annotationClass.lastIndexOf('/') + 1) + " in "
+                    + xmethod.toString());
         }
         XMethodParameter xparameter = new XMethodParameter(xmethod, p);
 
-        database.addDirectAnnotation(
-                        xparameter, n);
+        database.addDirectAnnotation(xparameter, n);
 
     }
 

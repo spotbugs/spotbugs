@@ -25,7 +25,7 @@ import java.util.Set;
 
 /**
  * Split a camel case identifier into individual words.
- *
+ * 
  * @author David Hovemeyer
  */
 public class SplitCamelCaseIdentifier {
@@ -33,21 +33,22 @@ public class SplitCamelCaseIdentifier {
 
     /**
      * Constructor.
-     *
-	 * @param ident the identifier to split into words
+     * 
+     * @param ident
+     *            the identifier to split into words
      */
     public SplitCamelCaseIdentifier(String ident) {
         this.ident = ident;
-	}
+    }
 
     /**
      * Split the identifier into words.
-     *
-	 * @return Collection of words in the identifier
+     * 
+     * @return Collection of words in the identifier
      */
     public Collection<String> split() {
         String s = ident;
-		Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<String>();
 
         while (s.length() > 0) {
             StringBuilder buf = new StringBuilder();
@@ -59,21 +60,21 @@ public class SplitCamelCaseIdentifier {
             if (s.length() > 1) {
                 boolean camelWord;
                 if (Character.isLowerCase(first)) {
-					camelWord = true;
+                    camelWord = true;
                 } else {
                     char next = s.charAt(i++);
                     buf.append(next);
-					camelWord = Character.isLowerCase(next);
+                    camelWord = Character.isLowerCase(next);
                 }
 
                 while (i < s.length()) {
                     char c = s.charAt(i);
                     if (Character.isUpperCase(c)) {
-						if (camelWord)
+                        if (camelWord)
                             break;
                     } else if (!camelWord) {
                         break;
-					}
+                    }
                     buf.append(c);
                     ++i;
                 }
@@ -81,7 +82,7 @@ public class SplitCamelCaseIdentifier {
                 if (!camelWord && i < s.length()) {
                     buf.deleteCharAt(buf.length() - 1);
                     --i;
-				}
+                }
             }
 
             result.add(buf.toString().toLowerCase(Locale.US));

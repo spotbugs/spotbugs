@@ -19,14 +19,14 @@
 
 package edu.umd.cs.findbugs.bcel;
 
-
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * Base class for Detectors which want to perform a preorder traversal of the classfile.
- *
+ * Base class for Detectors which want to perform a preorder traversal of the
+ * classfile.
+ * 
  * @see PreorderVisitor
  */
 abstract public class PreorderDetector extends PreorderVisitor implements Detector {
@@ -35,16 +35,16 @@ abstract public class PreorderDetector extends PreorderVisitor implements Detect
     public void visitClassContext(ClassContext classContext) {
         this.classContext = classContext;
         classContext.getJavaClass().accept(this);
-	}
+    }
 
     /**
      * Get the ClassContext of the class currently being visited.
-     *
-	 * @return the current ClassContext
+     * 
+     * @return the current ClassContext
      */
     public ClassContext getClassContext() {
         return classContext;
-	}
+    }
 
     public void report() {
     }

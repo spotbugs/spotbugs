@@ -29,89 +29,109 @@ import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
- * Implementation of ICodeBaseEntry that delegates to another
- * codebase entry.  This is needed for codebase entries in
- * nested zipfiles, which are implemented using a private
- * zipfile codebase.
- *
+ * Implementation of ICodeBaseEntry that delegates to another codebase entry.
+ * This is needed for codebase entries in nested zipfiles, which are implemented
+ * using a private zipfile codebase.
+ * 
  * @author David Hovemeyer
  */
 public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
     private ICodeBase frontEndCodeBase;
+
     private ICodeBaseEntry delegateCodeBaseEntry;
 
     public DelegatingCodeBaseEntry(ICodeBase frontEndCodeBase, ICodeBaseEntry delegateCodeBaseEntry) {
         this.frontEndCodeBase = frontEndCodeBase;
         this.delegateCodeBaseEntry = delegateCodeBaseEntry;
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
      */
-	public int getNumBytes() {
+    public int getNumBytes() {
         return delegateCodeBaseEntry.getNumBytes();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
      */
-	public String getResourceName() {
+    public String getResourceName() {
         return delegateCodeBaseEntry.getResourceName();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
      */
-	public InputStream openResource() throws IOException {
+    public InputStream openResource() throws IOException {
         return delegateCodeBaseEntry.openResource();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
      */
-	public ICodeBase getCodeBase() {
+    public ICodeBase getCodeBase() {
         return frontEndCodeBase;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
      */
-	public ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
+    public ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
         return delegateCodeBaseEntry.getClassDescriptor();
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java
+     * .lang.String)
      */
-	public void overrideResourceName(String resourceName) {
+    public void overrideResourceName(String resourceName) {
         delegateCodeBaseEntry.overrideResourceName(resourceName);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
-	@Override
+    @Override
     public boolean equals(Object obj) {
         if (obj == null || obj.getClass() != this.getClass()) {
             return false;
-		}
+        }
         DelegatingCodeBaseEntry other = (DelegatingCodeBaseEntry) obj;
         return this.frontEndCodeBase.equals(other.frontEndCodeBase)
-            && this.delegateCodeBaseEntry.equals(other.delegateCodeBaseEntry);
-	}
+                && this.delegateCodeBaseEntry.equals(other.delegateCodeBaseEntry);
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
-	@Override
+    @Override
     public int hashCode() {
         return 7919 * frontEndCodeBase.hashCode() + delegateCodeBaseEntry.hashCode();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
-	@Override
+    @Override
     public String toString() {
         return delegateCodeBaseEntry.toString();
     }

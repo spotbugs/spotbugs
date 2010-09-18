@@ -25,10 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Cached data for a source file.
- * Contains a map of line numbers to byte offsets, for quick
- * searching of source lines.
- *
+ * Cached data for a source file. Contains a map of line numbers to byte
+ * offsets, for quick searching of source lines.
+ * 
  * @author David Hovemeyer
  * @see SourceFinder
  */
@@ -38,24 +37,26 @@ public class SourceFile {
     }
 
     /**
-     * Helper object to build map of line number to byte offset
-     * for a source file.
-	 */
+     * Helper object to build map of line number to byte offset for a source
+     * file.
+     */
     private static class LineNumberMapBuilder {
         private SourceFile sourceFile;
+
         private int offset;
-		private int lastSeen;
+
+        private int lastSeen;
 
         public LineNumberMapBuilder(SourceFile sourceFile) {
             this.sourceFile = sourceFile;
             this.offset = 0;
-			this.lastSeen = -1;
+            this.lastSeen = -1;
         }
 
         public void addData(byte[] data, int len) {
             for (int i = 0; i < len; ++i) {
                 int ch = intValueOf(data[i]);
-				//if (ch < 0) throw new IllegalStateException();
+                // if (ch < 0) throw new IllegalStateException();
                 add(ch);
             }
         }
@@ -67,42 +68,46 @@ public class SourceFile {
         private void add(int ch) {
             switch (ch) {
             case '\n':
-				sourceFile.addLineOffset(offset + 1);
+                sourceFile.addLineOffset(offset + 1);
                 break;
             case '\r':
                 // Need to see next character to know if it's a
-				// line terminator.
+                // line terminator.
                 break;
             default:
                 if (lastSeen == '\r') {
-					// We consider a bare CR to be an end of line
+                    // We consider a bare CR to be an end of line
                     // if it is not followed by a new line.
                     // Mac OS has historically used a bare CR as
                     // its line terminator.
-					sourceFile.addLineOffset(offset);
+                    sourceFile.addLineOffset(offset);
                 }
             }
 
             lastSeen = ch;
             ++offset;
         }
-	}
+    }
 
     private static final int DEFAULT_SIZE = 100;
 
     private SourceFileDataSource dataSource;
+
     private byte[] data;
+
     private int[] lineNumberMap;
-	private int numLines;
+
+    private int numLines;
 
     /**
      * Constructor.
-     *
-	 * @param dataSource the SourceFileDataSource object which will
-     *                   provide the data of the source file
+     * 
+     * @param dataSource
+     *            the SourceFileDataSource object which will provide the data of
+     *            the source file
      */
     public SourceFile(SourceFileDataSource dataSource) {
-		this.dataSource = dataSource;
+        this.dataSource = dataSource;
         this.lineNumberMap = new int[DEFAULT_SIZE];
         this.numLines = 0;
     }
@@ -110,45 +115,46 @@ public class SourceFile {
     /**
      * Get the full path name of the source file (with directory).
      */
-	public String getFullFileName() {
+    public String getFullFileName() {
         return dataSource.getFullFileName();
     }
 
     /**
      * Get an InputStream on data.
-     *
-	 * @return an InputStream on the data in the source file,
-     *         starting from given offset
+     * 
+     * @return an InputStream on the data in the source file, starting from
+     *         given offset
      */
     public InputStream getInputStream() throws IOException {
-		loadFileData();
+        loadFileData();
         return new ByteArrayInputStream(data);
     }
 
     /**
      * Get an InputStream on data starting at given offset.
-     *
-	 * @param offset the start offset
-     * @return an InputStream on the data in the source file,
-     *         starting at the given offset
+     * 
+     * @param offset
+     *            the start offset
+     * @return an InputStream on the data in the source file, starting at the
+     *         given offset
      */
-	public InputStream getInputStreamFromOffset(int offset) throws IOException {
+    public InputStream getInputStreamFromOffset(int offset) throws IOException {
         loadFileData();
         return new ByteArrayInputStream(data, offset, data.length - offset);
     }
 
     /**
-     * Add a source line byte offset.
-     * This method should be called for each line in the source file,
-	 * in order.
-     *
-     * @param offset the byte offset of the next source line
+     * Add a source line byte offset. This method should be called for each line
+     * in the source file, in order.
+     * 
+     * @param offset
+     *            the byte offset of the next source line
      */
-	public void addLineOffset(int offset) {
+    public void addLineOffset(int offset) {
         if (numLines >= lineNumberMap.length) {
             // Grow the line number map.
             int capacity = lineNumberMap.length * 2;
-			int[] newLineNumberMap = new int[capacity];
+            int[] newLineNumberMap = new int[capacity];
             System.arraycopy(lineNumberMap, 0, newLineNumberMap, 0, lineNumberMap.length);
             lineNumberMap = newLineNumberMap;
         }
@@ -157,25 +163,26 @@ public class SourceFile {
     }
 
     /**
-     * Get the byte offset in the data for a source line.
-     * Note that lines are considered to be zero-index, so the first
-	 * line in the file is numbered zero.
-     *
-     * @param line the line number
-     * @return the byte offset in the file's data for the line,
-	 *         or -1 if the line is not valid
+     * Get the byte offset in the data for a source line. Note that lines are
+     * considered to be zero-index, so the first line in the file is numbered
+     * zero.
+     * 
+     * @param line
+     *            the line number
+     * @return the byte offset in the file's data for the line, or -1 if the
+     *         line is not valid
      */
     public int getLineOffset(int line) {
         try {
-			loadFileData();
+            loadFileData();
         } catch (IOException e) {
             System.err.println("SourceFile.getLineOffset: " + e.getMessage());
             return -1;
-		}
+        }
         if (line < 0 || line >= numLines)
             return -1;
         return lineNumberMap[line];
-	}
+    }
 
     private synchronized void loadFileData() throws IOException {
         if (data != null)
@@ -190,31 +197,33 @@ public class SourceFile {
             addLineOffset(0); // Line 0 starts at offset 0
             LineNumberMapBuilder mapBuilder = new LineNumberMapBuilder(this);
 
-            // Copy all of the data from the file into the byte array output stream
+            // Copy all of the data from the file into the byte array output
+            // stream
             byte[] buf = new byte[1024];
             int n;
-			while ((n = in.read(buf)) >= 0) {
+            while ((n = in.read(buf)) >= 0) {
                 mapBuilder.addData(buf, n);
                 out.write(buf, 0, n);
             }
-			mapBuilder.eof();
+            mapBuilder.eof();
 
             setData(out.toByteArray());
         } finally {
             if (in != null)
-				in.close();
+                in.close();
         }
 
     }
 
     /**
      * Set the source file data.
-     *
-	 * @param data the data
+     * 
+     * @param data
+     *            the data
      */
     private void setData(byte[] data) {
         this.data = data;
-	}
+    }
 }
 
 // vim:ts=4

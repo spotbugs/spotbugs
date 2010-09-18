@@ -42,76 +42,77 @@ import edu.umd.cs.findbugs.util.TopologicalSort;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
 
 /**
- * Analysis engine to produce the ClassInfo for a loaded class.
- * We parse just enough information from the classfile to
- * get the needed information.
- *
+ * Analysis engine to produce the ClassInfo for a loaded class. We parse just
+ * enough information from the classfile to get the needed information.
+ * 
  * @author David Hovemeyer
  */
 public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
     /*
-    private static final boolean USE_ASM_CLASS_PARSER = SystemProperties.getBoolean("findbugs.classparser.asm");
-    static {
-		if (USE_ASM_CLASS_PARSER) {
-            System.out.println("Using ClassParserUsingASM");
-        }
-    }
-	*/
-
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+     * private static final boolean USE_ASM_CLASS_PARSER =
+     * SystemProperties.getBoolean("findbugs.classparser.asm"); static { if
+     * (USE_ASM_CLASS_PARSER) { System.out.println("Using ClassParserUsingASM");
+     * } }
      */
-	public ClassInfo analyze(IAnalysisCache analysisCache,
-            ClassDescriptor descriptor) throws CheckedAnalysisException {
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
+     */
+    public ClassInfo analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
 
         if (descriptor instanceof ClassInfo)
             return (ClassInfo) descriptor;
         ClassData classData;
-		try {
+        try {
             classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
         } catch (edu.umd.cs.findbugs.classfile.MissingClassException e) {
             if (!descriptor.getSimpleName().equals("package-info"))
-				throw e;
+                throw e;
 
             ClassInfo.Builder builder = new ClassInfo.Builder();
             builder.setClassDescriptor(descriptor);
             builder.setAccessFlags(1536);
-			return builder.build();
+            return builder.build();
         }
 
-
-		// Read the class info
+        // Read the class info
 
         FBClassReader reader = analysisCache.getClassAnalysis(FBClassReader.class, descriptor);
-        ClassParserInterface parser  = new ClassParserUsingASM(reader, descriptor, classData.getCodeBaseEntry());
+        ClassParserInterface parser = new ClassParserUsingASM(reader, descriptor, classData.getCodeBaseEntry());
 
-		ClassInfo.Builder classInfoBuilder = new ClassInfo.Builder();
+        ClassInfo.Builder classInfoBuilder = new ClassInfo.Builder();
         parser.parse(classInfoBuilder);
         ClassInfo classInfo = classInfoBuilder.build();
 
         if (!classInfo.getClassDescriptor().equals(descriptor)) {
-            throw new ClassNameMismatchException(
-                    descriptor,
-					classInfo.getClassDescriptor(),
-                    classData.getCodeBaseEntry());
+            throw new ClassNameMismatchException(descriptor, classInfo.getClassDescriptor(), classData.getCodeBaseEntry());
         }
         return classInfo;
-	}
+    }
 
-
-    /* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
+     * .findbugs.classfile.IAnalysisCache)
      */
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerClassAnalysisEngine(XClass.class, this);
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#canRecompute()
      */
-	public boolean canRecompute() {
+    public boolean canRecompute() {
         // ClassInfo objects serve as XClass objects,
-        // which we want interned.  So, they are never purged from the cache.
+        // which we want interned. So, they are never purged from the cache.
         return false;
-	}
+    }
 }

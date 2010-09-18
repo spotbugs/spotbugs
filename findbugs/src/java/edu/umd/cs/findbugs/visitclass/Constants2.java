@@ -23,5 +23,4 @@ public interface Constants2 extends org.apache.bcel.Constants {
 
     // Nothing defined here for now
 
-
 }

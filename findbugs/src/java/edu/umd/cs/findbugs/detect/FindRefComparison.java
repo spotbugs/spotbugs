@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -105,68 +104,74 @@ import edu.umd.cs.findbugs.props.WarningPropertyUtil;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
- * Find suspicious reference comparisons.
- * This includes:
+ * Find suspicious reference comparisons. This includes:
  * <ul>
  * <li>Strings and other java.lang objects compared by reference equality</li>
- * <li>Calls to equals(Object) where the argument is a different type than
- *     the receiver object</li>
+ * <li>Calls to equals(Object) where the argument is a different type than the
+ * receiver object</li>
  * </ul>
- *
+ * 
  * @author David Hovemeyer
  * @author Bill Pugh
  */
 public class FindRefComparison implements Detector, ExtendedTypes {
     private static final boolean DEBUG = SystemProperties.getBoolean("frc.debug");
+
     private static final boolean REPORT_ALL_REF_COMPARISONS = true || SystemProperties.getBoolean("findbugs.refcomp.reportAll");
+
     private static final int BASE_ES_PRIORITY = SystemProperties.getInt("es.basePriority", NORMAL_PRIORITY);
 
     /**
      * Classes that are suspicious if compared by reference.
      */
-	private static final HashSet<String> DEFAULT_SUSPICIOUS_SET = new HashSet<String>();
+    private static final HashSet<String> DEFAULT_SUSPICIOUS_SET = new HashSet<String>();
 
     static {
         DEFAULT_SUSPICIOUS_SET.add("java.lang.Boolean");
         DEFAULT_SUSPICIOUS_SET.add("java.lang.Byte");
-		DEFAULT_SUSPICIOUS_SET.add("java.lang.Character");
+        DEFAULT_SUSPICIOUS_SET.add("java.lang.Character");
         DEFAULT_SUSPICIOUS_SET.add("java.lang.Double");
         DEFAULT_SUSPICIOUS_SET.add("java.lang.Float");
         DEFAULT_SUSPICIOUS_SET.add("java.lang.Integer");
-		DEFAULT_SUSPICIOUS_SET.add("java.lang.Long");
+        DEFAULT_SUSPICIOUS_SET.add("java.lang.Long");
         DEFAULT_SUSPICIOUS_SET.add("java.lang.Short");
     }
 
     /**
      * Set of opcodes that invoke instance methods on an object.
      */
-	private static final BitSet invokeInstanceSet = new BitSet();
+    private static final BitSet invokeInstanceSet = new BitSet();
 
     static {
         invokeInstanceSet.set(Constants.INVOKEVIRTUAL);
         invokeInstanceSet.set(Constants.INVOKEINTERFACE);
-		invokeInstanceSet.set(Constants.INVOKESPECIAL);
+        invokeInstanceSet.set(Constants.INVOKESPECIAL);
     }
 
     /**
      * Set of bytecodes using for prescreening.
      */
-	private static final BitSet prescreenSet = new BitSet();
+    private static final BitSet prescreenSet = new BitSet();
 
     static {
         prescreenSet.or(invokeInstanceSet);
         prescreenSet.set(Constants.IF_ACMPEQ);
-		prescreenSet.set(Constants.IF_ACMPNE);
+        prescreenSet.set(Constants.IF_ACMPNE);
     }
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * Helper classes
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     private static final byte T_DYNAMIC_STRING = T_AVAIL_TYPE + 0;
+
     private static final byte T_STATIC_STRING = T_AVAIL_TYPE + 1;
+
     private static final byte T_PARAMETER_STRING = T_AVAIL_TYPE + 2;
-	private static final byte T_STATIC_FINAL_PUBLIC_CONSTANT = T_AVAIL_TYPE + 3;
+
+    private static final byte T_STATIC_FINAL_PUBLIC_CONSTANT = T_AVAIL_TYPE + 3;
 
     private static final String STRING_SIGNATURE = "Ljava/lang/String;";
 
@@ -177,23 +182,24 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         /**
          * @param method
          * @param methodGen
-	     * @param cfg
+         * @param cfg
          * @param dfs
          * @param typeMerger
          * @param visitor
-	     * @param lookupFailureCallback
+         * @param lookupFailureCallback
          * @param exceptionSetFactory
          */
         private SpecialTypeAnalysis(Method method, MethodGen methodGen, CFG cfg, DepthFirstSearch dfs, TypeMerger typeMerger,
-	            TypeFrameModelingVisitor visitor, RepositoryLookupFailureCallback lookupFailureCallback,
+                TypeFrameModelingVisitor visitor, RepositoryLookupFailureCallback lookupFailureCallback,
                 ExceptionSetFactory exceptionSetFactory) {
             super(method, methodGen, cfg, dfs, typeMerger, visitor, lookupFailureCallback, exceptionSetFactory);
         }
 
-        @Override public void initEntryFact(TypeFrame result) {
+        @Override
+        public void initEntryFact(TypeFrame result) {
             super.initEntryFact(result);
-            for(int i = 0; i < methodGen.getMaxLocals(); i++) {
-	    		Type t = result.getValue(i);
+            for (int i = 0; i < methodGen.getMaxLocals(); i++) {
+                Type t = result.getValue(i);
                 if (t.equals(ObjectType.STRING)) {
                     result.setValue(i, parameterStringTypeInstance);
                 }
@@ -202,9 +208,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
     }
 
     /**
-     * Type representing a dynamically created String.
-     * This sort of String should never be compared using reference
-	 * equality.
+     * Type representing a dynamically created String. This sort of String
+     * should never be compared using reference equality.
      */
     public static class DynamicStringType extends ObjectType {
         private static final long serialVersionUID = 1L;
@@ -216,35 +221,38 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         @Override
         public byte getType() {
             return T_DYNAMIC_STRING;
-		}
-
-        @Override
-        public int hashCode() {
-            return System.identityHashCode(this);
-		}
-
-        @Override
-        public boolean equals(Object o) {
-            return o == this;
-		}
-
-        @Override
-        public String toString() {
-            return "<dynamic string>";
-		}
-    }
-
-    public static class FinalConstant extends ObjectType {
-		private static final long serialVersionUID = 1L;
-        final  @Nonnull XField field;
-        public FinalConstant(@DottedClassName String type, @Nonnull XField field) {
-            super(type);
-			this.field = field;
         }
 
         @Override
         public int hashCode() {
-          return  super.hashCode() * 31 + field.hashCode();
+            return System.identityHashCode(this);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o == this;
+        }
+
+        @Override
+        public String toString() {
+            return "<dynamic string>";
+        }
+    }
+
+    public static class FinalConstant extends ObjectType {
+        private static final long serialVersionUID = 1L;
+
+        final @Nonnull
+        XField field;
+
+        public FinalConstant(@DottedClassName String type, @Nonnull XField field) {
+            super(type);
+            this.field = field;
+        }
+
+        @Override
+        public int hashCode() {
+            return super.hashCode() * 31 + field.hashCode();
 
         }
 
@@ -253,12 +261,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             if (this == obj)
                 return true;
             if (!(obj instanceof FinalConstant))
-		        return false;
+                return false;
             FinalConstant other = (FinalConstant) obj;
 
             return super.equals(other) && this.field.equals(other.field);
         }
-
 
         public XField getXField() {
             return field;
@@ -267,20 +274,18 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         @Override
         public String toString() {
             return super.toString() + " " + field;
-		}
+        }
     }
-
 
     private static final Type dynamicStringTypeInstance = new DynamicStringType();
 
     /**
-     * Type representing a static String.
-     * E.g., interned strings and constant strings.
-	 * It is generally OK to compare this sort of String
-     * using reference equality.
+     * Type representing a static String. E.g., interned strings and constant
+     * strings. It is generally OK to compare this sort of String using
+     * reference equality.
      */
     public static class StaticStringType extends ObjectType {
-		private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
         public StaticStringType() {
             super("java.lang.String");
@@ -289,22 +294,22 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         @Override
         public byte getType() {
             return T_STATIC_STRING;
-		}
+        }
 
         @Override
         public int hashCode() {
             return System.identityHashCode(this);
-		}
+        }
 
         @Override
         public boolean equals(Object o) {
             return o == this;
-		}
+        }
 
         @Override
         public String toString() {
             return "<static string>";
-		}
+        }
     }
 
     private static final Type staticStringTypeInstance = new StaticStringType();
@@ -312,7 +317,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
     /**
      * Type representing a String passed as a parameter.
      */
-	public static class ParameterStringType extends ObjectType {
+    public static class ParameterStringType extends ObjectType {
         private static final long serialVersionUID = 1L;
 
         public ParameterStringType() {
@@ -322,34 +327,34 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         @Override
         public byte getType() {
             return T_PARAMETER_STRING;
-		}
+        }
 
         @Override
         public int hashCode() {
             return System.identityHashCode(this);
-		}
+        }
 
         @Override
         public boolean equals(Object o) {
             return o == this;
-		}
+        }
 
         @Override
         public String toString() {
             return "<parameter string>";
-		}
+        }
     }
 
     private static final Type parameterStringTypeInstance = new ParameterStringType();
 
     private static class RefComparisonTypeFrameModelingVisitor extends TypeFrameModelingVisitor {
         private final RepositoryLookupFailureCallback lookupFailureCallback;
+
         private boolean sawStringIntern;
 
-        public RefComparisonTypeFrameModelingVisitor(
-                ConstantPoolGen cpg,
-                TypeMerger typeMerger, RepositoryLookupFailureCallback lookupFailureCallback) {
-			super(cpg, typeMerger);
+        public RefComparisonTypeFrameModelingVisitor(ConstantPoolGen cpg, TypeMerger typeMerger,
+                RepositoryLookupFailureCallback lookupFailureCallback) {
+            super(cpg, typeMerger);
             this.lookupFailureCallback = lookupFailureCallback;
             this.sawStringIntern = false;
         }
@@ -364,62 +369,64 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         @Override
         public void visitINVOKESTATIC(INVOKESTATIC obj) {
             if (returnsString(obj)) {
-				consumeStack(obj);
+                consumeStack(obj);
 
                 String className = obj.getClassName(getCPG());
                 if (className.equals("java.lang.String")) {
                     pushValue(dynamicStringTypeInstance);
-				} else {
+                } else {
                     pushReturnType(obj);
                 }
             } else {
-				super.visitINVOKESTATIC(obj);
+                super.visitINVOKESTATIC(obj);
             }
         }
 
         @Override
         public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
             if (returnsString(obj))
-				handleInstanceMethod(obj);
-            else super.visitINVOKESPECIAL(obj);
+                handleInstanceMethod(obj);
+            else
+                super.visitINVOKESPECIAL(obj);
         }
 
         @Override
         public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
             if (returnsString(obj))
-				handleInstanceMethod(obj);
-            else super.visitINVOKEINTERFACE(obj);
+                handleInstanceMethod(obj);
+            else
+                super.visitINVOKEINTERFACE(obj);
 
         }
 
         @Override
         public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
             if (returnsString(obj))
-				handleInstanceMethod(obj);
-            else super.visitINVOKEVIRTUAL(obj);
+                handleInstanceMethod(obj);
+            else
+                super.visitINVOKEVIRTUAL(obj);
         }
 
         private boolean returnsString(InvokeInstruction inv) {
             String methodSig = inv.getSignature(getCPG());
             return methodSig.endsWith(")Ljava/lang/String;");
-		}
+        }
 
         private void handleInstanceMethod(InvokeInstruction obj) {
 
             assert returnsString(obj);
             consumeStack(obj);
             String className = obj.getClassName(getCPG());
-			String methodName = obj.getName(getCPG());
+            String methodName = obj.getName(getCPG());
             // System.out.println(className + "." + methodName);
 
             if (methodName.equals("intern") && className.equals("java.lang.String")) {
                 sawStringIntern = true;
                 pushValue(staticStringTypeInstance);
-			} else if (methodName.equals("toString")
-                    || className.equals("java.lang.String")) {
+            } else if (methodName.equals("toString") || className.equals("java.lang.String")) {
                 pushValue(dynamicStringTypeInstance);
                 // System.out.println("  dynamic");
-			} else {
+            } else {
                 pushReturnType(obj);
             }
 
@@ -428,13 +435,13 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         @Override
         public void visitLDC(LDC obj) {
             Type type = obj.getType(getCPG());
-			pushValue(isString(type) ? staticStringTypeInstance : type);
+            pushValue(isString(type) ? staticStringTypeInstance : type);
         }
 
         @Override
         public void visitLDC2_W(LDC2_W obj) {
             Type type = obj.getType(getCPG());
-			pushValue(isString(type) ? staticStringTypeInstance : type);
+            pushValue(isString(type) ? staticStringTypeInstance : type);
         }
 
         private boolean isString(Type type) {
@@ -444,63 +451,60 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         @Override
         public void visitGETSTATIC(GETSTATIC obj) {
             Type type = obj.getType(getCPG());
-			XField xf = XFactory.createXField(obj, cpg);
+            XField xf = XFactory.createXField(obj, cpg);
             if (xf.isFinal()) {
                 FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
                 Item summary = fieldSummary.getSummary(xf);
-				if (summary.isNull()) {
+                if (summary.isNull()) {
                     pushValue(TypeFrame.getNullType());
                     return;
                 }
-				
+
                 String slashedClassName = ClassName.fromFieldSignature(type.getSignature());
                 if (slashedClassName != null) {
                     String dottedClassName = ClassName.toDottedClassName(slashedClassName);
-					if (DEFAULT_SUSPICIOUS_SET.contains(dottedClassName)) {
+                    if (DEFAULT_SUSPICIOUS_SET.contains(dottedClassName)) {
                         type = new FinalConstant(dottedClassName, xf);
                         consumeStack(obj);
                         pushValue(type);
-						return;
+                        return;
                     }
                 }
 
-
-
             }
             if (type.getSignature().equals(STRING_SIGNATURE)) {
-				handleLoad(obj);
-            }
-            else super.visitGETSTATIC(obj);
+                handleLoad(obj);
+            } else
+                super.visitGETSTATIC(obj);
         }
 
         @Override
         public void visitGETFIELD(GETFIELD obj) {
             Type type = obj.getType(getCPG());
-			if (type.getSignature().equals(STRING_SIGNATURE)) {
+            if (type.getSignature().equals(STRING_SIGNATURE)) {
                 handleLoad(obj);
-            }
-            else {
-				XField xf = XFactory.createXField(obj, cpg);
+            } else {
+                XField xf = XFactory.createXField(obj, cpg);
                 if (xf.isFinal()) {
                     FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
                     Item summary = fieldSummary.getSummary(xf);
-					if (summary.isNull()) {
+                    if (summary.isNull()) {
                         consumeStack(obj);
                         pushValue(TypeFrame.getNullType());
                         return;
-					}
+                    }
 
                     String slashedClassName = ClassName.fromFieldSignature(type.getSignature());
                     if (slashedClassName != null) {
-						String dottedClassName = ClassName.toDottedClassName(slashedClassName);
+                        String dottedClassName = ClassName.toDottedClassName(slashedClassName);
                         if (DEFAULT_SUSPICIOUS_SET.contains(dottedClassName)) {
                             type = new FinalConstant(dottedClassName, xf);
                             consumeStack(obj);
-							pushValue(type);
+                            pushValue(type);
                             return;
                         }
                     }
-				}
+                }
                 super.visitGETFIELD(obj);
             }
         }
@@ -511,7 +515,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             Type type = obj.getType(getCPG());
             if (!type.getSignature().equals(STRING_SIGNATURE))
                 throw new IllegalArgumentException("type is not String: " + type);
-			try {
+            try {
                 String className = obj.getClassName(getCPG());
                 String fieldName = obj.getName(getCPG());
                 Field field = Hierarchy.findField(className, fieldName);
@@ -519,18 +523,17 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 if (field != null) {
                     // If the field is final, we'll assume that the String value
                     // is static.
-					if (field.isFinal()) {
+                    if (field.isFinal()) {
                         pushValue(staticStringTypeInstance);
                     } else {
                         pushValue(type);
-					}
+                    }
 
                     return;
                 }
             } catch (ClassNotFoundException ex) {
-				lookupFailureCallback.reportMissingClass(ex);
+                lookupFailureCallback.reportMissingClass(ex);
             }
-
 
             pushValue(type);
         }
@@ -539,26 +542,26 @@ public class FindRefComparison implements Detector, ExtendedTypes {
     /**
      * Type merger to use the extended String types.
      */
-	private static class RefComparisonTypeMerger extends StandardTypeMerger {
+    private static class RefComparisonTypeMerger extends StandardTypeMerger {
         public RefComparisonTypeMerger(RepositoryLookupFailureCallback lookupFailureCallback,
                 ExceptionSetFactory exceptionSetFactory) {
             super(lookupFailureCallback, exceptionSetFactory);
-		}
+        }
 
         @Override
         protected boolean isReferenceType(byte type) {
             return super.isReferenceType(type) || type == T_STATIC_STRING || type == T_DYNAMIC_STRING;
-		}
+        }
 
         @Override
         protected ReferenceType mergeReferenceTypes(ReferenceType aRef, ReferenceType bRef) throws DataflowAnalysisException {
             byte aType = aRef.getType();
-			byte bType = bRef.getType();
+            byte bType = bRef.getType();
 
             if (isExtendedStringType(aType) || isExtendedStringType(bType)) {
                 // If both types are the same extended String type,
-                // then the same type is returned.  Otherwise, extended
-				// types are downgraded to plain java.lang.String,
+                // then the same type is returned. Otherwise, extended
+                // types are downgraded to plain java.lang.String,
                 // and a standard merge is applied.
                 if (aType == bType) {
                     return aRef;
@@ -578,34 +581,42 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         private boolean isExtendedStringType(byte type) {
             return type == T_DYNAMIC_STRING || type == T_STATIC_STRING || type == T_PARAMETER_STRING;
         }
-	}
+    }
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * Fields
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     private final BugReporter bugReporter;
-    private final BugAccumulator bugAccumulator;
-    private ClassContext classContext;
-	private final Set<String> suspiciousSet;
 
-    /* ----------------------------------------------------------------------
+    private final BugAccumulator bugAccumulator;
+
+    private ClassContext classContext;
+
+    private final Set<String> suspiciousSet;
+
+    /*
+     * ----------------------------------------------------------------------
      * Implementation
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     public FindRefComparison(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
-		this.suspiciousSet = new HashSet<String>(DEFAULT_SUSPICIOUS_SET);
+        this.suspiciousSet = new HashSet<String>(DEFAULT_SUSPICIOUS_SET);
 
-        // Check frc.suspicious system property for additional suspicious types to check
+        // Check frc.suspicious system property for additional suspicious types
+        // to check
         String extraSuspiciousTypes = SystemProperties.getProperty("frc.suspicious");
         if (extraSuspiciousTypes != null) {
-			StringTokenizer tok = new StringTokenizer(extraSuspiciousTypes, ",");
+            StringTokenizer tok = new StringTokenizer(extraSuspiciousTypes, ",");
             while (tok.hasMoreTokens()) {
                 suspiciousSet.add(tok.nextToken());
             }
-		}
+        }
     }
 
     public void visitClassContext(ClassContext classContext) {
@@ -617,45 +628,49 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         for (Method method : methodList) {
             MethodGen methodGen = classContext.getMethodGen(method);
             if (methodGen == null) {
-	            continue;
+                continue;
             }
 
             // Prescreening - must have IF_ACMPEQ, IF_ACMPNE,
             // or an invocation of an instance method
             BitSet bytecodeSet = classContext.getBytecodeSet(method);
-			if (bytecodeSet == null || !bytecodeSet.intersects(prescreenSet)) {
+            if (bytecodeSet == null || !bytecodeSet.intersects(prescreenSet)) {
                 continue;
             }
 
             if (DEBUG) {
-                System.out.println("FindRefComparison: analyzing " +
-                        SignatureConverter.convertMethodSignature(methodGen));
+                System.out.println("FindRefComparison: analyzing " + SignatureConverter.convertMethodSignature(methodGen));
             }
 
             try {
                 analyzeMethod(classContext, method);
             } catch (CFGBuilderException e) {
-				bugReporter.logError("Error analyzing " + method.toString(), e);
+                bugReporter.logError("Error analyzing " + method.toString(), e);
             } catch (DataflowAnalysisException e) {
-                // bugReporter.logError("Error analyzing " + method.toString(), e);
+                // bugReporter.logError("Error analyzing " + method.toString(),
+                // e);
             }
-		}
+        }
         bugAccumulator.reportAccumulatedBugs();
     }
 
     /**
      * A BugInstance and its WarningPropertySet.
      */
-	private static class WarningWithProperties {
+    private static class WarningWithProperties {
         final BugInstance instance;
-        final SourceLineAnnotation sourceLine;
-        final WarningPropertySet<WarningProperty> propertySet;
-		final Location location;
 
-        WarningWithProperties(BugInstance warning, WarningPropertySet<WarningProperty> propertySet, SourceLineAnnotation sourceLine, Location location) {
+        final SourceLineAnnotation sourceLine;
+
+        final WarningPropertySet<WarningProperty> propertySet;
+
+        final Location location;
+
+        WarningWithProperties(BugInstance warning, WarningPropertySet<WarningProperty> propertySet,
+                SourceLineAnnotation sourceLine, Location location) {
             this.instance = warning;
             this.propertySet = propertySet;
-			this.sourceLine = sourceLine;
+            this.sourceLine = sourceLine;
             this.location = location;
         }
     }
@@ -664,9 +679,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         public void decorate(WarningWithProperties warn);
     }
 
-
-    private void analyzeMethod(ClassContext classContext, final Method method)
-    throws CFGBuilderException, DataflowAnalysisException {
+    private void analyzeMethod(ClassContext classContext, final Method method) throws CFGBuilderException,
+            DataflowAnalysisException {
 
         MethodGen methodGen = classContext.getMethodGen(method);
         if (methodGen == null) {
@@ -676,53 +690,41 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         JavaClass jclass = classContext.getJavaClass();
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
 
-
         // Enqueue all of the potential violations we find in the method.
         // Normally we'll only report the first highest-priority warning,
         // but if in relaxed mode or if REPORT_ALL_REF_COMPARISONS is set,
-		// then we'll report everything.
-        LinkedList<WarningWithProperties> refComparisonList =
-            new LinkedList<WarningWithProperties>();
-        LinkedList<WarningWithProperties> stringComparisonList =
-			new LinkedList<WarningWithProperties>();
+        // then we'll report everything.
+        LinkedList<WarningWithProperties> refComparisonList = new LinkedList<WarningWithProperties>();
+        LinkedList<WarningWithProperties> stringComparisonList = new LinkedList<WarningWithProperties>();
 
         comparedForEqualityInThisMethod = new HashSet<String>();
         CFG cfg = classContext.getCFG(method);
         DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
-		ExceptionSetFactory exceptionSetFactory =
-            classContext.getExceptionSetFactory(method);
+        ExceptionSetFactory exceptionSetFactory = classContext.getExceptionSetFactory(method);
 
         // Perform type analysis using our special type merger
         // (which handles String types specially, keeping track of
         // which ones appear to be dynamically created)
-		RefComparisonTypeMerger typeMerger =
-            new RefComparisonTypeMerger(bugReporter, exceptionSetFactory);
-        RefComparisonTypeFrameModelingVisitor visitor =
-            new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), typeMerger, bugReporter);
-		TypeAnalysis typeAnalysis =
-            new SpecialTypeAnalysis(method, methodGen, cfg, dfs, typeMerger, visitor, bugReporter, exceptionSetFactory);
+        RefComparisonTypeMerger typeMerger = new RefComparisonTypeMerger(bugReporter, exceptionSetFactory);
+        RefComparisonTypeFrameModelingVisitor visitor = new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(),
+                typeMerger, bugReporter);
+        TypeAnalysis typeAnalysis = new SpecialTypeAnalysis(method, methodGen, cfg, dfs, typeMerger, visitor, bugReporter,
+                exceptionSetFactory);
         TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
         Profiler profiler = Global.getAnalysisCache().getProfiler();
-		profiler.start(SpecialTypeAnalysis.class);
+        profiler.start(SpecialTypeAnalysis.class);
         try {
-        typeDataflow.execute();
+            typeDataflow.execute();
         } finally {
-			profiler.end(SpecialTypeAnalysis.class);
+            profiler.end(SpecialTypeAnalysis.class);
         }
 
-        // Inspect Locations in the method for suspicious ref comparisons and calls to equals()
+        // Inspect Locations in the method for suspicious ref comparisons and
+        // calls to equals()
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
 
-             inspectLocation(
-                    jclass,
-                    cpg,
-					method,
-                    methodGen,
-                    refComparisonList,
-                    stringComparisonList,
-					visitor,
-                    typeDataflow,
+            inspectLocation(jclass, cpg, method, methodGen, refComparisonList, stringComparisonList, visitor, typeDataflow,
                     location);
         }
 
@@ -732,11 +734,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         // Add method-wide properties to BugInstances
         final boolean likelyTestcase = TestCaseDetector.likelyTestCase(XFactory.createXMethod(jclass, method));
 
-		decorateWarnings(stringComparisonList, new WarningDecorator(){
+        decorateWarnings(stringComparisonList, new WarningDecorator() {
             public void decorate(WarningWithProperties warn) {
                 if (mightBeCheckedUsingEquals(warn.instance)) {
                     warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
-				}
+                }
 
                 if (likelyTestcase) {
                     warn.propertySet.addProperty(RefComparisonWarningProperty.COMPARE_IN_TEST_CASE);
@@ -745,129 +747,104 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 if (false && !(method.isPublic() || method.isProtected())) {
                     warn.propertySet.addProperty(RefComparisonWarningProperty.PRIVATE_METHOD);
                 }
-			}
+            }
         });
         decorateWarnings(refComparisonList, new WarningDecorator() {
             public void decorate(WarningWithProperties warn) {
-				if (likelyTestcase) {
+                if (likelyTestcase) {
                     warn.propertySet.addProperty(RefComparisonWarningProperty.COMPARE_IN_TEST_CASE);
                 }
 
                 if (mightBeCheckedUsingEquals(warn.instance)) {
                     warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
                 }
-			}
+            }
         });
 
         // Report violations
         boolean relaxed = FindBugsAnalysisFeatures.isRelaxedMode();
         reportBest(classContext, method, stringComparisonList, relaxed);
-		reportBest(classContext, method, refComparisonList, relaxed);
+        reportBest(classContext, method, refComparisonList, relaxed);
     }
 
     boolean mightBeCheckedUsingEquals(BugInstance bug) {
-        for(BugAnnotation a : bug.getAnnotations())
+        for (BugAnnotation a : bug.getAnnotations())
             if (a instanceof TypeAnnotation) {
-				String signature = ((TypeAnnotation) a).getTypeDescriptor();
+                String signature = ((TypeAnnotation) a).getTypeDescriptor();
                 if (comparedForEqualityInThisMethod.contains(signature))
                     return true;
             }
-		return false;
+        return false;
     }
-    private void inspectLocation(
-            JavaClass jclass,
-			ConstantPoolGen cpg,
-            Method method,
-            MethodGen methodGen,
-            LinkedList<WarningWithProperties> refComparisonList,
-			LinkedList<WarningWithProperties> stringComparisonList,
-            RefComparisonTypeFrameModelingVisitor visitor,
-            TypeDataflow typeDataflow,
-            Location location) throws DataflowAnalysisException {
-		Instruction ins = location.getHandle().getInstruction();
+
+    private void inspectLocation(JavaClass jclass, ConstantPoolGen cpg, Method method, MethodGen methodGen,
+            LinkedList<WarningWithProperties> refComparisonList, LinkedList<WarningWithProperties> stringComparisonList,
+            RefComparisonTypeFrameModelingVisitor visitor, TypeDataflow typeDataflow, Location location)
+            throws DataflowAnalysisException {
+        Instruction ins = location.getHandle().getInstruction();
         short opcode = ins.getOpcode();
         if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
-            checkRefComparison(
-					location,
-                    jclass,
-                    method,
-                    methodGen,
-					visitor,
-                    typeDataflow,
-                    stringComparisonList, refComparisonList);
+            checkRefComparison(location, jclass, method, methodGen, visitor, typeDataflow, stringComparisonList,
+                    refComparisonList);
         } else if (invokeInstanceSet.get(opcode)) {
-			InvokeInstruction inv = (InvokeInstruction) ins;
+            InvokeInstruction inv = (InvokeInstruction) ins;
             String methodName = inv.getMethodName(cpg);
             String methodSig = inv.getSignature(cpg);
             if (isEqualsMethod(methodName, methodSig)) {
-				
+
                 checkEqualsComparison(location, jclass, method, methodGen, cpg, typeDataflow);
             }
         }
-		
+
     }
 
-    private void decorateWarnings(
-            LinkedList<WarningWithProperties> stringComparisonList,
-            WarningDecorator warningDecorator) {
-		for (WarningWithProperties warn : stringComparisonList) {
+    private void decorateWarnings(LinkedList<WarningWithProperties> stringComparisonList, WarningDecorator warningDecorator) {
+        for (WarningWithProperties warn : stringComparisonList) {
             warningDecorator.decorate(warn);
             warn.propertySet.decorateBugInstance(warn.instance);
         }
-	}
+    }
 
-    private void reportBest(
-            ClassContext classContext,
-            Method method,
-			LinkedList<WarningWithProperties> warningList,
+    private void reportBest(ClassContext classContext, Method method, LinkedList<WarningWithProperties> warningList,
             boolean relaxed) {
         boolean reportAll = relaxed || REPORT_ALL_REF_COMPARISONS;
 
         WarningWithProperties best = null;
         int bestPriority = Integer.MAX_VALUE;
         for (WarningWithProperties warn : warningList) {
-			int priority = warn.instance.getPriority();
+            int priority = warn.instance.getPriority();
             if (bestPriority > priority)
                 bestPriority = priority;
-
 
             if (reportAll) {
                 if (relaxed) {
                     // Add general warning properties
-					WarningPropertyUtil.addPropertiesForDataMining(
-                            warn.propertySet,
-                            classContext,
-                            method,
-							warn.location);
+                    WarningPropertyUtil.addPropertiesForDataMining(warn.propertySet, classContext, method, warn.location);
 
                     // Convert warning properties to bug properties
                     warn.propertySet.decorateBugInstance(warn.instance);
                 }
-				bugAccumulator.accumulateBug(warn.instance, warn.sourceLine);
+                bugAccumulator.accumulateBug(warn.instance, warn.sourceLine);
             }
 
         }
-		if (!reportAll) for (WarningWithProperties warn : warningList) {
-            BugInstance bug = warn.instance;
-            int priority = warn.instance.getPriority();
-            if (priority <= bestPriority)
-				bugAccumulator.accumulateBug(warn.instance, warn.sourceLine);
-        }
+        if (!reportAll)
+            for (WarningWithProperties warn : warningList) {
+                BugInstance bug = warn.instance;
+                int priority = warn.instance.getPriority();
+                if (priority <= bestPriority)
+                    bugAccumulator.accumulateBug(warn.instance, warn.sourceLine);
+            }
     }
 
     private boolean isEqualsMethod(String methodName, String methodSig) {
-        return methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z") ;
+        return methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z");
     }
 
-
-        private void checkRefComparison(
-            Location location,
-			JavaClass jclass,
-            Method method,
-            MethodGen methodGen,
-            RefComparisonTypeFrameModelingVisitor visitor,
-			TypeDataflow typeDataflow,
-            List<WarningWithProperties> stringComparisonList, List<WarningWithProperties> refComparisonList) throws DataflowAnalysisException {
+    private void checkRefComparison(Location location, JavaClass jclass, Method method, MethodGen methodGen,
+            RefComparisonTypeFrameModelingVisitor visitor, TypeDataflow typeDataflow,
+            List<WarningWithProperties> stringComparisonList, List<WarningWithProperties> refComparisonList)
+            throws DataflowAnalysisException {
 
         InstructionHandle handle = location.getHandle();
 
@@ -883,43 +860,38 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         if (lhsType instanceof NullType || rhsType instanceof NullType) {
             return;
         }
-		if (lhsType instanceof ReferenceType && rhsType instanceof ReferenceType) {
+        if (lhsType instanceof ReferenceType && rhsType instanceof ReferenceType) {
             IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType, rhsType, true);
             if (result != IncompatibleTypes.SEEMS_OK && result != IncompatibleTypes.UNCHECKED) {
                 String sourceFile = jclass.getSourceFileName();
 
-                bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", result.getPriority())
-                .addClassAndMethod(methodGen, sourceFile)
-                .addFoundAndExpectedType(rhsType, lhsType)
-				.addSomeSourceForTopTwoStackValues(classContext, method, location),
-                SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle)
-                );
+                bugAccumulator.accumulateBug(
+                        new BugInstance(this, "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", result.getPriority())
+                                .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType, lhsType)
+                                .addSomeSourceForTopTwoStackValues(classContext, method, location),
+                        SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
                 return;
-			}
-            if (lhsType.equals(ObjectType.OBJECT)
-                    && rhsType.equals(ObjectType.OBJECT))
+            }
+            if (lhsType.equals(ObjectType.OBJECT) && rhsType.equals(ObjectType.OBJECT))
                 return;
-			String lhs = SignatureConverter.convert(lhsType.getSignature());
+            String lhs = SignatureConverter.convert(lhsType.getSignature());
             String rhs = SignatureConverter.convert(rhsType.getSignature());
 
             if (lhs.equals("java.lang.String") || rhs.equals("java.lang.String")) {
                 handleStringComparison(jclass, method, methodGen, visitor, stringComparisonList, location, lhsType, rhsType);
-            } else if (suspiciousSet.contains(lhs) ) {
-				handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, lhs, (ReferenceType) lhsType, (ReferenceType)rhsType);
-            } else if ( suspiciousSet.contains(rhs)) {
-                handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, rhs, (ReferenceType) lhsType, (ReferenceType)rhsType);
+            } else if (suspiciousSet.contains(lhs)) {
+                handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, lhs,
+                        (ReferenceType) lhsType, (ReferenceType) rhsType);
+            } else if (suspiciousSet.contains(rhs)) {
+                handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, rhs,
+                        (ReferenceType) lhsType, (ReferenceType) rhsType);
             }
-		}
+        }
     }
 
-    private void handleStringComparison(
-            JavaClass jclass,
-            Method method,
-			MethodGen methodGen,
-            RefComparisonTypeFrameModelingVisitor visitor,
-            List<WarningWithProperties> stringComparisonList,
-            Location location,
-			Type lhsType, Type rhsType) {
+    private void handleStringComparison(JavaClass jclass, Method method, MethodGen methodGen,
+            RefComparisonTypeFrameModelingVisitor visitor, List<WarningWithProperties> stringComparisonList, Location location,
+            Type lhsType, Type rhsType) {
         if (DEBUG) {
             System.out.println("String/String comparison at " + location.getHandle());
         }
@@ -927,99 +899,91 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         // Compute the priority:
         // - two static strings => do not report
         // - dynamic string and anything => high
-		// - static string and unknown => medium
+        // - static string and unknown => medium
         // - all other cases => low
         // System.out.println("Compare " + lhsType + " == " + rhsType);
         byte type1 = lhsType.getType();
-		byte type2 = rhsType.getType();
+        byte type2 = rhsType.getType();
 
         String bugPattern = "ES_COMPARING_STRINGS_WITH_EQ";
         // T1 T2 result
-        // S  S  no-op
-		// D  ?  high
-        // ?  D  high
-        // S  ?  normal
-        // ?  S  normal
-		WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
+        // S S no-op
+        // D ? high
+        // ? D high
+        // S ? normal
+        // ? S normal
+        WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
         if (type1 == T_STATIC_STRING && type2 == T_STATIC_STRING) {
             propertySet.addProperty(RefComparisonWarningProperty.COMPARE_STATIC_STRINGS);
         } else if (type1 == T_DYNAMIC_STRING || type2 == T_DYNAMIC_STRING) {
-			propertySet.addProperty(RefComparisonWarningProperty.DYNAMIC_AND_UNKNOWN);
+            propertySet.addProperty(RefComparisonWarningProperty.DYNAMIC_AND_UNKNOWN);
         } else if (type2 == T_PARAMETER_STRING || type1 == T_PARAMETER_STRING) {
             bugPattern = "ES_COMPARING_PARAMETER_STRING_WITH_EQ";
             if (methodGen.isPublic() || methodGen.isProtected()) {
-	            propertySet.addProperty(RefComparisonWarningProperty.STRING_PARAMETER_IN_PUBLIC_METHOD);
+                propertySet.addProperty(RefComparisonWarningProperty.STRING_PARAMETER_IN_PUBLIC_METHOD);
             } else {
                 propertySet.addProperty(RefComparisonWarningProperty.STRING_PARAMETER);
             }
         } else if (type1 == T_STATIC_STRING || type2 == T_STATIC_STRING) {
             propertySet.addProperty(RefComparisonWarningProperty.STATIC_AND_UNKNOWN);
         } else if (visitor.sawStringIntern()) {
-			propertySet.addProperty(RefComparisonWarningProperty.SAW_INTERN);
+            propertySet.addProperty(RefComparisonWarningProperty.SAW_INTERN);
         }
 
         String sourceFile = jclass.getSourceFileName();
-        BugInstance instance =
-            new BugInstance(this, bugPattern, BASE_ES_PRIORITY)
-		.addClassAndMethod(methodGen, sourceFile)
-        .addType("Ljava/lang/String;").describe(TypeAnnotation.FOUND_ROLE);
+        BugInstance instance = new BugInstance(this, bugPattern, BASE_ES_PRIORITY).addClassAndMethod(methodGen, sourceFile)
+                .addType("Ljava/lang/String;").describe(TypeAnnotation.FOUND_ROLE);
         // .addSomeSourceForTopTwoStackValues(classContext, method, location);
-        SourceLineAnnotation sourceLineAnnotation =
-			SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, location.getHandle());
+        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
+                sourceFile, location.getHandle());
         if (sourceLineAnnotation != null) {
-            WarningWithProperties warn = new WarningWithProperties(instance, propertySet, sourceLineAnnotation,
-                    location);
-			stringComparisonList.add(warn);
+            WarningWithProperties warn = new WarningWithProperties(instance, propertySet, sourceLineAnnotation, location);
+            stringComparisonList.add(warn);
         }
 
     }
 
-    private void handleSuspiciousRefComparison(
-            JavaClass jclass,
-            Method method,
-			MethodGen methodGen,
-            List<WarningWithProperties> refComparisonList,
-            Location location, String lhs, ReferenceType lhsType, ReferenceType rhsType) {
+    private void handleSuspiciousRefComparison(JavaClass jclass, Method method, MethodGen methodGen,
+            List<WarningWithProperties> refComparisonList, Location location, String lhs, ReferenceType lhsType,
+            ReferenceType rhsType) {
         XField xf = null;
-		if (lhsType instanceof FinalConstant)
-            xf = ((FinalConstant)lhsType).getXField();
+        if (lhsType instanceof FinalConstant)
+            xf = ((FinalConstant) lhsType).getXField();
         else if (rhsType instanceof FinalConstant)
-                xf = ((FinalConstant)rhsType).getXField();
-		String sourceFile = jclass.getSourceFileName();
+            xf = ((FinalConstant) rhsType).getXField();
+        String sourceFile = jclass.getSourceFileName();
         String bugPattern = "RC_REF_COMPARISON";
         int priority = Priorities.HIGH_PRIORITY;
         if (lhs.equals("java.lang.Boolean")) {
-			bugPattern = "RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN";
+            bugPattern = "RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN";
             priority = Priorities.NORMAL_PRIORITY;
         } else if (xf != null && xf.isStatic() && xf.isFinal()) {
             bugPattern = "RC_REF_COMPARISON_BAD_PRACTICE";
-			if (xf.isPublic() || !methodGen.isPublic())
+            if (xf.isPublic() || !methodGen.isPublic())
                 priority = Priorities.NORMAL_PRIORITY;
         }
-        BugInstance instance = new BugInstance(this, bugPattern, priority)
-		.addClassAndMethod(methodGen, sourceFile)
-        .addType("L" + lhs.replace('.', '/')+";").describe(TypeAnnotation.FOUND_ROLE);
+        BugInstance instance = new BugInstance(this, bugPattern, priority).addClassAndMethod(methodGen, sourceFile)
+                .addType("L" + lhs.replace('.', '/') + ";").describe(TypeAnnotation.FOUND_ROLE);
         if (xf != null)
             instance.addField(xf).describe(FieldAnnotation.LOADED_FROM_ROLE);
-		else 
+        else
             instance.addSomeSourceForTopTwoStackValues(classContext, method, location);
-        SourceLineAnnotation sourceLineAnnotation =
-            SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, location.getHandle());
-		if (sourceLineAnnotation != null)
-          refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet<WarningProperty>(), sourceLineAnnotation, location));
+        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
+                sourceFile, location.getHandle());
+        if (sourceLineAnnotation != null)
+            refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet<WarningProperty>(),
+                    sourceLineAnnotation, location));
     }
 
     private Set<String> comparedForEqualityInThisMethod;
-    private void checkEqualsComparison(
-            Location location,
-			JavaClass jclass,
-            Method method,
-            MethodGen methodGen, ConstantPoolGen cpg, TypeDataflow typeDataflow) throws DataflowAnalysisException {
+
+    private void checkEqualsComparison(Location location, JavaClass jclass, Method method, MethodGen methodGen,
+            ConstantPoolGen cpg, TypeDataflow typeDataflow) throws DataflowAnalysisException {
 
         InstructionHandle handle = location.getHandle();
         InstructionHandle next = handle.getNext();
         if (next != null && next.getInstruction() instanceof INVOKESTATIC) {
-			INVOKESTATIC is = (INVOKESTATIC) next.getInstruction();
+            INVOKESTATIC is = (INVOKESTATIC) next.getInstruction();
             if (is.getMethodName(cpg).equals("assertFalse")) {
                 return;
             }
@@ -1035,129 +999,117 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         Type lhsType_ = frame.getValue(numSlots - 2);
         Type rhsType_ = frame.getValue(numSlots - 1);
 
-
         // Ignore top and bottom values
-        if (lhsType_.getType() == T_TOP || lhsType_.getType() == T_BOTTOM
-                || rhsType_.getType() == T_TOP || rhsType_.getType() == T_BOTTOM) {
-	        return;
+        if (lhsType_.getType() == T_TOP || lhsType_.getType() == T_BOTTOM || rhsType_.getType() == T_TOP
+                || rhsType_.getType() == T_BOTTOM) {
+            return;
         }
 
         boolean looksLikeTestCase = TestCaseDetector.likelyTestCase(XFactory.createXMethod(methodGen));
         int priorityModifier = 0;
         if (looksLikeTestCase) {
-	        priorityModifier = 2;
+            priorityModifier = 2;
         }
 
         if (rhsType_.getType() == T_NULL) {
             // A literal null value was passed directly to equals().
             if (!looksLikeTestCase) {
-				
+
                 try {
                     IsNullValueDataflow isNullDataflow = classContext.getIsNullValueDataflow(method);
                     IsNullValueFrame isNullFrame = isNullDataflow.getFactAtLocation(location);
-                    BugAnnotation a = BugInstance.getSourceForTopStackValue(classContext,  method,  location);
-	                int priority = NORMAL_PRIORITY;
-                    if (a instanceof FieldAnnotation && ((FieldAnnotation)a).isStatic())
+                    BugAnnotation a = BugInstance.getSourceForTopStackValue(classContext, method, location);
+                    int priority = NORMAL_PRIORITY;
+                    if (a instanceof FieldAnnotation && ((FieldAnnotation) a).isStatic())
                         priority = LOW_PRIORITY;
                     if (isNullFrame.isValid() && isNullFrame.getTopValue().isDefinitelyNull())
-	                  bugAccumulator.accumulateBug(new BugInstance(this, "EC_NULL_ARG", priority)
-                      .addClassAndMethod(methodGen, sourceFile),
-                      SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
+                        bugAccumulator.accumulateBug(
+                                new BugInstance(this, "EC_NULL_ARG", priority).addClassAndMethod(methodGen, sourceFile),
+                                SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile,
+                                        location.getHandle()));
                 } catch (CFGBuilderException e) {
-                  AnalysisContext.logError("Error getting null value analysis", e);
+                    AnalysisContext.logError("Error getting null value analysis", e);
                 }
 
             }
             return;
-		} else if (lhsType_.getType() == T_NULL) {
+        } else if (lhsType_.getType() == T_NULL) {
             // Hmm...in this case, equals() is being invoked on
-            // a literal null value.  This is really the
-            // purview of FindNullDeref.  So, we'll just do nothing.
-			return;
-        } else if (!(lhsType_ instanceof ReferenceType) || !(rhsType_ instanceof ReferenceType)) {
-            bugReporter.logError("equals() used to compare non-object type(s) " +
-                    lhsType_ + " and " + rhsType_ +
-					" in " +
-                    SignatureConverter.convertMethodSignature(methodGen) +
-                    " at " + location.getHandle());
+            // a literal null value. This is really the
+            // purview of FindNullDeref. So, we'll just do nothing.
             return;
-		}
+        } else if (!(lhsType_ instanceof ReferenceType) || !(rhsType_ instanceof ReferenceType)) {
+            bugReporter.logError("equals() used to compare non-object type(s) " + lhsType_ + " and " + rhsType_ + " in "
+                    + SignatureConverter.convertMethodSignature(methodGen) + " at " + location.getHandle());
+            return;
+        }
         IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_);
 
         if (result.getPriority() >= Priorities.LOW_PRIORITY) {
-			comparedForEqualityInThisMethod.add(lhsType_.getSignature());
+            comparedForEqualityInThisMethod.add(lhsType_.getSignature());
             comparedForEqualityInThisMethod.add(rhsType_.getSignature());
         }
         if (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
-				String pattern =  "EC_BAD_ARRAY_COMPARE";
-                IncompatibleTypes result2 = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_, true);
-                if (result2 != IncompatibleTypes.SEEMS_OK)
-                     pattern =  "EC_INCOMPATIBLE_ARRAY_COMPARE";
-				bugAccumulator.accumulateBug(new BugInstance(this, pattern, NORMAL_PRIORITY)
-                .addClassAndMethod(methodGen, sourceFile)
-                .addFoundAndExpectedType(rhsType_, lhsType_)
-                .addSomeSourceForTopTwoStackValues(classContext, method, location),
-				SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
-                );
-            }
+            String pattern = "EC_BAD_ARRAY_COMPARE";
+            IncompatibleTypes result2 = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_, true);
+            if (result2 != IncompatibleTypes.SEEMS_OK)
+                pattern = "EC_INCOMPATIBLE_ARRAY_COMPARE";
+            bugAccumulator.accumulateBug(new BugInstance(this, pattern, NORMAL_PRIORITY).addClassAndMethod(methodGen, sourceFile)
+                    .addFoundAndExpectedType(rhsType_, lhsType_)
+                    .addSomeSourceForTopTwoStackValues(classContext, method, location),
+                    SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
+        }
         if (result == IncompatibleTypes.ARRAY_AND_NON_ARRAY || result == IncompatibleTypes.ARRAY_AND_OBJECT) {
-			String lhsSig = lhsType_.getSignature();
+            String lhsSig = lhsType_.getSignature();
             String rhsSig = rhsType_.getSignature();
             boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, new HashSet<XMethod>());
             if (allOk)
-				priorityModifier += 2;
+                priorityModifier += 2;
             bugAccumulator.accumulateBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", result.getPriority() + priorityModifier)
-            .addClassAndMethod(methodGen, sourceFile)
-            .addFoundAndExpectedType(rhsType_, lhsType_)
-			.addSomeSourceForTopTwoStackValues(classContext, method, location),
-            SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
-            );
+                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
+                    .addSomeSourceForTopTwoStackValues(classContext, method, location),
+                    SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
         } else if (result == IncompatibleTypes.INCOMPATIBLE_CLASSES) {
-			String lhsSig = lhsType_.getSignature();
+            String lhsSig = lhsType_.getSignature();
             String rhsSig = rhsType_.getSignature();
             boolean core = lhsSig.startsWith("Ljava") && rhsSig.startsWith("Ljava");
             if (core) {
-				looksLikeTestCase = false;
+                looksLikeTestCase = false;
                 priorityModifier = 0;
             }
             if (!looksLikeTestCase) {
-				Set<XMethod> targets = new HashSet<XMethod>();
+                Set<XMethod> targets = new HashSet<XMethod>();
                 boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, targets);
                 if (allOk)
-                    priorityModifier+=2;
-				bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
-                .addClassAndMethod(methodGen, sourceFile)
-                .addFoundAndExpectedType(rhsType_, lhsType_)
-                .addSomeSourceForTopTwoStackValues(classContext, method, location)
-				.addEqualsMethodUsed(targets),
-                SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
-                );
+                    priorityModifier += 2;
+                bugAccumulator.accumulateBug(
+                        new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
+                                .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
+                                .addSomeSourceForTopTwoStackValues(classContext, method, location).addEqualsMethodUsed(targets),
+                        SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile,
+                                location.getHandle()));
             }
-		}
-        else if (result == IncompatibleTypes.UNRELATED_CLASS_AND_INTERFACE
+        } else if (result == IncompatibleTypes.UNRELATED_CLASS_AND_INTERFACE
                 || result == IncompatibleTypes.UNRELATED_FINAL_CLASS_AND_INTERFACE) {
-            bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority() + priorityModifier)
-			.addClassAndMethod(methodGen, sourceFile)
-            .addFoundAndExpectedType(rhsType_, lhsType_)
-            .addSomeSourceForTopTwoStackValues(classContext, method, location)
-            .addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature())),
-			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
-            );
+            bugAccumulator.accumulateBug(
+                    new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority() + priorityModifier)
+                            .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
+                            .addSomeSourceForTopTwoStackValues(classContext, method, location)
+                            .addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature())),
+                    SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
         } else if (result == IncompatibleTypes.UNRELATED_INTERFACES) {
-            bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_INTERFACES", result.getPriority() + priorityModifier)
-			.addClassAndMethod(methodGen, sourceFile)
-            .addFoundAndExpectedType(rhsType_, lhsType_)
-            .addSomeSourceForTopTwoStackValues(classContext, method, location)
-            .addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature())),
-			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
-            );
+            bugAccumulator.accumulateBug(
+                    new BugInstance(this, "EC_UNRELATED_INTERFACES", result.getPriority() + priorityModifier)
+                            .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
+                            .addSomeSourceForTopTwoStackValues(classContext, method, location)
+                            .addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature())),
+                    SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
         } else if (result != IncompatibleTypes.UNCHECKED && result.getPriority() <= Priorities.LOW_PRIORITY) {
             bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
-			.addClassAndMethod(methodGen, sourceFile)
-            .addFoundAndExpectedType(rhsType_, lhsType_)
-            .addSomeSourceForTopTwoStackValues(classContext, method, location),
-            SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
-		}
+                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
+                    .addSomeSourceForTopTwoStackValues(classContext, method, location),
+                    SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
+        }
 
     }
 
@@ -1171,29 +1123,26 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         boolean allOk = false;
         try {
             ClassSummary classSummary = AnalysisContext.currentAnalysisContext().getClassSummary();
-	    	
+
             ClassDescriptor expectedClassDescriptor = DescriptorFactory.createClassDescriptorFromSignature(lhsSig);
             ClassDescriptor actualClassDescriptor = DescriptorFactory.createClassDescriptorFromSignature(rhsSig);
 
-	    	targets .addAll(Hierarchy2.resolveVirtualMethodCallTargets(expectedClassDescriptor, "equals", "(Ljava/lang/Object;)Z",
+            targets.addAll(Hierarchy2.resolveVirtualMethodCallTargets(expectedClassDescriptor, "equals", "(Ljava/lang/Object;)Z",
                     false, false));
             allOk = targets.size() > 0;
-            for(XMethod m2 : targets)
-	    		if (!classSummary.mightBeEqualTo(m2.getClassDescriptor(), actualClassDescriptor))
+            for (XMethod m2 : targets)
+                if (!classSummary.mightBeEqualTo(m2.getClassDescriptor(), actualClassDescriptor))
                     allOk = false;
 
         } catch (ClassNotFoundException e) {
-	    	AnalysisContext.reportMissingClass(e);
+            AnalysisContext.reportMissingClass(e);
         }
         return allOk;
     }
-
-
-
 
     public void report() {
         // do nothing
     }
 }
 
-//vim:ts=3
+// vim:ts=3

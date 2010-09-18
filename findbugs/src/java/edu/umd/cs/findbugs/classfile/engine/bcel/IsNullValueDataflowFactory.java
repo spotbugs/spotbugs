@@ -36,45 +36,49 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce IsNullValueDataflow objects
- * for an analyzed method.
- *
+ * Analysis engine to produce IsNullValueDataflow objects for an analyzed
+ * method.
+ * 
  * @author David Hovemeyer
  */
 public class IsNullValueDataflowFactory extends AnalysisFactory<IsNullValueDataflow> {
     /**
      * Constructor.
      */
-	public IsNullValueDataflowFactory() {
+    public IsNullValueDataflowFactory() {
         super("null value analysis", IsNullValueDataflow.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public IsNullValueDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public IsNullValueDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
         if (methodGen == null) {
             throw new MethodUnprofitableException(descriptor);
-		}
+        }
         CFG cfg = getCFG(analysisCache, descriptor);
         ValueNumberDataflow vnaDataflow = getValueNumberDataflow(analysisCache, descriptor);
         DepthFirstSearch dfs = getDepthFirstSearch(analysisCache, descriptor);
-		AssertionMethods assertionMethods = getAssertionMethods(analysisCache, descriptor.getClassDescriptor());
+        AssertionMethods assertionMethods = getAssertionMethods(analysisCache, descriptor.getClassDescriptor());
         TypeDataflow typeDataflow = getTypeDataflow(analysisCache, descriptor);
 
-        IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(descriptor, methodGen, cfg, vnaDataflow, typeDataflow, dfs, assertionMethods);
+        IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(descriptor, methodGen, cfg, vnaDataflow, typeDataflow, dfs,
+                assertionMethods);
 
         // Set return value and parameter databases
 
-        invAnalysis.setClassAndMethod(new JavaClassAndMethod(
-                getJavaClass(analysisCache, descriptor.getClassDescriptor()),
+        invAnalysis.setClassAndMethod(new JavaClassAndMethod(getJavaClass(analysisCache, descriptor.getClassDescriptor()),
                 getMethod(analysisCache, descriptor)));
 
         IsNullValueDataflow invDataflow = new IsNullValueDataflow(cfg, invAnalysis);
         invDataflow.execute();
         if (ClassContext.DUMP_DATAFLOW_ANALYSIS) {
-			invDataflow.dumpDataflow(invAnalysis);
+            invDataflow.dumpDataflow(invAnalysis);
         }
         return invDataflow;
 

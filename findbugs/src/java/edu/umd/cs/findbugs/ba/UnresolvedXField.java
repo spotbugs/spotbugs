@@ -35,71 +35,96 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 /**
  * @author pugh
  */
-public class UnresolvedXField extends AbstractField  {
+public class UnresolvedXField extends AbstractField {
 
     protected UnresolvedXField(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
         super(className, methodName, methodSig, accessFlags);
         if (methodSig.charAt(0) == '(')
-			throw new IllegalArgumentException("Bad signature: " + methodSig);
+            throw new IllegalArgumentException("Bad signature: " + methodSig);
         if (XFactory.DEBUG_UNRESOLVED) {
             System.out.println("Unresolved xmethod: " + this);
         }
-	}
+    }
+
     protected UnresolvedXField(FieldDescriptor m) {
         super(m.getClassDescriptor().getDottedClassName(), m.getName(), m.getSignature(), 0);
         if (m.getSignature().charAt(0) == '(')
-			throw new IllegalArgumentException("Bad signature: " + m.getSignature());
+            throw new IllegalArgumentException("Bad signature: " + m.getSignature());
         if (XFactory.DEBUG_UNRESOLVED) {
             System.out.println("Unresolved xmethod: " + this);
         }
-	}
-    /* (non-Javadoc)
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     public int compareTo(Object o) {
         if (o instanceof XField) {
-            return XFactory.compare((XField)this, (XField)o);
+            return XFactory.compare((XField) this, (XField) o);
         }
-		throw new ClassCastException("Don't know how to compare " + this.getClass().getName() + " to " + o.getClass().getName());
+        throw new ClassCastException("Don't know how to compare " + this.getClass().getName() + " to " + o.getClass().getName());
 
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getAnnotation(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getAnnotation(
+     * edu.umd.cs.findbugs.classfile.ClassDescriptor)
      */
     public AnnotationValue getAnnotation(ClassDescriptor desc) {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getAnnotationDescriptors()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#
+     * getAnnotationDescriptors()
      */
     public Collection<ClassDescriptor> getAnnotationDescriptors() {
-        return  Collections.<ClassDescriptor>emptyList();
+        return Collections.<ClassDescriptor> emptyList();
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getAnnotations()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getAnnotations()
      */
     public Collection<AnnotationValue> getAnnotations() {
-        return Collections.<AnnotationValue>emptyList();
+        return Collections.<AnnotationValue> emptyList();
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getContainingScope()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getContainingScope
+     * ()
      */
     public AnnotatedObject getContainingScope() {
         // TODO Auto-generated method stub
-        return AnalysisContext.currentXFactory().getXClass(DescriptorFactory.createClassDescriptorFromDottedClassName(getClassName()));
+        return AnalysisContext.currentXFactory().getXClass(
+                DescriptorFactory.createClassDescriptorFromDottedClassName(getClassName()));
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getElementType()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getElementType()
      */
     public ElementType getElementType() {
         return ElementType.FIELD;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isDeprecated()
      */
     public boolean isDeprecated() {
@@ -107,9 +132,9 @@ public class UnresolvedXField extends AbstractField  {
         return false;
     }
 
-    public @CheckForNull String getSourceSignature() {
+    public @CheckForNull
+    String getSourceSignature() {
         return null;
     }
-
 
 }

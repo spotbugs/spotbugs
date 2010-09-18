@@ -53,62 +53,70 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
 
 /**
- * Dataflow analysis to track obligations (i/o streams and other
- * resources which must be closed).
- *
- * <p>See Weimer and Necula,
- * <a href="http://doi.acm.org/10.1145/1028976.1029011"
- * >Finding and preventing run-time error handling mistakes</a>,
- * OOPSLA 2004.</p>
- *
+ * Dataflow analysis to track obligations (i/o streams and other resources which
+ * must be closed).
+ * 
+ * <p>
+ * See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011"
+ * >Finding and preventing run-time error handling mistakes</a>, OOPSLA 2004.
+ * </p>
+ * 
  * @author David Hovemeyer
  */
-public class ObligationAnalysis
-    extends ForwardDataflowAnalysis<StateSet> {
+public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("oa.debug");
+
     private static final boolean DEBUG_NULL_CHECK = SystemProperties.getBoolean("oa.debug.nullcheck");
 
     private XMethod xmethod;
+
     private ConstantPoolGen cpg;
+
     private ObligationFactory factory;
-	private ObligationPolicyDatabase database;
+
+    private ObligationPolicyDatabase database;
+
     private TypeDataflow typeDataflow;
+
     private IsNullValueDataflow invDataflow;
+
     private IErrorLogger errorLogger;
-	private InstructionActionCache actionCache;
+
+    private InstructionActionCache actionCache;
+
     private StateSet cachedEntryFact;
+
     static final ClassDescriptor willClose = DescriptorFactory.createClassDescriptor("javax/annotation/WillClose");
 
-	/**
+    /**
      * Constructor.
-     *
-     * @param dfs       a DepthFirstSearch on the method to be analyzed
-	 * @param xmethod   method to analyze
-     * @param cpg       ConstantPoolGen of the method to be analyzed
-     * @param factory   the ObligationFactory defining the obligation types
-     * @param database  the PolicyDatabase defining the methods which
-	 *                  add and delete obligations
-     * @param errorLogger callback to use when reporting
-     *                              missing classes
+     * 
+     * @param dfs
+     *            a DepthFirstSearch on the method to be analyzed
+     * @param xmethod
+     *            method to analyze
+     * @param cpg
+     *            ConstantPoolGen of the method to be analyzed
+     * @param factory
+     *            the ObligationFactory defining the obligation types
+     * @param database
+     *            the PolicyDatabase defining the methods which add and delete
+     *            obligations
+     * @param errorLogger
+     *            callback to use when reporting missing classes
      */
-	public ObligationAnalysis(
-            DepthFirstSearch dfs,
-            XMethod xmethod,
-            ConstantPoolGen cpg,
-			ObligationFactory factory,
-            ObligationPolicyDatabase database,
-            TypeDataflow typeDataflow,
-            IsNullValueDataflow invDataflow,
-			IErrorLogger errorLogger) {
+    public ObligationAnalysis(DepthFirstSearch dfs, XMethod xmethod, ConstantPoolGen cpg, ObligationFactory factory,
+            ObligationPolicyDatabase database, TypeDataflow typeDataflow, IsNullValueDataflow invDataflow,
+            IErrorLogger errorLogger) {
         super(dfs);
         this.xmethod = xmethod;
         this.cpg = cpg;
-		this.factory = factory;
+        this.factory = factory;
         this.database = database;
         this.typeDataflow = typeDataflow;
         this.invDataflow = invDataflow;
-		this.errorLogger = errorLogger;
+        this.errorLogger = errorLogger;
         this.actionCache = new InstructionActionCache(database);
     }
 
@@ -123,39 +131,45 @@ public class ObligationAnalysis
     @Override
     public boolean isFactValid(StateSet fact) {
         return fact.isValid();
-	}
+    }
 
     @Override
     public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StateSet fact)
-			throws DataflowAnalysisException {
+            throws DataflowAnalysisException {
         Collection<ObligationPolicyDatabaseAction> actionList = actionCache.getActions(handle, cpg);
         if (DEBUG && actionList.size() > 0) {
             System.out.println("Applying actions at " + handle + " to " + fact);
-		}
+        }
         for (ObligationPolicyDatabaseAction action : actionList) {
             if (DEBUG) {
                 System.out.print("  " + action + "...");
-			}
+            }
             action.apply(fact, basicBlock.getLabel());
             if (DEBUG) {
                 System.out.println(fact);
-			}
+            }
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transfer(edu.umd.cs.findbugs.ba.BasicBlock, org.apache.bcel.generic.InstructionHandle, java.lang.Object, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transfer(edu.umd.cs.findbugs
+     * .ba.BasicBlock, org.apache.bcel.generic.InstructionHandle,
+     * java.lang.Object, java.lang.Object)
      */
-	@Override
-    public void transfer(BasicBlock basicBlock, @CheckForNull  InstructionHandle end, StateSet start, StateSet result) throws DataflowAnalysisException {
+    @Override
+    public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, StateSet start, StateSet result)
+            throws DataflowAnalysisException {
         super.transfer(basicBlock, end, start, result);
         endTransfer(basicBlock, end, result);
-	}
+    }
 
     private void endTransfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, StateSet result) {
         // Append this block id to the Paths of all States
-        for (Iterator<State> i = result.stateIterator(); i.hasNext(); ) {
-			State state = i.next();
+        for (Iterator<State> i = result.stateIterator(); i.hasNext();) {
+            State state = i.next();
             state.getPath().append(basicBlock.getLabel());
         }
     }
@@ -163,74 +177,77 @@ public class ObligationAnalysis
     @Override
     public void edgeTransfer(Edge edge, StateSet fact) throws DataflowAnalysisException {
         if (edge.isExceptionEdge()) {
-			if (!edge.isFlagSet(Edge.CHECKED_EXCEPTIONS_FLAG)) {
+            if (!edge.isFlagSet(Edge.CHECKED_EXCEPTIONS_FLAG)) {
                 //
                 // Ignore all exception edges except those on which
                 // checked exceptions are thrown.
-				//
+                //
                 fact.setTop();
             } else {
                 //
-				// If the edge is an exception thrown from a method that
-                // tries to discharge an obligation, then that obligation needs to
+                // If the edge is an exception thrown from a method that
+                // tries to discharge an obligation, then that obligation needs
+                // to
                 // be removed from all states.
                 //
-				BasicBlock sourceBlock = edge.getSource();
+                BasicBlock sourceBlock = edge.getSource();
                 InstructionHandle handle = sourceBlock.getExceptionThrower();
 
                 // Apply only the actions which delete obligations
                 Collection<ObligationPolicyDatabaseAction> actions = actionCache.getActions(handle, cpg);
                 for (ObligationPolicyDatabaseAction action : actions) {
-					if (action.getActionType() == ObligationPolicyDatabaseActionType.DEL) {
+                    if (action.getActionType() == ObligationPolicyDatabaseActionType.DEL) {
                         action.apply(fact, edge.getTarget().getLabel());
                     }
                 }
-			}
+            }
         }
 
         // If the edge is from a reference comparison
         // which has established that a reference of an obligation type
         // is null, then we remove one occurrence of that type of
-		// obligation from all states.
+        // obligation from all states.
         if (isPossibleIfComparison(edge)) {
             Obligation comparedObligation = comparesObligationTypeToNull(edge);
-            if (comparedObligation != null/* && comparedObligation.equals(possiblyLeakedObligation)*/) {
-				if (DEBUG_NULL_CHECK) {
-                    System.out.println("Deleting " + comparedObligation.toString() +
-                        " on edge from comparision " + edge.getSource().getLastInstruction());
+            if (comparedObligation != null/*
+                                           * && comparedObligation.equals(
+                                           * possiblyLeakedObligation)
+                                           */) {
+                if (DEBUG_NULL_CHECK) {
+                    System.out.println("Deleting " + comparedObligation.toString() + " on edge from comparision "
+                            + edge.getSource().getLastInstruction());
                 }
-				fact.deleteObligation(comparedObligation, edge.getTarget().getLabel());
+                fact.deleteObligation(comparedObligation, edge.getTarget().getLabel());
             }
         }
     }
-	
+
     private boolean isPossibleIfComparison(Edge edge) {
         return edge.getType() == EdgeTypes.IFCMP_EDGE || edge.getType() == EdgeTypes.FALL_THROUGH_EDGE;
     }
 
-    private Obligation comparesObligationTypeToNull(Edge edge)
-        throws DataflowAnalysisException {
+    private Obligation comparesObligationTypeToNull(Edge edge) throws DataflowAnalysisException {
         BasicBlock sourceBlock = edge.getSource();
-		InstructionHandle last = sourceBlock.getLastInstruction();
+        InstructionHandle last = sourceBlock.getLastInstruction();
         if (last == null) {
             if (DEBUG_NULL_CHECK) {
                 System.out.println("no last instruction in source block of " + edge + " ???");
-			}
+            }
             return null;
         }
         Type type = null;
 
         short opcode = last.getInstruction().getOpcode();
         switch (opcode) {
-            case Constants.IFNULL:
-			case Constants.IFNONNULL:
-                type = nullCheck(opcode, edge, last, sourceBlock);
-                break;
+        case Constants.IFNULL:
+        case Constants.IFNONNULL:
+            type = nullCheck(opcode, edge, last, sourceBlock);
+            break;
 
-            case Constants.IF_ACMPEQ:
-            case Constants.IF_ACMPNE:
-                type = acmpNullCheck(opcode, edge, last, sourceBlock);
-				break;
+        case Constants.IF_ACMPEQ:
+        case Constants.IF_ACMPNE:
+            type = acmpNullCheck(opcode, edge, last, sourceBlock);
+            break;
         }
 
         if (type == null || !(type instanceof ObjectType)) {
@@ -240,109 +257,124 @@ public class ObligationAnalysis
         try {
             // See if the type of value compared to null is an obligation type.
             return database.getFactory().getObligationByType((ObjectType) type);
-		} catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             errorLogger.reportMissingClass(e);
             throw new MissingClassException(e);
         }
 
     }
 
-    private Type nullCheck(short opcode, Edge edge, InstructionHandle last, BasicBlock sourceBlock) throws DataflowAnalysisException {
+    private Type nullCheck(short opcode, Edge edge, InstructionHandle last, BasicBlock sourceBlock)
+            throws DataflowAnalysisException {
         if (DEBUG_NULL_CHECK) {
             System.out.println("checking for nullcheck on edge " + edge);
-		}
+        }
         Type type = null;
-        if ((opcode == Constants.IFNULL && edge.getType() == EdgeTypes.IFCMP_EDGE) ||
-            (opcode == Constants.IFNONNULL && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)) {
-			Location location = new Location(last, sourceBlock);
+        if ((opcode == Constants.IFNULL && edge.getType() == EdgeTypes.IFCMP_EDGE)
+                || (opcode == Constants.IFNONNULL && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)) {
+            Location location = new Location(last, sourceBlock);
             TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
             if (typeFrame.isValid()) {
                 type = typeFrame.getTopValue();
-				if (DEBUG_NULL_CHECK) {
+                if (DEBUG_NULL_CHECK) {
                     System.out.println("ifnull comparison of " + type + " to null at " + last);
                 }
             }
-		}
+        }
         return type;
     }
 
-    private Type acmpNullCheck(short opcode, Edge edge, InstructionHandle last, BasicBlock sourceBlock) throws DataflowAnalysisException {
+    private Type acmpNullCheck(short opcode, Edge edge, InstructionHandle last, BasicBlock sourceBlock)
+            throws DataflowAnalysisException {
         Type type = null;
         //
-		// Make sure that IF a value has been compared to null,
+        // Make sure that IF a value has been compared to null,
         // this edge is the edge on which the
         // compared value is definitely null.
         //
-		if ((opcode == Constants.IF_ACMPEQ && edge.getType() == EdgeTypes.IFCMP_EDGE) ||
-            (opcode == Constants.IF_ACMPNE && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)) {
+        if ((opcode == Constants.IF_ACMPEQ && edge.getType() == EdgeTypes.IFCMP_EDGE)
+                || (opcode == Constants.IF_ACMPNE && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)) {
             //
             // Check nullness and type of the top two stack values.
-			//
+            //
             Location location = new Location(last, sourceBlock);
             IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
             TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
-			if (invFrame.isValid() && typeFrame.isValid()) {
+            if (invFrame.isValid() && typeFrame.isValid()) {
                 //
-                // See if exactly one of the top two stack values is definitely null
+                // See if exactly one of the top two stack values is definitely
+                // null
                 //
-				boolean leftIsNull = invFrame.getStackValue(1).isDefinitelyNull();
+                boolean leftIsNull = invFrame.getStackValue(1).isDefinitelyNull();
                 boolean rightIsNull = invFrame.getStackValue(0).isDefinitelyNull();
 
                 if ((leftIsNull || rightIsNull) && !(leftIsNull && rightIsNull)) {
                     //
                     // Now we can determine what type was compared to null.
-					//
+                    //
                     type = typeFrame.getStackValue(leftIsNull ? 0 : 1);
                     if (DEBUG_NULL_CHECK) {
                         System.out.println("acmp comparison of " + type + " to null at " + last);
-					}
+                    }
                 }
             }
         }
-		return type;
+        return type;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#copy(edu.umd.cs.findbugs.ba.obl.StateSet, edu.umd.cs.findbugs.ba.obl.StateSet)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.DataflowAnalysis#copy(edu.umd.cs.findbugs.ba.obl
+     * .StateSet, edu.umd.cs.findbugs.ba.obl.StateSet)
      */
-	public void copy(StateSet src, StateSet dest) {
+    public void copy(StateSet src, StateSet dest) {
         dest.copyFrom(src);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(edu.umd.cs.findbugs.ba.obl.StateSet)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(edu.umd.cs.findbugs
+     * .ba.obl.StateSet)
      */
-	public void initEntryFact(StateSet fact) throws DataflowAnalysisException {
+    public void initEntryFact(StateSet fact) throws DataflowAnalysisException {
         if (cachedEntryFact == null) {
             cachedEntryFact = new StateSet(factory);
 
-			//
+            //
             // Initial state - create obligations for each parameter
             // marked with a @WillClose annotation.
             //
-			
+
             State state = new State(factory);
             Obligation[] paramObligations = factory.getParameterObligationTypes(xmethod);
 
             for (int i = 0; i < paramObligations.length; i++) {
                 if (paramObligations[i] != null && xmethod.getParameterAnnotation(i, willClose) != null) {
                     state.getObligationSet().add(paramObligations[i]);
-				}
+                }
             }
 
             // Add the state
-			HashMap<ObligationSet, State> map = new HashMap<ObligationSet, State>();
+            HashMap<ObligationSet, State> map = new HashMap<ObligationSet, State>();
             map.put(state.getObligationSet(), state);
             cachedEntryFact.replaceMap(map);
         }
-		
+
         fact.copyFrom(cachedEntryFact);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#makeFactTop(edu.umd.cs.findbugs.ba.obl.StateSet)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.DataflowAnalysis#makeFactTop(edu.umd.cs.findbugs
+     * .ba.obl.StateSet)
      */
-	public void makeFactTop(StateSet fact) {
+    public void makeFactTop(StateSet fact) {
         fact.setTop();
     }
 
@@ -350,82 +382,90 @@ public class ObligationAnalysis
         return fact.isTop();
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#same(edu.umd.cs.findbugs.ba.obl.StateSet, edu.umd.cs.findbugs.ba.obl.StateSet)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.DataflowAnalysis#same(edu.umd.cs.findbugs.ba.obl
+     * .StateSet, edu.umd.cs.findbugs.ba.obl.StateSet)
      */
-	public boolean same(StateSet a, StateSet b) {
+    public boolean same(StateSet a, StateSet b) {
         return a.equals(b);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(edu.umd.cs.findbugs.ba.obl.StateSet, edu.umd.cs.findbugs.ba.Edge, edu.umd.cs.findbugs.ba.obl.StateSet)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(edu.umd.cs.findbugs.
+     * ba.obl.StateSet, edu.umd.cs.findbugs.ba.Edge,
+     * edu.umd.cs.findbugs.ba.obl.StateSet)
      */
-	public void meetInto(StateSet fact, Edge edge, StateSet result)
-            throws DataflowAnalysisException {
+    public void meetInto(StateSet fact, Edge edge, StateSet result) throws DataflowAnalysisException {
         final StateSet inputFact = fact;
 
-		if (DEBUG && inputFact.isValid()) {
+        if (DEBUG && inputFact.isValid()) {
             for (Iterator<State> i = inputFact.stateIterator(); i.hasNext();) {
                 State state = i.next();
                 Path path = state.getPath();
-				if (path.getLength() > 0) {
+                if (path.getLength() > 0) {
                     if (path.getBlockIdAt(path.getLength() - 1) != edge.getSource().getLabel()) {
                         throw new IllegalStateException("on edge " + edge + ": state " + state + " missing source label in path");
                     }
-				}
+                }
             }
         }
 
         // Handle easy top and bottom cases
         if (inputFact.isTop() || result.isBottom()) {
             // Nothing to do
-		} else if (inputFact.isBottom() || result.isTop()) {
+        } else if (inputFact.isBottom() || result.isTop()) {
             copy(inputFact, result);
         } else {
             // We will destructively replace the state map of the result fact
-			// we're building.
+            // we're building.
             final Map<ObligationSet, State> updatedStateMap = result.createEmptyMap();
 
             // Build a Set of all ObligationSets.
             Set<ObligationSet> allObligationSets = new HashSet<ObligationSet>();
             allObligationSets.addAll(inputFact.getAllObligationSets());
-			allObligationSets.addAll(result.getAllObligationSets());
+            allObligationSets.addAll(result.getAllObligationSets());
 
             // Go through set of all ObligationsSets.
             // When both inputFact and result fact have a State
-			// with a common ObligationSet, we combine them into
+            // with a common ObligationSet, we combine them into
             // a single State.
-            for (Iterator<ObligationSet> i = allObligationSets.iterator(); i.hasNext(); ) {
+            for (Iterator<ObligationSet> i = allObligationSets.iterator(); i.hasNext();) {
                 ObligationSet obligationSet = i.next();
-				
+
                 State stateInInputFact = inputFact.getStateWithObligationSet(obligationSet);
                 State stateInResultFact = result.getStateWithObligationSet(obligationSet);
 
-				State stateToAdd;
+                State stateToAdd;
 
                 if (stateInInputFact != null && stateInResultFact != null) {
                     // Combine the two states,
-					// using the shorter path as the basis
+                    // using the shorter path as the basis
                     // of the new state's path.
                     // If both paths are the same length, we arbitrarily choose
                     // the path from the result fact.
-					Path path = stateInResultFact.getPath();
+                    Path path = stateInResultFact.getPath();
                     if (stateInInputFact.getPath().getLength() < path.getLength()) {
                         path = stateInInputFact.getPath();
                     }
-					
+
                     stateToAdd = new State(factory);
                     stateToAdd.getObligationSet().copyFrom(obligationSet);
                     stateToAdd.getPath().copyFrom(path);
-				} else if (stateInInputFact != null) {
+                } else if (stateInInputFact != null) {
                     stateToAdd = stateInInputFact.duplicate();
                 } else {
                     stateToAdd = stateInResultFact.duplicate();
-				}
+                }
 
                 updatedStateMap.put(stateToAdd.getObligationSet(), stateToAdd);
             }
-			
+
             result.replaceMap(updatedStateMap);
         }
     }

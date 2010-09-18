@@ -24,18 +24,20 @@ import edu.umd.cs.findbugs.ba.Dataflow;
 
 /**
  * Dataflow class for ReturnPathTypeAnalysis.
- *
+ * 
  * @author David Hovemeyer
  */
 public class ReturnPathTypeDataflow extends Dataflow<ReturnPathType, ReturnPathTypeAnalysis> {
 
     /**
      * Constructor.
-     *
-	 * @param cfg      CFG of the method being analyzed
-     * @param analysis the analysis
+     * 
+     * @param cfg
+     *            CFG of the method being analyzed
+     * @param analysis
+     *            the analysis
      */
     public ReturnPathTypeDataflow(CFG cfg, ReturnPathTypeAnalysis analysis) {
-		super(cfg, analysis);
+        super(cfg, analysis);
     }
 }

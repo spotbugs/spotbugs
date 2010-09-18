@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
  * PatternElement to match instructions with a particular opcode.
- *
+ * 
  * @author David Hovemeyer
  * @see PatternElement
  */
@@ -37,38 +37,39 @@ public class Opcode extends PatternElement {
 
     /**
      * Constructor.
-     *
-	 * @param opcode the opcode to match
+     * 
+     * @param opcode
+     *            the opcode to match
      */
     public Opcode(int opcode) {
         this.opcode = opcode;
-	}
+    }
 
     @Override
-         public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-                             ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+    public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
+            BindingSet bindingSet) throws DataflowAnalysisException {
 
         if (handle.getInstruction().getOpcode() == opcode)
             return new MatchResult(this, bindingSet);
         else
-			return null;
+            return null;
 
     }
 
     @Override
-         public boolean acceptBranch(Edge edge, InstructionHandle source) {
+    public boolean acceptBranch(Edge edge, InstructionHandle source) {
         return true;
-	}
+    }
 
     @Override
-         public int minOccur() {
+    public int minOccur() {
         return 1;
-	}
+    }
 
     @Override
-         public int maxOccur() {
+    public int maxOccur() {
         return 1;
-	}
+    }
 }
 
 // vim:ts=4

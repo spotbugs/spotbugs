@@ -45,8 +45,11 @@ import java.util.List;
  */
 public class BugFilingCommentHelper {
     private final Cloud cloud;
+
     private final String BUG_NOTE;
+
     private final String POSTMORTEM_NOTE;
+
     private final int POSTMORTEM_RANK;
 
     public BugFilingCommentHelper(Cloud cloud) {
@@ -62,8 +65,8 @@ public class BugFilingCommentHelper {
     }
 
     public String getBugReportText(BugInstance b) {
-        return getBugReportHead(b) + getBugReportSourceCode(b) + getLineTerminatedUserEvaluation(b)
-                + getBugPatternExplanation(b) + getBugReportTail(b);
+        return getBugReportHead(b) + getBugReportSourceCode(b) + getLineTerminatedUserEvaluation(b) + getBugPatternExplanation(b)
+                + getBugReportTail(b);
     }
 
     @SuppressWarnings("boxing")
@@ -75,59 +78,56 @@ public class BugFilingCommentHelper {
         int firstLine = Integer.MAX_VALUE;
         int lastLine = Integer.MIN_VALUE;
         for (BugAnnotation a : b.getAnnotations())
-			if (a instanceof SourceLineAnnotation) {
+            if (a instanceof SourceLineAnnotation) {
                 SourceLineAnnotation s = (SourceLineAnnotation) a;
                 if (s.getClassName().equals(primaryClass.getClassName()) && s.getStartLine() > 0) {
                     firstLine = Math.min(firstLine, s.getStartLine());
-					lastLine = Math.max(lastLine, s.getEndLine());
+                    lastLine = Math.max(lastLine, s.getEndLine());
 
                 }
 
             }
 
         SourceLineAnnotation primarySource = primaryClass.getSourceLines();
-        if (primarySource.isSourceFileKnown()
-            && firstLine >= 1 && firstLine <= lastLine
-            && lastLine - firstLine < 50) {
+        if (primarySource.isSourceFileKnown() && firstLine >= 1 && firstLine <= lastLine && lastLine - firstLine < 50) {
             try {
                 Project project = cloud.getBugCollection().getProject();
                 SourceFile sourceFile = project.getSourceFinder().findSourceFile(primarySource);
                 BufferedReader in = new BufferedReader(new InputStreamReader(sourceFile.getInputStream()));
                 int lineNumber = 1;
                 String commonWhiteSpace = null;
-				List<SourceLine> source = new ArrayList<SourceLine>();
+                List<SourceLine> source = new ArrayList<SourceLine>();
                 while (lineNumber <= lastLine + 4) {
                     String txt = in.readLine();
                     if (txt == null)
-						break;
+                        break;
                     if (lineNumber >= firstLine - 4) {
                         String trimmed = txt.trim();
                         if (trimmed.length() == 0) {
-							if (lineNumber > lastLine)
+                            if (lineNumber > lastLine)
                                 break;
                             txt = trimmed;
 
-						}
+                        }
                         source.add(new SourceLine(lineNumber, txt));
                         commonWhiteSpace = commonLeadingWhitespace(commonWhiteSpace, txt);
                     }
-					lineNumber++;
+                    lineNumber++;
                 }
                 in.close();
                 if (commonWhiteSpace == null)
-					commonWhiteSpace = "";
+                    commonWhiteSpace = "";
                 out.println("\nRelevant source code:");
-                for(SourceLine s : source) {
+                for (SourceLine s : source) {
                     if (s.text.length() == 0)
-							out.printf("%5d: %n", s.line);
+                        out.printf("%5d: %n", s.line);
                     else
                         out.printf("%5d:   %s%n", s.line, s.text.substring(commonWhiteSpace.length()));
                 }
-				
 
                 out.println();
             } catch (IOException e) {
-				assert true;
+                assert true;
             }
             out.close();
             return stringWriter.toString();
@@ -135,19 +135,19 @@ public class BugFilingCommentHelper {
         }
         return "";
     }
-    
+
     public String getBugReportHead(BugInstance b) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter out = new PrintWriter(stringWriter);
         out.println("Bug report generated from FindBugs");
-		out.println(b.getMessageWithoutPrefix());
+        out.println(b.getMessageWithoutPrefix());
         out.println();
         ClassAnnotation primaryClass = b.getPrimaryClass();
 
         for (BugAnnotation a : b.getAnnotations()) {
             if (a == primaryClass)
                 out.println(a);
-			else
+            else
                 out.println("  " + a.toString(primaryClass));
         }
         if (cloud.supportsSourceLinks()) {
@@ -163,7 +163,7 @@ public class BugFilingCommentHelper {
         if (BUG_NOTE != null) {
             out.println(BUG_NOTE);
             if (POSTMORTEM_NOTE != null && BugRanker.findRank(b) <= POSTMORTEM_RANK
-                && cloud.getConsensusDesignation(b).score() >= 0) {
+                    && cloud.getConsensusDesignation(b).score() >= 0) {
 
                 out.println(POSTMORTEM_NOTE);
             }
@@ -173,56 +173,59 @@ public class BugFilingCommentHelper {
         Collection<String> projects = cloud.getProjects(primaryClass.getClassName());
         if (projects != null && !projects.isEmpty()) {
             String projectList = projects.toString();
-			projectList = projectList.substring(1, projectList.length() - 1);
+            projectList = projectList.substring(1, projectList.length() - 1);
             out.println("Possibly part of: " + projectList);
             out.println();
         }
-		out.close();
+        out.close();
         return stringWriter.toString();
     }
 
     public String getBugPatternExplanation(BugInstance b) {
         String detailPlainText = b.getBugPattern().getDetailPlainText();
         return "Bug pattern explanation:\n" + detailPlainText + "\n\n";
-	}
+    }
 
     public String getLineTerminatedUserEvaluation(BugInstance b) {
         UserDesignation designation = cloud.getUserDesignation(b);
 
-		String result;
+        String result;
         if (designation != UserDesignation.UNCLASSIFIED)
-            result = "Classified as: " +  designation.toString() + "\n";
+            result = "Classified as: " + designation.toString() + "\n";
         else
-			result = "";
+            result = "";
         String eval = cloud.getUserEvaluation(b).trim();
         if (eval.length() > 0)
-            result = result +  eval + "\n";
-		return result;
+            result = result + eval + "\n";
+        return result;
     }
 
     public String getBugReportTail(BugInstance b) {
-		return "\nFindBugs issue identifier (do not modify or remove): " + b.getInstanceHash();
+        return "\nFindBugs issue identifier (do not modify or remove): " + b.getInstanceHash();
     }
 
-    // ================================= end of public methods ====================================
+    // ================================= end of public methods
+    // ====================================
 
     private String commonLeadingWhitespace(String soFar, String txt) {
         if (txt.length() == 0)
             return soFar;
-		if (soFar == null)
+        if (soFar == null)
             return txt;
         soFar = Util.commonPrefix(soFar, txt);
-        for(int i = 0; i < soFar.length(); i++) {
-			if (!Character.isWhitespace(soFar.charAt(i)))
-                    return soFar.substring(0,i);
+        for (int i = 0; i < soFar.length(); i++) {
+            if (!Character.isWhitespace(soFar.charAt(i)))
+                return soFar.substring(0, i);
         }
         return soFar;
-	}
+    }
 
-    // ==================================== inner classes =========================================
+    // ==================================== inner classes
+    // =========================================
 
     public static class SourceLine {
         public final int line;
+
         public final String text;
 
         public SourceLine(int line, String text) {

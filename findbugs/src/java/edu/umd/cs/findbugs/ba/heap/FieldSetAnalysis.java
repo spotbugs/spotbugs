@@ -48,7 +48,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
     public FieldSetAnalysis(DepthFirstSearch dfs, ConstantPoolGen cpg) {
         super(dfs);
         this.cpg = cpg;
-		this.instructionToFieldMap = new HashMap<InstructionHandle, XField>();
+        this.instructionToFieldMap = new HashMap<InstructionHandle, XField>();
     }
 
     public ConstantPoolGen getCPG() {
@@ -58,16 +58,18 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
     public void makeFactTop(FieldSet fact) {
         fact.setTop();
     }
-	public boolean isTop(FieldSet fact) {
+
+    public boolean isTop(FieldSet fact) {
         return fact.isTop();
     }
+
     public void initEntryFact(FieldSet result) throws DataflowAnalysisException {
-		result.clear();
+        result.clear();
     }
 
-//	public void initResultFact(FieldSet result) {
-//		makeFactTop(result);
-//	}
+    // public void initResultFact(FieldSet result) {
+    // makeFactTop(result);
+    // }
 
     public void meetInto(FieldSet fact, Edge edge, FieldSet result) throws DataflowAnalysisException {
         result.mergeWith(fact);
@@ -81,36 +83,31 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
         return new FieldSet();
     }
 
-
     @Override
-         public boolean isFactValid(FieldSet fact) {
+    public boolean isFactValid(FieldSet fact) {
         return fact.isValid();
-	}
+    }
 
     public void copy(FieldSet source, FieldSet dest) {
         dest.copyFrom(source);
     }
 
     @Override
-         public void transferInstruction(
-            InstructionHandle handle,
-			BasicBlock basicBlock,
-            FieldSet fact) throws DataflowAnalysisException {
+    public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, FieldSet fact)
+            throws DataflowAnalysisException {
         if (!isFactValid(fact))
             return;
 
         try {
             handleInstruction(handle, basicBlock, fact);
         } catch (ClassNotFoundException e) {
-			AnalysisContext.reportMissingClass(e);
+            AnalysisContext.reportMissingClass(e);
             fact.setBottom();
         }
     }
 
-    private void handleInstruction(
-            InstructionHandle handle,
-            BasicBlock basicBlock,
-			FieldSet fact) throws DataflowAnalysisException, ClassNotFoundException {
+    private void handleInstruction(InstructionHandle handle, BasicBlock basicBlock, FieldSet fact)
+            throws DataflowAnalysisException, ClassNotFoundException {
         Instruction ins = handle.getInstruction();
         short opcode = ins.getOpcode();
         XField field;
@@ -118,16 +115,16 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
         switch (opcode) {
         case Constants.GETFIELD:
         case Constants.GETSTATIC:
-			field = lookupField(handle, (FieldInstruction) ins);
+            field = lookupField(handle, (FieldInstruction) ins);
             if (field != null) {
                 sawLoad(fact, field);
             }
-			break;
+            break;
 
         case Constants.PUTFIELD:
         case Constants.PUTSTATIC:
             field = lookupField(handle, (FieldInstruction) ins);
-			if (field != null) {
+            if (field != null) {
                 sawStore(fact, field);
             }
             break;
@@ -135,22 +132,24 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
         case Constants.INVOKEINTERFACE:
         case Constants.INVOKESPECIAL:
         case Constants.INVOKESTATIC:
-		case Constants.INVOKEVIRTUAL:
-            // Assume that the called method assigns loads and stores all possible fields
+        case Constants.INVOKEVIRTUAL:
+            // Assume that the called method assigns loads and stores all
+            // possible fields
             fact.setBottom();
             break;
-		}
+        }
     }
 
     private XField lookupField(InstructionHandle handle, FieldInstruction fins) throws ClassNotFoundException {
         XField field = instructionToFieldMap.get(handle);
         if (field == null) {
-			field = Hierarchy.findXField(fins, getCPG());
+            field = Hierarchy.findXField(fins, getCPG());
             instructionToFieldMap.put(handle, field);
         }
         return field;
-	}
+    }
 
     protected abstract void sawLoad(FieldSet fact, XField field);
+
     protected abstract void sawStore(FieldSet fact, XField field);
 }

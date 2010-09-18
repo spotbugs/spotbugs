@@ -44,11 +44,11 @@ public class OpcodeStackScanner {
     public static OpcodeStack getStackAt(JavaClass theClass, Method method, int pc) {
         Scanner scanner = new Scanner(theClass, method, pc);
         try {
-			scanner.execute();
+            scanner.execute();
         } catch (EarlyExitException e) {
             return e.stack;
         }
-		throw new IllegalArgumentException("Didn't reach pc " + pc + " of " + method);
+        throw new IllegalArgumentException("Didn't reach pc " + pc + " of " + method);
     }
 
     static class Scanner extends OpcodeStackDetector {
@@ -56,7 +56,7 @@ public class OpcodeStackScanner {
         Scanner(JavaClass theClass, Method targetMethod, int targetPC) {
             this.theClass = theClass;
             this.targetMethod = targetMethod;
-			this.targetPC = targetPC;
+            this.targetPC = targetPC;
         }
 
         final JavaClass theClass;
@@ -68,19 +68,19 @@ public class OpcodeStackScanner {
         @Override
         public void sawOpcode(int seen) {
             if (getPC() == targetPC)
-				throw new EarlyExitException(stack);
+                throw new EarlyExitException(stack);
         }
 
         @Override
         public void visitJavaClass(JavaClass obj) {
             setupVisitorForClass(obj);
-			getConstantPool().accept(this);
+            getConstantPool().accept(this);
             doVisitMethod(targetMethod);
         }
 
         public void execute() {
             theClass.accept(this);
         }
-	}
+    }
 
 }

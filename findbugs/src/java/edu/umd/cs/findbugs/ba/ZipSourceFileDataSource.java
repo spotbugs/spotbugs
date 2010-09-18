@@ -26,24 +26,25 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * A source file data source for source files residing in Zip or Jar
- * archives.
+ * A source file data source for source files residing in Zip or Jar archives.
  */
 public class ZipSourceFileDataSource implements SourceFileDataSource {
     private ZipFile zipFile;
+
     private String entryName;
+
     private ZipEntry zipEntry;
 
     public ZipSourceFileDataSource(ZipFile zipFile, String entryName) {
         this.zipFile = zipFile;
         this.entryName = entryName;
-		this.zipEntry = zipFile.getEntry(entryName);
+        this.zipEntry = zipFile.getEntry(entryName);
     }
 
     public InputStream open() throws IOException {
         if (zipEntry == null)
             throw new FileNotFoundException("No zip entry for " + entryName);
-		return zipFile.getInputStream(zipEntry);
+        return zipFile.getInputStream(zipEntry);
     }
 
     public String getFullFileName() {

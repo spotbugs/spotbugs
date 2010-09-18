@@ -24,55 +24,57 @@ import java.util.Iterator;
 
 /**
  * Set of streams that are in an equivalence class.
- *
+ * 
  * @author David Hovemeyer
  */
 public class StreamEquivalenceClass {
     private HashSet<Stream> memberSet;
+
     private boolean isClosed;
 
     /**
-     * Constructor.
-     * Creates an empty set.
-	 */
+     * Constructor. Creates an empty set.
+     */
     public StreamEquivalenceClass() {
         this.memberSet = new HashSet<Stream>();
         this.isClosed = false;
-	}
+    }
 
     /**
      * Add a single member to the equivalence class.
-     *
-	 * @param member the member Stream
+     * 
+     * @param member
+     *            the member Stream
      */
     public void addMember(Stream member) {
         memberSet.add(member);
-	}
+    }
 
     /**
      * Get Iterator over the members of the class.
      */
-	public Iterator<Stream> memberIterator() {
+    public Iterator<Stream> memberIterator() {
         return memberSet.iterator();
     }
 
     /**
      * Add all members of other StreamEquivalenceClass to this one.
-     *
-	 * @param other the other StreamEquivalenceClass
+     * 
+     * @param other
+     *            the other StreamEquivalenceClass
      */
     public void addAll(StreamEquivalenceClass other) {
         memberSet.addAll(other.memberSet);
-	}
+    }
 
     /**
      * Mark all members of the class as being closed.
      */
-	public void setClosed() {
+    public void setClosed() {
         if (!isClosed) {
             isClosed = true;
             for (Stream member : memberSet) {
-				member.setClosed();
+                member.setClosed();
             }
         }
     }

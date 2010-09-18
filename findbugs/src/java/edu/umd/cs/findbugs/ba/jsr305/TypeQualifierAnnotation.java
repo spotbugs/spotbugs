@@ -31,36 +31,36 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
 /**
  * A type qualifier applied to a field, method, parameter, or return value.
- *
+ * 
  * @author Bill Pugh
  * @author David Hovemeyer
  */
 public class TypeQualifierAnnotation {
 
     public final TypeQualifierValue typeQualifier;
+
     public final When when;
 
     private TypeQualifierAnnotation(TypeQualifierValue typeQualifier, When when) {
-        this.typeQualifier =  typeQualifier;
+        this.typeQualifier = typeQualifier;
         this.when = when;
-	}
+    }
 
-    public static final TypeQualifierAnnotation OVERRIDES_BUT_NO_ANNOTATION
-    = new TypeQualifierAnnotation(null, null) {
+    public static final TypeQualifierAnnotation OVERRIDES_BUT_NO_ANNOTATION = new TypeQualifierAnnotation(null, null) {
         @Override
-		public String toString() {
+        public String toString() {
             return "Overrides but no annotation";
         }
     };
-	
-//	private static DualKeyHashMap <TypeQualifierValue, When, TypeQualifierAnnotation> map = new DualKeyHashMap <TypeQualifierValue, When, TypeQualifierAnnotation> ();
 
-    private static ThreadLocal<DualKeyHashMap <TypeQualifierValue, When, TypeQualifierAnnotation>> instance =
-        new ThreadLocal<DualKeyHashMap <TypeQualifierValue, When, TypeQualifierAnnotation>>() {
+    // private static DualKeyHashMap <TypeQualifierValue, When,
+    // TypeQualifierAnnotation> map = new DualKeyHashMap <TypeQualifierValue,
+    // When, TypeQualifierAnnotation> ();
+
+    private static ThreadLocal<DualKeyHashMap<TypeQualifierValue, When, TypeQualifierAnnotation>> instance = new ThreadLocal<DualKeyHashMap<TypeQualifierValue, When, TypeQualifierAnnotation>>() {
         @Override
-        protected
-        DualKeyHashMap <TypeQualifierValue, When, TypeQualifierAnnotation> initialValue() {
-            return  new DualKeyHashMap <TypeQualifierValue, When, TypeQualifierAnnotation>();
+        protected DualKeyHashMap<TypeQualifierValue, When, TypeQualifierAnnotation> initialValue() {
+            return new DualKeyHashMap<TypeQualifierValue, When, TypeQualifierAnnotation>();
         }
     };
 
@@ -68,66 +68,71 @@ public class TypeQualifierAnnotation {
         instance.remove();
     }
 
-//	public static synchronized  @NonNull TypeQualifierAnnotation getValue(ClassDescriptor desc, Object value, When when) {
-//		return getValue(TypeQualifierValue.getValue(desc, value), when);
-//	}
+    // public static synchronized @NonNull TypeQualifierAnnotation
+    // getValue(ClassDescriptor desc, Object value, When when) {
+    // return getValue(TypeQualifierValue.getValue(desc, value), when);
+    // }
 
     // When lattice:
     //
     // In subtypes:
-	//    - return value type must be at least as narrow as supertypes
-    //    - parameter types must be at least as wide as supertypes
+    // - return value type must be at least as narrow as supertypes
+    // - parameter types must be at least as wide as supertypes
     //
-    //            TOP               TOP is invalid as return type:
-	//         /   |   \            means that no When value is narrow enough
-    //        /    |    \           for combination of supertype annotations
-    //       /     |     \
-    // Always   Unknown   Never  ^  Narrower
-	//       \     |     /       |
-    //        \    |    /        |
-    //         \   |   /         |
-    //           Maybe           v  Wider
-	//
+    // TOP TOP is invalid as return type:
+    // / | \ means that no When value is narrow enough
+    // / | \ for combination of supertype annotations
+    // / | \
+    // Always Unknown Never ^ Narrower
+    // \ | / |
+    // \ | / |
+    // \ | / |
+    // Maybe v Wider
+    //
 
     private static final When TOP = null;
 
     private static final When[][] combineReturnValueMatrix = {
-        //                   ALWAYS       UNKNOWN        MAYBE            NEVER
-        /* ALWAYS */       { When.ALWAYS, },
-		/* UNKNOWN */      { When.ALWAYS, When.UNKNOWN, },
-        /* MAYBE */        { When.ALWAYS, When.UNKNOWN,  When.MAYBE, },
-        /* NEVER */        { TOP,         TOP,           When.NEVER,       When.NEVER },
-    };
+            // ALWAYS UNKNOWN MAYBE NEVER
+            /* ALWAYS */{ When.ALWAYS, },
+            /* UNKNOWN */{ When.ALWAYS, When.UNKNOWN, },
+            /* MAYBE */{ When.ALWAYS, When.UNKNOWN, When.MAYBE, },
+            /* NEVER */{ TOP, TOP, When.NEVER, When.NEVER }, };
 
     private static final When[][] combineParameterMatrix = {
-        //                   ALWAYS             UNKNOWN         MAYBE            NEVER
-        /* ALWAYS */       { When.ALWAYS, },
-		/* UNKNOWN */      { When.UNKNOWN,    When.UNKNOWN, },
-        /* MAYBE */        { When.MAYBE,      When.MAYBE,          When.MAYBE, },
-        /* NEVER */        { When.MAYBE,      When.UNKNOWN,        When.MAYBE,     When.NEVER },
-    };
+            // ALWAYS UNKNOWN MAYBE NEVER
+            /* ALWAYS */{ When.ALWAYS, },
+            /* UNKNOWN */{ When.UNKNOWN, When.UNKNOWN, },
+            /* MAYBE */{ When.MAYBE, When.MAYBE, When.MAYBE, },
+            /* NEVER */{ When.MAYBE, When.UNKNOWN, When.MAYBE, When.NEVER }, };
 
     /**
      * Combine return type annotations.
-     *
-	 * @param a a TypeQualifierAnnotation used on a return value
-     * @param b another TypeQualifierAnnotation used on a return value
+     * 
+     * @param a
+     *            a TypeQualifierAnnotation used on a return value
+     * @param b
+     *            another TypeQualifierAnnotation used on a return value
      * @return combined return type annotation that is at least as narrow as
-     *         both <code>a</code> or <code>b</code>,
-	 *         or null if no such TypeQualifierAnnotation exists
+     *         both <code>a</code> or <code>b</code>, or null if no such
+     *         TypeQualifierAnnotation exists
      */
-    public static @CheckForNull TypeQualifierAnnotation combineReturnTypeAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
+    public static @CheckForNull
+    TypeQualifierAnnotation combineReturnTypeAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
         return combineAnnotations(a, b, combineReturnValueMatrix);
-	}
+    }
 
     /**
-     *
-     * @param a a TypeQualifierAnnotation used on a method parameter
-	 * @param b another TypeQualifierAnnotation used on a method parameter
-     * @return combined parameter annotation that is at least as wide
-     *         as both a and b
+     * 
+     * @param a
+     *            a TypeQualifierAnnotation used on a method parameter
+     * @param b
+     *            another TypeQualifierAnnotation used on a method parameter
+     * @return combined parameter annotation that is at least as wide as both a
+     *         and b
      */
-	public static @NonNull TypeQualifierAnnotation combineParameterAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
+    public static @NonNull
+    TypeQualifierAnnotation combineParameterAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
         return combineAnnotations(a, b, combineParameterMatrix);
     }
 
@@ -138,7 +143,7 @@ public class TypeQualifierAnnotation {
         When aWhen = a.when;
         When bWhen = b.when;
         if (aWhen.ordinal() < bWhen.ordinal()) {
-			When tmp = aWhen;
+            When tmp = aWhen;
             aWhen = bWhen;
             bWhen = tmp;
         }
@@ -146,42 +151,47 @@ public class TypeQualifierAnnotation {
         When combined = mergeMatrix[aWhen.ordinal()][bWhen.ordinal()];
         if (combined != null) {
             return getValue(a.typeQualifier, combined);
-		} else {
+        } else {
             return null;
         }
     }
 
-    public static @NonNull Collection<TypeQualifierAnnotation> getValues(Map<TypeQualifierValue, When> map) {
+    public static @NonNull
+    Collection<TypeQualifierAnnotation> getValues(Map<TypeQualifierValue, When> map) {
         Collection<TypeQualifierAnnotation> result = new LinkedList<TypeQualifierAnnotation>();
-        for(Map.Entry<TypeQualifierValue, When> e : map.entrySet()) {
-			result.add(getValue(e.getKey(), e.getValue()));
+        for (Map.Entry<TypeQualifierValue, When> e : map.entrySet()) {
+            result.add(getValue(e.getKey(), e.getValue()));
         }
         return result;
     }
 
-    public static @NonNull TypeQualifierAnnotation getValue(TypeQualifierValue desc, When when) {
+    public static @NonNull
+    TypeQualifierAnnotation getValue(TypeQualifierValue desc, When when) {
         DualKeyHashMap<TypeQualifierValue, When, TypeQualifierAnnotation> map = instance.get();
         TypeQualifierAnnotation result = map.get(desc, when);
-		if (result != null) return result;
+        if (result != null)
+            return result;
         result = new TypeQualifierAnnotation(desc, when);
         map.put(desc, when, result);
         return result;
-	}
+    }
 
     @Override
     public int hashCode() {
         return typeQualifier.hashCode() * 37 + when.hashCode();
     }
+
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof TypeQualifierAnnotation)) return false;
+        if (!(o instanceof TypeQualifierAnnotation))
+            return false;
         TypeQualifierAnnotation other = (TypeQualifierAnnotation) o;
         return typeQualifier.equals(other.typeQualifier) && when.equals(other.when);
-	}
+    }
+
     @Override
     public String toString() {
         return typeQualifier + ":" + when;
     }
-
 
 }

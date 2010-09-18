@@ -37,44 +37,47 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
     }
 
     /**
-     * Build map of value numbers to param indices.
-     * The first parameter has index 0, the second has index 1, etc.
-	 * 
-     * @param method the method analyzed by the ValueNumberAnalysis
+     * Build map of value numbers to param indices. The first parameter has
+     * index 0, the second has index 1, etc.
+     * 
+     * @param method
+     *            the method analyzed by the ValueNumberAnalysis
      * @return the value number to parameter index map
      */
-	public Map<ValueNumber, Integer> getValueNumberToParamMap(Method method) {
+    public Map<ValueNumber, Integer> getValueNumberToParamMap(Method method) {
         return getValueNumberToParamMap(method.getSignature(), method.isStatic());
     }
 
     /**
-     * Build map of value numbers to param indices.
-     * The first parameter has index 0, the second has index 1, etc.
-	 * 
-     * @param methodSignature signature of the method analyzed by the ValueNumberAnalysis
-     * @param isStatic        true if the method is static, false if not
+     * Build map of value numbers to param indices. The first parameter has
+     * index 0, the second has index 1, etc.
+     * 
+     * @param methodSignature
+     *            signature of the method analyzed by the ValueNumberAnalysis
+     * @param isStatic
+     *            true if the method is static, false if not
      * @return the value number to parameter index map
-	 */
+     */
     public Map<ValueNumber, Integer> getValueNumberToParamMap(String methodSignature, boolean isStatic) {
-        HashMap<ValueNumber, Integer> valueNumberToParamMap =
-            new HashMap<ValueNumber, Integer>();
+        HashMap<ValueNumber, Integer> valueNumberToParamMap = new HashMap<ValueNumber, Integer>();
 
         ValueNumberFrame frameAtEntry = getStartFact(getCFG().getEntry());
 
         int numParams = new SignatureParser(methodSignature).getNumParameters();
         int shift = isStatic ? 0 : 1;
         for (int i = 0; i < numParams; ++i) {
-			valueNumberToParamMap.put(
-                    frameAtEntry.getValue(i + shift), i);
+            valueNumberToParamMap.put(frameAtEntry.getValue(i + shift), i);
         }
 
         return valueNumberToParamMap;
     }
 
-	 public @CheckForNull @DottedClassName String getClassName(ValueNumber v) { 
-         return getAnalysis().getClassName(v);
+    public @CheckForNull
+    @DottedClassName
+    String getClassName(ValueNumber v) {
+        return getAnalysis().getClassName(v);
 
-     }
+    }
 }
 
 // vim:ts=4

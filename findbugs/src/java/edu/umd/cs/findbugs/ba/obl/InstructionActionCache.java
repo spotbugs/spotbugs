@@ -34,37 +34,38 @@ import org.apache.bcel.generic.ReferenceType;
 
 /**
  * A cache for looking up the collection of ObligationPolicyDatabaseActions
- * associated with a given InstructionHandle.
- * Avoids the need for repeated (slow) lookups.
- *
+ * associated with a given InstructionHandle. Avoids the need for repeated
+ * (slow) lookups.
+ * 
  * @author David Hovemeyer
  */
 public class InstructionActionCache {
     private static final boolean DEBUG_LOOKUP = SystemProperties.getBoolean("oa.debug.lookup");
 
     private ObligationPolicyDatabase database;
-	private Map<InstructionHandle, Collection<ObligationPolicyDatabaseAction>> actionCache;
+
+    private Map<InstructionHandle, Collection<ObligationPolicyDatabaseAction>> actionCache;
 
     public InstructionActionCache(ObligationPolicyDatabase database) {
         this.database = database;
-		this.actionCache = new HashMap<InstructionHandle, Collection<ObligationPolicyDatabaseAction>>();
+        this.actionCache = new HashMap<InstructionHandle, Collection<ObligationPolicyDatabaseAction>>();
     }
 
     public Collection<ObligationPolicyDatabaseAction> getActions(InstructionHandle handle, ConstantPoolGen cpg) {
         Collection<ObligationPolicyDatabaseAction> actionList = actionCache.get(handle);
         if (actionList == null) {
-			Instruction ins = handle.getInstruction();
+            Instruction ins = handle.getInstruction();
             actionList = Collections.emptyList();
             if (ins instanceof InvokeInstruction) {
 
                 InvokeInstruction inv = (InvokeInstruction) ins;
                 String signature = inv.getSignature(cpg);
-                if (signature.indexOf(';') >=  -1) {
-					actionList = new LinkedList<ObligationPolicyDatabaseAction>();
+                if (signature.indexOf(';') >= -1) {
+                    actionList = new LinkedList<ObligationPolicyDatabaseAction>();
 
-                    if (signature.substring(0,signature.indexOf(')')).indexOf("Ljava/io/Closeable;") >= 0) {
+                    if (signature.substring(0, signature.indexOf(')')).indexOf("Ljava/io/Closeable;") >= 0) {
                         actionList.add(ObligationPolicyDatabaseAction.CLEAR);
-					} else {
+                    } else {
 
                         ReferenceType receiverType = inv.getReferenceType(cpg);
                         String methodName = inv.getName(cpg);
@@ -74,18 +75,17 @@ public class InstructionActionCache {
                         database.getActions(receiverType, methodName, signature, isStatic, actionList);
                         if (actionList.isEmpty()) {
                             actionList = Collections.emptyList();
-						}
+                        }
                     }
-
 
                     if (DEBUG_LOOKUP && !actionList.isEmpty()) {
-                        System.out.println("  At " + handle +": " + actionList);
+                        System.out.println("  At " + handle + ": " + actionList);
                     }
-				}
+                }
             }
 
             actionCache.put(handle, actionList);
-		}
+        }
 
         return actionList;
     }
@@ -98,14 +98,14 @@ public class InstructionActionCache {
         return hasAction(handle, cpg, obligation, ObligationPolicyDatabaseActionType.DEL);
     }
 
-    private boolean hasAction(InstructionHandle handle, ConstantPoolGen cpg, Obligation obligation, ObligationPolicyDatabaseActionType actionType) {
+    private boolean hasAction(InstructionHandle handle, ConstantPoolGen cpg, Obligation obligation,
+            ObligationPolicyDatabaseActionType actionType) {
         Collection<ObligationPolicyDatabaseAction> actionList = getActions(handle, cpg);
         for (ObligationPolicyDatabaseAction action : actionList) {
-			if (action.getActionType() == actionType
-                && action.getObligation().equals(obligation)) {
+            if (action.getActionType() == actionType && action.getObligation().equals(obligation)) {
                 return true;
             }
-		}
+        }
         return false;
     }
 }

@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 /**
  * A DetectorFactory is responsible for creating instances of Detector objects
  * and for maintaining meta-information about the detector class.
- *
+ * 
  * @author David Hovemeyer
  * @see Detector
  */
@@ -39,68 +39,63 @@ public class DetectorFactory {
     private static final boolean DEBUG_JAVA_VERSION = SystemProperties.getBoolean("findbugs.debug.javaversion");
 
     // Backwards-compatibility: if the Detector has a setAnalysisContext()
-	// method, call it, passing the current AnalysisContext.  We do this
+    // method, call it, passing the current AnalysisContext. We do this
     // because some released versions of FindBugs had a Detector
     // interface which specified this method (and ensured it was called
     // before the Detector was used to analyze any code).
-	private static final boolean SUPPORT_OLD_DETECTOR_INTERFACE = SystemProperties.getBoolean("findbugs.support.old.detector.interface");
+    private static final boolean SUPPORT_OLD_DETECTOR_INTERFACE = SystemProperties
+            .getBoolean("findbugs.support.old.detector.interface");
 
-    private static final Class<?>[] constructorArgTypes = new Class<?>[]{BugReporter.class};
+    private static final Class<?>[] constructorArgTypes = new Class<?>[] { BugReporter.class };
 
     static class ReflectionDetectorCreator {
         private Class<?> detectorClass;
+
         private Method setAnalysisContext;
 
         ReflectionDetectorCreator(Class<?> detectorClass) {
             this.detectorClass = detectorClass;
-            if(SUPPORT_OLD_DETECTOR_INTERFACE)
-			try {
-                setAnalysisContext = detectorClass.getDeclaredMethod(
-                        "setAnalysisContext", new Class[]{AnalysisContext.class});
-            } catch (NoSuchMethodException e) {
-				// Ignore
-            }
+            if (SUPPORT_OLD_DETECTOR_INTERFACE)
+                try {
+                    setAnalysisContext = detectorClass.getDeclaredMethod("setAnalysisContext",
+                            new Class[] { AnalysisContext.class });
+                } catch (NoSuchMethodException e) {
+                    // Ignore
+                }
         }
 
-		@Override
+        @Override
         public String toString() {
             return detectorClass.getSimpleName();
         }
 
         public Detector createDetector(BugReporter bugReporter) {
             try {
-                Constructor<?> constructor =
-					detectorClass.getConstructor(constructorArgTypes);
-                Detector detector = (Detector) constructor.newInstance(new Object[]{bugReporter});
+                Constructor<?> constructor = detectorClass.getConstructor(constructorArgTypes);
+                Detector detector = (Detector) constructor.newInstance(new Object[] { bugReporter });
                 if (setAnalysisContext != null) {
-                    setAnalysisContext.invoke(
-							detector,
-                            new Object[]{AnalysisContext.currentAnalysisContext()});
+                    setAnalysisContext.invoke(detector, new Object[] { AnalysisContext.currentAnalysisContext() });
                 }
                 return detector;
-			} catch (Exception e) {
-                throw new RuntimeException("Could not instantiate " + detectorClass.getName() +
-                        " as Detector", e);
+            } catch (Exception e) {
+                throw new RuntimeException("Could not instantiate " + detectorClass.getName() + " as Detector", e);
             }
-		}
+        }
 
         public Detector2 createDetector2(BugReporter bugReporter) {
             if (Detector2.class.isAssignableFrom(detectorClass)) {
                 try {
-					Constructor<?> constructor =
-                        detectorClass.getConstructor(constructorArgTypes);
-                    return (Detector2) constructor.newInstance(new Object[]{bugReporter});
+                    Constructor<?> constructor = detectorClass.getConstructor(constructorArgTypes);
+                    return (Detector2) constructor.newInstance(new Object[] { bugReporter });
                 } catch (Exception e) {
-					throw new RuntimeException("Could not instantiate " + detectorClass.getName() +
-                            " as Detector2", e);
+                    throw new RuntimeException("Could not instantiate " + detectorClass.getName() + " as Detector2", e);
                 }
             }
 
             if (Detector.class.isAssignableFrom(detectorClass)) {
                 if (NonReportingDetector.class.isAssignableFrom(detectorClass))
                     return new NonReportingDetectorToDetector2Adapter(createDetector(bugReporter));
-				return new DetectorToDetector2Adapter(
-                        createDetector(bugReporter));
+                return new DetectorToDetector2Adapter(createDetector(bugReporter));
 
             }
 
@@ -110,45 +105,64 @@ public class DetectorFactory {
         public Class<?> getDetectorClass() {
             return detectorClass;
         }
-	}
+    }
 
     private Plugin plugin;
+
     private final ReflectionDetectorCreator detectorCreator;
-    private final @DottedClassName String className;
-	private int positionSpecifiedInPluginDescriptor;
+
+    private final @DottedClassName
+    String className;
+
+    private int positionSpecifiedInPluginDescriptor;
+
     private boolean defEnabled;
+
     private final String speed;
+
     private final String reports;
-	private final String requireJRE;
+
+    private final String requireJRE;
+
     private String detailHTML;
+
     private int priorityAdjustment;
+
     private boolean enabledButNonReporting;
+
     private boolean hidden;
 
     /**
      * Constructor.
-     *
-	 * @param plugin        the Plugin the Detector is part of
-     * @param className TODO
-     * @param detectorClass the Class object of the Detector
-     * @param enabled       true if the Detector is enabled by default, false if disabled
-	 * @param speed         a string describing roughly how expensive the analysis performed
-     *                      by the detector is; suggested values are "fast", "moderate", and "slow"
-     * @param reports       comma separated list of bug pattern codes reported
-     *                      by the detector; empty if unknown
-	 * @param requireJRE    string describing JRE version required to run the
-     *                      the detector: e.g., "1.5"
+     * 
+     * @param plugin
+     *            the Plugin the Detector is part of
+     * @param className
+     *            TODO
+     * @param detectorClass
+     *            the Class object of the Detector
+     * @param enabled
+     *            true if the Detector is enabled by default, false if disabled
+     * @param speed
+     *            a string describing roughly how expensive the analysis
+     *            performed by the detector is; suggested values are "fast",
+     *            "moderate", and "slow"
+     * @param reports
+     *            comma separated list of bug pattern codes reported by the
+     *            detector; empty if unknown
+     * @param requireJRE
+     *            string describing JRE version required to run the the
+     *            detector: e.g., "1.5"
      */
-    public DetectorFactory(Plugin plugin,
-						   String className, Class<?> detectorClass, boolean enabled, String speed,
-                           String reports, String requireJRE) {
+    public DetectorFactory(Plugin plugin, String className, Class<?> detectorClass, boolean enabled, String speed,
+            String reports, String requireJRE) {
         this.plugin = plugin;
         this.className = className;
-		this.detectorCreator = FindBugs.noAnalysis ? null : new ReflectionDetectorCreator(detectorClass);
+        this.detectorCreator = FindBugs.noAnalysis ? null : new ReflectionDetectorCreator(detectorClass);
         this.defEnabled = enabled;
         this.speed = speed;
         this.reports = reports;
-		this.requireJRE = requireJRE;
+        this.requireJRE = requireJRE;
         this.priorityAdjustment = 0;
         this.hidden = false;
     }
@@ -156,233 +170,238 @@ public class DetectorFactory {
     @Override
     public String toString() {
         return getShortName();
-	}
+    }
+
     /**
-     * Set the overall position in which this detector was specified
-     * in the plugin descriptor.
-	 * 
-     * @param positionSpecifiedInPluginDescriptor position in plugin descriptor
+     * Set the overall position in which this detector was specified in the
+     * plugin descriptor.
+     * 
+     * @param positionSpecifiedInPluginDescriptor
+     *            position in plugin descriptor
      */
-    public void setPositionSpecifiedInPluginDescriptor(
-			int positionSpecifiedInPluginDescriptor) {
+    public void setPositionSpecifiedInPluginDescriptor(int positionSpecifiedInPluginDescriptor) {
         this.positionSpecifiedInPluginDescriptor = positionSpecifiedInPluginDescriptor;
     }
 
     /**
-     * Get the overall position in which this detector was specified
-     * in the plugin descriptor.
-	 * 
+     * Get the overall position in which this detector was specified in the
+     * plugin descriptor.
+     * 
      * @return position in plugin descriptor
      */
     public int getPositionSpecifiedInPluginDescriptor() {
-		return positionSpecifiedInPluginDescriptor;
+        return positionSpecifiedInPluginDescriptor;
     }
 
     /**
      * Get the Plugin that this Detector is part of.
-     *
-	 * @return the Plugin this Detector is part of
+     * 
+     * @return the Plugin this Detector is part of
      */
     public Plugin getPlugin() {
         return plugin;
-	}
+    }
 
     /**
-     * Determine whether the detector class is a subtype of the given class (or interface).
-     *
-	 * @param otherClass a class or interface
-     * @return true if the detector class is a subtype of the given class or interface
+     * Determine whether the detector class is a subtype of the given class (or
+     * interface).
+     * 
+     * @param otherClass
+     *            a class or interface
+     * @return true if the detector class is a subtype of the given class or
+     *         interface
      */
     public boolean isDetectorClassSubtypeOf(Class<?> otherClass) {
-		if (FindBugs.noAnalysis)
+        if (FindBugs.noAnalysis)
             throw new IllegalStateException("No analysis specified");
         return otherClass.isAssignableFrom(detectorCreator.getDetectorClass());
     }
 
     /**
-     * Return whether or not this DetectorFactory produces detectors
-     * which report warnings.
-	 * 
+     * Return whether or not this DetectorFactory produces detectors which
+     * report warnings.
+     * 
      * @return true if the created Detectors report warnings, false if not
      */
     public boolean isReportingDetector() {
-		return !isDetectorClassSubtypeOf(TrainingDetector.class)
-            && !isDetectorClassSubtypeOf(FirstPassDetector.class);
+        return !isDetectorClassSubtypeOf(TrainingDetector.class) && !isDetectorClassSubtypeOf(FirstPassDetector.class);
 
     }
 
     /**
-     * Check to see if we are running on a recent-enough JRE for
-     * this detector to be enabled.
-	 * 
+     * Check to see if we are running on a recent-enough JRE for this detector
+     * to be enabled.
+     * 
      * @return true if the current JRE is recent enough to run the Detector,
      *         false if it is too old
      */
-	public boolean isEnabledForCurrentJRE() {
+    public boolean isEnabledForCurrentJRE() {
         if (requireJRE.equals(""))
             return true;
         try {
-			JavaVersion requiredVersion = new JavaVersion(requireJRE);
+            JavaVersion requiredVersion = new JavaVersion(requireJRE);
             JavaVersion runtimeVersion = JavaVersion.getRuntimeVersion();
 
             if (DEBUG_JAVA_VERSION) {
-                System.out.println(
-                        "Checking JRE version for " + getShortName() +
-						" (requires " + requiredVersion +
-                        ", running on " + runtimeVersion + ")");
+                System.out.println("Checking JRE version for " + getShortName() + " (requires " + requiredVersion
+                        + ", running on " + runtimeVersion + ")");
             }
-
 
             boolean enabledForCurrentJRE = runtimeVersion.isSameOrNewerThan(requiredVersion);
             if (DEBUG_JAVA_VERSION) {
                 System.out.println("\t==> " + enabledForCurrentJRE);
-			}
+            }
             return enabledForCurrentJRE;
         } catch (JavaVersionException e) {
             if (DEBUG_JAVA_VERSION) {
-				System.out.println("Couldn't check Java version: " + e.toString());
+                System.out.println("Couldn't check Java version: " + e.toString());
                 e.printStackTrace(System.out);
             }
             return false;
-		}
+        }
     }
 
     /**
      * Set visibility of the factory (to GUI dialogs to configure detectors).
-     * Invisible detectors are those that are needed behind the scenes,
-	 * but shouldn't be explicitly enabled or disabled by the user.
-     *
-     * @param hidden true if this factory should be hidden, false if not
+     * Invisible detectors are those that are needed behind the scenes, but
+     * shouldn't be explicitly enabled or disabled by the user.
+     * 
+     * @param hidden
+     *            true if this factory should be hidden, false if not
      */
-	public void setHidden(boolean hidden) {
+    public void setHidden(boolean hidden) {
         this.hidden = hidden;
     }
 
     /**
      * Get visibility of the factory (to GUI dialogs to configure detectors).
      */
-	public boolean isHidden() {
+    public boolean isHidden() {
         return hidden;
     }
 
     /**
      * Is this factory enabled by default
      */
-	public boolean isDefaultEnabled() {
+    public boolean isDefaultEnabled() {
         return defEnabled;
     }
 
     /**
      * Set the priority adjustment for the detector produced by this factory.
-     *
-	 * @param priorityAdjustment the priority adjustment
+     * 
+     * @param priorityAdjustment
+     *            the priority adjustment
      */
     public void setPriorityAdjustment(int priorityAdjustment) {
         this.priorityAdjustment = priorityAdjustment;
-	}
+    }
+
     public void setEnabledButNonReporting(boolean notReporting) {
         this.enabledButNonReporting = notReporting;
     }
 
     /**
      * Get the priority adjustment for the detector produced by this factory.
-     *
-	 * @return the priority adjustment
+     * 
+     * @return the priority adjustment
      */
     public int getPriorityAdjustment() {
-        if (enabledButNonReporting) return 100;
+        if (enabledButNonReporting)
+            return 100;
         return priorityAdjustment;
     }
 
     /**
      * Get the speed of the Detector produced by this factory.
      */
-	public String getSpeed() {
+    public String getSpeed() {
         return speed;
     }
 
     /**
      * Get list of bug pattern codes reported by the detector: empty if unknown.
      */
-	public String getReportedBugPatternCodes() {
+    public String getReportedBugPatternCodes() {
         return reports;
     }
 
     /**
-     * Get set of all BugPatterns this detector reports.
-     * An empty set means that we don't know what kind of
-	 * bug patterns might be reported.
+     * Get set of all BugPatterns this detector reports. An empty set means that
+     * we don't know what kind of bug patterns might be reported.
      */
     public Set<BugPattern> getReportedBugPatterns() {
         Set<BugPattern> result = new TreeSet<BugPattern>();
-		StringTokenizer tok = new StringTokenizer(reports, ",");
+        StringTokenizer tok = new StringTokenizer(reports, ",");
         while (tok.hasMoreTokens()) {
             String type = tok.nextToken();
             BugPattern bugPattern = I18N.instance().lookupBugPattern(type);
-			if (bugPattern != null)
+            if (bugPattern != null)
                 result.add(bugPattern);
         }
         return result;
-	}
+    }
 
     /**
      * Get an HTML document describing the Detector.
      */
-	public String getDetailHTML() {
+    public String getDetailHTML() {
         return detailHTML;
     }
 
     /**
      * Set the HTML document describing the Detector.
      */
-	public void setDetailHTML(String detailHTML) {
+    public void setDetailHTML(String detailHTML) {
         this.detailHTML = detailHTML;
     }
 
     /**
-     * Create a Detector instance.
-     * This method is only guaranteed to work for
-	 * old-style detectors using the BCEL bytecode framework.
-     *
-     * @param bugReporter the BugReporter to be used to report bugs
+     * Create a Detector instance. This method is only guaranteed to work for
+     * old-style detectors using the BCEL bytecode framework.
+     * 
+     * @param bugReporter
+     *            the BugReporter to be used to report bugs
      * @return the Detector
-	 * @deprecated Use createDetector2 in new code
+     * @deprecated Use createDetector2 in new code
      */
     @Deprecated
     public Detector create(BugReporter bugReporter) {
-		if (FindBugs.noAnalysis)
+        if (FindBugs.noAnalysis)
             throw new IllegalStateException("No analysis specified");
         return detectorCreator.createDetector(bugReporter);
     }
 
     /**
      * Create a Detector2 instance.
-     *
-	 * @param bugReporter the BugReporter to be used to report bugs
+     * 
+     * @param bugReporter
+     *            the BugReporter to be used to report bugs
      * @return the Detector2
      */
     public Detector2 createDetector2(BugReporter bugReporter) {
-		if (FindBugs.noAnalysis)
+        if (FindBugs.noAnalysis)
             throw new IllegalStateException("No analysis specified");
         return detectorCreator.createDetector2(bugReporter);
     }
 
     /**
-     * Get the short name of the Detector.
-     * This is the name of the detector class without the package qualification.
-	 */
+     * Get the short name of the Detector. This is the name of the detector
+     * class without the package qualification.
+     */
     public String getShortName() {
         int endOfPkg = className.lastIndexOf('.');
         if (endOfPkg >= 0)
-			return className.substring(endOfPkg + 1);
+            return className.substring(endOfPkg + 1);
         return className;
     }
 
     /**
-     * Get the full name of the detector.
-     * This is the name of the detector class, with package qualification.
-	 */
-    public @DottedClassName String getFullName() {
+     * Get the full name of the detector. This is the name of the detector
+     * class, with package qualification.
+     */
+    public @DottedClassName
+    String getFullName() {
         return className;
     }
 }

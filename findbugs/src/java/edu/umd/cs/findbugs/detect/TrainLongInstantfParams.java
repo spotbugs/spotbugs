@@ -36,35 +36,39 @@ import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
-public class TrainLongInstantfParams extends PreorderVisitor implements Detector,  TrainingDetector {
+public class TrainLongInstantfParams extends PreorderVisitor implements Detector, TrainingDetector {
 
-
-    static class LongInstantParameterDatabase extends  MethodPropertyDatabase<ParameterProperty> {
+    static class LongInstantParameterDatabase extends MethodPropertyDatabase<ParameterProperty> {
         @Override
-		 protected ParameterProperty decodeProperty(String propStr)
-            throws PropertyDatabaseFormatException {
-        try {
-            int longInstants = Integer.parseInt(propStr);
-			ParameterProperty prop = new ParameterProperty(longInstants);
-            return prop;
-        } catch (NumberFormatException e) {
-            throw new PropertyDatabaseFormatException("Invalid unconditional deref param set: " + propStr);
-		}
+        protected ParameterProperty decodeProperty(String propStr) throws PropertyDatabaseFormatException {
+            try {
+                int longInstants = Integer.parseInt(propStr);
+                ParameterProperty prop = new ParameterProperty(longInstants);
+                return prop;
+            } catch (NumberFormatException e) {
+                throw new PropertyDatabaseFormatException("Invalid unconditional deref param set: " + propStr);
+            }
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#encodeProperty
+         * (Property)
+         */
+
+        @Override
+        protected String encodeProperty(ParameterProperty property) {
+            return String.valueOf(property.getParamsWithProperty());
+        }
+
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#encodeProperty(Property)
-     */
-
-    @Override
-         protected String encodeProperty(ParameterProperty property) {
-        return String.valueOf(property.getParamsWithProperty());
-	}
-
-    }
     LongInstantParameterDatabase database = new LongInstantParameterDatabase();
+
     public TrainLongInstantfParams(BugReporter bugReporter) {
-	}
+    }
 
     @Override
     public void visit(Code obj) {
@@ -72,49 +76,45 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
         if (!getMethod().isPublic() && !getMethod().isProtected())
             return;
         SignatureParser p = new SignatureParser(getMethodSig());
-		LocalVariableTable t = obj.getLocalVariableTable();
+        LocalVariableTable t = obj.getLocalVariableTable();
 
         if (t == null)
             return;
         ParameterProperty property = new ParameterProperty();
-		
+
         int index = getMethod().isStatic() ? 0 : 1;
         int parameterNumber = 0;
         for (Iterator<String> i = p.parameterSignatureIterator(); i.hasNext();) {
-			String s = i.next();
+            String s = i.next();
             LocalVariable localVariable = t.getLocalVariable(index, 0);
             if (localVariable != null) {
                 String name = localVariable.getName();
-				if (s.equals("J") && (name.toLowerCase().indexOf("instant")  >= 0 || name.startsWith("date"))) {
+                if (s.equals("J") && (name.toLowerCase().indexOf("instant") >= 0 || name.startsWith("date"))) {
 
                     System.out.println(getFullyQualifiedMethodName() + " " + s + " " + index + " " + name);
                     property.setParamWithProperty(parameterNumber, true);
                 }
-			}
+            }
             if (s.equals("J") || s.equals("D"))
                 index += 2;
             else
-				index += 1;
+                index += 1;
             parameterNumber++;
         }
         if (!property.isEmpty()) {
-			System.out.println(getFullyQualifiedMethodName() + " " + property);
+            System.out.println(getFullyQualifiedMethodName() + " " + property);
             database.setProperty(getMethodDescriptor(), property);
         }
     }
 
     /*
      * (non-Javadoc)
-     *
-	 * @see edu.umd.cs.findbugs.Detector#report()
+     * 
+     * @see edu.umd.cs.findbugs.Detector#report()
      */
     public void report() {
         System.out.println(database.entrySet().size() + " methods");
-		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
-                database,
-                "longInstant.db",
-                "long instant database");
-		
+        AnalysisContext.currentAnalysisContext().storePropertyDatabase(database, "longInstant.db", "long instant database");
 
     }
 

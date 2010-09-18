@@ -24,32 +24,28 @@ package edu.umd.cs.findbugs.graph;
 /**
  * GraphEdge interface; represents an edge in a graph.
  */
-public interface GraphEdge
-        <
-        ActualEdgeType extends GraphEdge<ActualEdgeType, VertexType>,
-        VertexType extends GraphVertex<VertexType>
-		>
+public interface GraphEdge<ActualEdgeType extends GraphEdge<ActualEdgeType, VertexType>, VertexType extends GraphVertex<VertexType>>
         extends Comparable<ActualEdgeType> {
 
     /**
      * Get the source vertex.
      */
-	public VertexType getSource();
+    public VertexType getSource();
 
     /**
      * Get the target vertex.
      */
-	public VertexType getTarget();
+    public VertexType getTarget();
 
     /**
      * Get the integer label.
      */
-	public int getLabel();
+    public int getLabel();
 
     /**
      * Set the integer label.
      */
-	public void setLabel(int label);
+    public void setLabel(int label);
 
 }
 

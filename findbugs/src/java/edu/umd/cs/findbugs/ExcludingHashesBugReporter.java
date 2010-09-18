@@ -31,6 +31,7 @@ import org.dom4j.DocumentException;
 public class ExcludingHashesBugReporter extends DelegatingBugReporter {
 
     Set<String> excludedHashes = new HashSet<String>();
+
     /**
      * @param delegate
      * @throws DocumentException
@@ -40,23 +41,26 @@ public class ExcludingHashesBugReporter extends DelegatingBugReporter {
         super(delegate);
         addToExcludedInstanceHashes(excludedHashes, baseline);
     }
+
     /**
      * @param baseline
      * @throws IOException
      * @throws DocumentException
      */
-    public static void addToExcludedInstanceHashes(Set<String> instanceHashesToExclude, String baseline) throws IOException, DocumentException {
+    public static void addToExcludedInstanceHashes(Set<String> instanceHashesToExclude, String baseline) throws IOException,
+            DocumentException {
         Project project = new Project();
         BugCollection origCollection;
         origCollection = new SortedBugCollection(project);
-		origCollection.readXML(baseline);
-        for(BugInstance b : origCollection.getCollection())
+        origCollection.readXML(baseline);
+        for (BugInstance b : origCollection.getCollection())
             instanceHashesToExclude.add(b.getInstanceHash());
     }
+
     @Override
     public void reportBug(BugInstance bugInstance) {
         String instanceHash = bugInstance.getInstanceHash();
-		if (!excludedHashes.contains(instanceHash))
-                getDelegate().reportBug(bugInstance);
+        if (!excludedHashes.contains(instanceHash))
+            getDelegate().reportBug(bugInstance);
     }
 }

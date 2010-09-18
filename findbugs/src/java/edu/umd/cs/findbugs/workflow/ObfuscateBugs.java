@@ -29,7 +29,6 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
 
-
 public class ObfuscateBugs {
     BugCollection bugCollection;
 
@@ -44,27 +43,29 @@ public class ObfuscateBugs {
         this.bugCollection = bugCollection;
     }
 
-
     public ObfuscateBugs execute() {
         ProjectPackagePrefixes foo = new ProjectPackagePrefixes();
-		
-        for(BugInstance b : bugCollection.getCollection())
+
+        for (BugInstance b : bugCollection.getCollection())
             foo.countBug(b);
         foo.report();
-		
+
         return this;
     }
 
-    static class CommandLine extends  edu.umd.cs.findbugs.config.CommandLine {
-
+    static class CommandLine extends edu.umd.cs.findbugs.config.CommandLine {
 
         @Override
         public void handleOption(String option, String optionalExtraPart) {
-			throw new IllegalArgumentException("unknown option: " + option);
+            throw new IllegalArgumentException("unknown option: " + option);
         }
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java.lang.String, java.lang.String)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java
+         * .lang.String, java.lang.String)
          */
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
@@ -76,40 +77,35 @@ public class ObfuscateBugs {
     public static void main(String[] args) throws Exception {
         FindBugs.setNoAnalysis();
         CommandLine commandLine = new CommandLine();
-		
-        int argCount = commandLine
-                .parse(args, 0, 2, "Usage: " + ObfuscateBugs.class.getName() + " [options] [<xml results>] ");
+
+        int argCount = commandLine.parse(args, 0, 2, "Usage: " + ObfuscateBugs.class.getName() + " [options] [<xml results>] ");
 
         SortedBugCollection bugCollection = new SortedBugCollection();
         if (argCount < args.length)
             bugCollection.readXML(args[argCount++]);
-		else
+        else
             bugCollection.readXML(System.in);
 
-
-		SortedBugCollection results = bugCollection.createEmptyCollectionWithMetadata();
+        SortedBugCollection results = bugCollection.createEmptyCollectionWithMetadata();
         Project project = results.getProject();
         project.getSourceDirList().clear();
         project.getFileList().clear();
-		project.getAuxClasspathEntryList().clear();
+        project.getAuxClasspathEntryList().clear();
 
         results.getProjectStats().getPackageStats().clear();
         results.clearMissingClasses();
         results.clearErrors();
-		
 
-        for(BugInstance bug : bugCollection) {
+        for (BugInstance bug : bugCollection) {
             results.add(Obfuscate.obfuscate(bug), false);
-		}
+        }
 
         if (argCount == args.length) {
             results.writeXML(System.out);
-        }
-		else {
+        } else {
             results.writeXML(args[argCount++]);
 
         }
-
 
     }
 }

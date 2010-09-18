@@ -22,19 +22,17 @@ package edu.umd.cs.findbugs.ba.vna;
 import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.Util;
 
-
-
 /**
- * A "value number" is a value produced somewhere in a methods.
- * We use value numbers as dataflow values in Frames.  When two frame
- * slots have the same value number, then the same value is in both
- * of those slots.
+ * A "value number" is a value produced somewhere in a methods. We use value
+ * numbers as dataflow values in Frames. When two frame slots have the same
+ * value number, then the same value is in both of those slots.
  * <p/>
- * <p> Instances of ValueNumbers produced by the same
- * {@link ValueNumberFactory ValueNumberFactory} are unique, so reference equality may
- * be used to determine whether or not two value numbers are the same.
- * In general, ValueNumbers from different factories cannot be compared.
- *
+ * <p>
+ * Instances of ValueNumbers produced by the same {@link ValueNumberFactory
+ * ValueNumberFactory} are unique, so reference equality may be used to
+ * determine whether or not two value numbers are the same. In general,
+ * ValueNumbers from different factories cannot be compared.
+ * 
  * @author David Hovemeyer
  * @see ValueNumberAnalysis
  */
@@ -42,44 +40,49 @@ public class ValueNumber implements Comparable<ValueNumber> {
     static MapCache<ValueNumber, ValueNumber> cache = new MapCache<ValueNumber, ValueNumber>(200);
 
     static int valueNumbersCreated = 0;
-	static int valueNumbersReused = 0;
 
-    public static synchronized  ValueNumber createValueNumber(int number, int flags) {
+    static int valueNumbersReused = 0;
+
+    public static synchronized ValueNumber createValueNumber(int number, int flags) {
         ValueNumber probe = new ValueNumber(number, flags);
-	    ValueNumber result = cache.get(probe);
+        ValueNumber result = cache.get(probe);
         if (result != null) {
             valueNumbersReused++;
             return result;
-	    }
+        }
         cache.put(probe, probe);
         valueNumbersCreated++;
         return probe;
     }
+
     public static ValueNumber createValueNumber(int number) {
         return createValueNumber(number, 0);
     }
+
     static {
-        Util.runLogAtShutdown(new Runnable(){
+        Util.runLogAtShutdown(new Runnable() {
 
             public void run() {
-                System.out.println("Value number statistics: " + valueNumbersCreated + " created, " + valueNumbersReused + " reused");
+                System.out.println("Value number statistics: " + valueNumbersCreated + " created, " + valueNumbersReused
+                        + " reused");
 
-            }});
+            }
+        });
     }
+
     /**
      * The value number.
-	 */
+     */
     final int number;
 
     /**
      * Flags representing meta information about the value.
      */
-	final int flags;
+    final int flags;
 
     /**
-     * Flag specifying that this value was the return value
-     * of a called method.
-	 */
+     * Flag specifying that this value was the return value of a called method.
+     */
     public static final int RETURN_VALUE = 1;
 
     public static final int ARRAY_VALUE = 2;
@@ -92,20 +95,23 @@ public class ValueNumber implements Comparable<ValueNumber> {
 
     /**
      * Constructor.
-     *
-	 * @param number the value number
+     * 
+     * @param number
+     *            the value number
      */
     private ValueNumber(int number) {
         this.number = number;
-		this.flags = 0;
+        this.flags = 0;
     }
+
     private ValueNumber(int number, int flags) {
         this.number = number;
-		this.flags = flags;
+        this.flags = flags;
     }
+
     public int getNumber() {
         return number;
-	}
+    }
 
     public int getFlags() {
         return flags;
@@ -114,37 +120,41 @@ public class ValueNumber implements Comparable<ValueNumber> {
     @Deprecated
     public void setFlags(int flags) {
         throw new UnsupportedOperationException();
-	}
+    }
 
     @Deprecated
     public void setFlag(int flag) {
         throw new UnsupportedOperationException();
-	}
+    }
 
     public boolean hasFlag(int flag) {
         return (flags & flag) == flag;
     }
 
     @Override
-         public String toString() {
-        if (flags != 0) return number+"("+flags+"),";
-		return number + ",";
+    public String toString() {
+        if (flags != 0)
+            return number + "(" + flags + "),";
+        return number + ",";
     }
 
     @Override
     public int hashCode() {
-        return number*17+flags;
-	}
+        return number * 17 + flags;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o instanceof ValueNumber) {
-			return number == ((ValueNumber)o).number && flags == ((ValueNumber)o).flags;
+            return number == ((ValueNumber) o).number && flags == ((ValueNumber) o).flags;
         }
         return false;
     }
-	public int compareTo(ValueNumber other) {
+
+    public int compareTo(ValueNumber other) {
         int result = number - other.number;
-        if (result != 0) return result;
+        if (result != 0)
+            return result;
         return flags - other.flags;
 
     }

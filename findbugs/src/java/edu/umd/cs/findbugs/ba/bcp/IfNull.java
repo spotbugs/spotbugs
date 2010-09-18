@@ -37,24 +37,24 @@ public class IfNull extends OneVariableInstruction implements EdgeTypes {
     }
 
     @Override
-    public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-                             ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+    public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
+            BindingSet bindingSet) throws DataflowAnalysisException {
 
         // Instruction must be IFNULL or IFNONNULL.
         Instruction ins = handle.getInstruction();
         if (!(ins instanceof IFNULL || ins instanceof IFNONNULL))
-			return null;
+            return null;
 
         // Ensure reference used is consistent with previous uses of
         // same variable.
         LocalVariable ref = new LocalVariable(before.getTopValue());
-		return addOrCheckDefinition(ref, bindingSet);
+        return addOrCheckDefinition(ref, bindingSet);
     }
 
     @Override
     public boolean acceptBranch(Edge edge, InstructionHandle source) {
         boolean isIfNull = (source.getInstruction() instanceof IFNULL);
-		return edge.getType() == (isIfNull ? IFCMP_EDGE : FALL_THROUGH_EDGE);
+        return edge.getType() == (isIfNull ? IFCMP_EDGE : FALL_THROUGH_EDGE);
     }
 }
 

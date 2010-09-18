@@ -58,30 +58,29 @@ import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.classfile.Unknown;
 import org.apache.bcel.classfile.Visitor;
 
-
 /**
  * Fixedup of from org.apache.bcel.classfile.Visitor
- *
+ * 
  * @author <A HREF="http://www.cs.umd.edu/~pugh">William Pugh</A>
  * @version 980818
  */
 public abstract class BetterVisitor implements Visitor {
 
-
-    /** clone() is overridden to change access control from protected
-     *  to public. Originally we compelled subclasses not to throw
-     *  CloneNotSupportedException, but that was unfriendly to some
-	 *  third-parties with existing code. */
+    /**
+     * clone() is overridden to change access control from protected to public.
+     * Originally we compelled subclasses not to throw
+     * CloneNotSupportedException, but that was unfriendly to some third-parties
+     * with existing code.
+     */
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
-	}
+    }
 
-
-    ////////////////// In short form //////////////////////
+    // //////////////// In short form //////////////////////
     // General classes
     public void visit(JavaClass obj) {
-	}
+    }
 
     public void visit(ConstantPool obj) {
     }
@@ -172,7 +171,8 @@ public abstract class BetterVisitor implements Visitor {
     public void visit(LocalVariableTable obj) {
         visit((Attribute) obj);
     }
-	public void visit(LocalVariableTypeTable obj) {
+
+    public void visit(LocalVariableTypeTable obj) {
         // must explicitly override to get functionality
     }
 
@@ -215,7 +215,7 @@ public abstract class BetterVisitor implements Visitor {
     // Attributes
     public void visitCode(Code obj) {
         visit(obj);
-	}
+    }
 
     public void visitCodeException(CodeException obj) {
         visit(obj);
@@ -224,7 +224,7 @@ public abstract class BetterVisitor implements Visitor {
     // Constants
     public void visitConstantClass(ConstantClass obj) {
         visit(obj);
-	}
+    }
 
     public void visitConstantDouble(ConstantDouble obj) {
         visit(obj);
@@ -289,7 +289,7 @@ public abstract class BetterVisitor implements Visitor {
     // Extra classes (i.e. leaves in this context)
     public void visitInnerClass(InnerClass obj) {
         visit(obj);
-	}
+    }
 
     public void visitInnerClasses(InnerClasses obj) {
         visit(obj);
@@ -298,7 +298,7 @@ public abstract class BetterVisitor implements Visitor {
     // General classes
     public void visitJavaClass(JavaClass obj) {
         visit(obj);
-	}
+    }
 
     public void visitLineNumber(LineNumber obj) {
         visit(obj);
@@ -315,10 +315,10 @@ public abstract class BetterVisitor implements Visitor {
     public void visitLocalVariableTable(LocalVariableTable obj) {
         visit(obj);
     }
-	public void visitLocalVariableTypeTable(LocalVariableTypeTable obj) {
+
+    public void visitLocalVariableTypeTable(LocalVariableTypeTable obj) {
         visit(obj);
     }
-
 
     public void visitMethod(Method obj) {
         visit(obj);
@@ -350,7 +350,5 @@ public abstract class BetterVisitor implements Visitor {
 
     public void report(PrintStream out) {
     }
-
-
 
 }

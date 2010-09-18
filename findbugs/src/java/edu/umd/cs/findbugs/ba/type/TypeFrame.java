@@ -27,9 +27,9 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Frame;
 
 /**
- * A specialization of {@link Frame} for determining the types
- * of values in the Java stack frame (locals and operand stack).
- *
+ * A specialization of {@link Frame} for determining the types of values in the
+ * Java stack frame (locals and operand stack).
+ * 
  * @author David Hovemeyer
  * @see Frame
  * @see TypeAnalysis
@@ -40,44 +40,48 @@ public class TypeFrame extends Frame<Type> {
     /**
      * Constructor.
      */
-	public TypeFrame(int numLocals) {
+    public TypeFrame(int numLocals) {
         super(numLocals);
         this.exactTypeSet = new BitSet();
     }
 
     /**
      * Set whether or not a type in a given slot is exact.
-     *
-	 * @param slot    the slot
-     * @param isExact true if the slot contains an exact type, false if just an upper bound
+     * 
+     * @param slot
+     *            the slot
+     * @param isExact
+     *            true if the slot contains an exact type, false if just an
+     *            upper bound
      */
     public void setExact(int slot, boolean isExact) {
-		exactTypeSet.set(slot, isExact);
+        exactTypeSet.set(slot, isExact);
     }
 
     /**
      * Get whether or not a type in a given slot is exact.
-     *
-	 * @param slot the slot
-     * @return true if the slot contains an exact type, false if just an upper bound
+     * 
+     * @param slot
+     *            the slot
+     * @return true if the slot contains an exact type, false if just an upper
+     *         bound
      */
     public boolean isExact(int slot) {
-		return exactTypeSet.get(slot);
+        return exactTypeSet.get(slot);
     }
 
     /**
-     * Clear the exact type set.
-     * The result is that all slots will be assumed <em>not</em> to
-	 * contain an exact type.
+     * Clear the exact type set. The result is that all slots will be assumed
+     * <em>not</em> to contain an exact type.
      */
     public void clearExactSet() {
         exactTypeSet.clear();
-	}
+    }
 
     @Override
     public void setTop() {
         super.setTop();
-		clearExactSet();
+        clearExactSet();
     }
 
     @Override
@@ -94,40 +98,40 @@ public class TypeFrame extends Frame<Type> {
     @Override
     protected String valueToString(Type value) {
         return value.toString() + ",";
-	}
+    }
 
     /**
      * Get the single instance of the "Top" type.
      */
-	public static Type getTopType() {
+    public static Type getTopType() {
         return TopType.instance();
     }
 
     /**
      * Get the single instance of the "Bottom" type.
      */
-	public static Type getBottomType() {
+    public static Type getBottomType() {
         return BottomType.instance();
     }
 
     /**
      * Get the single instance of the "LongExtra" type.
      */
-	public static Type getLongExtraType() {
+    public static Type getLongExtraType() {
         return LongExtraType.instance();
     }
 
     /**
      * Get the single instance of the "DoubleExtra" type.
      */
-	public static Type getDoubleExtraType() {
+    public static Type getDoubleExtraType() {
         return DoubleExtraType.instance();
     }
 
     /**
      * Get the single instance of the "Null" type.
      */
-	public static Type getNullType() {
+    public static Type getNullType() {
         return NullType.instance();
     }
 
@@ -139,33 +143,33 @@ public class TypeFrame extends Frame<Type> {
         try {
             exactTypeSet.clear(getStackLocation(0));
         } catch (DataflowAnalysisException e) {
-			assert false;
+            assert false;
         }
 
     }
 
     /**
      * Pop a value off of the Java operand stack.
-     *
-	 * @return the value that was popped
+     * 
+     * @return the value that was popped
      * @throws DataflowAnalysisException
      *             if the Java operand stack is empty
      */
-	@Override
+    @Override
     public Type popValue() throws DataflowAnalysisException {
 
         exactTypeSet.clear(getStackLocation(0));
         return super.popValue();
     }
-	
+
     @Override
     public String toString() {
         if (isTop())
-			return "[TOP]";
+            return "[TOP]";
         if (isBottom())
             return "[BOTTOM]";
         StringBuilder buf = new StringBuilder();
-		buf.append('[');
+        buf.append('[');
         int numSlots = getNumSlots();
         int start = 0;
         for (int i = start; i < numSlots; ++i) {
@@ -173,29 +177,24 @@ public class TypeFrame extends Frame<Type> {
             if (i == getNumLocals()) {
                 // Use a "|" character to visually separate locals from
                 // the operand stack.
-				int last = buf.length() - 1;
+                int last = buf.length() - 1;
                 if (last >= 0) {
                     if (buf.charAt(last) == ',')
                         buf.deleteCharAt(last);
-				}
+                }
                 buf.append(" | ");
             }
             if (isExact(i))
-				buf.append("!");
+                buf.append("!");
             String value = valueToString(getValue(i));
             if (i == numSlots - 1 && value.endsWith(","))
                 value = value.substring(0, value.length() - 1);
-			buf.append(value);
+            buf.append(value);
             // buf.append(' ');
         }
         buf.append(']');
-		return buf.toString();
+        return buf.toString();
     }
-
-
-
-
-
 
 }
 

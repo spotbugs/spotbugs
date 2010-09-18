@@ -32,15 +32,16 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Front-end for LockDataflow that can avoid doing unnecessary work
- * (e.g., actually performing the lock dataflow)
- * if the method analyzed does not contain explicit
+ * Front-end for LockDataflow that can avoid doing unnecessary work (e.g.,
+ * actually performing the lock dataflow) if the method analyzed does not
+ * contain explicit monitorenter/monitorexit instructions.
+ * 
+ * <p>
+ * Note that because LockSets use value numbers, ValueNumberAnalysis must be
+ * performed for all methods that are synchronized or contain explicit
  * monitorenter/monitorexit instructions.
- *
- * <p>Note that because LockSets use value numbers, ValueNumberAnalysis
- * must be performed for all methods that are synchronized or contain
- * explicit monitorenter/monitorexit instructions.</p>
- *
+ * </p>
+ * 
  * @see LockSet
  * @see LockDataflow
  * @see LockAnalysis
@@ -48,60 +49,71 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  */
 public class LockChecker {
     private MethodDescriptor methodDescriptor;
+
     private Method method;
+
     private LockDataflow lockDataflow;
-	private ValueNumberDataflow vnaDataflow;
+
+    private ValueNumberDataflow vnaDataflow;
+
     private HashMap<Location, LockSet> cache;
 
     /**
      * Constructor.
      */
-	public LockChecker(MethodDescriptor methodDescriptor) {
+    public LockChecker(MethodDescriptor methodDescriptor) {
         this.cache = new HashMap<Location, LockSet>();
         this.methodDescriptor = methodDescriptor;
     }
 
     /**
      * Execute dataflow analyses (only if required).
+     * 
      * @throws CheckedAnalysisException
-	 */
+     */
     public void execute() throws CheckedAnalysisException {
         method = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor);
-        ClassContext classContext = Global.getAnalysisCache().getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
-		
+        ClassContext classContext = Global.getAnalysisCache().getClassAnalysis(ClassContext.class,
+                methodDescriptor.getClassDescriptor());
+
         BitSet bytecodeSet = classContext.getBytecodeSet(method);
-        if (bytecodeSet == null) return;
+        if (bytecodeSet == null)
+            return;
         if (bytecodeSet.get(Constants.MONITORENTER) || bytecodeSet.get(Constants.MONITOREXIT)) {
-			this.lockDataflow = classContext.getLockDataflow(method);
+            this.lockDataflow = classContext.getLockDataflow(method);
         } else if (method.isSynchronized()) {
-            this.vnaDataflow = classContext.getValueNumberDataflow(method); // will need this later
+            this.vnaDataflow = classContext.getValueNumberDataflow(method); // will
+                                                                            // need
+                                                                            // this
+                                                                            // later
         }
-	}
+    }
 
     /**
      * Get LockSet at given Location.
-     *
-	 * @param location the Location
-     * @return         the LockSet at that Location
+     * 
+     * @param location
+     *            the Location
+     * @return the LockSet at that Location
      * @throws DataflowAnalysisException
      */
-	public LockSet getFactAtLocation(Location location) throws DataflowAnalysisException {
+    public LockSet getFactAtLocation(Location location) throws DataflowAnalysisException {
         if (lockDataflow != null)
             return lockDataflow.getFactAtLocation(location);
         else {
-			LockSet lockSet = cache.get(location);
+            LockSet lockSet = cache.get(location);
             if (lockSet == null) {
                 lockSet = new LockSet();
                 lockSet.setDefaultLockCount(0);
-				if (method.isSynchronized() && !method.isStatic()) {
+                if (method.isSynchronized() && !method.isStatic()) {
                     // LockSet contains just the "this" reference
                     ValueNumber instance = vnaDataflow.getAnalysis().getThisValue();
                     lockSet.setLockCount(instance.getNumber(), 1);
-				} else {
+                } else {
                     // LockSet is completely empty - nothing to do
                 }
                 cache.put(location, lockSet);
-			}
+            }
             return lockSet;
         }
     }

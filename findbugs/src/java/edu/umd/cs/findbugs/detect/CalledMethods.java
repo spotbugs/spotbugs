@@ -34,12 +34,15 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 /**
  * Detector to find private methods that are never called.
  */
-public class CalledMethods extends BytecodeScanningDetector implements  NonReportingDetector {
+public class CalledMethods extends BytecodeScanningDetector implements NonReportingDetector {
     boolean emptyArrayOnTOS;
+
     HashSet<XField> emptyArray = new HashSet<XField>();
+
     HashSet<XField> nonEmptyArray = new HashSet<XField>();
-	
+
     XFactory xFactory = AnalysisContext.currentXFactory();
+
     public CalledMethods(BugReporter bugReporter) {
 
     }
@@ -47,46 +50,48 @@ public class CalledMethods extends BytecodeScanningDetector implements  NonRepor
     @Override
     public void sawOpcode(int seen) {
 
-		
         if ((seen == PUTFIELD || seen == PUTSTATIC)) {
             XField f = getXFieldOperand();
             if (f != null) {
-				if (f.isFinal() || !f.isProtected() && !f.isPublic())
-                    if (emptyArrayOnTOS) emptyArray.add(f);
-                    else nonEmptyArray.add(f);
+                if (f.isFinal() || !f.isProtected() && !f.isPublic())
+                    if (emptyArrayOnTOS)
+                        emptyArray.add(f);
+                    else
+                        nonEmptyArray.add(f);
             }
-			
 
         }
-        emptyArrayOnTOS = (seen == ANEWARRAY || seen == NEWARRAY || seen == MULTIANEWARRAY && getIntConstant() == 1) && getPrevOpcode(1) == ICONST_0;
+        emptyArrayOnTOS = (seen == ANEWARRAY || seen == NEWARRAY || seen == MULTIANEWARRAY && getIntConstant() == 1)
+                && getPrevOpcode(1) == ICONST_0;
 
         if (seen == GETSTATIC || seen == GETFIELD) {
             XField f = getXFieldOperand();
             if (emptyArray.contains(f) && !nonEmptyArray.contains(f) && f.isFinal())
-				emptyArrayOnTOS = true;
+                emptyArrayOnTOS = true;
         }
         switch (seen) {
         case INVOKEVIRTUAL:
-		case INVOKESPECIAL:
+        case INVOKESPECIAL:
         case INVOKESTATIC:
         case INVOKEINTERFACE:
             ClassDescriptor c = getClassDescriptorOperand();
-			Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+            Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
             if (subtypes2.isApplicationClass(c))
                 xFactory.addCalledMethod(getMethodDescriptorOperand());
 
             break;
         default:
             break;
-		}
+        }
     }
 
-    @Override public void report() {
-		emptyArray.removeAll(nonEmptyArray);
-        for(XField f : emptyArray)
+    @Override
+    public void report() {
+        emptyArray.removeAll(nonEmptyArray);
+        for (XField f : emptyArray)
             xFactory.addEmptyArrayField(f);
         emptyArray.clear();
-	}
+    }
 
 }
 

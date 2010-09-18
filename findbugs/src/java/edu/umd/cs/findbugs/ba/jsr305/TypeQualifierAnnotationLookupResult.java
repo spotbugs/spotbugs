@@ -27,50 +27,51 @@ import javax.annotation.CheckForNull;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 
 /**
- * The result of looking up a TypeQualifierAnnotation.
- * Because type qualifiers are inherited, a full result of
- * looking resolving a TypeQualifierAnnotation
- * may include annotations on one or more supertypes.
- * Potentially, the supertype annotations may conflict with
- * each other, and/or conflict with the annotation on the annotated
- * entity.  This object makes it possible to report
- * such conflicts, while still providing a convenient
- * interface for getting the "effective" TypeQualifierAnnotation.
- *
+ * The result of looking up a TypeQualifierAnnotation. Because type qualifiers
+ * are inherited, a full result of looking resolving a TypeQualifierAnnotation
+ * may include annotations on one or more supertypes. Potentially, the supertype
+ * annotations may conflict with each other, and/or conflict with the annotation
+ * on the annotated entity. This object makes it possible to report such
+ * conflicts, while still providing a convenient interface for getting the
+ * "effective" TypeQualifierAnnotation.
+ * 
  * @author David Hovemeyer
  */
 public class TypeQualifierAnnotationLookupResult {
     /**
      * Partial result of looking up a TypeQualifierAnnotation.
      */
-	public static class PartialResult {
+    public static class PartialResult {
         private AnnotatedObject annotatedObject;
+
         private TypeQualifierAnnotation typeQualifierAnnotation;
 
         PartialResult(AnnotatedObject annotatedObject, TypeQualifierAnnotation typeQualifierAnnotation) {
             this.annotatedObject = annotatedObject;
             this.typeQualifierAnnotation = typeQualifierAnnotation;
-		}
+        }
 
         /**
          * @return Returns the annotatedObject.
          */
-		public AnnotatedObject getAnnotatedObject() {
+        public AnnotatedObject getAnnotatedObject() {
             return annotatedObject;
         }
 
         /**
          * @return Returns the typeQualifierAnnotation.
          */
-		public TypeQualifierAnnotation getTypeQualifierAnnotation() {
+        public TypeQualifierAnnotation getTypeQualifierAnnotation() {
             return typeQualifierAnnotation;
         }
 
-		/* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.lang.Object#toString()
          */
         @Override
-		public String toString() {
+        public String toString() {
             return annotatedObject + ":" + typeQualifierAnnotation;
         }
     }
@@ -80,30 +81,30 @@ public class TypeQualifierAnnotationLookupResult {
     TypeQualifierAnnotationLookupResult() {
         this.partialResultList = new LinkedList<PartialResult>();
     }
-	
+
     void addPartialResult(PartialResult partialResult) {
         partialResultList.add(partialResult);
     }
 
     /**
      * Get the effective TypeQualifierAnnotation.
-     *
-	 * @return the effective TypeQualifierAnnotation,
-     *         or null if no effective TypeQualifierAnnotation
-     *         can be found
+     * 
+     * @return the effective TypeQualifierAnnotation, or null if no effective
+     *         TypeQualifierAnnotation can be found
      */
-	public @CheckForNull TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation() {
+    public @CheckForNull
+    TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation() {
         boolean firstPartialResult = true;
         TypeQualifierAnnotation effective = null;
 
         for (PartialResult partialResult : partialResultList) {
             if (firstPartialResult) {
                 effective = partialResult.getTypeQualifierAnnotation();
-				firstPartialResult = false;
+                firstPartialResult = false;
             } else {
                 effective = combine(effective, partialResult.getTypeQualifierAnnotation());
             }
-		}
+        }
 
         return effective;
     }
@@ -111,21 +112,26 @@ public class TypeQualifierAnnotationLookupResult {
     /**
      * Subclasses must override this method to combine TypeQualifierAnnotations
      * found in multiple superclasses.
-	 * 
-     * @param a a TypeQualifierAnnotation
-     * @param b another TypeQualifierAnnotation
-     * @return combined TypeQualifierAnnotation compatible with both input TypeQualifierAnnotations,
-	 *         or null if no such TypeQualifierAnnotation exists
+     * 
+     * @param a
+     *            a TypeQualifierAnnotation
+     * @param b
+     *            another TypeQualifierAnnotation
+     * @return combined TypeQualifierAnnotation compatible with both input
+     *         TypeQualifierAnnotations, or null if no such
+     *         TypeQualifierAnnotation exists
      */
     protected TypeQualifierAnnotation combine(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
         return null;
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
-	 */
+     */
     @Override
     public String toString() {
         return partialResultList.toString();
-	}
+    }
 }

@@ -45,9 +45,7 @@ import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
-public class NoteSuppressedWarnings
-        extends AnnotationVisitor
-        implements Detector, NonReportingDetector {
+public class NoteSuppressedWarnings extends AnnotationVisitor implements Detector, NonReportingDetector {
 
     private final Set<String> packages = new HashSet<String>();
 
@@ -59,74 +57,72 @@ public class NoteSuppressedWarnings
 
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
-        if  (!BCELUtil.preTiger(javaClass)) {
-			@DottedClassName String name = javaClass.getClassName();
+        if (!BCELUtil.preTiger(javaClass)) {
+            @DottedClassName
+            String name = javaClass.getClassName();
             int i = name.lastIndexOf('.');
             String packageName = i < 0 ? "" : name.substring(0, i);
             if (name.endsWith(".package-info")) {
-				if (!packages.add(packageName))
+                if (!packages.add(packageName))
                     return;
             } else if (packages.add(packageName)) {
                 JavaClass packageInfoClass;
-				try {
+                try {
                     packageInfoClass = Repository.lookupClass(packageName + ".package-info");
                     packageInfoClass.accept(this);
                 } catch (ClassNotFoundException e) {
-					assert true;
+                    assert true;
                 }
             }
             javaClass.accept(this);
-		}
+        }
     }
 
     @Override
-    public void visitAnnotation(String annotationClass, Map<String, ElementValue> map,
-            boolean runtimeVisible) {
-		if (!annotationClass.endsWith("SuppressWarnings"))
+    public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
+        if (!annotationClass.endsWith("SuppressWarnings"))
             return;
-        String [] suppressed = getAnnotationParameterAsStringArray(map, "value");
+        String[] suppressed = getAnnotationParameterAsStringArray(map, "value");
         if (suppressed == null || suppressed.length == 0)
-			suppressWarning(null);
+            suppressWarning(null);
         else
             for (String s : suppressed)
-                suppressWarning( s);
-	}
+                suppressWarning(s);
+    }
 
     @Override
-    public void visitParameterAnnotation(int p, String annotationClass,
-            Map<String, ElementValue> map, boolean runtimeVisible) {
-		if (!annotationClass.endsWith("SuppressWarnings"))
+    public void visitParameterAnnotation(int p, String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
+        if (!annotationClass.endsWith("SuppressWarnings"))
             return;
-        if (!getMethod().isStatic()) p++;
+        if (!getMethod().isStatic())
+            p++;
 
-		String [] suppressed = getAnnotationParameterAsStringArray(map, "value");
+        String[] suppressed = getAnnotationParameterAsStringArray(map, "value");
         if (suppressed == null || suppressed.length == 0)
             suppressWarning(p, null);
         else
-			for (String s : suppressed)
+            for (String s : suppressed)
                 suppressWarning(p, s);
     }
 
-	private void suppressWarning(int parameter, String pattern) {
+    private void suppressWarning(int parameter, String pattern) {
         String className = getDottedClassName();
         ClassAnnotation clazz = new ClassAnnotation(className);
-        suppressionMatcher.addSuppressor(new ParameterWarningSuppressor(pattern, clazz,
-					MethodAnnotation.fromVisitedMethod(this), parameter));
+        suppressionMatcher.addSuppressor(new ParameterWarningSuppressor(pattern, clazz, MethodAnnotation.fromVisitedMethod(this),
+                parameter));
 
     }
 
     private void suppressWarning(String pattern) {
         String className = getDottedClassName();
         ClassAnnotation clazz = new ClassAnnotation(className);
-		if (className.endsWith(".package-info"))
-            suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern,
-                    getPackageName().replace('/', '.')));
+        if (className.endsWith(".package-info"))
+            suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern, getPackageName().replace('/', '.')));
         else if (visitingMethod())
-			suppressionMatcher.addSuppressor(new MethodWarningSuppressor(pattern, clazz,
-                    MethodAnnotation.fromVisitedMethod(this)));
+            suppressionMatcher
+                    .addSuppressor(new MethodWarningSuppressor(pattern, clazz, MethodAnnotation.fromVisitedMethod(this)));
         else if (visitingField())
-            suppressionMatcher.addSuppressor(new FieldWarningSuppressor(pattern, clazz,
-					FieldAnnotation.fromVisitedField(this)));
+            suppressionMatcher.addSuppressor(new FieldWarningSuppressor(pattern, clazz, FieldAnnotation.fromVisitedField(this)));
         else
             suppressionMatcher.addSuppressor(new ClassWarningSuppressor(pattern, clazz));
     }

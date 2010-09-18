@@ -19,7 +19,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -31,30 +30,31 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * finds public classes that use 'this' as a semaphore, which can cause conflicts if clients of this
- * class use an instance of this class as their own synchronization point. Frankly, Just calling
- * synchronized on this, or defining synchronized methods is bad, but since that is so prevalent,
- * don't warn on that.
+ * finds public classes that use 'this' as a semaphore, which can cause
+ * conflicts if clients of this class use an instance of this class as their own
+ * synchronization point. Frankly, Just calling synchronized on this, or
+ * defining synchronized methods is bad, but since that is so prevalent, don't
+ * warn on that.
  */
-public class PublicSemaphores extends BytecodeScanningDetector implements StatelessDetector
-{
+public class PublicSemaphores extends BytecodeScanningDetector implements StatelessDetector {
     private static final int SEEN_NOTHING = 0;
+
     private static final int SEEN_ALOAD_0 = 1;
 
     private BugReporter bugReporter;
+
     private int state;
+
     private boolean alreadyReported;
 
     public PublicSemaphores(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
-
-
     @Override
-         public void visitClassContext(ClassContext classContext) {
+    public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
-		if ((!cls.isPublic()) || (cls.getClassName().indexOf("$") >= 0))
+        if ((!cls.isPublic()) || (cls.getClassName().indexOf("$") >= 0))
             return;
 
         alreadyReported = false;
@@ -62,9 +62,9 @@ public class PublicSemaphores extends BytecodeScanningDetector implements Statel
     }
 
     @Override
-         public void visit(Code obj) {
+    public void visit(Code obj) {
         Method m = getMethod();
-		if (m.isStatic() || alreadyReported)
+        if (m.isStatic() || alreadyReported)
             return;
 
         state = SEEN_NOTHING;
@@ -72,28 +72,26 @@ public class PublicSemaphores extends BytecodeScanningDetector implements Statel
     }
 
     @Override
-         public void sawOpcode(int seen) {
+    public void sawOpcode(int seen) {
         if (alreadyReported)
-			return;
+            return;
 
         switch (state) {
-            case SEEN_NOTHING:
-                if (seen == ALOAD_0)
-					state = SEEN_ALOAD_0;
+        case SEEN_NOTHING:
+            if (seen == ALOAD_0)
+                state = SEEN_ALOAD_0;
             break;
 
-            case SEEN_ALOAD_0:
-                if ((seen == INVOKEVIRTUAL)
-                &&  getClassConstantOperand().equals("java/lang/Object")) {
-					String methodName = getNameConstantOperand();
-                    if ("wait".equals(methodName) || "notify".equals(methodName) || "notifyAll".equals(methodName)) {
-                        bugReporter.reportBug( new BugInstance( this, "PS_PUBLIC_SEMAPHORES", NORMAL_PRIORITY )
-                                .addClassAndMethod(this)
-								.addSourceLine(this));
-                        alreadyReported = true;
-                    }
+        case SEEN_ALOAD_0:
+            if ((seen == INVOKEVIRTUAL) && getClassConstantOperand().equals("java/lang/Object")) {
+                String methodName = getNameConstantOperand();
+                if ("wait".equals(methodName) || "notify".equals(methodName) || "notifyAll".equals(methodName)) {
+                    bugReporter.reportBug(new BugInstance(this, "PS_PUBLIC_SEMAPHORES", NORMAL_PRIORITY).addClassAndMethod(this)
+                            .addSourceLine(this));
+                    alreadyReported = true;
                 }
-				state = SEEN_NOTHING;
+            }
+            state = SEEN_NOTHING;
             break;
         }
 

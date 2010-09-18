@@ -52,7 +52,7 @@ public class CloudSyncAndReport {
         public String cloudId;
 
         public int ageInHours = 22;
-	}
+    }
 
     static class CSRCommandLine extends CommandLine {
 
@@ -61,82 +61,89 @@ public class CloudSyncAndReport {
         public CSRCommandLine(CSPoptions options) {
             this.options = options;
             addOption("-cloud", "id", "id of the cloud to use");
-			addOption("-recent", "hours", "maximum age in hours for an issue to be recent");
+            addOption("-recent", "hours", "maximum age in hours for an issue to be recent");
             addOption("-cloudSummary", "file", "write a cloud summary to thie file");
-                }
+        }
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String, java.lang.String)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String,
+         * java.lang.String)
          */
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
             throw new IllegalArgumentException("Unknown option : " + option);
 
-
         }
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java.lang.String, java.lang.String)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java
+         * .lang.String, java.lang.String)
          */
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
-          if (option.equals("-cloud")) {
-              options.cloudId = argument;
-          } else if (option.equals("-recent")) {
-	    	  options.ageInHours = Integer.parseInt(argument);  
-          }else if (option.equals("-cloudSummary")) {
-              options.cloudSummary = argument;
-          } else
-	    	  throw new IllegalArgumentException("Unknown option : " + option);
+            if (option.equals("-cloud")) {
+                options.cloudId = argument;
+            } else if (option.equals("-recent")) {
+                options.ageInHours = Integer.parseInt(argument);
+            } else if (option.equals("-cloudSummary")) {
+                options.cloudSummary = argument;
+            } else
+                throw new IllegalArgumentException("Unknown option : " + option);
         }
     }
-
 
     public static void main(String[] argv) throws Exception {
 
         FindBugs.setNoAnalysis();
         final CSPoptions options = new CSPoptions();
         final CSRCommandLine commandLine = new CSRCommandLine(options);
-		int argCount = commandLine.parse(argv, 0, 1, "Usage: " + CloudSyncAndReport.class.getName()
+        int argCount = commandLine.parse(argv, 0, 1, "Usage: " + CloudSyncAndReport.class.getName()
                 + " [options] [<results1> <results2> ... <resultsn>] ");
 
         if (argCount < argv.length)
             options.analysisFile = argv[argCount];
 
-		CloudSyncAndReport csr = new CloudSyncAndReport(options);
+        CloudSyncAndReport csr = new CloudSyncAndReport(options);
         csr.load();
 
         csr.sync();
-		PrintWriter out = new PrintWriter(System.out);
+        PrintWriter out = new PrintWriter(System.out);
         csr.report(out);
         out.flush();
         csr.shutdown();
-		out.close();
+        out.close();
     }
 
     final CSPoptions options;
-	final SortedBugCollection bugCollection = new SortedBugCollection();
+
+    final SortedBugCollection bugCollection = new SortedBugCollection();
 
     /**
      * @param options
      */
     public CloudSyncAndReport(CSPoptions options) {
-       this.options = options;
-
+        this.options = options;
 
     }
+
     public void load() throws IOException, DocumentException {
         if (options.analysisFile == null)
             bugCollection.readXML(new InputStreamReader(System.in));
         else
-    		bugCollection.readXML(options.analysisFile);
+            bugCollection.readXML(options.analysisFile);
         if (options.cloudId != null && !options.cloudId.equals(bugCollection.getProject().getCloudId())) {
             bugCollection.getProject().setCloudId(options.cloudId);
             bugCollection.reinitializeCloud();
-    		}
+        }
     }
 
-    public void sync()  {
+    public void sync() {
         Cloud cloud = bugCollection.getCloud();
         cloud.initiateCommunication();
         cloud.waitUntilIssueDataDownloaded();
@@ -146,66 +153,64 @@ public class CloudSyncAndReport {
         int total, recent;
 
     }
-    public void report(PrintWriter out)  {
-        TreeMap<BugRankCategory, Stats> stats =  new TreeMap<BugRankCategory,Stats>();
+
+    public void report(PrintWriter out) {
+        TreeMap<BugRankCategory, Stats> stats = new TreeMap<BugRankCategory, Stats>();
         ProjectStats projectStats = bugCollection.getProjectStats();
         Collection<BugInstance> bugs = bugCollection.getCollection();
-    	Cloud cloud = bugCollection.getCloud();
+        Cloud cloud = bugCollection.getCloud();
         cloud.setMode(Cloud.Mode.COMMUNAL);
 
         out.printf("Cloud sync and summary report for %s%n", bugCollection.getProject().getProjectName());
-    	
+
         out.printf("Code dated %s%n", new Date(bugCollection.getTimestamp()));
         out.printf("Code analyzed %s%n", new Date(bugCollection.getAnalysisTimestamp()));
 
-    	out.printf("%7d total classes%n", projectStats.getNumClasses());
+        out.printf("%7d total classes%n", projectStats.getNumClasses());
         out.printf("%7d total issues%n", bugs.size());
         long recentTimestamp = System.currentTimeMillis() - options.ageInHours * 3600 * 1000L;
         int allRecentIssues = 0;
-    	
-        for(BugInstance b : bugs) {
+
+        for (BugInstance b : bugs) {
             Stats s = stats.get(BugRankCategory.getRank(b.getBugRank()));
             if (s == null) {
-    			s = new Stats();
+                s = new Stats();
                 stats.put(BugRankCategory.getRank(b.getBugRank()), s);
             }
             s.total++;
-    		long firstSeen = cloud.getFirstSeen(b);
+            long firstSeen = cloud.getFirstSeen(b);
             if (firstSeen > recentTimestamp) {
                 s.recent++;
                 allRecentIssues++;
-    		}
+            }
 
         }
         out.printf("%7d recent issues%n", allRecentIssues);
-    	
-
 
         if (options.cloudSummary != null && cloud.supportsCloudSummaries()) {
-    		try {
+            try {
                 PrintWriter cs = new PrintWriter(new FileWriter(options.cloudSummary));
                 cs.printf("%6s %6s %s%n", "recent", "total", "Rank category");
-                for(Entry<BugRankCategory, Stats> e : stats.entrySet()) {
-		    		Stats s = e.getValue();
+                for (Entry<BugRankCategory, Stats> e : stats.entrySet()) {
+                    Stats s = e.getValue();
                     if (s.total > 0)
-                      cs.printf("%6d %6d %s%n", s.recent, s.total, e.getKey());
+                        cs.printf("%6d %6d %s%n", s.recent, s.total, e.getKey());
                 }
-		    	cs.println();
+                cs.println();
                 cloud.printCloudSummary(cs, bugs, null);
                 cs.close();
             } catch (Exception e) {
-				out.println("Error writing cloud summary to " + options.cloudSummary);
+                out.println("Error writing cloud summary to " + options.cloudSummary);
                 e.printStackTrace(out);
             }
 
-    		
         }
 
     }
-    public void shutdown()  {
+
+    public void shutdown() {
         Cloud cloud = bugCollection.getCloud();
         cloud.shutdown();
     }
-
 
 }

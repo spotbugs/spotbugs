@@ -11,89 +11,112 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
  * Codebase entry for a single-file codebase.
- *
+ * 
  * @author David Hovemeyer
  */
 public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
     private final SingleFileCodeBase codeBase;
+
     private String overriddenResourceName;
 
     /**
      * Constructor.
-     *
-	 * @param codeBase parent codebase
+     * 
+     * @param codeBase
+     *            parent codebase
      */
     public SingleFileCodeBaseEntry(SingleFileCodeBase codeBase) {
         this.codeBase = codeBase;
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
      */
-	public int getNumBytes() {
+    public int getNumBytes() {
         return codeBase.getNumBytes();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
      */
-	public String getResourceName() {
-        if (overriddenResourceName != null) return overriddenResourceName;
+    public String getResourceName() {
+        if (overriddenResourceName != null)
+            return overriddenResourceName;
         return codeBase.getResourceName();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
      */
-	public InputStream openResource() throws IOException {
+    public InputStream openResource() throws IOException {
         return codeBase.openFile();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
      */
-	public ICodeBase getCodeBase() {
+    public ICodeBase getCodeBase() {
         return codeBase;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
      */
-	public ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
+    public ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
         return codeBase.getClassDescriptor();
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java
+     * .lang.String)
      */
-	public void overrideResourceName(String resourceName) {
+    public void overrideResourceName(String resourceName) {
         overriddenResourceName = resourceName;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
-	@Override
+    @Override
     public boolean equals(Object obj) {
         if (obj == null || obj.getClass() != this.getClass()) {
             return false;
-		}
+        }
         SingleFileCodeBaseEntry other = (SingleFileCodeBaseEntry) obj;
         return other.codeBase.equals(this.codeBase);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
-	@Override
+    @Override
     public int hashCode() {
         return codeBase.hashCode();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
-	@Override
+    @Override
     public String toString() {
         return codeBase.getPathName();
     }

@@ -24,6 +24,7 @@ public class ResourceValue {
     }
 
     private static final ResourceValue instance = new ResourceValue();
+
     private static final ResourceValue notInstance = new ResourceValue();
 
     public static ResourceValue instance() {
@@ -37,7 +38,7 @@ public class ResourceValue {
     public static ResourceValue merge(ResourceValue a, ResourceValue b) {
         if (a == notInstance && b == notInstance)
             return notInstance;
-		else
+        else
             return instance;
     }
 
@@ -46,9 +47,9 @@ public class ResourceValue {
     }
 
     @Override
-         public String toString() {
+    public String toString() {
         return (this == instance) ? "I" : "-";
-	}
+    }
 }
 
 // vim:ts=4

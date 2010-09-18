@@ -23,12 +23,11 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 /**
- * Special type representing the null value.
- * This is a type which is higher in the lattice than any object type,
- * but lower than the overall Top type.  It represents the type
- * of the null value, which may logically be merged with any
+ * Special type representing the null value. This is a type which is higher in
+ * the lattice than any object type, but lower than the overall Top type. It
+ * represents the type of the null value, which may logically be merged with any
  * object type without loss of information.
- *
+ * 
  * @author David Hovemeyer
  * @see TypeAnalysis
  * @see TypeFrame
@@ -37,6 +36,7 @@ import org.apache.bcel.generic.Type;
 public class NullType extends ReferenceType implements ExtendedTypes {
 
     private static final long serialVersionUID = 1L;
+
     private static final NullType theInstance = new NullType();
 
     private NullType() {
@@ -44,14 +44,14 @@ public class NullType extends ReferenceType implements ExtendedTypes {
     }
 
     @Override
-         public int hashCode() {
+    public int hashCode() {
         return System.identityHashCode(this);
-	}
+    }
 
     @Override
-         public boolean equals(Object o) {
+    public boolean equals(Object o) {
         return o == this;
-	}
+    }
 
     public static NullType instance() {
         return theInstance;

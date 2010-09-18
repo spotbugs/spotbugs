@@ -25,5 +25,6 @@ package edu.umd.cs.findbugs.ba;
 @Deprecated
 public interface JavaClassAndMethodChooser {
     public boolean choose(JavaClassAndMethod javaClassAndMethod);
+
     public boolean choose(XMethod method);
 }

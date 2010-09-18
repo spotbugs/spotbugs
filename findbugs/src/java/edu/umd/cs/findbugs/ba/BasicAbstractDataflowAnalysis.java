@@ -24,25 +24,25 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * A useful starting point for defining a dataflow analysis.
- * Handles access and caching of start and result facts for
- * basic blocks.
- *
+ * A useful starting point for defining a dataflow analysis. Handles access and
+ * caching of start and result facts for basic blocks.
+ * 
  * <p>
- * Subclasses that model instructions within basic blocks
- * should extend AbstractDataflowAnalysis.
+ * Subclasses that model instructions within basic blocks should extend
+ * AbstractDataflowAnalysis.
  * </p>
- *
+ * 
  * @author David Hovemeyer
  */
 public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAnalysis<Fact> {
     private IdentityHashMap<BasicBlock, Fact> startFactMap;
+
     private IdentityHashMap<BasicBlock, Fact> resultFactMap;
 
     /**
      * Constructor.
      */
-	public BasicAbstractDataflowAnalysis() {
+    public BasicAbstractDataflowAnalysis() {
         this.startFactMap = new IdentityHashMap<BasicBlock, Fact>();
         this.resultFactMap = new IdentityHashMap<BasicBlock, Fact>();
     }
@@ -50,70 +50,73 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
     /**
      * Get an iterator over the result facts.
      */
-	public Iterator<Fact> resultFactIterator() {
+    public Iterator<Fact> resultFactIterator() {
         return resultFactMap.values().iterator();
     }
 
     /*
      * Default implementation - subclasses may override.
      */
-	public String factToString(Fact fact) {
+    public String factToString(Fact fact) {
         return fact.toString();
     }
 
-    public /*final*/ Fact getStartFact(BasicBlock block) {
+    public/* final */Fact getStartFact(BasicBlock block) {
         return lookupOrCreateFact(startFactMap, block);
     }
 
-    public /*final*/ Fact getResultFact(BasicBlock block) {
+    public/* final */Fact getResultFact(BasicBlock block) {
         return lookupOrCreateFact(resultFactMap, block);
     }
 
     /**
-     * Get dataflow fact at (just before) given Location.
-     * Note "before" is meant in the logical sense, so for backward analyses,
-	 * before means after the location in the control flow sense.
-     *
+     * Get dataflow fact at (just before) given Location. Note "before" is meant
+     * in the logical sense, so for backward analyses, before means after the
+     * location in the control flow sense.
+     * 
      * <p>
      * The default implementation ignores instructions within basic blocks.
-	 * Subclasses that model individual instructions must override this method.
+     * Subclasses that model individual instructions must override this method.
      * </p>
-     *
-     * @param location the Location
-	 * @return the dataflow value at given Location
+     * 
+     * @param location
+     *            the Location
+     * @return the dataflow value at given Location
      * @throws DataflowAnalysisException
      */
     public Fact getFactAtLocation(Location location) throws DataflowAnalysisException {
-		return getStartFact(location.getBasicBlock());
+        return getStartFact(location.getBasicBlock());
     }
 
     /**
      * Get the dataflow fact representing the point just after given Location.
      * Note "after" is meant in the logical sense, so for backward analyses,
-	 * after means before the location in the control flow sense.
-     *
+     * after means before the location in the control flow sense.
+     * 
      * <p>
      * The default implementation ignores instructions within basic blocks.
-	 * Subclasses that model individual instructions must override this method.
+     * Subclasses that model individual instructions must override this method.
      * </p>
-     *
-     * @param location the Location
-	 * @return the dataflow value after given Location
+     * 
+     * @param location
+     *            the Location
+     * @return the dataflow value after given Location
      * @throws DataflowAnalysisException
      */
     public Fact getFactAfterLocation(Location location) throws DataflowAnalysisException {
-		return getResultFact(location.getBasicBlock());
+        return getResultFact(location.getBasicBlock());
     }
 
     /**
      * Get the fact that is true on the given control edge,
      * <em>after applying the edge transfer function</em> (if any).
-	 * 
-     * @param edge the edge
+     * 
+     * @param edge
+     *            the edge
      * @return the fact that is true after applying the edge transfer function
      * @throws DataflowAnalysisException
-	 */
-    public /*final*/ Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
+     */
+    public/* final */Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
         BasicBlock block = isForwards() ? edge.getSource() : edge.getTarget();
 
         Fact predFact = createFact();
@@ -128,24 +131,32 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
         return result;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#startIteration()
      */
-	public void startIteration() {
+    public void startIteration() {
         // Do nothing - subclass may override
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#finishIteration()
      */
-	public void finishIteration() {
+    public void finishIteration() {
         // Do nothing - subclass may override
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.DataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs
+     * .ba.Edge, java.lang.Object)
      */
-	public void edgeTransfer(Edge edge, Fact fact) throws DataflowAnalysisException {
+    public void edgeTransfer(Edge edge, Fact fact) throws DataflowAnalysisException {
         // By default, edge transfer function is identity.
         // Subclasses may override.
     }
@@ -153,16 +164,17 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
     private Fact lookupOrCreateFact(Map<BasicBlock, Fact> map, BasicBlock block) {
         Fact fact = map.get(block);
         if (fact == null) {
-			fact = createFact();
+            fact = createFact();
             map.put(block, fact);
         }
         return fact;
-	}
+    }
 
     public int getLastUpdateTimestamp(Fact fact) {
         return 0;
     }
-	public void setLastUpdateTimestamp(Fact fact, int lastUpdateTimestamp) {
+
+    public void setLastUpdateTimestamp(Fact fact, int lastUpdateTimestamp) {
 
     }
 

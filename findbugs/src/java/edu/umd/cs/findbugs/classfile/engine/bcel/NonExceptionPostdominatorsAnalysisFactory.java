@@ -27,9 +27,9 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce NonExceptionPostDominatorsAnalysis objects
- * for analyzed methods.
- *
+ * Analysis engine to produce NonExceptionPostDominatorsAnalysis objects for
+ * analyzed methods.
+ * 
  * @author David Hovemeyer
  */
 public class NonExceptionPostdominatorsAnalysisFactory extends AnalysisFactory<NonExceptionPostdominatorsAnalysis> {
@@ -37,16 +37,22 @@ public class NonExceptionPostdominatorsAnalysisFactory extends AnalysisFactory<N
         super("non-exception postdominators analysis", NonExceptionPostdominatorsAnalysis.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public NonExceptionPostdominatorsAnalysis analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public NonExceptionPostdominatorsAnalysis analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         CFG cfg = getCFG(analysisCache, descriptor);
         ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(analysisCache, descriptor);
-        NonExceptionPostdominatorsAnalysis analysis = new NonExceptionPostdominatorsAnalysis(cfg, rdfs, getDepthFirstSearch(analysisCache, descriptor));
-		Dataflow<java.util.BitSet, PostDominatorsAnalysis> dataflow =
-            new Dataflow<java.util.BitSet, PostDominatorsAnalysis>(cfg, analysis);
+        NonExceptionPostdominatorsAnalysis analysis = new NonExceptionPostdominatorsAnalysis(cfg, rdfs, getDepthFirstSearch(
+                analysisCache, descriptor));
+        Dataflow<java.util.BitSet, PostDominatorsAnalysis> dataflow = new Dataflow<java.util.BitSet, PostDominatorsAnalysis>(cfg,
+                analysis);
         dataflow.execute();
         return analysis;
-	}
+    }
 }

@@ -32,55 +32,59 @@ import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Interprocedural field property database.
- *
+ * 
  * @author David Hovemeyer
  */
-public abstract class FieldPropertyDatabase<Property>
-extends PropertyDatabase<FieldDescriptor, Property> {
+public abstract class FieldPropertyDatabase<Property> extends PropertyDatabase<FieldDescriptor, Property> {
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#parseKey(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#parseKey(java.lang.
+     * String)
      */
-	@Override
+    @Override
     protected FieldDescriptor parseKey(String s) throws PropertyDatabaseFormatException {
         String[] tuple = s.split(",");
         if (tuple.length != 4) {
-			throw new PropertyDatabaseFormatException("Invalid field tuple: " + s);
+            throw new PropertyDatabaseFormatException("Invalid field tuple: " + s);
         }
 
         String className = XFactory.canonicalizeString(tuple[0]);
         String fieldName = XFactory.canonicalizeString(tuple[1]);
         String signature = XFactory.canonicalizeString(tuple[2]);
-		int accessFlags;
+        int accessFlags;
         try {
             accessFlags = Integer.parseInt(tuple[3]);
         } catch (NumberFormatException e) {
-			throw new PropertyDatabaseFormatException("Invalid field access flags: " + tuple[3]);
+            throw new PropertyDatabaseFormatException("Invalid field access flags: " + tuple[3]);
         }
 
-        return DescriptorFactory.instance().getFieldDescriptor(
-                ClassName.toSlashedClassName(className),
-                fieldName,
-				signature,
+        return DescriptorFactory.instance().getFieldDescriptor(ClassName.toSlashedClassName(className), fieldName, signature,
                 (accessFlags & Constants.ACC_STATIC) != 0);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#writeKey(java.io.Writer, KeyType)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#writeKey(java.io.Writer
+     * , KeyType)
      */
 
     @Override
     protected void writeKey(Writer writer, FieldDescriptor key) throws IOException {
         writer.write(key.getClassDescriptor().getDottedClassName());
-		writer.write(",");
+        writer.write(",");
         writer.write(key.getName());
         writer.write(",");
         writer.write(key.getSignature());
-		writer.write(",");
+        writer.write(",");
         int flags = 0;
         if (key instanceof XField) {
-            flags = ((XField)key).getAccessFlags() & 0xf;
-		} else if ( key.isStatic() )
+            flags = ((XField) key).getAccessFlags() & 0xf;
+        } else if (key.isStatic())
             flags = Constants.ACC_STATIC;
         writer.write(String.valueOf(flags));
     }

@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 /**
  * Java main application to compute update a historical bug collection with
  * results from another build/analysis.
- *
+ * 
  * @author William Pugh
  */
 
@@ -51,110 +51,103 @@ public class CopyBuggySource {
     /**
      *
      */
-	private static final String USAGE = "Usage: <cmd> "
-            + "  <bugs.xml> <destinationSrcDir>";
+    private static final String USAGE = "Usage: <cmd> " + "  <bugs.xml> <destinationSrcDir>";
 
-    public static void main(String[] args) throws IOException,
-            DocumentException {
+    public static void main(String[] args) throws IOException, DocumentException {
         FindBugs.setNoAnalysis();
-		DetectorFactoryCollection.instance();
+        DetectorFactoryCollection.instance();
         if (args.length != 2) {
             System.out.println(USAGE);
             return;
-		}
+        }
 
         BugCollection origCollection;
         origCollection = new SortedBugCollection();
         origCollection.readXML(args[0]);
-		File src = new File(args[1]);
+        File src = new File(args[1]);
         byte buf[] = new byte[4096];
         if (!src.isDirectory())
-            throw new IllegalArgumentException(args[1]
-					+ " is not a source directory");
+            throw new IllegalArgumentException(args[1] + " is not a source directory");
         Project project = origCollection.getProject();
         SourceFinder sourceFinder = new SourceFinder(project);
         HashSet<String> copied = new HashSet<String>();
-		HashSet<String> couldNotFind = new HashSet<String>();
+        HashSet<String> couldNotFind = new HashSet<String>();
         HashSet<String> couldNotCreate = new HashSet<String>();
 
         int copyCount = 0;
-		for (BugInstance bug : origCollection.getCollection()) {
-            for (Iterator<BugAnnotation> i = bug.annotationIterator(); i
-                    .hasNext();) {
+        for (BugInstance bug : origCollection.getCollection()) {
+            for (Iterator<BugAnnotation> i = bug.annotationIterator(); i.hasNext();) {
                 BugAnnotation ann = i.next();
-				SourceLineAnnotation sourceAnnotation;
+                SourceLineAnnotation sourceAnnotation;
                 if (ann instanceof BugAnnotationWithSourceLines)
-                    sourceAnnotation = ((BugAnnotationWithSourceLines) ann)
-                            .getSourceLines();
-				else if (ann instanceof SourceLineAnnotation)
+                    sourceAnnotation = ((BugAnnotationWithSourceLines) ann).getSourceLines();
+                else if (ann instanceof SourceLineAnnotation)
                     sourceAnnotation = (SourceLineAnnotation) ann;
                 else
                     continue;
-				if (sourceAnnotation == null)
+                if (sourceAnnotation == null)
                     continue;
                 if (sourceAnnotation.isUnknown())
                     continue;
-				String fullName;
+                String fullName;
 
                 String packageName = sourceAnnotation.getPackageName();
                 String sourceFile = sourceAnnotation.getSourceFile();
                 if (packageName == "")
-					fullName = sourceFile;
+                    fullName = sourceFile;
                 else
-                    fullName = packageName.replace('.', File.separatorChar)
-                            + File.separatorChar + sourceFile;
-				if (copied.add(fullName)) {
+                    fullName = packageName.replace('.', File.separatorChar) + File.separatorChar + sourceFile;
+                if (copied.add(fullName)) {
                     File file = new File(src, fullName);
                     if (file.exists()) {
                         System.out.println(file + " already exists");
-						continue;
+                        continue;
                     }
                     File parent = file.getParentFile();
                     InputStream in = null;
-					OutputStream out = null;
+                    OutputStream out = null;
                     try {
                         in = sourceFinder.openSource(packageName, sourceFile);
                         if (!parent.mkdirs() && !parent.isDirectory()) {
-							String path = parent.getPath();
+                            String path = parent.getPath();
                             if (couldNotCreate.add(path))
-                            System.out.println("Can't create directory for "
-                                    + path);
-							in.close();
+                                System.out.println("Can't create directory for " + path);
+                            in.close();
                             continue;
                         }
                         out = new FileOutputStream(file);
-						while (true) {
+                        while (true) {
                             int sz = in.read(buf);
                             if (sz < 0)
                                 break;
-							out.write(buf, 0, sz);
+                            out.write(buf, 0, sz);
                         }
                         System.out.println("Copied " + file);
                         copyCount++;
-					} catch (FileNotFoundException e) {
+                    } catch (FileNotFoundException e) {
                         if (couldNotFind.add(file.getPath()))
-                          System.out.println("Did not find " + file);
+                            System.out.println("Did not find " + file);
                     } catch (IOException e) {
-						if (couldNotFind.add(file.getPath())) {
+                        if (couldNotFind.add(file.getPath())) {
                             System.out.println("Problem copying " + file);
                             e.printStackTrace(System.out);
                         }
-					} finally {
+                    } finally {
                         close(in);
                         close(out);
                     }
-					
+
                 }
             }
         }
-		
+
         System.out.printf("All done. %d files not found, %d files copied%n", couldNotFind.size(), copyCount);
     }
 
     public static void close(InputStream in) {
         try {
             if (in != null)
-				in.close();
+                in.close();
         } catch (IOException e) {
         }
 
@@ -163,7 +156,7 @@ public class CopyBuggySource {
     public static void close(OutputStream out) {
         try {
             if (out != null)
-				out.close();
+                out.close();
         } catch (IOException e) {
         }
 

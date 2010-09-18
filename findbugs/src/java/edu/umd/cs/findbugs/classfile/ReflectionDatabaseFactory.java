@@ -24,16 +24,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-
 /**
- * A generic database factory that tries to create the database
- * by (in order of preference)
- *
+ * A generic database factory that tries to create the database by (in order of
+ * preference)
+ * 
  * <ol>
- * <li>Invoking a static <b>create</b> method </li>
+ * <li>Invoking a static <b>create</b> method</li>
  * <li>Invoking a no-arg constructor
  * </ol>
- *
+ * 
  * @author David Hovemeyer
  */
 public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
@@ -43,38 +42,39 @@ public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
         this.databaseClass = databaseClass;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.IDatabaseFactory#createDatabase()
      */
-	public E createDatabase() throws CheckedAnalysisException {
+    public E createDatabase() throws CheckedAnalysisException {
         E database;
 
         database = createUsingStaticCreateMethod();
         if (database != null) {
             return database;
-		}
+        }
 
         database = createUsingConstructor();
         if (database != null) {
             return database;
-		}
+        }
 
-        throw new CheckedAnalysisException(
-                "Could not find a way to create database " + databaseClass.getName());
+        throw new CheckedAnalysisException("Could not find a way to create database " + databaseClass.getName());
     }
 
     /**
      * Try to create the database using a static create() method.
-     *
-	 * @return the database, or null if there is no static create() method
+     * 
+     * @return the database, or null if there is no static create() method
      * @throws CheckedAnalysisException
      */
     private E createUsingStaticCreateMethod() throws CheckedAnalysisException {
-		Method createMethod;
+        Method createMethod;
         try {
             createMethod = databaseClass.getMethod("create", new Class[0]);
         } catch (NoSuchMethodException e) {
-			return null;
+            return null;
         }
 
         if (!Modifier.isStatic(createMethod.getModifiers())) {
@@ -88,41 +88,45 @@ public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
         try {
             return databaseClass.cast(createMethod.invoke(null, new Object[0]));
         } catch (InvocationTargetException e) {
-			throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
+            throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
         } catch (IllegalAccessException e) {
             throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
         }
-	}
+    }
 
     /**
      * Try to create the database using a no-arg constructor.
-     *
-	 * @return the database, or null if there is no no-arg constructor
+     * 
+     * @return the database, or null if there is no no-arg constructor
      * @throws CheckedAnalysisException
      */
     private E createUsingConstructor() throws CheckedAnalysisException {
-		Constructor<E> constructor;
+        Constructor<E> constructor;
         try {
             constructor = databaseClass.getConstructor(new Class[0]);
         } catch (NoSuchMethodException e) {
-			return null;
+            return null;
         }
 
         try {
             return constructor.newInstance(new Object[0]);
         } catch (InstantiationException e) {
-			throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
+            throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
         } catch (IllegalAccessException e) {
             throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
         } catch (InvocationTargetException e) {
-			throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
+            throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IDatabaseFactory#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IDatabaseFactory#registerWith(edu.umd.cs
+     * .findbugs.classfile.IAnalysisCache)
      */
-	public void registerWith(IAnalysisCache analysisCache) {
+    public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerDatabaseFactory(databaseClass, this);
     }
 

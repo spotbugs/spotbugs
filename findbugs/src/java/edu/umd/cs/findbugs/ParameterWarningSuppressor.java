@@ -9,7 +9,7 @@ public class ParameterWarningSuppressor extends ClassWarningSuppressor {
     public ParameterWarningSuppressor(String bugPattern, ClassAnnotation clazz, MethodAnnotation method, int register) {
         super(bugPattern, clazz);
         this.method = method;
-		this.register = register;
+        this.register = register;
     }
 
     @Override
@@ -21,11 +21,11 @@ public class ParameterWarningSuppressor extends ClassWarningSuppressor {
         MethodAnnotation bugMethod = bugInstance.getPrimaryMethod();
         LocalVariableAnnotation localVariable = bugInstance.getPrimaryLocalVariableAnnotation();
         if (bugMethod == null || !method.equals(bugMethod))
-			return false;
+            return false;
         if (localVariable == null || localVariable.getRegister() != register)
             return false;
         if (DEBUG)
-			System.out.println("Suppressing " + bugInstance);
+            System.out.println("Suppressing " + bugInstance);
         return true;
     }
 }

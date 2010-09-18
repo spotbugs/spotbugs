@@ -24,13 +24,16 @@ import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 
 public class NonNullSpecification {
     private final JavaClassAndMethod classAndMethod;
+
     private final ParameterProperty nonNullProperty;
+
     private final ParameterProperty possiblyNullProperty;
 
-    public NonNullSpecification(JavaClassAndMethod classAndMethod, ParameterProperty nonParamProperty, ParameterProperty possiblyNullProperty) {
+    public NonNullSpecification(JavaClassAndMethod classAndMethod, ParameterProperty nonParamProperty,
+            ParameterProperty possiblyNullProperty) {
         this.classAndMethod = classAndMethod;
         this.nonNullProperty = nonParamProperty;
-		this.possiblyNullProperty = possiblyNullProperty;
+        this.possiblyNullProperty = possiblyNullProperty;
     }
 
     public JavaClassAndMethod getClassAndMethod() {
@@ -48,15 +51,15 @@ public class NonNullSpecification {
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-		buf.append(classAndMethod);
+        buf.append(classAndMethod);
         buf.append(":");
         if (!nonNullProperty.isEmpty()) {
             buf.append(" nonull=");
-			buf.append(nonNullProperty);
+            buf.append(nonNullProperty);
         }
         if (!possiblyNullProperty.isEmpty()) {
             buf.append(" possiblynull=");
-			buf.append(possiblyNullProperty);
+            buf.append(possiblyNullProperty);
         }
         return buf.toString();
     }

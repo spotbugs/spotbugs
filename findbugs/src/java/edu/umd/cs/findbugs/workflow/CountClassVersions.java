@@ -54,15 +54,17 @@ public class CountClassVersions {
     public static List<String> readFrom(Reader r) throws IOException {
         BufferedReader in = new BufferedReader(r);
         List<String> lst = new LinkedList<String>();
-		while (true) {
+        while (true) {
             String s = in.readLine();
             if (s == null)
                 return lst;
-			lst.add(s);
+            lst.add(s);
         }
     }
+
     static class CountClassVersionsCommandLine extends CommandLine {
-		public String prefix = "";
+        public String prefix = "";
+
         public String inputFileList;
 
         long maxAge = Long.MIN_VALUE;
@@ -76,31 +78,33 @@ public class CountClassVersions {
 
         /*
          * (non-Javadoc)
-         *
-		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String,
-         *      java.lang.String)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String,
+         * java.lang.String)
          */
         @Override
-		protected void handleOption(String option, String optionExtraPart) throws IOException {
+        protected void handleOption(String option, String optionExtraPart) throws IOException {
             throw new IllegalArgumentException("Unknown option : " + option);
         }
 
         /*
          * (non-Javadoc)
-         *
-		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java.lang.String,
-         *      java.lang.String)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java
+         * .lang.String, java.lang.String)
          */
         @Override
-		protected void handleOptionWithArgument(String option, String argument) throws IOException {
+        protected void handleOptionWithArgument(String option, String argument) throws IOException {
             if (option.equals("-prefix"))
                 prefix = argument;
             else if (option.equals("-inputFileList"))
-				inputFileList = argument;
+                inputFileList = argument;
             else if (option.equals("-maxAge"))
                 maxAge = System.currentTimeMillis() - (24 * 60 * 60 * 1000L) * Integer.parseInt(argument);
             else
-				throw new IllegalArgumentException("Unknown option : " + option);
+                throw new IllegalArgumentException("Unknown option : " + option);
         }
 
     }
@@ -108,7 +112,7 @@ public class CountClassVersions {
     public static void main(String args[]) throws Exception {
         FindBugs.setNoAnalysis();
         CountClassVersionsCommandLine commandLine = new CountClassVersionsCommandLine();
-		int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, "Usage: " + CountClassVersions.class.getName()
+        int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, "Usage: " + CountClassVersions.class.getName()
                 + " [options] [<jarFile>+] ");
 
         int analysisClassCount = 0;
@@ -117,25 +121,25 @@ public class CountClassVersions {
         if (commandLine.inputFileList != null)
             fileList = readFrom(new FileReader(commandLine.inputFileList));
         else if (argCount == args.length)
-			fileList = readFromStandardInput();
+            fileList = readFromStandardInput();
         else
             fileList = Arrays.asList(args).subList(argCount, args.length - 1);
         byte buffer[] = new byte[8192];
-		MessageDigest digest = Util.getMD5Digest();
+        MessageDigest digest = Util.getMD5Digest();
         DualKeyHashMap<String, String, String> map = new DualKeyHashMap<String, String, String>();
 
         for (String fInName : fileList) {
             File f = new File(fInName);
             if (f.lastModified() < commandLine.maxAge) {
-				System.err.println("Skipping " + fInName + ", too old (" + new Date(f.lastModified()) + ")");
+                System.err.println("Skipping " + fInName + ", too old (" + new Date(f.lastModified()) + ")");
                 continue;
             }
             System.err.println("Opening " + f);
-			ZipFile zipInputFile;
+            ZipFile zipInputFile;
             try {
                 zipInputFile = new ZipFile(f);
             } catch (IOException e) {
-				e.printStackTrace();
+                e.printStackTrace();
                 continue;
             }
 
@@ -145,12 +149,12 @@ public class CountClassVersions {
                 if (ze == null)
                     break;
                 if (ze.isDirectory())
-					continue;
+                    continue;
 
                 String name = ze.getName();
                 if (!name.endsWith(".class"))
                     continue;
-				if (!name.replace('/', '.').startsWith(commandLine.prefix))
+                if (!name.replace('/', '.').startsWith(commandLine.prefix))
                     continue;
 
                 InputStream zipIn = zipInputFile.getInputStream(ze);
@@ -158,17 +162,17 @@ public class CountClassVersions {
                 while (true) {
                     int bytesRead = zipIn.read(buffer);
                     if (bytesRead < 0)
-						break;
+                        break;
                     digest.update(buffer, 0, bytesRead);
 
                 }
                 String hash = new BigInteger(1, digest.digest()).toString(16);
                 map.put(name, hash, fInName);
-			}
+            }
             zipInputFile.close();
         }
         for (String s : map.keySet()) {
-			Map<String, String> values = map.get(s);
+            Map<String, String> values = map.get(s);
             if (values.size() > 1) {
                 System.out.println(values.size() + "\t" + s + "\t" + values.values());
             }

@@ -19,7 +19,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
@@ -32,50 +31,47 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class InefficientMemberAccess extends BytecodeScanningDetector implements StatelessDetector {
 
     public static final String ACCESS_PREFIX = "access$";
+
     private BugReporter bugReporter;
+
     private String clsName;
 
     public InefficientMemberAccess(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
-
-
     @Override
-         public void visitClassContext(ClassContext classContext) {
+    public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
-		clsName = cls.getClassName();
+        clsName = cls.getClassName();
         if (clsName.indexOf("$") >= 0)
             super.visitClassContext(classContext);
     }
 
     @Override
-         public void sawOpcode(int seen) {
+    public void sawOpcode(int seen) {
 
         if (seen == INVOKESTATIC) {
             String methodName = getNameConstantOperand();
             if (!methodName.startsWith(ACCESS_PREFIX))
-				return;
+                return;
 
             String methodSig = getSigConstantOperand();
             Type[] argTypes = Type.getArgumentTypes(methodSig);
-			if ((argTypes.length < 1) || (argTypes.length > 2))
+            if ((argTypes.length < 1) || (argTypes.length > 2))
                 return;
             String parCls = argTypes[0].getSignature();
-            if (parCls.length() < 3) return;
-			parCls = parCls.substring(1, parCls.length() - 1);
+            if (parCls.length() < 3)
+                return;
+            parCls = parCls.substring(1, parCls.length() - 1);
             if (!parCls.equals(getClassConstantOperand()))
                 return;
             if ((argTypes.length == 2) && !argTypes[1].getSignature().equals(Type.getReturnType(methodSig).getSignature()))
-				return;
+                return;
 
-            bugReporter.reportBug(new BugInstance(this, "IMA_INEFFICIENT_MEMBER_ACCESS", LOW_PRIORITY)
-                .addClassAndMethod(this)
-                .addSourceLine(this));
-		}
+            bugReporter.reportBug(new BugInstance(this, "IMA_INEFFICIENT_MEMBER_ACCESS", LOW_PRIORITY).addClassAndMethod(this)
+                    .addSourceLine(this));
+        }
     }
-
-
-
 
 }

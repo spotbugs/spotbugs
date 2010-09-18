@@ -21,9 +21,9 @@ package edu.umd.cs.findbugs.ba.constant;
 import edu.umd.cs.findbugs.annotations.Nullable;
 
 /**
- * Abstract dataflow value representing a value which
- * may or may not be a constant.
- *
+ * Abstract dataflow value representing a value which may or may not be a
+ * constant.
+ * 
  * @see edu.umd.cs.findbugs.ba.constant.ConstantAnalysis
  * @author David Hovemeyer
  */
@@ -33,105 +33,104 @@ public class Constant {
     /**
      * Single instance representing all non-constant values.
      */
-	public static final Constant NOT_CONSTANT = new Constant(null);
+    public static final Constant NOT_CONSTANT = new Constant(null);
 
     /**
      * Constructor for a constant value.
-     *
-	 * @param value the constant value; must be a String, Integer, etc.
+     * 
+     * @param value
+     *            the constant value; must be a String, Integer, etc.
      */
     public Constant(@Nullable Object value) {
         this.value = value;
-	}
+    }
 
     /**
      * Return whether or not this value is a constant.
-     *
-	 * @return true if the value is a constant, false if not
+     * 
+     * @return true if the value is a constant, false if not
      */
     public boolean isConstant() {
         return value != null;
-	}
+    }
 
     /**
      * Return whether or not this value is a constant String.
-     *
-	 * @return true if the value is a constant String, false if not
+     * 
+     * @return true if the value is a constant String, false if not
      */
     public boolean isConstantString() {
         return isConstant() && (value instanceof String);
-	}
+    }
 
     /**
      * Get the constant String value of this value.
-     *
-	 * @return the constant String value
+     * 
+     * @return the constant String value
      */
     public String getConstantString() {
         return (String) value;
-	}
+    }
 
     /**
      * Return whether or not this value is a constant int/Integer.
-     *
-	 * @return true if the value is a constant int/Integer, false if not
+     * 
+     * @return true if the value is a constant int/Integer, false if not
      */
     public boolean isConstantInteger() {
         return isConstant() && (value instanceof Integer);
-	}
-
+    }
 
     /**
      * Get the constant int value of this value.
-     *
-	 * @return the constant int value
+     * 
+     * @return the constant int value
      */
     public int getConstantInt() {
         return ((Integer) value).intValue();
-	}
-
+    }
 
     /**
      * Merge two Constants.
-     *
-	 * @param a a Constant
-     * @param b another Constant
+     * 
+     * @param a
+     *            a Constant
+     * @param b
+     *            another Constant
      * @return the merge (dataflow meet) of the two Constants
      */
-	public static Constant merge(Constant a, Constant b) {
+    public static Constant merge(Constant a, Constant b) {
         if (!a.isConstant() || !b.isConstant())
             return NOT_CONSTANT;
         if (a.value.getClass() != b.value.getClass() || !a.value.equals(b.value))
-			return NOT_CONSTANT;
+            return NOT_CONSTANT;
         return a;
     }
 
-
     @Override
-         public boolean equals(Object obj) {
+    public boolean equals(Object obj) {
         if (obj == null || obj.getClass() != this.getClass())
-			return false;
+            return false;
         Constant other = (Constant) obj;
         if (other.value == this.value)
             return true;
-		else if (other.value == null || this.value == null)
+        else if (other.value == null || this.value == null)
             return false;
         else
             return this.value.equals(other.value);
-	}
-
+    }
 
     @Override
-         public int hashCode() {
+    public int hashCode() {
         return (value == null) ? 123 : value.hashCode();
-	}
+    }
 
     @Override
-         public String toString() {
+    public String toString() {
         if (!isConstant()) {
-			return "-";
+            return "-";
         } else {
             return "<" + value.toString() + ">";
         }
-	}
+    }
 }

@@ -31,15 +31,15 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 
 /**
- * Field property storing the types of values stored
- * in a field.  The idea is that we may be able to determine
- * a more precise type for values loaded from the field
- * than the field type alone would indicate.
- *
+ * Field property storing the types of values stored in a field. The idea is
+ * that we may be able to determine a more precise type for values loaded from
+ * the field than the field type alone would indicate.
+ * 
  * @author David Hovemeyer
  */
 public class FieldStoreType {
     private HashSet<String> typeSignatureSet;
+
     private ReferenceType loadType;
 
     public FieldStoreType() {
@@ -49,7 +49,7 @@ public class FieldStoreType {
     // TODO: type may be exact
     public void addTypeSignature(String signature) {
         loadType = null;
-		typeSignatureSet.add(signature);
+        typeSignatureSet.add(signature);
     }
 
     public Iterator<String> signatureIterator() {
@@ -59,7 +59,7 @@ public class FieldStoreType {
     public ReferenceType getLoadType(ReferenceType fieldType) {
         if (loadType == null) {
             computeLoadType(fieldType);
-		}
+        }
         return loadType;
     }
 
@@ -69,39 +69,40 @@ public class FieldStoreType {
         for (Iterator<String> i = signatureIterator(); i.hasNext();) {
             try {
                 String signature = i.next();
-				Type type = Type.getType(signature);
+                Type type = Type.getType(signature);
                 if (!(type instanceof ReferenceType))
                     continue;
 
                 // FIXME: this will mangle interface types, since
                 // getFirstCommonSuperclass() ignores interfaces.
                 /*
-				leastSupertype = (leastSupertype == null)
-                    ? (ReferenceType) type
-                    : leastSupertype.getFirstCommonSuperclass((ReferenceType) type);
-                */
-				if (leastSupertype == null) {
+                 * leastSupertype = (leastSupertype == null) ? (ReferenceType)
+                 * type :
+                 * leastSupertype.getFirstCommonSuperclass((ReferenceType)
+                 * type);
+                 */
+                if (leastSupertype == null) {
                     leastSupertype = (ReferenceType) type;
                 } else {
                     if (Subtypes2.ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES) {
-						leastSupertype = AnalysisContext.currentAnalysisContext().getSubtypes2().getFirstCommonSuperclass(
-                                leastSupertype, (ReferenceType) type);
+                        leastSupertype = AnalysisContext.currentAnalysisContext().getSubtypes2()
+                                .getFirstCommonSuperclass(leastSupertype, (ReferenceType) type);
                     } else {
                         leastSupertype = leastSupertype.getFirstCommonSuperclass((ReferenceType) type);
-					}
+                    }
                 }
 
             } catch (ClassFormatException e) {
                 // Bad signature: ignore
             } catch (ClassNotFoundException e) {
-				AnalysisContext.reportMissingClass(e);
+                AnalysisContext.reportMissingClass(e);
             }
         }
 
         try {
             if (leastSupertype != null && Hierarchy.isSubtype(leastSupertype, fieldType))
                 loadType = leastSupertype;
-		} catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
         }
 

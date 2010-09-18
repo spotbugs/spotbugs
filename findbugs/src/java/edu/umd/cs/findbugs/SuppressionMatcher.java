@@ -29,56 +29,59 @@ import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class SuppressionMatcher implements Matcher {
-    private Map <ClassAnnotation, Collection<WarningSuppressor>> suppressedWarnings
-            = new HashMap<ClassAnnotation, Collection<WarningSuppressor>>();
-    private Map <String, Collection<WarningSuppressor>> suppressedPackageWarnings
-			= new HashMap<String, Collection<WarningSuppressor>>();
+    private Map<ClassAnnotation, Collection<WarningSuppressor>> suppressedWarnings = new HashMap<ClassAnnotation, Collection<WarningSuppressor>>();
+
+    private Map<String, Collection<WarningSuppressor>> suppressedPackageWarnings = new HashMap<String, Collection<WarningSuppressor>>();
+
     int count = 0;
 
     public void addPackageSuppressor(PackageWarningSuppressor suppressor) {
         String packageName = suppressor.getPackageName();
 
-        Collection<WarningSuppressor> c =  suppressedPackageWarnings.get(packageName);
+        Collection<WarningSuppressor> c = suppressedPackageWarnings.get(packageName);
         if (c == null) {
             c = new LinkedList<WarningSuppressor>();
-			suppressedPackageWarnings.put(packageName,c);
-            }
-            c.add(suppressor);
+            suppressedPackageWarnings.put(packageName, c);
         }
+        c.add(suppressor);
+    }
 
     public void addSuppressor(ClassWarningSuppressor suppressor) {
         ClassAnnotation clazz = suppressor.getClassAnnotation().getTopLevelClass();
-        Collection<WarningSuppressor> c =  suppressedWarnings.get(clazz);
-		if (c == null) {
+        Collection<WarningSuppressor> c = suppressedWarnings.get(clazz);
+        if (c == null) {
             c = new LinkedList<WarningSuppressor>();
-            suppressedWarnings.put(clazz,c);
-            }
-			c.add(suppressor);
+            suppressedWarnings.put(clazz, c);
+        }
+        c.add(suppressor);
     }
+
     public int count() {
         return count;
-		}
+    }
+
     public boolean match(BugInstance b) {
         ClassAnnotation clazz = b.getPrimaryClass().getTopLevelClass();
         Collection<WarningSuppressor> c = suppressedWarnings.get(clazz);
-		if (c != null) 
-        for(WarningSuppressor w : c)
-            if (w.match(b)) {
-                count++;
-				return true;
+        if (c != null)
+            for (WarningSuppressor w : c)
+                if (w.match(b)) {
+                    count++;
+                    return true;
                 }
-        for(Collection<WarningSuppressor> c2 : suppressedPackageWarnings.values())
-          for(WarningSuppressor w : c2) {
-			if (w.match(b)) {
-                count++;
-                return true;
+        for (Collection<WarningSuppressor> c2 : suppressedPackageWarnings.values())
+            for (WarningSuppressor w : c2) {
+                if (w.match(b)) {
+                    count++;
+                    return true;
                 }
-			}
+            }
         return false;
-        }
+    }
+
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-		  // no-op; these aren't saved to XML
-        }
+        // no-op; these aren't saved to XML
+    }
 
 }
 

@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.ba;
 /**
  * @author pugh
  */
-public class AnnotationEnumeration <E extends AnnotationEnumeration<E>> implements Comparable<E> {
+public class AnnotationEnumeration<E extends AnnotationEnumeration<E>> implements Comparable<E> {
     private final int index;
 
     protected final String name;
@@ -30,33 +30,38 @@ public class AnnotationEnumeration <E extends AnnotationEnumeration<E>> implemen
     protected AnnotationEnumeration(String s, int i) {
         name = s;
         index = i;
-	}
+    }
+
     @Override
-         public final boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (!(o instanceof AnnotationEnumeration<?>))
-			return false;
+            return false;
         return index == ((AnnotationEnumeration<?>) o).getIndex();
     }
 
     @Override
-         public final int hashCode() {
+    public final int hashCode() {
         return index;
-	}
+    }
 
     @Override
-         public String toString() {
+    public String toString() {
         return name;
-	}
+    }
+
     /**
      * @return Returns the index.
      */
-	public int getIndex() {
+    public int getIndex() {
         return index;
     }
-    /* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(T)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Comparable#compareTo(T)
      */
     public int compareTo(E a) {
         return index - a.getIndex();
-	}
+    }
 }

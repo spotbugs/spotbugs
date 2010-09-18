@@ -19,10 +19,9 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-
 /**
  * Exception to indicate that a resource was not found.
- *
+ * 
  * @author David Hovemeyer
  */
 public class ResourceNotFoundException extends CheckedAnalysisException {
@@ -32,46 +31,45 @@ public class ResourceNotFoundException extends CheckedAnalysisException {
 
     /**
      * Constructor.
-     *
-	 * @param resourceName name of the missing resource
+     * 
+     * @param resourceName
+     *            name of the missing resource
      */
     public ResourceNotFoundException(String resourceName) {
         super(MESSAGE_PREFIX + resourceName);
-		this.resourceName = resourceName;
+        this.resourceName = resourceName;
     }
 
     /**
      * Constructor.
-     *
-	 * @param resourceName name of the missing resource
-     * @param cause        underlying cause of the exception
+     * 
+     * @param resourceName
+     *            name of the missing resource
+     * @param cause
+     *            underlying cause of the exception
      */
     public ResourceNotFoundException(String resourceName, Throwable cause) {
-		super(MESSAGE_PREFIX + resourceName, cause);
+        super(MESSAGE_PREFIX + resourceName, cause);
         this.resourceName = resourceName;
     }
 
     /**
      * Get the name of the resource that was not found.
-     *
-	 * @return the name of the resource that was not found
+     * 
+     * @return the name of the resource that was not found
      */
     public String getResourceName() {
         return resourceName;
-	}
+    }
 
     /**
-     * Convert this exception to a ClassNotFoundException.
-     * This method should only be called if the
-     * ResourceNotFoundException occurs while looking for a class.
-     * The message format is parseable by ClassNotFoundExceptionParser.
+     * Convert this exception to a ClassNotFoundException. This method should
+     * only be called if the ResourceNotFoundException occurs while looking for
+     * a class. The message format is parseable by ClassNotFoundExceptionParser.
      */
     public ClassNotFoundException toClassNotFoundException() {
         ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptorFromResourceName(resourceName);
-        return new ClassNotFoundException(
-                "ResourceNotFoundException while looking for class " +
-    			classDescriptor.toDottedClassName() +
-                ": " +
-                getMessage());
+        return new ClassNotFoundException("ResourceNotFoundException while looking for class "
+                + classDescriptor.toDottedClassName() + ": " + getMessage());
     }
 }

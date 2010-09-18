@@ -25,8 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Data source for source files which are stored in
- * the filesystem.
+ * Data source for source files which are stored in the filesystem.
  */
 public class FileSourceFileDataSource implements SourceFileDataSource {
     private String fileName;

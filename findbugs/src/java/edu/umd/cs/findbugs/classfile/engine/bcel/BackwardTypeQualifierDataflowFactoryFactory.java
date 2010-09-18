@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Factory to create BackwardTypeQualifierDataflowFactory objects.
- *
+ * 
  * @author David Hovemeyer
  */
 public class BackwardTypeQualifierDataflowFactoryFactory extends AnalysisFactory<BackwardTypeQualifierDataflowFactory> {
@@ -34,10 +34,14 @@ public class BackwardTypeQualifierDataflowFactoryFactory extends AnalysisFactory
         super("BackwardTypeQualifierDataflowFactory factory", BackwardTypeQualifierDataflowFactory.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public BackwardTypeQualifierDataflowFactory analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+    public BackwardTypeQualifierDataflowFactory analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
             throws CheckedAnalysisException {
         return new BackwardTypeQualifierDataflowFactory(descriptor);
     }

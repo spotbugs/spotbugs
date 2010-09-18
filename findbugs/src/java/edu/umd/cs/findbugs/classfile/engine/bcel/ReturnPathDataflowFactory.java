@@ -27,27 +27,30 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce ReturnPathDataflow objects
- * for analyzed methods.
- *
+ * Analysis engine to produce ReturnPathDataflow objects for analyzed methods.
+ * 
  * @author David Hovemeyer
  */
 public class ReturnPathDataflowFactory extends AnalysisFactory<ReturnPathDataflow> {
     /**
      * Constructor.
      */
-	public ReturnPathDataflowFactory() {
+    public ReturnPathDataflowFactory() {
         super("return path analysis", ReturnPathDataflow.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public ReturnPathDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public ReturnPathDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         CFG cfg = getCFG(analysisCache, descriptor);
         DepthFirstSearch dfs = getDepthFirstSearch(analysisCache, descriptor);
         ReturnPathAnalysis analysis = new ReturnPathAnalysis(dfs);
-		ReturnPathDataflow dataflow = new ReturnPathDataflow(cfg, analysis);
+        ReturnPathDataflow dataflow = new ReturnPathDataflow(cfg, analysis);
         dataflow.execute();
         return dataflow;
     }

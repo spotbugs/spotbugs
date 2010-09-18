@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 
 /**
  * Simple token class.
- *
+ * 
  * @author David Hovemeyer
  * @see Tokenizer
  */
@@ -29,69 +29,72 @@ public class Token {
     /**
      * End of file.
      */
-	public static final int EOF = -1;
+    public static final int EOF = -1;
 
     /**
      * End of line.
      */
-	public static final int EOL = -2;
+    public static final int EOL = -2;
 
     /**
      * An ordinary word, number, etc.
      */
-	public static final int WORD = 0;
+    public static final int WORD = 0;
 
     /**
      * A string or character literal.
      */
-	public static final int STRING = 1;
+    public static final int STRING = 1;
 
     /**
      * A single character token.
      */
-	public static final int SINGLE = 2;
+    public static final int SINGLE = 2;
 
     /**
      * A comment.
      */
-	public static final int COMMENT = 3;
+    public static final int COMMENT = 3;
 
     private int kind;
+
     private String lexeme;
 
     /**
      * Constructor.
-     *
-	 * @param kind   the kind of token
-     * @param lexeme the text value of the token
+     * 
+     * @param kind
+     *            the kind of token
+     * @param lexeme
+     *            the text value of the token
      */
     public Token(int kind, String lexeme) {
-		this.kind = kind;
+        this.kind = kind;
         this.lexeme = lexeme;
     }
 
     /**
-     * Constructor when there is no text.
-     * E.g., EOF and EOL.
-	 *
-     * @param kind the kind of token
+     * Constructor when there is no text. E.g., EOF and EOL.
+     * 
+     * @param kind
+     *            the kind of token
      */
     public Token(int kind) {
-		this.kind = kind;
+        this.kind = kind;
         this.lexeme = "";
     }
 
     /**
      * Get the kind of token.
      */
-	public int getKind() {
+    public int getKind() {
         return kind;
     }
 
     /**
      * Get the text value of the token.
      */
-	public String getLexeme() {
+    public String getLexeme() {
         return lexeme;
     }
 }

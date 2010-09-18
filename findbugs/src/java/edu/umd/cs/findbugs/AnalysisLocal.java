@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package edu.umd.cs.findbugs;
+
 import java.util.Map;
 
 import edu.umd.cs.findbugs.classfile.Global;
@@ -27,8 +28,8 @@ public class AnalysisLocal<T> {
     }
 
     @SuppressWarnings("unchecked")
-    protected Map <AnalysisLocal<T>, T> getMap() {
-        Map<?,?> m = Global.getAnalysisCache().getAnalysisLocals();
+    protected Map<AnalysisLocal<T>, T> getMap() {
+        Map<?, ?> m = Global.getAnalysisCache().getAnalysisLocals();
         return (Map<AnalysisLocal<T>, T>) m;
     }
 
@@ -39,21 +40,23 @@ public class AnalysisLocal<T> {
             return m.get(this);
         }
 
-        synchronized(m) {
+        synchronized (m) {
             if (m.containsKey(this)) {
                 return m.get(this);
-			}
+            }
             T result = initialValue();
-            m.put(this,result);
+            m.put(this, result);
             return result;
-		}
+        }
     }
-    public  void set(T value) {
+
+    public void set(T value) {
         Map<AnalysisLocal<T>, T> m = getMap();
-		m.put(this, value);
+        m.put(this, value);
     }
-    public  void  remove() {
+
+    public void remove() {
         Map<AnalysisLocal<T>, T> m = getMap();
-		m.remove(this);
+        m.remove(this);
     }
 }

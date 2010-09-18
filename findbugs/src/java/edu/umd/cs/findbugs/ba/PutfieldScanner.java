@@ -33,22 +33,21 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
  */
 public class PutfieldScanner {
 
-
-
     public static Map<Integer, OpcodeStack.Item> getPutfieldsFor(JavaClass theClass, Method method, XField field) {
         Scanner scanner = new Scanner(theClass, method, field);
 
-		scanner.execute();
+        scanner.execute();
         return scanner.putfields;
 
     }
 
     static class Scanner extends OpcodeStackDetector {
 
-        Map<Integer, OpcodeStack.Item>  putfields =  new TreeMap<Integer, OpcodeStack.Item> ();
+        Map<Integer, OpcodeStack.Item> putfields = new TreeMap<Integer, OpcodeStack.Item>();
+
         public Scanner(JavaClass theClass, Method targetMethod, XField target) {
             this.theClass = theClass;
-			this.targetMethod = targetMethod;
+            this.targetMethod = targetMethod;
             this.targetField = target;
         }
 
@@ -61,25 +60,23 @@ public class PutfieldScanner {
         @Override
         public void sawOpcode(int seen) {
             if (seen != PUTFIELD)
-				return;
+                return;
             XField xFieldOperand = getXFieldOperand();
-            if (xFieldOperand != null && xFieldOperand.equals(targetField)
-                    && stack.getStackItem(1).getRegisterNumber() == 0)
-				putfields.put(getPC(), new OpcodeStack.Item(stack.getStackItem(0)));
-
+            if (xFieldOperand != null && xFieldOperand.equals(targetField) && stack.getStackItem(1).getRegisterNumber() == 0)
+                putfields.put(getPC(), new OpcodeStack.Item(stack.getStackItem(0)));
 
         }
 
         @Override
         public void visitJavaClass(JavaClass obj) {
             setupVisitorForClass(obj);
-			getConstantPool().accept(this);
+            getConstantPool().accept(this);
             doVisitMethod(targetMethod);
         }
 
         public void execute() {
             theClass.accept(this);
         }
-	}
+    }
 
 }

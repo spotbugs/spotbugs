@@ -24,14 +24,14 @@ import org.apache.bcel.generic.MethodGen;
 
 /**
  * Map BCEL InstructionHandles to some kind of value type.
- *
+ * 
  * @author David Hovemeyer
  */
 public class InstructionHandleMap<ValueType> {
     private Object[] map;
 
     public InstructionHandleMap(MethodGen methodGen) {
-		map = new Object[methodGen.getMethod().getCode().getLength()];
+        map = new Object[methodGen.getMethod().getCode().getLength()];
     }
 
     @SuppressWarnings("unchecked")
@@ -39,9 +39,9 @@ public class InstructionHandleMap<ValueType> {
         return (ValueType) map[handle.getPosition()];
     }
 
-	public ValueType put(InstructionHandle handle, ValueType value) {
+    public ValueType put(InstructionHandle handle, ValueType value) {
         ValueType old = get(handle);
         map[handle.getPosition()] = value;
         return old;
-	}
+    }
 }

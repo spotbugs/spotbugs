@@ -27,62 +27,68 @@ import javax.annotation.Nonnull;
 
 /**
  * Some utility methods for working with the Java class path.
- *
+ * 
  * @author David Hovemeyer
  */
 public class ClassPathUtil {
     /**
-     * Try to find a codebase with the given name in the given
-     * class path string.
-	 * 
-     * @param codeBaseName name of a codebase (e.g., "findbugs.jar")
-     * @param classPath    a classpath
-     * @return full path of named codebase, or null if the codebase couldn't be found
-	 */
+     * Try to find a codebase with the given name in the given class path
+     * string.
+     * 
+     * @param codeBaseName
+     *            name of a codebase (e.g., "findbugs.jar")
+     * @param classPath
+     *            a classpath
+     * @return full path of named codebase, or null if the codebase couldn't be
+     *         found
+     */
     public static String findCodeBaseInClassPath(@Nonnull String codeBaseName, String classPath) {
         if (classPath == null) {
             return null;
-		}
+        }
 
         StringTokenizer tok = new StringTokenizer(classPath, File.pathSeparator);
         while (tok.hasMoreTokens()) {
-			String t = tok.nextToken();
+            String t = tok.nextToken();
             File f = new File(t);
             if (f.getName().equals(codeBaseName)) {
                 return t;
-			}
-        }
-
-        return null;
-	}
-
-    /**
-     * Try to find a codebase matching the given pattern in the given
-	 * class path string.
-     *
-     * @param codeBaseNamePattern pattern describing a codebase
-     *        (e.g., compiled from the regex "findbugs\\.jar$")
-	 * @param classPath    a classpath
-     * @return full path of named codebase, or null if the codebase couldn't be found
-     */
-    public static String findCodeBaseInClassPath(Pattern codeBaseNamePattern, String classPath) {
-		if (classPath == null) {
-            return null;
-        }
-
-		StringTokenizer tok = new StringTokenizer(classPath, File.pathSeparator);
-        while (tok.hasMoreTokens()) {
-            String t = tok.nextToken();
-            File f = new File(t);
-			Matcher m = codeBaseNamePattern.matcher(f.getName());
-            if (m.matches()) {
-                return t;
             }
-		}
+        }
 
         return null;
     }
-	
+
+    /**
+     * Try to find a codebase matching the given pattern in the given class path
+     * string.
+     * 
+     * @param codeBaseNamePattern
+     *            pattern describing a codebase (e.g., compiled from the regex
+     *            "findbugs\\.jar$")
+     * @param classPath
+     *            a classpath
+     * @return full path of named codebase, or null if the codebase couldn't be
+     *         found
+     */
+    public static String findCodeBaseInClassPath(Pattern codeBaseNamePattern, String classPath) {
+        if (classPath == null) {
+            return null;
+        }
+
+        StringTokenizer tok = new StringTokenizer(classPath, File.pathSeparator);
+        while (tok.hasMoreTokens()) {
+            String t = tok.nextToken();
+            File f = new File(t);
+            Matcher m = codeBaseNamePattern.matcher(f.getName());
+            if (m.matches()) {
+                return t;
+            }
+        }
+
+        return null;
+    }
+
     public static String[] getJavaClassPath() {
         return System.getProperty("java.class.path").split(":");
     }

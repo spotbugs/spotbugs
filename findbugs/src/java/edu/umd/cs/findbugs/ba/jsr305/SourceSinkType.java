@@ -21,20 +21,15 @@ package edu.umd.cs.findbugs.ba.jsr305;
 
 /**
  * Types of sources and sinks in type qualifier dataflow analysis.
- *
+ * 
  * @see SourceSinkInfo
  * @see TypeQualifierValueSet
  * @author David Hovemeyer
  */
 public enum SourceSinkType {
     // Source types
-    PARAMETER,
-    RETURN_VALUE_OF_CALLED_METHOD,
-	FIELD_LOAD,
-    CONSTANT_VALUE,
+    PARAMETER, RETURN_VALUE_OF_CALLED_METHOD, FIELD_LOAD, CONSTANT_VALUE,
 
     // Sink types
-	ARGUMENT_TO_CALLED_METHOD,
-    RETURN_VALUE,
-    FIELD_STORE
+    ARGUMENT_TO_CALLED_METHOD, RETURN_VALUE, FIELD_STORE
 }

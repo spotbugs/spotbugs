@@ -26,38 +26,37 @@ import org.dom4j.DocumentException;
 @Deprecated
 public class NewResults {
     private SortedBugCollection origCollection;
+
     private SortedBugCollection newCollection;
 
-    public NewResults(String origFilename, String newFilename)
-            throws IOException, DocumentException {
+    public NewResults(String origFilename, String newFilename) throws IOException, DocumentException {
         this(new SortedBugCollection(), new SortedBugCollection());
-		origCollection.readXML(origFilename);
+        origCollection.readXML(origFilename);
         newCollection.readXML(newFilename);
     }
 
     public NewResults(SortedBugCollection origCollection, SortedBugCollection newCollection) {
         this.origCollection = origCollection;
         this.newCollection = newCollection;
-	}
+    }
 
     public SortedBugCollection execute() {
         SortedBugCollection result = new SortedBugCollection();
 
-        for (Iterator<BugInstance> i= newCollection.iterator(); i.hasNext(); ) {
+        for (Iterator<BugInstance> i = newCollection.iterator(); i.hasNext();) {
             BugInstance bugInstance = i.next();
 
             if (!origCollection.contains(bugInstance)) {
                 result.add(bugInstance);
             }
-		}
+        }
 
         return result;
     }
 
     public static void main(String[] argv) throws Exception {
         if (argv.length != 3) {
-            System.err.println("Usage: " + NewResults.class.getName() +
-				" <orig results> <new results> <output file>");
+            System.err.println("Usage: " + NewResults.class.getName() + " <orig results> <new results> <output file>");
             System.exit(1);
         }
 

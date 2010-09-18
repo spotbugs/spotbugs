@@ -31,27 +31,30 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce LockDataflow objects for
- * analyzed methods.
- *
+ * Analysis engine to produce LockDataflow objects for analyzed methods.
+ * 
  * @author David Hovemeyer
  */
 public class LockDataflowFactory extends AnalysisFactory<LockDataflow> {
     /**
      * Constructor.
      */
-	public LockDataflowFactory() {
+    public LockDataflowFactory() {
         super("lock set analysis", LockDataflow.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public LockDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public LockDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
         if (methodGen == null) {
             throw new MethodUnprofitableException(descriptor);
-		}
+        }
         ValueNumberDataflow vnaDataflow = getValueNumberDataflow(analysisCache, descriptor);
         DepthFirstSearch dfs = getDepthFirstSearch(analysisCache, descriptor);
         CFG cfg = getCFG(analysisCache, descriptor);
@@ -59,7 +62,7 @@ public class LockDataflowFactory extends AnalysisFactory<LockDataflow> {
         LockAnalysis analysis = new LockAnalysis(methodGen, vnaDataflow, dfs);
         LockDataflow dataflow = new LockDataflow(cfg, analysis);
         dataflow.execute();
-		return dataflow;
+        return dataflow;
 
     }
 }

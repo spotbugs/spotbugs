@@ -22,42 +22,55 @@ package edu.umd.cs.findbugs.ba;
 /**
  * @author pugh
  */
-public class XMethodParameter implements Comparable<XMethodParameter>{
+public class XMethodParameter implements Comparable<XMethodParameter> {
     /**
      * Create a new Method parameter reference
-     * @param m the method of which this is a parameter to
-	 * @param p the parameter index (0 for first parameter)
+     * 
+     * @param m
+     *            the method of which this is a parameter to
+     * @param p
+     *            the parameter index (0 for first parameter)
      */
     public XMethodParameter(XMethod m, int p) {
         method = m;
-		parameter = p;
+        parameter = p;
     }
+
     private final XMethod method;
+
     private final int parameter;
-	public XMethod getMethod() {
+
+    public XMethod getMethod() {
         return method;
     }
+
     public int getParameterNumber() {
-		return parameter;
+        return parameter;
     }
+
     @Override
-         public boolean equals(Object o) {
-		if (!(o instanceof XMethodParameter)) return false;
+    public boolean equals(Object o) {
+        if (!(o instanceof XMethodParameter))
+            return false;
         XMethodParameter mp2 = (XMethodParameter) o;
         return parameter == mp2.parameter && method.equals(mp2.method);
     }
-	@Override
-         public int hashCode() {
+
+    @Override
+    public int hashCode() {
         return method.hashCode() + parameter;
     }
-	@SuppressWarnings("unchecked")
+
+    @SuppressWarnings("unchecked")
     public int compareTo(XMethodParameter mp2) {
         int result = method.compareTo(mp2.method);
-        if (result != 0) return result;
+        if (result != 0)
+            return result;
         return parameter - mp2.parameter;
-	}
+    }
+
     @Override
-         public String toString() {
+    public String toString() {
         return "parameter " + parameter + " of " + method;
-	}
+    }
 }

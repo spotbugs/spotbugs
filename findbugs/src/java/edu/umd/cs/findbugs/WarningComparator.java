@@ -29,13 +29,16 @@ import edu.umd.cs.findbugs.model.ClassNameRewriter;
 public interface WarningComparator extends Comparator<BugInstance> {
 
     /**
-     * @param classNameRewriter The classNameRewriter to set.
+     * @param classNameRewriter
+     *            The classNameRewriter to set.
      */
-	public abstract void setClassNameRewriter(ClassNameRewriter classNameRewriter);
+    public abstract void setClassNameRewriter(ClassNameRewriter classNameRewriter);
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Comparator#compare(T, T)
      */
-	public abstract int compare(BugInstance lhs, BugInstance rhs);
+    public abstract int compare(BugInstance lhs, BugInstance rhs);
 
 }

@@ -25,22 +25,27 @@ import java.util.Iterator;
 import javax.annotation.WillClose;
 
 /**
- * Base class for BugReporters which provides convenient formatting
- * and reporting of warnings and analysis errors.
- *
+ * Base class for BugReporters which provides convenient formatting and
+ * reporting of warnings and analysis errors.
+ * 
  * <p>
- * "TextUIBugReporter" is a bit of a misnomer, since this class
- * is useful in GUIs, too.
+ * "TextUIBugReporter" is a bit of a misnomer, since this class is useful in
+ * GUIs, too.
  * </p>
- *
+ * 
  * @author David Hovemeyer
  */
 public abstract class TextUIBugReporter extends AbstractBugReporter {
     private boolean reportStackTrace;
+
     private boolean useLongBugCodes = false;
+
     private boolean showRank = false;
-	private boolean reportHistory = false;
+
+    private boolean reportHistory = false;
+
     private boolean reportUserDesignations = false;
+
     private boolean applySuppressions = false;
 
     static final String OTHER_CATEGORY_ABBREV = "X";
@@ -53,109 +58,112 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
     /**
      * Set the PrintStream to write bug output to.
-     *
-	 * @param outputStream the PrintStream to write bug output to
+     * 
+     * @param outputStream
+     *            the PrintStream to write bug output to
      */
     public void setOutputStream(@WillClose PrintStream outputStream) {
         this.outputStream = outputStream;
-	}
+    }
 
     /**
      * Set whether or not stack traces should be reported in error output.
-     *
-	 * @param reportStackTrace true if stack traces should be reported, false if not
+     * 
+     * @param reportStackTrace
+     *            true if stack traces should be reported, false if not
      */
     public void setReportStackTrace(boolean reportStackTrace) {
         this.reportStackTrace = reportStackTrace;
-	}
+    }
 
     /**
      * Print bug in one-line format.
-     *
-	 * @param bugInstance the bug to print
+     * 
+     * @param bugInstance
+     *            the bug to print
      */
     protected void printBug(BugInstance bugInstance) {
         if (showRank) {
-			int rank = BugRanker.findRank(bugInstance);
+            int rank = BugRanker.findRank(bugInstance);
             outputStream.printf("%2d ", rank);
         }
         switch (bugInstance.getPriority()) {
-		case Detector.EXP_PRIORITY:
+        case Detector.EXP_PRIORITY:
             outputStream.print("E ");
             break;
         case Detector.LOW_PRIORITY:
-			outputStream.print("L ");
+            outputStream.print("L ");
             break;
         case Detector.NORMAL_PRIORITY:
             outputStream.print("M ");
-			break;
+            break;
         case Detector.HIGH_PRIORITY:
             outputStream.print("H ");
             break;
-		}
+        }
 
         BugPattern pattern = bugInstance.getBugPattern();
         if (pattern != null) {
             String categoryAbbrev = null;
-			BugCategory bcat = I18N.instance().getBugCategory(pattern.getCategory());
-            if (bcat != null) categoryAbbrev = bcat.getAbbrev();
-            if (categoryAbbrev == null) categoryAbbrev = OTHER_CATEGORY_ABBREV;
+            BugCategory bcat = I18N.instance().getBugCategory(pattern.getCategory());
+            if (bcat != null)
+                categoryAbbrev = bcat.getAbbrev();
+            if (categoryAbbrev == null)
+                categoryAbbrev = OTHER_CATEGORY_ABBREV;
             outputStream.print(categoryAbbrev);
-			outputStream.print(" ");
+            outputStream.print(" ");
         }
 
         if (useLongBugCodes) {
-        outputStream.print(bugInstance.getType());
-        outputStream.print(" ");
-		}
+            outputStream.print(bugInstance.getType());
+            outputStream.print(" ");
+        }
         if (reportUserDesignations) {
             outputStream.print(bugInstance.getUserDesignationKey());
             outputStream.print(" ");
-			}
+        }
 
         if (reportHistory) {
             long first = bugInstance.getFirstVersion();
             long last = bugInstance.getLastVersion();
-			outputStream.print(first);
+            outputStream.print(first);
             outputStream.print(" ");
             outputStream.print(last);
             outputStream.print(" ");
-		}
-        SourceLineAnnotation line =
-                bugInstance.getPrimarySourceLineAnnotation();
+        }
+        SourceLineAnnotation line = bugInstance.getPrimarySourceLineAnnotation();
         if (line == null)
-			outputStream.println(bugInstance.getMessage().replace('\n', ' '));
+            outputStream.println(bugInstance.getMessage().replace('\n', ' '));
         else
-            outputStream.println(bugInstance.getMessage().replace('\n', ' ')
-                    + "  " + line.toString());
-	}
+            outputStream.println(bugInstance.getMessage().replace('\n', ' ') + "  " + line.toString());
+    }
 
     private boolean analysisErrors;
-    private boolean missingClasses;
 
+    private boolean missingClasses;
 
     @Override
     public void reportQueuedErrors() {
         analysisErrors = missingClasses = false;
-		super.reportQueuedErrors();
+        super.reportQueuedErrors();
     }
 
     @Override
     public void reportAnalysisError(AnalysisError error) {
         if (!analysisErrors) {
-			emitLine("The following errors occurred during analysis:");
+            emitLine("The following errors occurred during analysis:");
             analysisErrors = true;
         }
         emitLine("\t" + error.getMessage());
-		if (error.getExceptionMessage() != null) {
+        if (error.getExceptionMessage() != null) {
             emitLine("\t\t" + error.getExceptionMessage());
             if (reportStackTrace) {
                 String[] stackTrace = error.getStackTrace();
-				if (stackTrace != null) {
+                if (stackTrace != null) {
                     for (String aStackTrace : stackTrace) {
                         emitLine("\t\t\tAt " + aStackTrace);
                     }
-				}
+                }
             }
         }
     }
@@ -163,24 +171,23 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
     @Override
     public void reportMissingClass(String message) {
         if (!missingClasses) {
-			emitLine("The following classes needed for analysis were missing:");
+            emitLine("The following classes needed for analysis were missing:");
             missingClasses = true;
         }
         emitLine("\t" + message);
-	}
+    }
 
     /**
-     * Emit one line of the error message report.
-     * By default, error messages are printed to System.err.
-	 * Subclasses may override.
-     *
-     * @param line one line of the error report
+     * Emit one line of the error message report. By default, error messages are
+     * printed to System.err. Subclasses may override.
+     * 
+     * @param line
+     *            one line of the error report
      */
-	protected void emitLine(String line) {
+    protected void emitLine(String line) {
         line = line.replaceAll("\t", "  ");
         System.err.println(line);
     }
-
 
     public boolean getUseLongBugCodes() {
         return useLongBugCodes;
@@ -193,11 +200,12 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
     public void setUseLongBugCodes(boolean useLongBugCodes) {
         this.useLongBugCodes = useLongBugCodes;
     }
-	public void setShowRank(boolean showRank) {
+
+    public void setShowRank(boolean showRank) {
         this.showRank = showRank;
     }
 
-	public void setApplySuppressions(boolean applySuppressions) {
+    public void setApplySuppressions(boolean applySuppressions) {
         this.applySuppressions = applySuppressions;
     }
 
@@ -205,33 +213,32 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
         this.reportUserDesignations = reportUserDesignations;
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
      */
-	public BugReporter getRealBugReporter() {
+    public BugReporter getRealBugReporter() {
         return this;
     }
 
     /**
-     * For debugging: check a BugInstance to make sure it
-     * is valid.
-	 * 
-     * @param bugInstance the BugInstance to check
+     * For debugging: check a BugInstance to make sure it is valid.
+     * 
+     * @param bugInstance
+     *            the BugInstance to check
      */
     protected void checkBugInstance(BugInstance bugInstance) {
-		for (Iterator<BugAnnotation> i = bugInstance.annotationIterator(); i.hasNext();) {
+        for (Iterator<BugAnnotation> i = bugInstance.annotationIterator(); i.hasNext();) {
             BugAnnotation bugAnnotation = i.next();
             if (bugAnnotation instanceof PackageMemberAnnotation) {
                 PackageMemberAnnotation pkgMember = (PackageMemberAnnotation) bugAnnotation;
-				if (pkgMember.getSourceLines() == null) {
-                    throw new IllegalStateException("Package member " + pkgMember +
-                            " reported without source lines!");
+                if (pkgMember.getSourceLines() == null) {
+                    throw new IllegalStateException("Package member " + pkgMember + " reported without source lines!");
                 }
-			}
+            }
         }
     }
-
 
     public boolean isApplySuppressions() {
         return applySuppressions;

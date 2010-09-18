@@ -23,142 +23,149 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.generic.*;
 
 /**
- * A common base class for frame modeling visitors.
- * This class provides a default implementation which copies values
- * between frame slots whenever appropriate.  For example, its handler
- * for the ALOAD bytecode will get the value from the referenced
- * local in the frame and push it onto the stack.  Bytecodes which
- * do something other than copying values are modeled by popping
- * values as appropriate, and pushing the "default" value onto the stack
- * for each stack slot produced, where the default value is the one
- * returned by the getDefaultValue() method.
+ * A common base class for frame modeling visitors. This class provides a
+ * default implementation which copies values between frame slots whenever
+ * appropriate. For example, its handler for the ALOAD bytecode will get the
+ * value from the referenced local in the frame and push it onto the stack.
+ * Bytecodes which do something other than copying values are modeled by popping
+ * values as appropriate, and pushing the "default" value onto the stack for
+ * each stack slot produced, where the default value is the one returned by the
+ * getDefaultValue() method.
  * <p/>
- * <p> Subclasses should override the visit methods for any bytecode instructions
+ * <p>
+ * Subclasses should override the visit methods for any bytecode instructions
  * which require special handling.
  * </p>
  * <p>
- * Users of AbstractFrameModelingVisitors should call the
- * analyzeInstruction() method instead of directly using the accept()
- * method of the instruction.  This allows a checked DataflowAnalysisException
- * to be thrown when invalid bytecode is detected.  E.g.,
- * stack underflows.
+ * Users of AbstractFrameModelingVisitors should call the analyzeInstruction()
+ * method instead of directly using the accept() method of the instruction. This
+ * allows a checked DataflowAnalysisException to be thrown when invalid bytecode
+ * is detected. E.g., stack underflows.
  * </p>
- *
+ * 
  * @author David Hovemeyer
  * @see Frame
  * @see DataflowAnalysis
  */
-public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Frame<Value>> implements Visitor {
+public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Frame<Value>> implements Visitor {
     private FrameType frame;
+
     private Location location;
+
     protected ConstantPoolGen cpg;
 
     /**
      * Constructor.
-     *
-	 * @param cpg the ConstantPoolGen of the method to be analyzed
+     * 
+     * @param cpg
+     *            the ConstantPoolGen of the method to be analyzed
      */
     public AbstractFrameModelingVisitor(ConstantPoolGen cpg) {
         this.frame = null;
-		this.cpg = cpg;
+        this.cpg = cpg;
     }
 
     /**
      * Analyze the given Instruction.
-     *
-	 * @param ins the Instruction
-     * @throws DataflowAnalysisException if an error occurs analyzing the instruction;
-     *                                   in most cases, this indicates that the bytecode
-     *                                   for the method being analyzed is invalid
-	 */
+     * 
+     * @param ins
+     *            the Instruction
+     * @throws DataflowAnalysisException
+     *             if an error occurs analyzing the instruction; in most cases,
+     *             this indicates that the bytecode for the method being
+     *             analyzed is invalid
+     */
     public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
         if (frame.isValid())
-        try {
-			ins.accept(this);
-        } catch (InvalidBytecodeException e) {
-            System.out.println("Could not analyze " + ins);
-            e.printStackTrace(System.out);
-			throw new DataflowAnalysisException("Invalid bytecode", e);
-        }
+            try {
+                ins.accept(this);
+            } catch (InvalidBytecodeException e) {
+                System.out.println("Could not analyze " + ins);
+                e.printStackTrace(System.out);
+                throw new DataflowAnalysisException("Invalid bytecode", e);
+            }
     }
 
     /**
      * Get the ConstantPoolGen for the method.
      */
-	public ConstantPoolGen getCPG() {
+    public ConstantPoolGen getCPG() {
         return cpg;
     }
 
     /**
-     * Set the frame and Location for the instruction about to
-     * be modeled.
-	 *
-     * @param frame    the Frame
-     * @param location the Location
+     * Set the frame and Location for the instruction about to be modeled.
+     * 
+     * @param frame
+     *            the Frame
+     * @param location
+     *            the Location
      */
-	public void setFrameAndLocation(FrameType frame, Location location) {
+    public void setFrameAndLocation(FrameType frame, Location location) {
         this.frame = frame;
         this.location = location;
     }
 
     /**
      * Get the frame.
-     *
-	 * @return the Frame object
+     * 
+     * @return the Frame object
      */
     public FrameType getFrame() {
         return frame;
-	}
+    }
 
     /**
      * Get the Location.
-     *
-	 * @return the Location
+     * 
+     * @return the Location
      */
     public Location getLocation() {
         return location;
-	}
+    }
 
     /**
-     * Produce a "default" value.
-     * This is what is pushed onto the stack by the
-	 * handleNormalInstruction() method for instructions which produce stack values.
+     * Produce a "default" value. This is what is pushed onto the stack by the
+     * handleNormalInstruction() method for instructions which produce stack
+     * values.
      */
     public abstract Value getDefaultValue();
 
     /**
      * Get the number of words consumed by given instruction.
      */
-	public int getNumWordsConsumed(Instruction ins) {
+    public int getNumWordsConsumed(Instruction ins) {
         int numWordsConsumed = ins.consumeStack(cpg);
         if (numWordsConsumed == Constants.UNPREDICTABLE)
             throw new InvalidBytecodeException("Unpredictable stack consumption");
-		return numWordsConsumed;
+        return numWordsConsumed;
     }
 
     /**
      * Get the number of words produced by given instruction.
      */
-	public int getNumWordsProduced(Instruction ins) {
+    public int getNumWordsProduced(Instruction ins) {
 
         int numWordsProduced = ins.produceStack(cpg);
         if (numWordsProduced == Constants.UNPREDICTABLE)
-			throw new InvalidBytecodeException("Unpredictable stack productions");
+            throw new InvalidBytecodeException("Unpredictable stack productions");
         return numWordsProduced;
     }
 
     /**
      * This is called for illegal bytecodes.
-     *
-	 * @throws InvalidBytecodeException
+     * 
+     * @throws InvalidBytecodeException
      */
     private void illegalBytecode(Instruction ins) {
         throw new InvalidBytecodeException("Illegal bytecode: " + ins);
-	}
+    }
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * Empty visit methods
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     public void visitStackInstruction(StackInstruction obj) {
     }
@@ -244,18 +251,20 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
     public void visitStackConsumer(StackConsumer obj) {
     }
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * General instruction handlers
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     /**
-     * Handler for all instructions which pop values from the stack
-     * and store them in a local variable.  Note that two locals
-	 * are stored into for long and double stores.
+     * Handler for all instructions which pop values from the stack and store
+     * them in a local variable. Note that two locals are stored into for long
+     * and double stores.
      */
     public void handleStoreInstruction(StoreInstruction obj) {
         try {
-			int numConsumed = obj.consumeStack(cpg);
+            int numConsumed = obj.consumeStack(cpg);
             if (numConsumed == Constants.UNPREDICTABLE)
                 throw new InvalidBytecodeException("Unpredictable stack consumption");
 
@@ -264,22 +273,22 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
             // Store values into consecutive locals corresponding
             // to the order in which the values appeared on the stack.
             while (numConsumed-- > 0) {
-				Value value = frame.popValue();
+                Value value = frame.popValue();
                 frame.setValue(index++, value);
             }
         } catch (DataflowAnalysisException e) {
-			throw new InvalidBytecodeException(e.toString());
+            throw new InvalidBytecodeException(e.toString());
         }
     }
 
     /**
-     * Handler for all instructions which load values from a local variable
-     * and push them on the stack.  Note that two locals are loaded for
-	 * long and double loads.
+     * Handler for all instructions which load values from a local variable and
+     * push them on the stack. Note that two locals are loaded for long and
+     * double loads.
      */
     public void handleLoadInstruction(LoadInstruction obj) {
         int numProduced = obj.produceStack(cpg);
-		if (numProduced == Constants.UNPREDICTABLE)
+        if (numProduced == Constants.UNPREDICTABLE)
             throw new InvalidBytecodeException("Unpredictable stack production");
 
         int index = obj.getIndex() + numProduced;
@@ -287,73 +296,75 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
         // Load values from locals in reverse order.
         // This restores them to the stack in a way consistent
         // with visitStoreInstruction().
-		while (numProduced-- > 0) {
+        while (numProduced-- > 0) {
             Value value = frame.getValue(--index);
             frame.pushValue(value);
         }
-	}
+    }
 
     /**
-     * This is called to handle any instruction which does not simply
-     * copy values between stack slots.  The default value
-	 * is pushed (if the instruction is a stack producer).
+     * This is called to handle any instruction which does not simply copy
+     * values between stack slots. The default value is pushed (if the
+     * instruction is a stack producer).
      */
     public void handleNormalInstruction(Instruction ins) {
         modelNormalInstruction(ins, getNumWordsConsumed(ins), getNumWordsProduced(ins));
-	}
+    }
 
     /**
      * Model the stack for instructions handled by handleNormalInstruction().
      * Subclasses may override to provide analysis-specific behavior.
-	 * 
-     * @param ins              the Instruction to model
-     * @param numWordsConsumed number of stack words consumed
-     * @param numWordsProduced number of stack words produced
-	 */
-    public void modelNormalInstruction(
-            Instruction ins,
-            int numWordsConsumed,
-			int numWordsProduced) {
+     * 
+     * @param ins
+     *            the Instruction to model
+     * @param numWordsConsumed
+     *            number of stack words consumed
+     * @param numWordsProduced
+     *            number of stack words produced
+     */
+    public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
         modelInstruction(ins, numWordsConsumed, numWordsProduced, getDefaultValue());
     }
 
     /**
-     * Primitive to model the stack effect of a single instruction,
-     * explicitly specifying the value to be pushed on the stack.
-	 * 
-     * @param ins              the Instruction to model
-     * @param numWordsConsumed number of stack words consumed
-     * @param numWordsProduced number of stack words produced
-	 * @param pushValue        value to push on the stack
+     * Primitive to model the stack effect of a single instruction, explicitly
+     * specifying the value to be pushed on the stack.
+     * 
+     * @param ins
+     *            the Instruction to model
+     * @param numWordsConsumed
+     *            number of stack words consumed
+     * @param numWordsProduced
+     *            number of stack words produced
+     * @param pushValue
+     *            value to push on the stack
      */
-    public void modelInstruction(
-            Instruction ins,
-			int numWordsConsumed,
-            int numWordsProduced,
-            Value pushValue) {
+    public void modelInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced, Value pushValue) {
         if (frame.getStackDepth() < numWordsConsumed) {
-			try {
-            throw new IllegalArgumentException(" asked to pop " + numWordsConsumed + " stack elements but only " + frame.getStackDepth()
-                    + " elements remain in " + frame + " while processing " + ins);
+            try {
+                throw new IllegalArgumentException(" asked to pop " + numWordsConsumed + " stack elements but only "
+                        + frame.getStackDepth() + " elements remain in " + frame + " while processing " + ins);
             } catch (Exception e) {
-				throw new IllegalArgumentException(" asked to pop " + numWordsConsumed + " stack elements but only " + frame.getStackDepth() 
-                        + " elements remain while processing " + ins);
+                throw new IllegalArgumentException(" asked to pop " + numWordsConsumed + " stack elements but only "
+                        + frame.getStackDepth() + " elements remain while processing " + ins);
             }
         }
-		try {
+        try {
             while (numWordsConsumed-- > 0)
                 frame.popValue();
         } catch (DataflowAnalysisException e) {
-			throw new InvalidBytecodeException("Not enough values on the stack", e);
+            throw new InvalidBytecodeException("Not enough values on the stack", e);
         }
 
         while (numWordsProduced-- > 0)
             frame.pushValue(pushValue);
     }
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * Visit methods for scalar STORE instructions
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     public void visitASTORE(ASTORE obj) {
         handleStoreInstruction(obj);
@@ -375,9 +386,11 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
         handleStoreInstruction(obj);
     }
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * Visit methods for scalar LOAD instructions
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     public void visitALOAD(ALOAD obj) {
         handleLoadInstruction(obj);
@@ -399,9 +412,11 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
         handleLoadInstruction(obj);
     }
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * Visit methods for POP, DUP, and SWAP instructions
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     public void visitPOP(POP obj) {
         handleNormalInstruction(obj);
@@ -414,21 +429,21 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
     public void visitDUP(DUP obj) {
         try {
             Value value = frame.popValue();
-			frame.pushValue(value);
+            frame.pushValue(value);
             frame.pushValue(value);
         } catch (DataflowAnalysisException e) {
             throw new InvalidBytecodeException(e.toString());
-		}
+        }
     }
 
     public void visitDUP_X1(DUP_X1 obj) {
         try {
             Value value1 = frame.popValue();
-			Value value2 = frame.popValue();
+            Value value2 = frame.popValue();
             frame.pushValue(value1);
             frame.pushValue(value2);
             frame.pushValue(value1);
-		} catch (DataflowAnalysisException e) {
+        } catch (DataflowAnalysisException e) {
             throw new InvalidBytecodeException(e.toString());
         }
     }
@@ -436,76 +451,78 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
     public void visitDUP_X2(DUP_X2 obj) {
         try {
             Value value1 = frame.popValue();
-			Value value2 = frame.popValue();
+            Value value2 = frame.popValue();
             Value value3 = frame.popValue();
             frame.pushValue(value1);
             frame.pushValue(value3);
-			frame.pushValue(value2);
+            frame.pushValue(value2);
             frame.pushValue(value1);
         } catch (DataflowAnalysisException e) {
             throw new InvalidBytecodeException(e.toString());
-		}
+        }
     }
 
     public void visitDUP2(DUP2 obj) {
         try {
             Value value1 = frame.popValue();
-			Value value2 = frame.popValue();
+            Value value2 = frame.popValue();
             frame.pushValue(value2);
             frame.pushValue(value1);
             frame.pushValue(value2);
-			frame.pushValue(value1);
+            frame.pushValue(value1);
         } catch (DataflowAnalysisException e) {
             throw new InvalidBytecodeException(e.toString());
         }
-	}
+    }
 
     public void visitDUP2_X1(DUP2_X1 obj) {
         try {
             Value value1 = frame.popValue();
-			Value value2 = frame.popValue();
+            Value value2 = frame.popValue();
             Value value3 = frame.popValue();
             frame.pushValue(value2);
             frame.pushValue(value1);
-			frame.pushValue(value3);
+            frame.pushValue(value3);
             frame.pushValue(value2);
             frame.pushValue(value1);
         } catch (DataflowAnalysisException e) {
-			throw new InvalidBytecodeException(e.toString());
+            throw new InvalidBytecodeException(e.toString());
         }
     }
 
     public void visitDUP2_X2(DUP2_X2 obj) {
         try {
             Value value1 = frame.popValue();
-			Value value2 = frame.popValue();
+            Value value2 = frame.popValue();
             Value value3 = frame.popValue();
             Value value4 = frame.popValue();
             frame.pushValue(value2);
-			frame.pushValue(value1);
+            frame.pushValue(value1);
             frame.pushValue(value4);
             frame.pushValue(value3);
             frame.pushValue(value2);
-			frame.pushValue(value1);
+            frame.pushValue(value1);
         } catch (DataflowAnalysisException e) {
             throw new InvalidBytecodeException(e.toString());
         }
-	}
+    }
 
     public void visitSWAP(SWAP obj) {
         try {
             Value value1 = frame.popValue();
-			Value value2 = frame.popValue();
+            Value value2 = frame.popValue();
             frame.pushValue(value1);
             frame.pushValue(value2);
         } catch (DataflowAnalysisException e) {
-			throw new InvalidBytecodeException(e.toString());
+            throw new InvalidBytecodeException(e.toString());
         }
     }
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * Illegal bytecodes
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     public void visitIMPDEP1(IMPDEP1 obj) {
         illegalBytecode(obj);
@@ -519,9 +536,11 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
         illegalBytecode(obj);
     }
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * Bytecodes that have "default" semantics
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     public void visitACONST_NULL(ACONST_NULL obj) {
         handleNormalInstruction(obj);

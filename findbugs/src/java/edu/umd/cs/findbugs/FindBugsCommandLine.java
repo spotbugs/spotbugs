@@ -29,9 +29,9 @@ import edu.umd.cs.findbugs.config.CommandLine;
 import javax.annotation.Nonnull;
 
 /**
- * Base class for FindBugs command line classes.
- * Handles all shared switches/options.
- *
+ * Base class for FindBugs command line classes. Handles all shared
+ * switches/options.
+ * 
  * @author David Hovemeyer
  */
 public abstract class FindBugsCommandLine extends CommandLine {
@@ -39,57 +39,59 @@ public abstract class FindBugsCommandLine extends CommandLine {
     /**
      * Analysis settings to configure the analysis effort.
      */
-	protected AnalysisFeatureSetting[] settingList = FindBugs.DEFAULT_EFFORT;
+    protected AnalysisFeatureSetting[] settingList = FindBugs.DEFAULT_EFFORT;
 
     /**
      * Project to analyze.
      */
-	protected Project project = new Project();
+    protected Project project = new Project();
 
     /**
      * True if project was initialized by loading a project file.
-	 */
+     */
     protected boolean projectLoadedFromFile;
 
     /**
-     * Constructor.
-     * Adds shared options/switches.
-	 */
+     * Constructor. Adds shared options/switches.
+     */
     public FindBugsCommandLine() {
         startOptionGroup("General FindBugs options:");
         addOption("-project", "project", "analyze given project");
-		addOption("-home", "home directory", "specify FindBugs home directory");
-        addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]",
-                "specify list of plugin Jar files to load");
+        addOption("-home", "home directory", "specify FindBugs home directory");
+        addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]", "specify list of plugin Jar files to load");
         addSwitchWithOptionalExtraPart("-effort", "min|less|default|more|max", "set analysis effort level");
-		addSwitch("-adjustExperimental", "lower priority of experimental Bug Patterns");
+        addSwitch("-adjustExperimental", "lower priority of experimental Bug Patterns");
         addSwitch("-workHard", "ensure analysis effort is at least 'default'");
         addSwitch("-conserveSpace", "same as -effort:min (for backward compatibility)");
     }
-	
+
     /**
-     * Additional constuctor just as hack for decoupling the core package from gui2 package
-     * @param modernGui ignored. In any case, gui2 options are added here.
-	 */
-    public FindBugsCommandLine(boolean modernGui){
+     * Additional constuctor just as hack for decoupling the core package from
+     * gui2 package
+     * 
+     * @param modernGui
+     *            ignored. In any case, gui2 options are added here.
+     */
+    public FindBugsCommandLine(boolean modernGui) {
         this();
         addOption("-f", "font size", "set font size");
-		addSwitch("-clear", "clear saved GUI settings and exit");
+        addSwitch("-clear", "clear saved GUI settings and exit");
         addOption("-priority", "thread priority", "set analysis thread priority");
         addOption("-loadbugs", "saved analysis results", "load bugs from saved analysis results");
         makeOptionUnlisted("-loadbugs");
-		addOption("-loadBugs", "saved analysis results", "load bugs from saved analysis results");
+        addOption("-loadBugs", "saved analysis results", "load bugs from saved analysis results");
 
         addSwitch("-d", "disable docking");
         addSwitch("--nodock", "disable docking");
-		addSwitchWithOptionalExtraPart("-look", "plastic|gtk|native", "set UI look and feel");
+        addSwitchWithOptionalExtraPart("-look", "plastic|gtk|native", "set UI look and feel");
     }
 
     public AnalysisFeatureSetting[] getSettingList() {
         return settingList;
     }
 
-    public @Nonnull Project getProject() {
+    public @Nonnull
+    Project getProject() {
         return project;
     }
 
@@ -100,19 +102,19 @@ public abstract class FindBugsCommandLine extends CommandLine {
     @Override
     protected void handleOption(String option, String optionExtraPart) {
         if (option.equals("-effort")) {
-			if (optionExtraPart.equals("min")) {
+            if (optionExtraPart.equals("min")) {
                 settingList = FindBugs.MIN_EFFORT;
             } else if (optionExtraPart.equals("less")) {
                 settingList = FindBugs.LESS_EFFORT;
-			} else if (optionExtraPart.equals("default")) {
+            } else if (optionExtraPart.equals("default")) {
                 settingList = FindBugs.DEFAULT_EFFORT;
             } else if (optionExtraPart.equals("more")) {
                 settingList = FindBugs.MORE_EFFORT;
-			} else if (optionExtraPart.equals("max")) {
+            } else if (optionExtraPart.equals("max")) {
                 settingList = FindBugs.MAX_EFFORT;
             } else {
                 throw new IllegalArgumentException("-effort:<value> must be one of min,default,more,max");
-			}
+            }
         } else if (option.equals("-workHard")) {
             if (settingList != FindBugs.MAX_EFFORT)
                 settingList = FindBugs.MORE_EFFORT;
@@ -120,20 +122,20 @@ public abstract class FindBugsCommandLine extends CommandLine {
         } else if (option.equals("-conserveSpace")) {
             settingList = FindBugs.MIN_EFFORT;
         } else if (option.equals("-adjustExperimental")) {
-			BugInstance.setAdjustExperimental(true);
+            BugInstance.setAdjustExperimental(true);
         } else {
             throw new IllegalArgumentException("Don't understand option " + option);
         }
-	}
+    }
 
     @Override
     protected void handleOptionWithArgument(String option, String argument) throws IOException {
         if (option.equals("-home")) {
-			FindBugs.setHome(argument);
+            FindBugs.setHome(argument);
         } else if (option.equals("-pluginList")) {
             String pluginListStr = argument;
             ArrayList<URL> pluginList = new ArrayList<URL>();
-			StringTokenizer tok = new StringTokenizer(pluginListStr, File.pathSeparator);
+            StringTokenizer tok = new StringTokenizer(pluginListStr, File.pathSeparator);
             while (tok.hasMoreTokens()) {
                 pluginList.add(new File(tok.nextToken()).toURL());
             }
@@ -141,19 +143,20 @@ public abstract class FindBugsCommandLine extends CommandLine {
             DetectorFactoryCollection.rawInstance().setPluginList(pluginList.toArray(new URL[pluginList.size()]));
         } else if (option.equals("-project")) {
             loadProject(argument);
-		} else {
+        } else {
             throw new IllegalStateException();
         }
     }
 
     /**
      * Load given project file.
-     *
-	 * @param arg name of project file
+     * 
+     * @param arg
+     *            name of project file
      * @throws java.io.IOException
      */
     public void loadProject(String arg) throws IOException {
-		project = Project.readProject(arg);
+        project = Project.readProject(arg);
         projectLoadedFromFile = true;
     }
 }

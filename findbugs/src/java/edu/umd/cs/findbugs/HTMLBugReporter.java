@@ -35,9 +35,10 @@ import org.dom4j.io.DocumentSource;
 
 public class HTMLBugReporter extends BugCollectionBugReporter {
     private String stylesheet;
+
     private Exception fatalException;
 
-	public HTMLBugReporter(Project project, String stylesheet) {
+    public HTMLBugReporter(Project project, String stylesheet) {
         super(project);
         this.stylesheet = stylesheet;
     }
@@ -45,16 +46,16 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
     @Override
     public void finish() {
         try {
-			BugCollection bugCollection = getBugCollection();
+            BugCollection bugCollection = getBugCollection();
             bugCollection.setWithMessages(true);
             // Decorate the XML with messages to display
             Document document = bugCollection.toDocument();
-			// new AddMessages(bugCollection, document).execute();
+            // new AddMessages(bugCollection, document).execute();
 
             // Get the stylesheet as a StreamSource.
             // First, try to load the stylesheet from the filesystem.
             // If that fails, try loading it as a resource.
-			InputStream xslInputStream = getStylesheetStream(stylesheet);
+            InputStream xslInputStream = getStylesheetStream(stylesheet);
             StreamSource xsl = new StreamSource(xslInputStream);
             xsl.setSystemId(stylesheet);
 
@@ -71,32 +72,35 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
             // Do the transformation
             transformer.transform(source, result);
         } catch (Exception e) {
-			logError("Could not generate HTML output", e);
+            logError("Could not generate HTML output", e);
             fatalException = e;
-            if (FindBugs.DEBUG) e.printStackTrace();
+            if (FindBugs.DEBUG)
+                e.printStackTrace();
         }
-	}
+    }
 
     public Exception getFatalException() {
         return fatalException;
     }
-	private static InputStream getStylesheetStream(String stylesheet) throws IOException {
-        if (FindBugs.DEBUG) System.out.println("Attempting to load stylesheet " + stylesheet);
+
+    private static InputStream getStylesheetStream(String stylesheet) throws IOException {
+        if (FindBugs.DEBUG)
+            System.out.println("Attempting to load stylesheet " + stylesheet);
         try {
             URL u = new URL(stylesheet);
-			return u.openStream();
+            return u.openStream();
         } catch (Exception e) {
             assert true; // ignore it
         }
-		try {
-            return  new BufferedInputStream(new FileInputStream(stylesheet));
+        try {
+            return new BufferedInputStream(new FileInputStream(stylesheet));
         } catch (Exception fnfe) {
             assert true; // ignore it
-		}
-        InputStream xslInputStream = HTMLBugReporter.class.getResourceAsStream("/"+stylesheet);
+        }
+        InputStream xslInputStream = HTMLBugReporter.class.getResourceAsStream("/" + stylesheet);
         if (xslInputStream == null) {
-            throw new IOException("Could not load HTML generation stylesheet " +  stylesheet);
-		}
+            throw new IOException("Could not load HTML generation stylesheet " + stylesheet);
+        }
         return xslInputStream;
     }
 }

@@ -32,29 +32,33 @@ import org.apache.bcel.generic.ReturnInstruction;
 import org.apache.bcel.generic.Select;
 
 /**
- * Visitor to find all of the targets of an instruction
- * whose InstructionHandle is given.
- * Note that we don't consider exception edges.
- *
+ * Visitor to find all of the targets of an instruction whose InstructionHandle
+ * is given. Note that we don't consider exception edges.
+ * 
  * @author David Hovemeyer
  * @author Chadd Williams
  */
-public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisitor
-        implements EdgeTypes {
+public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisitor implements EdgeTypes {
 
     private InstructionHandle handle;
+
     private ConstantPoolGen constPoolGen;
+
     private LinkedList<Target> targetList;
-	private boolean isBranch, isReturn, isThrow, isExit;
+
+    private boolean isBranch, isReturn, isThrow, isExit;
 
     /**
      * Constructor.
-     *
-	 * @param handle       the handle of the instruction whose targets should be enumerated
-     * @param constPoolGen the ConstantPoolGen object for the class
+     * 
+     * @param handle
+     *            the handle of the instruction whose targets should be
+     *            enumerated
+     * @param constPoolGen
+     *            the ConstantPoolGen object for the class
      */
     public TargetEnumeratingVisitor(InstructionHandle handle, ConstantPoolGen constPoolGen) {
-		this.handle = handle;
+        this.handle = handle;
         this.constPoolGen = constPoolGen;
         targetList = new LinkedList<Target>();
         isBranch = isReturn = isThrow = isExit = false;
@@ -65,88 +69,91 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
     /**
      * Is the instruction the end of a basic block?
      */
-	public boolean isEndOfBasicBlock() {
+    public boolean isEndOfBasicBlock() {
         return isBranch || isReturn || isThrow || isExit;
     }
 
     /**
      * Is the analyzed instruction a method return?
      */
-	public boolean instructionIsReturn() {
+    public boolean instructionIsReturn() {
         return isReturn;
     }
 
     /**
      * Is the analyzed instruction an explicit throw?
      */
-	public boolean instructionIsThrow() {
+    public boolean instructionIsThrow() {
         return isThrow;
     }
 
     /**
      * Is the analyzed instruction an exit (call to System.exit())?
      */
-	public boolean instructionIsExit() {
+    public boolean instructionIsExit() {
         return isExit;
     }
 
     /**
-     * Iterate over Target objects representing control flow targets
-     * and their edge types.
-	 */
+     * Iterate over Target objects representing control flow targets and their
+     * edge types.
+     */
     public Iterator<Target> targetIterator() {
         return targetList.iterator();
     }
 
     @Override
-         public void visitGotoInstruction(GotoInstruction ins) {
+    public void visitGotoInstruction(GotoInstruction ins) {
         isBranch = true;
-		InstructionHandle target = ins.getTarget();
-        if (target == null) throw new IllegalStateException();
+        InstructionHandle target = ins.getTarget();
+        if (target == null)
+            throw new IllegalStateException();
         targetList.add(new Target(target, GOTO_EDGE));
     }
 
     @Override
-         public void visitIfInstruction(IfInstruction ins) {
+    public void visitIfInstruction(IfInstruction ins) {
         isBranch = true;
-		InstructionHandle target = ins.getTarget();
-        if (target == null) throw new IllegalStateException();
+        InstructionHandle target = ins.getTarget();
+        if (target == null)
+            throw new IllegalStateException();
         targetList.add(new Target(target, IFCMP_EDGE));
         InstructionHandle fallThrough = handle.getNext();
-		targetList.add(new Target(fallThrough, FALL_THROUGH_EDGE));
+        targetList.add(new Target(fallThrough, FALL_THROUGH_EDGE));
     }
 
     @Override
-         public void visitSelect(Select ins) {
+    public void visitSelect(Select ins) {
         isBranch = true;
 
         // Add non-default switch edges.
         InstructionHandle[] targets = ins.getTargets();
         for (InstructionHandle target : targets) {
-			targetList.add(new Target(target, SWITCH_EDGE));
+            targetList.add(new Target(target, SWITCH_EDGE));
         }
 
         // Add default switch edge.
         InstructionHandle defaultTarget = ins.getTarget();
         if (defaultTarget == null) {
-			throw new IllegalStateException();
+            throw new IllegalStateException();
         }
         targetList.add(new Target(defaultTarget, SWITCH_DEFAULT_EDGE));
     }
 
     @Override
-         public void visitReturnInstruction(ReturnInstruction ins) {
+    public void visitReturnInstruction(ReturnInstruction ins) {
         isReturn = true;
-	}
+    }
 
     @Override
-         public void visitATHROW(ATHROW ins) {
+    public void visitATHROW(ATHROW ins) {
         isThrow = true;
-	}
+    }
 
     @Override
-         public void visitINVOKESTATIC(INVOKESTATIC ins) {
-        // Find calls to System.exit(), since this effectively terminates the basic block.
+    public void visitINVOKESTATIC(INVOKESTATIC ins) {
+        // Find calls to System.exit(), since this effectively terminates the
+        // basic block.
 
         String className = ins.getClassName(constPoolGen);
         String methodName = ins.getName(constPoolGen);

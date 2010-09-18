@@ -33,12 +33,13 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 public class LoadOfKnownNullValue implements Detector {
 
     private BugReporter bugReporter;
+
     private BugAccumulator bugAccumulator;
 
     public LoadOfKnownNullValue(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
-	}
+    }
 
     public void visitClassContext(ClassContext classContext) {
         Method[] methodList = classContext.getJavaClass().getMethods();
@@ -50,82 +51,82 @@ public class LoadOfKnownNullValue implements Detector {
             try {
                 analyzeMethod(classContext, method);
             } catch (MethodUnprofitableException mue) {
-				if (SystemProperties.getBoolean("unprofitable.debug")) // otherwise don't report
+                if (SystemProperties.getBoolean("unprofitable.debug")) // otherwise
+                                                                       // don't
+                                                                       // report
                     bugReporter.logError("skipping unprofitable method in " + getClass().getName());
             } catch (CFGBuilderException e) {
-                bugReporter.logError("Detector " + this.getClass().getName()
-						+ " caught exception", e);
+                bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
             } catch (DataflowAnalysisException e) {
-                bugReporter.logError("Detector " + this.getClass().getName()
-                        + " caught exception", e);
-			}
+                bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
+            }
             bugAccumulator.reportAccumulatedBugs();
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method)
-            throws CFGBuilderException, DataflowAnalysisException {
+    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
         BitSet lineMentionedMultipleTimes = classContext.linesMentionedMultipleTimes(method);
-		BitSet linesWithLoadsOfNotDefinitelyNullValues = null;
+        BitSet linesWithLoadsOfNotDefinitelyNullValues = null;
 
         CFG cfg = classContext.getCFG(method);
-        IsNullValueDataflow nullValueDataflow = classContext
-                .getIsNullValueDataflow(method);
-		MethodGen methodGen = classContext.getMethodGen(method);
+        IsNullValueDataflow nullValueDataflow = classContext.getIsNullValueDataflow(method);
+        MethodGen methodGen = classContext.getMethodGen(method);
         String sourceFile = classContext.getJavaClass().getSourceFileName();
 
         if (lineMentionedMultipleTimes.cardinality() > 0) {
             linesWithLoadsOfNotDefinitelyNullValues = new BitSet();
             LineNumberTable lineNumbers = method.getLineNumberTable();
-			for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+            for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
                 Location location = i.next();
 
                 InstructionHandle handle = location.getHandle();
                 Instruction ins = handle.getInstruction();
                 if (!(ins instanceof ALOAD))
-					continue;
+                    continue;
 
-                IsNullValueFrame frame = nullValueDataflow
-                        .getFactAtLocation(location);
+                IsNullValueFrame frame = nullValueDataflow.getFactAtLocation(location);
                 if (!frame.isValid()) {
-					// This basic block is probably dead
+                    // This basic block is probably dead
                     continue;
                 }
-                // System.out.println(handle.getPosition() + "\t" + ins.getName() +  "\t" + frame);
+                // System.out.println(handle.getPosition() + "\t" +
+                // ins.getName() + "\t" + frame);
 
                 ALOAD load = (ALOAD) ins;
 
                 int index = load.getIndex();
                 IsNullValue v = frame.getValue(index);
                 if (!v.isDefinitelyNull()) {
-					int sourceLine = lineNumbers.getSourceLine(handle.getPosition());
+                    int sourceLine = lineNumbers.getSourceLine(handle.getPosition());
                     if (sourceLine > 0)
-                    linesWithLoadsOfNotDefinitelyNullValues.set(sourceLine);
+                        linesWithLoadsOfNotDefinitelyNullValues.set(sourceLine);
                 }
-		}
+            }
         }
 
-
-        IdentityHashMap<InstructionHandle, Object> sometimesGood = new	IdentityHashMap<InstructionHandle, Object>();
+        IdentityHashMap<InstructionHandle, Object> sometimesGood = new IdentityHashMap<InstructionHandle, Object>();
 
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
             InstructionHandle handle = location.getHandle();
-			Instruction ins = handle.getInstruction();
-            if (!(ins instanceof ALOAD)) continue;
+            Instruction ins = handle.getInstruction();
+            if (!(ins instanceof ALOAD))
+                continue;
             IsNullValueFrame frame = nullValueDataflow.getFactAtLocation(location);
             if (!frame.isValid()) {
-				// This basic block is probably dead
+                // This basic block is probably dead
                 continue;
             }
-            // System.out.println(handle.getPosition() + "\t" + ins.getName() +  "\t" + frame);
+            // System.out.println(handle.getPosition() + "\t" + ins.getName() +
+            // "\t" + frame);
 
             ALOAD load = (ALOAD) ins;
 
             int index = load.getIndex();
             IsNullValue v = frame.getValue(index);
-            if (!v.isDefinitelyNull()) sometimesGood.put(handle, null);
-		}
+            if (!v.isDefinitelyNull())
+                sometimesGood.put(handle, null);
+        }
 
         // System.out.println(nullValueDataflow);
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
@@ -134,64 +135,67 @@ public class LoadOfKnownNullValue implements Detector {
             InstructionHandle handle = location.getHandle();
             Instruction ins = handle.getInstruction();
             if (!(ins instanceof ALOAD))
-				continue;
+                continue;
 
-            if (sometimesGood.containsKey(handle)) continue;
-            IsNullValueFrame frame = nullValueDataflow
-                    .getFactAtLocation(location);
-			if (!frame.isValid()) {
+            if (sometimesGood.containsKey(handle))
+                continue;
+            IsNullValueFrame frame = nullValueDataflow.getFactAtLocation(location);
+            if (!frame.isValid()) {
                 // This basic block is probably dead
                 continue;
             }
-			// System.out.println(handle.getPosition() + "\t" + ins.getName() +  "\t" + frame);
+            // System.out.println(handle.getPosition() + "\t" + ins.getName() +
+            // "\t" + frame);
 
             ALOAD load = (ALOAD) ins;
 
             int index = load.getIndex();
             IsNullValue v = frame.getValue(index);
             if (v.isDefinitelyNull()) {
-				Instruction next = handle.getNext().getInstruction();
+                Instruction next = handle.getNext().getInstruction();
                 InstructionHandle prevHandle = handle.getPrev();
-                SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
-                .fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
-				SourceLineAnnotation prevSourceLineAnnotation = SourceLineAnnotation
-                .fromVisitedInstruction(classContext, methodGen, sourceFile, prevHandle);
+                SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
+                        sourceFile, handle);
+                SourceLineAnnotation prevSourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext,
+                        methodGen, sourceFile, prevHandle);
 
                 if (next instanceof ARETURN) {
                     // probably stored for duration of finally block
                     continue;
-				}
-                if(next instanceof GOTO) {
-                    InstructionHandle targ = ((BranchInstruction)next).getTarget();
-                    if(targ.getInstruction() instanceof ARETURN) {
-						// Skip for the same reason we would skip if
-                        // (next instanceof ARETURN) were true.  This
+                }
+                if (next instanceof GOTO) {
+                    InstructionHandle targ = ((BranchInstruction) next).getTarget();
+                    if (targ.getInstruction() instanceof ARETURN) {
+                        // Skip for the same reason we would skip if
+                        // (next instanceof ARETURN) were true. This
                         // is necessary because the bytecode compiler
                         // compiles the ternary ? operator with a GOTO
-						// to an ARETURN instead of just an ARETURN.
+                        // to an ARETURN instead of just an ARETURN.
                         continue;
                     }
                 }
-				int startLine = sourceLineAnnotation.getStartLine();
-                if (startLine > 0 && lineMentionedMultipleTimes.get(startLine) && linesWithLoadsOfNotDefinitelyNullValues.get(startLine))
+                int startLine = sourceLineAnnotation.getStartLine();
+                if (startLine > 0 && lineMentionedMultipleTimes.get(startLine)
+                        && linesWithLoadsOfNotDefinitelyNullValues.get(startLine))
                     continue;
 
                 int previousLine = prevSourceLineAnnotation.getEndLine();
                 if (startLine < previousLine) {
                     // probably stored for duration of finally block
-					// System.out.println("Inverted line");
+                    // System.out.println("Inverted line");
                     continue;
                 }
                 int priority = NORMAL_PRIORITY;
 
-                if (!v.isChecked()) priority++;
-                // System.out.println("lineMentionedMultipleTimes: " + lineMentionedMultipleTimes);
-                // System.out.println("linesWithLoadsOfNonNullValues: " + linesWithLoadsOfNotDefinitelyNullValues);
+                if (!v.isChecked())
+                    priority++;
+                // System.out.println("lineMentionedMultipleTimes: " +
+                // lineMentionedMultipleTimes);
+                // System.out.println("linesWithLoadsOfNonNullValues: " +
+                // linesWithLoadsOfNotDefinitelyNullValues);
 
-                bugAccumulator.accumulateBug(new BugInstance(this,
-                        "NP_LOAD_OF_KNOWN_NULL_VALUE",
-                        priority)
-						.addClassAndMethod(methodGen, sourceFile),
+                bugAccumulator.accumulateBug(
+                        new BugInstance(this, "NP_LOAD_OF_KNOWN_NULL_VALUE", priority).addClassAndMethod(methodGen, sourceFile),
                         sourceLineAnnotation);
             }
 

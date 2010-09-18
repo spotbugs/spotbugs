@@ -44,7 +44,7 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
     @Override
     public void visit(Code obj) {
         state = 0;
-		super.visit(obj);
+        super.visit(obj);
         initializedFields.clear();
     }
 
@@ -58,58 +58,55 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
         if (seen == PUTFIELD) {
             OpcodeStack.Item top = stack.getStackItem(0);
             OpcodeStack.Item next = stack.getStackItem(1);
-			
 
             XField f = top.getXField();
             int registerNumber = next.getRegisterNumber();
-			if (f != null && f.equals(getXFieldOperand()) 
-                    && registerNumber >= 0 && registerNumber == top.getFieldLoadedFromRegister()) {
+            if (f != null && f.equals(getXFieldOperand()) && registerNumber >= 0
+                    && registerNumber == top.getFieldLoadedFromRegister()) {
                 int priority = NORMAL_PRIORITY;
 
                 LocalVariableAnnotation possibleMatch = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(),
                         getMethod(), getNameConstantOperand(), getSigConstantOperand());
                 if (possibleMatch == null)
-					possibleMatch = LocalVariableAnnotation.findUniqueBestMatchingParameter(getClassContext(), getMethod(),
+                    possibleMatch = LocalVariableAnnotation.findUniqueBestMatchingParameter(getClassContext(), getMethod(),
                             getNameConstantOperand(), getSigConstantOperand());
                 if (possibleMatch != null)
                     priority--;
-				else {
+                else {
                     String signature = stack.getLVValue(registerNumber).getSignature();
-                    for(int i = 0; i < stack.getNumLocalValues(); i++) if (i != register) {
-                        if (stack.getLVValue(i).getSignature().equals(signature)) {
-							priority--;
-                            break;
+                    for (int i = 0; i < stack.getNumLocalValues(); i++)
+                        if (i != register) {
+                            if (stack.getLVValue(i).getSignature().equals(signature)) {
+                                priority--;
+                                break;
+                            }
                         }
-                    }
-				}
+                }
 
-
-
-				
                 bugReporter.reportBug(new BugInstance(this, "SA_FIELD_SELF_ASSIGNMENT", priority).addClassAndMethod(this)
                         .addReferencedField(this).addOptionalAnnotation(possibleMatch).addSourceLine(this));
 
-			}
+            }
         }
         switch (state) {
         case 0:
-			if (seen == DUP)
+            if (seen == DUP)
                 state = 6;
             break;
         case 6:
-			if (isRegisterStore()) {
+            if (isRegisterStore()) {
                 state = 7;
                 register = getRegisterOperand();
             } else
-				state = 0;
+                state = 0;
             break;
         case 7:
             if (isRegisterStore() && register == getRegisterOperand()) {
-				bugReporter.reportBug(new BugInstance(this, "SA_LOCAL_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).add(
-                                LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC(), getPC() - 1))
+                bugReporter.reportBug(new BugInstance(this, "SA_LOCAL_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
+                        .addClassAndMethod(this)
+                        .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC(), getPC() - 1))
                         .addSourceLine(this));
-			}
+            }
             state = 0;
             break;
         }

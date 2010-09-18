@@ -23,53 +23,69 @@ import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * Accumulate type qualifier annotations for a method parameter.
- *
+ * 
  * @author David Hovemeyer
  */
 public class ParameterAnnotationAccumulator extends AbstractMethodAnnotationAccumulator {
     private int parameter;
+
     private ParameterAnnotationLookupResult result;
+
     private boolean overrides = false;
 
     /**
      * Constructor.
-     *
-	 * @param typeQualifierValue TypeQualifierValue specifying kind of application to lookup
-     * @param xmethod            method we want to find parameter annotation for
-     * @param parameter          the parameter (0 == first parameter)
+     * 
+     * @param typeQualifierValue
+     *            TypeQualifierValue specifying kind of application to lookup
+     * @param xmethod
+     *            method we want to find parameter annotation for
+     * @param parameter
+     *            the parameter (0 == first parameter)
      */
-	protected ParameterAnnotationAccumulator(TypeQualifierValue typeQualifierValue, XMethod xmethod, int parameter) {
+    protected ParameterAnnotationAccumulator(TypeQualifierValue typeQualifierValue, XMethod xmethod, int parameter) {
         super(typeQualifierValue, xmethod);
         this.parameter = parameter;
         this.result = new ParameterAnnotationLookupResult();
-	}
+    }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.jsr305.AbstractMethodAnnotationAccumulator#getResult()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.jsr305.AbstractMethodAnnotationAccumulator#getResult
+     * ()
      */
-	@Override
+    @Override
     public TypeQualifierAnnotationLookupResult getResult() {
         return result;
     }
-	
-    /** Returns true if the method overrides/implements a method in a superclass or interface */
+
+    /**
+     * Returns true if the method overrides/implements a method in a superclass
+     * or interface
+     */
     @Override
     public boolean overrides() {
-		return overrides;
+        return overrides;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.jsr305.AbstractMethodAnnotationAccumulator#lookupAnnotation(edu.umd.cs.findbugs.ba.XMethod)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.ba.jsr305.AbstractMethodAnnotationAccumulator#
+     * lookupAnnotation(edu.umd.cs.findbugs.ba.XMethod)
      */
-	@Override
+    @Override
     protected TypeQualifierAnnotation lookupAnnotation(XMethod xm) {
         overrides = true;
-        TypeQualifierAnnotation result = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xm, parameter, getTypeQualifierValue());
-		if (TypeQualifierApplications.DEBUG && result != null) {
+        TypeQualifierAnnotation result = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xm, parameter,
+                getTypeQualifierValue());
+        if (TypeQualifierApplications.DEBUG && result != null) {
             System.out.println("Inherit " + result.when + " from " + xm);
         }
         return result;
-	
+
     }
 
 }

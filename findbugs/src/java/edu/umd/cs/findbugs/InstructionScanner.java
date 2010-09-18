@@ -24,24 +24,24 @@ import org.apache.bcel.generic.InstructionHandle;
 import edu.umd.cs.findbugs.ba.Edge;
 
 /**
- * A scanner for implementing a state machine over a sequence
- * of instructions and control edges.
+ * A scanner for implementing a state machine over a sequence of instructions
+ * and control edges.
  */
 public interface InstructionScanner {
     /**
      * Traverse an edge.
      */
-	public void traverseEdge(Edge edge);
+    public void traverseEdge(Edge edge);
 
     /**
      * Traverse an instruction.
      */
-	public void scanInstruction(InstructionHandle handle);
+    public void scanInstruction(InstructionHandle handle);
 
     /**
      * Return true if this scanner has completed, false otherwise.
      */
-	public boolean isDone();
+    public boolean isDone();
 }
 
 // vim:ts=4

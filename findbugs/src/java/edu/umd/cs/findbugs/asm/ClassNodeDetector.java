@@ -28,9 +28,9 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 
 /**
- * Abstract base class to to reduce boilerplate needed for writing
- * ASM-based Detectors implemented as ClassNode visitors
- *
+ * Abstract base class to to reduce boilerplate needed for writing ASM-based
+ * Detectors implemented as ClassNode visitors
+ * 
  * @author pugh
  */
 abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
@@ -38,13 +38,14 @@ abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
     protected final BugReporter bugReporter;
 
     /**
-     * Construct a ClassNodeDetector. The bugReporter
-     * is passed to the constructor and stored in a protected final field.
-	 * 
-     * @param bugReporter the BugReporter that bug should be reporter to.
+     * Construct a ClassNodeDetector. The bugReporter is passed to the
+     * constructor and stored in a protected final field.
+     * 
+     * @param bugReporter
+     *            the BugReporter that bug should be reporter to.
      */
     public ClassNodeDetector(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+        this.bugReporter = bugReporter;
     }
 
     public String getDetectorClassName() {

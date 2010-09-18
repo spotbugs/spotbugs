@@ -22,68 +22,76 @@ package edu.umd.cs.findbugs.ba.vna;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * An AvailableLoad indicates a field and (optionally) object reference
- * for which a value is available.  It is used to implement
- * redundant load elimination and forward substitution in ValueNumberAnalysis.
- * The idea is that programmers often reload fields unnecessarily when they
- * "know" that the value will not change.  In order to deduce the intended
- * meaning of such code, our analyses need to figure out that such
- * loads return the same value.
+ * An AvailableLoad indicates a field and (optionally) object reference for
+ * which a value is available. It is used to implement redundant load
+ * elimination and forward substitution in ValueNumberAnalysis. The idea is that
+ * programmers often reload fields unnecessarily when they "know" that the value
+ * will not change. In order to deduce the intended meaning of such code, our
+ * analyses need to figure out that such loads return the same value.
  * <p/>
- * <p> AvailableLoad objects may be used as keys in both hash and tree
- * sets and maps.
- *
+ * <p>
+ * AvailableLoad objects may be used as keys in both hash and tree sets and
+ * maps.
+ * 
  * @author David Hovemeyer
  * @see ValueNumberAnalysis
  */
 public class AvailableLoad implements Comparable<AvailableLoad> {
     private final ValueNumber reference;
+
     private final XField field;
 
     /**
      * Constructor from static field.
-     *
-	 * @param staticField the StaticField
+     * 
+     * @param staticField
+     *            the StaticField
      */
     public AvailableLoad(XField staticField) {
         this.reference = null;
-		this.field = staticField;
+        this.field = staticField;
     }
 
     /**
      * Constructor from object reference and instance field.
-     *
-	 * @param reference the ValueNumber of the object reference
-     * @param field     the InstanceField
+     * 
+     * @param reference
+     *            the ValueNumber of the object reference
+     * @param field
+     *            the InstanceField
      */
     public AvailableLoad(ValueNumber reference, XField field) {
-		if (reference == null) throw new IllegalArgumentException();
+        if (reference == null)
+            throw new IllegalArgumentException();
         this.reference = reference;
         this.field = field;
     }
 
     /**
      * Get the ValueNumber of the object reference.
-     *
-	 * @return the ValueNumber, or null if this is a an available
-     *         static field load
+     * 
+     * @return the ValueNumber, or null if this is a an available static field
+     *         load
      */
     public ValueNumber getReference() {
-		return reference;
+        return reference;
     }
 
     public boolean matchesReference(ValueNumber v) {
-        if (v == reference) return true;
-        if (reference== null) return false;
-		return reference.equals(v);
+        if (v == reference)
+            return true;
+        if (reference == null)
+            return false;
+        return reference.equals(v);
     }
+
     /**
      * Get the field for which a load is available.
-	 *
+     * 
      * @return the XField
      */
     public XField getField() {
-		return field;
+        return field;
     }
 
     @SuppressWarnings("unchecked")
@@ -91,35 +99,34 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
         int cmp = field.compareTo(other.field);
         if (cmp != 0)
             return cmp;
-		else if (reference == other.reference)
+        else if (reference == other.reference)
             return 0;
         else if (reference == null)
             return -1;
-		else if (other.reference == null)
+        else if (other.reference == null)
             return 1;
         else
             return reference.compareTo(other.reference);
-	}
-
-    @Override
-         public int hashCode() {
-        return (reference == null ? 0 : reference.hashCode()) ^ field.hashCode();
-	}
-
-    @Override
-         public boolean equals(Object o) {
-        if (o == null || this.getClass() != o.getClass())
-			return false;
-        AvailableLoad other = (AvailableLoad) o;
-        return (reference == other.reference ||
-                (reference != null && other.reference != null && reference.equals(other.reference)))
-				&& field.equals(other.field);
     }
 
     @Override
-         public String toString() {
+    public int hashCode() {
+        return (reference == null ? 0 : reference.hashCode()) ^ field.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || this.getClass() != o.getClass())
+            return false;
+        AvailableLoad other = (AvailableLoad) o;
+        return (reference == other.reference || (reference != null && other.reference != null && reference
+                .equals(other.reference))) && field.equals(other.field);
+    }
+
+    @Override
+    public String toString() {
         return (reference == null ? "" : reference.getNumber() + ".") + field;
-	}
+    }
 }
 
 // vim:ts=4

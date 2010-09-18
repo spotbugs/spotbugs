@@ -27,42 +27,46 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * Common super-interface for class members (fields and methods).
- *
+ * 
  * @see edu.umd.cs.findbugs.ba.XField
  * @see edu.umd.cs.findbugs.ba.XMethod
  * @author David Hovemeyer
  */
-public interface ClassMember extends  Serializable, AccessibleEntity, Comparable, FieldOrMethodName  {
+public interface ClassMember extends Serializable, AccessibleEntity, Comparable, FieldOrMethodName {
 
     /**
-     * Get the full (dotted) name of the class (if the object represents a class)
-     * or the class the entity is defined in (if a field or method).
-	 */
-    public @DottedClassName String getClassName();
+     * Get the full (dotted) name of the class (if the object represents a
+     * class) or the class the entity is defined in (if a field or method).
+     */
+    public @DottedClassName
+    String getClassName();
+
     /**
      * Get the (dotted) name of the package in which the entity is defined.
-	 */
-    public  @DottedClassName String getPackageName();
+     */
+    public @DottedClassName
+    String getPackageName();
 
     /**
-	 * Get the name of the field/method.
+     * Get the name of the field/method.
      */
     public String getName();
 
     /**
      * Get the signature representing the field/method's type.
      */
-	public String getSignature();
+    public String getSignature();
 
     /**
-     * Get the signature representing the field/method's type, including generic type
-	 */
-    public @CheckForNull String getSourceSignature();
+     * Get the signature representing the field/method's type, including generic
+     * type
+     */
+    public @CheckForNull
+    String getSourceSignature();
 
     /**
-	 * Did we find a declaration of this entity?
+     * Did we find a declaration of this entity?
      */
     public boolean isResolved();
-
 
 }

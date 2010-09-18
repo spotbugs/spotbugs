@@ -23,9 +23,8 @@ import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 
 /**
- * MethodPropertyDatabase for keeping track of which methods
- * may return null.
- *
+ * MethodPropertyDatabase for keeping track of which methods may return null.
+ * 
  * @author David Hovemeyer
  * @deprecated
  */
@@ -33,19 +32,17 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 public class MayReturnNullPropertyDatabase extends MethodPropertyDatabase<Boolean> {
 
     @Override
-         protected Boolean decodeProperty(String propStr)
-            throws PropertyDatabaseFormatException {
-		return Boolean.valueOf(propStr);
+    protected Boolean decodeProperty(String propStr) throws PropertyDatabaseFormatException {
+        return Boolean.valueOf(propStr);
     }
 
-
     @Override
-         protected String encodeProperty(Boolean property) {
+    protected String encodeProperty(Boolean property) {
         return property.toString();
-	}
+    }
 
     public static void main(String[] args) throws Exception {
         MayReturnNullPropertyDatabase database = new MayReturnNullPropertyDatabase();
         database.readFromFile(AnalysisContext.DEFAULT_NULL_RETURN_VALUE_DB_FILENAME);
-	}
+    }
 }

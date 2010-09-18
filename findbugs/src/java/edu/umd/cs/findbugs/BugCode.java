@@ -20,59 +20,64 @@
 package edu.umd.cs.findbugs;
 
 /**
- * A BugCode is an abbreviation that is shared among some number
- * of BugPatterns.  For example, the code "HE" is shared by
- * all of the BugPatterns that represent hashcode/equals
- * violations.
- *
+ * A BugCode is an abbreviation that is shared among some number of BugPatterns.
+ * For example, the code "HE" is shared by all of the BugPatterns that represent
+ * hashcode/equals violations.
+ * 
  * @author David Hovemeyer
  * @see BugPattern
  */
-public class BugCode  implements Comparable<BugCode> {
+public class BugCode implements Comparable<BugCode> {
     private final String abbrev;
+
     private final int cweid;
+
     private final String description;
 
     /**
      * Constructor.
-     *
-	 * @param abbrev      the abbreviation for the bug code
-     * @param description a short textual description of the class of bug pattern
-     *                    represented by this bug code
+     * 
+     * @param abbrev
+     *            the abbreviation for the bug code
+     * @param description
+     *            a short textual description of the class of bug pattern
+     *            represented by this bug code
      */
-	public BugCode(String abbrev, String description) {
+    public BugCode(String abbrev, String description) {
         this.abbrev = abbrev;
         this.description = description;
         this.cweid = 0;
-	}
+    }
 
     public BugCode(String abbrev, String description, int cweid) {
         this.abbrev = abbrev;
-		this.description = description;
+        this.description = description;
         this.cweid = cweid;
     }
+
     /**
-	 * Get the abbreviation for this bug code.
+     * Get the abbreviation for this bug code.
      */
     public String getAbbrev() {
         return abbrev;
-	}
+    }
 
     /**
      * Get the short textual description of the bug code.
      */
-	public String getDescription() {
+    public String getDescription() {
         return description;
     }
 
     /**
      * Get the abbreviation fo this bug code.
      */
-	@Override
+    @Override
     public String toString() {
         return "BugCode[" + abbrev + "]";
     }
-	/**
+
+    /**
      * @return Returns the cweid.
      */
     public int getCWEid() {
@@ -85,18 +90,18 @@ public class BugCode  implements Comparable<BugCode> {
 
     @Override
     public boolean equals(Object o) {
-		if(this == o){
+        if (this == o) {
             return true;
         }
-        if (!(o instanceof BugCode)){
-			return false;
+        if (!(o instanceof BugCode)) {
+            return false;
         }
         BugCode other = (BugCode) o;
         return abbrev.equals(other.abbrev);
-	}
+    }
 
     @Override
     public int hashCode() {
-	    return abbrev.hashCode();
+        return abbrev.hashCode();
     }
 }

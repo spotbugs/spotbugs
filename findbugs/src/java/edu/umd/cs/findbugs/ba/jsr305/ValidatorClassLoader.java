@@ -37,16 +37,15 @@ public class ValidatorClassLoader extends ClassLoader {
             b = loadClassData(name);
             return defineClass(name, b, 0, b.length);
         } catch (CheckedAnalysisException e) {
-           return super.findClass(name);
+            return super.findClass(name);
         }
 
     }
 
     private byte[] loadClassData(String name) throws CheckedAnalysisException {
-           ClassDescriptor d = DescriptorFactory.createClassDescriptorFromDottedClassName(name);
+        ClassDescriptor d = DescriptorFactory.createClassDescriptorFromDottedClassName(name);
         ClassData data = Global.getAnalysisCache().getClassAnalysis(ClassData.class, d);
         return data.getData();
     }
-
 
 }

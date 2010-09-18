@@ -37,9 +37,10 @@ import edu.umd.cs.findbugs.SystemProperties;
 /**
  * Generic class for representing a Java stack frame as a dataflow value. A
  * frame consists of "slots", which represent the local variables and values on
- * the Java operand stack. Slots 0 .. <code>getNumLocals() - 1</code>
- * represent the local variables. Slots <code>getNumLocals()</code> ..
- * <code>getNumSlots() - 1</code> represent the Java operand stack. <p/>
+ * the Java operand stack. Slots 0 .. <code>getNumLocals() - 1</code> represent
+ * the local variables. Slots <code>getNumLocals()</code> ..
+ * <code>getNumSlots() - 1</code> represent the Java operand stack.
+ * <p/>
  * <p>
  * Frame is parametized by "ValueType", which is the type of value to be stored
  * in the Frame's slots. This type must form a lattice, according to the
@@ -47,14 +48,16 @@ import edu.umd.cs.findbugs.SystemProperties;
  * should be derived from FrameDataflowAnalysis). When a Frame is constructed,
  * all of its slots will contain null. The analysis is responsible for
  * initializing created Frames with default values at the appropriate time.
- * Typically, only initEntryFact() will need to do this. <p/>
+ * Typically, only initEntryFact() will need to do this.
+ * <p/>
  * <p>
  * A Frame may have the special "TOP" value. Such frames serve as the identity
- * element for the meet operation operation. <p/>
+ * element for the meet operation operation.
+ * <p/>
  * <p>
  * A Frame may have the special "BOTTOM" value. The result of merging any frame
  * with BOTTOM is BOTTOM.
- *
+ * 
  * @author David Hovemeyer
  * @see FrameDataflowAnalysis
  */
@@ -69,29 +72,29 @@ public abstract class Frame<ValueType> {
     /**
      * Number of local variables in the method.
      */
-	private int numLocals;
+    private int numLocals;
 
     /**
      * Array storing the values of local variables and operand stack slots.
      */
-	private ArrayList<ValueType> slotList;
+    private ArrayList<ValueType> slotList;
 
     /**
      * Flag marking this frame as a special "TOP" value. Such Frames serve as
      * the identity element when merging.
-	 */
+     */
     private boolean isTop;
 
     /**
      * Flag marking this frame as a special "BOTTOM" value. Such Frames arise
      * when merging two frames of different size.
-	 */
+     */
     private boolean isBottom;
 
     /**
      * Default number of stack slots to preallocate space for.
      */
-	private static final int DEFAULT_STACK_CAPACITY = 4;
+    private static final int DEFAULT_STACK_CAPACITY = 4;
 
     // //////////////////////////////////////////////////////////////////////////////////
     // Methods
@@ -100,15 +103,14 @@ public abstract class Frame<ValueType> {
     /**
      * Constructor. This version of the constructor is for subclasses for which
      * it is always safe to call getDefaultValue(), even when the object is not
-	 * fully initialized.
-     *
+     * fully initialized.
+     * 
      * @param numLocals
      *            number of local variable slots in the method
-	 */
+     */
     public Frame(int numLocals) {
         this.numLocals = numLocals;
-        this.slotList = new ArrayList<ValueType>(numLocals
-				+ DEFAULT_STACK_CAPACITY);
+        this.slotList = new ArrayList<ValueType>(numLocals + DEFAULT_STACK_CAPACITY);
         for (int i = 0; i < numLocals; ++i)
             slotList.add(null);
     }
@@ -116,7 +118,7 @@ public abstract class Frame<ValueType> {
     /**
      * Return whether or not this object the special "TOP" value for Frames.
      * Such Frames are the identity element of the meet operation.
-	 */
+     */
     public boolean isTop() {
         return isTop;
     }
@@ -124,17 +126,17 @@ public abstract class Frame<ValueType> {
     /**
      * Make this frame the special "TOP" value. Such Frames are the identity
      * element of the meet operation.
-	 */
+     */
     public void setTop() {
         isTop = true;
         isBottom = false;
-		lastUpdateTimestamp = 0;
+        lastUpdateTimestamp = 0;
     }
 
     /**
      * Return whether or not this object is the special "BOTTOM" value for
      * Frames. Such Frames arise when merging two frames of different size.
-	 */
+     */
     public boolean isBottom() {
         return isBottom;
     }
@@ -142,279 +144,266 @@ public abstract class Frame<ValueType> {
     /**
      * Make this Frame the special "BOTTOM" value. Such Frames arise when
      * merging two frames of different size.
-	 */
+     */
     public void setBottom() {
         isBottom = true;
         isTop = false;
-	}
+    }
 
     /**
      * Set the Frame to be valid (neither TOP nor BOTTOM).
      */
-	public void setValid() {
+    public void setValid() {
         isTop = isBottom = false;
     }
 
     /**
      * Is the frame valid (meaning it is not TOP or BOTTOM)?
      */
-	public boolean isValid() {
+    public boolean isValid() {
         return !isTop() && !isBottom();
     }
 
     /**
      * Push a value onto the Java operand stack.
-     *
-	 * @param value
+     * 
+     * @param value
      *            the ValueType to push
      */
     public void pushValue(ValueType value) {
-		if (VERIFY_INTEGRITY && value == null)
+        if (VERIFY_INTEGRITY && value == null)
             throw new IllegalArgumentException();
         if (!isValid())
             throw new IllegalStateException("accessing top or bottom frame");
-		slotList.add(value);
+        slotList.add(value);
     }
 
     /**
      * Pop a value off of the Java operand stack.
-     *
-	 * @return the value that was popped
+     * 
+     * @return the value that was popped
      * @throws DataflowAnalysisException
      *             if the Java operand stack is empty
      */
-	public ValueType popValue() throws DataflowAnalysisException {
+    public ValueType popValue() throws DataflowAnalysisException {
         if (!isValid())
             throw new DataflowAnalysisException("accessing top or bottom frame");
         if (slotList.size() == numLocals)
-			throw new DataflowAnalysisException("operand stack empty");
+            throw new DataflowAnalysisException("operand stack empty");
         return slotList.remove(slotList.size() - 1);
     }
 
     /**
      * Get the value on the top of the Java operand stack.
-     *
-	 * @throws DataflowAnalysisException
+     * 
+     * @throws DataflowAnalysisException
      *             if the Java operand stack is empty
      */
     public ValueType getTopValue() throws DataflowAnalysisException {
-		if (!isValid())
+        if (!isValid())
             throw new DataflowAnalysisException("accessing top or bottom frame");
         assert slotList.size() >= numLocals;
         if (slotList.size() == numLocals)
-			throw new DataflowAnalysisException("operand stack is empty");
+            throw new DataflowAnalysisException("operand stack is empty");
         return slotList.get(slotList.size() - 1);
     }
 
     /**
      * Get the values on the top of the Java operand stack. The top stack item
      * is placed at the end of the array, so that to restore the values to the
-	 * stack, you would push them in the order they appear in the array.
+     * stack, you would push them in the order they appear in the array.
      */
-    public void getTopStackWords(ValueType[] valueList)
-            throws DataflowAnalysisException {
-		int stackDepth = getStackDepth();
+    public void getTopStackWords(ValueType[] valueList) throws DataflowAnalysisException {
+        int stackDepth = getStackDepth();
         if (valueList.length > stackDepth)
             throw new DataflowAnalysisException("not enough values on stack");
         int numSlots = slotList.size();
-		for (int i = numSlots - valueList.length, j = 0; i < numSlots; ++i, ++j) {
+        for (int i = numSlots - valueList.length, j = 0; i < numSlots; ++i, ++j) {
             valueList[j] = slotList.get(i);
         }
     }
 
     /**
      * Get a value on the operand stack.
-     *
-	 * @param loc
+     * 
+     * @param loc
      *            the stack location, counting downwards from the top (location
      *            0)
      */
-	public ValueType getStackValue(int loc) throws DataflowAnalysisException {
+    public ValueType getStackValue(int loc) throws DataflowAnalysisException {
         if (!isValid())
-            throw new DataflowAnalysisException(
-                    "Accessing TOP or BOTTOM frame!");
-		int stackDepth = getStackDepth();
+            throw new DataflowAnalysisException("Accessing TOP or BOTTOM frame!");
+        int stackDepth = getStackDepth();
         if (loc >= stackDepth)
-            throw new DataflowAnalysisException(
-                    "not enough values on stack: access=" + loc + ", avail="
-							+ stackDepth);
+            throw new DataflowAnalysisException("not enough values on stack: access=" + loc + ", avail=" + stackDepth);
         return slotList.get(slotList.size() - (loc + 1));
     }
 
     /**
      * Get a the location in the frame of a value on the operand stack.
-     *
-	 * @param loc
+     * 
+     * @param loc
      *            the stack location, counting downwards from the top (location
      *            0)
      */
-	public int getStackLocation(int loc) throws DataflowAnalysisException {
+    public int getStackLocation(int loc) throws DataflowAnalysisException {
         int stackDepth = getStackDepth();
         if (loc >= stackDepth)
-            throw new DataflowAnalysisException(
-					"not enough values on stack: access=" + loc + ", avail="
-                            + stackDepth);
+            throw new DataflowAnalysisException("not enough values on stack: access=" + loc + ", avail=" + stackDepth);
         return slotList.size() - (loc + 1);
     }
 
     /**
      * Get the value corresponding to the object instance used in the given
      * instruction. This relies on the observation that in instructions which
-	 * use an object instance (such as getfield, invokevirtual, etc.), the
+     * use an object instance (such as getfield, invokevirtual, etc.), the
      * object instance is the first operand used by the instruction.
-     *
+     * 
      * @param ins
-	 *            the instruction
+     *            the instruction
      * @param cpg
      *            the ConstantPoolGen for the method
      */
-	public ValueType getInstance(Instruction ins, ConstantPoolGen cpg)
-            throws DataflowAnalysisException {
+    public ValueType getInstance(Instruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
         return getStackValue(getInstanceStackLocation(ins, cpg));
     }
 
     /**
      * Get the stack location (counting down from top of stack, starting at 0)
      * containing the object instance referred to by given instruction. This
-	 * relies on the observation that in instructions which use an object
+     * relies on the observation that in instructions which use an object
      * instance (such as getfield, invokevirtual, etc.), the object instance is
      * the first operand used by the instruction.
-     *
-	 * <p>
+     * 
+     * <p>
      * The value returned may be passed to getStackValue(int).
      * </p>
-     *
-	 * @param ins
+     * 
+     * @param ins
      *            the Instruction
      * @param cpg
      *            the ConstantPoolGen for the method
-	 * @return stack location (counting down from top of stack, starting at 0)
+     * @return stack location (counting down from top of stack, starting at 0)
      *         containing the object instance
      * @throws DataflowAnalysisException
      */
-	public int getInstanceStackLocation(Instruction ins, ConstantPoolGen cpg)
-            throws DataflowAnalysisException {
+    public int getInstanceStackLocation(Instruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
         int numConsumed = ins.consumeStack(cpg);
         if (numConsumed == Constants.UNPREDICTABLE)
-			throw new DataflowAnalysisException(
-                    "Unpredictable stack consumption in " + ins);
+            throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
         return numConsumed - 1;
     }
 
     /**
      * Get the slot the object instance referred to by given instruction is
      * located in.
-	 *
+     * 
      * @param ins
      *            the Instruction
      * @param cpg
-	 *            the ConstantPoolGen for the method
+     *            the ConstantPoolGen for the method
      * @return stack slot the object instance is in
      * @throws DataflowAnalysisException
      */
-	public int getInstanceSlot(Instruction ins, ConstantPoolGen cpg)
-            throws DataflowAnalysisException {
+    public int getInstanceSlot(Instruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
         if (!isValid()) {
-            throw new DataflowAnalysisException("Accessing invalid frame at "
-					+ ins);
+            throw new DataflowAnalysisException("Accessing invalid frame at " + ins);
         }
         int numConsumed = ins.consumeStack(cpg);
         if (numConsumed == Constants.UNPREDICTABLE)
-			throw new DataflowAnalysisException(
-                    "Unpredictable stack consumption in " + ins);
+            throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
         if (numConsumed > getStackDepth())
             throw new DataflowAnalysisException("Stack underflow " + ins);
-		return getNumSlots() - numConsumed;
+        return getNumSlots() - numConsumed;
     }
 
     /**
      * Get the number of arguments passed to given method invocation.
-     *
-	 * @param ins
+     * 
+     * @param ins
      *            the method invocation instruction
      * @param cpg
      *            the ConstantPoolGen for the class containing the method
-	 * @return number of arguments; note that this excludes the object instance
+     * @return number of arguments; note that this excludes the object instance
      *         for instance methods
      * @throws DataflowAnalysisException
      */
-	public int getNumArguments(InvokeInstruction ins, ConstantPoolGen cpg)
-            throws DataflowAnalysisException {
+    public int getNumArguments(InvokeInstruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
         SignatureParser parser = new SignatureParser(ins.getSignature(cpg));
         return parser.getNumParameters();
-	}
+    }
 
     /**
      * Get the number of arguments passed to given method invocation, including
      * the object instance if the call is to an instance method.
-	 *
+     * 
      * @param ins
      *            the method invocation instruction
      * @param cpg
-	 *            the ConstantPoolGen for the class containing the method
+     *            the ConstantPoolGen for the class containing the method
      * @return number of arguments, including object instance if appropriate
      * @throws DataflowAnalysisException
      */
-	public int getNumArgumentsIncludingObjectInstance(InvokeInstruction ins,
-            ConstantPoolGen cpg) throws DataflowAnalysisException {
+    public int getNumArgumentsIncludingObjectInstance(InvokeInstruction ins, ConstantPoolGen cpg)
+            throws DataflowAnalysisException {
         int numConsumed = ins.consumeStack(cpg);
         if (numConsumed == Constants.UNPREDICTABLE)
-			throw new DataflowAnalysisException(
-                    "Unpredictable stack consumption in " + ins);
+            throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
         return numConsumed;
     }
 
     /**
      * Get the <i>i</i>th argument passed to given method invocation.
-     *
-	 * @param ins
+     * 
+     * @param ins
      *            the method invocation instruction
      * @param cpg
      *            the ConstantPoolGen for the class containing the method
-	 * @param i
+     * @param i
      *            index of the argument; 0 for the first argument, etc.
      * @param numArguments
      *            total number of arguments to the method
-	 * @return the <i>i</i>th argument
+     * @return the <i>i</i>th argument
      * @throws DataflowAnalysisException
      */
-    @Deprecated public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg,
-			int i, int numArguments) throws DataflowAnalysisException {
+    @Deprecated
+    public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg, int i, int numArguments)
+            throws DataflowAnalysisException {
         SignatureParser sigParser = new SignatureParser(ins.getSignature(cpg));
-        return getArgument(ins, cpg, i, sigParser );
+        return getArgument(ins, cpg, i, sigParser);
     }
 
     /**
      * Get the <i>i</i>th argument passed to given method invocation.
-     *
-	 * @param ins
+     * 
+     * @param ins
      *            the method invocation instruction
      * @param cpg
      *            the ConstantPoolGen for the class containing the method
-	 * @param i
+     * @param i
      *            index of the argument; 0 for the first argument, etc.
      * @return the <i>i</i>th argument
      * @throws DataflowAnalysisException
-	 */
-    public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg,
-            int i, SignatureParser sigParser) throws DataflowAnalysisException {
+     */
+    public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg, int i, SignatureParser sigParser)
+            throws DataflowAnalysisException {
         if (i >= sigParser.getNumParameters())
-			throw new IllegalArgumentException("requesting parameter # " + i + " of " + sigParser);
+            throw new IllegalArgumentException("requesting parameter # " + i + " of " + sigParser);
         return getStackValue(sigParser.getSlotsFromTopOfStackForParameter(i));
     }
 
     /**
      * Get the stack slot that will contain given method argument. Assumes that
      * this frame is at the location (just before) a method invocation
-	 * instruction.
-     *
+     * instruction.
+     * 
      * @param i
      *            the argument index: 0 for first arg, etc.
-	 * @param numArguments
+     * @param numArguments
      *            total number of arguments to the called method
      * @return slot containing the argument value
      */
-	public int getArgumentSlot(int i, int numArguments) {
+    public int getArgumentSlot(int i, int numArguments) {
         if (i >= numArguments)
             throw new IllegalArgumentException();
 
@@ -423,50 +412,46 @@ public abstract class Frame<ValueType> {
 
     /**
      * Get the <i>i</i>th operand used by given instruction.
-     *
-	 * @param ins
+     * 
+     * @param ins
      *            the instruction, which must be a StackConsumer
      * @param cpg
      *            the ConstantPoolGen
-	 * @param i
+     * @param i
      *            index of operand to get: 0 for the first operand, etc.
      * @return the <i>i</i>th operand used by the given instruction
      * @throws DataflowAnalysisException
-	 */
-    public ValueType getOperand(StackConsumer ins, ConstantPoolGen cpg, int i)
-            throws DataflowAnalysisException {
+     */
+    public ValueType getOperand(StackConsumer ins, ConstantPoolGen cpg, int i) throws DataflowAnalysisException {
         int numOperands = ins.consumeStack(cpg);
-		if (numOperands == Constants.UNPREDICTABLE)
-            throw new DataflowAnalysisException(
-                    "Unpredictable stack consumption in " + ins);
+        if (numOperands == Constants.UNPREDICTABLE)
+            throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
         return getStackValue((numOperands - 1) - i);
-	}
+    }
 
     /**
      * Get set of arguments passed to a method invocation which match given
      * predicate.
-	 *
+     * 
      * @param invokeInstruction
      *            the InvokeInstruction
      * @param cpg
-	 *            the ConstantPoolGen
+     *            the ConstantPoolGen
      * @param chooser
      *            predicate to choose which argument values should be in the
      *            returned set
-	 * @return BitSet specifying which arguments match the predicate, indexed by
+     * @return BitSet specifying which arguments match the predicate, indexed by
      *         argument number (starting from 0)
      * @throws DataflowAnalysisException
      */
-	public BitSet getArgumentSet(InvokeInstruction invokeInstruction,
-            ConstantPoolGen cpg, DataflowValueChooser<ValueType> chooser)
+    public BitSet getArgumentSet(InvokeInstruction invokeInstruction, ConstantPoolGen cpg, DataflowValueChooser<ValueType> chooser)
             throws DataflowAnalysisException {
         BitSet chosenArgSet = new BitSet();
-		SignatureParser sigParser = new SignatureParser(invokeInstruction.getSignature(cpg));
+        SignatureParser sigParser = new SignatureParser(invokeInstruction.getSignature(cpg));
 
         for (int i = 0; i < sigParser.getNumParameters(); ++i) {
-            ValueType value = getArgument(invokeInstruction, cpg, i,
-                    sigParser);
-			if (chooser.choose(value))
+            ValueType value = getArgument(invokeInstruction, cpg, i, sigParser);
+            if (chooser.choose(value))
                 chosenArgSet.set(i);
         }
 
@@ -476,11 +461,11 @@ public abstract class Frame<ValueType> {
     /**
      * Clear the Java operand stack. Only local variable slots will remain in
      * the frame.
-	 */
+     */
     public void clearStack() {
         if (!isValid())
             throw new IllegalStateException("accessing top or bottom frame");
-		assert slotList.size() >= numLocals;
+        assert slotList.size() >= numLocals;
         if (slotList.size() > numLocals)
             slotList.subList(numLocals, slotList.size()).clear();
     }
@@ -488,56 +473,58 @@ public abstract class Frame<ValueType> {
     /**
      * Get the depth of the Java operand stack.
      */
-	public int getStackDepth() {
+    public int getStackDepth() {
         return slotList.size() - numLocals;
     }
 
     /**
      * Get the number of locals.
      */
-	public int getNumLocals() {
+    public int getNumLocals() {
         return numLocals;
     }
 
     /**
      * Get the number of slots (locals plus stack values).
      */
-	public int getNumSlots() {
+    public int getNumSlots() {
         return slotList.size();
     }
 
     public boolean contains(ValueType value) {
         if (!isValid())
             throw new IllegalStateException("accessing top or bottom frame");
-		for(ValueType v : slotList)
-            if (v.equals(value)) return true;
+        for (ValueType v : slotList)
+            if (v.equals(value))
+                return true;
         return false;
     }
-	/**
+
+    /**
      * Get the value at the <i>n</i>th slot.
-     *
+     * 
      * @param n
-	 *            the slot to get the value of
+     *            the slot to get the value of
      * @return the value in the slot
      */
     public ValueType getValue(int n) {
-		if (!isValid())
+        if (!isValid())
             throw new IllegalStateException("accessing top or bottom frame");
         return slotList.get(n);
     }
 
     /**
      * Set the value at the <i>n</i>th slot.
-     *
-	 * @param n
+     * 
+     * @param n
      *            the slot in which to set a new value
      * @param value
      *            the value to set
-	 */
+     */
     public void setValue(int n, ValueType value) {
         if (VERIFY_INTEGRITY && value == null)
             throw new IllegalArgumentException();
-		if (!isValid())
+        if (!isValid())
             throw new IllegalStateException("accessing top or bottom frame");
         slotList.set(n, value);
     }
@@ -545,11 +532,11 @@ public abstract class Frame<ValueType> {
     /**
      * Return true if this stack frame is the same as the one given as a
      * parameter.
-	 *
+     * 
      * @param other
      *            the other Frame
      * @return true if the frames are the same, false otherwise
-	 */
+     */
     public boolean sameAs(Frame<ValueType> other) {
         if (isTop != other.isTop)
             return false;
@@ -575,89 +562,86 @@ public abstract class Frame<ValueType> {
 
     /**
      * Make this Frame exactly the same as the one given as a parameter.
-     *
-	 * @param other
+     * 
+     * @param other
      *            the Frame to make this object the same as
      */
     public void copyFrom(Frame<ValueType> other) {
-		lastUpdateTimestamp = other.lastUpdateTimestamp;
+        lastUpdateTimestamp = other.lastUpdateTimestamp;
         slotList.clear();
         slotList.addAll(other.slotList);
-        /* Andrei,  27.02.2008:
-		 * "optimized" code below takes ~18% overall FB execution time, code above only 5%
-        int size = slotList.size();
-        if (size == other.slotList.size()) {
-            for (int i = 0; i < size; i++)
-				slotList.set(i, other.slotList.get(i));
-        } else {
-            slotList.clear();
-            for (ValueType v : other.slotList)
-				slotList.add(v);
-        } */
+        /*
+         * Andrei, 27.02.2008: "optimized" code below takes ~18% overall FB
+         * execution time, code above only 5% int size = slotList.size(); if
+         * (size == other.slotList.size()) { for (int i = 0; i < size; i++)
+         * slotList.set(i, other.slotList.get(i)); } else { slotList.clear();
+         * for (ValueType v : other.slotList) slotList.add(v); }
+         */
         isTop = other.isTop;
         isBottom = other.isBottom;
-	}
+    }
 
-    private static final boolean STACK_ONLY = SystemProperties
-            .getBoolean("dataflow.stackonly");
+    private static final boolean STACK_ONLY = SystemProperties.getBoolean("dataflow.stackonly");
 
     /**
      * Convert to string.
      */
-	@Override
+    @Override
     public String toString() {
         if (isTop())
             return "[TOP]";
-		if (isBottom())
+        if (isBottom())
             return "[BOTTOM]";
         StringBuilder buf = new StringBuilder();
         buf.append('[');
-		int numSlots = getNumSlots();
+        int numSlots = getNumSlots();
         int start = STACK_ONLY ? getNumLocals() : 0;
         for (int i = start; i < numSlots; ++i) {
             if (!STACK_ONLY && i == getNumLocals()) {
-				// Use a "|" character to visually separate locals from
+                // Use a "|" character to visually separate locals from
                 // the operand stack.
                 int last = buf.length() - 1;
                 if (last >= 0) {
-					if (buf.charAt(last) == ',')
+                    if (buf.charAt(last) == ',')
                         buf.deleteCharAt(last);
                 }
                 buf.append('|');
-			}
+            }
             String value = valueToString(getValue(i));
             if (i == numSlots - 1 && value.endsWith(","))
                 value = value.substring(0, value.length() - 1);
-			buf.append(value);
+            buf.append(value);
             // buf.append(' ');
         }
         buf.append(']');
-		return buf.toString();
+        return buf.toString();
     }
 
     /**
      * Subclasses may override this if they want to do something special to
      * convert Value objects to Strings. By default, we just call toString() on
-	 * the values.
+     * the values.
      */
     protected String valueToString(ValueType value) {
-        if (value == null) return "null";
-		return value.toString();
+        if (value == null)
+            return "null";
+        return value.toString();
     }
 
     /**
-     * @return an unmodifiable Collection of the local variable and operand stack slots
+     * @return an unmodifiable Collection of the local variable and operand
+     *         stack slots
      */
-	public Collection<ValueType> allSlots() {
+    public Collection<ValueType> allSlots() {
         if (slotList == null)
-            return Collections.<ValueType>emptyList();
-        return Collections.<ValueType>unmodifiableCollection(slotList);
-	}
+            return Collections.<ValueType> emptyList();
+        return Collections.<ValueType> unmodifiableCollection(slotList);
+    }
 
     /**
      * @param lastUpdateTimestamp
      *            The lastUpdateTimestamp to set.
-	 */
+     */
     public void setLastUpdateTimestamp(int lastUpdateTimestamp) {
         this.lastUpdateTimestamp = lastUpdateTimestamp;
     }
@@ -665,7 +649,7 @@ public abstract class Frame<ValueType> {
     /**
      * @return Returns the lastUpdateTimestamp.
      */
-	public int getLastUpdateTimestamp() {
+    public int getLastUpdateTimestamp() {
         return lastUpdateTimestamp;
     }
 

@@ -51,48 +51,66 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
- * An AnalysisContext implementation that uses the
- * IAnalysisCache.  This class must only be used by
- * FindBugs2, not the original FindBugs driver.
- *
+ * An AnalysisContext implementation that uses the IAnalysisCache. This class
+ * must only be used by FindBugs2, not the original FindBugs driver.
+ * 
  * @author David Hovemeyer
  */
 public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     static class DelegatingRepositoryLookupFailureCallback implements RepositoryLookupFailureCallback {
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.classfile.IErrorLogger#logError(java.lang.String)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.classfile.IErrorLogger#logError(java.lang.String)
          */
-		public void logError(String message) {
+        public void logError(String message) {
             Global.getAnalysisCache().getErrorLogger().logError(message);
         }
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.classfile.IErrorLogger#logError(java.lang.String, java.lang.Throwable)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.classfile.IErrorLogger#logError(java.lang.String,
+         * java.lang.Throwable)
          */
-		public void logError(String message, Throwable e) {
+        public void logError(String message, Throwable e) {
             Global.getAnalysisCache().getErrorLogger().logError(message, e);
         }
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(java.lang.ClassNotFoundException)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(java
+         * .lang.ClassNotFoundException)
          */
-		public void reportMissingClass(ClassNotFoundException ex) {
+        public void reportMissingClass(ClassNotFoundException ex) {
             Global.getAnalysisCache().getErrorLogger().reportMissingClass(ex);
         }
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu
+         * .umd.cs.findbugs.classfile.ClassDescriptor)
          */
-		public void reportMissingClass(ClassDescriptor classDescriptor) {
+        public void reportMissingClass(ClassDescriptor classDescriptor) {
             Global.getAnalysisCache().getErrorLogger().reportMissingClass(classDescriptor);
         }
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportSkippedAnalysis(edu.umd.cs.findbugs.classfile.MethodDescriptor)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.classfile.IErrorLogger#reportSkippedAnalysis(
+         * edu.umd.cs.findbugs.classfile.MethodDescriptor)
          */
-		public void reportSkippedAnalysis(MethodDescriptor method) {
+        public void reportSkippedAnalysis(MethodDescriptor method) {
             Global.getAnalysisCache().getErrorLogger().reportSkippedAnalysis(method);
         }
 
@@ -103,292 +121,358 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
     /**
      * Constructor.
      */
-	public AnalysisCacheToAnalysisContextAdapter() {
+    public AnalysisCacheToAnalysisContextAdapter() {
         this.lookupFailureCallback = new DelegatingRepositoryLookupFailureCallback();
     }
 
-//	/* (non-Javadoc)
-//	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#addApplicationClassToRepository(org.apache.bcel.classfile.JavaClass)
-//	 */
-//	@Override
-//	public void addApplicationClassToRepository(JavaClass appClass) {
-//		throw new UnsupportedOperationException();
-//	}
+    // /* (non-Javadoc)
+    // * @see
+    // edu.umd.cs.findbugs.ba.AnalysisContext#addApplicationClassToRepository(org.apache.bcel.classfile.JavaClass)
+    // */
+    // @Override
+    // public void addApplicationClassToRepository(JavaClass appClass) {
+    // throw new UnsupportedOperationException();
+    // }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AnalysisContext#addClasspathEntry(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.AnalysisContext#addClasspathEntry(java.lang.String
+     * )
      */
-	@Override
+    @Override
     public void addClasspathEntry(String url) throws IOException {
         throw new UnsupportedOperationException();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#clearClassContextCache()
      */
-	@Override
+    @Override
     public void clearClassContextCache() {
         throw new UnsupportedOperationException();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#clearRepository()
      */
-	@Override
+    @Override
     public void clearRepository() {
         // Set the backing store for the BCEL Repository to
         // be the AnalysisCache.
-		Repository.setRepository(new AnalysisCacheToRepositoryAdapter());
+        Repository.setRepository(new AnalysisCacheToRepositoryAdapter());
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AnalysisContext#getAnnotationRetentionDatabase()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.AnalysisContext#getAnnotationRetentionDatabase()
      */
-	@Override
+    @Override
     public AnnotationRetentionDatabase getAnnotationRetentionDatabase() {
         return getDatabase(AnnotationRetentionDatabase.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AnalysisContext#getCheckReturnAnnotationDatabase()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.AnalysisContext#getCheckReturnAnnotationDatabase()
      */
-	@Override
+    @Override
     public CheckReturnAnnotationDatabase getCheckReturnAnnotationDatabase() {
         return getDatabase(CheckReturnAnnotationDatabase.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AnalysisContext#getClassContext(org.apache.bcel.classfile.JavaClass)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.AnalysisContext#getClassContext(org.apache.bcel
+     * .classfile.JavaClass)
      */
-	@Override
+    @Override
     public ClassContext getClassContext(JavaClass javaClass) {
-        // This is a bit silly since we're doing an unnecessary ClassDescriptor->JavaClass lookup.
+        // This is a bit silly since we're doing an unnecessary
+        // ClassDescriptor->JavaClass lookup.
         // However, we can be assured that it will succeed.
 
-        ClassDescriptor classDescriptor =
-            DescriptorFactory.instance().getClassDescriptor(ClassName.toSlashedClassName(javaClass.getClassName()));
+        ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(
+                ClassName.toSlashedClassName(javaClass.getClassName()));
 
         try {
             return Global.getAnalysisCache().getClassAnalysis(ClassContext.class, classDescriptor);
         } catch (CheckedAnalysisException e) {
-			IllegalStateException ise = new IllegalStateException("Could not get ClassContext for JavaClass");
+            IllegalStateException ise = new IllegalStateException("Could not get ClassContext for JavaClass");
             ise.initCause(e);
             throw ise;
         }
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getClassContextStats()
      */
-	@Override
+    @Override
     public String getClassContextStats() {
         return "<unknown ClassContext stats>";
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getFieldStoreTypeDatabase()
      */
-	@Override
+    @Override
     public FieldStoreTypeDatabase getFieldStoreTypeDatabase() {
         return getDatabase(FieldStoreTypeDatabase.class);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getJCIPAnnotationDatabase()
      */
-	@Override
+    @Override
     public JCIPAnnotationDatabase getJCIPAnnotationDatabase() {
         return getDatabase(JCIPAnnotationDatabase.class);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getLookupFailureCallback()
      */
-	@Override
+    @Override
     public RepositoryLookupFailureCallback getLookupFailureCallback() {
         return lookupFailureCallback;
     }
-	
+
     private TypeQualifierNullnessAnnotationDatabase tqNullnessDatabase;
 
-    /* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getNullnessAnnotationDatabase()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.AnalysisContext#getNullnessAnnotationDatabase()
      */
     @Override
     public INullnessAnnotationDatabase getNullnessAnnotationDatabase() {
-		if (IsNullValueAnalysisFeatures.USE_TYPE_QUALIFIERS) {
+        if (IsNullValueAnalysisFeatures.USE_TYPE_QUALIFIERS) {
             if (tqNullnessDatabase == null) {
                 tqNullnessDatabase = new TypeQualifierNullnessAnnotationDatabase();
             }
-			return tqNullnessDatabase;
+            return tqNullnessDatabase;
         } else {
             return getDatabase(NullnessAnnotationDatabase.class);
         }
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSourceFinder()
      */
-	@Override
+    @Override
     public SourceFinder getSourceFinder() {
         return project.getSourceFinder();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSourceInfoMap()
      */
-	@Override
+    @Override
     public SourceInfoMap getSourceInfoMap() {
         return getDatabase(SourceInfoMap.class);
     }
 
-//	/* (non-Javadoc)
-//	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSubtypes()
-//	 */
-//	@Override
-//	public Subtypes getSubtypes() {
-//		if (Subtypes.DO_NOT_USE) {
-//			throw new IllegalArgumentException();
-//		}
-//		return getDatabase(Subtypes.class);
-//	}
+    // /* (non-Javadoc)
+    // * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSubtypes()
+    // */
+    // @Override
+    // public Subtypes getSubtypes() {
+    // if (Subtypes.DO_NOT_USE) {
+    // throw new IllegalArgumentException();
+    // }
+    // return getDatabase(Subtypes.class);
+    // }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AnalysisContext#getUnconditionalDerefParamDatabase()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.AnalysisContext#getUnconditionalDerefParamDatabase
+     * ()
      */
-	@Override
+    @Override
     public ParameterNullnessPropertyDatabase getUnconditionalDerefParamDatabase() {
         return getDatabase(ParameterNullnessPropertyDatabase.class);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#initDatabases()
      */
-	@Override
+    @Override
     public void initDatabases() {
-        // Databases are created on-demand - don't need to explicitly create them
+        // Databases are created on-demand - don't need to explicitly create
+        // them
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#lookupClass(java.lang.String)
      */
-	@Override
-    public JavaClass lookupClass(@DottedClassName String className)
-            throws ClassNotFoundException {
+    @Override
+    public JavaClass lookupClass(@DottedClassName String className) throws ClassNotFoundException {
         try {
-			if (className.length() == 0) 
+            if (className.length() == 0)
                 throw new IllegalArgumentException("Class name is empty");
             if (!ClassName.isValidClassName(className)) {
                 throw new ClassNotFoundException("Invalid class name: " + className);
-			}
-            return Global.getAnalysisCache().getClassAnalysis(
-                    JavaClass.class, DescriptorFactory.instance().getClassDescriptor(ClassName.toSlashedClassName(className)));
+            }
+            return Global.getAnalysisCache().getClassAnalysis(JavaClass.class,
+                    DescriptorFactory.instance().getClassDescriptor(ClassName.toSlashedClassName(className)));
         } catch (CheckedAnalysisException e) {
-			throw new ClassNotFoundException("Class not found: " + className, e);
+            throw new ClassNotFoundException("Class not found: " + className, e);
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getInnerClassAccessMap()
      */
-	@Override
+    @Override
     public InnerClassAccessMap getInnerClassAccessMap() {
         return getDatabase(InnerClassAccessMap.class);
     }
 
     /**
-     * Helper method to get a database
-     * without having to worry about a
-	 * CheckedAnalysisException.
-     *
-     * @param cls Class of the database to get
+     * Helper method to get a database without having to worry about a
+     * CheckedAnalysisException.
+     * 
+     * @param cls
+     *            Class of the database to get
      * @return the database
-	 */
-    private<E> E getDatabase(Class<E> cls) {
+     */
+    private <E> E getDatabase(Class<E> cls) {
         return Global.getAnalysisCache().getDatabase(cls);
     }
 
     /**
-     * Set the collection of class descriptors identifying all
-     * application classes.
-	 * 
-     * @param appClassCollection List of ClassDescriptors identifying application classes
+     * Set the collection of class descriptors identifying all application
+     * classes.
+     * 
+     * @param appClassCollection
+     *            List of ClassDescriptors identifying application classes
      */
     public void setAppClassList(List<ClassDescriptor> appClassCollection) throws CheckedAnalysisException {
 
         // FIXME: we really should drive the progress callback here
         HashSet<ClassDescriptor> appSet = new HashSet<ClassDescriptor>(appClassCollection);
 
-        Collection<ClassDescriptor> allClassDescriptors = new ArrayList<ClassDescriptor>(DescriptorFactory.instance().getAllClassDescriptors());
-        for (ClassDescriptor appClass : allClassDescriptors) try {
+        Collection<ClassDescriptor> allClassDescriptors = new ArrayList<ClassDescriptor>(DescriptorFactory.instance()
+                .getAllClassDescriptors());
+        for (ClassDescriptor appClass : allClassDescriptors)
+            try {
                 XClass xclass = currentXFactory().getXClass(appClass);
 
-                if (xclass == null) continue;
+                if (xclass == null)
+                    continue;
 
                 // Add the application class to the database
-				if (appSet.contains(appClass))  getSubtypes2().addApplicationClass(xclass);
+                if (appSet.contains(appClass))
+                    getSubtypes2().addApplicationClass(xclass);
                 else if (xclass instanceof ClassInfo)
-                        getSubtypes2().addClass(xclass);
+                    getSubtypes2().addClass(xclass);
 
-		} catch (Exception e) {
-            AnalysisContext.logError("Unable to get XClass for " + appClass, e);
-        }
+            } catch (Exception e) {
+                AnalysisContext.logError("Unable to get XClass for " + appClass, e);
+            }
 
-		if (Subtypes2.ENABLE_SUBTYPES2 && Subtypes2.DEBUG) {
+        if (Subtypes2.ENABLE_SUBTYPES2 && Subtypes2.DEBUG) {
             System.out.println(getSubtypes2().getGraph().getNumVertices() + " vertices in inheritance graph");
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#updateDatabases(int)
      */
-	@Override
+    @Override
     public void updateDatabases(int pass) {
         if (pass == 0) {
             getCheckReturnAnnotationDatabase().loadAuxiliaryAnnotations();
-			getNullnessAnnotationDatabase().loadAuxiliaryAnnotations();
+            getNullnessAnnotationDatabase().loadAuxiliaryAnnotations();
         }
 
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AnalysisContext#getReturnValueNullnessPropertyDatabase()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.AnalysisContext#getReturnValueNullnessPropertyDatabase
+     * ()
      */
-	@Override
+    @Override
     public ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase() {
         return getDatabase(ReturnValueNullnessPropertyDatabase.class);
     }
 
-//	private Subtypes2 subtypes2;
+    // private Subtypes2 subtypes2;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSubtypes2()
-	 */
+     */
     @Override
     public Subtypes2 getSubtypes2() {
         return Global.getAnalysisCache().getDatabase(Subtypes2.class);
-	}
+    }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AnalysisContext#getDirectlyRelevantTypeQualifiersDatabase()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.ba.AnalysisContext#
+     * getDirectlyRelevantTypeQualifiersDatabase()
      */
-	@Override
+    @Override
     public DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase() {
         return Global.getAnalysisCache().getDatabase(DirectlyRelevantTypeQualifiersDatabase.class);
     }
-	
-    public @CheckForNull XMethod getBridgeTo(MethodInfo m) {
+
+    public @CheckForNull
+    XMethod getBridgeTo(MethodInfo m) {
         return bridgeTo.get(m);
     }
-	public @CheckForNull XMethod getBridgeFrom(MethodInfo m) {
+
+    public @CheckForNull
+    XMethod getBridgeFrom(MethodInfo m) {
         return bridgeFrom.get(m);
     }
+
     public void setBridgeMethod(MethodInfo from, MethodInfo to) {
-		bridgeTo.put(from, to);
+        bridgeTo.put(from, to);
         bridgeFrom.put(to, from);
     }
 
-	 final Map<MethodInfo, MethodInfo> bridgeTo = new IdentityHashMap<MethodInfo, MethodInfo>();
-     final Map<MethodInfo, MethodInfo> bridgeFrom = new IdentityHashMap<MethodInfo, MethodInfo>();
+    final Map<MethodInfo, MethodInfo> bridgeTo = new IdentityHashMap<MethodInfo, MethodInfo>();
+
+    final Map<MethodInfo, MethodInfo> bridgeFrom = new IdentityHashMap<MethodInfo, MethodInfo>();
 
 }

@@ -34,6 +34,7 @@ public class AddAnnotation {
     private static final Logger LOGGER = Logger.getLogger(AddAnnotation.class.getName());
 
     private BugCollection bugCollection;
+
     private String annotation;
 
     public AddAnnotation(BugCollection bugCollection, String annotation) {
@@ -41,10 +42,9 @@ public class AddAnnotation {
         this.annotation = annotation;
     }
 
-    public AddAnnotation(String resultsFile, String annotation)
-            throws IOException, DocumentException {
+    public AddAnnotation(String resultsFile, String annotation) throws IOException, DocumentException {
         this(new SortedBugCollection(), annotation);
-		bugCollection.readXML(resultsFile);
+        bugCollection.readXML(resultsFile);
     }
 
     public BugCollection getBugCollection() {
@@ -75,7 +75,7 @@ public class AddAnnotation {
     @SuppressWarnings("DM_EXIT")
     public static void main(String[] argv) throws Exception {
         if (argv.length != 2) {
-			System.err.println("Usage: " + AddAnnotation.class.getName() + " <results file> <annotation>");
+            System.err.println("Usage: " + AddAnnotation.class.getName() + " <results file> <annotation>");
             System.exit(1);
         }
 

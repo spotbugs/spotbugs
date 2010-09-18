@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.filter.Filter;
 /**
  * Java main application to compute update a historical bug collection with
  * results from another build/analysis.
- *
+ * 
  * @author William Pugh
  */
 
@@ -55,26 +55,34 @@ public class SetBugDatabaseInfo {
     /**
      *
      */
-	private static final String USAGE = "Usage: <cmd> " + " [options] [<oldData> [<newData>]]";
+    private static final String USAGE = "Usage: <cmd> " + " [options] [<oldData> [<newData>]]";
 
     static class SetInfoCommandLine extends CommandLine {
         String revisionName;
+
         String projectName;
 
         String exclusionFilterFile;
+
         String lastVersion;
 
-		String cloudId;
-        HashMap<String,String> cloudProperties = new HashMap<String,String>();
+        String cloudId;
+
+        HashMap<String, String> cloudProperties = new HashMap<String, String>();
 
         boolean withMessages = false;
+
         boolean purgeStats = false;
+
         boolean purgeClassStats = false;
-		boolean purgeMissingClasses = false;
+
+        boolean purgeMissingClasses = false;
 
         boolean resetSource = false;
+
         boolean resetProject = false;
-		boolean purgeDesignations = false;
+
+        boolean purgeDesignations = false;
 
         long revisionTimestamp = 0L;
 
@@ -85,19 +93,19 @@ public class SetBugDatabaseInfo {
         SetInfoCommandLine() {
             addOption("-name", "name", "set name for (last) revision");
             addOption("-projectName", "name", "set name for project");
-			addOption("-timestamp", "when", "set timestamp for (last) revision");
+            addOption("-timestamp", "when", "set timestamp for (last) revision");
             addSwitch("-resetSource", "remove all source search paths");
             addSwitch("-resetProject", "remove all source search paths, analysis and auxilary classpath entries");
             addOption("-source", "directory", "Add this directory to the source search path");
-			addSwitch("-purgeStats", "purge/delete information about sizes of analyzed class files");
+            addSwitch("-purgeStats", "purge/delete information about sizes of analyzed class files");
             addSwitch("-uploadDesignations", "upload all designations to cloud");
             addSwitch("-purgeDesignations", "purge/delete user designations (e.g., MUST_FIX or NOT_A_BUG");
             addSwitch("-purgeClassStats", "purge/delete information about sizes of analyzed class files, but retain class stats");
-			addSwitch("-purgeMissingClasses", "purge list of missing classes");
+            addSwitch("-purgeMissingClasses", "purge list of missing classes");
             addOption("-findSource", "directory", "Find and add all relevant source directions contained within this directory");
             addOption("-suppress", "filter file", "Suppress warnings matched by this file (replaces previous suppressions)");
             addOption("-lastVersion", "version", "Trim the history to just include just the specified version");
-			addSwitch("-withMessages", "Add bug descriptions");
+            addSwitch("-withMessages", "Add bug descriptions");
             addOption("-cloud", "id", "set cloud id");
             addOption("-cloudProperty", "key=value", "set cloud property");
 
@@ -106,19 +114,19 @@ public class SetBugDatabaseInfo {
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
             if (option.equals("-withMessages"))
-				withMessages = true;
+                withMessages = true;
             else if (option.equals("-resetSource"))
                 resetSource = true;
             else if (option.equals("-resetProject"))
-				resetProject = true;
+                resetProject = true;
             else if (option.equals("-purgeStats"))
                 purgeStats = true;
             else if (option.equals("-purgeDesignations"))
-				purgeDesignations = true;
+                purgeDesignations = true;
             else if (option.equals("-purgeClassStats"))
                 purgeClassStats = true;
             else if (option.equals("-purgeMissingClasses"))
-				purgeMissingClasses = true;
+                purgeMissingClasses = true;
             else
                 throw new IllegalArgumentException("no option " + option);
 
@@ -127,43 +135,40 @@ public class SetBugDatabaseInfo {
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
             if (option.equals("-name"))
-				revisionName = argument;
+                revisionName = argument;
             else if (option.equals("-cloud"))
                 cloudId = argument;
             else if (option.equals("-cloudProperty")) {
-				int e = argument.indexOf('=');
+                int e = argument.indexOf('=');
                 if (e == -1)
                     throw new IllegalArgumentException("Bad cloud property: " + argument);
                 String key = argument.substring(0, e);
-				String value = argument.substring(e+1);
+                String value = argument.substring(e + 1);
                 cloudProperties.put(key, value);
 
-            }
-			else if (option.equals("-projectName"))
+            } else if (option.equals("-projectName"))
                 projectName = argument;
             else if (option.equals("-suppress"))
                 exclusionFilterFile = argument;
-			else if (option.equals("-timestamp"))
+            else if (option.equals("-timestamp"))
                 revisionTimestamp = Date.parse(argument);
 
             else if (option.equals("-source"))
                 sourcePaths.add(argument);
             else if (option.equals("-lastVersion")) {
-						
-            }
-            else if (option.equals("-findSource"))
+
+            } else if (option.equals("-findSource"))
                 searchSourcePaths.add(argument);
-			else
+            else
                 throw new IllegalArgumentException("Can't handle option " + option);
 
         }
 
     }
 
-    public static void main(String[] args) throws IOException,
-            DocumentException {
+    public static void main(String[] args) throws IOException, DocumentException {
         FindBugs.setNoAnalysis();
-		DetectorFactoryCollection.instance();
+        DetectorFactoryCollection.instance();
         SetInfoCommandLine commandLine = new SetInfoCommandLine();
         int argCount = commandLine.parse(args, 0, 2, USAGE);
 
@@ -172,130 +177,130 @@ public class SetBugDatabaseInfo {
         if (argCount < args.length)
             origCollection.readXML(args[argCount++]);
         else
-			origCollection.readXML(System.in);
+            origCollection.readXML(System.in);
         Project project = origCollection.getProject();
 
         if (commandLine.revisionName != null)
             origCollection.setReleaseName(commandLine.revisionName);
         if (commandLine.projectName != null)
-			origCollection.getProject().setProjectName(commandLine.projectName);
+            origCollection.getProject().setProjectName(commandLine.projectName);
         if (commandLine.revisionTimestamp != 0)
             origCollection.setTimestamp(commandLine.revisionTimestamp);
         origCollection.setWithMessages(commandLine.withMessages);
 
         if (commandLine.purgeDesignations)
-            for(BugInstance b : origCollection) {
+            for (BugInstance b : origCollection) {
                 b.setUserDesignation(null);
-			}
+            }
         if (commandLine.exclusionFilterFile != null) {
             project.setSuppressionFilter(Filter.parseFilter(commandLine.exclusionFilterFile));
         }
-		if (commandLine.resetProject) {
+        if (commandLine.resetProject) {
             project.getSourceDirList().clear();
             project.getFileList().clear();
             project.getAuxClasspathEntryList().clear();
-		}
+        }
         if (commandLine.cloudId != null)
             project.setCloudId(commandLine.cloudId);
-        for(Map.Entry<String,String> e : commandLine.cloudProperties.entrySet()) {
-			project.getCloudProperties().setProperty(e.getKey(), e.getValue());
+        for (Map.Entry<String, String> e : commandLine.cloudProperties.entrySet()) {
+            project.getCloudProperties().setProperty(e.getKey(), e.getValue());
         }
         if (commandLine.resetSource)
             project.getSourceDirList().clear();
-		for(String source : commandLine.sourcePaths)
+        for (String source : commandLine.sourcePaths)
             project.addSourceDir(source);
         if (commandLine.purgeStats)
             origCollection.getProjectStats().getPackageStats().clear();
-		if (commandLine.purgeClassStats)
-            for(PackageStats ps : origCollection.getProjectStats().getPackageStats()) {
+        if (commandLine.purgeClassStats)
+            for (PackageStats ps : origCollection.getProjectStats().getPackageStats()) {
                 ps.getClassStats().clear();
             }
-		if (commandLine.purgeMissingClasses)
+        if (commandLine.purgeMissingClasses)
             origCollection.clearMissingClasses();
         if (commandLine.lastVersion != null) {
             Map<String, AppVersion> versions = new HashMap<String, AppVersion>();
-			SortedMap<Long, AppVersion> timeStamps = new TreeMap<Long, AppVersion>();
+            SortedMap<Long, AppVersion> timeStamps = new TreeMap<Long, AppVersion>();
 
-            for(Iterator<AppVersion> i = origCollection.appVersionIterator(); i.hasNext(); ) {
+            for (Iterator<AppVersion> i = origCollection.appVersionIterator(); i.hasNext();) {
                 AppVersion v = i.next();
                 versions.put(v.getReleaseName(), v);
-				timeStamps.put(v.getTimestamp(), v);
+                timeStamps.put(v.getTimestamp(), v);
             }
             // add current version to the maps
             AppVersion v = origCollection.getCurrentAppVersion();
-			versions.put(v.getReleaseName(), v);
+            versions.put(v.getReleaseName(), v);
             timeStamps.put(v.getTimestamp(), v);
 
-            long last = edu.umd.cs.findbugs.workflow.Filter.FilterCommandLine.getVersionNum(
-                    versions, timeStamps, commandLine.lastVersion, true, v.getSequenceNumber());
+            long last = edu.umd.cs.findbugs.workflow.Filter.FilterCommandLine.getVersionNum(versions, timeStamps,
+                    commandLine.lastVersion, true, v.getSequenceNumber());
             if (last < origCollection.getSequenceNumber()) {
-				String name = origCollection.getAppVersionFromSequenceNumber(last).getReleaseName();
+                String name = origCollection.getAppVersionFromSequenceNumber(last).getReleaseName();
                 long timestamp = origCollection.getAppVersionFromSequenceNumber(last).getTimestamp();
                 origCollection.setReleaseName(name);
                 origCollection.setTimestamp(timestamp);
-				origCollection.trimAppVersions(last);
+                origCollection.trimAppVersions(last);
             }
 
         }
 
-        Map<String,Set<String>> missingFiles = new HashMap<String,Set<String>>();
+        Map<String, Set<String>> missingFiles = new HashMap<String, Set<String>>();
         if (!commandLine.searchSourcePaths.isEmpty()) {
             sourceSearcher = new SourceSearcher(project);
-			for(BugInstance bug : origCollection.getCollection()) {
+            for (BugInstance bug : origCollection.getCollection()) {
                 SourceLineAnnotation src = bug.getPrimarySourceLineAnnotation();
-                if (!sourceSearcher.sourceNotFound.contains(src.getClassName())
-                        && !sourceSearcher.findSource(src)) {
-					Set<String> paths = missingFiles.get(src.getSourceFile());
+                if (!sourceSearcher.sourceNotFound.contains(src.getClassName()) && !sourceSearcher.findSource(src)) {
+                    Set<String> paths = missingFiles.get(src.getSourceFile());
                     if (paths == null) {
                         paths = new HashSet<String>();
                         missingFiles.put(src.getSourceFile(), paths);
-					}
+                    }
                     String fullPath = fullPath(src);
                     // System.out.println("Missing " + fullPath);
                     paths.add(fullPath);
-				}
+                }
             }
             Set<String> foundPaths = new HashSet<String>();
-            for(String f : commandLine.searchSourcePaths)
-				for(File javaFile :  RecursiveSearchForJavaFiles.search(new File(f))) {
+            for (String f : commandLine.searchSourcePaths)
+                for (File javaFile : RecursiveSearchForJavaFiles.search(new File(f))) {
                     Set<String> matchingMissingClasses = missingFiles.get(javaFile.getName());
                     if (matchingMissingClasses == null) {
                         // System.out.println("Nothing for " + javaFile);
-					} else for(String sourcePath : matchingMissingClasses) {
-                        String path = javaFile.getAbsolutePath();
-                        if (path.endsWith(sourcePath)) {
-                            String dir = path.substring(0,path.length() - sourcePath.length());
-							foundPaths.add(dir);
+                    } else
+                        for (String sourcePath : matchingMissingClasses) {
+                            String path = javaFile.getAbsolutePath();
+                            if (path.endsWith(sourcePath)) {
+                                String dir = path.substring(0, path.length() - sourcePath.length());
+                                foundPaths.add(dir);
 
+                            }
                         }
-                    }
 
                 }
 
             Set<String> toRemove = new HashSet<String>();
-            for(String p1 : foundPaths)
-                for(String p2 : foundPaths)
-					if (!p1.equals(p2) && p1.startsWith(p2)) {
+            for (String p1 : foundPaths)
+                for (String p2 : foundPaths)
+                    if (!p1.equals(p2) && p1.startsWith(p2)) {
                         toRemove.add(p1);
                         break;
                     }
-			foundPaths.removeAll(toRemove);
+            foundPaths.removeAll(toRemove);
 
-            for(String dir : foundPaths)  {
+            for (String dir : foundPaths) {
                 project.addSourceDir(dir);
-				if (argCount < args.length)
+                if (argCount < args.length)
                     System.out.println("Found " + dir);
-                }
+            }
 
         }
-            // OK, now we know all the missing source files
-            // we also know all the .java files in the directories we were pointed to
-
+        // OK, now we know all the missing source files
+        // we also know all the .java files in the directories we were pointed
+        // to
 
         if (argCount < args.length)
             origCollection.writeXML(args[argCount++]);
         else
-			origCollection.writeXML(System.out);
+            origCollection.writeXML(System.out);
 
     }
 

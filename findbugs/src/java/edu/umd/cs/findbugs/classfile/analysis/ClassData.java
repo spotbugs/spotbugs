@@ -27,22 +27,26 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 
 /**
  * The data (bytes) of a class.
- *
+ * 
  * @author David Hovemeyer
  */
 public class ClassData {
     private final ClassDescriptor classDescriptor;
+
     private final ICodeBaseEntry codeBaseEntry;
+
     private final byte[] data;
 
     /**
      * Constructor.
-     *
-	 * @param classDescriptor descriptor for the class
-     * @param data            the data (bytes) for a class
+     * 
+     * @param classDescriptor
+     *            descriptor for the class
+     * @param data
+     *            the data (bytes) for a class
      */
     public ClassData(ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry, byte[] data) {
-		this.classDescriptor = classDescriptor;
+        this.classDescriptor = classDescriptor;
         this.codeBaseEntry = codeBaseEntry;
         this.data = data;
     }
@@ -50,31 +54,31 @@ public class ClassData {
     /**
      * @return Returns the ClassDescriptor.
      */
-	public ClassDescriptor getClassDescriptor() {
+    public ClassDescriptor getClassDescriptor() {
         return classDescriptor;
     }
 
     /**
      * @return Returns the codeBaseEntry.
      */
-	public ICodeBaseEntry getCodeBaseEntry() {
+    public ICodeBaseEntry getCodeBaseEntry() {
         return codeBaseEntry;
     }
 
     /**
      * @return Returns the data.
      */
-	public byte[] getData() {
+    public byte[] getData() {
         return data;
     }
 
     /**
      * Open an InputStream on the class data.
-     *
-	 * @return InputStream reading from the class data
+     * 
+     * @return InputStream reading from the class data
      */
     public InputStream getInputStream() {
         return new ByteArrayInputStream(data);
-	}
+    }
 
 }

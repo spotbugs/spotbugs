@@ -30,86 +30,106 @@ import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 
 /**
  * Codebase entry class for directory codebases.
- *
+ * 
  * @author David Hovemeyer
  */
-public class DirectoryCodeBaseEntry extends AbstractScannableCodeBaseEntry  {
+public class DirectoryCodeBaseEntry extends AbstractScannableCodeBaseEntry {
     private final DirectoryCodeBase codeBase;
+
     private final String realResourceName;
 
     public DirectoryCodeBaseEntry(DirectoryCodeBase codeBase, String realResourceName) {
         this.codeBase = codeBase;
         this.realResourceName = realResourceName;
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
      */
-	public int getNumBytes() {
+    public int getNumBytes() {
         File fullPath = codeBase.getFullPathOfResource(realResourceName);
         // this is not needed but causes slowdown on a slow file system IO
-        // file.length() returns zero if not found, and matches the contract of this method
-//		if (!fullPath.exists()) {
-//			return -1;
-//		}
+        // file.length() returns zero if not found, and matches the contract of
+        // this method
+        // if (!fullPath.exists()) {
+        // return -1;
+        // }
         return (int) fullPath.length();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
      */
-	public InputStream openResource() throws IOException {
+    public InputStream openResource() throws IOException {
         return codeBase.openFile(realResourceName);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getCodeBase()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getCodeBase
+     * ()
      */
-	@Override
+    @Override
     public AbstractScannableCodeBase getCodeBase() {
         return codeBase;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getRealResourceName()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#
+     * getRealResourceName()
      */
-	@Override
+    @Override
     public String getRealResourceName() {
         return realResourceName;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
      */
-	public ClassDescriptor getClassDescriptor() throws InvalidClassFileFormatException {
+    public ClassDescriptor getClassDescriptor() throws InvalidClassFileFormatException {
         return DescriptorFactory.createClassDescriptorFromResourceName(getResourceName());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
-	@Override
+    @Override
     public boolean equals(Object obj) {
         if (obj == null || obj.getClass() != this.getClass()) {
             return false;
-		}
+        }
         DirectoryCodeBaseEntry other = (DirectoryCodeBaseEntry) obj;
-        return this.codeBase.equals(other.codeBase)
-            && this.realResourceName.equals(other.realResourceName);
-	}
+        return this.codeBase.equals(other.codeBase) && this.realResourceName.equals(other.realResourceName);
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
-	@Override
+    @Override
     public int hashCode() {
         return 7919 * codeBase.hashCode() + realResourceName.hashCode();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
-	@Override
+    @Override
     public String toString() {
         return getCodeBase() + ":" + getResourceName();
     }

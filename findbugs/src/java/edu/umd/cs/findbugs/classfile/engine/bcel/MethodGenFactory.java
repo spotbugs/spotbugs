@@ -31,9 +31,8 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce MethodGen objects
- * for analyzed methods.
- *
+ * Analysis engine to produce MethodGen objects for analyzed methods.
+ * 
  * @author David Hovemeyer
  * @author Bill Pugh
  */
@@ -45,38 +44,43 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
         super("MethodGen construction", MethodGen.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
     public MethodGen analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         Method method = getMethod(analysisCache, descriptor);
 
         if (method.getCode() == null)
-    		return null;
+            return null;
         try {
             AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
             JavaClass jclass = getJavaClass(analysisCache, descriptor.getClassDescriptor());
-    		ConstantPoolGen cpg = getConstantPoolGen(analysisCache, descriptor.getClassDescriptor());
+            ConstantPoolGen cpg = getConstantPoolGen(analysisCache, descriptor.getClassDescriptor());
 
             String methodName = method.getName();
             int codeLength = method.getCode().getLength();
             String superclassName = jclass.getSuperclassName();
-			if (codeLength > 6000 && methodName.equals("<clinit>") && superclassName.equals("java.lang.Enum")) {
-                analysisContext.getLookupFailureCallback().reportSkippedAnalysis(new JavaClassAndMethod(jclass, method).toMethodDescriptor());
+            if (codeLength > 6000 && methodName.equals("<clinit>") && superclassName.equals("java.lang.Enum")) {
+                analysisContext.getLookupFailureCallback().reportSkippedAnalysis(
+                        new JavaClassAndMethod(jclass, method).toMethodDescriptor());
                 return null;
             }
-    		if (analysisContext.getBoolProperty(AnalysisFeatures.SKIP_HUGE_METHODS)) {
-                if (codeLength > 3000
-                        || (methodName.equals("<clinit>") || methodName.equals("getContents")) && codeLength > 1000) {
-                    analysisContext.getLookupFailureCallback().reportSkippedAnalysis(new JavaClassAndMethod(jclass, method).toMethodDescriptor());
-    				return null;
+            if (analysisContext.getBoolProperty(AnalysisFeatures.SKIP_HUGE_METHODS)) {
+                if (codeLength > 3000 || (methodName.equals("<clinit>") || methodName.equals("getContents")) && codeLength > 1000) {
+                    analysisContext.getLookupFailureCallback().reportSkippedAnalysis(
+                            new JavaClassAndMethod(jclass, method).toMethodDescriptor());
+                    return null;
                 }
             }
 
             return new MethodGen(method, jclass.getClassName(), cpg);
         } catch (Exception e) {
             AnalysisContext.logError("Error constructing methodGen", e);
-    		return null;
+            return null;
         }
     }
 }

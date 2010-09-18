@@ -10,16 +10,16 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Annotation indicating that a FindBugs warning is desired.
- *
+ * 
  * See http://code.google.com/p/findbugs/wiki/FindbugsTestCases
- *
+ * 
  * @author David Hovemeyer
  */
 @Retention(RetentionPolicy.CLASS)
 public @interface DesireWarning {
     /**
-     * The value indicates the bug code (e.g., NP) or bug pattern (e.g., IL_INFINITE_LOOP)
-     * of the desired warning
-	 */
+     * The value indicates the bug code (e.g., NP) or bug pattern (e.g.,
+     * IL_INFINITE_LOOP) of the desired warning
+     */
     public String value();
 }

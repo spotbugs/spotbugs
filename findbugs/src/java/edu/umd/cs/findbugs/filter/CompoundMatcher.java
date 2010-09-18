@@ -33,50 +33,60 @@ public abstract class CompoundMatcher implements Matcher {
     @Override
     public int hashCode() {
         int result = this.getClass().hashCode();
-		for(Matcher m : children) 
+        for (Matcher m : children)
             result += m.hashCode();
         return result;
     }
-	@Override
+
+    @Override
     public boolean equals(Object o) {
-        if (o == null) return false;
-        if (o.getClass() != this.getClass()) return false;
-		CompoundMatcher m = (CompoundMatcher) o;
+        if (o == null)
+            return false;
+        if (o.getClass() != this.getClass())
+            return false;
+        CompoundMatcher m = (CompoundMatcher) o;
         return children.equals(m.children);
     }
+
     protected int numberChildren() {
-		return children.size();
+        return children.size();
     }
+
     public void addChild(Matcher child) {
         children.add(child);
-	}
+    }
+
     protected void removeChild(Matcher child) {
         children.remove(child);
     }
-	protected void clear() {
+
+    protected void clear() {
         children.clear();
     }
 
     public Collection<Matcher> getChildren() {
         return Collections.unmodifiableCollection(children);
     }
-	public Iterator<Matcher> childIterator() {
+
+    public Iterator<Matcher> childIterator() {
         return children.iterator();
     }
-    public void writeChildrenXML(XMLOutput xmlOutput)  throws IOException {
-		for(Matcher m : children) 
+
+    public void writeChildrenXML(XMLOutput xmlOutput) throws IOException {
+        for (Matcher m : children)
             m.writeXML(xmlOutput, false);
     }
 
-	@Override
+    @Override
     public String toString() {
-        if (children.isEmpty()) return "";
+        if (children.isEmpty())
+            return "";
         StringBuilder buf = new StringBuilder();
-		for(Matcher m : children) 
+        for (Matcher m : children)
             buf.append(m).append(" ");
-        buf.setLength(buf.length()-1);
+        buf.setLength(buf.length() - 1);
         return buf.toString();
-	}
+    }
 }
 
 // vim:ts=4

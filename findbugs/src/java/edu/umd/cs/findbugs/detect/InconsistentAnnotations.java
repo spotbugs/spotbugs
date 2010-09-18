@@ -42,46 +42,44 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 public class InconsistentAnnotations implements Detector, UseAnnotationDatabase {
 
     public final TypeQualifierValue nonnullTypeQualifierValue;
+
     final BugReporter reporter;
 
     public InconsistentAnnotations(BugReporter reporter) {
         ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
         this.nonnullTypeQualifierValue = TypeQualifierValue.getValue(nonnullClassDesc, null);
-		this.reporter = reporter;
+        this.reporter = reporter;
     }
 
     public void visitClassContext(ClassContext classContext) {
-
-
 
         JavaClass jclass = classContext.getJavaClass();
 
         for (Method method : jclass.getMethods()) {
             XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-            ParameterProperty nonnullParameters = AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase().getProperty(xmethod.getMethodDescriptor());
-			if (nonnullParameters != null) {
+            ParameterProperty nonnullParameters = AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase()
+                    .getProperty(xmethod.getMethodDescriptor());
+            if (nonnullParameters != null) {
                 for (int p : nonnullParameters.iterable()) {
-                    TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications.getDirectTypeQualifierAnnotation(xmethod, p, nonnullTypeQualifierValue);
+                    TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications
+                            .getDirectTypeQualifierAnnotation(xmethod, p, nonnullTypeQualifierValue);
                     if (directTypeQualifierAnnotation != null && directTypeQualifierAnnotation.when == When.UNKNOWN) {
-						//
-                        // The LocalVariableAnnotation is constructed using the local variable
+                        //
+                        // The LocalVariableAnnotation is constructed using the
+                        // local variable
                         // number of the parameter, not the parameter number.
                         //
-						int paramLocal = xmethod.isStatic() ? p : p + 1;
+                        int paramLocal = xmethod.isStatic() ? p : p + 1;
 
-                        reporter.reportBug(
-                            new BugInstance(this, "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE", NORMAL_PRIORITY)
-                                .addClassAndMethod(jclass, method)
-								.add(LocalVariableAnnotation.getParameterLocalVariableAnnotation(method, paramLocal))
-                        );
-
+                        reporter.reportBug(new BugInstance(this, "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE",
+                                NORMAL_PRIORITY).addClassAndMethod(jclass, method).add(
+                                LocalVariableAnnotation.getParameterLocalVariableAnnotation(method, paramLocal)));
 
                     }
 
                 }
             }
         }
-
 
     }
 

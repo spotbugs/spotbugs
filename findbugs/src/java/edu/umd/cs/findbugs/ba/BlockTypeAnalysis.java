@@ -27,9 +27,9 @@ import org.apache.bcel.generic.ObjectType;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
- * Dataflow analysis to determine the nesting of catch and finally
- * blocks within a method.
- *
+ * Dataflow analysis to determine the nesting of catch and finally blocks within
+ * a method.
+ * 
  * @see BlockType
  * @author David Hovemeyer
  */
@@ -38,12 +38,13 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
 
     /**
      * Constructor.
-     *
-	 * @param dfs a DepthFirstSearch for the method to be analyzed
+     * 
+     * @param dfs
+     *            a DepthFirstSearch for the method to be analyzed
      */
     public BlockTypeAnalysis(DepthFirstSearch dfs) {
         this.dfs = dfs;
-	}
+    }
 
     public BlockType createFact() {
         return new BlockType();
@@ -60,11 +61,13 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
     public void makeFactTop(BlockType fact) {
         fact.setTop();
     }
-	public boolean isTop(BlockType fact) {
+
+    public boolean isTop(BlockType fact) {
         return fact.isTop();
     }
+
     public boolean isForwards() {
-		return true;
+        return true;
     }
 
     public BlockOrder getBlockOrder(CFG cfg) {
@@ -82,42 +85,48 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
         if (start.isValid()) {
             if (basicBlock.isExceptionHandler()) {
                 CodeExceptionGen exceptionGen = basicBlock.getExceptionGen();
-				ObjectType catchType = exceptionGen.getCatchType();
+                ObjectType catchType = exceptionGen.getCatchType();
                 if (catchType == null) {
                     // Probably a finally block, or a synchronized block
                     // exception-compensation catch block.
-					result.pushFinally();
+                    result.pushFinally();
                 } else {
                     // Catch type was explicitly specified:
                     // this is probably a programmer-written catch block
-					result.pushCatch();
+                    result.pushCatch();
                 }
             }
         }
-	}
+    }
 
     public void meetInto(BlockType fact, Edge edge, BlockType result) throws DataflowAnalysisException {
         result.mergeWith(fact);
     }
 
-//	public static void main(String[] argv) throws Exception {
-//		if (argv.length != 1) {
-//			System.err.println("Usage: " + BlockTypeAnalysis.class.getName() + " <classfile>");
-//			System.exit(1);
-//		}
-//
-//		DataflowTestDriver<BlockType, BlockTypeAnalysis> driver = new DataflowTestDriver<BlockType, BlockTypeAnalysis>() {
-//			/* (non-Javadoc)
-//			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
-//			 */
-//			@Override
-//			public Dataflow<BlockType, BlockTypeAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
-//				return classContext.getBlockTypeDataflow(method);
-//			}
-//		};
-//
-//		driver.execute(argv[0]);
-//	}
+    // public static void main(String[] argv) throws Exception {
+    // if (argv.length != 1) {
+    // System.err.println("Usage: " + BlockTypeAnalysis.class.getName() +
+    // " <classfile>");
+    // System.exit(1);
+    // }
+    //
+    // DataflowTestDriver<BlockType, BlockTypeAnalysis> driver = new
+    // DataflowTestDriver<BlockType, BlockTypeAnalysis>() {
+    // /* (non-Javadoc)
+    // * @see
+    // edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext,
+    // org.apache.bcel.classfile.Method)
+    // */
+    // @Override
+    // public Dataflow<BlockType, BlockTypeAnalysis> createDataflow(ClassContext
+    // classContext, Method method) throws CFGBuilderException,
+    // DataflowAnalysisException {
+    // return classContext.getBlockTypeDataflow(method);
+    // }
+    // };
+    //
+    // driver.execute(argv[0]);
+    // }
 }
 
 // vim:ts=4

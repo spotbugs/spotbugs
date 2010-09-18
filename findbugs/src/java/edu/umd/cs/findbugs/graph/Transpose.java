@@ -27,32 +27,30 @@ import java.util.Iterator;
 /**
  * Algorithm to transpose a graph.
  */
-public class Transpose
-        <
-        GraphType extends Graph<EdgeType, VertexType>,
-        EdgeType extends GraphEdge<EdgeType, VertexType>,
-		VertexType extends GraphVertex<VertexType>
-        > {
+public class Transpose<GraphType extends Graph<EdgeType, VertexType>, EdgeType extends GraphEdge<EdgeType, VertexType>, VertexType extends GraphVertex<VertexType>> {
 
     private IdentityHashMap<VertexType, VertexType> m_origToTransposeMap;
+
     private IdentityHashMap<VertexType, VertexType> m_transposeToOrigMap;
 
     /**
      * Constructor.
      */
-	public Transpose() {
+    public Transpose() {
         m_origToTransposeMap = new IdentityHashMap<VertexType, VertexType>();
         m_transposeToOrigMap = new IdentityHashMap<VertexType, VertexType>();
     }
 
     /**
-     * Transpose a graph.  Note that the original graph is not modified;
-     * the new graph and its vertices and edges are new objects.
-	 *
-     * @param orig    the graph to transpose
-     * @param toolkit a GraphToolkit to be used to create the transposed Graph
+     * Transpose a graph. Note that the original graph is not modified; the new
+     * graph and its vertices and edges are new objects.
+     * 
+     * @param orig
+     *            the graph to transpose
+     * @param toolkit
+     *            a GraphToolkit to be used to create the transposed Graph
      * @return the transposed Graph
-	 */
+     */
     public GraphType transpose(GraphType orig, GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
 
         GraphType trans = toolkit.createGraph();
@@ -60,26 +58,26 @@ public class Transpose
         // For each vertex in original graph, create an equivalent
         // vertex in the transposed graph,
         // ensuring that vertex labels in the transposed graph
-		// match vertex labels in the original graph
+        // match vertex labels in the original graph
         for (Iterator<VertexType> i = orig.vertexIterator(); i.hasNext();) {
             VertexType v = i.next();
 
             // Make a duplicate of original vertex
             // (Ensuring that transposed graph has same labeling as original)
             VertexType dupVertex = toolkit.duplicateVertex(v);
-			dupVertex.setLabel(v.getLabel());
+            dupVertex.setLabel(v.getLabel());
             trans.addVertex(v);
 
             // Keep track of correspondence between equivalent vertices
             m_origToTransposeMap.put(v, dupVertex);
             m_transposeToOrigMap.put(dupVertex, v);
-		}
+        }
         trans.setNumVertexLabels(orig.getNumVertexLabels());
 
         // For each edge in the original graph, create a reversed edge
         // in the transposed graph
         for (Iterator<EdgeType> i = orig.edgeIterator(); i.hasNext();) {
-			EdgeType e = i.next();
+            EdgeType e = i.next();
 
             VertexType transSource = m_origToTransposeMap.get(e.getTarget());
             VertexType transTarget = m_origToTransposeMap.get(e.getSource());
@@ -90,31 +88,33 @@ public class Transpose
             // Copy auxiliary information for edge
             toolkit.copyEdge(e, dupEdge);
         }
-		trans.setNumEdgeLabels(orig.getNumEdgeLabels());
+        trans.setNumEdgeLabels(orig.getNumEdgeLabels());
 
         return trans;
 
     }
 
     /**
-     * Get the vertex in the transposed graph which corresponds to the
-     * given vertex in the original graph.
-	 *
-     * @param v the vertex in the original graph
+     * Get the vertex in the transposed graph which corresponds to the given
+     * vertex in the original graph.
+     * 
+     * @param v
+     *            the vertex in the original graph
      * @return the equivalent vertex in the transposed graph
      */
-	public VertexType getTransposedGraphVertex(VertexType v) {
+    public VertexType getTransposedGraphVertex(VertexType v) {
         return m_origToTransposeMap.get(v);
     }
 
     /**
-     * Get the vertex in the original graph which corresponds to the
-     * given vertex in the transposed graph.
-	 *
-     * @param v the vertex in the transposed graph
+     * Get the vertex in the original graph which corresponds to the given
+     * vertex in the transposed graph.
+     * 
+     * @param v
+     *            the vertex in the transposed graph
      * @return the equivalent vertex in the original graph
      */
-	public VertexType getOriginalGraphVertex(VertexType v) {
+    public VertexType getOriginalGraphVertex(VertexType v) {
         return m_transposeToOrigMap.get(v);
     }
 

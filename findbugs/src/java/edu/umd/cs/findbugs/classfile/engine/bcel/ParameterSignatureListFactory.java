@@ -27,28 +27,31 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce parameter signature lists for
- * analyzed methods.
- *
+ * Analysis engine to produce parameter signature lists for analyzed methods.
+ * 
  * @author David Hovemeyer
  */
 public class ParameterSignatureListFactory extends AnalysisFactory<String[]> {
     /**
      * Constructor.
      */
-	public ParameterSignatureListFactory() {
+    public ParameterSignatureListFactory() {
         // XXX: should have a proper analysis class
         super("parameter signature list factory", String[].class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public String[] analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public String[] analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         SignatureParser parser = new SignatureParser(descriptor.getSignature());
         ArrayList<String> resultList = new ArrayList<String>();
         for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {
-			resultList.add(i.next());
+            resultList.add(i.next());
         }
         return resultList.toArray(new String[resultList.size()]);
     }

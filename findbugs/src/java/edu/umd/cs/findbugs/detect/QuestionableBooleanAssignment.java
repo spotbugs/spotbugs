@@ -19,7 +19,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -27,82 +26,83 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 
-public class QuestionableBooleanAssignment extends BytecodeScanningDetector implements StatelessDetector
-{
+public class QuestionableBooleanAssignment extends BytecodeScanningDetector implements StatelessDetector {
     public static final int SEEN_NOTHING = 0;
+
     public static final int SEEN_ICONST_0_OR_1 = 1;
+
     public static final int SEEN_DUP = 2;
-	public static final int SEEN_ISTORE = 3;
+
+    public static final int SEEN_ISTORE = 3;
+
     public static final int SEEN_GOTO = 4;
+
     public static final int SEEN_IF = 5;
 
     private BugReporter bugReporter;
+
     private int state;
 
     private BugInstance bug;
+
     public QuestionableBooleanAssignment(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-	}
-
-
+    }
 
     @Override
-         public void visitCode(Code obj) {
+    public void visitCode(Code obj) {
         state = SEEN_NOTHING;
-		super.visitCode(obj);
+        super.visitCode(obj);
         bug = null;
     }
 
     @Override
-         public void sawOpcode(int seen) {
+    public void sawOpcode(int seen) {
         if (seen == GOTO && getBranchOffset() == 4) {
-			state = SEEN_GOTO;
-        }
-        else switch (state) {
+            state = SEEN_GOTO;
+        } else
+            switch (state) {
             case SEEN_NOTHING:
-				if ((seen == ICONST_1) || (seen == ICONST_0))
+                if ((seen == ICONST_1) || (seen == ICONST_0))
                     state = SEEN_ICONST_0_OR_1;
-            break;
+                break;
 
             case SEEN_ICONST_0_OR_1:
                 if (seen == DUP)
                     state = SEEN_DUP;
-				else
+                else
                     state = SEEN_NOTHING;
-            break;
+                break;
 
             case SEEN_DUP:
                 if (((seen >= ISTORE_0) && (seen <= ISTORE_3)) || (seen == ISTORE))
                     state = SEEN_ISTORE;
-				else
+                else
                     state = SEEN_NOTHING;
-            break;
+                break;
 
             case SEEN_ISTORE:
-                if (seen == IFEQ || seen == IFNE)
-                {
-					bug = new BugInstance( this, "QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT", HIGH_PRIORITY)
-                        .addClassAndMethod(this)
-                        .addSourceLine(this);
+                if (seen == IFEQ || seen == IFNE) {
+                    bug = new BugInstance(this, "QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT", HIGH_PRIORITY).addClassAndMethod(this)
+                            .addSourceLine(this);
                     state = SEEN_IF;
-				}
-                else state = SEEN_NOTHING;
-            break;
-
+                } else
+                    state = SEEN_NOTHING;
+                break;
 
             case SEEN_IF:
                 state = SEEN_NOTHING;
                 if (seen == NEW) {
-					String cName = getClassConstantOperand();
-                    if (cName.equals("java/lang/AssertionError")) break;
+                    String cName = getClassConstantOperand();
+                    if (cName.equals("java/lang/AssertionError"))
+                        break;
                 }
                 bugReporter.reportBug(bug);
-
 
                 break;
             case SEEN_GOTO:
                 state = SEEN_NOTHING;
-				break;
-        }
+                break;
+            }
     }
 }

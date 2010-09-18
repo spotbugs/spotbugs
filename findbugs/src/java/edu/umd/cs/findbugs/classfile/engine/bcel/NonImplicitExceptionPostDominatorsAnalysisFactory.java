@@ -28,32 +28,34 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce NonImplicitExceptionPostDominatorsAnalysis
- * objects for analyzed methods.
- *
+ * Analysis engine to produce NonImplicitExceptionPostDominatorsAnalysis objects
+ * for analyzed methods.
+ * 
  * @author David Hovemeyer
  */
-public class NonImplicitExceptionPostDominatorsAnalysisFactory
-        extends AnalysisFactory<NonImplicitExceptionPostDominatorsAnalysis> {
+public class NonImplicitExceptionPostDominatorsAnalysisFactory extends
+        AnalysisFactory<NonImplicitExceptionPostDominatorsAnalysis> {
     /**
      * Constructor.
-	 */
+     */
     public NonImplicitExceptionPostDominatorsAnalysisFactory() {
         super("non-implicit-exception postdominators analysis", NonImplicitExceptionPostDominatorsAnalysis.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public NonImplicitExceptionPostDominatorsAnalysis analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public NonImplicitExceptionPostDominatorsAnalysis analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         CFG cfg = getCFG(analysisCache, descriptor);
-        NonImplicitExceptionPostDominatorsAnalysis analysis = new NonImplicitExceptionPostDominatorsAnalysis(
-                cfg,
-				getReverseDepthFirstSearch(analysisCache, descriptor),
-                getDepthFirstSearch(analysisCache, descriptor));
-        Dataflow<BitSet, PostDominatorsAnalysis> dataflow =
-            new Dataflow<BitSet, PostDominatorsAnalysis>(cfg, analysis);
-		dataflow.execute();
+        NonImplicitExceptionPostDominatorsAnalysis analysis = new NonImplicitExceptionPostDominatorsAnalysis(cfg,
+                getReverseDepthFirstSearch(analysisCache, descriptor), getDepthFirstSearch(analysisCache, descriptor));
+        Dataflow<BitSet, PostDominatorsAnalysis> dataflow = new Dataflow<BitSet, PostDominatorsAnalysis>(cfg, analysis);
+        dataflow.execute();
 
         return analysis;
     }

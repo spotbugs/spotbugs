@@ -21,29 +21,28 @@ package edu.umd.cs.findbugs.ba;
 
 /**
  * Algorithm to perform a depth first search on a CFG.
- *
+ * 
  * @see CFG
  * @author David Hovemeyer
  */
-public class DepthFirstSearch
-    extends edu.umd.cs.findbugs.graph.DepthFirstSearch<CFG, Edge, BasicBlock>
-{
+public class DepthFirstSearch extends edu.umd.cs.findbugs.graph.DepthFirstSearch<CFG, Edge, BasicBlock> {
     private BasicBlock firstRoot;
 
     /**
      * Constructor.
-     *
-	 * @param cfg the CFG to perform the depth first search on
+     * 
+     * @param cfg
+     *            the CFG to perform the depth first search on
      */
     public DepthFirstSearch(CFG cfg) {
         super(cfg);
-		firstRoot = cfg.getEntry();
+        firstRoot = cfg.getEntry();
     }
 
     @Override
-         protected BasicBlock getNextSearchTreeRoot() {
+    protected BasicBlock getNextSearchTreeRoot() {
         BasicBlock result = firstRoot;
-		firstRoot = null;
+        firstRoot = null;
         return result;
     }
 }

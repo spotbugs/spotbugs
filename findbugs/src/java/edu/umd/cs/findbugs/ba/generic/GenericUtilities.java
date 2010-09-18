@@ -34,144 +34,154 @@ import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
- * Utilities for adding support for generics. Most of these
- * methods can be applied to generic and non generic type
- * information.
- *
+ * Utilities for adding support for generics. Most of these methods can be
+ * applied to generic and non generic type information.
+ * 
  * @author Nat Ayewah
  */
 public class GenericUtilities {
 
     public static enum TypeCategory {
 
-
         /** A simple (non-generic ObjectType) */
-         PLAIN_OBJECT_TYPE
-         {
-			@Override
+        PLAIN_OBJECT_TYPE {
+            @Override
             public ReferenceType produce(GenericObjectType obj) {
                 return obj;
             }
-			@Override
+
+            @Override
             public String asString(GenericObjectType obj) {
                 // obj.getTypeCategory() does not return PLAIN_OBJECT_TYPE
                 return GenericUtilities.getString(obj);
-			}
+            }
         },
 
         /** A array */
-        ARRAY_TYPE
-         {
-			@Override
+        ARRAY_TYPE {
+            @Override
             public ReferenceType produce(GenericObjectType obj) {
                 return obj;
             }
-			@Override
+
+            @Override
             public String asString(GenericObjectType obj) {
                 // obj.getTypeCategory() does not return ARRAY_TYPE
                 return GenericUtilities.getString(obj);
-			}
+            }
         },
 
         /** A parameterized class e.g. <code>List&lt;String&gt;</code> */
-        PARAMETERIZED
-         {
-			@Override
+        PARAMETERIZED {
+            @Override
             public ReferenceType produce(GenericObjectType obj) {
                 return obj;
             }
-			@Override
+
+            @Override
             public String asString(GenericObjectType obj) {
                 StringBuilder b = new StringBuilder(obj.toPlainString());
                 b.append("<");
-				boolean first = true;
+                boolean first = true;
                 for (Type t : obj.parameters) {
                     if (!first)
                         b.append(",");
-					first = false;
+                    first = false;
                     b.append(GenericUtilities.getString(t));
                 }
                 b.append(">");
-				return b.toString();				
+                return b.toString();
             }
         },
 
-        /** A simple type variable e.g. <code>E</code>.
-         *  Underlying ObjectType is <code>java.lang.Object</code> */
-        TYPE_VARIABLE
-		 {
+        /**
+         * A simple type variable e.g. <code>E</code>. Underlying ObjectType is
+         * <code>java.lang.Object</code>
+         */
+        TYPE_VARIABLE {
             @Override
             public ReferenceType produce(GenericObjectType obj) {
                 return ObjectType.OBJECT;
-			}
+            }
+
             @Override
             public String asString(GenericObjectType obj) {
                 return obj.variable;
-			}
+            }
         },
 
-        /** A simple wildcard i.e. <code>?</code>.
-         *  Underlying ObjectType is <code>java.lang.Object</code> */
-         WILDCARD
-		 {
+        /**
+         * A simple wildcard i.e. <code>?</code>. Underlying ObjectType is
+         * <code>java.lang.Object</code>
+         */
+        WILDCARD {
             @Override
             public ReferenceType produce(GenericObjectType obj) {
                 return ObjectType.OBJECT;
-			}
+            }
+
             @Override
             public String asString(GenericObjectType obj) {
                 return "?";
-			}
+            }
         },
 
-        /** A wildcard that extends another ObjectType e.g. <code>? extends Comparable</code>.
-         *  Underlying ObjectType is <code>java.lang.Object</code>.
-         *  The extended type can be an ObjectType or a GenericObjectType */
-		WILDCARD_EXTENDS 
-         {
+        /**
+         * A wildcard that extends another ObjectType e.g.
+         * <code>? extends Comparable</code>. Underlying ObjectType is
+         * <code>java.lang.Object</code>. The extended type can be an ObjectType
+         * or a GenericObjectType
+         */
+        WILDCARD_EXTENDS {
             @Override
             public ReferenceType produce(GenericObjectType obj) {
-				return obj.extension;
+                return obj.extension;
             }
+
             @Override
             public String asString(GenericObjectType obj) {
-				Type extension = obj.extension;
+                Type extension = obj.extension;
                 assert extension != null;
                 return "? extends " + GenericUtilities.getString(extension);
             }
-		},
+        },
 
-        /** A wildcard that is extended by another ObjectType e.g. <code>? super Comparable</code>.
-         *  Underlying ObjectType is <code>java.lang.Object</code>.
-         *  The super type can be an ObjectType or a GenericObjectType */
-		 WILDCARD_SUPER 
-         {
+        /**
+         * A wildcard that is extended by another ObjectType e.g.
+         * <code>? super Comparable</code>. Underlying ObjectType is
+         * <code>java.lang.Object</code>. The super type can be an ObjectType or
+         * a GenericObjectType
+         */
+        WILDCARD_SUPER {
             @Override
             public ReferenceType produce(GenericObjectType obj) {
-				return ObjectType.OBJECT;
+                return ObjectType.OBJECT;
             }
+
             @Override
             public String asString(GenericObjectType obj) {
-				Type extension = obj.extension;
+                Type extension = obj.extension;
                 assert extension != null;
                 return "? super " + GenericUtilities.getString(extension);
             }
-		};
+        };
 
         public abstract String asString(GenericObjectType obj);
+
         public abstract ReferenceType produce(GenericObjectType obj);
 
         public static String asString(ArrayType atype) {
             Type obj = atype.getBasicType();
             String result = GenericUtilities.getString(obj);
-			return result + Util.repeat("[]", atype.getDimensions());
+            return result + Util.repeat("[]", atype.getDimensions());
         }
     }
 
     /**
      * Get the TypeCategory that represents this Object
+     * 
      * @see GenericUtilities.TypeCategory
-	 */
+     */
     public static final TypeCategory getTypeCategory(Type type) {
         if (type instanceof GenericObjectType)
             return ((GenericObjectType) type).getTypeCategory();
@@ -192,66 +202,70 @@ public class GenericUtilities {
     /**
      * Get String representation of a Type including Generic information
      */
-	public static final String getString(Type type) {
+    public static final String getString(Type type) {
         if (type instanceof GenericObjectType)
             return ((GenericObjectType) type).toString(true);
         else if (type instanceof ArrayType)
-			return TypeCategory.asString((ArrayType) type);
+            return TypeCategory.asString((ArrayType) type);
         else
             return type.toString();
     }
 
-     static String stripAngleBrackets(String s) {
-        if (s.indexOf('<') == -1) return s;
+    static String stripAngleBrackets(String s) {
+        if (s.indexOf('<') == -1)
+            return s;
         StringBuilder result = new StringBuilder(s.length());
-		int nesting = 0;
+        int nesting = 0;
         boolean seenLeftBracket = false;
-        for(int i = 0; i < s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-			if (c == '<') {
+            if (c == '<') {
                 nesting++;
                 seenLeftBracket = true;
-            }
-			else if (c == '>') nesting--;
+            } else if (c == '>')
+                nesting--;
             else if (nesting == 0) {
                 if (seenLeftBracket && c == '.')
                     result.append('$');
-				else result.append(c);
+                else
+                    result.append(c);
             }
         }
         return result.toString();
-	}
+    }
 
-     public static GenericObjectType getType(String className, List<? extends ReferenceType> parameters) {
-         return new GenericObjectType(className, parameters);
-	 }
+    public static GenericObjectType getType(String className, List<? extends ReferenceType> parameters) {
+        return new GenericObjectType(className, parameters);
+    }
+
     /**
-     * This method is analogous to <code>Type.getType(String)</code>,
-     * except that it also accepts signatures with generic information.
-	 * e.g. <code>Ljava/util/ArrayList&lt;TT;&gt;;</code> <p>
-     *
-     * The signature should only contain one type. Use GenericSignatureParser
-     * to break up a signature with many types or call createTypes(String) to
-	 * return a list of types
+     * This method is analogous to <code>Type.getType(String)</code>, except
+     * that it also accepts signatures with generic information. e.g.
+     * <code>Ljava/util/ArrayList&lt;TT;&gt;;</code>
+     * <p>
+     * 
+     * The signature should only contain one type. Use GenericSignatureParser to
+     * break up a signature with many types or call createTypes(String) to
+     * return a list of types
      */
-    public static  @CheckForNull Type getType(String signature) {
+    public static @CheckForNull
+    Type getType(String signature) {
         // ensure signature only has one type
-		if (new GenericSignatureParser("(" + signature + ")V").getNumParameters() != 1)
-            throw new IllegalArgumentException("the following signature does not " +
-                    "contain exactly one type: " + signature);
+        if (new GenericSignatureParser("(" + signature + ")V").getNumParameters() != 1)
+            throw new IllegalArgumentException("the following signature does not " + "contain exactly one type: " + signature);
         int index = 0;
 
         if (signature.startsWith("L")) {
             index = lastMatchedLeftAngleBracket(signature);
             if (index < 0)
-				return Type.getType(stripAngleBrackets(signature));
+                return Type.getType(stripAngleBrackets(signature));
 
-            String typeParameters = signature.substring(index+1, nextUnmatchedRightAngleBracket(signature, index+1));
+            String typeParameters = signature.substring(index + 1, nextUnmatchedRightAngleBracket(signature, index + 1));
             List<ReferenceType> parameters = GenericUtilities.getTypeParameters(typeParameters);
             if (parameters == null)
-				return null;
-            String baseType = removeMatchedAngleBrackets(signature.substring(1,index)).replace('.', '$');
-            return new GenericObjectType(baseType,	parameters);
+                return null;
+            String baseType = removeMatchedAngleBrackets(signature.substring(1, index)).replace('.', '$');
+            return new GenericObjectType(baseType, parameters);
 
         } else if (signature.startsWith("T")) {
             // can't handle type variables
@@ -259,11 +273,12 @@ public class GenericUtilities {
 
         } else if (signature.startsWith("[")) {
             index++;
-            while (signature.charAt(index) == '[') index++;
-			Type componentType = getType(signature.substring(index));
+            while (signature.charAt(index) == '[')
+                index++;
+            Type componentType = getType(signature.substring(index));
             if (componentType == null)
                 return null;
-            return new ArrayType( componentType, index);
+            return new ArrayType(componentType, index);
 
         } else if (signature.startsWith("*")) {
             return new GenericObjectType("*");
@@ -271,124 +286,139 @@ public class GenericUtilities {
         } else if (signature.startsWith("+") || signature.startsWith("-")) {
             Type baseType = getType(signature.substring(1));
             if (baseType == null)
-				return null;
-            return new GenericObjectType(
-                    signature.substring(0,1),
-                    (ReferenceType) baseType );
+                return null;
+            return new GenericObjectType(signature.substring(0, 1), (ReferenceType) baseType);
 
         } else
             // assert signature contains no generic information
             return Type.getType(signature);
-	}
+    }
 
-    public static ObjectType  merge(Type t1, ObjectType t2) {
+    public static ObjectType merge(Type t1, ObjectType t2) {
         if (t1 instanceof GenericObjectType)
             return merge((GenericObjectType) t1, t2);
-		return t2;
+        return t2;
     }
-    public static ObjectType  merge(GenericObjectType t1, ObjectType t2) {
+
+    public static ObjectType merge(GenericObjectType t1, ObjectType t2) {
         if (t2 instanceof GenericObjectType)
-			return t2;
+            return t2;
         List<? extends ReferenceType> parameters = t1.getParameters();
-        if (parameters == null) return t2;
+        if (parameters == null)
+            return t2;
         return new GenericObjectType(t2.getClassName(), parameters);
-	}
+    }
+
     public static String removeMatchedAngleBrackets(String s) {
         int first = s.indexOf('<');
-        if (first < 0) return s;
-		StringBuilder result = new StringBuilder(s.substring(0, first));
+        if (first < 0)
+            return s;
+        StringBuilder result = new StringBuilder(s.substring(0, first));
         int pos = first;
         int nesting = 0;
         while (pos < s.length()) {
-			char c = s.charAt(pos++);
-            if (c == '<') nesting++;
-            else if (c == '>') nesting--;
-            else if (nesting == 0) result.append(c);
-		}
+            char c = s.charAt(pos++);
+            if (c == '<')
+                nesting++;
+            else if (c == '>')
+                nesting--;
+            else if (nesting == 0)
+                result.append(c);
+        }
         return result.toString();
 
     }
+
     public static int nextUnmatchedRightAngleBracket(String s, int startingAt) {
         int nesting = 0;
-		int pos = startingAt;
-
-        while (true) {
-            if (pos < 0) return -1;
-            char c = s.charAt(pos);
-			if (c == '>') {
-                if (nesting == 0) return pos;
-                nesting--;
-            } else if (c == '<') nesting++;
-			pos++;
-        }
-    }
-    public static int lastMatchedLeftAngleBracket(String s) {
-		int nesting = 0;
-        int pos = s.length()-2;
+        int pos = startingAt;
 
         while (true) {
             if (pos < 0)
                 return -1;
-			char c = s.charAt(pos);
+            char c = s.charAt(pos);
+            if (c == '>') {
+                if (nesting == 0)
+                    return pos;
+                nesting--;
+            } else if (c == '<')
+                nesting++;
+            pos++;
+        }
+    }
+
+    public static int lastMatchedLeftAngleBracket(String s) {
+        int nesting = 0;
+        int pos = s.length() - 2;
+
+        while (true) {
+            if (pos < 0)
+                return -1;
+            char c = s.charAt(pos);
             if (c == '<') {
                 nesting--;
-                if (nesting == 0) return pos;
-			} else if (c == '>') nesting++;
-            else if (nesting == 0) return -1;
+                if (nesting == 0)
+                    return pos;
+            } else if (c == '>')
+                nesting++;
+            else if (nesting == 0)
+                return -1;
             pos--;
         }
-	}
+    }
+
     /**
      * Parse a bytecode signature that has 1 or more (possibly generic) types
      * and return a list of the Types.
-	 * @param signature bytecode signature e.g. 
-     * e.g. <code>Ljava/util/ArrayList&lt;Ljava/lang/String;&gt;;Ljava/util/ArrayList&lt;TT;&gt;;Ljava/util/ArrayList&lt;*&gt;;</code>
+     * 
+     * @param signature
+     *            bytecode signature e.g. e.g.
+     *            <code>Ljava/util/ArrayList&lt;Ljava/lang/String;&gt;;Ljava/util/ArrayList&lt;TT;&gt;;Ljava/util/ArrayList&lt;*&gt;;</code>
      */
-    public static final @CheckForNull List<ReferenceType> getTypeParameters(String signature) {
-		GenericSignatureParser parser = new GenericSignatureParser("(" + signature + ")V");
+    public static final @CheckForNull
+    List<ReferenceType> getTypeParameters(String signature) {
+        GenericSignatureParser parser = new GenericSignatureParser("(" + signature + ")V");
         List<ReferenceType> types = new ArrayList<ReferenceType>();
 
         Iterator<String> iter = parser.parameterSignatureIterator();
         while (iter.hasNext()) {
             String parameterString = iter.next();
-			ReferenceType t = (ReferenceType)getType(parameterString);
+            ReferenceType t = (ReferenceType) getType(parameterString);
             if (t == null)
                 return null;
             types.add(t);
-		}
+        }
         return types;
     }
 
-	public static final List<String>  split(String signature, boolean skipInitialAngleBracket) {
+    public static final List<String> split(String signature, boolean skipInitialAngleBracket) {
         List<String> result = new ArrayList<String>();
         if (signature.charAt(0) != '<')
             skipInitialAngleBracket = false;
-		int depth = 0;
+        int depth = 0;
         int start = 0;
-        for(int pos = start; pos < signature.length(); pos++)
-            switch(signature.charAt(pos)) {
-			case '<':
+        for (int pos = start; pos < signature.length(); pos++)
+            switch (signature.charAt(pos)) {
+            case '<':
                 depth++;
                 break;
             case '>':
-				depth--;
+                depth--;
                 if (depth == 0 && skipInitialAngleBracket) {
                     skipInitialAngleBracket = false;
                     start = pos + 1;
-				}
+                }
                 break;
             case ';':
                 if (depth > 0)
-					break;
+                    break;
                 String substring = signature.substring(start, pos + 1);
                 result.add(substring);
                 start = pos + 1;
-			}
+            }
         if (depth != 0)
             throw new IllegalArgumentException("Unbalanced signature: " + signature);
         return result;
-		}
-
-
+    }
 
 }

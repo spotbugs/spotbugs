@@ -10,7 +10,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine to produce ConstantDataflow objects for an analyzed method.
- *
+ * 
  * @author David Hovemeyer
  */
 public class ConstantDataflowFactory extends AnalysisFactory<ConstantDataflow> {
@@ -18,18 +18,20 @@ public class ConstantDataflowFactory extends AnalysisFactory<ConstantDataflow> {
         super("constant propagation analysis", ConstantDataflow.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public ConstantDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public ConstantDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
-        if (methodGen == null) return null;
-        ConstantAnalysis analysis = new ConstantAnalysis(
-				methodGen,
-                getDepthFirstSearch(analysisCache, descriptor)
-        );
+        if (methodGen == null)
+            return null;
+        ConstantAnalysis analysis = new ConstantAnalysis(methodGen, getDepthFirstSearch(analysisCache, descriptor));
         ConstantDataflow dataflow = new ConstantDataflow(getCFG(analysisCache, descriptor), analysis);
-		dataflow.execute();
+        dataflow.execute();
 
         return dataflow;
     }

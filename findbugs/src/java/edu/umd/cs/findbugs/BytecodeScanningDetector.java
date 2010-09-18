@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -27,7 +26,7 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 /**
  * Base class for Detectors which want to extend DismantleBytecode.
- *
+ * 
  * @see DismantleBytecode
  */
 public class BytecodeScanningDetector extends DismantleBytecode implements Detector {
@@ -36,29 +35,29 @@ public class BytecodeScanningDetector extends DismantleBytecode implements Detec
     public void visitClassContext(ClassContext classContext) {
         this.classContext = classContext;
         classContext.getJavaClass().accept(this);
-	}
+    }
 
     /**
      * Get the ClassContext of the class currently being visited.
-     *
-	 * @return the current ClassContext
+     * 
+     * @return the current ClassContext
      */
     public ClassContext getClassContext() {
         return classContext;
-	}
-
+    }
 
     /**
      * Check see if the Code for this method should be visited.
-	 * 
-     * @param obj Code attribute
+     * 
+     * @param obj
+     *            Code attribute
      * @return true if the Code should be visited
      */
-	public boolean shouldVisitCode(Code obj) {
+    public boolean shouldVisitCode(Code obj) {
         return true;
     }
 
-	public void report() {
+    public void report() {
     }
 }
 

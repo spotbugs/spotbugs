@@ -30,50 +30,52 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 
 /**
  * Interface for object representing information about a class.
- *
+ * 
  * @author David Hovemeyer
  */
 public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, AnnotatedObject {
 
     /**
      * Get ClassDescriptor of this class's immediate superclass.
-     *
-	 * @return ClassDescriptor of this class's immediate superclass, or
-     *         null if this class has no immediate superclass
+     * 
+     * @return ClassDescriptor of this class's immediate superclass, or null if
+     *         this class has no immediate superclass
      */
-    public @CheckForNull ClassDescriptor getSuperclassDescriptor();
+    public @CheckForNull
+    ClassDescriptor getSuperclassDescriptor();
 
     /**
      * Get ClassDescriptors of interfaces directly implemented by this class.
-     *
-	 * @return ClassDescriptors of interfaces directly implemented by this class 
+     * 
+     * @return ClassDescriptors of interfaces directly implemented by this class
      */
     public ClassDescriptor[] getInterfaceDescriptorList();
 
     /**
-     * Get the ClassDescriptor of the immediate enclosing class,
-     * or null if this XClass is not a nested or inner class.
-	 * 
-     * @return the ClassDescriptor of the immediate enclosing class,
-     *          or null if this XClass is not a nested or inner class
+     * Get the ClassDescriptor of the immediate enclosing class, or null if this
+     * XClass is not a nested or inner class.
+     * 
+     * @return the ClassDescriptor of the immediate enclosing class, or null if
+     *         this XClass is not a nested or inner class
      */
-	public ClassDescriptor getImmediateEnclosingClass();
+    public ClassDescriptor getImmediateEnclosingClass();
 
     /**
      * @return true if the class is an interface, false otherwise
      */
-	public boolean isInterface();
+    public boolean isInterface();
 
     /**
      * @return true if the class is an abstract
      */
-	public boolean isAbstract();
+    public boolean isAbstract();
 
     /**
-     *
+     * 
      * @return the Source attribute
-	 */
-    public @CheckForNull String getSource();
+     */
+    public @CheckForNull
+    String getSource();
 
     public Collection<ClassDescriptor> getAnnotationDescriptors();
 
@@ -81,45 +83,56 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
 
     /**
      * Find an XMethod matching given parameters.
-     *
-	 * @param methodName name of the method
-     * @param methodSig  signature of the method
-     * @param isStatic   true if the method is static, false if not
+     * 
+     * @param methodName
+     *            name of the method
+     * @param methodSig
+     *            signature of the method
+     * @param isStatic
+     *            true if the method is static, false if not
      * @return matching XMethod, or null if there is no matching XMethod
-	 */
+     */
     public XMethod findMethod(String methodName, String methodSig, boolean isStatic);
 
     /**
      * Find XMethod matching given MethodDescriptor.
-     *
-	 * @param descriptor a MethodDescriptor
+     * 
+     * @param descriptor
+     *            a MethodDescriptor
      * @return matching XMethod, or null if there is no matching method
      */
     public XMethod findMethod(MethodDescriptor descriptor);
-	/**
-     * Find XMethod matching the name and signature of the supplied method MethodDescriptor.
-     * The class descriptor of the argument is ignored.
-     *
-	 * @param descriptor a MethodDescriptor
+
+    /**
+     * Find XMethod matching the name and signature of the supplied method
+     * MethodDescriptor. The class descriptor of the argument is ignored.
+     * 
+     * @param descriptor
+     *            a MethodDescriptor
      * @return matching XMethod, or null if there is no matching method
      */
     public XMethod findMatchingMethod(MethodDescriptor descriptor);
 
     /**
      * Find an XField matching given parameters.
-     *
-	 * @param name      name of the field
-     * @param signature signature of the field
-     * @param isStatic  true if field is static, false if not
+     * 
+     * @param name
+     *            name of the field
+     * @param signature
+     *            signature of the field
+     * @param isStatic
+     *            true if field is static, false if not
      * @return XField, or null if there is no matching XField
-	 */
+     */
     public XField findField(String name, String signature, boolean isStatic);
 
     public List<? extends XField> getXFields();
-	public List<? extends XMethod> getXMethods();
+
+    public List<? extends XMethod> getXMethods();
 
     public String getSourceSignature();
 
-	public boolean usesConcurrency();
+    public boolean usesConcurrency();
+
     public boolean hasStubs();
 }

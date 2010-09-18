@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.filter;
 
-
 import java.io.IOException;
 
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -32,44 +31,50 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
 
     public MethodMatcher(String name) {
         super(name);
-	}
+    }
+
     public MethodMatcher(String name, String role) {
         super(name, null, role);
     }
 
     public MethodMatcher(String name, String params, String returns) {
-        super(name,  SignatureUtil.createMethodSignature(params, returns));
+        super(name, SignatureUtil.createMethodSignature(params, returns));
     }
-	public MethodMatcher(String name, String params, String returns, String role) {
-        super(name,  SignatureUtil.createMethodSignature(params, returns), role);
+
+    public MethodMatcher(String name, String params, String returns, String role) {
+        super(name, SignatureUtil.createMethodSignature(params, returns), role);
     }
 
     public boolean match(BugInstance bugInstance) {
 
         MethodAnnotation methodAnnotation = null;
-		if (role == null || role.equals(""))
+        if (role == null || role.equals(""))
             methodAnnotation = bugInstance.getPrimaryMethod();
-        else for(BugAnnotation a : bugInstance.getAnnotations())
-            if (a instanceof MethodAnnotation && role.equals(a.getDescription())) {
-				methodAnnotation = (MethodAnnotation) a;
-                break;
-            }
+        else
+            for (BugAnnotation a : bugInstance.getAnnotations())
+                if (a instanceof MethodAnnotation && role.equals(a.getDescription())) {
+                    methodAnnotation = (MethodAnnotation) a;
+                    break;
+                }
         if (methodAnnotation == null)
-			return false;
+            return false;
         if (!name.match(methodAnnotation.getMethodName()))
             return false;
         if (signature != null && !signature.equals(methodAnnotation.getMethodSignature()))
-			return false;
+            return false;
         return true;
     }
 
-	@Override
+    @Override
     public String toString() {
         return "Method(" + super.toString() + ")";
     }
+
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-		XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec()).addOptionalAttribute("signature",signature).addOptionalAttribute("role", role);
-        if (disabled) attributes.addAttribute("disabled", "true");
+        XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec())
+                .addOptionalAttribute("signature", signature).addOptionalAttribute("role", role);
+        if (disabled)
+            attributes.addAttribute("disabled", "true");
         xmlOutput.openCloseTag("Method", attributes);
     }
 }

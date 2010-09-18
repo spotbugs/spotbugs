@@ -36,16 +36,19 @@ import edu.umd.cs.findbugs.io.IO;
 
 /**
  * Analysis engine to produce the data (bytes) of a class.
- *
+ * 
  * @author David Hovemeyer
  */
 public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<ClassData> {
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public ClassData analyze(IAnalysisCache analysisCache,
-            ClassDescriptor descriptor) throws CheckedAnalysisException {
+    public ClassData analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
 
         // Compute the resource name
         String resourceName = descriptor.toResourceName();
@@ -53,49 +56,52 @@ public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
         // Look up the codebase entry for the resource
         ICodeBaseEntry codeBaseEntry;
         try {
-			codeBaseEntry = analysisCache.getClassPath().lookupResource(resourceName);
+            codeBaseEntry = analysisCache.getClassPath().lookupResource(resourceName);
         } catch (ResourceNotFoundException e) {
             throw new MissingClassException(descriptor, e);
         }
 
         byte[] data;
         if (codeBaseEntry instanceof ZipInputStreamCodeBaseEntry) {
-            data = ((ZipInputStreamCodeBaseEntry)codeBaseEntry).getBytes();
-		} else {
+            data = ((ZipInputStreamCodeBaseEntry) codeBaseEntry).getBytes();
+        } else {
             // Create a ByteArrayOutputStream to capture the class data
             int length = codeBaseEntry.getNumBytes();
             ByteArrayOutputStream byteSink;
-			if (length >= 0) {
+            if (length >= 0) {
                 byteSink = new ByteArrayOutputStream(length);
             } else {
                 byteSink = new ByteArrayOutputStream();
-			}
+            }
 
             // Read the class data into the byte array
             InputStream in = null;
             try {
-				in = codeBaseEntry.openResource();
+                in = codeBaseEntry.openResource();
                 IO.copy(in, byteSink);
             } catch (IOException e) {
                 throw new MissingClassException(descriptor, e);
-			} finally {
+            } finally {
                 if (in != null) {
                     IO.close(in);
                 }
-			}
+            }
 
             // Construct the resulting ClassData object and return it
             data = byteSink.toByteArray();
         }
-		return new ClassData(descriptor, codeBaseEntry, data);
+        return new ClassData(descriptor, codeBaseEntry, data);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
+     * .findbugs.classfile.IAnalysisCache)
      */
-	public void registerWith(IAnalysisCache analysisCache) {
+    public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerClassAnalysisEngine(ClassData.class, this);
     }
-
 
 }

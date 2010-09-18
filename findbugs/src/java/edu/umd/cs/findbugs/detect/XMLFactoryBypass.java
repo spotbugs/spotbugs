@@ -19,7 +19,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,27 +30,29 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
-public class XMLFactoryBypass extends BytecodeScanningDetector  {
+public class XMLFactoryBypass extends BytecodeScanningDetector {
     private BugReporter bugReporter;
-    private static final Set<String> xmlInterfaces = new HashSet<String>()
-    {
-		static final long serialVersionUID = -9117982073509840017L;
+
+    private static final Set<String> xmlInterfaces = new HashSet<String>() {
+        static final long serialVersionUID = -9117982073509840017L;
         {
-        add("javax.xml.parsers.DocumentBuilder");
-        add("org.w3c.dom.Document");
-		add("javax.xml.parsers.SAXParser");
-        add("org.xml.sax.XMLReader");
-        add("org.xml.sax.XMLFilter");
-        add("javax.xml.transform.Transformer");
-		add("org.w3c.dom.Attr");
-        add("org.w3c.dom.CDATASection");
-        add("org.w3c.dom.Comment");
-        add("org.w3c.dom.Element");
-		add("org.w3c.dom.Text");
+            add("javax.xml.parsers.DocumentBuilder");
+            add("org.w3c.dom.Document");
+            add("javax.xml.parsers.SAXParser");
+            add("org.xml.sax.XMLReader");
+            add("org.xml.sax.XMLFilter");
+            add("javax.xml.transform.Transformer");
+            add("org.w3c.dom.Attr");
+            add("org.w3c.dom.CDATASection");
+            add("org.w3c.dom.Comment");
+            add("org.w3c.dom.Element");
+            add("org.w3c.dom.Text");
         }
     };
+
     private final Set<String> rejectedXMLClasses = new HashSet<String>();
-	private JavaClass curClass;
+
+    private JavaClass curClass;
 
     public XMLFactoryBypass(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -60,17 +61,17 @@ public class XMLFactoryBypass extends BytecodeScanningDetector  {
     @Override
     public void visitClassContext(ClassContext classContext) {
         curClass = classContext.getJavaClass();
-		super.visitClassContext(classContext);
+        super.visitClassContext(classContext);
     }
 
     @Override
-         public void sawOpcode(int seen) {
+    public void sawOpcode(int seen) {
         try {
-			if (seen == INVOKESPECIAL) {
+            if (seen == INVOKESPECIAL) {
                 String newClsName = getClassConstantOperand();
                 if (rejectedXMLClasses.contains(newClsName))
                     return;
-				rejectedXMLClasses.add(newClsName);
+                rejectedXMLClasses.add(newClsName);
 
                 if (newClsName.startsWith("java/") || newClsName.startsWith("javax/"))
                     return;
@@ -94,27 +95,25 @@ public class XMLFactoryBypass extends BytecodeScanningDetector  {
                 JavaClass[] infs = newCls.getAllInterfaces();
                 for (JavaClass inf : infs) {
                     if (xmlInterfaces.contains(inf.getClassName())) {
-						bugReporter.reportBug(new BugInstance(this, "XFB_XML_FACTORY_BYPASS", LOW_PRIORITY)
-                                .addClassAndMethod(this)
-                                .addSourceLine(this));
+                        bugReporter.reportBug(new BugInstance(this, "XFB_XML_FACTORY_BYPASS", LOW_PRIORITY).addClassAndMethod(
+                                this).addSourceLine(this));
                         rejectedXMLClasses.remove(newClsName);
-					}
+                    }
                 }
             }
         } catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
+            bugReporter.reportMissingClass(cnfe);
         }
     }
 
-    public boolean samePackageBase(String invokerClsName, String newClsName)
-    {
+    public boolean samePackageBase(String invokerClsName, String newClsName) {
         String[] invokerParts = invokerClsName.split("/");
-		String[] newClsParts = newClsName.split("/");
+        String[] newClsParts = newClsName.split("/");
 
         if (newClsParts.length < 3)
             return false;
         if (invokerParts.length < 3)
-			return false;
+            return false;
 
         if (!invokerParts[0].equals(newClsParts[0]))
             return false;

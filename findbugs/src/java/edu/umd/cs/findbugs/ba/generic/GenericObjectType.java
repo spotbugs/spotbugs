@@ -36,199 +36,221 @@ import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
- * Extension to ObjectType that includes additional information
- * about the generic signature. <p>
- *
+ * Extension to ObjectType that includes additional information about the
+ * generic signature.
+ * <p>
+ * 
  * A GenericObjectType is either a parameterized type e.g.
- * <code>List&lt;String&gt;</code>, or a type variable e.g.
- * <code>T</code>. <p>
- *
- * This class cannot be initialized directly. Instead, create a GenericObjectType
- * by calling GenericUtilities.getType(String) and passing in the bytecode
- * signature for the type.
- *
+ * <code>List&lt;String&gt;</code>, or a type variable e.g. <code>T</code>.
+ * <p>
+ * 
+ * This class cannot be initialized directly. Instead, create a
+ * GenericObjectType by calling GenericUtilities.getType(String) and passing in
+ * the bytecode signature for the type.
+ * 
  * @author Nat Ayewah
  */
 public class GenericObjectType extends ObjectType {
 
     final List<? extends ReferenceType> parameters;
 
-    final @CheckForNull String variable;
+    final @CheckForNull
+    String variable;
 
-    final @CheckForNull ReferenceType extension;
-
+    final @CheckForNull
+    ReferenceType extension;
 
     public ReferenceType produce() {
-         return getTypeCategory().produce(this);
-	}
+        return getTypeCategory().produce(this);
+    }
+
     @Override
     public int hashCode() {
-        return 13*super.hashCode()
-		+ 9*Util.nullSafeHashcode(parameters) 
-        + 7*Util.nullSafeHashcode(variable)
-        + Util.nullSafeHashcode(extension);
+        return 13 * super.hashCode() + 9 * Util.nullSafeHashcode(parameters) + 7 * Util.nullSafeHashcode(variable)
+                + Util.nullSafeHashcode(extension);
     }
-	
-    @Override public boolean equals(Object o) {
-        if (!(o instanceof GenericObjectType)) return false;
-        if (!super.equals(o)) return false;
-		GenericObjectType that = (GenericObjectType)o;
-        return Util.nullSafeEquals(this.parameters, that.parameters)
-            && Util.nullSafeEquals(this.variable, that.variable)
-            && Util.nullSafeEquals(this.extension, that.extension);
-	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof GenericObjectType))
+            return false;
+        if (!super.equals(o))
+            return false;
+        GenericObjectType that = (GenericObjectType) o;
+        return Util.nullSafeEquals(this.parameters, that.parameters) && Util.nullSafeEquals(this.variable, that.variable)
+                && Util.nullSafeEquals(this.extension, that.extension);
+    }
+
     public Type getUpperBound() {
-        if ("+".equals(variable)) return extension;
+        if ("+".equals(variable))
+            return extension;
         return this;
-	}
+    }
 
     /**
      * @return Returns the extension.
      */
-	public Type getExtension() {
+    public Type getExtension() {
         return extension;
     }
 
     /**
      * @return Returns the variable.
      */
-	public String getVariable() {
+    public String getVariable() {
         return variable;
     }
 
     /**
      * Get the TypeCategory that represents this Object
+     * 
      * @see GenericUtilities.TypeCategory
-	 */
+     */
     public GenericUtilities.TypeCategory getTypeCategory() {
         if (hasParameters() && variable == null && extension == null) {
             return GenericUtilities.TypeCategory.PARAMETERIZED;
 
-        } else if(!hasParameters() && variable != null && extension == null) {
-            if (variable.equals("*")) return GenericUtilities.TypeCategory.WILDCARD;
-            else return GenericUtilities.TypeCategory.TYPE_VARIABLE;
+        } else if (!hasParameters() && variable != null && extension == null) {
+            if (variable.equals("*"))
+                return GenericUtilities.TypeCategory.WILDCARD;
+            else
+                return GenericUtilities.TypeCategory.TYPE_VARIABLE;
 
-        } else if(!hasParameters() && variable != null && extension != null){
-            if (variable.equals("+")) return GenericUtilities.TypeCategory.WILDCARD_EXTENDS;
-            else if (variable.equals("-")) return GenericUtilities.TypeCategory.WILDCARD_SUPER;
+        } else if (!hasParameters() && variable != null && extension != null) {
+            if (variable.equals("+"))
+                return GenericUtilities.TypeCategory.WILDCARD_EXTENDS;
+            else if (variable.equals("-"))
+                return GenericUtilities.TypeCategory.WILDCARD_SUPER;
 
         }
         // this should never happen
         throw new IllegalStateException("The Generic Object Type is badly initialized");
-	}
+    }
 
     /**
-     * @return true if this GenericObjectType represents a parameterized type e.g.
-     * <code>List&lt;String&gt;</code>. This implies that isVariable() is falses
-	 */
+     * @return true if this GenericObjectType represents a parameterized type
+     *         e.g. <code>List&lt;String&gt;</code>. This implies that
+     *         isVariable() is falses
+     */
     public boolean hasParameters() {
         return parameters != null && parameters.size() > 0;
     }
 
     /**
-     * @return the number of parameters if this is a parameterized class, 0 otherwise
+     * @return the number of parameters if this is a parameterized class, 0
+     *         otherwise
      */
-	public int getNumParameters() {
+    public int getNumParameters() {
         return parameters != null ? parameters.size() : 0;
     }
 
     /**
-     * @param index should be less than getNumParameters()
+     * @param index
+     *            should be less than getNumParameters()
      * @return the type parameter at index
-	 */
+     */
     public ReferenceType getParameterAt(int index) {
         if (index < getNumParameters())
             return parameters.get(index);
-		else 
+        else
             throw new IndexOutOfBoundsException("The index " + index + " is too large for " + this);
     }
 
-    public @CheckForNull List<? extends ReferenceType> getParameters() {
-        if (parameters == null) return null;
+    public @CheckForNull
+    List<? extends ReferenceType> getParameters() {
+        if (parameters == null)
+            return null;
         return Collections.unmodifiableList(parameters);
-	}
+    }
+
     // Package Level constructors
 
     /**
-     * Create a GenericObjectType that represents a Simple Type Variable
-     * or a simple wildcard with no extensions
-	 * @param variable the type variable e.g. <code>T</code>
+     * Create a GenericObjectType that represents a Simple Type Variable or a
+     * simple wildcard with no extensions
+     * 
+     * @param variable
+     *            the type variable e.g. <code>T</code>
      */
     GenericObjectType(@NonNull String variable) {
         this(variable, (ReferenceType) null);
-	}
+    }
 
     /**
-     * Create a GenericObjectType that represents a Wildcard
-     * with extensions
-	 * @param variable the type variable e.g. <code>T</code>
+     * Create a GenericObjectType that represents a Wildcard with extensions
+     * 
+     * @param variable
+     *            the type variable e.g. <code>T</code>
      */
     GenericObjectType(@NonNull String wildcard, ReferenceType extension) {
         super(DescriptorFactory.canonicalizeString(Type.OBJECT.getClassName()));
-		this.variable = DescriptorFactory.canonicalizeString(wildcard);
+        this.variable = DescriptorFactory.canonicalizeString(wildcard);
         this.extension = extension;
         parameters = null;
     }
 
     /**
      * Create a GenericObjectType that represents a parameterized class
-     * @param class_name the class that is parameterized. e.g. <code>java.util.List</code>
-	 * @param parameters the parameters of this class, must be at least 1 parameter
+     * 
+     * @param class_name
+     *            the class that is parameterized. e.g.
+     *            <code>java.util.List</code>
+     * @param parameters
+     *            the parameters of this class, must be at least 1 parameter
      */
     GenericObjectType(@DottedClassName String class_name, List<? extends ReferenceType> parameters) {
         super(DescriptorFactory.canonicalizeString(class_name));
-		variable = null;
+        variable = null;
         extension = null;
         if (parameters == null || parameters.size() == 0)
             throw new IllegalStateException("argument 'parameters' must contain at least 1 parameter");
-		this.parameters = parameters;
+        this.parameters = parameters;
     }
 
     /**
      * @return the underlying ObjectType for this Generic Object
      */
-	public ObjectType getObjectType() {
+    public ObjectType getObjectType() {
         String cName = ClassName.fromFieldSignature(getSignature());
         if (cName == null) {
             throw new IllegalStateException("Can't provide ObjectType for " + this);
-		}
-        @DottedClassName String c = ClassName.toDottedClassName(
-                cName);
-        return  ObjectTypeFactory.getInstance(c);
-	}
+        }
+        @DottedClassName
+        String c = ClassName.toDottedClassName(cName);
+        return ObjectTypeFactory.getInstance(c);
+    }
 
     /**
-     * Return a string representation of this object.
-     * (I do not override <code>toString()</code> in case
-	 * any existing code assumes that this object is an 
-     * ObjectType and expects similar string representation.
-     * i.e. <code>toString()</code> is equivalent to
-     * <code>toString(false)</code>)
-	 * 
-     * @param includeGenerics if true then the string includes generic information
-     * in this object. Otherwise this returns the same value as ObjectType.toString()
+     * Return a string representation of this object. (I do not override
+     * <code>toString()</code> in case any existing code assumes that this
+     * object is an ObjectType and expects similar string representation. i.e.
+     * <code>toString()</code> is equivalent to <code>toString(false)</code>)
+     * 
+     * @param includeGenerics
+     *            if true then the string includes generic information in this
+     *            object. Otherwise this returns the same value as
+     *            ObjectType.toString()
      */
-	public String toString(boolean includeGenerics) {
+    public String toString(boolean includeGenerics) {
         // if (!includeGenerics) return super.toString();
 
         return getTypeCategory().asString(this);
     }
 
-	@Override
+    @Override
     public String toString() {
         return getTypeCategory().asString(this);
     }
 
-
     public String toPlainString() {
         return super.toString();
-	}
+    }
 
     public String getGenericParametersAsString() {
-        if (getTypeCategory() !=  GenericUtilities.TypeCategory.PARAMETERIZED)
-		  throw new IllegalStateException(toString() + " doesn't have generic parameters");
+        if (getTypeCategory() != GenericUtilities.TypeCategory.PARAMETERIZED)
+            throw new IllegalStateException(toString() + " doesn't have generic parameters");
         String baseStringValue = super.toString();
         String fullStringValue = toString();
         return fullStringValue.substring(baseStringValue.length());
-	}
+    }
 }

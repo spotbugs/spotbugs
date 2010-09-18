@@ -25,42 +25,37 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
  * @author pugh
  */
 public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation> {
-    public final static NullnessAnnotation CHECK_FOR_NULL = new NullnessAnnotation(
-            "CheckForNull", 3);
+    public final static NullnessAnnotation CHECK_FOR_NULL = new NullnessAnnotation("CheckForNull", 3);
 
-    public final static NullnessAnnotation NONNULL = new NullnessAnnotation(
-            "NonNull", 1);
+    public final static NullnessAnnotation NONNULL = new NullnessAnnotation("NonNull", 1);
 
-    public final static NullnessAnnotation NULLABLE = new NullnessAnnotation(
-            "Nullable", 2);
+    public final static NullnessAnnotation NULLABLE = new NullnessAnnotation("Nullable", 2);
 
-    public final static NullnessAnnotation UNKNOWN_NULLNESS = new NullnessAnnotation(
-            "UnknownNullness", 0);
+    public final static NullnessAnnotation UNKNOWN_NULLNESS = new NullnessAnnotation("UnknownNullness", 0);
 
-    private final static NullnessAnnotation[] myValues = { UNKNOWN_NULLNESS,
-        NONNULL, NULLABLE,
-        CHECK_FOR_NULL };
+    private final static NullnessAnnotation[] myValues = { UNKNOWN_NULLNESS, NONNULL, NULLABLE, CHECK_FOR_NULL };
 
     public static class Parser {
-    @CheckForNull public static NullnessAnnotation parse(String s) {
-        if (s.equals("com.google.common.base.Nullable") || s.equals("org.jetbrains.annotations.Nullable"))
-			return CHECK_FOR_NULL;
-        for(NullnessAnnotation v : myValues)
-            if (s.endsWith(v.name)) return v;
-        if (s.endsWith("PossiblyNull"))
-			return CHECK_FOR_NULL;
-        return null;
+        @CheckForNull
+        public static NullnessAnnotation parse(String s) {
+            if (s.equals("com.google.common.base.Nullable") || s.equals("org.jetbrains.annotations.Nullable"))
+                return CHECK_FOR_NULL;
+            for (NullnessAnnotation v : myValues)
+                if (s.endsWith(v.name))
+                    return v;
+            if (s.endsWith("PossiblyNull"))
+                return CHECK_FOR_NULL;
+            return null;
+        }
     }
-    }
-	public static NullnessAnnotation[] values() {
+
+    public static NullnessAnnotation[] values() {
         return myValues.clone();
     }
 
     private NullnessAnnotation(String s, int i) {
-        super(s,i);
+        super(s, i);
 
     }
-
-
 
 }

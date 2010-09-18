@@ -25,10 +25,9 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.graph.AbstractGraph;
 
 /**
- * Class representing the interprocedural call graph.
- * Vertices represent methods.
- * Edges represent method calls.
- *
+ * Class representing the interprocedural call graph. Vertices represent
+ * methods. Edges represent method calls.
+ * 
  * @author David Hovemeyer
  */
 @Deprecated
@@ -39,35 +38,45 @@ public class InterproceduralCallGraph extends AbstractGraph<InterproceduralCallG
     /**
      * Constructor.
      */
-	public InterproceduralCallGraph() {
+    public InterproceduralCallGraph() {
         this.methodDescToVertexMap = new HashMap<MethodDescriptor, InterproceduralCallGraphVertex>();
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.graph.AbstractGraph#addVertex(edu.umd.cs.findbugs.graph.AbstractVertex)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.graph.AbstractGraph#addVertex(edu.umd.cs.findbugs
+     * .graph.AbstractVertex)
      */
-	@Override
+    @Override
     public void addVertex(InterproceduralCallGraphVertex v) {
         super.addVertex(v);
         methodDescToVertexMap.put(v.getXmethod().getMethodDescriptor(), v);
-	}
+    }
 
     /**
      * Look up vertex corresponding to given method.
-     *
-	 * @param methodDesc a MethodDescriptor specifying a method
-     * @return the InterproceduralCallGraphVertex representing that method, or null
-     *         if no such vertex exists
+     * 
+     * @param methodDesc
+     *            a MethodDescriptor specifying a method
+     * @return the InterproceduralCallGraphVertex representing that method, or
+     *         null if no such vertex exists
      */
-	public InterproceduralCallGraphVertex lookupVertex(MethodDescriptor methodDesc) {
+    public InterproceduralCallGraphVertex lookupVertex(MethodDescriptor methodDesc) {
         return methodDescToVertexMap.get(methodDesc);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.graph.AbstractGraph#allocateEdge(edu.umd.cs.findbugs.graph.AbstractVertex, edu.umd.cs.findbugs.graph.AbstractVertex)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.graph.AbstractGraph#allocateEdge(edu.umd.cs.findbugs
+     * .graph.AbstractVertex, edu.umd.cs.findbugs.graph.AbstractVertex)
      */
-	@Override
-    protected InterproceduralCallGraphEdge allocateEdge(InterproceduralCallGraphVertex source, InterproceduralCallGraphVertex target) {
+    @Override
+    protected InterproceduralCallGraphEdge allocateEdge(InterproceduralCallGraphVertex source,
+            InterproceduralCallGraphVertex target) {
         return new InterproceduralCallGraphEdge(source, target);
     }
 }

@@ -25,62 +25,67 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * Quote metacharacters in a String.
- *
+ * 
  * @see MetaCharacterMap
  * @author David Hovemeyer
  */
 public abstract class QuoteMetaCharacters {
     private String text;
+
     private MetaCharacterMap map;
 
     /**
      * Constructor.
-     *
-	 * @param text the text in which we want to quote metacharacters
-     * @param map  the MetaCharacterMap
+     * 
+     * @param text
+     *            the text in which we want to quote metacharacters
+     * @param map
+     *            the MetaCharacterMap
      */
     public QuoteMetaCharacters(@NonNull String text, @NonNull MetaCharacterMap map) {
-		if (text == null) throw new NullPointerException("text must be nonnull");
-        if (map == null) throw new NullPointerException("map must be nonnull");
+        if (text == null)
+            throw new NullPointerException("text must be nonnull");
+        if (map == null)
+            throw new NullPointerException("map must be nonnull");
         this.text = text;
         this.map = map;
-	}
+    }
 
     /**
      * Quote metacharacters in the text.
      */
-	public void process() throws IOException {
+    public void process() throws IOException {
         int pos = 0;
         do {
             int meta = findNextMeta(text, pos);
-			if (meta >= 0) {
+            if (meta >= 0) {
                 emitLiteral(text.substring(pos, meta));
                 emitLiteral(map.getReplacement(text.substring(meta, meta + 1)));
                 pos = meta + 1;
-			} else {
+            } else {
                 emitLiteral(text.substring(pos, text.length()));
                 pos = text.length();
             }
-		} while (pos < text.length());
+        } while (pos < text.length());
     }
 
     /**
-     * Downcall method to emit literal text,
-     * in which any occurrences of the metacharacters
-	 * are quoted.
-     *
-     * @param s the literal text to emit
+     * Downcall method to emit literal text, in which any occurrences of the
+     * metacharacters are quoted.
+     * 
+     * @param s
+     *            the literal text to emit
      */
-	public abstract void emitLiteral(String s) throws IOException;
+    public abstract void emitLiteral(String s) throws IOException;
 
     private int findNextMeta(String s, int start) {
         for (int i = start; i < s.length(); ++i) {
             char c = s.charAt(i);
-			if (map.isMeta(c))
+            if (map.isMeta(c))
                 return i;
         }
         return -1;
-	}
+    }
 }
 
 // vim:ts=4

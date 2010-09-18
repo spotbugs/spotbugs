@@ -41,17 +41,20 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
- * An abstract class which provides much of the functionality
- * required of all BugReporter objects.
+ * An abstract class which provides much of the functionality required of all
+ * BugReporter objects.
  */
 public abstract class AbstractBugReporter implements BugReporter {
     private static final boolean DEBUG = SystemProperties.getBoolean("abreporter.debug");
+
     private static final boolean DEBUG_MISSING_CLASSES = SystemProperties.getBoolean("findbugs.debug.missingclasses");
 
     protected static class Error {
         private int sequence;
+
         private String message;
-		private Throwable cause;
+
+        private Throwable cause;
 
         public Error(int sequence, String message) {
             this(sequence, message, null);
@@ -60,7 +63,7 @@ public abstract class AbstractBugReporter implements BugReporter {
         public Error(int sequence, String message, Throwable cause) {
             this.sequence = sequence;
             this.message = message;
-			this.cause = cause;
+            this.cause = cause;
         }
 
         public int getSequence() {
@@ -78,52 +81,59 @@ public abstract class AbstractBugReporter implements BugReporter {
         @Override
         public int hashCode() {
             int hashCode = message.hashCode();
-			if (cause != null) {
+            if (cause != null) {
                 hashCode += 1009 * cause.hashCode();
             }
             return hashCode;
-		}
-
+        }
 
         @Override
         public boolean equals(Object obj) {
             if (obj == null || obj.getClass() != this.getClass()) {
-				return false;
+                return false;
             }
             Error other = (Error) obj;
             if (!message.equals(other.message)) {
-				return false;
+                return false;
             }
             if (this.cause == other.cause) {
                 return true;
-			}
+            }
             if (this.cause == null || other.cause == null) {
                 return false;
             }
-			return this.cause.equals(other.cause);
+            return this.cause.equals(other.cause);
         }
     }
 
     private int verbosityLevel;
+
     private int priorityThreshold;
+
     private int rankThreshold;
-	private boolean analysisUnderway, relaxed;
+
+    private boolean analysisUnderway, relaxed;
+
     private int errorCount;
 
     private final Set<String> missingClassMessageList;
+
     private final Set<Error> errorSet;
+
     private final List<BugReporterObserver> observerList;
-	private final ProjectStats projectStats;
+
+    private final ProjectStats projectStats;
 
     public AbstractBugReporter() {
         super();
         verbosityLevel = NORMAL;
-		missingClassMessageList = new LinkedHashSet<String>();
+        missingClassMessageList = new LinkedHashSet<String>();
         errorSet = new HashSet<Error>();
         observerList = new LinkedList<BugReporterObserver>();
         projectStats = new ProjectStats();
-		// bug 2815983: no bugs are reported anymore
-        // there is no info which value should be default, so using the "any one"
+        // bug 2815983: no bugs are reported anymore
+        // there is no info which value should be default, so using the
+        // "any one"
         rankThreshold = 42;
     }
 
@@ -134,80 +144,78 @@ public abstract class AbstractBugReporter implements BugReporter {
     public void setPriorityThreshold(int threshold) {
         this.priorityThreshold = threshold;
     }
-	public void setRankThreshold(int threshold) {
+
+    public void setRankThreshold(int threshold) {
         this.rankThreshold = threshold;
     }
 
     // Subclasses must override doReportBug(), not this method.
     public final void reportBug(BugInstance bugInstance) {
         if (priorityThreshold == 0) {
-			throw new IllegalStateException("Priority threshold not set");
+            throw new IllegalStateException("Priority threshold not set");
         }
         if (!analysisUnderway) {
             if (FindBugsAnalysisFeatures.isRelaxedMode()) {
-				relaxed = true;
+                relaxed = true;
             }
 
             analysisUnderway = true;
         }
         ClassAnnotation primaryClass = bugInstance.getPrimaryClass();
-		if (primaryClass != null && !AnalysisContext.currentAnalysisContext().isApplicationClass(primaryClass.getClassName())) {
-            if(DEBUG) {
+        if (primaryClass != null && !AnalysisContext.currentAnalysisContext().isApplicationClass(primaryClass.getClassName())) {
+            if (DEBUG) {
                 System.out.println("AbstractBugReporter: Filtering due to non-primary class");
             }
-			return;
+            return;
         }
         int priority = bugInstance.getPriority();
         int bugRank = bugInstance.getBugRank();
-		if (priority <= priorityThreshold  && bugRank <= rankThreshold 
-                || relaxed) {
+        if (priority <= priorityThreshold && bugRank <= rankThreshold || relaxed) {
             doReportBug(bugInstance);
         } else {
-			if(DEBUG) {
+            if (DEBUG) {
                 if (priority <= priorityThreshold)
-                    System.out.println(
-                    "AbstractBugReporter: Filtering due to priorityThreshold " +
-					priority + " > " + priorityThreshold);
-                else System.out.println(
-                        "AbstractBugReporter: Filtering due to rankThreshold " +
-                        bugRank + " > " + rankThreshold);
-			}
+                    System.out.println("AbstractBugReporter: Filtering due to priorityThreshold " + priority + " > "
+                            + priorityThreshold);
+                else
+                    System.out.println("AbstractBugReporter: Filtering due to rankThreshold " + bugRank + " > " + rankThreshold);
+            }
         }
     }
 
-    public final void reportBugsFromXml(@WillClose InputStream in, Project theProject) throws IOException, DocumentException
-    {
+    public final void reportBugsFromXml(@WillClose InputStream in, Project theProject) throws IOException, DocumentException {
         SortedBugCollection theCollection = new SortedBugCollection(theProject);
-		theCollection.readXML(in);
-        for(BugInstance bug: theCollection.getCollection()) {
+        theCollection.readXML(in);
+        for (BugInstance bug : theCollection.getCollection()) {
             doReportBug(bug);
         }
-	}
+    }
 
-    public static @DottedClassName String getMissingClassName(ClassNotFoundException ex) {
+    public static @DottedClassName
+    String getMissingClassName(ClassNotFoundException ex) {
         String message = ex.getMessage();
         if (message == null) {
-			message = "";
+            message = "";
         }
 
         // Try to decode the error message by extracting the class name.
         String className = ClassNotFoundExceptionParser.getMissingClassName(ex);
         if (className != null) {
-			if (className.indexOf('/') >= 0) {
-                className = className.replace('/','.');
+            if (className.indexOf('/') >= 0) {
+                className = className.replace('/', '.');
             }
             return className;
-		}
+        }
 
         // Just return the entire message.
         // It hopefully will still make sense to the user.
         return message;
-	}
+    }
 
     public void reportMissingClass(ClassNotFoundException ex) {
         if (DEBUG_MISSING_CLASSES) {
             System.out.println("Missing class: " + ex.toString());
-			ex.printStackTrace(System.out);
+            ex.printStackTrace(System.out);
         }
 
         if (verbosityLevel == SILENT) {
@@ -218,46 +226,50 @@ public abstract class AbstractBugReporter implements BugReporter {
     }
 
     static final protected boolean isValidMissingClassMessage(String message) {
-        if(message == null) {
+        if (message == null) {
             return false;
-		}
+        }
 
         message = message.trim();
 
         if (message.startsWith("[")) {
             // Sometimes we see methods called on array classes.
             // Obviously, these don't exist as class files.
-			// So, we should just ignore the exception.
+            // So, we should just ignore the exception.
             // Really, we should fix the class/method search interfaces
             // to be much more intelligent in resolving method
             // implementations.
-			return false;
+            return false;
         }
 
         if (message.equals("")) {
             // Subtypes2 throws ClassNotFoundExceptions with no message in
-            // some cases.  Ignore them (the missing classes will already
-			// have been reported).
+            // some cases. Ignore them (the missing classes will already
+            // have been reported).
             return false;
         }
 
-        if(message.endsWith(".package-info")) {
+        if (message.endsWith(".package-info")) {
             // we ignore all "package-info" issues
             return false;
-		}
+        }
         if (message.equals("java.lang.Synthetic"))
             return false;
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd
+     * .cs.findbugs.classfile.ClassDescriptor)
      */
-	public void reportMissingClass(ClassDescriptor classDescriptor) {
+    public void reportMissingClass(ClassDescriptor classDescriptor) {
         if (DEBUG_MISSING_CLASSES) {
             System.out.println("Missing class: " + classDescriptor);
             new Throwable().printStackTrace(System.out);
-		}
+        }
 
         if (verbosityLevel == SILENT) {
             return;
@@ -269,21 +281,23 @@ public abstract class AbstractBugReporter implements BugReporter {
     /**
      * @param message
      */
-	private void logMissingClass(String message) {
-        if(!isValidMissingClassMessage(message)) {
+    private void logMissingClass(String message) {
+        if (!isValidMissingClassMessage(message)) {
             return;
         }
-		missingClassMessageList.add(message);
+        missingClassMessageList.add(message);
     }
 
     /**
      * Report that we skipped some analysis of a method
+     * 
      * @param method
-	 */
+     */
     public void reportSkippedAnalysis(MethodDescriptor method) {
         // TODO: log this
     }
-	public void logError(String message) {
+
+    public void logError(String message) {
         if (verbosityLevel == SILENT) {
             return;
         }
@@ -291,20 +305,20 @@ public abstract class AbstractBugReporter implements BugReporter {
         Error error = new Error(errorCount++, message);
         if (!errorSet.contains(error)) {
             errorSet.add(error);
-		}
+        }
     }
 
     /**
      * @return the set with all analysis errors reported so far
      */
-	protected Set<Error> getQueuedErrors() {
+    protected Set<Error> getQueuedErrors() {
         return errorSet;
     }
 
     /**
      * @return the set with all missing classes reported so far
      */
-	protected Set<String> getMissingClasses(){
+    protected Set<String> getMissingClasses() {
         return missingClassMessageList;
     }
 
@@ -313,21 +327,21 @@ public abstract class AbstractBugReporter implements BugReporter {
         if (e instanceof MethodUnprofitableException) {
             // TODO: log this
             return;
-		}
+        }
         if (e instanceof edu.umd.cs.findbugs.classfile.MissingClassException) {
             edu.umd.cs.findbugs.classfile.MissingClassException e2 = (edu.umd.cs.findbugs.classfile.MissingClassException) e;
             reportMissingClass(e2.getClassDescriptor());
-			return;
+            return;
         }
         if (e instanceof edu.umd.cs.findbugs.ba.MissingClassException) {
             // Record the missing class, in case the exception thrower didn't.
-			edu.umd.cs.findbugs.ba.MissingClassException missingClassEx = (edu.umd.cs.findbugs.ba.MissingClassException) e;
+            edu.umd.cs.findbugs.ba.MissingClassException missingClassEx = (edu.umd.cs.findbugs.ba.MissingClassException) e;
             ClassNotFoundException cnfe = missingClassEx.getClassNotFoundException();
 
             reportMissingClass(cnfe);
             // Don't report dataflow analysis exceptions due to missing classes.
             // Too much noise.
-			return;
+            return;
         }
 
         if (verbosityLevel == SILENT) {
@@ -337,17 +351,17 @@ public abstract class AbstractBugReporter implements BugReporter {
         Error error = new Error(errorCount++, message, e);
         if (!errorSet.contains(error)) {
             errorSet.add(error);
-		}
+        }
     }
 
     public void reportQueuedErrors() {
         // Report unique errors in order of their sequence
         Error[] errorList = errorSet.toArray(new Error[errorSet.size()]);
-		Arrays.sort(errorList, new Comparator<Error>() {
+        Arrays.sort(errorList, new Comparator<Error>() {
             public int compare(Error o1, Error o2) {
                 return o1.getSequence() - o2.getSequence();
             }
-		});
+        });
         for (Error error : errorList) {
             reportAnalysisError(new AnalysisError(error.getMessage(), error.getCause()));
         }
@@ -355,7 +369,7 @@ public abstract class AbstractBugReporter implements BugReporter {
         for (String aMissingClassMessageList : missingClassMessageList) {
             reportMissingClass(aMissingClassMessageList);
         }
-	}
+    }
 
     public void addObserver(BugReporterObserver observer) {
         observerList.add(observer);
@@ -367,34 +381,38 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     /**
      * This should be called when a bug is reported by a subclass.
-     *
-	 * @param bugInstance the bug to inform observers of
+     * 
+     * @param bugInstance
+     *            the bug to inform observers of
      */
     protected void notifyObservers(BugInstance bugInstance) {
         for (BugReporterObserver aObserverList : observerList) {
-			aObserverList.reportBug(bugInstance);
+            aObserverList.reportBug(bugInstance);
         }
     }
 
     /**
-     * Subclasses must override this.
-     * It will be called only for bugs which meet the priority threshold.
-	 *
-     * @param bugInstance the bug to report
+     * Subclasses must override this. It will be called only for bugs which meet
+     * the priority threshold.
+     * 
+     * @param bugInstance
+     *            the bug to report
      */
     protected abstract void doReportBug(BugInstance bugInstance);
 
     /**
      * Report a queued error.
-     *
-	 * @param error the queued error
+     * 
+     * @param error
+     *            the queued error
      */
     public abstract void reportAnalysisError(AnalysisError error);
 
     /**
      * Report a missing class.
-     *
-	 * @param string the name of the class
+     * 
+     * @param string
+     *            the name of the class
      */
     public abstract void reportMissingClass(String string);
 }

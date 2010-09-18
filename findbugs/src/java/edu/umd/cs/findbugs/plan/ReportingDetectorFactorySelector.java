@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.Plugin;
 
 /**
  * Select all detector factories for reporting detectors.
- *
+ * 
  * @author David Hovemeyer
  */
 public class ReportingDetectorFactorySelector implements DetectorFactorySelector {
@@ -32,28 +32,32 @@ public class ReportingDetectorFactorySelector implements DetectorFactorySelector
 
     /**
      * Constructor.
-     *
-	 * @param plugin Plugin containing detector factories to be selected;
-     *               if null, factories from any Plugin may be selected
+     * 
+     * @param plugin
+     *            Plugin containing detector factories to be selected; if null,
+     *            factories from any Plugin may be selected
      */
     public ReportingDetectorFactorySelector(Plugin plugin) {
-		this.plugin = plugin;
+        this.plugin = plugin;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.plan.DetectorFactorySelector#selectFactory(edu.umd.cs.findbugs.DetectorFactory)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.plan.DetectorFactorySelector#selectFactory(edu.umd
+     * .cs.findbugs.DetectorFactory)
      */
-	public boolean selectFactory(DetectorFactory factory) {
-        return (plugin == null || plugin == factory.getPlugin())
-            && factory.isReportingDetector();
+    public boolean selectFactory(DetectorFactory factory) {
+        return (plugin == null || plugin == factory.getPlugin()) && factory.isReportingDetector();
     }
 
     @Override
-         public String toString() {
+    public String toString() {
         String s = "All reporting detectors";
-		if (plugin != null) {
+        if (plugin != null) {
             s += " in plugin " + plugin.getPluginId();
         }
         return s;
-	}
+    }
 }

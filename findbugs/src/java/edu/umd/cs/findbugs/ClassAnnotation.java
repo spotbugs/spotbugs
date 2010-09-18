@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * A BugAnnotation object specifying a Java class involved in the bug.
- *
+ * 
  * @author David Hovemeyer
  * @see BugAnnotation
  * @see BugInstance
@@ -40,42 +40,47 @@ public class ClassAnnotation extends PackageMemberAnnotation {
     private static final long serialVersionUID = 1L;
 
     private static final String DEFAULT_ROLE = "CLASS_DEFAULT";
+
     public static final String SUBCLASS_ROLE = "CLASS_SUBCLASS";
-    public static final String SUPERCLASS_ROLE =  "CLASS_SUPERCLASS";
-	public static final String RECOMMENDED_SUPERCLASS_ROLE =  "CLASS_RECOMMENDED_SUPERCLASS";
 
-    public static final String IMPLEMENTED_INTERFACE_ROLE =  "CLASS_IMPLEMENTED_INTERFACE";
-    public static final String INTERFACE_ROLE =  "INTERFACE_TYPE";
-	public static final String ANNOTATION_ROLE = "CLASS_ANNOTATION";
+    public static final String SUPERCLASS_ROLE = "CLASS_SUPERCLASS";
 
+    public static final String RECOMMENDED_SUPERCLASS_ROLE = "CLASS_RECOMMENDED_SUPERCLASS";
+
+    public static final String IMPLEMENTED_INTERFACE_ROLE = "CLASS_IMPLEMENTED_INTERFACE";
+
+    public static final String INTERFACE_ROLE = "INTERFACE_TYPE";
+
+    public static final String ANNOTATION_ROLE = "CLASS_ANNOTATION";
 
     /**
      * Constructor.
-     *
-	 * @param className the name of the class
+     * 
+     * @param className
+     *            the name of the class
      */
     public ClassAnnotation(String className) {
         super(className, DEFAULT_ROLE);
-	}
+    }
 
     public ClassAnnotation(String className, String sourceFileName) {
         super(className, DEFAULT_ROLE, sourceFileName);
-	}
-
-
+    }
 
     @Override
     public boolean isSignificant() {
         return !SUBCLASS_ROLE.equals(description);
-	}
+    }
+
     /**
      * Factory method to create a ClassAnnotation from a ClassDescriptor.
-     *
-	 * @param classDescriptor the ClassDescriptor
+     * 
+     * @param classDescriptor
+     *            the ClassDescriptor
      * @return the ClassAnnotation
      */
     public static ClassAnnotation fromClassDescriptor(ClassDescriptor classDescriptor) {
-		return new ClassAnnotation(classDescriptor.toDottedClassName());
+        return new ClassAnnotation(classDescriptor.toDottedClassName());
     }
 
     public void accept(BugAnnotationVisitor visitor) {
@@ -85,54 +90,61 @@ public class ClassAnnotation extends PackageMemberAnnotation {
     @Override
     protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
         if (key.equals("") || key.equals("hash"))
-			return className;
+            return className;
         else if (key.equals("givenClass"))
             return shorten(primaryClass.getPackageName(), className);
         else if (key.equals("excludingPackage"))
-			return shorten(getPackageName(), className);
-        else if (key.equals("simpleClass") || key.equals("simpleName")  )
+            return shorten(getPackageName(), className);
+        else if (key.equals("simpleClass") || key.equals("simpleName"))
             return ClassName.extractSimpleName(className);
         else
-			throw new IllegalArgumentException("unknown key " + key);
+            throw new IllegalArgumentException("unknown key " + key);
     }
 
     @Override
     public int hashCode() {
         return className.hashCode();
-	}
+    }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof ClassAnnotation))
-			return false;
+            return false;
         ClassAnnotation other = (ClassAnnotation) o;
         return className.equals(other.className);
     }
 
     public boolean contains(ClassAnnotation other) {
-            return other.className.startsWith(className);
+        return other.className.startsWith(className);
     }
-	public ClassAnnotation getTopLevelClass() {
+
+    public ClassAnnotation getTopLevelClass() {
         int firstDollar = className.indexOf('$');
-        if (firstDollar <= 0) return this;
-        return new ClassAnnotation(className.substring(0,firstDollar));
+        if (firstDollar <= 0)
+            return this;
+        return new ClassAnnotation(className.substring(0, firstDollar));
 
     }
+
     public int compareTo(BugAnnotation o) {
-        if (!(o instanceof ClassAnnotation)) // BugAnnotations must be Comparable with any type of BugAnnotation
-			return this.getClass().getName().compareTo(o.getClass().getName());
+        if (!(o instanceof ClassAnnotation)) // BugAnnotations must be
+                                             // Comparable with any type of
+                                             // BugAnnotation
+            return this.getClass().getName().compareTo(o.getClass().getName());
         ClassAnnotation other = (ClassAnnotation) o;
         return className.compareTo(other.className);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.PackageMemberAnnotation#getSourceLines()
      */
-	@Override
+    @Override
     public SourceLineAnnotation getSourceLines() {
         if (sourceLines == null)
             this.sourceLines = getSourceLinesForClass(className, sourceFileName);
-		return sourceLines;
+        return sourceLines;
     }
 
     public static SourceLineAnnotation getSourceLinesForClass(@DottedClassName String className, String sourceFileName) {
@@ -149,28 +161,25 @@ public class ClassAnnotation extends PackageMemberAnnotation {
         if (classLine == null)
             return SourceLineAnnotation.getSourceAnnotationForClass(className, sourceFileName);
         else
-			return new SourceLineAnnotation(className, sourceFileName, classLine.getStart(), classLine.getEnd(), -1, -1);
+            return new SourceLineAnnotation(className, sourceFileName, classLine.getStart(), classLine.getEnd(), -1, -1);
     }
 
     /*
      * ----------------------------------------------------------------------
      * XML Conversion support
-	 * ----------------------------------------------------------------------
+     * ----------------------------------------------------------------------
      */
 
     private static final String ELEMENT_NAME = "Class";
 
-
-
-
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         writeXML(xmlOutput, false, false);
-	}
+    }
 
     public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
-        XMLAttributeList attributeList = new XMLAttributeList()
-            .addAttribute("classname", getClassName());
-		if (isPrimary) attributeList.addAttribute("primary", "true");
+        XMLAttributeList attributeList = new XMLAttributeList().addAttribute("classname", getClassName());
+        if (isPrimary)
+            attributeList.addAttribute("primary", "true");
 
         String role = getDescription();
         if (!role.equals(DEFAULT_ROLE))
@@ -179,11 +188,11 @@ public class ClassAnnotation extends PackageMemberAnnotation {
         xmlOutput.openTag(ELEMENT_NAME, attributeList);
         getSourceLines().writeXML(xmlOutput, addMessages, false);
         if (addMessages) {
-			xmlOutput.openTag(BugAnnotation.MESSAGE_TAG);
+            xmlOutput.openTag(BugAnnotation.MESSAGE_TAG);
             xmlOutput.writeText(this.toString());
             xmlOutput.closeTag(BugAnnotation.MESSAGE_TAG);
         }
-		xmlOutput.closeTag(ELEMENT_NAME);
+        xmlOutput.closeTag(ELEMENT_NAME);
 
     }
 }

@@ -30,25 +30,27 @@ import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
 /**
- * A StreamFactory for normal java.io streams that
- * are created using NEW instructions.
+ * A StreamFactory for normal java.io streams that are created using NEW
+ * instructions.
  */
 public class IOStreamFactory implements StreamFactory {
     private ObjectType baseClassType;
+
     private ObjectType[] uninterestingSubclassTypeList;
+
     private String bugType;
 
     public IOStreamFactory(String baseClass, String[] uninterestingSubclassList, String bugType) {
         this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
         this.uninterestingSubclassTypeList = new ObjectType[uninterestingSubclassList.length];
-		for (int i = 0; i < uninterestingSubclassList.length; ++i) {
+        for (int i = 0; i < uninterestingSubclassList.length; ++i) {
             this.uninterestingSubclassTypeList[i] = ObjectTypeFactory.getInstance(uninterestingSubclassList[i]);
         }
         this.bugType = bugType;
-	}
+    }
 
     public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-                               RepositoryLookupFailureCallback lookupFailureCallback) {
+            RepositoryLookupFailureCallback lookupFailureCallback) {
 
         try {
             Instruction ins = location.getHandle().getInstruction();
@@ -59,19 +61,19 @@ public class IOStreamFactory implements StreamFactory {
             if (Hierarchy.isSubtype(type, baseClassType)) {
                 boolean isUninteresting = false;
                 for (ObjectType aUninterestingSubclassTypeList : uninterestingSubclassTypeList) {
-					if (Hierarchy.isSubtype(type, aUninterestingSubclassTypeList)) {
+                    if (Hierarchy.isSubtype(type, aUninterestingSubclassTypeList)) {
                         isUninteresting = true;
                         break;
                     }
-				}
+                }
                 Stream result = new Stream(location, type.getClassName(), baseClassType.getClassName())
                         .setIgnoreImplicitExceptions(true);
                 if (!isUninteresting)
-					result.setInteresting(bugType);
+                    result.setInteresting(bugType);
                 return result;
             }
         } catch (ClassNotFoundException e) {
-			lookupFailureCallback.reportMissingClass(e);
+            lookupFailureCallback.reportMissingClass(e);
         }
 
         return null;

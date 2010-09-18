@@ -40,13 +40,14 @@ import edu.umd.cs.findbugs.ba.ReversePostOrder;
 
 public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
     private DepthFirstSearch dfs;
-    //private ConstantPoolGen cpg;
+
+    // private ConstantPoolGen cpg;
     private Map<InstructionHandle, Call> callMap;
 
     public CallListAnalysis(CFG cfg, DepthFirstSearch dfs, ConstantPoolGen cpg) {
         this.dfs = dfs;
-        //this.cpg = cpg;
-		this.callMap = buildCallMap(cfg, cpg);
+        // this.cpg = cpg;
+        this.callMap = buildCallMap(cfg, cpg);
     }
 
     private static Map<InstructionHandle, Call> buildCallMap(CFG cfg, ConstantPoolGen cpg) {
@@ -59,7 +60,7 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
             if (ins instanceof InvokeInstruction) {
                 InvokeInstruction inv = (InvokeInstruction) ins;
                 Call call = new Call(inv.getClassName(cpg), inv.getName(cpg), inv.getSignature(cpg));
-				callMap.put(handle, call);
+                callMap.put(handle, call);
             }
         }
 
@@ -70,9 +71,9 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
         fact.clear();
     }
 
-//	public void initResultFact(CallList fact) {
-//		fact.setTop();
-//	}
+    // public void initResultFact(CallList fact) {
+    // fact.setTop();
+    // }
 
     public boolean isForwards() {
         return true;
@@ -98,10 +99,9 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
         return a.equals(b);
     }
 
-    public void meetInto(CallList start, Edge edge, CallList result)
-            throws DataflowAnalysisException {
+    public void meetInto(CallList start, Edge edge, CallList result) throws DataflowAnalysisException {
         CallList merge = CallList.merge(start, result);
-		result.copyFrom(merge);
+        result.copyFrom(merge);
     }
 
     public void copy(CallList source, CallList dest) {
@@ -109,44 +109,45 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
     }
 
     @Override
-         public void transferInstruction(
-            InstructionHandle handle, BasicBlock basicBlock, CallList fact) throws DataflowAnalysisException {
-		Call call = callMap.get(handle);
+    public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, CallList fact)
+            throws DataflowAnalysisException {
+        Call call = callMap.get(handle);
         if (call != null) {
             fact.add(call);
         }
-	}
+    }
 
     @Override
-         public boolean isFactValid(CallList fact) {
+    public boolean isFactValid(CallList fact) {
         return fact.isValid();
-	}
+    }
 
-//	public static void main(String[] argv) throws Exception {
-//		if (argv.length != 1) {
-//			System.err.println("Usage: " + CallListAnalysis.class.getName() + " <class file>");
-//			System.exit(1);
-//		}
-//
-//		DataflowTestDriver<CallList, CallListAnalysis> driver =
-//			new DataflowTestDriver<CallList, CallListAnalysis>() {
-//				@Override
-//								 public Dataflow<CallList, CallListAnalysis> createDataflow(
-//						ClassContext classContext,
-//						Method method) throws CFGBuilderException, DataflowAnalysisException {
-//					CallListAnalysis analysis = new CallListAnalysis(
-//							classContext.getCFG(method),
-//							classContext.getDepthFirstSearch(method),
-//							classContext.getConstantPoolGen());
-//					Dataflow<CallList, CallListAnalysis> dataflow =
-//						new Dataflow<CallList, CallListAnalysis>(analysis.cfg, analysis);
-//
-//					dataflow.execute();
-//
-//					return dataflow;
-//				}
-//			};
-//
-//		driver.execute(argv[0]);
-//	}
+    // public static void main(String[] argv) throws Exception {
+    // if (argv.length != 1) {
+    // System.err.println("Usage: " + CallListAnalysis.class.getName() +
+    // " <class file>");
+    // System.exit(1);
+    // }
+    //
+    // DataflowTestDriver<CallList, CallListAnalysis> driver =
+    // new DataflowTestDriver<CallList, CallListAnalysis>() {
+    // @Override
+    // public Dataflow<CallList, CallListAnalysis> createDataflow(
+    // ClassContext classContext,
+    // Method method) throws CFGBuilderException, DataflowAnalysisException {
+    // CallListAnalysis analysis = new CallListAnalysis(
+    // classContext.getCFG(method),
+    // classContext.getDepthFirstSearch(method),
+    // classContext.getConstantPoolGen());
+    // Dataflow<CallList, CallListAnalysis> dataflow =
+    // new Dataflow<CallList, CallListAnalysis>(analysis.cfg, analysis);
+    //
+    // dataflow.execute();
+    //
+    // return dataflow;
+    // }
+    // };
+    //
+    // driver.execute(argv[0]);
+    // }
 }

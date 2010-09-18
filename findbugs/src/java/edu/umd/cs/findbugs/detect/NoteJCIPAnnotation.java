@@ -34,44 +34,40 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
-public class NoteJCIPAnnotation extends AnnotationVisitor implements
-        Detector, NonReportingDetector {
+public class NoteJCIPAnnotation extends AnnotationVisitor implements Detector, NonReportingDetector {
 
     private static final String NET_JCIP_ANNOTATIONS = "net.jcip.annotations.";
 
     public NoteJCIPAnnotation(BugReporter bugReporter) {
     }
 
-
     @Override
-    public void visitAnnotation(String annotationClass,
-            Map<String, ElementValue> map, boolean runtimeVisible) {
+    public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
 
         if (!annotationClass.startsWith(NET_JCIP_ANNOTATIONS))
             return;
-        annotationClass = annotationClass.substring(NET_JCIP_ANNOTATIONS
-				.length());
+        annotationClass = annotationClass.substring(NET_JCIP_ANNOTATIONS.length());
         ElementValue value = map.get("value");
         ClassMember member;
         if (visitingField())
-			member = XFactory.createXField(this);
+            member = XFactory.createXField(this);
         else if (visitingMethod())
             member = XFactory.createXMethod(this);
         else {
-			Map<String, ElementValue> annotationsOfThisClass = AnalysisContext.currentAnalysisContext()
-            .getJCIPAnnotationDatabase().getEntryForClass(getDottedClassName());
+            Map<String, ElementValue> annotationsOfThisClass = AnalysisContext.currentAnalysisContext()
+                    .getJCIPAnnotationDatabase().getEntryForClass(getDottedClassName());
             annotationsOfThisClass.put(annotationClass, value);
             return;
-		}
-        Map<String, ElementValue> annotationsOfThisMember = AnalysisContext.currentAnalysisContext()
-        .getJCIPAnnotationDatabase().getEntryForClassMember(member);
+        }
+        Map<String, ElementValue> annotationsOfThisMember = AnalysisContext.currentAnalysisContext().getJCIPAnnotationDatabase()
+                .getEntryForClassMember(member);
         annotationsOfThisMember.put(annotationClass, value);
-	}
+    }
 
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
-        if  (!BCELUtil.preTiger(javaClass))
-			javaClass.accept(this);
+        if (!BCELUtil.preTiger(javaClass))
+            javaClass.accept(this);
 
     }
 

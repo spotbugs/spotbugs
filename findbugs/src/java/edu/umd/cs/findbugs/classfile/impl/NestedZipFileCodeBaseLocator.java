@@ -27,72 +27,85 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
  * Codebase locator for a zip/jar archive nested inside a parent codebase.
- *
+ * 
  * @author David Hovemeyer
  */
 public class NestedZipFileCodeBaseLocator implements ICodeBaseLocator {
     private final ICodeBase parentCodeBase;
+
     private final String resourceName;
 
     public NestedZipFileCodeBaseLocator(ICodeBase parentCodeBase, String resourceName) {
         this.parentCodeBase = parentCodeBase;
         this.resourceName = resourceName;
-	}
+    }
 
     /**
      * @return Returns the parentCodeBase.
      */
-	public ICodeBase getParentCodeBase() {
+    public ICodeBase getParentCodeBase() {
         return parentCodeBase;
     }
 
     /**
      * @return Returns the resourceName.
      */
-	public String getResourceName() {
+    public String getResourceName() {
         return resourceName;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.ICodeBaseLocator#createRelativeCodeBaseLocator(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.ICodeBaseLocator#createRelativeCodeBaseLocator
+     * (java.lang.String)
      */
-	public ICodeBaseLocator createRelativeCodeBaseLocator(String relativePath) {
-        // The relative path indicates another codebase (archive) in the same parent codebase
+    public ICodeBaseLocator createRelativeCodeBaseLocator(String relativePath) {
+        // The relative path indicates another codebase (archive) in the same
+        // parent codebase
         return new NestedZipFileCodeBaseLocator(parentCodeBase, relativePath);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseLocator#openCodeBase()
      */
-	public ICodeBase openCodeBase() throws ResourceNotFoundException, IOException {
+    public ICodeBase openCodeBase() throws ResourceNotFoundException, IOException {
         return ClassFactory.createNestedZipFileCodeBase(this);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
-	@Override
+    @Override
     public String toString() {
         return "nested:[" + parentCodeBase.getCodeBaseLocator() + "]" + resourceName;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
-	@Override
+    @Override
     public boolean equals(Object obj) {
         if (obj == null || obj.getClass() != this.getClass()) {
             return false;
-		}
+        }
         NestedZipFileCodeBaseLocator other = (NestedZipFileCodeBaseLocator) obj;
-        return this.parentCodeBase.equals(other.parentCodeBase)
-            && this.resourceName.equals(other.resourceName);
-	}
+        return this.parentCodeBase.equals(other.parentCodeBase) && this.resourceName.equals(other.resourceName);
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
-	@Override
+    @Override
     public int hashCode() {
         return 7919 * parentCodeBase.hashCode() + resourceName.hashCode();
     }

@@ -29,51 +29,53 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 /**
- * Type matcher that determines if a candidate
- * Type is a subtype of a given Type.
- *
+ * Type matcher that determines if a candidate Type is a subtype of a given
+ * Type.
+ * 
  * @author David Hovemeyer
  */
 public class SubtypeTypeMatcher implements TypeMatcher {
     private ReferenceType supertype;
 
     /**
-	 * Constructor.
-     *
-     * @param supertype a ReferenceType: this TypeMatcher will test whether
-     *                  or not candidate Types are subtypes of this Type
-	 */
+     * Constructor.
+     * 
+     * @param supertype
+     *            a ReferenceType: this TypeMatcher will test whether or not
+     *            candidate Types are subtypes of this Type
+     */
     public SubtypeTypeMatcher(ReferenceType supertype) {
         this.supertype = supertype;
     }
-	
+
     /**
      * Constructor.
-     *
-	 * @param classDescriptor a ClassDescriptor naming a class: this TypeMatcher will test whether
-     *                  or not candidate Types are subtypes of the class
+     * 
+     * @param classDescriptor
+     *            a ClassDescriptor naming a class: this TypeMatcher will test
+     *            whether or not candidate Types are subtypes of the class
      */
     public SubtypeTypeMatcher(ClassDescriptor classDescriptor) {
-		this(BCELUtil.getObjectTypeInstance(classDescriptor.toDottedClassName()));
+        this(BCELUtil.getObjectTypeInstance(classDescriptor.toDottedClassName()));
     }
 
     public boolean matches(Type t) {
         if (!(t instanceof ReferenceType)) {
             return false;
-		}
+        }
         IAnalysisCache analysisCache = Global.getAnalysisCache();
         Subtypes2 subtypes2 = analysisCache.getDatabase(Subtypes2.class);
 
-		try {
+        try {
             return subtypes2.isSubtype((ReferenceType) t, supertype);
         } catch (ClassNotFoundException e) {
             analysisCache.getErrorLogger().reportMissingClass(e);
-			return false;
+            return false;
         }
     }
 
     @Override
     public String toString() {
         return "+" + supertype.toString();
-	}
+    }
 }

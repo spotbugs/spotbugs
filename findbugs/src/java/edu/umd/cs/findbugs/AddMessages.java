@@ -33,32 +33,35 @@ import org.dom4j.io.XMLWriter;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 /**
- * Add human-readable messages to a dom4j tree containing
- * FindBugs XML output.  This transformation makes it easier
- * to generate reports (such as HTML) from the XML.
- *
+ * Add human-readable messages to a dom4j tree containing FindBugs XML output.
+ * This transformation makes it easier to generate reports (such as HTML) from
+ * the XML.
+ * 
  * @see BugCollection
  * @author David Hovemeyer
  */
 public class AddMessages {
     private BugCollection bugCollection;
+
     private Document document;
 
     /**
      * Constructor.
-     *
-	 * @param bugCollection the BugCollection the dom4j was generated from
-     * @param document      the dom4j tree
+     * 
+     * @param bugCollection
+     *            the BugCollection the dom4j was generated from
+     * @param document
+     *            the dom4j tree
      */
     public AddMessages(BugCollection bugCollection, Document document) {
-		this.bugCollection = bugCollection;
+        this.bugCollection = bugCollection;
         this.document = document;
     }
 
     /**
      * Add messages to the dom4j tree.
      */
-	public void execute() {
+    public void execute() {
         Iterator elementIter = document.selectNodes("/BugCollection/BugInstance").iterator();
         Iterator<BugInstance> bugInstanceIter = bugCollection.iterator();
 
@@ -69,7 +72,7 @@ public class AddMessages {
         // Add short and long descriptions to BugInstance elements.
         // We rely on the Document and the BugCollection storing
         // the bug instances in the same order.
-		while (elementIter.hasNext() && bugInstanceIter.hasNext()) {
+        while (elementIter.hasNext() && bugInstanceIter.hasNext()) {
             Element element = (Element) elementIter.next();
             BugInstance bugInstance = bugInstanceIter.next();
 
@@ -81,95 +84,90 @@ public class AddMessages {
             bugCategorySet.add(bugPattern.getCategory());
             bugCodeSet.add(bugPattern.getAbbrev());
 
-            element.addElement("ShortMessage").addText(
-                bugPattern.getShortDescription());
+            element.addElement("ShortMessage").addText(bugPattern.getShortDescription());
             element.addElement("LongMessage").addText(bugInstance.getMessage());
 
             // Add pre-formatted display strings in "Message"
             // elements for all bug annotations.
             Iterator annElementIter = element.elements().iterator();
-			Iterator<BugAnnotation> annIter = bugInstance.annotationIterator();
+            Iterator<BugAnnotation> annIter = bugInstance.annotationIterator();
             while (annElementIter.hasNext() && annIter.hasNext()) {
                 Element annElement = (Element) annElementIter.next();
                 BugAnnotation ann = annIter.next();
-				annElement.addElement("Message").addText(ann.toString());
+                annElement.addElement("Message").addText(ann.toString());
             }
         }
 
         // Add BugPattern elements for each referenced bug types.
         addBugCategories(bugCategorySet);
         addBugPatterns(bugTypeSet);
-		addBugCodes(bugCodeSet);
+        addBugCodes(bugCodeSet);
     }
 
     /**
      * Add BugCategory elements.
-     *
-	 * @param bugCategorySet all bug categories referenced in the BugCollection
+     * 
+     * @param bugCategorySet
+     *            all bug categories referenced in the BugCollection
      */
     private void addBugCategories(Set<String> bugCategorySet) {
         Element root = document.getRootElement();
-		for (String category : bugCategorySet) {
+        for (String category : bugCategorySet) {
             Element element = root.addElement("BugCategory");
             element.addAttribute("category", category);
             Element description = element.addElement("Description");
-			description.setText(I18N.instance().getBugCategoryDescription(category));
+            description.setText(I18N.instance().getBugCategoryDescription(category));
 
             BugCategory bc = I18N.instance().getBugCategory(category);
             if (bc != null) { // shouldn't be null
                 String s = bc.getAbbrev();
-				if (s != null) {
+                if (s != null) {
                     Element abbrev = element.addElement("Abbreviation");
                     abbrev.setText(s);
                 }
-				s = bc.getDetailText();
+                s = bc.getDetailText();
                 if (s != null) {
                     Element details = element.addElement("Details");
                     details.setText(s);
-				}
+                }
             }
         }
     }
 
     /**
      * Add BugCode elements.
-     *
-	 * @param bugCodeSet all bug codes (abbrevs) referenced in the BugCollection
+     * 
+     * @param bugCodeSet
+     *            all bug codes (abbrevs) referenced in the BugCollection
      */
     private void addBugCodes(Set<String> bugCodeSet) {
         Element root = document.getRootElement();
-		for (String bugCode : bugCodeSet) {
+        for (String bugCode : bugCodeSet) {
             Element element = root.addElement("BugCode");
             element.addAttribute("abbrev", bugCode);
             Element description = element.addElement("Description");
-			description.setText(I18N.instance().getBugTypeDescription(bugCode));
+            description.setText(I18N.instance().getBugTypeDescription(bugCode));
         }
     }
 
     private void addBugPatterns(Set<String> bugTypeSet) {
         Element root = document.getRootElement();
         for (String bugType : bugTypeSet) {
-			BugPattern bugPattern = I18N.instance().lookupBugPattern(bugType);
+            BugPattern bugPattern = I18N.instance().lookupBugPattern(bugType);
             if (bugPattern == null)
                 continue;
             Element details = root.addElement("BugPattern");
-			details
-                    .addAttribute("type", bugType)
-                    .addAttribute("abbrev", bugPattern.getAbbrev())
+            details.addAttribute("type", bugType).addAttribute("abbrev", bugPattern.getAbbrev())
                     .addAttribute("category", bugPattern.getCategory());
-			details
-                    .addElement("ShortDescription")
-                    .addText(bugPattern.getShortDescription());
-            details
-					.addElement("Details")
-                    .addCDATA(bugPattern.getDetailText());
+            details.addElement("ShortDescription").addText(bugPattern.getShortDescription());
+            details.addElement("Details").addCDATA(bugPattern.getDetailText());
         }
     }
 
     @SuppressWarnings("DM_EXIT")
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
-			System.err.println("Usage: " + AddMessages.class.getName() + " <input collection> <output collection>");
+            System.err.println("Usage: " + AddMessages.class.getName() + " <input collection> <output collection>");
             System.exit(1);
         }
 
@@ -191,7 +189,7 @@ public class AddMessages {
         XMLWriter writer = new XMLWriter(new BufferedOutputStream(new FileOutputStream(outputFile)),
                 OutputFormat.createPrettyPrint());
         writer.write(document);
-		writer.close();
+        writer.close();
     }
 }
 

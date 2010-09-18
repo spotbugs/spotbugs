@@ -23,23 +23,27 @@ public class ReturnPath {
     /**
      * Top value.
      */
-	public static final int TOP = 0;
+    public static final int TOP = 0;
+
     /**
      * Method "returns" by exiting the process.
      */
-	public static final int EXIT = 1;
+    public static final int EXIT = 1;
+
     /**
      * Method returns by throwing an unhandled exception.
      */
-	public static final int UE = 2;
+    public static final int UE = 2;
+
     /**
      * Method returns either by exiting or throwing an unhandled exception.
      */
-	public static final int EXIT_UE = 3;
+    public static final int EXIT_UE = 3;
+
     /**
      * Method may return normally.
      */
-	public static final int RETURNS = 4;
+    public static final int RETURNS = 4;
 
     private int kind;
 
@@ -64,36 +68,36 @@ public class ReturnPath {
     }
 
     private static final int[][] mergeMatrix = {
-        // TOP      EXIT      UE       EXIT_UE   RETURNS
-        {TOP, }, // TOP
-		{EXIT, EXIT, }, // EXIT
-        {UE, EXIT_UE, UE, }, // UE
-        {EXIT_UE, EXIT_UE, EXIT_UE, EXIT_UE, }, // EXIT_UE
-        {RETURNS, RETURNS, RETURNS, RETURNS, RETURNS}, // RETURNS
-	};
+            // TOP EXIT UE EXIT_UE RETURNS
+            { TOP, }, // TOP
+            { EXIT, EXIT, }, // EXIT
+            { UE, EXIT_UE, UE, }, // UE
+            { EXIT_UE, EXIT_UE, EXIT_UE, EXIT_UE, }, // EXIT_UE
+            { RETURNS, RETURNS, RETURNS, RETURNS, RETURNS }, // RETURNS
+    };
 
     public void mergeWith(ReturnPath other) {
         int max = Math.max(this.kind, other.kind);
         int min = Math.min(this.kind, other.kind);
-		this.kind = mergeMatrix[max][min];
+        this.kind = mergeMatrix[max][min];
     }
 
     @Override
-         public String toString() {
+    public String toString() {
         switch (kind) {
-		case TOP:
+        case TOP:
             return "[TOP]";
         case EXIT:
             return "[EXIT]";
-		case UE:
+        case UE:
             return "[UE]";
         case EXIT_UE:
             return "[EXIT_UE]";
-		case RETURNS:
+        case RETURNS:
             return "[RETURNS]";
         default:
             throw new IllegalStateException();
-		}
+        }
     }
 }
 

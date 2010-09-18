@@ -30,43 +30,54 @@ import java.util.concurrent.ExecutorService;
 
 /**
  * Interface for any kind of GUI attached to the current FindBug analysis
- *
+ * 
  * @author Andrei
  */
 public interface IGuiCallback {
     /** If true, do not open windows or browsers */
     boolean isHeadless();
+
     void showMessageDialog(String message);
-	
 
     public final static int YES_OPTION = 0;
-    public final static int NO_OPTION = 1;
-	public final static int CANCEL_OPTION = 2;
 
-     public static final int         YES_NO_OPTION = 0;
-     public static final int         YES_NO_CANCEL_OPTION = 1;
-	 public static final int         OK_CANCEL_OPTION = 2;
+    public final static int NO_OPTION = 1;
+
+    public final static int CANCEL_OPTION = 2;
+
+    public static final int YES_NO_OPTION = 0;
+
+    public static final int YES_NO_CANCEL_OPTION = 1;
+
+    public static final int OK_CANCEL_OPTION = 2;
 
     void invokeInGUIThread(Runnable r);
+
     int showConfirmDialog(String message, String title, String ok, String cancel);
+
     String showQuestionDialog(String message, String title, String defaultValue);
 
     List<String> showForm(String message, String title, List<FormItem> labels);
 
     InputStream getProgressMonitorInputStream(InputStream in, int length, String msg);
+
     void setErrorMessage(String errorMsg);
+
     void displayNonmodelMessage(String title, String message);
+
     boolean showDocument(URL u);
+
     /**
      * Called as soon as the cloud object is created, before it is initialized.
      * Useful for adding status msg listener.
      */
     void registerCloud(Project project, BugCollection collection, Cloud cloud);
+
     void unregisterCloud(Project project, BugCollection collection, Cloud cloud);
 
     /**
-     * Use this executor to queue bug collection updates without interfering with the GUI.
-     * Runs on the AWT event thread.
+     * Use this executor to queue bug collection updates without interfering
+     * with the GUI. Runs on the AWT event thread.
      */
     ExecutorService getBugUpdateExecutor();
 
@@ -74,9 +85,13 @@ public interface IGuiCallback {
 
     public class FormItem {
         private String label;
+
         private String defaultValue;
+
         private boolean password = false;
+
         private List<String> possibleValues;
+
         private JComponent field;
 
         public FormItem(String label) {

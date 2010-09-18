@@ -33,10 +33,10 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 
 /**
  * Represents the class name, superclass name, and interface list of a class.
- *
+ * 
  * @author David Hovemeyer
  */
-public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
+public class ClassNameAndSuperclassInfo extends ClassDescriptor {
     private final ClassDescriptor superclassDescriptor;
 
     private final ClassDescriptor[] interfaceDescriptorList;
@@ -44,9 +44,10 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
     private final ICodeBaseEntry codeBaseEntry;
 
     private final int accessFlags;
-    private final Collection<ClassDescriptor> calledClassDescriptorList;
-    private final int  majorVersion, minorVersion;
 
+    private final Collection<ClassDescriptor> calledClassDescriptorList;
+
+    private final int majorVersion, minorVersion;
 
     public static class Builder {
         ClassDescriptor classDescriptor;
@@ -58,21 +59,22 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
         ICodeBaseEntry codeBaseEntry;
 
         int accessFlags;
+
         int majorVersion, minorVersion;
 
-
         Collection<ClassDescriptor> referencedClassDescriptorList;
-        Collection<ClassDescriptor>  calledClassDescriptorList = Collections.<ClassDescriptor>emptyList();
+
+        Collection<ClassDescriptor> calledClassDescriptorList = Collections.<ClassDescriptor> emptyList();
 
         public ClassNameAndSuperclassInfo build() {
             return new ClassNameAndSuperclassInfo(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry,
-                    accessFlags,referencedClassDescriptorList, calledClassDescriptorList, majorVersion, minorVersion);
-		}
+                    accessFlags, referencedClassDescriptorList, calledClassDescriptorList, majorVersion, minorVersion);
+        }
 
         /**
          * @param accessFlags
          *            The accessFlags to set.
-		 */
+         */
         public void setAccessFlags(int accessFlags) {
             this.accessFlags = accessFlags;
         }
@@ -80,7 +82,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
         /**
          * @param classDescriptor
          *            The classDescriptor to set.
-		 */
+         */
         public void setClassDescriptor(ClassDescriptor classDescriptor) {
             this.classDescriptor = classDescriptor;
         }
@@ -88,7 +90,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
         /**
          * @param codeBaseEntry
          *            The codeBaseEntry to set.
-		 */
+         */
         public void setCodeBaseEntry(ICodeBaseEntry codeBaseEntry) {
             this.codeBaseEntry = codeBaseEntry;
         }
@@ -96,7 +98,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
         /**
          * @param interfaceDescriptorList
          *            The interfaceDescriptorList to set.
-		 */
+         */
         public void setInterfaceDescriptorList(ClassDescriptor[] interfaceDescriptorList) {
             this.interfaceDescriptorList = interfaceDescriptorList;
         }
@@ -104,7 +106,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
         /**
          * @param superclassDescriptor
          *            The superclassDescriptor to set.
-		 */
+         */
         public void setSuperclassDescriptor(ClassDescriptor superclassDescriptor) {
             this.superclassDescriptor = superclassDescriptor;
         }
@@ -112,63 +114,65 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
         public void setClassfileVersion(int majorVersion, int minorVersion) {
             this.majorVersion = majorVersion;
             this.minorVersion = minorVersion;
-		}
+        }
+
         /**
          * @param referencedClassDescriptorList
          *            The referencedClassDescriptorList to set.
-		 */
+         */
         public void setReferencedClassDescriptors(Collection<ClassDescriptor> referencedClassDescriptorList) {
             if (referencedClassDescriptorList.size() == 0)
                 this.referencedClassDescriptorList = Collections.emptyList();
-			else 
+            else
                 this.referencedClassDescriptorList = new ArrayList<ClassDescriptor>(referencedClassDescriptorList);
         }
+
         public void setCalledClassDescriptors(Collection<ClassDescriptor> calledClassDescriptorList) {
-			if (calledClassDescriptorList.size() == 0)
+            if (calledClassDescriptorList.size() == 0)
                 this.calledClassDescriptorList = Collections.emptyList();
             else
                 this.calledClassDescriptorList = new ArrayList<ClassDescriptor>(calledClassDescriptorList);
-		}
+        }
     }
 
     /**
      * Constructor.
-     *
-	 * @param classDescriptor
+     * 
+     * @param classDescriptor
      *            ClassDescriptor representing the class name
      * @param superclassDescriptor
      *            ClassDescriptor representing the superclass name
-	 * @param interfaceDescriptorList
+     * @param interfaceDescriptorList
      *            ClassDescriptors representing implemented interface names
      * @param codeBaseEntry
      *            codebase entry class was loaded from
-	 * @param accessFlags
+     * @param accessFlags
      *            class's access flags
-     * @param usesConcurrency TODO
+     * @param usesConcurrency
+     *            TODO
      */
-	 ClassNameAndSuperclassInfo(ClassDescriptor classDescriptor, ClassDescriptor superclassDescriptor,
+    ClassNameAndSuperclassInfo(ClassDescriptor classDescriptor, ClassDescriptor superclassDescriptor,
             ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags,
             /* TODO: We aren't doing anything with this */
             Collection<ClassDescriptor> referencedClassDescriptorList,
-	        @Nonnull Collection<ClassDescriptor> calledClassDescriptorList, int majorVersion, int minorVersion) {
+            @Nonnull Collection<ClassDescriptor> calledClassDescriptorList, int majorVersion, int minorVersion) {
         super(classDescriptor.getClassName());
         this.superclassDescriptor = superclassDescriptor;
         this.interfaceDescriptorList = interfaceDescriptorList;
-		this.codeBaseEntry = codeBaseEntry;
+        this.codeBaseEntry = codeBaseEntry;
         this.accessFlags = accessFlags;
         if (calledClassDescriptorList == null)
             throw new NullPointerException("calledClassDescriptorList must not be null");
-		this.calledClassDescriptorList = calledClassDescriptorList;
+        this.calledClassDescriptorList = calledClassDescriptorList;
         this.majorVersion = majorVersion;
         this.minorVersion = minorVersion;
 
-	}
-
+    }
 
     /**
      * @return Returns the accessFlags.
      */
-	public int getAccessFlags() {
+    public int getAccessFlags() {
         return accessFlags;
     }
 
@@ -189,33 +193,34 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
     /**
      * @return Returns the classDescriptor.
      */
-	public ClassDescriptor getClassDescriptor() {
+    public ClassDescriptor getClassDescriptor() {
         return this;
     }
 
     /**
      * @return Returns the codeBaseEntry.
      */
-	public ICodeBaseEntry getCodeBaseEntry() {
+    public ICodeBaseEntry getCodeBaseEntry() {
         return codeBaseEntry;
     }
 
     /**
      * @return Returns the interfaceDescriptorList.
      */
-	public ClassDescriptor[] getInterfaceDescriptorList() {
+    public ClassDescriptor[] getInterfaceDescriptorList() {
         return interfaceDescriptorList;
     }
 
-	/**
+    /**
      * @return Returns the called class descriptor list.
      */
     public Collection<ClassDescriptor> getCalledClassDescriptorList() {
-		return calledClassDescriptorList;
+        return calledClassDescriptorList;
     }
+
     /**
      * @return Returns the superclassDescriptor.
-	 */
+     */
     public ClassDescriptor getSuperclassDescriptor() {
         return superclassDescriptor;
     }
@@ -247,15 +252,19 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
     public boolean isInterface() {
         return isFlagSet(IClassConstants.ACC_INTERFACE);
     }
+
     public boolean isAbstract() {
         return isFlagSet(IClassConstants.ACC_ABSTRACT);
     }
+
     public boolean isAnnotation() {
         return isFlagSet(IClassConstants.ACC_ANNOTATION);
     }
-	public boolean isSynthetic() {
+
+    public boolean isSynthetic() {
         return isFlagSet(IClassConstants.ACC_SYNTHETIC);
     }
+
     public boolean isDeprecated() {
         return isFlagSet(Opcodes.ACC_DEPRECATED);
     }

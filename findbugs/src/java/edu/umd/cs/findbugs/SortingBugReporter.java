@@ -26,8 +26,8 @@ import javax.annotation.Nonnull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
- * A BugReporter which stores all of the reported bug instances,
- * and sorts them by class name before printing them.
+ * A BugReporter which stores all of the reported bug instances, and sorts them
+ * by class name before printing them.
  */
 public class SortingBugReporter extends TextUIBugReporter {
     private SortedBugCollection bugCollection = new SortedBugCollection();
@@ -35,26 +35,27 @@ public class SortingBugReporter extends TextUIBugReporter {
     public void observeClass(ClassDescriptor classDescriptor) {
         // Don't need to do anything special, since we won't be
         // reporting statistics.
-	}
+    }
 
     @Override
     public void doReportBug(BugInstance bugInstance) {
         if (bugCollection.add(bugInstance))
-			notifyObservers(bugInstance);
+            notifyObservers(bugInstance);
     }
 
     public void finish() {
         Iterator<BugInstance> i = bugCollection.iterator();
         while (i.hasNext()) {
-			BugInstance bugInstance = i.next();
+            BugInstance bugInstance = i.next();
             printBug(bugInstance);
         }
 
         outputStream.close();
     }
 
-    public @Nonnull BugCollection getBugCollection() {
-       return bugCollection;
+    public @Nonnull
+    BugCollection getBugCollection() {
+        return bugCollection;
     }
 }
 

@@ -10,7 +10,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine for producing BlockTypeDataflow for an analyzed method.
- *
+ * 
  * @author David Hovemeyer
  */
 public class BlockTypeAnalysisFactory extends AnalysisFactory<BlockTypeDataflow> {
@@ -18,14 +18,18 @@ public class BlockTypeAnalysisFactory extends AnalysisFactory<BlockTypeDataflow>
         super("block type analysis", BlockTypeDataflow.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public BlockTypeDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public BlockTypeDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         CFG cfg = getCFG(analysisCache, descriptor);
         DepthFirstSearch dfs = getDepthFirstSearch(analysisCache, descriptor);
         BlockTypeAnalysis analysis = new BlockTypeAnalysis(dfs);
-		BlockTypeDataflow dataflow = new BlockTypeDataflow(cfg, analysis);
+        BlockTypeDataflow dataflow = new BlockTypeDataflow(cfg, analysis);
         dataflow.execute();
         return dataflow;
     }

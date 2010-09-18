@@ -31,15 +31,18 @@ public interface NameLookup {
 
     static final String USER_NAME = "user.name";
 
-	/** Return name that should be used as the user identity */
+    /** Return name that should be used as the user identity */
     String getUsername();
 
-    /** tries to obtain a user name.
-     * May prompt the user and/or perform network activity.
-     * @param plugin TODO
-	 * @param bugCollection
-     *
+    /**
+     * tries to obtain a user name. May prompt the user and/or perform network
+     * activity.
+     * 
+     * @param plugin
+     *            TODO
+     * @param bugCollection
+     * 
      * @return true if successful
      */
-	boolean signIn(CloudPlugin plugin, BugCollection bugCollection) throws IOException;
+    boolean signIn(CloudPlugin plugin, BugCollection bugCollection) throws IOException;
 }

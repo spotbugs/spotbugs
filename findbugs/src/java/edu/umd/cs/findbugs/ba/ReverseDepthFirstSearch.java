@@ -20,31 +20,30 @@
 package edu.umd.cs.findbugs.ba;
 
 /**
- * Algorithm to perform a reverse depth first search on a CFG.
- * (I.e., depth first search on reversed CFG.)
- *
+ * Algorithm to perform a reverse depth first search on a CFG. (I.e., depth
+ * first search on reversed CFG.)
+ * 
  * @see CFG
  * @author David Hovemeyer
  */
-public class ReverseDepthFirstSearch
-    extends edu.umd.cs.findbugs.graph.ReverseDepthFirstSearch<CFG, Edge, BasicBlock>
-{
+public class ReverseDepthFirstSearch extends edu.umd.cs.findbugs.graph.ReverseDepthFirstSearch<CFG, Edge, BasicBlock> {
     private BasicBlock firstRoot;
 
     /**
      * Constructor.
-     *
-	 * @param cfg the CFG to perform the reverse depth first search on
+     * 
+     * @param cfg
+     *            the CFG to perform the reverse depth first search on
      */
     public ReverseDepthFirstSearch(CFG cfg) {
         super(cfg);
-		this.firstRoot = cfg.getExit();
+        this.firstRoot = cfg.getExit();
     }
 
     @Override
-         protected BasicBlock getNextSearchTreeRoot() {
+    protected BasicBlock getNextSearchTreeRoot() {
         BasicBlock result = firstRoot;
-		firstRoot = null;
+        firstRoot = null;
         return result;
     }
 }

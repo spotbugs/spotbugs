@@ -21,8 +21,8 @@ package edu.umd.cs.findbugs.classfile;
 
 /**
  * Engine for performing an analysis on methods.
- *
+ * 
  * @author David Hovemeyer
  */
-public interface IMethodAnalysisEngine<ResultType> extends IAnalysisEngine<MethodDescriptor,ResultType> {
+public interface IMethodAnalysisEngine<ResultType> extends IAnalysisEngine<MethodDescriptor, ResultType> {
 }

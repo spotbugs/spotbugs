@@ -30,6 +30,6 @@ public class NonNullReturnProperty extends AbstractWarningProperty {
         super(name, priorityAdjustment);
     }
 
-    public static final NonNullReturnProperty EXACT_METHOD =
-        new NonNullReturnProperty("EXACT_METHOD", PriorityAdjustment.RAISE_PRIORITY);
+    public static final NonNullReturnProperty EXACT_METHOD = new NonNullReturnProperty("EXACT_METHOD",
+            PriorityAdjustment.RAISE_PRIORITY);
 }

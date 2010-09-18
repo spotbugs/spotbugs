@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.classfile;
 
 import edu.umd.cs.findbugs.BugReporter;
 
-
 /**
  * @author David Hovemeyer
  */
@@ -31,18 +30,17 @@ public interface IClassFactory {
 
     public IClassPathBuilder createClassPathBuilder(IErrorLogger errorLogger);
 
-    public ICodeBaseLocator createFilesystemCodeBaseLocator(
-            String pathName);
+    public ICodeBaseLocator createFilesystemCodeBaseLocator(String pathName);
 
     public ICodeBaseLocator createNestedArchiveCodeBaseLocator(ICodeBase parentCodeBase, String path);
 
     public IAnalysisCache createAnalysisCache(IClassPath classPath, BugReporter errorLogger);
 
-//	public IScannableCodeBase createLocalCodeBase(String fileName)
-//			throws IOException;
-//
-//	public IScannableCodeBase createNestedArchiveCodeBase(
-//			IScannableCodeBase parentCodeBase, String resourceName)
-//			throws ResourceNotFoundException, IOException;
+    // public IScannableCodeBase createLocalCodeBase(String fileName)
+    // throws IOException;
+    //
+    // public IScannableCodeBase createNestedArchiveCodeBase(
+    // IScannableCodeBase parentCodeBase, String resourceName)
+    // throws ResourceNotFoundException, IOException;
 
 }

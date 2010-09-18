@@ -23,7 +23,7 @@ import java.io.Serializable;
 
 /**
  * ClassNameRewriter that leaves classe names unchanged.
- *
+ * 
  * @author David Hovemeyer
  */
 public class IdentityClassNameRewriter implements ClassNameRewriter, Serializable {
@@ -34,16 +34,19 @@ public class IdentityClassNameRewriter implements ClassNameRewriter, Serializabl
 
     /**
      * Get the single instance.
-     *
-	 * @return the instance
+     * 
+     * @return the instance
      */
-    public static IdentityClassNameRewriter instance() { return theInstance; }
+    public static IdentityClassNameRewriter instance() {
+        return theInstance;
+    }
 
     /**
      * @see edu.umd.cs.findbugs.model.ClassNameRewriter#rewriteClassName(java.lang.String)
      */
-	public String rewriteClassName(String className) {
-        if (className.indexOf('+') >= 0) className = className.replace('+','$');
+    public String rewriteClassName(String className) {
+        if (className.indexOf('+') >= 0)
+            className = className.replace('+', '$');
         return className;
     }
 

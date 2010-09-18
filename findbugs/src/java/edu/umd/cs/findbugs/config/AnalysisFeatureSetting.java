@@ -24,31 +24,36 @@ import edu.umd.cs.findbugs.ba.AnalysisFeatures.AnalysisFeature;
 
 /**
  * Configure a specific boolean analysis property.
- *
+ * 
  * @author David Hovemeyer
  */
 public class AnalysisFeatureSetting {
-    private @AnalysisFeature int property;
+    private @AnalysisFeature
+    int property;
+
     private boolean enabled;
 
     /**
      * Constructor.
-     *
-	 * @param property the analysis property to configure
-     * @param enabled  true if the property is enabled, false if not
+     * 
+     * @param property
+     *            the analysis property to configure
+     * @param enabled
+     *            true if the property is enabled, false if not
      */
     public AnalysisFeatureSetting(@AnalysisFeature int property, boolean enabled) {
-		this.property = property;
+        this.property = property;
         this.enabled = enabled;
     }
 
     /**
      * Set the configured value of the analysis property in the given
      * AnalysisContext.
-	 * 
-     * @param analysisContext the AnalysisContext
+     * 
+     * @param analysisContext
+     *            the AnalysisContext
      */
     public void configure(AnalysisContext analysisContext) {
-		analysisContext.setBoolProperty(property, enabled);
+        analysisContext.setBoolProperty(property, enabled);
     }
 }

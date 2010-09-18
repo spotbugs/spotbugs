@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -49,31 +48,34 @@ import edu.umd.cs.findbugs.ba.LockDataflow;
 public final class FindTwoLockWait implements Detector, StatelessDetector {
 
     private BugReporter bugReporter;
+
     private JavaClass javaClass;
 
     private Collection<BugInstance> possibleWaitBugs = new LinkedList<BugInstance>();
+
     private Collection<SourceLineAnnotation> possibleNotifyLocations = new LinkedList<SourceLineAnnotation>();
+
     public FindTwoLockWait(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+        this.bugReporter = bugReporter;
     }
 
     @Override
     public Object clone() {
         try {
-			return super.clone();
+            return super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
         }
-	}
+    }
 
     public void visitClassContext(ClassContext classContext) {
         javaClass = classContext.getJavaClass();
         possibleWaitBugs.clear();
-		possibleNotifyLocations.clear();
+        possibleNotifyLocations.clear();
         Method[] methodList = javaClass.getMethods();
         for (Method method : methodList) {
             MethodGen methodGen = classContext.getMethodGen(method);
-			if (methodGen == null)
+            if (methodGen == null)
                 continue;
 
             if (!preScreen(methodGen))
@@ -82,21 +84,21 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
             try {
                 analyzeMethod(classContext, method);
             } catch (DataflowAnalysisException e) {
-				// bugReporter.logError("Error analyzing " + method.toString(), e);
+                // bugReporter.logError("Error analyzing " + method.toString(),
+                // e);
             } catch (CFGBuilderException e) {
                 bugReporter.logError("Error analyzing " + method.toString(), e);
             }
-		}
+        }
         if (!possibleNotifyLocations.isEmpty())
-            for(BugInstance bug : possibleWaitBugs ) {
-                for(SourceLineAnnotation notifyLine : possibleNotifyLocations)
-					bug.addSourceLine(notifyLine).describe("SOURCE_NOTIFICATION_DEADLOCK");
+            for (BugInstance bug : possibleWaitBugs) {
+                for (SourceLineAnnotation notifyLine : possibleNotifyLocations)
+                    bug.addSourceLine(notifyLine).describe("SOURCE_NOTIFICATION_DEADLOCK");
                 bugReporter.reportBug(bug);
             }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method)
-            throws CFGBuilderException, DataflowAnalysisException {
+    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
 
         MethodGen methodGen = classContext.getMethodGen(method);
         CFG cfg = classContext.getCFG(method);
@@ -105,7 +107,7 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
         for (Iterator<Location> j = cfg.locationIterator(); j.hasNext();) {
             Location location = j.next();
             visitLocation(classContext, location, methodGen, dataflow);
-		}
+        }
     }
 
     public boolean preScreen(MethodGen mg) {
@@ -117,11 +119,11 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
         InstructionHandle handle = mg.getInstructionList().getStart();
         while (handle != null && !(lockCount >= 2 && sawWaitOrNotify)) {
             Instruction ins = handle.getInstruction();
-			if (ins instanceof MONITORENTER)
+            if (ins instanceof MONITORENTER)
                 ++lockCount;
             else if (ins instanceof INVOKEVIRTUAL) {
                 INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
-				String methodName = inv.getMethodName(cpg);
+                String methodName = inv.getMethodName(cpg);
                 if (methodName.equals("wait") || methodName.startsWith("notify"))
                     sawWaitOrNotify = true;
             }
@@ -132,25 +134,26 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
         return lockCount >= 2 && sawWaitOrNotify;
     }
 
-    public void visitLocation(ClassContext classContext, Location location, MethodGen methodGen, LockDataflow dataflow) throws DataflowAnalysisException {
+    public void visitLocation(ClassContext classContext, Location location, MethodGen methodGen, LockDataflow dataflow)
+            throws DataflowAnalysisException {
         ConstantPoolGen cpg = methodGen.getConstantPool();
 
         if (Hierarchy.isMonitorWait(location.getHandle().getInstruction(), cpg)) {
             int count = dataflow.getFactAtLocation(location).getNumLockedObjects();
             if (count > 1) {
-				// A wait with multiple locks held?
+                // A wait with multiple locks held?
                 String sourceFile = javaClass.getSourceFileName();
-                possibleWaitBugs.add(new BugInstance(this, "TLW_TWO_LOCK_WAIT", HIGH_PRIORITY )
-                        .addClassAndMethod(methodGen, sourceFile)
-						.addSourceLine(classContext, methodGen, sourceFile, location.getHandle()));
+                possibleWaitBugs.add(new BugInstance(this, "TLW_TWO_LOCK_WAIT", HIGH_PRIORITY).addClassAndMethod(methodGen,
+                        sourceFile).addSourceLine(classContext, methodGen, sourceFile, location.getHandle()));
             }
         }
         if (Hierarchy.isMonitorNotify(location.getHandle().getInstruction(), cpg)) {
-			int count = dataflow.getFactAtLocation(location).getNumLockedObjects();
+            int count = dataflow.getFactAtLocation(location).getNumLockedObjects();
             if (count > 1) {
                 // A notify with multiple locks held?
                 String sourceFile = javaClass.getSourceFileName();
-				possibleNotifyLocations.add(SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, location.getHandle()));
+                possibleNotifyLocations.add(SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile,
+                        location.getHandle()));
             }
         }
     }

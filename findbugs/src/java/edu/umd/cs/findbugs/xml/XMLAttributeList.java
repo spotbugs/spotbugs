@@ -29,18 +29,19 @@ import edu.umd.cs.findbugs.util.Strings;
 
 /**
  * Helper class to format attributes in an XML tag.
- *
+ * 
  * @author David Hovemeyer
  */
 public class XMLAttributeList {
     public static class NameValuePair {
         private String name;
+
         private String value;
 
         public NameValuePair(String name, String value) {
             this.name = name;
             this.value = value;
-		}
+        }
 
         public String getName() {
             return name;
@@ -49,80 +50,86 @@ public class XMLAttributeList {
         public String getValue() {
             return value;
         }
-	}
+    }
 
     // Fields
     private List<NameValuePair> nameValuePairList;
 
     /**
-     * Constructor.
-     * Creates an empty object.
-	 */
+     * Constructor. Creates an empty object.
+     */
     public XMLAttributeList() {
         this.nameValuePairList = new LinkedList<NameValuePair>();
     }
 
     /**
      * Add a single attribute name and value.
-     *
-	 * @param name  the attribute name
-     * @param value the attribute value
+     * 
+     * @param name
+     *            the attribute name
+     * @param value
+     *            the attribute value
      * @return this object (so calls to addAttribute() can be chained)
      */
-	public XMLAttributeList addAttribute(@NonNull String name, @NonNull String value) {
+    public XMLAttributeList addAttribute(@NonNull String name, @NonNull String value) {
         if (name == null)
             throw new NullPointerException("name must be nonnull");
         if (value == null)
-			throw new NullPointerException("value must be nonnull");
+            throw new NullPointerException("value must be nonnull");
         nameValuePairList.add(new NameValuePair(name, value));
         return this;
     }
 
     /**
      * Add a single attribute name and value.
-     *
-	 * @param name  the attribute name
-     * @param value the attribute value
+     * 
+     * @param name
+     *            the attribute name
+     * @param value
+     *            the attribute value
      * @return this object (so calls to addAttribute() can be chained)
      */
-	public XMLAttributeList addOptionalAttribute(@NonNull String name, @CheckForNull String value) {
-        if (value == null) return this;
-        return addAttribute(name,value);
+    public XMLAttributeList addOptionalAttribute(@NonNull String name, @CheckForNull String value) {
+        if (value == null)
+            return this;
+        return addAttribute(name, value);
     }
 
     /**
-     * Return the attribute list as a String which can be
-     * directly output as part of an XML tag.
-	 */
+     * Return the attribute list as a String which can be directly output as
+     * part of an XML tag.
+     */
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-		for (NameValuePair pair : nameValuePairList) {
+        for (NameValuePair pair : nameValuePairList) {
             buf.append(' ');
             buf.append(pair.getName());
             buf.append('=');
-			buf.append('"');
+            buf.append('"');
             buf.append(getQuotedAttributeValue(pair.getValue()));
             buf.append('"');
         }
-		return buf.toString();
+        return buf.toString();
     }
 
     /**
      * Return an Iterator over NameValuePairs.
      */
-	public Iterator<NameValuePair> iterator() {
+    public Iterator<NameValuePair> iterator() {
         return nameValuePairList.iterator();
     }
 
     /**
      * Return a properly quoted form for an attribute value.
-     * @param rawValue the raw value of the attribute
-	 * @return a properly quoted representation of the value
+     * 
+     * @param rawValue
+     *            the raw value of the attribute
+     * @return a properly quoted representation of the value
      */
     public static String getQuotedAttributeValue(@NonNull String rawValue) {
         return Strings.escapeXml(rawValue);
-	}
+    }
 }
 
 // vim:ts=4

@@ -24,36 +24,34 @@ import java.util.Collection;
 import java.util.Locale;
 
 /**
- * A StringMatcher that checks to see if a candidate
- * string (assumed to be a camel-case word), when broken into
- * components, contains a given word.
- *
+ * A StringMatcher that checks to see if a candidate string (assumed to be a
+ * camel-case word), when broken into components, contains a given word.
+ * 
  * @author David Hovemeyer
  */
 public class ContainsCamelCaseWordStringMatcher implements StringMatcher {
     private String expected;
 
     /**
-	 * Constructor.
-     * This StringMatcher will match any string which,
-     * when broken into camel-case identifier components,
-     * has a component which matches the (lower-cased)
-	 * expected string value.
-     *
-     * @param expected the expected string value
+     * Constructor. This StringMatcher will match any string which, when broken
+     * into camel-case identifier components, has a component which matches the
+     * (lower-cased) expected string value.
+     * 
+     * @param expected
+     *            the expected string value
      */
-	public ContainsCamelCaseWordStringMatcher(String expected) {
+    public ContainsCamelCaseWordStringMatcher(String expected) {
         this.expected = expected.toLowerCase(Locale.ENGLISH);
     }
 
     public boolean matches(String s) {
         SplitCamelCaseIdentifier splitter = new SplitCamelCaseIdentifier(s);
         Collection<String> components = splitter.split();
-		return components.contains(expected);
+        return components.contains(expected);
     }
 
     @Override
     public String toString() {
         return "camel-case id contains " + expected;
-	}
+    }
 }

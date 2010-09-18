@@ -22,9 +22,7 @@ package edu.umd.cs.findbugs.ba.npe2;
 import edu.umd.cs.findbugs.ba.AbstractDataflow;
 import edu.umd.cs.findbugs.ba.CFG;
 
-public class DefinitelyNullSetDataflow
-    extends AbstractDataflow<DefinitelyNullSet, DefinitelyNullSetAnalysis>
-{
+public class DefinitelyNullSetDataflow extends AbstractDataflow<DefinitelyNullSet, DefinitelyNullSetAnalysis> {
     public DefinitelyNullSetDataflow(CFG cfg, DefinitelyNullSetAnalysis analysis) {
         super(cfg, analysis);
     }

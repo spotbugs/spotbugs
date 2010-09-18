@@ -30,48 +30,46 @@ import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
 /**
- * Factory for stream objects of a particular
- * base class type returned by any method.
- * This factory helps us keep track of streams returned
- * by methods; we don't want to report them, but we do
- * want to keep track of whether or not they are closed,
- * to avoid reporting unclosed streams in the same
- * equivalence class.
+ * Factory for stream objects of a particular base class type returned by any
+ * method. This factory helps us keep track of streams returned by methods; we
+ * don't want to report them, but we do want to keep track of whether or not
+ * they are closed, to avoid reporting unclosed streams in the same equivalence
+ * class.
  */
 public class AnyMethodReturnValueStreamFactory implements StreamFactory {
     private ObjectType baseClassType;
+
     private String bugType;
 
     public AnyMethodReturnValueStreamFactory(String streamBase) {
         this.baseClassType = ObjectTypeFactory.getInstance(streamBase);
         this.bugType = null;
-	}
+    }
 
     public AnyMethodReturnValueStreamFactory setBugType(String bugType) {
         this.bugType = bugType;
         return this;
-	}
+    }
 
     public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-                               RepositoryLookupFailureCallback lookupFailureCallback) {
+            RepositoryLookupFailureCallback lookupFailureCallback) {
 
         Instruction ins = location.getHandle().getInstruction();
 
         try {
             if (ins instanceof InvokeInstruction) {
                 if (!Hierarchy.isSubtype(type, baseClassType))
-					return null;
+                    return null;
 
-                Stream stream = new Stream(location, type.getClassName(), baseClassType.getClassName())
-                        .setIsOpenOnCreation(true)
+                Stream stream = new Stream(location, type.getClassName(), baseClassType.getClassName()).setIsOpenOnCreation(true)
                         .setIgnoreImplicitExceptions(true);
-				if (bugType != null)
+                if (bugType != null)
                     stream.setInteresting(bugType);
 
                 return stream;
             }
         } catch (ClassNotFoundException e) {
-			lookupFailureCallback.reportMissingClass(e);
+            lookupFailureCallback.reportMissingClass(e);
         }
 
         return null;

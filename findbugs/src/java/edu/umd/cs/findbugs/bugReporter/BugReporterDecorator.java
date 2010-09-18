@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.DelegatingBugReporter;
 
 /**
  * Abstract base class for bug reporters defined as plugins.
- *
+ * 
  * @author pugh
  */
 public abstract class BugReporterDecorator extends DelegatingBugReporter {
@@ -39,7 +39,7 @@ public abstract class BugReporterDecorator extends DelegatingBugReporter {
         try {
             Constructor<? extends BugReporterDecorator> constructor = pluginClass.getConstructor(BugReporterPlugin.class,
                     BugReporter.class);
-			return constructor.newInstance(plugin, delegate);
+            return constructor.newInstance(plugin, delegate);
         } catch (InstantiationException e) {
             throw new RuntimeException(e.getCause());
 

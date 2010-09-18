@@ -23,39 +23,41 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
     /**
      * The resource escapes the method.
      */
-	public static final int ESCAPED = 0;
+    public static final int ESCAPED = 0;
 
     /**
-     * The resource is open (or locked, etc) on paths that include only normal control flow.
+     * The resource is open (or locked, etc) on paths that include only normal
+     * control flow.
      */
-	public static final int OPEN = 1;
+    public static final int OPEN = 1;
 
     /**
-     * The resource is open (or locked, etc) on paths that include exception control flow.
+     * The resource is open (or locked, etc) on paths that include exception
+     * control flow.
      */
-	public static final int OPEN_ON_EXCEPTION_PATH = 2;
+    public static final int OPEN_ON_EXCEPTION_PATH = 2;
 
     /**
      * The resource is closed (or unlocked, etc).
      */
-	public static final int CLOSED = 3;
+    public static final int CLOSED = 3;
 
     /**
      * The resource has been created, but is not open.
      */
-	public static final int CREATED = 4;
+    public static final int CREATED = 4;
 
     /**
      * The resource doesn't exist.
      */
-	public static final int NONEXISTENT = 5;
+    public static final int NONEXISTENT = 5;
 
     private int status;
 
     public ResourceValueFrame(int numSlots) {
         super(numSlots);
         this.status = NONEXISTENT;
-	}
+    }
 
     public int getStatus() {
         return status;
@@ -66,27 +68,28 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
     }
 
     @Override
-         public boolean sameAs(Frame<ResourceValue> other_) {
+    public boolean sameAs(Frame<ResourceValue> other_) {
         if (!super.sameAs(other_))
-			return false;
+            return false;
 
         ResourceValueFrame other = (ResourceValueFrame) other_;
         return this.status == other.status;
     }
 
     @Override
-         public void copyFrom(Frame<ResourceValue> other_) {
+    public void copyFrom(Frame<ResourceValue> other_) {
         super.copyFrom(other_);
-		ResourceValueFrame other = (ResourceValueFrame) other_;
+        ResourceValueFrame other = (ResourceValueFrame) other_;
         this.status = other.status;
     }
 
-    private static final String[] statusList = {"(escaped)", "(open)", "(open_exception)", "(closed)", "(created)", "(nonexistent)"};
+    private static final String[] statusList = { "(escaped)", "(open)", "(open_exception)", "(closed)", "(created)",
+            "(nonexistent)" };
 
     @Override
-         public String toString() {
+    public String toString() {
         return super.toString() + statusList[status];
-	}
+    }
 
 }
 

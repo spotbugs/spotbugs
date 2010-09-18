@@ -5,7 +5,7 @@ import edu.umd.cs.findbugs.props.PriorityAdjustment;
 
 /**
  * Warning property for FindDeadLocalStores.
- *
+ * 
  * @author David Hovemeyer
  */
 public class DeadLocalStoreProperty extends AbstractWarningProperty {
@@ -14,22 +14,26 @@ public class DeadLocalStoreProperty extends AbstractWarningProperty {
     }
 
     /** A store in a JSP page */
-    public static final DeadLocalStoreProperty IN_JSP_PAGE = new DeadLocalStoreProperty(
-            "IN_JSP_PAGE", PriorityAdjustment.FALSE_POSITIVE);
-	/** A store in non Java page */
-    public static final DeadLocalStoreProperty NOT_JAVA = new DeadLocalStoreProperty(
-            "IN_JSP_PAGE", PriorityAdjustment.AT_MOST_LOW);
+    public static final DeadLocalStoreProperty IN_JSP_PAGE = new DeadLocalStoreProperty("IN_JSP_PAGE",
+            PriorityAdjustment.FALSE_POSITIVE);
 
-    /** A store that seemed to have been cloned (an inlined finally block or JSR? */
-    public static final DeadLocalStoreProperty CLONED_STORE = new DeadLocalStoreProperty(
-            "CLONED_STORE", PriorityAdjustment.FALSE_POSITIVE);
-	
+    /** A store in non Java page */
+    public static final DeadLocalStoreProperty NOT_JAVA = new DeadLocalStoreProperty("IN_JSP_PAGE",
+            PriorityAdjustment.AT_MOST_LOW);
+
+    /**
+     * A store that seemed to have been cloned (an inlined finally block or JSR?
+     */
+    public static final DeadLocalStoreProperty CLONED_STORE = new DeadLocalStoreProperty("CLONED_STORE",
+            PriorityAdjustment.FALSE_POSITIVE);
+
     /** Store is killed by a subsequent store. */
     public static final DeadLocalStoreProperty KILLED_BY_SUBSEQUENT_STORE = new DeadLocalStoreProperty(
             "KILLED_BY_SUBSEQUENT_STORE", PriorityAdjustment.LOWER_PRIORITY);
-	/** Store of database operation */
-    public static final DeadLocalStoreProperty STORE_OF_DATABASE_VALUE = new DeadLocalStoreProperty(
-            "STORE_OF_DATABASE_VALUE", PriorityAdjustment.RAISE_PRIORITY_TO_AT_LEAST_NORMAL);
+
+    /** Store of database operation */
+    public static final DeadLocalStoreProperty STORE_OF_DATABASE_VALUE = new DeadLocalStoreProperty("STORE_OF_DATABASE_VALUE",
+            PriorityAdjustment.RAISE_PRIORITY_TO_AT_LEAST_NORMAL);
 
     /** Dead store is of a defense programming constant value. */
     public static final DeadLocalStoreProperty DEFENSIVE_CONSTANT_OPCODE = new DeadLocalStoreProperty(
@@ -42,11 +46,12 @@ public class DeadLocalStoreProperty extends AbstractWarningProperty {
     /** The dead store is an increment. */
     public static final DeadLocalStoreProperty DEAD_INCREMENT = new DeadLocalStoreProperty("DEAD_INCREMENT",
             PriorityAdjustment.LOWER_PRIORITY);
-	public static final DeadLocalStoreProperty DEAD_INCREMENT_IN_MAIN = new DeadLocalStoreProperty("DEAD_INCREMENT",
+
+    public static final DeadLocalStoreProperty DEAD_INCREMENT_IN_MAIN = new DeadLocalStoreProperty("DEAD_INCREMENT",
             PriorityAdjustment.AT_MOST_LOW);
 
     public static final DeadLocalStoreProperty METHOD_RESULT = new DeadLocalStoreProperty("METHOD_RESULT",
-			PriorityAdjustment.A_LITTLE_BIT_HIGHER_PRIORITY);
+            PriorityAdjustment.A_LITTLE_BIT_HIGHER_PRIORITY);
 
     /** The dead store is an increment: the only one in the method. */
     public static final DeadLocalStoreProperty SINGLE_DEAD_INCREMENT = new DeadLocalStoreProperty("SINGLE_DEAD_INCREMENT",
@@ -63,11 +68,11 @@ public class DeadLocalStoreProperty extends AbstractWarningProperty {
     /** There is only one store of this local. (Maybe it's final?) */
     public static final DeadLocalStoreProperty SINGLE_STORE = new DeadLocalStoreProperty("SINGLE_STORE",
             PriorityAdjustment.FALSE_POSITIVE);
-	
+
     /** There is a dup immediately before the store; perhaps a ++ operation */
     public static final DeadLocalStoreProperty DUP_THEN_STORE = new DeadLocalStoreProperty("DUP_THEN_STORE",
             PriorityAdjustment.FALSE_POSITIVE);
-	
+
     /** There are no loads of this local. (Maybe it's final?). */
     public static final DeadLocalStoreProperty NO_LOADS = new DeadLocalStoreProperty("NO_LOADS",
             PriorityAdjustment.A_LITTLE_BIT_LOWER_PRIORITY);

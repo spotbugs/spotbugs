@@ -24,29 +24,35 @@ import java.util.NoSuchElementException;
 
 /**
  * An Iterator that returns no elements.
- *
+ * 
  * @author David Hovemeyer
  */
 public class NullIterator<E> implements Iterator<E> {
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Iterator#hasNext()
      */
-	public boolean hasNext() {
+    public boolean hasNext() {
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Iterator#next()
      */
-	public E next() {
+    public E next() {
         throw new NoSuchElementException();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Iterator#remove()
      */
-	public void remove() {
+    public void remove() {
         throw new UnsupportedOperationException();
     }
 

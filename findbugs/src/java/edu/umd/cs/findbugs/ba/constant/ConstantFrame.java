@@ -22,7 +22,7 @@ import edu.umd.cs.findbugs.ba.Frame;
 
 /**
  * Dataflow Frame for Constants.
- *
+ * 
  * @see edu.umd.cs.findbugs.ba.constant.Constant
  * @see edu.umd.cs.findbugs.ba.constant.ConstantAnalysis
  * @author David Hovemeyer

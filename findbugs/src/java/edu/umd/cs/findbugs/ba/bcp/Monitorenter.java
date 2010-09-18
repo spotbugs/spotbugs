@@ -29,33 +29,34 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
  * A PatternElement for matching a MONITORENTER instruction.
- *
+ * 
  * @author DavidHovemeyer
  */
 public class Monitorenter extends OneVariableInstruction {
     /**
      * Constructor.
-     *
-	 * @param varName name of the variable representing the reference
-     *                to the object being locked
+     * 
+     * @param varName
+     *            name of the variable representing the reference to the object
+     *            being locked
      */
     public Monitorenter(String varName) {
-		super(varName);
+        super(varName);
     }
 
     @Override
-         public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-                             ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+    public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
+            BindingSet bindingSet) throws DataflowAnalysisException {
 
         // Instruction must be MONITORENTER.
         Instruction ins = handle.getInstruction();
         if (!(ins instanceof MONITORENTER))
-			return null;
+            return null;
 
         // Ensure the object being locked matches any previous
         // instructions which bound our variable name to a value.
         Variable lock = new LocalVariable(before.getTopValue());
-		return addOrCheckDefinition(lock, bindingSet);
+        return addOrCheckDefinition(lock, bindingSet);
     }
 }
 

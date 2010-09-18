@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Iterator;
@@ -53,21 +52,22 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 public final class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
     private final BugReporter bugReporter;
+
     private final BugAccumulator bugAccumulator;
 
     public FindMismatchedWaitOrNotify(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
-	}
+    }
 
     @Override
     public Object clone() {
         try {
-			return super.clone();
+            return super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
         }
-	}
+    }
 
     public void visitClassContext(ClassContext classContext) {
         JavaClass jclass = classContext.getJavaClass();
@@ -75,33 +75,34 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
         Method[] methodList = jclass.getMethods();
         for (Method method : methodList) {
             MethodGen methodGen = classContext.getMethodGen(method);
-			if (methodGen == null)
+            if (methodGen == null)
                 continue;
 
             // Don't bother analyzing the method unless there is both locking
             // and a method call.
             BitSet bytecodeSet = classContext.getBytecodeSet(method);
-			if (bytecodeSet == null) continue;
+            if (bytecodeSet == null)
+                continue;
             if (!(bytecodeSet.get(Constants.MONITORENTER) && bytecodeSet.get(Constants.INVOKEVIRTUAL)))
                 continue;
 
             try {
                 analyzeMethod(classContext, method);
             } catch (DataflowAnalysisException e) {
-				bugReporter.logError("FindMismatchedWaitOrNotify: caught exception", e);
+                bugReporter.logError("FindMismatchedWaitOrNotify: caught exception", e);
             } catch (CFGBuilderException e) {
                 bugReporter.logError("FindMismatchedWaitOrNotify: caught exception", e);
             }
-		}
+        }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method)
-    throws CFGBuilderException, DataflowAnalysisException {
+    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
 
         MethodGen methodGen = classContext.getMethodGen(method);
-        if (methodGen == null) return;
+        if (methodGen == null)
+            return;
         ConstantPoolGen cpg = methodGen.getConstantPool();
-		CFG cfg = classContext.getCFG(method);
+        CFG cfg = classContext.getCFG(method);
         ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
         LockDataflow dataflow = classContext.getLockDataflow(method);
 
@@ -113,58 +114,57 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
             Instruction ins = handle.getInstruction();
             if (!(ins instanceof INVOKEVIRTUAL))
                 continue;
-			INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
+            INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
 
             String methodName = inv.getName(cpg);
             String methodSig = inv.getSignature(cpg);
 
-            if (Hierarchy.isMonitorWait(methodName, methodSig)
-                    || Hierarchy.isMonitorNotify(methodName, methodSig)) {
+            if (Hierarchy.isMonitorWait(methodName, methodSig) || Hierarchy.isMonitorNotify(methodName, methodSig)) {
                 int numConsumed = inv.consumeStack(cpg);
-				if (numConsumed == Constants.UNPREDICTABLE)
+                if (numConsumed == Constants.UNPREDICTABLE)
                     throw new DataflowAnalysisException("Unpredictable stack consumption", methodGen, handle);
 
                 ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
                 if (!frame.isValid())
                     // Probably dead code
-					continue;
+                    continue;
                 if (frame.getStackDepth() - numConsumed < 0)
                     throw new DataflowAnalysisException("Stack underflow", methodGen, handle);
                 ValueNumber ref = frame.getValue(frame.getNumSlots() - numConsumed);
-				LockSet lockSet = dataflow.getFactAtLocation(location);
+                LockSet lockSet = dataflow.getFactAtLocation(location);
                 int lockCount = lockSet.getLockCount(ref.getNumber());
 
                 if (lockCount == 0) {
                     Collection<ValueNumber> lockedValueNumbers = lockSet.getLockedValueNumbers(frame);
                     boolean foundMatch = false;
-					for(ValueNumber v : lockedValueNumbers) 
-                        if (frame.veryFuzzyMatch(ref, v)){
+                    for (ValueNumber v : lockedValueNumbers)
+                        if (frame.veryFuzzyMatch(ref, v)) {
                             foundMatch = true;
                             break;
-						}
+                        }
 
                     if (!foundMatch) {
 
-                        String type = methodName.equals("wait")
-                        ? "MWN_MISMATCHED_WAIT"
-                                : "MWN_MISMATCHED_NOTIFY";
-						String sourceFile = classContext.getJavaClass().getSourceFileName();
-                        // Report as medium priority only if the method is public.
-                        // Non-public methods may be properly locked in a calling context.
+                        String type = methodName.equals("wait") ? "MWN_MISMATCHED_WAIT" : "MWN_MISMATCHED_NOTIFY";
+                        String sourceFile = classContext.getJavaClass().getSourceFileName();
+                        // Report as medium priority only if the method is
+                        // public.
+                        // Non-public methods may be properly locked in a
+                        // calling context.
                         int priority = method.isPublic() ? NORMAL_PRIORITY : LOW_PRIORITY;
 
-                        bugAccumulator.accumulateBug(new BugInstance(this, type, priority)
-                        .addClassAndMethod(methodGen, sourceFile),
-                        SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
-					}
+                        bugAccumulator.accumulateBug(
+                                new BugInstance(this, type, priority).addClassAndMethod(methodGen, sourceFile),
+                                SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
+                    }
                 }
             }
         }
-		bugAccumulator.reportAccumulatedBugs();
+        bugAccumulator.reportAccumulatedBugs();
     }
 
     public void report() {
     }
 }
 
-//vim:ts=3
+// vim:ts=3

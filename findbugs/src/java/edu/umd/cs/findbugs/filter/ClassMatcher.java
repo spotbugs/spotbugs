@@ -34,8 +34,8 @@ public class ClassMatcher implements Matcher {
 
     @Override
     public String toString() {
-        return "Class(class=\"" + className.getValue() +"\")";
-	}
+        return "Class(class=\"" + className.getValue() + "\")";
+    }
 
     public ClassMatcher(String className) {
         this.className = new NameMatch(className);
@@ -44,15 +44,18 @@ public class ClassMatcher implements Matcher {
     public boolean match(BugInstance bugInstance) {
         ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
         String bugClassName = primaryClassAnnotation.getClassName();
-		boolean result =  className.match(bugClassName);
-        if (DEBUG) System.out.println("Matching " + bugClassName + " with " + className + ", result = " + result);
+        boolean result = className.match(bugClassName);
+        if (DEBUG)
+            System.out.println("Matching " + bugClassName + " with " + className + ", result = " + result);
         return result;
     }
-	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
+
+    public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", className.getSpec());
-        if (disabled) attributes.addAttribute("disabled", "true");
+        if (disabled)
+            attributes.addAttribute("disabled", "true");
         xmlOutput.openCloseTag("Class", attributes);
-	}
+    }
 }
 
 // vim:ts=4

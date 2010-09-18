@@ -31,31 +31,27 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 
-
 /**
- * A basic "cloud" that doesn't support any actual cloud features. This implementation does
- * use the {@link edu.umd.cs.findbugs.BugInstance.XmlProps} read from the analysis XML file, if present.
- *
+ * A basic "cloud" that doesn't support any actual cloud features. This
+ * implementation does use the {@link edu.umd.cs.findbugs.BugInstance.XmlProps}
+ * read from the analysis XML file, if present.
+ * 
  * @author pwilliam
  */
 public class BugCollectionStorageCloud extends AbstractCloud {
 
     private static CloudPlugin getFallbackPlugin() {
-        return new CloudPluginBuilder()
-                .setCloudid("fallback local cloud")
-                .setDescription("Analysis XML file")
+        return new CloudPluginBuilder().setCloudid("fallback local cloud").setDescription("Analysis XML file")
                 .setDetails("Comments will be stored in the analysis XML file.")
-				.setClassLoader(BugCollectionStorageCloud.class.getClassLoader())
-                .setCloudClass(BugCollectionStorageCloud.class)
-                .setUsernameClass(NoNameLookup.class)
-                .setProperties(new PropertyBundle())
-				.setOnlineStorage(false)
+                .setClassLoader(BugCollectionStorageCloud.class.getClassLoader()).setCloudClass(BugCollectionStorageCloud.class)
+                .setUsernameClass(NoNameLookup.class).setProperties(new PropertyBundle()).setOnlineStorage(false)
                 .createCloudPlugin();
     }
 
     /**
-     * Constructor is not protected to allow CloudFactory.createCloudWithoutInitializing()
-     * create a new instance of this cloud
+     * Constructor is not protected to allow
+     * CloudFactory.createCloudWithoutInitializing() create a new instance of
+     * this cloud
      */
     public BugCollectionStorageCloud(CloudPlugin plugin, BugCollection bc, Properties properties) {
         super(plugin, bc, properties);
@@ -78,6 +74,7 @@ public class BugCollectionStorageCloud extends AbstractCloud {
 
     public void waitUntilIssueDataDownloaded() {
     }
+
     public void initiateCommunication() {
     }
 
@@ -94,22 +91,25 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     @Override
     public UserDesignation getUserDesignation(BugInstance b) {
         BugDesignation bd = b.getUserDesignation();
-        if (bd == null) return UserDesignation.UNCLASSIFIED;
+        if (bd == null)
+            return UserDesignation.UNCLASSIFIED;
         return UserDesignation.valueOf(bd.getDesignationKey());
     }
 
     @Override
     public String getUserEvaluation(BugInstance b) {
         BugDesignation bd = b.getUserDesignation();
-          if (bd == null) return "";
-          return bd.getAnnotationText();
+        if (bd == null)
+            return "";
+        return bd.getAnnotationText();
     }
 
     @Override
     public long getUserTimestamp(BugInstance b) {
         BugDesignation bd = b.getUserDesignation();
-          if (bd == null) return Long.MAX_VALUE;
-          return bd.getTimestamp();
+        if (bd == null)
+            return Long.MAX_VALUE;
+        return bd.getTimestamp();
     }
 
     @Override
@@ -117,10 +117,9 @@ public class BugCollectionStorageCloud extends AbstractCloud {
         // TODO Auto-generated method stub
     }
 
-
     public void bugsPopulated() {
         assert true;
-	    
+
     }
 
     public void setSaveSignInInformation(boolean save) {
@@ -146,14 +145,13 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     }
 
     public void bugFiled(BugInstance b, Object bugLink) {
-         throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
 
     }
 
     public BugDesignation getPrimaryDesignation(BugInstance b) {
-        return  b.getUserDesignation();
+        return b.getUserDesignation();
     }
-
 
     protected Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd) {
         return Collections.emptyList();
@@ -177,7 +175,7 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     }
 
     @Override
-     public UserDesignation getConsensusDesignation(BugInstance b) {
+    public UserDesignation getConsensusDesignation(BugInstance b) {
         String consensus = b.getXmlProps().getConsensus();
         if (consensus == null)
             return UserDesignation.UNCLASSIFIED;
@@ -189,7 +187,7 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     }
 
     @Override
-     public long getFirstSeen(BugInstance b) {
+    public long getFirstSeen(BugInstance b) {
         long computed = super.getFirstSeen(b);
         Date fromXml = b.getXmlProps().getFirstSeen();
         if (fromXml == null)
@@ -204,7 +202,9 @@ public class BugCollectionStorageCloud extends AbstractCloud {
         return Math.min(fromXmlTime, computed);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.cloud.Cloud#waitUntilNewIssuesUploaded()
      */
     public void waitUntilNewIssuesUploaded() {

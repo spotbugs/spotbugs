@@ -28,27 +28,32 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce ReturnPathTypeDataflow objects
- * for analyzed methods.
- *
+ * Analysis engine to produce ReturnPathTypeDataflow objects for analyzed
+ * methods.
+ * 
  * @author David Hovemeyer
  */
 public class ReturnPathTypeDataflowFactory extends AnalysisFactory<ReturnPathTypeDataflow> {
     /**
      * Constructor.
      */
-	public ReturnPathTypeDataflowFactory() {
+    public ReturnPathTypeDataflowFactory() {
         super("return path type dataflow", ReturnPathTypeDataflow.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public ReturnPathTypeDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public ReturnPathTypeDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         CFG cfg = getCFG(analysisCache, descriptor);
         DepthFirstSearch dfs = getDepthFirstSearch(analysisCache, descriptor);
         ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(analysisCache, descriptor);
-		ReturnPathTypeAnalysis analysis = new ReturnPathTypeAnalysis(cfg, rdfs, dfs);
+        ReturnPathTypeAnalysis analysis = new ReturnPathTypeAnalysis(cfg, rdfs, dfs);
         ReturnPathTypeDataflow dataflow = new ReturnPathTypeDataflow(cfg, analysis);
 
         dataflow.execute();

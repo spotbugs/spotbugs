@@ -22,44 +22,40 @@ package edu.umd.cs.findbugs.graph;
 import java.util.Iterator;
 
 /**
- * Perform a reverse depth first search of a graph.
- * (I.e., depth first search of reversed graph.)
- *
+ * Perform a reverse depth first search of a graph. (I.e., depth first search of
+ * reversed graph.)
+ * 
  * @author David Hovemeyer
  * @see Graph
  * @see AbstractDepthFirstSearch
  */
-public class ReverseDepthFirstSearch
-        <
-        GraphType extends Graph<EdgeType, VertexType>,
-        EdgeType extends GraphEdge<EdgeType, VertexType>,
-		VertexType extends GraphVertex<VertexType>
-        >
-    extends AbstractDepthFirstSearch<GraphType, EdgeType, VertexType> {
+public class ReverseDepthFirstSearch<GraphType extends Graph<EdgeType, VertexType>, EdgeType extends GraphEdge<EdgeType, VertexType>, VertexType extends GraphVertex<VertexType>>
+        extends AbstractDepthFirstSearch<GraphType, EdgeType, VertexType> {
 
     /**
      * Constructor.
-     *
-	 * @param graph the graph to perform a reverse depth first search of
+     * 
+     * @param graph
+     *            the graph to perform a reverse depth first search of
      */
     public ReverseDepthFirstSearch(GraphType graph) {
         super(graph);
-	}
+    }
 
     @Override
-         protected Iterator<EdgeType> outgoingEdgeIterator(GraphType graph, VertexType vertex) {
+    protected Iterator<EdgeType> outgoingEdgeIterator(GraphType graph, VertexType vertex) {
         return graph.incomingEdgeIterator(vertex);
-	}
+    }
 
     @Override
-         protected VertexType getTarget(EdgeType edge) {
+    protected VertexType getTarget(EdgeType edge) {
         return edge.getSource();
-	}
+    }
 
     @Override
-         protected VertexType getSource(EdgeType edge) {
+    protected VertexType getSource(EdgeType edge) {
         return edge.getTarget();
-	}
+    }
 
 }
 

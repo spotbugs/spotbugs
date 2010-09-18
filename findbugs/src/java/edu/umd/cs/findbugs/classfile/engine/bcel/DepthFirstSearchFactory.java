@@ -25,26 +25,29 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce DepthFirstSearch objects
- * for analyzed methods.
- *
+ * Analysis engine to produce DepthFirstSearch objects for analyzed methods.
+ * 
  * @author David Hovemeyer
  */
 public class DepthFirstSearchFactory extends AnalysisFactory<DepthFirstSearch> {
     /**
      * Constructor.
      */
-	public DepthFirstSearchFactory() {
+    public DepthFirstSearchFactory() {
         super("depth first search", DepthFirstSearch.class);
     }
 
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
     public DepthFirstSearch analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
-		CFG cfg = getCFG(analysisCache, descriptor);
+        CFG cfg = getCFG(analysisCache, descriptor);
         DepthFirstSearch dfs = new DepthFirstSearch(cfg);
         dfs.search();
         return dfs;
-	}
+    }
 }

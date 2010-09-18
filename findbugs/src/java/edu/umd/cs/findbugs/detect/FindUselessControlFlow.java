@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -34,18 +33,22 @@ import org.apache.bcel.classfile.LineNumberTable;
 import java.util.BitSet;
 
 /**
- * A Detector to look for useless control flow.  For example,
+ * A Detector to look for useless control flow. For example,
+ * 
  * <pre>
- *     if (argv.length == 1);
- *         System.out.println("Hello, " + argv[0]);
+ * if (argv.length == 1)
+ *     ;
+ * System.out.println(&quot;Hello, &quot; + argv[0]);
  * </pre>
- * In this kind of bug, we'll see an ifcmp instruction where the IF
- * target is the same as the fall-through target.
+ * 
+ * In this kind of bug, we'll see an ifcmp instruction where the IF target is
+ * the same as the fall-through target.
  * <p/>
- * <p> The idea for this detector came from Richard P. King,
- * and the idea of looking for if instructions with identical
- * branch and fall-through targets is from Mike Fagan.
- *
+ * <p>
+ * The idea for this detector came from Richard P. King, and the idea of looking
+ * for if instructions with identical branch and fall-through targets is from
+ * Mike Fagan.
+ * 
  * @author David Hovemeyer
  */
 public class FindUselessControlFlow extends BytecodeScanningDetector implements StatelessDetector {
@@ -54,19 +57,19 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
     static {
         ifInstructionSet.set(Constants.IF_ACMPEQ);
         ifInstructionSet.set(Constants.IF_ACMPNE);
-		ifInstructionSet.set(Constants.IF_ICMPEQ);
+        ifInstructionSet.set(Constants.IF_ICMPEQ);
         ifInstructionSet.set(Constants.IF_ICMPNE);
         ifInstructionSet.set(Constants.IF_ICMPLT);
         ifInstructionSet.set(Constants.IF_ICMPLE);
-		ifInstructionSet.set(Constants.IF_ICMPGT);
+        ifInstructionSet.set(Constants.IF_ICMPGT);
         ifInstructionSet.set(Constants.IF_ICMPGE);
         ifInstructionSet.set(Constants.IFEQ);
         ifInstructionSet.set(Constants.IFNE);
-		ifInstructionSet.set(Constants.IFLT);
+        ifInstructionSet.set(Constants.IFLT);
         ifInstructionSet.set(Constants.IFLE);
         ifInstructionSet.set(Constants.IFGT);
         ifInstructionSet.set(Constants.IFGE);
-		ifInstructionSet.set(Constants.IFNULL);
+        ifInstructionSet.set(Constants.IFNULL);
         ifInstructionSet.set(Constants.IFNONNULL);
     }
 
@@ -76,42 +79,47 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
-
     @Override
     public void visit(Code obj) {
         super.visit(obj);
-		bugAccumulator.reportAccumulatedBugs();
+        bugAccumulator.reportAccumulatedBugs();
     }
+
     @Override
-         public void sawOpcode(int seen) {
-		if (ifInstructionSet.get(seen)) {
+    public void sawOpcode(int seen) {
+        if (ifInstructionSet.get(seen)) {
             if (getBranchTarget() == getBranchFallThrough()) {
                 int priority = NORMAL_PRIORITY;
 
                 LineNumberTable lineNumbers = getCode().getLineNumberTable();
                 if (lineNumbers != null) {
                     int branchLineNumber = lineNumbers.getSourceLine(getPC());
-					int targetLineNumber = lineNumbers.getSourceLine(getBranchFallThrough());
+                    int targetLineNumber = lineNumbers.getSourceLine(getBranchFallThrough());
                     int nextLine = getNextSourceLine(lineNumbers, branchLineNumber);
 
-                    if (branchLineNumber +1 == targetLineNumber || branchLineNumber  == targetLineNumber && nextLine == branchLineNumber+1) priority = HIGH_PRIORITY;
-					else if (branchLineNumber +2 < Math.max(targetLineNumber, nextLine)) priority = LOW_PRIORITY;
-                } else priority = LOW_PRIORITY;
-                bugAccumulator.accumulateBug(new BugInstance(this, priority == HIGH_PRIORITY ? "UCF_USELESS_CONTROL_FLOW_NEXT_LINE" : "UCF_USELESS_CONTROL_FLOW", priority)
+                    if (branchLineNumber + 1 == targetLineNumber || branchLineNumber == targetLineNumber
+                            && nextLine == branchLineNumber + 1)
+                        priority = HIGH_PRIORITY;
+                    else if (branchLineNumber + 2 < Math.max(targetLineNumber, nextLine))
+                        priority = LOW_PRIORITY;
+                } else
+                    priority = LOW_PRIORITY;
+                bugAccumulator.accumulateBug(new BugInstance(this,
+                        priority == HIGH_PRIORITY ? "UCF_USELESS_CONTROL_FLOW_NEXT_LINE" : "UCF_USELESS_CONTROL_FLOW", priority)
                         .addClassAndMethod(this), this);
-			}
+            }
         }
     }
 
-	public static int getNextSourceLine(LineNumberTable lineNumbers, int sourceLine) {
+    public static int getNextSourceLine(LineNumberTable lineNumbers, int sourceLine) {
         int result = Integer.MAX_VALUE;
-        for(LineNumber ln : lineNumbers.getLineNumberTable()) {
+        for (LineNumber ln : lineNumbers.getLineNumberTable()) {
 
-			int thisLine = ln.getLineNumber();
+            int thisLine = ln.getLineNumber();
             if (sourceLine < thisLine && thisLine < result)
                 result = thisLine;
         }
-		return result;
+        return result;
 
     }
 }

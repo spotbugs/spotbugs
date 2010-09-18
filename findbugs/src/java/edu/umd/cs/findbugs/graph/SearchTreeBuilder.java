@@ -24,20 +24,17 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
- * A search tree callback implementation that builds a
- * list of SearchTrees recording a graph search.
- *
+ * A search tree callback implementation that builds a list of SearchTrees
+ * recording a graph search.
+ * 
  * @see SearchTreeCallback
  * @author David Hovemeyer
  */
-public class SearchTreeBuilder <VertexType extends GraphVertex<VertexType>>
-    implements SearchTreeCallback<VertexType> {
+public class SearchTreeBuilder<VertexType extends GraphVertex<VertexType>> implements SearchTreeCallback<VertexType> {
 
-    private HashMap<VertexType, SearchTree<VertexType>> searchTreeMap =
-        new HashMap<VertexType, SearchTree<VertexType>>();
+    private HashMap<VertexType, SearchTree<VertexType>> searchTreeMap = new HashMap<VertexType, SearchTree<VertexType>>();
 
-    private LinkedList<SearchTree<VertexType>> searchTreeList =
-        new LinkedList<SearchTree<VertexType>>();
+    private LinkedList<SearchTree<VertexType>> searchTreeList = new LinkedList<SearchTree<VertexType>>();
 
     public void startSearchTree(VertexType vertex) {
         searchTreeList.add(createSearchTree(vertex));
@@ -46,7 +43,7 @@ public class SearchTreeBuilder <VertexType extends GraphVertex<VertexType>>
     public void addToSearchTree(VertexType parent, VertexType child) {
         SearchTree<VertexType> parentTree = searchTreeMap.get(parent);
         if (parentTree == null)
-			throw new IllegalStateException();
+            throw new IllegalStateException();
         SearchTree<VertexType> childTree = createSearchTree(child);
         parentTree.addChild(childTree);
     }
@@ -54,14 +51,14 @@ public class SearchTreeBuilder <VertexType extends GraphVertex<VertexType>>
     /**
      * Get an Iterator over the recorded SearchTrees.
      */
-	public Iterator<SearchTree<VertexType>> searchTreeIterator() {
+    public Iterator<SearchTree<VertexType>> searchTreeIterator() {
         return searchTreeList.iterator();
     }
 
     private SearchTree<VertexType> createSearchTree(VertexType vertex) {
         SearchTree<VertexType> searchTree = new SearchTree<VertexType>(vertex);
         searchTreeMap.put(vertex, searchTree);
-		return searchTree;
+        return searchTree;
     }
 }
 

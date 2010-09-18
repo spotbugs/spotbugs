@@ -19,18 +19,18 @@
 
 package edu.umd.cs.findbugs.ba.npe2;
 
-
 /**
  * @author David Hovemeyer
  */
 public class Decision {
     private boolean feasible;
+
     private NullnessValue nullnessValue;
 
     public Decision(boolean feasible, NullnessValue nullnessValue) {
-        this.feasible= feasible;
+        this.feasible = feasible;
         this.nullnessValue = nullnessValue;
-	}
+    }
 
     public boolean isFeasible() {
         return feasible;

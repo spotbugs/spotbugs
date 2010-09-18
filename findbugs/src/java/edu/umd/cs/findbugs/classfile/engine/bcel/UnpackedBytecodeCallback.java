@@ -22,20 +22,24 @@ package edu.umd.cs.findbugs.classfile.engine.bcel;
 import edu.umd.cs.findbugs.ba.BytecodeScanner;
 import edu.umd.cs.findbugs.ba.MethodBytecodeSet;
 
-
 public class UnpackedBytecodeCallback implements BytecodeScanner.Callback {
     private MethodBytecodeSet bytecodeSet;
+
     private short[] offsetToOpcodeMap;
 
     public UnpackedBytecodeCallback(int codeSize) {
         this.bytecodeSet = new MethodBytecodeSet();
         this.offsetToOpcodeMap = new short[codeSize];
-	}
+    }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.BytecodeScanner.Callback#handleInstruction(int, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.BytecodeScanner.Callback#handleInstruction(int,
+     * int)
      */
-	public void handleInstruction(int opcode, int index) {
+    public void handleInstruction(int opcode, int index) {
         bytecodeSet.set(opcode);
         offsetToOpcodeMap[index] = (short) opcode;
     }

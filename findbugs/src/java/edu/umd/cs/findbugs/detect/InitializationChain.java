@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -37,13 +36,20 @@ import edu.umd.cs.findbugs.SystemProperties;
 
 public class InitializationChain extends BytecodeScanningDetector {
     Set<String> requires = new TreeSet<String>();
+
     Map<String, Set<String>> classRequires = new TreeMap<String, Set<String>>();
+
     Set<String> staticFieldsAccessedInConstructor = new HashSet<String>();
-	Map<String, BugInstance> staticFieldWritten = new HashMap<String, BugInstance>();
+
+    Map<String, BugInstance> staticFieldWritten = new HashMap<String, BugInstance>();
+
     private BugReporter bugReporter;
+
     private boolean instanceCreated;
+
     private int instanceCreatedPC;
-	private boolean instanceCreatedWarningGiven;
+
+    private boolean instanceCreatedWarningGiven;
 
     private static final boolean DEBUG = SystemProperties.getBoolean("ic.debug");
 
@@ -52,67 +58,65 @@ public class InitializationChain extends BytecodeScanningDetector {
     }
 
     @Override
-         public void visit(Code obj) {
+    public void visit(Code obj) {
         instanceCreated = false;
-		instanceCreatedWarningGiven = false;
-        if (!getMethodName().equals("<clinit>") && !getMethodName().equals("<init>")) return;
+        instanceCreatedWarningGiven = false;
+        if (!getMethodName().equals("<clinit>") && !getMethodName().equals("<init>"))
+            return;
         super.visit(obj);
         requires.remove(getDottedClassName());
-		if (getDottedClassName().equals("java.lang.System")) {
+        if (getDottedClassName().equals("java.lang.System")) {
             requires.add("java.io.FileInputStream");
             requires.add("java.io.FileOutputStream");
             requires.add("java.io.BufferedInputStream");
-			requires.add("java.io.BufferedOutputStream");
+            requires.add("java.io.BufferedOutputStream");
             requires.add("java.io.PrintStream");
         }
         if (!requires.isEmpty()) {
-			classRequires.put(getDottedClassName(), requires);
+            classRequires.put(getDottedClassName(), requires);
             requires = new TreeSet<String>();
         }
     }
 
     @Override
     public void visitAfter(JavaClass obj) {
-        for(String name : staticFieldsAccessedInConstructor) {
-			BugInstance bug = staticFieldWritten.get(name);
-            if (bug != null) bugReporter.reportBug(bug);
+        for (String name : staticFieldsAccessedInConstructor) {
+            BugInstance bug = staticFieldWritten.get(name);
+            if (bug != null)
+                bugReporter.reportBug(bug);
         }
         staticFieldWritten.clear();
-		staticFieldsAccessedInConstructor.clear();
+        staticFieldsAccessedInConstructor.clear();
 
     }
 
     @Override
-         public void sawOpcode(int seen) {
+    public void sawOpcode(int seen) {
 
         if (getMethodName().equals("<init>")) {
             if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName())) {
                 staticFieldsAccessedInConstructor.add(getNameConstantOperand());
-			}
+            }
             return;
         }
-
 
         if (seen == PUTSTATIC && getClassConstantOperand().equals(getClassName())) {
             // Don't do this check; it generates too many false
             // positives. We need to do a more detailed check
-			// of which variables could be seen.
+            // of which variables could be seen.
             if (instanceCreated && !instanceCreatedWarningGiven && !getSuperclassName().equals("java.lang.Enum")) {
                 String okSig = "L" + getClassName() + ";";
                 if (!okSig.equals(getSigConstantOperand())) {
-					staticFieldWritten.put(getNameConstantOperand(), 
-                            new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY)
-                            .addClassAndMethod(this)
-                            .addReferencedField(this)
-							.addSourceLine(this, instanceCreatedPC));
+                    staticFieldWritten.put(getNameConstantOperand(),
+                            new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY).addClassAndMethod(this)
+                                    .addReferencedField(this).addSourceLine(this, instanceCreatedPC));
                     instanceCreatedWarningGiven = true;
                 }
             }
-		} else if (seen == NEW && getClassConstantOperand().equals(getClassName())) {
+        } else if (seen == NEW && getClassConstantOperand().equals(getClassName())) {
             instanceCreated = true;
             instanceCreatedPC = getPC();
-        } else if (seen == PUTSTATIC || seen == GETSTATIC || seen == INVOKESTATIC
-				|| seen == NEW)
+        } else if (seen == PUTSTATIC || seen == GETSTATIC || seen == INVOKESTATIC || seen == NEW)
             if (getPC() + 6 < codeBytes.length)
                 requires.add(getDottedClassConstantOperand());
     }
@@ -120,47 +124,50 @@ public class InitializationChain extends BytecodeScanningDetector {
     public void compute() {
         Set<String> allClasses = classRequires.keySet();
         Set<String> emptyClasses = new TreeSet<String>();
-		for (String c : allClasses) {
+        for (String c : allClasses) {
             Set<String> needs = classRequires.get(c);
             needs.retainAll(allClasses);
             Set<String> extra = new TreeSet<String>();
-			for (String need : needs)
+            for (String need : needs)
                 extra.addAll(classRequires.get(need));
             needs.addAll(extra);
             needs.retainAll(allClasses);
-			classRequires.put(c, needs);
-            if (needs.isEmpty()) emptyClasses.add(c);
+            classRequires.put(c, needs);
+            if (needs.isEmpty())
+                emptyClasses.add(c);
         }
         for (String c : emptyClasses) {
-			classRequires.remove(c);
+            classRequires.remove(c);
         }
     }
 
     @Override
-         public void report() {
+    public void report() {
 
-        if (DEBUG) System.out.println("Finishing computation");
+        if (DEBUG)
+            System.out.println("Finishing computation");
         compute();
         compute();
-		compute();
         compute();
         compute();
         compute();
-		compute();
+        compute();
+        compute();
         compute();
         Set<String> allClasses = classRequires.keySet();
 
         for (String c : allClasses) {
-            if (DEBUG) System.out.println("Class " + c + " requires:");
+            if (DEBUG)
+                System.out.println("Class " + c + " requires:");
             for (String needs : (classRequires.get(c))) {
-				if (DEBUG) System.out.println("  " + needs);
+                if (DEBUG)
+                    System.out.println("  " + needs);
                 Set<String> s = classRequires.get(needs);
                 if (s != null && s.contains(c) && c.compareTo(needs) < 0)
-                    bugReporter.reportBug(new BugInstance(this, "IC_INIT_CIRCULARITY", NORMAL_PRIORITY)
-							.addClass(c)
-                            .addClass(needs));
+                    bugReporter.reportBug(new BugInstance(this, "IC_INIT_CIRCULARITY", NORMAL_PRIORITY).addClass(c).addClass(
+                            needs));
             }
         }
-	}
+    }
 
 }

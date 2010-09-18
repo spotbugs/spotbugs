@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -42,39 +41,48 @@ import edu.umd.cs.findbugs.classfile.Global;
 
 public class MutableStaticFields extends BytecodeScanningDetector {
 
-
     static String extractPackage(String c) {
         int i = c.lastIndexOf('/');
         if (i < 0) {
-	        return "";
+            return "";
         }
         return c.substring(0, i);
     }
 
     static boolean mutableSignature(String sig) {
-        return sig.equals("Ljava/util/Hashtable;")
-                || sig.equals("Ljava/util/Date;")
-				|| sig.charAt(0) == '[';
+        return sig.equals("Ljava/util/Hashtable;") || sig.equals("Ljava/util/Date;") || sig.charAt(0) == '[';
     }
 
     LinkedList<XField> seen = new LinkedList<XField>();
+
     boolean publicClass;
+
     boolean zeroOnTOS;
-	boolean emptyArrayOnTOS;
+
+    boolean emptyArrayOnTOS;
+
     boolean inStaticInitializer;
+
     String packageName;
+
     Set<XField> readAnywhere = new HashSet<XField>();
-	Set<XField> unsafeValue = new HashSet<XField>();
+
+    Set<XField> unsafeValue = new HashSet<XField>();
+
     Set<XField> notFinal = new HashSet<XField>();
+
     Set<XField> outsidePackage = new HashSet<XField>();
+
     Map<XField, SourceLineAnnotation> firstFieldUse = new HashMap<XField, SourceLineAnnotation>();
-	private final BugReporter bugReporter;
+
+    private final BugReporter bugReporter;
 
     /**
-     * Eclipse uses reflection to initialize NLS message bundles. Classes which using this
-     * mechanism are usualy extending org.eclipse.osgi.util.NLS class and contains lots
-	 * of public static String fields which are used as message constants. Unfortunately
-     * these fields cannot be final, so FB reports tons of warnings for such Eclipse classes.
+     * Eclipse uses reflection to initialize NLS message bundles. Classes which
+     * using this mechanism are usualy extending org.eclipse.osgi.util.NLS class
+     * and contains lots of public static String fields which are used as
+     * message constants. Unfortunately these fields cannot be final, so FB
+     * reports tons of warnings for such Eclipse classes.
      */
     private boolean isEclipseNLS;
 
@@ -85,9 +93,8 @@ public class MutableStaticFields extends BytecodeScanningDetector {
     @Override
     public void visit(JavaClass obj) {
         super.visit(obj);
-		int flags = obj.getAccessFlags();
-        publicClass = (flags & ACC_PUBLIC) != 0
-                && !getDottedClassName().startsWith("sun.");
+        int flags = obj.getAccessFlags();
+        publicClass = (flags & ACC_PUBLIC) != 0 && !getDottedClassName().startsWith("sun.");
 
         packageName = extractPackage(getClassName());
         isEclipseNLS = "org.eclipse.osgi.util.NLS".equals(obj.getSuperclassName());
@@ -96,14 +103,14 @@ public class MutableStaticFields extends BytecodeScanningDetector {
     @Override
     public void visit(Method obj) {
         zeroOnTOS = false;
-		// System.out.println(methodName);
+        // System.out.println(methodName);
         inStaticInitializer = getMethodName().equals("<clinit>");
     }
 
     @Override
     public void sawOpcode(int seen) {
-        // System.out.println("saw	"	+ OPCODE_NAMES[seen] + "	" + zeroOnTOS);
-		switch (seen) {
+        // System.out.println("saw	" + OPCODE_NAMES[seen] + "	" + zeroOnTOS);
+        switch (seen) {
         case GETSTATIC:
         case PUTSTATIC:
 
@@ -115,15 +122,10 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                 break;
             }
 
-            boolean samePackage =
-                    packageName.equals(extractPackage(getClassConstantOperand()));
-            boolean initOnly =
-					seen == GETSTATIC ||
-                    getClassName().equals(getClassConstantOperand())
-                    && inStaticInitializer;
-            boolean safeValue =
-					seen == GETSTATIC || emptyArrayOnTOS || AnalysisContext.currentXFactory().isEmptyArrayField(xField)
-                    || !mutableSignature(getSigConstantOperand());
+            boolean samePackage = packageName.equals(extractPackage(getClassConstantOperand()));
+            boolean initOnly = seen == GETSTATIC || getClassName().equals(getClassConstantOperand()) && inStaticInitializer;
+            boolean safeValue = seen == GETSTATIC || emptyArrayOnTOS
+                    || AnalysisContext.currentXFactory().isEmptyArrayField(xField) || !mutableSignature(getSigConstantOperand());
 
             if (seen == GETSTATIC) {
                 readAnywhere.add(xField);
@@ -141,14 +143,15 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                 unsafeValue.add(xField);
             }
 
-            //Remove inStaticInitializer check to report all source lines of first use
-            //doing so, however adds quite a bit of memory bloat.
+            // Remove inStaticInitializer check to report all source lines of
+            // first use
+            // doing so, however adds quite a bit of memory bloat.
             if (inStaticInitializer && !firstFieldUse.containsKey(xField)) {
-				SourceLineAnnotation sla = SourceLineAnnotation.fromVisitedInstruction(this);
+                SourceLineAnnotation sla = SourceLineAnnotation.fromVisitedInstruction(this);
                 firstFieldUse.put(xField, sla);
             }
             break;
-		case ANEWARRAY:
+        case ANEWARRAY:
         case NEWARRAY:
             if (zeroOnTOS) {
                 emptyArrayOnTOS = true;
@@ -156,11 +159,11 @@ public class MutableStaticFields extends BytecodeScanningDetector {
             zeroOnTOS = false;
             return;
         case ICONST_0:
-			zeroOnTOS = true;
+            zeroOnTOS = true;
             emptyArrayOnTOS = false;
             return;
         }
-		zeroOnTOS = false;
+        zeroOnTOS = false;
         emptyArrayOnTOS = false;
     }
 
@@ -168,25 +171,25 @@ public class MutableStaticFields extends BytecodeScanningDetector {
         if (!f.isPublic() && !f.isProtected()) {
             return false;
         }
-        if (!f.isStatic()|| f.isSynthetic() || f.isVolatile()) {
+        if (!f.isStatic() || f.isSynthetic() || f.isVolatile()) {
             return false;
         }
-        boolean isHashtable =
-            f.getSignature().equals("Ljava/util/Hashtable;");
+        boolean isHashtable = f.getSignature().equals("Ljava/util/Hashtable;");
         boolean isArray = f.getSignature().charAt(0) == '[';
-		if (f.isFinal() && !(isArray || isHashtable)) {
+        if (f.isFinal() && !(isArray || isHashtable)) {
             return false;
         }
         return true;
 
     }
+
     @Override
     public void visit(Field obj) {
-		super.visit(obj);
+        super.visit(obj);
         int flags = obj.getAccessFlags();
         boolean isStatic = (flags & ACC_STATIC) != 0;
         if (!isStatic) {
-	        return;
+            return;
         }
         boolean isVolatile = (flags & ACC_VOLATILE) != 0;
         if (isVolatile) {
@@ -195,18 +198,17 @@ public class MutableStaticFields extends BytecodeScanningDetector {
         boolean isFinal = (flags & ACC_FINAL) != 0;
         boolean isPublic = publicClass && (flags & ACC_PUBLIC) != 0;
         boolean isProtected = publicClass && (flags & ACC_PROTECTED) != 0;
-		if (!isPublic && !isProtected) {
+        if (!isPublic && !isProtected) {
             return;
         }
 
-        boolean isHashtable =
-            getFieldSig().equals("Ljava/util/Hashtable;");
+        boolean isHashtable = getFieldSig().equals("Ljava/util/Hashtable;");
         boolean isArray = getFieldSig().charAt(0) == '[';
 
         if (isFinal && !(isHashtable || isArray)) {
             return;
         }
-        if(isEclipseNLS && getFieldSig().equals("Ljava/lang/String;")){
+        if (isEclipseNLS && getFieldSig().equals("Ljava/lang/String;")) {
             return;
         }
 
@@ -216,19 +218,17 @@ public class MutableStaticFields extends BytecodeScanningDetector {
     @Override
     public void report() {
         /*
-		for(Iterator i = unsafeValue.iterator(); i.hasNext(); ) {
-            System.out.println("Unsafe: " + i.next());
-            }
-        */
-		for (XField f : seen) {
+         * for(Iterator i = unsafeValue.iterator(); i.hasNext(); ) {
+         * System.out.println("Unsafe: " + i.next()); }
+         */
+        for (XField f : seen) {
             boolean isFinal = f.isFinal();
             String className = f.getClassName();
             String fieldSig = f.getSignature();
-			String fieldName = f.getName();
-            boolean couldBeFinal = !isFinal
-                    && !notFinal.contains(f);
+            String fieldName = f.getName();
+            boolean couldBeFinal = !isFinal && !notFinal.contains(f);
             boolean isPublic = f.isPublic();
-			boolean couldBePackage = !outsidePackage.contains(f);
+            boolean couldBePackage = !outsidePackage.contains(f);
             boolean movedOutofInterface = false;
 
             try {
@@ -238,31 +238,24 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                 assert true;
             }
             boolean isHashtable = fieldSig.equals("Ljava/util/Hashtable;");
-            boolean isArray = fieldSig.charAt(0) == '['
-                    && unsafeValue.contains(f);
-			boolean isReadAnywhere = readAnywhere.contains(f);
+            boolean isArray = fieldSig.charAt(0) == '[' && unsafeValue.contains(f);
+            boolean isReadAnywhere = readAnywhere.contains(f);
             if (false) {
-                System.out.println(className + "."  + fieldName
-                              + " : " + fieldSig
-	            		  + "	" + isHashtable
-                          + "	" + isArray
-                              );
+                System.out.println(className + "." + fieldName + " : " + fieldSig + "	" + isHashtable + "	" + isArray);
             }
-
 
             String bugType;
             int priority = NORMAL_PRIORITY;
             if (isFinal && !isHashtable && !isArray) {
-				continue;
+                continue;
             } else if (movedOutofInterface) {
                 bugType = "MS_OOI_PKGPROTECT";
             } else if (couldBePackage && couldBeFinal && (isHashtable || isArray)) {
-	            bugType = "MS_FINAL_PKGPROTECT";
+                bugType = "MS_FINAL_PKGPROTECT";
             } else if (couldBeFinal && !isHashtable && !isArray) {
                 bugType = "MS_SHOULD_BE_FINAL";
-                if (fieldName.equals(fieldName.toUpperCase())
-                        || fieldSig.charAt(0) == 'L') {
-	                priority = HIGH_PRIORITY;
+                if (fieldName.equals(fieldName.toUpperCase()) || fieldSig.charAt(0) == 'L') {
+                    priority = HIGH_PRIORITY;
                 }
             } else if (couldBePackage) {
                 bugType = "MS_PKGPROTECT";
@@ -274,7 +267,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
             } else if (isArray) {
                 bugType = "MS_MUTABLE_ARRAY";
                 if (fieldSig.indexOf("L") >= 0 || !isFinal) {
-	                priority = HIGH_PRIORITY;
+                    priority = HIGH_PRIORITY;
                 }
             } else if (!isFinal) {
                 bugType = "MS_CANNOT_BE_FINAL";
@@ -285,10 +278,8 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                 priority = LOW_PRIORITY;
             }
 
-            BugInstance bug = new BugInstance(this, bugType, priority)
-                                                .addClass(className)
-                                                .addField(f);
-			SourceLineAnnotation firstPC = firstFieldUse.get(f);
+            BugInstance bug = new BugInstance(this, bugType, priority).addClass(className).addField(f);
+            SourceLineAnnotation firstPC = firstFieldUse.get(f);
             if (firstPC != null) {
                 bug.addSourceLine(firstPC);
             }

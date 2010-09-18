@@ -19,49 +19,53 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import edu.umd.cs.findbugs.ba.Location;
 
 /**
- * A StreamEscape is an object representing the escape of a Stream
- * to a called method.
- * The "source" is the Stream which is escaping.
- * The "target" is the Location where the stream instance escapes.
+ * A StreamEscape is an object representing the escape of a Stream to a called
+ * method. The "source" is the Stream which is escaping. The "target" is the
+ * Location where the stream instance escapes.
  */
 public class StreamEscape implements Comparable<StreamEscape> {
     public final Stream source;
+
     public final Location target;
 
     /**
      * Constructor.
-     *
-	 * @param source Location where stream is opened
-     * @param target Location where stream escapes by being
-     *               passed to a method
+     * 
+     * @param source
+     *            Location where stream is opened
+     * @param target
+     *            Location where stream escapes by being passed to a method
      */
-	public StreamEscape(Stream source, Location target) {
+    public StreamEscape(Stream source, Location target) {
         this.source = source;
         this.target = target;
     }
 
     public int compareTo(StreamEscape other) {
         int cmp = source.compareTo(other.source);
-        if (cmp != 0) return cmp;
-		return target.compareTo(other.target);
+        if (cmp != 0)
+            return cmp;
+        return target.compareTo(other.target);
     }
 
     @Override
     public int hashCode() {
-        return source.hashCode() + 7*target.hashCode();
-	}
+        return source.hashCode() + 7 * target.hashCode();
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof StreamEscape)) return false;
-		StreamEscape other = (StreamEscape) o;
+        if (!(o instanceof StreamEscape))
+            return false;
+        StreamEscape other = (StreamEscape) o;
         return source.equals(other.source) && target.equals(other.target);
     }
+
     @Override
-		 public String toString() {
+    public String toString() {
         return source + " to " + target;
     }
 }

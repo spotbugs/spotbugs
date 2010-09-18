@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.util.Util;
 public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObject {
 
     public static final FieldInfo[] EMPTY_ARRAY = new FieldInfo[0];
+
     static public class Builder {
         final int accessFlags;
 
@@ -60,7 +61,7 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
         public Builder(@SlashedClassName String className, String fieldName, String fieldSignature, int accessFlags) {
             this.className = className;
             this.fieldName = fieldName;
-			this.fieldSignature = fieldSignature;
+            this.fieldSignature = fieldSignature;
             this.accessFlags = accessFlags;
         }
 
@@ -71,16 +72,18 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
         public void addAnnotation(String name, AnnotationValue value) {
             ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptorFromSignature(name);
             fieldAnnotations.put(annotationClass, value);
-		}
+        }
 
         public FieldInfo build() {
             return new FieldInfo(className, fieldName, fieldSignature, fieldSourceSignature, accessFlags, fieldAnnotations, true);
         }
-	}
+    }
 
     final int accessFlags;
 
-    final @CheckForNull String fieldSourceSignature;
+    final @CheckForNull
+    String fieldSourceSignature;
+
     Map<ClassDescriptor, AnnotationValue> fieldAnnotations;
 
     final boolean isResolved;
@@ -94,21 +97,15 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
      * @param fieldAnnotations
      * @param isResolved
      */
-    private FieldInfo(
-            @SlashedClassName String className,
-            String fieldName,
-            String fieldSignature,
-    		@CheckForNull String fieldSourceSignature,
-            int accessFlags,
-            Map<ClassDescriptor, AnnotationValue> fieldAnnotations,
+    private FieldInfo(@SlashedClassName String className, String fieldName, String fieldSignature,
+            @CheckForNull String fieldSourceSignature, int accessFlags, Map<ClassDescriptor, AnnotationValue> fieldAnnotations,
             boolean isResolved) {
-	    super(className, fieldName, fieldSignature, (accessFlags & Constants.ACC_STATIC) != 0);
+        super(className, fieldName, fieldSignature, (accessFlags & Constants.ACC_STATIC) != 0);
         this.accessFlags = accessFlags | (fieldName.startsWith("this$") ? Constants.ACC_FINAL : 0);
         this.fieldSourceSignature = fieldSourceSignature;
         this.fieldAnnotations = Util.immutableMap(fieldAnnotations);
-		this.isResolved = isResolved;
+        this.isResolved = isResolved;
     }
-
 
     public int getNumParams() {
         return new SignatureParser(getSignature()).getNumParameters();
@@ -125,21 +122,28 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
     public boolean isSynchronized() {
         return checkFlag(Constants.ACC_SYNCHRONIZED);
     }
+
     public boolean isDeprecated() {
         return checkFlag(Opcodes.ACC_DEPRECATED);
     }
-    public @DottedClassName String getClassName() {
+
+    public @DottedClassName
+    String getClassName() {
         return getClassDescriptor().toDottedClassName();
     }
 
-    public @DottedClassName String getPackageName() {
-        return  getClassDescriptor().getPackageName();
+    public @DottedClassName
+    String getPackageName() {
+        return getClassDescriptor().getPackageName();
     }
+
     public String getSourceSignature() {
         return fieldSourceSignature;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
@@ -147,140 +151,161 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
         if (rhs instanceof FieldDescriptor) {
             return super.compareTo((FieldDescriptor) rhs);
         }
-    	
+
         if (rhs instanceof XField) {
             return XFactory.compare((XField) this, (XField) rhs);
         }
-    	
+
         throw new ClassCastException("Can't compare a " + this.getClass().getName() + " to a " + rhs.getClass().getName());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getAccessFlags()
      */
     public int getAccessFlags() {
         return accessFlags;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isFinal()
      */
     public boolean isFinal() {
         return checkFlag(Constants.ACC_FINAL);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPrivate()
      */
     public boolean isPrivate() {
         return checkFlag(Constants.ACC_PRIVATE);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isProtected()
      */
     public boolean isProtected() {
         return checkFlag(Constants.ACC_PROTECTED);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPublic()
      */
     public boolean isPublic() {
         return checkFlag(Constants.ACC_PUBLIC);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isResolved()
      */
     public boolean isResolved() {
         return this.isResolved;
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.XField#isReferenceType()
      */
     public boolean isReferenceType() {
         return getSignature().startsWith("L") || getSignature().startsWith("[");
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.XField#isVolatile()
      */
     public boolean isVolatile() {
         return checkFlag(Constants.ACC_VOLATILE);
     }
 
-
     public boolean isSynthetic() {
         return checkFlag(Constants.ACC_SYNTHETIC);
     }
+
     public Collection<ClassDescriptor> getAnnotationDescriptors() {
         return fieldAnnotations.keySet();
     }
+
     public AnnotationValue getAnnotation(ClassDescriptor desc) {
-		return fieldAnnotations.get(desc);
+        return fieldAnnotations.get(desc);
     }
+
     public Collection<AnnotationValue> getAnnotations() {
         return fieldAnnotations.values();
-	}
-
-    /**
-     * Destructively add an annotation.
-	 * We do this for "built-in" annotations that might not
-     * be directly evident in the code.
-     * It's not a great idea in general, but we can
-     * get away with it as long as it's done early
-	 * enough (i.e., before anyone asks what annotations
-     * this field has.)
-     *
-     * @param annotationValue an AnnotationValue representing a field annotation
-	 */
-    public void addAnnotation(AnnotationValue annotationValue) {
-        HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(fieldAnnotations);
-        updatedAnnotations.put(annotationValue.getAnnotationClass(), annotationValue);
-		fieldAnnotations = updatedAnnotations;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Destructively add an annotation. We do this for "built-in" annotations
+     * that might not be directly evident in the code. It's not a great idea in
+     * general, but we can get away with it as long as it's done early enough
+     * (i.e., before anyone asks what annotations this field has.)
+     * 
+     * @param annotationValue
+     *            an AnnotationValue representing a field annotation
+     */
+    public void addAnnotation(AnnotationValue annotationValue) {
+        HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(
+                fieldAnnotations);
+        updatedAnnotations.put(annotationValue.getAnnotationClass(), annotationValue);
+        fieldAnnotations = updatedAnnotations;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.XField#getFieldDescriptor()
      */
-	public FieldDescriptor getFieldDescriptor() {
+    public FieldDescriptor getFieldDescriptor() {
         return this;
     }
 
-	/**
+    /**
      * Create a FieldInfo object to represent an unresolved field.
      * <em>Don't call this directly - use XFactory instead.</em>
-     *
-	 * @param className  name of class containing the field
-     * @param name       name of field
-     * @param signature  field signature
-     * @param isStatic   true if field is static, false otherwise
-	 * @return FieldInfo object representing the unresolved field
+     * 
+     * @param className
+     *            name of class containing the field
+     * @param name
+     *            name of field
+     * @param signature
+     *            field signature
+     * @param isStatic
+     *            true if field is static, false otherwise
+     * @return FieldInfo object representing the unresolved field
      */
     public static FieldInfo createUnresolvedFieldInfo(String className, String name, String signature, boolean isStatic) {
         className = ClassName.toSlashedClassName(className);
-		return new FieldInfo(
-                className,
-                name,
-                signature,
-				null, // without seeing the definition we don't know if it has a generic type
-                isStatic ? Constants.ACC_STATIC : 0,
-                new HashMap<ClassDescriptor, AnnotationValue>(),
-                false);
-	}
+        return new FieldInfo(className, name, signature, null, // without seeing
+                                                               // the definition
+                                                               // we don't know
+                                                               // if it has a
+                                                               // generic type
+                isStatic ? Constants.ACC_STATIC : 0, new HashMap<ClassDescriptor, AnnotationValue>(), false);
+    }
 
     public ElementType getElementType() {
         return ElementType.FIELD;
-	}
-    public @CheckForNull AnnotatedObject getContainingScope() {
+    }
+
+    public @CheckForNull
+    AnnotatedObject getContainingScope() {
         try {
             return Global.getAnalysisCache().getClassAnalysis(XClass.class, getClassDescriptor());
         } catch (CheckedAnalysisException e) {
-             return null;
+            return null;
         }
     }
 }

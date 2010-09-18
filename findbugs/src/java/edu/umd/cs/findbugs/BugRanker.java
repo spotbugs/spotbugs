@@ -37,127 +37,141 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
- * Bug rankers are used to compute a bug rank for each bug instance. Bug ranks 1-20 are for bugs that are visible to users.
- * Bug rank 1 is more the most relevant/scary bugs. A bug rank greater than 20 is for issues that should not be shown to users.
- *
- *
+ * Bug rankers are used to compute a bug rank for each bug instance. Bug ranks
+ * 1-20 are for bugs that are visible to users. Bug rank 1 is more the most
+ * relevant/scary bugs. A bug rank greater than 20 is for issues that should not
+ * be shown to users.
+ * 
+ * 
  * The following bug rankers may exist:
  * <ul>
- * <li> core bug ranker (loaded from etc/bugrank.txt)
- * <li> a bug ranker for each plugin (loaded from <plugin>/etc/bugrank.txt)
- * <li> A global adjustment ranker (loaded from plugins/adjustBugrank.txt)
+ * <li>core bug ranker (loaded from etc/bugrank.txt)
+ * <li>a bug ranker for each plugin (loaded from <plugin>/etc/bugrank.txt)
+ * <li>A global adjustment ranker (loaded from plugins/adjustBugrank.txt)
  * </ul>
- *
- * A bug ranker is comprised of a list of bug patterns, bug kinds and bug categories. For each, either an absolute
- * or relative bug rank is provided. A relative rank is one preceeded by a + or -.
- *
+ * 
+ * A bug ranker is comprised of a list of bug patterns, bug kinds and bug
+ * categories. For each, either an absolute or relative bug rank is provided. A
+ * relative rank is one preceeded by a + or -.
+ * 
  * For core bug detectors, the bug ranker search order is:
  * <ul>
- * <li> global bug ranker
- * <li> core bug ranker
+ * <li>global bug ranker
+ * <li>core bug ranker
  * </ul>
- *
+ * 
  * For third party plugins, the bug ranker search order is:
  * <ul>
- * <li> global adjustment bug ranker
- * <li> plugin adjustment bug ranker
- * <li> core bug ranker
+ * <li>global adjustment bug ranker
+ * <li>plugin adjustment bug ranker
+ * <li>core bug ranker
  * </ul>
- *
+ * 
  * The overall search order is
  * <ul>
- * <li> Bug patterns, in search order across bug rankers
- * <li> Bug kinds, in search order across bug rankers
- * <li> Bug categories, in search order across bug rankers
+ * <li>Bug patterns, in search order across bug rankers
+ * <li>Bug kinds, in search order across bug rankers
+ * <li>Bug categories, in search order across bug rankers
  * </ul>
- *
- * Search stops at the first absolute bug rank found, and the result is the sum of all of relative bug ranks plus
- * the final absolute bug rank. Since all bug categories are defined by the core bug ranker, we should always find
- * an absolute bug rank.
- *
- *
- *
+ * 
+ * Search stops at the first absolute bug rank found, and the result is the sum
+ * of all of relative bug ranks plus the final absolute bug rank. Since all bug
+ * categories are defined by the core bug ranker, we should always find an
+ * absolute bug rank.
+ * 
+ * 
+ * 
  * @author Bill Pugh
  */
 public class BugRanker {
 
     static final boolean PLUGIN_DEBUG = Boolean.getBoolean("bugranker.plugin.debug");
 
-	static class Scorer {
+    static class Scorer {
         private final HashMap<String, Integer> adjustment = new HashMap<String, Integer>();
-        private final HashSet<String> isRelative = new  HashSet<String>();
 
-		int get(String key) {
+        private final HashSet<String> isRelative = new HashSet<String>();
+
+        int get(String key) {
             Integer v = adjustment.get(key);
             if (v == null)
                 return 0;
-			return v;
+            return v;
         }
+
         boolean isRelative(String key) {
             return !adjustment.containsKey(key) || isRelative.contains(key);
-		}
+        }
+
         void storeAdjustment(String key, String value) {
-            for(String k : key.split(",")) {
+            for (String k : key.split(",")) {
                 int v = Integer.parseInt(value);
-				char firstChar = value.charAt(0);
+                char firstChar = value.charAt(0);
                 adjustment.put(k, v);
                 if (firstChar == '+' || firstChar == '-')
                     isRelative.add(k);
-			}
+            }
         }
     }
 
-	/**
-     * @param u may be null. In this case, a default value will be used for all bugs
+    /**
+     * @param u
+     *            may be null. In this case, a default value will be used for
+     *            all bugs
      * @throws IOException
      */
-	 BugRanker(@CheckForNull URL u) throws IOException {
-        if(u == null){
+    BugRanker(@CheckForNull URL u) throws IOException {
+        if (u == null) {
             return;
         }
-		BufferedReader in = new BufferedReader(new InputStreamReader(u.openStream(), "UTF-8"));
+        BufferedReader in = new BufferedReader(new InputStreamReader(u.openStream(), "UTF-8"));
         while (true) {
             String s = in.readLine();
-            if (s == null) break;
-			
+            if (s == null)
+                break;
+
             s = s.trim();
             if (s.length() == 0)
                 continue;
-			
-            String parts [] = s.split(" ");
+
+            String parts[] = s.split(" ");
             String rank = parts[0];
             String kind = parts[1];
-			String what = parts[2];
+            String what = parts[2];
             if (kind.equals("BugPattern"))
                 bugPatterns.storeAdjustment(what, rank);
             else if (kind.equals("BugKind"))
-				bugKinds.storeAdjustment(what, rank);
+                bugKinds.storeAdjustment(what, rank);
             else if (kind.equals("Category"))
                 bugCategories.storeAdjustment(what, rank);
             else
-				AnalysisContext.logError("Can't parse bug rank " + s);
+                AnalysisContext.logError("Can't parse bug rank " + s);
         }
         Util.closeSilently(in);
     }
 
     private final Scorer bugPatterns = new Scorer();
+
     private final Scorer bugKinds = new Scorer();
+
     private final Scorer bugCategories = new Scorer();
-	/**
+
+    /**
      *
      */
     public static final String FILENAME = "bugrank.txt";
+
     public static final String ADJUST_FILENAME = "adjustBugrank.txt";
 
     private static int priorityAdjustment(int priority) {
         switch (priority) {
         case Priorities.HIGH_PRIORITY:
             return 0;
-		case Priorities.NORMAL_PRIORITY:
+        case Priorities.NORMAL_PRIORITY:
             return 2;
         case Priorities.LOW_PRIORITY:
             return 5;
-		default:
+        default:
             return 10;
         }
     }
@@ -166,30 +180,33 @@ public class BugRanker {
         int priorityAdjustment = priorityAdjustment(priority);
         if (patternRank > 20)
             return patternRank + priorityAdjustment;
-		return Math.max(1,Math.min(patternRank + priorityAdjustment, 20));
+        return Math.max(1, Math.min(patternRank + priorityAdjustment, 20));
     }
 
     private static int rankBugPattern(BugPattern bugPattern, BugRanker... rankers) {
-       String type = bugPattern.getType();
-       int rank = 0;
-       for(BugRanker b : rankers) if (b != null) {
-		   rank += b.bugPatterns.get(type);
-           if (!b.bugPatterns.isRelative(type))
-               return rank;
-       }
-	   String kind = bugPattern.getAbbrev();
-       for(BugRanker b : rankers) if (b != null) {
-           rank += b.bugKinds.get(kind);
-           if (!b.bugKinds.isRelative(kind))
-			   return rank;
-       }
-       String category = bugPattern.getCategory();
-       for(BugRanker b : rankers) if (b != null) {
-		   rank += b.bugCategories.get(category);
-           if (!b.bugCategories.isRelative(category))
-               return rank;
-       }
-	  return 20;
+        String type = bugPattern.getType();
+        int rank = 0;
+        for (BugRanker b : rankers)
+            if (b != null) {
+                rank += b.bugPatterns.get(type);
+                if (!b.bugPatterns.isRelative(type))
+                    return rank;
+            }
+        String kind = bugPattern.getAbbrev();
+        for (BugRanker b : rankers)
+            if (b != null) {
+                rank += b.bugKinds.get(kind);
+                if (!b.bugKinds.isRelative(kind))
+                    return rank;
+            }
+        String category = bugPattern.getCategory();
+        for (BugRanker b : rankers)
+            if (b != null) {
+                rank += b.bugCategories.get(category);
+                if (!b.bugCategories.isRelative(category))
+                    return rank;
+            }
+        return 20;
     }
 
     private static BugRanker getAdjustmentBugRanker() {
@@ -200,80 +217,80 @@ public class BugRanker {
     private static BugRanker getCoreRanker() {
         DetectorFactoryCollection factory = DetectorFactoryCollection.instance();
         Plugin corePlugin = factory.getCorePlugin();
-		return corePlugin.getBugRanker();
+        return corePlugin.getBugRanker();
     }
 
     public static int findRank(BugInstance bug) {
         int patternRank = findRank(bug.getBugPattern(), bug.getDetectorFactory());
         return adjustRank(patternRank, bug.getPriority());
-	}
+    }
 
     public static int findRank(BugPattern bugPattern, int priority) {
         int patternRank = findRank(bugPattern, null);
         return adjustRank(patternRank, priority);
-	}
+    }
+
     private static HashMap<BugPattern, Integer> rankForBugPattern = new HashMap<BugPattern, Integer>();
 
     public static int findRank(BugPattern pattern, @CheckForNull DetectorFactory detectorFactory) {
         Integer cachedResult = rankForBugPattern.get(pattern);
         if (cachedResult != null)
-			return cachedResult;
+            return cachedResult;
         int rank;
         if (detectorFactory == null)
             rank = findRankUnknownPlugin(pattern);
-		else {
+        else {
             Plugin plugin = detectorFactory.getPlugin();
             BugRanker adjustmentRanker = getAdjustmentBugRanker();
             BugRanker pluginRanker = plugin.getBugRanker();
-			BugRanker coreRanker = getCoreRanker();
+            BugRanker coreRanker = getCoreRanker();
 
             if (pluginRanker == coreRanker)
                 rank = rankBugPattern(pattern, adjustmentRanker, coreRanker);
             else
-				rank = rankBugPattern(pattern, adjustmentRanker, pluginRanker, coreRanker);
+                rank = rankBugPattern(pattern, adjustmentRanker, pluginRanker, coreRanker);
         }
         rankForBugPattern.put(pattern, rank);
         return rank;
-	}
+    }
 
     private static int findRankUnknownPlugin(BugPattern pattern) {
-          DetectorFactoryCollection factory = DetectorFactoryCollection.instance();
-          Plugin corePlugin = factory.getCorePlugin();
+        DetectorFactoryCollection factory = DetectorFactoryCollection.instance();
+        Plugin corePlugin = factory.getCorePlugin();
 
-          List<BugRanker> rankers = new ArrayList<BugRanker>();
-          rankers.add(getAdjustmentBugRanker());
-          pluginLoop: for (Plugin plugin : factory.plugins()) {
+        List<BugRanker> rankers = new ArrayList<BugRanker>();
+        rankers.add(getAdjustmentBugRanker());
+        pluginLoop: for (Plugin plugin : factory.plugins()) {
             if (plugin == corePlugin)
-                  continue;
+                continue;
             if (false) {
-        		 rankers.add(plugin.getBugRanker());
-                 continue pluginLoop;
+                rankers.add(plugin.getBugRanker());
+                continue pluginLoop;
             }
-            for(DetectorFactory df : plugin.getDetectorFactories()) {
-        		
+            for (DetectorFactory df : plugin.getDetectorFactories()) {
+
                 if (df.getReportedBugPatterns().contains(pattern)) {
-                     if (PLUGIN_DEBUG)
-                         System.out.println("Bug rank match " + plugin + " " + df + " for " + pattern);
-        			 rankers.add(plugin.getBugRanker());
-                     continue pluginLoop;
+                    if (PLUGIN_DEBUG)
+                        System.out.println("Bug rank match " + plugin + " " + df + " for " + pattern);
+                    rankers.add(plugin.getBugRanker());
+                    continue pluginLoop;
                 }
             }
-        	if (PLUGIN_DEBUG)
-                 System.out.println("plugin " + plugin + " doesn't match " + pattern);
+            if (PLUGIN_DEBUG)
+                System.out.println("plugin " + plugin + " doesn't match " + pattern);
 
+        }
+        rankers.add(getCoreRanker());
 
-          }
-          rankers.add(getCoreRanker());
-
-          return rankBugPattern(pattern, rankers.toArray(new BugRanker[] {}));
+        return rankBugPattern(pattern, rankers.toArray(new BugRanker[] {}));
     }
 
     public static void trimToMaxRank(BugCollection origCollection, int maxRank) {
-        for(Iterator<BugInstance> i = origCollection.getCollection().iterator(); i.hasNext(); ) {
-                BugInstance b = i.next();
-                if (BugRanker.findRank(b) > maxRank)
-	    			i.remove();
+        for (Iterator<BugInstance> i = origCollection.getCollection().iterator(); i.hasNext();) {
+            BugInstance b = i.next();
+            if (BugRanker.findRank(b) > maxRank)
+                i.remove();
 
-            }
+        }
     }
 }

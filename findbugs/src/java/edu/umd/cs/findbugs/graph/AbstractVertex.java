@@ -21,19 +21,19 @@ package edu.umd.cs.findbugs.graph;
 
 /**
  * GraphVertex implementation for use with AbstractGraph.
- *
+ * 
  * @see GraphVertex
  * @see AbstractGraph
  * @see AbstractEdge
  * @author David Hovemeyer
  */
-public class AbstractVertex <
-        EdgeType extends AbstractEdge<EdgeType, ActualVertexType>,
-        ActualVertexType extends AbstractVertex<EdgeType, ActualVertexType>
-        > implements GraphVertex<ActualVertexType> {
+public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertexType>, ActualVertexType extends AbstractVertex<EdgeType, ActualVertexType>>
+        implements GraphVertex<ActualVertexType> {
 
     private int label;
+
     EdgeType firstIncomingEdge, lastIncomingEdge;
+
     EdgeType firstOutgoingEdge, lastOutgoingEdge;
 
     public int getLabel() {
@@ -47,23 +47,23 @@ public class AbstractVertex <
     @Override
     public int hashCode() {
         return label;
-	}
+    }
 
     @Override
     public boolean equals(Object o) {
-		if (o == null || o.getClass() != this.getClass()) {
+        if (o == null || o.getClass() != this.getClass()) {
             return false;
         }
         AbstractVertex other = (AbstractVertex) o;
-		return other.getLabel() == this.getLabel();
+        return other.getLabel() == this.getLabel();
     }
 
     public int compareTo(ActualVertexType other) {
-		if (this.getLabel() < other.getLabel()) {
+        if (this.getLabel() < other.getLabel()) {
             return -1;
         } else if (this.getLabel() > other.getLabel()) {
             return 1;
-		} else {
+        } else {
             return 0;
         }
     }
@@ -71,11 +71,11 @@ public class AbstractVertex <
     void addOutgoingEdge(EdgeType edge) {
         if (firstOutgoingEdge == null) {
             firstOutgoingEdge = lastOutgoingEdge = edge;
-		} else {
+        } else {
             lastOutgoingEdge.setNextOutgoingEdge(edge);
             lastOutgoingEdge = edge;
         }
-	}
+    }
 
     EdgeType getFirstOutgoingEdge() {
         return firstOutgoingEdge;
@@ -84,11 +84,11 @@ public class AbstractVertex <
     void addIncomingEdge(EdgeType edge) {
         if (firstIncomingEdge == null) {
             firstIncomingEdge = lastIncomingEdge = edge;
-		} else {
+        } else {
             lastIncomingEdge.setNextIncomingEdge(edge);
             lastIncomingEdge = edge;
         }
-	}
+    }
 
     EdgeType getFirstIncomingEdge() {
         return firstIncomingEdge;
@@ -97,37 +97,36 @@ public class AbstractVertex <
     void removeIncomingEdge(EdgeType edge) {
         EdgeType prev = null, cur = firstIncomingEdge;
         while (cur != null) {
-			EdgeType next = cur.getNextIncomingEdge();
+            EdgeType next = cur.getNextIncomingEdge();
             if (cur.equals(edge)) {
                 if (prev != null)
                     prev.setNextIncomingEdge(next);
-				else
+                else
                     firstIncomingEdge = next;
                 return;
             }
-			prev = cur;
+            prev = cur;
             cur = next;
         }
         throw new IllegalArgumentException("removing nonexistent edge!");
-	}
+    }
 
     void removeOutgoingEdge(EdgeType edge) {
         EdgeType prev = null, cur = firstOutgoingEdge;
         while (cur != null) {
-			EdgeType next = cur.getNextOutgoingEdge();
+            EdgeType next = cur.getNextOutgoingEdge();
             if (cur.equals(edge)) {
                 if (prev != null)
                     prev.setNextOutgoingEdge(next);
-				else
+                else
                     firstOutgoingEdge = next;
                 return;
             }
-			prev = cur;
+            prev = cur;
             cur = cur.getNextOutgoingEdge();
         }
         throw new IllegalArgumentException("removing nonexistent edge!");
-	}
-
+    }
 
 }
 

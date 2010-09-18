@@ -42,58 +42,65 @@ public class SynchronizeAndNullCheckField extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
     }
 
-
     @Override
     public void visit(Method obj) {
         gottenField = null;
-		currState = 0;
+        currState = 0;
         syncField = null;
     }
 
     FieldAnnotation gottenField;
+
     FieldAnnotation syncField;
+
     int currState;
-	@Override
+
+    @Override
     public void sawOpcode(int seen) {
-        // System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + currState);
-        switch(currState){
-		case 0:
-            if(seen == GETFIELD || seen == GETSTATIC){
+        // System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " +
+        // currState);
+        switch (currState) {
+        case 0:
+            if (seen == GETFIELD || seen == GETSTATIC) {
                 syncField = FieldAnnotation.fromReferencedField(this);
                 currState = 1;
-			}
+            }
             break;
         case 1:
-            if (seen == DUP){
-				currState = 2;
-            } else currState = 0;
+            if (seen == DUP) {
+                currState = 2;
+            } else
+                currState = 0;
             break;
         case 2:
-			if(seen == ASTORE || seen == ASTORE_0 || seen == ASTORE_1
-                    || seen == ASTORE_2 || seen == ASTORE_3)
+            if (seen == ASTORE || seen == ASTORE_0 || seen == ASTORE_1 || seen == ASTORE_2 || seen == ASTORE_3)
                 currState = 3;
-            else currState = 0;
-			break;
+            else
+                currState = 0;
+            break;
         case 3:
-            if(seen == MONITORENTER){
+            if (seen == MONITORENTER) {
                 currState = 4;
-			} else currState = 0;
+            } else
+                currState = 0;
             break;
         case 4:
-            if(seen == GETFIELD || seen == GETSTATIC){
-				gottenField = FieldAnnotation.fromReferencedField(this);
+            if (seen == GETFIELD || seen == GETSTATIC) {
+                gottenField = FieldAnnotation.fromReferencedField(this);
                 currState = 5;
-            } else currState = 0;
+            } else
+                currState = 0;
             break;
-		case 5:
-            if((seen == IFNONNULL || seen == IFNULL) && gottenField.equals(syncField)){
-                BugInstance bug = new BugInstance(this, "NP_SYNC_AND_NULL_CHECK_FIELD", NORMAL_PRIORITY)
-                .addClass(this).addMethod(this).addField(syncField).addSourceLine(this);
-				bugReporter.reportBug(bug);
-            } else currState = 0;
+        case 5:
+            if ((seen == IFNONNULL || seen == IFNULL) && gottenField.equals(syncField)) {
+                BugInstance bug = new BugInstance(this, "NP_SYNC_AND_NULL_CHECK_FIELD", NORMAL_PRIORITY).addClass(this)
+                        .addMethod(this).addField(syncField).addSourceLine(this);
+                bugReporter.reportBug(bug);
+            } else
+                currState = 0;
             break;
         default:
-			currState = 0;
+            currState = 0;
         }
     }
 }

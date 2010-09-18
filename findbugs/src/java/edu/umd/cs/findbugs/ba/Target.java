@@ -26,30 +26,33 @@ import org.apache.bcel.generic.InstructionHandle;
  */
 public class Target {
     private InstructionHandle targetInstruction;
+
     private int edgeType;
 
     /**
      * Constructor.
-     *
-	 * @param targetInstruction the handle of the target instruction
-     * @param edgeType          type of CFG edge; see EdgeTypes interface
+     * 
+     * @param targetInstruction
+     *            the handle of the target instruction
+     * @param edgeType
+     *            type of CFG edge; see EdgeTypes interface
      */
     public Target(InstructionHandle targetInstruction, int edgeType) {
-		this.targetInstruction = targetInstruction;
+        this.targetInstruction = targetInstruction;
         this.edgeType = edgeType;
     }
 
     /**
      * Get the handle of the target instruction.
      */
-	public InstructionHandle getTargetInstruction() {
+    public InstructionHandle getTargetInstruction() {
         return targetInstruction;
     }
 
     /**
      * Get the control flow edge type.
      */
-	public int getEdgeType() {
+    public int getEdgeType() {
         return edgeType;
     }
 }

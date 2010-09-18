@@ -25,22 +25,25 @@ public class FilterBugReporter extends DelegatingBugReporter {
     private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
 
     private Matcher filter;
+
     private boolean include;
 
     public FilterBugReporter(BugReporter realBugReporter, Matcher filter, boolean include) {
         super(realBugReporter);
         this.filter = filter;
-		this.include = include;
+        this.include = include;
     }
 
     @Override
     public void reportBug(BugInstance bugInstance) {
-        if (DEBUG) System.out.print("Match ==> ");
-		boolean match = filter.match(bugInstance);
-        if (DEBUG) System.out.println(match ? "YES" : "NO");
+        if (DEBUG)
+            System.out.print("Match ==> ");
+        boolean match = filter.match(bugInstance);
+        if (DEBUG)
+            System.out.println(match ? "YES" : "NO");
         if (include == match)
             getDelegate().reportBug(bugInstance);
-	}
+    }
 }
 
 // vim:ts=4

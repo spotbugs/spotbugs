@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 
 /**
  * Report warnings as an XML document.
- *
+ * 
  * @author David Hovemeyer
  */
 public class XMLBugReporter extends BugCollectionBugReporter {

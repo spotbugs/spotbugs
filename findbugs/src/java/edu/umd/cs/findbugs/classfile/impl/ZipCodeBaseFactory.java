@@ -42,11 +42,11 @@ public class ZipCodeBaseFactory {
     public static AbstractScannableCodeBase makeZipCodeBase(ICodeBaseLocator codeBaseLocator, File file) throws IOException {
         Profiler profiler = Global.getAnalysisCache().getProfiler();
         profiler.start(ZipCodeBaseFactory.class);
-		try {
-        return countUsingZipFile(codeBaseLocator, file);
+        try {
+            return countUsingZipFile(codeBaseLocator, file);
         } finally {
             profiler.end(ZipCodeBaseFactory.class);
-		}
+        }
     }
 
     /**
@@ -61,21 +61,19 @@ public class ZipCodeBaseFactory {
         long size = file.length();
         long estimatedEntries = size / 2000;
         if (estimatedEntries < 20000)
-			return new ZipFileCodeBase(codeBaseLocator, file);
+            return new ZipFileCodeBase(codeBaseLocator, file);
         int zipEntries = 0;
         ZipInputStream in = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)));
         try {
-			for(ZipEntry e; (e = in.getNextEntry()) != null && zipEntries < 30010; ) 
+            for (ZipEntry e; (e = in.getNextEntry()) != null && zipEntries < 30010;)
                 zipEntries++;
         } finally {
             in.close();
-		}
+        }
         if (zipEntries < 30010)
             return new ZipFileCodeBase(codeBaseLocator, file);
         return new ZipInputStreamCodeBase(codeBaseLocator, file);
     }
-
-
 
     /**
      * @param codeBaseLocator
@@ -89,19 +87,19 @@ public class ZipCodeBaseFactory {
         long size = file.length();
         long estimatedEntries = size / 2000;
         if (estimatedEntries < 20000)
-			return new ZipFileCodeBase(codeBaseLocator, file);
+            return new ZipFileCodeBase(codeBaseLocator, file);
         int zipEntries = 0;
         ZipFile in = new ZipFile(file);
         try {
-			for(Enumeration<?> e = in.entries(); e.hasMoreElements() && zipEntries < 30010; ) {
+            for (Enumeration<?> e = in.entries(); e.hasMoreElements() && zipEntries < 30010;) {
                 e.nextElement();
                 zipEntries++;
             }
-		} finally {
+        } finally {
             in.close();
         }
         if (zipEntries < 30010)
-			return new ZipFileCodeBase(codeBaseLocator, file);
+            return new ZipFileCodeBase(codeBaseLocator, file);
         return new ZipInputStreamCodeBase(codeBaseLocator, file);
     }
 

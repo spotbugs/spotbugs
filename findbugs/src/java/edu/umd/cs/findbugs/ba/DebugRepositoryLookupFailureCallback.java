@@ -25,73 +25,90 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * DebugRepositoryLookupFailureCallback implementation for debugging.
- * (Test drivers, etc.)  It just prints a message and exits.
- *
+ * DebugRepositoryLookupFailureCallback implementation for debugging. (Test
+ * drivers, etc.) It just prints a message and exits.
+ * 
  * @author David Hovemeyer
  */
-public class DebugRepositoryLookupFailureCallback implements
-        RepositoryLookupFailureCallback {
+public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFailureCallback {
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#reportMissingClass(java.lang.ClassNotFoundException)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#reportMissingClass
+     * (java.lang.ClassNotFoundException)
      */
-	@SuppressWarnings("DM_EXIT")
+    @SuppressWarnings("DM_EXIT")
     public void reportMissingClass(ClassNotFoundException ex) {
         String missing = AbstractBugReporter.getMissingClassName(ex);
-        if (missing.charAt(0) == '[') return;
-		
+        if (missing.charAt(0) == '[')
+            return;
+
         System.out.println("Missing class");
         ex.printStackTrace();
         System.exit(1);
-	}
+    }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd
+     * .cs.findbugs.classfile.ClassDescriptor)
      */
-	@SuppressWarnings("DM_EXIT")
+    @SuppressWarnings("DM_EXIT")
     public void reportMissingClass(ClassDescriptor classDescriptor) {
         System.out.println("Missing class: " + classDescriptor);
         System.exit(1);
-	}
+    }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#logError(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#logError(java.
+     * lang.String)
      */
-	@SuppressWarnings("DM_EXIT")
+    @SuppressWarnings("DM_EXIT")
     public void logError(String message) {
         System.err.println("Error: " + message);
         System.exit(1);
-	}
+    }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#logError(java.lang.String, java.lang.Throwable)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#logError(java.
+     * lang.String, java.lang.Throwable)
      */
-	@SuppressWarnings("DM_EXIT")
+    @SuppressWarnings("DM_EXIT")
     public void logError(String message, Throwable e) {
         if (e instanceof MissingClassException) {
             MissingClassException missingClassEx = (MissingClassException) e;
-			ClassNotFoundException cnfe = missingClassEx.getClassNotFoundException();
+            ClassNotFoundException cnfe = missingClassEx.getClassNotFoundException();
 
             reportMissingClass(cnfe);
             // Don't report dataflow analysis exceptions due to missing classes.
             // Too much noise.
-			return;
+            return;
 
         }
         if (e instanceof MethodUnprofitableException) {
             // TODO: log this
-			return;
+            return;
         }
         System.err.println("Error: " + message);
         e.printStackTrace();
-		System.exit(1);
+        System.exit(1);
     }
 
     /**
      * Report that we skipped some analysis of a method
+     * 
      * @param method
-	 */
+     */
     public void reportSkippedAnalysis(MethodDescriptor method) {
         System.err.println("Skipping " + method);
     }

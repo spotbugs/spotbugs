@@ -41,36 +41,42 @@ import org.apache.bcel.generic.RETURN;
 import org.apache.bcel.generic.ReturnInstruction;
 
 /**
- * Factory for producing ForwardTypeQualifierDataflow objects
- * for various kinds of type qualifiers.
- *
+ * Factory for producing ForwardTypeQualifierDataflow objects for various kinds
+ * of type qualifiers.
+ * 
  * @author David Hovemeyer
  */
-public class ForwardTypeQualifierDataflowFactory
-    extends TypeQualifierDataflowFactory
-    <
-    ForwardTypeQualifierDataflowAnalysis,
-	ForwardTypeQualifierDataflow
-    > {
+public class ForwardTypeQualifierDataflowFactory extends
+        TypeQualifierDataflowFactory<ForwardTypeQualifierDataflowAnalysis, ForwardTypeQualifierDataflow> {
 
     /**
      * Constructor.
-     *
-	 * @param methodDescriptor MethodDescriptor of method being analyzed
+     * 
+     * @param methodDescriptor
+     *            MethodDescriptor of method being analyzed
      */
     public ForwardTypeQualifierDataflowFactory(MethodDescriptor methodDescriptor) {
         super(methodDescriptor);
-	}
+    }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowFactory#getDataflow(edu.umd.cs.findbugs.ba.DepthFirstSearch, edu.umd.cs.findbugs.ba.XMethod, edu.umd.cs.findbugs.ba.CFG, edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow, org.apache.bcel.generic.ConstantPoolGen, edu.umd.cs.findbugs.classfile.IAnalysisCache, edu.umd.cs.findbugs.classfile.MethodDescriptor)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowFactory#getDataflow
+     * (edu.umd.cs.findbugs.ba.DepthFirstSearch, edu.umd.cs.findbugs.ba.XMethod,
+     * edu.umd.cs.findbugs.ba.CFG,
+     * edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow,
+     * org.apache.bcel.generic.ConstantPoolGen,
+     * edu.umd.cs.findbugs.classfile.IAnalysisCache,
+     * edu.umd.cs.findbugs.classfile.MethodDescriptor)
      */
-	@Override
+    @Override
     protected ForwardTypeQualifierDataflow getDataflow(DepthFirstSearch dfs, XMethod xmethod, CFG cfg,
-        ValueNumberDataflow vnaDataflow, ConstantPoolGen cpg, IAnalysisCache analysisCache, MethodDescriptor methodDescriptor,
-        TypeQualifierValue typeQualifierValue) throws DataflowAnalysisException {
-		ForwardTypeQualifierDataflowAnalysis analysis = new ForwardTypeQualifierDataflowAnalysis(
-            dfs, xmethod, cfg, vnaDataflow, cpg, typeQualifierValue);
+            ValueNumberDataflow vnaDataflow, ConstantPoolGen cpg, IAnalysisCache analysisCache,
+            MethodDescriptor methodDescriptor, TypeQualifierValue typeQualifierValue) throws DataflowAnalysisException {
+        ForwardTypeQualifierDataflowAnalysis analysis = new ForwardTypeQualifierDataflowAnalysis(dfs, xmethod, cfg, vnaDataflow,
+                cpg, typeQualifierValue);
         analysis.registerSourceSinkLocations();
 
         ForwardTypeQualifierDataflow dataflow = new ForwardTypeQualifierDataflow(cfg, analysis);
@@ -80,58 +86,60 @@ public class ForwardTypeQualifierDataflowFactory
     }
 
     @Override
-    protected void populateDatabase(ForwardTypeQualifierDataflow dataflow, ValueNumberDataflow vnaDataflow, XMethod xmethod, TypeQualifierValue tqv) throws CheckedAnalysisException {
+    protected void populateDatabase(ForwardTypeQualifierDataflow dataflow, ValueNumberDataflow vnaDataflow, XMethod xmethod,
+            TypeQualifierValue tqv) throws CheckedAnalysisException {
         assert TypeQualifierDatabase.USE_DATABASE;
-		
+
         if (xmethod.getSignature().endsWith(")V")) {
             return;
         }
-		
+
         // If there is no effective type qualifier annotation
         // on the method's return value, and we computed an
         // "interesting" (ALWAYS or NEVER) value for the return
-		// value, add it to the database.
+        // value, add it to the database.
 
         TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xmethod, tqv);
         if (tqa == null) {
-			// Find the meet of the flow values at all instructions
+            // Find the meet of the flow values at all instructions
             // which return a value.
             FlowValue effectiveFlowValue = null;
 
-			CFG cfg = dataflow.getCFG();
+            CFG cfg = dataflow.getCFG();
             Iterator<Location> i = cfg.locationIterator();
             while (i.hasNext()) {
                 Location loc = i.next();
-				InstructionHandle handle = loc.getHandle();
+                InstructionHandle handle = loc.getHandle();
                 Instruction ins = handle.getInstruction();
                 if (ins instanceof ReturnInstruction && !(ins instanceof RETURN)) {
                     ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(loc);
-					ValueNumber topVN = vnaFrame.getTopValue();
+                    ValueNumber topVN = vnaFrame.getTopValue();
 
                     TypeQualifierValueSet flowSet = dataflow.getFactAtLocation(loc);
                     FlowValue topFlowValue = flowSet.getValue(topVN);
 
-					if (topFlowValue != null) {
+                    if (topFlowValue != null) {
                         if (TypeQualifierDatabase.DEBUG) {
-                            System.out.println("at pc " + handle.getPosition() + " of " + xmethod +", return value for "  + tqv + " is " + topFlowValue);
+                            System.out.println("at pc " + handle.getPosition() + " of " + xmethod + ", return value for " + tqv
+                                    + " is " + topFlowValue);
                         }
-						if (effectiveFlowValue == null) {
+                        if (effectiveFlowValue == null) {
                             effectiveFlowValue = topFlowValue;
                         } else {
                             effectiveFlowValue = FlowValue.meet(effectiveFlowValue, topFlowValue);
-						}
+                        }
                     }
                 }
             }
-			
+
             if (effectiveFlowValue == FlowValue.ALWAYS || effectiveFlowValue == FlowValue.NEVER) {
                 TypeQualifierDatabase tqdb = Global.getAnalysisCache().getDatabase(TypeQualifierDatabase.class);
                 if (TypeQualifierDatabase.DEBUG) {
-					System.out.println("inferring return value for " + xmethod +" of"  + tqv + " : " + effectiveFlowValue);
+                    System.out.println("inferring return value for " + xmethod + " of" + tqv + " : " + effectiveFlowValue);
                 }
                 tqa = TypeQualifierAnnotation.getValue(tqv, effectiveFlowValue == FlowValue.ALWAYS ? When.ALWAYS : When.NEVER);
                 tqdb.setReturnValue(xmethod.getMethodDescriptor(), tqv, tqa);
-			}
+            }
         }
     }
 }

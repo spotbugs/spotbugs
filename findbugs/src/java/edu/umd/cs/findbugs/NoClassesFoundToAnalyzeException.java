@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.classfile.IClassPath;
  * To be consistent with FindBugs 1.3 this exception is an {@link IOException}
  * and replicates the message used in that release (because I suspect some tools
  * looked for that text pattern to come out at the console).
- *
+ * 
  * @author Tim Halloran
  */
 public class NoClassesFoundToAnalyzeException extends IOException {
@@ -39,23 +39,23 @@ public class NoClassesFoundToAnalyzeException extends IOException {
 
     /**
      * Gets the classpath this exception is about.
-     *
-	 * @return Gets the non-null classpath this exception is about.
+     * 
+     * @return Gets the non-null classpath this exception is about.
      */
     public IClassPath getClassPath() {
         return f_classPath;
-	}
+    }
 
     /**
      * Constructs an {@code NoClassesFoundToAnalyze} on the passed classpath.
-     *
-	 * @param classPath
+     * 
+     * @param classPath
      *            the classpath used
      */
     public NoClassesFoundToAnalyzeException(final IClassPath classPath) {
-		super("No classes found to analyze in " + classPath);
+        super("No classes found to analyze in " + classPath);
         if (classPath == null)
             throw new IllegalArgumentException("classpath must be non-null");
         f_classPath = classPath;
-	}
+    }
 }

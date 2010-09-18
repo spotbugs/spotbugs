@@ -28,98 +28,112 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 
 /**
- * Abstract base class providing functionality that will be useful
- * for most dataflow analysis implementations that model instructions
- * within basic blocks.
- *
+ * Abstract base class providing functionality that will be useful for most
+ * dataflow analysis implementations that model instructions within basic
+ * blocks.
+ * 
  * @author David Hovemeyer
  * @see Dataflow
  * @see DataflowAnalysis
  */
-public abstract class AbstractDataflowAnalysis <Fact> extends BasicAbstractDataflowAnalysis<Fact> {
+public abstract class AbstractDataflowAnalysis<Fact> extends BasicAbstractDataflowAnalysis<Fact> {
     private static final boolean DEBUG = SystemProperties.getBoolean("dataflow.transfer");
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * Public methods
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     /**
      * Transfer function for a single instruction.
-     *
-	 * @param handle     the instruction
-     * @param basicBlock the BasicBlock containing the instruction; needed to disambiguate
-     *                   instructions in inlined JSR subroutines
-     * @param fact       which should be modified based on the instruction
-	 */
-    public abstract void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, Fact fact) throws DataflowAnalysisException;
+     * 
+     * @param handle
+     *            the instruction
+     * @param basicBlock
+     *            the BasicBlock containing the instruction; needed to
+     *            disambiguate instructions in inlined JSR subroutines
+     * @param fact
+     *            which should be modified based on the instruction
+     */
+    public abstract void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, Fact fact)
+            throws DataflowAnalysisException;
 
     /**
-     * Determine whether the given fact is <em>valid</em>
-     * (neither top nor bottom).
-	 */
+     * Determine whether the given fact is <em>valid</em> (neither top nor
+     * bottom).
+     */
     @CheckReturnValue
     public abstract boolean isFactValid(Fact fact);
 
     /**
      * Get the dataflow fact representing the point just before given Location.
      * Note "before" is meant in the logical sense, so for backward analyses,
-	 * before means after the location in the control flow sense.
-     *
-     * @param location the location
+     * before means after the location in the control flow sense.
+     * 
+     * @param location
+     *            the location
      * @return the fact at the point just before the location
-	 */
+     */
     @Override
     public Fact getFactAtLocation(Location location) throws DataflowAnalysisException {
         Fact start = getStartFact(location.getBasicBlock());
-		Fact result = createFact();
+        Fact result = createFact();
         makeFactTop(result);
         transfer(location.getBasicBlock(), location.getHandle(), start, result);
         return result;
-	}
+    }
 
     /**
      * Get the dataflow fact representing the point just after given Location.
      * Note "after" is meant in the logical sense, so for backward analyses,
-	 * after means before the location in the control flow sense.
-     *
-     * @param location the location
+     * after means before the location in the control flow sense.
+     * 
+     * @param location
+     *            the location
      * @return the fact at the point just after the location
-	 */
+     */
     @Override
     public Fact getFactAfterLocation(Location location) throws DataflowAnalysisException {
         BasicBlock basicBlock = location.getBasicBlock();
-		InstructionHandle handle = location.getHandle();
+        InstructionHandle handle = location.getHandle();
 
         if (handle == (isForwards() ? basicBlock.getLastInstruction() : basicBlock.getFirstInstruction()))
             return getResultFact(basicBlock);
         else
-			return getFactAtLocation(new Location(isForwards() ? handle.getNext() : handle.getPrev(), basicBlock));
+            return getFactAtLocation(new Location(isForwards() ? handle.getNext() : handle.getPrev(), basicBlock));
     }
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * Implementations of interface methods
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
-    public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, Fact start, Fact result) throws DataflowAnalysisException {
+    public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, Fact start, Fact result)
+            throws DataflowAnalysisException {
         copy(start, result);
 
         if (isFactValid(result)) {
-            Iterator<InstructionHandle> i = isForwards() ? basicBlock.instructionIterator() : basicBlock.instructionReverseIterator();
+            Iterator<InstructionHandle> i = isForwards() ? basicBlock.instructionIterator() : basicBlock
+                    .instructionReverseIterator();
 
             while (i.hasNext()) {
                 InstructionHandle handle = i.next();
                 if (handle == end)
-					break;
+                    break;
 
-                if (DEBUG && end == null) System.out.print("Transfer " + handle);
+                if (DEBUG && end == null)
+                    System.out.print("Transfer " + handle);
 
                 // Transfer the dataflow value
                 transferInstruction(handle, basicBlock, result);
 
-                if (DEBUG && end == null) System.out.println(" ==> " + result.toString());
+                if (DEBUG && end == null)
+                    System.out.println(" ==> " + result.toString());
             }
         }
-	}
+    }
 
 }
 

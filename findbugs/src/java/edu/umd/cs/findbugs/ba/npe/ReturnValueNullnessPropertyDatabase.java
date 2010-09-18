@@ -22,31 +22,38 @@ package edu.umd.cs.findbugs.ba.npe;
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
 
 /**
- * Method property database storing which methods return values guaranteed to be nonnull
- *
+ * Method property database storing which methods return values guaranteed to be
+ * nonnull
+ * 
  * @author David Hovemeyer
  */
 public class ReturnValueNullnessPropertyDatabase extends MethodPropertyDatabase<Boolean> {
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#decodeProperty(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#decodeProperty
+     * (java.lang.String)
      */
 
     @Override
-         protected Boolean decodeProperty(String propStr) {
-            return Boolean.parseBoolean(propStr);
+    protected Boolean decodeProperty(String propStr) {
+        return Boolean.parseBoolean(propStr);
 
     }
 
-
-
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#encodeProperty(Property)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#encodeProperty
+     * (Property)
      */
 
     @Override
-         protected String encodeProperty(Boolean property) {
+    protected String encodeProperty(Boolean property) {
         return property.toString();
-	}
+    }
 
 }

@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
  * Mine historical information from a BugCollection. The BugCollection should be
  * built using UpdateBugCollection to record the history of analyzing all
  * versions over time.
- *
+ * 
  * @author David Hovemeyer
  * @author William Pugh
  */
@@ -54,58 +54,60 @@ public class RebornIssues {
         this.bugCollection = bugCollection;
     }
 
-
     public RebornIssues execute() {
 
         Map<String, List<BugInstance>> map = new HashMap<String, List<BugInstance>>();
-        for(BugInstance b : bugCollection.getCollection()) if (b.getFirstVersion() != 0 || b.getLastVersion() != -1){
-            List<BugInstance> lst = map.get(b.getInstanceHash());
-			if (lst == null) {
-                lst = new LinkedList<BugInstance>();
-                map.put(b.getInstanceHash(), lst);
+        for (BugInstance b : bugCollection.getCollection())
+            if (b.getFirstVersion() != 0 || b.getLastVersion() != -1) {
+                List<BugInstance> lst = map.get(b.getInstanceHash());
+                if (lst == null) {
+                    lst = new LinkedList<BugInstance>();
+                    map.put(b.getInstanceHash(), lst);
+                }
+                lst.add(b);
             }
-			lst.add(b);
-        }
-        for(List<BugInstance> lst : map.values()) {
+        for (List<BugInstance> lst : map.values()) {
             if (lst.size() > 1) {
-				TreeSet<Long> removalTimes = new TreeSet<Long>();
+                TreeSet<Long> removalTimes = new TreeSet<Long>();
                 TreeSet<Long> additionTimes = new TreeSet<Long>();
 
                 String bugPattern = "XXX";
-				for(BugInstance b : lst) {
+                for (BugInstance b : lst) {
                     bugPattern = b.getBugPattern().getType();
                     if (b.getFirstVersion() > 0)
                         additionTimes.add(b.getFirstVersion());
-					if (b.getLastVersion() != -1)
+                    if (b.getLastVersion() != -1)
                         removalTimes.add(b.getLastVersion());
                 }
                 Iterator<Long> aI = additionTimes.iterator();
-				if (!aI.hasNext()) continue;
+                if (!aI.hasNext())
+                    continue;
                 long a = aI.next();
-                loop: for(Long removed : removalTimes) {
+                loop: for (Long removed : removalTimes) {
                     while (a <= removed) {
-						if (!aI.hasNext()) break loop;
+                        if (!aI.hasNext())
+                            break loop;
                         a = aI.next();
                     }
                     System.out.printf("%5d %5d %s%n", removed, a, bugPattern);
-				}
+                }
 
             }
         }
-		return this;
+        return this;
     }
 
-    static class CommandLine extends  edu.umd.cs.findbugs.config.CommandLine {
+    static class CommandLine extends edu.umd.cs.findbugs.config.CommandLine {
 
         @Override
         public void handleOption(String option, String optionalExtraPart) {
             throw new IllegalArgumentException("unknown option: " + option);
-		}
+        }
 
         @Override
         public void handleOptionWithArgument(String option, String argument) {
             throw new IllegalArgumentException("unknown option: " + option);
-		}
+        }
     }
 
     public static void main(String[] args) throws Exception {
@@ -114,17 +116,16 @@ public class RebornIssues {
 
         RebornIssues reborn = new RebornIssues();
         CommandLine commandLine = new CommandLine();
-        int argCount = commandLine
-		        .parse(args, 0, 2, "Usage: " + RebornIssues.class.getName() + " [options] [<xml results> [<history]] ");
+        int argCount = commandLine.parse(args, 0, 2, "Usage: " + RebornIssues.class.getName()
+                + " [options] [<xml results> [<history]] ");
 
         SortedBugCollection bugCollection = new SortedBugCollection();
         if (argCount < args.length)
             bugCollection.readXML(args[argCount++]);
-		else
+        else
             bugCollection.readXML(System.in);
         reborn.setBugCollection(bugCollection);
         reborn.execute();
-		
 
     }
 }

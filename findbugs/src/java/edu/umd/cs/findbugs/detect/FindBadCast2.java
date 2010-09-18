@@ -57,6 +57,7 @@ public class FindBadCast2 implements Detector {
     private Set<String> concreteCollectionClasses = new HashSet<String>();
 
     private Set<String> abstractCollectionClasses = new HashSet<String>();
+
     private Set<String> veryAbstractCollectionClasses = new HashSet<String>();
 
     private static final boolean DEBUG = SystemProperties.getBoolean("bc.debug");
@@ -64,23 +65,23 @@ public class FindBadCast2 implements Detector {
     public FindBadCast2(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         veryAbstractCollectionClasses.add("java.util.Collection");
-		veryAbstractCollectionClasses.add("java.util.Iterable");
+        veryAbstractCollectionClasses.add("java.util.Iterable");
         abstractCollectionClasses.add("java.util.Collection");
         abstractCollectionClasses.add("java.util.List");
         abstractCollectionClasses.add("java.util.Set");
-		abstractCollectionClasses.add("java.util.SortedSet");
+        abstractCollectionClasses.add("java.util.SortedSet");
         abstractCollectionClasses.add("java.util.SortedMap");
         abstractCollectionClasses.add("java.util.Map");
         concreteCollectionClasses.add("java.util.LinkedHashMap");
-		concreteCollectionClasses.add("java.util.LinkedHashSet");
+        concreteCollectionClasses.add("java.util.LinkedHashSet");
         concreteCollectionClasses.add("java.util.HashMap");
         concreteCollectionClasses.add("java.util.HashSet");
         concreteCollectionClasses.add("java.util.TreeMap");
-		concreteCollectionClasses.add("java.util.TreeSet");
+        concreteCollectionClasses.add("java.util.TreeSet");
         concreteCollectionClasses.add("java.util.ArrayList");
         concreteCollectionClasses.add("java.util.LinkedList");
         concreteCollectionClasses.add("java.util.Hashtable");
-		concreteCollectionClasses.add("java.util.Vector");
+        concreteCollectionClasses.add("java.util.Vector");
 
     }
 
@@ -95,92 +96,93 @@ public class FindBadCast2 implements Detector {
             try {
                 analyzeMethod(classContext, method);
             } catch (MethodUnprofitableException e) {
-				assert true; // move along; nothing to see
+                assert true; // move along; nothing to see
             } catch (CFGBuilderException e) {
-                String msg = "Detector " + this.getClass().getName()
-                                        + " caught exception while analyzing " + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
-				bugReporter.logError(msg , e);
+                String msg = "Detector " + this.getClass().getName() + " caught exception while analyzing "
+                        + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
+                bugReporter.logError(msg, e);
             } catch (DataflowAnalysisException e) {
-                String msg = "Detector " + this.getClass().getName()
-                                        + " caught exception while analyzing " + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
-				bugReporter.logError(msg, e);
+                String msg = "Detector " + this.getClass().getName() + " caught exception while analyzing "
+                        + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
+                bugReporter.logError(msg, e);
             }
         }
     }
 
     public boolean prescreen(ClassContext classContext, Method method) {
         BitSet bytecodeSet = classContext.getBytecodeSet(method);
-        return bytecodeSet != null && (bytecodeSet.get(Constants.CHECKCAST)
-				|| bytecodeSet.get(Constants.INSTANCEOF));
+        return bytecodeSet != null && (bytecodeSet.get(Constants.CHECKCAST) || bytecodeSet.get(Constants.INSTANCEOF));
     }
 
     private boolean isSynthetic(Method m) {
-        if (m.isSynthetic()) return true;
+        if (m.isSynthetic())
+            return true;
         Attribute[] attrs = m.getAttributes();
-		for (Attribute attr : attrs) {
+        for (Attribute attr : attrs) {
             if (attr instanceof Synthetic)
                 return true;
         }
-		return false;
+        return false;
     }
-    private Set<ValueNumber> getParameterValueNumbers(ClassContext classContext, Method method,  CFG cfg ) throws DataflowAnalysisException, CFGBuilderException {
+
+    private Set<ValueNumber> getParameterValueNumbers(ClassContext classContext, Method method, CFG cfg)
+            throws DataflowAnalysisException, CFGBuilderException {
         ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
-		ValueNumberFrame vnaFrameAtEntry = vnaDataflow.getStartFact(cfg
-                .getEntry());
+        ValueNumberFrame vnaFrameAtEntry = vnaDataflow.getStartFact(cfg.getEntry());
         Set<ValueNumber> paramValueNumberSet = new HashSet<ValueNumber>();
         int firstParam = method.isStatic() ? 0 : 1;
-		for (int i = firstParam; i < vnaFrameAtEntry.getNumLocals(); ++i) {
+        for (int i = firstParam; i < vnaFrameAtEntry.getNumLocals(); ++i) {
             paramValueNumberSet.add(vnaFrameAtEntry.getValue(i));
         }
         return paramValueNumberSet;
-	}
-    private void analyzeMethod(ClassContext classContext, Method method)
-            throws CFGBuilderException, DataflowAnalysisException {
+    }
+
+    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
         if (isSynthetic(method) || !prescreen(classContext, method))
-			return;
+            return;
         BugAccumulator accumulator = new BugAccumulator(bugReporter);
 
         CFG cfg = classContext.getCFG(method);
         TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
         IsNullValueDataflow isNullDataflow = classContext.getIsNullValueDataflow(method);
-		Set<ValueNumber> paramValueNumberSet = null;
+        Set<ValueNumber> paramValueNumberSet = null;
 
         ValueNumberDataflow vnaDataflow = null;
 
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
         MethodGen methodGen = classContext.getMethodGen(method);
-        if (methodGen == null) return;
-		String methodName = methodGen.getClassName() + "."
-                + methodGen.getName();
+        if (methodGen == null)
+            return;
+        String methodName = methodGen.getClassName() + "." + methodGen.getName();
         String sourceFile = classContext.getJavaClass().getSourceFileName();
         if (DEBUG) {
-			System.out.println("Checking " + methodName);
+            System.out.println("Checking " + methodName);
         }
 
         Set<SourceLineAnnotation> haveInstanceOf = new HashSet<SourceLineAnnotation>();
         Set<SourceLineAnnotation> haveCast = new HashSet<SourceLineAnnotation>();
         Set<SourceLineAnnotation> haveMultipleInstanceOf = new HashSet<SourceLineAnnotation>();
-		Set<SourceLineAnnotation> haveMultipleCast = new HashSet<SourceLineAnnotation>();
+        Set<SourceLineAnnotation> haveMultipleCast = new HashSet<SourceLineAnnotation>();
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
             InstructionHandle handle = location.getHandle();
-			Instruction ins = handle.getInstruction();
+            Instruction ins = handle.getInstruction();
 
             if (!(ins instanceof CHECKCAST) && !(ins instanceof INSTANCEOF))
                 continue;
 
-            SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
-                    .fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
+            SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
+                    sourceFile, handle);
             if (ins instanceof CHECKCAST) {
-				if (!haveCast.add(sourceLineAnnotation))
+                if (!haveCast.add(sourceLineAnnotation))
                     haveMultipleCast.add(sourceLineAnnotation);
             } else {
                 if (!haveInstanceOf.add(sourceLineAnnotation))
-					haveMultipleInstanceOf.add(sourceLineAnnotation);
+                    haveMultipleInstanceOf.add(sourceLineAnnotation);
             }
         }
         BitSet linesMentionedMultipleTimes = classContext.linesMentionedMultipleTimes(method);
-		LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
+        LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
 
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
@@ -192,44 +194,43 @@ public class FindBadCast2 implements Detector {
             if (!(ins instanceof CHECKCAST) && !(ins instanceof INSTANCEOF))
                 continue;
 
-			
             boolean isCast = ins instanceof CHECKCAST;
             String kind = isCast ? "checkedCast" : "instanceof";
-            int occurrences = cfg.getLocationsContainingInstructionWithOffset(
-					pc).size();
+            int occurrences = cfg.getLocationsContainingInstructionWithOffset(pc).size();
             boolean split = occurrences > 1;
             if (lineNumberTable != null) {
                 int line = lineNumberTable.getSourceLine(handle.getPosition());
-				if (line > 0 && linesMentionedMultipleTimes.get(line)) split=true;
+                if (line > 0 && linesMentionedMultipleTimes.get(line))
+                    split = true;
             }
 
             IsNullValueFrame nullFrame = isNullDataflow.getFactAtLocation(location);
             if (!nullFrame.isValid())
                 continue;
-			IsNullValue operandNullness = nullFrame.getTopValue();
+            IsNullValue operandNullness = nullFrame.getTopValue();
             if (DEBUG) {
-                System.out
-                        .println(kind + " at pc: " + pc + " in " + methodName);
-				System.out.println(" occurrences: " + occurrences);
+                System.out.println(kind + " at pc: " + pc + " in " + methodName);
+                System.out.println(" occurrences: " + occurrences);
                 System.out.println("XXX: " + operandNullness);
 
             }
 
             if (split && !isCast) {
-                // don't report this case; it might be infeasible due to inlining
+                // don't report this case; it might be infeasible due to
+                // inlining
                 continue;
-			}
+            }
 
             TypeFrame frame = typeDataflow.getFactAtLocation(location);
             if (!frame.isValid()) {
                 // This basic block is probably dead
-				continue;
+                continue;
             }
 
             Type operandType = frame.getTopValue();
             if (operandType.equals(TopType.instance())) {
                 // unreachable
-				continue;
+                continue;
             }
             boolean operandTypeIsExact = frame.isExact(frame.getStackLocation(0));
             Type castType = ((TypedInstruction) ins).getType(cpg);
@@ -237,63 +238,61 @@ public class FindBadCast2 implements Detector {
             if (!(castType instanceof ReferenceType)) {
                 // This shouldn't happen either
                 continue;
-			}
+            }
             String castSig = castType.getSignature();
 
             if (operandType.equals(NullType.instance()) || operandNullness.isDefinitelyNull()) {
-                SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
-                .fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
-				assert castSig.length() > 1;
-                if (!isCast) accumulator.accumulateBug(new BugInstance(this,
-                        "NP_NULL_INSTANCEOF", split ? LOW_PRIORITY : NORMAL_PRIORITY)
-                        .addClassAndMethod(methodGen, sourceFile)
-						.addType(castSig), sourceLineAnnotation);
+                SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
+                        sourceFile, handle);
+                assert castSig.length() > 1;
+                if (!isCast)
+                    accumulator.accumulateBug(new BugInstance(this, "NP_NULL_INSTANCEOF", split ? LOW_PRIORITY : NORMAL_PRIORITY)
+                            .addClassAndMethod(methodGen, sourceFile).addType(castSig), sourceLineAnnotation);
                 continue;
 
             }
             if (!(operandType instanceof ReferenceType)) {
                 // Shouldn't happen - illegal bytecode
-				continue;
+                continue;
             }
             ReferenceType refType = (ReferenceType) operandType;
             boolean impliesByGenerics = typeDataflow.getAnalysis().isImpliedByGenericTypes(refType);
-			
+
             if (impliesByGenerics && !isCast)
                 continue;
 
             if (isCast && refType.equals(castType)) {
-                // System.out.println("self-cast to " + castType.getSignature());
+                // System.out.println("self-cast to " +
+                // castType.getSignature());
                 continue;
-			}
+            }
 
             String refSig = refType.getSignature();
             String castSig2 = castSig;
             String refSig2 = refSig;
-			while (castSig2.charAt(0) == '[' && refSig2.charAt(0) == '[') {
+            while (castSig2.charAt(0) == '[' && refSig2.charAt(0) == '[') {
                 castSig2 = castSig2.substring(1);
                 refSig2 = refSig2.substring(1);
             }
 
-
-            SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
-            .fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
+            SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
+                    sourceFile, handle);
 
             if (refSig2.charAt(0) != 'L' || castSig2.charAt(0) != 'L') {
-                if ( castSig2.charAt(0) == '[' && (refSig2.equals("Ljava/io/Serializable;")
-                        || refSig2.equals("Ljava/lang/Object;")
-						|| refSig2.equals("Ljava/lang/Cloneable;"))) continue;
-                if ( refSig2.charAt(0) == '[' && (castSig2.equals("Ljava/io/Serializable;")
-                        || castSig2.equals("Ljava/lang/Object;")
-                        || castSig2.equals("Ljava/lang/Cloneable;"))) continue;
-				int priority = HIGH_PRIORITY;
+                if (castSig2.charAt(0) == '['
+                        && (refSig2.equals("Ljava/io/Serializable;") || refSig2.equals("Ljava/lang/Object;") || refSig2
+                                .equals("Ljava/lang/Cloneable;")))
+                    continue;
+                if (refSig2.charAt(0) == '['
+                        && (castSig2.equals("Ljava/io/Serializable;") || castSig2.equals("Ljava/lang/Object;") || castSig2
+                                .equals("Ljava/lang/Cloneable;")))
+                    continue;
+                int priority = HIGH_PRIORITY;
                 if (split && (castSig2.endsWith("Error;") || castSig2.endsWith("Exception;")))
                     priority = LOW_PRIORITY;
 
-				bugReporter.reportBug(
-                        new BugInstance(this,
-                        isCast ? "BC_IMPOSSIBLE_CAST" : "BC_IMPOSSIBLE_INSTANCEOF",  priority)
-                        .addClassAndMethod(methodGen, sourceFile)
-						.addFoundAndExpectedType(refType, castType)
+                bugReporter.reportBug(new BugInstance(this, isCast ? "BC_IMPOSSIBLE_CAST" : "BC_IMPOSSIBLE_INSTANCEOF", priority)
+                        .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType)
                         .addSourceLine(sourceLineAnnotation));
                 continue;
             }
@@ -301,188 +300,155 @@ public class FindBadCast2 implements Detector {
             if (!operandTypeIsExact && refSig2.equals("Ljava/lang/Object;")) {
                 continue;
             }
-			if (false && isCast && haveMultipleCast.contains(sourceLineAnnotation)
-                    || !isCast
+            if (false && isCast && haveMultipleCast.contains(sourceLineAnnotation) || !isCast
                     && haveMultipleInstanceOf.contains(sourceLineAnnotation)) {
                 // skip; might be due to JSR inlining
-				continue;
+                continue;
             }
-            String castName = castSig2.substring(1, castSig2.length() - 1)
-                    .replace('/', '.');
-			String refName = refSig2.substring(1, refSig2.length() - 1)
-                    .replace('/', '.');
+            String castName = castSig2.substring(1, castSig2.length() - 1).replace('/', '.');
+            String refName = refSig2.substring(1, refSig2.length() - 1).replace('/', '.');
 
             if (vnaDataflow == null)
-                vnaDataflow = classContext
-                .getValueNumberDataflow(method);
-			ValueNumberFrame vFrame = vnaDataflow.getFactAtLocation(location);
+                vnaDataflow = classContext.getValueNumberDataflow(method);
+            ValueNumberFrame vFrame = vnaDataflow.getFactAtLocation(location);
             if (paramValueNumberSet == null)
                 paramValueNumberSet = getParameterValueNumbers(classContext, method, cfg);
-            ValueNumber valueNumber = vFrame
-					.getTopValue();
+            ValueNumber valueNumber = vFrame.getTopValue();
             boolean isParameter = paramValueNumberSet.contains(valueNumber);
-            BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
-                    location, valueNumber, vFrame, "VALUE_OF");
-			try {
+            BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber, vFrame,
+                    "VALUE_OF");
+            try {
                 JavaClass castJavaClass = Repository.lookupClass(castName);
                 JavaClass refJavaClass = Repository.lookupClass(refName);
 
-                boolean upcast = Repository.instanceOf(refJavaClass,
-                        castJavaClass);
+                boolean upcast = Repository.instanceOf(refJavaClass, castJavaClass);
                 if (upcast || refType.equals(castType)) {
-					if (!isCast)
-                        accumulator.accumulateBug(new BugInstance(this,
-                                "BC_VACUOUS_INSTANCEOF", NORMAL_PRIORITY)
-                                .addClassAndMethod(methodGen, sourceFile)
-								.addFoundAndExpectedType(refType, castType)
-                                ,sourceLineAnnotation);
+                    if (!isCast)
+                        accumulator.accumulateBug(new BugInstance(this, "BC_VACUOUS_INSTANCEOF", NORMAL_PRIORITY)
+                                .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType),
+                                sourceLineAnnotation);
                 } else {
-                    boolean downcast = Repository.instanceOf(castJavaClass,
-							refJavaClass);
+                    boolean downcast = Repository.instanceOf(castJavaClass, refJavaClass);
 
-                    if (!operandTypeIsExact && refName.equals("java.lang.Object")  ) continue;
+                    if (!operandTypeIsExact && refName.equals("java.lang.Object"))
+                        continue;
                     double rank = 0.0;
                     boolean castToConcreteCollection = concreteCollectionClasses.contains(castName)
-							&& abstractCollectionClasses.contains(refName);
-                    boolean castToAbstractCollection =
-                            abstractCollectionClasses.contains(castName)
+                            && abstractCollectionClasses.contains(refName);
+                    boolean castToAbstractCollection = abstractCollectionClasses.contains(castName)
                             && veryAbstractCollectionClasses.contains(refName);
 
                     if (!operandTypeIsExact) {
                         rank = Analyze.deepInstanceOf(refJavaClass, castJavaClass);
-                            if (castToConcreteCollection
-							&& rank > 0.6)
-                          rank = (rank + 0.6) /2;
-                        else if (castToAbstractCollection
-                            && rank > 0.3)
-						  rank = (rank + 0.3) /2;
+                        if (castToConcreteCollection && rank > 0.6)
+                            rank = (rank + 0.6) / 2;
+                        else if (castToAbstractCollection && rank > 0.3)
+                            rank = (rank + 0.3) / 2;
                     }
 
-
                     if (false)
-                        System.out.println("Rank:\t" + rank + "\t" + refName
-                                + "\t" + castName);
-					boolean completeInformation =  (!castJavaClass.isInterface() && !refJavaClass
-                            .isInterface())
-                            || refJavaClass.isFinal()
-                            || castJavaClass.isFinal();
-					if (DEBUG) {
+                        System.out.println("Rank:\t" + rank + "\t" + refName + "\t" + castName);
+                    boolean completeInformation = (!castJavaClass.isInterface() && !refJavaClass.isInterface())
+                            || refJavaClass.isFinal() || castJavaClass.isFinal();
+                    if (DEBUG) {
                         System.out.println(" In " + classContext.getFullyQualifiedMethodName(method));
                         System.out.println("At pc: " + handle.getPosition());
-                        System.out.println("cast from " + refName + " to "
-								+ castName);
+                        System.out.println("cast from " + refName + " to " + castName);
                         System.out.println("  is downcast: " + downcast);
                         System.out.println("  operand type is exact: " + operandTypeIsExact);
 
-                        System.out.println("  complete information: "
-                                + completeInformation);
-                        System.out.println("  isParameter: "
-								+ valueNumber);
+                        System.out.println("  complete information: " + completeInformation);
+                        System.out.println("  isParameter: " + valueNumber);
                         System.out.println("  score: " + rank);
                         if (handle.getPrev() == null)
                             System.out.println("  prev is null");
-						else 
+                        else
                             System.out.println("  prev is " + handle.getPrev());
                     }
                     if (!downcast && completeInformation || operandTypeIsExact) {
-						BugAnnotation source = BugInstance.getSourceForTopStackValue(classContext, method, location);
+                        BugAnnotation source = BugInstance.getSourceForTopStackValue(classContext, method, location);
                         String bugPattern;
                         if (isCast) {
-                            if (downcast && operandTypeIsExact)  {
-							  if (refSig.equals("[Ljava/lang/Object;") 
-                                    && source instanceof MethodAnnotation
-                                    && ((MethodAnnotation)source).getMethodName().equals("toArray")
-                                    && ((MethodAnnotation)source).getMethodSignature().equals("()[Ljava/lang/Object;"))
-								bugPattern = "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY";
-                              else
+                            if (downcast && operandTypeIsExact) {
+                                if (refSig.equals("[Ljava/lang/Object;") && source instanceof MethodAnnotation
+                                        && ((MethodAnnotation) source).getMethodName().equals("toArray")
+                                        && ((MethodAnnotation) source).getMethodSignature().equals("()[Ljava/lang/Object;"))
+                                    bugPattern = "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY";
+                                else
                                     bugPattern = "BC_IMPOSSIBLE_DOWNCAST";
                             } else
-								bugPattern = "BC_IMPOSSIBLE_CAST";
+                                bugPattern = "BC_IMPOSSIBLE_CAST";
                         } else
                             bugPattern = "BC_IMPOSSIBLE_INSTANCEOF";
 
-
-                        bugReporter.reportBug(new BugInstance(this,
-                                bugPattern,
-								isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
+                        bugReporter.reportBug(new BugInstance(this, bugPattern, isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
                                 .addClassAndMethod(methodGen, sourceFile)
 
-                                .addFoundAndExpectedType(refType, castType)
-                                .addOptionalUniqueAnnotations(variable, source)
+                                .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(variable, source)
                                 .addSourceLine(sourceLineAnnotation));
-					}
-                    else if (isCast && rank < 0.9 && variable instanceof LocalVariableAnnotation
-                            && !valueNumber.hasFlag(ValueNumber.ARRAY_VALUE)
-                            && !valueNumber.hasFlag(ValueNumber.RETURN_VALUE)) {
+                    } else if (isCast && rank < 0.9 && variable instanceof LocalVariableAnnotation
+                            && !valueNumber.hasFlag(ValueNumber.ARRAY_VALUE) && !valueNumber.hasFlag(ValueNumber.RETURN_VALUE)) {
 
                         int priority = NORMAL_PRIORITY;
 
                         if (rank > 0.75)
                             priority += 2;
                         else if (rank > 0.5)
-							priority += 1;
+                            priority += 1;
                         else if (rank > 0.25)
                             priority += 0;
                         else
-							priority--;
+                            priority--;
 
                         if (DEBUG)
                             System.out.println(" priority a: " + priority);
-                        if (methodGen.getClassName().startsWith(refName)
-								|| methodGen.getClassName().startsWith(castName))
+                        if (methodGen.getClassName().startsWith(refName) || methodGen.getClassName().startsWith(castName))
                             priority += 1;
                         if (DEBUG)
                             System.out.println(" priority b: " + priority);
-						if (castJavaClass.isInterface() && !castToAbstractCollection)
+                        if (castJavaClass.isInterface() && !castToAbstractCollection)
                             priority++;
                         if (DEBUG)
                             System.out.println(" priority c: " + priority);
-						if (castToConcreteCollection
-                            && veryAbstractCollectionClasses.contains(refName))
+                        if (castToConcreteCollection && veryAbstractCollectionClasses.contains(refName))
                             priority--;
                         if (DEBUG)
-							System.out.println(" priority d: " + priority);
-                        if (priority <= LOW_PRIORITY
-                                && !castToAbstractCollection
-                                && !castToConcreteCollection
-								&& (refJavaClass.isInterface() || refJavaClass
-                                        .isAbstract()))
+                            System.out.println(" priority d: " + priority);
+                        if (priority <= LOW_PRIORITY && !castToAbstractCollection && !castToConcreteCollection
+                                && (refJavaClass.isInterface() || refJavaClass.isAbstract()))
                             priority++;
                         if (DEBUG)
-							System.out.println(" priority e: " + priority);
+                            System.out.println(" priority e: " + priority);
                         if (DEBUG)
                             System.out.println(" ref name: " + refName);
                         if (methodGen.getName().equals("compareTo"))
-							priority++;
+                            priority++;
                         else if (methodGen.isPublic() && isParameter)
                             priority--;
-                       if (DEBUG)
-							System.out.println(" priority h: " + priority);
+                        if (DEBUG)
+                            System.out.println(" priority h: " + priority);
                         if (priority < HIGH_PRIORITY)
                             priority = HIGH_PRIORITY;
                         if (priority <= LOW_PRIORITY) {
-							String bug = "BC_UNCONFIRMED_CAST";
+                            String bug = "BC_UNCONFIRMED_CAST";
                             if (castToConcreteCollection)
                                 bug = "BC_BAD_CAST_TO_CONCRETE_COLLECTION";
                             else if (castToAbstractCollection)
-								bug = "BC_BAD_CAST_TO_ABSTRACT_COLLECTION";
+                                bug = "BC_BAD_CAST_TO_ABSTRACT_COLLECTION";
 
                             BugInstance bugInstance = new BugInstance(this, bug, priority)
-                                    .addClassAndMethod(methodGen, sourceFile)
-                                    .addFoundAndExpectedType(refType, castType)
-									 .addOptionalAnnotation(variable);
+                                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType)
+                                    .addOptionalAnnotation(variable);
 
-                            accumulator.accumulateBug(bugInstance,
-                                    sourceLineAnnotation
-                                    );
-						}
+                            accumulator.accumulateBug(bugInstance, sourceLineAnnotation);
+                        }
 
                     }
 
                 }
             } catch (ClassNotFoundException e) {
             }
-		}
+        }
         accumulator.reportAccumulatedBugs();
     }
 

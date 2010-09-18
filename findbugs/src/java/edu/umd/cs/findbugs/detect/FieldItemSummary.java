@@ -42,107 +42,110 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class FieldItemSummary extends OpcodeStackDetector implements NonReportingDetector {
 
     FieldSummary fieldSummary = new FieldSummary();
+
     public FieldItemSummary(BugReporter bugReporter) {
-		AnalysisContext context = AnalysisContext.currentAnalysisContext();
+        AnalysisContext context = AnalysisContext.currentAnalysisContext();
         context.setFieldSummary(fieldSummary);
     }
 
     Set<XField> touched = new HashSet<XField>();
 
-
     @Override
     public boolean shouldVisit(JavaClass obj) {
-		return !getXClass().hasStubs();
+        return !getXClass().hasStubs();
     }
+
     boolean sawInitializeSuper;
+
     @Override
-	public void sawOpcode(int seen) {
+    public void sawOpcode(int seen) {
         if (getMethodName().equals("<init>") && seen == INVOKEVIRTUAL) {
             XMethod m = getXMethodOperand();
             if (m != null && !m.isPrivate() && !m.isFinal()) {
-			int args = PreorderVisitor.getNumberArguments(m.getSignature());
-            OpcodeStack.Item item = stack.getStackItem(args);
-            if (item.getRegisterNumber() == 0) {
-                try {
-                	Set<XMethod> targets = Hierarchy2.resolveVirtualMethodCallTargets(m, false, false);
-                    Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+                int args = PreorderVisitor.getNumberArguments(m.getSignature());
+                OpcodeStack.Item item = stack.getStackItem(args);
+                if (item.getRegisterNumber() == 0) {
+                    try {
+                        Set<XMethod> targets = Hierarchy2.resolveVirtualMethodCallTargets(m, false, false);
+                        Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
-                    for(XMethod called : targets) {
-	                	if (!called.isAbstract() && !called.equals(m) && subtypes2.isSubtype(called.getClassDescriptor(), getClassDescriptor()))
-                            fieldSummary.setCalledFromSuperConstructor(new ProgramPoint(this), called);
+                        for (XMethod called : targets) {
+                            if (!called.isAbstract() && !called.equals(m)
+                                    && subtypes2.isSubtype(called.getClassDescriptor(), getClassDescriptor()))
+                                fieldSummary.setCalledFromSuperConstructor(new ProgramPoint(this), called);
+                        }
+                    } catch (ClassNotFoundException e) {
+                        AnalysisContext.reportMissingClass(e);
                     }
-                } catch (ClassNotFoundException e) {
-                   AnalysisContext.reportMissingClass(e);
+
                 }
 
             }
 
-			}
-
         }
 
-		if (seen == INVOKESPECIAL && getMethodName().equals("<init>") && getNameConstantOperand().equals("<init>")) {
+        if (seen == INVOKESPECIAL && getMethodName().equals("<init>") && getNameConstantOperand().equals("<init>")) {
 
             String classOperand = getClassConstantOperand();
             OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
-			if (invokedOn.getRegisterNumber() == 0 && !classOperand.equals(getClassName())) {
+            if (invokedOn.getRegisterNumber() == 0 && !classOperand.equals(getClassName())) {
                 sawInitializeSuper = true;
                 XMethod invoked = getXMethodOperand();
                 if (invoked != null)
-					fieldSummary.sawSuperCall(getXMethod(), invoked);
+                    fieldSummary.sawSuperCall(getXMethod(), invoked);
             }
 
         }
 
         if (seen == PUTFIELD || seen == PUTSTATIC) {
             XField fieldOperand = getXFieldOperand();
-            if (fieldOperand == null) return;
-			touched.add(fieldOperand);
+            if (fieldOperand == null)
+                return;
+            touched.add(fieldOperand);
             if (!fieldOperand.getClassDescriptor().getClassName().equals(getClassName()))
                 fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
             else if (seen == PUTFIELD) {
-				OpcodeStack.Item addr = stack.getStackItem(1); {
-                if (addr.getRegisterNumber() != 0 || !getMethodName().equals("<init>"))
-                    fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
+                OpcodeStack.Item addr = stack.getStackItem(1);
+                {
+                    if (addr.getRegisterNumber() != 0 || !getMethodName().equals("<init>"))
+                        fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
                 }
-			} else if (seen == PUTSTATIC && !getMethodName().equals("<clinit>"))
+            } else if (seen == PUTSTATIC && !getMethodName().equals("<clinit>"))
                 fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
             OpcodeStack.Item top = stack.getStackItem(0);
             fieldSummary.mergeSummary(fieldOperand, top);
-		}
+        }
 
     }
 
-
-		@Override
-        public void visit(Code obj) {
-            sawInitializeSuper = false;
-            super.visit(obj);
-            fieldSummary.setFieldsWritten(getXMethod(), touched);
-			if (getMethodName().equals("<init>") && sawInitializeSuper) {
-                XClass thisClass = getXClass();
-                for(XField f : thisClass.getXFields())
-                    if (!touched.contains(f)) {
-					OpcodeStack.Item item;
+    @Override
+    public void visit(Code obj) {
+        sawInitializeSuper = false;
+        super.visit(obj);
+        fieldSummary.setFieldsWritten(getXMethod(), touched);
+        if (getMethodName().equals("<init>") && sawInitializeSuper) {
+            XClass thisClass = getXClass();
+            for (XField f : thisClass.getXFields())
+                if (!touched.contains(f)) {
+                    OpcodeStack.Item item;
                     char firstChar = f.getSignature().charAt(0);
                     if (firstChar == 'L' || firstChar == '[')
                         item = OpcodeStack.Item.nullItem(f.getSignature());
-					else if (firstChar == 'I')
+                    else if (firstChar == 'I')
                         item = new OpcodeStack.Item("I", (Integer) 0);
                     else if (firstChar == 'J')
                         item = new OpcodeStack.Item("J", (Long) 0L);
-					else
+                    else
                         item = new OpcodeStack.Item(f.getSignature());
                     fieldSummary.mergeSummary(f, item);
-                    }
-			}
-            touched.clear();
+                }
         }
+        touched.clear();
+    }
 
-		
-        @Override
-        public void report() {
-            fieldSummary.setComplete(true);
-        }
+    @Override
+    public void report() {
+        fieldSummary.setComplete(true);
+    }
 
 }

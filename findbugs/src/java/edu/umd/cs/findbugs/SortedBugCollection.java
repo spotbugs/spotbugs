@@ -81,10 +81,10 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 
 /**
- * An implementation of {@link BugCollection} that keeps the BugInstances
- * sorted by class (using the native comparison ordering of BugInstance's
- * compareTo() method as a tie-breaker).
- *
+ * An implementation of {@link BugCollection} that keeps the BugInstances sorted
+ * by class (using the native comparison ordering of BugInstance's compareTo()
+ * method as a tie-breaker).
+ * 
  * @see BugInstance
  * @author David Hovemeyer
  */
@@ -92,14 +92,21 @@ public class SortedBugCollection implements BugCollection {
     private static final Logger LOGGER = Logger.getLogger(SortedBugCollection.class.getName());
 
     long analysisTimestamp = System.currentTimeMillis();
+
     String analysisVersion = Version.RELEASE;
+
     private boolean withMessages = false;
-	private boolean minimalXML = false;
+
+    private boolean minimalXML = false;
+
     private boolean applySuppressions = false;
+
     private Cloud cloud;
+
     boolean shouldNotUsePlugin;
-	
+
     long timeStartedLoading, timeFinishedLoading;
+
     String dataSource = "";
 
     /**
@@ -108,6 +115,7 @@ public class SortedBugCollection implements BugCollection {
     public long getTimeStartedLoading() {
         return timeStartedLoading;
     }
+
     /**
      * @return Returns the timeFinishedLoading.
      */
@@ -122,31 +130,30 @@ public class SortedBugCollection implements BugCollection {
     final Project project;
 
     public Project getProject() {
-		return project;
+        return project;
     }
 
-    public @Nonnull Cloud getCloud() {
-		if (shouldNotUsePlugin) {
+    public @Nonnull
+    Cloud getCloud() {
+        if (shouldNotUsePlugin) {
             return CloudFactory.getPlainCloud(this);
         }
         if (cloud == null) {
-			IGuiCallback callback = getProject().getGuiCallback();
+            IGuiCallback callback = getProject().getGuiCallback();
             try {
                 cloud = CloudFactory.createCloudWithoutInitializing(this);
                 callback.registerCloud(getProject(), this, cloud);
-				CloudFactory.initializeCloud(this, cloud);
+                CloudFactory.initializeCloud(this, cloud);
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Could not load cloud plugin", e);
-                callback.showMessageDialog("Unable to connect to cloud: "
-						+ e.getClass().getSimpleName()
-                        + ": " + e.getMessage());
+                callback.showMessageDialog("Unable to connect to cloud: " + e.getClass().getSimpleName() + ": " + e.getMessage());
                 cloud = CloudFactory.getPlainCloud(this);
             }
 
         }
         return cloud;
     }
-	
+
     public boolean isApplySuppressions() {
         return applySuppressions;
     }
@@ -154,8 +161,8 @@ public class SortedBugCollection implements BugCollection {
     public void setApplySuppressions(boolean applySuppressions) {
         this.applySuppressions = applySuppressions;
     }
-    private static final boolean REPORT_SUMMARY_HTML =
-        SystemProperties.getBoolean("findbugs.report.SummaryHTML");
+
+    private static final boolean REPORT_SUMMARY_HTML = SystemProperties.getBoolean("findbugs.report.SummaryHTML");
 
     public long getAnalysisTimestamp() {
         return analysisTimestamp;
@@ -166,93 +173,96 @@ public class SortedBugCollection implements BugCollection {
     }
 
     /**
-     * Add a Collection of BugInstances to this BugCollection object.
-     * This just calls add(BugInstance) for each instance in the input collection.
-	 *
-     * @param collection the Collection of BugInstances to add
+     * Add a Collection of BugInstances to this BugCollection object. This just
+     * calls add(BugInstance) for each instance in the input collection.
+     * 
+     * @param collection
+     *            the Collection of BugInstances to add
      */
     public void addAll(Collection<BugInstance> collection) {
-		for (BugInstance aCollection : collection) {
+        for (BugInstance aCollection : collection) {
             add(aCollection);
         }
     }
 
     /**
      * Add a Collection of BugInstances to this BugCollection object.
-     *
-	 * @param collection       the Collection of BugInstances to add
-     * @param updateActiveTime true if active time of added BugInstances should
-     *                         be updated to match collection: false if not
+     * 
+     * @param collection
+     *            the Collection of BugInstances to add
+     * @param updateActiveTime
+     *            true if active time of added BugInstances should be updated to
+     *            match collection: false if not
      */
-	public void addAll(Collection<BugInstance> collection, boolean updateActiveTime) {
+    public void addAll(Collection<BugInstance> collection, boolean updateActiveTime) {
         for (BugInstance warning : collection) {
             add(warning, updateActiveTime);
         }
-	}
+    }
 
     /**
-     * Add a BugInstance to this BugCollection.
-     * This just calls add(bugInstance, true).
-	 *
-     * @param bugInstance the BugInstance
+     * Add a BugInstance to this BugCollection. This just calls add(bugInstance,
+     * true).
+     * 
+     * @param bugInstance
+     *            the BugInstance
      * @return true if the BugInstance was added, or false if a matching
      *         BugInstance was already in the BugCollection
-	 */
+     */
     public boolean add(BugInstance bugInstance) {
         return add(bugInstance, true);
     }
 
     /**
      * Add an analysis error.
-     *
-	 * @param message the error message
+     * 
+     * @param message
+     *            the error message
      */
     public void addError(String message) {
         addError(message, null);
-	}
+    }
 
     /**
      * Get the current AppVersion.
      */
-	public AppVersion getCurrentAppVersion() {
-        return new AppVersion(getSequenceNumber())
-            .setReleaseName(getReleaseName())
-            .setTimestamp(getTimestamp())
-			.setNumClasses(getProjectStats().getNumClasses())
-            .setCodeSize(getProjectStats().getCodeSize());
+    public AppVersion getCurrentAppVersion() {
+        return new AppVersion(getSequenceNumber()).setReleaseName(getReleaseName()).setTimestamp(getTimestamp())
+                .setNumClasses(getProjectStats().getNumClasses()).setCodeSize(getProjectStats().getCodeSize());
     }
 
     /**
-     * Read XML data from given file into this object,
-     * populating given Project as a side effect.
-	 *
-     * @param fileName name of the file to read
+     * Read XML data from given file into this object, populating given Project
+     * as a side effect.
+     * 
+     * @param fileName
+     *            name of the file to read
      */
-    public void readXML(String fileName)
-			throws IOException, DocumentException {
+    public void readXML(String fileName) throws IOException, DocumentException {
         readXML(new File(fileName));
     }
 
     /**
-     * Read XML data from given file into this object,
-     * populating given Project as a side effect.
-	 *
-     * @param file    the file
+     * Read XML data from given file into this object, populating given Project
+     * as a side effect.
+     * 
+     * @param file
+     *            the file
      */
-    public void readXML(File file)
-			throws IOException, DocumentException {
+    public void readXML(File file) throws IOException, DocumentException {
         project.setCurrentWorkingDirectory(file.getParentFile());
         dataSource = file.getAbsolutePath();
         InputStream in = progessMonitoredInputStream(file, "Loading analysis");
-		try {
-        readXML(in, file);
+        try {
+            readXML(in, file);
         } catch (IOException e) {
             throw newIOException(file, e);
-		} catch (DocumentException e) {
+        } catch (DocumentException e) {
             throw new DocumentException("Failing reading " + file, e);
         }
     }
-	/**
+
+    /**
      * @param file
      * @param e
      * @return
@@ -262,311 +272,320 @@ public class SortedBugCollection implements BugCollection {
         result.initCause(e);
         return result;
     }
-    public void readXML(URL u)
-    throws IOException, DocumentException {
+
+    public void readXML(URL u) throws IOException, DocumentException {
         InputStream in = progessMonitoredInputStream(u.openConnection(), "Loading analysis");
-		dataSource = u.toString();
+        dataSource = u.toString();
         try {
             readXML(in);
         } catch (IOException e) {
-			throw newIOException(u, e);
+            throw newIOException(u, e);
         } catch (DocumentException e) {
             throw new DocumentException("Failing reading " + u, e);
         }
-	}
+    }
+
     /**
-     * Read XML data from given input stream into this
-     * object, populating the Project as a side effect.
-	 * An attempt will be made to close the input stream
-     * (even if an exception is thrown).
-     *
-     * @param in      the InputStream
-	 */
-    public void readXML(@WillClose InputStream in, File base)
-            throws IOException, DocumentException {
+     * Read XML data from given input stream into this object, populating the
+     * Project as a side effect. An attempt will be made to close the input
+     * stream (even if an exception is thrown).
+     * 
+     * @param in
+     *            the InputStream
+     */
+    public void readXML(@WillClose InputStream in, File base) throws IOException, DocumentException {
         try {
-			doReadXML(in, base);
+            doReadXML(in, base);
         } finally {
             in.close();
         }
-	}
-    public void readXML(@WillClose InputStream in)
-            throws IOException, DocumentException {
+    }
+
+    public void readXML(@WillClose InputStream in) throws IOException, DocumentException {
         assert project != null;
-		assert in != null;
+        assert in != null;
         doReadXML(in, null);
     }
 
     public void readXML(@WillClose Reader reader) throws IOException, DocumentException {
         assert project != null;
         assert reader != null;
-		doReadXML(reader, null);
+        doReadXML(reader, null);
     }
 
-    private void doReadXML(@WillClose InputStream in, @CheckForNull  File base) throws IOException, DocumentException {
-		checkInputStream(in);
+    private void doReadXML(@WillClose InputStream in, @CheckForNull File base) throws IOException, DocumentException {
+        checkInputStream(in);
         Reader reader = Util.getReader(in);
         doReadXML(reader, base);
     }
-	
+
     private void doReadXML(@WillClose Reader reader, @CheckForNull File base) throws IOException, DocumentException {
         timeStartedLoading = System.currentTimeMillis();
 
         SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, base);
         Profiler profiler = getProjectStats().getProfiler();
         profiler.start(handler.getClass());
-		try {
+        try {
 
             XMLReader xr = null;
             try {
-				xr = XMLReaderFactory.createXMLReader();
+                xr = XMLReaderFactory.createXMLReader();
             } catch (SAXException e) {
                 AnalysisContext.logError("Couldn't create XMLReaderFactory", e);
                 throw new DocumentException("Sax error ", e);
-			}
+            }
             xr.setContentHandler(handler);
             xr.setErrorHandler(handler);
 
-
             xr.parse(new InputSource(reader));
         } catch (SAXParseException e) {
-			if (base != null)
-                throw new DocumentException("Parse error at line " + e.getLineNumber() + " : " + e.getColumnNumber() + " of " + base, e);
+            if (base != null)
+                throw new DocumentException("Parse error at line " + e.getLineNumber() + " : " + e.getColumnNumber() + " of "
+                        + base, e);
             throw new DocumentException("Parse error at line " + e.getLineNumber() + " : " + e.getColumnNumber(), e);
         } catch (SAXException e) {
-			// FIXME: throw SAXException from method?
+            // FIXME: throw SAXException from method?
             if (base != null)
                 throw new DocumentException("Sax error while parsing " + base, e);
             throw new DocumentException("Sax error ", e);
-		} finally {
+        } finally {
             Util.closeSilently(reader);
             profiler.end(handler.getClass());
         }
-		timeFinishedLoading = System.currentTimeMillis();
-        Cloud plugin = getCloud(); // initialize cloud to allow listener to be registered
+        timeFinishedLoading = System.currentTimeMillis();
+        Cloud plugin = getCloud(); // initialize cloud to allow listener to be
+                                   // registered
 
         if (plugin != null)
-			plugin.bugsPopulated();
+            plugin.bugsPopulated();
         // Presumably, project is now up-to-date
         project.setModified(false);
     }
 
     /**
      * Write this BugCollection to a file as XML.
-     *
-	 * @param fileName the file to write to
+     * 
+     * @param fileName
+     *            the file to write to
      */
     public void writeXML(String fileName) throws IOException {
         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
-		writeXML(out);
+        writeXML(out);
     }
 
     /**
      * Write this BugCollection to a file as XML.
-     *
-	 * @param file    the file to write to
+     * 
+     * @param file
+     *            the file to write to
      */
     public void writeXML(File file) throws IOException {
         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-		writeXML(out);
+        writeXML(out);
     }
 
     /**
      * Convert the BugCollection into a dom4j Document object.
-     *
-	 * @return the Document representing the BugCollection as a dom4j tree
+     * 
+     * @return the Document representing the BugCollection as a dom4j tree
      */
     public Document toDocument() {
-        //if (project == null) throw new NullPointerException("No project");
-		assert project != null;
+        // if (project == null) throw new NullPointerException("No project");
+        assert project != null;
 
         DocumentFactory docFactory = new DocumentFactory();
         Document document = docFactory.createDocument();
-		Dom4JXMLOutput treeBuilder = new Dom4JXMLOutput(document);
+        Dom4JXMLOutput treeBuilder = new Dom4JXMLOutput(document);
 
         try {
             writeXML(treeBuilder);
         } catch (IOException e) {
-			// Can't happen
+            // Can't happen
         }
 
         return document;
     }
 
     /**
-     * Write the BugCollection to given output stream as XML.
-     * The output stream will be closed, even if an exception is thrown.
-	 *
-     * @param out     the OutputStream to write to
+     * Write the BugCollection to given output stream as XML. The output stream
+     * will be closed, even if an exception is thrown.
+     * 
+     * @param out
+     *            the OutputStream to write to
      */
     public void writeXML(@WillClose OutputStream out) throws IOException {
-		assert project != null;
+        assert project != null;
 
         XMLOutput xmlOutput;
-        //if (project == null) throw new NullPointerException("No project");
-		
+        // if (project == null) throw new NullPointerException("No project");
+
         if (withMessages) {
             Cloud cloud = getCloud();
             cloud.waitUntilIssueDataDownloaded();
-            xmlOutput= new OutputStreamXMLOutput(out, "http://findbugs.sourceforge.net/xsl/default.xsl");
+            xmlOutput = new OutputStreamXMLOutput(out, "http://findbugs.sourceforge.net/xsl/default.xsl");
         } else {
-            xmlOutput= new OutputStreamXMLOutput(out);
-		}
+            xmlOutput = new OutputStreamXMLOutput(out);
+        }
 
         writeXML(xmlOutput);
     }
 
     public void writePrologue(XMLOutput xmlOutput) throws IOException {
         xmlOutput.beginDocument();
-        xmlOutput.openTag(ROOT_ELEMENT_NAME,
-			new XMLAttributeList()
-                .addAttribute("version", analysisVersion)
-                .addAttribute("sequence",String.valueOf(getSequenceNumber()))
-                .addAttribute("timestamp", String.valueOf(getTimestamp()))
-				.addAttribute("analysisTimestamp", String.valueOf(getAnalysisTimestamp()))
+        xmlOutput.openTag(
+                ROOT_ELEMENT_NAME,
+                new XMLAttributeList().addAttribute("version", analysisVersion)
+                        .addAttribute("sequence", String.valueOf(getSequenceNumber()))
+                        .addAttribute("timestamp", String.valueOf(getTimestamp()))
+                        .addAttribute("analysisTimestamp", String.valueOf(getAnalysisTimestamp()))
 
-                .addAttribute("release", getReleaseName())
-        );
+                        .addAttribute("release", getReleaseName()));
         project.writeXML(xmlOutput);
-	}
+    }
 
-//	private String getQuickInstanceHash(BugInstance bugInstance) {
-//		String hash = bugInstance.getInstanceHash();
-//		if (hash != null) return hash;
-//		MessageDigest digest = null;
-//		try { digest = MessageDigest.getInstance("MD5");
-//		} catch (Exception e2) {
-//			// OK, we won't digest
-//			assert true;
-//		}
-//		hash = bugInstance.getInstanceKey();
-//		if (digest != null) {
-//			byte [] data = digest.digest(hash.getBytes());
-//			String tmp = new BigInteger(1,data).toString(16);
-//			if (false) System.out.println(hash + " -> " + tmp);
-//			hash = tmp;
-//		}
-//		bugInstance.setInstanceHash(hash);
-//		return hash;
-//	}
+    // private String getQuickInstanceHash(BugInstance bugInstance) {
+    // String hash = bugInstance.getInstanceHash();
+    // if (hash != null) return hash;
+    // MessageDigest digest = null;
+    // try { digest = MessageDigest.getInstance("MD5");
+    // } catch (Exception e2) {
+    // // OK, we won't digest
+    // assert true;
+    // }
+    // hash = bugInstance.getInstanceKey();
+    // if (digest != null) {
+    // byte [] data = digest.digest(hash.getBytes());
+    // String tmp = new BigInteger(1,data).toString(16);
+    // if (false) System.out.println(hash + " -> " + tmp);
+    // hash = tmp;
+    // }
+    // bugInstance.setInstanceHash(hash);
+    // return hash;
+    // }
 
     public void computeBugHashes() {
-        if (preciseHashOccurrenceNumbersAvailable) return;
+        if (preciseHashOccurrenceNumbersAvailable)
+            return;
         invalidateHashes();
-		MessageDigest digest = Util.getMD5Digest();
+        MessageDigest digest = Util.getMD5Digest();
 
         HashMap<String, Integer> seen = new HashMap<String, Integer>();
 
-        for(BugInstance bugInstance : getCollection()) {
+        for (BugInstance bugInstance : getCollection()) {
             String hash = bugInstance.getInstanceHash();
             if (hash == null) {
-				hash = bugInstance.getInstanceKey();
+                hash = bugInstance.getInstanceKey();
 
                 if (digest != null) {
-                    byte [] data = digest.digest(hash.getBytes());
-                    String tmp = new BigInteger(1,data).toString(16);
-					if (false) System.out.println(hash + " -> " + tmp);
+                    byte[] data = digest.digest(hash.getBytes());
+                    String tmp = new BigInteger(1, data).toString(16);
+                    if (false)
+                        System.out.println(hash + " -> " + tmp);
                     hash = tmp;
                 }
                 bugInstance.setInstanceHash(hash);
-			}
+            }
             Integer count = seen.get(hash);
             if (count == null) {
                 bugInstance.setInstanceOccurrenceNum(0);
-				seen.put(hash,0);
+                seen.put(hash, 0);
             } else {
-                bugInstance.setInstanceOccurrenceNum(count+1);
-                seen.put(hash, count+1);
-			}
+                bugInstance.setInstanceOccurrenceNum(count + 1);
+                seen.put(hash, count + 1);
+            }
         }
-        for(BugInstance bugInstance : getCollection())
+        for (BugInstance bugInstance : getCollection())
             bugInstance.setInstanceOccurrenceMax(seen.get(bugInstance.getInstanceHash()));
-		preciseHashOccurrenceNumbersAvailable = true;
+        preciseHashOccurrenceNumbersAvailable = true;
     }
+
     /**
-     * Write the BugCollection to an XMLOutput object.
-	 * The finish() method of the XMLOutput object is guaranteed
-     * to be called.
-     *
+     * Write the BugCollection to an XMLOutput object. The finish() method of
+     * the XMLOutput object is guaranteed to be called.
+     * 
      * <p>
-	 * To write the SummaryHTML element, set property
+     * To write the SummaryHTML element, set property
      * findbugs.report.SummaryHTML to "true".
      * </p>
-     *
-	 * @param xmlOutput the XMLOutput object
+     * 
+     * @param xmlOutput
+     *            the XMLOutput object
      */
     public void writeXML(@WillClose XMLOutput xmlOutput) throws IOException {
         assert project != null;
-		try {
+        try {
             writePrologue(xmlOutput);
             if (withMessages) {
                 computeBugHashes();
-				getProjectStats().computeFileStats(this);
+                getProjectStats().computeFileStats(this);
                 String commonBase = null;
-                for(String s : project.getSourceDirList()) {
-                    if (commonBase == null) commonBase = s;
-					else commonBase = commonBase.substring(0, commonPrefix(commonBase, s));
+                for (String s : project.getSourceDirList()) {
+                    if (commonBase == null)
+                        commonBase = s;
+                    else
+                        commonBase = commonBase.substring(0, commonPrefix(commonBase, s));
 
                 }
                 if (commonBase != null && commonBase.length() > 0) {
-					if (commonBase.indexOf("/./") > 0)
-                        commonBase = commonBase.substring(0,commonBase.indexOf("/."));
+                    if (commonBase.indexOf("/./") > 0)
+                        commonBase = commonBase.substring(0, commonBase.indexOf("/."));
                     File base = new File(commonBase);
                     if (base.exists() && base.isDirectory() && base.canRead())
-						SourceLineAnnotation.generateRelativeSource(base, project);
+                        SourceLineAnnotation.generateRelativeSource(base, project);
                 }
             }
             if (earlyStats && !minimalXML)
-				getProjectStats().writeXML(xmlOutput,withMessages);
+                getProjectStats().writeXML(xmlOutput, withMessages);
 
             // Write BugInstances
-            for(BugInstance bugInstance : getCollection())
-				if (!applySuppressions || !project.getSuppressionFilter().match(bugInstance))
-                bugInstance.writeXML(xmlOutput, this, withMessages);
+            for (BugInstance bugInstance : getCollection())
+                if (!applySuppressions || !project.getSuppressionFilter().match(bugInstance))
+                    bugInstance.writeXML(xmlOutput, this, withMessages);
 
             writeEpilogue(xmlOutput);
 
         } finally {
-			xmlOutput.finish();
+            xmlOutput.finish();
             SourceLineAnnotation.clearGenerateRelativeSource();
         }
     }
 
-
     int commonPrefix(String s1, String s2) {
         int pos = 0;
-		while (pos < s1.length() && pos < s2.length() && s1.charAt(pos) == s2.charAt(pos)) pos++;
+        while (pos < s1.length() && pos < s2.length() && s1.charAt(pos) == s2.charAt(pos))
+            pos++;
         return pos;
     }
+
     boolean earlyStats = SystemProperties.getBoolean("findbugs.report.summaryFirst");
-	public void writeEpilogue(XMLOutput xmlOutput) throws IOException {
+
+    public void writeEpilogue(XMLOutput xmlOutput) throws IOException {
         if (withMessages) {
-            writeBugCategories( xmlOutput);
-            writeBugPatterns( xmlOutput);
-			writeBugCodes( xmlOutput);
+            writeBugCategories(xmlOutput);
+            writeBugPatterns(xmlOutput);
+            writeBugCodes(xmlOutput);
         }
         // Errors, missing classes
         if (!minimalXML)
-			emitErrors(xmlOutput);
+            emitErrors(xmlOutput);
 
-        if (!earlyStats  && !minimalXML) {
+        if (!earlyStats && !minimalXML) {
             // Statistics
             getProjectStats().writeXML(xmlOutput, withMessages);
-		}
+        }
 
-
-//		// Class and method hashes
-//		xmlOutput.openTag(CLASS_HASHES_ELEMENT_NAME);
-//		for (Iterator<ClassHash> i = classHashIterator(); i.hasNext();) {
-//			ClassHash classHash = i.next();
-//			classHash.writeXML(xmlOutput);
-//		}
-//		xmlOutput.closeTag(CLASS_HASHES_ELEMENT_NAME);
+        // // Class and method hashes
+        // xmlOutput.openTag(CLASS_HASHES_ELEMENT_NAME);
+        // for (Iterator<ClassHash> i = classHashIterator(); i.hasNext();) {
+        // ClassHash classHash = i.next();
+        // classHash.writeXML(xmlOutput);
+        // }
+        // xmlOutput.closeTag(CLASS_HASHES_ELEMENT_NAME);
 
         // Class features
         xmlOutput.openTag("ClassFeatures");
         for (Iterator<ClassFeatureSet> i = classFeatureSetIterator(); i.hasNext();) {
-			ClassFeatureSet classFeatureSet = i.next();
+            ClassFeatureSet classFeatureSet = i.next();
             classFeatureSet.writeXML(xmlOutput);
         }
         xmlOutput.closeTag("ClassFeatures");
@@ -574,19 +593,19 @@ public class SortedBugCollection implements BugCollection {
         // AppVersions
         xmlOutput.openTag(HISTORY_ELEMENT_NAME);
         for (Iterator<AppVersion> i = appVersionIterator(); i.hasNext();) {
-			AppVersion appVersion = i.next();
+            AppVersion appVersion = i.next();
             appVersion.writeXML(xmlOutput);
         }
         xmlOutput.closeTag(HISTORY_ELEMENT_NAME);
 
         // Summary HTML
-        if ( REPORT_SUMMARY_HTML ) {
+        if (REPORT_SUMMARY_HTML) {
             String html = getSummaryHTML();
-			if (html != null && !html.equals("")) {
+            if (html != null && !html.equals("")) {
                 xmlOutput.openTag(SUMMARY_HTML_ELEMENT_NAME);
                 xmlOutput.writeCDATA(html);
                 xmlOutput.closeTag(SUMMARY_HTML_ELEMENT_NAME);
-			}
+            }
         }
 
         xmlOutput.closeTag(ROOT_ELEMENT_NAME);
@@ -595,15 +614,15 @@ public class SortedBugCollection implements BugCollection {
     private void writeBugPatterns(XMLOutput xmlOutput) throws IOException {
         // Find bug types reported
         Set<String> bugTypeSet = new HashSet<String>();
-		for (Iterator<BugInstance> i = iterator(); i.hasNext();) {
+        for (Iterator<BugInstance> i = iterator(); i.hasNext();) {
             BugInstance bugInstance = i.next();
             BugPattern bugPattern = bugInstance.getBugPattern();
             if (bugPattern != null) {
-				bugTypeSet.add(bugPattern.getType());
+                bugTypeSet.add(bugPattern.getType());
             }
         }
         // Emit element describing each reported bug pattern
-		for (String bugType : bugTypeSet) {
+        for (String bugType : bugTypeSet) {
             BugPattern bugPattern = I18N.instance().lookupBugPattern(bugType);
             if (bugPattern == null)
                 continue;
@@ -611,11 +630,11 @@ public class SortedBugCollection implements BugCollection {
             XMLAttributeList attributeList = new XMLAttributeList();
             attributeList.addAttribute("type", bugType);
             attributeList.addAttribute("abbrev", bugPattern.getAbbrev());
-			attributeList.addAttribute("category", bugPattern.getCategory());
+            attributeList.addAttribute("category", bugPattern.getCategory());
             if (bugPattern.getCWEid() != 0) {
                 attributeList.addAttribute("cweid", Integer.toString(bugPattern.getCWEid()));
             }
-			xmlOutput.openTag("BugPattern", attributeList);
+            xmlOutput.openTag("BugPattern", attributeList);
 
             xmlOutput.openTag("ShortDescription");
             xmlOutput.writeText(bugPattern.getShortDescription());
@@ -632,24 +651,24 @@ public class SortedBugCollection implements BugCollection {
     private void writeBugCodes(XMLOutput xmlOutput) throws IOException {
         // Find bug codes reported
         Set<String> bugCodeSet = new HashSet<String>();
-		for (Iterator<BugInstance> i = iterator(); i.hasNext();) {
+        for (Iterator<BugInstance> i = iterator(); i.hasNext();) {
             BugInstance bugInstance = i.next();
             String bugCode = bugInstance.getAbbrev();
             if (bugCode != null) {
-				bugCodeSet.add(bugCode);
+                bugCodeSet.add(bugCode);
             }
         }
         // Emit element describing each reported bug code
-		for (String bugCodeAbbrev : bugCodeSet) {
+        for (String bugCodeAbbrev : bugCodeSet) {
             BugCode bugCode = I18N.instance().getBugCode(bugCodeAbbrev);
             String bugCodeDescription = bugCode.getDescription();
             if (bugCodeDescription == null)
-				continue;
+                continue;
 
             XMLAttributeList attributeList = new XMLAttributeList();
             attributeList.addAttribute("abbrev", bugCodeAbbrev);
             if (bugCode.getCWEid() != 0) {
-				attributeList.addAttribute("cweid", Integer.toString(bugCode.getCWEid()));
+                attributeList.addAttribute("cweid", Integer.toString(bugCode.getCWEid()));
             }
             xmlOutput.openTag("BugCode", attributeList);
 
@@ -664,15 +683,15 @@ public class SortedBugCollection implements BugCollection {
     private void writeBugCategories(XMLOutput xmlOutput) throws IOException {
         // Find bug categories reported
         Set<String> bugCatSet = new HashSet<String>();
-		for (Iterator<BugInstance> i = iterator(); i.hasNext();) {
+        for (Iterator<BugInstance> i = iterator(); i.hasNext();) {
             BugInstance bugInstance = i.next();
             BugPattern bugPattern = bugInstance.getBugPattern();
             if (bugPattern != null) {
-				bugCatSet.add(bugPattern.getCategory());
+                bugCatSet.add(bugPattern.getCategory());
             }
         }
         // Emit element describing each reported bug code
-		for (String bugCat : bugCatSet) {
+        for (String bugCat : bugCatSet) {
             String bugCatDescription = I18N.instance().getBugCategoryDescription(bugCat);
             if (bugCatDescription == null)
                 continue;
@@ -691,17 +710,16 @@ public class SortedBugCollection implements BugCollection {
     }
 
     private void emitErrors(XMLOutput xmlOutput) throws IOException {
-        //System.err.println("Writing errors to XML output");
+        // System.err.println("Writing errors to XML output");
         XMLAttributeList attributeList = new XMLAttributeList();
-		attributeList.addAttribute("errors", Integer.toString(errorList.size()));
+        attributeList.addAttribute("errors", Integer.toString(errorList.size()));
         attributeList.addAttribute("missingClasses", Integer.toString(missingClassSet.size()));
-        xmlOutput.openTag(ERRORS_ELEMENT_NAME,attributeList);
-
+        xmlOutput.openTag(ERRORS_ELEMENT_NAME, attributeList);
 
         // Emit Error elements describing analysis errors
-        for (Iterator<AnalysisError> i = errorIterator(); i.hasNext(); ) {
+        for (Iterator<AnalysisError> i = errorIterator(); i.hasNext();) {
             AnalysisError error = i.next();
-			xmlOutput.openTag(ERROR_ELEMENT_NAME);
+            xmlOutput.openTag(ERROR_ELEMENT_NAME);
 
             xmlOutput.openTag(ERROR_MESSAGE_ELEMENT_NAME);
             xmlOutput.writeText(error.getMessage());
@@ -710,46 +728,43 @@ public class SortedBugCollection implements BugCollection {
             if (error.getExceptionMessage() != null) {
                 xmlOutput.openTag(ERROR_EXCEPTION_ELEMENT_NAME);
                 xmlOutput.writeText(error.getExceptionMessage());
-				xmlOutput.closeTag(ERROR_EXCEPTION_ELEMENT_NAME);
+                xmlOutput.closeTag(ERROR_EXCEPTION_ELEMENT_NAME);
 
                 String stackTrace[] = error.getStackTrace();
                 if (stackTrace != null) {
                     for (String aStackTrace : stackTrace) {
-						xmlOutput.openTag(ERROR_STACK_TRACE_ELEMENT_NAME);
+                        xmlOutput.openTag(ERROR_STACK_TRACE_ELEMENT_NAME);
                         xmlOutput.writeText(aStackTrace);
                         xmlOutput.closeTag(ERROR_STACK_TRACE_ELEMENT_NAME);
                     }
-				}
+                }
 
                 if (false && error.getNestedExceptionMessage() != null) {
                     xmlOutput.openTag(ERROR_EXCEPTION_ELEMENT_NAME);
                     xmlOutput.writeText(error.getNestedExceptionMessage());
-					xmlOutput.closeTag(ERROR_EXCEPTION_ELEMENT_NAME);
+                    xmlOutput.closeTag(ERROR_EXCEPTION_ELEMENT_NAME);
 
                     stackTrace = error.getNestedStackTrace();
                     if (stackTrace != null) {
                         for (String aStackTrace : stackTrace) {
-							xmlOutput.openTag(ERROR_STACK_TRACE_ELEMENT_NAME);
+                            xmlOutput.openTag(ERROR_STACK_TRACE_ELEMENT_NAME);
                             xmlOutput.writeText(aStackTrace);
                             xmlOutput.closeTag(ERROR_STACK_TRACE_ELEMENT_NAME);
                         }
-					}
+                    }
                 }
             }
             xmlOutput.closeTag(ERROR_ELEMENT_NAME);
-		}
+        }
 
         // Emit missing classes
-        XMLOutputUtil.writeElementList(xmlOutput, MISSING_CLASS_ELEMENT_NAME,
-            missingClassIterator());
+        XMLOutputUtil.writeElementList(xmlOutput, MISSING_CLASS_ELEMENT_NAME, missingClassIterator());
 
         xmlOutput.closeTag(ERRORS_ELEMENT_NAME);
     }
 
-
-
     private void checkInputStream(@WillNotClose InputStream in) throws IOException {
-		if (!in.markSupported())
+        if (!in.markSupported())
             return;
 
         byte[] buf = new byte[200];
@@ -760,11 +775,11 @@ public class SortedBugCollection implements BugCollection {
         boolean isEOF = false;
         while (numRead < buf.length && !isEOF) {
             int n = in.read(buf, numRead, buf.length - numRead);
-			if (n < 0) {
+            if (n < 0) {
                 isEOF = true;
             } else {
                 numRead += n;
-			}
+            }
         }
 
         in.reset();
@@ -772,11 +787,11 @@ public class SortedBugCollection implements BugCollection {
         BufferedReader reader = new BufferedReader(Util.getReader(new ByteArrayInputStream(buf)));
         try {
             String line;
-			while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 if (line.startsWith("<BugCollection")) {
                     return;
                 }
-			}
+            }
         } finally {
             reader.close();
         }
@@ -786,163 +801,182 @@ public class SortedBugCollection implements BugCollection {
     }
 
     /**
-     * Clone all of the BugInstance objects in the source Collection
-     * and add them to the destination Collection.
-	 *
-     * @param dest   the destination Collection
-     * @param source the source Collection
+     * Clone all of the BugInstance objects in the source Collection and add
+     * them to the destination Collection.
+     * 
+     * @param dest
+     *            the destination Collection
+     * @param source
+     *            the source Collection
      */
-	public static void cloneAll(Collection<BugInstance> dest, Collection<BugInstance> source) {
+    public static void cloneAll(Collection<BugInstance> dest, Collection<BugInstance> source) {
         for (BugInstance obj : source) {
             dest.add((BugInstance) obj.clone());
         }
-	}
+    }
 
     /**
      * @author pugh
      */
     private static final class BoundedLinkedHashSet extends LinkedHashSet<AnalysisError> {
-        @Override public boolean add(AnalysisError a) {
-            if (this.size() > 1000) return false;
+        @Override
+        public boolean add(AnalysisError a) {
+            if (this.size() > 1000)
+                return false;
             return super.add(a);
-	    }
+        }
     }
 
     public static class BugInstanceComparator implements Comparator<BugInstance> {
-        private BugInstanceComparator() {}
+        private BugInstanceComparator() {
+        }
+
         public int compare(BugInstance lhs, BugInstance rhs) {
-			ClassAnnotation lca = lhs.getPrimaryClass();
+            ClassAnnotation lca = lhs.getPrimaryClass();
             ClassAnnotation rca = rhs.getPrimaryClass();
             if (lca == null || rca == null)
                 throw new IllegalStateException("null class annotation: " + lca + "," + rca);
-			int cmp = lca.getClassName().compareTo(rca.getClassName());
+            int cmp = lca.getClassName().compareTo(rca.getClassName());
             if (cmp != 0)
                 return cmp;
             return lhs.compareTo(rhs);
-		}
+        }
+
         public static final BugInstanceComparator instance = new BugInstanceComparator();
     }
 
     public static class MultiversionBugInstanceComparator extends BugInstanceComparator {
         @Override
         public int compare(BugInstance lhs, BugInstance rhs) {
-			int result = super.compare(lhs,rhs);
-            if (result != 0) return result;
-            long diff  = lhs.getFirstVersion() - rhs.getFirstVersion();
+            int result = super.compare(lhs, rhs);
+            if (result != 0)
+                return result;
+            long diff = lhs.getFirstVersion() - rhs.getFirstVersion();
             if (diff == 0)
-				diff = lhs.getLastVersion() - rhs.getLastVersion();
-            if (diff < 0) return -1;
-            if (diff > 0) return 1;
+                diff = lhs.getLastVersion() - rhs.getLastVersion();
+            if (diff < 0)
+                return -1;
+            if (diff > 0)
+                return 1;
             return 0;
-		}
+        }
+
         public static final MultiversionBugInstanceComparator instance = new MultiversionBugInstanceComparator();
     }
+
     private Comparator<BugInstance> comparator;
-	private TreeSet<BugInstance> bugSet;
+
+    private TreeSet<BugInstance> bugSet;
+
     private LinkedHashSet<AnalysisError> errorList;
+
     private TreeSet<String> missingClassSet;
-    @CheckForNull private String summaryHTML;
-	private ProjectStats projectStats;
-//	private Map<String, ClassHash> classHashMap;
+
+    @CheckForNull
+    private String summaryHTML;
+
+    private ProjectStats projectStats;
+
+    // private Map<String, ClassHash> classHashMap;
     private Map<String, ClassFeatureSet> classFeatureSetMap;
+
     private List<AppVersion> appVersionList;
 
-
     private boolean preciseHashOccurrenceNumbersAvailable = false;
+
     /**
-     * Sequence number of the most-recently analyzed version
-	 * of the code.
+     * Sequence number of the most-recently analyzed version of the code.
      */
     private long sequence;
+
     /**
-	 * Release name of the analyzed application.
+     * Release name of the analyzed application.
      */
     private String releaseName;
+
     /**
-	 * Current analysis timestamp.
+     * Current analysis timestamp.
      */
     private long timestamp;
 
     public SortedBugCollection(Project project) {
         this(new ProjectStats(), MultiversionBugInstanceComparator.instance, project);
     }
-	
+
     public SortedBugCollection(File f) throws IOException, DocumentException {
         this();
         this.readXML(f);
-	}
-
+    }
 
     /**
-     * Constructor.
-	 * Creates an empty object.
+     * Constructor. Creates an empty object.
      */
     public SortedBugCollection() {
         this(new ProjectStats());
-	}
+    }
 
     /**
-     * Constructor.
-     * Creates an empty object.
-	 */
+     * Constructor. Creates an empty object.
+     */
     public SortedBugCollection(Comparator<BugInstance> comparator) {
         this(new ProjectStats(), comparator);
     }
 
     /**
-     * Constructor.
-     * Creates an empty object given an existing ProjectStats.
-	 * 
-     * @param projectStats the ProjectStats
+     * Constructor. Creates an empty object given an existing ProjectStats.
+     * 
+     * @param projectStats
+     *            the ProjectStats
      */
     public SortedBugCollection(ProjectStats projectStats) {
-		this(projectStats, MultiversionBugInstanceComparator.instance);
+        this(projectStats, MultiversionBugInstanceComparator.instance);
     }
 
     public SortedBugCollection(ProjectStats projectStats, Project project) {
-		this(projectStats, MultiversionBugInstanceComparator.instance, project);
+        this(projectStats, MultiversionBugInstanceComparator.instance, project);
     }
 
     /**
-     * Constructor.
-     * Creates an empty object given an existing ProjectStats.
-	 * 
-     * @param projectStats the ProjectStats
-     * @param comparator to use for sorting bug instances
+     * Constructor. Creates an empty object given an existing ProjectStats.
+     * 
+     * @param projectStats
+     *            the ProjectStats
+     * @param comparator
+     *            to use for sorting bug instances
      */
-	public SortedBugCollection(ProjectStats projectStats, Comparator<BugInstance> comparator) {
+    public SortedBugCollection(ProjectStats projectStats, Comparator<BugInstance> comparator) {
         this(projectStats, comparator, new Project());
     }
+
     public SortedBugCollection(ProjectStats projectStats, Comparator<BugInstance> comparator, Project project) {
-		this.projectStats = projectStats;
+        this.projectStats = projectStats;
         this.comparator = comparator;
         this.project = project;
         bugSet = new TreeSet<BugInstance>(comparator);
-		errorList = new BoundedLinkedHashSet();
+        errorList = new BoundedLinkedHashSet();
         missingClassSet = new TreeSet<String>();
         summaryHTML = null;
         classFeatureSetMap = new TreeMap<String, ClassFeatureSet>();
-		sequence = 0L;
+        sequence = 0L;
         appVersionList = new LinkedList<AppVersion>();
         releaseName = "";
         timestamp = -1L;
-	}
+    }
 
     public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
         preciseHashOccurrenceNumbersAvailable = false;
         if (updateActiveTime) {
-			bugInstance.setFirstVersion(sequence);
+            bugInstance.setFirstVersion(sequence);
         }
 
         return bugSet.add(bugInstance);
     }
 
-
-
     private void invalidateHashes() {
         preciseHashOccurrenceNumbersAvailable = false;
     }
-	public boolean remove(BugInstance bugInstance) {
+
+    public boolean remove(BugInstance bugInstance) {
         invalidateHashes();
         return bugSet.remove(bugInstance);
     }
@@ -955,47 +989,45 @@ public class SortedBugCollection implements BugCollection {
         return bugSet;
     }
 
-
     public void addError(String message, Throwable exception) {
         if (exception instanceof MissingClassException) {
             MissingClassException e = (MissingClassException) exception;
-			addMissingClass(AbstractBugReporter.getMissingClassName(e.getClassNotFoundException()));
+            addMissingClass(AbstractBugReporter.getMissingClassName(e.getClassNotFoundException()));
             return;
         }
         if (exception instanceof ClassNotFoundException) {
-			ClassNotFoundException e = (ClassNotFoundException) exception;
+            ClassNotFoundException e = (ClassNotFoundException) exception;
             addMissingClass(AbstractBugReporter.getMissingClassName(e));
             return;
         }
-		if (exception instanceof edu.umd.cs.findbugs.classfile.MissingClassException) {
+        if (exception instanceof edu.umd.cs.findbugs.classfile.MissingClassException) {
             edu.umd.cs.findbugs.classfile.MissingClassException e = (edu.umd.cs.findbugs.classfile.MissingClassException) exception;
             addMissingClass(AbstractBugReporter.getMissingClassName(e.toClassNotFoundException()));
             return;
-		}
+        }
         errorList.add(new AnalysisError(message, exception));
     }
-
 
     public void addError(AnalysisError error) {
         errorList.add(error);
     }
-	
+
     public void clearErrors() {
         errorList.clear();
     }
 
     public void addMissingClass(String className) {
-        if (className.length() == 0) return;
+        if (className.length() == 0)
+            return;
         if (className.startsWith("[")) {
-			assert false : "Bad class name " + className;
+            assert false : "Bad class name " + className;
             return;
         }
         if (className.endsWith(";"))
-			addError("got signature rather than classname: " + className, 
-                    new IllegalArgumentException());
+            addError("got signature rather than classname: " + className, new IllegalArgumentException());
         else
             missingClassSet.add(className);
-	}
+    }
 
     public Iterator<AnalysisError> errorIterator() {
         return errorList.iterator();
@@ -1012,23 +1044,23 @@ public class SortedBugCollection implements BugCollection {
     public BugInstance getMatching(BugInstance bugInstance) {
         SortedSet<BugInstance> tailSet = bugSet.tailSet(bugInstance);
         if (tailSet.isEmpty())
-			return null;
+            return null;
         BugInstance first = tailSet.first();
         return bugInstance.equals(first) ? first : null;
     }
 
     public String getSummaryHTML() throws IOException {
-        if ( summaryHTML == null ) {
+        if (summaryHTML == null) {
             try {
-				StringWriter writer = new StringWriter();
+                StringWriter writer = new StringWriter();
                 ProjectStats stats = getProjectStats();
                 stats.transformSummaryToHTML(writer);
                 summaryHTML = writer.toString();
-			} catch (final TransformerException e) {
+            } catch (final TransformerException e) {
                 IOException ioe = new IOException("Couldn't generate summary HTML");
                 ioe.initCause(e);
                 throw ioe;
-			}
+            }
         }
 
         return summaryHTML;
@@ -1038,17 +1070,21 @@ public class SortedBugCollection implements BugCollection {
         return projectStats;
     }
 
-    /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.BugCollection#lookupFromUniqueId(java.lang.String)
-         */
-	@Deprecated
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.BugCollection#lookupFromUniqueId(java.lang.String)
+     */
+    @Deprecated
     public BugInstance lookupFromUniqueId(String uniqueId) {
-        for(BugInstance bug : bugSet)
-            if (bug.getInstanceHash().equals(uniqueId)) return bug;
-		return null;
+        for (BugInstance bug : bugSet)
+            if (bug.getInstanceHash().equals(uniqueId))
+                return bug;
+        return null;
     }
 
-        public long getSequenceNumber() {
+    public long getSequenceNumber() {
         return sequence;
     }
 
@@ -1056,20 +1092,18 @@ public class SortedBugCollection implements BugCollection {
         this.sequence = sequence;
     }
 
-
-
     public SortedBugCollection duplicate() {
-          SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone(), comparator, project.duplicate());
+        SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone(), comparator, project.duplicate());
 
         SortedBugCollection.cloneAll(dup.bugSet, this.bugSet);
         dup.errorList.addAll(this.errorList);
         dup.missingClassSet.addAll(this.missingClassSet);
-		dup.summaryHTML = this.summaryHTML;
-//		dup.classHashMap.putAll(this.classHashMap);
+        dup.summaryHTML = this.summaryHTML;
+        // dup.classHashMap.putAll(this.classHashMap);
         dup.classFeatureSetMap.putAll(this.classFeatureSetMap);
         dup.sequence = this.sequence;
         dup.timestamp = this.timestamp;
-		dup.releaseName = this.releaseName;
+        dup.releaseName = this.releaseName;
         for (AppVersion appVersion : appVersionList) {
             dup.appVersionList.add((AppVersion) appVersion.clone());
         }
@@ -1077,7 +1111,9 @@ public class SortedBugCollection implements BugCollection {
         return dup;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.BugCollection#clearBugInstances()
      */
 
@@ -1090,24 +1126,32 @@ public class SortedBugCollection implements BugCollection {
     public void clearMissingClasses() {
         missingClassSet.clear();
     }
-	/* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.BugCollection#getReleaseName()
-         */
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.BugCollection#getReleaseName()
+     */
 
     public String getReleaseName() {
-        if (releaseName == null) return "";
+        if (releaseName == null)
+            return "";
         return releaseName;
-	}
+    }
 
-    /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.BugCollection#setReleaseName(java.lang.String)
-         */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.BugCollection#setReleaseName(java.lang.String)
+     */
 
     public void setReleaseName(String releaseName) {
         this.releaseName = releaseName;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.BugCollection#appVersionIterator()
      */
 
@@ -1115,50 +1159,62 @@ public class SortedBugCollection implements BugCollection {
         return appVersionList.iterator();
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.BugCollection#addAppVersion(edu.umd.cs.findbugs.AppVersion)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.BugCollection#addAppVersion(edu.umd.cs.findbugs.
+     * AppVersion)
      */
 
     public void addAppVersion(AppVersion appVersion) {
         appVersionList.add(appVersion);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.BugCollection#clearAppVersions()
      */
 
     public void clearAppVersions() {
         appVersionList.clear();
     }
-	public void trimAppVersions(long numberToRetain) {
+
+    public void trimAppVersions(long numberToRetain) {
         while (appVersionList.size() > numberToRetain)
-            appVersionList.remove(appVersionList.size()-1);
+            appVersionList.remove(appVersionList.size() - 1);
         sequence = appVersionList.size();
 
     }
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.BugCollection#createEmptyCollectionWithMetadata()
-	 */
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.BugCollection#createEmptyCollectionWithMetadata()
+     */
 
     public SortedBugCollection createEmptyCollectionWithMetadata() {
         SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone(), comparator, project.duplicate());
         dup.errorList.addAll(this.errorList);
-		dup.missingClassSet.addAll(this.missingClassSet);
+        dup.missingClassSet.addAll(this.missingClassSet);
         dup.summaryHTML = this.summaryHTML;
         dup.classFeatureSetMap.putAll(this.classFeatureSetMap);
         dup.sequence = this.sequence;
-		dup.analysisVersion = this.analysisVersion;
+        dup.analysisVersion = this.analysisVersion;
         dup.analysisTimestamp = this.analysisTimestamp;
         dup.timestamp = this.timestamp;
         dup.releaseName = this.releaseName;
-		for (AppVersion appVersion : appVersionList) {
+        for (AppVersion appVersion : appVersionList) {
             dup.appVersionList.add((AppVersion) appVersion.clone());
         }
 
         return dup;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.BugCollection#setTimestamp(long)
      */
 
@@ -1166,7 +1222,9 @@ public class SortedBugCollection implements BugCollection {
         this.timestamp = timestamp;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.BugCollection#getTimestamp()
      */
 
@@ -1174,23 +1232,32 @@ public class SortedBugCollection implements BugCollection {
         return timestamp;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.BugCollection#getClassFeatureSet(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.BugCollection#getClassFeatureSet(java.lang.String)
      */
 
     public ClassFeatureSet getClassFeatureSet(String className) {
         return classFeatureSetMap.get(className);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.BugCollection#setClassFeatureSet(edu.umd.cs.findbugs.model.ClassFeatureSet)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.BugCollection#setClassFeatureSet(edu.umd.cs.findbugs
+     * .model.ClassFeatureSet)
      */
 
     public void setClassFeatureSet(ClassFeatureSet classFeatureSet) {
         classFeatureSetMap.put(classFeatureSet.getClassName(), classFeatureSet);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.BugCollection#classFeatureSetIterator()
      */
 
@@ -1198,130 +1265,145 @@ public class SortedBugCollection implements BugCollection {
         return classFeatureSetMap.values().iterator();
     }
 
-    /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.BugCollection#clearClassFeatures()
-         */
-	public void clearClassFeatures() {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.BugCollection#clearClassFeatures()
+     */
+    public void clearClassFeatures() {
         classFeatureSetMap.clear();
     }
 
     /**
-     * @param withMessages The withMessages to set.
+     * @param withMessages
+     *            The withMessages to set.
      */
-	public void setWithMessages(boolean withMessages) {
+    public void setWithMessages(boolean withMessages) {
         this.withMessages = withMessages;
     }
 
     /**
      * @return Returns the withMessages.
      */
-	public boolean getWithMessages() {
+    public boolean getWithMessages() {
         return withMessages;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.BugCollection#getAppVersionFromSequenceNumber(int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.BugCollection#getAppVersionFromSequenceNumber(int)
      */
-	public AppVersion getAppVersionFromSequenceNumber(long target) {
-        for(AppVersion av : appVersionList)
-            if (av.getSequenceNumber() == target) return av;
-        if(target == this.getSequenceNumber())
-			return this.getCurrentAppVersion();
+    public AppVersion getAppVersionFromSequenceNumber(long target) {
+        for (AppVersion av : appVersionList)
+            if (av.getSequenceNumber() == target)
+                return av;
+        if (target == this.getSequenceNumber())
+            return this.getCurrentAppVersion();
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.BugCollection#findBug(java.lang.String, java.lang.String, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.BugCollection#findBug(java.lang.String,
+     * java.lang.String, int)
      */
-	public BugInstance findBug(String instanceHash, String bugType,
-            int lineNumber) {
-        for(BugInstance bug : bugSet)
+    public BugInstance findBug(String instanceHash, String bugType, int lineNumber) {
+        for (BugInstance bug : bugSet)
             if (bug.getInstanceHash().equals(instanceHash) && bug.getBugPattern().getType().equals(bugType)
-					&&  bug.getPrimarySourceLineAnnotation().getStartLine() == lineNumber) return bug;
+                    && bug.getPrimarySourceLineAnnotation().getStartLine() == lineNumber)
+                return bug;
         return null;
     }
 
     /**
      * @param version
      */
-	public void setAnalysisVersion(String version) {
+    public void setAnalysisVersion(String version) {
         this.analysisVersion = version;
     }
 
-	public String getAnalysisVersion() {
+    public String getAnalysisVersion() {
         return this.analysisVersion;
     }
 
-
-    public  InputStream progessMonitoredInputStream(File  f, String msg) throws IOException {
+    public InputStream progessMonitoredInputStream(File f, String msg) throws IOException {
         InputStream in = new FileInputStream(f);
-		long length = f.length();
+        long length = f.length();
         if (length > Integer.MAX_VALUE)
             throw new IllegalArgumentException("File " + f + " is too big at " + length + " bytes");
-        return wrapGzip( progressMonitoredInputStream(in, (int)length, msg), f);
-	}
+        return wrapGzip(progressMonitoredInputStream(in, (int) length, msg), f);
+    }
 
-    public  InputStream progessMonitoredInputStream(URLConnection c, String msg) throws IOException {
+    public InputStream progessMonitoredInputStream(URLConnection c, String msg) throws IOException {
         InputStream in = c.getInputStream();
-		int length = c.getContentLength();
+        int length = c.getContentLength();
         return wrapGzip(progressMonitoredInputStream(in, length, msg), c.getURL());
     }
 
-
-    public  InputStream progressMonitoredInputStream(InputStream in, int length, String msg) {
+    public InputStream progressMonitoredInputStream(InputStream in, int length, String msg) {
         if (GraphicsEnvironment.isHeadless())
             return in;
-	    IGuiCallback guiCallback = project.getGuiCallback();
+        IGuiCallback guiCallback = project.getGuiCallback();
         if (guiCallback == null)
             return in;
         return guiCallback.getProgressMonitorInputStream(in, length, msg);
     }
 
-    public  InputStream wrapGzip(InputStream in, Object source) {
+    public InputStream wrapGzip(InputStream in, Object source) {
         try {
-		if (source instanceof File) {
-            File f = (File) source;
-            if (f.getName().endsWith(".gz")) {
-                return new GZIPInputStream(in);
-			}
-        } else if (source instanceof URL) {
-            URL u = (URL) source;
-            if (u.getPath().endsWith(".gz")) {
-				return new GZIPInputStream(in);
-            }
+            if (source instanceof File) {
+                File f = (File) source;
+                if (f.getName().endsWith(".gz")) {
+                    return new GZIPInputStream(in);
+                }
+            } else if (source instanceof URL) {
+                URL u = (URL) source;
+                if (u.getPath().endsWith(".gz")) {
+                    return new GZIPInputStream(in);
+                }
 
-        }
-		} catch (IOException e) {
+            }
+        } catch (IOException e) {
             assert true;
         }
-        return  in;
-	}
-    /* (non-Javadoc)
+        return in;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.BugCollection#reinitializeCloud()
      */
     public Cloud reinitializeCloud() {
         Cloud oldCloud = cloud;
         IGuiCallback callback = project.getGuiCallback();
-		if (oldCloud != null) {
+        if (oldCloud != null) {
             callback.unregisterCloud(project, this, oldCloud);
             oldCloud.shutdown();
         }
-		cloud = null;
+        cloud = null;
         Cloud newCloud = getCloud();
         assert newCloud == cloud;
         if (cloud != null) {
-			cloud.bugsPopulated();
+            cloud.bugsPopulated();
             cloud.initiateCommunication();
         }
         return cloud;
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.BugCollection#setMinimalXML(boolean)
      */
     public void setMinimalXML(boolean minimalXML) {
-       this.minimalXML = minimalXML;
+        this.minimalXML = minimalXML;
 
     }
+
     /**
      * @param b
      */

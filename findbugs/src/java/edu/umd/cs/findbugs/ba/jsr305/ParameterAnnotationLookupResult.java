@@ -22,14 +22,19 @@ package edu.umd.cs.findbugs.ba.jsr305;
 /**
  * TypeQualifierAnnotationLookupResult summarizing TypeQualifierAnnotation(s)
  * relevant for a method parameter.
- *
+ * 
  * @author David Hovemeyer
  */
 class ParameterAnnotationLookupResult extends TypeQualifierAnnotationLookupResult {
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotationLookupResult#combine(edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation, edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotationLookupResult#combine
+     * (edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation,
+     * edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation)
      */
-	@Override
+    @Override
     protected TypeQualifierAnnotation combine(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
         return TypeQualifierAnnotation.combineParameterAnnotations(a, b);
     }

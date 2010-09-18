@@ -36,26 +36,31 @@ import edu.umd.cs.findbugs.SystemProperties;
  */
 public class LaunchBrowser {
 
-    private static Pattern validExec  = Pattern.compile("[a-zA-Z0-9-_/]+");
+    private static Pattern validExec = Pattern.compile("[a-zA-Z0-9-_/]+");
+
     public static final String execCommand = SystemProperties.getProperty("findbugs.execCommand");
-    public static final boolean launchViaExec = execCommand != null
-				&& validExec.matcher(execCommand).matches()
-                && "Linux".equals(SystemProperties.getProperty("os.name"));
+
+    public static final boolean launchViaExec = execCommand != null && validExec.matcher(execCommand).matches()
+            && "Linux".equals(SystemProperties.getProperty("os.name"));
+
     private static Object desktopObject;
+
     private static Method desktopBrowseMethod;
-	private static boolean launchViaExecFailed = false;
+
+    private static boolean launchViaExecFailed = false;
+
     static boolean DEBUG = SystemProperties.getBoolean("findbugs.launchBrowser.debug");
 
-    static final  Exception desktopException;
+    static final Exception desktopException;
 
     static {
         Exception toStore = null;
         try {
-			Class<?> desktopClass = Class.forName("java.awt.Desktop");
+            Class<?> desktopClass = Class.forName("java.awt.Desktop");
             desktopObject = desktopClass.getMethod("getDesktop").invoke(null);
             desktopBrowseMethod = desktopClass.getMethod("browse", URI.class);
         } catch (Exception e) {
-			toStore = e;
+            toStore = e;
         }
         desktopException = toStore;
     }
@@ -63,91 +68,97 @@ public class LaunchBrowser {
     static boolean desktopFeasible() {
         return desktopObject != null && desktopBrowseMethod != null;
     }
-	
+
     static boolean webstartFeasible() {
         return JavaWebStart.jnlpShowDocumentMethod != null && JavaWebStart.jnlpBasicService != null;
     }
-	static boolean showDocumentViaDesktop(URL u) {
 
-        if (desktopObject != null && desktopBrowseMethod != null) try {
-             if (DEBUG) JOptionPane.showMessageDialog(null, "Trying desktop browse");
-			 viaDesktop(u.toURI());
-             if (DEBUG) JOptionPane.showMessageDialog(null, "desktop browse succeeded");
-             return true;
-        } catch (InvocationTargetException ite) {
-			assert true;
-        } catch (IllegalAccessException iae) {
-            assert true;
-        } catch (IllegalArgumentException e) {
-			assert true;
-        } catch (URISyntaxException e) {
-            assert true;
-        }
+    static boolean showDocumentViaDesktop(URL u) {
+
+        if (desktopObject != null && desktopBrowseMethod != null)
+            try {
+                if (DEBUG)
+                    JOptionPane.showMessageDialog(null, "Trying desktop browse");
+                viaDesktop(u.toURI());
+                if (DEBUG)
+                    JOptionPane.showMessageDialog(null, "desktop browse succeeded");
+                return true;
+            } catch (InvocationTargetException ite) {
+                assert true;
+            } catch (IllegalAccessException iae) {
+                assert true;
+            } catch (IllegalArgumentException e) {
+                assert true;
+            } catch (URISyntaxException e) {
+                assert true;
+            }
         return false;
     }
 
     static void viaDesktop(URI u) throws IllegalAccessException, InvocationTargetException, URISyntaxException {
         if (desktopBrowseMethod == null)
             throw new UnsupportedOperationException("Launch via desktop not available");
-	    desktopBrowseMethod.invoke(desktopObject, u);
+        desktopBrowseMethod.invoke(desktopObject, u);
     }
-
 
     static boolean showDocumentViaExec(URL url) {
         if (launchViaExec && !launchViaExecFailed) {
-			 if (DEBUG) JOptionPane.showMessageDialog(null, "Trying exec browse");
+            if (DEBUG)
+                JOptionPane.showMessageDialog(null, "Trying exec browse");
 
             try {
                 Process p = launchViaExec(url);
-				Thread.sleep(90);
+                Thread.sleep(90);
 
                 int exitValue = p.exitValue();
                 if (exitValue != 0) {
-					launchViaExecFailed = true;
+                    launchViaExecFailed = true;
                     if (DEBUG)
                         JOptionPane.showMessageDialog(null, "exec browse launch failed with exit code " + exitValue);
                     return false;
-				} 
-                 if (DEBUG) JOptionPane.showMessageDialog(null, "exec browse succeeded");
+                }
+                if (DEBUG)
+                    JOptionPane.showMessageDialog(null, "exec browse succeeded");
                 return true;
             } catch (IllegalThreadStateException e) {
-				if (DEBUG) JOptionPane.showMessageDialog(null, "exec browse succeeded but not done");
+                if (DEBUG)
+                    JOptionPane.showMessageDialog(null, "exec browse succeeded but not done");
                 return true;
             } catch (Exception e) {
-                if (DEBUG) JOptionPane.showMessageDialog(null, "exec browse failed" + e.getMessage());
-				launchViaExecFailed = true;
+                if (DEBUG)
+                    JOptionPane.showMessageDialog(null, "exec browse failed" + e.getMessage());
+                launchViaExecFailed = true;
             }
         }
         return false;
-	
+
     }
 
     static Process launchViaExec(URL url) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder(execCommand, url.toString() );
+        ProcessBuilder builder = new ProcessBuilder(execCommand, url.toString());
         Process p = builder.start();
-	    return p;
+        return p;
     }
 
     /**
-     * attempt to show the given URL.
-	 * will first attempt via the JNLP api, then will try showViaExec().
-     * @param url the URL
+     * attempt to show the given URL. will first attempt via the JNLP api, then
+     * will try showViaExec().
+     * 
+     * @param url
+     *            the URL
      * @return true on success
      */
-	public static boolean showDocument(URL url) {
-
+    public static boolean showDocument(URL url) {
 
         if (showDocumentViaDesktop(url))
             return true;
         if (showDocumentViaExec(url))
-			return true;
+            return true;
         if (JavaWebStart.showViaWebStart(url))
             return true;
 
         return false;
 
-
     }
-
 
 }

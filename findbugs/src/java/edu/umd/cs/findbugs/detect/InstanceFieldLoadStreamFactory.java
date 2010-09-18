@@ -30,41 +30,40 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
 /**
  * StreamFactory for stream objects loaded from instance fields.
- *
+ * 
  * @author David Hovemeyer
  */
 public class InstanceFieldLoadStreamFactory implements StreamFactory {
     private String streamBaseClass;
+
     private String bugPatternType;
 
     /**
-     * Constructor.
-     * By default, Streams created by this factory
-	 * will not be marked as interesting.
-     * The setBugPatternType() method should be called to
+     * Constructor. By default, Streams created by this factory will not be
+     * marked as interesting. The setBugPatternType() method should be called to
      * make the factory produce interesting streams.
-     *
-	 * @param streamBaseClass the base class of the streams
-     *                        produced by the factory
+     * 
+     * @param streamBaseClass
+     *            the base class of the streams produced by the factory
      */
     public InstanceFieldLoadStreamFactory(String streamBaseClass) {
-		this.streamBaseClass = streamBaseClass;
+        this.streamBaseClass = streamBaseClass;
     }
 
     /**
-     * Set the bug pattern type reported for unclosed streams
-     * loaded from this field.  This makes the created
-	 * streams "interesting".
-     *
-     * @param bugPatternType the bug pattern type
+     * Set the bug pattern type reported for unclosed streams loaded from this
+     * field. This makes the created streams "interesting".
+     * 
+     * @param bugPatternType
+     *            the bug pattern type
      */
-	public InstanceFieldLoadStreamFactory setBugPatternType(String bugPatternType) {
+    public InstanceFieldLoadStreamFactory setBugPatternType(String bugPatternType) {
         this.bugPatternType = bugPatternType;
         return this;
     }
 
     public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-                               RepositoryLookupFailureCallback lookupFailureCallback) {
+            RepositoryLookupFailureCallback lookupFailureCallback) {
 
         Instruction ins = location.getHandle().getInstruction();
         if (ins.getOpcode() != Constants.GETFIELD)
@@ -73,20 +72,20 @@ public class InstanceFieldLoadStreamFactory implements StreamFactory {
         String fieldClass = type.getClassName();
         try {
             if (fieldClass.startsWith("["))
-				return null;
+                return null;
             if (!Hierarchy.isSubtype(fieldClass, streamBaseClass))
                 return null;
 
             Stream stream = new Stream(location, fieldClass, streamBaseClass);
             stream.setIsOpenOnCreation(true);
             stream.setOpenLocation(location);
-			if (bugPatternType != null)
+            if (bugPatternType != null)
                 stream.setInteresting(bugPatternType);
 
-            //System.out.println("Instance field stream at " + location);
+            // System.out.println("Instance field stream at " + location);
             return stream;
         } catch (ClassNotFoundException e) {
-			lookupFailureCallback.reportMissingClass(e);
+            lookupFailureCallback.reportMissingClass(e);
             return null;
         }
     }

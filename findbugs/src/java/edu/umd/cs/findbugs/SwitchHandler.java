@@ -24,40 +24,38 @@ import java.util.List;
 
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
-
-public class SwitchHandler
-{
+public class SwitchHandler {
     private final List<SwitchDetails> switchOffsetStack;
 
     public SwitchHandler() {
         switchOffsetStack = new ArrayList<SwitchDetails>();
     }
 
-    public void enterSwitch( DismantleBytecode dbc ) {
+    public void enterSwitch(DismantleBytecode dbc) {
 
-        SwitchDetails details = new SwitchDetails( dbc.getPC(), dbc.getSwitchOffsets(), dbc.getDefaultSwitchOffset());
+        SwitchDetails details = new SwitchDetails(dbc.getPC(), dbc.getSwitchOffsets(), dbc.getDefaultSwitchOffset());
 
         int size = switchOffsetStack.size();
         while (--size >= 0) {
             SwitchDetails existingDetail = switchOffsetStack.get(size);
-			if (details.switchPC > (existingDetail.switchPC + existingDetail.swOffsets[existingDetail.swOffsets.length-1])) 
+            if (details.switchPC > (existingDetail.switchPC + existingDetail.swOffsets[existingDetail.swOffsets.length - 1]))
                 switchOffsetStack.remove(size);
         }
         switchOffsetStack.add(details);
-	}
+    }
 
-    public boolean isOnSwitchOffset( DismantleBytecode dbc ) {
+    public boolean isOnSwitchOffset(DismantleBytecode dbc) {
         int pc = dbc.getPC();
         if (pc == getDefaultOffset())
-			return false;
+            return false;
 
         return (pc == getNextSwitchOffset(dbc));
     }
 
-    public int getNextSwitchOffset( DismantleBytecode dbc ) {
+    public int getNextSwitchOffset(DismantleBytecode dbc) {
         int size = switchOffsetStack.size();
         while (size > 0) {
-			SwitchDetails details = switchOffsetStack.get(size-1);
+            SwitchDetails details = switchOffsetStack.get(size - 1);
 
             int nextSwitchOffset = details.getNextSwitchOffset(dbc.getPC());
             if (nextSwitchOffset >= 0)
@@ -65,8 +63,8 @@ public class SwitchHandler
 
             if (dbc.getPC() <= details.getDefaultOffset())
                 return -1;
-            switchOffsetStack.remove(size-1);
-			size--;
+            switchOffsetStack.remove(size - 1);
+            size--;
         }
 
         return -1;
@@ -75,42 +73,44 @@ public class SwitchHandler
     public int getDefaultOffset() {
         int size = switchOffsetStack.size();
         if (size == 0)
-			return -1;
+            return -1;
 
-        SwitchDetails details = switchOffsetStack.get(size-1);
+        SwitchDetails details = switchOffsetStack.get(size - 1);
         return details.getDefaultOffset();
     }
 
-    public static class SwitchDetails
-    {
-        final int   switchPC;
-		final int[] swOffsets;
-        final int	  defaultOffset;
-        int   nextOffset;
+    public static class SwitchDetails {
+        final int switchPC;
+
+        final int[] swOffsets;
+
+        final int defaultOffset;
+
+        int nextOffset;
 
         public SwitchDetails(int pc, int[] offsets, int defOffset) {
             switchPC = pc;
             int uniqueOffsets = 0;
-			int lastValue = -1;
+            int lastValue = -1;
             for (int offset : offsets) {
                 if (offset != lastValue) {
                     uniqueOffsets++;
-					lastValue = offset;
+                    lastValue = offset;
                 }
             }
 
             swOffsets = new int[uniqueOffsets];
             int insertPos = 0;
             lastValue = -1;
-			for (int offset1 : offsets) {
+            for (int offset1 : offsets) {
                 if (offset1 != lastValue) {
                     swOffsets[insertPos++] = offset1;
                     lastValue = offset1;
-				}
+                }
             }
             defaultOffset = defOffset;
             nextOffset = 0;
-		}	
+        }
 
         public int getNextSwitchOffset(int currentPC) {
             while ((nextOffset < swOffsets.length) && (currentPC > (switchPC + swOffsets[nextOffset])))
@@ -125,5 +125,5 @@ public class SwitchHandler
         public int getDefaultOffset() {
             return switchPC + defaultOffset;
         }
-	}
+    }
 }

@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class IntCast2LongAsInstant extends OpcodeStackDetector {
 
     final BugReporter bugReporter;
+
     int lastConstantForSIPUSH;
 
     TrainLongInstantfParams.LongInstantParameterDatabase database = new TrainLongInstantfParams.LongInstantParameterDatabase();
@@ -48,7 +49,7 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
     public IntCast2LongAsInstant(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         AnalysisContext.currentAnalysisContext().loadPropertyDatabaseFromResource(database, "longInstant.db",
-		        "long instant database");
+                "long instant database");
     }
 
     @Override
@@ -56,7 +57,7 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
         if (seen == SIPUSH) {
             lastConstantForSIPUSH = getIntConstant();
         }
-		if (seen == INVOKEINTERFACE || seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKESTATIC) {
+        if (seen == INVOKEINTERFACE || seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKESTATIC) {
             String signature = getSigConstantOperand();
 
             int numberArguments = PreorderVisitor.getNumberArguments(signature);
@@ -64,19 +65,21 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
             for (int i = 0; i < numberArguments; i++) {
                 Item item = stack.getStackItem(numberArguments - 1 - i);
                 if (item.getSpecialKind() == OpcodeStack.Item.RESULT_OF_I2L) {
-					ParameterProperty property = database.getProperty(getMethodDescriptorOperand());
+                    ParameterProperty property = database.getProperty(getMethodDescriptorOperand());
                     if (property != null && property.hasProperty(i)) {
                         int priority = NORMAL_PRIORITY;
 
-						if (getPrevOpcode(1) == I2L && getPrevOpcode(2) == IMUL && getPrevOpcode(3) == SIPUSH && lastConstantForSIPUSH == 1000) {
-                             priority = HIGH_PRIORITY;
+                        if (getPrevOpcode(1) == I2L && getPrevOpcode(2) == IMUL && getPrevOpcode(3) == SIPUSH
+                                && lastConstantForSIPUSH == 1000) {
+                            priority = HIGH_PRIORITY;
 
-                        } else if (getPrevOpcode(1) == I2L && getPrevOpcode(2) == IMUL && getPrevOpcode(4) == SIPUSH  && lastConstantForSIPUSH == 1000) {
-							 priority = HIGH_PRIORITY;
+                        } else if (getPrevOpcode(1) == I2L && getPrevOpcode(2) == IMUL && getPrevOpcode(4) == SIPUSH
+                                && lastConstantForSIPUSH == 1000) {
+                            priority = HIGH_PRIORITY;
                         }
                         BugInstance bug = new BugInstance(this, "ICAST_INT_2_LONG_AS_INSTANT", priority).addClassAndMethod(this)
                                 .addCalledMethod(this).addValueSource(item, this).addSourceLine(this);
-						bugReporter.reportBug(bug);
+                        bugReporter.reportBug(bug);
                     }
 
                 }
@@ -87,8 +90,8 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
 
     /*
      * (non-Javadoc)
-     *
-	 * @see edu.umd.cs.findbugs.Detector#report()
+     * 
+     * @see edu.umd.cs.findbugs.Detector#report()
      */
     @Override
     public void report() {

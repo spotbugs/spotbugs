@@ -34,19 +34,20 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 
 /**
- * Repopulate a BugCollection with class features from
- * the classes in a specified jar file.
- *
+ * Repopulate a BugCollection with class features from the classes in a
+ * specified jar file.
+ * 
  * @author David Hovemeyer
  */
 public class RegenerateClassFeatures {
     private BugCollection bugCollection;
+
     private String jarFile;
 
     public RegenerateClassFeatures(BugCollection bugCollection, String jarFile) {
         this.bugCollection = bugCollection;
         this.jarFile = jarFile;
-	}
+    }
 
     public RegenerateClassFeatures execute() throws IOException {
         bugCollection.clearClassFeatures();
@@ -58,7 +59,7 @@ public class RegenerateClassFeatures {
         // Add all classes to repository (for hierarchy queries)
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
         while (entries.hasMoreElements()) {
-			ZipEntry entry = entries.nextElement();
+            ZipEntry entry = entries.nextElement();
 
             if (!entry.getName().endsWith(".class"))
                 continue;
@@ -69,12 +70,12 @@ public class RegenerateClassFeatures {
             Repository.addClass(javaClass);
             classList.add(javaClass);
         }
-		zipFile.close();
+        zipFile.close();
 
         for (JavaClass javaClass : classList) {
             ClassFeatureSet classFeatureSet = new ClassFeatureSet().initialize(javaClass);
             bugCollection.setClassFeatureSet(classFeatureSet);
-		}
+        }
 
         return this;
     }
@@ -82,14 +83,14 @@ public class RegenerateClassFeatures {
     /**
      * @return Returns the bugCollection.
      */
-	public BugCollection getBugCollection() {
+    public BugCollection getBugCollection() {
         return bugCollection;
     }
 
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
             System.err.println("Usage: " + RegenerateClassFeatures.class.getName() + " <bug collection> <jar file>");
-			System.exit(1);
+            System.exit(1);
         }
 
         SortedBugCollection bugCollection = new SortedBugCollection();

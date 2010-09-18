@@ -26,51 +26,56 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Used to signal a method not analyzed because it seemed unprofitable to do so
+ * 
  * @author pugh
  */
 public class MethodUnprofitableException extends CFGBuilderException {
     private static final long serialVersionUID = 1L;
+
     private final XMethod method;
 
     /**
      * Constructor.
-     *
-	 * @param method the method that is unprofitable to analyze
+     * 
+     * @param method
+     *            the method that is unprofitable to analyze
      */
     public MethodUnprofitableException(JavaClassAndMethod method) {
         super("Appears unprofitable to analyze " + method);
-		this.method = XFactory.createXMethod(method.getJavaClass(), method.getMethod());
+        this.method = XFactory.createXMethod(method.getJavaClass(), method.getMethod());
     }
 
     /**
      * Constructor.
-     *
-	 * @param jClass the class containing the method that is unprofitable to analyze
-     * @param method the method that is unprofitable to analyze
+     * 
+     * @param jClass
+     *            the class containing the method that is unprofitable to
+     *            analyze
+     * @param method
+     *            the method that is unprofitable to analyze
      */
     public MethodUnprofitableException(JavaClass jClass, Method method) {
-		super("Appears unprofitable to analyze " + method);
+        super("Appears unprofitable to analyze " + method);
         this.method = XFactory.createXMethod(jClass, method);
     }
 
-	/**
+    /**
      * Constructor.
-     *
-     * @param methodDescriptor the MethodDescriptor indicating the method it is unprofitable to analyze
-	 */
+     * 
+     * @param methodDescriptor
+     *            the MethodDescriptor indicating the method it is unprofitable
+     *            to analyze
+     */
     public MethodUnprofitableException(MethodDescriptor methodDescriptor) {
         super("Appears unprofitable to analyze " + methodDescriptor.toString());
-        this.method = XFactory.createXMethod(
-				methodDescriptor.getClassDescriptor().toDottedClassName(),
-                methodDescriptor.getName(),
-                methodDescriptor.getSignature(),
-                methodDescriptor.isStatic());
-	}
+        this.method = XFactory.createXMethod(methodDescriptor.getClassDescriptor().toDottedClassName(),
+                methodDescriptor.getName(), methodDescriptor.getSignature(), methodDescriptor.isStatic());
+    }
 
     /**
      * @return the method that is unprofitable to analyze
      */
-	public XMethod getMethod() {
+    public XMethod getMethod() {
         return method;
     }
 

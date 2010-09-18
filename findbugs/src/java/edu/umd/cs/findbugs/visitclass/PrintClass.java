@@ -32,7 +32,6 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-
 /**
  * @author pugh
  */
@@ -41,11 +40,12 @@ public class PrintClass {
     /**
      * @author pugh
      */
-	static final class ZipEntryComparator implements Comparator<ZipEntry>, Serializable {
+    static final class ZipEntryComparator implements Comparator<ZipEntry>, Serializable {
         private static final long serialVersionUID = 1L;
+
         public int compare(ZipEntry e1, ZipEntry e2) {
             String s1 = e1.getName();
-			int pos1 = s1.lastIndexOf('/');
+            int pos1 = s1.lastIndexOf('/');
             String p1 = "-";
             if (pos1 >= 0)
                 p1 = s1.substring(0, pos1);
@@ -53,80 +53,79 @@ public class PrintClass {
             String s2 = e2.getName();
             int pos2 = s2.lastIndexOf('/');
             String p2 = "-";
-			if (pos2 >= 0)
+            if (pos2 >= 0)
                 p2 = s2.substring(0, pos2);
             int r = p1.compareTo(p2);
             if (r != 0)
-				return r;
+                return r;
             return s1.compareTo(s2);
         }
     }
 
     static boolean code = false, constants = false;
+
     static boolean superClasses = false;
 
     public static void main(String argv[]) throws IOException {
         String[] file_name = new String[argv.length];
         int files = 0;
-		ClassParser parser = null;
+        ClassParser parser = null;
         String zip_file = null;
 
         /*
          * Parse command line arguments.
          */
-		for (int i = 0; i < argv.length; i++) {
+        for (int i = 0; i < argv.length; i++) {
             if (argv[i].charAt(0) == '-') { // command line switch
                 if (argv[i].equals("-constants"))
                     constants = true;
-				else if (argv[i].equals("-code"))
+                else if (argv[i].equals("-code"))
                     code = true;
                 else if (argv[i].equals("-super"))
                     superClasses = true;
-				else if (argv[i].equals("-zip"))
+                else if (argv[i].equals("-zip"))
                     zip_file = argv[++i];
             } else if (argv[i].endsWith(".zip") || argv[i].endsWith(".jar"))
                 zip_file = argv[i];
-			else { // add file name to list
+            else { // add file name to list
                 file_name[files++] = argv[i];
             }
         }
 
-        if (!constants) code = true;
+        if (!constants)
+            code = true;
         if (files == 0 && zip_file == null) {
             System.err.println("list: No input files specified");
-		} else {
+        } else {
 
             if (zip_file != null) {
                 for (int i = 0; i < files; i++)
-                    file_name[i] = file_name[i].replace('.','/');
-				ZipFile z = new ZipFile(zip_file);
-                TreeSet<ZipEntry> zipEntries = new TreeSet<ZipEntry>(
-                        new ZipEntryComparator());
-                for (Enumeration<? extends ZipEntry> e =  z
-						.entries(); e.hasMoreElements();)
+                    file_name[i] = file_name[i].replace('.', '/');
+                ZipFile z = new ZipFile(zip_file);
+                TreeSet<ZipEntry> zipEntries = new TreeSet<ZipEntry>(new ZipEntryComparator());
+                for (Enumeration<? extends ZipEntry> e = z.entries(); e.hasMoreElements();)
                     zipEntries.add(e.nextElement());
 
                 for (ZipEntry ze : zipEntries) {
                     String name = ze.getName();
-                    if (!name.endsWith(".class")) continue;
-					checkMatch: if (files > 0) {
+                    if (!name.endsWith(".class"))
+                        continue;
+                    checkMatch: if (files > 0) {
                         for (int i = 0; i < files; i++)
                             if (name.indexOf(file_name[i]) >= 0)
                                 break checkMatch;
-						continue;
+                        continue;
                     }
                     printClass(new ClassParser(z.getInputStream(ze), name));
-
-
 
                 }
                 z.close();
             } else
-				for (int i = 0; i < files; i++)
+                for (int i = 0; i < files; i++)
                     if (file_name[i].endsWith(".class")) {
                         if (zip_file == null)
                             printClass(new ClassParser(file_name[i]));
-						else
+                        else
                             printClass(new ClassParser(zip_file, file_name[i]));
 
                     }
@@ -141,20 +140,20 @@ public class PrintClass {
         if (superClasses) {
             try {
                 while (java_class != null) {
-					System.out.print(java_class.getClassName() + "  ");
+                    System.out.print(java_class.getClassName() + "  ");
                     java_class = java_class.getSuperClass();
                 }
             } catch (ClassNotFoundException e) {
-					System.out.println(e.getMessage());
+                System.out.println(e.getMessage());
 
             }
             System.out.println();
             return;
-		}
+        }
         if (constants || code)
             System.out.println(java_class); // Dump the contents
         if (constants) // Dump the constant pool ?
-			System.out.println(java_class.getConstantPool());
+            System.out.println(java_class.getConstantPool());
 
         if (code) // Dump the method code ?
             printCode(java_class.getMethods());
@@ -163,11 +162,11 @@ public class PrintClass {
     /**
      * Dump the disassembled code of all methods in the class.
      */
-	public static void printCode(Method[] methods) {
+    public static void printCode(Method[] methods) {
         for (Method m : methods) {
             System.out.println(m);
             Code code = m.getCode();
-			if (code != null)
+            if (code != null)
                 System.out.println(code);
 
         }

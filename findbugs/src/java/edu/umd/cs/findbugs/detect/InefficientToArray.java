@@ -20,7 +20,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -36,101 +35,104 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * Find occurrences of collection.toArray( new Foo[0] );
- * This causes another memory allocation through reflection
- * Much better to do collection.toArray( new Foo[collection.size()] );
- *
+ * Find occurrences of collection.toArray( new Foo[0] ); This causes another
+ * memory allocation through reflection Much better to do collection.toArray(
+ * new Foo[collection.size()] );
+ * 
  * @author Dave Brosius
  */
 public class InefficientToArray extends BytecodeScanningDetector implements StatelessDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("ita.debug");
 
     static final int SEEN_NOTHING = 0;
+
     static final int SEEN_ICONST_0 = 1;
+
     static final int SEEN_ANEWARRAY = 2;
 
     private final static JavaClass collectionClass;
 
     private BugReporter bugReporter;
+
     private BugAccumulator bugAccumulator;
+
     private int state = SEEN_NOTHING;
 
     static {
         JavaClass tmp = null;
         try {
-			tmp = AnalysisContext.lookupSystemClass("java.util.Collection");
+            tmp = AnalysisContext.lookupSystemClass("java.util.Collection");
         } catch (ClassNotFoundException cnfe) {
             AnalysisContext.reportMissingClass(cnfe);
         }
-		collectionClass = tmp;
+        collectionClass = tmp;
     }
 
     public InefficientToArray(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
-	}
-
-
-
-    @Override
-         public void visitClassContext(ClassContext classContext) {
-        if (collectionClass != null)
-			classContext.getJavaClass().accept(this);
     }
 
     @Override
-         public void visit(Method obj) {
+    public void visitClassContext(ClassContext classContext) {
+        if (collectionClass != null)
+            classContext.getJavaClass().accept(this);
+    }
+
+    @Override
+    public void visit(Method obj) {
         if (DEBUG)
-			System.out.println("------------------- Analyzing " + obj.getName() + " ----------------");
+            System.out.println("------------------- Analyzing " + obj.getName() + " ----------------");
         state = SEEN_NOTHING;
         super.visit(obj);
     }
 
     @Override
-    public void  visit(Code obj) {
+    public void visit(Code obj) {
         super.visit(obj);
-		bugAccumulator.reportAccumulatedBugs();
+        bugAccumulator.reportAccumulatedBugs();
 
     }
+
     @Override
-		 public void sawOpcode(int seen) {
-        if (DEBUG) System.out.println("State: " + state + "  Opcode: " + OPCODE_NAMES[seen]);
+    public void sawOpcode(int seen) {
+        if (DEBUG)
+            System.out.println("State: " + state + "  Opcode: " + OPCODE_NAMES[seen]);
 
         switch (state) {
         case SEEN_NOTHING:
             if (seen == ICONST_0)
-				state = SEEN_ICONST_0;
+                state = SEEN_ICONST_0;
             break;
 
         case SEEN_ICONST_0:
             if (seen == ANEWARRAY) {
                 state = SEEN_ANEWARRAY;
-			} else
+            } else
                 state = SEEN_NOTHING;
             break;
 
         case SEEN_ANEWARRAY:
-            if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE))
-                    && (getNameConstantOperand().equals("toArray"))
-					&& (getSigConstantOperand().equals("([Ljava/lang/Object;)[Ljava/lang/Object;"))) {
+            if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && (getNameConstantOperand().equals("toArray"))
+                    && (getSigConstantOperand().equals("([Ljava/lang/Object;)[Ljava/lang/Object;"))) {
                 try {
                     String clsName = getDottedClassConstantOperand();
                     JavaClass cls = Repository.lookupClass(clsName);
-					if (cls.implementationOf(collectionClass))
-                        bugAccumulator.accumulateBug(new BugInstance(this, "ITA_INEFFICIENT_TO_ARRAY", LOW_PRIORITY)
-                                .addClassAndMethod(this), this);
+                    if (cls.implementationOf(collectionClass))
+                        bugAccumulator.accumulateBug(
+                                new BugInstance(this, "ITA_INEFFICIENT_TO_ARRAY", LOW_PRIORITY).addClassAndMethod(this), this);
 
                 } catch (ClassNotFoundException cnfe) {
                     bugReporter.reportMissingClass(cnfe);
                 }
-			}
+            }
             state = SEEN_NOTHING;
             break;
 
         default:
             state = SEEN_NOTHING;
             break;
-		}
+        }
     }
 }
 

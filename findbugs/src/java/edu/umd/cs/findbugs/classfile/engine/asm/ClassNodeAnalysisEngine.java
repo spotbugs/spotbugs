@@ -30,17 +30,20 @@ import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 
 /**
- * Analysis engine to produce the ClassNode (ASM tree format)
- * for a class.
- *
+ * Analysis engine to produce the ClassNode (ASM tree format) for a class.
+ * 
  * @author David Hovemeyer
  */
 public class ClassNodeAnalysisEngine extends RecomputableClassAnalysisEngine<ClassNode> {
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public ClassNode analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
+    public ClassNode analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
         ClassReader classReader = analysisCache.getClassAnalysis(ClassReader.class, descriptor);
 
         ICodeBaseEntry entry = analysisCache.getClassPath().lookupResource(descriptor.toResourceName());
@@ -48,22 +51,25 @@ public class ClassNodeAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
         // One of the less-than-ideal features of ASM is that
         // invalid classfile format is indicated by a
         // random runtime exception rather than something
-		// indicative of the real problem.
+        // indicative of the real problem.
         try {
             ClassNode cn = new ClassNode();
             classReader.accept(cn, 0);
-			return cn;
+            return cn;
         } catch (RuntimeException e) {
             throw new InvalidClassFileFormatException(descriptor, entry, e);
         }
-	}
-
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
-     */
-	public void registerWith(IAnalysisCache analysisCache) {
-        analysisCache.registerClassAnalysisEngine(ClassNode.class, this);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
+     * .findbugs.classfile.IAnalysisCache)
+     */
+    public void registerWith(IAnalysisCache analysisCache) {
+        analysisCache.registerClassAnalysisEngine(ClassNode.class, this);
+    }
 
 }

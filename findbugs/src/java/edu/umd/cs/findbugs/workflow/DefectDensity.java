@@ -1,4 +1,3 @@
-
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003-2005 William Pugh
@@ -27,61 +26,62 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
 
 /**
- * Java main application to compute defect density for a bug collection
- * (stored as an XML collection)
- *
+ * Java main application to compute defect density for a bug collection (stored
+ * as an XML collection)
+ * 
  * @author William Pugh
  */
 public class DefectDensity {
     private static void printRow(Object... values) {
         for (Object s : values) {
             System.out.print(s);
-			System.out.print("\t");
+            System.out.print("\t");
         }
         System.out.println();
 
     }
 
     public static double density(int bugs, int ncss) {
-        if (ncss == 0) return Double.NaN;
-        long bugsPer10KNCSS = Math.round(10000.0*bugs/ncss);
-		return bugsPer10KNCSS/10.0;
+        if (ncss == 0)
+            return Double.NaN;
+        long bugsPer10KNCSS = Math.round(10000.0 * bugs / ncss);
+        return bugsPer10KNCSS / 10.0;
     }
+
     public static void main(String args[]) throws Exception {
 
-        if (args.length>1 || (args.length>0 && "-help".equals(args[0]))) {
+        if (args.length > 1 || (args.length > 0 && "-help".equals(args[0]))) {
             System.err.println("Usage: " + DefectDensity.class.getName() + " [<infile>]");
             System.exit(1);
-		}
+        }
         FindBugs.setNoAnalysis();
         BugCollection origCollection = new SortedBugCollection();
         int argCount = 0;
-		if (argCount == args.length)
+        if (argCount == args.length)
             origCollection.readXML(System.in);
         else
             origCollection.readXML(args[argCount]);
-		ProjectStats stats = origCollection.getProjectStats();
+        ProjectStats stats = origCollection.getProjectStats();
         printRow("kind", "name", "density/KNCSS", "bugs", "NCSS");
-        double projectDensity = density(stats.getTotalBugs(),  stats.getCodeSize());
-        printRow("project", origCollection.getCurrentAppVersion().getReleaseName(),
-				projectDensity, stats.getTotalBugs(),
+        double projectDensity = density(stats.getTotalBugs(), stats.getCodeSize());
+        printRow("project", origCollection.getCurrentAppVersion().getReleaseName(), projectDensity, stats.getTotalBugs(),
                 stats.getCodeSize());
-        for (PackageStats p : stats.getPackageStats()) if (p.getTotalBugs() > 4) {
+        for (PackageStats p : stats.getPackageStats())
+            if (p.getTotalBugs() > 4) {
 
-
-                double packageDensity = density( p.getTotalBugs(),p.size());
-                if (Double.isNaN(packageDensity) || packageDensity < projectDensity) continue;
-                printRow("package", p.getPackageName(),
-						packageDensity, p.getTotalBugs(), p.size());
-            for (ClassStats c : p.getSortedClassStats()) if (c.getTotalBugs() > 4) {
-                double density = density( c.getTotalBugs(), c.size());
-                if (Double.isNaN(density) || density < packageDensity) continue;
-				printRow("class", c.getName(), 
-                        density, c.getTotalBugs(), c.size());
+                double packageDensity = density(p.getTotalBugs(), p.size());
+                if (Double.isNaN(packageDensity) || packageDensity < projectDensity)
+                    continue;
+                printRow("package", p.getPackageName(), packageDensity, p.getTotalBugs(), p.size());
+                for (ClassStats c : p.getSortedClassStats())
+                    if (c.getTotalBugs() > 4) {
+                        double density = density(c.getTotalBugs(), c.size());
+                        if (Double.isNaN(density) || density < packageDensity)
+                            continue;
+                        printRow("class", c.getName(), density, c.getTotalBugs(), c.size());
+                    }
             }
-        }
 
     }
-
 
 }

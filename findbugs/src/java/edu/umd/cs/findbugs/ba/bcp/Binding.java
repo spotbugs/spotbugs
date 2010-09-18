@@ -21,22 +21,26 @@ package edu.umd.cs.findbugs.ba.bcp;
 
 /**
  * A Binding binds a name to a Variable.
- *
+ * 
  * @author David Hovemeyer
  * @see Variable
  */
 public class Binding {
     private final String varName;
+
     private final Variable variable;
 
     /**
      * Constructor.
-     *
-	 * @param varName  the name of the variable
-     * @param variable the variable
+     * 
+     * @param varName
+     *            the name of the variable
+     * @param variable
+     *            the variable
      */
     public Binding(String varName, Variable variable) {
-		if (variable == null) throw new IllegalArgumentException("No variable!");
+        if (variable == null)
+            throw new IllegalArgumentException("No variable!");
         this.varName = varName;
         this.variable = variable;
     }
@@ -44,25 +48,25 @@ public class Binding {
     /**
      * Get the variable name.
      */
-	public String getVarName() {
+    public String getVarName() {
         return varName;
     }
 
     /**
      * Get the variable of the variable.
      */
-	public Variable getVariable() {
+    public Variable getVariable() {
         return variable;
     }
 
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-		buf.append(varName);
+        buf.append(varName);
         buf.append('=');
         buf.append(variable.toString());
         return buf.toString();
-	}
+    }
 }
 
 // vim:ts=4

@@ -19,16 +19,15 @@
 
 package edu.umd.cs.findbugs.bcel;
 
-
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.UseAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 /**
- * Base class for Detectors which want to perform a preorder traversal of the classfile
- * including visiting Annotations.
- *
+ * Base class for Detectors which want to perform a preorder traversal of the
+ * classfile including visiting Annotations.
+ * 
  * @see AnnotationVisitor
  */
 abstract public class AnnotationDetector extends AnnotationVisitor implements Detector, UseAnnotationDatabase {
@@ -37,16 +36,16 @@ abstract public class AnnotationDetector extends AnnotationVisitor implements De
     public void visitClassContext(ClassContext classContext) {
         this.classContext = classContext;
         classContext.getJavaClass().accept(this);
-	}
+    }
 
     /**
      * Get the ClassContext of the class currently being visited.
-     *
-	 * @return the current ClassContext
+     * 
+     * @return the current ClassContext
      */
     public ClassContext getClassContext() {
         return classContext;
-	}
+    }
 
     public void report() {
     }

@@ -46,49 +46,50 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 
 /**
- * Build a database of reference types stored into fields.
- * This can be used in the future to improve the precision
- * of type analysis when values are loaded from fields.
- *
+ * Build a database of reference types stored into fields. This can be used in
+ * the future to improve the precision of type analysis when values are loaded
+ * from fields.
+ * 
  * @author David Hovemeyer
  */
 public class TrainFieldStoreTypes implements Detector, TrainingDetector {
     private BugReporter bugReporter;
+
     private FieldStoreTypeDatabase database;
 
     public TrainFieldStoreTypes(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.database = new FieldStoreTypeDatabase();
-	}
+    }
 
     public void visitClassContext(ClassContext classContext) {
         Method[] methodList = classContext.getJavaClass().getMethods();
         for (Method method : methodList) {
-			if (method.getCode() == null)
+            if (method.getCode() == null)
                 continue;
 
             try {
                 analyzeMethod(classContext, method);
             } catch (CFGBuilderException e) {
-				bugReporter.logError("Error compting field store types", e);
+                bugReporter.logError("Error compting field store types", e);
             } catch (DataflowAnalysisException e) {
                 bugReporter.logError("Error compting field store types", e);
             } catch (ClassNotFoundException e) {
-				bugReporter.reportMissingClass(e);
+                bugReporter.reportMissingClass(e);
             }
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method)
-                throws CFGBuilderException, DataflowAnalysisException, ClassNotFoundException {
+    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException,
+            ClassNotFoundException {
         CFG cfg = classContext.getCFG(method);
-		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+        TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
 
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
             Instruction ins = location.getHandle().getInstruction();
-			short opcode = ins.getOpcode();
+            short opcode = ins.getOpcode();
 
             // Field store instruction?
             if (opcode != Constants.PUTFIELD && opcode != Constants.PUTSTATIC)
@@ -97,44 +98,45 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
             // Check if field type is a reference type
             FieldInstruction fins = (FieldInstruction) ins;
             Type fieldType = fins.getType(cpg);
-			if (!(fieldType instanceof ReferenceType))
+            if (!(fieldType instanceof ReferenceType))
                 continue;
 
             // Find the exact field being stored into
             XField xfield = Hierarchy.findXField(fins, cpg);
             if (xfield == null)
-				continue;
+                continue;
 
-            // Skip public and protected fields, since it is reasonable to assume
+            // Skip public and protected fields, since it is reasonable to
+            // assume
             // we won't see every store to those fields
             if (xfield.isPublic() || xfield.isProtected())
-				continue;
+                continue;
 
             // The top value on the stack is the one which will be stored
             // into the field
             TypeFrame frame = typeDataflow.getFactAtLocation(location);
-			if (!frame.isValid())
+            if (!frame.isValid())
                 continue;
             Type storeType = frame.getTopValue();
             if (!(storeType instanceof ReferenceType))
-				continue;
+                continue;
 
             // Get or create the field store type set
             FieldStoreType property = database.getProperty(xfield.getFieldDescriptor());
             if (property == null) {
-				property = new FieldStoreType();
+                property = new FieldStoreType();
                 database.setProperty(xfield.getFieldDescriptor(), property);
             }
 
             // Add the store type to the set
             property.addTypeSignature(storeType.getSignature());
         }
-	}
+    }
 
     public void report() {
         database.purgeBoringEntries();
-        AnalysisContext.currentAnalysisContext().storePropertyDatabase(
-				database, FieldStoreTypeDatabase.DEFAULT_FILENAME, "store type database");
+        AnalysisContext.currentAnalysisContext().storePropertyDatabase(database, FieldStoreTypeDatabase.DEFAULT_FILENAME,
+                "store type database");
     }
 
 }

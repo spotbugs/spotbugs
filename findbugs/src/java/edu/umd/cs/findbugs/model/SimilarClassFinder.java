@@ -36,7 +36,7 @@ public class SimilarClassFinder {
     public void add(ClassFeatureSet classFeatureSet) {
         for (SimilarClassSet similarClassSet : similarClassSetList) {
             if (similarClassSet.shouldContain(classFeatureSet)) {
-				similarClassSet.addMember(classFeatureSet);
+                similarClassSet.addMember(classFeatureSet);
                 return;
             }
         }
@@ -44,7 +44,7 @@ public class SimilarClassFinder {
         SimilarClassSet newSimilarClassSet = new SimilarClassSet();
         newSimilarClassSet.addMember(classFeatureSet);
         similarClassSetList.add(newSimilarClassSet);
-	}
+    }
 
     public int size() {
         return similarClassSetList.size();

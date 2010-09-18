@@ -129,7 +129,7 @@ import edu.umd.cs.findbugs.visitclass.Util;
  * A Detector to find instructions where a NullPointerException might be raised.
  * We also look for useless reference comparisons involving null and non-null
  * values.
- *
+ * 
  * @author David Hovemeyer
  * @author William Pugh
  * @see edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis
@@ -176,7 +176,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     public FindNullDeref(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
-	}
+    }
 
     public void visitClassContext(ClassContext classContext) {
         this.classContext = classContext;
@@ -186,12 +186,12 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         JavaClass jclass = classContext.getJavaClass();
         String className = jclass.getClassName();
         if (CLASS != null && !className.equals(CLASS))
-			return;
+            return;
 
         List<Method> methodsInCallOrder = classContext.getMethodsInCallOrder();
         for (Method method : methodsInCallOrder) {
             try {
-				if (method.isAbstract() || method.isNative() || method.getCode() == null)
+                if (method.isAbstract() || method.isNative() || method.getCode() == null)
                     continue;
 
                 currentMethod = SignatureConverter.convertMethodSignature(jclass, method);
@@ -199,15 +199,15 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                 if (METHOD != null && !method.getName().equals(METHOD))
                     continue;
                 if (DEBUG || DEBUG_NULLARG)
-					System.out.println("Checking for NP in " + currentMethod);
+                    System.out.println("Checking for NP in " + currentMethod);
                 analyzeMethod(classContext, method);
             } catch (MissingClassException e) {
                 bugReporter.reportMissingClass(e.getClassNotFoundException());
-			} catch (DataflowAnalysisException e) {
+            } catch (DataflowAnalysisException e) {
                 bugReporter.logError("While analyzing " + currentMethod + ": FindNullDeref caught dae exception", e);
             } catch (CFGBuilderException e) {
                 bugReporter.logError("While analyzing " + currentMethod + ": FindNullDeref caught cfgb exception", e);
-			}
+            }
             bugAccumulator.reportAccumulatedBugs();
         }
     }
@@ -226,7 +226,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         if (methodGen == null)
             return;
         if (!checkedDatabases) {
-			checkDatabases();
+            checkDatabases();
             checkedDatabases = true;
         }
 
@@ -235,19 +235,19 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         ClassDescriptor junitTestAnnotation = DescriptorFactory.createClassDescriptor("org/junit/Test");
         AnnotationValue av = xMethod.getAnnotation(junitTestAnnotation);
         if (av != null) {
-			Object value = av.getValue("expected");
+            Object value = av.getValue("expected");
 
             if (value instanceof Type) {
                 String className = ((Type) value).getClassName();
                 if (className.equals("java.lang.NullPointerException"))
-					return;
+                    return;
             }
         }
 
         // UsagesRequiringNonNullValues uses =
         // classContext.getUsagesRequiringNonNullValues(method);
         this.method = method;
-		this.methodAnnotation = getMethodNullnessAnnotation();
+        this.methodAnnotation = getMethodNullnessAnnotation();
 
         if (DEBUG || DEBUG_NULLARG)
             System.out.println("FND: " + SignatureConverter.convertMethodSignature(methodGen));
@@ -262,11 +262,11 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         // Create a NullDerefAndRedundantComparisonFinder object to do the
         // actual
         // work. It will call back to report null derefs and redundant null
-		// comparisons
+        // comparisons
         // through the NullDerefAndRedundantComparisonCollector interface we
         // implement.
         NullDerefAndRedundantComparisonFinder worker = new NullDerefAndRedundantComparisonFinder(classContext, method, this);
-		worker.execute();
+        worker.execute();
 
         checkCallSitesAndReturnInstructions();
 
@@ -275,19 +275,19 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     /**
      * Find set of blocks which were known to be dead before doing the null
      * pointer analysis.
-	 * 
+     * 
      * @return set of previously dead blocks, indexed by block id
      * @throws CFGBuilderException
      * @throws DataflowAnalysisException
-	 */
+     */
     private BitSet findPreviouslyDeadBlocks() throws DataflowAnalysisException, CFGBuilderException {
         BitSet deadBlocks = new BitSet();
         ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
-		for (Iterator<BasicBlock> i = vnaDataflow.getCFG().blockIterator(); i.hasNext();) {
+        for (Iterator<BasicBlock> i = vnaDataflow.getCFG().blockIterator(); i.hasNext();) {
             BasicBlock block = i.next();
             ValueNumberFrame vnaFrame = vnaDataflow.getStartFact(block);
             if (vnaFrame.isTop()) {
-				deadBlocks.set(block.getLabel());
+                deadBlocks.set(block.getLabel());
             }
         }
 
@@ -297,11 +297,11 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     /**
      * Check whether or not the various interprocedural databases we can use
      * exist and are nonempty.
-	 */
+     */
     private void checkDatabases() {
         AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
         unconditionalDerefParamDatabase = analysisContext.getUnconditionalDerefParamDatabase();
-	}
+    }
 
     private <DatabaseType extends PropertyDatabase<?, ?>> boolean isDatabaseNonEmpty(DatabaseType database) {
         return database != null && !database.isEmpty();
@@ -309,8 +309,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
     /**
      * See if the currently-visited method declares a
-     *
-	 * @NonNull annotation, or overrides a method which declares a
+     * 
+     * @NonNull annotation, or overrides a method which declares a
      * @NonNull annotation.
      */
     private NullnessAnnotation getMethodNullnessAnnotation() {
@@ -318,13 +318,13 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         if (method.getSignature().indexOf(")L") >= 0 || method.getSignature().indexOf(")[") >= 0) {
             if (DEBUG_NULLRETURN) {
                 System.out.println("Checking return annotation for "
-				        + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
+                        + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
             }
 
             XMethod m = XFactory.createXMethod(classContext.getJavaClass(), method);
             return AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase().getResolvedAnnotation(m, false);
         }
-		return NullnessAnnotation.UNKNOWN_NULLNESS;
+        return NullnessAnnotation.UNKNOWN_NULLNESS;
     }
 
     static class CheckCallSitesAndReturnInstructions {
@@ -333,14 +333,14 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     private void checkCallSitesAndReturnInstructions() {
         Profiler profiler = Global.getAnalysisCache().getProfiler();
         profiler.start(CheckCallSitesAndReturnInstructions.class);
-		try {
+        try {
             ConstantPoolGen cpg = classContext.getConstantPoolGen();
             TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 
             for (Iterator<Location> i = classContext.getCFG(method).locationIterator(); i.hasNext();) {
                 Location location = i.next();
                 Instruction ins = location.getHandle().getInstruction();
-				try {
+                try {
                     ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
                     if (!vnaFrame.isValid())
                         continue;
@@ -352,15 +352,15 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                         examineReturnInstruction(location);
                     } else if (ins instanceof PUTFIELD) {
                         examinePutfieldInstruction(location, (PUTFIELD) ins, cpg);
-					}
+                    }
                 } catch (ClassNotFoundException e) {
                     bugReporter.reportMissingClass(e);
                 }
-			}
+            }
         } catch (CheckedAnalysisException e) {
             AnalysisContext.logError("error:", e);
         } finally {
-			profiler.end(CheckCallSitesAndReturnInstructions.class);
+            profiler.end(CheckCallSitesAndReturnInstructions.class);
         }
     }
 
@@ -375,13 +375,13 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         // Don't check equals() calls.
         // If an equals() call unconditionally dereferences the parameter,
         // it is the fault of the method, not the caller.
-		if (methodName.equals("equals") && signature.equals("(Ljava/lang/Object;)Z"))
+        if (methodName.equals("equals") && signature.equals("(Ljava/lang/Object;)Z"))
             return;
 
         int returnTypeStart = signature.indexOf(')');
         if (returnTypeStart < 0)
             return;
-		String paramList = signature.substring(0, returnTypeStart + 1);
+        String paramList = signature.substring(0, returnTypeStart + 1);
 
         if (paramList.equals("()") || (paramList.indexOf("L") < 0 && paramList.indexOf('[') < 0))
             // Method takes no arguments, or takes no reference arguments
@@ -390,27 +390,27 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         // See if any null arguments are passed
         IsNullValueFrame frame = classContext.getIsNullValueDataflow(method).getFactAtLocation(location);
         if (!frame.isValid())
-			return;
+            return;
         BitSet nullArgSet = frame.getArgumentSet(invokeInstruction, cpg, new DataflowValueChooser<IsNullValue>() {
             public boolean choose(IsNullValue value) {
                 // Only choose non-exception values.
-				// Values null on an exception path might be due to
+                // Values null on an exception path might be due to
                 // infeasible control flow.
                 return value.mightBeNull() && !value.isException() && !value.isReturnValue();
             }
-		});
+        });
         BitSet definitelyNullArgSet = frame.getArgumentSet(invokeInstruction, cpg, new DataflowValueChooser<IsNullValue>() {
             public boolean choose(IsNullValue value) {
                 return value.isDefinitelyNull();
-			}
+            }
         });
         nullArgSet.and(definitelyNullArgSet);
         if (nullArgSet.isEmpty())
-			return;
+            return;
         if (DEBUG_NULLARG) {
             System.out.println("Null arguments passed: " + nullArgSet);
             System.out.println("Frame is: " + frame);
-			System.out.println("# arguments: " + frame.getNumArguments(invokeInstruction, cpg));
+            System.out.println("# arguments: " + frame.getNumArguments(invokeInstruction, cpg));
             XMethod xm = XFactory.createXMethod(invokeInstruction, cpg);
             System.out.print("Signature: " + xm.getSignature());
         }
@@ -418,12 +418,12 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         if (unconditionalDerefParamDatabase != null) {
             checkUnconditionallyDereferencedParam(location, cpg, typeDataflow, invokeInstruction, nullArgSet,
                     definitelyNullArgSet);
-		}
+        }
 
         if (DEBUG_NULLARG) {
             System.out.println("Checking nonnull params");
         }
-		checkNonNullParam(location, cpg, typeDataflow, invokeInstruction, nullArgSet, definitelyNullArgSet);
+        checkNonNullParam(location, cpg, typeDataflow, invokeInstruction, nullArgSet, definitelyNullArgSet);
 
     }
 
@@ -433,25 +433,25 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         IsNullValueDataflow invDataflow = classContext.getIsNullValueDataflow(method);
         IsNullValueFrame frame = invDataflow.getFactAtLocation(location);
         if (!frame.isValid())
-			return;
+            return;
         IsNullValue tos = frame.getTopValue();
         if (tos.isDefinitelyNull()) {
             XField field = XFactory.createXField(ins, cpg);
-			NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
+            NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
                     .getResolvedAnnotation(field, false);
             if (annotation == NullnessAnnotation.NONNULL) {
 
                 BugAnnotation variableAnnotation = null;
                 try {
                     ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
-					ValueNumber valueNumber = vnaFrame.getTopValue();
+                    ValueNumber valueNumber = vnaFrame.getTopValue();
                     variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber,
                             vnaFrame, "VALUE_OF");
 
                 } catch (DataflowAnalysisException e) {
                     AnalysisContext.logError("error", e);
                 } catch (CFGBuilderException e) {
-					AnalysisContext.logError("error", e);
+                    AnalysisContext.logError("error", e);
                 }
 
                 BugInstance warning = new BugInstance(this, "NP_STORE_INTO_NONNULL_FIELD", tos.isDefinitelyNull() ? HIGH_PRIORITY
@@ -461,69 +461,69 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                 bugReporter.reportBug(warning);
             }
         }
-	}
+    }
 
     private void examineReturnInstruction(Location location) throws DataflowAnalysisException, CFGBuilderException {
         if (DEBUG_NULLRETURN) {
             System.out.println("Checking null return at " + location);
-		}
+        }
 
         IsNullValueDataflow invDataflow = classContext.getIsNullValueDataflow(method);
         IsNullValueFrame frame = invDataflow.getFactAtLocation(location);
         ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
-		if (!vnaFrame.isValid())
+        if (!vnaFrame.isValid())
             return;
         ValueNumber valueNumber = vnaFrame.getTopValue();
         if (!frame.isValid())
-			return;
+            return;
         IsNullValue tos = frame.getTopValue();
         if (tos.isDefinitelyNull()) {
             BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame,
-			        "VALUE_OF");
+                    "VALUE_OF");
 
             String bugPattern = "NP_NONNULL_RETURN_VIOLATION";
             int priority = NORMAL_PRIORITY;
             if (tos.isDefinitelyNull() && !tos.isException())
-				priority = HIGH_PRIORITY;
+                priority = HIGH_PRIORITY;
             String methodName = method.getName();
             if (methodName.equals("clone")) {
                 bugPattern = "NP_CLONE_COULD_RETURN_NULL";
-				priority = NORMAL_PRIORITY;
+                priority = NORMAL_PRIORITY;
             } else if (methodName.equals("toString")) {
                 bugPattern = "NP_TOSTRING_COULD_RETURN_NULL";
                 priority = NORMAL_PRIORITY;
-			}
+            }
             BugInstance warning = new BugInstance(this, bugPattern, priority).addClassAndMethod(classContext.getJavaClass(),
                     method).addOptionalAnnotation(variable);
             bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(classContext, method, location));
-		}
+        }
     }
 
     private boolean hasManyPreceedingNullTests(int pc) {
         int ifNullTests = 0;
         int ifNonnullTests = 0;
-		BitSet seen = new BitSet();
+        BitSet seen = new BitSet();
         try {
             for (Iterator<Location> i = classContext.getCFG(method).locationIterator(); i.hasNext();) {
                 Location loc = i.next();
-				int pc2 = loc.getHandle().getPosition();
+                int pc2 = loc.getHandle().getPosition();
                 if (pc2 >= pc || pc2 < pc - 30)
                     continue;
                 Instruction ins = loc.getHandle().getInstruction();
-				if (ins instanceof IFNONNULL && !seen.get(pc2)) {
+                if (ins instanceof IFNONNULL && !seen.get(pc2)) {
                     ifNonnullTests++;
                     seen.set(pc2);
                 } else if (ins instanceof IFNULL && !seen.get(pc2)) {
-					ifNullTests++;
+                    ifNullTests++;
                     seen.set(pc2);
                 }
             }
-			boolean result = ifNullTests + ifNonnullTests > 2;
+            boolean result = ifNullTests + ifNonnullTests > 2;
 
             // System.out.println("Preceeding null tests " + ifNullTests + " " +
             // ifNonnullTests + " " + result);
             return result;
-		} catch (CFGBuilderException e) {
+        } catch (CFGBuilderException e) {
             return false;
         }
     }
@@ -539,11 +539,11 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/NullPointerException", position);
         if (catchSize < Integer.MAX_VALUE)
             return true;
-		catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/RuntimeException", position);
+        catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/RuntimeException", position);
         if (catchSize < Integer.MAX_VALUE)
             return true;
         catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/Exception", position);
-		if (catchSize < Integer.MAX_VALUE)
+        if (catchSize < Integer.MAX_VALUE)
             return true;
 
         return false;
@@ -562,18 +562,18 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/NumberFormatException", position);
             if (catchSize < Integer.MAX_VALUE)
                 return true;
-			catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/IllegalArgumentException", position);
+            catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/IllegalArgumentException", position);
             if (catchSize < Integer.MAX_VALUE)
                 return true;
 
             catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/RuntimeException", position);
             if (catchSize < Integer.MAX_VALUE)
                 return true;
-			catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/Exception", position);
+            catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/Exception", position);
             if (catchSize < Integer.MAX_VALUE)
                 return true;
         }
-		return false;
+        return false;
     }
 
     private void checkUnconditionallyDereferencedParam(Location location, ConstantPoolGen cpg, TypeDataflow typeDataflow,
@@ -583,21 +583,22 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         if (inExplictCatchNullBlock(location))
             return;
         boolean caught = inIndirectCatchNullBlock(location);
-		if (caught && skipIfInsideCatchNull())
+        if (caught && skipIfInsideCatchNull())
             return;
 
         // See what methods might be called here
         XMethod calledMethod = XFactory.createXMethod(invokeInstruction, cpg);
         if (true) {
-			// If a parameter is already marked as nonnull, don't complain about it here.
+            // If a parameter is already marked as nonnull, don't complain about
+            // it here.
             nullArgSet = (BitSet) nullArgSet.clone();
             definitelyNullArgSet = (BitSet) definitelyNullArgSet.clone();
             ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
-			TypeQualifierValue nonnullTypeQualifierValue = TypeQualifierValue.getValue(nonnullClassDesc, null);
+            TypeQualifierValue nonnullTypeQualifierValue = TypeQualifierValue.getValue(nonnullClassDesc, null);
             for (int i = nullArgSet.nextSetBit(0); i >= 0; i = nullArgSet.nextSetBit(i + 1)) {
                 TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(calledMethod, i,
                         nonnullTypeQualifierValue);
-				if (tqa != null && tqa.when == When.ALWAYS) {
+                if (tqa != null && tqa.when == When.ALWAYS) {
                     nullArgSet.clear(i);
                     definitelyNullArgSet.clear(i);
                 }
@@ -605,7 +606,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             }
         }
         TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
-		Set<JavaClassAndMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(invokeInstruction, typeFrame, cpg);
+        Set<JavaClassAndMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(invokeInstruction, typeFrame, cpg);
         if (DEBUG_NULLARG) {
             System.out.println("Possibly called methods: " + targetMethodSet);
         }
@@ -613,17 +614,17 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         // See if any call targets unconditionally dereference one of the null
         // arguments
         BitSet unconditionallyDereferencedNullArgSet = new BitSet();
-		List<JavaClassAndMethod> dangerousCallTargetList = new LinkedList<JavaClassAndMethod>();
+        List<JavaClassAndMethod> dangerousCallTargetList = new LinkedList<JavaClassAndMethod>();
         List<JavaClassAndMethod> veryDangerousCallTargetList = new LinkedList<JavaClassAndMethod>();
         for (JavaClassAndMethod targetMethod : targetMethodSet) {
             if (DEBUG_NULLARG) {
-				System.out.println("For target method " + targetMethod);
+                System.out.println("For target method " + targetMethod);
             }
 
             ParameterProperty property = unconditionalDerefParamDatabase.getProperty(targetMethod.toMethodDescriptor());
             if (property == null)
                 continue;
-			if (DEBUG_NULLARG) {
+            if (DEBUG_NULLARG) {
                 System.out.println("\tUnconditionally dereferenced params: " + property);
             }
 
@@ -648,36 +649,36 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         // See if there are any safe targets
         Set<JavaClassAndMethod> safeCallTargetSet = new HashSet<JavaClassAndMethod>();
         safeCallTargetSet.addAll(targetMethodSet);
-		safeCallTargetSet.removeAll(dangerousCallTargetList);
+        safeCallTargetSet.removeAll(dangerousCallTargetList);
         if (safeCallTargetSet.isEmpty()) {
             propertySet.addProperty(NullArgumentWarningProperty.ALL_DANGEROUS_TARGETS);
             if (dangerousCallTargetList.size() == 1) {
-				propertySet.addProperty(NullArgumentWarningProperty.MONOMORPHIC_CALL_SITE);
+                propertySet.addProperty(NullArgumentWarningProperty.MONOMORPHIC_CALL_SITE);
             }
         }
 
         // Call to private method? In theory there should be only one possible
         // target.
         boolean privateCall = safeCallTargetSet.isEmpty() && dangerousCallTargetList.size() == 1
-		        && dangerousCallTargetList.get(0).getMethod().isPrivate();
+                && dangerousCallTargetList.get(0).getMethod().isPrivate();
 
         String bugType;
         int priority;
         if (privateCall || invokeInstruction.getOpcode() == Constants.INVOKESTATIC
-		        || invokeInstruction.getOpcode() == Constants.INVOKESPECIAL) {
+                || invokeInstruction.getOpcode() == Constants.INVOKESPECIAL) {
             bugType = "NP_NULL_PARAM_DEREF_NONVIRTUAL";
             priority = HIGH_PRIORITY;
         } else if (safeCallTargetSet.isEmpty()) {
-			bugType = "NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS";
+            bugType = "NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS";
             priority = NORMAL_PRIORITY;
         } else {
             return;
-		}
+        }
 
         if (caught)
             priority++;
         if (dangerousCallTargetList.size() > veryDangerousCallTargetList.size())
-			priority++;
+            priority++;
         else
             propertySet.addProperty(NullArgumentWarningProperty.ACTUAL_PARAMETER_GUARANTEED_NULL);
         XMethod calledFrom = XFactory.createXMethod(classContext.getJavaClass(), method);
@@ -685,7 +686,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         if (safeCallToPrimateParseMethod(calledMethod, location))
             return;
         BugInstance warning = new BugInstance(this, bugType, priority).addClassAndMethod(classContext.getJavaClass(), method)
-		        .addMethod(calledMethod).describe(MethodAnnotation.METHOD_CALLED).addSourceLine(classContext, method, location);
+                .addMethod(calledMethod).describe(MethodAnnotation.METHOD_CALLED).addSourceLine(classContext, method, location);
 
         boolean uncallable = false;
         if (!AnalysisContext.currentXFactory().isCalledDirectlyOrIndirectly(calledFrom) && calledFrom.isPrivate()) {
@@ -693,17 +694,17 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             propertySet.addProperty(GeneralWarningProperty.IN_UNCALLABLE_METHOD);
             uncallable = true;
         }
-		// Check which params might be null
+        // Check which params might be null
         addParamAnnotations(location, definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
 
         if (bugType.equals("NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS")) {
             // Add annotations for dangerous method call targets
             for (JavaClassAndMethod dangerousCallTarget : veryDangerousCallTargetList) {
-				warning.addMethod(dangerousCallTarget).describe(MethodAnnotation.METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL);
+                warning.addMethod(dangerousCallTarget).describe(MethodAnnotation.METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL);
             }
             dangerousCallTargetList.removeAll(veryDangerousCallTargetList);
             if (DEBUG_NULLARG) {
-				// Add annotations for dangerous method call targets
+                // Add annotations for dangerous method call targets
                 for (JavaClassAndMethod dangerousCallTarget : dangerousCallTargetList) {
                     warning.addMethod(dangerousCallTarget).describe(MethodAnnotation.METHOD_DANGEROUS_TARGET);
                 }
@@ -711,11 +712,11 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                 // Add safe method call targets.
                 // This is useful to see which other call targets the analysis
                 // considered.
-				for (JavaClassAndMethod safeMethod : safeCallTargetSet) {
+                for (JavaClassAndMethod safeMethod : safeCallTargetSet) {
                     warning.addMethod(safeMethod).describe(MethodAnnotation.METHOD_SAFE_TARGET);
                 }
             }
-		}
+        }
 
         decorateWarning(location, propertySet, warning);
         bugReporter.reportBug(warning);
@@ -724,18 +725,18 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     private void decorateWarning(Location location, WarningPropertySet<WarningProperty> propertySet, BugInstance warning) {
         if (FindBugsAnalysisFeatures.isRelaxedMode()) {
             WarningPropertyUtil.addPropertiesForDataMining(propertySet, classContext, method, location);
-		}
+        }
         propertySet.decorateBugInstance(warning);
     }
 
     private void addParamAnnotations(Location location, BitSet definitelyNullArgSet, BitSet violatedParamSet,
             WarningPropertySet<? super NullArgumentWarningProperty> propertySet, BugInstance warning) {
         ValueNumberFrame vnaFrame = null;
-		try {
+        try {
             vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
         } catch (DataflowAnalysisException e) {
             AnalysisContext.logError("error", e);
-		} catch (CFGBuilderException e) {
+        } catch (CFGBuilderException e) {
             AnalysisContext.logError("error", e);
         }
 
@@ -748,15 +749,15 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             if (definitelyNull)
                 propertySet.addProperty(NullArgumentWarningProperty.ARG_DEFINITELY_NULL);
             ValueNumber valueNumber = null;
-			if (vnaFrame != null)
+            if (vnaFrame != null)
                 try {
                     valueNumber = vnaFrame.getArgument(instruction, classContext.getConstantPoolGen(), i, sigParser);
                     BugAnnotation variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location,
-					        valueNumber, vnaFrame, "VALUE_OF");
+                            valueNumber, vnaFrame, "VALUE_OF");
                     warning.addOptionalAnnotation(variableAnnotation);
                 } catch (DataflowAnalysisException e) {
                     AnalysisContext.logError("error", e);
-				}
+                }
 
             // Note: we report params as being indexed starting from 1, not
             // 0
@@ -768,22 +769,22 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     /**
      * We have a method invocation in which a possibly or definitely null
      * parameter is passed. Check it against the library of nonnull annotations.
-	 * 
+     * 
      * @param location
      * @param cpg
      * @param typeDataflow
-	 * @param invokeInstruction
+     * @param invokeInstruction
      * @param nullArgSet
      * @param definitelyNullArgSet
      * @throws ClassNotFoundException
-	 */
+     */
     private void checkNonNullParam(Location location, ConstantPoolGen cpg, TypeDataflow typeDataflow,
             InvokeInstruction invokeInstruction, BitSet nullArgSet, BitSet definitelyNullArgSet) throws ClassNotFoundException {
 
         if (inExplictCatchNullBlock(location))
             return;
         boolean caught = inIndirectCatchNullBlock(location);
-		if (caught && skipIfInsideCatchNull())
+        if (caught && skipIfInsideCatchNull())
             return;
 
         XMethod m = XFactory.createXMethod(invokeInstruction, cpg);
@@ -795,34 +796,34 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             if (db.parameterMustBeNonNull(m, i)) {
                 boolean definitelyNull = definitelyNullArgSet.get(i);
                 if (DEBUG_NULLARG) {
-					System.out.println("Checking " + m);
+                    System.out.println("Checking " + m);
                     System.out.println("QQQ2: " + i + " -- " + i + " is null");
                     System.out.println("QQQ nullArgSet: " + nullArgSet);
                     System.out.println("QQQ dnullArgSet: " + definitelyNullArgSet);
-				}
+                }
                 BugAnnotation variableAnnotation = null;
                 try {
                     ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
-					ValueNumber valueNumber = vnaFrame.getArgument(invokeInstruction, cpg, i, sigParser);
+                    ValueNumber valueNumber = vnaFrame.getArgument(invokeInstruction, cpg, i, sigParser);
                     variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber,
                             vnaFrame, "VALUE_OF");
 
                 } catch (DataflowAnalysisException e) {
                     AnalysisContext.logError("error", e);
                 } catch (CFGBuilderException e) {
-					AnalysisContext.logError("error", e);
+                    AnalysisContext.logError("error", e);
                 }
 
                 int priority = definitelyNull ? HIGH_PRIORITY : NORMAL_PRIORITY;
                 if (caught)
                     priority++;
-				if (m.isPrivate() && priority == HIGH_PRIORITY)
+                if (m.isPrivate() && priority == HIGH_PRIORITY)
                     priority = NORMAL_PRIORITY;
                 String description = definitelyNull ? "INT_NULL_ARG" : "INT_MAYBE_NULL_ARG";
-                BugInstance warning = new BugInstance(this, "NP_NONNULL_PARAM_VIOLATION", priority).addClassAndMethod(
-				        classContext.getJavaClass(), method).addMethod(m).describe(MethodAnnotation.METHOD_CALLED)
-                        .addParameterAnnotation(i, description).addOptionalAnnotation(variableAnnotation).addSourceLine(
-                                classContext, method, location);
+                BugInstance warning = new BugInstance(this, "NP_NONNULL_PARAM_VIOLATION", priority)
+                        .addClassAndMethod(classContext.getJavaClass(), method).addMethod(m)
+                        .describe(MethodAnnotation.METHOD_CALLED).addParameterAnnotation(i, description)
+                        .addOptionalAnnotation(variableAnnotation).addSourceLine(classContext, method, location);
 
                 bugReporter.reportBug(warning);
             }
@@ -836,39 +837,39 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     public boolean skipIfInsideCatchNull() {
         return classContext.getJavaClass().getClassName().indexOf("Test") >= 0 || method.getName().indexOf("test") >= 0
                 || method.getName().indexOf("Test") >= 0;
-	}
+    }
 
     /**
      * @deprecated Use
      *             {@link #foundNullDeref(Location,ValueNumber,IsNullValue,ValueNumberFrame,boolean)}
-	 *             instead
+     *             instead
      */
     public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame) {
         foundNullDeref(location, valueNumber, refValue, vnaFrame, true);
-	}
+    }
 
     public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame,
             boolean isConsistent) {
         WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
-		if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
+        if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
             return;
 
         boolean onExceptionPath = refValue.isException();
         if (onExceptionPath) {
             propertySet.addProperty(GeneralWarningProperty.ON_EXCEPTION_PATH);
-		}
+        }
         int pc = location.getHandle().getPosition();
         BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame,
                 "VALUE_OF");
-		addPropertiesForDereferenceLocations(propertySet, Collections.singleton(location), isConsistent);
+        addPropertiesForDereferenceLocations(propertySet, Collections.singleton(location), isConsistent);
         Instruction ins = location.getHandle().getInstruction();
         if (ins instanceof InvokeInstruction && refValue.isDefinitelyNull()) {
             InvokeInstruction iins = (InvokeInstruction) ins;
-			if (iins.getMethodName(classContext.getConstantPoolGen()).equals("close")
+            if (iins.getMethodName(classContext.getConstantPoolGen()).equals("close")
                     && iins.getSignature(classContext.getConstantPoolGen()).equals("()V"))
                 propertySet.addProperty(NullDerefProperty.CLOSING_NULL);
         }
-		boolean duplicated = false;
+        boolean duplicated = false;
         if (!isConsistent) {
             if (propertySet.containsProperty(NullDerefProperty.DEREFS_ARE_CLONED))
                 duplicated = true;
@@ -876,11 +877,11 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             else
                 try {
                     CFG cfg = classContext.getCFG(method);
-					if (cfg.getLocationsContainingInstructionWithOffset(pc).size() > 1) {
+                    if (cfg.getLocationsContainingInstructionWithOffset(pc).size() > 1) {
                         propertySet.addProperty(NullDerefProperty.DEREFS_ARE_INLINED_FINALLY_BLOCKS);
                         duplicated = true;
                     }
-				} catch (CFGBuilderException e) {
+                } catch (CFGBuilderException e) {
                     AnalysisContext.logError("Error while analyzing " + classContext.getFullyQualifiedMethodName(method), e);
                 }
         }
@@ -888,32 +889,32 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         if (inExplictCatchNullBlock(location))
             return;
         boolean caught = inIndirectCatchNullBlock(location);
-		if (caught && skipIfInsideCatchNull())
+        if (caught && skipIfInsideCatchNull())
             return;
 
         if (refValue.isDefinitelyNull()) {
             String type = "NP_ALWAYS_NULL";
             if (propertySet.containsProperty(NullDerefProperty.CLOSING_NULL))
-				type = "NP_CLOSING_NULL";
+                type = "NP_CLOSING_NULL";
             else if (onExceptionPath)
                 type = "NP_ALWAYS_NULL_EXCEPTION";
             else if (duplicated)
-				type = "NP_NULL_ON_SOME_PATH";
+                type = "NP_NULL_ON_SOME_PATH";
             int priority = onExceptionPath ? NORMAL_PRIORITY : HIGH_PRIORITY;
             if (caught)
                 priority++;
-			reportNullDeref(propertySet, location, type, priority, variable);
+            reportNullDeref(propertySet, location, type, priority, variable);
         } else if (refValue.mightBeNull() && refValue.isParamValue()) {
 
             String type;
             int priority = NORMAL_PRIORITY;
             if (caught)
-				priority++;
+                priority++;
 
             if (method.getName().equals("equals") && method.getSignature().equals("(Ljava/lang/Object;)Z")) {
                 if (caught)
                     return;
-				type = "NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT";
+                type = "NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT";
 
             } else
                 type = "NP_ARGUMENT_MIGHT_BE_NULL";
@@ -931,14 +932,14 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         BugInstance bugInstance = new BugInstance(this, type, priority).addClassAndMethod(classContext.getJavaClass(), method);
         if (variable != null)
             bugInstance.add(variable);
-		else
+        else
             bugInstance.add(new LocalVariableAnnotation("?", -1, -1));
         bugInstance.addSourceLine(classContext, method, location).describe("SOURCE_LINE_DEREF");
 
         if (FindBugsAnalysisFeatures.isRelaxedMode()) {
             WarningPropertyUtil.addPropertiesForDataMining(propertySet, classContext, method, location);
         }
-		addPropertiesForDereferenceLocations(propertySet, Collections.singleton(location), false);
+        addPropertiesForDereferenceLocations(propertySet, Collections.singleton(location), false);
 
         propertySet.decorateBugInstance(bugInstance);
 
@@ -948,19 +949,19 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     public static boolean isThrower(BasicBlock target) {
         InstructionHandle ins = target.getFirstInstruction();
         int maxCount = 7;
-		while (ins != null) {
+        while (ins != null) {
             if (maxCount-- <= 0)
                 break;
             Instruction i = ins.getInstruction();
-			if (i instanceof ATHROW) {
+            if (i instanceof ATHROW) {
                 return true;
             }
             if (i instanceof InstructionTargeter || i instanceof ReturnInstruction)
-				return false;
+                return false;
             ins = ins.getNext();
         }
         return false;
-	}
+    }
 
     public void foundRedundantNullCheck(Location location, RedundantBranch redundantBranch) {
 
@@ -971,7 +972,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         boolean createdDeadCode = false;
         boolean infeasibleEdgeSimplyThrowsException = false;
         Edge infeasibleEdge = redundantBranch.infeasibleEdge;
-		if (infeasibleEdge != null) {
+        if (infeasibleEdge != null) {
             if (DEBUG)
                 System.out.println("Check if " + redundantBranch + " creates dead code");
             BasicBlock target = infeasibleEdge.getTarget();
@@ -979,23 +980,23 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             if (DEBUG)
                 System.out.println("Target block is  "
                         + (target.isExceptionThrower() ? " exception thrower" : " not exception thrower"));
-			// If the block is empty, it probably doesn't matter that it was
+            // If the block is empty, it probably doesn't matter that it was
             // killed.
             // FIXME: really, we should crawl the immediately reachable blocks
             // starting at the target block to see if any of them are dead and
-			// nonempty.
+            // nonempty.
             boolean empty = !target.isExceptionThrower()
                     && (target.isEmpty() || isGoto(target.getFirstInstruction().getInstruction()));
             if (!empty) {
-				try {
+                try {
                     if (classContext.getCFG(method).getNumIncomingEdges(target) > 1) {
                         if (DEBUG)
                             System.out.println("Target of infeasible edge has multiple incoming edges");
-						empty = true;
+                        empty = true;
                     }
                 } catch (CFGBuilderException e) {
                     assert true; // ignore it
-				}
+                }
             }
             if (DEBUG)
                 System.out.println("Target block is  " + (empty ? "empty" : "not empty"));
@@ -1007,11 +1008,11 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             }
             if (!empty && !previouslyDeadBlocks.get(target.getLabel())) {
                 if (DEBUG)
-					System.out.println("target was alive previously");
+                    System.out.println("target was alive previously");
                 // Block was not dead before the null pointer analysis.
                 // See if it is dead now by inspecting the null value frame.
                 // If it's TOP, then the block became dead.
-				IsNullValueFrame invFrame = invDataflow.getStartFact(target);
+                IsNullValueFrame invFrame = invDataflow.getStartFact(target);
                 createdDeadCode = invFrame.isTop();
                 if (DEBUG)
                     System.out.println("target is now " + (createdDeadCode ? "dead" : "alive"));
@@ -1022,27 +1023,27 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         int priority;
         boolean valueIsNull = true;
         String warning;
-		int pc = location.getHandle().getPosition();
+        int pc = location.getHandle().getPosition();
         OpcodeStack stack = null;
         OpcodeStack.Item item1 = null;
 
-		OpcodeStack.Item item2 = null;
+        OpcodeStack.Item item2 = null;
         try {
             stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
 
-			item1 = stack.getStackItem(0);
+            item1 = stack.getStackItem(0);
         } catch (RuntimeException e) {
             if (SystemProperties.ASSERTIONS_ENABLED) {
                 AnalysisContext.logError("Error getting stack at specific PC", e);
-			}
+            }
             assert true;
         }
         if (redundantBranch.secondValue == null) {
-			if (redundantBranch.firstValue.isDefinitelyNull()) {
+            if (redundantBranch.firstValue.isDefinitelyNull()) {
                 warning = "RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE";
                 priority = NORMAL_PRIORITY;
             } else {
-				warning = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE";
+                warning = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE";
                 valueIsNull = false;
                 priority = isChecked ? NORMAL_PRIORITY : LOW_PRIORITY;
             }
@@ -1050,19 +1051,19 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         } else {
             if (stack != null)
                 item2 = stack.getStackItem(1);
-			boolean bothNull = redundantBranch.firstValue.isDefinitelyNull() && redundantBranch.secondValue.isDefinitelyNull();
+            boolean bothNull = redundantBranch.firstValue.isDefinitelyNull() && redundantBranch.secondValue.isDefinitelyNull();
             if (redundantBranch.secondValue.isChecked())
                 isChecked = true;
             if (redundantBranch.secondValue.wouldHaveBeenAKaboom()) {
-				wouldHaveBeenAKaboom = true;
+                wouldHaveBeenAKaboom = true;
                 locationOfKaBoom = redundantBranch.secondValue.getLocationOfKaBoom();
             }
             if (bothNull) {
-				warning = "RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES";
+                warning = "RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES";
                 priority = NORMAL_PRIORITY;
             } else {
                 warning = "RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE";
-				priority = isChecked ? NORMAL_PRIORITY : LOW_PRIORITY;
+                priority = isChecked ? NORMAL_PRIORITY : LOW_PRIORITY;
             }
 
         }
@@ -1070,22 +1071,22 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         if (wouldHaveBeenAKaboom) {
             priority = HIGH_PRIORITY;
             warning = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE";
-			if (locationOfKaBoom == null)
+            if (locationOfKaBoom == null)
                 throw new NullPointerException("location of KaBoom is null");
         }
 
         if (DEBUG)
             System.out.println(createdDeadCode + " " + infeasibleEdgeSimplyThrowsException + " " + valueIsNull + " " + priority);
         if (createdDeadCode && !infeasibleEdgeSimplyThrowsException) {
-			priority += 0;
+            priority += 0;
         } else if (createdDeadCode && infeasibleEdgeSimplyThrowsException) {
             // throw clause
             if (valueIsNull)
-				priority += 0;
+                priority += 0;
             else
                 priority += 1;
         } else {
-			// didn't create any dead code
+            // didn't create any dead code
             priority += 1;
         }
 
@@ -1096,15 +1097,15 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             if (isChecked)
                 System.out.println("isChecked");
             if (wouldHaveBeenAKaboom)
-				System.out.println("wouldHaveBeenAKaboom");
+                System.out.println("wouldHaveBeenAKaboom");
             if (createdDeadCode)
                 System.out.println("createdDeadCode");
         }
-		if (priority > LOW_PRIORITY)
+        if (priority > LOW_PRIORITY)
             return;
         BugAnnotation variableAnnotation = null;
         try {
-			// Get the value number
+            // Get the value number
             ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
             if (vnaFrame.isValid()) {
                 Instruction ins = location.getHandle().getInstruction();
@@ -1112,20 +1113,20 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                 ValueNumber valueNumber = vnaFrame.getInstance(ins, classContext.getConstantPoolGen());
                 if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
                     return;
-				variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame,
+                variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame,
                         "VALUE_OF");
 
             }
         } catch (DataflowAnalysisException e) {
             // ignore
-		} catch (CFGBuilderException e) {
+        } catch (CFGBuilderException e) {
             // ignore
         }
 
         BugInstance bugInstance = new BugInstance(this, warning, priority).addClassAndMethod(classContext.getJavaClass(), method);
         LocalVariableAnnotation fallback = new LocalVariableAnnotation("?", -1, -1);
-        bugInstance.addOptionalUniqueAnnotationsWithFallback(fallback, variableAnnotation, BugInstance
-		        .getFieldOrMethodValueSource(item1), BugInstance.getFieldOrMethodValueSource(item2));
+        bugInstance.addOptionalUniqueAnnotationsWithFallback(fallback, variableAnnotation,
+                BugInstance.getFieldOrMethodValueSource(item1), BugInstance.getFieldOrMethodValueSource(item2));
 
         if (wouldHaveBeenAKaboom)
             bugInstance.addSourceLine(classContext, method, locationOfKaBoom);
@@ -1133,11 +1134,11 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         if (FindBugsAnalysisFeatures.isRelaxedMode()) {
             WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
             WarningPropertyUtil.addPropertiesForDataMining(propertySet, classContext, method, location);
-			if (isChecked)
+            if (isChecked)
                 propertySet.addProperty(NullDerefProperty.CHECKED_VALUE);
             if (wouldHaveBeenAKaboom)
                 propertySet.addProperty(NullDerefProperty.WOULD_HAVE_BEEN_A_KABOOM);
-			if (createdDeadCode)
+            if (createdDeadCode)
                 propertySet.addProperty(NullDerefProperty.CREATED_DEAD_CODE);
 
             propertySet.decorateBugInstance(bugInstance);
@@ -1146,12 +1147,12 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         SourceLineAnnotation sourceLine = SourceLineAnnotation.fromVisitedInstruction(classContext, method, location);
         sourceLine.setDescription("SOURCE_REDUNDANT_NULL_CHECK");
         bugAccumulator.accumulateBug(bugInstance, sourceLine);
-	}
+    }
 
     BugAnnotation getVariableAnnotation(Location location) {
         BugAnnotation variableAnnotation = null;
         try {
-			// Get the value number
+            // Get the value number
             ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
             if (vnaFrame.isValid()) {
                 Instruction ins = location.getHandle().getInstruction();
@@ -1159,13 +1160,13 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                 ValueNumber valueNumber = vnaFrame.getInstance(ins, classContext.getConstantPoolGen());
                 if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
                     return null;
-				variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame,
+                variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame,
                         "VALUE_OF");
 
             }
         } catch (DataflowAnalysisException e) {
             // ignore
-		} catch (CFGBuilderException e) {
+        } catch (CFGBuilderException e) {
             // ignore
         }
         return variableAnnotation;
@@ -1174,19 +1175,19 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
     /**
      * Determine whether or not given instruction is a goto.
-     *
-	 * @param instruction
+     * 
+     * @param instruction
      *            the instruction
      * @return true if the instruction is a goto, false otherwise
      */
-	private boolean isGoto(Instruction instruction) {
+    private boolean isGoto(Instruction instruction) {
         return instruction.getOpcode() == Constants.GOTO || instruction.getOpcode() == Constants.GOTO_W;
     }
 
     int minPC(Collection<Location> locs) {
         int result = 1000000;
         for (Location l : locs)
-			if (result > l.getHandle().getPosition())
+            if (result > l.getHandle().getPosition())
                 result = l.getHandle().getPosition();
         return result;
     }
@@ -1194,28 +1195,28 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     int maxPC(Collection<Location> locs) {
         int result = -1000000;
         for (Location l : locs)
-			if (result < l.getHandle().getPosition())
+            if (result < l.getHandle().getPosition())
                 result = l.getHandle().getPosition();
         return result;
     }
 
     /*
      * (non-Javadoc)
-     *
-	 * @seeedu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector#
+     * 
+     * @seeedu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector#
      * foundGuaranteedNullDeref(java.util.Set, java.util.Set,
      * edu.umd.cs.findbugs.ba.vna.ValueNumber, boolean)
      */
-	public void foundGuaranteedNullDeref(@NonNull Set<Location> assignedNullLocationSet, @NonNull Set<Location> derefLocationSet,
+    public void foundGuaranteedNullDeref(@NonNull Set<Location> assignedNullLocationSet, @NonNull Set<Location> derefLocationSet,
             SortedSet<Location> doomedLocations, ValueNumberDataflow vna, ValueNumber refValue,
             @CheckForNull BugAnnotation variableAnnotation, NullValueUnconditionalDeref deref, boolean npeIfStatementCovered) {
         if (refValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
-			return;
+            return;
 
         if (DEBUG) {
             System.out.println("Found guaranteed null deref in " + method.getName());
             for (Location loc : doomedLocations)
-				System.out.println("Doomed at " + loc);
+                System.out.println("Doomed at " + loc);
         }
 
         String bugType;
@@ -1225,11 +1226,11 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         if (derefLocationSet.size() > 1)
             if (!deref.isAlwaysOnExceptionPath())
                 bugType = "NP_GUARANTEED_DEREF";
-			else
+            else
                 bugType = "NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH";
         else if (!deref.isAlwaysOnExceptionPath())
             bugType = "NP_NULL_ON_SOME_PATH";
-		else
+        else
             bugType = "NP_NULL_ON_SOME_PATH_EXCEPTION";
 
         // Add Locations in the set of locations at least one of which
@@ -1238,7 +1239,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         SortedSet<Location> sourceLocations;
         if (doomedLocations.isEmpty() || doomedLocations.size() > 3 && doomedLocations.size() > assignedNullLocationSet.size())
             sourceLocations = new TreeSet<Location>(assignedNullLocationSet);
-		else
+        else
             sourceLocations = doomedLocations;
 
         if (doomedLocations.isEmpty() || derefLocationSet.isEmpty())
@@ -1248,14 +1249,13 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
         addPropertiesForDereferenceLocations(propertySet, derefLocationSet, false);
 
-
         int minDereferencePC = minPC(derefLocationSet);
         int distance1 = minDereferencePC - maxPC(assignedNullLocationSet);
-		int distance2 = minDereferencePC - maxPC(doomedLocations);
+        int distance2 = minDereferencePC - maxPC(doomedLocations);
         int distance = Math.max(distance1, distance2);
         if (false)
             System.out.printf("%9d %9d %9d RANGE %s.%s%s\n", distance, distance1, distance2, classContext.getClassDescriptor()
-			        .toDottedClassName(), method.getName(), method.getSignature());
+                    .toDottedClassName(), method.getName(), method.getSignature());
 
         // Create BugInstance
 
@@ -1264,21 +1264,21 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         SortedSet<SourceLineAnnotation> knownNullLocations = new TreeSet<SourceLineAnnotation>();
         for (Location loc : sourceLocations) {
             SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, method, loc);
-			if (sourceLineAnnotation == null)
+            if (sourceLineAnnotation == null)
                 continue;
             int startLine = sourceLineAnnotation.getStartLine();
             if (startLine == -1)
-				knownNullLocations.add(sourceLineAnnotation);
+                knownNullLocations.add(sourceLineAnnotation);
             else if (!knownNull.get(startLine)) {
                 knownNull.set(startLine);
                 knownNullLocations.add(sourceLineAnnotation);
-			}
+            }
         }
 
         FieldAnnotation storedField = null;
         MethodAnnotation invokedMethod = null;
         XMethod invokedXMethod = null;
-		int parameterNumber = -1;
+        int parameterNumber = -1;
         if (derefLocationSet.size() == 1) {
 
             Location loc = derefLocationSet.iterator().next();
@@ -1286,77 +1286,79 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             PointerUsageRequiringNonNullValue pu = null;
             try {
                 UsagesRequiringNonNullValues usages = classContext.getUsagesRequiringNonNullValues(method);
-				pu = usages.get(loc, refValue, vnaDataflow);
+                pu = usages.get(loc, refValue, vnaDataflow);
             } catch (DataflowAnalysisException e) {
                 AnalysisContext.logError("Error getting UsagesRequiringNonNullValues for " + method, e);
             } catch (CFGBuilderException e) {
-				AnalysisContext.logError("Error getting UsagesRequiringNonNullValues for " + method, e);
+                AnalysisContext.logError("Error getting UsagesRequiringNonNullValues for " + method, e);
             }
 
             if (pu == null)
                 assert true; // nothing to do
             else if (deref.isReadlineValue()) {
-				bugType = "NP_DEREFERENCE_OF_READLINE_VALUE";
+                bugType = "NP_DEREFERENCE_OF_READLINE_VALUE";
                 priority = NORMAL_PRIORITY;
-            } else  if (deref.isMethodReturnValue() && !deref.isReadlineValue()) {
+            } else if (deref.isMethodReturnValue() && !deref.isReadlineValue()) {
                 bugType = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE";
-				priority = NORMAL_PRIORITY;
+                priority = NORMAL_PRIORITY;
                 if (DefaultNullnessAnnotations.ICSE10_NULLNESS_PAPER)
                     checkNullSource: if (doomedLocations.size() == 1) {
                         try {
-							CFG cfg = classContext.getCFG(method);
+                            CFG cfg = classContext.getCFG(method);
                             Location doomed = doomedLocations.iterator().next();
 
                             InstructionHandle handle = doomed.getHandle();
                             Instruction ins = handle.getInstruction();
                             if (!(ins instanceof InvokeInstruction))
-								break checkNullSource;
+                                break checkNullSource;
 
                             InvokeInstruction iins = (InvokeInstruction) ins;
                             ConstantPoolGen cpg = classContext.getConstantPoolGen();
                             XMethod invoked = XFactory.createXMethod(iins, cpg);
-							if (!invoked.getName().equals("get")
+                            if (!invoked.getName().equals("get")
                                     || !invoked.getSignature().equals("(Ljava/lang/Object;)Ljava/lang/Object;"))
                                 break checkNullSource;
                             for (Location derefLoc : derefLocationSet)
-								if (catchesNull(derefLoc))
+                                if (catchesNull(derefLoc))
                                     return;
                             ValueNumberFrame vnFrame = vna.getFactAtLocation(doomed);
                             ValueNumber vn = vnFrame.getStackValue(1);
-							ValueNumber vnKey = vnFrame.getStackValue(0);
-                            BugAnnotation src = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, doomed, vn, vnFrame, "VALUE_OF");
+                            ValueNumber vnKey = vnFrame.getStackValue(0);
+                            BugAnnotation src = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, doomed, vn, vnFrame,
+                                    "VALUE_OF");
 
                             for (Location l2 : classContext.getCFG(method).locations()) {
-								InstructionHandle h2 = l2.getHandle();
+                                InstructionHandle h2 = l2.getHandle();
                                 Instruction i2 = h2.getInstruction();
                                 int pos = handle.getPosition();
                                 int pos2 = h2.getPosition();
-								if (pos2 < pos && pos - pos2 < 150 && i2 instanceof InvokeInstruction) {
+                                if (pos2 < pos && pos - pos2 < 150 && i2 instanceof InvokeInstruction) {
                                     XMethod invoked2 = XFactory.createXMethod((InvokeInstruction) i2, cpg);
                                     ValueNumberFrame vnFrame2 = vna.getFactAtLocation(l2);
                                     ValueNumber vn2 = vnFrame2.getInstance(i2, cpg);
-									ValueNumber vn2Key = vnFrame2.getStackValue(0);
-                                    BugAnnotation src2 = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, l2, vn2, vnFrame2, "VALUE_OF");
+                                    ValueNumber vn2Key = vnFrame2.getStackValue(0);
+                                    BugAnnotation src2 = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, l2, vn2,
+                                            vnFrame2, "VALUE_OF");
                                     boolean precise = vn.equals(vn2) || src != null && src.equals(src2);
 
                                     if (invoked2.getName().equals("keySet") || invoked2.getName().equals("keys")) {
                                         bugType = "TESTING1";
                                         if (precise) {
-											priority = HIGH_PRIORITY;
+                                            priority = HIGH_PRIORITY;
                                             break;
                                         }
                                         break;
-									} else if (invoked2.getName().equals("containsKey")) {
+                                    } else if (invoked2.getName().equals("containsKey")) {
                                         bugType = "TESTING2";
                                         if (precise && vnKey.equals(vn2Key)) {
                                             priority = HIGH_PRIORITY;
-											break;
+                                            break;
                                         }
 
                                     } else if (invoked2.getName().equals("get")) {
                                         bugType = "TESTING3";
                                         if (precise && vnKey.equals(vn2Key)) {
-											priority = HIGH_PRIORITY;
+                                            priority = HIGH_PRIORITY;
 
                                         }
                                     }
@@ -1364,19 +1366,21 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                                 }
                             }
                         } catch (DataflowAnalysisException e) {
-							AnalysisContext.logError("Error while analyzing " + classContext.getFullyQualifiedMethodName(method), e);
+                            AnalysisContext.logError("Error while analyzing " + classContext.getFullyQualifiedMethodName(method),
+                                    e);
                         } catch (CFGBuilderException e) {
-                            AnalysisContext.logError("Error while analyzing " + classContext.getFullyQualifiedMethodName(method), e);
+                            AnalysisContext.logError("Error while analyzing " + classContext.getFullyQualifiedMethodName(method),
+                                    e);
                         }
-					}
+                    }
             } else if (pu.isReturnFromNonNullMethod()) {
                 bugType = "NP_NONNULL_RETURN_VIOLATION";
                 String methodName = method.getName();
-				String methodSig = method.getSignature();
+                String methodSig = method.getSignature();
                 if (methodName.equals("clone") && methodSig.equals("()Ljava/lang/Object;")) {
                     bugType = "NP_CLONE_COULD_RETURN_NULL";
                     priority = NORMAL_PRIORITY;
-				} else if (methodName.equals("toString") && methodSig.equals("()Ljava/lang/String;")) {
+                } else if (methodName.equals("toString") && methodSig.equals("()Ljava/lang/String;")) {
                     bugType = "NP_TOSTRING_COULD_RETURN_NULL";
                     priority = NORMAL_PRIORITY;
                 }
@@ -1384,40 +1388,40 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             } else if (pu.getNonNullField() != null) {
                 storedField = FieldAnnotation.fromXField(pu.getNonNullField());
                 bugType = "NP_STORE_INTO_NONNULL_FIELD";
-			} else if (pu.getNonNullParameter() != null) {
+            } else if (pu.getNonNullParameter() != null) {
                 XMethodParameter mp = pu.getNonNullParameter();
                 invokedXMethod = mp.getMethod();
                 for (Location derefLoc : derefLocationSet)
-					if (safeCallToPrimateParseMethod(invokedXMethod, derefLoc))
+                    if (safeCallToPrimateParseMethod(invokedXMethod, derefLoc))
                         return;
                 invokedMethod = MethodAnnotation.fromXMethod(mp.getMethod());
                 if (mp.getParameterNumber() == 0 && NullnessAnnotationDatabase.assertsFirstParameterIsNonnull(invokedXMethod))
-					return;
+                    return;
                 parameterNumber = mp.getParameterNumber();
                 bugType = "NP_NULL_PARAM_DEREF";
             }
-		}	
+        }
 
         boolean hasManyNullTests = true;
         for (SourceLineAnnotation sourceLineAnnotation : knownNullLocations) {
             if (!hasManyPreceedingNullTests(sourceLineAnnotation.getStartBytecode()))
-				hasManyNullTests = false;
+                hasManyNullTests = false;
         }
         if (hasManyNullTests) {
             if (bugType.equals("NP_NULL_ON_SOME_PATH") || bugType.equals("NP_GUARANTEED_DEREF"))
-				bugType = "NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE";
+                bugType = "NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE";
             else
                 priority++;
         }
 
         BugInstance bugInstance = new BugInstance(this, bugType, priority).addClassAndMethod(classContext.getJavaClass(), method);
         if (invokedMethod != null)
-            bugInstance.addMethod(invokedMethod).describe(MethodAnnotation.METHOD_CALLED).addParameterAnnotation(parameterNumber,
-			        "INT_MAYBE_NULL_ARG");
+            bugInstance.addMethod(invokedMethod).describe(MethodAnnotation.METHOD_CALLED)
+                    .addParameterAnnotation(parameterNumber, "INT_MAYBE_NULL_ARG");
         if (storedField != null)
             bugInstance.addField(storedField).describe("FIELD_STORED");
         bugInstance.addOptionalAnnotation(variableAnnotation);
-		if (variableAnnotation instanceof FieldAnnotation)
+        if (variableAnnotation instanceof FieldAnnotation)
             bugInstance.describe("FIELD_CONTAINS_VALUE");
 
         addPropertiesForDereferenceLocations(propertySet, derefLocationSet, false);
@@ -1432,53 +1436,53 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             int source = -9999;
             if (knownNullLocations.size() == 1)
                 source = knownNullLocations.iterator().next().getEndBytecode();
-			for (Location loc : derefLocationSet) {
+            for (Location loc : derefLocationSet) {
                 int pos = loc.getHandle().getPosition();
                 if (pos != source + 3) // immediate dereferences are handled by
                     // another detector
-					bugAccumulator.accumulateBug(bugInstance, SourceLineAnnotation.fromVisitedInstruction(classContext, method,
-                            loc));
+                    bugAccumulator.accumulateBug(bugInstance,
+                            SourceLineAnnotation.fromVisitedInstruction(classContext, method, loc));
             }
 
         } else {
             for (Location loc : derefLocationSet)
                 bugInstance.addSourceLine(classContext, method, loc).describe(getDescription(loc, refValue));
 
-            if (sourceLocations == doomedLocations && assignedNullLocationSet.size() == 1)  {
+            if (sourceLocations == doomedLocations && assignedNullLocationSet.size() == 1) {
                 Location assignedNull = assignedNullLocationSet.iterator().next();
-                SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, method, assignedNull);
-				if (sourceLineAnnotation != null) {
-                int startLine = sourceLineAnnotation.getStartLine();
-                if (startLine > 0 && !knownNull.get(startLine))
-                    bugInstance.add(sourceLineAnnotation).describe("SOURCE_LINE_NULL_VALUE");
-				}
+                SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, method,
+                        assignedNull);
+                if (sourceLineAnnotation != null) {
+                    int startLine = sourceLineAnnotation.getStartLine();
+                    if (startLine > 0 && !knownNull.get(startLine))
+                        bugInstance.add(sourceLineAnnotation).describe("SOURCE_LINE_NULL_VALUE");
+                }
 
             }
             for (SourceLineAnnotation sourceLineAnnotation : knownNullLocations) {
-				bugInstance.add(sourceLineAnnotation).describe("SOURCE_LINE_KNOWN_NULL");
+                bugInstance.add(sourceLineAnnotation).describe("SOURCE_LINE_KNOWN_NULL");
             }
 
             // Report it
             bugReporter.reportBug(bugInstance);
         }
-	}
+    }
 
     /**
      * @param propertySet
      * @param derefLocationSet
-	 * @param isConsistent
+     * @param isConsistent
      *            TODO
      */
     private void addPropertiesForDereferenceLocations(WarningPropertySet<WarningProperty> propertySet,
-	        Collection<Location> derefLocationSet, boolean isConsistent) {
+            Collection<Location> derefLocationSet, boolean isConsistent) {
         boolean derefOutsideCatchBlock = false;
         boolean derefOutsideCatchNullBlock = false;
         boolean allDerefsAtDoomedLocations = true;
-		
 
         for (Location loc : derefLocationSet) {
             if (!inExplictCatchNullBlock(loc)) {
-				derefOutsideCatchNullBlock = true;
+                derefOutsideCatchNullBlock = true;
                 if (!inIndirectCatchNullBlock(loc))
                     derefOutsideCatchBlock = true;
             }
@@ -1486,26 +1490,26 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             if (!isDoomed(loc))
                 allDerefsAtDoomedLocations = false;
         }
-		
+
         if (!derefOutsideCatchNullBlock) {
             propertySet.addProperty(GeneralWarningProperty.FALSE_POSITIVE);
             return;
-		}
+        }
 
         if (allDerefsAtDoomedLocations) {
             // Add a WarningProperty
             propertySet.addProperty(DoomedCodeWarningProperty.DOOMED_CODE);
-		}
+        }
         boolean uniqueDereferenceLocations = uniqueLocations(derefLocationSet);
 
         if (!derefOutsideCatchBlock) {
             if (!uniqueDereferenceLocations || skipIfInsideCatchNull())
                 propertySet.addProperty(GeneralWarningProperty.FALSE_POSITIVE);
-			else
+            else
                 propertySet.addProperty(NullDerefProperty.DEREFS_IN_CATCH_BLOCKS);
         }
         if (!isConsistent && !uniqueDereferenceLocations)
-			// Add a WarningProperty
+            // Add a WarningProperty
             propertySet.addProperty(NullDerefProperty.DEREFS_ARE_CLONED);
 
         addPropertiesForMethodContainingWarning(propertySet);
@@ -1514,15 +1518,15 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     /**
      * @param derefLocationSet
      * @return
-	 */
+     */
     private boolean uniqueLocations(Collection<Location> derefLocationSet) {
         boolean uniqueDereferenceLocations = false;
         CodeException[] exceptionTable = method.getCode().getExceptionTable();
-		if (exceptionTable == null)
+        if (exceptionTable == null)
             return true;
         checkForCatchAll: {
             for (CodeException e : exceptionTable)
-				if (e.getCatchType() == 0)
+                if (e.getCatchType() == 0)
                     break checkForCatchAll;
             return true;
         }
@@ -1530,21 +1534,21 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         LineNumberTable table = method.getLineNumberTable();
         if (table == null)
             uniqueDereferenceLocations = true;
-		else {
+        else {
             BitSet linesMentionedMultipleTimes = classContext.linesMentionedMultipleTimes(method);
             for (Location loc : derefLocationSet) {
                 int lineNumber = table.getSourceLine(loc.getHandle().getPosition());
-				if (lineNumber > 0 && !linesMentionedMultipleTimes.get(lineNumber))
+                if (lineNumber > 0 && !linesMentionedMultipleTimes.get(lineNumber))
                     uniqueDereferenceLocations = true;
             }
         }
-		return uniqueDereferenceLocations;
+        return uniqueDereferenceLocations;
     }
 
     /**
      * @param propertySet
      * @param xMethod
-	 */
+     */
     private void addPropertiesForMethodContainingWarning(WarningPropertySet<WarningProperty> propertySet) {
         XMethod xMethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 
@@ -1557,7 +1561,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     private boolean isDoomed(Location loc) {
         if (!MARK_DOOMED) {
             return false;
-		}
+        }
 
         ReturnPathTypeDataflow rptDataflow;
         try {
@@ -1568,22 +1572,22 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             return !rpt.canReturnNormally();
         } catch (CheckedAnalysisException e) {
             AnalysisContext.logError("Error getting return path type", e);
-			return false;
+            return false;
         }
     }
 
     String getDescription(Location loc, ValueNumber refValue) {
         PointerUsageRequiringNonNullValue pu;
         try {
-			UsagesRequiringNonNullValues usages = classContext.getUsagesRequiringNonNullValues(method);
+            UsagesRequiringNonNullValues usages = classContext.getUsagesRequiringNonNullValues(method);
             pu = usages.get(loc, refValue, vnaDataflow);
             if (pu == null)
                 return "SOURCE_LINE_DEREF";
-			return pu.getDescription();
+            return pu.getDescription();
         } catch (DataflowAnalysisException e) {
             AnalysisContext.logError("Error getting UsagesRequiringNonNullValues for " + method, e);
             return "SOURCE_LINE_DEREF";
-		} catch (CFGBuilderException e) {
+        } catch (CFGBuilderException e) {
             AnalysisContext.logError("Error getting UsagesRequiringNonNullValues for " + method, e);
             return "SOURCE_LINE_DEREF";
         }
@@ -1593,27 +1597,28 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     boolean inExplictCatchNullBlock(Location loc) {
         int pc = loc.getHandle().getPosition();
         int catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
-		        "java/lang/NullPointerException", pc);
+                "java/lang/NullPointerException", pc);
         if (catchSize < Integer.MAX_VALUE)
             return true;
         return false;
-	}
+    }
+
     boolean inIndirectCatchNullBlock(Location loc) {
         int pc = loc.getHandle().getPosition();
         int catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
-		        "java/lang/Exception", pc);
+                "java/lang/Exception", pc);
         if (catchSize < 5)
             return true;
         catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
-		        "java/lang/RuntimeException", pc);
+                "java/lang/RuntimeException", pc);
         if (catchSize < 5)
             return true;
         catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
-		        "java/lang/Throwable", pc);
+                "java/lang/Throwable", pc);
         if (catchSize < 5)
             return true;
         return false;
-	}
+    }
 }
 
 // vim:ts=4

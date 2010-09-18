@@ -33,41 +33,40 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce UnconditionalValueDerefDataflow objects
- * for analyzed methods.
- *
+ * Analysis engine to produce UnconditionalValueDerefDataflow objects for
+ * analyzed methods.
+ * 
  * @author David Hovemeyer
  */
 public class UnconditionalValueDerefDataflowFactory extends AnalysisFactory<UnconditionalValueDerefDataflow> {
     /**
      * Constructor.
      */
-	public UnconditionalValueDerefDataflowFactory() {
+    public UnconditionalValueDerefDataflowFactory() {
         super("unconditional value dereference analysis", UnconditionalValueDerefDataflow.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public UnconditionalValueDerefDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
-        MethodGen methodGen =getMethodGen(analysisCache, descriptor);
+    public UnconditionalValueDerefDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
+        MethodGen methodGen = getMethodGen(analysisCache, descriptor);
         if (methodGen == null) {
             throw new MethodUnprofitableException(descriptor);
-		}
+        }
 
         CFG cfg = getCFG(analysisCache, descriptor);
 
         ValueNumberDataflow vnd = getValueNumberDataflow(analysisCache, descriptor);
 
-        UnconditionalValueDerefAnalysis analysis = new UnconditionalValueDerefAnalysis(
-                getReverseDepthFirstSearch(analysisCache, descriptor),
-                getDepthFirstSearch(analysisCache, descriptor),
-				cfg,
-                getMethod(analysisCache, descriptor),
-                methodGen,
-                vnd,
-				getAssertionMethods(analysisCache, descriptor.getClassDescriptor())
-        );
+        UnconditionalValueDerefAnalysis analysis = new UnconditionalValueDerefAnalysis(getReverseDepthFirstSearch(analysisCache,
+                descriptor), getDepthFirstSearch(analysisCache, descriptor), cfg, getMethod(analysisCache, descriptor),
+                methodGen, vnd, getAssertionMethods(analysisCache, descriptor.getClassDescriptor()));
 
         IsNullValueDataflow inv = getIsNullValueDataflow(analysisCache, descriptor);
         // XXX: hack to clear derefs on not-null branches
@@ -76,16 +75,15 @@ public class UnconditionalValueDerefDataflowFactory extends AnalysisFactory<Unco
         TypeDataflow typeDataflow = getTypeDataflow(analysisCache, descriptor);
         // XXX: type analysis is needed to resolve method calls for
         // checking whether call targets unconditionally dereference parameters
-		analysis.setTypeDataflow(typeDataflow);
+        analysis.setTypeDataflow(typeDataflow);
 
-        UnconditionalValueDerefDataflow dataflow =
-            new UnconditionalValueDerefDataflow(cfg, analysis);
+        UnconditionalValueDerefDataflow dataflow = new UnconditionalValueDerefDataflow(cfg, analysis);
         dataflow.execute();
-		if (ClassContext.DUMP_DATAFLOW_ANALYSIS) {
+        if (ClassContext.DUMP_DATAFLOW_ANALYSIS) {
             dataflow.dumpDataflow(analysis);
         }
         if (UnconditionalValueDerefAnalysis.DEBUG) {
-			ClassContext.dumpDataflowInformation(getMethod(analysisCache, descriptor), cfg, vnd, inv, dataflow, typeDataflow);
+            ClassContext.dumpDataflowInformation(getMethod(analysisCache, descriptor), cfg, vnd, inv, dataflow, typeDataflow);
         }
 
         return dataflow;

@@ -29,16 +29,14 @@ import edu.umd.cs.findbugs.util.ClassName;
 
 public abstract class AbstractMethod extends AbstractClassMember implements XMethod {
 
-
-    protected AbstractMethod(@DottedClassName String className, String methodName, String methodSig,
-             int accessFlags) {
+    protected AbstractMethod(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
         super(className, methodName, methodSig, accessFlags);
-	}
+    }
 
     public int getNumParams() {
         // FIXME: cache this?
         return new SignatureParser(getSignature()).getNumParameters();
-	}
+    }
 
     public boolean isNative() {
         return (getAccessFlags() & Constants.ACC_NATIVE) != 0;
@@ -51,18 +49,16 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
     @Override
     public String toString() {
         return SignatureConverter.convertMethodSignature(this);
-	}
-
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.XMethod#getMethodDescriptor()
-	 */
-    public MethodDescriptor getMethodDescriptor() {
-        return DescriptorFactory.instance().getMethodDescriptor(
-                ClassName.toSlashedClassName(getClassName()),
-				getName(),
-                getSignature(),
-                isStatic());
     }
-	
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.ba.XMethod#getMethodDescriptor()
+     */
+    public MethodDescriptor getMethodDescriptor() {
+        return DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(getClassName()), getName(),
+                getSignature(), isStatic());
+    }
 
 }

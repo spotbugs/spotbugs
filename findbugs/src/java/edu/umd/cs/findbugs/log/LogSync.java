@@ -20,8 +20,8 @@
 
 package edu.umd.cs.findbugs.log;
 
-public interface LogSync
-{
+public interface LogSync {
     public void writeToLog(String message);
+
     public void error(String error);
 }

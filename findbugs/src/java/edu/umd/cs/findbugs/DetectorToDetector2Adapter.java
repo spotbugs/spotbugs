@@ -27,9 +27,9 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.log.Profiler;
 
 /**
- * An adapter allowing classes implementing the Detector interface
- * to support the new Detector2 interface.
- *
+ * An adapter allowing classes implementing the Detector interface to support
+ * the new Detector2 interface.
+ * 
  * @author David Hovemeyer
  */
 public class DetectorToDetector2Adapter implements Detector2 {
@@ -37,44 +37,52 @@ public class DetectorToDetector2Adapter implements Detector2 {
 
     /**
      * Constructor.
-     *
-	 * @param detector the Detector we want to adapt
+     * 
+     * @param detector
+     *            the Detector we want to adapt
      */
     public DetectorToDetector2Adapter(Detector detector) {
         this.detector = detector;
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.Detector2#finishPass()
      */
-	public void finishPass() {
+    public void finishPass() {
         detector.report();
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile
+     * .ClassDescriptor)
      */
-	public void visitClass(ClassDescriptor classDescriptor)
-            throws CheckedAnalysisException {
+    public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 
         // Just get the ClassContext from the analysis cache
-		// and apply the detector to it.
+        // and apply the detector to it.
 
         IAnalysisCache analysisCache = Global.getAnalysisCache();
         ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
         Profiler profiler = analysisCache.getProfiler();
-		profiler.start(detector.getClass());
+        profiler.start(detector.getClass());
         try {
-        detector.visitClassContext(classContext);
+            detector.visitClassContext(classContext);
         } finally {
-			profiler.end(detector.getClass());
+            profiler.end(detector.getClass());
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
      */
-	public String getDetectorClassName() {
+    public String getDetectorClassName() {
         return detector.getClass().getName();
     }
 }

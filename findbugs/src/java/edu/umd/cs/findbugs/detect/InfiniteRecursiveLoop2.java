@@ -53,19 +53,22 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
- * Signal an infinite loop if either:
- * we see a call to the same method with the same parameters, or
- * we see a call to the same (dynamically dispatched method), and there
- * has been no transfer of control.
- *
- * <p>This does the same thing as InfiniteRecursiveLoop, but uses CFG-based
- * analysis for greater precision.</p>
- *
+ * Signal an infinite loop if either: we see a call to the same method with the
+ * same parameters, or we see a call to the same (dynamically dispatched
+ * method), and there has been no transfer of control.
+ * 
+ * <p>
+ * This does the same thing as InfiniteRecursiveLoop, but uses CFG-based
+ * analysis for greater precision.
+ * </p>
+ * 
  * @author Bill Pugh
  * @author David Hovemeyer
  */
-public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
+public @Deprecated
+class InfiniteRecursiveLoop2 implements Detector {
     private static final boolean DEBUG = SystemProperties.getBoolean("irl.debug");
+
     private static final String IRL_METHOD = SystemProperties.getProperty("irl.method");
 
     private BugReporter bugReporter;
@@ -74,30 +77,36 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
         this.bugReporter = bugReporter;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba
+     * .ClassContext)
      */
-	public void visitClassContext(ClassContext classContext) {
+    public void visitClassContext(ClassContext classContext) {
         Method[] methodList = classContext.getJavaClass().getMethods();
         for (Method method : methodList) {
             if (method.getCode() == null)
-				continue;
+                continue;
 
             if (IRL_METHOD != null && !method.getName().equals(IRL_METHOD))
                 continue;
 
             try {
                 if (DEBUG) {
-                    System.out.println("Checking method " +
-							SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
+                    System.out.println("Checking method "
+                            + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
                 }
                 analyzeMethod(classContext, method);
             } catch (CFGBuilderException e) {
-				bugReporter.logError("Error checking for infinite recursive loop in " +
-                        SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method), e);
+                bugReporter.logError(
+                        "Error checking for infinite recursive loop in "
+                                + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method), e);
             } catch (DataflowAnalysisException e) {
-                bugReporter.logError("Error checking for infinite recursive loop in " +
-						SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method), e);
+                bugReporter.logError(
+                        "Error checking for infinite recursive loop in "
+                                + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method), e);
             }
         }
     }
@@ -106,15 +115,15 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
         CFG cfg = classContext.getCFG(method);
 
         // Look for recursive calls which either
-        //   - postdominate the CFG entry, or
-        //   - pass all of the parameters as arguments
-		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext(); ) {
+        // - postdominate the CFG entry, or
+        // - pass all of the parameters as arguments
+        for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
             BasicBlock basicBlock = i.next();
 
             // Check if it's a method invocation.
             if (!basicBlock.isExceptionThrower())
                 continue;
-			InstructionHandle thrower = basicBlock.getExceptionThrower();
+            InstructionHandle thrower = basicBlock.getExceptionThrower();
             Instruction ins = thrower.getInstruction();
             if (!(ins instanceof InvokeInstruction))
                 continue;
@@ -122,12 +131,14 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
             // Recursive call?
             if (isRecursiveCall((InvokeInstruction) ins, classContext, method)) {
                 checkRecursiveCall(classContext, method, cfg, basicBlock, thrower, (InvokeInstruction) ins);
-			}
+            }
 
             // Call to add(Object)?
             if (isCallToAdd((InvokeInstruction) ins, classContext.getConstantPoolGen())) {
-                if (DEBUG) { System.out.println("Checking call to add..."); }
-				checkCallToAdd(classContext, method, basicBlock, thrower);
+                if (DEBUG) {
+                    System.out.println("Checking call to add...");
+                }
+                checkCallToAdd(classContext, method, basicBlock, thrower);
             }
         }
     }
@@ -139,27 +150,21 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
         if (!instruction.getClassName(cpg).equals(classContext.getJavaClass().getClassName())
                 || !instruction.getName(cpg).equals(method.getName())
-				|| !instruction.getSignature(cpg).equals(method.getSignature()))
+                || !instruction.getSignature(cpg).equals(method.getSignature()))
             return false;
 
         return true;
     }
 
-    private void checkRecursiveCall(
-            ClassContext classContext,
-            Method method,
-			CFG cfg,
-            BasicBlock basicBlock,
-            InstructionHandle thrower,
-            InvokeInstruction ins) throws DataflowAnalysisException, CFGBuilderException {
+    private void checkRecursiveCall(ClassContext classContext, Method method, CFG cfg, BasicBlock basicBlock,
+            InstructionHandle thrower, InvokeInstruction ins) throws DataflowAnalysisException, CFGBuilderException {
 
         if (DEBUG) {
-            System.out.println("Checking recursive call in " +
-                    SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
-		}
+            System.out.println("Checking recursive call in "
+                    + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
+        }
 
-        PostDominatorsAnalysis postDominators =
-            classContext.getNonImplicitExceptionDominatorsAnalysis(method);
+        PostDominatorsAnalysis postDominators = classContext.getNonImplicitExceptionDominatorsAnalysis(method);
 
         ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
         ValueNumberFrame vnaFrameAtEntry = vnaDataflow.getStartFact(cfg.getEntry());
@@ -170,7 +175,7 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
         // How many arguments need to be checked to find out whether
         // the parameters are passed to recursive calls verbatim?
         int numArgsToCheck = new SignatureParser(method.getSignature()).getNumParameters();
-		if (!method.isStatic())
+        if (!method.isStatic())
             ++numArgsToCheck;
 
         boolean report = false;
@@ -178,37 +183,36 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
         // Check to see if this block postdominates the method entry,
         // and the called method is known exactly.
         report = entryPostDominators.get(basicBlock.getLabel())
-				&& targetMethodKnownExactly(classContext, method, basicBlock, ins);
+                && targetMethodKnownExactly(classContext, method, basicBlock, ins);
 
         if (!report) {
             // See if
             // (1) all parameters are passed unconditionally as arguments
-			// (2) no fields which might have been read have been written to
-            //     (meaning a different path could be taken in the called method)
+            // (2) no fields which might have been read have been written to
+            // (meaning a different path could be taken in the called method)
             report = allParamsPassedAsArgs(classContext, vnaDataflow, vnaFrameAtEntry, numArgsToCheck, basicBlock, ins)
                     && !checkedStateHasBeenModified(classContext, method, basicBlock);
-		}
+        }
 
         if (report) {
             JavaClass javaClass = classContext.getJavaClass();
-            BugInstance warning = new BugInstance(this, "IL_INFINITE_RECURSIVE_LOOP", HIGH_PRIORITY)
-					.addClassAndMethod(javaClass, method)
-                    .addSourceLine(classContext, method, thrower);
+            BugInstance warning = new BugInstance(this, "IL_INFINITE_RECURSIVE_LOOP", HIGH_PRIORITY).addClassAndMethod(javaClass,
+                    method).addSourceLine(classContext, method, thrower);
             bugReporter.reportBug(warning);
         }
-	}
+    }
 
-    private boolean targetMethodKnownExactly(ClassContext classContext, Method method, BasicBlock basicBlock, InvokeInstruction ins)
-            throws DataflowAnalysisException, CFGBuilderException {
+    private boolean targetMethodKnownExactly(ClassContext classContext, Method method, BasicBlock basicBlock,
+            InvokeInstruction ins) throws DataflowAnalysisException, CFGBuilderException {
 
         // Ways in which we can be confident that the called method
         // is the same as the calling method:
         // 1. invocation is nonvirtual: invokestatic or invokespecial
-		// 2. method is private
+        // 2. method is private
         // 3. method or class is final
         // 4. receiver instance is the same as "this"
         // 5. receiver type is known exactly, and is the same as the class
-		//    containing the calling method
+        // containing the calling method
 
         if (ins.getOpcode() == Constants.INVOKESTATIC || ins.getOpcode() == Constants.INVOKESPECIAL)
             return true;
@@ -222,11 +226,11 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
         // See if caller and callee are the same.
         // Technically, the call could still dispatch to a subclass,
         // but that's pretty unlikely.
-		ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
+        ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
         ValueNumber caller = vnaDataflow.getAnalysis().getThisValue();
         ValueNumberFrame frameAtCall = vnaDataflow.getStartFact(basicBlock);
         ValueNumber callee = frameAtCall.getInstance(ins, classContext.getConstantPoolGen());
-		if (caller.equals(callee)) {
+        if (caller.equals(callee)) {
             return true;
         }
 
@@ -240,17 +244,12 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
         if (!(receiverType instanceof ObjectType))
             return false;
 
-        return (((ObjectType) receiverType).getClassName().equals(
-                classContext.getJavaClass().getClassName()));
+        return (((ObjectType) receiverType).getClassName().equals(classContext.getJavaClass().getClassName()));
     }
 
-    private boolean allParamsPassedAsArgs(
-            ClassContext classContext,
-            ValueNumberDataflow vnaDataflow,
-			ValueNumberFrame vnaFrameAtEntry,
-            int numArgsToCheck,
-            BasicBlock basicBlock,
-            InvokeInstruction ins) throws DataflowAnalysisException {
+    private boolean allParamsPassedAsArgs(ClassContext classContext, ValueNumberDataflow vnaDataflow,
+            ValueNumberFrame vnaFrameAtEntry, int numArgsToCheck, BasicBlock basicBlock, InvokeInstruction ins)
+            throws DataflowAnalysisException {
 
         boolean allParamsPassedAsArgs = false;
 
@@ -258,19 +257,18 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
         if (vnaFrame.isValid() && vnaFrame.getStackDepth() >= numArgsToCheck) {
             allParamsPassedAsArgs = true;
 
-        checkArgsLoop:
-            for (int arg = 0; arg < numArgsToCheck; ++arg) {
+            checkArgsLoop: for (int arg = 0; arg < numArgsToCheck; ++arg) {
                 ValueNumber paramVal = vnaFrameAtEntry.getValue(arg);
-				ValueNumber argVal = vnaFrame.getOperand(ins, classContext.getConstantPoolGen(), arg); 
+                ValueNumber argVal = vnaFrame.getOperand(ins, classContext.getConstantPoolGen(), arg);
 
                 if (DEBUG) {
-                    System.out.println("param="+paramVal.getNumber()+", arg=" + argVal.getNumber());
+                    System.out.println("param=" + paramVal.getNumber() + ", arg=" + argVal.getNumber());
                 }
 
                 if (!paramVal.equals(argVal)) {
                     allParamsPassedAsArgs = false;
                     break checkArgsLoop;
-				}
+                }
             }
         }
 
@@ -305,39 +303,36 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
     }
 
     private boolean isCallToAdd(InvokeInstruction ins, ConstantPoolGen cpg) {
-        return ins.getOpcode() != Constants.INVOKESTATIC
-            && ins.getName(cpg).equals("add")
-			&& ins.getSignature(cpg).equals("(Ljava/lang/Object;)Z");
+        return ins.getOpcode() != Constants.INVOKESTATIC && ins.getName(cpg).equals("add")
+                && ins.getSignature(cpg).equals("(Ljava/lang/Object;)Z");
     }
 
-    private void checkCallToAdd(
-            ClassContext classContext,
-            Method method,
-			BasicBlock basicBlock,
-            InstructionHandle thrower) throws DataflowAnalysisException, CFGBuilderException {
+    private void checkCallToAdd(ClassContext classContext, Method method, BasicBlock basicBlock, InstructionHandle thrower)
+            throws DataflowAnalysisException, CFGBuilderException {
         ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
         ValueNumberFrame vnaFrame = vnaDataflow.getStartFact(basicBlock);
 
         if (vnaFrame.isValid() && vnaFrame.getStackDepth() >= 2) {
             ValueNumber top = vnaFrame.getStackValue(0);
             ValueNumber next = vnaFrame.getStackValue(1);
-			if (DEBUG) {
+            if (DEBUG) {
                 System.out.println("top=" + top.getNumber() + ", next=" + next.getNumber());
             }
             if (top.equals(next)) {
-				JavaClass javaClass = classContext.getJavaClass();
-                BugInstance warning = new BugInstance(this, "IL_CONTAINER_ADDED_TO_ITSELF", NORMAL_PRIORITY)
-                    .addClassAndMethod(javaClass, method)
-                    .addSourceLine(classContext, method, thrower);
-				bugReporter.reportBug(warning);
+                JavaClass javaClass = classContext.getJavaClass();
+                BugInstance warning = new BugInstance(this, "IL_CONTAINER_ADDED_TO_ITSELF", NORMAL_PRIORITY).addClassAndMethod(
+                        javaClass, method).addSourceLine(classContext, method, thrower);
+                bugReporter.reportBug(warning);
             }
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.Detector#report()
      */
-	public void report() {
+    public void report() {
     }
 
 }

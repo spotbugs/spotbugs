@@ -25,43 +25,44 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Utility methods for BugAnnotation classes.
- *
+ * 
  * @author David Hovemeyer
  */
 public abstract class BugAnnotationUtil {
     /**
      * Write a BugAnnotation as XML.
-     *
-	 * @param xmlOutput     the XMLOutput
-     * @param elementName   name of element for BugAnnotation
-     * @param annotation    the BugAnnotation
-     * @param attributeList the XML attribute list
-	 * @param addMessages   true if descriptive messages should be added
+     * 
+     * @param xmlOutput
+     *            the XMLOutput
+     * @param elementName
+     *            name of element for BugAnnotation
+     * @param annotation
+     *            the BugAnnotation
+     * @param attributeList
+     *            the XML attribute list
+     * @param addMessages
+     *            true if descriptive messages should be added
      * @throws IOException
      */
-    public static void writeXML(
-			XMLOutput xmlOutput,
-            String elementName,
-            BugAnnotation annotation,
-            XMLAttributeList attributeList,
-			boolean addMessages) throws IOException {
+    public static void writeXML(XMLOutput xmlOutput, String elementName, BugAnnotation annotation,
+            XMLAttributeList attributeList, boolean addMessages) throws IOException {
 
         SourceLineAnnotation src = null;
         if (annotation instanceof BugAnnotationWithSourceLines)
-             src = ((BugAnnotationWithSourceLines) annotation).getSourceLines();
-		
+            src = ((BugAnnotationWithSourceLines) annotation).getSourceLines();
+
         if (addMessages || src != null) {
             xmlOutput.openTag(elementName, attributeList);
             if (src != null)
-					src.writeXML(xmlOutput, addMessages, false);
+                src.writeXML(xmlOutput, addMessages, false);
             if (addMessages) {
                 xmlOutput.openTag(BugAnnotation.MESSAGE_TAG);
                 xmlOutput.writeText(annotation.toString());
-				xmlOutput.closeTag(BugAnnotation.MESSAGE_TAG);
+                xmlOutput.closeTag(BugAnnotation.MESSAGE_TAG);
             }
             xmlOutput.closeTag(elementName);
         } else {
-			xmlOutput.openCloseTag(elementName, attributeList);
+            xmlOutput.openCloseTag(elementName, attributeList);
         }
 
     }

@@ -29,32 +29,38 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  */
 public class LastVersionMatcher extends VersionMatcher implements Matcher {
 
-    public final static  LastVersionMatcher DEAD_BUG_MATCHER = new LastVersionMatcher(-1, RelationalOp.NEQ);
+    public final static LastVersionMatcher DEAD_BUG_MATCHER = new LastVersionMatcher(-1, RelationalOp.NEQ);
 
-	
     public LastVersionMatcher(String versionAsString, String relOpAsString) {
         this(Long.parseLong(versionAsString), RelationalOp.byName(relOpAsString));
     }
-	public LastVersionMatcher(String versionAsString, RelationalOp relOp) {
+
+    public LastVersionMatcher(String versionAsString, RelationalOp relOp) {
         this(Long.parseLong(versionAsString), relOp);
     }
+
     public LastVersionMatcher(long version, RelationalOp relOp) {
-		super(version,relOp);
+        super(version, relOp);
     }
 
     public boolean match(BugInstance bugInstance) {
         return relOp.check(bugInstance.getLastVersion(), version);
     }
-	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-        XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Long.toString(version)).addAttribute("relOp",relOp.getName());
-        if (disabled) attributes.addAttribute("disabled", "true");
+
+    public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
+        XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Long.toString(version)).addAttribute("relOp",
+                relOp.getName());
+        if (disabled)
+            attributes.addAttribute("disabled", "true");
         xmlOutput.openCloseTag("LastVersion", attributes);
-	}
+    }
 
     @Override
     public String toString() {
-        if (version == -1 && relOp == RelationalOp.EQ) return "ActiveBugs()";
-        else if (version == -1 && relOp == RelationalOp.NEQ) return "DeadBugs()";
-        return "LastVersion(version " + relOp + version +")";
-	}
+        if (version == -1 && relOp == RelationalOp.EQ)
+            return "ActiveBugs()";
+        else if (version == -1 && relOp == RelationalOp.NEQ)
+            return "DeadBugs()";
+        return "LastVersion(version " + relOp + version + ")";
+    }
 }

@@ -32,15 +32,17 @@ public class JAIFEnumConstant {
     /**
      * @return Returns the name.
      */
-	public String getName() {
+    public String getName() {
         return name;
     }
 
-	/* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
-	public String toString() {
+    public String toString() {
         return "enum constant " + name;
     }
 }

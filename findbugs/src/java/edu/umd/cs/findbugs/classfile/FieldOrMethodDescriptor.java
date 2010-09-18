@@ -24,138 +24,149 @@ import edu.umd.cs.findbugs.util.MapCache;
 
 /**
  * Common superclass for FieldDescriptor and MethodDescriptor.
- *
+ * 
  * @author David Hovemeyer
  */
 public abstract class FieldOrMethodDescriptor implements FieldOrMethodName, Comparable {
 
-    private final @SlashedClassName String slashedClassName;
+    private final @SlashedClassName
+    String slashedClassName;
+
     private final String name;
+
     private final String signature;
+
     private final boolean isStatic;
-	private int cachedHashCode;
+
+    private int cachedHashCode;
+
     private final int nameSigHashCode;
 
     public FieldOrMethodDescriptor(@SlashedClassName String slashedClassName, String name, String signature, boolean isStatic) {
-		assert slashedClassName.indexOf('.') == -1 : "class name not in VM format: " + slashedClassName;
+        assert slashedClassName.indexOf('.') == -1 : "class name not in VM format: " + slashedClassName;
 
         this.slashedClassName = DescriptorFactory.canonicalizeString(slashedClassName);
         this.name = DescriptorFactory.canonicalizeString(name);
-		this.signature = DescriptorFactory.canonicalizeString(signature);
+        this.signature = DescriptorFactory.canonicalizeString(signature);
         this.isStatic = isStatic;
         this.nameSigHashCode = getNameSigHashCode(this.name, this.signature);
     }
 
-
     public static int getNameSigHashCode(String name, String signature) {
-        return name.hashCode() * 3119  + signature.hashCode() * 131;
-	}
+        return name.hashCode() * 3119 + signature.hashCode() * 131;
+    }
 
     public int getNameSigHashCode() {
         return nameSigHashCode;
-	}
+    }
+
     /**
-     *
-     *
-	 * @return Returns the class name
+     * 
+     * 
+     * @return Returns the class name
      */
-    public @SlashedClassName String getSlashedClassName() {
+    public @SlashedClassName
+    String getSlashedClassName() {
         return slashedClassName;
-	}
+    }
 
     /**
      * @return a ClassDescriptor for the method's class
-	 */
+     */
     public ClassDescriptor getClassDescriptor() {
         return DescriptorFactory.createClassDescriptor(slashedClassName);
     }
 
-
     /**
      * @return Returns the method name
      */
-	public String getName() {
+    public String getName() {
         return name;
     }
 
     /**
      * @return Returns the method signature
      */
-	public String getSignature() {
+    public String getSignature() {
         return signature;
     }
 
     /**
      * @return Returns true if method is static, false if not
      */
-	public boolean isStatic() {
+    public boolean isStatic() {
         return isStatic;
     }
 
-
     protected int compareTo(FieldOrMethodName o) {
         int cmp;
-		cmp = this.getClassDescriptor().compareTo(o.getClassDescriptor());
+        cmp = this.getClassDescriptor().compareTo(o.getClassDescriptor());
         if (cmp != 0) {
             return cmp;
         }
-		cmp = this.name.compareTo(o.getName());
+        cmp = this.name.compareTo(o.getName());
         if (cmp != 0) {
             return cmp;
         }
-		cmp = this.signature.compareTo(o.getSignature());
+        cmp = this.signature.compareTo(o.getSignature());
         if (cmp != 0) {
             return cmp;
         }
-		return (this.isStatic ? 1 : 0) - (o.isStatic() ? 1 : 0);
+        return (this.isStatic ? 1 : 0) - (o.isStatic() ? 1 : 0);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
-	@Override
+    @Override
     public final boolean equals(Object obj) {
         if (obj == null || !(obj instanceof FieldOrMethodDescriptor)) {
             return false;
-		}
+        }
         FieldOrMethodDescriptor other = (FieldOrMethodDescriptor) obj;
-        return this.isStatic == other.isStatic
-            && this.slashedClassName.equals(other.slashedClassName)
-			&& this.name.equals(other.name)
-            && this.signature.equals(other.signature);
+        return this.isStatic == other.isStatic && this.slashedClassName.equals(other.slashedClassName)
+                && this.name.equals(other.name) && this.signature.equals(other.signature);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
-	@Override
+    @Override
     public final int hashCode() {
         if (cachedHashCode == 0) {
-            cachedHashCode = slashedClassName.hashCode() * 7919
-				+ nameSigHashCode
-                + (isStatic ? 1 : 0);
+            cachedHashCode = slashedClassName.hashCode() * 7919 + nameSigHashCode + (isStatic ? 1 : 0);
         }
         return cachedHashCode;
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
-	@Override
+    @Override
     public String toString() {
         return (isStatic ? "static " : "") + getClassDescriptor().getDottedClassName() + "." + name + signature;
     }
-	
+
     public int compareTo(Object o) {
-        if (!(o instanceof FieldOrMethodDescriptor)) throw new IllegalArgumentException("Can't compare " + this.getClass().getName() + " to a " + o.getClass().getName());
+        if (!(o instanceof FieldOrMethodDescriptor))
+            throw new IllegalArgumentException("Can't compare " + this.getClass().getName() + " to a " + o.getClass().getName());
         FieldOrMethodDescriptor that = (FieldOrMethodDescriptor) o;
-		int result =  this.slashedClassName.compareTo(that.slashedClassName);
-        if (result != 0) return result;
+        int result = this.slashedClassName.compareTo(that.slashedClassName);
+        if (result != 0)
+            return result;
         result = this.name.compareTo(that.name);
-        if (result != 0) return result;
-		result = this.signature.compareTo(that.signature);
-        if (result != 0) return result;
+        if (result != 0)
+            return result;
+        result = this.signature.compareTo(that.signature);
+        if (result != 0)
+            return result;
         result = (this.isStatic ? 1 : 0) - (that.isStatic ? 1 : 0);
         return result;
-	}
+    }
 }

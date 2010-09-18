@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Bug annotation class for integer values.
- *
+ * 
  * @author David Hovemeyer
  * @see BugAnnotation
  */
@@ -36,56 +36,64 @@ public class IntAnnotation implements BugAnnotation {
     private static final String DEFAULT_ROLE = "INT_DEFAULT";
 
     private int value;
+
     private String description;
 
     /**
      *
      */
-	public static final String INT_SYNC_PERCENT = "INT_SYNC_PERCENT";
+    public static final String INT_SYNC_PERCENT = "INT_SYNC_PERCENT";
+
     public static final String INT_OCCURRENCES = "INT_OCCURRENCES";
+
     public static final String INT_VALUE = "INT_VALUE";
-    public static final String INT_SHIFT= "INT_SHIFT";
-	public static final String INT_EXPECTED_ARGUMENTS= "INT_EXPECTED_ARGUMENTS";
-    public static final String INT_ACTUAL_ARGUMENTS= "INT_ACTUAL_ARGUMENTS";
+
+    public static final String INT_SHIFT = "INT_SHIFT";
+
+    public static final String INT_EXPECTED_ARGUMENTS = "INT_EXPECTED_ARGUMENTS";
+
+    public static final String INT_ACTUAL_ARGUMENTS = "INT_ACTUAL_ARGUMENTS";
+
     public static final String INT_OBLIGATIONS_REMAINING = "INT_OBLIGATIONS_REMAINING";
 
     /**
      * Constructor.
-     *
-	 * @param value the integer value
+     * 
+     * @param value
+     *            the integer value
      */
     public IntAnnotation(int value) {
         this.value = value;
-		this.description = DEFAULT_ROLE;
+        this.description = DEFAULT_ROLE;
     }
-
 
     @Override
     public Object clone() {
         try {
-			return super.clone();
+            return super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
         }
-	}
+    }
 
     /**
      * Get the integer value.
-     *
-	 * @return the integer value
+     * 
+     * @return the integer value
      */
     public int getValue() {
         return value;
-	}
+    }
 
     public void accept(BugAnnotationVisitor visitor) {
         visitor.visitIntAnnotation(this);
     }
 
     public String format(String key, ClassAnnotation primaryClass) {
-        if (key.equals("hash") && !isSignificant()) return "";
+        if (key.equals("hash") && !isSignificant())
+            return "";
         return String.valueOf(value);
-	}
+    }
 
     public void setDescription(String description) {
         this.description = description;
@@ -98,31 +106,34 @@ public class IntAnnotation implements BugAnnotation {
     @Override
     public int hashCode() {
         return value;
-	}
+    }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof IntAnnotation))
-			return false;
+            return false;
         return value == ((IntAnnotation) o).value;
     }
 
     public int compareTo(BugAnnotation o) {
-        if (!(o instanceof IntAnnotation)) // BugAnnotations must be Comparable with any type of BugAnnotation
+        if (!(o instanceof IntAnnotation)) // BugAnnotations must be Comparable
+                                           // with any type of BugAnnotation
             return this.getClass().getName().compareTo(o.getClass().getName());
-		return value - ((IntAnnotation) o).value;
+        return value - ((IntAnnotation) o).value;
     }
 
     @Override
     public String toString() {
         String pattern = I18N.instance().getAnnotationDescription(description);
-		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-        return format.format(new BugAnnotation[]{this}, null);
+        FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
+        return format.format(new BugAnnotation[] { this }, null);
     }
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * XML Conversion support
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     private static final String ELEMENT_NAME = "Int";
 
@@ -131,8 +142,7 @@ public class IntAnnotation implements BugAnnotation {
     }
 
     public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
-        XMLAttributeList attributeList = new XMLAttributeList()
-            .addAttribute("value", String.valueOf(value));
+        XMLAttributeList attributeList = new XMLAttributeList().addAttribute("value", String.valueOf(value));
 
         String role = getDescription();
         if (!role.equals(DEFAULT_ROLE))
@@ -144,8 +154,6 @@ public class IntAnnotation implements BugAnnotation {
     public boolean isSignificant() {
         return !description.equals(INT_SYNC_PERCENT) && !description.equals(INT_OCCURRENCES);
     }
-
-
 
     public String toString(ClassAnnotation primaryClass) {
         return toString();

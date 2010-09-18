@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
@@ -34,25 +33,26 @@ import edu.umd.cs.findbugs.ba.ResourceValueFrame;
 import edu.umd.cs.findbugs.ba.ResourceValueFrameModelingVisitor;
 
 /**
- * A visitor to model the effect of instructions on the status
- * of the resource (in this case, Streams).
+ * A visitor to model the effect of instructions on the status of the resource
+ * (in this case, Streams).
  */
 public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
     private StreamResourceTracker resourceTracker;
+
     private Stream stream;
+
     private Location location;
 
-    public StreamFrameModelingVisitor(ConstantPoolGen cpg, StreamResourceTracker resourceTracker,
-                                      Stream stream) {
+    public StreamFrameModelingVisitor(ConstantPoolGen cpg, StreamResourceTracker resourceTracker, Stream stream) {
         super(cpg);
-		this.resourceTracker = resourceTracker;
+        this.resourceTracker = resourceTracker;
         this.stream = stream;
     }
 
     @Override
-         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) throws DataflowAnalysisException {
+    public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) throws DataflowAnalysisException {
         // Record what Location we are analyzing
-		this.location = new Location(handle, basicBlock);
+        this.location = new Location(handle, basicBlock);
 
         final Instruction ins = handle.getInstruction();
         final ConstantPoolGen cpg = getCPG();
@@ -64,23 +64,23 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
         // Is a resource created, opened, or closed by this instruction?
         Location creationPoint = stream.getLocation();
         if (handle == creationPoint.getHandle() && basicBlock == creationPoint.getBasicBlock()) {
-			// Resource creation
+            // Resource creation
             if (stream.isOpenOnCreation()) {
                 status = ResourceValueFrame.OPEN;
                 stream.setOpenLocation(location);
-				resourceTracker.addStreamOpenLocation(location, stream);
+                resourceTracker.addStreamOpenLocation(location, stream);
             } else {
                 status = ResourceValueFrame.CREATED;
             }
-			created = true;
+            created = true;
         } else if (resourceTracker.isResourceOpen(basicBlock, handle, cpg, stream, frame)) {
             // Resource opened
             status = ResourceValueFrame.OPEN;
-			stream.setOpenLocation(location);
+            stream.setOpenLocation(location);
             resourceTracker.addStreamOpenLocation(location, stream);
         } else if (resourceTracker.isResourceClose(basicBlock, handle, cpg, stream, frame)) {
             // Resource closed
-			status = ResourceValueFrame.CLOSED;
+            status = ResourceValueFrame.CLOSED;
         }
 
         // Model use of instance values in frame slots
@@ -89,38 +89,36 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
         // If needed, update frame status
         if (status != -1) {
             frame.setStatus(status);
-			if (created)
+            if (created)
                 frame.setValue(frame.getNumSlots() - 1, ResourceValue.instance());
         }
 
     }
 
     @Override
-         protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {
+    protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {
         ConstantPoolGen cpg = getCPG();
-		String className = inv.getClassName(cpg);
+        String className = inv.getClassName(cpg);
 
-        //System.out.print("[Passed as arg="+instanceArgNum+" at " + inv + "]");
+        // System.out.print("[Passed as arg="+instanceArgNum+" at " + inv +
+        // "]");
 
         boolean escapes = (inv.getOpcode() == Constants.INVOKESTATIC || instanceArgNum != 0);
         String methodName = inv.getMethodName(cpg);
         String methodSig = inv.getSignature(cpg);
-		if (inv.getOpcode() == Constants.INVOKEVIRTUAL 
-                    && (methodName.equals("load") || methodName.equals("loadFromXml") || methodName.equals("store")
-                            || methodName.equals("save"))
-                    && className.equals("java.util.Properties"))
-				escapes = false;
         if (inv.getOpcode() == Constants.INVOKEVIRTUAL
-                    && (methodName.equals("load") || methodName.equals("store"))
-                    && className.equals("java.security.KeyStore"))
-				escapes = false;
-        if (inv.getOpcode() == Constants.INVOKEVIRTUAL
-                    && "getChannel".equals(methodName)
-                    && "()Ljava/nio/channels/FileChannel;".equals(methodSig))
-				escapes = true;
+                && (methodName.equals("load") || methodName.equals("loadFromXml") || methodName.equals("store") || methodName
+                        .equals("save")) && className.equals("java.util.Properties"))
+            escapes = false;
+        if (inv.getOpcode() == Constants.INVOKEVIRTUAL && (methodName.equals("load") || methodName.equals("store"))
+                && className.equals("java.security.KeyStore"))
+            escapes = false;
+        if (inv.getOpcode() == Constants.INVOKEVIRTUAL && "getChannel".equals(methodName)
+                && "()Ljava/nio/channels/FileChannel;".equals(methodSig))
+            escapes = true;
 
         if (FindOpenStream.DEBUG && escapes) {
-            System.out.println("ESCAPE at " + location + " at call to " + className +"." + methodName +":" + methodSig);
+            System.out.println("ESCAPE at " + location + " at call to " + className + "." + methodName + ":" + methodSig);
         }
 
         // Record the fact that this might be a stream escape

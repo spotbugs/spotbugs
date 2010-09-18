@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
@@ -39,51 +38,50 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 public class StartInConstructor extends BytecodeScanningDetector implements StatelessDetector {
     private BugReporter bugReporter;
+
     private final BugAccumulator bugAccumulator;
 
     public StartInConstructor(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
-	}
+    }
 
     @Override
     public boolean shouldVisit(JavaClass obj) {
         boolean isFinal = (obj.getAccessFlags() & ACC_FINAL) != 0 || (obj.getAccessFlags() & ACC_PUBLIC) == 0;
-		return !isFinal;
+        return !isFinal;
     }
 
     @Override
     public void visit(Code obj) {
-        if (getMethodName().equals("<init>")
-				&& (getMethod().isPublic() || getMethod().isProtected())) {
+        if (getMethodName().equals("<init>") && (getMethod().isPublic() || getMethod().isProtected())) {
             super.visit(obj);
             bugAccumulator.reportAccumulatedBugs();
         }
-	}
+    }
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("start")
-		        && getSigConstantOperand().equals("()V")) {
+        if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("start") && getSigConstantOperand().equals("()V")) {
             try {
                 if (Hierarchy.isSubtype(getDottedClassConstantOperand(), "java.lang.Thread")) {
                     int priority = Priorities.NORMAL_PRIORITY;
-					if (getPC() + 4 >= getCode().getCode().length)
+                    if (getPC() + 4 >= getCode().getCode().length)
                         priority = Priorities.LOW_PRIORITY;
                     BugInstance bug = new BugInstance(this, "SC_START_IN_CTOR", priority).addClassAndMethod(this)
                             .addCalledMethod(this);
-					Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+                    Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
                     Set<ClassDescriptor> directSubtypes = subtypes2.getDirectSubtypes(getClassDescriptor());
                     if (!directSubtypes.isEmpty()) {
                         for (ClassDescriptor sub : directSubtypes)
-							bug.addClass(sub).describe(ClassAnnotation.SUBCLASS_ROLE);
+                            bug.addClass(sub).describe(ClassAnnotation.SUBCLASS_ROLE);
                         bug.setPriority(Priorities.HIGH_PRIORITY);
                     }
                     bugAccumulator.accumulateBug(bug, this);
-				}
+                }
             } catch (ClassNotFoundException e) {
                 bugReporter.reportMissingClass(e);
             }
-		}
+        }
     }
 }

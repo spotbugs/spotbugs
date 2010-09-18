@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -34,43 +33,41 @@ import edu.umd.cs.findbugs.StatelessDetector;
 //   8:   aload_1
 //   9:   monitorexit
 
-
 public class FindUnconditionalWait extends BytecodeScanningDetector implements StatelessDetector {
     int stage = 0;
+
     private BugReporter bugReporter;
 
     public FindUnconditionalWait(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
-
-
     @Override
-         public void visit(Method obj) {
+    public void visit(Method obj) {
         stage = 0;
-	}
+    }
 
     @Override
-         public void sawBranchTo(int target) {
-        if (stage == 1) stage = 0;
-	}
+    public void sawBranchTo(int target) {
+        if (stage == 1)
+            stage = 0;
+    }
 
     @Override
-         public void sawOpcode(int seen) {
+    public void sawOpcode(int seen) {
         switch (stage) {
-		case 0:
+        case 0:
             if (seen == MONITORENTER)
                 stage = 1;
             break;
-		case 1:
+        case 1:
             if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("wait")) {
                 bugReporter.reportBug(new BugInstance(this, "UW_UNCOND_WAIT",
-                        getSigConstantOperand().equals("()V") ? NORMAL_PRIORITY : LOW_PRIORITY)
-						.addClassAndMethod(this)
+                        getSigConstantOperand().equals("()V") ? NORMAL_PRIORITY : LOW_PRIORITY).addClassAndMethod(this)
                         .addSourceLine(this));
                 stage = 2;
             }
-			break;
+            break;
         }
     }
 }

@@ -24,18 +24,17 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 
 /**
  * Print the AppVersion information from a BugCollection.
- *
+ * 
  * @author David Hovemeyer
  */
 public class PrintAppVersion {
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {
-            System.out.println("Usage: " + PrintAppVersion.class.getName() +
-					" <bug collection>" );
+            System.out.println("Usage: " + PrintAppVersion.class.getName() + " <bug collection>");
             System.exit(1);
         }
         FindBugs.setNoAnalysis();
-		SortedBugCollection bugCollection = new SortedBugCollection();
+        SortedBugCollection bugCollection = new SortedBugCollection();
         bugCollection.readXML(args[0]);
         System.out.println(bugCollection.getCurrentAppVersion());
     }

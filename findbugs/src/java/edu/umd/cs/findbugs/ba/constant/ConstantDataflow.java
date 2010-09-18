@@ -23,7 +23,7 @@ import edu.umd.cs.findbugs.ba.Dataflow;
 
 /**
  * Dataflow class for ConstantAnalysis.
- *
+ * 
  * @see edu.umd.cs.findbugs.ba.Dataflow
  * @see edu.umd.cs.findbugs.ba.constant.ConstantAnalysis
  * @author David Hovemeyer

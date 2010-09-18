@@ -35,56 +35,64 @@ import java.util.ResourceBundle;
 
 public class L10N {
     private static final boolean DEBUG = SystemProperties.getBoolean("i18n.debug");
+
     private static final boolean GENERATE_MISSING_KEYS = SystemProperties.getBoolean("i18n.generateMissingKeys");
 
     private static ResourceBundle bundle;
+
     private static ResourceBundle bundle_en;
 
     private static PrintWriter extraProperties;
     static {
         try {
-			if (GENERATE_MISSING_KEYS) try {
-                extraProperties = new PrintWriter(new FileWriter("/tmp/extra.properties"));
-            } catch (IOException e) {
-                e.printStackTrace();
-			}
+            if (GENERATE_MISSING_KEYS)
+                try {
+                    extraProperties = new PrintWriter(new FileWriter("/tmp/extra.properties"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
             bundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.gui.bundle.findbugs");
             bundle_en = ResourceBundle.getBundle("edu.umd.cs.findbugs.gui.bundle.findbugs", Locale.ENGLISH);
-
 
         } catch (Exception mre) {
         }
     }
 
-
     private L10N() {
     }
 
     private static String lookup(ResourceBundle b, String key) {
-        if (b == null || key == null ) throw new MissingResourceException(null,null,null);
+        if (b == null || key == null)
+            throw new MissingResourceException(null, null, null);
 
         return b.getString(key);
     }
+
     public static String getLocalString(String key, String defaultString) {
-		if (key == null) return "TRANSLATE("+defaultString+")";
+        if (key == null)
+            return "TRANSLATE(" + defaultString + ")";
         try {
             return lookup(bundle, key);
         } catch (MissingResourceException mre) {
-			try {
+            try {
                 String en = lookup(bundle_en, key);
-                if (DEBUG) return "TRANSLATE("+en+")";
-                else return en;
-			} catch (MissingResourceException mre2) {
+                if (DEBUG)
+                    return "TRANSLATE(" + en + ")";
+                else
+                    return en;
+            } catch (MissingResourceException mre2) {
                 if (extraProperties != null) {
-                    extraProperties.println(key+"="+defaultString);
+                    extraProperties.println(key + "=" + defaultString);
                     extraProperties.flush();
-				}
-                //String en = "Default("+defaultString+")";
+                }
+                // String en = "Default("+defaultString+")";
                 String en = defaultString;
-                if (DEBUG) return "TRANSLATE("+en+")";
-				else return en;
-        }
+                if (DEBUG)
+                    return "TRANSLATE(" + en + ")";
+                else
+                    return en;
+            }
         }
     }
 

@@ -30,17 +30,18 @@ import edu.umd.cs.findbugs.PropertyBundle;
 public class BugReporterPlugin {
 
     public BugReporterPlugin(Plugin plugin, String filterId, ClassLoader classLoader,
-             Class<? extends BugReporterDecorator> filterClass, PropertyBundle properties, boolean enabledByDefault, String description, String details) {
+            Class<? extends BugReporterDecorator> filterClass, PropertyBundle properties, boolean enabledByDefault,
+            String description, String details) {
         this.plugin = plugin;
-		this.id = filterId;
+        this.id = filterId;
         int i = filterId.lastIndexOf('.');
-        this.shortId = filterId.substring(i+1);
+        this.shortId = filterId.substring(i + 1);
         this.classLoader = classLoader;
-		this.filterClass = filterClass;
+        this.filterClass = filterClass;
         this.properties = properties;
         this.description = description;
         this.details = details;
-		this.enabledByDefault = enabledByDefault;
+        this.enabledByDefault = enabledByDefault;
     }
 
     public String getId() {
@@ -76,16 +77,19 @@ public class BugReporterPlugin {
         return getDescription();
     }
 
-	public Plugin getPlugin() {
+    public Plugin getPlugin() {
         return plugin;
     }
+
     public boolean isNamed(Set<String> names) {
-		return names.contains(id) ||  names.contains(shortId);
+        return names.contains(id) || names.contains(shortId);
 
     }
 
     final Plugin plugin;
+
     final String id;
+
     final String shortId;
 
     final ClassLoader classLoader;

@@ -12,17 +12,17 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation indicating that <em>no</em> FindBugs warning is expected.
- *
+ * 
  * See http://code.google.com/p/findbugs/wiki/FindbugsTestCases
- *
+ * 
  * @author David Hovemeyer
  */
 @Retention(RetentionPolicy.CLASS)
 public @interface NoWarning {
     /**
-     * The value indicates the bug code (e.g., NP) or bug pattern (e.g., IL_INFINITE_LOOP)
-     * that should not be reported
-	 */
+     * The value indicates the bug code (e.g., NP) or bug pattern (e.g.,
+     * IL_INFINITE_LOOP) that should not be reported
+     */
     public String value();
 
 }

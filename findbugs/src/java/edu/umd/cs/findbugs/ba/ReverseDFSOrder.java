@@ -22,11 +22,10 @@ package edu.umd.cs.findbugs.ba;
 import java.util.Comparator;
 
 /**
- * A BlockOrder for visiting the blocks of a CFG in
- * the order they would be visited in a depth first search
- * of the reversed CFG.  This is the most efficient visitation
- * order for backwards dataflow analyses.
- *
+ * A BlockOrder for visiting the blocks of a CFG in the order they would be
+ * visited in a depth first search of the reversed CFG. This is the most
+ * efficient visitation order for backwards dataflow analyses.
+ * 
  * @see BlockOrder
  * @see ReverseDepthFirstSearch
  * @see CFG
@@ -36,27 +35,34 @@ public class ReverseDFSOrder extends AbstractBlockOrder {
 
     private static class ReverseDFSComparator implements Comparator<BasicBlock> {
         private final DepthFirstSearch dfs;
-		public ReverseDFSComparator(ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
-            if (dfs == null) throw new IllegalArgumentException();
+
+        public ReverseDFSComparator(ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
+            if (dfs == null)
+                throw new IllegalArgumentException();
             this.dfs = dfs;
         }
-		public int compare(BasicBlock a, BasicBlock b) {
+
+        public int compare(BasicBlock a, BasicBlock b) {
             return dfs.getFinishTime(a) - dfs.getFinishTime(b);
         }
     }
-	
+
     public final ReverseDepthFirstSearch rdfs;
+
     public final DepthFirstSearch dfs;
 
-	/**
+    /**
      * Constructor.
-     *
-     * @param cfg  the CFG
-	 * @param rdfs the ReverseDepthFirstSearch of the CFG
-     * @param dfs TODO
+     * 
+     * @param cfg
+     *            the CFG
+     * @param rdfs
+     *            the ReverseDepthFirstSearch of the CFG
+     * @param dfs
+     *            TODO
      */
     public ReverseDFSOrder(CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
-		super(cfg, new ReverseDFSComparator(rdfs, dfs));
+        super(cfg, new ReverseDFSComparator(rdfs, dfs));
         this.rdfs = rdfs;
         this.dfs = dfs;
     }

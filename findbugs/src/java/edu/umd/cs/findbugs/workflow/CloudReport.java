@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 /**
  * Java main application to compute update a historical bug collection with
  * results from another build/analysis.
- *
+ * 
  * @author William Pugh
  */
 
@@ -39,30 +39,26 @@ public class CloudReport {
     /**
      *
      */
-	private static final String USAGE = "Usage: <cmd> "
-            + "  [<bugs.xml>]";
+    private static final String USAGE = "Usage: <cmd> " + "  [<bugs.xml>]";
 
-    public static void main(String[] args) throws IOException,
-            DocumentException {
+    public static void main(String[] args) throws IOException, DocumentException {
 
         FindBugs.setNoAnalysis();
         DetectorFactoryCollection.instance();
         if (args.length > 1) {
-			System.out.println(USAGE);
+            System.out.println(USAGE);
             return;
         }
 
         BugCollection bugs = new SortedBugCollection();
         if (args.length == 0)
-          bugs.readXML(System.in);
-		else
+            bugs.readXML(System.in);
+        else
             bugs.readXML(args[0]);
         bugs.getCloud().waitUntilIssueDataDownloaded();
         PrintWriter out = new PrintWriter(System.out);
-		bugs.getCloud().printCloudSummary(out, bugs, new String[0]);
+        bugs.getCloud().printCloudSummary(out, bugs, new String[0]);
         out.close();
-
-
 
     }
 }

@@ -27,27 +27,30 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce UnpackedCode objects
- * for analyzed methods.
- *
+ * Analysis engine to produce UnpackedCode objects for analyzed methods.
+ * 
  * @author David Hovemeyer
  */
 public class UnpackedCodeFactory extends AnalysisFactory<UnpackedCode> {
     /**
      * Constructor.
      */
-	public UnpackedCodeFactory() {
+    public UnpackedCodeFactory() {
         super("unpacked bytecode", UnpackedCode.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public UnpackedCode analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public UnpackedCode analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         Method method = getMethod(analysisCache, descriptor);
         Code code = method.getCode();
         if (code == null)
-			return null;
+            return null;
 
         byte[] instructionList = code.getCode();
 

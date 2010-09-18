@@ -31,31 +31,36 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
  * Set of ValueNumbers and their corresponding FlowValues.
- *
+ * 
  * @author David Hovemeyer
  */
 public class TypeQualifierValueSet {
     // States
-    enum State { VALID, TOP, BOTTOM }
+    enum State {
+        VALID, TOP, BOTTOM
+    }
 
     private static final FlowValue DEFAULT_FLOW_VALUE = FlowValue.UNKNOWN;
 
     private Map<ValueNumber, FlowValue> valueMap;
+
     private Map<ValueNumber, Set<SourceSinkInfo>> whereAlways;
+
     private Map<ValueNumber, Set<SourceSinkInfo>> whereNever;
-	private State state = State.VALID;
+
+    private State state = State.VALID;
 
     public TypeQualifierValueSet() {
         this.valueMap = new HashMap<ValueNumber, FlowValue>();
         this.whereAlways = new HashMap<ValueNumber, Set<SourceSinkInfo>>();
-		this.whereNever = new HashMap<ValueNumber, Set<SourceSinkInfo>>();
+        this.whereNever = new HashMap<ValueNumber, Set<SourceSinkInfo>>();
         this.state = State.TOP;
     }
 
     public void modelSourceSink(SourceSinkInfo sourceSinkInfo) {
         assert sourceSinkInfo != null;
         ValueNumber vn = sourceSinkInfo.getValueNumber();
-		FlowValue flowValue = FlowValue.flowValueFromWhen(sourceSinkInfo.getWhen());
+        FlowValue flowValue = FlowValue.flowValueFromWhen(sourceSinkInfo.getWhen());
 
         setValue(vn, flowValue);
 
@@ -66,45 +71,47 @@ public class TypeQualifierValueSet {
         if (flowValue.isNo()) {
             addSourceSinkInfo(whereNever, vn, sourceSinkInfo);
         }
-	}
+    }
 
     private void setValue(ValueNumber vn, FlowValue flowValue) {
         valueMap.put(vn, flowValue);
     }
 
-    private static void addSourceSinkInfo(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber vn, SourceSinkInfo sourceSinkInfo) {
+    private static void addSourceSinkInfo(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber vn,
+            SourceSinkInfo sourceSinkInfo) {
         Set<SourceSinkInfo> sourceSinkInfoSet = getOrCreateSourceSinkInfoSet(sourceSinkInfoSetMap, vn);
         sourceSinkInfoSet.add(sourceSinkInfo);
-	}
+    }
 
     public void pruneValue(ValueNumber vn) {
         assert isValid();
         valueMap.remove(vn);
-		whereAlways.remove(vn);
+        whereAlways.remove(vn);
         whereNever.remove(vn);
     }
 
-	public Set<SourceSinkInfo> getWhereAlways(ValueNumber vn) {
+    public Set<SourceSinkInfo> getWhereAlways(ValueNumber vn) {
         return getOrCreateSourceSinkInfoSet(whereAlways, vn);
     }
 
-	public Set<SourceSinkInfo> getWhereNever(ValueNumber vn) {
+    public Set<SourceSinkInfo> getWhereNever(ValueNumber vn) {
         return getOrCreateSourceSinkInfoSet(whereNever, vn);
     }
 
-    private static Set<SourceSinkInfo> getOrCreateSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber vn) {
+    private static Set<SourceSinkInfo> getOrCreateSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap,
+            ValueNumber vn) {
         Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.get(vn);
         if (sourceSinkInfoSet == null) {
-			sourceSinkInfoSet = new HashSet<SourceSinkInfo>();
+            sourceSinkInfoSet = new HashSet<SourceSinkInfo>();
             sourceSinkInfoSetMap.put(vn, sourceSinkInfoSet);
         }
         return sourceSinkInfoSet;
-	}
+    }
 
     public FlowValue getValue(ValueNumber vn) {
         FlowValue result = valueMap.get(vn);
         return result != null ? result : FlowValue.TOP;
-	}
+    }
 
     public Collection<? extends ValueNumber> getValueNumbers() {
         return valueMap.keySet();
@@ -116,33 +123,30 @@ public class TypeQualifierValueSet {
 
     public void makeValid() {
         /*
-        this.state = State.VALID;
-		this.valueMap.clear();
-        this.whereAlways.clear();
-        this.whereNever.clear();
-        */
-		reset(State.VALID);
+         * this.state = State.VALID; this.valueMap.clear();
+         * this.whereAlways.clear(); this.whereNever.clear();
+         */
+        reset(State.VALID);
     }
 
     public void makeSameAs(TypeQualifierValueSet source) {
         /*
-        this.state = source.state;
-		this.valueMap.clear();
-        */
+         * this.state = source.state; this.valueMap.clear();
+         */
         reset(source.state);
         this.valueMap.putAll(source.valueMap);
-		copySourceSinkInfoSetMap(this.whereAlways, source.whereAlways);
+        copySourceSinkInfoSetMap(this.whereAlways, source.whereAlways);
         copySourceSinkInfoSetMap(this.whereNever, source.whereNever);
     }
 
     private void copySourceSinkInfoSetMap(Map<ValueNumber, Set<SourceSinkInfo>> dest, Map<ValueNumber, Set<SourceSinkInfo>> source) {
         dest.keySet().retainAll(source.keySet());
 
-		for (Map.Entry<ValueNumber, Set<SourceSinkInfo>> entry : source.entrySet()) {
+        for (Map.Entry<ValueNumber, Set<SourceSinkInfo>> entry : source.entrySet()) {
             Set<SourceSinkInfo> locSet = getOrCreateSourceSinkInfoSet(dest, entry.getKey());
             locSet.clear();
             locSet.addAll(entry.getValue());
-		}
+        }
     }
 
     public boolean isTop() {
@@ -151,9 +155,8 @@ public class TypeQualifierValueSet {
 
     public void setTop() {
         /*
-        this.valueMap.clear();
-		this.state = State.TOP;
-        */
+         * this.valueMap.clear(); this.state = State.TOP;
+         */
         reset(State.TOP);
     }
 
@@ -163,16 +166,15 @@ public class TypeQualifierValueSet {
 
     public void setBottom() {
         /*
-        this.valueMap.clear();
-		this.state = State.BOTTOM;
-        */
+         * this.valueMap.clear(); this.state = State.BOTTOM;
+         */
         reset(State.BOTTOM);
     }
-	
+
     private void reset(State state) {
         valueMap.clear();
         whereAlways.clear();
-		whereNever.clear();
+        whereNever.clear();
         this.state = state;
     }
 
@@ -182,73 +184,73 @@ public class TypeQualifierValueSet {
         setValue(toVN, getValue(fromVN));
 
         // Propagate source/sink information
-		transferSourceSinkInfoSet(whereAlways, fromVN, toVN);
+        transferSourceSinkInfoSet(whereAlways, fromVN, toVN);
         transferSourceSinkInfoSet(whereNever, fromVN, toVN);
 
         // Remove all information about the "from" value
-		valueMap.remove(fromVN);
+        valueMap.remove(fromVN);
         whereAlways.remove(fromVN);
         whereNever.remove(fromVN);
     }
 
-    private static void transferSourceSinkInfoSet(
-            Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap,
-            ValueNumber fromVN,
+    private static void transferSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber fromVN,
             ValueNumber toVN) {
-		Set<SourceSinkInfo> locSet = getOrCreateSourceSinkInfoSet(sourceSinkInfoSetMap, fromVN);
+        Set<SourceSinkInfo> locSet = getOrCreateSourceSinkInfoSet(sourceSinkInfoSetMap, fromVN);
 
         for (SourceSinkInfo loc : locSet) {
             addSourceSinkInfo(sourceSinkInfoSetMap, toVN, loc);
-		}
+        }
     }
 
     public void mergeWith(TypeQualifierValueSet fact) throws DataflowAnalysisException {
         if (!isValid() || !fact.isValid()) {
             throw new DataflowAnalysisException("merging an invalid TypeQualifierValueSet");
-		}
+        }
 
         Set<ValueNumber> interesting = new HashSet<ValueNumber>();
         interesting.addAll(this.valueMap.keySet());
-		interesting.addAll(fact.valueMap.keySet());
+        interesting.addAll(fact.valueMap.keySet());
 
         for (ValueNumber vn : interesting) {
             setValue(vn, FlowValue.meet(this.getValue(vn), fact.getValue(vn)));
-			mergeSourceSinkInfoSets(this.whereAlways, fact.whereAlways, vn);
+            mergeSourceSinkInfoSets(this.whereAlways, fact.whereAlways, vn);
             mergeSourceSinkInfoSets(this.whereNever, fact.whereNever, vn);
         }
     }
 
-    private void mergeSourceSinkInfoSets(
-            Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMapToUpdate,
-            Map<ValueNumber, Set<SourceSinkInfo>> otherSourceSinkInfoSetMap,
-			ValueNumber vn) {
+    private void mergeSourceSinkInfoSets(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMapToUpdate,
+            Map<ValueNumber, Set<SourceSinkInfo>> otherSourceSinkInfoSetMap, ValueNumber vn) {
         if (!otherSourceSinkInfoSetMap.containsKey(vn)) {
             return;
         }
-		Set<SourceSinkInfo> sourceSinkInfoSetToUpdate = getOrCreateSourceSinkInfoSet(sourceSinkInfoSetMapToUpdate, vn);
+        Set<SourceSinkInfo> sourceSinkInfoSetToUpdate = getOrCreateSourceSinkInfoSet(sourceSinkInfoSetMapToUpdate, vn);
         sourceSinkInfoSetToUpdate.addAll(getOrCreateSourceSinkInfoSet(otherSourceSinkInfoSetMap, vn));
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
-	@Override
+    @Override
     public boolean equals(Object obj) {
         if (obj == null || obj.getClass() != this.getClass()) {
             return false;
-		}
+        }
         TypeQualifierValueSet other = (TypeQualifierValueSet) obj;
         if (this.isValid() && other.isValid()) {
             return this.valueMap.equals(other.valueMap);
-		} else {
+        } else {
             return this.state == other.state;
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
-	@Override
+    @Override
     public int hashCode() {
         throw new UnsupportedOperationException();
     }
@@ -256,27 +258,27 @@ public class TypeQualifierValueSet {
     @Override
     public String toString() {
         if (state != State.VALID) {
-			return state.toString();
+            return state.toString();
         }
 
         TreeSet<ValueNumber> interesting = new TreeSet<ValueNumber>();
-		interesting.addAll(valueMap.keySet());
+        interesting.addAll(valueMap.keySet());
 
         StringBuilder buf = new StringBuilder();
 
-		buf.append("{");
+        buf.append("{");
 
         for (ValueNumber vn : interesting) {
             if (buf.length() > 1) {
-				buf.append(", ");
+                buf.append(", ");
             }
             buf.append(valueNumberToString(vn));
         }
-		
+
         buf.append("}");
 
         return buf.toString();
-	}
+    }
 
     public String valueNumberToString(ValueNumber vn) {
         StringBuilder buf = new StringBuilder();
@@ -284,11 +286,11 @@ public class TypeQualifierValueSet {
         buf.append(vn.getNumber());
         buf.append("->");
         buf.append(getValue(vn).toString());
-		buf.append("[");
+        buf.append("[");
         appendSourceSinkInfos(buf, "YES=", getOrCreateSourceSinkInfoSet(whereAlways, vn));
         buf.append(",");
         appendSourceSinkInfos(buf, "NO=", getOrCreateSourceSinkInfoSet(whereNever, vn));
-		buf.append("]");
+        buf.append("]");
 
         return buf.toString();
     }
@@ -296,17 +298,17 @@ public class TypeQualifierValueSet {
     private static void appendSourceSinkInfos(StringBuilder buf, String key, Set<SourceSinkInfo> sourceSinkInfoSet) {
         TreeSet<SourceSinkInfo> sortedLocSet = new TreeSet<SourceSinkInfo>();
         sortedLocSet.addAll(sourceSinkInfoSet);
-		boolean first = true;
+        boolean first = true;
         buf.append(key);
         buf.append("(");
         for (SourceSinkInfo loc : sortedLocSet) {
-			if (first) {
+            if (first) {
                 first = false;
             } else {
                 buf.append(",");
-			}
+            }
             buf.append(loc.getLocation().toCompactString());
         }
         buf.append(")");
-	}
+    }
 }

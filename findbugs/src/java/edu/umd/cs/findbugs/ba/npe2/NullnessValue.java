@@ -21,28 +21,31 @@ package edu.umd.cs.findbugs.ba.npe2;
 
 /**
  * Symbolic values representing the nullness of a runtime value.
- *
+ * 
  * @author David Hovemeyer
  */
 public class NullnessValue {
     static final int DEFINITELY_NULL = 0;
+
     static final int DEFINITELY_NOT_NULL = 1;
+
     static final int CHECKED = 2;
-	static final int NO_KABOOM = 3;
+
+    static final int NO_KABOOM = 3;
 
     static final int FLAGS_MAX = 4;
 
     private static final NullnessValue[] instanceList = new NullnessValue[1 << FLAGS_MAX];
     static {
         for (int i = 0; i < instanceList.length; i++) {
-			instanceList[i] = new NullnessValue(i);
+            instanceList[i] = new NullnessValue(i);
         }
     }
 
     private final int flags;
 
     private NullnessValue(int flags) {
-        this.flags= flags;
+        this.flags = flags;
     }
 
     int getFlags() {
@@ -73,21 +76,21 @@ public class NullnessValue {
         return instanceList[flags | (1 << NO_KABOOM)];
     }
 
-//	public NullnessValue toCheckedNullValue() {
-//		if (isDefinitelyNull() || isDefinitelyNotNull()) {
-//			throw new IllegalStateException();
-//		}
-//
-//		return fromFlags(flags | DEFINITELY_NULL | CHECKED);
-//	}
-//
-//	public NullnessValue toCheckedNotNullValue() {
-//		if (isDefinitelyNull() || isDefinitelyNotNull()) {
-//			throw new IllegalStateException();
-//		}
-//
-//		return fromFlags(flags | DEFINITELY_NOT_NULL | CHECKED);
-//	}
+    // public NullnessValue toCheckedNullValue() {
+    // if (isDefinitelyNull() || isDefinitelyNotNull()) {
+    // throw new IllegalStateException();
+    // }
+    //
+    // return fromFlags(flags | DEFINITELY_NULL | CHECKED);
+    // }
+    //
+    // public NullnessValue toCheckedNotNullValue() {
+    // if (isDefinitelyNull() || isDefinitelyNotNull()) {
+    // throw new IllegalStateException();
+    // }
+    //
+    // return fromFlags(flags | DEFINITELY_NOT_NULL | CHECKED);
+    // }
 
     private boolean isFlagSet(int flag) {
         return (flags & (1 << flag)) != 0;
@@ -109,10 +112,12 @@ public class NullnessValue {
         return fromFlags(0);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
-	@Override
+    @Override
     public String toString() {
         String pfx = "";
 
@@ -129,7 +134,7 @@ public class NullnessValue {
         if (isDefinitelyNull()) {
             val = "n";
         } else if (isDefinitelyNotNull()) {
-			val = "N";
+            val = "N";
         } else {
             val = "-";
         }

@@ -24,23 +24,26 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analysis engine to produce ExceptionSetFactory objects
- * for analyzed methods.
- *
+ * Analysis engine to produce ExceptionSetFactory objects for analyzed methods.
+ * 
  * @author David Hovemeyer
  */
 public class ExceptionSetFactoryFactory extends AnalysisFactory<ExceptionSetFactory> {
     /**
      * Constructor.
      */
-	public ExceptionSetFactoryFactory() {
+    public ExceptionSetFactoryFactory() {
         super("exception set factory", ExceptionSetFactory.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public ExceptionSetFactory analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public ExceptionSetFactory analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         return new ExceptionSetFactory();
     }
 }

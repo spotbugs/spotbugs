@@ -27,13 +27,15 @@ import java.lang.annotation.RetentionPolicy;
 import javax.annotation.meta.TypeQualifierNickname;
 import javax.annotation.meta.When;
 
-
 /**
- * Denotes a class name or package name where the . character is used to separate package/class name components.
+ * Denotes a class name or package name where the . character is used to
+ * separate package/class name components.
+ * 
  * @author pugh
  */
 @Documented
-@SlashedClassName(when=When.NEVER)
+@SlashedClassName(when = When.NEVER)
 @TypeQualifierNickname
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DottedClassName { }
+public @interface DottedClassName {
+}

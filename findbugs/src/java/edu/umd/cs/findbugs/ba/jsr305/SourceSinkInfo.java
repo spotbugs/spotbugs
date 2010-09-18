@@ -25,35 +25,43 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
- * Information about a source or sink in
- * the type qualifier dataflow analysis.
- *
+ * Information about a source or sink in the type qualifier dataflow analysis.
+ * 
  * @author David Hovemeyer
  */
 public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
     private final SourceSinkType type;
+
     private final Location location;
+
     private final ValueNumber vn;
-	private final When when;
+
+    private final When when;
+
     private int parameter;
+
     private int local;
+
     private Object constantValue;
-	
 
     private boolean interproc;
 
     /**
      * Constructor.
-     *
-	 * @param type     type of the source or sink
-     * @param location Location of the source or sink
-     * @param vn       the ValueNumber of the annotated value
-     * @param when     the When value used (explicitly or implicitly) to annotate this
-	 *                 source or sink
+     * 
+     * @param type
+     *            type of the source or sink
+     * @param location
+     *            Location of the source or sink
+     * @param vn
+     *            the ValueNumber of the annotated value
+     * @param when
+     *            the When value used (explicitly or implicitly) to annotate
+     *            this source or sink
      */
     public SourceSinkInfo(SourceSinkType type, Location location, ValueNumber vn, When when) {
         this.type = type;
-		this.location = location;
+        this.location = location;
         this.vn = vn;
         this.when = when;
     }
@@ -61,112 +69,116 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
     /**
      * @return Returns the type.
      */
-	public SourceSinkType getType() {
+    public SourceSinkType getType() {
         return type;
     }
 
     /**
      * @return Returns the location.
      */
-	public Location getLocation() {
+    public Location getLocation() {
         return location;
     }
 
-	/**
+    /**
      * @return Returns the ValueNumber.
      */
     public ValueNumber getValueNumber() {
-		return vn;
+        return vn;
     }
 
     /**
      * @return Returns the when.
      */
-	public When getWhen() {
+    public When getWhen() {
         return when;
     }
 
     /**
-     * @param parameter The parameter to set.
+     * @param parameter
+     *            The parameter to set.
      */
-	public void setParameter(int parameter) {
+    public void setParameter(int parameter) {
         this.parameter = parameter;
     }
 
     /**
-     * @param parameter The parameter to set.
-     * @param local     The local to set.
-	 */
+     * @param parameter
+     *            The parameter to set.
+     * @param local
+     *            The local to set.
+     */
     public void setParameterAndLocal(int parameter, int local) {
         this.parameter = parameter;
         this.local = local;
-	}
+    }
 
     /**
      * @return Returns the parameter.
      */
-	public int getParameter() {
+    public int getParameter() {
         return parameter;
     }
 
     /**
      * @return Returns the local.
      */
-	public int getLocal() {
+    public int getLocal() {
         return local;
     }
 
     /**
-     * Set the SourceSinkInfo as having been created based
-     * on the results of type qualifiers computed for a called method
-	 * (and not explicitly annotating the called method).
-     *
-     * @param interproc true if the SourceSinkInfo results from
-     *                  computed type qualifiers for a called method,
-	 *                  false otherwise
+     * Set the SourceSinkInfo as having been created based on the results of
+     * type qualifiers computed for a called method (and not explicitly
+     * annotating the called method).
+     * 
+     * @param interproc
+     *            true if the SourceSinkInfo results from computed type
+     *            qualifiers for a called method, false otherwise
      */
     public void setInterproc(boolean interproc) {
         this.interproc = interproc;
-	}
+    }
 
     /**
-     * Return whether or not the SourceSinkInfo was created
-	 * based on the results of type qualifiers computed for a called method
-     * (and not explicitly annotating the called method).
-     *
-     * @return true if the SourceSinkInfo results from
-	 *         computed type qualifiers for a called method,
-     *         false otherwise
+     * Return whether or not the SourceSinkInfo was created based on the results
+     * of type qualifiers computed for a called method (and not explicitly
+     * annotating the called method).
+     * 
+     * @return true if the SourceSinkInfo results from computed type qualifiers
+     *         for a called method, false otherwise
      */
     public boolean getInterproc() {
-		return interproc;
+        return interproc;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-	public int compareTo(SourceSinkInfo o) {
+    public int compareTo(SourceSinkInfo o) {
         return this.location.compareTo(o.location);
     }
+
     public Object getConstantValue() {
-    	return constantValue;
+        return constantValue;
     }
 
     public void setConstantValue(Object constantValue) {
         this.constantValue = constantValue;
     }
 
-
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((constantValue == null) ? 0 : constantValue.hashCode());
-	    result = prime * result + (interproc ? 1231 : 1237);
+        result = prime * result + (interproc ? 1231 : 1237);
         result = prime * result + local;
         result = prime * result + ((location == null) ? 0 : location.hashCode());
         result = prime * result + parameter;
-	    result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
         result = prime * result + ((vn == null) ? 0 : vn.hashCode());
         result = prime * result + ((when == null) ? 0 : when.hashCode());
         return result;
@@ -177,44 +189,45 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
         if (this == obj)
             return true;
         if (obj == null)
-		    return false;
+            return false;
         if (getClass() != obj.getClass())
             return false;
         SourceSinkInfo other = (SourceSinkInfo) obj;
-	    if (constantValue == null) {
+        if (constantValue == null) {
             if (other.constantValue != null)
                 return false;
         } else if (!constantValue.equals(other.constantValue))
-		    return false;
+            return false;
         if (interproc != other.interproc)
             return false;
         if (local != other.local)
-		    return false;
+            return false;
         if (location == null) {
             if (other.location != null)
                 return false;
-	    } else if (!location.equals(other.location))
+        } else if (!location.equals(other.location))
             return false;
         if (parameter != other.parameter)
             return false;
-	    if (type != other.type)
+        if (type != other.type)
             return false;
         if (vn == null) {
             if (other.vn != null)
-			    return false;
+                return false;
         } else if (!vn.equals(other.vn))
             return false;
         if (when != other.when)
-		    return false;
+            return false;
         return true;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
-	@Override
+    @Override
     public String toString() {
-        return type.toString() + "@" + location.toCompactString() + "[vn=" + vn.getNumber() +
-            ",when=" + when + "]";
-	}
+        return type.toString() + "@" + location.toCompactString() + "[vn=" + vn.getNumber() + ",when=" + when + "]";
+    }
 }

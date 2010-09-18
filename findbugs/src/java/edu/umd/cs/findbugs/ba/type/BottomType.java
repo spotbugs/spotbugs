@@ -22,9 +22,8 @@ package edu.umd.cs.findbugs.ba.type;
 import org.apache.bcel.generic.Type;
 
 /**
- * Special "bottom" type.
- * It is the zero element for the type merge operation.
- *
+ * Special "bottom" type. It is the zero element for the type merge operation.
+ * 
  * @author David Hovemeyer
  * @see TypeAnalysis
  * @see TypeFrame
@@ -34,7 +33,8 @@ public class BottomType extends Type implements ExtendedTypes {
     /**
      *
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
+
     private static final BottomType theInstance = new BottomType();
 
     private BottomType() {
@@ -42,19 +42,19 @@ public class BottomType extends Type implements ExtendedTypes {
     }
 
     @Override
-         public int hashCode() {
+    public int hashCode() {
         return System.identityHashCode(this);
-	}
+    }
 
     @Override
-         public boolean equals(Object o) {
+    public boolean equals(Object o) {
         return o == this;
-	}
+    }
 
     /**
      * Get the single instance of the bottom type.
      */
-	public static Type instance() {
+    public static Type instance() {
         return theInstance;
     }
 }

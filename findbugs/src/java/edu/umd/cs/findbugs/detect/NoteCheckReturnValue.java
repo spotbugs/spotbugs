@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -48,21 +47,24 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
  * @author William Pugh
  */
 
-public class NoteCheckReturnValue extends AnnotationVisitor
-  implements Detector, NonReportingDetector {
+public class NoteCheckReturnValue extends AnnotationVisitor implements Detector, NonReportingDetector {
 
     // XXX: Hack, for now
     private static final String LOAD_TRAINING = SystemProperties.getProperty("findbugs.checkreturn.loadtraining");
+
     private static final String SAVE_TRAINING = SystemProperties.getProperty("findbugs.checkreturn.savetraining");
 
     private BugReporter bugReporter;
+
     private boolean checkLoad;
+
     private Set<XMethod> checkReturnValueDatabase;
 
     public NoteCheckReturnValue(BugReporter bugReporter) {
-        AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase(); // force creation
+        AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase(); // force
+                                                                                     // creation
         this.bugReporter = bugReporter;
-		if (SAVE_TRAINING != null) {
+        if (SAVE_TRAINING != null) {
             checkReturnValueDatabase = new HashSet<XMethod>();
         }
     }
@@ -70,82 +72,82 @@ public class NoteCheckReturnValue extends AnnotationVisitor
     public void visitClassContext(ClassContext classContext) {
         if (LOAD_TRAINING != null && !checkLoad) {
             loadTraining();
-			checkLoad = true;
+            checkLoad = true;
         }
         JavaClass javaClass = classContext.getJavaClass();
-        if  (!BCELUtil.preTiger(javaClass)) javaClass.accept(this);
-	}
+        if (!BCELUtil.preTiger(javaClass))
+            javaClass.accept(this);
+    }
 
     @Override
     public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
         if (!annotationClass.endsWith("CheckReturnValue"))
-			return;
+            return;
         if (!visitingMethod())
             return;
         BCPMethodReturnCheck.addMethodWhoseReturnMustBeChecked("+" + getDottedClassName(), getMethodName(), getMethodSig(),
-		        getThisClass().isStatic() ? Invoke.STATIC : Invoke.ANY);
+                getThisClass().isStatic() ? Invoke.STATIC : Invoke.ANY);
 
         if (SAVE_TRAINING != null) {
             checkReturnValueDatabase.add(XFactory.createXMethod(this));
         }
-	}
+    }
 
     public void report() {
         if (SAVE_TRAINING != null) {
             saveTraining();
-		}
         }
+    }
 
     private void loadTraining() {
         BufferedReader reader = null;
         try {
-			reader = new BufferedReader(Util.getFileReader(LOAD_TRAINING));
+            reader = new BufferedReader(Util.getFileReader(LOAD_TRAINING));
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] tuple = line.split(",");
-				if (tuple.length != 4)
+                if (tuple.length != 4)
                     continue;
-                BCPMethodReturnCheck.addMethodWhoseReturnMustBeChecked(
-                        tuple[0], tuple[1], tuple[2],
-						Boolean.valueOf(tuple[3]).booleanValue() ? Invoke.STATIC : Invoke.ANY);
+                BCPMethodReturnCheck.addMethodWhoseReturnMustBeChecked(tuple[0], tuple[1], tuple[2], Boolean.valueOf(tuple[3])
+                        .booleanValue() ? Invoke.STATIC : Invoke.ANY);
             }
         } catch (IOException e) {
             bugReporter.logError("Couldn't load check return database");
-		} finally {
+        } finally {
             if (reader != null) {
                 try {
                     reader.close();
-				} catch (IOException e) {
+                } catch (IOException e) {
                     // Ignore
                 }
             }
-		}
+        }
     }
 
     private void saveTraining() {
         BufferedWriter writer = null;
         try {
-			writer = new BufferedWriter(new FileWriter(SAVE_TRAINING));
+            writer = new BufferedWriter(new FileWriter(SAVE_TRAINING));
             for (XMethod xmethod : checkReturnValueDatabase) {
                 writer.write(xmethod.getClassName());
                 writer.write(",");
-				writer.write(xmethod.getName());
+                writer.write(xmethod.getName());
                 writer.write(",");
                 writer.write(xmethod.getSignature());
                 writer.write(",");
-				writer.write(String.valueOf(xmethod.getAccessFlags()));
+                writer.write(String.valueOf(xmethod.getAccessFlags()));
                 writer.write("\n");
             }
         } catch (IOException e) {
-			bugReporter.logError("Couldn't write check return value training data", e);
+            bugReporter.logError("Couldn't write check return value training data", e);
         } finally {
             if (writer != null) {
                 try {
-					writer.close();
+                    writer.close();
                 } catch (IOException e) {
                     // ignore
                 }
-			}
+            }
         }
     }
 

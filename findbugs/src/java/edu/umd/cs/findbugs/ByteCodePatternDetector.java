@@ -35,14 +35,14 @@ import edu.umd.cs.findbugs.ba.bcp.PatternMatcher;
 
 /**
  * A base class for bug detectors that are based on a ByteCodePattern.
- * ByteCodePatterns provide an easy way to detect patterns of
- * bytecode instructions, taking into account control flow and
- * uses of fields and values.
- *
+ * ByteCodePatterns provide an easy way to detect patterns of bytecode
+ * instructions, taking into account control flow and uses of fields and values.
+ * 
  * @see ByteCodePattern
  */
 public abstract class ByteCodePatternDetector implements Detector {
     private static final boolean DEBUG = SystemProperties.getBoolean("bcpd.debug");
+
     private static final String METHOD = SystemProperties.getProperty("bcpd.method");
 
     protected abstract BugReporter getBugReporter();
@@ -50,7 +50,7 @@ public abstract class ByteCodePatternDetector implements Detector {
     public void visitClassContext(ClassContext classContext) {
         try {
             ByteCodePattern pattern = getPattern();
-			JavaClass jclass = classContext.getJavaClass();
+            JavaClass jclass = classContext.getJavaClass();
             Method[] methodList = jclass.getMethods();
 
             for (Method method : methodList) {
@@ -61,9 +61,9 @@ public abstract class ByteCodePatternDetector implements Detector {
                     continue;
 
                 if (DEBUG) {
-                    System.out.print("=====================================================================\n" +
-                            "Method " + jclass.getClassName() + "." + method.getName() + "\n" +
-							"=====================================================================\n");
+                    System.out.print("=====================================================================\n" + "Method "
+                            + jclass.getClassName() + "." + method.getName() + "\n"
+                            + "=====================================================================\n");
                 }
 
                 if (!prescreen(method, classContext))
@@ -83,30 +83,30 @@ public abstract class ByteCodePatternDetector implements Detector {
                     if (DEBUG) {
                         System.out.println("Pattern match:");
                         Iterator<PatternElementMatch> pemIter = match.patternElementMatchIterator();
-						while (pemIter.hasNext()) {
+                        while (pemIter.hasNext()) {
                             PatternElementMatch pem = pemIter.next();
                             System.out.println("\t" + pem.toString());
                         }
-					}
+                    }
 
                     reportMatch(classContext, method, match);
                 }
             }
-		} catch (DataflowAnalysisException e) {
+        } catch (DataflowAnalysisException e) {
             getBugReporter().logError(getDetectorName() + " caught exception", e);
         } catch (CFGBuilderException e) {
             getBugReporter().logError(getDetectorName() + " caught exception", e);
-		}
+        }
     }
 
     private String getDetectorName() {
         String className = this.getClass().getName();
         int lastDot = className.lastIndexOf('.');
-		if (lastDot >= 0) {
+        if (lastDot >= 0) {
             className = className.substring(lastDot + 1);
         }
         return className;
-	}
+    }
 
     public void report() {
     }
@@ -114,37 +114,43 @@ public abstract class ByteCodePatternDetector implements Detector {
     /**
      * Get the ByteCodePattern for this detector.
      */
-	public abstract ByteCodePattern getPattern();
+    public abstract ByteCodePattern getPattern();
 
     /**
-     * Prescreen a method.
-     * It is a valid, but dumb, implementation simply to return true unconditionally.
-	 * A better implementation is to call ClassContext.getBytecodeSet() to check
-     * whether the method actually contains the bytecode instructions that
-     * the pattern will look for.  The theory is that checking the bytecode
-     * set is very fast, while building the MethodGen, CFG, ValueNumberAnalysis,
-	 * etc. objects required to match ByteCodePatterns is slow, and the bytecode
-     * pattern matching algorithm is also not particularly fast.
+     * Prescreen a method. It is a valid, but dumb, implementation simply to
+     * return true unconditionally. A better implementation is to call
+     * ClassContext.getBytecodeSet() to check whether the method actually
+     * contains the bytecode instructions that the pattern will look for. The
+     * theory is that checking the bytecode set is very fast, while building the
+     * MethodGen, CFG, ValueNumberAnalysis, etc. objects required to match
+     * ByteCodePatterns is slow, and the bytecode pattern matching algorithm is
+     * also not particularly fast.
      * <p/>
-     * <p> As a datapoint, prescreening speeds up the BCPDoubleCheck detector
-	 * <b>by a factor of 5</b> with no loss of generality and only a dozen
-     * or so extra lines of code.
-     *
-     * @param method       the method
-	 * @param classContext the ClassContext for the method
+     * <p>
+     * As a datapoint, prescreening speeds up the BCPDoubleCheck detector <b>by
+     * a factor of 5</b> with no loss of generality and only a dozen or so extra
+     * lines of code.
+     * 
+     * @param method
+     *            the method
+     * @param classContext
+     *            the ClassContext for the method
      * @return true if the method should be analyzed for instances of the
      *         ByteCodePattern
      */
-	public abstract boolean prescreen(Method method, ClassContext classContext);
+    public abstract boolean prescreen(Method method, ClassContext classContext);
 
     /**
      * Called to report an instance of the ByteCodePattern.
-     *
-	 * @param classContext the ClassContext for the analyzed class
-     * @param method       the method to instance appears in
-     * @param match        the ByteCodePatternMatch object representing the match
-     *                     of the ByteCodePattern against actual instructions in the method
-	 */
+     * 
+     * @param classContext
+     *            the ClassContext for the analyzed class
+     * @param method
+     *            the method to instance appears in
+     * @param match
+     *            the ByteCodePatternMatch object representing the match of the
+     *            ByteCodePattern against actual instructions in the method
+     */
     public abstract void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
             throws CFGBuilderException, DataflowAnalysisException;
 }

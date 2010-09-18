@@ -44,53 +44,56 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
 
 /**
- * Add uid attributes to BugInstances in a BugCollection.
- * A uid is an integer that uniquely identifies a BugInstance
- * in a BugCollection.
- * Right now this is only used in machine learning experiments.
- *
+ * Add uid attributes to BugInstances in a BugCollection. A uid is an integer
+ * that uniquely identifies a BugInstance in a BugCollection. Right now this is
+ * only used in machine learning experiments.
+ * 
  * @author David Hovemeyer
  */
 public class GenerateUIDs {
     private BugCollection bugCollection;
-    @NonNull private Project project;
+
+    @NonNull
+    private Project project;
+
     private String inputFilename;
-	private String outputFilename;
+
+    private String outputFilename;
 
     public GenerateUIDs(String inputFilename, String outputFilename) {
         this.bugCollection = new SortedBugCollection();
         this.inputFilename = inputFilename;
-		this.outputFilename = outputFilename;
+        this.outputFilename = outputFilename;
     }
 
     @SuppressWarnings("unchecked")
     public void execute() throws IOException, DocumentException {
         InputStream in = null;
-		try {
-        if (inputFilename.equals("-")) {
-            in = System.in;
-        } else {
-			in = new BufferedInputStream(new FileInputStream(inputFilename));
-            if (inputFilename.endsWith(".gz"))
-                in = new GZIPInputStream(in);
-        }
+        try {
+            if (inputFilename.equals("-")) {
+                in = System.in;
+            } else {
+                in = new BufferedInputStream(new FileInputStream(inputFilename));
+                if (inputFilename.endsWith(".gz"))
+                    in = new GZIPInputStream(in);
+            }
 
-
-        bugCollection.readXML(in);
-        in = null;
+            bugCollection.readXML(in);
+            in = null;
         } finally {
-			if (in != null) in.close();
+            if (in != null)
+                in.close();
         }
         Document document = DocumentFactory.getInstance().createDocument();
         Dom4JXMLOutput xmlOutput = new Dom4JXMLOutput(document);
-		bugCollection.writeXML(xmlOutput);
+        bugCollection.writeXML(xmlOutput);
 
         int count = 0;
 
         List<Element> bugInstanceList = document.selectNodes("/BugCollection/BugInstance");
         for (Element element : bugInstanceList) {
             Attribute uidAttr = element.attribute("uid");
-			if (uidAttr == null) {
+            if (uidAttr == null) {
                 element.addAttribute("uid", Integer.toString(count++));
             }
         }
@@ -98,22 +101,21 @@ public class GenerateUIDs {
         OutputStream out;
         if (outputFilename.equals("-")) {
             out = System.out;
-		} else {
+        } else {
             out = new BufferedOutputStream(new FileOutputStream(outputFilename));
         }
 
-		XMLWriter xmlWriter = new XMLWriter(out, OutputFormat.createPrettyPrint());
+        XMLWriter xmlWriter = new XMLWriter(out, OutputFormat.createPrettyPrint());
         try {
             xmlWriter.write(document);
         } finally {
-			xmlWriter.close();
+            xmlWriter.close();
         }
     }
 
     public static void main(String[] args) throws IOException, DocumentException {
         if (args.length != 2) {
-            System.err.println("Usage: " + GenerateUIDs.class.getName() +
-					" <input file> <output file>");
+            System.err.println("Usage: " + GenerateUIDs.class.getName() + " <input file> <output file>");
             System.exit(1);
         }
 

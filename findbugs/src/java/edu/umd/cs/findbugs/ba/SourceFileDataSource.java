@@ -29,12 +29,12 @@ public interface SourceFileDataSource {
     /**
      * Open an InputStream on the source file.
      */
-	public InputStream open() throws IOException;
+    public InputStream open() throws IOException;
 
     /**
      * Get the full filename of the source file.
      */
-	public String getFullFileName();
+    public String getFullFileName();
 }
 
 // vim:ts=4

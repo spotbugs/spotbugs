@@ -22,38 +22,45 @@ package edu.umd.cs.findbugs.ba.jsr305;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * Accumulate relevant return type annotations
- * for a given method by traversing its supertypes.
- *
+ * Accumulate relevant return type annotations for a given method by traversing
+ * its supertypes.
+ * 
  * @author David Hovemeyer
  */
 class ReturnTypeAnnotationAccumulator extends AbstractMethodAnnotationAccumulator {
     private TypeQualifierAnnotationLookupResult result;
+
     private boolean overrides = false;
 
     /**
      * Constructor.
-     *
-	 * @param typeQualifierValue TypeQualifierValue specifying the kind of annotation we want to look up
-     * @param xmethod            method whose effective return type annotation we want
+     * 
+     * @param typeQualifierValue
+     *            TypeQualifierValue specifying the kind of annotation we want
+     *            to look up
+     * @param xmethod
+     *            method whose effective return type annotation we want
      */
     public ReturnTypeAnnotationAccumulator(TypeQualifierValue typeQualifierValue, XMethod xmethod) {
-		super(typeQualifierValue, xmethod);
+        super(typeQualifierValue, xmethod);
         this.result = new ReturnTypeAnnotationLookupResult();
     }
 
     @Override
     public TypeQualifierAnnotationLookupResult getResult() {
         return result;
-	}
+    }
 
-    /** Returns true if the method overrides/implements a method in a superclass or interface */
+    /**
+     * Returns true if the method overrides/implements a method in a superclass
+     * or interface
+     */
     @Override
-	public boolean overrides() {
+    public boolean overrides() {
         return overrides;
     }
 
-	@Override
+    @Override
     protected TypeQualifierAnnotation lookupAnnotation(XMethod xm) {
         overrides = true;
         return TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xm, getTypeQualifierValue());

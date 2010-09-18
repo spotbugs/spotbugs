@@ -25,27 +25,31 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 
 /**
- * A really simple forward dataflow analysis to find the depth of
- * the Java operand stack.  This is more of a proof of concept for
- * the dataflow analysis framework than anything useful.
- *
+ * A really simple forward dataflow analysis to find the depth of the Java
+ * operand stack. This is more of a proof of concept for the dataflow analysis
+ * framework than anything useful.
+ * 
  * @see Dataflow
  * @see DataflowAnalysis
  */
 public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
     public static final int TOP = -1;
+
     public static final int BOTTOM = -2;
 
     private ConstantPoolGen cpg;
 
     /**
      * Constructor.
-     *
-	 * @param cpg the ConstantPoolGen of the method whose CFG we're performing the analysis on
-     * @param dfs DepthFirstSearch of the method's CFG
+     * 
+     * @param cpg
+     *            the ConstantPoolGen of the method whose CFG we're performing
+     *            the analysis on
+     * @param dfs
+     *            DepthFirstSearch of the method's CFG
      */
     public StackDepthAnalysis(ConstantPoolGen cpg, DepthFirstSearch dfs) {
-		super(dfs);
+        super(dfs);
         this.cpg = cpg;
     }
 
@@ -56,14 +60,15 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
     public void makeFactTop(StackDepth fact) {
         fact.setDepth(TOP);
     }
-	public boolean isTop(StackDepth fact) {
+
+    public boolean isTop(StackDepth fact) {
         return fact.getDepth() == TOP;
     }
 
     @Override
-         public boolean isFactValid(StackDepth fact) {
+    public boolean isFactValid(StackDepth fact) {
         int depth = fact.getDepth();
-		return depth != TOP && depth != BOTTOM;
+        return depth != TOP && depth != BOTTOM;
     }
 
     public void copy(StackDepth source, StackDepth dest) {
@@ -79,64 +84,70 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
     }
 
     @Override
-         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StackDepth fact) throws DataflowAnalysisException {
+    public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StackDepth fact)
+            throws DataflowAnalysisException {
         Instruction ins = handle.getInstruction();
-		int produced = ins.produceStack(cpg);
+        int produced = ins.produceStack(cpg);
         int consumed = ins.consumeStack(cpg);
         if (produced == Constants.UNPREDICTABLE || consumed == Constants.UNPREDICTABLE)
             throw new IllegalStateException("Unpredictable stack delta for instruction: " + handle);
-		int depth = fact.getDepth();
+        int depth = fact.getDepth();
         depth += (produced - consumed);
         if (depth < 0)
             fact.setDepth(BOTTOM);
-		else
+        else
             fact.setDepth(depth);
     }
 
     public void meetInto(StackDepth fact, Edge edge, StackDepth result) {
         int a = fact.getDepth();
         int b = result.getDepth();
-		int combined;
+        int combined;
 
         if (a == TOP)
             combined = b;
         else if (b == TOP)
-			combined = a;
+            combined = a;
         else if (a == BOTTOM || b == BOTTOM || a != b)
             combined = BOTTOM;
         else
-			combined = a;
+            combined = a;
 
         result.setDepth(combined);
     }
 
-//	/**
-//	 * Command line driver, for testing.
-//	 */
-//	public static void main(String[] argv) throws Exception {
-//		if (argv.length != 1) {
-//			System.out.println("Usage: " + StackDepthAnalysis.class.getName() + " <class file>");
-//			System.exit(1);
-//		}
-//
-//		DataflowTestDriver<StackDepth, StackDepthAnalysis> driver = new DataflowTestDriver<StackDepth, StackDepthAnalysis>() {
-//			@Override
-//						 public Dataflow<StackDepth, StackDepthAnalysis> createDataflow(ClassContext classContext, Method method)
-//					throws CFGBuilderException, DataflowAnalysisException {
-//
-//				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
-//				CFG cfg = classContext.getCFG(method);
-//
-//				StackDepthAnalysis analysis = new StackDepthAnalysis(classContext.getConstantPoolGen(), dfs);
-//				Dataflow<StackDepth, StackDepthAnalysis> dataflow = new Dataflow<StackDepth, StackDepthAnalysis>(cfg, analysis);
-//				dataflow.execute();
-//
-//				return dataflow;
-//			}
-//		};
-//
-//		driver.execute(argv[0]);
-//	}
+    // /**
+    // * Command line driver, for testing.
+    // */
+    // public static void main(String[] argv) throws Exception {
+    // if (argv.length != 1) {
+    // System.out.println("Usage: " + StackDepthAnalysis.class.getName() +
+    // " <class file>");
+    // System.exit(1);
+    // }
+    //
+    // DataflowTestDriver<StackDepth, StackDepthAnalysis> driver = new
+    // DataflowTestDriver<StackDepth, StackDepthAnalysis>() {
+    // @Override
+    // public Dataflow<StackDepth, StackDepthAnalysis>
+    // createDataflow(ClassContext classContext, Method method)
+    // throws CFGBuilderException, DataflowAnalysisException {
+    //
+    // DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+    // CFG cfg = classContext.getCFG(method);
+    //
+    // StackDepthAnalysis analysis = new
+    // StackDepthAnalysis(classContext.getConstantPoolGen(), dfs);
+    // Dataflow<StackDepth, StackDepthAnalysis> dataflow = new
+    // Dataflow<StackDepth, StackDepthAnalysis>(cfg, analysis);
+    // dataflow.execute();
+    //
+    // return dataflow;
+    // }
+    // };
+    //
+    // driver.execute(argv[0]);
+    // }
 }
 
 // vim:ts=4

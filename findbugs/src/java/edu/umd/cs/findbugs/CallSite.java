@@ -30,16 +30,20 @@ import edu.umd.cs.findbugs.ba.Location;
  */
 public class CallSite {
     private final Method method;
+
     private final Location location;
 
     /**
      * Constructor.
-     *
-	 * @param method     the method containing the call site
-     * @param basicBlock the basic block where the call site is located
-     * @param handle     the instruction which performs the call
+     * 
+     * @param method
+     *            the method containing the call site
+     * @param basicBlock
+     *            the basic block where the call site is located
+     * @param handle
+     *            the instruction which performs the call
      */
-	public CallSite(Method method, BasicBlock basicBlock, InstructionHandle handle) {
+    public CallSite(Method method, BasicBlock basicBlock, InstructionHandle handle) {
         this.method = method;
         this.location = new Location(handle, basicBlock);
     }
@@ -47,46 +51,43 @@ public class CallSite {
     /**
      * Get the method containing the call site.
      */
-	public Method getMethod() {
+    public Method getMethod() {
         return method;
     }
 
     /**
-     * Get the Location (basic block and instruction) where the call site is located.
+     * Get the Location (basic block and instruction) where the call site is
+     * located.
      */
-	public Location getLocation() {
+    public Location getLocation() {
         return location;
     }
 
     /**
      * Get the basic block where the call site is located.
      */
-	public BasicBlock getBasicBlock() {
+    public BasicBlock getBasicBlock() {
         return location.getBasicBlock();
     }
 
     /**
      * Get the instruction which performs the call.
      */
-	public InstructionHandle getHandle() {
+    public InstructionHandle getHandle() {
         return location.getHandle();
     }
 
     @Override
     public int hashCode() {
-        return System.identityHashCode(method)
-				^ getBasicBlock().getLabel()
-                ^ System.identityHashCode(location.getHandle());
+        return System.identityHashCode(method) ^ getBasicBlock().getLabel() ^ System.identityHashCode(location.getHandle());
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof CallSite))
-			return false;
+            return false;
         CallSite other = (CallSite) o;
-        return method == other.method
-                && getBasicBlock() == other.getBasicBlock()
-				&& getHandle() == other.getHandle();
+        return method == other.method && getBasicBlock() == other.getBasicBlock() && getHandle() == other.getHandle();
     }
 }
 

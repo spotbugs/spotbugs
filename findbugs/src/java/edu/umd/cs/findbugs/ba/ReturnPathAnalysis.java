@@ -45,51 +45,54 @@ public class ReturnPathAnalysis extends ForwardDataflowAnalysis<ReturnPath> impl
     public boolean isTop(ReturnPath fact) {
         return fact.getKind() == ReturnPath.TOP;
     }
-	public boolean same(ReturnPath fact1, ReturnPath fact2) {
+
+    public boolean same(ReturnPath fact1, ReturnPath fact2) {
         return fact1.sameAs(fact2);
     }
 
     @Override
-         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ReturnPath fact)
+    public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ReturnPath fact)
             throws DataflowAnalysisException {
-		// Nothing to do
+        // Nothing to do
     }
 
     @Override
-         public boolean isFactValid(ReturnPath fact) {
+    public boolean isFactValid(ReturnPath fact) {
         return true;
-	}
+    }
 
     public void meetInto(ReturnPath fact, Edge edge, ReturnPath result) throws DataflowAnalysisException {
         switch (edge.getType()) {
         case UNHANDLED_EXCEPTION_EDGE:
-			fact = new ReturnPath(ReturnPath.UE);
+            fact = new ReturnPath(ReturnPath.UE);
             break;
         case EXIT_EDGE:
             fact = new ReturnPath(ReturnPath.EXIT);
-			break;
+            break;
         }
 
         result.mergeWith(fact);
     }
 
-//	public static void main(String[] argv) throws Exception {
-//		if (argv.length != 1) {
-//			System.err.println("Usage: " + ReturnPathAnalysis.class.getName() + " <classfile>");
-//			System.exit(1);
-//		}
-//
-//		DataflowTestDriver<ReturnPath, ReturnPathAnalysis> driver = new DataflowTestDriver<ReturnPath, ReturnPathAnalysis>() {
-//			@Override
-//						 public Dataflow<ReturnPath, ReturnPathAnalysis>
-//					createDataflow(ClassContext classContext, Method method)
-//					throws CFGBuilderException, DataflowAnalysisException {
-//				return classContext.getReturnPathDataflow(method);
-//			}
-//		};
-//
-//		driver.execute(argv[0]);
-//	}
+    // public static void main(String[] argv) throws Exception {
+    // if (argv.length != 1) {
+    // System.err.println("Usage: " + ReturnPathAnalysis.class.getName() +
+    // " <classfile>");
+    // System.exit(1);
+    // }
+    //
+    // DataflowTestDriver<ReturnPath, ReturnPathAnalysis> driver = new
+    // DataflowTestDriver<ReturnPath, ReturnPathAnalysis>() {
+    // @Override
+    // public Dataflow<ReturnPath, ReturnPathAnalysis>
+    // createDataflow(ClassContext classContext, Method method)
+    // throws CFGBuilderException, DataflowAnalysisException {
+    // return classContext.getReturnPathDataflow(method);
+    // }
+    // };
+    //
+    // driver.execute(argv[0]);
+    // }
 }
 
 // vim:ts=4

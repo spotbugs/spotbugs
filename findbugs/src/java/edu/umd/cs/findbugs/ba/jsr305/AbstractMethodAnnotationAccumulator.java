@@ -23,9 +23,9 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.OverriddenMethodsVisitor;
 
 /**
- * Accumulate type qualifier annotations on method,
- * taking supertype methods into account.
- *
+ * Accumulate type qualifier annotations on method, taking supertype methods
+ * into account.
+ * 
  * @author David Hovemeyer
  */
 public abstract class AbstractMethodAnnotationAccumulator extends OverriddenMethodsVisitor {
@@ -33,45 +33,50 @@ public abstract class AbstractMethodAnnotationAccumulator extends OverriddenMeth
 
     protected AbstractMethodAnnotationAccumulator(TypeQualifierValue typeQualifierValue, XMethod xmethod) {
         super(xmethod);
-        this.typeQualifierValue= typeQualifierValue;
-	}
+        this.typeQualifierValue = typeQualifierValue;
+    }
 
     /**
      * @return Returns the typeQualifierValue.
-	 */
+     */
     public TypeQualifierValue getTypeQualifierValue() {
         return typeQualifierValue;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.ch.OverriddenMethodsVisitor#visitOverriddenMethod(edu.umd.cs.findbugs.ba.XMethod)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.ch.OverriddenMethodsVisitor#visitOverriddenMethod
+     * (edu.umd.cs.findbugs.ba.XMethod)
      */
-	@Override
+    @Override
     protected boolean visitOverriddenMethod(XMethod xmethod) {
 
         // If xmethod is the method where the visitation begins,
-		// then we don't want to try to compute the effective annotation
+        // then we don't want to try to compute the effective annotation
         // (since that would cause an infinite recursion).
         // Instead, continue to supertype methods.
         if (xmethod == getXmethod()) {
-			return true;
+            return true;
         }
 
         // See if matching method is annotated
-		TypeQualifierAnnotation tqa = lookupAnnotation(xmethod);
+        TypeQualifierAnnotation tqa = lookupAnnotation(xmethod);
         if (tqa == null) {
             // continue search in supertype
             return true;
-		} else {
+        } else {
             // This branch of search ends here.
             // Add partial result.
             getResult().addPartialResult(new TypeQualifierAnnotationLookupResult.PartialResult(xmethod, tqa));
-			return false;
+            return false;
         }
     }
 
     public abstract TypeQualifierAnnotationLookupResult getResult();
+
     protected abstract TypeQualifierAnnotation lookupAnnotation(XMethod xm);
 
-	public abstract boolean overrides();
+    public abstract boolean overrides();
 }

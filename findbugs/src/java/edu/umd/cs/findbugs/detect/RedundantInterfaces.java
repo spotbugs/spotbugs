@@ -19,7 +19,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -33,15 +32,12 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
-public class RedundantInterfaces extends PreorderVisitor implements Detector, StatelessDetector
-{
+public class RedundantInterfaces extends PreorderVisitor implements Detector, StatelessDetector {
     private BugReporter bugReporter;
 
     public RedundantInterfaces(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
-
-
 
     public void visitClassContext(ClassContext classContext) {
         JavaClass obj = classContext.getJavaClass();
@@ -61,15 +57,14 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, St
             for (String interfaceName : interfaceNames) {
                 if (!"java/io/Serializable".equals(interfaceName)) {
                     JavaClass inf = Repository.lookupClass(interfaceName.replace('/', '.'));
-					if (superObj.instanceOf(inf))
+                    if (superObj.instanceOf(inf))
                         redundantInfNames.add(inf.getClassName());
                 }
             }
 
             if (redundantInfNames.size() > 0) {
-                BugInstance bug = new BugInstance( this, "RI_REDUNDANT_INTERFACES", LOW_PRIORITY )
-                            .addClass(obj);
-				for (String redundantInfName : redundantInfNames)
+                BugInstance bug = new BugInstance(this, "RI_REDUNDANT_INTERFACES", LOW_PRIORITY).addClass(obj);
+                for (String redundantInfName : redundantInfNames)
                     bug.addClass(redundantInfName).describe("INTERFACE_TYPE");
 
                 bugReporter.reportBug(bug);
@@ -78,7 +73,7 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, St
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         }
-	}
+    }
 
     public void report() {
     }

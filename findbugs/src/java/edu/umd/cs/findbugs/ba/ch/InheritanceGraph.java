@@ -23,27 +23,35 @@ import edu.umd.cs.findbugs.graph.AbstractGraph;
 
 /**
  * Graph of inheritance relationships.
- *
+ * 
  * @author David Hovemeyer
  */
 public class InheritanceGraph extends AbstractGraph<InheritanceEdge, ClassVertex> {
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.graph.AbstractGraph#allocateEdge(edu.umd.cs.findbugs.graph.AbstractVertex, edu.umd.cs.findbugs.graph.AbstractVertex)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.graph.AbstractGraph#allocateEdge(edu.umd.cs.findbugs
+     * .graph.AbstractVertex, edu.umd.cs.findbugs.graph.AbstractVertex)
      */
-	@Override
+    @Override
     protected InheritanceEdge allocateEdge(ClassVertex source, ClassVertex target) {
         return new InheritanceEdge(source, target);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.graph.AbstractGraph#createEdge(edu.umd.cs.findbugs.graph.AbstractVertex, edu.umd.cs.findbugs.graph.AbstractVertex)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.graph.AbstractGraph#createEdge(edu.umd.cs.findbugs
+     * .graph.AbstractVertex, edu.umd.cs.findbugs.graph.AbstractVertex)
      */
-	@Override
+    @Override
     public InheritanceEdge createEdge(ClassVertex source, ClassVertex target) {
         if (!target.isInterface()) {
             source.setDirectSuperclass(target);
-		}
+        }
         return super.createEdge(source, target);
     }
 

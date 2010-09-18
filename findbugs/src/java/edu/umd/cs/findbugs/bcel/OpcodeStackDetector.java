@@ -26,9 +26,9 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.JumpInfo;
 
 /**
- * Base class for Detectors that want to scan the bytecode
- * of a method and use an opcode stack.
- *
+ * Base class for Detectors that want to scan the bytecode of a method and use
+ * an opcode stack.
+ * 
  * @see BytecodeScanningDetector
  */
 abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
@@ -43,30 +43,30 @@ abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
     protected OpcodeStack stack;
 
     public OpcodeStack getStack() {
-		return stack;
+        return stack;
     }
 
     @Override
-	public void visitCode(Code obj) {
+    public void visitCode(Code obj) {
         if (!shouldVisitCode(obj))
             return;
         stack = new OpcodeStack();
-		stack.resetForMethodEntry(this);
+        stack.resetForMethodEntry(this);
         super.visitCode(obj);
         stack = null;
     }
-	
+
     @Override
     public boolean beforeOpcode(int seen) {
         stack.precomputation(this);
-		stack.mergeJumps(this);
+        stack.mergeJumps(this);
         return !stack.isTop();
     }
 
     @Override
     public void afterOpcode(int seen) {
         stack.sawOpcode(this, seen);
-	}
+    }
 
     @Override
     abstract public void sawOpcode(int seen);

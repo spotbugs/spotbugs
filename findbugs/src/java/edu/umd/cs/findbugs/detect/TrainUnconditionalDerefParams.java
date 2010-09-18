@@ -27,39 +27,36 @@ import edu.umd.cs.findbugs.TrainingDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 /**
- * Training pass to find method parameters which are
- * unconditionally dereferenced.  We do this by performing
- * a backwards dataflow analysis which sees which params are
- * dereferenced on all non-implicit-exception paths from the CFG entry.
- *
+ * Training pass to find method parameters which are unconditionally
+ * dereferenced. We do this by performing a backwards dataflow analysis which
+ * sees which params are dereferenced on all non-implicit-exception paths from
+ * the CFG entry.
+ * 
  * @author David Hovemeyer
  */
-public class TrainUnconditionalDerefParams
-        extends BuildUnconditionalParamDerefDatabase
-        implements Detector, TrainingDetector {
+public class TrainUnconditionalDerefParams extends BuildUnconditionalParamDerefDatabase implements Detector, TrainingDetector {
     private static final boolean VERBOSE_DEBUG = SystemProperties.getBoolean("upd.debug");
 
     public TrainUnconditionalDerefParams(BugReporter bugReporter) {
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.Detector#report()
      */
-	public void report() {
+    public void report() {
         AnalysisContext.currentAnalysisContext().storePropertyDatabase(
                 AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase(),
-                AnalysisContext.UNCONDITIONAL_DEREF_DB_FILENAME,
-				"unconditional deref database");
+                AnalysisContext.UNCONDITIONAL_DEREF_DB_FILENAME, "unconditional deref database");
         AnalysisContext.currentAnalysisContext().storePropertyDatabase(
                 AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase(),
-                AnalysisContext.NONNULL_RETURN_DB_FILENAME,
-				"nonnull return database");
+                AnalysisContext.NONNULL_RETURN_DB_FILENAME, "nonnull return database");
     }
-
 
     @Override
     protected void reportBug(BugInstance bug) {
-       // Ignore it
+        // Ignore it
 
     }
 

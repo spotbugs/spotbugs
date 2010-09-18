@@ -30,64 +30,73 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Recursively search a directory, its subdirectories, etc.
- * Note that the search algorithm uses a worklist, so its implementation does
- * not use recursive method calls.
- *
+ * Recursively search a directory, its subdirectories, etc. Note that the search
+ * algorithm uses a worklist, so its implementation does not use recursive
+ * method calls.
+ * 
  * @author David Hovemeyer
  */
 public class RecursiveFileSearch {
     private String baseDir;
+
     private FileFilter fileFilter;
+
     private LinkedList<File> directoryWorkList;
-	private HashSet<String> directoriesScanned = new HashSet<String>();
+
+    private HashSet<String> directoriesScanned = new HashSet<String>();
+
     private List<String> directoriesScannedList = new LinkedList<String>();
+
     private ArrayList<String> resultList;
 
     /**
      * Constructor.
-     *
-	 * @param baseDir    the base directory for the search
-     * @param fileFilter chooses files to add to the results, and subdirectories
-     *                   to continue the search in
+     * 
+     * @param baseDir
+     *            the base directory for the search
+     * @param fileFilter
+     *            chooses files to add to the results, and subdirectories to
+     *            continue the search in
      */
-	public RecursiveFileSearch(String baseDir, FileFilter fileFilter) {
+    public RecursiveFileSearch(String baseDir, FileFilter fileFilter) {
         this.baseDir = baseDir;
         this.fileFilter = fileFilter;
         this.directoryWorkList = new LinkedList<File>();
-		this.resultList = new ArrayList<String>();
+        this.resultList = new ArrayList<String>();
     }
 
     static String bestEffortCanonicalPath(File f) {
         try {
             return f.getCanonicalPath();
-		} catch (IOException e) {
+        } catch (IOException e) {
             return f.getAbsolutePath();
         }
     }
-	/**
+
+    /**
      * Perform the search.
-     *
+     * 
      * @return this object
-	 * @throws InterruptedException if the thread is interrupted before the
-     *                              search completes
+     * @throws InterruptedException
+     *             if the thread is interrupted before the search completes
      */
     public RecursiveFileSearch search() throws InterruptedException {
-		File baseFile = new File(baseDir);
+        File baseFile = new File(baseDir);
         String basePath = bestEffortCanonicalPath(baseFile);
         directoryWorkList.add(baseFile);
         directoriesScanned.add(basePath);
-		directoriesScannedList.add(basePath);
+        directoriesScannedList.add(basePath);
 
         while (!directoryWorkList.isEmpty()) {
             File dir = directoryWorkList.removeFirst();
             if (!dir.isDirectory())
-				continue;
+                continue;
 
             File[] contentList = dir.listFiles();
-            if (contentList == null) continue;
+            if (contentList == null)
+                continue;
             for (File aContentList : contentList) {
-				if (Thread.interrupted())
+                if (Thread.interrupted())
                     throw new InterruptedException();
 
                 File file = aContentList;
@@ -95,15 +104,15 @@ public class RecursiveFileSearch {
                 if (!fileFilter.accept(file)) {
                     continue;
                 }
-				
+
                 if (file.isDirectory()) {
                     String myPath = bestEffortCanonicalPath(file);
                     if (myPath.startsWith(basePath) && directoriesScanned.add(myPath)) {
-						directoriesScannedList.add(myPath);
+                        directoriesScannedList.add(myPath);
                         directoryWorkList.add(file);
                     }
                 } else {
-					resultList.add(file.getPath());
+                    resultList.add(file.getPath());
                 }
             }
         }
@@ -112,17 +121,17 @@ public class RecursiveFileSearch {
     }
 
     /**
-     * Get an iterator over the files found by the search.
-     * The full path names of the files are returned.
-	 */
+     * Get an iterator over the files found by the search. The full path names
+     * of the files are returned.
+     */
     public Iterator<String> fileNameIterator() {
         return resultList.iterator();
     }
-	
+
     /*
      * Get List of all directories scanned.
      */
-	public List<String> getDirectoriesScanned() {
+    public List<String> getDirectoriesScanned() {
         return Collections.unmodifiableList(directoriesScannedList);
     }
 

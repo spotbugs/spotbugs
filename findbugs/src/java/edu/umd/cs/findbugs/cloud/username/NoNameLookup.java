@@ -33,7 +33,7 @@ public class NoNameLookup implements NameLookup {
     public String getUsername() {
         return "no name";
     }
-	
+
     public boolean signIn(CloudPlugin plugin, BugCollection bugCollection) {
         return true;
     }

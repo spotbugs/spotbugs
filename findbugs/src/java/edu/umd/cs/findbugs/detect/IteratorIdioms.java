@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -32,17 +31,15 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
-public class IteratorIdioms extends BytecodeScanningDetector implements  StatelessDetector {
+public class IteratorIdioms extends BytecodeScanningDetector implements StatelessDetector {
 
     private ClassDescriptor iteratorDescriptor = DescriptorFactory.createClassDescriptor(java.util.Iterator.class);
+
     private BugReporter bugReporter;
 
-	
     public IteratorIdioms(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
-
-
 
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -51,40 +48,37 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
         try {
             if (subtypes2.isSubtype(classContext.getClassDescriptor(), iteratorDescriptor))
                 super.visitClassContext(classContext);
-		} catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
         }
     }
 
-
     boolean sawNoSuchElement;
+
     boolean sawCall;
 
     @Override
-         public void visit(Code obj) {
-        if (getMethodName().equals("next")
-				&& getMethodSig().equals("()Ljava/lang/Object;")) {
+    public void visit(Code obj) {
+        if (getMethodName().equals("next") && getMethodSig().equals("()Ljava/lang/Object;")) {
             sawNoSuchElement = false;
             sawCall = false;
             super.visit(obj);
-			if (!sawNoSuchElement)
+            if (!sawNoSuchElement)
 
-                bugReporter.reportBug(new BugInstance(this, "IT_NO_SUCH_ELEMENT", sawCall ? LOW_PRIORITY : NORMAL_PRIORITY).addClassAndMethod(this));
+                bugReporter.reportBug(new BugInstance(this, "IT_NO_SUCH_ELEMENT", sawCall ? LOW_PRIORITY : NORMAL_PRIORITY)
+                        .addClassAndMethod(this));
         }
     }
 
-
     @Override
-         public void sawOpcode(int seen) {
-        if (seen == NEW
-				&& getClassConstantOperand().equals("java/util/NoSuchElementException"))
+    public void sawOpcode(int seen) {
+        if (seen == NEW && getClassConstantOperand().equals("java/util/NoSuchElementException"))
             sawNoSuchElement = true;
-        else if (seen == INVOKESPECIAL
-                || seen == INVOKEVIRTUAL
-				|| seen == INVOKEINTERFACE) {
+        else if (seen == INVOKESPECIAL || seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
             sawCall = true;
-            if (getNameConstantOperand().toLowerCase().indexOf("next")  >= 0 || getNameConstantOperand().toLowerCase().indexOf("previous") >= 0 )
+            if (getNameConstantOperand().toLowerCase().indexOf("next") >= 0
+                    || getNameConstantOperand().toLowerCase().indexOf("previous") >= 0)
                 sawNoSuchElement = true;
-		}
+        }
     }
 }

@@ -30,49 +30,47 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
- * A MethodPropertyDatabase keeps track of properties of
- * methods.  This is useful for implementing interprocedural analyses.
- *
+ * A MethodPropertyDatabase keeps track of properties of methods. This is useful
+ * for implementing interprocedural analyses.
+ * 
  * @author David Hovemeyer
  */
-public abstract class MethodPropertyDatabase<Property>
-    extends PropertyDatabase<MethodDescriptor, Property> {
+public abstract class MethodPropertyDatabase<Property> extends PropertyDatabase<MethodDescriptor, Property> {
 
     @Override
     protected MethodDescriptor parseKey(String methodStr) throws PropertyDatabaseFormatException {
         String[] tuple = methodStr.split(",");
-		if (tuple.length != 4)
+        if (tuple.length != 4)
             throw new PropertyDatabaseFormatException("Invalid method tuple: " + methodStr);
 
         try {
             int accessFlags = Integer.parseInt(tuple[3]);
-//			return XFactory.createMethodDescriptor(XFactory.canonicalizeString(tuple[0]),
-//					XFactory.canonicalizeString( tuple[1]), XFactory.canonicalizeString(tuple[2]), accessFlags);
+            // return
+            // XFactory.createMethodDescriptor(XFactory.canonicalizeString(tuple[0]),
+            // XFactory.canonicalizeString( tuple[1]),
+            // XFactory.canonicalizeString(tuple[2]), accessFlags);
             String className = XFactory.canonicalizeString(tuple[0]);
             String methodName = XFactory.canonicalizeString(tuple[1]);
             String methodSig = XFactory.canonicalizeString(tuple[2]);
-			return DescriptorFactory.instance().getMethodDescriptor(
-                    ClassName.toSlashedClassName(className),
-                    methodName,
-                    methodSig,
-					(accessFlags & Constants.ACC_STATIC) != 0);
+            return DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(className), methodName,
+                    methodSig, (accessFlags & Constants.ACC_STATIC) != 0);
 
         } catch (NumberFormatException e) {
             return null;
         }
-	}
+    }
 
     @Override
     protected void writeKey(Writer writer, MethodDescriptor method) throws IOException {
         writer.write(method.getClassDescriptor().toDottedClassName());
-		writer.write(",");
+        writer.write(",");
         writer.write(method.getName());
         writer.write(",");
         writer.write(method.getSignature());
-		writer.write(",");
+        writer.write(",");
         if (method instanceof XMethod)
-            writer.write(Integer.toString(((XMethod)method).getAccessFlags() & 0xf));
+            writer.write(Integer.toString(((XMethod) method).getAccessFlags() & 0xf));
         else
-			writer.write(String.valueOf(method.isStatic() ? Constants.ACC_STATIC : 0));
+            writer.write(String.valueOf(method.isStatic() ? Constants.ACC_STATIC : 0));
     }
 }

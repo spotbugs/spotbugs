@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Matcher to select BugInstances with a particular priority.
- *
+ * 
  * @author David Hovemeyer
  */
 public class PriorityMatcher implements Matcher {
@@ -34,34 +34,41 @@ public class PriorityMatcher implements Matcher {
 
     @Override
     public String toString() {
-        return "Priority(priority="+priority+")";
+        return "Priority(priority=" + priority + ")";
     }
+
     /**
-	 * Constructor.
-     *
-     * @param priorityAsString the priority, as a String
+     * Constructor.
+     * 
+     * @param priorityAsString
+     *            the priority, as a String
      * @throws FilterException
-	 */
+     */
     public PriorityMatcher(String priorityAsString) {
-            this.priority = Integer.parseInt(priorityAsString);
+        this.priority = Integer.parseInt(priorityAsString);
     }
 
     @Override
     public int hashCode() {
         return priority;
     }
+
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof PriorityMatcher)) return false;
+        if (!(o instanceof PriorityMatcher))
+            return false;
         PriorityMatcher other = (PriorityMatcher) o;
         return priority == other.priority;
-	}
+    }
+
     public boolean match(BugInstance bugInstance) {
         return bugInstance.getPriority() == priority;
     }
-	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
+
+    public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Integer.toString(priority));
-        if (disabled) attributes.addAttribute("disabled", "true");
+        if (disabled)
+            attributes.addAttribute("disabled", "true");
         xmlOutput.openCloseTag("Priority", attributes);
-	}
+    }
 }

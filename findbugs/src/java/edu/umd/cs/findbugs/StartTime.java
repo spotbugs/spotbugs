@@ -29,18 +29,18 @@ public class StartTime {
     /**
      * The start time this FindBugs instance was started
      */
-	public static final long START_TIME = System.currentTimeMillis();
+    public static final long START_TIME = System.currentTimeMillis();
 
     public static final long VM_START_TIME;
 
     static {
         long vmStartTime = START_TIME;
         try {
-			vmStartTime = ManagementFactory.getRuntimeMXBean().getStartTime();
+            vmStartTime = ManagementFactory.getRuntimeMXBean().getStartTime();
         } catch (Throwable e) {
             assert true; // ignore
         }
-		VM_START_TIME = vmStartTime;
+        VM_START_TIME = vmStartTime;
     }
 
 }

@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * Analysis engine to produce ReverseDepthFirstSearch objects for analyzed
  * methods.
- *
+ * 
  * @author David Hovemeyer
  */
 public class ReverseDepthFirstSearchFactory extends AnalysisFactory<ReverseDepthFirstSearch> {
@@ -38,13 +38,18 @@ public class ReverseDepthFirstSearchFactory extends AnalysisFactory<ReverseDepth
         super("reverse depth first search", ReverseDepthFirstSearch.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-    public ReverseDepthFirstSearch analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public ReverseDepthFirstSearch analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
+            throws CheckedAnalysisException {
         CFG cfg = getCFG(analysisCache, descriptor);
         ReverseDepthFirstSearch rdfs = new ReverseDepthFirstSearch(cfg);
         rdfs.search();
-    	return rdfs;
+        return rdfs;
     }
 }

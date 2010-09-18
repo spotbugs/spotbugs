@@ -23,32 +23,33 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
- * FindBugs-specific default-annotation annotations.
- * I.e.:
+ * FindBugs-specific default-annotation annotations. I.e.:
+ * 
  * <pre>
  *   {@literal @DefaultAnnotationForParameters({Nonnull.class})}
  *   public class MyClass {
  *      ...
  *   }
  * </pre>
+ * 
  * @author David Hovemeyer
  */
 public abstract class FindBugsDefaultAnnotations {
 
     /** Default annotation for all element types. */
-    public static final ClassDescriptor DEFAULT_ANNOTATION =
-        DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/DefaultAnnotation");
+    public static final ClassDescriptor DEFAULT_ANNOTATION = DescriptorFactory.instance().getClassDescriptor(
+            "edu/umd/cs/findbugs/annotations/DefaultAnnotation");
 
     /** Default annotation for fields. */
-    public static final ClassDescriptor DEFAULT_ANNOTATION_FOR_FIELDS =
-        DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/DefaultAnnotationForFields");
+    public static final ClassDescriptor DEFAULT_ANNOTATION_FOR_FIELDS = DescriptorFactory.instance().getClassDescriptor(
+            "edu/umd/cs/findbugs/annotations/DefaultAnnotationForFields");
 
     /** Default annotation for methods. */
-    public static final ClassDescriptor DEFAULT_ANNOTATION_FOR_METHODS =
-        DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/DefaultAnnotationForMethods");
+    public static final ClassDescriptor DEFAULT_ANNOTATION_FOR_METHODS = DescriptorFactory.instance().getClassDescriptor(
+            "edu/umd/cs/findbugs/annotations/DefaultAnnotationForMethods");
 
     /** Default annotation for parameters. */
-    public static final ClassDescriptor DEFAULT_ANNOTATION_FOR_PARAMETERS =
-        DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/DefaultAnnotationForParameters");
+    public static final ClassDescriptor DEFAULT_ANNOTATION_FOR_PARAMETERS = DescriptorFactory.instance().getClassDescriptor(
+            "edu/umd/cs/findbugs/annotations/DefaultAnnotationForParameters");
 
 }

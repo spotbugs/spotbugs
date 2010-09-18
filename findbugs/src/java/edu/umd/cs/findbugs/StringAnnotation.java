@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Bug annotation class for string values.
- *
+ * 
  * @author William Pugh
  * @see BugAnnotation
  */
@@ -37,60 +37,70 @@ public class StringAnnotation implements BugAnnotation {
     private static final long serialVersionUID = 1L;
 
     public static final String DEFAULT_ROLE = "STRING_DEFAULT";
+
     public static final String STRING_CONSTANT_ROLE = "STRING_CONSTANT";
+
     public static final String REGEX_ROLE = "STRING_REGEX";
-	
+
     public static final String ERROR_MSG_ROLE = "STRING_ERROR_MSG";
 
     public static final String STRING_MESSAGE = "STRING_MESSAGE";
-	public static final String PARAMETER_NAME_ROLE = "STRING_PARAMETER_NAME";
+
+    public static final String PARAMETER_NAME_ROLE = "STRING_PARAMETER_NAME";
+
     public static final String TYPE_QUALIFIER_ROLE = "STRING_TYPE_QUALIFIER";
+
     public static final String REMAINING_OBLIGATIONS_ROLE = "STRING_REMAINING_OBLIGATIONS";
+
     public static final String FORMAT_STRING_ROLE = "STRING_FORMAT_STRING";
-	public static final String FORMAT_SPECIFIER_ROLE = "STRING_FORMAT_SPECIFIER";
+
+    public static final String FORMAT_SPECIFIER_ROLE = "STRING_FORMAT_SPECIFIER";
 
     final private String value;
+
     private String description;
 
-	static class QuotedStringMarker {};
+    static class QuotedStringMarker {
+    };
 
     /**
      * Constructor.
-     *
-	 * @param value the String value
+     * 
+     * @param value
+     *            the String value
      */
     public StringAnnotation(String value) {
         this.value = value;
-		this.description = DEFAULT_ROLE;
+        this.description = DEFAULT_ROLE;
     }
 
     public static StringAnnotation fromRawString(String value) {
         return new StringAnnotation(Strings.escapeLFCRBackSlash(value));
 
-	}
+    }
 
     public static StringAnnotation fromXMLEscapedString(String value) {
         return new StringAnnotation(Strings.unescapeXml(value));
-		
+
     }
+
     @Override
     public Object clone() {
-		try {
+        try {
             return super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
-		}
+        }
     }
-
 
     /**
      * Get the String value.
-     *
-	 * @return the String value
+     * 
+     * @return the String value
      */
     public String getValue() {
         return value;
-	}
+    }
 
     public void accept(BugAnnotationVisitor visitor) {
         visitor.visitStringAnnotation(this);
@@ -99,7 +109,7 @@ public class StringAnnotation implements BugAnnotation {
     public String format(String key, ClassAnnotation primaryClass) {
         String txt = value;
         return txt;
-	}
+    }
 
     public void setDescription(String description) {
         this.description = description;
@@ -112,31 +122,35 @@ public class StringAnnotation implements BugAnnotation {
     @Override
     public int hashCode() {
         return value.hashCode();
-	}
+    }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof StringAnnotation))
-			return false;
+            return false;
         return value.equals(((StringAnnotation) o).value);
     }
 
     public int compareTo(BugAnnotation o) {
-        if (!(o instanceof StringAnnotation)) // BugAnnotations must be Comparable with any type of BugAnnotation
+        if (!(o instanceof StringAnnotation)) // BugAnnotations must be
+                                              // Comparable with any type of
+                                              // BugAnnotation
             return this.getClass().getName().compareTo(o.getClass().getName());
-		return value.compareTo(((StringAnnotation) o).value);
+        return value.compareTo(((StringAnnotation) o).value);
     }
 
     @Override
     public String toString() {
         String pattern = I18N.instance().getAnnotationDescription(description);
-		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-        return format.format(new BugAnnotation[]{this}, null);
+        FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
+        return format.format(new BugAnnotation[] { this }, null);
     }
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * XML Conversion support
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     private static final String ELEMENT_NAME = "String";
 
@@ -145,8 +159,7 @@ public class StringAnnotation implements BugAnnotation {
     }
 
     public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
-        XMLAttributeList attributeList = new XMLAttributeList()
-            .addAttribute("value", value);
+        XMLAttributeList attributeList = new XMLAttributeList().addAttribute("value", value);
 
         String role = getDescription();
         if (!role.equals(DEFAULT_ROLE))
@@ -155,10 +168,10 @@ public class StringAnnotation implements BugAnnotation {
         BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
     }
 
-
     public boolean isSignificant() {
         return true;
     }
+
     public String toString(ClassAnnotation primaryClass) {
         return toString();
     }

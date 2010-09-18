@@ -20,20 +20,20 @@
 package edu.umd.cs.findbugs;
 
 /**
- * Observer to determine when a BugReporter reports a bug.
- * By adding an observer, it is possible to determine which
- * bugs a BugReporter is actually reporting, because due to
- * filtering, priorities, etc., not all bugs sent to a BugReporter
- * will actually be processed.
- *
+ * Observer to determine when a BugReporter reports a bug. By adding an
+ * observer, it is possible to determine which bugs a BugReporter is actually
+ * reporting, because due to filtering, priorities, etc., not all bugs sent to a
+ * BugReporter will actually be processed.
+ * 
  * @author David Hovemeyer
  * @see BugReporter
  */
 public interface BugReporterObserver {
     /**
      * Called when a BugReporter reports a bug.
-     *
-	 * @param bugInstance the BugInstance
+     * 
+     * @param bugInstance
+     *            the BugInstance
      */
     public void reportBug(BugInstance bugInstance);
 }

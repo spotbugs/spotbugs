@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
  * if we get from a ConcurrentHashMap and assign to a variable... and don't do
  * anything else and perform a null check on it... and then do a set on it...
  * (or anything else inside the if that modifies it?) then we have a bug.
- *
+ * 
  * @author Michael Midgley-Biggs
  */
 public class AtomicityProblem extends OpcodeStackDetector {
@@ -52,76 +52,76 @@ public class AtomicityProblem extends OpcodeStackDetector {
     @Override
     public void visit(Code obj) {
         if (DEBUG) {
-			System.out.println("Checking " + obj);
+            System.out.println("Checking " + obj);
         }
         lastQuestionableCheckTarget = -1;
         super.visit(obj);
-	}
+    }
 
     /**
      * This is the "dumb" version of the detector. It may generate false
      * positives, and/or not detect all instances of the bug.
-	 * 
+     * 
      * @see edu.umd.cs.findbugs.visitclass.DismantleBytecode#sawOpcode(int)
      */
     @Override
-	public void sawOpcode(int seen) {
+    public void sawOpcode(int seen) {
         if (DEBUG) {
             System.out.println(getPC() + " " + OPCODE_NAMES[seen]);
         }
-		switch (seen) {
+        switch (seen) {
         case IFNE:
         case IFEQ: {
             OpcodeStack.Item top = stack.getStackItem(0);
-			if (DEBUG) {
+            if (DEBUG) {
                 System.out.println("Stack top: " + top);
             }
             XMethod m = top.getReturnValueOf();
-			if (m != null && m.getClassName().equals("java.util.concurrent.ConcurrentHashMap")
+            if (m != null && m.getClassName().equals("java.util.concurrent.ConcurrentHashMap")
                     && m.getName().equals("containsKey")) {
                 lastQuestionableCheckTarget = getBranchTarget();
                 if (seen == IFEQ) {
-					priority = LOW_PRIORITY;
+                    priority = LOW_PRIORITY;
                 } else if (seen == IFNE) {
                     priority = NORMAL_PRIORITY;
                 }
-			}
+            }
             break;
         }
         case IFNULL:
-		case IFNONNULL: {
+        case IFNONNULL: {
             OpcodeStack.Item top = stack.getStackItem(0);
             if (DEBUG) {
                 System.out.println("Stack top: " + top);
-			}
+            }
             XMethod m = top.getReturnValueOf();
             if (DEBUG) {
                 System.out.println("Found null check");
-			}
+            }
             if (m != null && m.getClassName().equals("java.util.concurrent.ConcurrentHashMap") && m.getName().equals("get")) {
                 lastQuestionableCheckTarget = getBranchTarget();
                 if (seen == IFNULL) {
-					priority = LOW_PRIORITY;
+                    priority = LOW_PRIORITY;
                 } else if (seen == IFNONNULL) {
                     priority = NORMAL_PRIORITY;
                 }
-			}
+            }
             break;
         }
         case INVOKEVIRTUAL:
-		case INVOKEINTERFACE: {
+        case INVOKEINTERFACE: {
             if (getDottedClassConstantOperand().equals("java.util.concurrent.ConcurrentHashMap")) {
                 String methodName = getNameConstantOperand();
                 XClass xClass = getXClassOperand();
-				if (xClass != null && methodName.equals("put")) {
+                if (xClass != null && methodName.equals("put")) {
                     if ((getPC() < lastQuestionableCheckTarget) && (lastQuestionableCheckTarget != -1)) {
                         bugReporter.reportBug(new BugInstance(this, "AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION", priority)
                                 .addClassAndMethod(this).addType(xClass.getClassDescriptor()).addCalledMethod(this)
-						        .addSourceLine(this));
+                                .addSourceLine(this));
                     }
                 }
             }
-			break;
+            break;
         }
         }
     }

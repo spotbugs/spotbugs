@@ -22,54 +22,59 @@ package edu.umd.cs.findbugs;
 import edu.umd.cs.findbugs.classfile.IClassPathBuilderProgress;
 
 /**
- * A callback that may be installed in a FindBugs instance
- * to asynchronously keep track of its progress.
- *
+ * A callback that may be installed in a FindBugs instance to asynchronously
+ * keep track of its progress.
+ * 
  * @author David Hovemeyer
  * @see FindBugs
  */
 public interface FindBugsProgress extends IClassPathBuilderProgress {
     /**
-     * Report the total number of archives (Jar or zip files) that will be analyzed.
-     *
-	 * @param numArchives the number of archives
+     * Report the total number of archives (Jar or zip files) that will be
+     * analyzed.
+     * 
+     * @param numArchives
+     *            the number of archives
      */
     public void reportNumberOfArchives(int numArchives);
 
     /**
-     * Report that FindBugs has started scanning an archive in order
-     * to add its classes to the repository.
-	 */
+     * Report that FindBugs has started scanning an archive in order to add its
+     * classes to the repository.
+     */
     public void startArchive(String name);
 
     /**
-	 * Report that FindBugs has finished scanning an archive in order
-     * to add its classes to the repository.
+     * Report that FindBugs has finished scanning an archive in order to add its
+     * classes to the repository.
      */
     public void finishArchive();
 
     /**
      * Provide an array that predicts the number of classes in each pass
+     * 
      * @param classesPerPass
-	 */
-    public void predictPassCount(int [] classesPerPass);
-    /**
-     * Report that FindBugs has finished scanning the archives and will
-	 * start analysing the classes contained therein.
-     *
-     * @param numClasses number of classes found in all of the archives
      */
-	public void startAnalysis(int numClasses);
+    public void predictPassCount(int[] classesPerPass);
+
+    /**
+     * Report that FindBugs has finished scanning the archives and will start
+     * analysing the classes contained therein.
+     * 
+     * @param numClasses
+     *            number of classes found in all of the archives
+     */
+    public void startAnalysis(int numClasses);
 
     /**
      * Report that FindBugs has finished analyzing a class.
      */
-	public void finishClass();
+    public void finishClass();
 
     /**
-     * Called to indicate that the per-class analysis is finished, and
-     * that the whole program analysis is taking place.
-	 */
+     * Called to indicate that the per-class analysis is finished, and that the
+     * whole program analysis is taking place.
+     */
     public void finishPerClassAnalysis();
 }
 

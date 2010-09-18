@@ -33,55 +33,69 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
- * Compute the union of two sets of bug results,
- * preserving annotations.
+ * Compute the union of two sets of bug results, preserving annotations.
  */
 public class UnionResults {
 
     static class UnionResultsCommandLine extends CommandLine {
         public String outputFile;
-		boolean withMessages;
+
+        boolean withMessages;
 
         UnionResultsCommandLine() {
             addSwitch("-withMessages", "Generated XML should contain msgs for external processing");
-			addOption("-output", "outputFile", "File in which to store combined results");
+            addOption("-output", "outputFile", "File in which to store combined results");
         }
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String, java.lang.String)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String,
+         * java.lang.String)
          */
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
-            if (option.equals("-withMessages")) withMessages = true;
-            else throw new IllegalArgumentException("Unknown option : " + option);
+            if (option.equals("-withMessages"))
+                withMessages = true;
+            else
+                throw new IllegalArgumentException("Unknown option : " + option);
         }
 
-        /* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java.lang.String, java.lang.String)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java
+         * .lang.String, java.lang.String)
          */
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
-            if (option.equals("-output")) outputFile = argument;
-            else throw new IllegalArgumentException("Unknown option : " + option);
+            if (option.equals("-output"))
+                outputFile = argument;
+            else
+                throw new IllegalArgumentException("Unknown option : " + option);
         }
 
     }
 
     static {
-        DetectorFactoryCollection.instance(); // as a side effect, loads detector plugins
+        DetectorFactoryCollection.instance(); // as a side effect, loads
+                                              // detector plugins
     }
-	static public SortedBugCollection union (SortedBugCollection origCollection, SortedBugCollection newCollection) {
+
+    static public SortedBugCollection union(SortedBugCollection origCollection, SortedBugCollection newCollection) {
 
         SortedBugCollection result = origCollection.duplicate();
 
         for (Iterator<BugInstance> i = newCollection.iterator(); i.hasNext();) {
             BugInstance bugInstance = i.next();
             result.add(bugInstance);
-			}
+        }
         ProjectStats stats = result.getProjectStats();
         ProjectStats stats2 = newCollection.getProjectStats();
         stats.addStats(stats2);
-		
+
         Project project = result.getProject();
         Project project2 = newCollection.getProject();
         project.add(project2);
@@ -97,37 +111,35 @@ public class UnionResults {
         int argCount = commandLine.parse(argv, 2, Integer.MAX_VALUE, "Usage: " + UnionResults.class.getName()
                 + " [options] [<results1> <results2> ... <resultsn>] ");
 
-
         SortedBugCollection results = null;
-        for(int i = argCount; i < argv.length; i++) {
+        for (int i = argCount; i < argv.length; i++) {
             try {
-				SortedBugCollection more = new SortedBugCollection();
+                SortedBugCollection more = new SortedBugCollection();
 
                 more.readXML(argv[i]);
                 if (results != null) {
-					results = union(results, more);
+                    results = union(results, more);
                 } else {
                     results = more;
                 }
-			} catch (IOException e) {
+            } catch (IOException e) {
                 System.err.println("Trouble reading/parsing " + argv[i]);
             } catch (DocumentException e) {
                 System.err.println("Trouble reading/parsing " + argv[i]);
-			}
+            }
         }
 
         if (results == null) {
             System.err.println("No files successfully read");
             System.exit(1);
-			return;
+            return;
         }
         results.setWithMessages(commandLine.withMessages);
         if (commandLine.outputFile == null)
-			results.writeXML(System.out);
+            results.writeXML(System.out);
         else
             results.writeXML(commandLine.outputFile);
     }
-
 
 }
 

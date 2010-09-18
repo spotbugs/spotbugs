@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -28,57 +27,46 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 
-public class EmptyZipFileEntry extends BytecodeScanningDetector implements  StatelessDetector {
+public class EmptyZipFileEntry extends BytecodeScanningDetector implements StatelessDetector {
 
     private BugReporter bugReporter;
+
     private int sawPutEntry;
+
     private String streamType;
 
     public EmptyZipFileEntry(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
-
-
     @Override
-         public void visit(JavaClass obj) {
+    public void visit(JavaClass obj) {
     }
 
     @Override
-         public void visit(Method obj) {
+    public void visit(Method obj) {
         sawPutEntry = -10000;
-		streamType = "";
+        streamType = "";
     }
 
     @Override
-         public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL
-			&& getNameConstantOperand().equals("putNextEntry")) {
+    public void sawOpcode(int seen) {
+        if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("putNextEntry")) {
             streamType = getClassConstantOperand();
-            if (streamType.equals("java/util/zip/ZipOutputStream")
-            ||  streamType.equals("java/util/jar/JarOutputStream"))
-				sawPutEntry = getPC();
+            if (streamType.equals("java/util/zip/ZipOutputStream") || streamType.equals("java/util/jar/JarOutputStream"))
+                sawPutEntry = getPC();
             else
                 streamType = "";
-            }
-		else {
-            if (getPC() - sawPutEntry <= 7  && seen == INVOKEVIRTUAL
-                && getNameConstantOperand().equals("closeEntry")
-            && getClassConstantOperand()
-				.equals(streamType) )
-                        bugReporter.reportBug(new BugInstance(
-                            this,
-                            streamType.equals("java/util/zip/ZipOutputStream") ?
-								"AM_CREATES_EMPTY_ZIP_FILE_ENTRY" :
-                                "AM_CREATES_EMPTY_JAR_FILE_ENTRY",
-                            NORMAL_PRIORITY)
-                            .addClassAndMethod(this)
-							.addSourceLine(this));
+        } else {
+            if (getPC() - sawPutEntry <= 7 && seen == INVOKEVIRTUAL && getNameConstantOperand().equals("closeEntry")
+                    && getClassConstantOperand().equals(streamType))
+                bugReporter
+                        .reportBug(new BugInstance(this,
+                                streamType.equals("java/util/zip/ZipOutputStream") ? "AM_CREATES_EMPTY_ZIP_FILE_ENTRY"
+                                        : "AM_CREATES_EMPTY_JAR_FILE_ENTRY", NORMAL_PRIORITY).addClassAndMethod(this)
+                                .addSourceLine(this));
 
-            }
-
-
-
+        }
 
     }
 

@@ -24,12 +24,12 @@ import edu.umd.cs.findbugs.model.ClassNameRewriterUtil;
 import edu.umd.cs.findbugs.model.IdentityClassNameRewriter;
 
 /**
- * Very sloppy bug comparator: if the warnings are of the same type,
- * and in the same class/method/field, assume they are the same.
- *
+ * Very sloppy bug comparator: if the warnings are of the same type, and in the
+ * same class/method/field, assume they are the same.
+ * 
  * @author David Hovemeyer
  */
-public class SloppyBugComparator implements  WarningComparator {
+public class SloppyBugComparator implements WarningComparator {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("sloppyComparator.debug");
 
@@ -40,7 +40,7 @@ public class SloppyBugComparator implements  WarningComparator {
     /**
      * Constructor.
      */
-	public SloppyBugComparator() {
+    public SloppyBugComparator() {
     }
 
     public void setClassNameRewriter(ClassNameRewriter classNameRewriter) {
@@ -50,18 +50,20 @@ public class SloppyBugComparator implements  WarningComparator {
     private int compareNullElements(Object lhs, Object rhs) {
         if (lhs == null && rhs == null)
             return 0;
-		else
+        else
             return (lhs == null) ? -1 : 1;
     }
 
     /**
      * Compare class annotations.
-     *
-	 * @param lhs left hand class annotation
-     * @param rhs right hand class annotation
+     * 
+     * @param lhs
+     *            left hand class annotation
+     * @param rhs
+     *            right hand class annotation
      * @return comparison of the class annotations
      */
-	private int compareClassesAllowingNull(ClassAnnotation lhs, ClassAnnotation rhs) {
+    private int compareClassesAllowingNull(ClassAnnotation lhs, ClassAnnotation rhs) {
         if (lhs == null || rhs == null) {
             return compareNullElements(lhs, rhs);
         }
@@ -69,17 +71,19 @@ public class SloppyBugComparator implements  WarningComparator {
         String lhsClassName = classNameRewriter.rewriteClassName(lhs.getClassName());
         String rhsClassName = classNameRewriter.rewriteClassName(rhs.getClassName());
 
-        if (DEBUG) System.err.println("Comparing " + lhsClassName + " and " + rhsClassName);
+        if (DEBUG)
+            System.err.println("Comparing " + lhsClassName + " and " + rhsClassName);
 
         int cmp = lhsClassName.compareTo(rhsClassName);
-        if (DEBUG) System.err.println("\t==> " + cmp);
+        if (DEBUG)
+            System.err.println("\t==> " + cmp);
         return cmp;
-	}
+    }
 
     private int compareMethodsAllowingNull(MethodAnnotation lhs, MethodAnnotation rhs) {
         if (lhs == null || rhs == null) {
             return compareNullElements(lhs, rhs);
-		}
+        }
 
         lhs = convertMethod(lhs);
         rhs = convertMethod(rhs);
@@ -90,12 +94,13 @@ public class SloppyBugComparator implements  WarningComparator {
     private int compareFieldsAllowingNull(FieldAnnotation lhs, FieldAnnotation rhs) {
         if (lhs == null || rhs == null) {
             return compareNullElements(lhs, rhs);
-		}
+        }
 
         lhs = convertField(lhs);
         rhs = convertField(rhs);
 
-        if (DEBUG) System.err.println("Compare fields: " + lhs + " and " + rhs);
+        if (DEBUG)
+            System.err.println("Compare fields: " + lhs + " and " + rhs);
 
         return lhs.compareTo(rhs);
     }
@@ -108,46 +113,53 @@ public class SloppyBugComparator implements  WarningComparator {
         return ClassNameRewriterUtil.convertFieldAnnotation(classNameRewriter, fieldAnnotation);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.WarningComparator#compare(edu.umd.cs.findbugs.BugInstance, edu.umd.cs.findbugs.BugInstance)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.WarningComparator#compare(edu.umd.cs.findbugs.BugInstance
+     * , edu.umd.cs.findbugs.BugInstance)
      */
-	public int compare(BugInstance lhs, BugInstance rhs) {
+    public int compare(BugInstance lhs, BugInstance rhs) {
 
         int cmp;
 
         // Bug abbrevs must match
         BugPattern lhsPattern = lhs.getBugPattern();
         BugPattern rhsPattern = rhs.getBugPattern();
-		String lhsAbbrev, rhsAbbrev;
+        String lhsAbbrev, rhsAbbrev;
         if (lhsPattern == null || rhsPattern == null) {
             lhsAbbrev = getAbbrevFromBugType(lhs.getType());
             rhsAbbrev = getAbbrevFromBugType(rhs.getType());
-		} else {
+        } else {
             lhsAbbrev = lhsPattern.getAbbrev();
             rhsAbbrev = rhsPattern.getAbbrev();
         }
-		cmp = lhsAbbrev.compareTo(rhsAbbrev);
+        cmp = lhsAbbrev.compareTo(rhsAbbrev);
         if (cmp != 0) {
-            if (DEBUG) System.err.println("bug abbrevs do not match");
+            if (DEBUG)
+                System.err.println("bug abbrevs do not match");
             return cmp;
-		}
+        }
 
         // Primary class must match
         cmp = compareClassesAllowingNull(lhs.getPrimaryClass(), rhs.getPrimaryClass());
         if (cmp != 0)
-			return cmp;
+            return cmp;
 
         // Primary method must match (if any)
         cmp = compareMethodsAllowingNull(lhs.getPrimaryMethod(), rhs.getPrimaryMethod());
         if (cmp != 0) {
-			if (DEBUG) System.err.println("primary methods do not match");
+            if (DEBUG)
+                System.err.println("primary methods do not match");
             return cmp;
         }
 
         // Primary field must match (if any)
         cmp = compareFieldsAllowingNull(lhs.getPrimaryField(), rhs.getPrimaryField());
         if (cmp != 0) {
-			if (DEBUG) System.err.println("primary fields do not match");
+            if (DEBUG)
+                System.err.println("primary fields do not match");
             return cmp;
         }
 
@@ -158,9 +170,9 @@ public class SloppyBugComparator implements  WarningComparator {
     /**
      * @param type
      * @return
-	 */
+     */
     private static String getAbbrevFromBugType(String type) {
         int bar = type.indexOf('_');
         return (bar >= 0) ? type.substring(0, bar) : "";
-	}
+    }
 }

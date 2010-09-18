@@ -22,17 +22,17 @@ package edu.umd.cs.findbugs.xml;
 import java.io.IOException;
 
 /**
- * Interface indicating that an object can write itself
- * to an XML document.
- *
+ * Interface indicating that an object can write itself to an XML document.
+ * 
  * @see XMLOutput
  * @author David Hovemeyer
  */
 public interface XMLWriteable {
     /**
      * Write this object to given XMLOutput.
-     *
-	 * @param xmlOutput the XMLOutput for the document
+     * 
+     * @param xmlOutput
+     *            the XMLOutput for the document
      */
     public void writeXML(XMLOutput xmlOutput) throws IOException;
 }

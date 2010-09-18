@@ -40,33 +40,38 @@ public class FieldMatcher extends MemberMatcher implements Matcher {
     public FieldMatcher(String name, String type) {
         super(name, SignatureUtil.createFieldSignature(type));
     }
-	@Override
+
+    @Override
     public String toString() {
         return "Method(" + super.toString() + ")";
     }
+
     public boolean match(BugInstance bugInstance) {
-		FieldAnnotation fieldAnnotation = null;
+        FieldAnnotation fieldAnnotation = null;
         if (role == null || role.equals(""))
             fieldAnnotation = bugInstance.getPrimaryField();
-        else for(BugAnnotation a : bugInstance.getAnnotations())
-			if (a instanceof FieldAnnotation && role.equals(a.getDescription())) {
-                fieldAnnotation = (FieldAnnotation) a;
-                break;
-            }
-		if(fieldAnnotation == null) {
+        else
+            for (BugAnnotation a : bugInstance.getAnnotations())
+                if (a instanceof FieldAnnotation && role.equals(a.getDescription())) {
+                    fieldAnnotation = (FieldAnnotation) a;
+                    break;
+                }
+        if (fieldAnnotation == null) {
             return false;
         }
-        if(!name.match(fieldAnnotation.getFieldName())) {
-			return false;
+        if (!name.match(fieldAnnotation.getFieldName())) {
+            return false;
         }
         if (signature != null && !signature.equals(fieldAnnotation.getFieldSignature()))
             return false;
-		return true;
+        return true;
     }
 
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-		XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec()).addOptionalAttribute("signature",signature);
-        if (disabled) attributes.addAttribute("disabled", "true");
+        XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec()).addOptionalAttribute(
+                "signature", signature);
+        if (disabled)
+            attributes.addAttribute("disabled", "true");
         xmlOutput.openCloseTag("Field", attributes);
     }
 }

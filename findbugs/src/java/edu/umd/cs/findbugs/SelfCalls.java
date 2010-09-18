@@ -45,18 +45,22 @@ public class SelfCalls {
     private static final boolean DEBUG = SystemProperties.getBoolean("selfcalls.debug");
 
     private ClassContext classContext;
+
     private CallGraph callGraph;
+
     private HashSet<Method> calledMethodSet;
-	private boolean hasSynchronization;
+
+    private boolean hasSynchronization;
 
     /**
      * Constructor.
-     *
-	 * @param classContext the ClassContext for the class
+     * 
+     * @param classContext
+     *            the ClassContext for the class
      */
     public SelfCalls(ClassContext classContext) {
         this.classContext = classContext;
-		this.callGraph = new CallGraph();
+        this.callGraph = new CallGraph();
         this.calledMethodSet = new HashSet<Method>();
         this.hasSynchronization = false;
     }
@@ -64,52 +68,56 @@ public class SelfCalls {
     /**
      * Find the self calls.
      */
-	public void execute() throws CFGBuilderException {
+    public void execute() throws CFGBuilderException {
         JavaClass jclass = classContext.getJavaClass();
         Method[] methods = jclass.getMethods();
 
-        if (DEBUG) System.out.println("Class has " + methods.length + " methods");
+        if (DEBUG)
+            System.out.println("Class has " + methods.length + " methods");
 
         // Add call graph nodes for all methods
         for (Method method : methods) {
             callGraph.addNode(method);
-		}
-        if (DEBUG) System.out.println("Added " + callGraph.getNumVertices() + " nodes to graph");
+        }
+        if (DEBUG)
+            System.out.println("Added " + callGraph.getNumVertices() + " nodes to graph");
 
         // Scan methods for self calls
         for (Method method : methods) {
             MethodGen mg = classContext.getMethodGen(method);
-			if (mg == null)
+            if (mg == null)
                 continue;
 
             scan(callGraph.getNodeForMethod(method));
         }
 
-        if (DEBUG) System.out.println("Found " + callGraph.getNumEdges() + " self calls");
+        if (DEBUG)
+            System.out.println("Found " + callGraph.getNumEdges() + " self calls");
     }
 
     /**
      * Get the self call graph for the class.
      */
-	public CallGraph getCallGraph() {
+    public CallGraph getCallGraph() {
         return callGraph;
     }
 
     /**
      * Get an Iterator over self-called methods.
      */
-	public Iterator<Method> calledMethodIterator() {
+    public Iterator<Method> calledMethodIterator() {
         return calledMethodSet.iterator();
     }
 
     /**
-     * Determine whether we are interested in calls for the
-     * given method.  Subclasses may override.  The default version
-	 * returns true for every method.
-     *
-     * @param method the method
+     * Determine whether we are interested in calls for the given method.
+     * Subclasses may override. The default version returns true for every
+     * method.
+     * 
+     * @param method
+     *            the method
      * @return true if we want call sites for the method, false if not
-	 */
+     */
     public boolean wantCallsFor(Method method) {
         return true;
     }
@@ -117,7 +125,7 @@ public class SelfCalls {
     /**
      * Get an Iterator over all self call sites.
      */
-	public Iterator<CallSite> callSiteIterator() {
+    public Iterator<CallSite> callSiteIterator() {
         return new Iterator<CallSite>() {
             private Iterator<CallGraphEdge> iter = callGraph.edgeIterator();
 
@@ -132,24 +140,25 @@ public class SelfCalls {
             public void remove() {
                 iter.remove();
             }
-		};
+        };
     }
 
     /**
      * Does this class contain any explicit synchronization?
      */
-	public boolean hasSynchronization() {
+    public boolean hasSynchronization() {
         return hasSynchronization;
     }
 
     /**
      * Scan a method for self call sites.
-     *
-	 * @param node the CallGraphNode for the method to be scanned
+     * 
+     * @param node
+     *            the CallGraphNode for the method to be scanned
      */
     private void scan(CallGraphNode node) throws CFGBuilderException {
         Method method = node.getMethod();
-		CFG cfg = classContext.getCFG(method);
+        CFG cfg = classContext.getCFG(method);
 
         if (method.isSynchronized())
             hasSynchronization = true;
@@ -157,33 +166,33 @@ public class SelfCalls {
         Iterator<BasicBlock> i = cfg.blockIterator();
         while (i.hasNext()) {
             BasicBlock block = i.next();
-			Iterator<InstructionHandle> j = block.instructionIterator();
+            Iterator<InstructionHandle> j = block.instructionIterator();
             while (j.hasNext()) {
                 InstructionHandle handle = j.next();
 
                 Instruction ins = handle.getInstruction();
                 if (ins instanceof InvokeInstruction) {
                     InvokeInstruction inv = (InvokeInstruction) ins;
-					Method called = isSelfCall(inv);
+                    Method called = isSelfCall(inv);
                     if (called != null) {
                         // Add edge to call graph
                         CallSite callSite = new CallSite(method, block, handle);
-						callGraph.createEdge(node, callGraph.getNodeForMethod(called), callSite);
+                        callGraph.createEdge(node, callGraph.getNodeForMethod(called), callSite);
 
                         // Add to called method set
                         calledMethodSet.add(called);
                     }
-				} else if (ins instanceof MONITORENTER || ins instanceof MONITOREXIT) {
+                } else if (ins instanceof MONITORENTER || ins instanceof MONITOREXIT) {
                     hasSynchronization = true;
                 }
             }
-		}
+        }
     }
 
     /**
      * Is the given instruction a self-call?
      */
-	private Method isSelfCall(InvokeInstruction inv) {
+    private Method isSelfCall(InvokeInstruction inv) {
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
         JavaClass jclass = classContext.getJavaClass();
 
@@ -192,7 +201,7 @@ public class SelfCalls {
         // FIXME: is it possible we would see a superclass name here?
         // Not a big deal for now, as we are mostly just interested in calls
         // to private methods, for which we will definitely see the right
-		// called class name.
+        // called class name.
         if (!calledClassName.equals(jclass.getClassName()))
             return null;
 
@@ -203,14 +212,12 @@ public class SelfCalls {
         // Scan methods for one that matches.
         Method[] methods = jclass.getMethods();
         for (Method method : methods) {
-			String methodName = method.getName();
+            String methodName = method.getName();
             String signature = method.getSignature();
             boolean isStatic = method.isStatic();
 
-            if (methodName.equals(calledMethodName) &&
-                    signature.equals(calledMethodSignature) &&
-                    isStatic == isStaticCall) {
-				// This method looks like a match.
+            if (methodName.equals(calledMethodName) && signature.equals(calledMethodSignature) && isStatic == isStaticCall) {
+                // This method looks like a match.
                 return wantCallsFor(method) ? method : null;
             }
         }
@@ -218,7 +225,8 @@ public class SelfCalls {
         // Hmm...no matching method found.
         // This is almost certainly because the named method
         // was inherited from a superclass.
-		if (DEBUG) System.out.println("No method found for " + calledClassName + "." + calledMethodName + " : " + calledMethodSignature);
+        if (DEBUG)
+            System.out.println("No method found for " + calledClassName + "." + calledMethodName + " : " + calledMethodSignature);
         return null;
     }
 }

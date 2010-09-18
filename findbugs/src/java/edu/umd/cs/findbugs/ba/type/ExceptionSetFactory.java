@@ -29,14 +29,16 @@ public class ExceptionSetFactory implements Serializable {
     /**
      *
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
+
     private HashMap<ObjectType, Integer> typeIndexMap;
+
     private ArrayList<ObjectType> typeList;
 
     public ExceptionSetFactory() {
         this.typeIndexMap = new HashMap<ObjectType, Integer>();
         this.typeList = new ArrayList<ObjectType>();
-	}
+    }
 
     public ExceptionSet createExceptionSet() {
         return new ExceptionSet(this);
@@ -45,11 +47,11 @@ public class ExceptionSetFactory implements Serializable {
     int getIndexOfType(ObjectType type) {
         Integer index = typeIndexMap.get(type);
         if (index == null) {
-			index = getNumTypes();
+            index = getNumTypes();
             typeList.add(type);
             typeIndexMap.put(type, index);
         }
-		return index.intValue();
+        return index.intValue();
     }
 
     ObjectType getType(int index) {

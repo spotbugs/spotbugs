@@ -26,9 +26,9 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * A BugReporter which delegates all method calls to another BugReporter.
- * This is useful for customizing the behavior of another bug reporter.
- *
+ * A BugReporter which delegates all method calls to another BugReporter. This
+ * is useful for customizing the behavior of another bug reporter.
+ * 
  * @author David Hovemeyer
  */
 public class DelegatingBugReporter implements BugReporter {
@@ -36,17 +36,17 @@ public class DelegatingBugReporter implements BugReporter {
 
     /**
      * Constructor.
-     *
-	 * @param delegate another BugReporter to delegate all BugReporter methods to
+     * 
+     * @param delegate
+     *            another BugReporter to delegate all BugReporter methods to
      */
     public DelegatingBugReporter(BugReporter delegate) {
         this.delegate = delegate;
-	}
-
+    }
 
     protected BugReporter getDelegate() {
         return this.delegate;
-	}
+    }
 
     public void setErrorVerbosity(int level) {
         delegate.setErrorVerbosity(level);
@@ -95,19 +95,21 @@ public class DelegatingBugReporter implements BugReporter {
     public void logError(String message, Throwable e) {
         if (e instanceof MethodUnprofitableException)
             return;
-		delegate.logError(message, e);
+        delegate.logError(message, e);
     }
+
     /**
      * Report that we skipped some analysis of a method
-	 * @param method
+     * 
+     * @param method
      */
     public void reportSkippedAnalysis(MethodDescriptor method) {
         delegate.reportSkippedAnalysis(method);
-	}
+    }
 
-
-    public @CheckForNull BugCollection getBugCollection() {
-       return delegate.getBugCollection();
+    public @CheckForNull
+    BugCollection getBugCollection() {
+        return delegate.getBugCollection();
     }
 }
 

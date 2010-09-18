@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Matcher to select BugInstances with a particular rank or higher.
- *
+ * 
  * @author William Pugh
  */
 public class RankMatcher implements Matcher {
@@ -35,34 +35,42 @@ public class RankMatcher implements Matcher {
 
     @Override
     public String toString() {
-        return "Rank(rank="+rank+")";
+        return "Rank(rank=" + rank + ")";
     }
+
     /**
-	 * Constructor.
-     *
-     * @param rankAsString the rank, as a String
-     * @throws NumberFormatException if the rank cannot be parsed
-	 */
+     * Constructor.
+     * 
+     * @param rankAsString
+     *            the rank, as a String
+     * @throws NumberFormatException
+     *             if the rank cannot be parsed
+     */
     public RankMatcher(String rankAsString) {
-            this.rank = Integer.parseInt(rankAsString);
+        this.rank = Integer.parseInt(rankAsString);
     }
 
     @Override
     public int hashCode() {
         return rank;
     }
+
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof RankMatcher)) return false;
+        if (!(o instanceof RankMatcher))
+            return false;
         RankMatcher other = (RankMatcher) o;
         return rank == other.rank;
-	}
-    public boolean match(BugInstance bugInstance) {
-        return  BugRanker.findRank(bugInstance) >= rank;
     }
-	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
+
+    public boolean match(BugInstance bugInstance) {
+        return BugRanker.findRank(bugInstance) >= rank;
+    }
+
+    public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Integer.toString(rank));
-        if (disabled) attributes.addAttribute("disabled", "true");
+        if (disabled)
+            attributes.addAttribute("disabled", "true");
         xmlOutput.openCloseTag("Rank", attributes);
-	}
+    }
 }

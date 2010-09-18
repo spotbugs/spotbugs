@@ -24,8 +24,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * Search for bug instances whose text annotations contain
- * one of a set of keywords.
+ * Search for bug instances whose text annotations contain one of a set of
+ * keywords.
  */
 public abstract class QueryBugAnnotations {
     // Bug's text annotation must contain one of the key
@@ -33,57 +33,60 @@ public abstract class QueryBugAnnotations {
     private HashSet<String> keywordSet = new HashSet<String>();
 
     /**
-     * Add a keyword to the query.
-     * A BugInstance's text annotation must contain at least
-	 * one keyword in order to match the query.
-     *
-     * @param keyword the keyword
+     * Add a keyword to the query. A BugInstance's text annotation must contain
+     * at least one keyword in order to match the query.
+     * 
+     * @param keyword
+     *            the keyword
      */
-	public void addKeyword(String keyword) {
+    public void addKeyword(String keyword) {
         keywordSet.add(keyword);
     }
 
     /**
-     * Scan bug instances contained in given file,
-     * reporting those whose text annotations contain at least
-	 * one of the keywords in the query.
-     *
-     * @param filename an XML file containing bug instances
+     * Scan bug instances contained in given file, reporting those whose text
+     * annotations contain at least one of the keywords in the query.
+     * 
+     * @param filename
+     *            an XML file containing bug instances
      */
-	public void scan(String filename) throws Exception {
+    public void scan(String filename) throws Exception {
         BugCollection bugCollection = new SortedBugCollection();
         bugCollection.readXML(filename);
         scan(bugCollection, filename);
-	}
+    }
 
     /**
-     * Scan bug instances contained in given bug collection,
-     * reporting those whose text annotations contain at least
-	 * one of the keywords in the query.
-     *
-     * @param bugCollection the bug collection
-     * @param filename      the XML file from which the bug collection was read
-	 */
+     * Scan bug instances contained in given bug collection, reporting those
+     * whose text annotations contain at least one of the keywords in the query.
+     * 
+     * @param bugCollection
+     *            the bug collection
+     * @param filename
+     *            the XML file from which the bug collection was read
+     */
     public void scan(BugCollection bugCollection, String filename) throws Exception {
         Iterator<BugInstance> i = bugCollection.iterator();
         while (i.hasNext()) {
-			BugInstance bugInstance = i.next();
+            BugInstance bugInstance = i.next();
 
             Set<String> contents = bugInstance.getTextAnnotationWords();
             for (String aKeywordSet : keywordSet) {
                 if (contents.contains(aKeywordSet)) {
-					match(bugInstance, filename);
+                    match(bugInstance, filename);
                     break;
                 }
             }
-		}
+        }
     }
 
     /**
      * Called when a bug instance contains a query keyword.
-     *
-	 * @param bugInstance the bug instance containing the keyword
-     * @param filename    name of the file containing the bug instance
+     * 
+     * @param bugInstance
+     *            the bug instance containing the keyword
+     * @param filename
+     *            name of the file containing the bug instance
      */
     protected abstract void match(BugInstance bugInstance, String filename) throws Exception;
 }

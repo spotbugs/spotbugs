@@ -23,38 +23,41 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
-
 /**
- * Special ReferenceType representing the type of a caught exception.
- * Keeps track of the entire set of exceptions that can be caught,
- * and whether they are explicit or implicit.
+ * Special ReferenceType representing the type of a caught exception. Keeps
+ * track of the entire set of exceptions that can be caught, and whether they
+ * are explicit or implicit.
  */
 public class ExceptionObjectType extends ObjectType implements Constants, ExtendedTypes {
     /**
      *
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
+
     private ExceptionSet exceptionSet;
 
     /**
      * Constructor.
-     *
-	 * @param className    the class name
-     * @param exceptionSet the set of exceptions
+     * 
+     * @param className
+     *            the class name
+     * @param exceptionSet
+     *            the set of exceptions
      */
     private ExceptionObjectType(String className, ExceptionSet exceptionSet) {
-		super(className);
+        super(className);
         this.exceptionSet = exceptionSet;
     }
 
     /**
      * Initialize object from an exception set.
-     *
-	 * @param exceptionSet the exception set
-     * @return a Type that is a supertype of all of the exceptions in
-     *         the exception set
+     * 
+     * @param exceptionSet
+     *            the exception set
+     * @return a Type that is a supertype of all of the exceptions in the
+     *         exception set
      */
-	public static Type fromExceptionSet(ExceptionSet exceptionSet) throws ClassNotFoundException {
+    public static Type fromExceptionSet(ExceptionSet exceptionSet) throws ClassNotFoundException {
         Type commonSupertype = exceptionSet.getCommonSupertype();
         if (commonSupertype.getType() != T_OBJECT)
             return commonSupertype;
@@ -64,50 +67,51 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
         String className = exceptionSupertype.getClassName();
         if (className.equals("java.lang.Throwable"))
             return exceptionSupertype;
-		return new ExceptionObjectType(className, exceptionSet);
+        return new ExceptionObjectType(className, exceptionSet);
     }
 
     @Override
-         public byte getType() {
+    public byte getType() {
         return T_EXCEPTION;
-	}
+    }
 
     @Override
-         public int hashCode() {
+    public int hashCode() {
         return getSignature().hashCode();
-	}
+    }
 
     @Override
-         public boolean equals(Object o) {
-        if (o == null) return false;
-		if (o.getClass() != this.getClass()) return false;
+    public boolean equals(Object o) {
+        if (o == null)
+            return false;
+        if (o.getClass() != this.getClass())
+            return false;
 
         ExceptionObjectType other = (ExceptionObjectType) o;
-        return getSignature().equals(other.getSignature())
-                && exceptionSet.equals(other.exceptionSet);
-	}
+        return getSignature().equals(other.getSignature()) && exceptionSet.equals(other.exceptionSet);
+    }
 
     /**
      * Return the exception set.
-     *
-	 * @return the ExceptionSet
+     * 
+     * @return the ExceptionSet
      */
     public ExceptionSet getExceptionSet() {
         return exceptionSet;
-	}
+    }
 
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-		buf.append("<exception:");
+        buf.append("<exception:");
         boolean first = true;
         for (ExceptionSet.ThrownExceptionIterator i = exceptionSet.iterator(); i.hasNext();) {
             if (first)
-				first = false;
+                first = false;
             else
                 buf.append(',');
             buf.append(i.next().toString());
-		}
+        }
         buf.append(">");
         return buf.toString();
     }

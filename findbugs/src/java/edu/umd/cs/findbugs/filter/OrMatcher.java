@@ -25,35 +25,37 @@ import java.util.Iterator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
-
 public class OrMatcher extends CompoundMatcher {
 
     public boolean match(BugInstance bugInstance) {
         Iterator<Matcher> i = childIterator();
         while (i.hasNext()) {
-			Matcher child = i.next();
+            Matcher child = i.next();
             if (child.match(bugInstance))
                 return true;
         }
-		return false;
+        return false;
     }
 
-    public void writeXML(XMLOutput xmlOutput, boolean disabled)  throws IOException {
+    public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         if (numberChildren() == 1) {
             childIterator().next().writeXML(xmlOutput, false);
-			return;
+            return;
         }
         xmlOutput.startTag("Or");
-        if (disabled) xmlOutput.addAttribute("disabled","true");
-		xmlOutput.stopTag(false);
+        if (disabled)
+            xmlOutput.addAttribute("disabled", "true");
+        xmlOutput.stopTag(false);
         writeChildrenXML(xmlOutput);
         xmlOutput.closeTag("Or");
     }
-	@Override
+
+    @Override
     public String toString() {
-        if (numberChildren() == 1) return super.toString();
-        return "Or(" + super.toString() +")";
-	}
+        if (numberChildren() == 1)
+            return super.toString();
+        return "Or(" + super.toString() + ")";
+    }
 
 }
 

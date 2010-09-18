@@ -49,90 +49,107 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 public class ClassParserUsingBCEL implements ClassParserInterface {
 
     private final JavaClass javaClass;
+
     private final String slashedClassName;
+
     private final ClassDescriptor expectedClassDescriptor;
-	private final ICodeBaseEntry codeBaseEntry;
 
+    private final ICodeBaseEntry codeBaseEntry;
 
-    public ClassParserUsingBCEL(JavaClass javaClass,
-			@CheckForNull ClassDescriptor expectedClassDescriptor,
+    public ClassParserUsingBCEL(JavaClass javaClass, @CheckForNull ClassDescriptor expectedClassDescriptor,
             ICodeBaseEntry codeBaseEntry) {
         this.javaClass = javaClass;
         this.slashedClassName = javaClass.getClassName().replace('.', '/');
-		this.expectedClassDescriptor = expectedClassDescriptor;
+        this.expectedClassDescriptor = expectedClassDescriptor;
         this.codeBaseEntry = codeBaseEntry;
 
     }
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd
+     * .cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder)
      */
     public void parse(final ClassNameAndSuperclassInfo.Builder builder) throws InvalidClassFileFormatException {
 
         builder.setCodeBaseEntry(codeBaseEntry);
         builder.setAccessFlags(javaClass.getAccessFlags());
         ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(javaClass.getClassName());
-    	if (expectedClassDescriptor != null && expectedClassDescriptor.equals(classDescriptor))
+        if (expectedClassDescriptor != null && expectedClassDescriptor.equals(classDescriptor))
             throw new InvalidClassFileFormatException("Expected " + expectedClassDescriptor, classDescriptor, codeBaseEntry);
         builder.setClassDescriptor(classDescriptor);
 
         builder.setSuperclassDescriptor(DescriptorFactory.createClassDescriptorFromDottedClassName(javaClass.getSuperclassName()));
-        String [] allInterfaces = javaClass.getInterfaceNames();
+        String[] allInterfaces = javaClass.getInterfaceNames();
         ClassDescriptor[] allInterfaceDescriptiors;
-    	if (allInterfaces.length == 0)
+        if (allInterfaces.length == 0)
             allInterfaceDescriptiors = ClassDescriptor.EMPTY_ARRAY;
         else {
             allInterfaceDescriptiors = new ClassDescriptor[allInterfaces.length];
-			for (int i = 0; i < allInterfaces.length; i++)
+            for (int i = 0; i < allInterfaces.length; i++)
                 allInterfaceDescriptiors[i] = DescriptorFactory.createClassDescriptorFromDottedClassName(allInterfaces[i]);
         }
         builder.setInterfaceDescriptorList(allInterfaceDescriptiors);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd.cs.findbugs.classfile.analysis.ClassInfo.Builder)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd
+     * .cs.findbugs.classfile.analysis.ClassInfo.Builder)
      */
     public void parse(ClassInfo.Builder builder) throws InvalidClassFileFormatException {
-            parse((ClassNameAndSuperclassInfo.Builder) builder);
+        parse((ClassNameAndSuperclassInfo.Builder) builder);
 
-            final List<FieldDescriptor> fieldDescriptorList = new LinkedList<FieldDescriptor>();
-            final List<MethodDescriptor> methodDescriptorList =  new LinkedList<MethodDescriptor>();
-            final TreeSet<ClassDescriptor> referencedClassSet = new TreeSet<ClassDescriptor>();
-			javaClass.accept(new AnnotationVisitor() {
-                @Override
-                public void visit(Method obj) {
-                    methodDescriptorList.add(parseMethod(obj));
-                }
-                @Override
-                public void visit(Field obj) {
-                    fieldDescriptorList.add(parseField(obj));
-                }
-                @Override
-                public void visit(ConstantClass obj) {
-                    @SlashedClassName String className = obj.getBytes(javaClass.getConstantPool());
-                    if (className.indexOf('[') >= 0) {
-                        ClassParser.extractReferencedClassesFromSignature(referencedClassSet, className);
-					} else if (ClassName.isValidClassName(className)) {
-                        referencedClassSet.add(DescriptorFactory.instance().getClassDescriptor(className));
-                    }
-                }
+        final List<FieldDescriptor> fieldDescriptorList = new LinkedList<FieldDescriptor>();
+        final List<MethodDescriptor> methodDescriptorList = new LinkedList<MethodDescriptor>();
+        final TreeSet<ClassDescriptor> referencedClassSet = new TreeSet<ClassDescriptor>();
+        javaClass.accept(new AnnotationVisitor() {
+            @Override
+            public void visit(Method obj) {
+                methodDescriptorList.add(parseMethod(obj));
+            }
 
-                @Override
-                public void visit(ConstantNameAndType obj) {
-                    String signature = obj.getSignature(javaClass.getConstantPool());
-                    ClassParser.extractReferencedClassesFromSignature(referencedClassSet, signature);
+            @Override
+            public void visit(Field obj) {
+                fieldDescriptorList.add(parseField(obj));
+            }
+
+            @Override
+            public void visit(ConstantClass obj) {
+                @SlashedClassName
+                String className = obj.getBytes(javaClass.getConstantPool());
+                if (className.indexOf('[') >= 0) {
+                    ClassParser.extractReferencedClassesFromSignature(referencedClassSet, className);
+                } else if (ClassName.isValidClassName(className)) {
+                    referencedClassSet.add(DescriptorFactory.instance().getClassDescriptor(className));
                 }
-			});
+            }
+
+            @Override
+            public void visit(ConstantNameAndType obj) {
+                String signature = obj.getSignature(javaClass.getConstantPool());
+                ClassParser.extractReferencedClassesFromSignature(referencedClassSet, signature);
+            }
+        });
 
     }
+
     /**
-     * @param obj the field to parse
+     * @param obj
+     *            the field to parse
      * @return a descriptor for the field
      */
     protected FieldDescriptor parseField(Field obj) {
         return new FieldDescriptor(slashedClassName, obj.getName(), obj.getSignature(), obj.isStatic());
     }
+
     /**
-     * @param obj the method to parse
+     * @param obj
+     *            the method to parse
      * @return a descriptor for the method
      */
     protected MethodDescriptor parseMethod(Method obj) {

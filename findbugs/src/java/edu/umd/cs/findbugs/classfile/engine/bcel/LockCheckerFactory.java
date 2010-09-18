@@ -25,21 +25,25 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine to produce LockChecker objects for analyzed methods.
- *
+ * 
  * @author David Hovemeyer
  */
 public class LockCheckerFactory extends AnalysisFactory<LockChecker> {
     /**
      * Constructor.
      */
-	public LockCheckerFactory() {
+    public LockCheckerFactory() {
         super("lock checker meta-analysis", LockChecker.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public LockChecker analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+    public LockChecker analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         LockChecker lockChecker = new LockChecker(descriptor);
 
         lockChecker.execute();

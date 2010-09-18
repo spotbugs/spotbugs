@@ -26,21 +26,21 @@ public interface FieldOrMethodName {
     /**
      * @return a ClassDescriptor for the field/method's class
      */
-	public ClassDescriptor getClassDescriptor();
+    public ClassDescriptor getClassDescriptor();
 
     /**
      * @return Returns the field/method name
      */
-	public String getName();
+    public String getName();
 
     /**
      * @return Returns the field/method signature
      */
-	public String getSignature();
+    public String getSignature();
 
     /**
      * @return Returns true if field/method is static, false if not
      */
-	public boolean isStatic();
+    public boolean isStatic();
 
 }

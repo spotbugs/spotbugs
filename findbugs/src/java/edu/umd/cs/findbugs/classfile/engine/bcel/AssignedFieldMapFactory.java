@@ -27,31 +27,39 @@ import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 
 /**
  * Analysis engine for producing an AssignedFieldMap for a class.
- *
+ * 
  * @author David Hovemeyer
  */
 public class AssignedFieldMapFactory extends RecomputableClassAnalysisEngine<AssignedFieldMap> {
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public AssignedFieldMap analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
+    public AssignedFieldMap analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
         /*
-        JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, descriptor);
-        return new AssignedFieldMap(jclass);
-		*/
+         * JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class,
+         * descriptor); return new AssignedFieldMap(jclass);
+         */
         throw new UnsupportedOperationException("AssignedFieldMap is going away");
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
+     * .findbugs.classfile.IAnalysisCache)
      */
-	public void registerWith(IAnalysisCache analysisCache) {
+    public void registerWith(IAnalysisCache analysisCache) {
         /*
-        analysisCache.registerClassAnalysisEngine(AssignedFieldMap.class, this);
-        */
-		throw new UnsupportedOperationException("AssignedFieldMap is going away");
+         * analysisCache.registerClassAnalysisEngine(AssignedFieldMap.class,
+         * this);
+         */
+        throw new UnsupportedOperationException("AssignedFieldMap is going away");
     }
-
 
 }

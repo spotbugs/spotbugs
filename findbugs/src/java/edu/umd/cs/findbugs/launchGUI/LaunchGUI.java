@@ -34,19 +34,19 @@ public class LaunchGUI {
 
     public static void launchGUI(SortedBugCollection bugs) {
         if (GraphicsEnvironment.isHeadless()) {
-			throw new IllegalStateException("Running in GUI headless mode, can't open GUI");
+            throw new IllegalStateException("Running in GUI headless mode, can't open GUI");
         }
         GUISaveState.loadInstance();
         try {
-			FindBugsLayoutManagerFactory factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
+            FindBugsLayoutManagerFactory factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
             MainFrame.makeInstance(factory);
             MainFrame instance = MainFrame.getInstance();
             instance.waitUntilReady();
-			instance.openBugCollection(bugs);
+            instance.openBugCollection(bugs);
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-			throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 

@@ -27,14 +27,16 @@ import org.objectweb.asm.FieldVisitor;
  */
 public abstract class AbstractFieldAnnotationVisitor implements FieldVisitor {
 
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.FieldVisitor#visitAttribute(org.objectweb.asm.Attribute)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.objectweb.asm.FieldVisitor#visitAttribute(org.objectweb.asm.Attribute
+     * )
      */
     public void visitAttribute(Attribute attr) {
         // TODO Auto-generated method stub
 
     }
-
 
 }

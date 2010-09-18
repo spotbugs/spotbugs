@@ -30,10 +30,13 @@ public abstract class AbstractFBMethodVisitor extends MethodAdapter implements F
     public AbstractFBMethodVisitor() {
         super(new EmptyVisitor());
     }
+
     int pc;
+
     public void visitOffset(int offset) {
         pc = offset;
     }
+
     public int getPC() {
         return pc;
     }

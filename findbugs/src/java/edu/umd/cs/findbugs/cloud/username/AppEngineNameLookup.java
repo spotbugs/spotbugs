@@ -43,21 +43,28 @@ public class AppEngineNameLookup implements NameLookup {
     public static final String LOCAL_APPENGINE = "appengine.local";
 
     public static final String APPENGINE_LOCALHOST_PROPERTY_NAME = "appengine.host.local";
+
     public static final String APPENGINE_LOCALHOST_DEFAULT = "http://localhost:8080";
+
     public static final String APPENGINE_HOST_PROPERTY_NAME = "appengine.host";
 
     private static final Logger LOGGER = Logger.getLogger(AppEngineNameLookup.class.getName());
 
     /** if "true", prevents session info from being saved between launches. */
     private static final String SYSPROP_NEVER_SAVE_SESSION = "appengine.never_save_session";
+
     private static final String SYSPROP_APPENGINE_LOCAL = "appengine.local";
 
     private static final int USER_SIGNIN_TIMEOUT_SECS = 60;
+
     private static final String KEY_SAVE_SESSION_INFO = "save_session_info";
+
     private static final String KEY_APPENGINECLOUD_SESSION_ID = "appenginecloud_session_id";
 
     private Long sessionId;
+
     private String username;
+
     private String host;
 
     public boolean signIn(CloudPlugin plugin, BugCollection bugCollection) throws IOException {
@@ -100,6 +107,7 @@ public class AppEngineNameLookup implements NameLookup {
 
     /**
      * If the user can be authenticated due to an existing session id, do so
+     * 
      * @return true if we could authenticate the user
      * @throws IOException
      */
@@ -115,7 +123,7 @@ public class AppEngineNameLookup implements NameLookup {
         // check the previously used session ID
         long id = loadSessionId();
         if (id == 0)
-              return false;
+            return false;
         boolean authorized = checkAuthorized(getAuthCheckUrl(id));
         if (authorized) {
             LOGGER.info("Authorized with session ID: " + id);
@@ -139,7 +147,7 @@ public class AppEngineNameLookup implements NameLookup {
 
     public static boolean isSavingSessionInfoEnabled() {
         return !Boolean.getBoolean(SYSPROP_NEVER_SAVE_SESSION)
-               && Preferences.userNodeForPackage(AppEngineNameLookup.class).getBoolean(KEY_SAVE_SESSION_INFO, true);
+                && Preferences.userNodeForPackage(AppEngineNameLookup.class).getBoolean(KEY_SAVE_SESSION_INFO, true);
     }
 
     public static void clearSavedSessionInformation() {
@@ -148,7 +156,7 @@ public class AppEngineNameLookup implements NameLookup {
     }
 
     public static void saveSessionInformation(long sessionId) {
-            assert sessionId != 0;
+        assert sessionId != 0;
         Preferences.userNodeForPackage(AppEngineNameLookup.class).putLong(KEY_APPENGINECLOUD_SESSION_ID, sessionId);
     }
 
@@ -163,21 +171,21 @@ public class AppEngineNameLookup implements NameLookup {
     public String getHost() {
         return host;
     }
-	
+
     // ======================= end of public methods =======================
 
     private long loadOrCreateSessionId() {
         long id = loadSessionId();
         if (id != 0) {
-			LOGGER.info("Using saved session ID: " + id);
+            LOGGER.info("Using saved session ID: " + id);
             return id;
         }
         SecureRandom r = new SecureRandom();
-		while (id == 0)
+        while (id == 0)
             id = r.nextLong();
         if (id == 0) { // 0 is reserved for no session id
             id = 42;
-		}
+        }
         if (isSavingSessionInfoEnabled())
             saveSessionInformation(id);
 
@@ -199,11 +207,11 @@ public class AppEngineNameLookup implements NameLookup {
         int responseCode = connection.getResponseCode();
         if (responseCode == 200) {
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-	    	String status = in.readLine();
+            String status = in.readLine();
             sessionId = Long.parseLong(in.readLine());
             username = in.readLine();
             Util.closeSilently(in);
-	    	if ("OK".equals(status)) {
+            if ("OK".equals(status)) {
                 LOGGER.info("Authorized session " + sessionId);
                 return true;
             }

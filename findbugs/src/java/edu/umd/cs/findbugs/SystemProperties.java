@@ -37,72 +37,78 @@ import edu.umd.cs.findbugs.io.IO;
 public class SystemProperties {
 
     private static Properties properties = new Properties();
+
     public final static boolean ASSERTIONS_ENABLED;
+
     final static String OS_NAME;
-	static {
+    static {
         boolean tmp = false;
         assert tmp = true; // set tmp to true if assertions are enabled
         ASSERTIONS_ENABLED = tmp;
-		String osName;
+        String osName;
         try {
-            osName = "." + System.getProperty("os.name","Unknown").replace(' ','_');
+            osName = "." + System.getProperty("os.name", "Unknown").replace(' ', '_');
         } catch (Throwable e) {
-			osName = ".Unknown";
+            osName = ".Unknown";
         }
         OS_NAME = osName;
         loadPropertiesFromConfigFile();
-		if (getBoolean("findbugs.dumpProperties")){
+        if (getBoolean("findbugs.dumpProperties")) {
             FileOutputStream out = null;
             try {
                 out = new FileOutputStream("/tmp/outProperties.txt");
-				System.getProperties().store(out, "System properties dump");
+                System.getProperties().store(out, "System properties dump");
                 properties.store(out, "FindBugs properties dump");
             } catch (IOException e) {
                 assert true;
-			} finally {
+            } finally {
                 IO.close(out);
             }
         }
-	}
+    }
 
-    private static void loadPropertiesFromConfigFile()  {
+    private static void loadPropertiesFromConfigFile() {
 
-	    URL systemProperties = DetectorFactoryCollection.getCoreResource("systemProperties.properties");
-       loadPropertiesFromURL(systemProperties);
+        URL systemProperties = DetectorFactoryCollection.getCoreResource("systemProperties.properties");
+        loadPropertiesFromURL(systemProperties);
         String u = System.getProperty("findbugs.loadPropertiesFrom");
         if (u != null)
-			try {
-             URL configURL = new URL(u);
-             loadPropertiesFromURL(configURL);
+            try {
+                URL configURL = new URL(u);
+                loadPropertiesFromURL(configURL);
             } catch (MalformedURLException e) {
-	            AnalysisContext.logError("Unable to load properties from " + u, e);
+                AnalysisContext.logError("Unable to load properties from " + u, e);
 
             }
-        }
+    }
 
     public static Properties getLocalProperties() {
-		return properties;
+        return properties;
     }
+
     public static Properties getAllProperties() {
         Properties result = System.getProperties();
-		result.putAll(properties);
+        result.putAll(properties);
         return result;
     }
+
     /**
-	 * This method is public to allow clients to set system properties via any {@link URL}
-     *
-     * @param url an url to load system properties from, may be nullerrorMsg
+     * This method is public to allow clients to set system properties via any
+     * {@link URL}
+     * 
+     * @param url
+     *            an url to load system properties from, may be nullerrorMsg
      */
     public static void loadPropertiesFromURL(URL url) {
         if (url == null) {
             return;
         }
-		InputStream in = null;
+        InputStream in = null;
         try {
             in = url.openStream();
             properties.load(in);
         } catch (IOException e) {
-             AnalysisContext.logError("Unable to load properties from " + url, e);
+            AnalysisContext.logError("Unable to load properties from " + url, e);
         } finally {
             IO.close(in);
         }
@@ -110,128 +116,142 @@ public class SystemProperties {
 
     /**
      * Get boolean property, returning false if a security manager prevents us
-	 * from accessing system properties
+     * from accessing system properties
+     * 
      * @return true if the property exists and is set to true
      */
     public static boolean getBoolean(String name) {
-		return getBoolean(name, false);
+        return getBoolean(name, false);
     }
 
     public static boolean getBoolean(String name, boolean defaultValue) {
         boolean result = defaultValue;
         try {
-			String value = getProperty(name);
-            if (value == null) return defaultValue;
+            String value = getProperty(name);
+            if (value == null)
+                return defaultValue;
             result = toBoolean(value);
         } catch (IllegalArgumentException e) {
-		} catch (NullPointerException e) {
+        } catch (NullPointerException e) {
         }
         return result;
     }
-	private static boolean toBoolean(String name) {
+
+    private static boolean toBoolean(String name) {
         return ((name != null) && name.equalsIgnoreCase("true"));
     }
 
-
     /**
-     * @param arg0 property name
-     * @param arg1 default value
+     * @param arg0
+     *            property name
+     * @param arg1
+     *            default value
      * @return the int value (or arg1 if the property does not exist)
      * @deprecated Use {@link #getInt(String,int)} instead
      */
     public static Integer getInteger(String arg0, int arg1) {
         return getInt(arg0, arg1);
     }
+
     /**
-     * @param name property name
-     * @param defaultValue default value
-	 * @return the int value (or defaultValue if the property does not exist)
+     * @param name
+     *            property name
+     * @param defaultValue
+     *            default value
+     * @return the int value (or defaultValue if the property does not exist)
      */
     public static int getInt(String name, int defaultValue) {
         try {
-			String value = getProperty(name);
+            String value = getProperty(name);
             if (value != null)
                 return Integer.decode(value);
         } catch (Exception e) {
-			assert true;
+            assert true;
         }
         return defaultValue;
     }
 
     /**
-     * @param name property name
+     * @param name
+     *            property name
      * @return string value (or null if the property does not exist)
-	 */
+     */
     public static String getOSDependentProperty(String name) {
         String osDependentName = name + OS_NAME;
-        String value =  getProperty(osDependentName);
-		if (value != null)
+        String value = getProperty(osDependentName);
+        if (value != null)
             return value;
         return getProperty(name);
     }
 
     /**
-     * @param name property name
+     * @param name
+     *            property name
      * @return string value (or null if the property does not exist)
-	 */
+     */
     public static String getProperty(String name) {
         try {
             String value = properties.getProperty(name);
-			if (value != null)
+            if (value != null)
                 return value;
             return System.getProperty(name);
         } catch (Exception e) {
-			return null;
+            return null;
         }
 
     }
 
     /**
-     * @param name property name
+     * @param name
+     *            property name
      * @return string value (or null if the property does not exist)
-	 */
+     */
     public static void setProperty(String name, String value) {
-         properties.setProperty(name, value);
+        properties.setProperty(name, value);
     }
-	/**
-     * @param name property name
-     * @param defaultValue default value
+
+    /**
+     * @param name
+     *            property name
+     * @param defaultValue
+     *            default value
      * @return string value (or defaultValue if the property does not exist)
-	 */
+     */
     public static String getProperty(String name, String defaultValue) {
         try {
-        String value = properties.getProperty(name);
-		if (value != null)
-            return value;
-        return System.getProperty(name, defaultValue);
+            String value = properties.getProperty(name);
+            if (value != null)
+                return value;
+            return System.getProperty(name, defaultValue);
         } catch (Exception e) {
-			return defaultValue;
+            return defaultValue;
         }
     }
 
-	private static final String URL_REWRITE_PATTERN_STRING = getOSDependentProperty("findbugs.urlRewritePattern");
+    private static final String URL_REWRITE_PATTERN_STRING = getOSDependentProperty("findbugs.urlRewritePattern");
+
     private static final String URL_REWRITE_FORMAT = getOSDependentProperty("findbugs.urlRewriteFormat");
 
     private static final Pattern URL_REWRITE_PATTERN;
-	static {
+    static {
         Pattern p = null;
         if (URL_REWRITE_PATTERN_STRING != null && URL_REWRITE_FORMAT != null)
             try {
-				p = Pattern.compile(URL_REWRITE_PATTERN_STRING);
+                p = Pattern.compile(URL_REWRITE_PATTERN_STRING);
             } catch (Exception e) {
                 assert true;
             }
-		URL_REWRITE_PATTERN = p;
+        URL_REWRITE_PATTERN = p;
     }
 
     public static String rewriteURLAccordingToProperties(String u) {
         if (URL_REWRITE_PATTERN == null || URL_REWRITE_FORMAT == null)
             return u;
-		Matcher m = URL_REWRITE_PATTERN.matcher(u);
+        Matcher m = URL_REWRITE_PATTERN.matcher(u);
         if (!m.matches())
             return u;
         String result = String.format(URL_REWRITE_FORMAT, m.group(1));
-		return result;
+        return result;
     }
 
 }

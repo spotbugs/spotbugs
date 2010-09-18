@@ -45,9 +45,9 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
- * Subclass of PreorderVisitor that visits annotations
- * on classes, fields, methods, and method parameters.
- *
+ * Subclass of PreorderVisitor that visits annotations on classes, fields,
+ * methods, and method parameters.
+ * 
  * @author William Pugh
  */
 public class AnnotationVisitor extends PreorderVisitor {
@@ -55,328 +55,345 @@ public class AnnotationVisitor extends PreorderVisitor {
     /**
      *
      */
-	private static final String RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS = "RuntimeInvisibleParameterAnnotations";
+    private static final String RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS = "RuntimeInvisibleParameterAnnotations";
+
     /**
      *
      */
-	private static final String RUNTIME_INVISIBLE_ANNOTATIONS = "RuntimeInvisibleAnnotations";
+    private static final String RUNTIME_INVISIBLE_ANNOTATIONS = "RuntimeInvisibleAnnotations";
+
     /**
      *
      */
-	private static final String RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations";
+    private static final String RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations";
+
     /**
      *
      */
-	private static final String RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS = "RuntimeVisibleParameterAnnotations";
+    private static final String RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS = "RuntimeVisibleParameterAnnotations";
+
     static final boolean DEBUG = SystemProperties.getBoolean("annotation.visitor");
 
     /**
      * Visit annotation on a class, field or method
-     * @param annotationClass class of annotation
-	 * @param map map from names to values
-     * @param runtimeVisible true if annotation is runtime visible
+     * 
+     * @param annotationClass
+     *            class of annotation
+     * @param map
+     *            map from names to values
+     * @param runtimeVisible
+     *            true if annotation is runtime visible
      */
-    public void visitAnnotation(@DottedClassName String annotationClass,
-			Map<String, ElementValue> map, boolean runtimeVisible) {
+    public void visitAnnotation(@DottedClassName String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
         if (DEBUG) {
-        System.out.println("Annotation: " + annotationClass);
-        for (Map.Entry<String, ElementValue> e : map.entrySet()) {
-			System.out.println("    " + e.getKey());
-            System.out.println(" -> " + e.getValue());
+            System.out.println("Annotation: " + annotationClass);
+            for (Map.Entry<String, ElementValue> e : map.entrySet()) {
+                System.out.println("    " + e.getKey());
+                System.out.println(" -> " + e.getValue());
+            }
         }
-        }
-	}
-
+    }
 
     protected static String getAnnotationParameterAsString(Map<String, ElementValue> map, String parameter) {
         try {
-			ElementValue ev = map.get(parameter);
+            ElementValue ev = map.get(parameter);
 
-        if (ev instanceof SimpleElementValue)
-            return ((SimpleElementValue)ev).getValueString();
-		return null;
+            if (ev instanceof SimpleElementValue)
+                return ((SimpleElementValue) ev).getValueString();
+            return null;
         } catch (Exception e) {
             return null;
 
-		}
+        }
     }
 
     protected static String[] getAnnotationParameterAsStringArray(Map<String, ElementValue> map, String parameter) {
-		try {
-        ElementValue e = map.get(parameter);
-        ArrayElementValue a = (ArrayElementValue) e;
-        int size = a.getElementValuesArraySize();
-		String [] result = new String[size];
-        for(int i = 0; i < size; i++)
-            result[i]  = ((SimpleElementValue)a.getElementValuesArray()[i]).getValueString();
-        return result;
-		} catch (Exception e) {
+        try {
+            ElementValue e = map.get(parameter);
+            ArrayElementValue a = (ArrayElementValue) e;
+            int size = a.getElementValuesArraySize();
+            String[] result = new String[size];
+            for (int i = 0; i < size; i++)
+                result[i] = ((SimpleElementValue) a.getElementValuesArray()[i]).getValueString();
+            return result;
+        } catch (Exception e) {
             return null;
 
         }
-	}
+    }
+
     /**
      * Visit annotation on a method parameter
-     * @param p  parameter number, starting at zero ("this" parameter is not counted)
-	 * @param annotationClass class of annotation
-     * @param map map from names to values
-     * @param runtimeVisible true if annotation is runtime visible
+     * 
+     * @param p
+     *            parameter number, starting at zero ("this" parameter is not
+     *            counted)
+     * @param annotationClass
+     *            class of annotation
+     * @param map
+     *            map from names to values
+     * @param runtimeVisible
+     *            true if annotation is runtime visible
      */
-	public void visitParameterAnnotation(int p, @DottedClassName String annotationClass,
-            Map<String, ElementValue> map, boolean runtimeVisible) {
-//		System.out
-//				.println("Parameter " + p + " Annotation: " + annotationClass);
-//		for (Map.Entry<String, Object> e : map.entrySet()) {
-//			System.out.println("    " + e.getKey());
-//			System.out.println(" -> " + e.getValue());
-//		}
+    public void visitParameterAnnotation(int p, @DottedClassName String annotationClass, Map<String, ElementValue> map,
+            boolean runtimeVisible) {
+        // System.out
+        // .println("Parameter " + p + " Annotation: " + annotationClass);
+        // for (Map.Entry<String, Object> e : map.entrySet()) {
+        // System.out.println("    " + e.getKey());
+        // System.out.println(" -> " + e.getValue());
+        // }
     }
 
-    public void visitSyntheticParameterAnnotation(int p,  boolean runtimeVisible) {
+    public void visitSyntheticParameterAnnotation(int p, boolean runtimeVisible) {
     }
 
-//	@Override
-//	public void visit(Unknown obj) {
-//		try {
-//
-//				String name = obj.getName();
-//				if (DEBUG)
-//					System.out.println("In " + getDottedClassName() + " found "
-//							+ name);
-//				byte[] b = obj.getBytes();
-//				DataInputStream bytes = new DataInputStream(
-//						new ByteArrayInputStream(b));
-//				boolean runtimeVisible = name.equals(RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS);
-//				if (name.equals(RUNTIME_VISIBLE_ANNOTATIONS)
-//						|| name.equals(RUNTIME_INVISIBLE_ANNOTATIONS)) {
-//
-//					int numAnnotations = bytes.readUnsignedShort();
-//					if (DEBUG)
-//						System.out.println("# of annotations: "
-//								+ numAnnotations);
-//					for (int i = 0; i < numAnnotations; i++) {
-//						String annotationName = getAnnotationName(bytes);
-//						int numPairs = bytes.readUnsignedShort();
-//						Map<String, Object> values = readAnnotationValues(
-//								bytes, numPairs);
-//						visitAnnotation(annotationName, values, name
-//								.equals(RUNTIME_VISIBLE_ANNOTATIONS));
-//					}
-//
-//				} else if (runtimeVisible
-//						|| name.equals(RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS)) {
-//					int numParameters = bytes.readUnsignedByte();
-//					if (DEBUG) System.out.println("Number of parameters: " + numParameters);
-//					int numParametersToMethod = getNumberMethodArguments();
-//					if (DEBUG) System.out.println("Number of parameters to method: " + numParametersToMethod);
-//					int offset = 0;
-//					if (numParametersToMethod > numParameters) {
-//						offset = 1;
-//						visitSyntheticParameterAnnotation(
-//								0,
-//								runtimeVisible);
-//						for(int p = numParameters+1; p < numParametersToMethod; p++) {
-//							visitSyntheticParameterAnnotation(
-//									p,
-//									runtimeVisible);
-//						}
-//					}
-//					for (int p = 0; p < numParameters; p++) {
-//						int numAnnotations = bytes.readUnsignedShort();
-//						if (DEBUG)
-//							System.out.println("# of annotations on parameter " + (offset+p)
-//									+ ": "
-//									+ numAnnotations);
-//						for (int i = 0; i < numAnnotations; i++) {
-//							String annotationName = getAnnotationName(bytes);
-//							int numPairs = bytes.readUnsignedShort();
-//							Map<String, Object> values = readAnnotationValues(
-//									bytes, numPairs);
-//
-//							visitParameterAnnotation(
-//									p+offset,
-//									annotationName,
-//									values,
-//									runtimeVisible);
-//						}
-//					}
-//
-//				}
-//
-//				if (DEBUG) {
-//					for (byte aB : b)
-//						System.out.print(Integer.toString((aB & 0xff), 16)
-//								+ " ");
-//					System.out.println();
-//				}
-//
-//
-//		} catch (RuntimeException e) {
-//			assert true; // ignore
-//		} catch (IOException e) {
-//			assert true; // ignore
-//        }
-//	}
+    // @Override
+    // public void visit(Unknown obj) {
+    // try {
+    //
+    // String name = obj.getName();
+    // if (DEBUG)
+    // System.out.println("In " + getDottedClassName() + " found "
+    // + name);
+    // byte[] b = obj.getBytes();
+    // DataInputStream bytes = new DataInputStream(
+    // new ByteArrayInputStream(b));
+    // boolean runtimeVisible =
+    // name.equals(RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS);
+    // if (name.equals(RUNTIME_VISIBLE_ANNOTATIONS)
+    // || name.equals(RUNTIME_INVISIBLE_ANNOTATIONS)) {
+    //
+    // int numAnnotations = bytes.readUnsignedShort();
+    // if (DEBUG)
+    // System.out.println("# of annotations: "
+    // + numAnnotations);
+    // for (int i = 0; i < numAnnotations; i++) {
+    // String annotationName = getAnnotationName(bytes);
+    // int numPairs = bytes.readUnsignedShort();
+    // Map<String, Object> values = readAnnotationValues(
+    // bytes, numPairs);
+    // visitAnnotation(annotationName, values, name
+    // .equals(RUNTIME_VISIBLE_ANNOTATIONS));
+    // }
+    //
+    // } else if (runtimeVisible
+    // || name.equals(RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS)) {
+    // int numParameters = bytes.readUnsignedByte();
+    // if (DEBUG) System.out.println("Number of parameters: " + numParameters);
+    // int numParametersToMethod = getNumberMethodArguments();
+    // if (DEBUG) System.out.println("Number of parameters to method: " +
+    // numParametersToMethod);
+    // int offset = 0;
+    // if (numParametersToMethod > numParameters) {
+    // offset = 1;
+    // visitSyntheticParameterAnnotation(
+    // 0,
+    // runtimeVisible);
+    // for(int p = numParameters+1; p < numParametersToMethod; p++) {
+    // visitSyntheticParameterAnnotation(
+    // p,
+    // runtimeVisible);
+    // }
+    // }
+    // for (int p = 0; p < numParameters; p++) {
+    // int numAnnotations = bytes.readUnsignedShort();
+    // if (DEBUG)
+    // System.out.println("# of annotations on parameter " + (offset+p)
+    // + ": "
+    // + numAnnotations);
+    // for (int i = 0; i < numAnnotations; i++) {
+    // String annotationName = getAnnotationName(bytes);
+    // int numPairs = bytes.readUnsignedShort();
+    // Map<String, Object> values = readAnnotationValues(
+    // bytes, numPairs);
+    //
+    // visitParameterAnnotation(
+    // p+offset,
+    // annotationName,
+    // values,
+    // runtimeVisible);
+    // }
+    // }
+    //
+    // }
+    //
+    // if (DEBUG) {
+    // for (byte aB : b)
+    // System.out.print(Integer.toString((aB & 0xff), 16)
+    // + " ");
+    // System.out.println();
+    // }
+    //
+    //
+    // } catch (RuntimeException e) {
+    // assert true; // ignore
+    // } catch (IOException e) {
+    // assert true; // ignore
+    // }
+    // }
 
-    private Map<String, Object> readAnnotationValues(DataInputStream bytes,
-            int numPairs) throws IOException {
+    private Map<String, Object> readAnnotationValues(DataInputStream bytes, int numPairs) throws IOException {
         Map<String, Object> values = new HashMap<String, Object>();
-		for (int j = 0; j < numPairs; j++) {
+        for (int j = 0; j < numPairs; j++) {
             int memberNameIndex = bytes.readUnsignedShort();
-            String memberName = ((ConstantUtf8) getConstantPool().getConstant(
-                    memberNameIndex)).getBytes();
-			if (DEBUG)
+            String memberName = ((ConstantUtf8) getConstantPool().getConstant(memberNameIndex)).getBytes();
+            if (DEBUG)
                 System.out.println("memberName: " + memberName);
             Object value = readAnnotationValue(bytes);
             if (DEBUG)
-				System.out.println(memberName + ":" + value);
+                System.out.println(memberName + ":" + value);
             values.put(memberName, value);
         }
         return values;
-	}
+    }
 
-    private @DottedClassName String getAnnotationName(DataInputStream bytes) throws IOException {
+    private @DottedClassName
+    String getAnnotationName(DataInputStream bytes) throws IOException {
         int annotationNameIndex = bytes.readUnsignedShort();
-        String annotationName = ((ConstantUtf8) getConstantPool().getConstant(
-				annotationNameIndex)).getBytes().replace('/','.');
-        annotationName = annotationName.substring(1,
-                annotationName.length() - 1);
+        String annotationName = ((ConstantUtf8) getConstantPool().getConstant(annotationNameIndex)).getBytes().replace('/', '.');
+        annotationName = annotationName.substring(1, annotationName.length() - 1);
         if (DEBUG)
-			System.out.println("Annotation name: " + annotationName);
+            System.out.println("Annotation name: " + annotationName);
         return annotationName;
     }
 
-    private Object readAnnotationValue(DataInputStream bytes)
-            throws IOException {
+    private Object readAnnotationValue(DataInputStream bytes) throws IOException {
         try {
-		char tag = (char) bytes.readUnsignedByte();
-        if (DEBUG)
-            System.out.println("tag: " + tag);
-        switch (tag) {
-		case '[':
-        {
-            int sz = bytes.readUnsignedShort();
+            char tag = (char) bytes.readUnsignedByte();
             if (DEBUG)
-				System.out.println("Array of " + sz + " entries");
-            Object[] result = new Object[sz];
-            for (int i = 0; i < sz; i++)
-                result[i] = readAnnotationValue(bytes);
-			return result;
-        }
-        case 'B':
-        case 'C':
-		case 'D':
-        case 'F':
-        case 'I':
-        case 'J':
-		case 'S':
-        case 'Z':
-        case 's':
-        case 'c':
-			int cp_index = bytes.readUnsignedShort();
-            Constant c = getConstantPool().getConstant(cp_index);
+                System.out.println("tag: " + tag);
             switch (tag) {
+            case '[': {
+                int sz = bytes.readUnsignedShort();
+                if (DEBUG)
+                    System.out.println("Array of " + sz + " entries");
+                Object[] result = new Object[sz];
+                for (int i = 0; i < sz; i++)
+                    result[i] = readAnnotationValue(bytes);
+                return result;
+            }
             case 'B':
-				return (byte) ((ConstantInteger) c).getBytes();
             case 'C':
-                return (char) ((ConstantInteger) c).getBytes();
             case 'D':
-				return new Double(((ConstantDouble) c).getBytes());
             case 'F':
-                return new Float(((ConstantFloat) c).getBytes());
             case 'I':
-				return ((ConstantInteger) c).getBytes();
             case 'J':
-                return ((ConstantLong) c).getBytes();
             case 'S':
-				return (char) ((ConstantInteger) c).getBytes();
             case 'Z':
-                return Boolean.valueOf(((ConstantInteger) c).getBytes() != 0);
             case 's':
-				return ((ConstantUtf8) c).getBytes();
             case 'c':
-                String cName = ((ConstantUtf8)c).getBytes().replace('/','.');
+                int cp_index = bytes.readUnsignedShort();
+                Constant c = getConstantPool().getConstant(cp_index);
+                switch (tag) {
+                case 'B':
+                    return (byte) ((ConstantInteger) c).getBytes();
+                case 'C':
+                    return (char) ((ConstantInteger) c).getBytes();
+                case 'D':
+                    return new Double(((ConstantDouble) c).getBytes());
+                case 'F':
+                    return new Float(((ConstantFloat) c).getBytes());
+                case 'I':
+                    return ((ConstantInteger) c).getBytes();
+                case 'J':
+                    return ((ConstantLong) c).getBytes();
+                case 'S':
+                    return (char) ((ConstantInteger) c).getBytes();
+                case 'Z':
+                    return Boolean.valueOf(((ConstantInteger) c).getBytes() != 0);
+                case 's':
+                    return ((ConstantUtf8) c).getBytes();
+                case 'c':
+                    String cName = ((ConstantUtf8) c).getBytes().replace('/', '.');
+                    if (cName.startsWith("L") && cName.endsWith(";"))
+                        cName = cName.substring(1, cName.length() - 1);
+                    if (DEBUG)
+                        System.out.println("cName: " + cName);
+                    return cName;
+                default:
+                    if (DEBUG)
+                        System.out.println("Impossible");
+                    throw new IllegalStateException("Impossible");
+                }
+            case '@':
+                throw new IllegalArgumentException("Not ready to handle annotations as elements of annotations");
+            case 'e': {
+                int cp1 = bytes.readUnsignedShort();
+                ConstantUtf8 c1 = (ConstantUtf8) getConstantPool().getConstant(cp1);
+                String cName = c1.getBytes().replace('/', '.');
                 if (cName.startsWith("L") && cName.endsWith(";"))
-					cName = cName.substring(1,cName.length()-1);
-                if (DEBUG) System.out.println("cName: " + cName);
-                return cName;
+                    cName = cName.substring(1, cName.length() - 1);
+                int cp2 = bytes.readUnsignedShort();
+                ConstantUtf8 c2 = (ConstantUtf8) getConstantPool().getConstant(cp2);
+                String result = cName + "." + c2.getBytes();
+                // System.out.println(result);
+                return result;
+            }
             default:
-				if (DEBUG) System.out.println("Impossible");
-                throw new IllegalStateException("Impossible");
+                if (DEBUG)
+                    System.out.println("Unexpected tag of " + tag);
+                throw new IllegalArgumentException("Unexpected tag of " + tag);
             }
-        case '@':
-			throw new IllegalArgumentException("Not ready to handle annotations as elements of annotations");
-        case 'e':
-            {
-            int cp1= bytes.readUnsignedShort();
-			ConstantUtf8 c1 = (ConstantUtf8) getConstantPool().getConstant(cp1);
-            String cName = c1.getBytes().replace('/','.');
-            if (cName.startsWith("L") && cName.endsWith(";"))
-                cName = cName.substring(1,cName.length()-1);
-			int cp2= bytes.readUnsignedShort();
-            ConstantUtf8 c2 = (ConstantUtf8) getConstantPool().getConstant(cp2);
-            String result = cName +"." + c2.getBytes();
-            // System.out.println(result);
-			return result;
-            }
-        default:
-            if (DEBUG) System.out.println("Unexpected tag of " + tag);
-			throw new IllegalArgumentException("Unexpected tag of " + tag);
-        }
         } catch (RuntimeException e) {
             if (DEBUG) {
-			System.out.println("Problem processing annotation " + e.getMessage());
-            e.printStackTrace();
+                System.out.println("Problem processing annotation " + e.getMessage());
+                e.printStackTrace();
             }
             throw e;
-		}
+        }
     }
 
-      @Override
+    @Override
     public void visitParameterAnnotation(ParameterAnnotations arg0) {
-          ParameterAnnotationEntry[] parameterAnnotationEntries = arg0.getParameterAnnotationEntries();
-          int numParametersToMethod = getNumberMethodArguments();
-          int offset = 0;
-		  if (numParametersToMethod > parameterAnnotationEntries.length) {
-              offset = 1;
-              System.out.println("Have synthetic parameters");
-          }
-		  for(int i = 0; i < parameterAnnotationEntries.length; i++) {
-              ParameterAnnotationEntry e = parameterAnnotationEntries[i];
-              for(AnnotationEntry ae : e.getAnnotationEntries()) {
-                   boolean runtimeVisible = ae.isRuntimeVisible();
-				   
-                   String name = ClassName.fromFieldSignature(ae.getAnnotationType());
-                   if (name == null)
-                       continue;
-				   name = ClassName.toDottedClassName(name);
-                   Map<String,ElementValue> map  = new HashMap<String, ElementValue>();
-                   for(ElementValuePair ev  : ae.getElementValuePairs()) {
-                       map.put(ev.getNameString(), ev.getValue());
-				   }
-                   visitParameterAnnotation(offset+i, name, map, runtimeVisible);
-
-               }
-		   }
+        ParameterAnnotationEntry[] parameterAnnotationEntries = arg0.getParameterAnnotationEntries();
+        int numParametersToMethod = getNumberMethodArguments();
+        int offset = 0;
+        if (numParametersToMethod > parameterAnnotationEntries.length) {
+            offset = 1;
+            System.out.println("Have synthetic parameters");
         }
-      /* (non-Javadoc)
-         * @see org.apache.bcel.classfile.Visitor#visitAnnotation(org.apache.bcel.classfile.Annotations)
-	     */
-        @Override
-        public void visitAnnotation(Annotations arg0) {
-            for(AnnotationEntry ae : arg0.getAnnotationEntries()) {
-                 boolean runtimeVisible = ae.isRuntimeVisible();
-                 String name = ClassName.fromFieldSignature(ae.getAnnotationType());
-				   if (name == null)
-                       continue;
-                   name = ClassName.toDottedClassName(name);
-                  Map<String,ElementValue> map  = new HashMap<String, ElementValue>();
-				   for(ElementValuePair ev  : ae.getElementValuePairs()) {
-                       map.put(ev.getNameString(), ev.getValue());
-                   }
-                   visitAnnotation(name, map, runtimeVisible);
-		    	
+        for (int i = 0; i < parameterAnnotationEntries.length; i++) {
+            ParameterAnnotationEntry e = parameterAnnotationEntries[i];
+            for (AnnotationEntry ae : e.getAnnotationEntries()) {
+                boolean runtimeVisible = ae.isRuntimeVisible();
+
+                String name = ClassName.fromFieldSignature(ae.getAnnotationType());
+                if (name == null)
+                    continue;
+                name = ClassName.toDottedClassName(name);
+                Map<String, ElementValue> map = new HashMap<String, ElementValue>();
+                for (ElementValuePair ev : ae.getElementValuePairs()) {
+                    map.put(ev.getNameString(), ev.getValue());
+                }
+                visitParameterAnnotation(offset + i, name, map, runtimeVisible);
+
             }
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.bcel.classfile.Visitor#visitAnnotation(org.apache.bcel.classfile
+     * .Annotations)
+     */
+    @Override
+    public void visitAnnotation(Annotations arg0) {
+        for (AnnotationEntry ae : arg0.getAnnotationEntries()) {
+            boolean runtimeVisible = ae.isRuntimeVisible();
+            String name = ClassName.fromFieldSignature(ae.getAnnotationType());
+            if (name == null)
+                continue;
+            name = ClassName.toDottedClassName(name);
+            Map<String, ElementValue> map = new HashMap<String, ElementValue>();
+            for (ElementValuePair ev : ae.getElementValuePairs()) {
+                map.put(ev.getNameString(), ev.getValue());
+            }
+            visitAnnotation(name, map, runtimeVisible);
 
         }
+
+    }
 }

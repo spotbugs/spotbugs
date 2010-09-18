@@ -41,77 +41,88 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 
 /**
- * This detector is just a test harness to test a dataflow
- * analysis class specified by the dataflow.classname property.
- *
+ * This detector is just a test harness to test a dataflow analysis class
+ * specified by the dataflow.classname property.
+ * 
  * @author David Hovemeyer
  */
 public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
 
     private String dataflowClassName;
+
     private String methodName;
-	private Class<? extends Dataflow> dataflowClass;
+
+    private Class<? extends Dataflow> dataflowClass;
+
     private boolean initialized;
 
     public TestDataflowAnalysis(BugReporter bugReporter) {
-		dataflowClassName = SystemProperties.getProperty("dataflow.classname");
+        dataflowClassName = SystemProperties.getProperty("dataflow.classname");
         methodName = SystemProperties.getProperty("dataflow.method");
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.Detector2#finishPass()
      */
-	public void finishPass() {
+    public void finishPass() {
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
      */
-	public String getDetectorClassName() {
+    public String getDetectorClassName() {
         return getClass().getName();
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile
+     * .ClassDescriptor)
      */
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
         if (dataflowClassName == null) {
             return;
         }
-		
+
         if (!initialized) {
             initialize();
         }
-		
+
         if (dataflowClass == null) {
             return;
         }
-		
+
         IAnalysisCache analysisCache = Global.getAnalysisCache();
 
         XClass classInfo = analysisCache.getClassAnalysis(XClass.class, classDescriptor);
-		
+
         // Test dataflow analysis on each method]
-        for(XMethod xMethod : classInfo.getXMethods()) {
+        for (XMethod xMethod : classInfo.getXMethods()) {
             if (methodName != null && !methodName.equals(xMethod.getName())) {
-				continue;
+                continue;
             }
             MethodDescriptor methodDescriptor = xMethod.getMethodDescriptor();
 
-			System.out.println("-----------------------------------------------------------------");
+            System.out.println("-----------------------------------------------------------------");
             System.out.println("Method: " + SignatureConverter.convertMethodSignature(methodDescriptor));
             System.out.println("-----------------------------------------------------------------");
 
-			// Create and execute the dataflow analysis
+            // Create and execute the dataflow analysis
             Dataflow dataflow = analysisCache.getMethodAnalysis(dataflowClass, methodDescriptor);
 
             System.out.println("Dataflow finished after " + dataflow.getNumIterations());
-			
+
             if (SystemProperties.getBoolean("dataflow.printcfg")) {
                 DataflowCFGPrinter cfgPrinter = new DataflowCFGPrinter(dataflow);
                 cfgPrinter.print(System.out);
-			}
+            }
 
         }
     }
@@ -126,42 +137,39 @@ public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
         // First, try loading the dataflow class from the general findBugs code.
         try {
             cls = getClass().getClassLoader().loadClass(dataflowClassName);
-	    } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             // Ignore
         }
 
         if (cls == null) {
             // Find the dataflow class from the plugin in which it was loaded
 
-	    	DetectorFactoryCollection detectorFactoryCollection =
-                analysisCache.getDatabase(DetectorFactoryCollection.class);
-            for (Iterator<Plugin> i = detectorFactoryCollection.pluginIterator(); i.hasNext(); ) {
+            DetectorFactoryCollection detectorFactoryCollection = analysisCache.getDatabase(DetectorFactoryCollection.class);
+            for (Iterator<Plugin> i = detectorFactoryCollection.pluginIterator(); i.hasNext();) {
                 Plugin plugin = i.next();
-	    		PluginLoader pluginLoader = plugin.getPluginLoader();
+                PluginLoader pluginLoader = plugin.getPluginLoader();
 
                 try {
                     cls = pluginLoader.getClassLoader().loadClass(dataflowClassName);
-	                break;
+                    break;
                 } catch (ClassNotFoundException e) {
                     // Ignore
                 }
-	    		
+
             }
         }
 
-	    if (cls == null) {
-            analysisCache.getErrorLogger().logError(
-                    "TestDataflowAnalysis: could not load class " + dataflowClassName);
+        if (cls == null) {
+            analysisCache.getErrorLogger().logError("TestDataflowAnalysis: could not load class " + dataflowClassName);
             return;
-	    }
-
-        if (!Dataflow.class.isAssignableFrom(cls)) {
-            analysisCache.getErrorLogger().logError(
-                    "TestDataflowAnalysis: " + dataflowClassName + " is not a Dataflow class");
-	    	return;
         }
 
-        dataflowClass = cls.<Dataflow>asSubclass(Dataflow.class);
+        if (!Dataflow.class.isAssignableFrom(cls)) {
+            analysisCache.getErrorLogger().logError("TestDataflowAnalysis: " + dataflowClassName + " is not a Dataflow class");
+            return;
+        }
+
+        dataflowClass = cls.<Dataflow> asSubclass(Dataflow.class);
     }
 
 }

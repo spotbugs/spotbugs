@@ -22,8 +22,7 @@ package edu.umd.cs.findbugs;
 /**
  * @author pugh
  */
-public class NonReportingDetectorToDetector2Adapter extends DetectorToDetector2Adapter  implements NonReportingDetector {
-
+public class NonReportingDetectorToDetector2Adapter extends DetectorToDetector2Adapter implements NonReportingDetector {
 
     public NonReportingDetectorToDetector2Adapter(Detector detector) {
         super(detector);

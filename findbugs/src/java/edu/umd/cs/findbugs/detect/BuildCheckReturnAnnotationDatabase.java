@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 /**
  * Scan application classes for CheckReturnValue annotations.
- *
+ * 
  * @author David Hovemeyer
  * @author William Pugh
  */
@@ -49,7 +49,7 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
     private static final Map<String, AnnotationDatabase.Target> defaultKind = new HashMap<String, AnnotationDatabase.Target>();
     static {
         defaultKind.put("", AnnotationDatabase.Target.ANY);
-		defaultKind.put("ForParameters", AnnotationDatabase.Target.PARAMETER);
+        defaultKind.put("ForParameters", AnnotationDatabase.Target.PARAMETER);
         defaultKind.put("ForMethods", AnnotationDatabase.Target.METHOD);
         defaultKind.put("ForFields", AnnotationDatabase.Target.FIELD);
 
@@ -62,7 +62,7 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
     static String simpleClassName(@DottedClassName String className) {
         int i = className.lastIndexOf(".");
         if (i < 0)
-			return className;
+            return className;
         return className.substring(i + 1);
     }
 
@@ -77,34 +77,34 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
             Target annotationTarget = defaultKind.get(annotationClassSimpleName);
             if (annotationTarget != Target.METHOD)
                 return;
-			
+
             ElementValue v = map.get("value");
             if (v instanceof ClassElementValue) {
                 handleClassElementValue((ClassElementValue) v, map, annotationTarget);
-			} else if (v instanceof ArrayElementValue) {
-                for(ElementValue v2 : ((ArrayElementValue)v).getElementValuesArray()) {
+            } else if (v instanceof ArrayElementValue) {
+                for (ElementValue v2 : ((ArrayElementValue) v).getElementValuesArray()) {
                     if (v2 instanceof ClassElementValue)
                         handleClassElementValue((ClassElementValue) v2, map, annotationTarget);
-				}
+                }
             }
 
             return;
-		}
+        }
 
         CheckReturnValueAnnotation n;
 
         if (annotationClassName.equals(javax.annotation.CheckReturnValue.class.getName())) {
             ElementValue v = map.get("when");
             if (v instanceof EnumElementValue) {
-			EnumElementValue when = (EnumElementValue) v;
+                EnumElementValue when = (EnumElementValue) v;
                 String w = simpleClassName(when.getEnumValueString());
                 if (w.equals("NEVER") || w.equals("UNKNOWN"))
                     n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE;
-				else if (w.equals("MAYBE")) 
+                else if (w.equals("MAYBE"))
                     n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE;
-                 else if (w.equals("ALWAYS"))
+                else if (w.equals("ALWAYS"))
                     n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH;
-				else
+                else
                     return;
             } else
                 n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
@@ -112,19 +112,19 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
         } else if (annotationClassName.equals(edu.umd.cs.findbugs.annotations.CheckReturnValue.class.getName())) {
             n = CheckReturnValueAnnotation.parse(getAnnotationParameterAsString(map, "priority"));
         } else if (annotationClassSimpleName.equals("CheckReturnValue")) {
-			n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
+            n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
         } else
             return;
         if (n == null)
-			return;
+            return;
         if (visitingMethod())
-            AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase().addDirectAnnotation(
-                XFactory.createXMethod(this), n);
-		else
-            AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase().addDefaultAnnotation(
-                     Target.METHOD, getDottedClassName(), n);
+            AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase()
+                    .addDirectAnnotation(XFactory.createXMethod(this), n);
+        else
+            AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase()
+                    .addDefaultAnnotation(Target.METHOD, getDottedClassName(), n);
 
-	}
+    }
 
     /**
      * @param value
@@ -135,8 +135,8 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
         if (simpleClassName(value.getClassString()).equals("CheckReturnValue")) {
             CheckReturnValueAnnotation n = CheckReturnValueAnnotation.parse(getAnnotationParameterAsString(map, "priority"));
             if (n != null)
-	    		AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase().addDefaultAnnotation(
-                        annotationTarget, getDottedClassName(), n);
+                AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase()
+                        .addDefaultAnnotation(annotationTarget, getDottedClassName(), n);
 
         }
     }

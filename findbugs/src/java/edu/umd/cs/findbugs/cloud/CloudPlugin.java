@@ -30,15 +30,15 @@ public class CloudPlugin {
     public CloudPlugin(String cloudid, ClassLoader classLoader, Class<? extends Cloud> cloudClass,
             Class<? extends NameLookup> usernameClass, boolean hidden, PropertyBundle properties, String description,
             String details) {
-		this.cloudid = cloudid;
+        this.cloudid = cloudid;
         this.classLoader = classLoader;
         this.cloudClass = cloudClass;
         this.usernameClass = usernameClass;
-		this.properties = properties;
+        this.properties = properties;
         this.description = description;
         this.details = details;
         this.hidden = hidden;
-	}
+    }
 
     public String getId() {
         return cloudid;

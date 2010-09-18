@@ -23,52 +23,57 @@ import java.io.Serializable;
 
 /**
  * An object providing context information about a particular BugInstance.
- *
+ * 
  * @author David Hovemeyer
  * @see BugInstance
  */
-public interface BugAnnotation
-        extends Comparable<BugAnnotation>, XMLWriteableWithMessages, Serializable, Cloneable {
+public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteableWithMessages, Serializable, Cloneable {
     /**
      * XML tag for a formatted text message describing the annotation.
-	 */
+     */
     public static final String MESSAGE_TAG = "Message";
 
     public Object clone();
 
     /**
      * Accept a BugAnnotationVisitor.
-     *
-	 * @param visitor the visitor to accept
+     * 
+     * @param visitor
+     *            the visitor to accept
      */
     public void accept(BugAnnotationVisitor visitor);
 
     /**
-     * Format the annotation as a String.
-     * The given key specifies additional information about how the annotation should
-	 * be formatted.  If the key is empty, then the "default" format will be used.
-     *
-     * @param key how the annotation should be formatted
-     * @param primaryClass The primary class for the bug; some bug annotation format msgs are simplified in relation to that class.
-	 */
+     * Format the annotation as a String. The given key specifies additional
+     * information about how the annotation should be formatted. If the key is
+     * empty, then the "default" format will be used.
+     * 
+     * @param key
+     *            how the annotation should be formatted
+     * @param primaryClass
+     *            The primary class for the bug; some bug annotation format msgs
+     *            are simplified in relation to that class.
+     */
     public String format(String key, ClassAnnotation primaryClass);
 
     /**
-     * Get a description of this bug annotation.
-     * The description is a key for the FindBugsAnnotationDescriptions resource bundle.
-	 */
+     * Get a description of this bug annotation. The description is a key for
+     * the FindBugsAnnotationDescriptions resource bundle.
+     */
     public String getDescription();
 
     /**
-     * Set a description of this bug annotation.
-     * The description is a key for the FindBugsAnnotationDescriptions resource bundle.
-	 */
+     * Set a description of this bug annotation. The description is a key for
+     * the FindBugsAnnotationDescriptions resource bundle.
+     */
     public void setDescription(String description);
 
     /**
-     * Is this annotation used to compute instance hashes or match bug instances across versions
+     * Is this annotation used to compute instance hashes or match bug instances
+     * across versions
+     * 
      * @return true if significant
-	 */
+     */
     public boolean isSignificant();
 
     public String toString(ClassAnnotation primaryClass);

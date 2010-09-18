@@ -31,18 +31,22 @@ public abstract class RelationalOp {
     public abstract <T extends Comparable<T>> boolean check(T x, T y);
 
     final String value;
+
     final String name;
 
     private static final Map<String, RelationalOp> map = new HashMap<String, RelationalOp>();
+
     public static RelationalOp byName(String s) {
         RelationalOp relationalOp = map.get(s);
-		if (relationalOp == null) 
+        if (relationalOp == null)
             throw new IllegalArgumentException("Could not find relOp named " + s + " in " + map.keySet());
         return relationalOp;
     }
-	public static Collection<RelationalOp> values() {
+
+    public static Collection<RelationalOp> values() {
         return map.values();
     }
+
     /**
      * @deprecated Use {@link #RelationalOp(String,String)} instead
      */
@@ -50,18 +54,20 @@ public abstract class RelationalOp {
     private RelationalOp(String value) {
         this(value, "xxx");
     }
+
     private RelationalOp(String value, String name) {
         this.value = value;
         this.name = name;
-		map.put(name, this);
+        map.put(name, this);
     }
 
     @Override
     public String toString() {
         return value;
     }
+
     public String getName() {
-		return name;
+        return name;
     }
 
     public static final RelationalOp EQ = new RelationalOp("==", "EQ") {
@@ -74,7 +80,7 @@ public abstract class RelationalOp {
 
     public static final RelationalOp LEQ = new RelationalOp("<=", "LEQ") {
         @Override
-        public <T extends Comparable<T>> boolean check(T x, T y){
+        public <T extends Comparable<T>> boolean check(T x, T y) {
             return x.compareTo(y) <= 0;
         }
 
@@ -90,7 +96,7 @@ public abstract class RelationalOp {
 
     public static final RelationalOp GEQ = new RelationalOp(">=", "GEQ") {
         @Override
-        public <T extends Comparable<T>> boolean check(T x, T y){
+        public <T extends Comparable<T>> boolean check(T x, T y) {
             return x.compareTo(y) >= 0;
         }
 

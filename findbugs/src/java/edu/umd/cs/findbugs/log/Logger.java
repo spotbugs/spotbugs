@@ -20,10 +20,11 @@
 
 package edu.umd.cs.findbugs.log;
 
-public interface Logger
-{
+public interface Logger {
     public static final int INFO = 0;
+
     public static final int WARNING = 1;
+
     public static final int ERROR = 2;
 
     public void logMessage(int severity, String message);

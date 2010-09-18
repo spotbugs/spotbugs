@@ -29,17 +29,17 @@ import org.apache.bcel.generic.SIPUSH;
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 
 /**
- * Visitor to model the effect of bytecode instructions
- * on ConstantFrames.
- *
- * <p>For now, only String constants are modeled.
- * In the future we can add other kinds of constants.</p>
- *
+ * Visitor to model the effect of bytecode instructions on ConstantFrames.
+ * 
+ * <p>
+ * For now, only String constants are modeled. In the future we can add other
+ * kinds of constants.
+ * </p>
+ * 
  * @see edu.umd.cs.findbugs.ba.constant.ConstantAnalysis
  * @author David Hovemeyer
  */
-public class ConstantFrameModelingVisitor
-        extends AbstractFrameModelingVisitor<Constant, ConstantFrame> {
+public class ConstantFrameModelingVisitor extends AbstractFrameModelingVisitor<Constant, ConstantFrame> {
 
     public ConstantFrameModelingVisitor(ConstantPoolGen cpg) {
         super(cpg);
@@ -48,54 +48,54 @@ public class ConstantFrameModelingVisitor
     @Override
     public Constant getDefaultValue() {
         return Constant.NOT_CONSTANT;
-	}
+    }
+
     @Override
     public void visitIINC(IINC obj) {
         // System.out.println("before iinc: " + getFrame());
-		int v = obj.getIndex();
+        int v = obj.getIndex();
         int amount = obj.getIncrement();
         ConstantFrame f = getFrame();
         Constant c = f.getValue(v);
-		if (c.isConstantInteger())
+        if (c.isConstantInteger())
             f.setValue(v, new Constant(c.getConstantInt() + amount));
-        else f.setValue(v, Constant.NOT_CONSTANT);
+        else
+            f.setValue(v, Constant.NOT_CONSTANT);
         // System.out.println("after iinc: " + getFrame());
-	}
+    }
 
     @Override
     public void visitICONST(ICONST obj) {
         Number value = obj.getValue();
-		Constant c = new Constant(value);
+        Constant c = new Constant(value);
         getFrame().pushValue(c);
-        }
-
+    }
 
     @Override
     public void visitBIPUSH(BIPUSH obj) {
         Number value = obj.getValue();
-		Constant c = new Constant(value);
+        Constant c = new Constant(value);
         getFrame().pushValue(c);
     }
 
     @Override
     public void visitSIPUSH(SIPUSH obj) {
         Number value = obj.getValue();
-		Constant c = new Constant(value);
+        Constant c = new Constant(value);
         getFrame().pushValue(c);
     }
-
 
     @Override
     public void visitLDC(LDC obj) {
         Object value = obj.getValue(getCPG());
-		Constant c = new Constant(value);
+        Constant c = new Constant(value);
         getFrame().pushValue(c);
     }
 
     @Override
     public void visitLDC2_W(LDC2_W obj) {
         Object value = obj.getValue(getCPG());
-		Constant c = new Constant(value);
+        Constant c = new Constant(value);
         getFrame().pushValue(c);
         getFrame().pushValue(c);
     }

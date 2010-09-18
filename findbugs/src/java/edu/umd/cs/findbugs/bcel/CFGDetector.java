@@ -34,61 +34,68 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Base class for detectors that analyze CFG (and/or use CFG-based analyses).
- *
+ * 
  * @author David Hovemeyer
  */
 public abstract class CFGDetector implements Detector2 {
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.Detector2#finishPass()
      */
-	public void finishPass() {
+    public void finishPass() {
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
      */
-	public String getDetectorClassName() {
+    public String getDetectorClassName() {
         return getClass().getName();
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile
+     * .ClassDescriptor)
      */
-	public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
+    public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
         IAnalysisCache analysisCache = Global.getAnalysisCache();
 
         JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, classDescriptor);
         ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
 
-		for (Method method : classContext.getMethodsInCallOrder()) {
+        for (Method method : classContext.getMethodsInCallOrder()) {
             if (method.getCode() == null) {
                 continue;
             }
 
             MethodDescriptor methodDescriptor = BCELUtil.getMethodDescriptor(jclass, method);
 
-            // Try to get MethodGen.  If we can't get one,
+            // Try to get MethodGen. If we can't get one,
             // then this method should be skipped.
             MethodGen methodGen = analysisCache.getMethodAnalysis(MethodGen.class, methodDescriptor);
-			if (methodGen == null) {
+            if (methodGen == null) {
                 continue;
             }
 
             CFG cfg = analysisCache.getMethodAnalysis(CFG.class, methodDescriptor);
             visitMethodCFG(methodDescriptor, cfg);
         }
-	}
+    }
 
     /**
-     * Visit the CFG (control flow graph) of a method to be analyzed.
-     * Should be overridded by subclasses.
-	 * 
+     * Visit the CFG (control flow graph) of a method to be analyzed. Should be
+     * overridded by subclasses.
+     * 
      * @param methodDescriptor
      * @param cfg
      * @throws CheckedAnalysisException
-	 */
-    protected abstract void visitMethodCFG(MethodDescriptor methodDescriptor, CFG cfg)
-        throws CheckedAnalysisException;
+     */
+    protected abstract void visitMethodCFG(MethodDescriptor methodDescriptor, CFG cfg) throws CheckedAnalysisException;
 
 }

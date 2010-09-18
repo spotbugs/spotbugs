@@ -33,33 +33,45 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public class IfNullCondition extends Condition {
     private ValueNumber valueNumber;
+
     private Decision ifcmpDecision;
+
     private Decision fallThroughDecision;
 
     public IfNullCondition(Location location) {
         super(location);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.npe2.Condition#getDecision(edu.umd.cs.findbugs.ba.Edge)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.npe2.Condition#getDecision(edu.umd.cs.findbugs
+     * .ba.Edge)
      */
-	@Override
+    @Override
     public Decision getDecision(Edge edge) {
         return edge.getType() == EdgeTypes.IFCMP_EDGE ? ifcmpDecision : fallThroughDecision;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.ba.npe2.Condition#getValueNumber()
      */
-	@Override
+    @Override
     public ValueNumber getValueNumber() {
         return valueNumber;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.npe2.Condition#refresh(edu.umd.cs.findbugs.ba.vna.ValueNumberFrame, edu.umd.cs.findbugs.ba.npe2.DefinitelyNullSet)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.ba.npe2.Condition#refresh(edu.umd.cs.findbugs.ba.
+     * vna.ValueNumberFrame, edu.umd.cs.findbugs.ba.npe2.DefinitelyNullSet)
      */
-	@Override
+    @Override
     public void refresh(ValueNumberFrame vnaFrame, DefinitelyNullSet definitelyNullSet) throws DataflowAnalysisException {
         valueNumber = vnaFrame.getTopValue();
 
@@ -70,16 +82,10 @@ public class IfNullCondition extends Condition {
             // Comparison is redundant.
 
             boolean ifcmpFeasible = nullnessValue.isDefinitelyNull() == (opcode == Constants.IFNULL);
-            ifcmpDecision = new Decision(
-                    ifcmpFeasible,
-					ifcmpFeasible ? nullnessValue.toCheckedValue() : null
-            );
+            ifcmpDecision = new Decision(ifcmpFeasible, ifcmpFeasible ? nullnessValue.toCheckedValue() : null);
 
             boolean fallThroughFeasible = nullnessValue.isDefinitelyNull() != (opcode == Constants.IFNONNULL);
-            fallThroughDecision = new Decision(
-                    fallThroughFeasible,
-					fallThroughFeasible ? nullnessValue.toCheckedValue() : null
-            );
+            fallThroughDecision = new Decision(fallThroughFeasible, fallThroughFeasible ? nullnessValue.toCheckedValue() : null);
 
             return;
         }
@@ -88,13 +94,7 @@ public class IfNullCondition extends Condition {
         NullnessValue definitelyNotNull = NullnessValue.definitelyNotNullValue().toCheckedValue();
 
         // Nullness is unknown, assume both branches are feasible.
-        ifcmpDecision = new Decision(
-                true,
-				(opcode == Constants.IFNULL) ? definitelyNull : definitelyNotNull
-        );
-        fallThroughDecision = new Decision(
-                true,
-				(opcode == Constants.IFNULL) ? definitelyNotNull : definitelyNull
-        );
+        ifcmpDecision = new Decision(true, (opcode == Constants.IFNULL) ? definitelyNull : definitelyNotNull);
+        fallThroughDecision = new Decision(true, (opcode == Constants.IFNULL) ? definitelyNotNull : definitelyNull);
     }
 }

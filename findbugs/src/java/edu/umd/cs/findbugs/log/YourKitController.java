@@ -34,11 +34,11 @@ public class YourKitController {
     public YourKitController() {
         try {
             Class<?> c = Class.forName("com.yourkit.api.Controller");
-			controller = c.newInstance();
+            controller = c.newInstance();
             advanceGeneration = c.getMethod("advanceGeneration", String.class);
             captureMemorySnapshot = c.getMethod("captureMemorySnapshot");
         } catch (RuntimeException e) {
-			throw e;
+            throw e;
         } catch (Exception e) {
             controller = null;
         }
@@ -48,21 +48,21 @@ public class YourKitController {
     public void advanceGeneration(String name) {
         if (controller == null)
             return;
-		try {
+        try {
             advanceGeneration.invoke(controller, name);
         } catch (Exception e) {
             assert true;
-		}
+        }
     }
 
     public void captureMemorySnapshot() {
         if (controller == null)
             return;
-		try {
+        try {
             captureMemorySnapshot.invoke(controller);
         } catch (RuntimeException e) {
             throw e;
-		} catch (Exception e) {
+        } catch (Exception e) {
             assert true;
         }
     }

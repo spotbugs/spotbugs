@@ -24,18 +24,19 @@ import java.util.regex.Pattern;
 
 /**
  * StringMatcher that matches based on a regular expression.
- *
+ * 
  * @author David Hovemeyer
  */
 public class RegexStringMatcher implements StringMatcher {
 
     private Pattern pattern;
 
-	/**
+    /**
      * Constructor.
-     *
-     * @param patStr a String defining the regular expression pattern to match
-	 */
+     * 
+     * @param patStr
+     *            a String defining the regular expression pattern to match
+     */
     public RegexStringMatcher(String patStr) {
         pattern = Pattern.compile(patStr);
     }
@@ -43,11 +44,11 @@ public class RegexStringMatcher implements StringMatcher {
     public boolean matches(String s) {
         Matcher m = pattern.matcher(s);
         return m.matches();
-	}
+    }
 
     @Override
     public String toString() {
         return pattern.toString();
-	}
+    }
 
 }

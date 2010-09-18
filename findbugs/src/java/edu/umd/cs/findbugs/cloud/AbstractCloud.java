@@ -54,7 +54,6 @@ import edu.umd.cs.findbugs.cloud.username.NameLookup;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Multiset;
 
-
 /**
  * @author William Pugh
  */
@@ -65,62 +64,72 @@ public abstract class AbstractCloud implements Cloud {
     protected static final boolean THROW_EXCEPTION_IF_CANT_CONNECT = false;
 
     private static final Mode DEFAULT_VOTING_MODE = Mode.COMMUNAL;
+
     private static final Logger LOGGER = Logger.getLogger(AbstractCloud.class.getName());
 
     private static final String LEADERBOARD_BLACKLIST = SystemProperties.getProperty("findbugs.leaderboard.blacklist");
+
     private static final Pattern LEADERBOARD_BLACKLIST_PATTERN;
 
     static {
         Pattern p = null;
         if (LEADERBOARD_BLACKLIST != null) {
-			try {
+            try {
                 p = Pattern.compile(LEADERBOARD_BLACKLIST.replace(',', '|'));
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Could not load leaderboard blacklist pattern", e);
-			}
+            }
         }
         LEADERBOARD_BLACKLIST_PATTERN = p;
         try {
-			MIN_TIMESTAMP = DateFormat.getDateInstance(DateFormat.DEFAULT, Locale.US).parse("Jan 23, 1996").getTime();
+            MIN_TIMESTAMP = DateFormat.getDateInstance(DateFormat.DEFAULT, Locale.US).parse("Jan 23, 1996").getTime();
         } catch (ParseException e) {
             throw new IllegalStateException(e);
         }
-	}
+    }
 
     protected final CloudPlugin plugin;
+
     protected final BugCollection bugCollection;
+
     protected final PropertyBundle properties;
-	@CheckForNull
+
+    @CheckForNull
     private Pattern sourceFileLinkPattern;
+
     private String sourceFileLinkFormat;
+
     private String sourceFileLinkFormatWithLine;
 
     private String sourceFileLinkToolTip;
 
     private CopyOnWriteArraySet<CloudListener> listeners = new CopyOnWriteArraySet<CloudListener>();
+
     private CopyOnWriteArraySet<CloudStatusListener> statusListeners = new CopyOnWriteArraySet<CloudStatusListener>();
 
     private Mode mode = Mode.COMMUNAL;
+
     private String statusMsg;
+
     private SigninState signinState = SigninState.UNAUTHENTICATED;
 
     protected AbstractCloud(CloudPlugin plugin, BugCollection bugs, Properties properties) {
         this.plugin = plugin;
         this.bugCollection = bugs;
-		this.properties = plugin.getProperties().copy();
+        this.properties = plugin.getProperties().copy();
         if (!properties.isEmpty()) {
             this.properties.loadProperties(properties);
         }
-	}
+    }
 
     public boolean initialize() throws IOException {
         String modeString = getCloudProperty("votingmode");
         Mode newMode = DEFAULT_VOTING_MODE;
-		if (modeString != null) {
+        if (modeString != null) {
             try {
                 newMode = Mode.valueOf(modeString.toUpperCase());
             } catch (IllegalArgumentException e) {
-				LOGGER.log(Level.WARNING, "No such voting mode " + modeString, e);
+                LOGGER.log(Level.WARNING, "No such voting mode " + modeString, e);
             }
         }
         setMode(newMode);
@@ -129,18 +138,18 @@ public abstract class AbstractCloud implements Cloud {
         String sf = properties.getProperty("findbugs.sourcelink.format");
         String sfwl = properties.getProperty("findbugs.sourcelink.formatWithLine");
 
-        String stt  = properties.getProperty("findbugs.sourcelink.tooltip");
+        String stt = properties.getProperty("findbugs.sourcelink.tooltip");
         if (sp != null && sf != null) {
             try {
-				this.sourceFileLinkPattern = Pattern.compile(sp);
+                this.sourceFileLinkPattern = Pattern.compile(sp);
                 this.sourceFileLinkFormat = sf;
                 this.sourceFileLinkToolTip = stt;
                 this.sourceFileLinkFormatWithLine = sfwl;
-			} catch (RuntimeException e) {
+            } catch (RuntimeException e) {
                 LOGGER.log(Level.WARNING, "Could not compile pattern " + sp, e);
                 if (THROW_EXCEPTION_IF_CANT_CONNECT)
                     throw e;
-			}
+            }
         }
         return true;
     }
@@ -148,7 +157,8 @@ public abstract class AbstractCloud implements Cloud {
     public Mode getMode() {
         return mode;
     }
-	public void setMode(Mode mode) {
+
+    public void setMode(Mode mode) {
         this.mode = mode;
     }
 
@@ -197,70 +207,74 @@ public abstract class AbstractCloud implements Cloud {
     }
 
     public boolean canSeeCommentsByOthers(BugInstance bug) {
-        switch(getMode()) {
-        case SECRET: return false;
-		case COMMUNAL : return true;
-        case VOTING : return hasVoted(bug);
+        switch (getMode()) {
+        case SECRET:
+            return false;
+        case COMMUNAL:
+            return true;
+        case VOTING:
+            return hasVoted(bug);
         }
         throw new IllegalStateException();
-	}
+    }
 
     public boolean hasVoted(BugInstance bug) {
-        for(BugDesignation bd : getLatestDesignationFromEachUser(bug))
+        for (BugDesignation bd : getLatestDesignationFromEachUser(bug))
             if (getUser().equals(bd.getUser()))
-				return true;
+                return true;
         return false;
     }
 
     public String getCloudReport(BugInstance b) {
         SimpleDateFormat format = new SimpleDateFormat("MM/dd, yyyy");
         StringBuilder builder = new StringBuilder();
-		long firstSeen = getFirstSeen(b);
+        long firstSeen = getFirstSeen(b);
         builder.append(String.format("First seen %s%n", format.format(new Date(firstSeen))));
         builder.append("\n");
-
 
         I18N i18n = I18N.instance();
         boolean canSeeCommentsByOthers = canSeeCommentsByOthers(b);
         if (canSeeCommentsByOthers && supportsBugLinks()) {
-			BugFilingStatus bugLinkStatus = getBugLinkStatus(b);
+            BugFilingStatus bugLinkStatus = getBugLinkStatus(b);
             if (bugLinkStatus != null && bugLinkStatus.bugIsFiled()) {
 
                 builder.append("\nBug status is ").append(getBugStatus(b));
-				if (getBugIsUnassigned(b))
-                  builder.append("\nBug is unassigned");
+                if (getBugIsUnassigned(b))
+                    builder.append("\nBug is unassigned");
 
                 builder.append("\n\n");
             }
         }
-		String me = getUser();
-        for(BugDesignation d : getLatestDesignationFromEachUser(b)) {
-            if ((me != null && me.equals(d.getUser()))|| canSeeCommentsByOthers ) {
+        String me = getUser();
+        for (BugDesignation d : getLatestDesignationFromEachUser(b)) {
+            if ((me != null && me.equals(d.getUser())) || canSeeCommentsByOthers) {
                 builder.append(String.format("%s @ %s: %s%n", d.getUser(), format.format(new Date(d.getTimestamp())),
-						i18n.getUserDesignation(d.getDesignationKey())));
+                        i18n.getUserDesignation(d.getDesignationKey())));
                 String annotationText = d.getAnnotationText();
                 if (annotationText != null && annotationText.length() > 0) {
                     builder.append(annotationText);
-					builder.append("\n\n");
+                    builder.append("\n\n");
                 }
             }
         }
-		return builder.toString();
+        return builder.toString();
     }
 
     public String getBugStatus(BugInstance b) {
         return null;
     }
-	protected abstract Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd);
+
+    protected abstract Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd);
 
     public Date getUserDate(BugInstance b) {
         return new Date(getUserTimestamp(b));
     }
 
     public void addListener(CloudListener listener) {
-        if (listener == null) throw new NullPointerException();
+        if (listener == null)
+            throw new NullPointerException();
         if (!listeners.contains(listener))
-			listeners.add(listener);
+            listeners.add(listener);
     }
 
     public void removeListener(CloudListener listener) {
@@ -268,9 +282,10 @@ public abstract class AbstractCloud implements Cloud {
     }
 
     public void addStatusListener(CloudStatusListener listener) {
-        if (listener == null) throw new NullPointerException();
+        if (listener == null)
+            throw new NullPointerException();
         if (!statusListeners.contains(listener))
-			statusListeners.add(listener);
+            statusListeners.add(listener);
     }
 
     public void removeStatusListener(CloudStatusListener listener) {
@@ -289,70 +304,68 @@ public abstract class AbstractCloud implements Cloud {
         return getUserDesignation(b) == UserDesignation.I_WILL_FIX;
     }
 
-
-
     public UserDesignation getConsensusDesignation(BugInstance b) {
         if (b == null)
             throw new NullPointerException("null bug instance");
-		Multiset<UserDesignation> designations = new Multiset<UserDesignation>();
+        Multiset<UserDesignation> designations = new Multiset<UserDesignation>();
         int count = 0;
         int totalCount = 0;
         double total = 0.0;
-		int                     isAProblem = 0;
+        int isAProblem = 0;
         int notAProblem = 0;
         for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
-            UserDesignation d =	UserDesignation.valueOf(designation.getDesignationKey());
-			if (d == UserDesignation.I_WILL_FIX)
+            UserDesignation d = UserDesignation.valueOf(designation.getDesignationKey());
+            if (d == UserDesignation.I_WILL_FIX)
                 d = UserDesignation.MUST_FIX;
             else if (d == UserDesignation.UNCLASSIFIED)
                 continue;
-			switch (d) {
+            switch (d) {
             case I_WILL_FIX:
             case MUST_FIX:
             case SHOULD_FIX:
-				isAProblem++;
+                isAProblem++;
                 break;
             case BAD_ANALYSIS:
             case NOT_A_BUG:
-			case MOSTLY_HARMLESS:
+            case MOSTLY_HARMLESS:
             case OBSOLETE_CODE:
                 notAProblem++;
                 break;
-			}
+            }
             designations.add(d);
             totalCount++;
             if (d.nonVoting())
-				continue;
+                continue;
             count++;
             total += d.score();
         }
-		if (totalCount == 0)
+        if (totalCount == 0)
             return UserDesignation.UNCLASSIFIED;
         UserDesignation mostCommonVotingDesignation = null;
         UserDesignation mostCommonDesignation = null;
 
-        for(Map.Entry<UserDesignation,Integer> e : designations.entriesInDecreasingFrequency()) {
+        for (Map.Entry<UserDesignation, Integer> e : designations.entriesInDecreasingFrequency()) {
             UserDesignation d = e.getKey();
             if (mostCommonVotingDesignation == null && !d.nonVoting()) {
-				mostCommonVotingDesignation = d;
-                if (e.getValue() > count/2)
+                mostCommonVotingDesignation = d;
+                if (e.getValue() > count / 2)
                     return d;
             }
-			if (mostCommonDesignation == null && d != UserDesignation.UNCLASSIFIED) {
+            if (mostCommonDesignation == null && d != UserDesignation.UNCLASSIFIED) {
                 mostCommonDesignation = d;
-                if (e.getValue() > count/2)
+                if (e.getValue() > count / 2)
                     return d;
-			}
+            }
         }
 
-        double score = total/count;
+        double score = total / count;
         if (score >= UserDesignation.SHOULD_FIX.score() || isAProblem > notAProblem)
             return UserDesignation.SHOULD_FIX;
-		if (score <= UserDesignation.NOT_A_BUG.score())
+        if (score <= UserDesignation.NOT_A_BUG.score())
             return UserDesignation.NOT_A_BUG;
         if (score <= UserDesignation.MOSTLY_HARMLESS.score() || notAProblem > isAProblem)
             return UserDesignation.MOSTLY_HARMLESS;
-		return UserDesignation.NEEDS_STUDY;
+        return UserDesignation.NEEDS_STUDY;
 
     }
 
@@ -361,58 +374,60 @@ public abstract class AbstractCloud implements Cloud {
         return consensusDesignation != UserDesignation.UNCLASSIFIED && consensusDesignation.score() < 0;
     }
 
-    public  double getClassificationScore(BugInstance b) {
+    public double getClassificationScore(BugInstance b) {
 
         int count = 0;
         double total = 0.0;
         for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
-			UserDesignation d =	UserDesignation.valueOf(designation.getDesignationKey());
+            UserDesignation d = UserDesignation.valueOf(designation.getDesignationKey());
             if (d.nonVoting())
                 continue;
             count++;
-			total += d.score();
+            total += d.score();
         }
         return total / count;
 
     }
-    public  double getClassificationVariance(BugInstance b) {
+
+    public double getClassificationVariance(BugInstance b) {
 
         int count = 0;
         double total = 0.0;
         double totalSquares = 0.0;
-		for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
-            UserDesignation d =	UserDesignation.valueOf(designation.getDesignationKey());
+        for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
+            UserDesignation d = UserDesignation.valueOf(designation.getDesignationKey());
             if (d.nonVoting())
                 continue;
-			count++;
+            count++;
             total += d.score();
             totalSquares += d.score() * d.score();
         }
-		double average = total/count;
-        return totalSquares / count - average*average;
+        double average = total / count;
+        return totalSquares / count - average * average;
 
     }
-    public  double getPortionObsoleteClassifications(BugInstance b) {
+
+    public double getPortionObsoleteClassifications(BugInstance b) {
         int count = 0;
-		double total = 0.0;
+        double total = 0.0;
         for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
             count++;
             UserDesignation d = UserDesignation.valueOf(designation.getDesignationKey());
-			if ( d == UserDesignation.OBSOLETE_CODE)
+            if (d == UserDesignation.OBSOLETE_CODE)
                 total++;
         }
         return total / count;
-	}
+    }
 
     public int getNumberReviewers(BugInstance b) {
         int count = 0;
         Iterable<BugDesignation> designations = getLatestDesignationFromEachUser(b);
-        //noinspection UnusedDeclaration
+        // noinspection UnusedDeclaration
         for (BugDesignation designation : designations) {
             count++;
         }
         return count;
-	}
+    }
 
     @SuppressWarnings("boxing")
     public void printCloudSummary(PrintWriter w, Iterable<BugInstance> bugs, String[] packagePrefixes) {
@@ -421,89 +436,87 @@ public abstract class AbstractCloud implements Cloud {
         Multiset<String> designations = new Multiset<String>();
         Multiset<String> bugStatus = new Multiset<String>();
 
-        int issuesWithThisManyReviews [] = new int[100];
+        int issuesWithThisManyReviews[] = new int[100];
         I18N i18n = I18N.instance();
-
 
         int packageCount = 0;
         int classCount = 0;
         int ncss = 0;
-		ProjectStats projectStats = bugCollection.getProjectStats();
-        for(PackageStats ps : projectStats.getPackageStats()) {
+        ProjectStats projectStats = bugCollection.getProjectStats();
+        for (PackageStats ps : projectStats.getPackageStats()) {
             int num = ps.getNumClasses();
             if (ClassName.matchedPrefixes(packagePrefixes, ps.getPackageName()) && num > 0) {
-				packageCount++;
+                packageCount++;
                 ncss += ps.size();
                 classCount += num;
             }
-		}
-
+        }
 
         if (classCount == 0) {
             w.println("No classes were analyzed");
             return;
-		} 
+        }
         if (packagePrefixes != null && packagePrefixes.length > 0) {
             String lst = Arrays.asList(packagePrefixes).toString();
-            w.println("Code analyzed in " + lst.substring(1, lst.length()-1));
-		} else {
+            w.println("Code analyzed in " + lst.substring(1, lst.length() - 1));
+        } else {
             w.println("Code analyzed");
         }
         w.printf("%,7d packages%n%,7d classes%n", packageCount, classCount);
-		if (ncss > 0)
-            w.printf("%,7d thousands of lines of non-commenting source statements%n",
-                    (ncss+999)/1000);
+        if (ncss > 0)
+            w.printf("%,7d thousands of lines of non-commenting source statements%n", (ncss + 999) / 1000);
         w.println();
-		int count = 0;
-        for(BugInstance bd  : bugs) {
+        int count = 0;
+        for (BugInstance bd : bugs) {
 
             count++;
-			HashSet<String> reviewers = new HashSet<String>();
-            String status  = supportsBugLinks()  && getBugLinkStatus(bd).bugIsFiled() ? getBugStatus(bd) : null;
+            HashSet<String> reviewers = new HashSet<String>();
+            String status = supportsBugLinks() && getBugLinkStatus(bd).bugIsFiled() ? getBugStatus(bd) : null;
             if (status != null)
                 bugStatus.add(status);
-			
 
-            for(BugDesignation d : getLatestDesignationFromEachUser(bd))
+            for (BugDesignation d : getLatestDesignationFromEachUser(bd))
                 if (reviewers.add(d.getUser())) {
-					evaluations.add(d.getUser());
+                    evaluations.add(d.getUser());
                     designations.add(i18n.getUserDesignation(d.getDesignationKey()));
                 }
 
-            int numReviews = Math.min( reviewers.size(), issuesWithThisManyReviews.length -1);
+            int numReviews = Math.min(reviewers.size(), issuesWithThisManyReviews.length - 1);
             issuesWithThisManyReviews[numReviews]++;
 
         }
         if (count == getBugCollection().getCollection().size())
             w.printf("Summary for %d issues%n%n", count);
-		else
-                w.printf("Summary for %d issues that are in the current view%n%n", count);
+        else
+            w.printf("Summary for %d issues that are in the current view%n%n", count);
         if (evaluations.numKeys() == 0) {
             w.println("No evaluations found");
-		} else {
+        } else {
             w.println("People who have performed the most reviews");
             printLeaderBoard(w, evaluations, 9, getUser(), true, "reviewer");
             w.println();
-			w.println("Distribution of evaluations");
+            w.println("Distribution of evaluations");
             printLeaderBoard(w, designations, 100, " --- ", false, "designation");
         }
 
         if (supportsBugLinks()) {
             if (bugStatus.numKeys() == 0) {
                 w.println();
-				w.println("No bugs filed");	
+                w.println("No bugs filed");
             } else {
                 w.println();
                 w.println("Distribution of bug status");
-				printLeaderBoard(w, bugStatus, 100, " --- ", false, "status of filed bug");
-            }}
+                printLeaderBoard(w, bugStatus, 100, " --- ", false, "status of filed bug");
+            }
+        }
         w.println();
         w.println("Distribution of number of reviews");
-		for(int i = 0; i < issuesWithThisManyReviews.length; i++) 
+        for (int i = 0; i < issuesWithThisManyReviews.length; i++)
             if (issuesWithThisManyReviews[i] > 0) {
                 w.printf("%4d  with %3d review", issuesWithThisManyReviews[i], i);
-                if (i != 1) w.print("s");
-				w.println();
+                if (i != 1)
+                    w.print("s");
+                w.println();
 
             }
     }
@@ -511,19 +524,19 @@ public abstract class AbstractCloud implements Cloud {
     @SuppressWarnings("boxing")
     public static void printLeaderBoard2(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint,
             String format, String title) {
-		int row = 1;
+        int row = 1;
         int position = 0;
         int previousScore = -1;
         boolean foundAlwaysPrint = false;
 
-        for(Map.Entry<String,Integer> e : evaluations.entriesInDecreasingFrequency()) {
+        for (Map.Entry<String, Integer> e : evaluations.entriesInDecreasingFrequency()) {
             int num = e.getValue();
             if (num != previousScore) {
-				position = row;
+                position = row;
                 previousScore = num;
             }
             String key = e.getKey();
-			if (LEADERBOARD_BLACKLIST_PATTERN != null && LEADERBOARD_BLACKLIST_PATTERN.matcher(key).matches())
+            if (LEADERBOARD_BLACKLIST_PATTERN != null && LEADERBOARD_BLACKLIST_PATTERN.matcher(key).matches())
                 continue;
 
             boolean shouldAlwaysPrint = key.equals(alwaysPrint);
@@ -533,11 +546,11 @@ public abstract class AbstractCloud implements Cloud {
             if (shouldAlwaysPrint)
                 foundAlwaysPrint = true;
             row++;
-			if (row >= maxRows) {
+            if (row >= maxRows) {
                 if (alwaysPrint == null)
                     break;
                 if (foundAlwaysPrint) {
-					w.printf("Total of %d %ss%n", evaluations.numKeys(), title);
+                    w.printf("Total of %d %ss%n", evaluations.numKeys(), title);
                     break;
                 }
             }
@@ -560,30 +573,32 @@ public abstract class AbstractCloud implements Cloud {
     public UserDesignation getUserDesignation(BugInstance b) {
         BugDesignation bd = getPrimaryDesignation(b);
         if (bd == null)
-			return UserDesignation.UNCLASSIFIED;
+            return UserDesignation.UNCLASSIFIED;
         return UserDesignation.valueOf(bd.getDesignationKey());
     }
 
     public String getUserEvaluation(BugInstance b) {
         BugDesignation bd = getPrimaryDesignation(b);
-        if (bd == null) return "";
-		String result =  bd.getAnnotationText();
+        if (bd == null)
+            return "";
+        String result = bd.getAnnotationText();
         if (result == null)
             return "";
         return result;
-	}
+    }
 
     public long getUserTimestamp(BugInstance b) {
         BugDesignation bd = getPrimaryDesignation(b);
-        if (bd == null) return Long.MAX_VALUE;
-		return bd.getTimestamp();
+        if (bd == null)
+            return Long.MAX_VALUE;
+        return bd.getTimestamp();
 
     }
 
     public long getFirstSeen(BugInstance b) {
         long firstVersion = b.getFirstVersion();
         AppVersion v = getBugCollection().getAppVersionFromSequenceNumber(firstVersion);
-		if (v == null)
+        if (v == null)
             return getBugCollection().getTimestamp();
         return v.getTimestamp();
     }
@@ -593,33 +608,33 @@ public abstract class AbstractCloud implements Cloud {
     protected void updatedStatus() {
         for (CloudListener listener : listeners) {
             try {
-				listener.statusUpdated();
+                listener.statusUpdated();
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Error executing callback " + listener, e);
             }
-		}
+        }
     }
 
     public void updatedIssue(BugInstance bug) {
         for (CloudListener listener : listeners) {
             try {
-				listener.issueUpdated(bug);
+                listener.issueUpdated(bug);
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Error executing callback " + listener, e);
             }
-		}
+        }
     }
 
     protected void fireIssueDataDownloadedEvent() {
         for (CloudStatusListener statusListener : statusListeners)
             statusListener.handleIssueDataDownloadedEvent();
-	}
+    }
 
     public SigninState getSigninState() {
         return signinState;
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     protected void setSigninState(SigninState state) {
         SigninState oldState = this.signinState;
         if (oldState == state)
@@ -628,25 +643,25 @@ public abstract class AbstractCloud implements Cloud {
         this.signinState = state;
         for (CloudStatusListener statusListener : statusListeners)
             statusListener.handleStateChange(oldState, state);
-	}
+    }
 
     public BugInstance getBugByHash(String hash) {
         for (BugInstance instance : bugCollection.getCollection()) {
             if (instance.getInstanceHash().equals(hash)) {
-				return instance;
+                return instance;
             }
         }
         return null;
-	}
+    }
 
     protected NameLookup getUsernameLookup() throws IOException {
         NameLookup lookup;
         try {
-			lookup = plugin.getUsernameClass().newInstance();
+            lookup = plugin.getUsernameClass().newInstance();
         } catch (Exception e) {
             throw new RuntimeException("Unable to obtain username", e);
         }
-		if (!lookup.signIn(plugin, bugCollection)) {
+        if (!lookup.signIn(plugin, bugCollection)) {
             throw new RuntimeException("Unable to obtain username");
         }
         return lookup;
@@ -680,14 +695,15 @@ public abstract class AbstractCloud implements Cloud {
     public void setStatusMsg(String newMsg) {
         this.statusMsg = newMsg;
         updatedStatus();
-	}
+    }
 
-    private static void printLeaderBoard(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint, boolean listRank, String title) {
+    private static void printLeaderBoard(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint,
+            boolean listRank, String title) {
         if (listRank)
             w.printf("%3s %4s %s%n", "rnk", "num", title);
-		else
-            w.printf("%4s %s%n",  "num", title);
-        printLeaderBoard2(w, evaluations, maxRows, alwaysPrint, listRank ? "%3d %4d %s%n" : "%2$4d %3$s%n"  , title);
+        else
+            w.printf("%4s %s%n", "num", title);
+        printLeaderBoard2(w, evaluations, maxRows, alwaysPrint, listRank ? "%3d %4d %s%n" : "%2$4d %3$s%n", title);
     }
 
     protected String getCloudProperty(String propertyName) {
@@ -699,29 +715,30 @@ public abstract class AbstractCloud implements Cloud {
     }
 
     @SuppressWarnings("boxing")
-    public @CheckForNull URL getSourceLink(BugInstance b) {
+    public @CheckForNull
+    URL getSourceLink(BugInstance b) {
         if (sourceFileLinkPattern == null)
-			return null;
+            return null;
 
         SourceLineAnnotation src = b.getPrimarySourceLineAnnotation();
         String fileName = src.getSourcePath();
         int startLine = src.getStartLine();
-		int endLine = src.getEndLine();
+        int endLine = src.getEndLine();
         java.util.regex.Matcher m = sourceFileLinkPattern.matcher(fileName);
         boolean isMatch = m.matches();
         if (isMatch)
-			try {
+            try {
                 URL link;
                 if (startLine > 0)
                     link = new URL(String.format(sourceFileLinkFormatWithLine, m.group(1), startLine, startLine - 10, endLine));
-				else
+                else
                     link = new URL(String.format(sourceFileLinkFormat, m.group(1)));
                 return link;
             } catch (Exception e) {
-				AnalysisContext.logError("Error generating source link for " + src, e);
+                AnalysisContext.logError("Error generating source link for " + src, e);
             }
 
-            return null;
+        return null;
 
     }
 
@@ -729,24 +746,32 @@ public abstract class AbstractCloud implements Cloud {
         return sourceFileLinkToolTip;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#getBugIsUnassigned(edu.umd.cs.findbugs.BugInstance)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.cloud.Cloud#getBugIsUnassigned(edu.umd.cs.findbugs
+     * .BugInstance)
      */
-	public boolean getBugIsUnassigned(BugInstance b) {
+    public boolean getBugIsUnassigned(BugInstance b) {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#getWillNotBeFixed(edu.umd.cs.findbugs.BugInstance)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.cloud.Cloud#getWillNotBeFixed(edu.umd.cs.findbugs
+     * .BugInstance)
      */
-	public boolean getWillNotBeFixed(BugInstance b) {
+    public boolean getWillNotBeFixed(BugInstance b) {
         return false;
     }
 
     public Set<String> getReviewers(BugInstance b) {
         HashSet<String> result = new HashSet<String>();
-        for(BugDesignation d : getLatestDesignationFromEachUser(b))
-			result.add(d.getUser());
+        for (BugDesignation d : getLatestDesignationFromEachUser(b))
+            result.add(d.getUser());
         return result;
     }
 

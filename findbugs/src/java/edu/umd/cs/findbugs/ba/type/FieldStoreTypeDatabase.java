@@ -34,23 +34,22 @@ import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 /**
  * @author David Hovemeyer
  */
-public class FieldStoreTypeDatabase
-    extends FieldPropertyDatabase<FieldStoreType> {
+public class FieldStoreTypeDatabase extends FieldPropertyDatabase<FieldStoreType> {
 
     public static final String DEFAULT_FILENAME = "fieldStoreTypes.db";
 
     public void purgeBoringEntries() {
         Collection<FieldDescriptor> keys = new ArrayList<FieldDescriptor>(getKeys());
-        for(FieldDescriptor f : keys) {
-			String s = f.getSignature();
+        for (FieldDescriptor f : keys) {
+            String s = f.getSignature();
             FieldStoreType type = getProperty(f);
             Type fieldType = Type.getType(f.getSignature());
             if (!(fieldType instanceof ReferenceType)) {
-				removeProperty(f);
+                removeProperty(f);
                 continue;
             }
-            ReferenceType storeType = type.getLoadType((ReferenceType)fieldType);
-			if (storeType.equals(fieldType)) 
+            ReferenceType storeType = type.getLoadType((ReferenceType) fieldType);
+            if (storeType.equals(fieldType))
                 removeProperty(f);
         }
     }
@@ -58,23 +57,22 @@ public class FieldStoreTypeDatabase
     @Override
     protected FieldStoreType decodeProperty(String propStr) throws PropertyDatabaseFormatException {
         FieldStoreType property = new FieldStoreType();
-		StringTokenizer t = new StringTokenizer(propStr, ",");
+        StringTokenizer t = new StringTokenizer(propStr, ",");
         while (t.hasMoreTokens()) {
             String signature = t.nextToken();
             property.addTypeSignature(signature);
-		}
+        }
         return property;
     }
-
 
     @Override
     protected String encodeProperty(FieldStoreType property) {
         StringBuilder buf = new StringBuilder();
-		for (Iterator<String> i = property.signatureIterator(); i.hasNext();) {
+        for (Iterator<String> i = property.signatureIterator(); i.hasNext();) {
             if (buf.length() > 0) {
                 buf.append(',');
             }
-			buf.append(i.next());
+            buf.append(i.next());
         }
         return buf.toString();
     }

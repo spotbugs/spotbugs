@@ -24,13 +24,9 @@ package edu.umd.cs.findbugs.classfile;
  */
 public abstract class RecomputableClassAnalysisEngine<ResultType> implements IClassAnalysisEngine<ResultType> {
 
-
-
     public boolean canRecompute() {
         // can be recomputed
         return true;
-	}
-
-
+    }
 
 }

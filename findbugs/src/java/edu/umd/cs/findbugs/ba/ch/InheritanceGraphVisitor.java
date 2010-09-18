@@ -25,32 +25,36 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * Visitor interface for traversals of the inheritance graph.
- *
+ * 
  * @see Subtypes2
  * @author David Hovemeyer
  */
 public interface InheritanceGraphVisitor {
     /**
      * Visit a class vertex in the inheritance graph.
-     *
-	 * @param classDescriptor ClassDescriptor of the class vertex
-     * @param xclass          XClass object containing information about the class; null if class cannot be resolved
+     * 
+     * @param classDescriptor
+     *            ClassDescriptor of the class vertex
+     * @param xclass
+     *            XClass object containing information about the class; null if
+     *            class cannot be resolved
      * @return true if traversal should continue, false otherwise
      */
-	public boolean visitClass(ClassDescriptor classDescriptor, @CheckForNull XClass xclass);
+    public boolean visitClass(ClassDescriptor classDescriptor, @CheckForNull XClass xclass);
 
     /**
      * Visit an inheritance edge in the inheritance graph.
-     *
-	 * @param sourceDesc ClassDescriptor of the source class (subtype)
-     * @param source     XClass object containing information about source class
-     * @param targetDesc ClassDescriptor of the target class (supertype)
-     * @param target     XClass object containing information about target class; null if class cannot be resolved
-	 * @return true if traversal should continue, false otherwise
+     * 
+     * @param sourceDesc
+     *            ClassDescriptor of the source class (subtype)
+     * @param source
+     *            XClass object containing information about source class
+     * @param targetDesc
+     *            ClassDescriptor of the target class (supertype)
+     * @param target
+     *            XClass object containing information about target class; null
+     *            if class cannot be resolved
+     * @return true if traversal should continue, false otherwise
      */
-    public boolean visitEdge(
-            ClassDescriptor sourceDesc,
-			XClass source,
-            ClassDescriptor targetDesc,
-            @CheckForNull XClass target);
+    public boolean visitEdge(ClassDescriptor sourceDesc, XClass source, ClassDescriptor targetDesc, @CheckForNull XClass target);
 }

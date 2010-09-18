@@ -32,47 +32,45 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
-public class DontCatchIllegalMonitorStateException
-        extends PreorderVisitor implements Detector {
+public class DontCatchIllegalMonitorStateException extends PreorderVisitor implements Detector {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("dcimse.debug");
 
     BugReporter bugReporter;
+
     Set<String> msgs = null;
+
     ClassContext classContext;
 
     public DontCatchIllegalMonitorStateException(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         if (DEBUG)
-			msgs = new HashSet<String>();
+            msgs = new HashSet<String>();
     }
 
-
-
     @Override
-         public void visit(ExceptionTable obj) {
+    public void visit(ExceptionTable obj) {
         if (DEBUG) {
-			String names[] = obj.getExceptionNames();
+            String names[] = obj.getExceptionNames();
             for (String name : names)
-                if (name.equals("java.lang.Exception")
-                        || name.equals("java.lang.Throwable"))
-					System.out.println(name + " thrown by " + getFullyQualifiedMethodName());
+                if (name.equals("java.lang.Exception") || name.equals("java.lang.Throwable"))
+                    System.out.println(name + " thrown by " + getFullyQualifiedMethodName());
         }
     }
 
     @Override
-         public void visit(CodeException obj) {
+    public void visit(CodeException obj) {
         int type = obj.getCatchType();
-		if (type == 0) return;
+        if (type == 0)
+            return;
         String name = getConstantPool().constantToString(getConstantPool().getConstant(type));
         if (DEBUG) {
             String msg = "Catching " + name + " in " + getFullyQualifiedMethodName();
-			if (msgs.add(msg))
+            if (msgs.add(msg))
                 System.out.println(msg);
         }
         if (name.equals("java.lang.IllegalMonitorStateException"))
-			bugReporter.reportBug(new BugInstance(this, "IMSE_DONT_CATCH_IMSE", HIGH_PRIORITY)
-                    .addClassAndMethod(this)
+            bugReporter.reportBug(new BugInstance(this, "IMSE_DONT_CATCH_IMSE", HIGH_PRIORITY).addClassAndMethod(this)
                     .addSourceLine(this.classContext, this, obj.getHandlerPC()));
 
     }
@@ -80,7 +78,7 @@ public class DontCatchIllegalMonitorStateException
     public void visitClassContext(ClassContext classContext) {
         this.classContext = classContext;
         classContext.getJavaClass().accept(this);
-	}
+    }
 
     public void report() {
     }

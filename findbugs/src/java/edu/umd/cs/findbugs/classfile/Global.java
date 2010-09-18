@@ -19,44 +19,41 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-
 /**
- * Static methods for accessing objects that are global
- * to an analysis session.  Hopefully, this will be
- * limited to the analysis cache.
- *
+ * Static methods for accessing objects that are global to an analysis session.
+ * Hopefully, this will be limited to the analysis cache.
+ * 
  * @author David Hovemeyer
  */
 public abstract class Global {
-    private static final InheritableThreadLocal<IAnalysisCache> analysisCacheThreadLocal =
-        new InheritableThreadLocal<IAnalysisCache>();
+    private static final InheritableThreadLocal<IAnalysisCache> analysisCacheThreadLocal = new InheritableThreadLocal<IAnalysisCache>();
 
     /**
-     * Remove the analysis cache for the current thread.
-     * This should be called after all analysis is complete
-	 * 
+     * Remove the analysis cache for the current thread. This should be called
+     * after all analysis is complete
+     * 
      */
     public static void removeAnalysisCacheForCurrentThread() {
         analysisCacheThreadLocal.remove();
-	}
+    }
 
     /**
-     * Set the analysis cache for the current thread.
-     * This should be called before any detectors or analyses that
-	 * need the cache are used.
-     *
-     * @param analysisCache the analysis cache to set for the current thread
+     * Set the analysis cache for the current thread. This should be called
+     * before any detectors or analyses that need the cache are used.
+     * 
+     * @param analysisCache
+     *            the analysis cache to set for the current thread
      */
-	public static void setAnalysisCacheForCurrentThread(IAnalysisCache analysisCache) {
+    public static void setAnalysisCacheForCurrentThread(IAnalysisCache analysisCache) {
         analysisCacheThreadLocal.set(analysisCache);
     }
 
     /**
      * Get the analysis cache for the current thread.
-     *
-	 * @return the analysis cache for the current thread
+     * 
+     * @return the analysis cache for the current thread
      */
     public static IAnalysisCache getAnalysisCache() {
         return analysisCacheThreadLocal.get();
-	}
+    }
 }

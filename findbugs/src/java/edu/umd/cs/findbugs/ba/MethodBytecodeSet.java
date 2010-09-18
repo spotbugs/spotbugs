@@ -25,18 +25,18 @@ import org.apache.bcel.Constants;
 
 /**
  * Class representing the set of opcodes used in a method.
- *
+ * 
  * @author David Hovemeyer
  */
 public class MethodBytecodeSet extends BitSet {
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder("[");
-		for (int i = nextSetBit(0); i >= 0; i = nextSetBit(i + 1)) {
+        for (int i = nextSetBit(0); i >= 0; i = nextSetBit(i + 1)) {
             buf.append(Constants.OPCODE_NAMES[i]).append(", ");
         }
         buf.setLength(buf.length() - 2);
-		buf.append("]");
+        buf.append("]");
         return buf.toString();
     }
 

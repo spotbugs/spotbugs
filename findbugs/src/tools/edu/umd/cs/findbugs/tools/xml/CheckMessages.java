@@ -144,7 +144,7 @@ public class CheckMessages {
 
     /**
      * Check given messages file for validity.
-     *
+     * 
      * @throws DocumentException
      *             if the messages file is invalid
      */

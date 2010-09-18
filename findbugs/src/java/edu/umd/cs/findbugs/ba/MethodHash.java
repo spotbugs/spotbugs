@@ -27,41 +27,45 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.util.Util;
 
-
 /**
- * Compute a hash of the bytecode for given method.
- * This can find methods which have not been changed other
- * than accessing different constant pool entries.
- *
+ * Compute a hash of the bytecode for given method. This can find methods which
+ * have not been changed other than accessing different constant pool entries.
+ * 
  * @author David Hovemeyer
  */
 public class MethodHash implements Comparable<MethodHash> {
     public static final String METHOD_HASH_ELEMENT_NAME = "MethodHash";
 
     private byte[] hash;
+
     private String methodName;
+
     private String methodSig;
-	private boolean isStatic;
+
+    private boolean isStatic;
 
     /**
-     * Constructor.
-     * computeHash(Method) must be used to initialize the contents.
-	 */
+     * Constructor. computeHash(Method) must be used to initialize the contents.
+     */
     public MethodHash() {
     }
 
     /**
      * Constructor.
-     *
-	 * @param methodName method name
-     * @param methodSig  method signature
-     * @param isStatic   true if the method is static, false if not
-     * @param hash       the pre-computed hash
-	 */
+     * 
+     * @param methodName
+     *            method name
+     * @param methodSig
+     *            method signature
+     * @param isStatic
+     *            true if the method is static, false if not
+     * @param hash
+     *            the pre-computed hash
+     */
     public MethodHash(String methodName, String methodSig, boolean isStatic, byte[] hash) {
         this.methodName = methodName;
         this.methodSig = methodSig;
-		this.isStatic = isStatic;
+        this.isStatic = isStatic;
         this.hash = new byte[hash.length];
         System.arraycopy(hash, 0, this.hash, 0, hash.length);
     }
@@ -69,53 +73,54 @@ public class MethodHash implements Comparable<MethodHash> {
     /**
      * @return Returns the method name.
      */
-	public String getMethodName() {
+    public String getMethodName() {
         return methodName;
     }
 
     /**
      * @return Returns the method signature.
      */
-	public String getMethodSig() {
+    public String getMethodSig() {
         return methodSig;
     }
 
     /**
      * @return Returns whether the method is static.
      */
-	public boolean isStatic() {
+    public boolean isStatic() {
         return isStatic;
     }
 
     /**
      * Get the computed method hash.
-     *
-	 * @return the method hash
+     * 
+     * @return the method hash
      */
     public byte[] getMethodHash() {
         return hash;
-	}
+    }
 
     /**
      * Compute hash on given method.
-     *
-	 * @param method the method
+     * 
+     * @param method
+     *            the method
      * @return this object
      */
     public MethodHash computeHash(Method method) {
-		final MessageDigest digest = Util.getMD5Digest();
+        final MessageDigest digest = Util.getMD5Digest();
 
         byte[] code;
         if (method.getCode() == null || method.getCode().getCode() == null) {
             code = new byte[0];
-		} else {
+        } else {
             code = method.getCode().getCode();
         }
 
         BytecodeScanner.Callback callback = new BytecodeScanner.Callback() {
             public void handleInstruction(int opcode, int index) {
                 digest.update((byte) opcode);
-			}
+            }
         };
 
         BytecodeScanner bytecodeScanner = new BytecodeScanner();
@@ -127,57 +132,64 @@ public class MethodHash implements Comparable<MethodHash> {
     }
 
     /**
-     * Return whether or not this method hash has the same value as the one given.
-     *
-	 * @param other another MethodHash
+     * Return whether or not this method hash has the same value as the one
+     * given.
+     * 
+     * @param other
+     *            another MethodHash
      * @return true if the hash values are the same, false if not
      */
     public boolean isSameHash(MethodHash other) {
-		return Arrays.equals(this.hash, other.hash);
+        return Arrays.equals(this.hash, other.hash);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Comparable#compareTo(T)
      */
-	public int compareTo(MethodHash other) {
+    public int compareTo(MethodHash other) {
         return MethodHash.compareHashes(this.hash, other.hash);
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof MethodHash)
-			return isSameHash((MethodHash)o);
+            return isSameHash((MethodHash) o);
         return false;
     }
+
     @Override
-	public int hashCode() {
+    public int hashCode() {
         int result = 0;
-        for(byte b : hash)
+        for (byte b : hash)
             result = result * 17 + b;
-		return result;
+        return result;
     }
+
     public static int compareHashes(byte[] a, byte[] b) {
         int pfxlen = Math.min(a.length, b.length);
-		for (int i = 0; i < pfxlen; ++i) {
+        for (int i = 0; i < pfxlen; ++i) {
             int cmp = toUnsigned(a[i]) - toUnsigned(b[i]);
             if (cmp != 0)
                 return cmp;
-		}
+        }
         return a.length - b.length;
     }
 
     /**
      * Convert a byte to an unsigned int.
-     *
-	 * @param b a byte value
+     * 
+     * @param b
+     *            a byte value
      * @return the unsigned integer value of the byte
      */
     private static int toUnsigned(byte b) {
-		int value = b & 0x7F;
+        int value = b & 0x7F;
         if ((b & 0x80) != 0) {
             value |= 0x80;
         }
-		return value;
+        return value;
     }
 
 }

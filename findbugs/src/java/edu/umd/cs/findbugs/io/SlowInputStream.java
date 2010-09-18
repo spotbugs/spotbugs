@@ -33,16 +33,16 @@ public class SlowInputStream extends FilterInputStream {
     public SlowInputStream(InputStream in, int baudRate) {
         super(in);
         this.bytesPerSecond = baudRate / 10;
-	}
+    }
 
     private void delay() {
         try {
             long beenRunning = System.currentTimeMillis() - started;
-			long time = length * 1000L / bytesPerSecond - beenRunning;
+            long time = length * 1000L / bytesPerSecond - beenRunning;
             if (time > 0) {
                 Thread.sleep((int) time);
             }
-		} catch (InterruptedException e) {
+        } catch (InterruptedException e) {
         }
     }
 
@@ -51,7 +51,7 @@ public class SlowInputStream extends FilterInputStream {
         int b = in.read();
         if (b >= 0)
             length++;
-		delay();
+        delay();
         return b;
     }
 
@@ -65,11 +65,11 @@ public class SlowInputStream extends FilterInputStream {
         if (len > bytesPerSecond / 10)
             len = bytesPerSecond / 10;
         int tmp = in.read(b, off, len);
-		if (tmp >= 0) {
+        if (tmp >= 0) {
             length += tmp;
             delay();
         }
-		return tmp;
+        return tmp;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class SlowInputStream extends FilterInputStream {
         n = in.skip(n);
         if (n >= 0)
             length += n;
-		delay();
+        delay();
         return n;
     }
 

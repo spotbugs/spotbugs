@@ -26,60 +26,75 @@ import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Matches a String value against a predefined specification.
- *
+ * 
  * Matching can be done in three modes depending on ctor matchSpec argument.
- *
- * If matchSpec is null, match will succeed for any value (including empty String and null)
- *
- * If matchSpec starts with ~ character it will be treated as java.util.regex.Pattern, with the ~
- * character ommited. The pattern will be matched against whole value (ie Matcher.match(), not Matcher.find())
- *
- * If matchSpec is a non-null String with any other initial charcter, exact matching using String.equals(String)
- * will be performed.
- *
+ * 
+ * If matchSpec is null, match will succeed for any value (including empty
+ * String and null)
+ * 
+ * If matchSpec starts with ~ character it will be treated as
+ * java.util.regex.Pattern, with the ~ character ommited. The pattern will be
+ * matched against whole value (ie Matcher.match(), not Matcher.find())
+ * 
+ * If matchSpec is a non-null String with any other initial charcter, exact
+ * matching using String.equals(String) will be performed.
+ * 
  * @author rafal@caltha.pl
  */
 public class NameMatch {
 
-    private @CheckForNull String spec;
-    private @CheckForNull String exact;
+    private @CheckForNull
+    String spec;
 
-    private @CheckForNull Pattern pattern;
+    private @CheckForNull
+    String exact;
+
+    private @CheckForNull
+    Pattern pattern;
 
     @Override
     public int hashCode() {
-        if (spec == null) return 0;
+        if (spec == null)
+            return 0;
         return spec.hashCode();
     }
-	public boolean isUniversal() {
-        if (spec == null) return true;
+
+    public boolean isUniversal() {
+        if (spec == null)
+            return true;
         return spec.equals("~.*");
     }
-	@Override
+
+    @Override
     public boolean equals(Object o) {
-        if (!(o instanceof NameMatch)) return false;
-        return Util.nullSafeEquals(spec, ((NameMatch)o).spec);
+        if (!(o instanceof NameMatch))
+            return false;
+        return Util.nullSafeEquals(spec, ((NameMatch) o).spec);
     }
-	public String getValue() {
-        if (exact != null) return exact;
-        if (pattern != null) return pattern.toString();
+
+    public String getValue() {
+        if (exact != null)
+            return exact;
+        if (pattern != null)
+            return pattern.toString();
         return "~.*";
-	}
+    }
+
     public NameMatch(String matchSpec) {
         spec = matchSpec;
         if (matchSpec != null) {
-			if (matchSpec.startsWith("~")) {
+            if (matchSpec.startsWith("~")) {
                 pattern = Pattern.compile(matchSpec.substring(1));
             } else {
                 exact = matchSpec;
-			}
+            }
         }
     }
 
     public boolean match(String value) {
         if (exact != null)
             return exact.equals(value);
-		if (pattern != null)
+        if (pattern != null)
             return pattern.matcher(value).matches();
         return true;
     }
@@ -87,11 +102,12 @@ public class NameMatch {
     @Override
     public String toString() {
         if (exact != null)
-			return "exact(" + exact + ")";	
+            return "exact(" + exact + ")";
         if (pattern != null)
             return "regex(" + pattern.toString() + ")";
         return "any()";
-	}
+    }
+
     public String getSpec() {
         return spec;
     }

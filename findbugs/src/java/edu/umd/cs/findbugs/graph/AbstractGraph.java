@@ -24,36 +24,32 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * A simple Graph implementation where the vertex objects
- * store a list of incoming and outgoing edges.
- * The edge link fields are stored in the edge objects,
- * which means a fairly low space overhead.
- *
- * <p> The abstract allocateEdge() method must be implemented.
- *
+ * A simple Graph implementation where the vertex objects store a list of
+ * incoming and outgoing edges. The edge link fields are stored in the edge
+ * objects, which means a fairly low space overhead.
+ * 
+ * <p>
+ * The abstract allocateEdge() method must be implemented.
+ * 
  * @see Graph
  * @see AbstractEdge
  * @see AbstractVertex
  * @author David Hovemeyer
  */
-public abstract class AbstractGraph
-        <
-        EdgeType extends AbstractEdge<EdgeType, VertexType>,
-        VertexType extends AbstractVertex<EdgeType, VertexType>
-		> implements Graph<EdgeType, VertexType> {
+public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, VertexType>, VertexType extends AbstractVertex<EdgeType, VertexType>>
+        implements Graph<EdgeType, VertexType> {
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * Helper classes
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     /**
      * Iterator over outgoing edges.
      */
-	private static class OutgoingEdgeIterator
-            <
-            EdgeType extends AbstractEdge<EdgeType, VertexType>,
-            VertexType extends AbstractVertex<EdgeType, VertexType>
-			> implements Iterator<EdgeType> {
+    private static class OutgoingEdgeIterator<EdgeType extends AbstractEdge<EdgeType, VertexType>, VertexType extends AbstractVertex<EdgeType, VertexType>>
+            implements Iterator<EdgeType> {
 
         private EdgeType edge;
 
@@ -68,7 +64,7 @@ public abstract class AbstractGraph
         public EdgeType next() {
             if (!hasNext())
                 throw new NoSuchElementException();
-			EdgeType result = edge;
+            EdgeType result = edge;
             edge = edge.getNextOutgoingEdge();
             return result;
         }
@@ -76,16 +72,13 @@ public abstract class AbstractGraph
         public void remove() {
             throw new UnsupportedOperationException();
         }
-	}
+    }
 
     /**
      * Iterator over incoming edges.
      */
-	private static class IncomingEdgeIterator
-            <
-            EdgeType extends AbstractEdge<EdgeType, VertexType>,
-            VertexType extends AbstractVertex<EdgeType, VertexType>
-			> implements Iterator<EdgeType> {
+    private static class IncomingEdgeIterator<EdgeType extends AbstractEdge<EdgeType, VertexType>, VertexType extends AbstractVertex<EdgeType, VertexType>>
+            implements Iterator<EdgeType> {
 
         private EdgeType edge;
 
@@ -100,7 +93,7 @@ public abstract class AbstractGraph
         public EdgeType next() {
             if (!hasNext())
                 throw new NoSuchElementException();
-			EdgeType result = edge;
+            EdgeType result = edge;
             edge = edge.getNextIncomingEdge();
             return result;
         }
@@ -108,26 +101,33 @@ public abstract class AbstractGraph
         public void remove() {
             throw new UnsupportedOperationException();
         }
-	}
+    }
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * Fields
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     private ArrayList<VertexType> vertexList;
+
     private ArrayList<EdgeType> edgeList;
+
     private int maxVertexLabel;
-//	private int nextVertexId;
+
+    // private int nextVertexId;
     private int maxEdgeLabel;
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * Public methods
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     public AbstractGraph() {
         this.vertexList = new ArrayList<VertexType>();
         this.edgeList = new ArrayList<EdgeType>();
-		this.maxVertexLabel = 0;
+        this.maxVertexLabel = 0;
         this.maxEdgeLabel = 0;
     }
 
@@ -146,19 +146,20 @@ public abstract class AbstractGraph
     public Iterator<VertexType> vertexIterator() {
         return vertexList.iterator();
     }
-	public Iterable<VertexType> vertices() {
+
+    public Iterable<VertexType> vertices() {
         return vertexList;
     }
 
     public void addVertex(VertexType v) {
         vertexList.add(v);
         v.setLabel(maxVertexLabel++);
-	}
+    }
 
     public boolean containsVertex(VertexType v) {
         for (VertexType existingVertex : vertexList) {
             if (v == existingVertex)
-				return true;
+                return true;
         }
         return false;
     }
@@ -166,20 +167,20 @@ public abstract class AbstractGraph
     public EdgeType createEdge(VertexType source, VertexType target) {
         EdgeType edge = allocateEdge(source, target);
         edgeList.add(edge);
-		source.addOutgoingEdge(edge);
+        source.addOutgoingEdge(edge);
         target.addIncomingEdge(edge);
         edge.setLabel(maxEdgeLabel++);
         return edge;
-	}
+    }
 
     public EdgeType lookupEdge(VertexType source, VertexType target) {
         Iterator<EdgeType> i = outgoingEdgeIterator(source);
         while (i.hasNext()) {
-			EdgeType edge = i.next();
+            EdgeType edge = i.next();
             if (edge.getTarget() == target)
                 return edge;
         }
-		return null;
+        return null;
     }
 
     public int getNumVertexLabels() {
@@ -201,7 +202,7 @@ public abstract class AbstractGraph
     public void removeEdge(EdgeType edge) {
         if (!edgeList.remove(edge))
             throw new IllegalArgumentException("removing nonexistent edge!");
-		edge.getSource().removeOutgoingEdge(edge);
+        edge.getSource().removeOutgoingEdge(edge);
         edge.getTarget().removeIncomingEdge(edge);
     }
 
@@ -227,21 +228,21 @@ public abstract class AbstractGraph
     public int getNumIncomingEdges(VertexType vertex) {
         int count = 0;
         EdgeType e = vertex.firstIncomingEdge;
-		while (e != null) {
+        while (e != null) {
             ++count;
             e = e.getNextIncomingEdge();
         }
-		return count;
+        return count;
     }
 
     public int getNumOutgoingEdges(VertexType vertex) {
         int count = 0;
         EdgeType e = vertex.firstOutgoingEdge;
-		while (e != null) {
+        while (e != null) {
             ++count;
             e = e.getNextOutgoingEdge();
         }
-		return count;
+        return count;
     }
 
     public Iterator<VertexType> successorIterator(final VertexType source) {
@@ -259,7 +260,7 @@ public abstract class AbstractGraph
             public void remove() {
                 iter.remove();
             }
-		};
+        };
     }
 
     public Iterator<VertexType> predecessorIterator(final VertexType target) {
@@ -277,12 +278,14 @@ public abstract class AbstractGraph
             public void remove() {
                 iter.remove();
             }
-		};
+        };
     }
 
-    /* ----------------------------------------------------------------------
+    /*
+     * ----------------------------------------------------------------------
      * Downcall methods
-     * ---------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------
+     */
 
     protected abstract EdgeType allocateEdge(VertexType source, VertexType target);
 

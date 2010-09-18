@@ -34,54 +34,49 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 public class TestingGround extends OpcodeStackDetector {
 
     final BugReporter bugReporter;
+
     final BugAccumulator accumulator;
 
     public TestingGround(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.accumulator = new BugAccumulator(bugReporter);
-	}
+    }
 
     @Override
     public void visit(Code code) {
         boolean interesting = true;
-		if (interesting)  {
+        if (interesting) {
             // initialize any variables we want to initialize for the method
             super.visit(code); // make callbacks to sawOpcode for all opcodes
         }
-		accumulator.reportAccumulatedBugs();
+        accumulator.reportAccumulatedBugs();
     }
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKESTATIC
-				&& getClassConstantOperand().equals("com/google/common/base/Preconditions")
+        if (seen == INVOKESTATIC && getClassConstantOperand().equals("com/google/common/base/Preconditions")
                 && getNameConstantOperand().startsWith("check")) {
             SignatureParser parser = new SignatureParser(getSigConstantOperand());
             int count = 0;
-			for(Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext(); count++) {
+            for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext(); count++) {
                 String parameter = i.next();
                 if (parameter.equals("Ljava/lang/Object;")) {
                     OpcodeStack.Item item = stack.getStackItem(parser.getNumParameters() - 1 - count);
-					XMethod m =  item.getReturnValueOf();
+                    XMethod m = item.getReturnValueOf();
                     if (m == null)
                         continue;
                     if (!m.getName().equals("toString"))
-						continue;
+                        continue;
                     if (!m.getClassName().startsWith("java.lang.StringB"))
                         continue;
-                    accumulator.accumulateBug(new BugInstance(this,
-							"TESTING", NORMAL_PRIORITY)
-                    .addClassAndMethod(this)
-                    .addCalledMethod(this), this);
+                    accumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this)
+                            .addCalledMethod(this), this);
                 }
-					
+
             }
 
         }
-				
+
     }
-
-
-
 
 }

@@ -27,23 +27,27 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 public class VersionMatcher {
 
     protected final long version;
+
     protected final RelationalOp relOp;
 
-	@Override
+    @Override
     public int hashCode() {
-        return (int)version+relOp.hashCode();
+        return (int) version + relOp.hashCode();
     }
+
     @Override
     public boolean equals(Object o) {
-        if (o == null || this.getClass() != o.getClass()) return false;
-        VersionMatcher m = (VersionMatcher)o;
+        if (o == null || this.getClass() != o.getClass())
+            return false;
+        VersionMatcher m = (VersionMatcher) o;
         return version == m.version && relOp.equals(m.relOp);
-	}
+    }
 
     public VersionMatcher(long version, @NonNull RelationalOp relOp) {
-        if (relOp == null) throw new NullPointerException("relOp must be nonnull");
+        if (relOp == null)
+            throw new NullPointerException("relOp must be nonnull");
         this.version = version;
-		this.relOp = relOp;
+        this.relOp = relOp;
     }
 
 }

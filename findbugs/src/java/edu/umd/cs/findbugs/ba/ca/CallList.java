@@ -23,6 +23,7 @@ import java.util.Iterator;
 
 public class CallList {
     private boolean isTop, isBottom;
+
     private ArrayList<Call> callList;
 
     public CallList() {
@@ -48,19 +49,19 @@ public class CallList {
     public void setTop() {
         this.isTop = true;
         this.isBottom = false;
-		this.callList.clear();
+        this.callList.clear();
     }
 
     public void setBottom() {
         this.isTop = false;
         this.isBottom = true;
-		this.callList.clear();
+        this.callList.clear();
     }
 
     public void clear() {
         this.isTop = this.isBottom = false;
         this.callList.clear();
-	}
+    }
 
     public void add(Call call) {
         callList.add(call);
@@ -77,7 +78,7 @@ public class CallList {
     public void copyFrom(CallList other) {
         this.isTop = other.isTop;
         this.isBottom = other.isBottom;
-		this.callList.clear();
+        this.callList.clear();
         this.callList.addAll(other.callList);
     }
 
@@ -87,44 +88,42 @@ public class CallList {
         if (a.isBottom || b.isBottom) {
             result.isBottom = true;
         } else if (a.isTop) {
-			result.copyFrom(b);
+            result.copyFrom(b);
         } else if (b.isTop) {
             result.copyFrom(a);
         } else {
-			// Result is the common prefix
+            // Result is the common prefix
             int len = Math.min(a.size(), b.size());
             for (int i = 0; i < len; ++i) {
                 if (!a.get(i).equals(b.get(i)))
-					break;
+                    break;
                 result.add(a.get(i));
             }
         }
-		return result;
+        return result;
     }
 
-
     @Override
-         public boolean equals(Object obj) {
+    public boolean equals(Object obj) {
         if (obj == null || obj.getClass() != this.getClass())
-			return false;
+            return false;
         CallList other = (CallList) obj;
         return this.callList.equals(other.callList);
     }
 
-
     @Override
-         public int hashCode() {
+    public int hashCode() {
         return callList.hashCode();
-	}
+    }
 
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-		for (Call call : callList) {
+        for (Call call : callList) {
             if (buf.length() > 0)
                 buf.append(',');
             buf.append(call.getMethodName());
-		}
+        }
         return buf.toString();
     }
 }

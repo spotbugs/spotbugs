@@ -33,52 +33,55 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 /**
  * Database of type qualfiers applied directly to methods.
- *
+ * 
  * @author William Pugh
  * @author David Hovemeyer
  */
 public class DirectlyRelevantTypeQualifiersDatabase {
 
     private Map<MethodDescriptor, Collection<TypeQualifierValue>> methodToDirectlyRelevantQualifiersMap;
+
     private Set<TypeQualifierValue> allKnownQualifiers;
-	
+
     /*
      * Constructor.
      */
-	public DirectlyRelevantTypeQualifiersDatabase() {
-        methodToDirectlyRelevantQualifiersMap = new HashMap<MethodDescriptor, Collection<TypeQualifierValue>> ();
+    public DirectlyRelevantTypeQualifiersDatabase() {
+        methodToDirectlyRelevantQualifiersMap = new HashMap<MethodDescriptor, Collection<TypeQualifierValue>>();
         allKnownQualifiers = new HashSet<TypeQualifierValue>();
     }
 
     /**
-     * Get the directly-relevant type qualifiers applied to given
-     * method.
-	 * 
-     * @param m MethodDescriptor identifying a method
+     * Get the directly-relevant type qualifiers applied to given method.
+     * 
+     * @param m
+     *            MethodDescriptor identifying a method
      * @return Collection of type qualifiers applied directly to that method
      */
-	public Collection<TypeQualifierValue> getDirectlyRelevantTypeQualifiers(MethodDescriptor m) {
+    public Collection<TypeQualifierValue> getDirectlyRelevantTypeQualifiers(MethodDescriptor m) {
         Collection<TypeQualifierValue> result = methodToDirectlyRelevantQualifiersMap.get(m);
         if (result != null)
             return result;
-		return Collections.<TypeQualifierValue>emptyList();
+        return Collections.<TypeQualifierValue> emptyList();
     }
 
     /**
-	 * Return a set of all known type qualifiers.
-     *
+     * Return a set of all known type qualifiers.
+     * 
      * @return set of all known type qualifiers
      */
     public Set<TypeQualifierValue> getAllKnownQualifiers() {
-        return Collections.<TypeQualifierValue>unmodifiableSet(allKnownQualifiers);
+        return Collections.<TypeQualifierValue> unmodifiableSet(allKnownQualifiers);
     }
 
     /**
-     * Set the collection of directly-relevant type qualifiers for
-     * a given method.
-	 * 
-     * @param methodDescriptor MethodDescriptor identifying a method
-     * @param qualifiers       collection of directly-relevant type qualifiers for the method
+     * Set the collection of directly-relevant type qualifiers for a given
+     * method.
+     * 
+     * @param methodDescriptor
+     *            MethodDescriptor identifying a method
+     * @param qualifiers
+     *            collection of directly-relevant type qualifiers for the method
      */
     public void setDirectlyRelevantTypeQualifiers(MethodDescriptor methodDescriptor, Collection<TypeQualifierValue> qualifiers) {
         methodToDirectlyRelevantQualifiersMap.put(methodDescriptor, qualifiers);

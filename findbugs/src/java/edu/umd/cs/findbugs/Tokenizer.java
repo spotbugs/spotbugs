@@ -25,10 +25,9 @@ import java.io.Reader;
 import java.util.BitSet;
 
 /**
- * A simple tokenizer for Java source text.
- * This is not intended to be a compliant lexer;
- * instead, it is for quick and dirty scanning.
- *
+ * A simple tokenizer for Java source text. This is not intended to be a
+ * compliant lexer; instead, it is for quick and dirty scanning.
+ * 
  * @author David Hovemeyer
  * @see Token
  */
@@ -38,7 +37,7 @@ public class Tokenizer {
     static {
         whiteSpace.set(' ');
         whiteSpace.set('\t');
-		whiteSpace.set('\r');
+        whiteSpace.set('\r');
         whiteSpace.set('\f');
     }
 
@@ -47,170 +46,172 @@ public class Tokenizer {
     static {
         single.set('!');
         single.set('%');
-		single.set('^');
+        single.set('^');
         single.set('&');
         single.set('*');
         single.set('(');
-		single.set(')');
+        single.set(')');
         single.set('-');
         single.set('+');
         single.set('=');
-		single.set('[');
+        single.set('[');
         single.set(']');
         single.set('{');
         single.set('}');
-		single.set('|');
+        single.set('|');
         single.set(':');
         single.set(';');
         single.set(',');
-		single.set('.');
+        single.set('.');
         single.set('<');
         single.set('>');
         single.set('?');
-		single.set('~');
+        single.set('~');
     }
 
     private PushbackReader reader;
 
     /**
      * Constructor.
-     *
-	 * @param reader the Reader for the Java source text
+     * 
+     * @param reader
+     *            the Reader for the Java source text
      */
     public Tokenizer(Reader reader) {
         this.reader = new PushbackReader(reader);
-	}
+    }
 
     /**
      * Get the next Token in the stream.
-     *
-	 * @return the Token
+     * 
+     * @return the Token
      */
     public Token next() throws IOException {
         skipWhitespace();
-		int c = reader.read();
+        int c = reader.read();
         if (c < 0)
             return new Token(Token.EOF);
         else if (c == '\n')
-			return new Token(Token.EOL);
+            return new Token(Token.EOL);
         else if (c == '\'' || c == '"')
             return munchString(c);
         else if (c == '/')
-			return maybeComment();
+            return maybeComment();
         else if (single.get(c))
             return new Token(Token.SINGLE, String.valueOf((char) c));
         else {
-			reader.unread(c);
+            reader.unread(c);
             return parseWord();
         }
     }
 
     private void skipWhitespace() throws IOException {
-        for (; ;) {
+        for (;;) {
             int c = reader.read();
-			if (c < 0) break;
+            if (c < 0)
+                break;
             if (!whiteSpace.get(c)) {
                 reader.unread(c);
                 break;
-			}
+            }
         }
     }
 
     private Token munchString(int delimiter) throws IOException {
         final int SCAN = 0;
         final int ESCAPE = 1;
-		final int DONE = 2;
+        final int DONE = 2;
 
         StringBuilder result = new StringBuilder();
         result.append((char) delimiter);
         int state = SCAN;
 
-            while (state != DONE) {
-                int c = reader.read();
-                if (c < 0)
-					break;
-                result.append((char) c);
-                switch (state) {
-                case SCAN:
-					if (c == delimiter)
-                        state = DONE;
-                    else if (c == '\\')
-                        state = ESCAPE;
-					break;
-                case ESCAPE:
-                    state = SCAN;
-                    break;
-				}
+        while (state != DONE) {
+            int c = reader.read();
+            if (c < 0)
+                break;
+            result.append((char) c);
+            switch (state) {
+            case SCAN:
+                if (c == delimiter)
+                    state = DONE;
+                else if (c == '\\')
+                    state = ESCAPE;
+                break;
+            case ESCAPE:
+                state = SCAN;
+                break;
             }
+        }
         return new Token(Token.STRING, result.toString());
     }
 
     private Token maybeComment() throws IOException {
         int c = reader.read();
         if (c == '/') {
-			// Single line comment
+            // Single line comment
             StringBuilder result = new StringBuilder();
             result.append("//");
-            for (; ;) {
-				c = reader.read();
+            for (;;) {
+                c = reader.read();
                 if (c < 0)
                     break;
                 else if (c == '\n') {
-					reader.unread(c);
+                    reader.unread(c);
                     break;
                 }
                 result.append((char) c);
-			}
+            }
             return new Token(Token.COMMENT, result.toString());
         } else if (c == '*') {
             // C-style multiline comment
-			StringBuilder result = new StringBuilder();
+            StringBuilder result = new StringBuilder();
             result.append("/*");
             final int SCAN = 0;
             final int STAR = 1;
-			final int DONE = 2;
+            final int DONE = 2;
             int state = SCAN;
             while (state != DONE) {
                 c = reader.read();
-				if (c < 0)
+                if (c < 0)
                     state = DONE;
                 else
                     result.append((char) c);
-				switch (state) {
+                switch (state) {
                 case SCAN:
                     if (c == '*')
                         state = STAR;
-					break;
+                    break;
                 case STAR:
                     if (c == '/')
                         state = DONE;
-					else if (c != '*')
+                    else if (c != '*')
                         state = SCAN;
                     break;
                 case DONE:
-					break;
+                    break;
                 }
             }
             return new Token(Token.COMMENT, result.toString());
-		} else {
+        } else {
             if (c >= 0)
                 reader.unread(c);
             return new Token(Token.SINGLE, "/");
-		}
+        }
     }
 
     private Token parseWord() throws IOException {
         StringBuilder result = new StringBuilder();
-        for (; ;) {
-			int c = reader.read();
+        for (;;) {
+            int c = reader.read();
             if (c < 0)
                 break;
             if (whiteSpace.get(c) || c == '\n' || single.get(c)) {
-				reader.unread(c);
+                reader.unread(c);
                 break;
             }
             result.append((char) c);
-		}
+        }
         return new Token(Token.WORD, result.toString());
     }
 }

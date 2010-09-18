@@ -36,30 +36,27 @@ public class Obfuscate {
     public static String hashData(String in) {
         MessageDigest md;
         try {
-			md = MessageDigest.getInstance("SHA-1");
+            md = MessageDigest.getInstance("SHA-1");
             byte[] hash = md.digest((HASH_SEED + in).getBytes("UTF-8"));
             return String.format("%040x", new BigInteger(1, hash));
         } catch (RuntimeException e) {
-			throw e;
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-	}
-
+    }
 
     public static String hashFilename(String fileName) {
         int lastDot = fileName.lastIndexOf('.');
-		if (lastDot >= 0) {
+        if (lastDot >= 0) {
             String suffix = fileName.substring(lastDot);
             return hashData(fileName.substring(0, lastDot)) + suffix;
         }
-		return hashData(fileName);
+        return hashData(fileName);
     }
 
-
-
     public static String hashClass(@SlashedClassName String className) {
-		if (className.startsWith("java"))
+        if (className.startsWith("java"))
             return className;
         return "obfuscated.H" + hashData(className);
     }
@@ -67,27 +64,27 @@ public class Obfuscate {
     public static String hashSignature(String signature) {
         char firstChar = signature.charAt(0);
         switch (firstChar) {
-		case '[':
+        case '[':
             return '[' + hashSignature(signature.substring(1));
         case 'V':
         case 'Z':
-			
+
         case 'B':
         case 'S':
         case 'C':
-		case 'I':
+        case 'I':
         case 'J':
         case 'D':
         case 'F':
-			if (signature.length() == 1)
+            if (signature.length() == 1)
                 return signature;
             throw new IllegalArgumentException("bad signature: " + signature);
         case 'L':
-			if (!signature.endsWith(";"))
+            if (!signature.endsWith(";"))
                 throw new IllegalArgumentException("bad signature: " + signature);
             signature = signature.substring(1, signature.length() - 1);
             signature = hashClass(signature);
-			return "L" + signature + ";";
+            return "L" + signature + ";";
         default:
             throw new IllegalArgumentException("bad signature: " + signature);
 
@@ -98,63 +95,58 @@ public class Obfuscate {
     public static String hashMethodSignature(String signature) {
         SignatureParser parser = new SignatureParser(signature);
         StringBuilder buf = new StringBuilder("(");
-		for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {
+        for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {
             String param = i.next();
             buf.append(hashSignature(param));
         }
-		buf.append(")");
+        buf.append(")");
         buf.append(hashSignature(parser.getReturnTypeSignature()));
         return buf.toString();
 
     }
 
-
-
     static MethodAnnotation obfuscate(MethodAnnotation m) {
         String className = m.getClassName();
         if (className.startsWith("java"))
-			return m;
+            return m;
 
         String methodName = m.getMethodName();
         String methodSignature = m.getMethodSignature();
-		
-        if (methodName.equals("hashCode") && methodSignature.equals("()I")
-                || methodName.equals("equals") && methodSignature.equals("(Ljava/lang/Object;)Z")
-                || methodName.equals("compareTo") && methodSignature.equals("(Ljava/lang/Object;)I")
-				|| methodName.equals("<init>")
+
+        if (methodName.equals("hashCode") && methodSignature.equals("()I") || methodName.equals("equals")
+                && methodSignature.equals("(Ljava/lang/Object;)Z") || methodName.equals("compareTo")
+                && methodSignature.equals("(Ljava/lang/Object;)I") || methodName.equals("<init>")
                 || methodName.equals("<clinit>")) {
             // don't need to obfuscate method name
         } else {
-			methodName =  hashData(methodName);
+            methodName = hashData(methodName);
         }
 
-
-		MethodAnnotation result = new MethodAnnotation(hashClass(className), methodName,
-                hashMethodSignature(methodSignature), m.isStatic());
+        MethodAnnotation result = new MethodAnnotation(hashClass(className), methodName, hashMethodSignature(methodSignature),
+                m.isStatic());
         result.setDescription(m.getDescription());
         return result;
 
     }
+
     static FieldAnnotation obfuscate(FieldAnnotation m) {
-        FieldAnnotation result = new FieldAnnotation(hashClass(m.getClassName()), hashData(m.getFieldName()), hashSignature(m
-		        .getFieldSignature()), m.isStatic());
+        FieldAnnotation result = new FieldAnnotation(hashClass(m.getClassName()), hashData(m.getFieldName()),
+                hashSignature(m.getFieldSignature()), m.isStatic());
         result.setDescription(m.getDescription());
         return result;
 
     }
-
 
     static ClassAnnotation obfuscate(ClassAnnotation m) {
         ClassAnnotation result = new ClassAnnotation(hashClass(m.getClassName()));
         result.setDescription(m.getDescription());
-		return result;
+        return result;
 
     }
 
-
     static TypeAnnotation obfuscate(TypeAnnotation m) {
         TypeAnnotation result = new TypeAnnotation(hashSignature(m.getTypeDescriptor()));
-		result.setDescription(m.getDescription());
+        result.setDescription(m.getDescription());
         return result;
 
     }
@@ -162,19 +154,20 @@ public class Obfuscate {
     static IntAnnotation obfuscate(IntAnnotation m) {
         IntAnnotation result = new IntAnnotation(m.getValue());
         result.setDescription(m.getDescription());
-		return result;
+        return result;
 
     }
 
     static StringAnnotation obfuscate(StringAnnotation m) {
         StringAnnotation result = new StringAnnotation("obfuscated: " + hashData(m.getValue()));
         result.setDescription(m.getDescription());
-		return result;
+        return result;
 
     }
+
     static SourceLineAnnotation obfuscate(SourceLineAnnotation m) {
-        SourceLineAnnotation result = new SourceLineAnnotation(hashClass(m.getClassName()), hashFilename(m.getSourceFile()), m
-		        .getStartLine(), m.getEndLine(), m.getStartBytecode(), m.getEndBytecode());
+        SourceLineAnnotation result = new SourceLineAnnotation(hashClass(m.getClassName()), hashFilename(m.getSourceFile()),
+                m.getStartLine(), m.getEndLine(), m.getStartBytecode(), m.getEndBytecode());
         result.setDescription(m.getDescription());
         return result;
 
@@ -188,55 +181,55 @@ public class Obfuscate {
 
     }
 
-    public static  BugInstance obfuscate(BugInstance b) {
-		final BugInstance result = new BugInstance(b.getType(), b.getPriority());
+    public static BugInstance obfuscate(BugInstance b) {
+        final BugInstance result = new BugInstance(b.getType(), b.getPriority());
         BugAnnotationVisitor visitor = new BugAnnotationVisitor() {
 
             public void visitTypeAnnotation(TypeAnnotation typeAnnotation) {
-				result.add(obfuscate(typeAnnotation));
+                result.add(obfuscate(typeAnnotation));
 
             }
 
-			public void visitStringAnnotation(StringAnnotation stringAnnotation) {
+            public void visitStringAnnotation(StringAnnotation stringAnnotation) {
                 result.add(obfuscate(stringAnnotation));
 
             }
-			
+
             public void visitSourceLineAnnotation(SourceLineAnnotation sourceLineAnnotation) {
                 result.add(obfuscate(sourceLineAnnotation));
 
-			}
+            }
 
             public void visitMethodAnnotation(MethodAnnotation methodAnnotation) {
                 result.add(obfuscate(methodAnnotation));
-				
+
             }
 
             public void visitLocalVariableAnnotation(LocalVariableAnnotation fieldAnnotation) {
-				result.add(obfuscate(fieldAnnotation));
-
-            }
-
-			public void visitIntAnnotation(IntAnnotation fieldAnnotation) {
                 result.add(obfuscate(fieldAnnotation));
 
             }
-			
+
+            public void visitIntAnnotation(IntAnnotation fieldAnnotation) {
+                result.add(obfuscate(fieldAnnotation));
+
+            }
+
             public void visitFieldAnnotation(FieldAnnotation fieldAnnotation) {
                 result.add(obfuscate(fieldAnnotation));
 
-			}
+            }
 
             public void visitClassAnnotation(ClassAnnotation classAnnotation) {
                 result.add(obfuscate(classAnnotation));
-				
+
             }
         };
-        for(BugAnnotation a : b.getAnnotations())
-			a.accept(visitor);
+        for (BugAnnotation a : b.getAnnotations())
+            a.accept(visitor);
         result.setOldInstanceHash(hashData(b.getInstanceHash()));
         result.setHistory(b);
         return result;
-	}
+    }
 
 }

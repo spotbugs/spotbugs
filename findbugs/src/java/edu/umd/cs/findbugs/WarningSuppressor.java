@@ -1,4 +1,3 @@
-
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
@@ -15,30 +14,27 @@ abstract public class WarningSuppressor implements Matcher {
     public WarningSuppressor(String bugPattern) {
         this.bugPattern = bugPattern;
         if (DEBUG)
-		System.out.println("Suppressing " + bugPattern);
-        }
+            System.out.println("Suppressing " + bugPattern);
+    }
 
     public boolean match(BugInstance bugInstance) {
 
         if (DEBUG) {
-    System.out.println("Checking " + bugInstance);
-    System.out.println("    type:" + bugInstance.getType());
-	System.out.println(" against: " + bugPattern);
+            System.out.println("Checking " + bugInstance);
+            System.out.println("    type:" + bugInstance.getType());
+            System.out.println(" against: " + bugPattern);
 
+        }
+        if (!(bugPattern == null || bugInstance.getType().startsWith(bugPattern)
+                || bugInstance.getBugPattern().getCategory().equalsIgnoreCase(bugPattern) || bugInstance.getBugPattern()
+                .getAbbrev().equalsIgnoreCase(bugPattern)))
+            return false;
+        if (DEBUG)
+            System.out.println(" pattern matches");
+        return true;
     }
-    if (!(
-        bugPattern == null
-		|| bugInstance.getType().startsWith(bugPattern)
-        || bugInstance.getBugPattern().getCategory().equalsIgnoreCase(bugPattern)
-        || bugInstance.getBugPattern().getAbbrev().equalsIgnoreCase(bugPattern)))
-    return false;
-	if (DEBUG)
-    System.out.println(" pattern matches");
-    return true;
-    }
-	
+
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-      // no-op; these aren't saved to XML
+        // no-op; these aren't saved to XML
     }
 }
-

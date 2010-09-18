@@ -32,26 +32,31 @@ import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Descriptor identifying a class.
- *
+ * 
  * @author David Hovemeyer
  */
 public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializable {
     private static final long serialVersionUID = 1L;
-    private final @SlashedClassName String className;
+
+    private final @SlashedClassName
+    String className;
+
     private static final Pattern ANONYMOUS_CLASS_NAME = Pattern.compile(".*\\$[0-9]*$");
-	
+
     public static final ClassDescriptor[] EMPTY_ARRAY = new ClassDescriptor[0];
+
     /**
      * Constructor.
-	 * 
-     * @param className class name in VM format, e.g. "java/lang/String"
+     * 
+     * @param className
+     *            class name in VM format, e.g. "java/lang/String"
      */
-     protected ClassDescriptor(@SlashedClassName String className) {
-		if (className.indexOf('.') >= 0) {
+    protected ClassDescriptor(@SlashedClassName String className) {
+        if (className.indexOf('.') >= 0) {
             throw new IllegalArgumentException("Class name " + className + " not in VM format");
         }
         if (!ClassName.isValidClassName(className)) {
-			throw new IllegalArgumentException("Invalid class name " + className);
+            throw new IllegalArgumentException("Invalid class name " + className);
         }
         this.className = className;
     }
@@ -59,78 +64,88 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     /**
      * @return Returns the class name in VM format, e.g. "java/lang/String"
      */
-	public final @SlashedClassName String getClassName() {
+    public final @SlashedClassName
+    String getClassName() {
         return className;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-	public int compareTo(ClassDescriptor o) {
+    public int compareTo(ClassDescriptor o) {
         return className.compareTo(o.className);
     }
 
     /**
      * Get the resource name of this class as it would appear in the classpath.
      * E.g., "java/lang/String.class"
-	 * 
+     * 
      * @return the resource name
      */
     public String toResourceName() {
-		return className + ".class";
+        return className + ".class";
     }
 
     /**
      * Get the name of the class in dotted format.
-     *
-	 * @return the name of the class in dotted format
+     * 
+     * @return the name of the class in dotted format
      */
-    public @DottedClassName String toDottedClassName() {
+    public @DottedClassName
+    String toDottedClassName() {
         return ClassName.toDottedClassName(className);
-	}
+    }
+
     /**
      * Get the name of the class in dotted format.
-     *
-	 * @return the name of the class in dotted format
+     * 
+     * @return the name of the class in dotted format
      */
-    public  @DottedClassName  String getDottedClassName() {
+    public @DottedClassName
+    String getDottedClassName() {
         return ClassName.toDottedClassName(className);
-	}
+    }
 
     /**
      * Get the name of the package in dotted format.
-     *
-	 * @return the name of the package in dotted format
+     * 
+     * @return the name of the package in dotted format
      */
-    public  @DottedClassName  String getPackageName() {
+    public @DottedClassName
+    String getPackageName() {
         return ClassName.extractPackageName(ClassName.toDottedClassName(className));
-	}
+    }
 
     /**
      * Get the simple name of the class
-     *
-	 * @return the simple name of the class
+     * 
+     * @return the simple name of the class
      */
-    public   String getSimpleName() {
+    public String getSimpleName() {
         return ClassName.extractSimpleName(ClassName.toDottedClassName(className));
-	}
+    }
 
-    public   String getSignature() {
+    public String getSignature() {
         if (isArray())
-			return className;
-        return "L"+className +";";
+            return className;
+        return "L" + className + ";";
     }
+
     public boolean isArray() {
-		return className.charAt(0) == '[';
+        return className.charAt(0) == '[';
     }
 
-
-	/**
+    /**
      * Create a class descriptor from a resource name.
-     *
-     * @param resourceName the resource name
+     * 
+     * @param resourceName
+     *            the resource name
      * @return the class descriptor
-     * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromResourceName(String)} instead
+     * @deprecated Use
+     *             {@link DescriptorFactory#createClassDescriptorFromResourceName(String)}
+     *             instead
      */
     @Deprecated
     public static ClassDescriptor fromResourceName(String resourceName) {
@@ -139,18 +154,23 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 
     /**
      * Create a class descriptor from a field signature
-     * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromFieldSignature(String)} instead
-     *
+     * 
+     * @deprecated Use
+     *             {@link DescriptorFactory#createClassDescriptorFromFieldSignature(String)}
+     *             instead
+     * 
      */
     @Deprecated
-    public static @CheckForNull ClassDescriptor fromFieldSignature(String signature) {
+    public static @CheckForNull
+    ClassDescriptor fromFieldSignature(String signature) {
         return DescriptorFactory.createClassDescriptorFromFieldSignature(signature);
     }
 
     /**
      * Determine whether or not the given resource name refers to a class.
-     *
-     * @param resourceName the resource name
+     * 
+     * @param resourceName
+     *            the resource name
      * @return true if the resource is a class, false otherwise
      * @deprecated Use {@link DescriptorFactory#isClassResource(String)} instead
      */
@@ -160,78 +180,97 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     }
 
     /**
-     * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromSignature(String)} instead
+     * @deprecated Use
+     *             {@link DescriptorFactory#createClassDescriptorFromSignature(String)}
+     *             instead
      */
     @Deprecated
     public static ClassDescriptor createClassDescriptorFromSignature(String signature) {
         return DescriptorFactory.createClassDescriptorFromSignature(signature);
     }
+
     /**
-     * @deprecated Use {@link DescriptorFactory#createClassDescriptor(String)} instead
+     * @deprecated Use {@link DescriptorFactory#createClassDescriptor(String)}
+     *             instead
      */
     @Deprecated
     public static ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
         return DescriptorFactory.createClassDescriptor(className);
     }
+
     /**
-     * @deprecated Use {@link DescriptorFactory#createClassDescriptor(String[])} instead
+     * @deprecated Use {@link DescriptorFactory#createClassDescriptor(String[])}
+     *             instead
      */
     @Deprecated
     public static ClassDescriptor[] createClassDescriptor(String[] classNames) {
         return DescriptorFactory.createClassDescriptor(classNames);
     }
+
     /**
-     * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromDottedClassName(String)} instead
+     * @deprecated Use
+     *             {@link DescriptorFactory#createClassDescriptorFromDottedClassName(String)}
+     *             instead
      */
     @Deprecated
     public static ClassDescriptor createClassDescriptorFromDottedClassName(String dottedClassName) {
         return DescriptorFactory.createClassDescriptorFromDottedClassName(dottedClassName);
     }
+
     /**
-     * @deprecated Use {@link DescriptorFactory#createClassDescriptor(JavaClass)} instead
+     * @deprecated Use
+     *             {@link DescriptorFactory#createClassDescriptor(JavaClass)}
+     *             instead
      */
     @Deprecated
     public static ClassDescriptor createClassDescriptor(JavaClass c) {
         return DescriptorFactory.createClassDescriptor(c);
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
-	@Override
+    @Override
     public String toString() {
         return className;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
-	@Override
+    @Override
     public final boolean equals(Object obj) {
         if (obj == null || !(obj instanceof ClassDescriptor)) {
             return false;
-		}
+        }
 
         // All instances of ClassDescriptor should be considered
         // equal if they represent the same class,
-		// even if compared to an object of a different runtime class.
-        return getClassName().equals(((ClassDescriptor)obj).getClassName());
+        // even if compared to an object of a different runtime class.
+        return getClassName().equals(((ClassDescriptor) obj).getClassName());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
-	@Override
+    @Override
     public int hashCode() {
         return className.hashCode();
     }
 
     /**
-     * Throw a ClassNotFoundException to indicate that class named
-     * by given ClassDescriptor cannot be found.
-     * The exception message is formatted in a way that can
-     * be decoded by ClassNotFoundExceptionParser.
-     *
-     * @param classDescriptor ClassDescriptor naming a class that cannot be found
+     * Throw a ClassNotFoundException to indicate that class named by given
+     * ClassDescriptor cannot be found. The exception message is formatted in a
+     * way that can be decoded by ClassNotFoundExceptionParser.
+     * 
+     * @param classDescriptor
+     *            ClassDescriptor naming a class that cannot be found
      * @throws ClassNotFoundException
      * @see edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser
      */

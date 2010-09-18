@@ -20,36 +20,34 @@
 package edu.umd.cs.findbugs.graph;
 
 /**
- * An interface for creating Graph objects,
- * and for copying auxiliary information in vertices and edges.
+ * An interface for creating Graph objects, and for copying auxiliary
+ * information in vertices and edges.
  */
-public interface GraphToolkit
-        <
-        GraphType extends Graph<EdgeType, VertexType>,
-        EdgeType extends GraphEdge<EdgeType, VertexType>,
-		VertexType extends GraphVertex<VertexType>
-        > {
+public interface GraphToolkit<GraphType extends Graph<EdgeType, VertexType>, EdgeType extends GraphEdge<EdgeType, VertexType>, VertexType extends GraphVertex<VertexType>> {
 
     /**
      * Create a new empty graph (no vertices or edges).
-     *
-	 * @return the new graph
+     * 
+     * @return the new graph
      */
     public GraphType createGraph();
 
     /**
      * Make a copy of given vertex.
-     *
-	 * @param original the vertex to copy
+     * 
+     * @param original
+     *            the vertex to copy
      * @return an exact duplicate of the vertex
      */
     public VertexType duplicateVertex(VertexType original);
 
     /**
      * Copy auxiliary information from one edge to another.
-     *
-	 * @param source the source edge
-     * @param dest   the destination edge
+     * 
+     * @param source
+     *            the source edge
+     * @param dest
+     *            the destination edge
      */
     public void copyEdge(EdgeType source, EdgeType dest);
 

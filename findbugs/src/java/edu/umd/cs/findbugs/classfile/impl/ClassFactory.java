@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
  * Factory to create codebase/classpath/classfile objects.
- *
+ * 
  * @author David Hovemeyer
  */
 public class ClassFactory implements IClassFactory {
@@ -48,28 +48,37 @@ public class ClassFactory implements IClassFactory {
         return theInstance;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.impl.IClassFactory#createClassPath()
      */
-	public IClassPath createClassPath() {
+    public IClassPath createClassPath() {
         return new ClassPathImpl();
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IClassFactory#createClassPathBuilder(edu.umd.cs.findbugs.classfile.IErrorLogger)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IClassFactory#createClassPathBuilder(edu
+     * .umd.cs.findbugs.classfile.IErrorLogger)
      */
-	public IClassPathBuilder createClassPathBuilder(IErrorLogger errorLogger) {
+    public IClassPathBuilder createClassPathBuilder(IErrorLogger errorLogger) {
         return new ClassPathBuilder(this, errorLogger);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.impl.IClassFactory#createFilesystemCodeBaseLocator(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.classfile.impl.IClassFactory#
+     * createFilesystemCodeBaseLocator(java.lang.String)
      */
-	public ICodeBaseLocator createFilesystemCodeBaseLocator(String pathName) {
+    public ICodeBaseLocator createFilesystemCodeBaseLocator(String pathName) {
         // Attempt to canonicalize the pathname.
         // It's not fatal if we can't.
         try {
-			pathName = new File(pathName).getCanonicalPath();
+            pathName = new File(pathName).getCanonicalPath();
         } catch (IOException e) {
             // Ignore
         }
@@ -77,10 +86,14 @@ public class ClassFactory implements IClassFactory {
         return new FilesystemCodeBaseLocator(pathName);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IClassFactory#createNestedArchiveCodeBaseLocator(edu.umd.cs.findbugs.classfile.ICodeBase, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.classfile.IClassFactory#
+     * createNestedArchiveCodeBaseLocator
+     * (edu.umd.cs.findbugs.classfile.ICodeBase, java.lang.String)
      */
-	public ICodeBaseLocator createNestedArchiveCodeBaseLocator(ICodeBase parentCodeBase, String path) {
+    public ICodeBaseLocator createNestedArchiveCodeBaseLocator(ICodeBase parentCodeBase, String path) {
         return new NestedZipFileCodeBaseLocator(parentCodeBase, path);
     }
 
@@ -92,22 +105,25 @@ public class ClassFactory implements IClassFactory {
         if (file.isDirectory()) {
             return new DirectoryCodeBase(codeBaseLocator, file);
         } else if (fileName.endsWith(".class")) {
-			return new SingleFileCodeBase(codeBaseLocator, fileName);
+            return new SingleFileCodeBase(codeBaseLocator, fileName);
         } else {
             return ZipCodeBaseFactory.makeZipCodeBase(codeBaseLocator, file);
         }
-	}
-
-    static IScannableCodeBase createNestedZipFileCodeBase(
-            NestedZipFileCodeBaseLocator codeBaseLocator)
-            throws ResourceNotFoundException, IOException {
-		return new NestedZipFileCodeBase(codeBaseLocator);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IClassFactory#createAnalysisCache(edu.umd.cs.findbugs.classfile.IClassPath)
+    static IScannableCodeBase createNestedZipFileCodeBase(NestedZipFileCodeBaseLocator codeBaseLocator)
+            throws ResourceNotFoundException, IOException {
+        return new NestedZipFileCodeBase(codeBaseLocator);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IClassFactory#createAnalysisCache(edu.umd
+     * .cs.findbugs.classfile.IClassPath)
      */
-	public IAnalysisCache createAnalysisCache(IClassPath classPath, BugReporter errorLogger) {
+    public IAnalysisCache createAnalysisCache(IClassPath classPath, BugReporter errorLogger) {
         IAnalysisCache analysisCache = new AnalysisCache(classPath, errorLogger);
         return analysisCache;
     }

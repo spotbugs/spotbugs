@@ -26,7 +26,6 @@ import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
-
 public class LocalMatcher implements Matcher {
     private NameMatch name;
 
@@ -40,21 +39,24 @@ public class LocalMatcher implements Matcher {
 
     @Override
     public String toString() {
-        return "Local(name="+name+")";
+        return "Local(name=" + name + ")";
     }
+
     public boolean match(BugInstance bugInstance) {
-		LocalVariableAnnotation localAnnotation = bugInstance.getPrimaryLocalVariableAnnotation();
-        if(localAnnotation == null) {
+        LocalVariableAnnotation localAnnotation = bugInstance.getPrimaryLocalVariableAnnotation();
+        if (localAnnotation == null) {
             return false;
         }
-		if(!name.match(localAnnotation.getName())) {
+        if (!name.match(localAnnotation.getName())) {
             return false;
         }
         return true;
-	}
+    }
+
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec());
-        if (disabled) attributes.addAttribute("disabled", "true");
-		xmlOutput.openCloseTag("Local", attributes);
+        if (disabled)
+            attributes.addAttribute("disabled", "true");
+        xmlOutput.openCloseTag("Local", attributes);
     }
 }

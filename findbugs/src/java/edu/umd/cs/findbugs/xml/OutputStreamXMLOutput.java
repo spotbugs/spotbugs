@@ -30,39 +30,47 @@ import javax.annotation.WillCloseWhenClosed;
 
 /**
  * Write XML to an output stream.
- *
+ * 
  * @author David Hovemeyer
  */
 public class OutputStreamXMLOutput implements XMLOutput {
     private static final String OPENING = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+
     private static String getStylesheetCode(String stylesheet) {
-        if (stylesheet == null) return "";
-		return "<?xml-stylesheet type=\"text/xsl\" href=\"" + stylesheet + "\"?>\n";
+        if (stylesheet == null)
+            return "";
+        return "<?xml-stylesheet type=\"text/xsl\" href=\"" + stylesheet + "\"?>\n";
     }
 
-
-
     private Writer out;
+
     private int nestingLevel;
+
     private boolean newLine;
-	private String stylesheet;
+
+    private String stylesheet;
 
     /**
      * Constructor.
-     * @param os OutputStream to write XML output to
-	 */
+     * 
+     * @param os
+     *            OutputStream to write XML output to
+     */
     public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os) {
         this(os, null);
     }
 
     /**
      * Constructor.
-     * @param os OutputStream to write XML output to
-	 * @param stylesheet name of stylesheet
+     * 
+     * @param os
+     *            OutputStream to write XML output to
+     * @param stylesheet
+     *            name of stylesheet
      */
     public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os, String stylesheet) {
         this.out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
-		this.nestingLevel = 0;
+        this.nestingLevel = 0;
         this.newLine = true;
         this.stylesheet = stylesheet;
     }
@@ -70,7 +78,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
     public void beginDocument() throws IOException {
         out.write(OPENING);
         out.write(getStylesheetCode(stylesheet));
-		out.write("\n");
+        out.write("\n");
         newLine = true;
     }
 
@@ -93,48 +101,48 @@ public class OutputStreamXMLOutput implements XMLOutput {
     public void startTag(String tagName) throws IOException {
         indent();
         ++nestingLevel;
-		out.write("<" + tagName);
+        out.write("<" + tagName);
     }
 
     public void addAttribute(String name, String value) throws IOException {
         out.write(' ');
         out.write(name);
-		out.write('=');
+        out.write('=');
         out.write('"');
         out.write(XMLAttributeList.getQuotedAttributeValue(value));
         out.write('"');
-	}
+    }
 
     public void stopTag(boolean close) throws IOException {
         if (close) {
             out.write("/>\n");
-			--nestingLevel;
+            --nestingLevel;
             newLine = true;
         } else {
             out.write(">");
-			newLine = false;
+            newLine = false;
         }
     }
 
     private void emitTag(String tagName, boolean close) throws IOException {
         startTag(tagName);
         stopTag(close);
-	}
+    }
 
     private void emitTag(String tagName, String attributes, boolean close) throws IOException {
         startTag(tagName);
         attributes = attributes.trim();
-		if (attributes.length() > 0) {
+        if (attributes.length() > 0) {
             out.write(" ");
             out.write(attributes);
         }
-		stopTag(close);
+        stopTag(close);
     }
 
     public void closeTag(String tagName) throws IOException {
         --nestingLevel;
         if (newLine)
-			indent();
+            indent();
         out.write("</" + tagName + ">\n");
         newLine = true;
     }
@@ -146,22 +154,22 @@ public class OutputStreamXMLOutput implements XMLOutput {
     public void writeCDATA(String cdata) throws IOException {
         // FIXME: We just trust fate that the characters being written
         // don't contain the string "]]>"
-		assert(cdata.indexOf("]]") == -1);
+        assert (cdata.indexOf("]]") == -1);
         out.write("<![CDATA[");
         out.write(cdata);
         out.write("]]>");
-		newLine = false;
+        newLine = false;
     }
 
     @DischargesObligation
     public void finish() throws IOException {
         out.close();
-	}
+    }
 
     private void indent() throws IOException {
         if (!newLine)
             out.write("\n");
-		for (int i = 0; i < nestingLevel; ++i) {
+        for (int i = 0; i < nestingLevel; ++i) {
             out.write("  ");
         }
     }

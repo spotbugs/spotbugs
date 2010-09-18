@@ -58,7 +58,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 /**
  * Find places where ordinary (balanced) synchronization is performed on JSR166
  * Lock objects. Suggested by Doug Lea.
- *
+ * 
  * @author David Hovemeyer
  */
 public final class FindJSR166LockMonitorenter implements Detector, StatelessDetector {
@@ -78,16 +78,16 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
     @Override
     public Object clone() {
         try {
-			return super.clone();
+            return super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
         }
-	}
+    }
 
     public void visitClassContext(ClassContext classContext) {
         JavaClass jclass = classContext.getJavaClass();
         if (jclass.getClassName().startsWith("java.util.concurrent."))
-			return;
+            return;
         Method[] methodList = jclass.getMethods();
 
         for (Method method : methodList) {
@@ -97,7 +97,7 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
             // We can ignore methods that don't contain a monitorenter
             BitSet bytecodeSet = classContext.getBytecodeSet(method);
             if (bytecodeSet == null)
-				continue;
+                continue;
             if (false && !bytecodeSet.get(Constants.MONITORENTER))
                 continue;
 
@@ -109,19 +109,19 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
     private void analyzeMethod(ClassContext classContext, Method method) {
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
         CFG cfg;
-		try {
+        try {
             cfg = classContext.getCFG(method);
         } catch (CFGBuilderException e1) {
             AnalysisContext.logError("Coult not get CFG", e1);
-			return;
+            return;
         }
         TypeDataflow typeDataflow;
         try {
-			typeDataflow = classContext.getTypeDataflow(method);
+            typeDataflow = classContext.getTypeDataflow(method);
         } catch (CheckedAnalysisException e1) {
             AnalysisContext.logError("Coult not get Type dataflow", e1);
             return;
-		}
+        }
 
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
@@ -135,56 +135,54 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
                 String methodName = iv.getMethodName(cpg);
                 String methodSig = iv.getSignature(cpg);
                 if (methodName.equals("wait")
-				        && (methodSig.equals("()V") || methodSig.equals("(J)V") || methodSig.equals("(JI)V"))
+                        && (methodSig.equals("()V") || methodSig.equals("(J)V") || methodSig.equals("(JI)V"))
                         || (methodName.equals("notify") || methodName.equals("notifyAll")) && methodSig.equals("()V")) {
                     try {
                         TypeFrame frame = typeDataflow.getFactAtLocation(location);
-						if (!frame.isValid())
+                        if (!frame.isValid())
                             continue;
                         Type type = frame.getInstance(ins, cpg);
                         if (!(type instanceof ReferenceType)) {
-							// Something is deeply wrong if a non-reference type
+                            // Something is deeply wrong if a non-reference type
                             // is used for a method invocation. But, that's
                             // really a
                             // verification problem.
-							continue;
+                            continue;
                         }
-                        ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptorFromSignature(type.getSignature());
+                        ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptorFromSignature(type
+                                .getSignature());
                         if (classDescriptor.equals(classContext.getClassDescriptor()))
-							continue;
+                            continue;
                         if (!classDescriptor.getClassName().startsWith("java/util/concurrent"))
                             continue;
                         XClass c = Lookup.getXClass(classDescriptor);
-						XMethod m;
+                        XMethod m;
                         int priority = NORMAL_PRIORITY;
                         if (methodName.equals("wait")) {
                             m = c.findMethod("await", "()V", false);
-							priority = HIGH_PRIORITY;
+                            priority = HIGH_PRIORITY;
                         } else if (methodName.equals("notify")) {
-                                m = c.findMethod("signal", "()V", false);
-                                if (m == null)
-									m =  c.findMethod("countDown", "()V", false);
+                            m = c.findMethod("signal", "()V", false);
+                            if (m == null)
+                                m = c.findMethod("countDown", "()V", false);
                         } else if (methodName.equals("notifyAll")) {
-                                m = c.findMethod("signalAll", "()V", false);
-                                if (m == null)
-									m =  c.findMethod("countDown", "()V", false);
-                        }
-                        else
+                            m = c.findMethod("signalAll", "()V", false);
+                            if (m == null)
+                                m = c.findMethod("countDown", "()V", false);
+                        } else
                             throw new IllegalStateException("Unexpected methodName: " + methodName);
-						
+
                         if (m != null && m.isPublic() && c.isPublic())
 
-                            bugReporter.reportBug(new BugInstance(this, "JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT", priority).addClassAndMethod(
-							        classContext.getJavaClass(), method)
-                                    .addCalledMethod(cpg, iv)
-                                    .addMethod(m).describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET)
-                                    .addType(classDescriptor).describe(TypeAnnotation.FOUND_ROLE)
-							        .addSourceLine(classContext, method, location));
+                            bugReporter.reportBug(new BugInstance(this, "JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT", priority)
+                                    .addClassAndMethod(classContext.getJavaClass(), method).addCalledMethod(cpg, iv).addMethod(m)
+                                    .describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET).addType(classDescriptor)
+                                    .describe(TypeAnnotation.FOUND_ROLE).addSourceLine(classContext, method, location));
 
                     } catch (CheckedAnalysisException e) {
                         AnalysisContext.logError("Coult not get Type dataflow", e);
                         continue;
-					}
+                    }
 
                 }
 
@@ -193,42 +191,42 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
             if (ins.getOpcode() != Constants.MONITORENTER)
                 continue;
             Type type;
-			try {
+            try {
                 TypeFrame frame = typeDataflow.getFactAtLocation(location);
                 if (!frame.isValid())
                     continue;
-				type = frame.getInstance(ins, cpg);
+                type = frame.getInstance(ins, cpg);
             } catch (CheckedAnalysisException e) {
                 AnalysisContext.logError("Coult not get Type dataflow", e);
                 continue;
-			}
+            }
 
             if (!(type instanceof ReferenceType)) {
                 // Something is deeply wrong if a non-reference type
                 // is used for a monitorenter. But, that's really a
-				// verification problem.
+                // verification problem.
                 continue;
             }
 
             boolean isSubtype = false;
             try {
                 isSubtype = Hierarchy.isSubtype((ReferenceType) type, LOCK_TYPE);
-			} catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) {
                 bugReporter.reportMissingClass(e);
             }
             String sig = type.getSignature();
-			boolean isUtilConcurrentSig = sig.startsWith(UTIL_CONCURRRENT_SIG_PREFIX);
+            boolean isUtilConcurrentSig = sig.startsWith(UTIL_CONCURRRENT_SIG_PREFIX);
 
             if (isSubtype) {
                 bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_LOCK_MONITORENTER", isUtilConcurrentSig ? HIGH_PRIORITY
                         : NORMAL_PRIORITY).addClassAndMethod(classContext.getJavaClass(), method).addType(sig)
-				        .addSourceForTopStackValue(classContext, method, location).addSourceLine(classContext, method, location));
+                        .addSourceForTopStackValue(classContext, method, location).addSourceLine(classContext, method, location));
             } else if (isUtilConcurrentSig) {
 
                 int priority = "Ljava/util/concurrent/CopyOnWriteArrayList;".equals(sig) ? HIGH_PRIORITY : NORMAL_PRIORITY;
-				bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_UTILCONCURRENT_MONITORENTER", priority)
-                        .addClassAndMethod(classContext.getJavaClass(), method).addType(sig).addSourceForTopStackValue(
-                                classContext, method, location).addSourceLine(classContext, method, location));
+                bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_UTILCONCURRENT_MONITORENTER", priority)
+                        .addClassAndMethod(classContext.getJavaClass(), method).addType(sig)
+                        .addSourceForTopStackValue(classContext, method, location).addSourceLine(classContext, method, location));
 
             }
         }

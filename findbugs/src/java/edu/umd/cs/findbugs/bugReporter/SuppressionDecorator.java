@@ -49,7 +49,7 @@ public class SuppressionDecorator extends BugReporterDecorator {
     public SuppressionDecorator(BugReporterPlugin plugin, BugReporter delegate) {
         super(plugin, delegate);
         category = plugin.getProperties().getProperty("category");
-		if (I18N.instance().getBugCategory(category) == null)
+        if (I18N.instance().getBugCategory(category) == null)
             throw new IllegalArgumentException("Unable to find category " + category);
         final String adjustmentSource = plugin.getProperties().getProperty("packageSource");
         String packageList = plugin.getProperties().getProperty("packageList");
@@ -57,14 +57,14 @@ public class SuppressionDecorator extends BugReporterDecorator {
         try {
             if (packageList != null) {
                 processPackageList(new StringReader(packageList));
-			}
+            }
             if (adjustmentSource != null) {
                 URL u;
 
                 if (adjustmentSource.startsWith("file:") || adjustmentSource.startsWith("http:")
                         || adjustmentSource.startsWith("https:"))
                     u = new URL(adjustmentSource);
-				else {
+                else {
                     u = plugin.getPlugin().getPluginLoader().getResource(adjustmentSource);
                     if (u == null)
                         u = DetectorFactoryCollection.getCoreResource(adjustmentSource);
@@ -72,39 +72,39 @@ public class SuppressionDecorator extends BugReporterDecorator {
                 }
                 if (u != null) {
                     InputStreamReader rawIn = new InputStreamReader(u.openStream(), "UTF-8");
-					processPackageList(rawIn);
+                    processPackageList(rawIn);
                 }
 
             }
         } catch (IOException e) {
             throw new RuntimeException("Unable to load " + category + " filters from " + adjustmentSource, e);
-		}
+        }
     }
 
     /**
      * @param rawIn
      * @throws IOException
-	 */
+     */
     private void processPackageList(Reader rawIn) throws IOException {
         BufferedReader in = new BufferedReader(rawIn);
         while (true) {
-			String s = in.readLine();
+            String s = in.readLine();
             if (s == null)
                 break;
             s = s.trim();
-			if (s.length() == 0)
+            if (s.length() == 0)
                 continue;
             String packageName = s.substring(1).trim();
             if (s.charAt(0) == '+') {
-				check.add(packageName);
+                check.add(packageName);
                 dontCheck.remove(packageName);
             } else if (s.charAt(0) == '-') {
                 dontCheck.add(packageName);
-				check.remove(packageName);
+                check.remove(packageName);
             } else
                 throw new IllegalArgumentException("Can't parse " + category + " filter line: " + s);
         }
-	}
+    }
 
     @Override
     public void reportBug(BugInstance bugInstance) {
@@ -112,7 +112,7 @@ public class SuppressionDecorator extends BugReporterDecorator {
         if (!category.equals(bugInstance.getBugPattern().getCategory())) {
             getDelegate().reportBug(bugInstance);
             return;
-		}
+        }
         if (check.isEmpty())
             return;
 
@@ -123,15 +123,15 @@ public class SuppressionDecorator extends BugReporterDecorator {
         while (true) {
             if (check.contains(packageName)) {
                 getDelegate().reportBug(bugInstance);
-				return;
+                return;
             } else if (dontCheck.contains(packageName)) {
                 return;
             }
-			int i = packageName.lastIndexOf('.');
+            int i = packageName.lastIndexOf('.');
             if (i < 0)
                 return;
             packageName = packageName.substring(0, i);
-		}
+        }
 
     }
 

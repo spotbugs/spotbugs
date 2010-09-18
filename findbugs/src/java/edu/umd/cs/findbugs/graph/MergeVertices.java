@@ -26,46 +26,45 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Algorithm to merge a set of vertices into a single vertex.
- * Note that the graph is modified as part of this process.
+ * Algorithm to merge a set of vertices into a single vertex. Note that the
+ * graph is modified as part of this process.
  */
-public class MergeVertices
-        <
-        GraphType extends Graph<EdgeType, VertexType>,
-        EdgeType extends GraphEdge<EdgeType, VertexType>,
-		VertexType extends GraphVertex<VertexType>
-        > {
+public class MergeVertices<GraphType extends Graph<EdgeType, VertexType>, EdgeType extends GraphEdge<EdgeType, VertexType>, VertexType extends GraphVertex<VertexType>> {
 
     /**
      * Constructor.
      */
-	public MergeVertices() {
+    public MergeVertices() {
     }
 
     /**
      * Merge the specified set of vertices into a single vertex.
-     *
-	 * @param vertexSet  the set of vertices to be merged
-     * @param g          the graph to be modified
-     * @param combinator object used to combine vertices
-     * @param toolkit    GraphToolkit used to copy auxiliary information for edges
-	 */
+     * 
+     * @param vertexSet
+     *            the set of vertices to be merged
+     * @param g
+     *            the graph to be modified
+     * @param combinator
+     *            object used to combine vertices
+     * @param toolkit
+     *            GraphToolkit used to copy auxiliary information for edges
+     */
     public void mergeVertices(Set<VertexType> vertexSet, GraphType g, VertexCombinator<VertexType> combinator,
-                              GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
+            GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
 
         // Special case: if the vertex set contains a single vertex
         // or is empty, there is nothing to do
         if (vertexSet.size() <= 1)
-			return;
+            return;
 
         // Get all vertices to which we have outgoing edges
         // or from which we have incoming edges, since they'll need
         // to be fixed
-		TreeSet<EdgeType> edgeSet = new TreeSet<EdgeType>();
+        TreeSet<EdgeType> edgeSet = new TreeSet<EdgeType>();
         for (Iterator<EdgeType> i = g.edgeIterator(); i.hasNext();) {
             EdgeType e = i.next();
             if (vertexSet.contains(e.getSource()) || vertexSet.contains(e.getTarget()))
-				edgeSet.add(e);
+                edgeSet.add(e);
         }
 
         // Combine all of the vertices into a single composite vertex
@@ -74,18 +73,17 @@ public class MergeVertices
         // For each original edge into or out of the vertex set,
         // create an equivalent edge referencing the composite
         // vertex
-		for (EdgeType e : edgeSet) {
+        for (EdgeType e : edgeSet) {
             VertexType source = vertexSet.contains(e.getSource()) ? compositeVertex : e.getSource();
             VertexType target = vertexSet.contains(e.getTarget()) ? compositeVertex : e.getTarget();
 
-//			  if (source != compositeVertex && target != compositeVertex)
-//				  System.out.println("BIG OOPS!");
+            // if (source != compositeVertex && target != compositeVertex)
+            // System.out.println("BIG OOPS!");
 
             // Don't create a self edge for the composite vertex
             // unless one of the vertices in the vertex set
             // had a self edge
-			if (source == compositeVertex && target == compositeVertex &&
-                    e.getSource() != e.getTarget())
+            if (source == compositeVertex && target == compositeVertex && e.getSource() != e.getTarget())
                 continue;
 
             // Don't create duplicate edges.
@@ -95,12 +93,12 @@ public class MergeVertices
             EdgeType compositeEdge = g.createEdge(source, target);
             // FIXME: we really should have an EdgeCombinator here
             toolkit.copyEdge(e, compositeEdge);
-		}
+        }
 
         // Remove all of the vertices in the vertex set; this will
         // automatically remove the edges into and out of those
         // vertices
-		for (VertexType aVertexSet : vertexSet) {
+        for (VertexType aVertexSet : vertexSet) {
             g.removeVertex(aVertexSet);
         }
 

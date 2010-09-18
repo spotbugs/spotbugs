@@ -35,61 +35,68 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 
 /**
- * Analysis engine to produce a BCEL JavaClass object for
- * a named class.
- *
+ * Analysis engine to produce a BCEL JavaClass object for a named class.
+ * 
  * @author David Hovemeyer
  */
 public class JavaClassAnalysisEngine implements IClassAnalysisEngine<JavaClass> {
-    private static final boolean DEBUG_MISSING_CLASSES =
-        SystemProperties.getBoolean("findbugs.debug.missingclasses");
+    private static final boolean DEBUG_MISSING_CLASSES = SystemProperties.getBoolean("findbugs.debug.missingclasses");
+
     private static final String JVM_VERSION = SystemProperties.getProperty("java.runtime.version");
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
+     * .classfile.IAnalysisCache, java.lang.Object)
      */
-	public JavaClass analyze(IAnalysisCache analysisCache,
-            ClassDescriptor descriptor) throws CheckedAnalysisException {
+    public JavaClass analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
         try {
             ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
-			JavaClass javaClass = new ClassParser(classData.getInputStream(), descriptor.toResourceName()).parse();
+            JavaClass javaClass = new ClassParser(classData.getInputStream(), descriptor.toResourceName()).parse();
             if (false) {
                 char jVersion = JVM_VERSION.charAt(2);
                 if (jVersion < '5' && javaClass.getMajor() >= 49 || jVersion < '6' && javaClass.getMajor() >= 50)
-					throw new CheckedAnalysisException(descriptor.toResourceName() + " is version " 
-                            + javaClass.getMajor() + "." + javaClass.getMinor() + " but FindBugs is being run in a " + JVM_VERSION + " JVM");
-
+                    throw new CheckedAnalysisException(descriptor.toResourceName() + " is version " + javaClass.getMajor() + "."
+                            + javaClass.getMinor() + " but FindBugs is being run in a " + JVM_VERSION + " JVM");
 
             }
             // Make sure that the JavaClass object knows the repository
             // it was loaded from.
-			javaClass.setRepository(Repository.getRepository());
+            javaClass.setRepository(Repository.getRepository());
 
-            if (DEBUG_MISSING_CLASSES &&
-                    !(javaClass.getRepository() instanceof AnalysisCacheToRepositoryAdapter)) {
+            if (DEBUG_MISSING_CLASSES && !(javaClass.getRepository() instanceof AnalysisCacheToRepositoryAdapter)) {
                 throw new IllegalStateException("this should not happen");
-			}
+            }
 
             return javaClass;
         } catch (IOException e) {
             throw new ResourceNotFoundException(descriptor.toResourceName(), e);
-		}
+        }
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
+     * .findbugs.classfile.IAnalysisCache)
      */
-	public void registerWith(IAnalysisCache analysisCache) {
+    public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerClassAnalysisEngine(JavaClass.class, this);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#canRecompute()
      */
-	public boolean canRecompute() {
-        // Currently, JavaClass objects are compared by reference equality in some places,
-        // so we can't recompute them.  (Plus, most detectors/analyses need
+    public boolean canRecompute() {
+        // Currently, JavaClass objects are compared by reference equality in
+        // some places,
+        // so we can't recompute them. (Plus, most detectors/analyses need
         // the JavaClass object, so keeping them in memory helps performance.)
-	    return false;
+        return false;
     }
 }

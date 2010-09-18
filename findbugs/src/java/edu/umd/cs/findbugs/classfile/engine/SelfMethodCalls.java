@@ -42,31 +42,32 @@ public class SelfMethodCalls {
     static private boolean interestingSignature(String signature) {
         return !signature.equals("()V");
     }
-    public static <T> MultiMap<T, T> getSelfCalls(final ClassDescriptor classDescriptor, final Map<String, T> methods) {
-        final MultiMap<T, T> map = new MultiMap<T,T>(HashSet.class);
 
-		FBClassReader reader;
+    public static <T> MultiMap<T, T> getSelfCalls(final ClassDescriptor classDescriptor, final Map<String, T> methods) {
+        final MultiMap<T, T> map = new MultiMap<T, T>(HashSet.class);
+
+        FBClassReader reader;
         try {
             reader = Global.getAnalysisCache().getClassAnalysis(FBClassReader.class, classDescriptor);
         } catch (CheckedAnalysisException e) {
             AnalysisContext.logError("Error finding self method calls for " + classDescriptor, e);
             return map;
         }
-        reader.accept(new EmptyVisitor(){
+        reader.accept(new EmptyVisitor() {
 
             @Override
-			public MethodVisitor visitMethod(final int access, final String name, final String desc, String signature, String[] exceptions) {
+            public MethodVisitor visitMethod(final int access, final String name, final String desc, String signature,
+                    String[] exceptions) {
                 return new EmptyVisitor() {
                     @Override
-                     public void visitMethodInsn(int opcode, String owner, String name2, String desc2)  {
-	            		if (owner.equals(classDescriptor.getClassName()) && interestingSignature(desc2)) {
-                            T from = methods.get(name+desc + ((access & Opcodes.ACC_STATIC) != 0));
-                            T to = methods.get(name2+desc2 + (opcode == Opcodes.INVOKESTATIC));
+                    public void visitMethodInsn(int opcode, String owner, String name2, String desc2) {
+                        if (owner.equals(classDescriptor.getClassName()) && interestingSignature(desc2)) {
+                            T from = methods.get(name + desc + ((access & Opcodes.ACC_STATIC) != 0));
+                            T to = methods.get(name2 + desc2 + (opcode == Opcodes.INVOKESTATIC));
                             map.add(from, to);
-	            		}
+                        }
 
                     }
-
 
                 };
             }
@@ -74,7 +75,9 @@ public class SelfMethodCalls {
         }, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         return map;
     }
-	private final ClassReader  classReader;
+
+    private final ClassReader classReader;
+
     public SelfMethodCalls(ClassReader classReader) {
         this.classReader = classReader;
     }

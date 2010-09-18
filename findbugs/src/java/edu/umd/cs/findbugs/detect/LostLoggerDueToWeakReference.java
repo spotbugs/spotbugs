@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
 
     final BugReporter bugReporter;
+
     final BugAccumulator bugAccumulator;
 
     final HashSet<String> namesOfSetterMethods = new HashSet<String>();
@@ -49,26 +50,26 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
     public LostLoggerDueToWeakReference(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
-		namesOfSetterMethods.add("addHandler");
+        namesOfSetterMethods.add("addHandler");
         namesOfSetterMethods.add("setUseParentHandlers");
         namesOfSetterMethods.add("setLevel");
         namesOfSetterMethods.add("setFilter");
-	}
+    }
 
     @Override
     public void visit(Code code) {
         if (getMethodSig().indexOf("Logger") == -1) {
-			sawGetLogger = -1;
+            sawGetLogger = -1;
             loggerEscaped = loggerImported = false;
             super.visit(code); // make callbacks to sawOpcode for all opcodes
             if (false) {
-				System.out.println(getFullyQualifiedMethodName());
+                System.out.println(getFullyQualifiedMethodName());
                 System.out.printf("%d %s %s\n", sawGetLogger, loggerEscaped, loggerImported);
 
             }
             if (sawGetLogger >= 0 && !loggerEscaped && !loggerImported)
                 bugAccumulator.reportAccumulatedBugs();
-			else 
+            else
                 bugAccumulator.clearBugs();
         }
     }
@@ -82,27 +83,26 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
-		case INVOKESTATIC:
+        case INVOKESTATIC:
             if (getClassConstantOperand().equals("java/util/logging/Logger") && getNameConstantOperand().equals("getLogger")) {
                 OpcodeStack.Item item = stack.getStackItem(0);
-                if (! "".equals(item.getConstant()))
-					sawGetLogger = getPC();
+                if (!"".equals(item.getConstant()))
+                    sawGetLogger = getPC();
                 break;
             }
             checkForImport();
-			break;
+            break;
         case INVOKEVIRTUAL:
             if (getClassConstantOperand().equals("java/util/logging/Logger")
                     && namesOfSetterMethods.contains(getNameConstantOperand())) {
-				int priority = HIGH_PRIORITY;
-                if (getMethod().isStatic() && getMethodName().equals("main")
-                        && getMethodSig().equals("([Ljava/lang/String;)V"))
-                    priority = NORMAL_PRIORITY;;
-				bugAccumulator.accumulateBug(
-                        new BugInstance(this, "LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE", priority)
-                        .addClassAndMethod(this), this);
+                int priority = HIGH_PRIORITY;
+                if (getMethod().isStatic() && getMethodName().equals("main") && getMethodSig().equals("([Ljava/lang/String;)V"))
+                    priority = NORMAL_PRIORITY;
+                ;
+                bugAccumulator.accumulateBug(
+                        new BugInstance(this, "LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE", priority).addClassAndMethod(this), this);
                 break;
-			}
+            }
             checkForImport();
             checkForMethodExportImport();
             break;
@@ -110,21 +110,21 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
         case INVOKEINTERFACE:
         case INVOKESPECIAL:
             checkForImport();
-			checkForMethodExportImport();
+            checkForMethodExportImport();
             break;
 
         case CHECKCAST:
             String sig = getClassConstantOperand();
             if (sig.indexOf("Logger") >= 0)
-				loggerImported = true;
+                loggerImported = true;
             break;
 
         case GETFIELD:
-		case GETSTATIC:
+        case GETSTATIC:
             checkForImport();
             break;
         case PUTFIELD:
-		case PUTSTATIC:
+        case PUTSTATIC:
             checkForFieldEscape();
         }
 
@@ -133,31 +133,30 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
     private void checkForImport() {
         if (getSigConstantOperand().endsWith("Logger;"))
             loggerImported = true;
-	}
-
+    }
 
     private void checkForMethodExportImport() {
         int numArguments = PreorderVisitor.getNumberArguments(getSigConstantOperand());
-        for(int i = 0; i < numArguments; i++) {
-			OpcodeStack.Item item = stack.getStackItem(i);
+        for (int i = 0; i < numArguments; i++) {
+            OpcodeStack.Item item = stack.getStackItem(i);
             if (item.getSignature().endsWith("Logger;"))
                 loggerEscaped = true;
         }
-		String sig = getSigConstantOperand();
+        String sig = getSigConstantOperand();
         int pos = sig.indexOf(")");
         int loggerPos = sig.indexOf("Logger");
         if (0 <= loggerPos && loggerPos < pos)
-			loggerEscaped = true;
+            loggerEscaped = true;
     }
 
     private void checkForFieldEscape() {
         String sig = getSigConstantOperand();
         if (sig.indexOf("Logger") >= 0)
-			loggerEscaped = true;
+            loggerEscaped = true;
         OpcodeStack.Item item = stack.getStackItem(0);
         if (item.getSignature().endsWith("Logger;"))
             loggerEscaped = true;
-		
+
     }
 
     private void emitWarning() {

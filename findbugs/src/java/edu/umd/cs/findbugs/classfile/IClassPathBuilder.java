@@ -23,49 +23,55 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Build a classpath.
- * Takes a list of project codebases and
+ * Build a classpath. Takes a list of project codebases and
  * <ul>
  * <li>Scans them for nested and referenced codebases</li>
  * <li>Builds a list of application class descriptors</li>
  * <li>Adds system codebases</li>
  * </ul>
- *
+ * 
  * @author David Hovemeyer
  */
 public interface IClassPathBuilder {
     /**
      * Add a project codebase.
-     *
-	 * @param locator       locator for project codebase
-     * @param isApplication true if the codebase is an application codebase, false otherwise
+     * 
+     * @param locator
+     *            locator for project codebase
+     * @param isApplication
+     *            true if the codebase is an application codebase, false
+     *            otherwise
      */
     public void addCodeBase(ICodeBaseLocator locator, boolean isApplication);
 
     /**
-     * Set whether or not nested archives should be scanned.
-     * This should be called before the build() method is called.
-	 * 
-     * @param scanNestedArchives true if nested archives should be scanned,
-     *                            false otherwise
+     * Set whether or not nested archives should be scanned. This should be
+     * called before the build() method is called.
+     * 
+     * @param scanNestedArchives
+     *            true if nested archives should be scanned, false otherwise
      */
-	public void scanNestedArchives(boolean scanNestedArchives);
+    public void scanNestedArchives(boolean scanNestedArchives);
 
     /**
      * Build the classpath.
-     *
-	 * @param classPath IClassPath object to build
-     * @param progress  IClassPathBuilderProgress callback
+     * 
+     * @param classPath
+     *            IClassPath object to build
+     * @param progress
+     *            IClassPathBuilderProgress callback
      * @throws ResourceNotFoundException
      * @throws IOException
-	 * @throws InterruptedException
+     * @throws InterruptedException
      */
-    public void build(IClassPath classPath, IClassPathBuilderProgress progress) throws CheckedAnalysisException, IOException, InterruptedException;
+    public void build(IClassPath classPath, IClassPathBuilderProgress progress) throws CheckedAnalysisException, IOException,
+            InterruptedException;
 
     /**
-     * Get the list of application classes discovered while scanning the classpath.
-     *
-	 * @return list of application classes
+     * Get the list of application classes discovered while scanning the
+     * classpath.
+     * 
+     * @return list of application classes
      */
     public List<ClassDescriptor> getAppClassList();
 }

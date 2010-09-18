@@ -29,7 +29,8 @@ public class MemberMatcher {
 
     protected final NameMatch name;
 
-    @CheckForNull protected final String role;
+    @CheckForNull
+    protected final String role;
 
     @CheckForNull
     protected final String signature;
@@ -47,7 +48,7 @@ public class MemberMatcher {
         if (name == null) {
             if (signature == null)
                 throw new FilterException(this.getClass().getName() + " must have eiter name or signature attributes");
-			else
+            else
                 name = "~.*"; // any name
         }
 
@@ -60,29 +61,30 @@ public class MemberMatcher {
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-		if (!name.isUniversal()) {
+        if (!name.isUniversal()) {
             buf.append("name=\"");
             buf.append(name.getSpec());
             buf.append("\"");
-		}
+        }
         if (signature != null) {
             if (buf.length() > 0)
                 buf.append(" ");
-		buf.append("signature=\"");
-        buf.append(signature);
-        buf.append("\"");
+            buf.append("signature=\"");
+            buf.append(signature);
+            buf.append("\"");
         }
-		return buf.toString();
+        return buf.toString();
     }
+
     @Override
     public int hashCode() {
-		return name.hashCode() + Util.nullSafeHashcode(signature);
+        return name.hashCode() + Util.nullSafeHashcode(signature);
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || this.getClass() != o.getClass())
-			return false;
+            return false;
 
         MemberMatcher other = (MemberMatcher) o;
         return name.equals(other.name) && Util.nullSafeEquals(signature, other.signature);

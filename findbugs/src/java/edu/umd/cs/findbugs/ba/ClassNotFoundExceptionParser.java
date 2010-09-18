@@ -29,66 +29,64 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
- * Parse the detail message in a ClassNotFoundException
- * to extract the name of the missing class.
- * Unfortunately, this information is not directly available
- * from the exception object.  So, this class parses the
- * detail message in several common formats (such as the
- * format used by BCEL).
- *
+ * Parse the detail message in a ClassNotFoundException to extract the name of
+ * the missing class. Unfortunately, this information is not directly available
+ * from the exception object. So, this class parses the detail message in
+ * several common formats (such as the format used by BCEL).
+ * 
  * @author David Hovemeyer
  */
 public class ClassNotFoundExceptionParser {
     // BCEL reports missing classes in this format
-    private static final Pattern BCEL_MISSING_CLASS_PATTERN =
-            Pattern.compile("^.*while looking for class ([^:]*):.*$");
+    private static final Pattern BCEL_MISSING_CLASS_PATTERN = Pattern.compile("^.*while looking for class ([^:]*):.*$");
 
     // edu.umd.cs.findbugs.ba.type.TypeRepository
     // and edu.umd.cs.findbugs.ba.ch.Subtypes2 uses this format
-    private static final Pattern TYPE_REPOSITORY_MISSING_CLASS_PATTERN =
-			Pattern.compile("^Class ([^ ]*) cannot be resolved.*$");
+    private static final Pattern TYPE_REPOSITORY_MISSING_CLASS_PATTERN = Pattern.compile("^Class ([^ ]*) cannot be resolved.*$");
 
     private static final Pattern[] patternList;
 
     static {
         ArrayList<Pattern> list = new ArrayList<Pattern>();
         list.add(BCEL_MISSING_CLASS_PATTERN);
-		list.add(TYPE_REPOSITORY_MISSING_CLASS_PATTERN);
+        list.add(TYPE_REPOSITORY_MISSING_CLASS_PATTERN);
 
         patternList = list.toArray(new Pattern[list.size()]);
     }
 
     /**
      * Get the name of the missing class from a ClassNotFoundException.
-     *
-	 * @param ex the ClassNotFoundException
-     * @return the name of the missing class, or null if we
-     *         couldn't figure out the class name
+     * 
+     * @param ex
+     *            the ClassNotFoundException
+     * @return the name of the missing class, or null if we couldn't figure out
+     *         the class name
      */
-	public static @DottedClassName String getMissingClassName(ClassNotFoundException ex) {
+    public static @DottedClassName
+    String getMissingClassName(ClassNotFoundException ex) {
         // If the exception has a ResourceNotFoundException as the cause,
         // then we have an easy answer.
         Throwable cause = ex.getCause();
-		if (cause instanceof ResourceNotFoundException) {
+        if (cause instanceof ResourceNotFoundException) {
             String resourceName = ((ResourceNotFoundException) cause).getResourceName();
             if (resourceName != null) {
                 ClassDescriptor classDesc = DescriptorFactory.createClassDescriptorFromResourceName(resourceName);
-				return classDesc.toDottedClassName();
+                return classDesc.toDottedClassName();
             }
         }
 
-		if (ex.getMessage() == null) {
+        if (ex.getMessage() == null) {
             return null;
         }
 
         // Try the regular expression patterns to parse the class name
         // from the exception message.
         for (Pattern pattern : patternList) {
-			Matcher matcher = pattern.matcher(ex.getMessage());
+            Matcher matcher = pattern.matcher(ex.getMessage());
             if (matcher.matches())
                 return matcher.group(1);
         }
-		return null;
+        return null;
     }
 
 }

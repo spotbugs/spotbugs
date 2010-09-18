@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.asm.ClassNodeDetector;
 
 /**
  * Sample detector, using ASM
- *
+ * 
  * @author David Hovemeyer
  */
 public class TestASM extends ClassNodeDetector {
@@ -47,11 +47,11 @@ public class TestASM extends ClassNodeDetector {
     @Override
     public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
             final String[] exceptions) {
-		if (Character.isUpperCase(name.charAt(0))) {
+        if (Character.isUpperCase(name.charAt(0))) {
             BugInstance bug0 = new BugInstance(this, "NM_METHOD_NAMING_CONVENTION", NORMAL_PRIORITY).addClass(this).addMethod(
                     this.name, name, desc, access);
             bugReporter.reportBug(bug0);
-		}
+        }
         return new AbstractFBMethodVisitor() {
             int prevOpcode;
 
@@ -60,17 +60,17 @@ public class TestASM extends ClassNodeDetector {
             @Override
             public void visitInsn(int opcode) {
                 prevOpcode = opcode;
-				prevPC = getPC();
+                prevPC = getPC();
             }
 
             @Override
             public void visitMethodInsn(int opcode, String owner, String invokedName, String invokedDesc) {
                 if (prevPC + 1 == getPC() && prevOpcode == I2D && opcode == INVOKESTATIC && owner.equals("java/lang/Math")
-				        && invokedName.equals("ceil") && invokedDesc.equals("(D)D")) {
+                        && invokedName.equals("ceil") && invokedDesc.equals("(D)D")) {
                     BugInstance bug0 = new BugInstance(TestASM.this, "ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", NORMAL_PRIORITY);
                     MethodAnnotation methodAnnotation = MethodAnnotation.fromForeignMethod(TestASM.this.name, name, desc, access);
                     bug0.addClass(TestASM.this).addMethod(methodAnnotation);
-					bugReporter.reportBug(bug0);
+                    bugReporter.reportBug(bug0);
                 }
             }
         };
@@ -80,10 +80,10 @@ public class TestASM extends ClassNodeDetector {
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         if ((access & Opcodes.ACC_STATIC) != 0 && (access & Opcodes.ACC_FINAL) != 0 && (access & Opcodes.ACC_PUBLIC) != 0
-		        && !name.equals(name.toUpperCase()))
+                && !name.equals(name.toUpperCase()))
             bugReporter.reportBug(new BugInstance(this, "NM_FIELD_NAMING_CONVENTION", Detector2.LOW_PRIORITY).addClass(this)
                     .addField(this.name, name, desc, access));
         return null;
-	}
+    }
 
 }
