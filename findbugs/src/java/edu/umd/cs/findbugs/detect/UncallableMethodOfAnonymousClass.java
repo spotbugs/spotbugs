@@ -42,195 +42,195 @@ import edu.umd.cs.findbugs.util.EditDistance;
 
 public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 
-	BugReporter bugReporter;
+    BugReporter bugReporter;
 
-	public UncallableMethodOfAnonymousClass(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    public UncallableMethodOfAnonymousClass(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-	
 
-	XMethod potentialSuperCall;
-	@Override
-	public void visitJavaClass(JavaClass obj) {
+
+    XMethod potentialSuperCall;
+    @Override
+    public void visitJavaClass(JavaClass obj) {
 		try {
-	       obj.getSuperClass();
+           obj.getSuperClass();
         } catch (ClassNotFoundException e) {
-	       AnalysisContext.reportMissingClass(e);
-	       return;
+           AnalysisContext.reportMissingClass(e);
+           return;
         }
-		
-		String superclassName2 = getSuperclassName();
-		boolean weird = superclassName2.equals("java.lang.Object") && obj.getInterfaceIndices().length == 0;
+
+        String superclassName2 = getSuperclassName();
+        boolean weird = superclassName2.equals("java.lang.Object") && obj.getInterfaceIndices().length == 0;
 		boolean hasAnonymousName = ClassName.isAnonymous(obj.getClassName());
-		boolean isAnonymousInnerClass = hasAnonymousName && !weird;
-		if (isAnonymousInnerClass)
-			super.visitJavaClass(obj);
+        boolean isAnonymousInnerClass = hasAnonymousName && !weird;
+        if (isAnonymousInnerClass)
+            super.visitJavaClass(obj);
 	}
 
-	boolean definedInThisClassOrSuper(JavaClass clazz, String method)
-			throws ClassNotFoundException {
-		if (clazz == null)
+    boolean definedInThisClassOrSuper(JavaClass clazz, String method)
+            throws ClassNotFoundException {
+        if (clazz == null)
 			return false;
-		// System.out.println("Checking to see if " + method + " is defined in "
-		// + clazz.getClassName());
-		for (Method m : clazz.getMethods()) {
+        // System.out.println("Checking to see if " + method + " is defined in "
+        // + clazz.getClassName());
+        for (Method m : clazz.getMethods()) {
 			String key = m.getName() + ":" + m.getSignature();
-			if (!m.isStatic() && method.equals( key ))
-				return true;
-		}
+            if (!m.isStatic() && method.equals( key ))
+                return true;
+        }
 
-		return definedInSuperClassOrInterface(clazz, method);
+        return definedInSuperClassOrInterface(clazz, method);
 
-	}
+    }
 
-	@Override
+    @Override
     public void sawOpcode(int seen) {
-		if (seen == INVOKESPECIAL) {
-			XMethod m = getXMethodOperand();
-			if (m == null) 
+        if (seen == INVOKESPECIAL) {
+            XMethod m = getXMethodOperand();
+            if (m == null)
 				return;
-			XClass c = getXClass();
-			int nameDistance = EditDistance.editDistance(m.getName(), getMethodName());
-			if (nameDistance < 4 && c.findMatchingMethod(m.getMethodDescriptor())
+            XClass c = getXClass();
+            int nameDistance = EditDistance.editDistance(m.getName(), getMethodName());
+            if (nameDistance < 4 && c.findMatchingMethod(m.getMethodDescriptor())
 					== null && !m.isFinal())
-				potentialSuperCall = m;
-		}
-	}
+                potentialSuperCall = m;
+        }
+    }
 	boolean definedInSuperClassOrInterface(JavaClass clazz, String method)
-			throws ClassNotFoundException {
-		if (clazz == null)
-			return false;
+            throws ClassNotFoundException {
+        if (clazz == null)
+            return false;
 		JavaClass superClass = clazz.getSuperClass();
-		if (definedInThisClassOrSuper(superClass, method))
-			return true;
-		for (JavaClass i : clazz.getInterfaces())
+        if (definedInThisClassOrSuper(superClass, method))
+            return true;
+        for (JavaClass i : clazz.getInterfaces())
 			if (definedInThisClassOrSuper(i, method))
-				return true;
-		return false;
-	}
+                return true;
+        return false;
+    }
 
-	Set<String> definedInClass(JavaClass clazz) {
-		HashSet<String> result = new HashSet<String>();
-		for(Method m : clazz.getMethods()) {
+    Set<String> definedInClass(JavaClass clazz) {
+        HashSet<String> result = new HashSet<String>();
+        for(Method m : clazz.getMethods()) {
 			if (!skip(m)) 
-				result.add(m.getName()+m.getSignature());
-		}
-		return result;
+                result.add(m.getName()+m.getSignature());
+        }
+        return result;
 	}
 
-	 private boolean skip(Method obj) {
-		if (obj.isSynthetic())
-			return true;
+     private boolean skip(Method obj) {
+        if (obj.isSynthetic())
+            return true;
 		if (obj.isPrivate())
-			return true;
-		if (obj.isAbstract()) 
-			return true;
+            return true;
+        if (obj.isAbstract())
+            return true;
 
-		String methodName = obj.getName();
-		String sig = obj.getSignature();
-		if (methodName.equals("<init>"))
+        String methodName = obj.getName();
+        String sig = obj.getSignature();
+        if (methodName.equals("<init>"))
 			return true;
-		if (methodName.equals("<clinit>"))
-			return true;
-		if (sig.equals("()Ljava/lang/Object;") 
+        if (methodName.equals("<clinit>"))
+            return true;
+        if (sig.equals("()Ljava/lang/Object;")
 				&& (methodName.equals("readResolve") 
-						|| methodName.equals("writeReplace")))
+                        || methodName.equals("writeReplace")))
+            return true;
+        if (methodName.startsWith("access$"))
 			return true;
-		if (methodName.startsWith("access$"))
-			return true;
-		if (methodName.length() < 2 || methodName.indexOf('$') >= 0)
-			return true;
-		XMethod m = getXMethod();
+        if (methodName.length() < 2 || methodName.indexOf('$') >= 0)
+            return true;
+        XMethod m = getXMethod();
 		for(ClassDescriptor c : m.getAnnotationDescriptors()) 
-			if (c.getClassName().indexOf("inject") >= 0)
-				return true;
-		return false;
+            if (c.getClassName().indexOf("inject") >= 0)
+                return true;
+        return false;
 	}
-	 
-	 
-	 BugInstance pendingBug;
+
+
+     BugInstance pendingBug;
 		@Override
-		public void doVisitMethod(Method obj) {
-			super.doVisitMethod(obj);
-			if (pendingBug != null) {
+        public void doVisitMethod(Method obj) {
+            super.doVisitMethod(obj);
+            if (pendingBug != null) {
 				if (potentialSuperCall == null) {
-					String role = ClassAnnotation.SUPERCLASS_ROLE;
+                    String role = ClassAnnotation.SUPERCLASS_ROLE;
 
-					String superclassName = ClassName.toDottedClassName(getSuperclassName());
-					if (superclassName.equals("java.lang.Object")) {
-						
+                    String superclassName = ClassName.toDottedClassName(getSuperclassName());
+                    if (superclassName.equals("java.lang.Object")) {
+
                         try {
-                        	JavaClass interfaces[] = getThisClass().getInterfaces();
-	                        if (interfaces.length == 1) {
-								superclassName = interfaces[0].getClassName();
+                            JavaClass interfaces[] = getThisClass().getInterfaces();
+                            if (interfaces.length == 1) {
+                                superclassName = interfaces[0].getClassName();
 								role = ClassAnnotation.IMPLEMENTED_INTERFACE_ROLE;
-							}
+                            }
                         } catch (ClassNotFoundException e) {
-	                        AnalysisContext.reportMissingClass(e);
+                            AnalysisContext.reportMissingClass(e);
                         }
-					}
-					pendingBug.addClass(superclassName).describe(role);
+                    }
+                    pendingBug.addClass(superclassName).describe(role);
                 } else  {
-					pendingBug.setPriority(pendingBug.getPriority()-1);
-					pendingBug.addMethod(potentialSuperCall).describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
-				}
+                    pendingBug.setPriority(pendingBug.getPriority()-1);
+                    pendingBug.addMethod(potentialSuperCall).describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
+                }
 				bugReporter.reportBug(pendingBug);
-				pendingBug = null;
-				potentialSuperCall = null;
-			}
+                pendingBug = null;
+                potentialSuperCall = null;
+            }
 
-			
-			
-		}
+
+
+        }
 		@Override
-		public void visit(Code obj) {
-			if (pendingBug != null)
-				super.visit(obj);
+        public void visit(Code obj) {
+            if (pendingBug != null)
+                super.visit(obj);
 		}
 
-	@Override
-	public void visit(Method obj) {
-		try {
+    @Override
+    public void visit(Method obj) {
+        try {
 
-			if (skip(obj)) return;
+            if (skip(obj)) return;
 
-			JavaClass clazz = getThisClass();
-			XMethod xmethod = XFactory.createXMethod(clazz, obj);
-			XFactory factory = AnalysisContext.currentXFactory();
+            JavaClass clazz = getThisClass();
+            XMethod xmethod = XFactory.createXMethod(clazz, obj);
+            XFactory factory = AnalysisContext.currentXFactory();
 			String key = obj.getName() + ":" + obj.getSignature();
-			if (!factory.isCalled(xmethod)
-					&& (obj.isStatic() || 
-							!definedInSuperClassOrInterface(clazz, key))) {
+            if (!factory.isCalled(xmethod)
+                    && (obj.isStatic() ||
+                            !definedInSuperClassOrInterface(clazz, key))) {
 				int priority = NORMAL_PRIORITY;
-				JavaClass superClass = clazz.getSuperClass();
-				String superClassName = superClass.getClassName();
-				if (superClassName.equals("java.lang.Object")) {
+                JavaClass superClass = clazz.getSuperClass();
+                String superClassName = superClass.getClassName();
+                if (superClassName.equals("java.lang.Object")) {
 						priority = NORMAL_PRIORITY;
-						
-				}
-				else if (definedInClass(superClass).containsAll(definedInClass(clazz)))
+
+                }
+                else if (definedInClass(superClass).containsAll(definedInClass(clazz)))
 						priority = NORMAL_PRIORITY;
-				else
-					priority = HIGH_PRIORITY;
-				Code code = null;
+                else
+                    priority = HIGH_PRIORITY;
+                Code code = null;
 				for(Attribute a : obj.getAttributes()) 
-					if (a instanceof Code) {
-						code = (Code) a;
-						break;
+                    if (a instanceof Code) {
+                        code = (Code) a;
+                        break;
 					}
-				if (code != null && code.getLength() == 1) 
-					priority++; // TODO: why didn't FindBugs give a warning here before the null check was added?
-				
+                if (code != null && code.getLength() == 1)
+                    priority++; // TODO: why didn't FindBugs give a warning here before the null check was added?
+
 				pendingBug = new BugInstance(this, "UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS",
-						priority).addClassAndMethod(this);
-				potentialSuperCall = null;
-			}
+                        priority).addClassAndMethod(this);
+                potentialSuperCall = null;
+            }
 
-		} catch (ClassNotFoundException e) {
-			bugReporter.reportMissingClass(e);
-		}
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        }
 
-	}
+    }
 
 }

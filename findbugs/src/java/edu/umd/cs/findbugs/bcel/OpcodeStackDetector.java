@@ -33,41 +33,41 @@ import edu.umd.cs.findbugs.OpcodeStack.JumpInfo;
  */
 abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
 
-	/**
+    /**
      * @author pwilliam
      */
     public abstract static class WithCustomJumpInfo extends OpcodeStackDetector {
-    	public abstract JumpInfo customJumpInfo();
+        public abstract JumpInfo customJumpInfo();
     }
 
-	protected OpcodeStack stack;
-	
-	public OpcodeStack getStack() {
+    protected OpcodeStack stack;
+
+    public OpcodeStack getStack() {
 		return stack;
-	}
-	
-	@Override
+    }
+
+    @Override
 	public void visitCode(Code obj) {
-		if (!shouldVisitCode(obj))
-			return;
-		stack = new OpcodeStack();
+        if (!shouldVisitCode(obj))
+            return;
+        stack = new OpcodeStack();
 		stack.resetForMethodEntry(this);
-		super.visitCode(obj);
-		stack = null;
-	}
+        super.visitCode(obj);
+        stack = null;
+    }
 	
-	@Override
-	public boolean beforeOpcode(int seen) {
-		stack.precomputation(this);
+    @Override
+    public boolean beforeOpcode(int seen) {
+        stack.precomputation(this);
 		stack.mergeJumps(this);
-		return !stack.isTop();
+        return !stack.isTop();
+    }
+
+    @Override
+    public void afterOpcode(int seen) {
+        stack.sawOpcode(this, seen);
 	}
 
-	@Override
-	public void afterOpcode(int seen) {
-		stack.sawOpcode(this, seen);
-	}
-
-	@Override
-	abstract public void sawOpcode(int seen);
+    @Override
+    abstract public void sawOpcode(int seen);
 }

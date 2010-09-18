@@ -49,139 +49,139 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  */
 
 public class DetectorsTest {
-	/**
-     * 
+    /**
+     *
      */
     private static final String FB_UNEXPECTED_WARNING = "FB_UNEXPECTED_WARNING";
 
-	/**
-     * 
+    /**
+     *
      */
     private static final String FB_MISSING_EXPECTED_WARNING = "FB_MISSING_EXPECTED_WARNING";
 
-	private BugCollectionBugReporter bugReporter;
+    private BugCollectionBugReporter bugReporter;
 
-	private IFindBugsEngine engine;
+    private IFindBugsEngine engine;
 
-	@Before
-	public void setUp() throws Exception {
-		loadFindbugsPlugin();
+    @Before
+    public void setUp() throws Exception {
+        loadFindbugsPlugin();
 	}
 
-	@Test
-	public void testAllRegressionFiles() throws IOException,
-			InterruptedException {
+    @Test
+    public void testAllRegressionFiles() throws IOException,
+            InterruptedException {
 		setUpEngine("../findbugsTestCases/build/classes/");
 
-		engine.execute();
+        engine.execute();
 
-		// If there are zero bugs, then something's wrong
-		assertFalse(
-				"No bugs were reported. Something is wrong with the configuration",
+        // If there are zero bugs, then something's wrong
+        assertFalse(
+                "No bugs were reported. Something is wrong with the configuration",
 				bugReporter.getBugCollection().getCollection().isEmpty());
-	}
-	@Test
-	public void testBug3053867() throws IOException,
+    }
+    @Test
+    public void testBug3053867() throws IOException,
 			InterruptedException {
-		setUpEngine("../findbugsTestCases/build/classes/sfBugs/Bug3053867.class", "../findbugsTestCases/build/classes/sfBugs/Bug3053867$Foo.class");
+        setUpEngine("../findbugsTestCases/build/classes/sfBugs/Bug3053867.class", "../findbugsTestCases/build/classes/sfBugs/Bug3053867$Foo.class");
 
-		engine.execute();
+        engine.execute();
 
-		// If there are zero bugs, then something's wrong
-		assertFalse(
-				"No bugs were reported. Something is wrong with the configuration",
+        // If there are zero bugs, then something's wrong
+        assertFalse(
+                "No bugs were reported. Something is wrong with the configuration",
 				bugReporter.getBugCollection().getCollection().isEmpty());
-	}
-	
-	@After
+    }
+
+    @After
 	public void checkForUnexpectedBugs() {
-		List<BugInstance> unexpectedBugs = new ArrayList<BugInstance>();
-		for (BugInstance bug : bugReporter.getBugCollection()) {
-			if (isUnexpectedBug(bug) && bug.getPriority() == Priorities.HIGH_PRIORITY) {
+        List<BugInstance> unexpectedBugs = new ArrayList<BugInstance>();
+        for (BugInstance bug : bugReporter.getBugCollection()) {
+            if (isUnexpectedBug(bug) && bug.getPriority() == Priorities.HIGH_PRIORITY) {
 				unexpectedBugs.add(bug);
-				System.out.println(bug.getMessageWithPriorityTypeAbbreviation());
-				System.out.println("  " + bug.getPrimarySourceLineAnnotation());
-			}
+                System.out.println(bug.getMessageWithPriorityTypeAbbreviation());
+                System.out.println("  " + bug.getPrimarySourceLineAnnotation());
+            }
 		}
 
-		if (!unexpectedBugs.isEmpty())
-		  Assert.fail("Unexpected bugs (" + unexpectedBugs.size() + "):"+ getBugsLocations(unexpectedBugs));
-	}
+        if (!unexpectedBugs.isEmpty())
+          Assert.fail("Unexpected bugs (" + unexpectedBugs.size() + "):"+ getBugsLocations(unexpectedBugs));
+    }
 
-	/**
-	 * Returns a printable String concatenating bug locations.
-	 */
+    /**
+     * Returns a printable String concatenating bug locations.
+     */
 	private String getBugsLocations(List<BugInstance> unexpectedBugs) {
-		StringBuilder message = new StringBuilder();
-		for (BugInstance bugInstance : unexpectedBugs) {
-			message.append("\n");
+        StringBuilder message = new StringBuilder();
+        for (BugInstance bugInstance : unexpectedBugs) {
+            message.append("\n");
 			if (bugInstance.getBugPattern().getType().equals(FB_MISSING_EXPECTED_WARNING))
-				message.append("missing " );
-			else
-				message.append("unexpected " );
+                message.append("missing " );
+            else
+                message.append("unexpected " );
 			StringAnnotation pattern = (StringAnnotation) bugInstance.getAnnotations().get(2);
-			message.append(pattern.getValue());
-			message.append(" ");
-			message.append(bugInstance.getPrimarySourceLineAnnotation());
+            message.append(pattern.getValue());
+            message.append(" ");
+            message.append(bugInstance.getPrimarySourceLineAnnotation());
 		}
-		return message.toString();
-	}
+        return message.toString();
+    }
 
-	/**
-	 * Returns if a bug instance is unexpected for this test.
-	 */
+    /**
+     * Returns if a bug instance is unexpected for this test.
+     */
 	private boolean isUnexpectedBug(BugInstance bug) {
-		return FB_MISSING_EXPECTED_WARNING.equals(bug.getType())
-				|| FB_UNEXPECTED_WARNING.equals(bug.getType());
-	}
+        return FB_MISSING_EXPECTED_WARNING.equals(bug.getType())
+                || FB_UNEXPECTED_WARNING.equals(bug.getType());
+    }
 
-	/**
-	 * Loads the default detectors from findbugs.jar, to isolate the test from
-	 * others that use fake plugins.
+    /**
+     * Loads the default detectors from findbugs.jar, to isolate the test from
+     * others that use fake plugins.
 	 */
-	private void loadFindbugsPlugin() throws MalformedURLException {
-		File workingDir = new File(System.getProperty("user.dir"));
-		File findbugsJar = new File(workingDir.getParentFile(),
+    private void loadFindbugsPlugin() throws MalformedURLException {
+        File workingDir = new File(System.getProperty("user.dir"));
+        File findbugsJar = new File(workingDir.getParentFile(),
 				"findbugs/build/lib/findbugs.jar");
-		URL[] pluginList = new URL[] { findbugsJar.toURI().toURL() };
-		DetectorFactoryCollection dfc = new DetectorFactoryCollection();
+        URL[] pluginList = new URL[] { findbugsJar.toURI().toURL() };
+        DetectorFactoryCollection dfc = new DetectorFactoryCollection();
 //		dfc.setPluginList(pluginList);
-		DetectorFactoryCollection.resetInstance(dfc);
-	}
+        DetectorFactoryCollection.resetInstance(dfc);
+    }
 
-	/**
-	 * Sets up a FB engine to run on the 'findbugsTestCases' project. It enables
-	 * all the available detectors and reports all the bug categories. Uses a
+    /**
+     * Sets up a FB engine to run on the 'findbugsTestCases' project. It enables
+     * all the available detectors and reports all the bug categories. Uses a
 	 * normal priority threshold.
-	 */
-	private void setUpEngine(String ... analyzeMe) {
-		this.engine = new FindBugs2();
+     */
+    private void setUpEngine(String ... analyzeMe) {
+        this.engine = new FindBugs2();
 		Project project = new Project();
-		project.setProjectName("findbugsTestCases");
-		this.engine.setProject(project);
+        project.setProjectName("findbugsTestCases");
+        this.engine.setProject(project);
 
-		DetectorFactoryCollection detectorFactoryCollection = DetectorFactoryCollection
-				.instance();
-		engine.setDetectorFactoryCollection(detectorFactoryCollection);
+        DetectorFactoryCollection detectorFactoryCollection = DetectorFactoryCollection
+                .instance();
+        engine.setDetectorFactoryCollection(detectorFactoryCollection);
 		
-		bugReporter = new BugCollectionBugReporter(project);
-		bugReporter.setPriorityThreshold(Priorities.LOW_PRIORITY);
-		
+        bugReporter = new BugCollectionBugReporter(project);
+        bugReporter.setPriorityThreshold(Priorities.LOW_PRIORITY);
+
 		engine.setBugReporter(this.bugReporter);
-		UserPreferences preferences = UserPreferences.createDefaultUserPreferences();
-		DetectorFactory checkExpectedWarnings = DetectorFactoryCollection.instance().getFactory("CheckExpectedWarnings");
-		preferences.enableDetector(checkExpectedWarnings, true);
+        UserPreferences preferences = UserPreferences.createDefaultUserPreferences();
+        DetectorFactory checkExpectedWarnings = DetectorFactoryCollection.instance().getFactory("CheckExpectedWarnings");
+        preferences.enableDetector(checkExpectedWarnings, true);
 		preferences.getFilterSettings().clearAllCategories();
-		this.engine.setUserPreferences(preferences);
+        this.engine.setUserPreferences(preferences);
 
 
-		// This is ugly. We should think how to improve this.
-		for(String s : analyzeMe) 
-			project.addFile(s);
+        // This is ugly. We should think how to improve this.
+        for(String s : analyzeMe)
+            project.addFile(s);
 		
-		project.addAuxClasspathEntry("../findbugsTestCases/lib/j2ee.jar");
-		project.addAuxClasspathEntry("lib/junit.jar");
-		project.addAuxClasspathEntry("../findbugs/lib/jsr305.jar");
+        project.addAuxClasspathEntry("../findbugsTestCases/lib/j2ee.jar");
+        project.addAuxClasspathEntry("lib/junit.jar");
+        project.addAuxClasspathEntry("../findbugs/lib/jsr305.jar");
 		project.addAuxClasspathEntry("../findbugs/lib/annotations.jar");
-	}
+    }
 }

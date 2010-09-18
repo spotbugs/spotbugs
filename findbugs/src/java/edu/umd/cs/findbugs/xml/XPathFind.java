@@ -1,17 +1,17 @@
 /*
  * Evaluate XPath expressions on an XML file
  * Copyright (C) 2004, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -42,56 +42,56 @@ import org.dom4j.io.SAXReader;
  * @author David Hovemeyer
  */
 public abstract class XPathFind {
-	private Document document;
+    private Document document;
 
-	public XPathFind(Document document) {
-		this.document = document;
-	}
+    public XPathFind(Document document) {
+        this.document = document;
+    }
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public void find(String xpath) {
-		for (Node node : (List<Node>) document.selectNodes(xpath)) {
-			match(node);
-		}
+        for (Node node : (List<Node>) document.selectNodes(xpath)) {
+            match(node);
+        }
 	}
 
-	protected abstract void match(Node node);
+    protected abstract void match(Node node);
 
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 2) {
-			System.err.println("Usage: " + XPathFind.class.getName() +
+    public static void main(String[] argv) throws Exception {
+        if (argv.length != 2) {
+            System.err.println("Usage: " + XPathFind.class.getName() +
 				": <filename> <xpath expression>");
-			System.exit(1);
-		}
+            System.exit(1);
+        }
 
-		String fileName = argv[0];
-		String xpath = argv[1];
+        String fileName = argv[0];
+        String xpath = argv[1];
 
-		SAXReader reader = new SAXReader();
-		Document document = reader.read(fileName);
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(fileName);
 
-		XPathFind finder = new XPathFind(document) {
-			@Override
-			protected void match(Node node) {
+        XPathFind finder = new XPathFind(document) {
+            @Override
+            protected void match(Node node) {
 				//System.out.println(node.toString());
-				if (node instanceof Element) {
-					Element element = (Element) node;
-					System.out.println("Element: " + element.getQualifiedName());
+                if (node instanceof Element) {
+                    Element element = (Element) node;
+                    System.out.println("Element: " + element.getQualifiedName());
 					System.out.println("\tText: " + element.getText());
-					System.out.println("\tAttributes:");
-					for (Iterator i = element.attributeIterator(); i.hasNext(); ) {
-						Attribute attribute = (Attribute) i.next();
+                    System.out.println("\tAttributes:");
+                    for (Iterator i = element.attributeIterator(); i.hasNext(); ) {
+                        Attribute attribute = (Attribute) i.next();
 						System.out.println("\t\t" + attribute.getName() + "=" + attribute.getValue());
-					}
-				} else if (node instanceof Attribute) {
-					Attribute attribute = (Attribute) node;
+                    }
+                } else if (node instanceof Attribute) {
+                    Attribute attribute = (Attribute) node;
 					System.out.println("Attribute: " + attribute.getName() + "=" + attribute.getValue());
-				}
-			}
-		};
+                }
+            }
+        };
 
-		finder.find(xpath);
-	}
+        finder.find(xpath);
+    }
 }
 
 // vim:ts=4

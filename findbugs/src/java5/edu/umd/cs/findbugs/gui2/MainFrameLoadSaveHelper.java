@@ -30,7 +30,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
         this.mainFrame = mainFrame;
     }
 
-	public void initialize() {
+    public void initialize() {
         saveOpenFileChooser = new FBFileChooser();
         saveOpenFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         saveOpenFileChooser.setAcceptAllFileFilterUsed(false);
@@ -41,7 +41,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
         filterOpenFileChooser = new FBFileChooser();
         filterOpenFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         filterOpenFileChooser.setFileFilter(FindBugsFilterFileFilter.INSTANCE);
-	}
+    }
 
     /**
      * This method is for when the user wants to open a file.
@@ -511,5 +511,5 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
     }
 
-	enum SaveReturn {SAVE_SUCCESSFUL, SAVE_IO_EXCEPTION, SAVE_ERROR}
+    enum SaveReturn {SAVE_SUCCESSFUL, SAVE_IO_EXCEPTION, SAVE_ERROR}
 }

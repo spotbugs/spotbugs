@@ -32,215 +32,215 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class Noise extends OpcodeStackDetector {
 
-	class HashQueue {
-		HashQueue(int size) throws NoSuchAlgorithmException {
-			md = MessageDigest.getInstance("SHA");
+    class HashQueue {
+        HashQueue(int size) throws NoSuchAlgorithmException {
+            md = MessageDigest.getInstance("SHA");
 			this.size = size;
-			this.data = new byte[size];
-		}
+            this.data = new byte[size];
+        }
 
-		MessageDigest md;
+        MessageDigest md;
 
-		final int size;
+        final int size;
 
-		int next = 0; // 0 <= next < size
+        int next = 0; // 0 <= next < size
 
-		final byte[] data;
+        final byte[] data;
 
-		// data is next..size-1, 0..next-1
-		public void push(byte b) {
-			data[next++] = b;
+        // data is next..size-1, 0..next-1
+        public void push(byte b) {
+            data[next++] = b;
 			if (next == size)
-				next = 0;
-		}
+                next = 0;
+        }
 
-		public void reset() {
-			next = 0;
-			for (int i = 0; i < size; i++)
+        public void reset() {
+            next = 0;
+            for (int i = 0; i < size; i++)
 				data[i] = 0;
+        }
+
+        public void push(String s) {
+            for (byte b : s.getBytes())
+                push(b);
 		}
 
-		public void push(String s) {
-			for (byte b : s.getBytes())
-				push(b);
-		}
-
-		public void pushHash(Object x) {
-			push(x.hashCode());
-		}
+        public void pushHash(Object x) {
+            push(x.hashCode());
+        }
 		public void push(int x) {
-			push((byte) (x));
-			push((byte) (x >> 8));
-			push((byte) (x >> 16));
+            push((byte) (x));
+            push((byte) (x >> 8));
+            push((byte) (x >> 16));
 			push((byte) (x >> 24));
-		}
+        }
 
-		public int getHash() {
-			md.update(primer);
-			md.update(data, next, size - next);
+        public int getHash() {
+            md.update(primer);
+            md.update(data, next, size - next);
 			md.update(data, 0, next);
-			byte[] hash = md.digest();
-			int result = (hash[0] & 0xff) | (hash[1] & 0xff) << 8 | (hash[2] & 0xff) << 16 | (hash[3] & 0x7f) << 24;
-			return result;
+            byte[] hash = md.digest();
+            int result = (hash[0] & 0xff) | (hash[1] & 0xff) << 8 | (hash[2] & 0xff) << 16 | (hash[3] & 0x7f) << 24;
+            return result;
 		}
+
+        public int getPriority() {
+            int hash = getHash();
 		
-		public int getPriority() {
-			int hash = getHash();
-		
-			if ((hash & 0x1ff0) == 0) {
-				hash = hash & 0xf;
-				if (hash < 1)
+            if ((hash & 0x1ff0) == 0) {
+                hash = hash & 0xf;
+                if (hash < 1)
 					return Priorities.HIGH_PRIORITY;
-				else if (hash < 1+2)
-					return Priorities.NORMAL_PRIORITY;
-				else if (hash < 1+2+4)
+                else if (hash < 1+2)
+                    return Priorities.NORMAL_PRIORITY;
+                else if (hash < 1+2+4)
 					return Priorities.LOW_PRIORITY;
-				else return Priorities.IGNORE_PRIORITY;
+                else return Priorities.IGNORE_PRIORITY;
+        }
+            else return Priorities.IGNORE_PRIORITY+1;
 		}
-			else return Priorities.IGNORE_PRIORITY+1;
-		}
-	}
+    }
 
-	final BugReporter bugReporter;
-	final BugAccumulator accumulator;
+    final BugReporter bugReporter;
+    final BugAccumulator accumulator;
 
-	final HashQueue hq;
+    final HashQueue hq;
 
-	byte[] primer;
+    byte[] primer;
 
-	public Noise(BugReporter bugReporter) throws NoSuchAlgorithmException {
-		this.bugReporter = bugReporter;
-		this.accumulator = new BugAccumulator(bugReporter);
+    public Noise(BugReporter bugReporter) throws NoSuchAlgorithmException {
+        this.bugReporter = bugReporter;
+        this.accumulator = new BugAccumulator(bugReporter);
 		hq = new HashQueue(24);
-	}
+    }
 
 
-	@Override
-	public void visit(Code code) {
-		primer = getFullyQualifiedMethodName().getBytes();
+    @Override
+    public void visit(Code code) {
+        primer = getFullyQualifiedMethodName().getBytes();
 		hq.reset();
 
-		super.visit(code); // make callbacks to sawOpcode for all opcodes
-		accumulator.reportAccumulatedBugs();
-	}
+        super.visit(code); // make callbacks to sawOpcode for all opcodes
+        accumulator.reportAccumulatedBugs();
+    }
 
-	@Override
-	public void sawInt(int i) {
-		hq.push(i);
+    @Override
+    public void sawInt(int i) {
+        hq.push(i);
 	}
-	@Override
-	public void sawLong(long x) {
-		hq.push((int)(x>>0));
+    @Override
+    public void sawLong(long x) {
+        hq.push((int)(x>>0));
 		hq.push((int)(x>>32));
-	}
-	@Override
-	public void sawString(String s) {
+    }
+    @Override
+    public void sawString(String s) {
 		hq.pushHash(s);
-	}
-	@Override
-	public void sawClass() {
+    }
+    @Override
+    public void sawClass() {
 		hq.push(getClassConstantOperand());
-	}
-	/*
-	 * (non-Javadoc)
+    }
+    /*
+     * (non-Javadoc)
 	 * 
-	 * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
-	 */
-	
-	@Override
-	public void sawOpcode(int seen) {
-		int priority;
-		switch (seen) {
-		case INVOKEINTERFACE:
-		case INVOKEVIRTUAL:
-		case INVOKESPECIAL:
-		case INVOKESTATIC:
-			hq.pushHash(getClassConstantOperand());
-			if (getNameConstantOperand().indexOf('$') == -1)
-				hq.pushHash(getNameConstantOperand());
-			hq.pushHash(getSigConstantOperand());
+     * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
+     */
 
-			 priority = hq.getPriority();
-			if (priority <= Priorities.LOW_PRIORITY)
-				accumulator.accumulateBug(new BugInstance(this, "NOISE_METHOD_CALL", priority).addClassAndMethod(this)
+	@Override
+    public void sawOpcode(int seen) {
+        int priority;
+        switch (seen) {
+		case INVOKEINTERFACE:
+        case INVOKEVIRTUAL:
+        case INVOKESPECIAL:
+        case INVOKESTATIC:
+			hq.pushHash(getClassConstantOperand());
+            if (getNameConstantOperand().indexOf('$') == -1)
+                hq.pushHash(getNameConstantOperand());
+            hq.pushHash(getSigConstantOperand());
+
+             priority = hq.getPriority();
+            if (priority <= Priorities.LOW_PRIORITY)
+                accumulator.accumulateBug(new BugInstance(this, "NOISE_METHOD_CALL", priority).addClassAndMethod(this)
 				        .addCalledMethod(this), this);
-			
-			break;
-		case GETFIELD:
+
+            break;
+        case GETFIELD:
 		case PUTFIELD:
-		case GETSTATIC:
-		case PUTSTATIC:
-			hq.pushHash(getClassConstantOperand());
+        case GETSTATIC:
+        case PUTSTATIC:
+            hq.pushHash(getClassConstantOperand());
 			if (getNameConstantOperand().indexOf('$') == -1)
-				hq.pushHash(getNameConstantOperand());
-			hq.pushHash(getSigConstantOperand());
-			 priority = hq.getPriority();
+                hq.pushHash(getNameConstantOperand());
+            hq.pushHash(getSigConstantOperand());
+             priority = hq.getPriority();
 			if (priority <= Priorities.LOW_PRIORITY)
-				accumulator.accumulateBug(new BugInstance(this, "NOISE_FIELD_REFERENCE", priority).addClassAndMethod(this)
-				        .addReferencedField(this), this);
-			break;
+                accumulator.accumulateBug(new BugInstance(this, "NOISE_FIELD_REFERENCE", priority).addClassAndMethod(this)
+                        .addReferencedField(this), this);
+            break;
 		case CHECKCAST:
-		case INSTANCEOF:
-		case NEW:
-			hq.pushHash(getClassConstantOperand());
+        case INSTANCEOF:
+        case NEW:
+            hq.pushHash(getClassConstantOperand());
 			break;
-		case IFEQ:
-		case IFNE:
-		case IFNONNULL:
+        case IFEQ:
+        case IFNE:
+        case IFNONNULL:
 		case IFNULL:
-		case IF_ICMPEQ:
-		case IF_ICMPNE:
-		case IF_ICMPLE:
+        case IF_ICMPEQ:
+        case IF_ICMPNE:
+        case IF_ICMPLE:
 		case IF_ICMPGE:
-		case IF_ICMPGT:
-		case IF_ICMPLT:
-		case IF_ACMPEQ:
+        case IF_ICMPGT:
+        case IF_ICMPLT:
+        case IF_ACMPEQ:
 		case IF_ACMPNE:
-		case RETURN:
-		case ARETURN:
-		case IRETURN:
+        case RETURN:
+        case ARETURN:
+        case IRETURN:
 		case MONITORENTER:
-		case MONITOREXIT:
-		case IINC:
-		case NEWARRAY:
+        case MONITOREXIT:
+        case IINC:
+        case NEWARRAY:
 		case TABLESWITCH:
-		case LOOKUPSWITCH:
-		case LCMP:
-		case INEG:
+        case LOOKUPSWITCH:
+        case LCMP:
+        case INEG:
 		case IADD:
-		case IMUL:
-		case ISUB:
-		case IDIV:
+        case IMUL:
+        case ISUB:
+        case IDIV:
 		case IREM:
-		case IXOR:
-		case ISHL:
-		case ISHR:
+        case IXOR:
+        case ISHL:
+        case ISHR:
 		case IUSHR:
-		case IAND:
-		case IOR:
-		case LAND:
+        case IAND:
+        case IOR:
+        case LAND:
 		case LOR:
-		case LADD:
-		case LMUL:
-		case LSUB:
+        case LADD:
+        case LMUL:
+        case LSUB:
 		case LDIV:
-		case LSHL:
-		case LSHR:
-		case LUSHR:
+        case LSHL:
+        case LSHR:
+        case LUSHR:
 		case AALOAD:
-		case AASTORE:
-		case IALOAD:
-		case IASTORE:
+        case AASTORE:
+        case IALOAD:
+        case IASTORE:
 		case BALOAD:
-		case BASTORE:
-			hq.push(seen);
-			 priority = hq.getPriority();
+        case BASTORE:
+            hq.push(seen);
+             priority = hq.getPriority();
 				if (priority <= Priorities.LOW_PRIORITY)
-					accumulator.accumulateBug(new BugInstance(this, "NOISE_OPERATION", priority).addClassAndMethod(this)
-							.addString(OPCODE_NAMES[seen]), this);
-		}
+                    accumulator.accumulateBug(new BugInstance(this, "NOISE_OPERATION", priority).addClassAndMethod(this)
+                            .addString(OPCODE_NAMES[seen]), this);
+        }
 	}
-	
-	
+
+
 
 }

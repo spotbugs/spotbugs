@@ -8,24 +8,24 @@ import edu.umd.cs.findbugs.ba.MethodBytecodeSet;
  * of bytecode offsets to opcodes.
  */
 public class UnpackedCode {
-	private MethodBytecodeSet bytecodeSet;
-	private short[] offsetToBytecodeMap;
-	public UnpackedCode(MethodBytecodeSet bytecodeSet, short[] offsetToBytecodeMap) {
+    private MethodBytecodeSet bytecodeSet;
+    private short[] offsetToBytecodeMap;
+    public UnpackedCode(MethodBytecodeSet bytecodeSet, short[] offsetToBytecodeMap) {
 		this.bytecodeSet = bytecodeSet;
-		this.offsetToBytecodeMap = offsetToBytecodeMap;
-	}
+        this.offsetToBytecodeMap = offsetToBytecodeMap;
+    }
 
-	/**
-	 * @return Returns the bytecodeSet.
-	 */
+    /**
+     * @return Returns the bytecodeSet.
+     */
 	public MethodBytecodeSet getBytecodeSet() {
-		return bytecodeSet;
-	}
+        return bytecodeSet;
+    }
 
-	/**
-	 * @return Returns the offsetToBytecodeMap.
-	 */
+    /**
+     * @return Returns the offsetToBytecodeMap.
+     */
 	public short[] getOffsetToBytecodeMap() {
-		return offsetToBytecodeMap;
-	}
+        return offsetToBytecodeMap;
+    }
 }

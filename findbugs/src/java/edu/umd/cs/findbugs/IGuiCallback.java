@@ -30,27 +30,27 @@ import java.util.concurrent.ExecutorService;
 
 /**
  * Interface for any kind of GUI attached to the current FindBug analysis
- * 
+ *
  * @author Andrei
  */
 public interface IGuiCallback {
-	/** If true, do not open windows or browsers */
-	boolean isHeadless();
-	void showMessageDialog(String message);
+    /** If true, do not open windows or browsers */
+    boolean isHeadless();
+    void showMessageDialog(String message);
 	
-	
-	public final static int YES_OPTION = 0;
-	public final static int NO_OPTION = 1;
+
+    public final static int YES_OPTION = 0;
+    public final static int NO_OPTION = 1;
 	public final static int CANCEL_OPTION = 2;
-	
-	 public static final int         YES_NO_OPTION = 0;
-	 public static final int         YES_NO_CANCEL_OPTION = 1;
+
+     public static final int         YES_NO_OPTION = 0;
+     public static final int         YES_NO_CANCEL_OPTION = 1;
 	 public static final int         OK_CANCEL_OPTION = 2;
 
-	void invokeInGUIThread(Runnable r);
+    void invokeInGUIThread(Runnable r);
     int showConfirmDialog(String message, String title, String ok, String cancel);
-	String showQuestionDialog(String message, String title, String defaultValue);
-    
+    String showQuestionDialog(String message, String title, String defaultValue);
+
     List<String> showForm(String message, String title, List<FormItem> labels);
 
     InputStream getProgressMonitorInputStream(InputStream in, int length, String msg);
@@ -58,7 +58,7 @@ public interface IGuiCallback {
     void displayNonmodelMessage(String title, String message);
     boolean showDocument(URL u);
     /**
-     * Called as soon as the cloud object is created, before it is initialized. 
+     * Called as soon as the cloud object is created, before it is initialized.
      * Useful for adding status msg listener.
      */
     void registerCloud(Project project, BugCollection collection, Cloud cloud);

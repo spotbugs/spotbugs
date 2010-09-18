@@ -54,121 +54,121 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class CallToUnconditionalThrower extends PreorderVisitor implements Detector {
 
-	static boolean DEBUG = false;
-	BugReporter bugReporter;
-	AnalysisContext analysisContext;
+    static boolean DEBUG = false;
+    BugReporter bugReporter;
+    AnalysisContext analysisContext;
 
-	public CallToUnconditionalThrower(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
-
-	
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.Detector#report()
-     */
-    public void report() {
-	    // TODO Auto-generated method stub
-	    
+    public CallToUnconditionalThrower(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
     }
 
 
-	private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
-		if (method.isSynthetic() || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE) return;
-		CFG cfg = classContext.getCFG(method);
-		
-		
-		ConstantPoolGen cpg = classContext.getConstantPoolGen();
-		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.Detector#report()
+     */
+    public void report() {
+        // TODO Auto-generated method stub
+
+    }
+
+
+    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+        if (method.isSynthetic() || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE) return;
+        CFG cfg = classContext.getCFG(method);
 		
 
-		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext(); ) {
-			BasicBlock basicBlock = i.next();
+        ConstantPoolGen cpg = classContext.getConstantPoolGen();
+        TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+		
 
-			// Check if it's a method invocation.
-			if (!basicBlock.isExceptionThrower())
-				continue;
+        for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext(); ) {
+            BasicBlock basicBlock = i.next();
+
+            // Check if it's a method invocation.
+            if (!basicBlock.isExceptionThrower())
+                continue;
 			InstructionHandle thrower = basicBlock.getExceptionThrower();
-			Instruction ins = thrower.getInstruction();
-			if (!(ins instanceof InvokeInstruction))
-				continue;
+            Instruction ins = thrower.getInstruction();
+            if (!(ins instanceof InvokeInstruction))
+                continue;
 			
-			InvokeInstruction inv = (InvokeInstruction) ins;
-			boolean foundThrower = false;
-			boolean foundNonThrower = false;
+            InvokeInstruction inv = (InvokeInstruction) ins;
+            boolean foundThrower = false;
+            boolean foundNonThrower = false;
 
-			if (inv instanceof INVOKEINTERFACE) continue;
-				
-			String className = inv.getClassName(cpg);
+            if (inv instanceof INVOKEINTERFACE) continue;
+
+            String className = inv.getClassName(cpg);
 			
-			Location loc = new Location(thrower, basicBlock);
-			TypeFrame typeFrame = typeDataflow.getFactAtLocation(loc);
-			XMethod primaryXMethod = XFactory.createXMethod(inv, cpg);
+            Location loc = new Location(thrower, basicBlock);
+            TypeFrame typeFrame = typeDataflow.getFactAtLocation(loc);
+            XMethod primaryXMethod = XFactory.createXMethod(inv, cpg);
 			// if (primaryXMethod.isAbstract()) continue;
-			Set<XMethod> targetSet = null;
-			try {
+            Set<XMethod> targetSet = null;
+            try {
 
-				if (className.startsWith("["))
-					continue;
-				String methodSig = inv.getSignature(cpg);
+                if (className.startsWith("["))
+                    continue;
+                String methodSig = inv.getSignature(cpg);
 				if (!methodSig.endsWith("V")) 
-					continue;
+                    continue;
 
-				targetSet = Hierarchy2.resolveMethodCallTargets(inv, typeFrame, cpg);
+                targetSet = Hierarchy2.resolveMethodCallTargets(inv, typeFrame, cpg);
 
-				for(XMethod xMethod : targetSet) {
-					if (DEBUG) System.out.println("\tFound " + xMethod);
+                for(XMethod xMethod : targetSet) {
+                    if (DEBUG) System.out.println("\tFound " + xMethod);
+
 					
-					
-					boolean isUnconditionalThrower = xMethod.isUnconditionalThrower() && !xMethod.isUnsupported() && !xMethod.isSynthetic();
-					if (isUnconditionalThrower) {
-						foundThrower = true;
+                    boolean isUnconditionalThrower = xMethod.isUnconditionalThrower() && !xMethod.isUnsupported() && !xMethod.isSynthetic();
+                    if (isUnconditionalThrower) {
+                        foundThrower = true;
 						if (DEBUG) System.out.println("Found thrower");
-					}
-					else {
-						foundNonThrower = true;
+                    }
+                    else {
+                        foundNonThrower = true;
 						if (DEBUG) System.out.println("Found non thrower");
-					}
+                    }
 
-				}
-			} catch (ClassNotFoundException e) {
-				analysisContext.getLookupFailureCallback().reportMissingClass(e);
+                }
+            } catch (ClassNotFoundException e) {
+                analysisContext.getLookupFailureCallback().reportMissingClass(e);
 			}
-			boolean newResult = foundThrower && !foundNonThrower;
-			if (newResult)
-				bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY)
+            boolean newResult = foundThrower && !foundNonThrower;
+            if (newResult)
+                bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY)
 				    .addClassAndMethod(classContext.getJavaClass(), method)
-				    .addString("Call to method that always throws Exception")
-					.addMethod(primaryXMethod).describe(MethodAnnotation.METHOD_CALLED)
-					.addSourceLine(classContext, method, loc));
+                    .addString("Call to method that always throws Exception")
+                    .addMethod(primaryXMethod).describe(MethodAnnotation.METHOD_CALLED)
+                    .addSourceLine(classContext, method, loc));
 
-		}
+        }
 
-		
-	}
+
+    }
 
     public void visitClassContext(ClassContext classContext) {
-    	analysisContext = AnalysisContext.currentAnalysisContext();
-		Method[] methodList = classContext.getJavaClass().getMethods();
-		for (Method method : methodList) {
+        analysisContext = AnalysisContext.currentAnalysisContext();
+        Method[] methodList = classContext.getJavaClass().getMethods();
+        for (Method method : methodList) {
 			if (method.getCode() == null)
-				continue;
+                continue;
 
-			try {
-				
+            try {
 
-				analyzeMethod(classContext, method);
-			} catch (CFGBuilderException e) {
-				bugReporter.logError("Error checking for infinite recursive loop in " +
+
+                analyzeMethod(classContext, method);
+            } catch (CFGBuilderException e) {
+                bugReporter.logError("Error checking for infinite recursive loop in " +
 						SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method), e);
-			} catch (DataflowAnalysisException e) {
-				bugReporter.logError("Error checking for infinite recursive loop in " +
-						SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method), e);
+            } catch (DataflowAnalysisException e) {
+                bugReporter.logError("Error checking for infinite recursive loop in " +
+                        SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method), e);
 			}
-		}
-	}
+        }
+    }
 
 
-	
-	
+
+
 
 }

@@ -40,7 +40,7 @@ public class CommandLineUiCallback implements IGuiCallback {
     private final CurrentThreadExecutorService bugUpdateExecutor = new CurrentThreadExecutorService();
 
     public CommandLineUiCallback() {
-    	}
+        }
     public void showMessageDialogAndWait(String message) throws InterruptedException {
         System.out.println(message);
     }
@@ -50,8 +50,8 @@ public class CommandLineUiCallback implements IGuiCallback {
   }
 
     public int showConfirmDialog(String message, String title, String ok, String cancel) {
-    	String confirmStr = "Yes (Y) or No (N)?";
-        
+        String confirmStr = "Yes (Y) or No (N)?";
+
         System.out.println(String.format("Confirmation required: %s%n\t%s%n\t%s", title, message, confirmStr));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String answer = null;
@@ -105,7 +105,7 @@ public class CommandLineUiCallback implements IGuiCallback {
  * @see edu.umd.cs.findbugs.IGuiCallback#showQuestionDialog(java.lang.String, java.lang.String, java.lang.String)
  */
 public String showQuestionDialog(String message, String title, String defaultValue) {
-	throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException();
 }
 
     public List<String> showForm(String message, String title, List<FormItem> labels) {
@@ -116,7 +116,7 @@ public String showQuestionDialog(String message, String title, String defaultVal
  * @see edu.umd.cs.findbugs.IGuiCallback#showDocument(java.net.URL)
  */
 public boolean showDocument(URL u) {
-	return false;
+    return false;
 }
 
 public void registerCloud(Project project, BugCollection collection, Cloud cloud) {
@@ -151,25 +151,25 @@ public void registerCloud(Project project, BugCollection collection, Cloud cloud
         }
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.IGuiCallback#isHeadless()
      */
     public boolean isHeadless() {
-	    return true;
+        return true;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.IGuiCallback#unregisterCloud(edu.umd.cs.findbugs.Project, edu.umd.cs.findbugs.BugCollection, edu.umd.cs.findbugs.cloud.Cloud)
      */
     public void unregisterCloud(Project project, BugCollection collection, Cloud cloud) {
-	    
+
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.IGuiCallback#invokeInGUIThread(java.lang.Runnable)
      */
     public void invokeInGUIThread(Runnable r) {
-	    throw new UnsupportedOperationException();
-	    
+        throw new UnsupportedOperationException();
+
     }
 }

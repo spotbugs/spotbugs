@@ -9,7 +9,7 @@
 <!ENTITY nbsp "&#160;">
 ]>
 <book lang="ja" id="findbugs-manual">
- 
+
 <bookinfo>
 <title>&FindBugs;&trade; マニュアル</title>
 
@@ -19,11 +19,11 @@
     <othername>H.</othername>
     <surname>Hovemeyer</surname>
   </author>
-	<author>
-		<firstname>William</firstname>
-		<othername>W.</othername>
+    <author>
+        <firstname>William</firstname>
+        <othername>W.</othername>
 		<surname>Pugh</surname>
-	</author>
+    </author>
 </authorgroup>
 
 <copyright>
@@ -51,7 +51,7 @@
    Introduction
    **************************************************************************
 -->
- 
+
 <chapter id="introduction">
 <title>はじめに</title>
 
@@ -65,7 +65,7 @@
 
 <para>&FindBugs; を使用するためには、少なくとも 512 MB のメモリが必要です。巨大なプロジェクトを解析するためには、それより多くのメモリが必要とされることがあります。</para>
 </sect1>
- 
+
 </chapter>
 
 <!--
@@ -131,7 +131,7 @@
 </para>
 
 <warning>
-	<para>Redhat Linux システムの <filename>/usr/bin/ant</filename> に同梱されている &Ant; のバージョンでは、 &FindBugs; のコンパイルは<emphasis>うまくできません</emphasis>。<ulink url="http://ant.apache.org/">&Ant; web サイト</ulink>からバイナリ配布物をダウンロードしてインストールすることを推奨します。&Ant; を実行する場合は、 環境変数 <replaceable>JAVA_HOME</replaceable> が  JDK 1.5 (またはそれ以降)をインストールしたディレクトリーを指していることを確認してください。</para>
+    <para>Redhat Linux システムの <filename>/usr/bin/ant</filename> に同梱されている &Ant; のバージョンでは、 &FindBugs; のコンパイルは<emphasis>うまくできません</emphasis>。<ulink url="http://ant.apache.org/">&Ant; web サイト</ulink>からバイナリ配布物をダウンロードしてインストールすることを推奨します。&Ant; を実行する場合は、 環境変数 <replaceable>JAVA_HOME</replaceable> が  JDK 1.5 (またはそれ以降)をインストールしたディレクトリーを指していることを確認してください。</para>
 </warning>
 
 <para>体裁の整った &FindBugs; のドキュメントを生成したい場合は、以下のソフトウェアも必要となります:<itemizedlist>
@@ -164,7 +164,7 @@
 <sect1>
 <title><filename>local.properties</filename> の修正</title>
 <para>FindBugs のドキュメントをビルドするためには、 <filename>local.properties</filename> ファイルを修正する必要があります。このファイルは、 &FindBugs; をビルドする際に <ulink url="http://ant.apache.org/">&Ant;</ulink> <filename>build.xml</filename> ファイルが参照します。FindBugs のドキュメントをビルドしない場合は、このファイルは無視してもかまいません。</para>
-	
+
 <para><filename>local.properties</filename> での定義は、 <filename>build.properties</filename> ファイルでの定義に優先します。<filename>build.properties</filename> は次のような内容です:<programlisting>
 <![CDATA[
 # User Configuration:
@@ -178,7 +178,7 @@ local.software.home     =/export/home/daveho/linux
 xsl.stylesheet.home     =${local.software.home}/docbook/docbook-xsl-1.71.1
 
 # Set this to the directory where Saxon (http://saxon.sourceforge.net/)
-# is installed. 
+# is installed.
 
 saxon.home              =${local.software.home}/java/saxon-6.5.5
 ]]>
@@ -208,18 +208,18 @@ saxon.home              =${local.software.home}/java/saxon-6.5.5
        <para>このターゲットは、ドキュメントの整形を行います(また、副作用としていくつかのソースのコンパイルも行います。)</para>
     </listitem>
   </varlistentry>
-  
+
   <varlistentry>
-	<term><command>runjunit</command></term>
-	<listitem>
-		<para>このターゲットは、コンパイルを行い &FindBugs; が持っている JUnit テストを実行します。ユニットテストが失敗した場合は、エラーメッセージが表示されます。</para>
+    <term><command>runjunit</command></term>
+    <listitem>
+        <para>このターゲットは、コンパイルを行い &FindBugs; が持っている JUnit テストを実行します。ユニットテストが失敗した場合は、エラーメッセージが表示されます。</para>
 	</listitem>
   </varlistentry>
-  
+
   <varlistentry>
-	<term><command>bindist</command></term>
-	<listitem>
-		<para>&FindBugs; のバイナリ配布物を構築します。このターゲットは、 <filename>.zip</filename> および <filename>.tar.gz</filename> のアーカイブをそれぞれ作成します。</para>
+    <term><command>bindist</command></term>
+    <listitem>
+        <para>&FindBugs; のバイナリ配布物を構築します。このターゲットは、 <filename>.zip</filename> および <filename>.tar.gz</filename> のアーカイブをそれぞれ作成します。</para>
 	</listitem>
   </varlistentry>
 </variablelist>
@@ -254,9 +254,9 @@ Total time: 17 seconds
 
 <para>&FindBugs; には2つのユーザーインタフェースがあります。すなわち、グラフィカルユーザーインタフェース (GUI) および コマンドラインインタフェースです。この章では、それぞれのインタフェースの実行方法について説明します。</para>
 
-	<warning>
-		<para>この章は、現在書き直し中です。書き直しはまだ完了していません。</para>
-	</warning>
+    <warning>
+        <para>この章は、現在書き直し中です。書き直しはまだ完了していません。</para>
+    </warning>
 
 <!--
 <sect1>
@@ -265,115 +265,115 @@ Total time: 17 seconds
 -->
 
 <sect1>
-	<title>クイック・スタート</title>
-	<para>Windows システムで  &FindBugs; を起動する場合は、 <filename>&FBHomeWin;\lib\findbugs.jar</filename> ファイルをダブルクリックしてください。 &FindBugs; GUI が起動します。</para>
-	
+    <title>クイック・スタート</title>
+    <para>Windows システムで  &FindBugs; を起動する場合は、 <filename>&FBHomeWin;\lib\findbugs.jar</filename> ファイルをダブルクリックしてください。 &FindBugs; GUI が起動します。</para>
+
 	<para>Unix 、 Linux または Mac OS X システムの場合は、<filename>&FBHome;/bin/findbugs</filename> スクリプトを実行するか、以下のコマンドを実行します。<screen>
 <command>java -jar &FBHome;/lib/findbugs.jar</command></screen>これで、 &FindBugs; GUI が起動します。</para>
-	
-	<para>GUI の使用方法については、 <xref linkend="gui"/> を参照してください。</para>
+
+    <para>GUI の使用方法については、 <xref linkend="gui"/> を参照してください。</para>
 </sect1>
 
 <sect1>
-	
-	<title>&FindBugs; の起動</title>
 
-	<para>このセクションでは、 &FindBugs; の起動方法を説明します。&FindBugs; を起動するには2つの方法があります。すなわち、直接起動する方法、および、ラップしているスクリプトを使用する方法です。</para>
+    <title>&FindBugs; の起動</title>
+
+    <para>このセクションでは、 &FindBugs; の起動方法を説明します。&FindBugs; を起動するには2つの方法があります。すなわち、直接起動する方法、および、ラップしているスクリプトを使用する方法です。</para>
 
 
-	<sect2 id="directInvocation">
-		<title>&FindBugs; の直接起動</title>
-		
+    <sect2 id="directInvocation">
+        <title>&FindBugs; の直接起動</title>
+
 		<para>最初に述べる &FindBugs; の起動方法は、 <filename>&FBHome;/lib/findbugs.jar</filename> を直接実行する方法です。JVM (<command>java</command>) 実行プログラムの <command>-jar</command> コマンドラインスイッチを使用します。(&FindBugs;のバージョンが 1.3.5 より前の場合は、ラップしているスクリプトを使用する必要があります。)</para>
-		
-		<para>&FindBugs; を直接起動するための、一般的な構文は以下のようになります。<screen>
-	<command>java <replaceable>[JVM 引数]</replaceable> -jar &FBHome;/lib/findbugs.jar <replaceable>オプション…</replaceable></command>
-</screen>
-		</para>
 
-<!--	
-		<para>
-			By default, executing <filename>findbugs.jar</filename> runs the
+        <para>&FindBugs; を直接起動するための、一般的な構文は以下のようになります。<screen>
+    <command>java <replaceable>[JVM 引数]</replaceable> -jar &FBHome;/lib/findbugs.jar <replaceable>オプション…</replaceable></command>
+</screen>
+        </para>
+
+<!--
+        <para>
+            By default, executing <filename>findbugs.jar</filename> runs the
 			&FindBugs; graphical user interface (GUI).  On windows systems,
-			you can double-click on <filename>findbugs.jar</filename> to launch
-			the GUI.  From a command line, the command
-			<screen>
+            you can double-click on <filename>findbugs.jar</filename> to launch
+            the GUI.  From a command line, the command
+            <screen>
 java -jar <replaceable>&FBHome;</replaceable>/lib/findbugs.jar</screen>
-			will launch the GUI.
-		</para>
+            will launch the GUI.
+        </para>
 -->
 
-		<sect3 id="chooseUI">
-			<title> ユーザーインタフェースの選択</title>
-		
+        <sect3 id="chooseUI">
+            <title> ユーザーインタフェースの選択</title>
+
 		<para>1 番目のコマンドラインオプションは、起動する &FindBugs; ユーザーインタフェースを選択するためのものです。指定可能な値は次の通りです:</para>
-		<itemizedlist>
-			<listitem>
-				<para>
+        <itemizedlist>
+            <listitem>
+                <para>
 				<command>-gui</command>: グラフィカルユーザーインタフェース (GUI) を起動します。</para>
-			</listitem>
-			
-			<listitem>
+            </listitem>
+
+            <listitem>
 				<para>
-					<command>-textui</command>: コマンドラインインタフェースを起動します。</para>
+                    <command>-textui</command>: コマンドラインインタフェースを起動します。</para>
+            </listitem>
+
+            <listitem>
+                <para>
+                    <command>-version</command>: &FindBugs; のバージョン番号を表示します。</para>
 			</listitem>
 
-			<listitem>
-				<para>
-					<command>-version</command>: &FindBugs; のバージョン番号を表示します。</para>
+            <listitem>
+                <para>
+                    <command>-help</command>: &FindBugs; コマンドラインインタフェースのヘルプ情報を表示します。</para>
 			</listitem>
 
-			<listitem>
-				<para>
-					<command>-help</command>: &FindBugs; コマンドラインインタフェースのヘルプ情報を表示します。</para>
+            <listitem>
+                <para>
+                    <command>-gui1</command>: 最初に作成された &FindBugs; グラフィカルユーザーインタフェース(すでに廃止されサポートされていない)を起動します。</para>
 			</listitem>
+        </itemizedlist>
 
-			<listitem>
-				<para>
-					<command>-gui1</command>: 最初に作成された &FindBugs; グラフィカルユーザーインタフェース(すでに廃止されサポートされていない)を起動します。</para>
-			</listitem>
-		</itemizedlist>
+        </sect3>
 		
-		</sect3>
-		
-		<sect3 id="jvmArgs">
-			<title>Java 仮想マシン (JVM) 引数</title>
-			
+        <sect3 id="jvmArgs">
+            <title>Java 仮想マシン (JVM) 引数</title>
+
 			<para>&FindBugs; を起動する際に有用な Java 仮想マシン 引数をいくつか紹介します。</para>
-			
-			<variablelist>
-				<varlistentry>
+
+            <variablelist>
+                <varlistentry>
 					<term><command>-Xmx<replaceable>NN</replaceable>m</command></term>
-					<listitem>
-						<para>Java ヒープサイズの最大値を <replaceable>NN</replaceable> メガバイトに設定します。&FindBugs; は一般的に大容量のメモリサイズを必要とします。大きなプロジェクトでは、 1500 メガバイトを使用することも珍しくありません。</para>
-					</listitem>
+                    <listitem>
+                        <para>Java ヒープサイズの最大値を <replaceable>NN</replaceable> メガバイトに設定します。&FindBugs; は一般的に大容量のメモリサイズを必要とします。大きなプロジェクトでは、 1500 メガバイトを使用することも珍しくありません。</para>
+                    </listitem>
 				</varlistentry>
 
-				<varlistentry>
-					<term><command>-D<replaceable>name</replaceable>=<replaceable>value</replaceable></command></term>
-					<listitem>
+                <varlistentry>
+                    <term><command>-D<replaceable>name</replaceable>=<replaceable>value</replaceable></command></term>
+                    <listitem>
 						<para>Java システムプロパティーを設定します。例えば、引数 <command>-Duser.language=ja</command> を使用すると GUI 文言が日本語で表示されます。</para>
-					</listitem>
-				</varlistentry>
+                    </listitem>
+                </varlistentry>
 
-				<!--
-				<varlistentry>
-					<term></term>
+                <!--
+                <varlistentry>
+                    <term></term>
 					<listitem>
-						<para>
-						</para>
-					</listitem>
+                        <para>
+                        </para>
+                    </listitem>
 				</varlistentry>
-				-->
-			</variablelist>
-		</sect3>
+                -->
+            </variablelist>
+        </sect3>
 		
-	</sect2>
-	
-	<sect2 id="wrapperScript">
+    </sect2>
+
+    <sect2 id="wrapperScript">
 		<title>ラップしているスクリプトを使用した &FindBugs; の起動</title>
 
-		<para>&FindBugs; を起動するもうひとつの方法は、ラップしているスクリプトを使用する方法です。</para>
+        <para>&FindBugs; を起動するもうひとつの方法は、ラップしているスクリプトを使用する方法です。</para>
 
 <para>Unix 系のシステムにおいては、次のようなコマンドでラップしているスクリプトを起動します :<screen>
 <prompt>$ </prompt><command>&FBHome;/bin/findbugs <replaceable>オプション…</replaceable></command>
@@ -387,9 +387,9 @@ java -jar <replaceable>&FBHome;</replaceable>/lib/findbugs.jar</screen>
 
 <para>Unix 系システム および Windows システムのどちらにおいても、ディレクトリー  <filename><replaceable>$FINDBUGS_HOME</replaceable>/bin</filename> を環境変数 <filename>PATH</filename> に追加するだけで、 <command>findbugs</command> コマンドを使用して FindBugs を起動することができます。</para>
 
-	<sect3 id="wrapperOptions">
-		<title>ラップしているスクリプトのコマンドラインオプション</title>
-		<para>&FindBugs; のラップしているスクリプトは、次のようなコマンドラインオプションをサポートしています。これらのコマンドラインオプションは &FindBugs; プログラム 自体が操作するのでは<emphasis>なく</emphasis>、どちらかといえば、ラップしているスクリプトの方が処理を行います。</para>
+    <sect3 id="wrapperOptions">
+        <title>ラップしているスクリプトのコマンドラインオプション</title>
+        <para>&FindBugs; のラップしているスクリプトは、次のようなコマンドラインオプションをサポートしています。これらのコマンドラインオプションは &FindBugs; プログラム 自体が操作するのでは<emphasis>なく</emphasis>、どちらかといえば、ラップしているスクリプトの方が処理を行います。</para>
 	<variablelist>
   <varlistentry>
     <term><command>-jvmArgs <replaceable>引数</replaceable></command></term>
@@ -429,9 +429,9 @@ java -jar <replaceable>&FBHome;</replaceable>/lib/findbugs.jar</screen>
     </listitem>
   </varlistentry>
 
-	</variablelist>
-		
-	</sect3>
+    </variablelist>
+
+    </sect3>
 
 </sect2>
 
@@ -465,14 +465,14 @@ The second invokes the Command Line Interface (Text UI):
 <para>ここで示すオプションは、 GUI および コマンドラインインタフェースの両方で使用できます。</para>
 
 <variablelist>
-  
+
   <varlistentry>
     <term><command>-effort:min</command></term>
     <listitem>
       <para>このオプションを指定すると、精度を上げるために大量のメモリーを消費する分析が無効になります。&FindBugs; の実行時にメモリー不足になったり、分析を完了するまでに異常に長い時間がかかる場合に試してみてください。</para>
     </listitem>
   </varlistentry>
-  
+
 
   <varlistentry>
     <term><command>-effort:max</command></term>
@@ -487,15 +487,15 @@ The second invokes the Command Line Interface (Text UI):
     <para>分析するプロジェクトを指定します。指定するプロジェクトファイルには、 GUI を使って作成したものを使用してください。ファイルの拡張子は、一般的には <filename>.fb</filename> または <filename>.fbp</filename> です。</para>
   </listitem>
   </varlistentry>
-  
+
   <!--
   <varlistentry>
-	  <term><command></command></term>
-	  <listitem>
-		  <para>
+      <term><command></command></term>
+      <listitem>
+          <para>
 			  
-		  </para>
-	  </listitem>
+          </para>
+      </listitem>
   </varlistentry>
   -->
 
@@ -570,11 +570,11 @@ The second invokes the Command Line Interface (Text UI):
     <para>優先度 (高) のバグのみが報告されます。</para>
   </listitem>
   </varlistentry>
-  
+
   <varlistentry>
-	<term><command>-relaxed</command></term>
-	<listitem>
-		<para>手抜き報告モードです。このオプションを指定すると、多くのディテクタにおいて 誤検出を回避するためのヒューリスティック機能が抑止されます。</para>
+    <term><command>-relaxed</command></term>
+    <listitem>
+        <para>手抜き報告モードです。このオプションを指定すると、多くのディテクタにおいて 誤検出を回避するためのヒューリスティック機能が抑止されます。</para>
 	</listitem>
   </varlistentry>
 
@@ -588,9 +588,9 @@ The second invokes the Command Line Interface (Text UI):
   <varlistentry>
   <term><command>-html</command></term>
   <listitem>
-    <para>HTML 出力が生成されます。デフォルトでは &FindBugs; は <filename>default.xsl</filename> <ulink url="http://www.w3.org/TR/xslt">XSLT</ulink> スタイルシートを使用して HTML 出力を生成します: このファイルは、 <filename>findbugs.jar</filename> の中、または、 &FindBugs; のソース配布物もしくはバイナリ配布物の中にあります。このオプションには、次のようなバリエーションも存在します。すなわち、 <command>-html:plain.xsl</command> 、 <command>-html:fancy.xsl</command> および <command>-html:fancy-hist.xsl</command> です。<filename>plain.xsl</filename> スタイルシートは Javascript や DOM を利用しません。したがって、古いWeb ブラウザ使用時や印刷時にも比較的うまく表示されるでしょう。<filename>fancy.xsl</filename> スタイルシートは DOM と Javascript を利用してナビゲーションを行います。また、ビジュアル表示に CSS を使用します。<command>fancy-hist.xsl</command> は <command>fancy.xsl</command> スタイルシートを更に進化させたものです。DOM や Javascript をふんだんに駆使して、バグの一覧を動的にフィルタリングします。</para>		
-		
-	<para>ユーザー自身の XSLT スタイルシートを用いて HTML への変換を行いたい場合は、 <command>-html:<replaceable>myStylesheet.xsl</replaceable></command> のように指定してください。ここで、 <replaceable>myStylesheet.xsl</replaceable> はユーザーが使用したいスタイルシートのファイル名です。</para>
+    <para>HTML 出力が生成されます。デフォルトでは &FindBugs; は <filename>default.xsl</filename> <ulink url="http://www.w3.org/TR/xslt">XSLT</ulink> スタイルシートを使用して HTML 出力を生成します: このファイルは、 <filename>findbugs.jar</filename> の中、または、 &FindBugs; のソース配布物もしくはバイナリ配布物の中にあります。このオプションには、次のようなバリエーションも存在します。すなわち、 <command>-html:plain.xsl</command> 、 <command>-html:fancy.xsl</command> および <command>-html:fancy-hist.xsl</command> です。<filename>plain.xsl</filename> スタイルシートは Javascript や DOM を利用しません。したがって、古いWeb ブラウザ使用時や印刷時にも比較的うまく表示されるでしょう。<filename>fancy.xsl</filename> スタイルシートは DOM と Javascript を利用してナビゲーションを行います。また、ビジュアル表示に CSS を使用します。<command>fancy-hist.xsl</command> は <command>fancy.xsl</command> スタイルシートを更に進化させたものです。DOM や Javascript をふんだんに駆使して、バグの一覧を動的にフィルタリングします。</para>
+
+    <para>ユーザー自身の XSLT スタイルシートを用いて HTML への変換を行いたい場合は、 <command>-html:<replaceable>myStylesheet.xsl</replaceable></command> のように指定してください。ここで、 <replaceable>myStylesheet.xsl</replaceable> はユーザーが使用したいスタイルシートのファイル名です。</para>
   </listitem>
   </varlistentry>
 
@@ -655,9 +655,9 @@ The second invokes the Command Line Interface (Text UI):
 </chapter>
 
 <chapter id="gui">
-	<title>&FindBugs; GUI の使用方法</title>
+    <title>&FindBugs; GUI の使用方法</title>
 
-	<para>この章では、&FindBugs; グラフィカルユーザーインタフェース (GUI) の使用方法を説明します。</para>
+    <para>この章では、&FindBugs; グラフィカルユーザーインタフェース (GUI) の使用方法を説明します。</para>
 
 <sect1>
 <title>プロジェクトの作成</title>
@@ -780,20 +780,20 @@ Command Line Interface.
 <para>コマンドラインから &Ant; を起動する例を次に示します。前述の <literal>findbugs</literal> ターゲットを使用しています。<screen>
   <prompt>[daveho@noir]$</prompt> <command>ant findbugs</command>
   Buildfile: build.xml
-  
+
   init:
-  
+
   compile:
-  
+
   examples:
-  
+
   jar:
-  
+
   findbugs:
    [findbugs] Running FindBugs...
    [findbugs] Bugs were found
    [findbugs] Output saved to bcel-fb.xml
-  
+
   BUILD SUCCESSFUL
   Total time: 35 seconds
 </screen>この事例においては、XML ファイルでバグ検索結果を保存しているので、 &FindBugs; GUI を使って結果を参照することができます。 <xref linkend="running"/> を参照してください。</para>
@@ -877,11 +877,11 @@ Command Line Interface.
        <para>任意指定のブール値属性です。true に設定すると、 &FindBugs; は 診断情報を出力します。どのクラスを分析しているか、どのパグパターンディテクタが実行されているか、という情報が表示されます。デフォルトは、 false です。</para>
     </listitem>
   </varlistentry>
-	
+
   <varlistentry>
-	  <term><literal>effort</literal></term>
-	  <listitem>
-		  <para>分析の活動レベルを設定します。<literal>min</literal> 、<literal>default</literal> または <literal>max</literal> のいずれかの値を設定してください。分析レベルの設定に関する詳細情報は、 <xref linkend="commandLineOptions"/> を参照してください。</para>
+      <term><literal>effort</literal></term>
+      <listitem>
+          <para>分析の活動レベルを設定します。<literal>min</literal> 、<literal>default</literal> または <literal>max</literal> のいずれかの値を設定してください。分析レベルの設定に関する詳細情報は、 <xref linkend="commandLineOptions"/> を参照してください。</para>
 	  </listitem>
   </varlistentry>
 
@@ -898,7 +898,7 @@ Command Line Interface.
        <para>effort=&quot;max&quot; と同義です。</para>
     </listitem>
   </varlistentry>
-	
+
   <varlistentry>
     <term><literal>visitors</literal></term>
     <listitem>
@@ -968,11 +968,11 @@ Command Line Interface.
        <para>任意指定の属性です。&FindBugs; の実行中にエラーが発生した場合に、「true」が設定されるプロパティーの名前を指定します。</para>
     </listitem>
   </varlistentry>
-	
+
   <varlistentry>
-	  <term><literal>warningsProperty</literal></term>
-	  <listitem>
-		  <para>任意指定の属性です。&FindBugs; が分析したプログラムにバグ報告が 1 件でもある場合に、「true」が設定されるプロパティーの名前を指定します。</para>
+      <term><literal>warningsProperty</literal></term>
+      <listitem>
+          <para>任意指定の属性です。&FindBugs; が分析したプログラムにバグ報告が 1 件でもある場合に、「true」が設定されるプロパティーの名前を指定します。</para>
 	  </listitem>
   </varlistentry>
 
@@ -1011,30 +1011,30 @@ Command Line Interface.
 <title>インストール</title>
 
 <para>更新サイトが提供されています。更新サイトを利用して、機械的に FindBugs を Eclipse にインストールできます。また自動的に、最新版のアップデートを照会してインストールすることもできます。内容の異なる 3 つの更新サイトが存在します。</para>
-  
+
   <variablelist><title>FindBugs Eclipse 更新サイト一覧</title>
-    <varlistentry><term><ulink url="http://findbugs.cs.umd.edu/eclipse/">http://findbugs.cs.umd.edu/eclipse/</ulink></term> 
-      
+    <varlistentry><term><ulink url="http://findbugs.cs.umd.edu/eclipse/">http://findbugs.cs.umd.edu/eclipse/</ulink></term>
+
     <listitem>
       <para>FindBugs の公式リリース物を提供します。</para>
     </listitem>
     </varlistentry>
-    
-    <varlistentry><term><ulink url="http://findbugs.cs.umd.edu/eclipse-candidate/">http://findbugs.cs.umd.edu/eclips-candidate/</ulink></term> 
-      
+
+    <varlistentry><term><ulink url="http://findbugs.cs.umd.edu/eclipse-candidate/">http://findbugs.cs.umd.edu/eclips-candidate/</ulink></term>
+
       <listitem>
         <para>FindBugsの公式リリース物に加えて、公式リリース候補版を提供します。</para>
       </listitem>
     </varlistentry>
 
-    <varlistentry><term><ulink url="http://findbugs.cs.umd.edu/eclipse-daily/">http://findbugs.cs.umd.edu/eclipse-daily/</ulink></term> 
-      
+    <varlistentry><term><ulink url="http://findbugs.cs.umd.edu/eclipse-daily/">http://findbugs.cs.umd.edu/eclipse-daily/</ulink></term>
+
       <listitem>
         <para>FindBugsの日次ビルド物を提供します。コンパイルができること以上のテストは行われていません。</para>
       </listitem>
     </varlistentry>
     </variablelist>
-   
+
 <para>また、次に示すリンクから手動でプラグインをダウンロードすることもできます : <ulink url="@DOWNLOADS_WEBSITE@/edu.umd.cs.findbugs.plugin.eclipse_@ECLIPSE_UI_VERSION@.zip?download">@DOWNLOADS_WEBSITE@/edu.umd.cs.findbugs.plugin.eclipse_@ECLIPSE_UI_VERSION@.zip?download</ulink>. 展開して Eclipse の「plugins」サブディレクトリーに入れてください。(そうすると、 &lt;eclipse インストールディレクトリー &gt;/plugins/edu.umd.cs.findbugs.plugin.eclipse_@ECLIPSE_UI_VERSION@/findbugs.png が &FindBugs; のロゴファイルへのパスになるはずです。)</para>
 
 <para>プラグインの展開ができたら、 Eclipse を起動して <menuchoice> <guimenu>Help</guimenu> <guimenuitem>About Eclipse Platform</guimenuitem> <guimenuitem>Plug-in Details</guimenuitem> </menuchoice> を選択してください。「FindBugs Project」から提供された「FindBugs Plug-in」というプラグインがあることを確認してください。</para>
@@ -1124,29 +1124,29 @@ Command Line Interface.
  </varlistentry>
 
  <varlistentry>
-	<term><literal>&lt;Priority&gt;</literal></term>
-	<listitem>
-		<para>この要素は、特定の優先度をもつ警告を照合します。<literal>value</literal> 属性には、整数値を指定します : 1 は優先度(高)、また、 2  は優先度(中) 、 3 は優先度(低) を示します。</para>
+    <term><literal>&lt;Priority&gt;</literal></term>
+    <listitem>
+        <para>この要素は、特定の優先度をもつ警告を照合します。<literal>value</literal> 属性には、整数値を指定します : 1 は優先度(高)、また、 2  は優先度(中) 、 3 は優先度(低) を示します。</para>
 	</listitem>
  </varlistentry>
 
 
  <varlistentry>
    <term><literal>&lt;Package&gt;</literal></term>
-	<listitem>
-		<para>この要素は、 <literal>name</literal> 属性で指定した特定のパッケージ内にあるクラスに関連した警告を照合します。入れ子のパッケージは含まれません (Java import 文に従っています) 。しかしながら、正規表現を使うと複数パッケージにマッチさせることは簡単にできます。</para>
-	</listitem>
+    <listitem>
+        <para>この要素は、 <literal>name</literal> 属性で指定した特定のパッケージ内にあるクラスに関連した警告を照合します。入れ子のパッケージは含まれません (Java import 文に従っています) 。しかしながら、正規表現を使うと複数パッケージにマッチさせることは簡単にできます。</para>
+    </listitem>
   </varlistentry>
-		
+
  <varlistentry>
    <term><literal>&lt;Class&gt;</literal></term>
-	<listitem>
-		<para>この要素は、特定のクラスに関連した警告を照合します。<literal>name</literal> 属性を使用して、照合するクラス名をクラス名そのものか、または、正規表現で指定します。</para>
-		
+    <listitem>
+        <para>この要素は、特定のクラスに関連した警告を照合します。<literal>name</literal> 属性を使用して、照合するクラス名をクラス名そのものか、または、正規表現で指定します。</para>
+
 		<para>下位互換性を持たせたい場合は、この要素の代わりに <literal>Match</literal> 要素を使用してください。クラス名そのものの指定は <literal>class</literal> 属性を、クラス名を正規表現で指定する場合は <literal>classregex</literal> 属性をそれぞれ使用してください</para>
-		
-		<para>もし <literal>Match</literal> 要素に <literal>Class</literal> 要素が無かったり、 <literal>class</literal> / <literal>classregex</literal> 属性が無かったりした場合は、すべてのクラスに適用されます。その場合、想定外に多くのバグ検索結果が一致してしまうことがあり得ます。その場合は、適当なメソッドやフィールドで絞り込んでください。</para>
-	</listitem>
+
+        <para>もし <literal>Match</literal> 要素に <literal>Class</literal> 要素が無かったり、 <literal>class</literal> / <literal>classregex</literal> 属性が無かったりした場合は、すべてのクラスに適用されます。その場合、想定外に多くのバグ検索結果が一致してしまうことがあり得ます。その場合は、適当なメソッドやフィールドで絞り込んでください。</para>
+    </listitem>
  </varlistentry>
 
  <varlistentry>
@@ -1160,13 +1160,13 @@ Command Line Interface.
 
    <listitem><para>この要素は、フィールドを指定します。<literal>name</literal> 属性を使用して、照合するフィールド名をフィールド名そのものか、または、正規表現で指定します。また、フィールドのシグニチャーに照らしたフィルタリングをすることができます。 <literal>type</literal> 属性を使用して、フィールドの型を完全修飾名で指定してください。名前とシグニチャーに基づく条件を規定するために、その2つの属性を両方とも指定することができます。</para></listitem>
  </varlistentry>
-   
+
    <varlistentry>
    <term><literal>&lt;Local&gt;</literal></term>
 
    <listitem><para>この要素は、ローカル変数を指定します。<literal>name</literal> 属性を使用して、照合するローカル変数名をローカル変数名そのものか、または、正規表現で指定します。ローカル変数とは、メソッド内で定義した変数です。</para></listitem>
  </varlistentry>
-   
+
  <varlistentry>
    <term><literal>&lt;Or&gt;</literal></term>
     <listitem><para>この要素は、論理和として <literal>Match</literal> 条項を結合します。すなわち、2つの <literal>Method</literal> 要素を <literal>Or</literal> 条項に入れることで、どちらか一方のメソッドでマッチさせることができます。</para></listitem>
@@ -1289,7 +1289,7 @@ Command Line Interface.
 
 <para>8. AspectJ コンパイラーによって引き起こされるマイナーバグに一致させます (AspectJ の開発者でもない限り、それらのバグに関心を持つことはないと考えます)。<programlisting>
 <![CDATA[
-    <Match> 
+    <Match>
       <Class name="~.*\$AjcClosure\d+" />
       <Bug pattern="DLS_DEAD_LOCAL_STORE" />
       <Method name="run" />
@@ -1305,7 +1305,7 @@ Command Line Interface.
 <para>9. 基盤コードの特定の部分に対するバグに一致させます<programlisting>
 <![CDATA[
     <!-- すべてのパッケージにある Messages クラスに対する unused fields 警告に一致。 -->
-    <Match> 
+    <Match>
       <Class name="~.*\.Messages" />
       <Bug code="UUF" />
     </Match>
@@ -1325,21 +1325,21 @@ Command Line Interface.
 
 <para>10. 特定のシグニチャーを持つフィールドまたはメソッドのバグに一致させます。<programlisting>
 <![CDATA[
-	<!-- すべてのクラスの main(String[]) メソッドに対する System.exit(...) usage 警告に一致。 -->
-	<Match>
-	  <Method returns="void" name="main" params="java.lang.String[]" />
+    <!-- すべてのクラスの main(String[]) メソッドに対する System.exit(...) usage 警告に一致。 -->
+    <Match>
+      <Method returns="void" name="main" params="java.lang.String[]" />
 	  <Method pattern="DM_EXIT" />
-	</Match>
-	<!-- すべてのクラスの com.foobar.DebugInfo 型のフィールドに対する UuF 警告に一致。 -->
-	<Match>
+    </Match>
+    <!-- すべてのクラスの com.foobar.DebugInfo 型のフィールドに対する UuF 警告に一致。 -->
+    <Match>
 	  <Field type="com.foobar.DebugInfo" />
-	  <Bug code="UuF" />
-	</Match>
+      <Bug code="UuF" />
+    </Match>
 ]]>
-</programlisting>	
+</programlisting>
 
 </para>
-	
+
 </sect1>
 
 <sect1>
@@ -1812,9 +1812,9 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
    Data mining
    **************************************************************************
 -->
-	
+
 <chapter id="datamining">
-	<title>&FindBugs;&trade; によるデータ・マイニング</title>
+    <title>&FindBugs;&trade; によるデータ・マイニング</title>
 
 <para>バグデータベースへの高機能の問い合わせ機能、および、調査対象のコードの複数のバージョンにわたる警告の追跡記録機能を、 FindBugs は内蔵しています。これらを使って次のようなことができます。すなわち、いつバグが最初持ち込まれたかを捜し出すこと、最終リリース以後持ち込まれた警告の分析を行うこと、または、無限再起ループの数を時間軸でグラフにすることです。</para>
 
@@ -1840,78 +1840,78 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 ]]>
 </programlisting>
 
-	<sect1 id="commands">
-		<title>コマンド</title>
-		
+    <sect1 id="commands">
+        <title>コマンド</title>
+
 		<para>FindBugs データ・マイニング ツールはすべてコマンドラインから実行することができます。また、いくつかのより有用なコマンドは、 ant ビルドファイルから実行することができます。</para>
 
 <para>コマンドラインツールについて簡単に説明します :</para>
 
-		<variablelist>
-			<varlistentry>
-				<term><command><link linkend="unionBugs">unionBugs</link></command></term>
+        <variablelist>
+            <varlistentry>
+                <term><command><link linkend="unionBugs">unionBugs</link></command></term>
 				<listitem>
-					<para>別のクラスに対する別個の分析結果を結合します。</para>
-				</listitem>
-			</varlistentry>
+                    <para>別のクラスに対する別個の分析結果を結合します。</para>
+                </listitem>
+            </varlistentry>
 			<varlistentry>
-				<term><command><link linkend="computeBugHistory">computeBugHistory</link></command></term>
-				<listitem>
-					<para>複数バージョンから得られた複数のバグ警告を、マージして 1 個の複数バージョンバグデータベースにします。これを使って、既存の複数バージョンバグデータベースに更にバージョンを追加したり、 1 バージョンを格納するバグデータベースの集合から 1 個の複数バージョンバグデータベースを作成したり、できます。</para>
+                <term><command><link linkend="computeBugHistory">computeBugHistory</link></command></term>
+                <listitem>
+                    <para>複数バージョンから得られた複数のバグ警告を、マージして 1 個の複数バージョンバグデータベースにします。これを使って、既存の複数バージョンバグデータベースに更にバージョンを追加したり、 1 バージョンを格納するバグデータベースの集合から 1 個の複数バージョンバグデータベースを作成したり、できます。</para>
 				</listitem>
-			</varlistentry>
+            </varlistentry>
+            <varlistentry>
+                <term><command><link linkend="setBugDatabaseInfo">setBugDatabaseInfo</link></command></term>
+				<listitem>
+                    <para>リビジョン名やタイム・スタンプなどの情報を XML データベースに設定します。</para>
+                </listitem>
+            </varlistentry>
 			<varlistentry>
-				<term><command><link linkend="setBugDatabaseInfo">setBugDatabaseInfo</link></command></term>
-				<listitem>
-					<para>リビジョン名やタイム・スタンプなどの情報を XML データベースに設定します。</para>
+                <term><command><link linkend="listBugDatabaseInfo">listBugDatabaseInfo</link></command></term>
+                <listitem>
+                    <para>XML データベースにあるリビジョン名やタイム・スタンプなどの情報を一覧表示します。</para>
 				</listitem>
-			</varlistentry>
+            </varlistentry>
+            <varlistentry>
+                <term><command><link linkend="filterBugs">filterBugs</link></command></term>
+				<listitem>
+                    <para>バグデータベースの部分集合を選択します。</para>
+                </listitem>
+            </varlistentry>
 			<varlistentry>
-				<term><command><link linkend="listBugDatabaseInfo">listBugDatabaseInfo</link></command></term>
-				<listitem>
-					<para>XML データベースにあるリビジョン名やタイム・スタンプなどの情報を一覧表示します。</para>
+                <term><command><link linkend="mineBugHistory">mineBugHistory</link></command></term>
+                <listitem>
+                    <para>複数バージョンバグデータベースの各バージョン毎の警告数を一覧にした表を作成します。</para>
 				</listitem>
-			</varlistentry>
+            </varlistentry>
+            <varlistentry>
+                <term><command><link linkend="defectDensity">defectDensity</link></command></term>
+				<listitem>
+                    <para>プロジェクト全体およびクラス毎・パッケージ毎の不良密度 (1000 NCSS 毎の警告数) に関する情報を一覧表示します。</para>
+                </listitem>
+            </varlistentry>
 			<varlistentry>
-				<term><command><link linkend="filterBugs">filterBugs</link></command></term>
-				<listitem>
-					<para>バグデータベースの部分集合を選択します。</para>
+                <term><command><link linkend="convertXmlToText">convertXmlToText</link></command></term>
+                <listitem>
+                    <para>XML 形式のバグ警告を、 1 行 1 バグのテキスト形式、または、HTML形式に変換します。</para>
 				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term><command><link linkend="mineBugHistory">mineBugHistory</link></command></term>
-				<listitem>
-					<para>複数バージョンバグデータベースの各バージョン毎の警告数を一覧にした表を作成します。</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term><command><link linkend="defectDensity">defectDensity</link></command></term>
-				<listitem>
-					<para>プロジェクト全体およびクラス毎・パッケージ毎の不良密度 (1000 NCSS 毎の警告数) に関する情報を一覧表示します。</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term><command><link linkend="convertXmlToText">convertXmlToText</link></command></term>
-				<listitem>
-					<para>XML 形式のバグ警告を、 1 行 1 バグのテキスト形式、または、HTML形式に変換します。</para>
-				</listitem>
-			</varlistentry>
-		</variablelist>
+            </varlistentry>
+        </variablelist>
+
 		
-		
-		<sect2 id="unionBugs">
-			<title>unionBugs</title>
+        <sect2 id="unionBugs">
+            <title>unionBugs</title>
 
-		<para>分析するのにアプリケーションの jar ファイルを分割している場合、このコマンドを使用することで、別個に生成された XML バグ警告ファイルをすべての警告を含んでいる 1 つの ファイルにすることができます。</para>
+        <para>分析するのにアプリケーションの jar ファイルを分割している場合、このコマンドを使用することで、別個に生成された XML バグ警告ファイルをすべての警告を含んでいる 1 つの ファイルにすることができます。</para>
 
-			<para>同じファイルの異なるバージョンを分析した結果を結合する場合は、このコマンドを<emphasis>使用しないでください</emphasis>。代わりに <command>computeBugHistory</command> を使用してください。</para>
+            <para>同じファイルの異なるバージョンを分析した結果を結合する場合は、このコマンドを<emphasis>使用しないでください</emphasis>。代わりに <command>computeBugHistory</command> を使用してください。</para>
 
-			<para>XML ファイルは、コマンドラインで指定してください。結果は、標準出力に送られます。</para>
-		</sect2>
+            <para>XML ファイルは、コマンドラインで指定してください。結果は、標準出力に送られます。</para>
+        </sect2>
 
-		<sect2 id="computeBugHistory">
-			<title>computeBugHistory</title>
-		
+        <sect2 id="computeBugHistory">
+            <title>computeBugHistory</title>
+
 <para>このコマンドを使用することで、分析するソフトウェアの異なるビルドまたはバージョンの情報を含むバグデータベースを生成することができます入力として提供したファイルの 1 番目のファイルから履歴が取得されます。後に続くファイルは 1 バージョンのバグデータベースであるようにしてください (もし、履歴を持っていたとしても無視されます) 。</para>
 <para>デフォルトでは、結果は標準出力に送られます。</para>
 
@@ -1936,17 +1936,17 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 ]]>
 </programlisting>
 
-		<table id="computeBugHistoryTable">
-			<title>computeBugHistory コマンドのオプション一覧</title>
-			<tgroup cols="3" align="left">
+        <table id="computeBugHistoryTable">
+            <title>computeBugHistory コマンドのオプション一覧</title>
+            <tgroup cols="3" align="left">
   				<thead>
-    				<row>
-      					<entry>コマンドラインオプション</entry>
-      					<entry>Ant 属性</entry>
+                    <row>
+                          <entry>コマンドラインオプション</entry>
+                          <entry>Ant 属性</entry>
       					<entry>目的</entry>
-    				</row>
-  					</thead>
-  				<tbody>
+                    </row>
+                      </thead>
+                  <tbody>
 <row><entry>-output &lt;file&gt;</entry>           <entry>output=&quot;&lt;file&gt;&quot;</entry>           <entry>出力結果を保存するファイル名を指定します。 (同時に入力ファイルにもなりえます)</entry></row>
 <row><entry>-overrideRevisionNames[:truth]</entry> <entry>overrideRevisionNames=&quot;[true|false]&quot;</entry><entry>ファイル名から算出されるそれぞれのバージョン名を指定変更します。</entry></row>
 <row><entry>-noPackageMoves[:truth]</entry>        <entry>noPackageMoves=&quot;[true|false]&quot;</entry><entry>パッケージを移動したクラスがある場合、当該クラスの警告は別の存在として扱われます。</entry></row>
@@ -1954,13 +1954,13 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 <row><entry>-precisePriorityMatch[:truth]</entry>  <entry>precisePriorityMatch=&quot;[true|false]&quot;</entry><entry>優先度が正確に一致した場合のみ警告が同一であると判断されます。</entry></row>
 <row><entry>-quiet[:truth]</entry>                 <entry>quiet=&quot;[true|false]&quot;</entry><entry>エラーが発生しない限り、標準出力には何も表示されません。</entry></row>
 <row><entry>-withMessages[:truth]</entry>          <entry>withMessages=&quot;[true|false]&quot;</entry><entry>出力 XML に人間が読むことができるバグメッセージが含まれます。</entry></row>
-				</tbody>
-			</tgroup>
-		</table>
+                </tbody>
+            </tgroup>
+        </table>
 
-		</sect2>	
-		<sect2 id="filterBugs">
-			<title>filterBugs</title>
+        </sect2>
+        <sect2 id="filterBugs">
+            <title>filterBugs</title>
 <para>このコマンドを使用することで、 FindBugs XML 警告ファイルから一部分を選び出して新規 FindBugs 警告ファイルに選択された部分を書き込むことができます。</para>
 <para>このコマンドには、オプション群に続いて 0 個から 2 個の findbugs xml バグファイルを指定することができます。</para>
 <para>ファイル名をひとつも指定しない場合は、標準入力から読んで標準出力に出力されます。ファイル名を 1 個 指定した場合は、指定したファイルから読んで標準出力に出力されます。ファイル名を 2 個 指定した場合は、 1 番目に指定したファイルから読んで 2 番目に指定したファイルに出力されます。</para>
@@ -1985,17 +1985,17 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 ]]>
 </programlisting>
 
-		<table id="filterOptionsTable">
-			<title>filterBugs コマンドのオプション一覧</title>
-			<tgroup cols="3" align="left">
+        <table id="filterOptionsTable">
+            <title>filterBugs コマンドのオプション一覧</title>
+            <tgroup cols="3" align="left">
   				<thead>
-    				<row>
-      					<entry>コマンドラインオプション</entry>
-      					<entry>Ant 属性</entry>
+                    <row>
+                          <entry>コマンドラインオプション</entry>
+                          <entry>Ant 属性</entry>
       					<entry>目的</entry>
-    				</row>
-  					</thead>
-  				<tbody>
+                    </row>
+                      </thead>
+                  <tbody>
 <row><entry/>                            <entry>input=&quot;&lt;file&gt;&quot;</entry>             <entry>入力ファイルを指定します。</entry></row>
 <row><entry/>                            <entry>output=&quot;&lt;file&gt;&quot;</entry>            <entry>出力ファイルを指定します。</entry></row>
 <row><entry>-not</entry>                        <entry>not=&quot;[true|false]&quot;</entry>               <entry>フィルターのスイッチを反転します。</entry></row>
@@ -2021,13 +2021,13 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 <row><entry>-category &lt;category&gt;</entry>  <entry>category=&quot;&lt;category&gt;&quot;</entry>      <entry>指定した文字列で始まるカテゴリーの警告のみ出力されます。</entry></row>
 <row><entry>-designation &lt;designation&gt;</entry> <entry>designation=&quot;&lt;designation&gt;&quot;</entry> <entry>指定したバグ分類指定をもつ警告のみ出力されます。 (例、 -designation SHOULD_FIX)</entry></row>
 <row><entry>-withMessages[:truth] </entry>      <entry>withMessages=&quot;[true|false]&quot;</entry>      <entry>テキストメッセージを含んだ XML が生成されます。</entry></row>
-				</tbody>
-			</tgroup>
-		</table>
+                </tbody>
+            </tgroup>
+        </table>
 		  		
-		</sect2>
-		
-		<sect2 id="mineBugHistory">
+        </sect2>
+
+        <sect2 id="mineBugHistory">
 			<title>mineBugHistory</title>
 <para>このコマンドを使用することで、複数バージョンバグデータベースの各バージョン毎の警告数を一覧にした表を作成することができます。</para>
 
@@ -2052,84 +2052,84 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 ]]>
 </programlisting>
 
-		<table id="mineBugHistoryOptionsTable">
-			<title>mineBugHistory コマンドのオプション一覧</title>
-			<tgroup cols="3" align="left">
+        <table id="mineBugHistoryOptionsTable">
+            <title>mineBugHistory コマンドのオプション一覧</title>
+            <tgroup cols="3" align="left">
   				<thead>
-    				<row>
-      					<entry>コマンドラインオプション</entry>
-      					<entry>Ant 属性</entry>
+                    <row>
+                          <entry>コマンドラインオプション</entry>
+                          <entry>Ant 属性</entry>
       					<entry>目的</entry>
-    				</row>
-  				</thead>
-  				<tbody>
+                    </row>
+                  </thead>
+                  <tbody>
 <row><entry/>               <entry>input=&quot;&lt;file&gt;&quot;</entry>             <entry>入力ファイルを指定します。</entry></row>
 <row><entry/>               <entry>output=&quot;&lt;file&gt;&quot;</entry>            <entry>出力ファイルを指定します。</entry></row>
 <row><entry>-formatDates</entry>   <entry>formatDates=&quot;[true|false]&quot;</entry>       <entry>データがテキスト形式で描画されます。</entry></row>
 <row><entry>-noTabs</entry>        <entry>noTabs=&quot;[true|false]&quot;</entry>            <entry>タブの代わりに複数スペースでカラムが区切られます (下記参照)。</entry></row>
 <row><entry>-summary</entry>       <entry>summary=&quot;[true|false]&quot;</entry>           <entry>最新 10 件の変更の要約が出力されます。</entry></row>
-				</tbody>
-			</tgroup>
-		</table>
+                </tbody>
+            </tgroup>
+        </table>
 
-		<para><option>-noTabs</option> 出力を使うことで、固定幅フォントのシェルで読み易くなります。数値カラムは右寄せされるので、スペースがカラム値の前に挿入されます。また、このオプションを使用した場合、 <option>-formatDates</option> を指定したときに要約の日付を描画するのに空白が埋め込まれなくなります。</para>
+        <para><option>-noTabs</option> 出力を使うことで、固定幅フォントのシェルで読み易くなります。数値カラムは右寄せされるので、スペースがカラム値の前に挿入されます。また、このオプションを使用した場合、 <option>-formatDates</option> を指定したときに要約の日付を描画するのに空白が埋め込まれなくなります。</para>
 
-		<para>出力される表は、 (<option>-noTabs</option> が無ければ) タブ区切りで次に示すカラムから成ります :</para>
+        <para>出力される表は、 (<option>-noTabs</option> が無ければ) タブ区切りで次に示すカラムから成ります :</para>
 
-		<table id="mineBugHistoryColumns">
-			<title>mineBugHistory 出力のカラム一覧</title>
-			<tgroup cols="2" align="left">
+        <table id="mineBugHistoryColumns">
+            <title>mineBugHistory 出力のカラム一覧</title>
+            <tgroup cols="2" align="left">
   				<thead>
-    				<row>
-      					<entry>表題</entry>
-      					<entry>目的</entry>
+                    <row>
+                          <entry>表題</entry>
+                          <entry>目的</entry>
     				</row>
-  					</thead>
-  				<tbody>
-					  <row><entry>seq</entry><entry>シーケンス番号 (0 始まりの連続した整数値)</entry></row>
+                      </thead>
+                  <tbody>
+                      <row><entry>seq</entry><entry>シーケンス番号 (0 始まりの連続した整数値)</entry></row>
 					  <row><entry>version</entry><entry>バージョン名</entry></row>
-					  <row><entry>time</entry><entry>リリースされた日時</entry></row>
-					  <row><entry>classes</entry><entry>分析されたクラス数</entry></row>
-					  <row><entry>NCSS</entry><entry>コメント文を除いた命令数 (Non Commenting Source Statements)</entry></row>
+                      <row><entry>time</entry><entry>リリースされた日時</entry></row>
+                      <row><entry>classes</entry><entry>分析されたクラス数</entry></row>
+                      <row><entry>NCSS</entry><entry>コメント文を除いた命令数 (Non Commenting Source Statements)</entry></row>
 					  <row><entry>added</entry><entry>前回のバージョンに存在したクラスにおける新規警告数</entry></row>
-					  <row><entry>newCode</entry><entry>前回のバージョンに存在しなかったクラスにおける新規警告数</entry></row>
-					  <row><entry>fixed</entry><entry>現在のバージョンに存在するクラスにおける除去された警告数</entry></row>
-					  <row><entry>removed</entry><entry>現在のバージョンに存在しないクラスの前回のバージョンにおける警告数</entry></row>
+                      <row><entry>newCode</entry><entry>前回のバージョンに存在しなかったクラスにおける新規警告数</entry></row>
+                      <row><entry>fixed</entry><entry>現在のバージョンに存在するクラスにおける除去された警告数</entry></row>
+                      <row><entry>removed</entry><entry>現在のバージョンに存在しないクラスの前回のバージョンにおける警告数</entry></row>
 					  <row><entry>retained</entry><entry>現在のバージョンと前回のバージョンの両方に存在する警告の数</entry></row>
-					  <row><entry>dead</entry><entry>以前のバージョンに存在したが現在のバージョンにも直前のバージョンにも存在しない警告の数</entry></row>
-					  <row><entry>active</entry><entry>現在のバージョンに存在する警告総数</entry></row>
-				</tbody>
+                      <row><entry>dead</entry><entry>以前のバージョンに存在したが現在のバージョンにも直前のバージョンにも存在しない警告の数</entry></row>
+                      <row><entry>active</entry><entry>現在のバージョンに存在する警告総数</entry></row>
+                </tbody>
 				</tgroup>
-		</table>						
-		</sect2>
-		
+        </table>
+        </sect2>
+
 		<sect2 id="defectDensity">
-			<title>defectDensity</title>
+            <title>defectDensity</title>
 <para>このコマンドを使用することで、プロジェクト全体およびクラス毎・パッケージ毎の不良密度 (1000 NCSS 毎の警告数) に関する情報を一覧表示できます。標準入力から読み込む場合はファイル指定なしで、そうでなければ、コマンドラインでファイルを指定して、このコマンドを実行します。</para>
 <para>出力される表は、次に示すカラムから成ります。また、プロジェクト全体情報の行、および、4 個以上の警告を含んでいる各パッケージ情報または各クラス情報の行も出力されます。</para>
-		<table id="defectDensityColumns">
-			<title>defectDensity 出力のカラム一覧</title>
-			<tgroup cols="2" align="left">
+        <table id="defectDensityColumns">
+            <title>defectDensity 出力のカラム一覧</title>
+            <tgroup cols="2" align="left">
   				<thead>
-    				<row>
-      					<entry>表題</entry>
-      					<entry>目的</entry>
+                    <row>
+                          <entry>表題</entry>
+                          <entry>目的</entry>
     				</row>
-  					</thead>
-  				<tbody>
-					  <row><entry>kind</entry><entry>プロジェクト (project)、パッケージ (package) またはクラス (class)</entry></row>
+                      </thead>
+                  <tbody>
+                      <row><entry>kind</entry><entry>プロジェクト (project)、パッケージ (package) またはクラス (class)</entry></row>
 					  <row><entry>name</entry><entry>プロジェクト、パッケージまたはクラスの名前</entry></row>
-					  <row><entry>density</entry><entry> 1000 NCSS 毎の警告数</entry></row>
-					  <row><entry>bugs</entry><entry>警告数</entry></row>
-					  <row><entry>NCSS</entry><entry>コメント文を除いた命令数 (Non Commenting Source Statements) </entry></row>
+                      <row><entry>density</entry><entry> 1000 NCSS 毎の警告数</entry></row>
+                      <row><entry>bugs</entry><entry>警告数</entry></row>
+                      <row><entry>NCSS</entry><entry>コメント文を除いた命令数 (Non Commenting Source Statements) </entry></row>
 				</tbody>
-				</tgroup>
-			</table>
-		</sect2>
+                </tgroup>
+            </table>
+        </sect2>
 		
-		<sect2 id="convertXmlToText">
-			<title>convertXmlToText</title>
-			
+        <sect2 id="convertXmlToText">
+            <title>convertXmlToText</title>
+
 			<para>このコマンドを使用することで、XML 形式のバグ警告を、 1 行 1 バグのテキスト形式、または、HTML形式に変換することができます。</para>
 
 <para>この機能は、 ant からも使用することができます。まず次に示すように、ビルドファイルに <command>convertXmlToText</command> を taskdef で定義します :</para>
@@ -2143,34 +2143,34 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 </programlisting>
 
 <para>この ant タスクに指定できる属性を、下表に一覧で示します。</para>
-			
-			<table id="convertXmlToTextTable">
-			<title>convertXmlToText コマンドのオプション一覧</title>
+
+            <table id="convertXmlToTextTable">
+            <title>convertXmlToText コマンドのオプション一覧</title>
 			<tgroup cols="3" align="left">
-  				<thead>
-    				<row>
-      					<entry>コマンドラインオプション</entry>
+                  <thead>
+                    <row>
+                          <entry>コマンドラインオプション</entry>
       					<entry>Ant 属性</entry>
-      					<entry>目的</entry>
-    				</row>
-  					</thead>
+                          <entry>目的</entry>
+                    </row>
+                      </thead>
   				<tbody>
 <row><entry/>                   <entry>input=&quot;&lt;filename&gt;&quot;</entry>         <entry>入力ファイルを指定します。</entry></row>
 <row><entry/>                   <entry>output=&quot;&lt;filename&gt;&quot;</entry>        <entry>出力ファイルを指定します。</entry></row>
 <row><entry>-longBugCodes</entry>      <entry>longBugCodes=&quot;[true|false]&quot;</entry>      <entry>2 文字のバグ略称の代わりに、省略なしのバグパターンコードを使用します。</entry></row>
 <row><entry/>                   <entry>format=&quot;text&quot;</entry>                    <entry>プレーンテキストの出力が作成されます。1 行につき 1 つのバグが出力されます。コマンドライン時のデフォルトです。</entry></row>
 <row><entry>-html[:stylesheet]</entry> <entry>format=&quot;html:&lt;stylesheet&gt;&quot;</entry> <entry>指定されたスタイルシートを使用して出力が作成されます (下記参照) 。省略した場合は、 default.xsl が使用されます。</entry></row>
-				</tbody>
-			</tgroup>
-		    </table>
+                </tbody>
+            </tgroup>
+            </table>
 			
-			<para>-html/format オプションには、plain.xsl 、 default.xsl 、 fancy.xsl 、 fancy-hist.xsl または ユーザ自身が作成した XSL スタイルシートのいずれかを指定することができます。オプション名をよそに、 html 以外の形式を出力するスタイルシートを指定することもできます。FindBugs に含まれているスタイルシート(上述)以外のスタイルシートを使用する場合は、オプション -html/format で当該スタイルシートへのパスまたは URL を指定してください。</para>
-		</sect2>
-		
+            <para>-html/format オプションには、plain.xsl 、 default.xsl 、 fancy.xsl 、 fancy-hist.xsl または ユーザ自身が作成した XSL スタイルシートのいずれかを指定することができます。オプション名をよそに、 html 以外の形式を出力するスタイルシートを指定することもできます。FindBugs に含まれているスタイルシート(上述)以外のスタイルシートを使用する場合は、オプション -html/format で当該スタイルシートへのパスまたは URL を指定してください。</para>
+        </sect2>
+
 		<sect2 id="setBugDatabaseInfo">
-			<title>setBugDatabaseInfo</title>
-			
-			<para>このコマンドを使用することで、指定したバグ警告にメタ情報を設定することができます。このコマンドには次に示すオプションがあります:</para>
+            <title>setBugDatabaseInfo</title>
+
+            <para>このコマンドを使用することで、指定したバグ警告にメタ情報を設定することができます。このコマンドには次に示すオプションがあります:</para>
 
 <para>この機能は、 ant からも使用することができます。まず次に示すように、ビルドファイルに <command>setBugDatabaseInfo</command> を taskdef で定義します :</para>
 
@@ -2192,75 +2192,75 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 ]]>
 </programlisting>
 
-		<table id="setBugDatabaseInfoOptions">
-			<title>setBugDatabaseInfo オプション一覧</title>
-			<tgroup cols="3" align="left">
+        <table id="setBugDatabaseInfoOptions">
+            <title>setBugDatabaseInfo オプション一覧</title>
+            <tgroup cols="3" align="left">
   				<thead>
-    				<row>
-      					<entry>コマンドラインオプション</entry>
-      					<entry>Ant 属性</entry>
+                    <row>
+                          <entry>コマンドラインオプション</entry>
+                          <entry>Ant 属性</entry>
       					<entry>目的</entry>
-    				</row>
-  				</thead>
-  				<tbody>
+                    </row>
+                  </thead>
+                  <tbody>
 					  <row><entry/>                              <entry>input=&quot;&lt;file&gt;&quot;</entry>           <entry>入力ファイルを指定します。</entry></row>
-					  <row><entry/>                              <entry>output=&quot;&lt;file&gt;&quot;</entry>          <entry>出力ファイルを指定します。</entry></row>
-					  <row><entry>-name &lt;name&gt;</entry>            <entry>name=&quot;&lt;name&gt;&quot;</entry>            <entry>最新リビジョンの名前を設定します。</entry></row>
-					  <row><entry>-timestamp &lt;when&gt;</entry>       <entry>timestamp=&quot;&lt;when&gt;&quot;</entry>       <entry>最新リビジョンのタイム・スタンプを設定します。</entry></row>
+                      <row><entry/>                              <entry>output=&quot;&lt;file&gt;&quot;</entry>          <entry>出力ファイルを指定します。</entry></row>
+                      <row><entry>-name &lt;name&gt;</entry>            <entry>name=&quot;&lt;name&gt;&quot;</entry>            <entry>最新リビジョンの名前を設定します。</entry></row>
+                      <row><entry>-timestamp &lt;when&gt;</entry>       <entry>timestamp=&quot;&lt;when&gt;&quot;</entry>       <entry>最新リビジョンのタイム・スタンプを設定します。</entry></row>
 					  <row><entry>-source &lt;directory&gt;</entry>     <entry>source=&quot;&lt;directory&gt;&quot;</entry>     <entry>ソースを検索するディレクトリーを追加指定します。</entry></row>
-					  <row><entry>-findSource &lt;directory&gt;</entry> <entry>findSource=&quot;&lt;directory&gt;&quot;</entry> <entry>指定したディレクトリー内を検索して関連するソースの場所を追加します。</entry></row>
-					  <row><entry>-suppress &lt;filter file&gt;</entry> <entry>suppress=&quot;&lt;filter file&gt;&quot;</entry> <entry>指定したファイルに一致する警告を抑止します (以前に指定した抑止設定は置き換えられます)。</entry></row>
-					  <row><entry>-withMessages</entry>                 <entry>withMessages=&quot;[true|false]&quot;</entry>    <entry>XMLにテキストメッセージを追加します。</entry></row>
+                      <row><entry>-findSource &lt;directory&gt;</entry> <entry>findSource=&quot;&lt;directory&gt;&quot;</entry> <entry>指定したディレクトリー内を検索して関連するソースの場所を追加します。</entry></row>
+                      <row><entry>-suppress &lt;filter file&gt;</entry> <entry>suppress=&quot;&lt;filter file&gt;&quot;</entry> <entry>指定したファイルに一致する警告を抑止します (以前に指定した抑止設定は置き換えられます)。</entry></row>
+                      <row><entry>-withMessages</entry>                 <entry>withMessages=&quot;[true|false]&quot;</entry>    <entry>XMLにテキストメッセージを追加します。</entry></row>
 					  <row><entry>-resetSource</entry>                  <entry>resetSource=&quot;[true|false]&quot;</entry>     <entry>ソース検索パスをすべて削除します。</entry></row>
-			 	</tbody>
-				</tgroup>
-			</table>
+                 </tbody>
+                </tgroup>
+            </table>
 		</sect2>
-		
-		<sect2 id="listBugDatabaseInfo">
-			<title>listBugDatabaseInfo</title>
+
+        <sect2 id="listBugDatabaseInfo">
+            <title>listBugDatabaseInfo</title>
 			
-			<para>このコマンドの実行においては、コマンドラインで 0 個以上の xml バグデータベースファイル名を指定します。ファイル名を1つも指定しなければ、標準出力から読み込みを行いテーブルのヘッダーは生成されません。</para>
+            <para>このコマンドの実行においては、コマンドラインで 0 個以上の xml バグデータベースファイル名を指定します。ファイル名を1つも指定しなければ、標準出力から読み込みを行いテーブルのヘッダーは生成されません。</para>
 
 <para>このコマンドには 1 つだけオプションがあります : <option>-formatDates</option> を指定するとテキスト形式でデータが描画されます。</para>
-			
-<para>出力される表は、各バグデータベースごとに行を持ち、次に示すカラムから成ります :</para>
-		<table id="listBugDatabaseInfoColumns">
-			<title>listBugDatabaseInfo カラム一覧</title>
-			<tgroup cols="2" align="left">
-  				<thead>
-    				<row>
-      					<entry>カラム</entry>
-      					<entry>目的</entry>
-    				</row>
-  				</thead>
-  				<tbody>
-					  <row><entry>version</entry><entry>バージョン名</entry></row>
-					  <row><entry>time</entry><entry>リリースされた日時</entry></row>
-					  <row><entry>classes</entry><entry>分析されたクラス数</entry></row>
-					  <row><entry>NCSS</entry><entry>コメント文を除いた命令数 (Non Commenting Source Statements)</entry></row>
-					  <row><entry>total</entry><entry>全警告数</entry></row>
-					  <row><entry>high</entry><entry>優先度(高)の警告の総数</entry></row>
-					  <row><entry>medium</entry><entry>優先度(中)の警告の総数</entry></row>
-					  <row><entry>low</entry><entry>優先度(低)の警告の総数</entry></row>
-					  <row><entry>filename</entry><entry>データベースのファイル名</entry></row>
-<!--
-					  <row><entry></entry><entry></entry></row>
-					  <row><entry></entry><entry></entry></row>
-					  <row><entry></entry><entry></entry></row>
-					  <row><entry></entry><entry></entry></row>
-					  <row><entry></entry><entry></entry></row>
-					  <row><entry></entry><entry></entry></row>
--->
-			 	</tbody>
-				</tgroup>
-			</table>
-			
-		</sect2>
 
-	</sect1>
-	
-	<sect1 id="examples">
+<para>出力される表は、各バグデータベースごとに行を持ち、次に示すカラムから成ります :</para>
+        <table id="listBugDatabaseInfoColumns">
+            <title>listBugDatabaseInfo カラム一覧</title>
+            <tgroup cols="2" align="left">
+  				<thead>
+                    <row>
+                          <entry>カラム</entry>
+                          <entry>目的</entry>
+    				</row>
+                  </thead>
+                  <tbody>
+                      <row><entry>version</entry><entry>バージョン名</entry></row>
+					  <row><entry>time</entry><entry>リリースされた日時</entry></row>
+                      <row><entry>classes</entry><entry>分析されたクラス数</entry></row>
+                      <row><entry>NCSS</entry><entry>コメント文を除いた命令数 (Non Commenting Source Statements)</entry></row>
+                      <row><entry>total</entry><entry>全警告数</entry></row>
+					  <row><entry>high</entry><entry>優先度(高)の警告の総数</entry></row>
+                      <row><entry>medium</entry><entry>優先度(中)の警告の総数</entry></row>
+                      <row><entry>low</entry><entry>優先度(低)の警告の総数</entry></row>
+                      <row><entry>filename</entry><entry>データベースのファイル名</entry></row>
+<!--
+                      <row><entry></entry><entry></entry></row>
+                      <row><entry></entry><entry></entry></row>
+                      <row><entry></entry><entry></entry></row>
+					  <row><entry></entry><entry></entry></row>
+                      <row><entry></entry><entry></entry></row>
+                      <row><entry></entry><entry></entry></row>
+-->
+                 </tbody>
+                </tgroup>
+            </table>
+			
+        </sect2>
+
+    </sect1>
+
+    <sect1 id="examples">
 		<title>例</title>
 <sect2 id="unixscriptsexamples">
    <title>提供されたシェル・スクリプトを使用しての履歴マイニング</title>
@@ -2271,7 +2271,7 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 computeBugHistory jdk1.6.0-b* | filterBugs -bugPattern IL_ | mineBugHistory -formatDates
 </screen>
 <para>すると、次のような出力が行われます :</para>
-	
+
 <screen>
 seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active
 0	jdk1.6.0-b12	&quot;Thu Nov 11 09:07:20 EST 2004&quot;	13128	811569	0	4	0	0	0	0	4
@@ -2392,16 +2392,16 @@ seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active
 </sect2>
 
 <sect2 id="incrementalhistory">
-	<title>増分履歴メンテナンス</title>
+    <title>増分履歴メンテナンス</title>
 
 <para>仮に、 db.xml がビルド b12 - b60 に対する findbugs 実行結果を保持している場合、次に示すコマンドを実行することで、 db.xml に b61 に対する実行結果を追加することができます :</para>
 <screen>
 computeBugHistory -output db.xml db.xml jdk1.6.0-b61/jre/lib/rt.xml
 </screen>
 </sect2>
-		
-			</sect1>
-	
+
+            </sect1>
+
          <sect1 id="antexample">
             <title>Ant の例</title>
 <para>findbugs の実行とその後のデータ・マイニングツールの活用の両方を実行している ant スクリプトの完全な例を以下に示します :</para>
@@ -2412,12 +2412,12 @@ computeBugHistory -output db.xml db.xml jdk1.6.0-b61/jre/lib/rt.xml
    <property name="findbugs.home" value="/Users/ben/Documents/workspace/findbugs/findbugs" />
    <property name="jvmargs" value="-server -Xss1m -Xmx800m -Duser.language=en -Duser.region=EN -Dfindbugs.home=${findbugs.home}" />
 
-	<path id="findbugs.lib">
+    <path id="findbugs.lib">
       <fileset dir="${findbugs.home}/lib">
          <include name="findbugs-ant.jar"/>
       </fileset>
    </path>
-   
+
    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
       <classpath refid="findbugs.lib" />
    </taskdef>
@@ -2463,9 +2463,9 @@ computeBugHistory -output db.xml db.xml jdk1.6.0-b61/jre/lib/rt.xml
 
       <!-- 最新の分析結果に情報を設定する -->
       <setBugDatabaseInfo home="${findbugs.home}"
-      	                  withMessages="true"
-      	                  name="asm-util-3.0.jar"
-      	                  input="out.xml"
+                            withMessages="true"
+                            name="asm-util-3.0.jar"
+                            input="out.xml"
       	                  output="out-rel.xml"/>
 
       <!-- 履歴ファイル (out-hist.xml) が既に存在するかどうかを確認する -->
@@ -2500,18 +2500,18 @@ computeBugHistory -output db.xml db.xml jdk1.6.0-b61/jre/lib/rt.xml
    <target name="history" if="mining.historyfile.available">
       <!-- ${data.file} を ${hist.file} にマージします -->
       <computeBugHistory home="${findbugs.home}"
-      	                 withMessages="true"
-      	                 output="${hist.file}">
-      	  <dataFile name="${hist.file}"/>
+                           withMessages="true"
+                           output="${hist.file}">
+            <dataFile name="${hist.file}"/>
       	  <dataFile name="${data.file}"/>
       </computeBugHistory>
 
       <!-- 履歴を算出して ${hist.summary.file} に出力します -->
       <mineBugHistory home="${findbugs.home}"
-      	              formatDates="true"
+                        formatDates="true"
                       noTabs="true"
-      	              input="${hist.file}"
-      	              output="${hist.summary.file}"/>
+                        input="${hist.file}"
+                        output="${hist.summary.file}"/>
    </target>
 
 </project>
@@ -2622,42 +2622,42 @@ in the Ant task.</para>
 <para>Greg Bentz provided a fix for the hashcode/equals detector.</para>
 
 <para>K. Hashimoto contributed internationalization fixes and several other
-	bug fixes.</para>
+    bug fixes.</para>
 
 <para>
-	Glenn Boysko contributed support for ignoring specified local
-	variables in the dead local store detector.
-</para>
-	
-<para>
-	Jay Dunning contributed a detector to find equality comparisons
-	of floating-point values, and overhauled the analysis summary
-	report and its representation in the saved XML format.
+    Glenn Boysko contributed support for ignoring specified local
+    variables in the dead local store detector.
 </para>
 
 <para>
-	Olivier Parent contributed updated French translations for bug descriptions and
-	Swing GUI.
+    Jay Dunning contributed a detector to find equality comparisons
+    of floating-point values, and overhauled the analysis summary
+    report and its representation in the saved XML format.
 </para>
 
 <para>
-	Chris Nappin contributed the <filename>plain.xsl</filename>
-	stylesheet.
+    Olivier Parent contributed updated French translations for bug descriptions and
+    Swing GUI.
 </para>
 
 <para>
-	Etienne Giraudy contributed the <filename>fancy.xsl</filename> and  <filename>fancy-hist.xsl</filename>
-	stylesheets, and made improvements to the <command>-xml:withMessages</command>
-	option.
+    Chris Nappin contributed the <filename>plain.xsl</filename>
+    stylesheet.
 </para>
-	
+
 <para>
-	Takashi Okamoto fixed bugs in the project preferences dialog
-	in the Eclipse plugin, and contributed to its internationalization and localization.
+    Etienne Giraudy contributed the <filename>fancy.xsl</filename> and  <filename>fancy-hist.xsl</filename>
+    stylesheets, and made improvements to the <command>-xml:withMessages</command>
+    option.
 </para>
-	
+
+<para>
+    Takashi Okamoto fixed bugs in the project preferences dialog
+    in the Eclipse plugin, and contributed to its internationalization and localization.
+</para>
+
 <para>Thomas Einwaller fixed bugs in the project preferences dialog in the Eclipse plugin.</para>
-	
+
 <para>Jeff Knox contributed support for the warningsProperty attribute
 in the Ant task.</para>
 
@@ -2666,7 +2666,7 @@ and fixed a bug related to renaming the Eclipse plugin ID.</para>
 
 <para>Mark McKay contributed an Ant task to launch the findbugs frame.</para>
 
-<para>Dieter von Holten (dvholten) contributed 
+<para>Dieter von Holten (dvholten) contributed
 some German improvements to findbugs_de.properties.</para>
 
 
@@ -2746,7 +2746,7 @@ distributed under the following license:</para>
 
 <blockquote>
 <para>
-Copyright 2001 (C) MetaStuff, Ltd. All Rights Reserved. 
+Copyright 2001 (C) MetaStuff, Ltd. All Rights Reserved.
 </para>
 
 <para>

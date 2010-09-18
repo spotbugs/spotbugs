@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -31,9 +31,9 @@ public class FBClassReader extends ClassReader {
 
     // boolean needOffsets; // optional optimization (not thread safe)
 
-	public FBClassReader(byte[] b) {
-	    super(b);
-	    }
+    public FBClassReader(byte[] b) {
+        super(b);
+        }
     public FBClassReader(byte[] b, int off, int len) {
         super(b, off, len);
     }
@@ -54,7 +54,7 @@ public class FBClassReader extends ClassReader {
             }
         }
         ((MyLabel) labels[offset]).realLabel = true;
-        return labels[offset];    
+        return labels[offset];
     }
 
     private static class MyClassAdapter extends ClassAdapter {
@@ -84,7 +84,7 @@ public class FBClassReader extends ClassReader {
         @Override
         public void visitLabel(Label label)
         {
-        	assert label instanceof MyLabel;
+            assert label instanceof MyLabel;
             MyLabel l = (MyLabel) label;
             ((FBMethodVisitor) mv).visitOffset(l.originalOffset);
             if (l.realLabel) {

@@ -45,83 +45,83 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  */
 public class BuildInterproceduralCallGraph extends BytecodeScanningDetector implements NonReportingDetector {
 
-	private final InterproceduralCallGraph callGraph;
-	private InterproceduralCallGraphVertex currentVertex;
+    private final InterproceduralCallGraph callGraph;
+    private InterproceduralCallGraphVertex currentVertex;
 
-	/**
-	 * Constructor.
-	 *
+    /**
+     * Constructor.
+     *
 	 * @param bugReporter the BugReporter to use
-	 */
-	public BuildInterproceduralCallGraph(BugReporter bugReporter) {
-		if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
+     */
+    public BuildInterproceduralCallGraph(BugReporter bugReporter) {
+        if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
 			return;
+        }
+        callGraph = new InterproceduralCallGraph();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.BytecodeScanningDetector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
+     */
+	@Override
+    public void visitClassContext(ClassContext classContext) {
+        if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
+            return;
 		}
-		callGraph = new InterproceduralCallGraph();
+        super.visitClassContext(classContext);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.visitclass.BetterVisitor#visitMethod(org.apache.bcel.classfile.Method)
+     */
+	@Override
+    public void visitMethod(Method obj) {
+        currentVertex = findVertex(getXMethod());
+        super.visitMethod(obj);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.BytecodeScanningDetector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.visitclass.DismantleBytecode#sawOpcode(int)
+     */
 	@Override
-	public void visitClassContext(ClassContext classContext) {
-		if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
-			return;
-		}
-		super.visitClassContext(classContext);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.visitclass.BetterVisitor#visitMethod(org.apache.bcel.classfile.Method)
-	 */
-	@Override
-	public void visitMethod(Method obj) {
-		currentVertex = findVertex(getXMethod());
-		super.visitMethod(obj);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.visitclass.DismantleBytecode#sawOpcode(int)
-	 */
-	@Override
-	public void sawOpcode(int seen) {
-		switch (seen) {
-		case Constants.INVOKESTATIC:
+    public void sawOpcode(int seen) {
+        switch (seen) {
+        case Constants.INVOKESTATIC:
 		case Constants.INVOKEVIRTUAL:
-		case Constants.INVOKEINTERFACE:
-		case Constants.INVOKESPECIAL:
-			MethodDescriptor called = getMethodDescriptorOperand();
+        case Constants.INVOKEINTERFACE:
+        case Constants.INVOKESPECIAL:
+            MethodDescriptor called = getMethodDescriptorOperand();
 			XMethod calledXMethod = XFactory.createXMethod(called);
-			InterproceduralCallGraphVertex calledVertex = findVertex(calledXMethod);
-			callGraph.createEdge(currentVertex, calledVertex);
-		}
+            InterproceduralCallGraphVertex calledVertex = findVertex(calledXMethod);
+            callGraph.createEdge(currentVertex, calledVertex);
+        }
 	}
 
-	/**
-	 * Find the InterproceduralCallGraphVertex for given XMethod.
-	 *
+    /**
+     * Find the InterproceduralCallGraphVertex for given XMethod.
+     *
 	 * @param xmethod an XMethod
-	 * @return the XMethod's InterproceduralCallGraphVertex
-	 */
-	private InterproceduralCallGraphVertex findVertex(XMethod xmethod) {
+     * @return the XMethod's InterproceduralCallGraphVertex
+     */
+    private InterproceduralCallGraphVertex findVertex(XMethod xmethod) {
 		InterproceduralCallGraphVertex vertex;
-		vertex = callGraph.lookupVertex(xmethod.getMethodDescriptor());
-		if (vertex == null) {
-			vertex = new InterproceduralCallGraphVertex();
+        vertex = callGraph.lookupVertex(xmethod.getMethodDescriptor());
+        if (vertex == null) {
+            vertex = new InterproceduralCallGraphVertex();
 			vertex.setXmethod(xmethod);
-			callGraph.addVertex(vertex);
-		}
-		return vertex;
+            callGraph.addVertex(vertex);
+        }
+        return vertex;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.BytecodeScanningDetector#report()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.BytecodeScanningDetector#report()
+     */
 	@Override
-	public void report() {
-		if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
-			return;
+    public void report() {
+        if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
+            return;
 		}
-		Global.getAnalysisCache().eagerlyPutDatabase(InterproceduralCallGraph.class, callGraph);
-	}
+        Global.getAnalysisCache().eagerlyPutDatabase(InterproceduralCallGraph.class, callGraph);
+    }
 }

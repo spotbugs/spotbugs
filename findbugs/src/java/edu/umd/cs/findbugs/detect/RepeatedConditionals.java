@@ -33,123 +33,123 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class RepeatedConditionals extends OpcodeStackDetector {
 
-	BugReporter bugReporter;
+    BugReporter bugReporter;
 
-	public RepeatedConditionals(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-		reset();
+    public RepeatedConditionals(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+        reset();
 	}
 
-	@Override
-	public void visit(Code code) {
-		boolean interesting = true;
+    @Override
+    public void visit(Code code) {
+        boolean interesting = true;
 		if (interesting) {
-			// initialize any variables we want to initialize for the method
-			super.visit(code); // make callbacks to sawOpcode for all opcodes
-			reset();
+            // initialize any variables we want to initialize for the method
+            super.visit(code); // make callbacks to sawOpcode for all opcodes
+            reset();
 		}
-	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 *
+    /*
+     * (non-Javadoc)
+     *
 	 * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
-	 */
-	int oldPC;
+     */
+    int oldPC;
 
-	LinkedList<Integer> emptyStackLocations = new LinkedList<Integer>();
+    LinkedList<Integer> emptyStackLocations = new LinkedList<Integer>();
 
-	LinkedList<Integer> prevOpcodeLocations = new LinkedList<Integer>();
-	Map<Integer, Integer> branchTargets = new HashMap<Integer,Integer>();
+    LinkedList<Integer> prevOpcodeLocations = new LinkedList<Integer>();
+    Map<Integer, Integer> branchTargets = new HashMap<Integer,Integer>();
 
-	@Override
+    @Override
     public void sawBranchTo(int pc) {
-		branchTargets.put(getPC(), pc);
-	}
-	@Override
+        branchTargets.put(getPC(), pc);
+    }
+    @Override
 	public void sawOpcode(int seen) {
-		if (isRegisterStore() || isReturn(seen) || isSwitch(seen) || seen == INVOKEINTERFACE || seen == INVOKESPECIAL || seen == INVOKESTATIC
-				|| seen == INVOKEVIRTUAL || seen == PUTFIELD || seen == PUTSTATIC) {
-			reset();
+        if (isRegisterStore() || isReturn(seen) || isSwitch(seen) || seen == INVOKEINTERFACE || seen == INVOKESPECIAL || seen == INVOKESTATIC
+                || seen == INVOKEVIRTUAL || seen == PUTFIELD || seen == PUTSTATIC) {
+            reset();
 		}
-		else if (stack.getStackDepth() == 0) {
-			check: if (emptyStackLocations.size() > 1) {
-				int first = emptyStackLocations.get(emptyStackLocations.size() - 2);
+        else if (stack.getStackDepth() == 0) {
+            check: if (emptyStackLocations.size() > 1) {
+                int first = emptyStackLocations.get(emptyStackLocations.size() - 2);
 				int second = emptyStackLocations.get(emptyStackLocations.size() - 1);
-				int third = getPC();
-				if (third - second == second - first) {
-					int endOfFirstSegment = prevOpcodeLocations.get(emptyStackLocations.size() - 1);
+                int third = getPC();
+                if (third - second == second - first) {
+                    int endOfFirstSegment = prevOpcodeLocations.get(emptyStackLocations.size() - 1);
 					int endOfSecondSegment = oldPC;
-					int opcodeAtEndOfFirst = getCodeByte(endOfFirstSegment);
-					int opcodeAtEndOfSecond = getCodeByte(endOfSecondSegment);
+                    int opcodeAtEndOfFirst = getCodeByte(endOfFirstSegment);
+                    int opcodeAtEndOfSecond = getCodeByte(endOfSecondSegment);
 
-					if (!isBranch(opcodeAtEndOfFirst) || !isBranch(opcodeAtEndOfSecond)) {
-	                    break check;
+                    if (!isBranch(opcodeAtEndOfFirst) || !isBranch(opcodeAtEndOfSecond)) {
+                        break check;
                     }
-					if (opcodeAtEndOfFirst == Opcodes.GOTO || opcodeAtEndOfSecond == Opcodes.GOTO) {
-	                    break check;
+                    if (opcodeAtEndOfFirst == Opcodes.GOTO || opcodeAtEndOfSecond == Opcodes.GOTO) {
+                        break check;
                     }
-					if (opcodeAtEndOfFirst != opcodeAtEndOfSecond
-							&& !areOppositeBranches(opcodeAtEndOfFirst, opcodeAtEndOfSecond)) {
-	                    break check;
+                    if (opcodeAtEndOfFirst != opcodeAtEndOfSecond
+                            && !areOppositeBranches(opcodeAtEndOfFirst, opcodeAtEndOfSecond)) {
+                        break check;
                     }
 
-					byte[] code = getCode().getCode();
-					if (first == endOfFirstSegment) {
-	                    break check;
+                    byte[] code = getCode().getCode();
+                    if (first == endOfFirstSegment) {
+                        break check;
                     }
-					for (int i = first; i < endOfFirstSegment; i++) {
-						if (code[i] != code[i - first + second]) {
-							break check;
+                    for (int i = first; i < endOfFirstSegment; i++) {
+                        if (code[i] != code[i - first + second]) {
+                            break check;
 						}
-					}
-					if (false) {
-						System.out.println(getFullyQualifiedMethodName());
+                    }
+                    if (false) {
+                        System.out.println(getFullyQualifiedMethodName());
 						System.out.println(first + " ... " + endOfFirstSegment + " : " + OPCODE_NAMES[opcodeAtEndOfFirst]);
-						System.out.println(second + " ... " + endOfSecondSegment + " : " + OPCODE_NAMES[opcodeAtEndOfSecond]);
-					}
-					SourceLineAnnotation firstSourceLine =
+                        System.out.println(second + " ... " + endOfSecondSegment + " : " + OPCODE_NAMES[opcodeAtEndOfSecond]);
+                    }
+                    SourceLineAnnotation firstSourceLine =
 						SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(), this, first, endOfFirstSegment-1);
-					SourceLineAnnotation secondSourceLine =
-						SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(), this, second, endOfSecondSegment-1);
+                    SourceLineAnnotation secondSourceLine =
+                        SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(), this, second, endOfSecondSegment-1);
 
-					int priority = HIGH_PRIORITY;
-					if (firstSourceLine.getStartLine() == -1 || firstSourceLine.getStartLine() != secondSourceLine.getEndLine()) {
-	                    priority++;
+                    int priority = HIGH_PRIORITY;
+                    if (firstSourceLine.getStartLine() == -1 || firstSourceLine.getStartLine() != secondSourceLine.getEndLine()) {
+                        priority++;
                     }
-					if (stack.isJumpTarget(second)) {
-	                    priority++;
+                    if (stack.isJumpTarget(second)) {
+                        priority++;
                     }
-					Integer firstTarget = branchTargets.get(endOfFirstSegment);
-					Integer secondTarget = branchTargets.get(endOfSecondSegment);
-					if (firstTarget == null || secondTarget == null) {
+                    Integer firstTarget = branchTargets.get(endOfFirstSegment);
+                    Integer secondTarget = branchTargets.get(endOfSecondSegment);
+                    if (firstTarget == null || secondTarget == null) {
 	                    break check;
                     }
-					if (firstTarget.equals(secondTarget) && opcodeAtEndOfFirst == opcodeAtEndOfSecond
-							|| firstTarget.intValue() == getPC()) {
-						// identical checks;
+                    if (firstTarget.equals(secondTarget) && opcodeAtEndOfFirst == opcodeAtEndOfSecond
+                            || firstTarget.intValue() == getPC()) {
+                        // identical checks;
 					} else {
-						// opposite checks
-						priority+=2;
-					}
+                        // opposite checks
+                        priority+=2;
+                    }
 
-					BugInstance bug = new BugInstance(this, "RpC_REPEATED_CONDITIONAL_TEST", priority).addClassAndMethod(this)
-					.add(firstSourceLine).add(secondSourceLine);
-					bugReporter.reportBug(bug);
+                    BugInstance bug = new BugInstance(this, "RpC_REPEATED_CONDITIONAL_TEST", priority).addClassAndMethod(this)
+                    .add(firstSourceLine).add(secondSourceLine);
+                    bugReporter.reportBug(bug);
 				}
-			}
-			emptyStackLocations.add(getPC());
-			prevOpcodeLocations.add(oldPC);
+            }
+            emptyStackLocations.add(getPC());
+            prevOpcodeLocations.add(oldPC);
 
-		}
-		oldPC = getPC();
-	}
+        }
+        oldPC = getPC();
+    }
 
-	private void reset() {
-	    emptyStackLocations.clear();
-	    prevOpcodeLocations.clear();
+    private void reset() {
+        emptyStackLocations.clear();
+        prevOpcodeLocations.clear();
 	    branchTargets.clear();
-		oldPC = -1;
+        oldPC = -1;
     }
 
 }

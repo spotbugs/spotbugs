@@ -1,17 +1,17 @@
 /*
  * Bytecode Analysis Framework
  * Copyright (C) 2003,2004 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -27,45 +27,45 @@ package edu.umd.cs.findbugs.ba;
  * @see AbstractDominatorsAnalysis
  */
 public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
-	final private ReverseDepthFirstSearch rdfs;
-	final private DepthFirstSearch dfs;
+    final private ReverseDepthFirstSearch rdfs;
+    final private DepthFirstSearch dfs;
 
-	/**
-	 * Constructor.
-	 *
+    /**
+     * Constructor.
+     *
 	 * @param cfg         the CFG to compute dominator relationships for
-	 * @param rdfs        the ReverseDepthFirstSearch on the CFG
-	 * @param dfs         the DepthFirstSearch on the CFG
-	 * @param edgeChooser EdgeChooser to choose which Edges to consider significant
+     * @param rdfs        the ReverseDepthFirstSearch on the CFG
+     * @param dfs         the DepthFirstSearch on the CFG
+     * @param edgeChooser EdgeChooser to choose which Edges to consider significant
 	 */
-	protected PostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs, EdgeChooser edgeChooser) {
-		super(cfg, edgeChooser);
-		this.rdfs = rdfs;
+    protected PostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs, EdgeChooser edgeChooser) {
+        super(cfg, edgeChooser);
+        this.rdfs = rdfs;
 		this.dfs = dfs;
-	}
+    }
 
-	/**
-	 * Constructor.
-	 *
+    /**
+     * Constructor.
+     *
 	 * @param cfg                  the CFG to compute dominator relationships for
-	 * @param rdfs                 the ReverseDepthFirstSearch on the CFG
-	 * @param dfs                  the DepthFirstSearch on the CFG
-	 * @param ignoreExceptionEdges true if exception edges should be ignored
+     * @param rdfs                 the ReverseDepthFirstSearch on the CFG
+     * @param dfs                  the DepthFirstSearch on the CFG
+     * @param ignoreExceptionEdges true if exception edges should be ignored
 	 */
-	protected PostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs,
-								  DepthFirstSearch dfs, boolean ignoreExceptionEdges) {
-		super(cfg, ignoreExceptionEdges);
+    protected PostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs,
+                                  DepthFirstSearch dfs, boolean ignoreExceptionEdges) {
+        super(cfg, ignoreExceptionEdges);
 		this.rdfs = rdfs;
-		this.dfs = dfs;
-	}
+        this.dfs = dfs;
+    }
 
-	public boolean isForwards() {
-		return false;
-	}
+    public boolean isForwards() {
+        return false;
+    }
 
-	public BlockOrder getBlockOrder(CFG cfg) {
-		return new ReverseDFSOrder(cfg, rdfs, dfs);
-	}
+    public BlockOrder getBlockOrder(CFG cfg) {
+        return new ReverseDFSOrder(cfg, rdfs, dfs);
+    }
 
 //	public static void main(String[] args) throws Exception {
 //		if (args.length != 1) {

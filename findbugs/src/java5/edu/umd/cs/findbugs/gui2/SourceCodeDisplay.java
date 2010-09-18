@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston MA 02111-1307, USA
@@ -42,260 +42,260 @@ import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.sourceViewer.JavaSourceDocument;
 
 public final class SourceCodeDisplay implements Runnable {
-	final MainFrame frame;
+    final MainFrame frame;
 
-	private static final Color MAIN_HIGHLIGHT = new Color(1f, 1f, 0.5f);
-	private static final Color MAIN_HIGHLIGHT_MORE = MAIN_HIGHLIGHT.brighter();
-	private static final Color ALTERNATIVE_HIGHLIGHT = new Color(0.86f, 0.90f, 1.0f);
+    private static final Color MAIN_HIGHLIGHT = new Color(1f, 1f, 0.5f);
+    private static final Color MAIN_HIGHLIGHT_MORE = MAIN_HIGHLIGHT.brighter();
+    private static final Color ALTERNATIVE_HIGHLIGHT = new Color(0.86f, 0.90f, 1.0f);
 	private static final Color FOUND_HIGHLIGHT = new Color(0.75f, 0.75f, 1f);
 
-	static final Document SOURCE_NOT_RELEVANT = new DefaultStyledDocument();
+    static final Document SOURCE_NOT_RELEVANT = new DefaultStyledDocument();
 
-	public JavaSourceDocument myDocument;
-	private int currentChar = -1; //for find
+    public JavaSourceDocument myDocument;
+    private int currentChar = -1; //for find
 
-	private final Map<String, SoftReference<JavaSourceDocument>> map = new HashMap<String,  SoftReference<JavaSourceDocument>>();
+    private final Map<String, SoftReference<JavaSourceDocument>> map = new HashMap<String,  SoftReference<JavaSourceDocument>>();
 
-	SourceCodeDisplay(MainFrame frame) {
-		this.frame = frame;
-		Thread t = new Thread(this, "Source code display thread");
+    SourceCodeDisplay(MainFrame frame) {
+        this.frame = frame;
+        Thread t = new Thread(this, "Source code display thread");
 		t.setDaemon(true);
-		t.start();
-	}
+        t.start();
+    }
 
-	private boolean pendingUpdate;
+    private boolean pendingUpdate;
 
-	@CheckForNull private BugInstance bugToDisplay;
+    @CheckForNull private BugInstance bugToDisplay;
 
-	private SourceLineAnnotation sourceToHighlight;
+    private SourceLineAnnotation sourceToHighlight;
 
-	public synchronized void displaySource(BugInstance bug,
-			SourceLineAnnotation source) {
-		bugToDisplay = bug;
+    public synchronized void displaySource(BugInstance bug,
+            SourceLineAnnotation source) {
+        bugToDisplay = bug;
 		sourceToHighlight = source;
-		pendingUpdate = true;
-		notifyAll();
-	}
+        pendingUpdate = true;
+        notifyAll();
+    }
 
-	public void clearCache() {
-		map.clear();
-	}
+    public void clearCache() {
+        map.clear();
+    }
 
-	@NonNull
-	private JavaSourceDocument getDocument(SourceLineAnnotation source) {
-		try {
+    @NonNull
+    private JavaSourceDocument getDocument(SourceLineAnnotation source) {
+        try {
 			SourceFile sourceFile = frame.getProject().getSourceFinder().findSourceFile(source);
-			String fullFileName = sourceFile.getFullFileName();
-			SoftReference<JavaSourceDocument> resultReference = map.get(fullFileName);
-			JavaSourceDocument result = null;
+            String fullFileName = sourceFile.getFullFileName();
+            SoftReference<JavaSourceDocument> resultReference = map.get(fullFileName);
+            JavaSourceDocument result = null;
 			if (resultReference != null)
-				result = resultReference.get();
-			if (result != null)
-				return result;
+                result = resultReference.get();
+            if (result != null)
+                return result;
 			try {
-				InputStream in = sourceFile.getInputStream();
-				result = new JavaSourceDocument(source.getClassName(),
-						new InputStreamReader(in), sourceFile);
+                InputStream in = sourceFile.getInputStream();
+                result = new JavaSourceDocument(source.getClassName(),
+                        new InputStreamReader(in), sourceFile);
 			} catch (Exception e) {
-				result = JavaSourceDocument.UNKNOWNSOURCE;
-				Debug.println(e); // e.printStackTrace();
-			}
+                result = JavaSourceDocument.UNKNOWNSOURCE;
+                Debug.println(e); // e.printStackTrace();
+            }
 			map.put(fullFileName, new SoftReference<JavaSourceDocument>(result));
-			return result;
-		} catch (Exception e) {
-			Debug.println(e); // e.printStackTrace();
+            return result;
+        } catch (Exception e) {
+            Debug.println(e); // e.printStackTrace();
 			return JavaSourceDocument.UNKNOWNSOURCE;
 
-		}
-	}
+        }
+    }
 
-	public void run() {
-		while (true) {
-			BugInstance myBug;
+    public void run() {
+        while (true) {
+            BugInstance myBug;
 			SourceLineAnnotation mySourceLine;
-			synchronized (this) {
-				while (!pendingUpdate) {
-					try {
+            synchronized (this) {
+                while (!pendingUpdate) {
+                    try {
 						wait();
-					} catch (InterruptedException e) {
-						// we don't use these
-					}
+                    } catch (InterruptedException e) {
+                        // we don't use these
+                    }
 				}
-				myBug = bugToDisplay;
-				mySourceLine = sourceToHighlight;
-				bugToDisplay = null;
+                myBug = bugToDisplay;
+                mySourceLine = sourceToHighlight;
+                bugToDisplay = null;
 				sourceToHighlight = null;
-				pendingUpdate = false;
-			}
-			if (myBug == null || mySourceLine == null) {
+                pendingUpdate = false;
+            }
+            if (myBug == null || mySourceLine == null) {
 				frame.clearSourcePane();
-				continue;
-			}
+                continue;
+            }
 
-			try {
-			final JavaSourceDocument src = getDocument(mySourceLine);
-			this.myDocument = src;
+            try {
+            final JavaSourceDocument src = getDocument(mySourceLine);
+            this.myDocument = src;
 			src.getHighlightInformation().clear();
-			String primaryKind = mySourceLine.getDescription();
-			// Display myBug and mySourceLine
-			for(Iterator<BugAnnotation> i = myBug.annotationIterator(); i.hasNext(); ) {
+            String primaryKind = mySourceLine.getDescription();
+            // Display myBug and mySourceLine
+            for(Iterator<BugAnnotation> i = myBug.annotationIterator(); i.hasNext(); ) {
 				BugAnnotation annotation = i.next();
-				if (annotation instanceof SourceLineAnnotation) {
-					SourceLineAnnotation sourceAnnotation = (SourceLineAnnotation) annotation;
-					if (sourceAnnotation == mySourceLine)  continue;
+                if (annotation instanceof SourceLineAnnotation) {
+                    SourceLineAnnotation sourceAnnotation = (SourceLineAnnotation) annotation;
+                    if (sourceAnnotation == mySourceLine)  continue;
 					if (sourceAnnotation.getDescription().equals(primaryKind))
-						highlight(src, sourceAnnotation, MAIN_HIGHLIGHT_MORE);
-					else 
-						highlight(src, sourceAnnotation, ALTERNATIVE_HIGHLIGHT);
+                        highlight(src, sourceAnnotation, MAIN_HIGHLIGHT_MORE);
+                    else
+                        highlight(src, sourceAnnotation, ALTERNATIVE_HIGHLIGHT);
 				}
-			}
-			highlight(src, mySourceLine, MAIN_HIGHLIGHT);
-			final BugInstance thisBug = myBug;
+            }
+            highlight(src, mySourceLine, MAIN_HIGHLIGHT);
+            final BugInstance thisBug = myBug;
 			final SourceLineAnnotation thisSource = mySourceLine;
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					frame.getSourceCodeTextPane().setEditorKit(src.getEditorKit());
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    frame.getSourceCodeTextPane().setEditorKit(src.getEditorKit());
 					StyledDocument document = src.getDocument();
-					frame.getSourceCodeTextPane().setDocument(document);
-					String sourceFile = thisSource.getSourceFile();
-					if (sourceFile == null || sourceFile.equals("<Unknown>")) {
+                    frame.getSourceCodeTextPane().setDocument(document);
+                    String sourceFile = thisSource.getSourceFile();
+                    if (sourceFile == null || sourceFile.equals("<Unknown>")) {
 						sourceFile = thisSource.getSimpleClassName();
-					}
-					int startLine = thisSource.getStartLine();
-					int endLine = thisSource.getEndLine();
+                    }
+                    int startLine = thisSource.getStartLine();
+                    int endLine = thisSource.getEndLine();
 					frame.setSourceTab(sourceFile + " in " + thisSource.getPackageName(), thisBug);
-					
-					int originLine = (startLine + endLine) / 2;
-					LinkedList<Integer> otherLines = new LinkedList<Integer>();
+
+                    int originLine = (startLine + endLine) / 2;
+                    LinkedList<Integer> otherLines = new LinkedList<Integer>();
 					//show(frame.getSourceCodeTextPane(), document, thisSource);
-					for(Iterator<BugAnnotation> i = thisBug.annotationIterator(); i.hasNext(); ) {
-						BugAnnotation annotation = i.next();
-						if (annotation instanceof SourceLineAnnotation) {
+                    for(Iterator<BugAnnotation> i = thisBug.annotationIterator(); i.hasNext(); ) {
+                        BugAnnotation annotation = i.next();
+                        if (annotation instanceof SourceLineAnnotation) {
 							SourceLineAnnotation sourceAnnotation = (SourceLineAnnotation) annotation;
-							if (sourceAnnotation != thisSource) {
-								//show(frame.getSourceCodeTextPane(), document, sourceAnnotation);
-								int otherLine = sourceAnnotation.getStartLine();
+                            if (sourceAnnotation != thisSource) {
+                                //show(frame.getSourceCodeTextPane(), document, sourceAnnotation);
+                                int otherLine = sourceAnnotation.getStartLine();
 								if (otherLine > originLine) otherLine = sourceAnnotation.getEndLine();
-								otherLines.add(otherLine);
-							}
-						}
+                                otherLines.add(otherLine);
+                            }
+                        }
 					}
-					//show(frame.getSourceCodeTextPane(), document, thisSource);
-					
-					if (startLine >= 0 && endLine >= 0)
+                    //show(frame.getSourceCodeTextPane(), document, thisSource);
+
+                    if (startLine >= 0 && endLine >= 0)
 						frame.getSourceCodeTextPane().scrollLinesToVisible(startLine, endLine, otherLines);
-				}
-			});
-		} catch (Exception e) {
+                }
+            });
+        } catch (Exception e) {
 			Debug.println(e); // e.printStackTrace();
-		}
-		}
-	}
+        }
+        }
+    }
 
-	/**
-	 * @param src
-	 * @param sourceAnnotation
+    /**
+     * @param src
+     * @param sourceAnnotation
 	 */
-	private void highlight(JavaSourceDocument src, SourceLineAnnotation sourceAnnotation, Color color) {
+    private void highlight(JavaSourceDocument src, SourceLineAnnotation sourceAnnotation, Color color) {
 
-		int startLine = sourceAnnotation.getStartLine();
-		if (startLine == -1) return;
-		String sourceFile = sourceAnnotation.getSourcePath();
+        int startLine = sourceAnnotation.getStartLine();
+        if (startLine == -1) return;
+        String sourceFile = sourceAnnotation.getSourcePath();
 		String sourceFile2 = src.getSourceFile().getFullFileName();
-		if(!java.io.File.separator.equals(String.valueOf(SourceLineAnnotation.CANONICAL_PACKAGE_SEPARATOR))) {
-			sourceFile2 = sourceFile2.replace(java.io.File.separatorChar, SourceLineAnnotation.CANONICAL_PACKAGE_SEPARATOR);
-		}
+        if(!java.io.File.separator.equals(String.valueOf(SourceLineAnnotation.CANONICAL_PACKAGE_SEPARATOR))) {
+            sourceFile2 = sourceFile2.replace(java.io.File.separatorChar, SourceLineAnnotation.CANONICAL_PACKAGE_SEPARATOR);
+        }
 		if (!sourceFile2.endsWith(sourceFile)) return;
-		src.getHighlightInformation().setHighlight(startLine, sourceAnnotation.getEndLine(), color);
-	}
+        src.getHighlightInformation().setHighlight(startLine, sourceAnnotation.getEndLine(), color);
+    }
 
-	public void foundItem(int lineNum) {
-		myDocument.getHighlightInformation().updateFoundLineNum(lineNum);
-		myDocument.getHighlightInformation().setHighlight(lineNum, FOUND_HIGHLIGHT);
+    public void foundItem(int lineNum) {
+        myDocument.getHighlightInformation().updateFoundLineNum(lineNum);
+        myDocument.getHighlightInformation().setHighlight(lineNum, FOUND_HIGHLIGHT);
 		frame.getSourceCodeTextPane().scrollLineToVisible(lineNum);
-		frame.getSourceCodeTextPane().updateUI();
-	}
+        frame.getSourceCodeTextPane().updateUI();
+    }
 
-	private int search(JavaSourceDocument document, String target, int start, Boolean backwards)
-	{
-		if (document == null) return -1;
+    private int search(JavaSourceDocument document, String target, int start, Boolean backwards)
+    {
+        if (document == null) return -1;
 
-		String docContent = null;
-		try{
-		StyledDocument document2 = document.getDocument();
+        String docContent = null;
+        try{
+        StyledDocument document2 = document.getDocument();
 		if (document2 == null) return -1;
-		docContent = document2.getText(0, document2.getLength());
-		}
-		catch(BadLocationException ble){System.out.println("Bad location exception");}
+        docContent = document2.getText(0, document2.getLength());
+        }
+        catch(BadLocationException ble){System.out.println("Bad location exception");}
 		catch(NullPointerException npe){return -1;}
-		if(docContent == null) return -1;
-		int targetLen = target.length();
-		int sourceLen = docContent.length();
+        if(docContent == null) return -1;
+        int targetLen = target.length();
+        int sourceLen = docContent.length();
 		if(targetLen > sourceLen)
-			return -1;
-		else if(backwards)
-		{
+            return -1;
+        else if(backwards)
+        {
 			for(int i=start; i>=0; i--)
+                if(docContent.substring(i, i+targetLen).equals(target))
+                    return i;
+            for(int i=(sourceLen-targetLen); i>start; i--)
 				if(docContent.substring(i, i+targetLen).equals(target))
-					return i;
-			for(int i=(sourceLen-targetLen); i>start; i--)
-				if(docContent.substring(i, i+targetLen).equals(target))
-					return i;
-			return -1;
-		}
+                    return i;
+            return -1;
+        }
 		else
-		{
-			for(int i=start; i<=(sourceLen-targetLen); i++)
-				if(docContent.substring(i, i+targetLen).equals(target))
+        {
+            for(int i=start; i<=(sourceLen-targetLen); i++)
+                if(docContent.substring(i, i+targetLen).equals(target))
 					return i;
-			for(int i=0; i<start; i++)
-				if(docContent.substring(i, i+targetLen).equals(target))
-					return i;
+            for(int i=0; i<start; i++)
+                if(docContent.substring(i, i+targetLen).equals(target))
+                    return i;
 			return -1;
-		}
-	}
+        }
+    }
 
-	private int charToLineNum(int charNum)
-	{
-		if(charNum==-1) return -1;
+    private int charToLineNum(int charNum)
+    {
+        if(charNum==-1) return -1;
 		try
-		{
-			for(int i=1; true; i++){
-				if(frame.getSourceCodeTextPane().getLineOffset(i) > charNum)
+        {
+            for(int i=1; true; i++){
+                if(frame.getSourceCodeTextPane().getLineOffset(i) > charNum)
 					return i-1;
-				else if(frame.getSourceCodeTextPane().getLineOffset(i) == -1)
-					return -1;
-			}
+                else if(frame.getSourceCodeTextPane().getLineOffset(i) == -1)
+                    return -1;
+            }
 		}
-		catch(BadLocationException ble){return -1;}
-	}
+        catch(BadLocationException ble){return -1;}
+    }
 
-	public int find(String target)
-	{
+    public int find(String target)
+    {
         currentChar = search(myDocument, target, 0, false);
-		//System.out.println(currentChar);
-		//System.out.println(charToLineNum(currentChar));
-		return charToLineNum(currentChar);
+        //System.out.println(currentChar);
+        //System.out.println(charToLineNum(currentChar));
+        return charToLineNum(currentChar);
 	}
 
-	public int findNext(String target)
-	{
+    public int findNext(String target)
+    {
         currentChar = search(myDocument, target, currentChar+1, false);
-		//System.out.println(currentChar);
-		//System.out.println(charToLineNum(currentChar));
-		return charToLineNum(currentChar);
+        //System.out.println(currentChar);
+        //System.out.println(charToLineNum(currentChar));
+        return charToLineNum(currentChar);
 	}
 
-	public int findPrevious(String target)
-	{
+    public int findPrevious(String target)
+    {
         currentChar = search(myDocument, target, currentChar-1, true);
-		//System.out.println(currentChar);
-		//System.out.println(charToLineNum(currentChar));
-		return charToLineNum(currentChar);
+        //System.out.println(currentChar);
+        //System.out.println(charToLineNum(currentChar));
+        return charToLineNum(currentChar);
 	}
 
-	public void showLine(int line) {
-		frame.getSourceCodeTextPane().scrollLineToVisible(line);
+    public void showLine(int line) {
+        frame.getSourceCodeTextPane().scrollLineToVisible(line);
 
-	}
+    }
 }

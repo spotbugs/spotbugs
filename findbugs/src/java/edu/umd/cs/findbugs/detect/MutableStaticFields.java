@@ -43,257 +43,257 @@ import edu.umd.cs.findbugs.classfile.Global;
 public class MutableStaticFields extends BytecodeScanningDetector {
 
 
-	static String extractPackage(String c) {
-		int i = c.lastIndexOf('/');
-		if (i < 0) {
+    static String extractPackage(String c) {
+        int i = c.lastIndexOf('/');
+        if (i < 0) {
 	        return "";
         }
-		return c.substring(0, i);
-	}
+        return c.substring(0, i);
+    }
 
-	static boolean mutableSignature(String sig) {
-		return sig.equals("Ljava/util/Hashtable;")
-				|| sig.equals("Ljava/util/Date;")
+    static boolean mutableSignature(String sig) {
+        return sig.equals("Ljava/util/Hashtable;")
+                || sig.equals("Ljava/util/Date;")
 				|| sig.charAt(0) == '[';
-	}
+    }
 
-	LinkedList<XField> seen = new LinkedList<XField>();
-	boolean publicClass;
-	boolean zeroOnTOS;
+    LinkedList<XField> seen = new LinkedList<XField>();
+    boolean publicClass;
+    boolean zeroOnTOS;
 	boolean emptyArrayOnTOS;
-	boolean inStaticInitializer;
-	String packageName;
-	Set<XField> readAnywhere = new HashSet<XField>();
+    boolean inStaticInitializer;
+    String packageName;
+    Set<XField> readAnywhere = new HashSet<XField>();
 	Set<XField> unsafeValue = new HashSet<XField>();
-	Set<XField> notFinal = new HashSet<XField>();
-	Set<XField> outsidePackage = new HashSet<XField>();
-	Map<XField, SourceLineAnnotation> firstFieldUse = new HashMap<XField, SourceLineAnnotation>();
+    Set<XField> notFinal = new HashSet<XField>();
+    Set<XField> outsidePackage = new HashSet<XField>();
+    Map<XField, SourceLineAnnotation> firstFieldUse = new HashMap<XField, SourceLineAnnotation>();
 	private final BugReporter bugReporter;
 
-	/**
-	 * Eclipse uses reflection to initialize NLS message bundles. Classes which using this
-	 * mechanism are usualy extending org.eclipse.osgi.util.NLS class and contains lots
+    /**
+     * Eclipse uses reflection to initialize NLS message bundles. Classes which using this
+     * mechanism are usualy extending org.eclipse.osgi.util.NLS class and contains lots
 	 * of public static String fields which are used as message constants. Unfortunately
-	 * these fields cannot be final, so FB reports tons of warnings for such Eclipse classes.
-	 */
-	private boolean isEclipseNLS;
+     * these fields cannot be final, so FB reports tons of warnings for such Eclipse classes.
+     */
+    private boolean isEclipseNLS;
 
-	public MutableStaticFields(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    public MutableStaticFields(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-	@Override
-	public void visit(JavaClass obj) {
-		super.visit(obj);
+    @Override
+    public void visit(JavaClass obj) {
+        super.visit(obj);
 		int flags = obj.getAccessFlags();
-		publicClass = (flags & ACC_PUBLIC) != 0
-				&& !getDottedClassName().startsWith("sun.");
+        publicClass = (flags & ACC_PUBLIC) != 0
+                && !getDottedClassName().startsWith("sun.");
 
-		packageName = extractPackage(getClassName());
-		isEclipseNLS = "org.eclipse.osgi.util.NLS".equals(obj.getSuperclassName());
-	}
+        packageName = extractPackage(getClassName());
+        isEclipseNLS = "org.eclipse.osgi.util.NLS".equals(obj.getSuperclassName());
+    }
 
-	@Override
-	public void visit(Method obj) {
-		zeroOnTOS = false;
+    @Override
+    public void visit(Method obj) {
+        zeroOnTOS = false;
 		// System.out.println(methodName);
-		inStaticInitializer = getMethodName().equals("<clinit>");
-	}
+        inStaticInitializer = getMethodName().equals("<clinit>");
+    }
 
-	@Override
-	public void sawOpcode(int seen) {
-		// System.out.println("saw	"	+ OPCODE_NAMES[seen] + "	" + zeroOnTOS);
+    @Override
+    public void sawOpcode(int seen) {
+        // System.out.println("saw	"	+ OPCODE_NAMES[seen] + "	" + zeroOnTOS);
 		switch (seen) {
-		case GETSTATIC:
-		case PUTSTATIC:
+        case GETSTATIC:
+        case PUTSTATIC:
 
-			XField xField = getXFieldOperand();
-			if (xField == null) {
-	            break;
+            XField xField = getXFieldOperand();
+            if (xField == null) {
+                break;
             }
-			if (!interesting(xField)) {
-	            break;
+            if (!interesting(xField)) {
+                break;
             }
 
-			boolean samePackage =
-					packageName.equals(extractPackage(getClassConstantOperand()));
-			boolean initOnly =
+            boolean samePackage =
+                    packageName.equals(extractPackage(getClassConstantOperand()));
+            boolean initOnly =
 					seen == GETSTATIC ||
-					getClassName().equals(getClassConstantOperand())
-					&& inStaticInitializer;
-			boolean safeValue =
+                    getClassName().equals(getClassConstantOperand())
+                    && inStaticInitializer;
+            boolean safeValue =
 					seen == GETSTATIC || emptyArrayOnTOS || AnalysisContext.currentXFactory().isEmptyArrayField(xField)
-					|| !mutableSignature(getSigConstantOperand());
+                    || !mutableSignature(getSigConstantOperand());
 
-			if (seen == GETSTATIC) {
-	            readAnywhere.add(xField);
+            if (seen == GETSTATIC) {
+                readAnywhere.add(xField);
             }
 
-			if (!samePackage) {
-	            outsidePackage.add(xField);
+            if (!samePackage) {
+                outsidePackage.add(xField);
             }
 
-			if (!initOnly) {
-	            notFinal.add(xField);
+            if (!initOnly) {
+                notFinal.add(xField);
             }
 
-			if (!safeValue) {
-	            unsafeValue.add(xField);
+            if (!safeValue) {
+                unsafeValue.add(xField);
             }
 
-			//Remove inStaticInitializer check to report all source lines of first use
-			//doing so, however adds quite a bit of memory bloat.
-			if (inStaticInitializer && !firstFieldUse.containsKey(xField)) {
+            //Remove inStaticInitializer check to report all source lines of first use
+            //doing so, however adds quite a bit of memory bloat.
+            if (inStaticInitializer && !firstFieldUse.containsKey(xField)) {
 				SourceLineAnnotation sla = SourceLineAnnotation.fromVisitedInstruction(this);
-				firstFieldUse.put(xField, sla);
-			}
-			break;
-		case ANEWARRAY:
-		case NEWARRAY:
-			if (zeroOnTOS) {
-	            emptyArrayOnTOS = true;
+                firstFieldUse.put(xField, sla);
             }
-			zeroOnTOS = false;
-			return;
-		case ICONST_0:
+            break;
+		case ANEWARRAY:
+        case NEWARRAY:
+            if (zeroOnTOS) {
+                emptyArrayOnTOS = true;
+            }
+            zeroOnTOS = false;
+            return;
+        case ICONST_0:
 			zeroOnTOS = true;
-			emptyArrayOnTOS = false;
-			return;
-		}
+            emptyArrayOnTOS = false;
+            return;
+        }
 		zeroOnTOS = false;
-		emptyArrayOnTOS = false;
-	}
+        emptyArrayOnTOS = false;
+    }
 
-	private boolean interesting(XField f) {
-		if (!f.isPublic() && !f.isProtected()) {
-	        return false;
+    private boolean interesting(XField f) {
+        if (!f.isPublic() && !f.isProtected()) {
+            return false;
         }
-		if (!f.isStatic()|| f.isSynthetic() || f.isVolatile()) {
-	        return false;
+        if (!f.isStatic()|| f.isSynthetic() || f.isVolatile()) {
+            return false;
         }
-		boolean isHashtable =
-			f.getSignature().equals("Ljava/util/Hashtable;");
-		boolean isArray = f.getSignature().charAt(0) == '[';
+        boolean isHashtable =
+            f.getSignature().equals("Ljava/util/Hashtable;");
+        boolean isArray = f.getSignature().charAt(0) == '[';
 		if (f.isFinal() && !(isArray || isHashtable)) {
-	        return false;
+            return false;
         }
-		return true;
+        return true;
 
-	}
-	@Override
-	public void visit(Field obj) {
+    }
+    @Override
+    public void visit(Field obj) {
 		super.visit(obj);
-		int flags = obj.getAccessFlags();
-		boolean isStatic = (flags & ACC_STATIC) != 0;
-		if (!isStatic) {
+        int flags = obj.getAccessFlags();
+        boolean isStatic = (flags & ACC_STATIC) != 0;
+        if (!isStatic) {
 	        return;
         }
-		boolean isVolatile = (flags & ACC_VOLATILE) != 0;
-		if (isVolatile) {
-	        return;
+        boolean isVolatile = (flags & ACC_VOLATILE) != 0;
+        if (isVolatile) {
+            return;
         }
-		boolean isFinal = (flags & ACC_FINAL) != 0;
-		boolean isPublic = publicClass && (flags & ACC_PUBLIC) != 0;
-		boolean isProtected = publicClass && (flags & ACC_PROTECTED) != 0;
+        boolean isFinal = (flags & ACC_FINAL) != 0;
+        boolean isPublic = publicClass && (flags & ACC_PUBLIC) != 0;
+        boolean isProtected = publicClass && (flags & ACC_PROTECTED) != 0;
 		if (!isPublic && !isProtected) {
-	        return;
+            return;
         }
 
-		boolean isHashtable =
-			getFieldSig().equals("Ljava/util/Hashtable;");
-		boolean isArray = getFieldSig().charAt(0) == '[';
+        boolean isHashtable =
+            getFieldSig().equals("Ljava/util/Hashtable;");
+        boolean isArray = getFieldSig().charAt(0) == '[';
 
-		if (isFinal && !(isHashtable || isArray)) {
-	        return;
+        if (isFinal && !(isHashtable || isArray)) {
+            return;
         }
-		if(isEclipseNLS && getFieldSig().equals("Ljava/lang/String;")){
-			return;
-		}
+        if(isEclipseNLS && getFieldSig().equals("Ljava/lang/String;")){
+            return;
+        }
 
-		seen.add(getXField());
-	}
+        seen.add(getXField());
+    }
 
-	@Override
-	public void report() {
-		/*
+    @Override
+    public void report() {
+        /*
 		for(Iterator i = unsafeValue.iterator(); i.hasNext(); ) {
-			System.out.println("Unsafe: " + i.next());
-			}
-		*/
+            System.out.println("Unsafe: " + i.next());
+            }
+        */
 		for (XField f : seen) {
-			boolean isFinal = f.isFinal();
-			String className = f.getClassName();
-			String fieldSig = f.getSignature();
+            boolean isFinal = f.isFinal();
+            String className = f.getClassName();
+            String fieldSig = f.getSignature();
 			String fieldName = f.getName();
-			boolean couldBeFinal = !isFinal
-					&& !notFinal.contains(f);
-			boolean isPublic = f.isPublic();
+            boolean couldBeFinal = !isFinal
+                    && !notFinal.contains(f);
+            boolean isPublic = f.isPublic();
 			boolean couldBePackage = !outsidePackage.contains(f);
-			boolean movedOutofInterface = false;
+            boolean movedOutofInterface = false;
 
             try {
-            	XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, f.getClassDescriptor());
-            	movedOutofInterface = couldBePackage && xClass.isInterface();
+                XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, f.getClassDescriptor());
+                movedOutofInterface = couldBePackage && xClass.isInterface();
             } catch (CheckedAnalysisException e) {
-            	assert true;
+                assert true;
             }
-			boolean isHashtable = fieldSig.equals("Ljava/util/Hashtable;");
-			boolean isArray = fieldSig.charAt(0) == '['
-					&& unsafeValue.contains(f);
+            boolean isHashtable = fieldSig.equals("Ljava/util/Hashtable;");
+            boolean isArray = fieldSig.charAt(0) == '['
+                    && unsafeValue.contains(f);
 			boolean isReadAnywhere = readAnywhere.contains(f);
-			if (false) {
-	            System.out.println(className + "."  + fieldName
-	            			  + " : " + fieldSig
+            if (false) {
+                System.out.println(className + "."  + fieldName
+                              + " : " + fieldSig
 	            		  + "	" + isHashtable
-	            		  + "	" + isArray
-	            			  );
+                          + "	" + isArray
+                              );
             }
 
 
-			String bugType;
-			int priority = NORMAL_PRIORITY;
-			if (isFinal && !isHashtable && !isArray) {
+            String bugType;
+            int priority = NORMAL_PRIORITY;
+            if (isFinal && !isHashtable && !isArray) {
 				continue;
-			} else if (movedOutofInterface) {
-				bugType = "MS_OOI_PKGPROTECT";
-			} else if (couldBePackage && couldBeFinal && (isHashtable || isArray)) {
+            } else if (movedOutofInterface) {
+                bugType = "MS_OOI_PKGPROTECT";
+            } else if (couldBePackage && couldBeFinal && (isHashtable || isArray)) {
 	            bugType = "MS_FINAL_PKGPROTECT";
             } else if (couldBeFinal && !isHashtable && !isArray) {
-				bugType = "MS_SHOULD_BE_FINAL";
-				if (fieldName.equals(fieldName.toUpperCase())
-						|| fieldSig.charAt(0) == 'L') {
+                bugType = "MS_SHOULD_BE_FINAL";
+                if (fieldName.equals(fieldName.toUpperCase())
+                        || fieldSig.charAt(0) == 'L') {
 	                priority = HIGH_PRIORITY;
                 }
-			} else if (couldBePackage) {
-	            bugType = "MS_PKGPROTECT";
+            } else if (couldBePackage) {
+                bugType = "MS_PKGPROTECT";
             } else if (isHashtable) {
-				bugType = "MS_MUTABLE_HASHTABLE";
-				if (!isFinal) {
+                bugType = "MS_MUTABLE_HASHTABLE";
+                if (!isFinal) {
+                    priority = HIGH_PRIORITY;
+                }
+            } else if (isArray) {
+                bugType = "MS_MUTABLE_ARRAY";
+                if (fieldSig.indexOf("L") >= 0 || !isFinal) {
 	                priority = HIGH_PRIORITY;
                 }
-			} else if (isArray) {
-				bugType = "MS_MUTABLE_ARRAY";
-				if (fieldSig.indexOf("L") >= 0 || !isFinal) {
-	                priority = HIGH_PRIORITY;
-                }
-			} else if (!isFinal) {
-	            bugType = "MS_CANNOT_BE_FINAL";
+            } else if (!isFinal) {
+                bugType = "MS_CANNOT_BE_FINAL";
             } else {
-	            throw new IllegalStateException("impossible");
+                throw new IllegalStateException("impossible");
             }
-			if (!isReadAnywhere) {
-	            priority = LOW_PRIORITY;
+            if (!isReadAnywhere) {
+                priority = LOW_PRIORITY;
             }
 
-			BugInstance bug = new BugInstance(this, bugType, priority)
-												.addClass(className)
-												.addField(f);
+            BugInstance bug = new BugInstance(this, bugType, priority)
+                                                .addClass(className)
+                                                .addField(f);
 			SourceLineAnnotation firstPC = firstFieldUse.get(f);
-			if (firstPC != null) {
-	            bug.addSourceLine(firstPC);
+            if (firstPC != null) {
+                bug.addSourceLine(firstPC);
             }
-			bugReporter.reportBug(bug);
+            bugReporter.reportBug(bug);
 
-		}
-	}
+        }
+    }
 }

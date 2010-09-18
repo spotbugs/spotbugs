@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003-2005 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -109,566 +109,566 @@ import org.objectweb.asm.tree.ClassNode;
  * @see BugAnnotation
  */
 public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Serializable, Cloneable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final String type;
-	private int priority;
-	private ArrayList<BugAnnotation> annotationList;
+    private final String type;
+    private int priority;
+    private ArrayList<BugAnnotation> annotationList;
 	private int cachedHashCode;
-	private @CheckForNull  BugDesignation userDesignation;
-	private BugProperty propertyListHead, propertyListTail;
-	private String oldInstanceHash;
+    private @CheckForNull  BugDesignation userDesignation;
+    private BugProperty propertyListHead, propertyListTail;
+    private String oldInstanceHash;
 	private String instanceHash;
-	private int instanceOccurrenceNum;
-	private int instanceOccurrenceMax;
-	private DetectorFactory detectorFactory;
+    private int instanceOccurrenceNum;
+    private int instanceOccurrenceMax;
+    private DetectorFactory detectorFactory;
     private AtomicReference<XmlProps> xmlProps = new AtomicReference<XmlProps>();
 
 
-	/*
-	 * The following fields are used for tracking Bug instances across multiple versions of software.
-	 * They are meaningless in a BugCollection for just one version of software. 
+    /*
+     * The following fields are used for tracking Bug instances across multiple versions of software.
+     * They are meaningless in a BugCollection for just one version of software.
 	 */
-	private long firstVersion = 0;
-	private long lastVersion = -1;
-	private boolean introducedByChangeOfExistingClass;
+    private long firstVersion = 0;
+    private long lastVersion = -1;
+    private boolean introducedByChangeOfExistingClass;
 	private boolean removedByChangeOfPersistingClass;
 
-	/**
-	 * This value is used to indicate that the cached hashcode
-	 * is invalid, and should be recomputed.
+    /**
+     * This value is used to indicate that the cached hashcode
+     * is invalid, and should be recomputed.
 	 */
-	private static final int INVALID_HASH_CODE = 0;
+    private static final int INVALID_HASH_CODE = 0;
 
-	/**
-	 * This value is used to indicate whether BugInstances should be reprioritized very low,
-	 * when the BugPattern is marked as experimental
+    /**
+     * This value is used to indicate whether BugInstances should be reprioritized very low,
+     * when the BugPattern is marked as experimental
 	 */
-	private static boolean adjustExperimental = false;
+    private static boolean adjustExperimental = false;
 
-	private static Set<String> missingBugTypes = Collections.synchronizedSet(new HashSet<String>());
-	public static  DateFormat firstSeenXMLFormat() {
-		return  DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT, Locale.ENGLISH);
+    private static Set<String> missingBugTypes = Collections.synchronizedSet(new HashSet<String>());
+    public static  DateFormat firstSeenXMLFormat() {
+        return  DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT, Locale.ENGLISH);
 	}
 
 
     /**
-	 * Constructor.
-	 *
-	 * @param type     the bug type
+     * Constructor.
+     *
+     * @param type     the bug type
 	 * @param priority the bug priority
-	 */
-	public BugInstance(String type, int priority) {
-		this.type = type.intern();
+     */
+    public BugInstance(String type, int priority) {
+        this.type = type.intern();
 		this.priority = priority;
-		annotationList = new ArrayList<BugAnnotation>(4);
-		cachedHashCode = INVALID_HASH_CODE;
+        annotationList = new ArrayList<BugAnnotation>(4);
+        cachedHashCode = INVALID_HASH_CODE;
 
-		BugPattern p = I18N.instance().lookupBugPattern(type);
-		if (p == null) {
-			if (missingBugTypes.add(type)) {
+        BugPattern p = I18N.instance().lookupBugPattern(type);
+        if (p == null) {
+            if (missingBugTypes.add(type)) {
 				String msg = "Can't find definition of bug type " + type;
-				AnalysisContext.logError(msg, new IllegalArgumentException(msg));
-			}
-		} else
+                AnalysisContext.logError(msg, new IllegalArgumentException(msg));
+            }
+        } else
 			this.priority += p.getPriorityAdjustment();
-		if (adjustExperimental && isExperimental())
-			this.priority = Detector.EXP_PRIORITY;
-		boundPriority();
+        if (adjustExperimental && isExperimental())
+            this.priority = Detector.EXP_PRIORITY;
+        boundPriority();
 	}
 
-	private void boundPriority() {
-		priority = boundedPriority(priority);
-	}
+    private void boundPriority() {
+        priority = boundedPriority(priority);
+    }
 
-	@Override
-	public Object clone() {
-		BugInstance dup;
+    @Override
+    public Object clone() {
+        BugInstance dup;
 
-		try {
-			dup = (BugInstance) super.clone();
+        try {
+            dup = (BugInstance) super.clone();
 
-			// Do deep copying of mutable objects
-			for (int i = 0; i < dup.annotationList.size(); ++i) {
-				dup.annotationList.set(i, (BugAnnotation) dup.annotationList.get(i).clone());
+            // Do deep copying of mutable objects
+            for (int i = 0; i < dup.annotationList.size(); ++i) {
+                dup.annotationList.set(i, (BugAnnotation) dup.annotationList.get(i).clone());
 			}
-			 dup.propertyListHead = dup.propertyListTail = null;
-			for (Iterator<BugProperty> i = propertyIterator(); i.hasNext(); ) {
-				dup.addProperty((BugProperty) i.next().clone());
+             dup.propertyListHead = dup.propertyListTail = null;
+            for (Iterator<BugProperty> i = propertyIterator(); i.hasNext(); ) {
+                dup.addProperty((BugProperty) i.next().clone());
 			}
 
-			return dup;
-		} catch (CloneNotSupportedException e) {
-			throw new AssertionError(e);
+            return dup;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
 		}
-	}
+    }
 
-	/**
-	 * Create a new BugInstance.
-	 * This is the constructor that should be used by Detectors.
+    /**
+     * Create a new BugInstance.
+     * This is the constructor that should be used by Detectors.
 	 * 
-	 * @param detector the Detector that is reporting the BugInstance
-	 * @param type     the bug type
-	 * @param priority the bug priority
+     * @param detector the Detector that is reporting the BugInstance
+     * @param type     the bug type
+     * @param priority the bug priority
 	 */
-	public BugInstance(Detector detector, String type, int priority) {
-		this(type, priority);
-		if (detector != null) {
+    public BugInstance(Detector detector, String type, int priority) {
+        this(type, priority);
+        if (detector != null) {
 			// Adjust priority if required
-			detectorFactory =
-				DetectorFactoryCollection.instance().getFactoryByClassName(detector.getClass().getName());
-			if (detectorFactory != null) {
+            detectorFactory =
+                DetectorFactoryCollection.instance().getFactoryByClassName(detector.getClass().getName());
+            if (detectorFactory != null) {
 				this.priority += detectorFactory.getPriorityAdjustment();
-				boundPriority();
-				BugPattern bugPattern = getBugPattern();
-				if (SystemProperties.ASSERTIONS_ENABLED 
+                boundPriority();
+                BugPattern bugPattern = getBugPattern();
+                if (SystemProperties.ASSERTIONS_ENABLED
 						&& !bugPattern.getCategory().equals("EXPERIMENTAL")
-						&& !detectorFactory.getReportedBugPatterns().contains(bugPattern))
-					  AnalysisContext.logError(detectorFactory.getShortName() + " doesn't note that it reports " + bugPattern);
+                        && !detectorFactory.getReportedBugPatterns().contains(bugPattern))
+                      AnalysisContext.logError(detectorFactory.getShortName() + " doesn't note that it reports " + bugPattern);
 
-			}
-		}
+            }
+        }
 
-	}
+    }
 
-	/**
-	 * Create a new BugInstance.
-	 * This is the constructor that should be used by Detectors.
+    /**
+     * Create a new BugInstance.
+     * This is the constructor that should be used by Detectors.
 	 * 
-	 * @param detector the Detector2 that is reporting the BugInstance
-	 * @param type     the bug type
-	 * @param priority the bug priority
+     * @param detector the Detector2 that is reporting the BugInstance
+     * @param type     the bug type
+     * @param priority the bug priority
 	 */
-	public BugInstance(Detector2 detector, String type, int priority) {
-		this(type, priority);
-		
+    public BugInstance(Detector2 detector, String type, int priority) {
+        this(type, priority);
+
 		if (detector != null) {
-			// Adjust priority if required
-			detectorFactory =
-				DetectorFactoryCollection.instance().getFactoryByClassName(detector.getDetectorClassName());
+            // Adjust priority if required
+            detectorFactory =
+                DetectorFactoryCollection.instance().getFactoryByClassName(detector.getDetectorClassName());
 			if (detectorFactory != null) {
-				this.priority += detectorFactory.getPriorityAdjustment();
-				boundPriority();
-				if (SystemProperties.ASSERTIONS_ENABLED && !detectorFactory.getReportedBugPatterns().contains(getBugPattern()))
+                this.priority += detectorFactory.getPriorityAdjustment();
+                boundPriority();
+                if (SystemProperties.ASSERTIONS_ENABLED && !detectorFactory.getReportedBugPatterns().contains(getBugPattern()))
 				  AnalysisContext.logError(detectorFactory.getShortName() + " doesn't note that it reports " + getBugPattern());
-				
-					
-			}
+
+
+            }
 		}
 
-	}
-	public static void setAdjustExperimental(boolean adjust) {
-		adjustExperimental = adjust;
+    }
+    public static void setAdjustExperimental(boolean adjust) {
+        adjustExperimental = adjust;
 	}
 
-	/* ----------------------------------------------------------------------
-	 * Accessors
-	 * ---------------------------------------------------------------------- */
+    /* ----------------------------------------------------------------------
+     * Accessors
+     * ---------------------------------------------------------------------- */
 
-	/**
-	 * Get the bug pattern name (e.g., IL_INFINITE_RECURSIVE_LOOP)
-	 */
+    /**
+     * Get the bug pattern name (e.g., IL_INFINITE_RECURSIVE_LOOP)
+     */
 	public String getType() {
-		return type;
-	}
+        return type;
+    }
 
-	/**
-	 * Get the BugPattern.
-	 */
+    /**
+     * Get the BugPattern.
+     */
 	public @NonNull BugPattern getBugPattern() {
-		BugPattern result =  I18N.instance().lookupBugPattern(getType());
-		if (result != null) return result;
-		AnalysisContext.logError("Unable to find description of bug pattern " + getType());
+        BugPattern result =  I18N.instance().lookupBugPattern(getType());
+        if (result != null) return result;
+        AnalysisContext.logError("Unable to find description of bug pattern " + getType());
 		result = I18N.instance().lookupBugPattern("UNKNOWN");
-		if (result != null) return result;
-		return BugPattern.REALLY_UNKNOWN;
-	}
+        if (result != null) return result;
+        return BugPattern.REALLY_UNKNOWN;
+    }
 
-	/**
-	 * Get the bug priority.
-	 */
+    /**
+     * Get the bug priority.
+     */
 	public int getPriority() {
-		return priority;
-	}
+        return priority;
+    }
 
-	
-	public int getBugRank() {
-		return BugRanker.findRank(this);
+
+    public int getBugRank() {
+        return BugRanker.findRank(this);
 	}
-	/**
-	 * Get a string describing the bug priority and type.
-	 * e.g. "High Priority Correctness"
+    /**
+     * Get a string describing the bug priority and type.
+     * e.g. "High Priority Correctness"
 	 * @return a string describing the bug priority and type
-	 */
-	public String getPriorityTypeString()
-	{
+     */
+    public String getPriorityTypeString()
+    {
 		String priorityString = getPriorityString();
-		BugPattern bugPattern = this.getBugPattern();
-		//then get the category and put everything together
-		String categoryString;
+        BugPattern bugPattern = this.getBugPattern();
+        //then get the category and put everything together
+        String categoryString;
 		if (bugPattern == null) categoryString = "Unknown category for " + getType();
-		else categoryString = I18N.instance().getBugCategoryDescription(bugPattern.getCategory());
-		return priorityString + " Priority " + categoryString;
-		//TODO: internationalize the word "Priority"
+        else categoryString = I18N.instance().getBugCategoryDescription(bugPattern.getCategory());
+        return priorityString + " Priority " + categoryString;
+        //TODO: internationalize the word "Priority"
 	}
 
-	public String getPriorityTypeAbbreviation()
-	{
-		String priorityString = getPriorityAbbreviation();
+    public String getPriorityTypeAbbreviation()
+    {
+        String priorityString = getPriorityAbbreviation();
 		return priorityString + " " + getCategoryAbbrev();
-	}
+    }
 
-	public String getCategoryAbbrev() {
-	    BugPattern bugPattern = getBugPattern();
-	    if (bugPattern == null) return "?";
+    public String getCategoryAbbrev() {
+        BugPattern bugPattern = getBugPattern();
+        if (bugPattern == null) return "?";
 		return bugPattern.getCategoryAbbrev();
     }
 
-	public String getPriorityString() {
-		//first, get the priority
-		int value = this.getPriority();
+    public String getPriorityString() {
+        //first, get the priority
+        int value = this.getPriority();
 		String priorityString;
-		if (value == Detector.HIGH_PRIORITY)
-			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_high", "High");
-		else if (value == Detector.NORMAL_PRIORITY)
+        if (value == Detector.HIGH_PRIORITY)
+            priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_high", "High");
+        else if (value == Detector.NORMAL_PRIORITY)
 			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_normal", "Medium");
-		else if (value == Detector.LOW_PRIORITY)
-			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_low", "Low");
-		else if (value == Detector.EXP_PRIORITY)
+        else if (value == Detector.LOW_PRIORITY)
+            priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_low", "Low");
+        else if (value == Detector.EXP_PRIORITY)
 			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_experimental", "Experimental");
-		else
-			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_ignore", "Ignore"); // This probably shouldn't ever happen, but what the hell, let's be complete
-		return priorityString;
+        else
+            priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_ignore", "Ignore"); // This probably shouldn't ever happen, but what the hell, let's be complete
+        return priorityString;
 	}
 
-	public String getPriorityAbbreviation() {
-		return getPriorityString().substring(0,1);
-	}
+    public String getPriorityAbbreviation() {
+        return getPriorityString().substring(0,1);
+    }
 	/**
-	 * Set the bug priority.
-	 */
-	public void setPriority(int p) {
+     * Set the bug priority.
+     */
+    public void setPriority(int p) {
 		priority = boundedPriority(p);
-	}
+    }
 
-	private int boundedPriority(int p) {
-		return Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, p));
-	}
+    private int boundedPriority(int p) {
+        return Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, p));
+    }
 	public void raisePriority() {
-		priority = boundedPriority(priority-1);
+        priority = boundedPriority(priority-1);
 
-	}
-	public void lowerPriority() {
-		priority = boundedPriority(priority+1);
-	}
-
-	public void lowerPriorityALot() {
-		priority = boundedPriority(priority+2);
+    }
+    public void lowerPriority() {
+        priority = boundedPriority(priority+1);
 	}
 
-	/**
-	 * Is this bug instance the result of an experimental detector?
-	 */
+    public void lowerPriorityALot() {
+        priority = boundedPriority(priority+2);
+    }
+
+    /**
+     * Is this bug instance the result of an experimental detector?
+     */
 	public boolean isExperimental() {
-		BugPattern pattern = getBugPattern();
-		return (pattern != null) && pattern.isExperimental();
-	}
+        BugPattern pattern = getBugPattern();
+        return (pattern != null) && pattern.isExperimental();
+    }
 
-	/**
-	 * Get the primary class annotation, which indicates where the bug occurs.
-	 */
+    /**
+     * Get the primary class annotation, which indicates where the bug occurs.
+     */
 	public ClassAnnotation getPrimaryClass() {
-		ClassAnnotation result =   findPrimaryAnnotationOfType(ClassAnnotation.class);
-		if (result == null) {
-			System.out.println("huh");
+        ClassAnnotation result =   findPrimaryAnnotationOfType(ClassAnnotation.class);
+        if (result == null) {
+            System.out.println("huh");
 			result =   findPrimaryAnnotationOfType(ClassAnnotation.class);
-		}
-		return result;
-	}
+        }
+        return result;
+    }
 
-	/**
-	 * Get the primary method annotation, which indicates where the bug occurs.
-	 */
+    /**
+     * Get the primary method annotation, which indicates where the bug occurs.
+     */
 	public MethodAnnotation getPrimaryMethod() {
-		return  findPrimaryAnnotationOfType(MethodAnnotation.class);
-	}
-	/**
+        return  findPrimaryAnnotationOfType(MethodAnnotation.class);
+    }
+    /**
 	 * Get the primary method annotation, which indicates where the bug occurs.
-	 */
-	public FieldAnnotation getPrimaryField() {
-		return findPrimaryAnnotationOfType(FieldAnnotation.class);
+     */
+    public FieldAnnotation getPrimaryField() {
+        return findPrimaryAnnotationOfType(FieldAnnotation.class);
 	}
 
 
-	public BugInstance lowerPriorityIfDeprecated() {
-		MethodAnnotation m = getPrimaryMethod();
-		if (m != null && XFactory.createXMethod(m).isDeprecated())
+    public BugInstance lowerPriorityIfDeprecated() {
+        MethodAnnotation m = getPrimaryMethod();
+        if (m != null && XFactory.createXMethod(m).isDeprecated())
 				lowerPriority();
-		FieldAnnotation f = getPrimaryField();
-		if (f != null && XFactory.createXField(f).isDeprecated())
-			lowerPriority();
+        FieldAnnotation f = getPrimaryField();
+        if (f != null && XFactory.createXField(f).isDeprecated())
+            lowerPriority();
 		return this;
-	}
-	/**
-	 * Find the first BugAnnotation in the list of annotations
+    }
+    /**
+     * Find the first BugAnnotation in the list of annotations
 	 * that is the same type or a subtype as the given Class parameter.
-	 * 
-	 * @param cls the Class parameter
-	 * @return the first matching BugAnnotation of the given type,
+     *
+     * @param cls the Class parameter
+     * @return the first matching BugAnnotation of the given type,
 	 *         or null if there is no such BugAnnotation
-	 */
-	private <T extends BugAnnotation> T findPrimaryAnnotationOfType(Class<T>  cls) {
-		for (Iterator<BugAnnotation> i = annotationIterator(); i.hasNext();) {
+     */
+    private <T extends BugAnnotation> T findPrimaryAnnotationOfType(Class<T>  cls) {
+        for (Iterator<BugAnnotation> i = annotationIterator(); i.hasNext();) {
 			BugAnnotation annotation = i.next();
-			if (annotation.getDescription().endsWith("DEFAULT") && cls.isAssignableFrom(annotation.getClass()))
-				return cls.cast(annotation);
-		}
+            if (annotation.getDescription().endsWith("DEFAULT") && cls.isAssignableFrom(annotation.getClass()))
+                return cls.cast(annotation);
+        }
 		return null;
-	}
+    }
 
-	public LocalVariableAnnotation getPrimaryLocalVariableAnnotation() {
-		for (BugAnnotation annotation : annotationList) 
-			if (annotation instanceof LocalVariableAnnotation)
+    public LocalVariableAnnotation getPrimaryLocalVariableAnnotation() {
+        for (BugAnnotation annotation : annotationList)
+            if (annotation instanceof LocalVariableAnnotation)
 				return (LocalVariableAnnotation) annotation;
-		return null;
-	}
-	/**
+        return null;
+    }
+    /**
 	 * Get the primary source line annotation.
-	 * There is guaranteed to be one (unless some Detector constructed
-	 * an invalid BugInstance).
-	 *
+     * There is guaranteed to be one (unless some Detector constructed
+     * an invalid BugInstance).
+     *
 	 * @return the source line annotation
-	 */
-	public SourceLineAnnotation getPrimarySourceLineAnnotation() {
-		// Highest priority: return the first top level source line annotation
+     */
+    public SourceLineAnnotation getPrimarySourceLineAnnotation() {
+        // Highest priority: return the first top level source line annotation
 		for (BugAnnotation annotation : annotationList) {
-			if (annotation instanceof SourceLineAnnotation
-					&& annotation.getDescription().equals(SourceLineAnnotation.DEFAULT_ROLE)
-					&& !((SourceLineAnnotation)annotation).isUnknown())
+            if (annotation instanceof SourceLineAnnotation
+                    && annotation.getDescription().equals(SourceLineAnnotation.DEFAULT_ROLE)
+                    && !((SourceLineAnnotation)annotation).isUnknown())
 				
-				return (SourceLineAnnotation) annotation;
-		}
-		
+                return (SourceLineAnnotation) annotation;
+        }
+
 		for (BugAnnotation annotation : annotationList) {
-			if (annotation instanceof SourceLineAnnotation
-					&& !((SourceLineAnnotation)annotation).isUnknown())
-				
+            if (annotation instanceof SourceLineAnnotation
+                    && !((SourceLineAnnotation)annotation).isUnknown())
+
 				return (SourceLineAnnotation) annotation;
-		}
-		// Next: Try primary method, primary field, primary class
-		SourceLineAnnotation srcLine;
+        }
+        // Next: Try primary method, primary field, primary class
+        SourceLineAnnotation srcLine;
 		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryMethod())) != null)
-			return srcLine;
-		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryField())) != null)
-			return srcLine;
+            return srcLine;
+        if ((srcLine = inspectPackageMemberSourceLines(getPrimaryField())) != null)
+            return srcLine;
 		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryClass())) != null)
-			return srcLine;
+            return srcLine;
 
-		// Last resort: throw exception
-		throw new IllegalStateException("BugInstance for " + getType() + " must contain at least one class, method, or field annotation");
-	}
+        // Last resort: throw exception
+        throw new IllegalStateException("BugInstance for " + getType() + " must contain at least one class, method, or field annotation");
+    }
 
-	
-	
-	public String getInstanceKey() {
+
+
+    public String getInstanceKey() {
 		String newValue = getInstanceKeyNew();
-		return newValue;
-	}
+        return newValue;
+    }
 
-	private String getInstanceKeyNew() {
-		StringBuilder buf = new StringBuilder(type);
-		for (BugAnnotation annotation : annotationList) 
+    private String getInstanceKeyNew() {
+        StringBuilder buf = new StringBuilder(type);
+        for (BugAnnotation annotation : annotationList)
 			if (annotation.isSignificant() || annotation instanceof IntAnnotation || annotation instanceof LocalVariableAnnotation) {
-				buf.append(":");
-				buf.append(annotation.format("hash", null));
-			}
+                buf.append(":");
+                buf.append(annotation.format("hash", null));
+            }
 		
-		return buf.toString();
-	}
-	/**
+        return buf.toString();
+    }
+    /**
 	 * If given PackageMemberAnnotation is non-null, return its
-	 * SourceLineAnnotation.
-	 * 
-	 * @param packageMember
+     * SourceLineAnnotation.
+     *
+     * @param packageMember
 	 *            a PackageMemberAnnotation
-	 * @return the PackageMemberAnnotation's SourceLineAnnotation, or null if
-	 *         there is no SourceLineAnnotation
-	 */
+     * @return the PackageMemberAnnotation's SourceLineAnnotation, or null if
+     *         there is no SourceLineAnnotation
+     */
 	private SourceLineAnnotation inspectPackageMemberSourceLines(PackageMemberAnnotation packageMember) {
-		return (packageMember != null) ? packageMember.getSourceLines() : null;
-	}
+        return (packageMember != null) ? packageMember.getSourceLines() : null;
+    }
 
-	/**
-	 * Get an Iterator over all bug annotations.
-	 */
+    /**
+     * Get an Iterator over all bug annotations.
+     */
 	public Iterator<BugAnnotation> annotationIterator() {
-		return annotationList.iterator();
-	}
-	
+        return annotationList.iterator();
+    }
+
 	/**
-	 * Get an Iterator over all bug annotations.
-	 */
-	public List<? extends BugAnnotation> getAnnotations() {
+     * Get an Iterator over all bug annotations.
+     */
+    public List<? extends BugAnnotation> getAnnotations() {
 		return annotationList;
-	}
+    }
 
-	/**
-	 * Get the abbreviation of this bug instance's BugPattern.
-	 * This is the same abbreviation used by the BugCode which
+    /**
+     * Get the abbreviation of this bug instance's BugPattern.
+     * This is the same abbreviation used by the BugCode which
 	 * the BugPattern is a particular species of.
-	 */
-	public String getAbbrev() {
-		BugPattern pattern = getBugPattern();
+     */
+    public String getAbbrev() {
+        BugPattern pattern = getBugPattern();
 		return pattern != null ? pattern.getAbbrev() : "<unknown bug pattern>";
-	}
+    }
 
-	/** clear the user designation. */
-	public void clearUserDesignation() {
-		userDesignation = null;
+    /** clear the user designation. */
+    public void clearUserDesignation() {
+        userDesignation = null;
 	}
-	/** set the user designation object. This will clobber any
-	 *  existing annotationText (or any other BugDesignation field). */
-	@Deprecated
+    /** set the user designation object. This will clobber any
+     *  existing annotationText (or any other BugDesignation field). */
+    @Deprecated
 	public void setUserDesignation(BugDesignation bd) {
-		userDesignation = bd;
-	}
-	/** return the user designation object, which may be null.
+        userDesignation = bd;
+    }
+    /** return the user designation object, which may be null.
 	 * 
-	 *  A previous calls to getSafeUserDesignation(), setAnnotationText(),
-	 *  or setUserDesignation() will ensure it will be non-null
-	 *  [barring an intervening setUserDesignation(null)].
+     *  A previous calls to getSafeUserDesignation(), setAnnotationText(),
+     *  or setUserDesignation() will ensure it will be non-null
+     *  [barring an intervening setUserDesignation(null)].
 	 *  @see #getNonnullUserDesignation() */
-	@Deprecated
-	@Nullable public BugDesignation getUserDesignation() {
-		return userDesignation;
+    @Deprecated
+    @Nullable public BugDesignation getUserDesignation() {
+        return userDesignation;
 	}
-	/** return the user designation object, creating one if
-	 *  necessary. So calling
-	 *  <code>getSafeUserDesignation().setDesignation("HARMLESS")</code>
+    /** return the user designation object, creating one if
+     *  necessary. So calling
+     *  <code>getSafeUserDesignation().setDesignation("HARMLESS")</code>
 	 *  will always work without the possibility of a NullPointerException.
-	 *  @see #getUserDesignation() */
-	@Deprecated
-	@NonNull public BugDesignation getNonnullUserDesignation() {
+     *  @see #getUserDesignation() */
+    @Deprecated
+    @NonNull public BugDesignation getNonnullUserDesignation() {
 		if (userDesignation == null)
-			userDesignation = new BugDesignation();
-		return userDesignation;
-	}
+            userDesignation = new BugDesignation();
+        return userDesignation;
+    }
 
 
-	/** Get the user designation key.
-	 *  E.g., "MOSTLY_HARMLESS", "CRITICAL", "NOT_A_BUG", etc.
-	 *
+    /** Get the user designation key.
+     *  E.g., "MOSTLY_HARMLESS", "CRITICAL", "NOT_A_BUG", etc.
+     *
 	 *  If the user designation object is null,returns UNCLASSIFIED.
-	 *
-	 *  To set the user designation key, call
-	 *  <code>getSafeUserDesignation().setDesignation("HARMLESS")</code>.
+     *
+     *  To set the user designation key, call
+     *  <code>getSafeUserDesignation().setDesignation("HARMLESS")</code>.
 	 * 
-	 *  @see I18N#getUserDesignation(String key)
-	 *  @return the user designation key
-	 */
+     *  @see I18N#getUserDesignation(String key)
+     *  @return the user designation key
+     */
 	@NonNull public String getUserDesignationKey() {
-		if (userDesignation == null) 
-			return BugDesignation.UNCLASSIFIED;
-		return userDesignation.getDesignationKey();
+        if (userDesignation == null)
+            return BugDesignation.UNCLASSIFIED;
+        return userDesignation.getDesignationKey();
 	}
-	
-	public @CheckForNull String getUserName() {
-		if (userDesignation == null) return null;
+
+    public @CheckForNull String getUserName() {
+        if (userDesignation == null) return null;
 		return userDesignation.getUser();
-	}
-	public  long getUserTimestamp() {
-		if (userDesignation == null) return Long.MAX_VALUE;
+    }
+    public  long getUserTimestamp() {
+        if (userDesignation == null) return Long.MAX_VALUE;
 		return userDesignation.getTimestamp();
-	}
-	
-	@NonNull public int getUserDesignationKeyIndex() {
+    }
+
+    @NonNull public int getUserDesignationKeyIndex() {
 		return I18N.instance().getUserDesignationKeys(true).indexOf(getUserDesignationKey());
-	}
+    }
 
-	/**
-	 * @param key
-	 * @param bugCollection TODO
+    /**
+     * @param key
+     * @param bugCollection TODO
 	 */
-	public void setUserDesignationKey(String key, @CheckForNull BugCollection bugCollection) {
+    public void setUserDesignationKey(String key, @CheckForNull BugCollection bugCollection) {
         BugDesignation userDesignation = getNonnullUserDesignation();
-		if (userDesignation.getDesignationKey().equals(key))
-			return;
-		userDesignation.setDesignationKey(key);
+        if (userDesignation.getDesignationKey().equals(key))
+            return;
+        userDesignation.setDesignationKey(key);
 		Cloud plugin = bugCollection != null? bugCollection.getCloud() : null;
-		if (plugin != null)
-			plugin.storeUserAnnotation(this);
-	}
+        if (plugin != null)
+            plugin.storeUserAnnotation(this);
+    }
 	
-	/**s
-	 * @param index
-	 * @param bugCollection TODO
+    /**s
+     * @param index
+     * @param bugCollection TODO
 	 */
-	public void setUserDesignationKeyIndex(int index, @CheckForNull BugCollection bugCollection) {
-		setUserDesignationKey(
-				I18N.instance().getUserDesignationKey(index), bugCollection);
+    public void setUserDesignationKeyIndex(int index, @CheckForNull BugCollection bugCollection) {
+        setUserDesignationKey(
+                I18N.instance().getUserDesignationKey(index), bugCollection);
 		}
 
-	/**
-	 * Set the user annotation text.
-	 *
+    /**
+     * Set the user annotation text.
+     *
 	 * @param annotationText the user annotation text
-	 * @param bugCollection TODO
-	 */
-	public void setAnnotationText(String annotationText, @CheckForNull BugCollection bugCollection) {
+     * @param bugCollection TODO
+     */
+    public void setAnnotationText(String annotationText, @CheckForNull BugCollection bugCollection) {
 		final BugDesignation u = getNonnullUserDesignation();
-		String existingText = u.getAnnotationText();
-		if (existingText != null && existingText.equals(annotationText))
-			return;
+        String existingText = u.getAnnotationText();
+        if (existingText != null && existingText.equals(annotationText))
+            return;
 		u.setAnnotationText(annotationText);
-		Cloud plugin = bugCollection != null? bugCollection.getCloud() : null;
-		if (plugin != null)
-			plugin.storeUserAnnotation(this);
+        Cloud plugin = bugCollection != null? bugCollection.getCloud() : null;
+        if (plugin != null)
+            plugin.storeUserAnnotation(this);
 	}
 
-	/**
-	 * Get the user annotation text.
-	 *
+    /**
+     * Get the user annotation text.
+     *
 	 * @return the user annotation text
-	 */
-	@NonNull public String getAnnotationText() {
-		BugDesignation userDesignation = this.userDesignation;
+     */
+    @NonNull public String getAnnotationText() {
+        BugDesignation userDesignation = this.userDesignation;
 		if (userDesignation == null) return "";		
-		String s = userDesignation.getAnnotationText();
-		if (s == null) return "";
-		return s;
+        String s = userDesignation.getAnnotationText();
+        if (s == null) return "";
+        return s;
 	}
 
-	public void setUser(String user) {
-		BugDesignation userDesignation = getNonnullUserDesignation();
-		userDesignation.setUser(user);
+    public void setUser(String user) {
+        BugDesignation userDesignation = getNonnullUserDesignation();
+        userDesignation.setUser(user);
 	}
-	public void setUserAnnotationTimestamp(long timestamp) {
-		BugDesignation userDesignation = getNonnullUserDesignation();
-		userDesignation.setTimestamp(timestamp);
+    public void setUserAnnotationTimestamp(long timestamp) {
+        BugDesignation userDesignation = getNonnullUserDesignation();
+        userDesignation.setTimestamp(timestamp);
 	}
-	/**
-	 * Determine whether or not the annotation text contains
-	 * the given word.
+    /**
+     * Determine whether or not the annotation text contains
+     * the given word.
 	 *
-	 * @param word the word
-	 * @return true if the annotation text contains the word, false otherwise
-	 */
+     * @param word the word
+     * @return true if the annotation text contains the word, false otherwise
+     */
 	public boolean annotationTextContainsWord(String word) {
-		return getTextAnnotationWords().contains(word);
-	}
+        return getTextAnnotationWords().contains(word);
+    }
 
-	/**
-	 * Get set of words in the text annotation.
-	 */
+    /**
+     * Get set of words in the text annotation.
+     */
 	public Set<String> getTextAnnotationWords() {
-		HashSet<String> result = new HashSet<String>();
+        HashSet<String> result = new HashSet<String>();
 
-		StringTokenizer tok = new StringTokenizer(getAnnotationText(), " \t\r\n\f.,:;-");
-		while (tok.hasMoreTokens()) {
-			result.add(tok.nextToken());
+        StringTokenizer tok = new StringTokenizer(getAnnotationText(), " \t\r\n\f.,:;-");
+        while (tok.hasMoreTokens()) {
+            result.add(tok.nextToken());
 		}
-		return result;
-	}
+        return result;
+    }
 
     public XmlProps getXmlProps() {
         XmlProps props = xmlProps.get();
@@ -686,1131 +686,1131 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
       * Property accessors
       * ---------------------------------------------------------------------- */
 
-	private class BugPropertyIterator implements Iterator<BugProperty> {
-		private BugProperty prev, cur;
-		private boolean removed;
+    private class BugPropertyIterator implements Iterator<BugProperty> {
+        private BugProperty prev, cur;
+        private boolean removed;
 
-		/* (non-Javadoc)
-		 * @see java.util.Iterator#hasNext()
-		 */
+        /* (non-Javadoc)
+         * @see java.util.Iterator#hasNext()
+         */
 		public boolean hasNext() {
-			return findNext() != null;
-		}
-		/* (non-Javadoc)
+            return findNext() != null;
+        }
+        /* (non-Javadoc)
 		 * @see java.util.Iterator#next()
-		 */
-		public BugProperty next() {
-			BugProperty next = findNext();
+         */
+        public BugProperty next() {
+            BugProperty next = findNext();
 			if (next == null)
-				throw new NoSuchElementException();
-			prev = cur;
-			cur = next;
+                throw new NoSuchElementException();
+            prev = cur;
+            cur = next;
 			removed = false;
-			return cur;
-		}
+            return cur;
+        }
 
-		/* (non-Javadoc)
-		 * @see java.util.Iterator#remove()
-		 */
+        /* (non-Javadoc)
+         * @see java.util.Iterator#remove()
+         */
 		public void remove() {
-			if (cur == null || removed)
-				throw new IllegalStateException();
-			if (prev == null) {
+            if (cur == null || removed)
+                throw new IllegalStateException();
+            if (prev == null) {
 				propertyListHead = cur.getNext();
-			} else {
-				prev.setNext(cur.getNext());
-			}
+            } else {
+                prev.setNext(cur.getNext());
+            }
 			if (cur == propertyListTail) {
-				propertyListTail = prev;
-			}
-			removed = true;
+                propertyListTail = prev;
+            }
+            removed = true;
 		}
 
-		private BugProperty findNext() {
-			return cur == null ? propertyListHead : cur.getNext();
-		}
+        private BugProperty findNext() {
+            return cur == null ? propertyListHead : cur.getNext();
+        }
 
-	}
+    }
 
-	/**
-	 * Get value of given property.
-	 * 
+    /**
+     * Get value of given property.
+     *
 	 * @param name name of the property to get
-	 * @return the value of the named property, or null if
-	 *         the property has not been set
-	 */
+     * @return the value of the named property, or null if
+     *         the property has not been set
+     */
 	public String getProperty(String name) {
-		BugProperty prop = lookupProperty(name);
-		return prop != null ? prop.getValue() : null;
-	}
+        BugProperty prop = lookupProperty(name);
+        return prop != null ? prop.getValue() : null;
+    }
 
-	/**
-	 * Get value of given property, returning given default
-	 * value if the property has not been set.
+    /**
+     * Get value of given property, returning given default
+     * value if the property has not been set.
 	 * 
-	 * @param name         name of the property to get
-	 * @param defaultValue default value to return if propery is not set
-	 * @return the value of the named property, or the default
+     * @param name         name of the property to get
+     * @param defaultValue default value to return if propery is not set
+     * @return the value of the named property, or the default
 	 *         value if the property has not been set
-	 */
-	public String getProperty(String name, String defaultValue) {
-		String value = getProperty(name);
+     */
+    public String getProperty(String name, String defaultValue) {
+        String value = getProperty(name);
 		return value != null ? value : defaultValue;
-	}
+    }
 
-	/**
-	 * Get an Iterator over the properties defined in this BugInstance.
-	 * 
+    /**
+     * Get an Iterator over the properties defined in this BugInstance.
+     *
 	 * @return Iterator over properties
-	 */
-	public Iterator<BugProperty> propertyIterator() {
-		return new BugPropertyIterator();
+     */
+    public Iterator<BugProperty> propertyIterator() {
+        return new BugPropertyIterator();
 	}
 
-	/**
-	 * Set value of given property.
-	 * 
+    /**
+     * Set value of given property.
+     *
 	 * @param name  name of the property to set
-	 * @param value the value of the property
-	 * @return this object, so calls can be chained
-	 */
+     * @param value the value of the property
+     * @return this object, so calls can be chained
+     */
 	public BugInstance setProperty(String name, String value) {
-		BugProperty prop = lookupProperty(name);
-		if (prop != null) {
-			prop.setValue(value);
+        BugProperty prop = lookupProperty(name);
+        if (prop != null) {
+            prop.setValue(value);
 		} else {
-			prop = new BugProperty(name, value);
-			addProperty(prop);
-		}
+            prop = new BugProperty(name, value);
+            addProperty(prop);
+        }
 		return this;
-	}
+    }
 
-	/**
-	 * Look up a property by name.
-	 * 
+    /**
+     * Look up a property by name.
+     *
 	 * @param name name of the property to look for
-	 * @return the BugProperty with the given name,
-	 *         or null if the property has not been set
-	 */
+     * @return the BugProperty with the given name,
+     *         or null if the property has not been set
+     */
 	public BugProperty lookupProperty(String name) {
-		BugProperty prop = propertyListHead;
+        BugProperty prop = propertyListHead;
 
-		while (prop != null) {
-			if (prop.getName().equals(name))
-				break;
+        while (prop != null) {
+            if (prop.getName().equals(name))
+                break;
 			prop = prop.getNext();
-		}
+        }
 
-		return prop;
-	}
+        return prop;
+    }
 
-	/**
-	 * Delete property with given name.
-	 * 
+    /**
+     * Delete property with given name.
+     *
 	 * @param name name of the property to delete
-	 * @return true if a property with that name was deleted,
-	 *         or false if there is no such property
-	 */
+     * @return true if a property with that name was deleted,
+     *         or false if there is no such property
+     */
 	public boolean deleteProperty(String name) {
-		BugProperty prev = null;
-		BugProperty prop = propertyListHead;
+        BugProperty prev = null;
+        BugProperty prop = propertyListHead;
 
-		while (prop != null) {
-			if (prop.getName().equals(name))
-				break;
+        while (prop != null) {
+            if (prop.getName().equals(name))
+                break;
 			prev = prop;
-			prop = prop.getNext();
-		}
+            prop = prop.getNext();
+        }
 
-		if (prop != null) {
-			if (prev != null) {
-				// Deleted node in interior or at tail of list
+        if (prop != null) {
+            if (prev != null) {
+                // Deleted node in interior or at tail of list
 				prev.setNext(prop.getNext());
-			} else {
-				// Deleted node at head of list
-				propertyListHead = prop.getNext();
+            } else {
+                // Deleted node at head of list
+                propertyListHead = prop.getNext();
 			}
 
-			if (prop.getNext() == null) {
-				// Deleted node at end of list
-				propertyListTail = prev;
+            if (prop.getNext() == null) {
+                // Deleted node at end of list
+                propertyListTail = prev;
 			}
 
-			return true;
-		} else {
-			// No such property
+            return true;
+        } else {
+            // No such property
 			return false;
-		}
-	}
+        }
+    }
 
-	private void addProperty(BugProperty prop) {
-		if (propertyListTail != null) {
-			propertyListTail.setNext(prop);
+    private void addProperty(BugProperty prop) {
+        if (propertyListTail != null) {
+            propertyListTail.setNext(prop);
 			propertyListTail = prop;
-		} else {
-			propertyListHead = propertyListTail = prop;
-		}
+        } else {
+            propertyListHead = propertyListTail = prop;
+        }
 		prop.setNext(null);
-	}
+    }
 
-	/* ----------------------------------------------------------------------
-	 * Generic BugAnnotation adders
-	 * ---------------------------------------------------------------------- */
+    /* ----------------------------------------------------------------------
+     * Generic BugAnnotation adders
+     * ---------------------------------------------------------------------- */
 
-	/**
-	 * Add a Collection of BugAnnotations.
-	 * 
+    /**
+     * Add a Collection of BugAnnotations.
+     *
 	 * @param annotationCollection Collection of BugAnnotations
-	 */
-	public BugInstance addAnnotations(Collection<? extends BugAnnotation> annotationCollection) {
-		for (BugAnnotation annotation : annotationCollection) {
+     */
+    public BugInstance addAnnotations(Collection<? extends BugAnnotation> annotationCollection) {
+        for (BugAnnotation annotation : annotationCollection) {
 			add(annotation);
-		}
-		return this;
-	}
+        }
+        return this;
+    }
 
-	/* ----------------------------------------------------------------------
-	 * Combined annotation adders
-	 * ---------------------------------------------------------------------- */
+    /* ----------------------------------------------------------------------
+     * Combined annotation adders
+     * ---------------------------------------------------------------------- */
 
-	public BugInstance addClassAndMethod(MethodDescriptor methodDescriptor) {
-		addClass(ClassName.toDottedClassName(methodDescriptor.getSlashedClassName()));
-		add(MethodAnnotation.fromMethodDescriptor(methodDescriptor));
+    public BugInstance addClassAndMethod(MethodDescriptor methodDescriptor) {
+        addClass(ClassName.toDottedClassName(methodDescriptor.getSlashedClassName()));
+        add(MethodAnnotation.fromMethodDescriptor(methodDescriptor));
 		return this;
+    }
+    public BugInstance addClassAndMethod(XMethod xMethod) {
+        return addClassAndMethod(xMethod.getMethodDescriptor());
 	}
-	public BugInstance addClassAndMethod(XMethod xMethod) {
-		return addClassAndMethod(xMethod.getMethodDescriptor());
-	}
-	/**
-	 * Add a class annotation and a method annotation for the class and method
-	 * which the given visitor is currently visiting.
+    /**
+     * Add a class annotation and a method annotation for the class and method
+     * which the given visitor is currently visiting.
 	 *
-	 * @param visitor the BetterVisitor
-	 * @return this object
-	 */
+     * @param visitor the BetterVisitor
+     * @return this object
+     */
 	public BugInstance addClassAndMethod(PreorderVisitor visitor) {
-		addClass(visitor);
-		addMethod(visitor);
-		return this;
+        addClass(visitor);
+        addMethod(visitor);
+        return this;
 	}
 
-	/**
-	 * Add class and method annotations for given method.
-	 *
+    /**
+     * Add class and method annotations for given method.
+     *
 	 * @param methodAnnotation  the method
-	 * @return this object
-	 */
-	public BugInstance addClassAndMethod(MethodAnnotation methodAnnotation) {
+     * @return this object
+     */
+    public BugInstance addClassAndMethod(MethodAnnotation methodAnnotation) {
 		addClass(methodAnnotation.getClassName());
-		addMethod(methodAnnotation);
-		return this;
-	}
+        addMethod(methodAnnotation);
+        return this;
+    }
 
-	/**
-	 * Add class and method annotations for given method.
-	 *
+    /**
+     * Add class and method annotations for given method.
+     *
 	 * @param methodGen  the method
-	 * @param sourceFile source file the method is defined in
-	 * @return this object
-	 */
+     * @param sourceFile source file the method is defined in
+     * @return this object
+     */
 	public BugInstance addClassAndMethod(MethodGen methodGen, String sourceFile) {
-		addClass(methodGen.getClassName());
-		addMethod(methodGen, sourceFile);
-		return this;
+        addClass(methodGen.getClassName());
+        addMethod(methodGen, sourceFile);
+        return this;
 	}
 
 
-	/**
-	 * Add class and method annotations for given class and method.
-	 *  
+    /**
+     * Add class and method annotations for given class and method.
+     *
 	 * @param javaClass the class
-	 * @param method    the method
-	 * @return this object
-	 */
+     * @param method    the method
+     * @return this object
+     */
 	public BugInstance addClassAndMethod(JavaClass javaClass, Method method) {
-		addClass(javaClass.getClassName());
-		addMethod(javaClass, method);
-		return this;
+        addClass(javaClass.getClassName());
+        addMethod(javaClass, method);
+        return this;
 	}
 
-	/* ----------------------------------------------------------------------
-	 * Class annotation adders
-	 * ---------------------------------------------------------------------- */
+    /* ----------------------------------------------------------------------
+     * Class annotation adders
+     * ---------------------------------------------------------------------- */
 
-	/**
-	 * Add a class annotation.  If this is the first class annotation added,
-	 * it becomes the primary class annotation.
+    /**
+     * Add a class annotation.  If this is the first class annotation added,
+     * it becomes the primary class annotation.
 	 *
-	 * @param className the name of the class
-	 * @param sourceFileName the source file of the class
-	 * @return this object
+     * @param className the name of the class
+     * @param sourceFileName the source file of the class
+     * @return this object
 	 */
-	public BugInstance addClass(String className, String sourceFileName) {
-		ClassAnnotation classAnnotation = new ClassAnnotation(className, sourceFileName);
-		add(classAnnotation);
+    public BugInstance addClass(String className, String sourceFileName) {
+        ClassAnnotation classAnnotation = new ClassAnnotation(className, sourceFileName);
+        add(classAnnotation);
 		return this;
-	}
+    }
 
-	/**
-	 * Add a class annotation.  If this is the first class annotation added,
-	 * it becomes the primary class annotation.
+    /**
+     * Add a class annotation.  If this is the first class annotation added,
+     * it becomes the primary class annotation.
 	 *
-	 * @param className the name of the class
-	 * @return this object
-	 */
+     * @param className the name of the class
+     * @return this object
+     */
 	public BugInstance addClass(@DottedClassName String className) {
-		ClassAnnotation classAnnotation = new ClassAnnotation(ClassName.toDottedClassName(className));
-		add(classAnnotation);
-		return this;
+        ClassAnnotation classAnnotation = new ClassAnnotation(ClassName.toDottedClassName(className));
+        add(classAnnotation);
+        return this;
 	}
 
-	/**
-	 * Add a class annotation for the classNode.
-	 *
+    /**
+     * Add a class annotation for the classNode.
+     *
 	 * @param classNode the ASM visitor
-	 * @return this object
-	 */
-	public BugInstance addClass(ClassNode classNode) {
+     * @return this object
+     */
+    public BugInstance addClass(ClassNode classNode) {
 		ClassAnnotation classAnnotation = new ClassAnnotation(classNode.name);
-		add(classAnnotation);
-		return this;
-	}
+        add(classAnnotation);
+        return this;
+    }
 
-	/**
-	 * Add a class annotation.  If this is the first class annotation added,
-	 * it becomes the primary class annotation.
+    /**
+     * Add a class annotation.  If this is the first class annotation added,
+     * it becomes the primary class annotation.
 	 * 
-	 * @param classDescriptor the class to add
-	 * @return this object
-	 */
+     * @param classDescriptor the class to add
+     * @return this object
+     */
 	public BugInstance addClass(ClassDescriptor classDescriptor) {
-		add(ClassAnnotation.fromClassDescriptor(classDescriptor));
-		return this;
-	}
+        add(ClassAnnotation.fromClassDescriptor(classDescriptor));
+        return this;
+    }
 
-	/**
-	 * Add a class annotation.  If this is the first class annotation added,
-	 * it becomes the primary class annotation.
+    /**
+     * Add a class annotation.  If this is the first class annotation added,
+     * it becomes the primary class annotation.
 	 *
-	 * @param jclass the JavaClass object for the class
-	 * @return this object
-	 */
+     * @param jclass the JavaClass object for the class
+     * @return this object
+     */
 	public BugInstance addClass(JavaClass jclass) {
-		addClass(jclass.getClassName());
-		return this;
-	}
+        addClass(jclass.getClassName());
+        return this;
+    }
 
-	/**
-	 * Add a class annotation for the class that the visitor is currently visiting.
-	 *
+    /**
+     * Add a class annotation for the class that the visitor is currently visiting.
+     *
 	 * @param visitor the BetterVisitor
-	 * @return this object
-	 */
-	public BugInstance addClass(PreorderVisitor visitor) {
+     * @return this object
+     */
+    public BugInstance addClass(PreorderVisitor visitor) {
 		String className = visitor.getDottedClassName();
-		addClass(className);
-		return this;
-	}
+        addClass(className);
+        return this;
+    }
 
-	/**
-	 * Add a class annotation for the superclass of the class the visitor
-	 * is currently visiting.
+    /**
+     * Add a class annotation for the superclass of the class the visitor
+     * is currently visiting.
 	 *
-	 * @param visitor the BetterVisitor
-	 * @return this object
-	 */
+     * @param visitor the BetterVisitor
+     * @return this object
+     */
 	public BugInstance addSuperclass(PreorderVisitor visitor) {
-		String className = ClassName.toDottedClassName(visitor.getSuperclassName());
-		addClass(className);
-		return this;
+        String className = ClassName.toDottedClassName(visitor.getSuperclassName());
+        addClass(className);
+        return this;
 	}
 
-	/* ----------------------------------------------------------------------
-	 * Type annotation adders
-	 * ---------------------------------------------------------------------- */
+    /* ----------------------------------------------------------------------
+     * Type annotation adders
+     * ---------------------------------------------------------------------- */
 
-	/**
-	 * Add a type annotation. Handy for referring to array types.
-	 *
+    /**
+     * Add a type annotation. Handy for referring to array types.
+     *
 	 * <p>For information on type descriptors,
-	 * <br>see http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html#14152
-	 * <br>or  http://www.murrayc.com/learning/java/java_classfileformat.shtml#TypeDescriptors
-	 * 
+     * <br>see http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html#14152
+     * <br>or  http://www.murrayc.com/learning/java/java_classfileformat.shtml#TypeDescriptors
+     *
 	 * @param typeDescriptor a jvm type descriptor, such as "[I"
-	 * @return this object
-	 */
-	public BugInstance addType(String typeDescriptor) {
+     * @return this object
+     */
+    public BugInstance addType(String typeDescriptor) {
 		TypeAnnotation typeAnnotation = new TypeAnnotation(typeDescriptor);
-		add(typeAnnotation);
-		return this;
-	}
+        add(typeAnnotation);
+        return this;
+    }
 
-	public BugInstance addType(Type type) {
-		TypeAnnotation typeAnnotation = new TypeAnnotation(type);
-		add(typeAnnotation);
+    public BugInstance addType(Type type) {
+        TypeAnnotation typeAnnotation = new TypeAnnotation(type);
+        add(typeAnnotation);
 		return this;
-	}
+    }
 
-	public BugInstance addFoundAndExpectedType(Type foundType, Type expectedType) {
-		
-		add( new TypeAnnotation(foundType, TypeAnnotation.FOUND_ROLE));
+    public BugInstance addFoundAndExpectedType(Type foundType, Type expectedType) {
+
+        add( new TypeAnnotation(foundType, TypeAnnotation.FOUND_ROLE));
 		add( new TypeAnnotation(expectedType, TypeAnnotation.EXPECTED_ROLE));
-		return this;
-	}
-	
+        return this;
+    }
+
 	public BugInstance addFoundAndExpectedType(String foundType, String expectedType) {
-		add( new TypeAnnotation(foundType, TypeAnnotation.FOUND_ROLE));
-		add( new TypeAnnotation(expectedType, TypeAnnotation.EXPECTED_ROLE));
-		return this;
+        add( new TypeAnnotation(foundType, TypeAnnotation.FOUND_ROLE));
+        add( new TypeAnnotation(expectedType, TypeAnnotation.EXPECTED_ROLE));
+        return this;
 	}
-	
-	public BugInstance addEqualsMethodUsed(ClassDescriptor expectedClass) {
-		try {
+
+    public BugInstance addEqualsMethodUsed(ClassDescriptor expectedClass) {
+        try {
 			Set<XMethod> targets = Hierarchy2.resolveVirtualMethodCallTargets(expectedClass, "equals", "(Ljava/lang/Object;)Z",
-			        false, false);
-			addEqualsMethodUsed(targets);
+                    false, false);
+            addEqualsMethodUsed(targets);
 
-		} catch (ClassNotFoundException e) {
-			AnalysisContext.reportMissingClass(e);
-		}
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
+        }
 
-		return this;
-	}
+        return this;
+    }
 
-	public BugInstance addEqualsMethodUsed(@CheckForNull Collection<XMethod> equalsMethods) {
-		if (equalsMethods == null) return this;
-		if (equalsMethods.size() < 5) {
+    public BugInstance addEqualsMethodUsed(@CheckForNull Collection<XMethod> equalsMethods) {
+        if (equalsMethods == null) return this;
+        if (equalsMethods.size() < 5) {
 			for (XMethod m : equalsMethods) {
-				addMethod(m).describe(MethodAnnotation.METHOD_EQUALS_USED);
-			}
-		} else {
+                addMethod(m).describe(MethodAnnotation.METHOD_EQUALS_USED);
+            }
+        } else {
 			addMethod(equalsMethods.iterator().next()).describe(MethodAnnotation.METHOD_EQUALS_USED);
-		}
+        }
 
-		return this;
-	}
-	public BugInstance addTypeOfNamedClass(@DottedClassName String typeName) {
+        return this;
+    }
+    public BugInstance addTypeOfNamedClass(@DottedClassName String typeName) {
 		TypeAnnotation typeAnnotation = new TypeAnnotation("L" + typeName.replace('.','/')+";");
-		add(typeAnnotation);
-		return this;
-	}
+        add(typeAnnotation);
+        return this;
+    }
 	public BugInstance addType(ClassDescriptor c) {
-		TypeAnnotation typeAnnotation = new TypeAnnotation(c.getSignature());
-		add(typeAnnotation);
-		return this;
+        TypeAnnotation typeAnnotation = new TypeAnnotation(c.getSignature());
+        add(typeAnnotation);
+        return this;
 	}
-	/* ----------------------------------------------------------------------
-	 * Field annotation adders
-	 * ---------------------------------------------------------------------- */
+    /* ----------------------------------------------------------------------
+     * Field annotation adders
+     * ---------------------------------------------------------------------- */
 
-	/**
-	 * Add a field annotation.
-	 *
+    /**
+     * Add a field annotation.
+     *
 	 * @param className name of the class containing the field
-	 * @param fieldName the name of the field
-	 * @param fieldSig  type signature of the field
-	 * @param isStatic  whether or not the field is static
+     * @param fieldName the name of the field
+     * @param fieldSig  type signature of the field
+     * @param isStatic  whether or not the field is static
 	 * @return this object
-	 */
-	public BugInstance addField(String className, String fieldName, String fieldSig, boolean isStatic) {
-		addField(new FieldAnnotation(className, fieldName, fieldSig, isStatic));
+     */
+    public BugInstance addField(String className, String fieldName, String fieldSig, boolean isStatic) {
+        addField(new FieldAnnotation(className, fieldName, fieldSig, isStatic));
 		return this;
-	}
+    }
 
-	/**
-	 * Add a field annotation.
-	 *
+    /**
+     * Add a field annotation.
+     *
 	 * @param className name of the class containing the field
-	 * @param fieldName the name of the field
-	 * @param fieldSig  type signature of the field
-	 * @param accessFlags access flags for the field
+     * @param fieldName the name of the field
+     * @param fieldSig  type signature of the field
+     * @param accessFlags access flags for the field
 	 * @return this object
-	 */
-	public BugInstance addField(String className, String fieldName, String fieldSig, int accessFlags) {
-		addField(new FieldAnnotation(className, fieldName, fieldSig, accessFlags));
+     */
+    public BugInstance addField(String className, String fieldName, String fieldSig, int accessFlags) {
+        addField(new FieldAnnotation(className, fieldName, fieldSig, accessFlags));
 		return this;
-	}
-	public BugInstance addField(PreorderVisitor visitor) {
-		FieldAnnotation fieldAnnotation = FieldAnnotation.fromVisitedField(visitor);
+    }
+    public BugInstance addField(PreorderVisitor visitor) {
+        FieldAnnotation fieldAnnotation = FieldAnnotation.fromVisitedField(visitor);
 		return addField(fieldAnnotation);
-	}
-	/**
-	 * Add a field annotation
+    }
+    /**
+     * Add a field annotation
 	 *
-	 * @param fieldAnnotation the field annotation
-	 * @return this object
-	 */
+     * @param fieldAnnotation the field annotation
+     * @return this object
+     */
 	public BugInstance addField(FieldAnnotation fieldAnnotation) {
-		add(fieldAnnotation);
-		return this;
-	}
+        add(fieldAnnotation);
+        return this;
+    }
 
-	/**
-	 * Add a field annotation for a FieldVariable matched in a ByteCodePattern.
-	 *
+    /**
+     * Add a field annotation for a FieldVariable matched in a ByteCodePattern.
+     *
 	 * @param field the FieldVariable
-	 * @return this object
-	 */
-	public BugInstance addField(FieldVariable field) {
+     * @return this object
+     */
+    public BugInstance addField(FieldVariable field) {
 		return addField(field.getClassName(), field.getFieldName(), field.getFieldSig(), field.isStatic());
-	}
+    }
 
-	/**
-	 * Add a field annotation for an XField.
-	 *
+    /**
+     * Add a field annotation for an XField.
+     *
 	 * @param xfield the XField
-	 * @return this object
-	 */
-	public BugInstance addOptionalField(@CheckForNull XField xfield) {
+     * @return this object
+     */
+    public BugInstance addOptionalField(@CheckForNull XField xfield) {
 		if (xfield == null) return this;
-		return addField(xfield.getClassName(), xfield.getName(), xfield.getSignature(), xfield.isStatic());
-	}
-	/**
+        return addField(xfield.getClassName(), xfield.getName(), xfield.getSignature(), xfield.isStatic());
+    }
+    /**
 	 * Add a field annotation for an XField.
-	 *
-	 * @param xfield the XField
-	 * @return this object
+     *
+     * @param xfield the XField
+     * @return this object
 	 */
-	public BugInstance addField(XField xfield) {
-		return addField(xfield.getClassName(), xfield.getName(), xfield.getSignature(), xfield.isStatic());
-	}
+    public BugInstance addField(XField xfield) {
+        return addField(xfield.getClassName(), xfield.getName(), xfield.getSignature(), xfield.isStatic());
+    }
 	/**
-	 * Add a field annotation for a FieldDescriptor.
-	 * 
-	 * @param fieldDescriptor the FieldDescriptor
+     * Add a field annotation for a FieldDescriptor.
+     *
+     * @param fieldDescriptor the FieldDescriptor
 	 * @return this object
-	 */
-	public BugInstance addField(FieldDescriptor fieldDescriptor) {
-		FieldAnnotation fieldAnnotation = FieldAnnotation.fromFieldDescriptor(fieldDescriptor);
+     */
+    public BugInstance addField(FieldDescriptor fieldDescriptor) {
+        FieldAnnotation fieldAnnotation = FieldAnnotation.fromFieldDescriptor(fieldDescriptor);
 		add(fieldAnnotation);
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Add a field annotation for the field which has just been accessed
-	 * by the method currently being visited by given visitor.
+    /**
+     * Add a field annotation for the field which has just been accessed
+     * by the method currently being visited by given visitor.
 	 * Assumes that a getfield/putfield or getstatic/putstatic
-	 * has just been seen.
-	 *
-	 * @param visitor the DismantleBytecode object
+     * has just been seen.
+     *
+     * @param visitor the DismantleBytecode object
 	 * @return this object
-	 */
-	public BugInstance addReferencedField(DismantleBytecode visitor) {
-		FieldAnnotation f = FieldAnnotation.fromReferencedField(visitor);
+     */
+    public BugInstance addReferencedField(DismantleBytecode visitor) {
+        FieldAnnotation f = FieldAnnotation.fromReferencedField(visitor);
 		addField(f);
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Add a field annotation for the field referenced by the FieldAnnotation parameter
-	 */
+    /**
+     * Add a field annotation for the field referenced by the FieldAnnotation parameter
+     */
 	public BugInstance addReferencedField(FieldAnnotation fa) {
-		addField(fa);
-		return this;
-	}
+        addField(fa);
+        return this;
+    }
 
-	/**
-	 * Add a field annotation for the field which is being visited by
-	 * given visitor.
+    /**
+     * Add a field annotation for the field which is being visited by
+     * given visitor.
 	 *
-	 * @param visitor the visitor
-	 * @return this object
-	 */
+     * @param visitor the visitor
+     * @return this object
+     */
 	public BugInstance addVisitedField(PreorderVisitor visitor) {
-		FieldAnnotation f = FieldAnnotation.fromVisitedField(visitor);
-		addField(f);
-		return this;
+        FieldAnnotation f = FieldAnnotation.fromVisitedField(visitor);
+        addField(f);
+        return this;
 	}
 
-	/**
-	 * Local variable adders
-	 */
+    /**
+     * Local variable adders
+     */
 	public BugInstance addOptionalLocalVariable(DismantleBytecode dbc, OpcodeStack.Item item) {
-		int register = item.getRegisterNumber();
+        int register = item.getRegisterNumber();
 
-		if (register >= 0)
-			this.add(LocalVariableAnnotation.getLocalVariableAnnotation(dbc.getMethod(), register, dbc.getPC()-1, dbc.getPC()));
-		return this;
+        if (register >= 0)
+            this.add(LocalVariableAnnotation.getLocalVariableAnnotation(dbc.getMethod(), register, dbc.getPC()-1, dbc.getPC()));
+        return this;
 	}
-	
-	
-	/* ----------------------------------------------------------------------
+
+
+    /* ----------------------------------------------------------------------
 	 * Method annotation adders
-	 * ---------------------------------------------------------------------- */
+     * ---------------------------------------------------------------------- */
 
-	/**
-	 * Add a method annotation.  If this is the first method annotation added,
-	 * it becomes the primary method annotation.
+    /**
+     * Add a method annotation.  If this is the first method annotation added,
+     * it becomes the primary method annotation.
 	 *
-	 * @param className  name of the class containing the method
-	 * @param methodName name of the method
-	 * @param methodSig  type signature of the method
+     * @param className  name of the class containing the method
+     * @param methodName name of the method
+     * @param methodSig  type signature of the method
 	 * @param isStatic   true if the method is static, false otherwise
-	 * @return this object
-	 */
-	public BugInstance addMethod(String className, String methodName, String methodSig, boolean isStatic) {
+     * @return this object
+     */
+    public BugInstance addMethod(String className, String methodName, String methodSig, boolean isStatic) {
 		addMethod(MethodAnnotation.fromForeignMethod(className, methodName, methodSig, isStatic));
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Add a method annotation.  If this is the first method annotation added,
-	 * it becomes the primary method annotation.
+    /**
+     * Add a method annotation.  If this is the first method annotation added,
+     * it becomes the primary method annotation.
 	 *
-	 * @param className  name of the class containing the method
-	 * @param methodName name of the method
-	 * @param methodSig  type signature of the method
+     * @param className  name of the class containing the method
+     * @param methodName name of the method
+     * @param methodSig  type signature of the method
 	 * @param accessFlags   accessFlags for the method
-	 * @return this object
-	 */
-	public BugInstance addMethod(String className, String methodName, String methodSig, int accessFlags) {
+     * @return this object
+     */
+    public BugInstance addMethod(String className, String methodName, String methodSig, int accessFlags) {
 		addMethod(MethodAnnotation.fromForeignMethod(className, methodName, methodSig, accessFlags));
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Add a method annotation.  If this is the first method annotation added,
-	 * it becomes the primary method annotation.
+    /**
+     * Add a method annotation.  If this is the first method annotation added,
+     * it becomes the primary method annotation.
 	 * If the method has source line information, then a SourceLineAnnotation
-	 * is added to the method.
-	 *
-	 * @param methodGen  the MethodGen object for the method
+     * is added to the method.
+     *
+     * @param methodGen  the MethodGen object for the method
 	 * @param sourceFile source file method is defined in
-	 * @return this object
-	 */
-	public BugInstance addMethod(MethodGen methodGen, String sourceFile) {
+     * @return this object
+     */
+    public BugInstance addMethod(MethodGen methodGen, String sourceFile) {
 		String className = methodGen.getClassName();
-		MethodAnnotation methodAnnotation =
-				new MethodAnnotation(className, methodGen.getName(), methodGen.getSignature(), methodGen.isStatic());
-		addMethod(methodAnnotation);
+        MethodAnnotation methodAnnotation =
+                new MethodAnnotation(className, methodGen.getName(), methodGen.getSignature(), methodGen.isStatic());
+        addMethod(methodAnnotation);
 		addSourceLinesForMethod(methodAnnotation, SourceLineAnnotation.fromVisitedMethod(methodGen, sourceFile));
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Add a method annotation.  If this is the first method annotation added,
-	 * it becomes the primary method annotation.
+    /**
+     * Add a method annotation.  If this is the first method annotation added,
+     * it becomes the primary method annotation.
 	 * If the method has source line information, then a SourceLineAnnotation
-	 * is added to the method.
-	 *
-	 * @param javaClass the class the method is defined in
+     * is added to the method.
+     *
+     * @param javaClass the class the method is defined in
 	 * @param method    the method
-	 * @return this object
-	 */
-	public BugInstance addMethod(JavaClass javaClass, Method method) {
+     * @return this object
+     */
+    public BugInstance addMethod(JavaClass javaClass, Method method) {
 		MethodAnnotation methodAnnotation =
-			new MethodAnnotation(javaClass.getClassName(), method.getName(), method.getSignature(), method.isStatic());
-		SourceLineAnnotation methodSourceLines = SourceLineAnnotation.forEntireMethod(
-				javaClass,
+            new MethodAnnotation(javaClass.getClassName(), method.getName(), method.getSignature(), method.isStatic());
+        SourceLineAnnotation methodSourceLines = SourceLineAnnotation.forEntireMethod(
+                javaClass,
 				method);
-		methodAnnotation.setSourceLines(methodSourceLines);
-		addMethod(methodAnnotation);
-		return this;
+        methodAnnotation.setSourceLines(methodSourceLines);
+        addMethod(methodAnnotation);
+        return this;
 	}
 
-	/**
-	 * Add a method annotation.  If this is the first method annotation added,
-	 * it becomes the primary method annotation.
+    /**
+     * Add a method annotation.  If this is the first method annotation added,
+     * it becomes the primary method annotation.
 	 * If the method has source line information, then a SourceLineAnnotation
-	 * is added to the method.
-	 *
-	 * @param classAndMethod JavaClassAndMethod identifying the method to add
+     * is added to the method.
+     *
+     * @param classAndMethod JavaClassAndMethod identifying the method to add
 	 * @return this object
-	 */
-	public BugInstance addMethod(JavaClassAndMethod classAndMethod) {
-		return addMethod(classAndMethod.getJavaClass(), classAndMethod.getMethod());
+     */
+    public BugInstance addMethod(JavaClassAndMethod classAndMethod) {
+        return addMethod(classAndMethod.getJavaClass(), classAndMethod.getMethod());
 	}
 
-	/**
-	 * Add a method annotation for the method which the given visitor is currently visiting.
-	 * If the method has source line information, then a SourceLineAnnotation
+    /**
+     * Add a method annotation for the method which the given visitor is currently visiting.
+     * If the method has source line information, then a SourceLineAnnotation
 	 * is added to the method.
-	 *
-	 * @param visitor the BetterVisitor
-	 * @return this object
+     *
+     * @param visitor the BetterVisitor
+     * @return this object
 	 */
-	public BugInstance addMethod(PreorderVisitor visitor) {
-		MethodAnnotation methodAnnotation = MethodAnnotation.fromVisitedMethod(visitor);
-		addMethod(methodAnnotation);
+    public BugInstance addMethod(PreorderVisitor visitor) {
+        MethodAnnotation methodAnnotation = MethodAnnotation.fromVisitedMethod(visitor);
+        addMethod(methodAnnotation);
 		addSourceLinesForMethod(methodAnnotation, SourceLineAnnotation.fromVisitedMethod(visitor));
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Add a method annotation for the method which has been called
-	 * by the method currently being visited by given visitor.
+    /**
+     * Add a method annotation for the method which has been called
+     * by the method currently being visited by given visitor.
 	 * Assumes that the visitor has just looked at an invoke instruction
-	 * of some kind.
-	 *
-	 * @param visitor the DismantleBytecode object
+     * of some kind.
+     *
+     * @param visitor the DismantleBytecode object
 	 * @return this object
-	 */
-	public BugInstance addCalledMethod(DismantleBytecode visitor) {
+     */
+    public BugInstance addCalledMethod(DismantleBytecode visitor) {
 
-		return addMethod(MethodAnnotation.fromCalledMethod(visitor)).describe(MethodAnnotation.METHOD_CALLED);
-	}
+        return addMethod(MethodAnnotation.fromCalledMethod(visitor)).describe(MethodAnnotation.METHOD_CALLED);
+    }
 
-	/**
-	 * Add a method annotation.
-	 *
+    /**
+     * Add a method annotation.
+     *
 	 * @param className  name of class containing called method
-	 * @param methodName name of called method
-	 * @param methodSig  signature of called method
-	 * @param isStatic   true if called method is static, false if not
+     * @param methodName name of called method
+     * @param methodSig  signature of called method
+     * @param isStatic   true if called method is static, false if not
 	 * @return this object
-	 */
-	public BugInstance addCalledMethod(String className, String methodName, String methodSig, boolean isStatic) {
-		return addMethod(MethodAnnotation.fromCalledMethod(className, methodName, methodSig, isStatic)).describe(MethodAnnotation.METHOD_CALLED);
+     */
+    public BugInstance addCalledMethod(String className, String methodName, String methodSig, boolean isStatic) {
+        return addMethod(MethodAnnotation.fromCalledMethod(className, methodName, methodSig, isStatic)).describe(MethodAnnotation.METHOD_CALLED);
 	}
 
-	/**
-	 * Add a method annotation for the method which is called by given
-	 * instruction.
+    /**
+     * Add a method annotation for the method which is called by given
+     * instruction.
 	 *
-	 * @param cpg the constant pool for the method containing the call
-	 * @param inv the InvokeInstruction
-	 * @return this object
+     * @param cpg the constant pool for the method containing the call
+     * @param inv the InvokeInstruction
+     * @return this object
 	 */
-	public BugInstance addCalledMethod(ConstantPoolGen cpg, InvokeInstruction inv) {
-		String className = inv.getClassName(cpg);
-		String methodName = inv.getMethodName(cpg);
+    public BugInstance addCalledMethod(ConstantPoolGen cpg, InvokeInstruction inv) {
+        String className = inv.getClassName(cpg);
+        String methodName = inv.getMethodName(cpg);
 		String methodSig = inv.getSignature(cpg);
-		addMethod(className, methodName, methodSig, inv.getOpcode() == Constants.INVOKESTATIC);
-		describe(MethodAnnotation.METHOD_CALLED);
-		return this;
+        addMethod(className, methodName, methodSig, inv.getOpcode() == Constants.INVOKESTATIC);
+        describe(MethodAnnotation.METHOD_CALLED);
+        return this;
 	}
 
-	/**
-	 * Add a method annotation for the method which is called by given
-	 * instruction.
+    /**
+     * Add a method annotation for the method which is called by given
+     * instruction.
 	 *
-	 * @param methodGen the method containing the call
-	 * @param inv       the InvokeInstruction
-	 * @return this object
+     * @param methodGen the method containing the call
+     * @param inv       the InvokeInstruction
+     * @return this object
 	 */
-	public BugInstance addCalledMethod(MethodGen methodGen, InvokeInstruction inv) {
-		ConstantPoolGen cpg = methodGen.getConstantPool();
-		return addCalledMethod(cpg, inv);
+    public BugInstance addCalledMethod(MethodGen methodGen, InvokeInstruction inv) {
+        ConstantPoolGen cpg = methodGen.getConstantPool();
+        return addCalledMethod(cpg, inv);
 	}
 
-	/**
-	 * Add a MethodAnnotation from an XMethod.
-	 * 
+    /**
+     * Add a MethodAnnotation from an XMethod.
+     *
 	 * @param xmethod the XMethod
-	 * @return this object
-	 */
-	public BugInstance addMethod(XMethod xmethod) {
+     * @return this object
+     */
+    public BugInstance addMethod(XMethod xmethod) {
 		addMethod(MethodAnnotation.fromXMethod(xmethod));
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Add a method annotation.  If this is the first method annotation added,
-	 * it becomes the primary method annotation.
+    /**
+     * Add a method annotation.  If this is the first method annotation added,
+     * it becomes the primary method annotation.
 	 *
-	 * @param methodAnnotation the method annotation
-	 * @return this object
-	 */
+     * @param methodAnnotation the method annotation
+     * @return this object
+     */
 	public BugInstance addMethod(MethodAnnotation methodAnnotation) {
-		add(methodAnnotation);
-		return this;
-	}
+        add(methodAnnotation);
+        return this;
+    }
 
-	/* ----------------------------------------------------------------------
-	 * Integer annotation adders
-	 * ---------------------------------------------------------------------- */
+    /* ----------------------------------------------------------------------
+     * Integer annotation adders
+     * ---------------------------------------------------------------------- */
 
-	/**
-	 * Add an integer annotation.
-	 *
+    /**
+     * Add an integer annotation.
+     *
 	 * @param value the integer value
-	 * @return this object
-	 */
-	public BugInstance addInt(int value) {
+     * @return this object
+     */
+    public BugInstance addInt(int value) {
 		add(new IntAnnotation(value));
-		return this;
-	}
+        return this;
+    }
 
-	/*
-	 * Add an annotation about a parameter
-	 * @param index  parameter index, starting from 0
+    /*
+     * Add an annotation about a parameter
+     * @param index  parameter index, starting from 0
 	 * @param role the role used to describe the parameter
-	 */
-	public BugInstance addParameterAnnotation(int index, String role) {
-		return addInt(index+1).describe(role);
+     */
+    public BugInstance addParameterAnnotation(int index, String role) {
+        return addInt(index+1).describe(role);
 	}
-	/**
-	 * Add a String annotation.
-	 *
+    /**
+     * Add a String annotation.
+     *
 	 * @param value the String value
-	 * @return this object
-	 */
-	public BugInstance addString(String value) {
+     * @return this object
+     */
+    public BugInstance addString(String value) {
 		add(StringAnnotation.fromRawString(value));
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Add a String annotation.
-	 *
+    /**
+     * Add a String annotation.
+     *
 	 * @param c the char value
-	 * @return this object
-	 */
-	public BugInstance addString(char c) {
+     * @return this object
+     */
+    public BugInstance addString(char c) {
 		add(StringAnnotation.fromRawString(Character.toString(c)));
-		return this;
-	}
-	/* ----------------------------------------------------------------------
+        return this;
+    }
+    /* ----------------------------------------------------------------------
 	 * Source line annotation adders
-	 * ---------------------------------------------------------------------- */
+     * ---------------------------------------------------------------------- */
 
-	/**
-	 * Add a source line annotation.
-	 *
+    /**
+     * Add a source line annotation.
+     *
 	 * @param sourceLine the source line annotation
-	 * @return this object
-	 */
-	public BugInstance addSourceLine(SourceLineAnnotation sourceLine) {
+     * @return this object
+     */
+    public BugInstance addSourceLine(SourceLineAnnotation sourceLine) {
 		add(sourceLine);
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Add a source line annotation for instruction whose PC is given
-	 * in the method that the given visitor is currently visiting.
+    /**
+     * Add a source line annotation for instruction whose PC is given
+     * in the method that the given visitor is currently visiting.
 	 * Note that if the method does not have line number information, then
-	 * no source line annotation will be added.
-	 *
-	 * @param visitor a BytecodeScanningDetector that is currently visiting the method
+     * no source line annotation will be added.
+     *
+     * @param visitor a BytecodeScanningDetector that is currently visiting the method
 	 * @param pc      bytecode offset of the instruction
-	 * @return this object
-	 */
-	public BugInstance addSourceLine(BytecodeScanningDetector visitor, int pc) {
+     * @return this object
+     */
+    public BugInstance addSourceLine(BytecodeScanningDetector visitor, int pc) {
 		SourceLineAnnotation sourceLineAnnotation =
-			SourceLineAnnotation.fromVisitedInstruction(visitor.getClassContext(), visitor, pc);
-		if (sourceLineAnnotation != null)
-			add(sourceLineAnnotation);
+            SourceLineAnnotation.fromVisitedInstruction(visitor.getClassContext(), visitor, pc);
+        if (sourceLineAnnotation != null)
+            add(sourceLineAnnotation);
 		return this;
-	}
+    }
 
-	/**
-	 * Add a source line annotation for instruction whose PC is given
-	 * in the method that the given visitor is currently visiting.
+    /**
+     * Add a source line annotation for instruction whose PC is given
+     * in the method that the given visitor is currently visiting.
 	 * Note that if the method does not have line number information, then
-	 * no source line annotation will be added.
-	 *
-	 * @param classContext the ClassContext
+     * no source line annotation will be added.
+     *
+     * @param classContext the ClassContext
 	 * @param visitor a PreorderVisitor that is currently visiting the method
-	 * @param pc      bytecode offset of the instruction
-	 * @return this object
-	 */
+     * @param pc      bytecode offset of the instruction
+     * @return this object
+     */
 	public BugInstance addSourceLine(ClassContext classContext, PreorderVisitor visitor, int pc) {
-		SourceLineAnnotation sourceLineAnnotation =
-			SourceLineAnnotation.fromVisitedInstruction(classContext, visitor, pc);
-		if (sourceLineAnnotation != null)
+        SourceLineAnnotation sourceLineAnnotation =
+            SourceLineAnnotation.fromVisitedInstruction(classContext, visitor, pc);
+        if (sourceLineAnnotation != null)
 			add(sourceLineAnnotation);
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Add a source line annotation for the given instruction in the given method.
-	 * Note that if the method does not have line number information, then
+    /**
+     * Add a source line annotation for the given instruction in the given method.
+     * Note that if the method does not have line number information, then
 	 * no source line annotation will be added.
-	 *
-	 * @param classContext the ClassContext
-	 * @param methodGen  the method being visited
+     *
+     * @param classContext the ClassContext
+     * @param methodGen  the method being visited
 	 * @param sourceFile source file the method is defined in
-	 * @param handle     the InstructionHandle containing the visited instruction
-	 * @return this object
-	 */
+     * @param handle     the InstructionHandle containing the visited instruction
+     * @return this object
+     */
 	public BugInstance addSourceLine(ClassContext classContext, MethodGen methodGen, String sourceFile, @NonNull InstructionHandle handle) {
-		SourceLineAnnotation sourceLineAnnotation =
-			SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
-		if (sourceLineAnnotation != null)
+        SourceLineAnnotation sourceLineAnnotation =
+            SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
+        if (sourceLineAnnotation != null)
 			add(sourceLineAnnotation);
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Add a source line annotation describing a range of instructions.
-	 *
+    /**
+     * Add a source line annotation describing a range of instructions.
+     *
 	 * @param classContext the ClassContext
-	 * @param methodGen  the method
-	 * @param sourceFile source file the method is defined in
-	 * @param start      the start instruction in the range
+     * @param methodGen  the method
+     * @param sourceFile source file the method is defined in
+     * @param start      the start instruction in the range
 	 * @param end        the end instruction in the range (inclusive)
-	 * @return this object
-	 */
-	public BugInstance addSourceLine(ClassContext classContext, MethodGen methodGen, String sourceFile, InstructionHandle start, InstructionHandle end) {
+     * @return this object
+     */
+    public BugInstance addSourceLine(ClassContext classContext, MethodGen methodGen, String sourceFile, InstructionHandle start, InstructionHandle end) {
 		// Make sure start and end are really in the right order.
-		if (start.getPosition() > end.getPosition()) {
-			InstructionHandle tmp = start;
-			start = end;
+        if (start.getPosition() > end.getPosition()) {
+            InstructionHandle tmp = start;
+            start = end;
 			end = tmp;
-		}
-		SourceLineAnnotation sourceLineAnnotation =
-			SourceLineAnnotation.fromVisitedInstructionRange(classContext, methodGen, sourceFile, start, end);
+        }
+        SourceLineAnnotation sourceLineAnnotation =
+            SourceLineAnnotation.fromVisitedInstructionRange(classContext, methodGen, sourceFile, start, end);
 		if (sourceLineAnnotation != null)
-			add(sourceLineAnnotation);
-		return this;
-	}
+            add(sourceLineAnnotation);
+        return this;
+    }
 
-	/**
-	 * Add source line annotation for given Location in a method. 
-	 * 
+    /**
+     * Add source line annotation for given Location in a method.
+     *
 	 * @param classContext the ClassContext
-	 * @param method       the Method
-	 * @param location     the Location in the method
-	 * @return this BugInstance
+     * @param method       the Method
+     * @param location     the Location in the method
+     * @return this BugInstance
 	 */
-	public BugInstance addSourceLine(ClassContext classContext, Method method, Location location) {
-		return addSourceLine(classContext, method, location.getHandle());
-	}
+    public BugInstance addSourceLine(ClassContext classContext, Method method, Location location) {
+        return addSourceLine(classContext, method, location.getHandle());
+    }
 
-	/**
-	 * Add source line annotation for given Location in a method.
-	 * 
+    /**
+     * Add source line annotation for given Location in a method.
+     *
 	 * @param methodDescriptor the method
-	 * @param location         the Location in the method
-	 * @return this BugInstance
-	 */
+     * @param location         the Location in the method
+     * @return this BugInstance
+     */
 	public BugInstance addSourceLine(MethodDescriptor methodDescriptor, Location location) {
-		try {
-			IAnalysisCache analysisCache = Global.getAnalysisCache();
-			ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
+        try {
+            IAnalysisCache analysisCache = Global.getAnalysisCache();
+            ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
 			Method method = analysisCache.getMethodAnalysis(Method.class, methodDescriptor);
-			return addSourceLine(classContext, method, location);
-		} catch (CheckedAnalysisException e) {
-			return addSourceLine(SourceLineAnnotation.createReallyUnknown(methodDescriptor.getClassDescriptor().toDottedClassName()));
+            return addSourceLine(classContext, method, location);
+        } catch (CheckedAnalysisException e) {
+            return addSourceLine(SourceLineAnnotation.createReallyUnknown(methodDescriptor.getClassDescriptor().toDottedClassName()));
 		}
-	}
-	
-	/**
+    }
+
+    /**
 	 * Add source line annotation for given Location in a method. 
-	 * 
-	 * @param classContext the ClassContext
-	 * @param method       the Method
+     *
+     * @param classContext the ClassContext
+     * @param method       the Method
 	 * @param handle       InstructionHandle of an instruction in the method
-	 * @return this BugInstance
-	 */
-	public BugInstance addSourceLine(ClassContext classContext, Method method, InstructionHandle handle) {
+     * @return this BugInstance
+     */
+    public BugInstance addSourceLine(ClassContext classContext, Method method, InstructionHandle handle) {
 		SourceLineAnnotation sourceLineAnnotation =
-			SourceLineAnnotation.fromVisitedInstruction(classContext, method, handle.getPosition());
-		if (sourceLineAnnotation != null)
-			add(sourceLineAnnotation);
+            SourceLineAnnotation.fromVisitedInstruction(classContext, method, handle.getPosition());
+        if (sourceLineAnnotation != null)
+            add(sourceLineAnnotation);
 		return this;
-	}
-	/**
-	 * Add a source line annotation describing the
+    }
+    /**
+     * Add a source line annotation describing the
 	 * source line numbers for a range of instructions in the method being
-	 * visited by the given visitor.
-	 * Note that if the method does not have line number information, then
-	 * no source line annotation will be added.
+     * visited by the given visitor.
+     * Note that if the method does not have line number information, then
+     * no source line annotation will be added.
 	 *
-	 * @param visitor a BetterVisitor which is visiting the method
-	 * @param startPC the bytecode offset of the start instruction in the range
-	 * @param endPC   the bytecode offset of the end instruction in the range
+     * @param visitor a BetterVisitor which is visiting the method
+     * @param startPC the bytecode offset of the start instruction in the range
+     * @param endPC   the bytecode offset of the end instruction in the range
 	 * @return this object
-	 */
-	public BugInstance addSourceLineRange(BytecodeScanningDetector visitor, int startPC, int endPC) {
-		SourceLineAnnotation sourceLineAnnotation =
+     */
+    public BugInstance addSourceLineRange(BytecodeScanningDetector visitor, int startPC, int endPC) {
+        SourceLineAnnotation sourceLineAnnotation =
 			SourceLineAnnotation.fromVisitedInstructionRange(visitor.getClassContext(), visitor, startPC, endPC);
-		if (sourceLineAnnotation != null)
-			add(sourceLineAnnotation);
-		return this;
+        if (sourceLineAnnotation != null)
+            add(sourceLineAnnotation);
+        return this;
 	}
 
-	/**
-	 * Add a source line annotation describing the
-	 * source line numbers for a range of instructions in the method being
+    /**
+     * Add a source line annotation describing the
+     * source line numbers for a range of instructions in the method being
 	 * visited by the given visitor.
-	 * Note that if the method does not have line number information, then
-	 * no source line annotation will be added.
-	 *
+     * Note that if the method does not have line number information, then
+     * no source line annotation will be added.
+     *
 	 * @param classContext the ClassContext
-	 * @param visitor a BetterVisitor which is visiting the method
-	 * @param startPC the bytecode offset of the start instruction in the range
-	 * @param endPC   the bytecode offset of the end instruction in the range
+     * @param visitor a BetterVisitor which is visiting the method
+     * @param startPC the bytecode offset of the start instruction in the range
+     * @param endPC   the bytecode offset of the end instruction in the range
 	 * @return this object
-	 */
-	public BugInstance addSourceLineRange(ClassContext classContext, PreorderVisitor visitor, int startPC, int endPC) {
-		SourceLineAnnotation sourceLineAnnotation =
+     */
+    public BugInstance addSourceLineRange(ClassContext classContext, PreorderVisitor visitor, int startPC, int endPC) {
+        SourceLineAnnotation sourceLineAnnotation =
 			SourceLineAnnotation.fromVisitedInstructionRange(classContext, visitor, startPC, endPC);
-		if (sourceLineAnnotation != null)
-			add(sourceLineAnnotation);
-		return this;
+        if (sourceLineAnnotation != null)
+            add(sourceLineAnnotation);
+        return this;
 	}
 
-	/**
-	 * Add a source line annotation for instruction currently being visited
-	 * by given visitor.
+    /**
+     * Add a source line annotation for instruction currently being visited
+     * by given visitor.
 	 * Note that if the method does not have line number information, then
-	 * no source line annotation will be added.
-	 *
-	 * @param visitor a BytecodeScanningDetector visitor that is currently visiting the instruction
+     * no source line annotation will be added.
+     *
+     * @param visitor a BytecodeScanningDetector visitor that is currently visiting the instruction
 	 * @return this object
-	 */
-	public BugInstance addSourceLine(BytecodeScanningDetector visitor) {
-		SourceLineAnnotation sourceLineAnnotation =
+     */
+    public BugInstance addSourceLine(BytecodeScanningDetector visitor) {
+        SourceLineAnnotation sourceLineAnnotation =
 			SourceLineAnnotation.fromVisitedInstruction(visitor);
-		if (sourceLineAnnotation != null)
-			add(sourceLineAnnotation);
-		return this;
+        if (sourceLineAnnotation != null)
+            add(sourceLineAnnotation);
+        return this;
 	}
 
-	/**
-	 * Add a non-specific source line annotation.
-	 * This will result in the entire source file being displayed.
+    /**
+     * Add a non-specific source line annotation.
+     * This will result in the entire source file being displayed.
 	 *
-	 * @param className  the class name
-	 * @param sourceFile the source file name
-	 * @return this object
+     * @param className  the class name
+     * @param sourceFile the source file name
+     * @return this object
 	 */
-	public BugInstance addUnknownSourceLine(String className, String sourceFile) {
-		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.createUnknown(className, sourceFile);
-		if (sourceLineAnnotation != null)
+    public BugInstance addUnknownSourceLine(String className, String sourceFile) {
+        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.createUnknown(className, sourceFile);
+        if (sourceLineAnnotation != null)
 			add(sourceLineAnnotation);
-		return this;
-	}
+        return this;
+    }
 
-	/* ----------------------------------------------------------------------
-	 * Formatting support
-	 * ---------------------------------------------------------------------- */
+    /* ----------------------------------------------------------------------
+     * Formatting support
+     * ---------------------------------------------------------------------- */
 
-	/**
-	 * Format a string describing this bug instance.
-	 *
+    /**
+     * Format a string describing this bug instance.
+     *
 	 * @return the description
-	 */
-	public String getMessageWithoutPrefix() {
-		BugPattern bugPattern = getBugPattern();
+     */
+    public String getMessageWithoutPrefix() {
+        BugPattern bugPattern = getBugPattern();
 		String pattern, shortPattern;
-		
-			pattern = getLongDescription();
-			shortPattern = bugPattern.getShortDescription();
+
+            pattern = getLongDescription();
+            shortPattern = bugPattern.getShortDescription();
 		try {
-			FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
-		} catch (RuntimeException e) {
+            FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
+            return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
+        } catch (RuntimeException e) {
 			AnalysisContext.logError("Error generating bug msg ", e);
-			return shortPattern + " [Error generating customized description]";
-		}
-	}
+            return shortPattern + " [Error generating customized description]";
+        }
+    }
 	String getLongDescription() {
-		return getBugPattern().getLongDescription().replaceAll("BUG_PATTERN", type);
-	}
-	public String getAbridgedMessage() {
+        return getBugPattern().getLongDescription().replaceAll("BUG_PATTERN", type);
+    }
+    public String getAbridgedMessage() {
 		BugPattern bugPattern = getBugPattern();
-		String pattern, shortPattern;
-		if (bugPattern == null) 
-			shortPattern = pattern = "Error2: missing bug pattern for key " + type;
+        String pattern, shortPattern;
+        if (bugPattern == null)
+            shortPattern = pattern = "Error2: missing bug pattern for key " + type;
 		else {
-			pattern = getLongDescription().replaceAll(" in \\{1\\}", "");
-			shortPattern = bugPattern.getShortDescription();
-		}
+            pattern = getLongDescription().replaceAll(" in \\{1\\}", "");
+            shortPattern = bugPattern.getShortDescription();
+        }
 		try {
-			FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass(), true);
-		} catch (RuntimeException e) {
+            FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
+            return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass(), true);
+        } catch (RuntimeException e) {
 			AnalysisContext.logError("Error generating bug msg ", e);
-			return shortPattern + " [Error3 generating customized description]";
-		}
-	}
+            return shortPattern + " [Error3 generating customized description]";
+        }
+    }
 	/**
-	 * Format a string describing this bug instance.
-	 *
-	 * @return the description
+     * Format a string describing this bug instance.
+     *
+     * @return the description
 	 */
-	public String getMessage() {
-		BugPattern bugPattern = getBugPattern();
-		String pattern = bugPattern.getAbbrev() + ": " + getLongDescription();
+    public String getMessage() {
+        BugPattern bugPattern = getBugPattern();
+        String pattern = bugPattern.getAbbrev() + ": " + getLongDescription();
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-		try {
-			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
-		} catch (RuntimeException e) {
+        try {
+            return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
+        } catch (RuntimeException e) {
 			AnalysisContext.logError("Error generating bug msg ", e);
-			return bugPattern.getShortDescription() + " [Error generating customized description]";
-		}
-	}
+            return bugPattern.getShortDescription() + " [Error generating customized description]";
+        }
+    }
 
-	/**
-	 * Format a string describing this bug pattern, with the priority and type at the beginning.
-	 * e.g. "(High Priority Correctness) Guaranteed null pointer dereference..."
+    /**
+     * Format a string describing this bug pattern, with the priority and type at the beginning.
+     * e.g. "(High Priority Correctness) Guaranteed null pointer dereference..."
 	 */
-	public String getMessageWithPriorityType() {
-		return "(" + this.getPriorityTypeString() + ") " + this.getMessage();
-	}
+    public String getMessageWithPriorityType() {
+        return "(" + this.getPriorityTypeString() + ") " + this.getMessage();
+    }
 
-	public String getMessageWithPriorityTypeAbbreviation() {
-		return this.getPriorityTypeAbbreviation() + " "+ this.getMessage();
-	}
+    public String getMessageWithPriorityTypeAbbreviation() {
+        return this.getPriorityTypeAbbreviation() + " "+ this.getMessage();
+    }
 
-	/**
-	 * Add a description to the most recently added bug annotation.
-	 *
+    /**
+     * Add a description to the most recently added bug annotation.
+     *
 	 * @param description the description to add
-	 * @return this object
-	 */
-	public BugInstance describe(String description) {
+     * @return this object
+     */
+    public BugInstance describe(String description) {
 		annotationList.get(annotationList.size() - 1).setDescription(description);
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Convert to String.
-	 * This method returns the "short" message describing the bug,
+    /**
+     * Convert to String.
+     * This method returns the "short" message describing the bug,
 	 * as opposed to the longer format returned by getMessage().
-	 * The short format is appropriate for the tree view in a GUI,
-	 * where the annotations are listed separately as part of the overall
-	 * bug instance.
+     * The short format is appropriate for the tree view in a GUI,
+     * where the annotations are listed separately as part of the overall
+     * bug instance.
 	 */
-	@Override
-	public String toString() {
-		return I18N.instance().getShortMessage(type);
+    @Override
+    public String toString() {
+        return I18N.instance().getShortMessage(type);
 	}
 
-	/* ----------------------------------------------------------------------
-	 * XML Conversion support
-	 * ---------------------------------------------------------------------- */
+    /* ----------------------------------------------------------------------
+     * XML Conversion support
+     * ---------------------------------------------------------------------- */
 
-	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		writeXML(xmlOutput, null, false);
-	}
+    public void writeXML(XMLOutput xmlOutput) throws IOException {
+        writeXML(xmlOutput, null, false);
+    }
 
-	public void writeXML(XMLOutput xmlOutput, BugCollection bugCollection, boolean addMessages) throws IOException {
-		  XMLAttributeList attributeList = new XMLAttributeList()
-			.addAttribute("type", type)
+    public void writeXML(XMLOutput xmlOutput, BugCollection bugCollection, boolean addMessages) throws IOException {
+          XMLAttributeList attributeList = new XMLAttributeList()
+            .addAttribute("type", type)
 			.addAttribute("priority", String.valueOf(priority));
 
-		BugPattern pattern = getBugPattern();
-		if (pattern != null) {
-			// The bug abbreviation and pattern category are
+        BugPattern pattern = getBugPattern();
+        if (pattern != null) {
+            // The bug abbreviation and pattern category are
 			// emitted into the XML for informational purposes only.
-			// (The information is redundant, but might be useful
-			// for processing tools that want to make sense of
-			// bug instances without looking at the plugin descriptor.)
+            // (The information is redundant, but might be useful
+            // for processing tools that want to make sense of
+            // bug instances without looking at the plugin descriptor.)
 			attributeList.addAttribute("abbrev", pattern.getAbbrev());
-			attributeList.addAttribute("category", pattern.getCategory());
-		}
+            attributeList.addAttribute("category", pattern.getCategory());
+        }
 
 
-		if (addMessages) {
-			//		Add a uid attribute, if we have a unique id.
+        if (addMessages) {
+            //		Add a uid attribute, if we have a unique id.
 
-			attributeList.addAttribute("instanceHash", getInstanceHash());
-			attributeList.addAttribute("instanceOccurrenceNum", Integer.toString(getInstanceOccurrenceNum()));
-			attributeList.addAttribute("instanceOccurrenceMax", Integer.toString(getInstanceOccurrenceMax()));
+            attributeList.addAttribute("instanceHash", getInstanceHash());
+            attributeList.addAttribute("instanceOccurrenceNum", Integer.toString(getInstanceOccurrenceNum()));
+            attributeList.addAttribute("instanceOccurrenceMax", Integer.toString(getInstanceOccurrenceMax()));
 			attributeList.addAttribute("rank", Integer.toString(getBugRank()));
 
-		} else if (oldInstanceHash != null && !isInstanceHashConsistent()) {
-			attributeList.addAttribute("oldInstanceHash", oldInstanceHash);
-		}
+        } else if (oldInstanceHash != null && !isInstanceHashConsistent()) {
+            attributeList.addAttribute("oldInstanceHash", oldInstanceHash);
+        }
 		if (firstVersion > 0) attributeList.addAttribute("first", Long.toString(firstVersion));
-		if (lastVersion >= 0) 	attributeList.addAttribute("last", Long.toString(lastVersion));
-		if (introducedByChangeOfExistingClass) 
-			attributeList.addAttribute("introducedByChange", "true");
+        if (lastVersion >= 0) 	attributeList.addAttribute("last", Long.toString(lastVersion));
+        if (introducedByChangeOfExistingClass)
+            attributeList.addAttribute("introducedByChange", "true");
 		if (removedByChangeOfPersistingClass) 
-			attributeList.addAttribute("removedByChange", "true");
+            attributeList.addAttribute("removedByChange", "true");
 
         if (bugCollection != null) {
             Cloud cloud = bugCollection.getCloud();
@@ -1818,9 +1818,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             attributeList.addAttribute("firstSeen", firstSeenXMLFormat().format(firstSeen));
             int reviews = cloud.getNumberReviewers(this);
             UserDesignation consensus = cloud.getConsensusDesignation(this);
-			if (!cloud.isInCloud(this)) {
-				attributeList.addAttribute("isInCloud", "false");
-			}
+            if (!cloud.isInCloud(this)) {
+                attributeList.addAttribute("isInCloud", "false");
+            }
             if (reviews > 0) {
                 attributeList.addAttribute("reviews", Integer.toString(reviews));
 
@@ -1843,469 +1843,469 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             }
         }
 
-		xmlOutput.openTag(ELEMENT_NAME, attributeList);
+        xmlOutput.openTag(ELEMENT_NAME, attributeList);
 
         // write out the user's designation & comment
-		if (userDesignation != null) {
-			userDesignation.writeXML(xmlOutput);
-		}
+        if (userDesignation != null) {
+            userDesignation.writeXML(xmlOutput);
+        }
 
-		if (addMessages) {
-			BugPattern bugPattern = getBugPattern();
+        if (addMessages) {
+            BugPattern bugPattern = getBugPattern();
 
-			xmlOutput.openTag("ShortMessage");
-			xmlOutput.writeText(bugPattern != null ? bugPattern.getShortDescription() : this.toString());
-			xmlOutput.closeTag("ShortMessage");
+            xmlOutput.openTag("ShortMessage");
+            xmlOutput.writeText(bugPattern != null ? bugPattern.getShortDescription() : this.toString());
+            xmlOutput.closeTag("ShortMessage");
 
-			xmlOutput.openTag("LongMessage");
-			if (FindBugsDisplayFeatures.isAbridgedMessages()) xmlOutput.writeText(this.getAbridgedMessage());
-			else xmlOutput.writeText(this.getMessageWithoutPrefix());
+            xmlOutput.openTag("LongMessage");
+            if (FindBugsDisplayFeatures.isAbridgedMessages()) xmlOutput.writeText(this.getAbridgedMessage());
+            else xmlOutput.writeText(this.getMessageWithoutPrefix());
 			xmlOutput.closeTag("LongMessage");
-		}
+        }
 
-		Map<BugAnnotation,Void> primaryAnnotations;
-		
-		if (addMessages) {
+        Map<BugAnnotation,Void> primaryAnnotations;
+
+        if (addMessages) {
 			primaryAnnotations = new IdentityHashMap<BugAnnotation,Void>();
-			primaryAnnotations.put(getPrimarySourceLineAnnotation(), null);
-			primaryAnnotations.put(getPrimaryClass(), null);
-			primaryAnnotations.put(getPrimaryField(), null);
+            primaryAnnotations.put(getPrimarySourceLineAnnotation(), null);
+            primaryAnnotations.put(getPrimaryClass(), null);
+            primaryAnnotations.put(getPrimaryField(), null);
 			primaryAnnotations.put(getPrimaryMethod(), null);
-		} else {
-			primaryAnnotations = Collections.<BugAnnotation,Void>emptyMap();
-		}
+        } else {
+            primaryAnnotations = Collections.<BugAnnotation,Void>emptyMap();
+        }
 		
-		boolean foundSourceAnnotation = false;
-		for (BugAnnotation annotation : annotationList) {
-			if (annotation instanceof SourceLineAnnotation) 
+        boolean foundSourceAnnotation = false;
+        for (BugAnnotation annotation : annotationList) {
+            if (annotation instanceof SourceLineAnnotation)
 				foundSourceAnnotation = true;
-			annotation.writeXML(xmlOutput, addMessages,  primaryAnnotations.containsKey(annotation));
-		}
-		if (!foundSourceAnnotation && addMessages) {
+            annotation.writeXML(xmlOutput, addMessages,  primaryAnnotations.containsKey(annotation));
+        }
+        if (!foundSourceAnnotation && addMessages) {
 			SourceLineAnnotation synth = getPrimarySourceLineAnnotation();
-			if (synth != null) {
-				synth.setSynthetic(true);
-				synth.writeXML(xmlOutput, addMessages, false);
+            if (synth != null) {
+                synth.setSynthetic(true);
+                synth.writeXML(xmlOutput, addMessages, false);
 			}
-		}
+        }
 
-		if (propertyListHead != null) {
-			BugProperty prop = propertyListHead;
-			while (prop != null) {
+        if (propertyListHead != null) {
+            BugProperty prop = propertyListHead;
+            while (prop != null) {
 				prop.writeXML(xmlOutput);
-				prop = prop.getNext();
-			}
-		}
+                prop = prop.getNext();
+            }
+        }
 
-		xmlOutput.closeTag(ELEMENT_NAME);
-	}
+        xmlOutput.closeTag(ELEMENT_NAME);
+    }
 
-	private static final String ELEMENT_NAME = "BugInstance";
-	
-	/* ----------------------------------------------------------------------
+    private static final String ELEMENT_NAME = "BugInstance";
+
+    /* ----------------------------------------------------------------------
 	 * Implementation
-	 * ---------------------------------------------------------------------- */
+     * ---------------------------------------------------------------------- */
 
-	public BugInstance addOptionalAnnotation(@CheckForNull BugAnnotation annotation) {
-		if (annotation == null) return this;
-		return add(annotation);
+    public BugInstance addOptionalAnnotation(@CheckForNull BugAnnotation annotation) {
+        if (annotation == null) return this;
+        return add(annotation);
 	}
-	public BugInstance addOptionalAnnotation(@CheckForNull BugAnnotation annotation, String role) {
-		if (annotation == null) return this;
-		return add(annotation).describe(role);
+    public BugInstance addOptionalAnnotation(@CheckForNull BugAnnotation annotation, String role) {
+        if (annotation == null) return this;
+        return add(annotation).describe(role);
 	}
-	public BugInstance add(@Nonnull BugAnnotation annotation) {
-		if (annotation == null)
-			throw new IllegalArgumentException("Missing BugAnnotation!");
+    public BugInstance add(@Nonnull BugAnnotation annotation) {
+        if (annotation == null)
+            throw new IllegalArgumentException("Missing BugAnnotation!");
 
-		// Add to list
-		annotationList.add(annotation);
+        // Add to list
+        annotationList.add(annotation);
 
-		// This object is being modified, so the cached hashcode
-		// must be invalidated
-		cachedHashCode = INVALID_HASH_CODE;
+        // This object is being modified, so the cached hashcode
+        // must be invalidated
+        cachedHashCode = INVALID_HASH_CODE;
 		return this;
-	}
-	
-	public BugInstance addSomeSourceForTopTwoStackValues(ClassContext classContext, Method method, Location location) {
+    }
+
+    public BugInstance addSomeSourceForTopTwoStackValues(ClassContext classContext, Method method, Location location) {
 		int pc = location.getHandle().getPosition();
-		OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
-		BugAnnotation a1 = getSomeSource(classContext, method, location, stack, 1);
-		BugAnnotation a0 = getSomeSource(classContext, method, location, stack, 0);
+        OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
+        BugAnnotation a1 = getSomeSource(classContext, method, location, stack, 1);
+        BugAnnotation a0 = getSomeSource(classContext, method, location, stack, 0);
 		addOptionalUniqueAnnotations(a0, a1);
-		
-			
-		return this;
 
-	}
-	
-	public BugInstance addSourceForTopStackValue(ClassContext classContext, Method method, Location location) {
+
+        return this;
+
+    }
+
+    public BugInstance addSourceForTopStackValue(ClassContext classContext, Method method, Location location) {
 		BugAnnotation b =  getSourceForTopStackValue( classContext,  method,  location) ;
-		return this.addOptionalAnnotation(b);
-	}
-	public static @CheckForNull BugAnnotation getSourceForTopStackValue(ClassContext classContext, Method method, Location location) {
+        return this.addOptionalAnnotation(b);
+    }
+    public static @CheckForNull BugAnnotation getSourceForTopStackValue(ClassContext classContext, Method method, Location location) {
 		int pc = location.getHandle().getPosition();
-		OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
-		BugAnnotation a0 = getSomeSource(classContext, method, location, stack, 0);
-		return a0;
+        OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
+        BugAnnotation a0 = getSomeSource(classContext, method, location, stack, 0);
+        return a0;
 	}
-	public static @CheckForNull BugAnnotation getSomeSource(ClassContext classContext, Method method, Location location, OpcodeStack stack, int stackPos) {
-		int pc = location.getHandle().getPosition();
+    public static @CheckForNull BugAnnotation getSomeSource(ClassContext classContext, Method method, Location location, OpcodeStack stack, int stackPos) {
+        int pc = location.getHandle().getPosition();
 
-		try {
-			BugAnnotation result =  ValueNumberSourceInfo.getFromValueNumber(classContext, method, location, stackPos);
-			if (result != null)
+        try {
+            BugAnnotation result =  ValueNumberSourceInfo.getFromValueNumber(classContext, method, location, stackPos);
+            if (result != null)
 				return result;
-		} catch (DataflowAnalysisException e) {
+        } catch (DataflowAnalysisException e) {
+            AnalysisContext.logError("Couldn't find value source", e);
+        } catch (CFGBuilderException e) {
 			AnalysisContext.logError("Couldn't find value source", e);
-		} catch (CFGBuilderException e) {
-			AnalysisContext.logError("Couldn't find value source", e);
-		}
+        }
 
-		return getValueSource(stack.getStackItem(stackPos), method, pc);
+        return getValueSource(stack.getStackItem(stackPos), method, pc);
 
-	}
+    }
 
-	public static @CheckForNull BugAnnotation getValueSource(OpcodeStack.Item item, Method method, int pc) {
-		LocalVariableAnnotation lv = LocalVariableAnnotation.getLocalVariableAnnotation(method, item, pc);
-		if (lv != null && lv.isNamed()) 
+    public static @CheckForNull BugAnnotation getValueSource(OpcodeStack.Item item, Method method, int pc) {
+        LocalVariableAnnotation lv = LocalVariableAnnotation.getLocalVariableAnnotation(method, item, pc);
+        if (lv != null && lv.isNamed())
 			return lv;
-		
-		BugAnnotation a = getFieldOrMethodValueSource(item);
-		if (a != null)
+
+        BugAnnotation a = getFieldOrMethodValueSource(item);
+        if (a != null)
 			return a;
-		Object c = item.getConstant();
-		if (c instanceof String) {
-			a = new StringAnnotation((String)c);
+        Object c = item.getConstant();
+        if (c instanceof String) {
+            a = new StringAnnotation((String)c);
 			a.setDescription(StringAnnotation.STRING_CONSTANT_ROLE);
-			return a;
-		}
-		if (c instanceof Integer) {
+            return a;
+        }
+        if (c instanceof Integer) {
 			a = new IntAnnotation((Integer)c);
-			a.setDescription(IntAnnotation.INT_VALUE);
-			return a;
-		}
+            a.setDescription(IntAnnotation.INT_VALUE);
+            return a;
+        }
 		return null;
 
-	}
+    }
 
-	public BugInstance addValueSource(OpcodeStack.Item item, DismantleBytecode dbc) {
-		return addValueSource(item, dbc.getMethod(), dbc.getPC());
-	}
+    public BugInstance addValueSource(OpcodeStack.Item item, DismantleBytecode dbc) {
+        return addValueSource(item, dbc.getMethod(), dbc.getPC());
+    }
 	
-	public BugInstance addValueSource(OpcodeStack.Item item, Method method, int pc) {
-		addOptionalAnnotation(getValueSource(item, method, pc));
-		return this;
+    public BugInstance addValueSource(OpcodeStack.Item item, Method method, int pc) {
+        addOptionalAnnotation(getValueSource(item, method, pc));
+        return this;
 	}
-	/**
+    /**
      * @param item
      */
     public BugInstance addFieldOrMethodValueSource(OpcodeStack.Item item) {
-    	addOptionalAnnotation(getFieldOrMethodValueSource(item));
-    	return this;
+        addOptionalAnnotation(getFieldOrMethodValueSource(item));
+        return this;
     }
 
     public BugInstance addOptionalUniqueAnnotations(BugAnnotation... annotations) {
-    	HashSet<BugAnnotation> added = new HashSet<BugAnnotation>();
-    	for(BugAnnotation a : annotations) if (a != null && added.add(a)) 
-    		add(a);
+        HashSet<BugAnnotation> added = new HashSet<BugAnnotation>();
+        for(BugAnnotation a : annotations) if (a != null && added.add(a))
+            add(a);
     	return this;
     }
     public BugInstance addOptionalUniqueAnnotationsWithFallback(BugAnnotation fallback, BugAnnotation... annotations) {
-    	HashSet<BugAnnotation> added = new HashSet<BugAnnotation>();
-    	for(BugAnnotation a : annotations) if (a != null && added.add(a)) 
-    		add(a);
+        HashSet<BugAnnotation> added = new HashSet<BugAnnotation>();
+        for(BugAnnotation a : annotations) if (a != null && added.add(a))
+            add(a);
     	if (added.isEmpty())
-    		add(fallback);
-    	return this;
+            add(fallback);
+        return this;
     }
 
-	public static @CheckForNull
-	BugAnnotation getFieldOrMethodValueSource(@CheckForNull OpcodeStack.Item item) {
-		if (item == null)
+    public static @CheckForNull
+    BugAnnotation getFieldOrMethodValueSource(@CheckForNull OpcodeStack.Item item) {
+        if (item == null)
 			return null;
-		XField xField = item.getXField();
-		if (xField != null) {
-			FieldAnnotation a = FieldAnnotation.fromXField(xField);
+        XField xField = item.getXField();
+        if (xField != null) {
+            FieldAnnotation a = FieldAnnotation.fromXField(xField);
 			a.setDescription(FieldAnnotation.LOADED_FROM_ROLE);
-			return a;
-		}
+            return a;
+        }
 
-		XMethod xMethod = item.getReturnValueOf();
-		if (xMethod != null) {
-			MethodAnnotation a = MethodAnnotation.fromXMethod(xMethod);
+        XMethod xMethod = item.getReturnValueOf();
+        if (xMethod != null) {
+            MethodAnnotation a = MethodAnnotation.fromXMethod(xMethod);
 			a.setDescription(MethodAnnotation.METHOD_RETURN_VALUE_OF);
-			return a;
-		}
-		return null;
+            return a;
+        }
+        return null;
 
-	}
+    }
 
-	private void addSourceLinesForMethod(MethodAnnotation methodAnnotation, SourceLineAnnotation sourceLineAnnotation) {
-		if (sourceLineAnnotation != null) {
-			// Note: we don't add the source line annotation directly to
+    private void addSourceLinesForMethod(MethodAnnotation methodAnnotation, SourceLineAnnotation sourceLineAnnotation) {
+        if (sourceLineAnnotation != null) {
+            // Note: we don't add the source line annotation directly to
 			// the bug instance.  Instead, we stash it in the MethodAnnotation.
-			// It is much more useful there, and it would just be distracting
-			// if it were displayed in the UI, since it would compete for attention
-			// with the actual bug location source line annotation (which is much
+            // It is much more useful there, and it would just be distracting
+            // if it were displayed in the UI, since it would compete for attention
+            // with the actual bug location source line annotation (which is much
 			// more important and interesting).
-			methodAnnotation.setSourceLines(sourceLineAnnotation);
-		}
-	}
+            methodAnnotation.setSourceLines(sourceLineAnnotation);
+        }
+    }
 
-	@Override
-	public int hashCode() {
-		if (cachedHashCode == INVALID_HASH_CODE) {
+    @Override
+    public int hashCode() {
+        if (cachedHashCode == INVALID_HASH_CODE) {
 			int hashcode = type.hashCode() + priority;
-			Iterator<BugAnnotation> i = annotationIterator();
-			while (i.hasNext())
-				hashcode += i.next().hashCode();
+            Iterator<BugAnnotation> i = annotationIterator();
+            while (i.hasNext())
+                hashcode += i.next().hashCode();
 			if (hashcode == INVALID_HASH_CODE)
-				hashcode = INVALID_HASH_CODE+1;
-			cachedHashCode = hashcode;
-		}
+                hashcode = INVALID_HASH_CODE+1;
+            cachedHashCode = hashcode;
+        }
 
-		return cachedHashCode;
-	}
+        return cachedHashCode;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
 		if (!(o instanceof BugInstance))
+            return false;
+        BugInstance other = (BugInstance) o;
+        if (!type.equals(other.type) || priority != other.priority)
 			return false;
-		BugInstance other = (BugInstance) o;
-		if (!type.equals(other.type) || priority != other.priority)
-			return false;
-		if (annotationList.size() != other.annotationList.size())
-			return false;
-		int numAnnotations = annotationList.size();
+        if (annotationList.size() != other.annotationList.size())
+            return false;
+        int numAnnotations = annotationList.size();
 		for (int i = 0; i < numAnnotations; ++i) {
-			BugAnnotation lhs = annotationList.get(i);
-			BugAnnotation rhs = other.annotationList.get(i);
-			if (!lhs.equals(rhs))
+            BugAnnotation lhs = annotationList.get(i);
+            BugAnnotation rhs = other.annotationList.get(i);
+            if (!lhs.equals(rhs))
 				return false;
-		}
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public int compareTo(BugInstance other) {
-		int cmp;
-		cmp = type.compareTo(other.type);
+    public int compareTo(BugInstance other) {
+        int cmp;
+        cmp = type.compareTo(other.type);
 		if (cmp != 0)
-			return cmp;
-		cmp = priority - other.priority;
-		if (cmp != 0)
+            return cmp;
+        cmp = priority - other.priority;
+        if (cmp != 0)
 			return cmp;
 
-		// Compare BugAnnotations lexicographically
-		int pfxLen = Math.min(annotationList.size(), other.annotationList.size());
-		for (int i = 0; i < pfxLen; ++i) {
+        // Compare BugAnnotations lexicographically
+        int pfxLen = Math.min(annotationList.size(), other.annotationList.size());
+        for (int i = 0; i < pfxLen; ++i) {
 			BugAnnotation lhs = annotationList.get(i);
-			BugAnnotation rhs = other.annotationList.get(i);
-			cmp = lhs.compareTo(rhs);
-			if (cmp != 0)
+            BugAnnotation rhs = other.annotationList.get(i);
+            cmp = lhs.compareTo(rhs);
+            if (cmp != 0)
 				return cmp;
-		}
+        }
 
-		// All elements in prefix were the same,
-		// so use number of elements to decide
-		return annotationList.size() - other.annotationList.size();
+        // All elements in prefix were the same,
+        // so use number of elements to decide
+        return annotationList.size() - other.annotationList.size();
 	}
 
-	/**
-	 * @param firstVersion The firstVersion to set.
-	 */
+    /**
+     * @param firstVersion The firstVersion to set.
+     */
 	public void setFirstVersion(long firstVersion) {
-		if (lastVersion >= 0 && firstVersion > lastVersion) 
-			throw new IllegalArgumentException(
-				firstVersion + ".." + lastVersion);
+        if (lastVersion >= 0 && firstVersion > lastVersion)
+            throw new IllegalArgumentException(
+                firstVersion + ".." + lastVersion);
 		this.firstVersion = firstVersion;
-		
-	}
 
-	/**
-	 * @return Returns the firstVersion.
-	 */
+    }
+
+    /**
+     * @return Returns the firstVersion.
+     */
 	public long getFirstVersion() {
-		return firstVersion;
-	}
+        return firstVersion;
+    }
 
-	public void setHistory(BugInstance from) {
-		long first = from.getFirstVersion();
-		long last = from.getLastVersion();
+    public void setHistory(BugInstance from) {
+        long first = from.getFirstVersion();
+        long last = from.getLastVersion();
 		if (first > 0 && last >=0
-				&& first > last) {
-			
-			throw new IllegalArgumentException("from has version range " + first + "..." + last + " in " + from.getBugPattern() +"\n" + from.getMessage());
+                && first > last) {
+
+            throw new IllegalArgumentException("from has version range " + first + "..." + last + " in " + from.getBugPattern() +"\n" + from.getMessage());
 		}
-		setFirstVersion(first);
-		setLastVersion(last);
-		this.removedByChangeOfPersistingClass = from.removedByChangeOfPersistingClass;
+        setFirstVersion(first);
+        setLastVersion(last);
+        this.removedByChangeOfPersistingClass = from.removedByChangeOfPersistingClass;
 		this.introducedByChangeOfExistingClass = from.introducedByChangeOfExistingClass;
-	}
-		
-	/**
+    }
+
+    /**
 	 * @param lastVersion The lastVersion to set.
-	 */
-	public void setLastVersion(long lastVersion) {
-		if (lastVersion >= 0 && firstVersion > lastVersion) 
+     */
+    public void setLastVersion(long lastVersion) {
+        if (lastVersion >= 0 && firstVersion > lastVersion)
 			throw new IllegalArgumentException(
-				firstVersion + ".." + lastVersion);
-		this.lastVersion = lastVersion;
-	}
+                firstVersion + ".." + lastVersion);
+        this.lastVersion = lastVersion;
+    }
 
-	/**
-	 * @return Returns the lastVersion.
-	 */
+    /**
+     * @return Returns the lastVersion.
+     */
 	public long getLastVersion() {
-		return lastVersion;
-	}
+        return lastVersion;
+    }
 
-	public boolean isDead() {
-		return lastVersion != -1;
-	}
+    public boolean isDead() {
+        return lastVersion != -1;
+    }
 	/**
-	 * @param introducedByChangeOfExistingClass The introducedByChangeOfExistingClass to set.
-	 */
-	public void setIntroducedByChangeOfExistingClass(boolean introducedByChangeOfExistingClass) {
+     * @param introducedByChangeOfExistingClass The introducedByChangeOfExistingClass to set.
+     */
+    public void setIntroducedByChangeOfExistingClass(boolean introducedByChangeOfExistingClass) {
 		this.introducedByChangeOfExistingClass = introducedByChangeOfExistingClass;
-	}
+    }
 
-	/**
-	 * @return Returns the introducedByChangeOfExistingClass.
-	 */
+    /**
+     * @return Returns the introducedByChangeOfExistingClass.
+     */
 	public boolean isIntroducedByChangeOfExistingClass() {
-		return introducedByChangeOfExistingClass;
-	}
+        return introducedByChangeOfExistingClass;
+    }
 
-	/**
-	 * @param removedByChangeOfPersistingClass The removedByChangeOfPersistingClass to set.
-	 */
+    /**
+     * @param removedByChangeOfPersistingClass The removedByChangeOfPersistingClass to set.
+     */
 	public void setRemovedByChangeOfPersistingClass(boolean removedByChangeOfPersistingClass) {
-		this.removedByChangeOfPersistingClass = removedByChangeOfPersistingClass;
-	}
+        this.removedByChangeOfPersistingClass = removedByChangeOfPersistingClass;
+    }
 
-	/**
-	 * @return Returns the removedByChangeOfPersistingClass.
-	 */
+    /**
+     * @return Returns the removedByChangeOfPersistingClass.
+     */
 	public boolean isRemovedByChangeOfPersistingClass() {
-		return removedByChangeOfPersistingClass;
-	}
+        return removedByChangeOfPersistingClass;
+    }
 
-	/**
-	 * @param instanceHash The instanceHash to set.
-	 */
+    /**
+     * @param instanceHash The instanceHash to set.
+     */
 	public void setInstanceHash(String instanceHash) {
-		this.instanceHash = instanceHash;
-	}
-	/**
+        this.instanceHash = instanceHash;
+    }
+    /**
 	 * @param oldInstanceHash The oldInstanceHash to set.
-	 */
-	public void setOldInstanceHash(String oldInstanceHash) {
-		this.oldInstanceHash = oldInstanceHash;
+     */
+    public void setOldInstanceHash(String oldInstanceHash) {
+        this.oldInstanceHash = oldInstanceHash;
 	}
-	/**
-	 * @return Returns the instanceHash.
-	 */
+    /**
+     * @return Returns the instanceHash.
+     */
 	
-	public String getInstanceHash() {
-		String hash = instanceHash;
-		if (hash != null) return hash;
+    public String getInstanceHash() {
+        String hash = instanceHash;
+        if (hash != null) return hash;
 
-		MessageDigest digest = Util.getMD5Digest();
-		String key = getInstanceKey();
-		byte[] data = digest.digest(key.getBytes());
+        MessageDigest digest = Util.getMD5Digest();
+        String key = getInstanceKey();
+        byte[] data = digest.digest(key.getBytes());
 		hash = new BigInteger(1, data).toString(16);
-		instanceHash = hash;
-		return hash;
-	}
+        instanceHash = hash;
+        return hash;
+    }
 
-	public boolean isInstanceHashConsistent() {
-		return oldInstanceHash == null || getInstanceHash().equals(oldInstanceHash);
-	}
+    public boolean isInstanceHashConsistent() {
+        return oldInstanceHash == null || getInstanceHash().equals(oldInstanceHash);
+    }
 	/**
-	 * @param instanceOccurrenceNum The instanceOccurrenceNum to set.
-	 */
-	public void setInstanceOccurrenceNum(int instanceOccurrenceNum) {
+     * @param instanceOccurrenceNum The instanceOccurrenceNum to set.
+     */
+    public void setInstanceOccurrenceNum(int instanceOccurrenceNum) {
 		this.instanceOccurrenceNum = instanceOccurrenceNum;
-	}
+    }
 
-	/**
-	 * @return Returns the instanceOccurrenceNum.
-	 */
+    /**
+     * @return Returns the instanceOccurrenceNum.
+     */
 	public int getInstanceOccurrenceNum() {
-		return instanceOccurrenceNum;
-	}
+        return instanceOccurrenceNum;
+    }
 
-	/**
-	 * @param instanceOccurrenceMax The instanceOccurrenceMax to set.
-	 */
+    /**
+     * @param instanceOccurrenceMax The instanceOccurrenceMax to set.
+     */
 	public void setInstanceOccurrenceMax(int instanceOccurrenceMax) {
-		this.instanceOccurrenceMax = instanceOccurrenceMax;
-	}
+        this.instanceOccurrenceMax = instanceOccurrenceMax;
+    }
 
-	/**
-	 * @return Returns the instanceOccurrenceMax.
-	 */
+    /**
+     * @return Returns the instanceOccurrenceMax.
+     */
 	public int getInstanceOccurrenceMax() {
-		return instanceOccurrenceMax;
-	}
-	
-	public DetectorFactory getDetectorFactory() {
-		return detectorFactory;
-	}
-	
-	private void optionalAdd(Collection<BugAnnotation> c, BugAnnotation a) {
-		if (a != null)
-			c.add(a);
-	}
-	public Iterable<BugAnnotation> getAnnotationsForMessage(boolean showContext) {
-		ArrayList<BugAnnotation> result = new ArrayList<BugAnnotation>();
-		
-		HashSet<BugAnnotation> primaryAnnotations = new HashSet<BugAnnotation>();
-		
-		//This ensures the order of the primary annotations of the bug
-		FieldAnnotation primeField = getPrimaryField();
-		MethodAnnotation primeMethod = getPrimaryMethod();
-		ClassAnnotation primeClass = getPrimaryClass();
-		
-		SourceLineAnnotation primarySourceLineAnnotation = getPrimarySourceLineAnnotation();
-		optionalAdd(primaryAnnotations, primarySourceLineAnnotation);
-		optionalAdd(primaryAnnotations, primeMethod);
-		optionalAdd(primaryAnnotations, primeField);
-		optionalAdd(primaryAnnotations, primeClass);
-	
-		if ( primarySourceLineAnnotation != null && (showContext || !primarySourceLineAnnotation.getDescription().equals(SourceLineAnnotation.DEFAULT_ROLE))) 
-			result.add(primarySourceLineAnnotation);
+        return instanceOccurrenceMax;
+    }
 
-		if ( primeMethod != null && (showContext || !primeMethod.getDescription().equals(MethodAnnotation.DEFAULT_ROLE))) 
-			result.add(primeMethod);
+	public DetectorFactory getDetectorFactory() {
+        return detectorFactory;
+    }
+
+	private void optionalAdd(Collection<BugAnnotation> c, BugAnnotation a) {
+        if (a != null)
+            c.add(a);
+    }
+	public Iterable<BugAnnotation> getAnnotationsForMessage(boolean showContext) {
+        ArrayList<BugAnnotation> result = new ArrayList<BugAnnotation>();
+
+        HashSet<BugAnnotation> primaryAnnotations = new HashSet<BugAnnotation>();
 		
+        //This ensures the order of the primary annotations of the bug
+        FieldAnnotation primeField = getPrimaryField();
+        MethodAnnotation primeMethod = getPrimaryMethod();
+		ClassAnnotation primeClass = getPrimaryClass();
+
+        SourceLineAnnotation primarySourceLineAnnotation = getPrimarySourceLineAnnotation();
+        optionalAdd(primaryAnnotations, primarySourceLineAnnotation);
+		optionalAdd(primaryAnnotations, primeMethod);
+        optionalAdd(primaryAnnotations, primeField);
+        optionalAdd(primaryAnnotations, primeClass);
+
+		if ( primarySourceLineAnnotation != null && (showContext || !primarySourceLineAnnotation.getDescription().equals(SourceLineAnnotation.DEFAULT_ROLE))) 
+            result.add(primarySourceLineAnnotation);
+
+        if ( primeMethod != null && (showContext || !primeMethod.getDescription().equals(MethodAnnotation.DEFAULT_ROLE)))
+            result.add(primeMethod);
+
 		optionalAdd(result, primeField);
-		
-		String fieldClass = "";
-		String methodClass = "";
+
+        String fieldClass = "";
+        String methodClass = "";
 		if(primeField != null)
-			fieldClass = primeField.getClassName();
-		if(primeMethod != null)
-			methodClass = primeMethod.getClassName();			
+            fieldClass = primeField.getClassName();
+        if(primeMethod != null)
+            methodClass = primeMethod.getClassName();
 		if(showContext && (primaryAnnotations.size() < 2) || (!(primeClass.getClassName().equals(fieldClass) || 
-				primeClass.getClassName().equals(methodClass)))){
-			optionalAdd(result, primeClass);
-		}
+                primeClass.getClassName().equals(methodClass)))){
+            optionalAdd(result, primeClass);
+        }
 	
-		for(BugAnnotation b : getAnnotations())  {
-			if (primaryAnnotations.contains(b)) continue;
-			if (b instanceof LocalVariableAnnotation 
+        for(BugAnnotation b : getAnnotations())  {
+            if (primaryAnnotations.contains(b)) continue;
+            if (b instanceof LocalVariableAnnotation
 					&& !((LocalVariableAnnotation)b).isNamed())
+                continue;
+            if (b instanceof SourceLineAnnotation
+                    && ((SourceLineAnnotation)b).isUnknown())
 				continue;
-			if (b instanceof SourceLineAnnotation 
-					&& ((SourceLineAnnotation)b).isUnknown())
-				continue;
-			result.add(b);
-		}
-		return result;
+            result.add(b);
+        }
+        return result;
 	}
 
     /**
@@ -2333,11 +2333,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             return consensus;
         }
 
-		public boolean isInCloud() {
-			return isInCloud;
-		}
+        public boolean isInCloud() {
+            return isInCloud;
+        }
 
-		public void setFirstSeen(Date firstSeen) {
+        public void setFirstSeen(Date firstSeen) {
             this.firstSeen = firstSeen;
         }
 
@@ -2349,9 +2349,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             this.consensus = consensus;
         }
 
-		public void setIsInCloud(boolean inCloud) {
-			isInCloud = inCloud;
-		}
+        public void setIsInCloud(boolean inCloud) {
+            isInCloud = inCloud;
+        }
 	}
 }
 

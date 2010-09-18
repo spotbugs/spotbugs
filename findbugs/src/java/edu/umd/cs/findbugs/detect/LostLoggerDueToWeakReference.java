@@ -41,127 +41,127 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  */
 public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
 
-	final BugReporter bugReporter;
-	final BugAccumulator bugAccumulator;
+    final BugReporter bugReporter;
+    final BugAccumulator bugAccumulator;
 
-	final HashSet<String> namesOfSetterMethods = new HashSet<String>();
+    final HashSet<String> namesOfSetterMethods = new HashSet<String>();
 
-	public LostLoggerDueToWeakReference(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-		this.bugAccumulator = new BugAccumulator(bugReporter);
+    public LostLoggerDueToWeakReference(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+        this.bugAccumulator = new BugAccumulator(bugReporter);
 		namesOfSetterMethods.add("addHandler");
-		namesOfSetterMethods.add("setUseParentHandlers");
-		namesOfSetterMethods.add("setLevel");
-		namesOfSetterMethods.add("setFilter");
+        namesOfSetterMethods.add("setUseParentHandlers");
+        namesOfSetterMethods.add("setLevel");
+        namesOfSetterMethods.add("setFilter");
 	}
 
-	@Override
-	public void visit(Code code) {
-		if (getMethodSig().indexOf("Logger") == -1) {
+    @Override
+    public void visit(Code code) {
+        if (getMethodSig().indexOf("Logger") == -1) {
 			sawGetLogger = -1;
-			loggerEscaped = loggerImported = false;
-			super.visit(code); // make callbacks to sawOpcode for all opcodes
-			if (false) {
+            loggerEscaped = loggerImported = false;
+            super.visit(code); // make callbacks to sawOpcode for all opcodes
+            if (false) {
 				System.out.println(getFullyQualifiedMethodName());
-				System.out.printf("%d %s %s\n", sawGetLogger, loggerEscaped, loggerImported);
+                System.out.printf("%d %s %s\n", sawGetLogger, loggerEscaped, loggerImported);
 
-			}
-			if (sawGetLogger >= 0 && !loggerEscaped && !loggerImported)
-				bugAccumulator.reportAccumulatedBugs();
+            }
+            if (sawGetLogger >= 0 && !loggerEscaped && !loggerImported)
+                bugAccumulator.reportAccumulatedBugs();
 			else 
-				bugAccumulator.clearBugs();
-		}
-	}
+                bugAccumulator.clearBugs();
+        }
+    }
 
-	int sawGetLogger;
+    int sawGetLogger;
 
-	boolean loggerEscaped;
+    boolean loggerEscaped;
 
-	boolean loggerImported;
+    boolean loggerImported;
 
-	@Override
-	public void sawOpcode(int seen) {
-		switch (seen) {
+    @Override
+    public void sawOpcode(int seen) {
+        switch (seen) {
 		case INVOKESTATIC:
-			if (getClassConstantOperand().equals("java/util/logging/Logger") && getNameConstantOperand().equals("getLogger")) {
-				OpcodeStack.Item item = stack.getStackItem(0);
-				if (! "".equals(item.getConstant()))
+            if (getClassConstantOperand().equals("java/util/logging/Logger") && getNameConstantOperand().equals("getLogger")) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                if (! "".equals(item.getConstant()))
 					sawGetLogger = getPC();
-				break;
-			}
-			checkForImport();
+                break;
+            }
+            checkForImport();
 			break;
-		case INVOKEVIRTUAL:
-			if (getClassConstantOperand().equals("java/util/logging/Logger")
-			        && namesOfSetterMethods.contains(getNameConstantOperand())) {
+        case INVOKEVIRTUAL:
+            if (getClassConstantOperand().equals("java/util/logging/Logger")
+                    && namesOfSetterMethods.contains(getNameConstantOperand())) {
 				int priority = HIGH_PRIORITY;
-				if (getMethod().isStatic() && getMethodName().equals("main") 
-						&& getMethodSig().equals("([Ljava/lang/String;)V"))
-					priority = NORMAL_PRIORITY;;
+                if (getMethod().isStatic() && getMethodName().equals("main")
+                        && getMethodSig().equals("([Ljava/lang/String;)V"))
+                    priority = NORMAL_PRIORITY;;
 				bugAccumulator.accumulateBug(
-						new BugInstance(this, "LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE", priority)
-						.addClassAndMethod(this), this);
-				break;
+                        new BugInstance(this, "LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE", priority)
+                        .addClassAndMethod(this), this);
+                break;
 			}
-			checkForImport();
-			checkForMethodExportImport();
-			break;
+            checkForImport();
+            checkForMethodExportImport();
+            break;
 
-		case INVOKEINTERFACE:
-		case INVOKESPECIAL:
-			checkForImport();
+        case INVOKEINTERFACE:
+        case INVOKESPECIAL:
+            checkForImport();
 			checkForMethodExportImport();
-			break;
+            break;
 
-		case CHECKCAST:
-			String sig = getClassConstantOperand();
-			if (sig.indexOf("Logger") >= 0)
+        case CHECKCAST:
+            String sig = getClassConstantOperand();
+            if (sig.indexOf("Logger") >= 0)
 				loggerImported = true;
-			break;
-			
-		case GETFIELD:
+            break;
+
+        case GETFIELD:
 		case GETSTATIC:
-			checkForImport();
-			break;
-		case PUTFIELD:
+            checkForImport();
+            break;
+        case PUTFIELD:
 		case PUTSTATIC:
-			checkForFieldEscape();
-		}
+            checkForFieldEscape();
+        }
 
+    }
+
+    private void checkForImport() {
+        if (getSigConstantOperand().endsWith("Logger;"))
+            loggerImported = true;
 	}
 
-	private void checkForImport() {
-		if (getSigConstantOperand().endsWith("Logger;"))
-			loggerImported = true;
-	}
 
-
-	private void checkForMethodExportImport() {
-		int numArguments = PreorderVisitor.getNumberArguments(getSigConstantOperand());
-		for(int i = 0; i < numArguments; i++) {
+    private void checkForMethodExportImport() {
+        int numArguments = PreorderVisitor.getNumberArguments(getSigConstantOperand());
+        for(int i = 0; i < numArguments; i++) {
 			OpcodeStack.Item item = stack.getStackItem(i);
-			if (item.getSignature().endsWith("Logger;"))
-				loggerEscaped = true;
-		}
+            if (item.getSignature().endsWith("Logger;"))
+                loggerEscaped = true;
+        }
 		String sig = getSigConstantOperand();
-		int pos = sig.indexOf(")");
-		int loggerPos = sig.indexOf("Logger");
-		if (0 <= loggerPos && loggerPos < pos)
+        int pos = sig.indexOf(")");
+        int loggerPos = sig.indexOf("Logger");
+        if (0 <= loggerPos && loggerPos < pos)
 			loggerEscaped = true;
-	}
+    }
 
-	private void checkForFieldEscape() {
-		String sig = getSigConstantOperand();
-		if (sig.indexOf("Logger") >= 0)
+    private void checkForFieldEscape() {
+        String sig = getSigConstantOperand();
+        if (sig.indexOf("Logger") >= 0)
 			loggerEscaped = true;
-		OpcodeStack.Item item = stack.getStackItem(0);
-		if (item.getSignature().endsWith("Logger;"))
-			loggerEscaped = true;
+        OpcodeStack.Item item = stack.getStackItem(0);
+        if (item.getSignature().endsWith("Logger;"))
+            loggerEscaped = true;
 		
-	}
+    }
 
-	private void emitWarning() {
-		System.out.println("Warn about " + getMethodName()); // TODO
-	}
+    private void emitWarning() {
+        System.out.println("Warn about " + getMethodName()); // TODO
+    }
 
 }

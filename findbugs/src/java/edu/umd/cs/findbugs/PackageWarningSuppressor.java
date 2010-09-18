@@ -3,30 +3,30 @@ package edu.umd.cs.findbugs;
 
 public class PackageWarningSuppressor extends WarningSuppressor {
 
-	String packageName;
+    String packageName;
 
-	public PackageWarningSuppressor(String bugPattern,
-		String packageName) {
-		super(bugPattern);
+    public PackageWarningSuppressor(String bugPattern,
+        String packageName) {
+        super(bugPattern);
 		this.packageName = packageName;
-		}
+        }
 
-	public String getPackageName() {
-		return packageName;
-	}
+    public String getPackageName() {
+        return packageName;
+    }
 
-	@Override
-	public boolean match(BugInstance bugInstance) {
+    @Override
+    public boolean match(BugInstance bugInstance) {
 
-		if (!super.match(bugInstance)) return false;
+        if (!super.match(bugInstance)) return false;
 
 
-	 ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
-	 if (DEBUG) System.out.println("Compare " + primaryClassAnnotation + " with " + packageName);
+     ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
+     if (DEBUG) System.out.println("Compare " + primaryClassAnnotation + " with " + packageName);
 
-	String className = primaryClassAnnotation.getClassName();
+    String className = primaryClassAnnotation.getClassName();
 
-	return className.startsWith(packageName);
-	}
+    return className.startsWith(packageName);
+    }
 }
 

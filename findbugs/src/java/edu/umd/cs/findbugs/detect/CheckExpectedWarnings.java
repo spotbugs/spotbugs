@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2008 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -62,174 +62,174 @@ import edu.umd.cs.findbugs.plan.ExecutionPlan;
 /**
  * Check uses of the ExpectWarning and NoWarning annotations.
  * This is for internal testing of FindBugs (against findbugsTestCases).
- * 
+ *
  * @author David Hovemeyer
  */
 public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
-	private static final boolean DEBUG = SystemProperties.getBoolean("cew.debug");
-	
-	private BugReporter reporter;
+    private static final boolean DEBUG = SystemProperties.getBoolean("cew.debug");
+
+    private BugReporter reporter;
 	private BugCollection bugCollection;
-	private Set<String> possibleBugCodes;
-	private Map<MethodDescriptor, Collection<BugInstance>> warningsByMethod;
-	
+    private Set<String> possibleBugCodes;
+    private Map<MethodDescriptor, Collection<BugInstance>> warningsByMethod;
+
 	private ClassDescriptor expectWarning;
-	private ClassDescriptor noWarning;
-	private ClassDescriptor desireWarning;
-	private ClassDescriptor desireNoWarning;
+    private ClassDescriptor noWarning;
+    private ClassDescriptor desireWarning;
+    private ClassDescriptor desireNoWarning;
 	
-	private boolean warned;
-	
-	public CheckExpectedWarnings(BugReporter bugReporter) {
+    private boolean warned;
+
+    public CheckExpectedWarnings(BugReporter bugReporter) {
 		bugCollection = bugReporter.getBugCollection();
-		if (bugCollection != null) {
-			reporter = bugReporter;
-			expectWarning = DescriptorFactory.createClassDescriptor(ExpectWarning.class);
+        if (bugCollection != null) {
+            reporter = bugReporter;
+            expectWarning = DescriptorFactory.createClassDescriptor(ExpectWarning.class);
 			noWarning = DescriptorFactory.createClassDescriptor(NoWarning.class);
-			desireWarning = DescriptorFactory.createClassDescriptor(DesireWarning.class);
-			desireNoWarning = DescriptorFactory.createClassDescriptor(DesireNoWarning.class);
-		}
+            desireWarning = DescriptorFactory.createClassDescriptor(DesireWarning.class);
+            desireNoWarning = DescriptorFactory.createClassDescriptor(DesireNoWarning.class);
+        }
 	}
 
-	public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
-		if (reporter == null) {
-			if (!warned) {
+    public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
+        if (reporter == null) {
+            if (!warned) {
 				System.err.println("*** NOTE ***: CheckExpectedWarnings disabled because bug reporter doesn't use a BugCollection");
-				warned = true;
-			}
-			return;
+                warned = true;
+            }
+            return;
 		}
 
-		if (warningsByMethod == null) {
-			//
-			// Build index of all warnings reported so far, by method.
+        if (warningsByMethod == null) {
+            //
+            // Build index of all warnings reported so far, by method.
 			// Because this detector runs in a later pass than any
-			// reporting detector, all warnings should have been
-			// produced by this point.
-			//
+            // reporting detector, all warnings should have been
+            // produced by this point.
+            //
 			
-			warningsByMethod = new HashMap<MethodDescriptor, Collection<BugInstance>>();
-			
-			for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); ){
+            warningsByMethod = new HashMap<MethodDescriptor, Collection<BugInstance>>();
+
+            for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); ){
 				BugInstance warning = i.next();
-				MethodAnnotation method = warning.getPrimaryMethod();
-				if (method != null) {
-					MethodDescriptor methodDesc = method.toXMethod().getMethodDescriptor();
+                MethodAnnotation method = warning.getPrimaryMethod();
+                if (method != null) {
+                    MethodDescriptor methodDesc = method.toXMethod().getMethodDescriptor();
 					Collection<BugInstance> warnings = warningsByMethod.get(methodDesc);
-					if (warnings == null) {
-						warnings = new LinkedList<BugInstance>();
-						warningsByMethod.put(methodDesc, warnings);
+                    if (warnings == null) {
+                        warnings = new LinkedList<BugInstance>();
+                        warningsByMethod.put(methodDesc, warnings);
 					}
-					warnings.add(warning);
-				}
-			}
+                    warnings.add(warning);
+                }
+            }
 			
-			//
-			// Based on enabled detectors, figure out which bug codes
-			// could possibly be reported.  Don't complain about
+            //
+            // Based on enabled detectors, figure out which bug codes
+            // could possibly be reported.  Don't complain about
 			// expected warnings that would be produced by detectors
-			// that aren't enabled.
-			//
-			
+            // that aren't enabled.
+            //
+
 			possibleBugCodes = new HashSet<String>();
-			ExecutionPlan executionPlan = Global.getAnalysisCache().getDatabase(ExecutionPlan.class);
-			Iterator<AnalysisPass> i = executionPlan.passIterator();
-			while (i.hasNext()) {
+            ExecutionPlan executionPlan = Global.getAnalysisCache().getDatabase(ExecutionPlan.class);
+            Iterator<AnalysisPass> i = executionPlan.passIterator();
+            while (i.hasNext()) {
 				AnalysisPass pass = i.next();
-				Iterator<DetectorFactory> j = pass.iterator();
-				while (j.hasNext()) {
-					DetectorFactory factory = j.next();
+                Iterator<DetectorFactory> j = pass.iterator();
+                while (j.hasNext()) {
+                    DetectorFactory factory = j.next();
 					
-					Collection<BugPattern> reportedPatterns = factory.getReportedBugPatterns();
-					for (BugPattern pattern : reportedPatterns) {
-						possibleBugCodes.add(pattern.getType());
+                    Collection<BugPattern> reportedPatterns = factory.getReportedBugPatterns();
+                    for (BugPattern pattern : reportedPatterns) {
+                        possibleBugCodes.add(pattern.getType());
 						possibleBugCodes.add(pattern.getAbbrev());
-					}
-				}
-			}
+                    }
+                }
+            }
 			if (DEBUG) {
-				System.out.println("CEW: possible warnings are " + possibleBugCodes);
-			}
-		}
-		
-		XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescriptor);
-		List<? extends XMethod> methods = xclass.getXMethods();
-		for (XMethod xmethod : methods) {
-			if (DEBUG) {
-				System.out.println("CEW: checking " + xmethod.toString());
-			}
-			check(xmethod, expectWarning, true, HIGH_PRIORITY);
-			check(xmethod, desireWarning, true, NORMAL_PRIORITY);
-			check(xmethod, noWarning, false, HIGH_PRIORITY);
-			check(xmethod, desireNoWarning, false, NORMAL_PRIORITY);
-		}
-
-	}
-
-
-	private void check(XMethod xmethod, ClassDescriptor annotation, boolean expectWarnings, int priority) {
-		AnnotationValue expect = xmethod.getAnnotation(annotation);
-		if (expect != null) {
-			if (DEBUG) {
-				System.out.println("*** Found " + annotation + " annotation");
-			}
-			String expectedBugCodes = (String) expect.getValue("value");
-			StringTokenizer tok = new StringTokenizer(expectedBugCodes, ",");
-			while (tok.hasMoreTokens()) {
-				String bugCode = tok.nextToken();
-				Collection<SourceLineAnnotation> bugs = countWarnings(xmethod.getMethodDescriptor(), bugCode);
-				if (expectWarnings && bugs.isEmpty() && possibleBugCodes.contains(bugCode)) {
-					reporter.reportBug(new BugInstance(this, "FB_MISSING_EXPECTED_WARNING", priority).addClassAndMethod(xmethod.getMethodDescriptor()).
-							addString(bugCode));
-				} else if (!expectWarnings) for(SourceLineAnnotation s : bugs) {
-					reporter.reportBug(new BugInstance(this, "FB_UNEXPECTED_WARNING", priority).addClassAndMethod(xmethod.getMethodDescriptor()).
-							addString(bugCode).add(s));
-				}
-			}
-		}
-	}
-
-	private Collection<SourceLineAnnotation> countWarnings(MethodDescriptor methodDescriptor, String bugCode) {
-		Collection<BugInstance> warnings = warningsByMethod.get(methodDescriptor);
-		Collection<SourceLineAnnotation> matching = new HashSet<SourceLineAnnotation>();
-		I18N i18n = I18N.instance();
-		boolean matchPattern = false;
-		try {
-			i18n.getBugCode(bugCode);
-		} catch (IllegalArgumentException e) {
-			matchPattern = true;
-		}
-		
-		if (warnings != null) {
-			for (BugInstance warning : warnings) {
-				BugPattern pattern = warning.getBugPattern();
-				String match;
-				if (matchPattern)
-					match = pattern.getType();
-				else
-					match = pattern.getAbbrev();
-				if (match.equals(bugCode)) {
-					matching.add(warning.getPrimarySourceLineAnnotation());
-				}
-			}
-		}
-		return matching;
-	}
-	
-	public void finishPass() {
-		HashSet<BugPattern> claimedReported = new HashSet<BugPattern>();
-		for(DetectorFactory d : DetectorFactoryCollection.instance().getFactories()) 
-			claimedReported.addAll(d.getReportedBugPatterns());
-		for(BugPattern b : I18N.instance().getBugPatterns()) {
-	        String category = b.getCategory();
-	        if (!b.isDeprecated() && !category.equals("EXPERIMENTAL") && !claimedReported.contains(b))
-			  AnalysisContext.logError("No detector claims " + b.getType());
+                System.out.println("CEW: possible warnings are " + possibleBugCodes);
+            }
         }
 		
-	}
+        XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescriptor);
+        List<? extends XMethod> methods = xclass.getXMethods();
+        for (XMethod xmethod : methods) {
+			if (DEBUG) {
+                System.out.println("CEW: checking " + xmethod.toString());
+            }
+            check(xmethod, expectWarning, true, HIGH_PRIORITY);
+			check(xmethod, desireWarning, true, NORMAL_PRIORITY);
+            check(xmethod, noWarning, false, HIGH_PRIORITY);
+            check(xmethod, desireNoWarning, false, NORMAL_PRIORITY);
+        }
 
-	public String getDetectorClassName() {
-		return CheckExpectedWarnings.class.getName();
-	}
+    }
+
+
+    private void check(XMethod xmethod, ClassDescriptor annotation, boolean expectWarnings, int priority) {
+        AnnotationValue expect = xmethod.getAnnotation(annotation);
+        if (expect != null) {
+			if (DEBUG) {
+                System.out.println("*** Found " + annotation + " annotation");
+            }
+            String expectedBugCodes = (String) expect.getValue("value");
+			StringTokenizer tok = new StringTokenizer(expectedBugCodes, ",");
+            while (tok.hasMoreTokens()) {
+                String bugCode = tok.nextToken();
+                Collection<SourceLineAnnotation> bugs = countWarnings(xmethod.getMethodDescriptor(), bugCode);
+				if (expectWarnings && bugs.isEmpty() && possibleBugCodes.contains(bugCode)) {
+                    reporter.reportBug(new BugInstance(this, "FB_MISSING_EXPECTED_WARNING", priority).addClassAndMethod(xmethod.getMethodDescriptor()).
+                            addString(bugCode));
+                } else if (!expectWarnings) for(SourceLineAnnotation s : bugs) {
+					reporter.reportBug(new BugInstance(this, "FB_UNEXPECTED_WARNING", priority).addClassAndMethod(xmethod.getMethodDescriptor()).
+                            addString(bugCode).add(s));
+                }
+            }
+		}
+    }
+
+    private Collection<SourceLineAnnotation> countWarnings(MethodDescriptor methodDescriptor, String bugCode) {
+        Collection<BugInstance> warnings = warningsByMethod.get(methodDescriptor);
+        Collection<SourceLineAnnotation> matching = new HashSet<SourceLineAnnotation>();
+		I18N i18n = I18N.instance();
+        boolean matchPattern = false;
+        try {
+            i18n.getBugCode(bugCode);
+		} catch (IllegalArgumentException e) {
+            matchPattern = true;
+        }
+
+		if (warnings != null) {
+            for (BugInstance warning : warnings) {
+                BugPattern pattern = warning.getBugPattern();
+                String match;
+				if (matchPattern)
+                    match = pattern.getType();
+                else
+                    match = pattern.getAbbrev();
+				if (match.equals(bugCode)) {
+                    matching.add(warning.getPrimarySourceLineAnnotation());
+                }
+            }
+		}
+        return matching;
+    }
+
+	public void finishPass() {
+        HashSet<BugPattern> claimedReported = new HashSet<BugPattern>();
+        for(DetectorFactory d : DetectorFactoryCollection.instance().getFactories())
+            claimedReported.addAll(d.getReportedBugPatterns());
+		for(BugPattern b : I18N.instance().getBugPatterns()) {
+            String category = b.getCategory();
+            if (!b.isDeprecated() && !category.equals("EXPERIMENTAL") && !claimedReported.contains(b))
+              AnalysisContext.logError("No detector claims " + b.getType());
+        }
+
+    }
+
+    public String getDetectorClassName() {
+        return CheckExpectedWarnings.class.getName();
+    }
 
 }

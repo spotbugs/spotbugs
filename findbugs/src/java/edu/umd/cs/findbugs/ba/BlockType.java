@@ -1,17 +1,17 @@
 /*
  * Bytecode Analysis Framework
  * Copyright (C) 2004, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -42,230 +42,230 @@ import java.util.BitSet;
  * the dataflow lattice.</p>
  *
  * <p>The dataflow lattice is effectively finite-height because
- * real Java methods are guaranteed to have a finite 
+ * real Java methods are guaranteed to have a finite
  * catch and finally block nesting level.</p>
  *
  * @see BlockTypeAnalysis
  * @author David Hovemeyer
  */
 public class BlockType extends BitSet {
-	/**
-	 * 
-	 */
+    /**
+     *
+     */
 	private static final long serialVersionUID = 1L;
-	public static final boolean CATCH = false;
-	public static final boolean FINALLY = true;
+    public static final boolean CATCH = false;
+    public static final boolean FINALLY = true;
 
-	private boolean isValid;
-	private boolean isTop;
-	private int depth;
+    private boolean isValid;
+    private boolean isTop;
+    private int depth;
 
-	/**
-	 * Constructor.
-	 * Should only be called by BlockTypeAnalysis.
+    /**
+     * Constructor.
+     * Should only be called by BlockTypeAnalysis.
 	 */
-	BlockType() {
-	}
+    BlockType() {
+    }
 
-	@Override
+    @Override
     public int hashCode() {
-	    final int prime = 31;
-	    int result = super.hashCode();
-	    result = prime * result + depth;
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + depth;
 	    result = prime * result + (isTop ? 1231 : 1237);
-	    result = prime * result + (isValid ? 1231 : 1237);
-	    return result;
+        result = prime * result + (isValid ? 1231 : 1237);
+        return result;
     }
 
-	@Override
+    @Override
     public boolean equals(Object obj) {
-	    if (this == obj)
-		    return true;
-	    if (!super.equals(obj))
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
 		    return false;
-	    if (!(obj instanceof BlockType))
-		    return false;
-	    final BlockType other = (BlockType) obj;
+        if (!(obj instanceof BlockType))
+            return false;
+        final BlockType other = (BlockType) obj;
 	    if (depth != other.depth)
-		    return false;
-	    if (isTop != other.isTop)
-		    return false;
+            return false;
+        if (isTop != other.isTop)
+            return false;
 	    if (isValid != other.isValid)
-		    return false;
-	    return true;
+            return false;
+        return true;
     }
 
-	/**
-	 * Return whether or not this value is valid,
-	 * meaning it contains a valid representation of the
+    /**
+     * Return whether or not this value is valid,
+     * meaning it contains a valid representation of the
 	 * nesting of catch and finally blocks.
-	 */
-	public boolean isValid() {
-		return isValid;
+     */
+    public boolean isValid() {
+        return isValid;
 	}
 
-	/**
-	 * Get the current nesting depth.
-	 * The value must be valid.
+    /**
+     * Get the current nesting depth.
+     * The value must be valid.
 	 */
-	public int getDepth() {
-		if (!isValid) throw new IllegalStateException();
-		return depth;
+    public int getDepth() {
+        if (!isValid) throw new IllegalStateException();
+        return depth;
 	}
 
-	/**
-	 * Get the top value on the catch and finally block nesting stack.
-	 */
+    /**
+     * Get the top value on the catch and finally block nesting stack.
+     */
 	public boolean getTopValue() {
-		if (depth == 0) throw new IllegalStateException();
-		return get(depth - 1);
+        if (depth == 0) throw new IllegalStateException();
+        return get(depth - 1);
+    }
+
+    /**
+     * Return whether or not this value represents "normal" control-flow.
+     * Normal control flow are all blocks outside any catch or finally block.
+	 */
+    public boolean isNormal() {
+        if (!isValid) throw new IllegalStateException();
+        return getDepth() == 0;
 	}
 
-	/**
-	 * Return whether or not this value represents "normal" control-flow.
-	 * Normal control flow are all blocks outside any catch or finally block.
-	 */
-	public boolean isNormal() {
-		if (!isValid) throw new IllegalStateException();
-		return getDepth() == 0;
-	}
-
-	/**
-	 * Make this value represent "normal" control flow.
-	 */
+    /**
+     * Make this value represent "normal" control flow.
+     */
 	public void setNormal() {
-		this.isValid = true;
-		this.depth = 0;
-	}
+        this.isValid = true;
+        this.depth = 0;
+    }
 
-	/**
-	 * Return whether or not this is the special "top" dataflow value.
-	 */
+    /**
+     * Return whether or not this is the special "top" dataflow value.
+     */
 	public boolean isTop() {
-		return !isValid && isTop;
-	}
+        return !isValid && isTop;
+    }
 
-	/**
-	 * Make this the special "top" dataflow value.
-	 */
+    /**
+     * Make this the special "top" dataflow value.
+     */
 	public void setTop() {
-		this.isValid = false;
-		this.isTop = true;
-	}
+        this.isValid = false;
+        this.isTop = true;
+    }
 
-	/**
-	 * Return whether or not this is the special "bottom" dataflow value.
-	 */
+    /**
+     * Return whether or not this is the special "bottom" dataflow value.
+     */
 	public boolean isBottom() {
-		return !isValid && !isTop;
-	}
+        return !isValid && !isTop;
+    }
 
-	/**
-	 * Make this the special "bottom" dataflow value.
-	 */
+    /**
+     * Make this the special "bottom" dataflow value.
+     */
 	public void setBottom() {
-		this.isValid = false;
-		this.isTop = false;
-	}
+        this.isValid = false;
+        this.isTop = false;
+    }
 
-	/**
-	 * Make this object an exact duplicate of given object.
-	 *
+    /**
+     * Make this object an exact duplicate of given object.
+     *
 	 * @param other the other BlockType object
-	 */
-	public void copyFrom(BlockType other) {
-		this.isValid = other.isValid;
+     */
+    public void copyFrom(BlockType other) {
+        this.isValid = other.isValid;
 		this.isTop = other.isTop;
-		if (isValid) {
-			this.depth = other.depth;
-			this.clear();
+        if (isValid) {
+            this.depth = other.depth;
+            this.clear();
 			this.or(other);
-		}
-	}
+        }
+    }
 
-	/**
-	 * Return whether or not this object is identical to the one given.
-	 *
+    /**
+     * Return whether or not this object is identical to the one given.
+     *
 	 * @param other the other BlockType object
-	 * @return true if this object is identical to the one given,
-	 *         false otherwise
-	 */
+     * @return true if this object is identical to the one given,
+     *         false otherwise
+     */
 	public boolean sameAs(BlockType other) {
-		if (!this.isValid) {
-			return !other.isValid
-				&& (this.isTop == other.isTop);
+        if (!this.isValid) {
+            return !other.isValid
+                && (this.isTop == other.isTop);
 		} else {
-			if (!other.isValid)
-				return false;
-			else {
+            if (!other.isValid)
+                return false;
+            else {
 				// Both facts are valid
-				if (this.depth != other.depth)
-					return false;
+                if (this.depth != other.depth)
+                    return false;
 
-				// Compare bits
-				for (int i = 0; i < this.depth; ++i) {
-					if (this.get(i) != other.get(i))
+                // Compare bits
+                for (int i = 0; i < this.depth; ++i) {
+                    if (this.get(i) != other.get(i))
 						return false;
-				}
+                }
 
-				return true;
-			}
-		}
+                return true;
+            }
+        }
 	}
 
-	/**
-	 * Merge other dataflow value into this value.
-	 *
+    /**
+     * Merge other dataflow value into this value.
+     *
 	 * @param other the other BlockType value
-	 */
-	public void mergeWith(BlockType other) {
-		if (this.isTop() || other.isBottom()) {
+     */
+    public void mergeWith(BlockType other) {
+        if (this.isTop() || other.isBottom()) {
 			copyFrom(other);
-		} else if (isValid()) {
-			// To merge, we take the common prefix
-			int pfxLen = Math.min(this.depth, other.depth);
+        } else if (isValid()) {
+            // To merge, we take the common prefix
+            int pfxLen = Math.min(this.depth, other.depth);
 			int commonLen;
-			for (commonLen = 0; commonLen < pfxLen; ++commonLen) {
-				if (this.get(commonLen) != other.get(commonLen))
-					break;
+            for (commonLen = 0; commonLen < pfxLen; ++commonLen) {
+                if (this.get(commonLen) != other.get(commonLen))
+                    break;
 			}
-			this.depth = commonLen;
-		}
-	}
+            this.depth = commonLen;
+        }
+    }
 
-	/**
-	 * Enter a catch block.
-	 */
+    /**
+     * Enter a catch block.
+     */
 	public void pushCatch() {
-		push(CATCH);
-	}
+        push(CATCH);
+    }
 
-	/**
-	 * Enter a finally block.
-	 */
+    /**
+     * Enter a finally block.
+     */
 	public void pushFinally() {
-		push(FINALLY);
-	}
+        push(FINALLY);
+    }
 
-	@Override
-	public String toString() {
-		if (isTop())
+    @Override
+    public String toString() {
+        if (isTop())
 			return "<top>";
-		else if (isBottom())
-			return "<bottom>";
-		else {
+        else if (isBottom())
+            return "<bottom>";
+        else {
 			StringBuilder buf = new StringBuilder();
-			buf.append("N");
-			for (int i = 0; i < depth; ++i) {
-				buf.append(get(i) == CATCH ? "C" : "F");
+            buf.append("N");
+            for (int i = 0; i < depth; ++i) {
+                buf.append(get(i) == CATCH ? "C" : "F");
 			}
-			return buf.toString();
-		}
-	}
+            return buf.toString();
+        }
+    }
 
-	private void push(boolean value) {
-		set(depth, value);
-		++depth;
+    private void push(boolean value) {
+        set(depth, value);
+        ++depth;
 	}
 }
 

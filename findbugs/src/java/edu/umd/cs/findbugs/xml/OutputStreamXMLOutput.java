@@ -1,17 +1,17 @@
 /*
  * XML input/output support for FindBugs
  * Copyright (C) 2004,2005 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -30,141 +30,141 @@ import javax.annotation.WillCloseWhenClosed;
 
 /**
  * Write XML to an output stream.
- * 
+ *
  * @author David Hovemeyer
  */
 public class OutputStreamXMLOutput implements XMLOutput {
-	private static final String OPENING = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-	private static String getStylesheetCode(String stylesheet) {
-		if (stylesheet == null) return "";
+    private static final String OPENING = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    private static String getStylesheetCode(String stylesheet) {
+        if (stylesheet == null) return "";
 		return "<?xml-stylesheet type=\"text/xsl\" href=\"" + stylesheet + "\"?>\n";
-	}
+    }
 
 
 
-	private Writer out;
-	private int nestingLevel;
-	private boolean newLine;
+    private Writer out;
+    private int nestingLevel;
+    private boolean newLine;
 	private String stylesheet;
 
-	/**
-	 * Constructor.
-	 * @param os OutputStream to write XML output to
+    /**
+     * Constructor.
+     * @param os OutputStream to write XML output to
 	 */
-	public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os) {
-		this(os, null);
-	}
+    public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os) {
+        this(os, null);
+    }
 
-	/**
-	 * Constructor.
-	 * @param os OutputStream to write XML output to
+    /**
+     * Constructor.
+     * @param os OutputStream to write XML output to
 	 * @param stylesheet name of stylesheet
-	 */
-	public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os, String stylesheet) {
-		this.out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+     */
+    public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os, String stylesheet) {
+        this.out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
 		this.nestingLevel = 0;
-		this.newLine = true;
-		this.stylesheet = stylesheet;
-	}
+        this.newLine = true;
+        this.stylesheet = stylesheet;
+    }
 
-	public void beginDocument() throws IOException {
-		out.write(OPENING);
-		out.write(getStylesheetCode(stylesheet));
+    public void beginDocument() throws IOException {
+        out.write(OPENING);
+        out.write(getStylesheetCode(stylesheet));
 		out.write("\n");
-		newLine = true;
-	}
+        newLine = true;
+    }
 
-	public void openTag(String tagName) throws IOException {
-		emitTag(tagName, false);
-	}
+    public void openTag(String tagName) throws IOException {
+        emitTag(tagName, false);
+    }
 
-	public void openTag(String tagName, XMLAttributeList attributeList) throws IOException {
-		emitTag(tagName, attributeList.toString(), false);
-	}
+    public void openTag(String tagName, XMLAttributeList attributeList) throws IOException {
+        emitTag(tagName, attributeList.toString(), false);
+    }
 
-	public void openCloseTag(String tagName) throws IOException {
-		emitTag(tagName, true);
-	}
+    public void openCloseTag(String tagName) throws IOException {
+        emitTag(tagName, true);
+    }
 
-	public void openCloseTag(String tagName, XMLAttributeList attributeList) throws IOException {
-		emitTag(tagName, attributeList.toString(), true);
-	}
+    public void openCloseTag(String tagName, XMLAttributeList attributeList) throws IOException {
+        emitTag(tagName, attributeList.toString(), true);
+    }
 
-	public void startTag(String tagName) throws IOException {
-		indent();
-		++nestingLevel;
+    public void startTag(String tagName) throws IOException {
+        indent();
+        ++nestingLevel;
 		out.write("<" + tagName);
-	}
+    }
 
-	public void addAttribute(String name, String value) throws IOException {
-		out.write(' ');
-		out.write(name);
+    public void addAttribute(String name, String value) throws IOException {
+        out.write(' ');
+        out.write(name);
 		out.write('=');
-		out.write('"');
-		out.write(XMLAttributeList.getQuotedAttributeValue(value));
-		out.write('"');
+        out.write('"');
+        out.write(XMLAttributeList.getQuotedAttributeValue(value));
+        out.write('"');
 	}
 
-	public void stopTag(boolean close) throws IOException {
-		if (close) {
-			out.write("/>\n");
+    public void stopTag(boolean close) throws IOException {
+        if (close) {
+            out.write("/>\n");
 			--nestingLevel;
-			newLine = true;
-		} else {
-			out.write(">");
+            newLine = true;
+        } else {
+            out.write(">");
 			newLine = false;
-		}
+        }
+    }
+
+    private void emitTag(String tagName, boolean close) throws IOException {
+        startTag(tagName);
+        stopTag(close);
 	}
 
-	private void emitTag(String tagName, boolean close) throws IOException {
-		startTag(tagName);
-		stopTag(close);
-	}
-
-	private void emitTag(String tagName, String attributes, boolean close) throws IOException {
-		startTag(tagName);
-		attributes = attributes.trim();
+    private void emitTag(String tagName, String attributes, boolean close) throws IOException {
+        startTag(tagName);
+        attributes = attributes.trim();
 		if (attributes.length() > 0) {
-			out.write(" ");
-			out.write(attributes);
-		}
+            out.write(" ");
+            out.write(attributes);
+        }
 		stopTag(close);
-	}
+    }
 
-	public void closeTag(String tagName) throws IOException {
-		--nestingLevel;
-		if (newLine)
+    public void closeTag(String tagName) throws IOException {
+        --nestingLevel;
+        if (newLine)
 			indent();
-		out.write("</" + tagName + ">\n");
-		newLine = true;
-	}
+        out.write("</" + tagName + ">\n");
+        newLine = true;
+    }
 
-	public void writeText(String text) throws IOException {
-		out.write(Strings.escapeXml(text));
-	}
+    public void writeText(String text) throws IOException {
+        out.write(Strings.escapeXml(text));
+    }
 
-	public void writeCDATA(String cdata) throws IOException {
-		// FIXME: We just trust fate that the characters being written
-		// don't contain the string "]]>"
+    public void writeCDATA(String cdata) throws IOException {
+        // FIXME: We just trust fate that the characters being written
+        // don't contain the string "]]>"
 		assert(cdata.indexOf("]]") == -1);
-		out.write("<![CDATA[");
-		out.write(cdata);
-		out.write("]]>");
+        out.write("<![CDATA[");
+        out.write(cdata);
+        out.write("]]>");
 		newLine = false;
+    }
+
+    @DischargesObligation
+    public void finish() throws IOException {
+        out.close();
 	}
 
-	@DischargesObligation
-	public void finish() throws IOException {
-		out.close();
-	}
-
-	private void indent() throws IOException {
-		if (!newLine)
-			out.write("\n");
+    private void indent() throws IOException {
+        if (!newLine)
+            out.write("\n");
 		for (int i = 0; i < nestingLevel; ++i) {
-			out.write("  ");
-		}
-	}
+            out.write("  ");
+        }
+    }
 }
 
 // vim:ts=4

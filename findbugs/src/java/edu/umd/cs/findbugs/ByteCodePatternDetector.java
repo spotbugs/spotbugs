@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003,2004 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -42,111 +42,111 @@ import edu.umd.cs.findbugs.ba.bcp.PatternMatcher;
  * @see ByteCodePattern
  */
 public abstract class ByteCodePatternDetector implements Detector {
-	private static final boolean DEBUG = SystemProperties.getBoolean("bcpd.debug");
-	private static final String METHOD = SystemProperties.getProperty("bcpd.method");
+    private static final boolean DEBUG = SystemProperties.getBoolean("bcpd.debug");
+    private static final String METHOD = SystemProperties.getProperty("bcpd.method");
 
-	protected abstract BugReporter getBugReporter();
+    protected abstract BugReporter getBugReporter();
 
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			ByteCodePattern pattern = getPattern();
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            ByteCodePattern pattern = getPattern();
 			JavaClass jclass = classContext.getJavaClass();
-			Method[] methodList = jclass.getMethods();
+            Method[] methodList = jclass.getMethods();
 
-			for (Method method : methodList) {
-				if (method.isAbstract() || method.isNative())
-					continue;
+            for (Method method : methodList) {
+                if (method.isAbstract() || method.isNative())
+                    continue;
 
-				if (METHOD != null && !method.getName().equals(METHOD))
-					continue;
+                if (METHOD != null && !method.getName().equals(METHOD))
+                    continue;
 
-				if (DEBUG) {
-					System.out.print("=====================================================================\n" +
-							"Method " + jclass.getClassName() + "." + method.getName() + "\n" +
+                if (DEBUG) {
+                    System.out.print("=====================================================================\n" +
+                            "Method " + jclass.getClassName() + "." + method.getName() + "\n" +
 							"=====================================================================\n");
-				}
+                }
 
-				if (!prescreen(method, classContext))
-					continue;
+                if (!prescreen(method, classContext))
+                    continue;
 
-				MethodGen methodGen = classContext.getMethodGen(method);
-				if (methodGen == null)
-					continue;
+                MethodGen methodGen = classContext.getMethodGen(method);
+                if (methodGen == null)
+                    continue;
 
-				PatternMatcher matcher = new PatternMatcher(pattern, classContext, method);
-				matcher.execute();
+                PatternMatcher matcher = new PatternMatcher(pattern, classContext, method);
+                matcher.execute();
 
-				Iterator<ByteCodePatternMatch> j = matcher.byteCodePatternMatchIterator();
-				while (j.hasNext()) {
-					ByteCodePatternMatch match = j.next();
+                Iterator<ByteCodePatternMatch> j = matcher.byteCodePatternMatchIterator();
+                while (j.hasNext()) {
+                    ByteCodePatternMatch match = j.next();
 
-					if (DEBUG) {
-						System.out.println("Pattern match:");
-						Iterator<PatternElementMatch> pemIter = match.patternElementMatchIterator();
+                    if (DEBUG) {
+                        System.out.println("Pattern match:");
+                        Iterator<PatternElementMatch> pemIter = match.patternElementMatchIterator();
 						while (pemIter.hasNext()) {
-							PatternElementMatch pem = pemIter.next();
-							System.out.println("\t" + pem.toString());
-						}
+                            PatternElementMatch pem = pemIter.next();
+                            System.out.println("\t" + pem.toString());
+                        }
 					}
 
-					reportMatch(classContext, method, match);
-				}
-			}
+                    reportMatch(classContext, method, match);
+                }
+            }
 		} catch (DataflowAnalysisException e) {
-			getBugReporter().logError(getDetectorName() + " caught exception", e);
-		} catch (CFGBuilderException e) {
-			getBugReporter().logError(getDetectorName() + " caught exception", e);
+            getBugReporter().logError(getDetectorName() + " caught exception", e);
+        } catch (CFGBuilderException e) {
+            getBugReporter().logError(getDetectorName() + " caught exception", e);
 		}
-	}
+    }
 
-	private String getDetectorName() {
-		String className = this.getClass().getName();
-		int lastDot = className.lastIndexOf('.');
+    private String getDetectorName() {
+        String className = this.getClass().getName();
+        int lastDot = className.lastIndexOf('.');
 		if (lastDot >= 0) {
-			className = className.substring(lastDot + 1);
-		}
-		return className;
+            className = className.substring(lastDot + 1);
+        }
+        return className;
 	}
 
-	public void report() {
-	}
+    public void report() {
+    }
 
-	/**
-	 * Get the ByteCodePattern for this detector.
-	 */
+    /**
+     * Get the ByteCodePattern for this detector.
+     */
 	public abstract ByteCodePattern getPattern();
 
-	/**
-	 * Prescreen a method.
-	 * It is a valid, but dumb, implementation simply to return true unconditionally.
+    /**
+     * Prescreen a method.
+     * It is a valid, but dumb, implementation simply to return true unconditionally.
 	 * A better implementation is to call ClassContext.getBytecodeSet() to check
-	 * whether the method actually contains the bytecode instructions that
-	 * the pattern will look for.  The theory is that checking the bytecode
-	 * set is very fast, while building the MethodGen, CFG, ValueNumberAnalysis,
+     * whether the method actually contains the bytecode instructions that
+     * the pattern will look for.  The theory is that checking the bytecode
+     * set is very fast, while building the MethodGen, CFG, ValueNumberAnalysis,
 	 * etc. objects required to match ByteCodePatterns is slow, and the bytecode
-	 * pattern matching algorithm is also not particularly fast.
-	 * <p/>
-	 * <p> As a datapoint, prescreening speeds up the BCPDoubleCheck detector
+     * pattern matching algorithm is also not particularly fast.
+     * <p/>
+     * <p> As a datapoint, prescreening speeds up the BCPDoubleCheck detector
 	 * <b>by a factor of 5</b> with no loss of generality and only a dozen
-	 * or so extra lines of code.
-	 *
-	 * @param method       the method
+     * or so extra lines of code.
+     *
+     * @param method       the method
 	 * @param classContext the ClassContext for the method
-	 * @return true if the method should be analyzed for instances of the
-	 *         ByteCodePattern
-	 */
+     * @return true if the method should be analyzed for instances of the
+     *         ByteCodePattern
+     */
 	public abstract boolean prescreen(Method method, ClassContext classContext);
 
-	/**
-	 * Called to report an instance of the ByteCodePattern.
-	 *
+    /**
+     * Called to report an instance of the ByteCodePattern.
+     *
 	 * @param classContext the ClassContext for the analyzed class
-	 * @param method       the method to instance appears in
-	 * @param match        the ByteCodePatternMatch object representing the match
-	 *                     of the ByteCodePattern against actual instructions in the method
+     * @param method       the method to instance appears in
+     * @param match        the ByteCodePatternMatch object representing the match
+     *                     of the ByteCodePattern against actual instructions in the method
 	 */
-	public abstract void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
-			throws CFGBuilderException, DataflowAnalysisException;
+    public abstract void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
+            throws CFGBuilderException, DataflowAnalysisException;
 }
 
 // vim:ts=4

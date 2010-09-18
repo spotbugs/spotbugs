@@ -27,133 +27,133 @@ import edu.umd.cs.findbugs.ba.constant.ConstantFrame;
 
 public class DumbMethodInvocations implements Detector {
 
-	private final BugReporter bugReporter;
-	private final BugAccumulator bugAccumulator;
+    private final BugReporter bugReporter;
+    private final BugAccumulator bugAccumulator;
 
-	public DumbMethodInvocations(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-		this.bugAccumulator = new BugAccumulator(bugReporter);
+    public DumbMethodInvocations(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+        this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
-	public void visitClassContext(ClassContext classContext) {
-		Method[] methodList = classContext.getJavaClass().getMethods();
+    public void visitClassContext(ClassContext classContext) {
+        Method[] methodList = classContext.getJavaClass().getMethods();
 
-		for (Method method : methodList) {
-			if (method.getCode() == null)
-				continue;
+        for (Method method : methodList) {
+            if (method.getCode() == null)
+                continue;
 
-			try {
-				analyzeMethod(classContext, method);
-				bugAccumulator.reportAccumulatedBugs();
+            try {
+                analyzeMethod(classContext, method);
+                bugAccumulator.reportAccumulatedBugs();
 			} catch (MethodUnprofitableException mue) {
-				if (SystemProperties.getBoolean("unprofitable.debug")) // otherwise don't report
-					bugReporter.logError("skipping unprofitable method in " + getClass().getName());
-			} catch (CFGBuilderException e) {
+                if (SystemProperties.getBoolean("unprofitable.debug")) // otherwise don't report
+                    bugReporter.logError("skipping unprofitable method in " + getClass().getName());
+            } catch (CFGBuilderException e) {
 				bugReporter.logError("Detector " + this.getClass().getName()
+                        + " caught exception", e);
+            } catch (DataflowAnalysisException e) {
+                bugReporter.logError("Detector " + this.getClass().getName()
 						+ " caught exception", e);
-			} catch (DataflowAnalysisException e) {
-				bugReporter.logError("Detector " + this.getClass().getName()
-						+ " caught exception", e);
-			}
-		}
-	}
+            }
+        }
+    }
 
-	private void analyzeMethod(ClassContext classContext, Method method)
-			throws CFGBuilderException, DataflowAnalysisException {
-		CFG cfg = classContext.getCFG(method);
+    private void analyzeMethod(ClassContext classContext, Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
+        CFG cfg = classContext.getCFG(method);
 		ConstantDataflow constantDataflow = classContext
-				.getConstantDataflow(method);
-		ConstantPoolGen cpg = classContext.getConstantPoolGen();
-		MethodGen methodGen = classContext.getMethodGen(method);
+                .getConstantDataflow(method);
+        ConstantPoolGen cpg = classContext.getConstantPoolGen();
+        MethodGen methodGen = classContext.getMethodGen(method);
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 
-		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
-			Location location = i.next();
+        for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+            Location location = i.next();
 
-			Instruction ins = location.getHandle().getInstruction();
-			if (!(ins instanceof InvokeInstruction))
-				continue;
+            Instruction ins = location.getHandle().getInstruction();
+            if (!(ins instanceof InvokeInstruction))
+                continue;
 			InvokeInstruction iins = (InvokeInstruction) ins;
 
-			ConstantFrame frame = constantDataflow.getFactAtLocation(location);
-			if (!frame.isValid()) {
-				// This basic block is probably dead
+            ConstantFrame frame = constantDataflow.getFactAtLocation(location);
+            if (!frame.isValid()) {
+                // This basic block is probably dead
 				continue;
-			}
+            }
 
-			if (iins.getName(cpg).equals("getConnection")
-					&& iins.getSignature(cpg).equals("(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;")
-					&& iins.getClassName(cpg).equals("java.sql.DriverManager")) {
+            if (iins.getName(cpg).equals("getConnection")
+                    && iins.getSignature(cpg).equals("(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;")
+                    && iins.getClassName(cpg).equals("java.sql.DriverManager")) {
 				Constant operandValue = frame.getTopValue();
-				if (operandValue.isConstantString()) {
-					String password = operandValue.getConstantString();
-					if (password.length() == 0)
+                if (operandValue.isConstantString()) {
+                    String password = operandValue.getConstantString();
+                    if (password.length() == 0)
 						bugAccumulator.accumulateBug(new BugInstance(this,
-								"DMI_EMPTY_DB_PASSWORD", NORMAL_PRIORITY)
-								.addClassAndMethod(methodGen, sourceFile),
-								classContext, methodGen,sourceFile, location);
+                                "DMI_EMPTY_DB_PASSWORD", NORMAL_PRIORITY)
+                                .addClassAndMethod(methodGen, sourceFile),
+                                classContext, methodGen,sourceFile, location);
 					else bugAccumulator.accumulateBug(new BugInstance(this,
-							"DMI_CONSTANT_DB_PASSWORD", NORMAL_PRIORITY)
-							.addClassAndMethod(methodGen, sourceFile), classContext, methodGen,
-													sourceFile, location);
+                            "DMI_CONSTANT_DB_PASSWORD", NORMAL_PRIORITY)
+                            .addClassAndMethod(methodGen, sourceFile), classContext, methodGen,
+                                                    sourceFile, location);
 
-				}
-			}
-			
+                }
+            }
+
 			if (iins.getName(cpg).equals("substring")
-					&& iins.getSignature(cpg).equals("(I)Ljava/lang/String;")
-					&& iins.getClassName(cpg).equals("java.lang.String")) {
+                    && iins.getSignature(cpg).equals("(I)Ljava/lang/String;")
+                    && iins.getClassName(cpg).equals("java.lang.String")) {
 
-				Constant operandValue = frame.getTopValue();
-				if (!operandValue.isConstantInteger())
-					continue;
+                Constant operandValue = frame.getTopValue();
+                if (!operandValue.isConstantInteger())
+                    continue;
 				int v = operandValue.getConstantInt();
-				if (v == 0)
-					bugAccumulator.accumulateBug(new BugInstance(this,
-							"DMI_USELESS_SUBSTRING", NORMAL_PRIORITY)
+                if (v == 0)
+                    bugAccumulator.accumulateBug(new BugInstance(this,
+                            "DMI_USELESS_SUBSTRING", NORMAL_PRIORITY)
 							.addClassAndMethod(methodGen, sourceFile), classContext, methodGen,
-													sourceFile, location);
+                                                    sourceFile, location);
 
-			}
-			else 
-				if (iins.getName(cpg).equals("<init>")
+            }
+            else
+                if (iins.getName(cpg).equals("<init>")
 						&& iins.getSignature(cpg).equals("(Ljava/lang/String;)V")
-						&& iins.getClassName(cpg).equals("java.io.File")) {
+                        && iins.getClassName(cpg).equals("java.io.File")) {
 
-					Constant operandValue = frame.getTopValue();
-					if (!operandValue.isConstantString())
-						continue;
+                    Constant operandValue = frame.getTopValue();
+                    if (!operandValue.isConstantString())
+                        continue;
 					String v = operandValue.getConstantString();
-					if (isAbsoluteFileName(v) && !v.startsWith("/etc/") && !v.startsWith("/dev/")) {
-						int priority = NORMAL_PRIORITY;
-						if (v.startsWith("/tmp")) priority = LOW_PRIORITY;
+                    if (isAbsoluteFileName(v) && !v.startsWith("/etc/") && !v.startsWith("/dev/")) {
+                        int priority = NORMAL_PRIORITY;
+                        if (v.startsWith("/tmp")) priority = LOW_PRIORITY;
 						else if (v.indexOf("/home") >= 0) priority = HIGH_PRIORITY;
-						bugAccumulator.accumulateBug(new BugInstance(this,
-								"DMI_HARDCODED_ABSOLUTE_FILENAME", priority)
-								.addClassAndMethod(methodGen, sourceFile)
+                        bugAccumulator.accumulateBug(new BugInstance(this,
+                                "DMI_HARDCODED_ABSOLUTE_FILENAME", priority)
+                                .addClassAndMethod(methodGen, sourceFile)
 								.addString(v).describe("FILE_NAME"), classContext, methodGen,
-														sourceFile, location);
-					}
+                                                        sourceFile, location);
+                    }
 
-				}
+                }
 
-		}
-	}
+        }
+    }
 
-	private boolean isAbsoluteFileName(String v) {
-		if (v.startsWith("/dev/")) return false;
-		if (v.startsWith("/")) return true;
+    private boolean isAbsoluteFileName(String v) {
+        if (v.startsWith("/dev/")) return false;
+        if (v.startsWith("/")) return true;
 		if (v.startsWith("C:")) return true;
-		if (v.startsWith("c:")) return true;
-		try {
-			File f = new File(v);
+        if (v.startsWith("c:")) return true;
+        try {
+            File f = new File(v);
 			return f.isAbsolute();
-		} catch (RuntimeException e) {
-			return false;
-		}
+        } catch (RuntimeException e) {
+            return false;
+        }
 	}
 
-	public void report() {
-	}
+    public void report() {
+    }
 
 }

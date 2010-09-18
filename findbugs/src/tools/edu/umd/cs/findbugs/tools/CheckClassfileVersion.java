@@ -29,7 +29,7 @@ import java.util.jar.JarFile;
 /**
  * Verify that a set of jar files are compiled for Java 5.0, the release
  * standard for FindBugs
- * 
+ *
  */
 public class CheckClassfileVersion {
 

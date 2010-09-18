@@ -41,77 +41,77 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
  */
 public class SuperfluousInstanceOf extends BytecodeScanningDetector implements StatelessDetector {
 
-	private static final int SEEN_NOTHING = 0;
-	private static final int SEEN_ALOAD = 1;
+    private static final int SEEN_NOTHING = 0;
+    private static final int SEEN_ALOAD = 1;
 
-	private BugReporter bugReporter;
-	private LocalVariableTable varTable;
-	private int state;
+    private BugReporter bugReporter;
+    private LocalVariableTable varTable;
+    private int state;
 	private int register;
 
-	public SuperfluousInstanceOf(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    public SuperfluousInstanceOf(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
 
 
-	@Override
-		 public void visit(Method obj) {
-		state = SEEN_NOTHING;
+    @Override
+         public void visit(Method obj) {
+        state = SEEN_NOTHING;
 		varTable = obj.getLocalVariableTable();
-		if (varTable != null)
+        if (varTable != null)
+            super.visit(obj);
+    }
+
+    @Override
+         public void visit(Code obj) {
+        if (varTable != null)
 			super.visit(obj);
-	}
-
-	@Override
-		 public void visit(Code obj) {
-		if (varTable != null)
-			super.visit(obj);
-	}
+    }
 
 
-	@Override
-		 public void sawOpcode(int seen) {
-		switch (state) {
+    @Override
+         public void sawOpcode(int seen) {
+        switch (state) {
 			case SEEN_NOTHING:
-				if (seen == ALOAD)
-					register = getRegisterOperand();
-				else if ((seen >= ALOAD_0) && (seen <= ALOAD_3))
+                if (seen == ALOAD)
+                    register = getRegisterOperand();
+                else if ((seen >= ALOAD_0) && (seen <= ALOAD_3))
 					register = seen - ALOAD_0;
-				else
-					return;
-				state = SEEN_ALOAD;
+                else
+                    return;
+                state = SEEN_ALOAD;
 			break;
 
-			case SEEN_ALOAD:
-				try {
-					if (seen == INSTANCEOF) {
+            case SEEN_ALOAD:
+                try {
+                    if (seen == INSTANCEOF) {
 						LocalVariable lv = LVTHelper.getLocalVariableAtPC(varTable, register, getPC());
-						if (lv != null) {
-							String objSignature = lv.getSignature();
-							if (objSignature.charAt(0) == 'L') {
+                        if (lv != null) {
+                            String objSignature = lv.getSignature();
+                            if (objSignature.charAt(0) == 'L') {
 								objSignature = objSignature.substring(1, objSignature.length()-1).replace('/', '.');
-								String clsSignature = getDottedClassConstantOperand();
+                                String clsSignature = getDottedClassConstantOperand();
 
-								if (clsSignature.charAt(0) != '[') {
-									if (org.apache.bcel.Repository.instanceOf( objSignature, clsSignature )) {
-										bugReporter.reportBug(new BugInstance(this, "SIO_SUPERFLUOUS_INSTANCEOF", LOW_PRIORITY)
+                                if (clsSignature.charAt(0) != '[') {
+                                    if (org.apache.bcel.Repository.instanceOf( objSignature, clsSignature )) {
+                                        bugReporter.reportBug(new BugInstance(this, "SIO_SUPERFLUOUS_INSTANCEOF", LOW_PRIORITY)
 											.addClassAndMethod(this)
-											.addSourceLine(this));
-									}
-								}
+                                            .addSourceLine(this));
+                                    }
+                                }
 							}
-						}
-					}
-				} catch (ClassNotFoundException cnfe) {
+                        }
+                    }
+                } catch (ClassNotFoundException cnfe) {
 					bugReporter.reportMissingClass(cnfe);
-				}
+                }
 
-				state = SEEN_NOTHING;
-			break;
-		}
+                state = SEEN_NOTHING;
+            break;
+        }
 
-	}
+    }
 }
 
 // vim:ts=4

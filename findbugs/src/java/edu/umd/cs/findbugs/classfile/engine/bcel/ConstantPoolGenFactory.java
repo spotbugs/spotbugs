@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2007 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -30,25 +30,25 @@ import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 
 /**
  * Analysis engine to produce ConstantPoolGen objects for an analyzed class.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ConstantPoolGenFactory extends RecomputableClassAnalysisEngine<ConstantPoolGen> {
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+     */
 	public ConstantPoolGen analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
-		ClassGen classGen = new ClassGen(analysisCache.getClassAnalysis(JavaClass.class, descriptor));
-		return classGen.getConstantPool();
-	}
+        ClassGen classGen = new ClassGen(analysisCache.getClassAnalysis(JavaClass.class, descriptor));
+        return classGen.getConstantPool();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
+     */
 	public void registerWith(IAnalysisCache analysisCache) {
-		analysisCache.registerClassAnalysisEngine(ConstantPoolGen.class, this);
-	}
+        analysisCache.registerClassAnalysisEngine(ConstantPoolGen.class, this);
+    }
 
-	
+
 }

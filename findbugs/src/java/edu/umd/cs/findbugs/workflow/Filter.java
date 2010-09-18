@@ -63,623 +63,623 @@ import edu.umd.cs.findbugs.filter.Matcher;
  * @author William Pugh
  */
 public class Filter {
-	static class FilterCommandLine extends CommandLine {
-		/**
-		 * 
+    static class FilterCommandLine extends CommandLine {
+        /**
+         *
 		 */
-		public static final long MILLISECONDS_PER_DAY = 24*60*60*1000L;
-		Pattern className,bugPattern;
-		public boolean notSpecified = false;
+        public static final long MILLISECONDS_PER_DAY = 24*60*60*1000L;
+        Pattern className,bugPattern;
+        public boolean notSpecified = false;
 		public boolean not = false;
-		int duration;
-		long first;
-		String firstAsString; 
+        int duration;
+        long first;
+        String firstAsString;
 		long after;
-		String afterAsString;  
-		long before;
-		String beforeAsString; 
+        String afterAsString;
+        long before;
+        String beforeAsString;
 		int maxRank = Integer.MAX_VALUE;
-		
-		long maybeMutated;
-		String maybeMutatedAsString;
 
-		long last;
-		String lastAsString; 
-		String trimToVersionAsString;
+        long maybeMutated;
+        String maybeMutatedAsString;
+
+        long last;
+        String lastAsString;
+        String trimToVersionAsString;
 		String fixedAsString; // alternate way to specify 'last'
-		long present;
-		String presentAsString; 
-		long absent;
+        long present;
+        String presentAsString;
+        long absent;
 		String absentAsString; 
-		String annotation;
-		public boolean activeSpecified = false;
-		public boolean active = false;
+        String annotation;
+        public boolean activeSpecified = false;
+        public boolean active = false;
 
-		public boolean notAProblem = false;
-		public boolean notAProblemSpecified = false;
-		public boolean shouldFix = false;
+        public boolean notAProblem = false;
+        public boolean notAProblemSpecified = false;
+        public boolean shouldFix = false;
 		public boolean shouldFixSpecified = false;
-		public boolean hasField = false;
-		public boolean hasFieldSpecified = false;
+        public boolean hasField = false;
+        public boolean hasFieldSpecified = false;
 
-		public boolean hasLocal = false;
-		public boolean hasLocalSpecified = false;
-		
+        public boolean hasLocal = false;
+        public boolean hasLocalSpecified = false;
+
 		public boolean applySuppression = false;
-		public boolean applySuppressionSpecified = false;
+        public boolean applySuppressionSpecified = false;
 
-		public boolean withSource = false;
-		public boolean withSourceSpecified = false;
-		public boolean knownSource = false;
+        public boolean withSource = false;
+        public boolean withSourceSpecified = false;
+        public boolean knownSource = false;
 		public boolean knownSourceSpecified = false;
-		public boolean introducedByChange = false;
-		public boolean introducedByChangeSpecified = false;
+        public boolean introducedByChange = false;
+        public boolean introducedByChangeSpecified = false;
 
-		public boolean removedByChange = false;
-		public boolean removedByChangeSpecified = false;
+        public boolean removedByChange = false;
+        public boolean removedByChangeSpecified = false;
 
-		public boolean newCode = false;
-		public boolean newCodeSpecified = false;
+        public boolean newCode = false;
+        public boolean newCodeSpecified = false;
 
-		public boolean hashChanged = false;
-		public boolean hashChangedSpecified = false;
+        public boolean hashChanged = false;
+        public boolean hashChangedSpecified = false;
 
-		public boolean removedCode = false;
-		public boolean removedCodeSpecified = false;
+        public boolean removedCode = false;
+        public boolean removedCodeSpecified = false;
 
-		public boolean dontUpdateStats = false;
-		public boolean dontUpdateStatsSpecified = false;
+        public boolean dontUpdateStats = false;
+        public boolean dontUpdateStatsSpecified = false;
 
-		public int maxAge = 0;
-		public boolean maxAgeSpecified = false;
+        public int maxAge = 0;
+        public boolean maxAgeSpecified = false;
 
-		public boolean withMessagesSpecified = false;
-		public boolean withMessages = false;
-		
+        public boolean withMessagesSpecified = false;
+        public boolean withMessages = false;
+
 		private List<Matcher> includeFilter = new LinkedList<Matcher>();
-		private List<Matcher> excludeFilter = new LinkedList<Matcher>();
-		HashSet<String> excludedInstanceHashes = new HashSet<String>();
-		Set<String> designationKey = new HashSet<String>();
+        private List<Matcher> excludeFilter = new LinkedList<Matcher>();
+        HashSet<String> excludedInstanceHashes = new HashSet<String>();
+        Set<String> designationKey = new HashSet<String>();
 		Set<String> categoryKey = new HashSet<String>();
-		
-		int priority = 3;
 
-		FilterCommandLine() {
+        int priority = 3;
 
-			addSwitch("-not", "reverse (all) switches for the filter");
-			addSwitchWithOptionalExtraPart("-knownSource", "trurh", "Only issues that have known source locations");
-			addSwitchWithOptionalExtraPart("-withSource", "truth", "only warnings for which source is available");
+        FilterCommandLine() {
+
+            addSwitch("-not", "reverse (all) switches for the filter");
+            addSwitchWithOptionalExtraPart("-knownSource", "trurh", "Only issues that have known source locations");
+            addSwitchWithOptionalExtraPart("-withSource", "truth", "only warnings for which source is available");
 			addSwitchWithOptionalExtraPart("-hashChanged", "truth", "only warnings for which the stored hash is not the same as the calculated hash");
-			addOption("-excludeBugs", "baseline bug collection", "exclude bugs already contained in the baseline bug collection");
-			addOption("-exclude", "filter file", "exclude bugs matching given filter");
-			addOption("-include", "filter file", "include only bugs matching given filter");
+            addOption("-excludeBugs", "baseline bug collection", "exclude bugs already contained in the baseline bug collection");
+            addOption("-exclude", "filter file", "exclude bugs matching given filter");
+            addOption("-include", "filter file", "include only bugs matching given filter");
 
-			addOption("-annotation", "text", "allow only warnings containing this text in a user annotation");
-			addSwitchWithOptionalExtraPart("-withMessages", "truth", "generated XML should contain textual messages");
-			addOption("-maxDuration", "# versions", "only issues present in at most this many versions");
+            addOption("-annotation", "text", "allow only warnings containing this text in a user annotation");
+            addSwitchWithOptionalExtraPart("-withMessages", "truth", "generated XML should contain textual messages");
+            addOption("-maxDuration", "# versions", "only issues present in at most this many versions");
 			addOption("-after", "when", "allow only warnings that first occurred after this version");
-			addOption("-before", "when", "allow only warnings that first occurred before this version");
-			addOption("-first", "when", "allow only warnings that first occurred in this version");
-			addOption("-last", "when", "allow only warnings that last occurred in this version");
+            addOption("-before", "when", "allow only warnings that first occurred before this version");
+            addOption("-first", "when", "allow only warnings that first occurred in this version");
+            addOption("-last", "when", "allow only warnings that last occurred in this version");
 			addOption("-trimToVersion", "when", "trim bug collection to exclude information about versions after this one");
-			addOption("-fixed", "when", "allow only warnings that last occurred in the previous version (clobbers last)");
-			addOption("-present", "when", "allow only warnings present in this version");
-			addOption("-absent", "when", "allow only warnings absent in this version");
+            addOption("-fixed", "when", "allow only warnings that last occurred in the previous version (clobbers last)");
+            addOption("-present", "when", "allow only warnings present in this version");
+            addOption("-absent", "when", "allow only warnings absent in this version");
 			addOption("-maybeMutated", "when", "allow only warnings that might have mutated/fixed/born in this version");
-			addSwitchWithOptionalExtraPart("-hasField", "truth", "allow only warnings that are annotated with a field");
-			addSwitchWithOptionalExtraPart("-hasLocal", "truth", "allow only warnings that are annotated with a local variable");
-			addSwitchWithOptionalExtraPart("-active", "truth", "allow only warnings alive in the last sequence number");
+            addSwitchWithOptionalExtraPart("-hasField", "truth", "allow only warnings that are annotated with a field");
+            addSwitchWithOptionalExtraPart("-hasLocal", "truth", "allow only warnings that are annotated with a local variable");
+            addSwitchWithOptionalExtraPart("-active", "truth", "allow only warnings alive in the last sequence number");
 			addSwitch("-applySuppression",  "exclude warnings that match the suppression filter");
-			
-			addSwitchWithOptionalExtraPart("-introducedByChange", "truth",
-					"allow only warnings introduced by a change of an existing class");
+
+            addSwitchWithOptionalExtraPart("-introducedByChange", "truth",
+                    "allow only warnings introduced by a change of an existing class");
 			addSwitchWithOptionalExtraPart("-removedByChange", "truth",
-					"allow only warnings removed by a change of a persisting class");
-			addSwitchWithOptionalExtraPart("-newCode", "truth",
-			"allow only warnings introduced by the addition of a new class");
+                    "allow only warnings removed by a change of a persisting class");
+            addSwitchWithOptionalExtraPart("-newCode", "truth",
+            "allow only warnings introduced by the addition of a new class");
 			addSwitchWithOptionalExtraPart("-removedCode", "truth",
-			"allow only warnings removed by removal of a class");
-			addOption("-priority", "level", "allow only warnings with this priority or higher");
-			addOption("-maxRank", "rank", "allow only warnings with this rank or lower");
+            "allow only warnings removed by removal of a class");
+            addOption("-priority", "level", "allow only warnings with this priority or higher");
+            addOption("-maxRank", "rank", "allow only warnings with this rank or lower");
 			addOption("-maxAge", "days", "Only issues that weren't first seen more than this many days ago");
-			addSwitchWithOptionalExtraPart("-notAProblem", "truth", "Only issues with a consensus view that they are not a problem");
-			addSwitchWithOptionalExtraPart("-shouldFix", "truth", "Only issues with a consensus view that they should be fixed");
-			
+            addSwitchWithOptionalExtraPart("-notAProblem", "truth", "Only issues with a consensus view that they are not a problem");
+            addSwitchWithOptionalExtraPart("-shouldFix", "truth", "Only issues with a consensus view that they should be fixed");
+
 			addOption("-class", "pattern", "allow only bugs whose primary class name matches this pattern");
-			addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
-			addOption("-category", "category", "allow only warnings with a category that starts with this string");
-			addOption("-designation", "designation", "allow only warnings with this designation (e.g., -designation SHOULD_FIX,MUST_FIX)");
+            addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
+            addOption("-category", "category", "allow only warnings with a category that starts with this string");
+            addOption("-designation", "designation", "allow only warnings with this designation (e.g., -designation SHOULD_FIX,MUST_FIX)");
 			addSwitch("-hashChanged", "recomputed instance hash is different than stored instance hash");
-			addSwitch("-dontUpdateStats", "used when withSource is specified to only update bugs, not the class and package stats");
-			
-		}
+            addSwitch("-dontUpdateStats", "used when withSource is specified to only update bugs, not the class and package stats");
 
-		public static long getVersionNum(Map<String, AppVersion> versions, 
-				SortedMap<Long, AppVersion> timeStamps , String val, 
-				boolean roundToLaterVersion, long currentSeqNum) {
+        }
+
+        public static long getVersionNum(Map<String, AppVersion> versions,
+                SortedMap<Long, AppVersion> timeStamps , String val,
+                boolean roundToLaterVersion, long currentSeqNum) {
 			long numVersions = currentSeqNum+1;
-			if (val == null) return -1;
-			if (val.equals("last") || val.equals("lastVersion")) return numVersions -1;
+            if (val == null) return -1;
+            if (val.equals("last") || val.equals("lastVersion")) return numVersions -1;
 
-			AppVersion v = versions.get(val);
-			if (v != null) return v.getSequenceNumber();
-			try {
+            AppVersion v = versions.get(val);
+            if (v != null) return v.getSequenceNumber();
+            try {
 				long time = 0;
-				if (val.endsWith("daysAgo")) 
-					time = System.currentTimeMillis() - MILLISECONDS_PER_DAY * Integer.parseInt(val.substring(0, val.length() - 7));
-				else time = Date.parse(val);
+                if (val.endsWith("daysAgo"))
+                    time = System.currentTimeMillis() - MILLISECONDS_PER_DAY * Integer.parseInt(val.substring(0, val.length() - 7));
+                else time = Date.parse(val);
 				return getAppropriateSeq(timeStamps, time, roundToLaterVersion);
-			} catch (Exception e) {
-				try {
-					long version =  Long.parseLong(val);
+            } catch (Exception e) {
+                try {
+                    long version =  Long.parseLong(val);
 					if (version < 0) {
-						version = numVersions + version;
-					}
-					return version;
+                        version = numVersions + version;
+                    }
+                    return version;
 				}
-				catch (NumberFormatException e1) {
-					throw new IllegalArgumentException("Could not interpret version specification of '" + val + "'");
-				}
+                catch (NumberFormatException e1) {
+                    throw new IllegalArgumentException("Could not interpret version specification of '" + val + "'");
+                }
 			}
-		}
+        }
 
-		// timeStamps contains 0 10 20 30
-		// if roundToLater == true, ..0 = 0, 1..10 = 1, 11..20 = 2, 21..30 = 3, 31.. = Long.MAX
-		// if roundToLater == false, ..-1 = Long.MIN, 0..9 = 0, 10..19 = 1, 20..29 = 2, 30..39 = 3, 40 .. = 4
+        // timeStamps contains 0 10 20 30
+        // if roundToLater == true, ..0 = 0, 1..10 = 1, 11..20 = 2, 21..30 = 3, 31.. = Long.MAX
+        // if roundToLater == false, ..-1 = Long.MIN, 0..9 = 0, 10..19 = 1, 20..29 = 2, 30..39 = 3, 40 .. = 4
 		static private long getAppropriateSeq(SortedMap<Long, AppVersion> timeStamps, long when, boolean roundToLaterVersion) {
-			if (roundToLaterVersion) {
-				SortedMap<Long, AppVersion> geq = timeStamps.tailMap(when);
-				if (geq.isEmpty()) return Long.MAX_VALUE;
+            if (roundToLaterVersion) {
+                SortedMap<Long, AppVersion> geq = timeStamps.tailMap(when);
+                if (geq.isEmpty()) return Long.MAX_VALUE;
 				return geq.get(geq.firstKey()).getSequenceNumber();
-			} else {
-				SortedMap<Long, AppVersion> leq = timeStamps.headMap(when);
-				if (leq.isEmpty()) return Long.MIN_VALUE;
+            } else {
+                SortedMap<Long, AppVersion> leq = timeStamps.headMap(when);
+                if (leq.isEmpty()) return Long.MIN_VALUE;
 				return leq.get(leq.lastKey()).getSequenceNumber();
-			}
-		}
+            }
+        }
 
         private long minFirstSeen;
-		edu.umd.cs.findbugs.filter.Filter suppressionFilter;
-		void adjustFilter(Project project, BugCollection collection) {
-			suppressionFilter = project.getSuppressionFilter();
+        edu.umd.cs.findbugs.filter.Filter suppressionFilter;
+        void adjustFilter(Project project, BugCollection collection) {
+            suppressionFilter = project.getSuppressionFilter();
 			Map<String, AppVersion> versions = new HashMap<String, AppVersion>();
-			SortedMap<Long, AppVersion> timeStamps = new TreeMap<Long, AppVersion>();
+            SortedMap<Long, AppVersion> timeStamps = new TreeMap<Long, AppVersion>();
 
-			for(Iterator<AppVersion> i = collection.appVersionIterator(); i.hasNext(); ) {
-				AppVersion v = i.next();
-				versions.put(v.getReleaseName(), v);
+            for(Iterator<AppVersion> i = collection.appVersionIterator(); i.hasNext(); ) {
+                AppVersion v = i.next();
+                versions.put(v.getReleaseName(), v);
 				timeStamps.put(v.getTimestamp(), v);
-			}
-			// add current version to the maps
-			AppVersion v = collection.getCurrentAppVersion();
+            }
+            // add current version to the maps
+            AppVersion v = collection.getCurrentAppVersion();
 			versions.put(v.getReleaseName(), v);
-			timeStamps.put(v.getTimestamp(), v);
+            timeStamps.put(v.getTimestamp(), v);
 
-			if (maxAgeSpecified) {
-				minFirstSeen = collection.getAnalysisTimestamp() - maxAge * MILLISECONDS_PER_DAY;
-			}
+            if (maxAgeSpecified) {
+                minFirstSeen = collection.getAnalysisTimestamp() - maxAge * MILLISECONDS_PER_DAY;
+            }
 			first = getVersionNum(versions, timeStamps, firstAsString, true, v.getSequenceNumber());
-			maybeMutated = getVersionNum(versions, timeStamps, maybeMutatedAsString, true, v.getSequenceNumber());
-			last = getVersionNum(versions, timeStamps, lastAsString, true,  v.getSequenceNumber());
-			before = getVersionNum(versions, timeStamps, beforeAsString, true,  v.getSequenceNumber());
+            maybeMutated = getVersionNum(versions, timeStamps, maybeMutatedAsString, true, v.getSequenceNumber());
+            last = getVersionNum(versions, timeStamps, lastAsString, true,  v.getSequenceNumber());
+            before = getVersionNum(versions, timeStamps, beforeAsString, true,  v.getSequenceNumber());
 			after = getVersionNum(versions, timeStamps, afterAsString, false,  v.getSequenceNumber());
-			present = getVersionNum(versions, timeStamps, presentAsString, true,  v.getSequenceNumber());
-			absent = getVersionNum(versions, timeStamps, absentAsString, true,  v.getSequenceNumber());
+            present = getVersionNum(versions, timeStamps, presentAsString, true,  v.getSequenceNumber());
+            absent = getVersionNum(versions, timeStamps, absentAsString, true,  v.getSequenceNumber());
 
-			long fixed = getVersionNum(versions, timeStamps, fixedAsString, true,  v.getSequenceNumber());
-			if (fixed >= 0) last = fixed - 1; // fixed means last on previous sequence (ok if -1)
-		}
+            long fixed = getVersionNum(versions, timeStamps, fixedAsString, true,  v.getSequenceNumber());
+            if (fixed >= 0) last = fixed - 1; // fixed means last on previous sequence (ok if -1)
+        }
 
-		boolean accept(BugCollection collection, BugInstance bug) {
-			boolean result = evaluate( collection, bug);
-			if (not) return !result;
+        boolean accept(BugCollection collection, BugInstance bug) {
+            boolean result = evaluate( collection, bug);
+            if (not) return !result;
 			return result;
-		}
-		boolean evaluate(BugCollection collection, BugInstance bug) {
+        }
+        boolean evaluate(BugCollection collection, BugInstance bug) {
 
 
-			for(Matcher m : includeFilter)
-				if (!m.match(bug)) return false;
-			for(Matcher m : excludeFilter)
+            for(Matcher m : includeFilter)
+                if (!m.match(bug)) return false;
+            for(Matcher m : excludeFilter)
 				if (m.match(bug)) return false;
-			if (excludedInstanceHashes.contains(bug.getInstanceHash())) return false;
-			if (annotation != null && bug.getAnnotationText().indexOf(annotation) == -1)
-				return false;
+            if (excludedInstanceHashes.contains(bug.getInstanceHash())) return false;
+            if (annotation != null && bug.getAnnotationText().indexOf(annotation) == -1)
+                return false;
 			if (bug.getPriority() > priority)
-				return false;
-			if (firstAsString != null && bug.getFirstVersion() != first)
-				return false;
+                return false;
+            if (firstAsString != null && bug.getFirstVersion() != first)
+                return false;
 			if (afterAsString != null && bug.getFirstVersion() <= after)
-				return false;
-			if (beforeAsString != null && bug.getFirstVersion() >= before)
-				return false;
+                return false;
+            if (beforeAsString != null && bug.getFirstVersion() >= before)
+                return false;
 			long lastSeen = bug.getLastVersion();
-			if (lastSeen < 0)
-				lastSeen = collection.getSequenceNumber();
-			long thisDuration = lastSeen - bug.getFirstVersion();
+            if (lastSeen < 0)
+                lastSeen = collection.getSequenceNumber();
+            long thisDuration = lastSeen - bug.getFirstVersion();
 			if (duration > 0 && thisDuration > duration)
-				return false;
-			if ((lastAsString != null || fixedAsString != null) && (last < 0 || bug.getLastVersion() != last))
-				return false;
+                return false;
+            if ((lastAsString != null || fixedAsString != null) && (last < 0 || bug.getLastVersion() != last))
+                return false;
 			if (presentAsString != null && !bugLiveAt(bug, present))
-				return false;
-			if (absentAsString != null && bugLiveAt(bug, absent))
-				return false;
+                return false;
+            if (absentAsString != null && bugLiveAt(bug, absent))
+                return false;
 
-			if (hasFieldSpecified && (hasField != (bug.getPrimaryField() != null)))
+            if (hasFieldSpecified && (hasField != (bug.getPrimaryField() != null)))
+                    return false;
+            if (hasLocalSpecified && (hasLocal != (bug.getPrimaryLocalVariableAnnotation() != null)))
 					return false;
-			if (hasLocalSpecified && (hasLocal != (bug.getPrimaryLocalVariableAnnotation() != null)))
-					return false;
 
-			if (maxRank < Integer.MAX_VALUE &&  BugRanker.findRank(bug) > maxRank)
-				return false;
+            if (maxRank < Integer.MAX_VALUE &&  BugRanker.findRank(bug) > maxRank)
+                return false;
 
-			if (activeSpecified && active == bug.isDead())
-				return false;
-			if (removedByChangeSpecified
+            if (activeSpecified && active == bug.isDead())
+                return false;
+            if (removedByChangeSpecified
 					&& bug.isRemovedByChangeOfPersistingClass() != removedByChange)
+                return false;
+            if (introducedByChangeSpecified
+                    && bug.isIntroducedByChangeOfExistingClass() != introducedByChange)
 				return false;
-			if (introducedByChangeSpecified
-					&& bug.isIntroducedByChangeOfExistingClass() != introducedByChange)
-				return false;
-			if (newCodeSpecified && newCode != (!bug.isIntroducedByChangeOfExistingClass() && bug.getFirstVersion() != 0))
-				return false;
-			if (removedCodeSpecified && removedCode != (!bug.isRemovedByChangeOfPersistingClass() && bug.isDead()))
+            if (newCodeSpecified && newCode != (!bug.isIntroducedByChangeOfExistingClass() && bug.getFirstVersion() != 0))
+                return false;
+            if (removedCodeSpecified && removedCode != (!bug.isRemovedByChangeOfPersistingClass() && bug.isDead()))
 				return false;
 
-			if (bugPattern != null && !bugPattern.matcher(bug.getType()).find())
-					return false;
-			if (className != null && !className.matcher(bug.getPrimaryClass().getClassName()).find())
+            if (bugPattern != null && !bugPattern.matcher(bug.getType()).find())
+                    return false;
+            if (className != null && !className.matcher(bug.getPrimaryClass().getClassName()).find())
 					return false;
 
-			if (maybeMutatedAsString != null
-					&& !(atMutationPoint(bug)
-					&& mutationPoints.contains(getBugLocation(bug)))) 
+            if (maybeMutatedAsString != null
+                    && !(atMutationPoint(bug)
+                    && mutationPoints.contains(getBugLocation(bug))))
 					return false;
-				
-	
-			
+
+
+
 			BugPattern thisBugPattern = bug.getBugPattern();
-			if (!categoryKey.isEmpty() && thisBugPattern != null && !categoryKey.contains(thisBugPattern.getCategory()))
-				return false;
-			if (!designationKey.isEmpty() && !designationKey.contains(bug.getUserDesignationKey()))
+            if (!categoryKey.isEmpty() && thisBugPattern != null && !categoryKey.contains(thisBugPattern.getCategory()))
+                return false;
+            if (!designationKey.isEmpty() && !designationKey.contains(bug.getUserDesignationKey()))
 				return false;
 
-			
-			if (hashChangedSpecified) {
-				if (bug.isInstanceHashConsistent()  == hashChanged) 
+
+            if (hashChangedSpecified) {
+                if (bug.isInstanceHashConsistent()  == hashChanged)
 					return false;
-			}
-			if (applySuppressionSpecified && applySuppression 
-					&& suppressionFilter.match(bug))
+            }
+            if (applySuppressionSpecified && applySuppression
+                    && suppressionFilter.match(bug))
 				return false;
-			SourceLineAnnotation primarySourceLineAnnotation = bug.getPrimarySourceLineAnnotation();
-			
-			if (knownSourceSpecified) {
+            SourceLineAnnotation primarySourceLineAnnotation = bug.getPrimarySourceLineAnnotation();
+
+            if (knownSourceSpecified) {
 				if (primarySourceLineAnnotation.isUnknown() == knownSource)
-					return false;
-			}
-			if (withSourceSpecified) {
+                    return false;
+            }
+            if (withSourceSpecified) {
 				if (sourceSearcher.findSource(primarySourceLineAnnotation) != withSource) 
-					return false;
-			}
-			
+                    return false;
+            }
+
 			if (maxAgeSpecified) {
-				long firstSeen = collection.getCloud().getFirstSeen(bug);
-				if ( firstSeen < minFirstSeen)
-				  return false;
+                long firstSeen = collection.getCloud().getFirstSeen(bug);
+                if ( firstSeen < minFirstSeen)
+                  return false;
 			}
-				
-			
-			if (notAProblemSpecified && 
+
+
+            if (notAProblemSpecified &&
 					notAProblem != (collection.getCloud().getConsensusDesignation(bug).score() < 0))
+                return false;
+            if (shouldFixSpecified &&
+                    shouldFix != (collection.getCloud().getConsensusDesignation(bug).score() > 0))
 				return false;
-			if (shouldFixSpecified && 
-					shouldFix != (collection.getCloud().getConsensusDesignation(bug).score() > 0))
-				return false;
-			
-			
-			
-
-			return true;
-		}
 
 
-	    private void addDesignationKey(String argument) {
-	    	I18N i18n = I18N.instance();
-			
+
+
+            return true;
+        }
+
+
+        private void addDesignationKey(String argument) {
+            I18N i18n = I18N.instance();
+
 		    for(String x : argument.split("[,|]")) {
-				for (String designationKey : i18n.getUserDesignationKeys()) {
-					if (designationKey.equals(x) 
-							|| i18n.getUserDesignation(designationKey).equals(x)) {
+                for (String designationKey : i18n.getUserDesignationKeys()) {
+                    if (designationKey.equals(x)
+                            || i18n.getUserDesignation(designationKey).equals(x)) {
 						this.designationKey.add(designationKey);
-						break;
-					}
+                        break;
+                    }
 
-				}
-			}
-	    }
+                }
+            }
+        }
 	    private void addCategoryKey(String argument) {
-	    	I18N i18n = I18N.instance();
-			
-		    for(String x : argument.split("[,|]")) {
+            I18N i18n = I18N.instance();
+
+            for(String x : argument.split("[,|]")) {
 				for (BugCategory category : i18n.getBugCategoryObjects()) {
-					if (category.getAbbrev().equals(x) || category.getCategory().equals(x)) {
-						this.categoryKey.add(category.getCategory());
-						break;
+                    if (category.getAbbrev().equals(x) || category.getCategory().equals(x)) {
+                        this.categoryKey.add(category.getCategory());
+                        break;
 					}
-				}
-			}
-	    }
+                }
+            }
+        }
 		private boolean bugLiveAt(BugInstance bug, long now) {
-			if (now < bug.getFirstVersion())
+            if (now < bug.getFirstVersion())
+                return false;
+            if (bug.isDead() && bug.getLastVersion() < now)
 				return false;
-			if (bug.isDead() && bug.getLastVersion() < now)
-				return false;
-			return true;
-		}
+            return true;
+        }
 
-		@Override
-		protected void handleOption(String option, String optionExtraPart) throws IOException {
-			option = option.substring(1);
+        @Override
+        protected void handleOption(String option, String optionExtraPart) throws IOException {
+            option = option.substring(1);
 			if (optionExtraPart.length() == 0)
-				setField(option, true);
-			else
-				setField(option, Boolean.parseBoolean(optionExtraPart));
+                setField(option, true);
+            else
+                setField(option, Boolean.parseBoolean(optionExtraPart));
 			setField(option+"Specified", true);
-		}
+        }
 
-		private void setField(String fieldName, boolean value) {
-			try {
-			Field f = FilterCommandLine.class.getField(fieldName);
+        private void setField(String fieldName, boolean value) {
+            try {
+            Field f = FilterCommandLine.class.getField(fieldName);
 			f.setBoolean(this, value);
-			} catch (RuntimeException e) {
-				throw e;
-			} catch (Exception e) {
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
 				throw new RuntimeException(e);
-			}
+            }
 
-		}
-		@Override
-		protected void handleOptionWithArgument(String option, String argument) throws IOException {
+        }
+        @Override
+        protected void handleOptionWithArgument(String option, String argument) throws IOException {
 
-			if (option.equals("-priority")) {
-				priority = parsePriority(argument);
-			}
+            if (option.equals("-priority")) {
+                priority = parsePriority(argument);
+            }
 
 
-			else if (option.equals("-maxRank")) 
-				maxRank = Integer.parseInt(argument);
-			
+            else if (option.equals("-maxRank"))
+                maxRank = Integer.parseInt(argument);
+
 			else if (option.equals("-first")) 
-				firstAsString = argument;
-			else if (option.equals("-maybeMutated")) 
-				maybeMutatedAsString = argument;
+                firstAsString = argument;
+            else if (option.equals("-maybeMutated"))
+                maybeMutatedAsString = argument;
 			else if (option.equals("-last")) 
-				lastAsString = argument;
-			else if (option.equals("-trimToVersion")) 
-				trimToVersionAsString = argument;
+                lastAsString = argument;
+            else if (option.equals("-trimToVersion"))
+                trimToVersionAsString = argument;
 			else if (option.equals("-maxDuration")) 
-				duration = Integer.parseInt(argument);
-			else if (option.equals("-fixed")) 
-				fixedAsString = argument;
+                duration = Integer.parseInt(argument);
+            else if (option.equals("-fixed"))
+                fixedAsString = argument;
 			else if (option.equals("-after")) 
-				afterAsString = argument;
-			else if (option.equals("-before")) 
-				beforeAsString = argument;
+                afterAsString = argument;
+            else if (option.equals("-before"))
+                beforeAsString = argument;
 			else if (option.equals("-present")) 
-				presentAsString = argument;
-			else if (option.equals("-absent")) 
-				absentAsString = argument;
+                presentAsString = argument;
+            else if (option.equals("-absent"))
+                absentAsString = argument;
 
-			else if (option.equals("-category"))
-				addCategoryKey(argument);
-			else if (option.equals("-designation"))
+            else if (option.equals("-category"))
+                addCategoryKey(argument);
+            else if (option.equals("-designation"))
 				addDesignationKey(argument);
-			else if (option.equals("-class"))
-					className = Pattern.compile(argument.replace(',', '|'));
-			else if (option.equals("-bugPattern"))
+            else if (option.equals("-class"))
+                    className = Pattern.compile(argument.replace(',', '|'));
+            else if (option.equals("-bugPattern"))
 					bugPattern = Pattern.compile(argument);
-			else if (option.equals("-annotation"))
-				annotation = argument;
-			else if (option.equals("-excludeBugs")) {
+            else if (option.equals("-annotation"))
+                annotation = argument;
+            else if (option.equals("-excludeBugs")) {
 				try {
-					ExcludingHashesBugReporter.addToExcludedInstanceHashes(excludedInstanceHashes, argument);
-				} catch (DocumentException e) {
-					throw new IllegalArgumentException("Error processing include file: " + argument, e);
+                    ExcludingHashesBugReporter.addToExcludedInstanceHashes(excludedInstanceHashes, argument);
+                } catch (DocumentException e) {
+                    throw new IllegalArgumentException("Error processing include file: " + argument, e);
 				}
-			} else if (option.equals("-include")) {
-				try {
-					includeFilter.add(new edu.umd.cs.findbugs.filter.Filter(argument));
+            } else if (option.equals("-include")) {
+                try {
+                    includeFilter.add(new edu.umd.cs.findbugs.filter.Filter(argument));
 				} catch (FilterException e) {
-					throw new IllegalArgumentException("Error processing include file: " + argument, e);
-				}
-			} else if (option.equals("-exclude")) {
+                    throw new IllegalArgumentException("Error processing include file: " + argument, e);
+                }
+            } else if (option.equals("-exclude")) {
 				try {
-					excludeFilter.add(new edu.umd.cs.findbugs.filter.Filter(argument));
-				} catch (FilterException e) {
-					throw new IllegalArgumentException("Error processing include file: " + argument, e);
+                    excludeFilter.add(new edu.umd.cs.findbugs.filter.Filter(argument));
+                } catch (FilterException e) {
+                    throw new IllegalArgumentException("Error processing include file: " + argument, e);
 				}
-			} else if (option.equals("-maxAge")) {
-				maxAge = Integer.parseInt(argument);
-				maxAgeSpecified = true;
+            } else if (option.equals("-maxAge")) {
+                maxAge = Integer.parseInt(argument);
+                maxAgeSpecified = true;
 			} else throw new IllegalArgumentException("can't handle command line argument of " + option);
-			
-		}
 
-		HashSet<String> mutationPoints;
-		/**
-		 * Do any prep work needed to perform bug filtering
+        }
+
+        HashSet<String> mutationPoints;
+        /**
+         * Do any prep work needed to perform bug filtering
 		 * 
          * @param origCollection
          */
         public void getReady(SortedBugCollection origCollection) {
-          	if (maybeMutatedAsString != null) {
-	        		HashSet<String> addedIssues = new HashSet<String>();
-	        		HashSet<String> removedIssues = new HashSet<String>();
+              if (maybeMutatedAsString != null) {
+                    HashSet<String> addedIssues = new HashSet<String>();
+                    HashSet<String> removedIssues = new HashSet<String>();
 	        		for(BugInstance b : origCollection) 
-	        			if (b.getFirstVersion() == maybeMutated) 
-	        				addedIssues.add(getBugLocation(b));
-	        			else if (b.getLastVersion() == maybeMutated -1)
+                        if (b.getFirstVersion() == maybeMutated)
+                            addedIssues.add(getBugLocation(b));
+                        else if (b.getLastVersion() == maybeMutated -1)
 	        				removedIssues.add(getBugLocation(b));
-	        		addedIssues.remove(null);
-	        		addedIssues.retainAll(removedIssues);
-	        		mutationPoints = addedIssues;
+                    addedIssues.remove(null);
+                    addedIssues.retainAll(removedIssues);
+                    mutationPoints = addedIssues;
 	        }
-	        
+
         }
 
-		/**
+        /**
          * @param b
          * @return
          */
         private boolean atMutationPoint(BugInstance b) {
-	        return b.getFirstVersion() == maybeMutated 
-	        		|| b.getLastVersion() == maybeMutated -1;
+            return b.getFirstVersion() == maybeMutated
+                    || b.getLastVersion() == maybeMutated -1;
         }
 
-		/**
+        /**
          * @param b
          * @return
          */
         private String getBugLocation(BugInstance b) {
-	        String point;
-	        MethodAnnotation m = b.getPrimaryMethod();
-	        FieldAnnotation f = b.getPrimaryField();
+            String point;
+            MethodAnnotation m = b.getPrimaryMethod();
+            FieldAnnotation f = b.getPrimaryField();
 	        if (m != null) 
-	        	point = m.toString();
-	        else if (f != null)
-	        	point = f.toString();
+                point = m.toString();
+            else if (f != null)
+                point = f.toString();
 	        else 
-	        	point = null;
-	        return point;
+                point = null;
+            return point;
         }
 
 
 
-	}
-	public static int parsePriority(String argument) {
-		int i = " HMLE".indexOf(argument);
+    }
+    public static int parsePriority(String argument) {
+        int i = " HMLE".indexOf(argument);
 		if (i == -1)
-			i = " 1234".indexOf(argument);
-		if (i == -1)
-			throw new IllegalArgumentException("Bad priority: " + argument);
+            i = " 1234".indexOf(argument);
+        if (i == -1)
+            throw new IllegalArgumentException("Bad priority: " + argument);
 		return i;
-	}
+    }
 
-	static SourceSearcher sourceSearcher;
+    static SourceSearcher sourceSearcher;
 
-	public static void main(String[] args) throws Exception {
-		FindBugs.setNoAnalysis();
-		DetectorFactoryCollection.instance();
+    public static void main(String[] args) throws Exception {
+        FindBugs.setNoAnalysis();
+        DetectorFactoryCollection.instance();
 		
-		final FilterCommandLine commandLine = new FilterCommandLine();
+        final FilterCommandLine commandLine = new FilterCommandLine();
 
-		int argCount = commandLine.parse(args, 0, 2, "Usage: " + Filter.class.getName()
-				+ " [options] [<orig results> [<new results]] ");
-		SortedBugCollection origCollection = new SortedBugCollection();
+        int argCount = commandLine.parse(args, 0, 2, "Usage: " + Filter.class.getName()
+                + " [options] [<orig results> [<new results]] ");
+        SortedBugCollection origCollection = new SortedBugCollection();
 
-		if (argCount == args.length)
-			origCollection.readXML(System.in);
-		else
+        if (argCount == args.length)
+            origCollection.readXML(System.in);
+        else
 			origCollection.readXML(args[argCount++]);
-		boolean verbose = argCount < args.length;
-		SortedBugCollection resultCollection = origCollection.createEmptyCollectionWithMetadata();
-		Project project = resultCollection.getProject();
+        boolean verbose = argCount < args.length;
+        SortedBugCollection resultCollection = origCollection.createEmptyCollectionWithMetadata();
+        Project project = resultCollection.getProject();
 		int passed = 0;
-		int dropped = 0;
-		resultCollection.setWithMessages(commandLine.withMessages);
-		if (commandLine.hashChangedSpecified)
+        int dropped = 0;
+        resultCollection.setWithMessages(commandLine.withMessages);
+        if (commandLine.hashChangedSpecified)
 			origCollection.computeBugHashes();
-		commandLine.adjustFilter(project, resultCollection);
-		ProjectStats projectStats = resultCollection.getProjectStats();
-		projectStats.clearBugCounts();
+        commandLine.adjustFilter(project, resultCollection);
+        ProjectStats projectStats = resultCollection.getProjectStats();
+        projectStats.clearBugCounts();
 		if (commandLine.className != null) {
-			projectStats.purgeClassesThatDontMatch(commandLine.className);
-		}
-		sourceSearcher = new SourceSearcher(project);
+            projectStats.purgeClassesThatDontMatch(commandLine.className);
+        }
+        sourceSearcher = new SourceSearcher(project);
 		
-		long trimToVersion = -1;
-		if (commandLine.trimToVersionAsString != null) {
-			Map<String, AppVersion> versions = new HashMap<String, AppVersion>();
+        long trimToVersion = -1;
+        if (commandLine.trimToVersionAsString != null) {
+            Map<String, AppVersion> versions = new HashMap<String, AppVersion>();
 			SortedMap<Long, AppVersion> timeStamps = new TreeMap<Long, AppVersion>();
 
-			for(Iterator<AppVersion> i = origCollection.appVersionIterator(); i.hasNext(); ) {
-				AppVersion v = i.next();
-				versions.put(v.getReleaseName(), v);
+            for(Iterator<AppVersion> i = origCollection.appVersionIterator(); i.hasNext(); ) {
+                AppVersion v = i.next();
+                versions.put(v.getReleaseName(), v);
 				timeStamps.put(v.getTimestamp(), v);
-			}
-			// add current version to the maps
-			AppVersion v = resultCollection.getCurrentAppVersion();
+            }
+            // add current version to the maps
+            AppVersion v = resultCollection.getCurrentAppVersion();
 			versions.put(v.getReleaseName(), v);
-			timeStamps.put(v.getTimestamp(), v);
+            timeStamps.put(v.getTimestamp(), v);
 
-			trimToVersion = edu.umd.cs.findbugs.workflow.Filter.FilterCommandLine.getVersionNum(
-					versions, timeStamps, commandLine.trimToVersionAsString, true, v.getSequenceNumber());
-			if (trimToVersion < origCollection.getSequenceNumber()) {
+            trimToVersion = edu.umd.cs.findbugs.workflow.Filter.FilterCommandLine.getVersionNum(
+                    versions, timeStamps, commandLine.trimToVersionAsString, true, v.getSequenceNumber());
+            if (trimToVersion < origCollection.getSequenceNumber()) {
 				String name = resultCollection.getAppVersionFromSequenceNumber(trimToVersion).getReleaseName();
-				long timestamp = resultCollection.getAppVersionFromSequenceNumber(trimToVersion).getTimestamp();
-				resultCollection.setReleaseName(name);
-				resultCollection.setTimestamp(timestamp);
+                long timestamp = resultCollection.getAppVersionFromSequenceNumber(trimToVersion).getTimestamp();
+                resultCollection.setReleaseName(name);
+                resultCollection.setTimestamp(timestamp);
 				resultCollection.trimAppVersions(trimToVersion);
-			}
+            }
 
-		}
+        }
 
 
-		if (commandLine.maxAgeSpecified || commandLine.notAProblemSpecified ||
-				commandLine.shouldFixSpecified)
-			origCollection.getCloud().waitUntilIssueDataDownloaded();
+        if (commandLine.maxAgeSpecified || commandLine.notAProblemSpecified ||
+                commandLine.shouldFixSpecified)
+            origCollection.getCloud().waitUntilIssueDataDownloaded();
 		
-		commandLine.getReady(origCollection);
-		
-		for (BugInstance bug : origCollection.getCollection())
+        commandLine.getReady(origCollection);
+
+        for (BugInstance bug : origCollection.getCollection())
 			if (commandLine.accept(origCollection, bug)) {
-				if (trimToVersion >= 0) {
-					if (bug.getFirstVersion() > trimToVersion) {
-						dropped++;
+                if (trimToVersion >= 0) {
+                    if (bug.getFirstVersion() > trimToVersion) {
+                        dropped++;
 						continue;
-					} else if (bug.getLastVersion() >= trimToVersion) {
-						bug.setLastVersion(-1);
-						bug.setRemovedByChangeOfPersistingClass(false);
+                    } else if (bug.getLastVersion() >= trimToVersion) {
+                        bug.setLastVersion(-1);
+                        bug.setRemovedByChangeOfPersistingClass(false);
 					}
-				}
-				resultCollection.add(bug, false);
-				if (!bug.isDead())
+                }
+                resultCollection.add(bug, false);
+                if (!bug.isDead())
 					projectStats.addBug(bug);
-				passed++;
-			} else
-				dropped++;
+                passed++;
+            } else
+                dropped++;
 
-		
-		
-		if (verbose)
+
+
+        if (verbose)
 			System.out.println(passed + " warnings passed through, " + dropped
-				+ " warnings dropped");
-		if (commandLine.withSourceSpecified && commandLine.withSource && !commandLine.dontUpdateStats && projectStats.hasClassStats()) {
-			for(PackageStats stats : projectStats.getPackageStats()) {
+                + " warnings dropped");
+        if (commandLine.withSourceSpecified && commandLine.withSource && !commandLine.dontUpdateStats && projectStats.hasClassStats()) {
+            for(PackageStats stats : projectStats.getPackageStats()) {
 				Iterator<ClassStats> i = stats.getClassStats().iterator();
-				while (i.hasNext()) {
-					String className = i.next().getName();
-					if (sourceSearcher.sourceNotFound.contains(className) || !sourceSearcher.sourceFound.contains(className) 
+                while (i.hasNext()) {
+                    String className = i.next().getName();
+                    if (sourceSearcher.sourceNotFound.contains(className) || !sourceSearcher.sourceFound.contains(className)
 							&& !sourceSearcher.findSource(SourceLineAnnotation.createReallyUnknown(className)
-									)) 
-						i.remove();
-				}
+                                    ))
+                        i.remove();
+                }
 			}
-			
-		}
-		projectStats.recomputeFromComponents();
+
+        }
+        projectStats.recomputeFromComponents();
 		if (argCount == args.length) {
-			assert !verbose;
-			resultCollection.writeXML(System.out);
-		}
+            assert !verbose;
+            resultCollection.writeXML(System.out);
+        }
 		else {
-			resultCollection.writeXML(args[argCount++]);
+            resultCollection.writeXML(args[argCount++]);
 
-		}
+        }
 
-	}
+    }
 
 
 }

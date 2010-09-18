@@ -33,55 +33,55 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class TestingGround extends OpcodeStackDetector {
 
-	final BugReporter bugReporter;
-	final BugAccumulator accumulator;
+    final BugReporter bugReporter;
+    final BugAccumulator accumulator;
 
-	public TestingGround(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-		this.accumulator = new BugAccumulator(bugReporter);
+    public TestingGround(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+        this.accumulator = new BugAccumulator(bugReporter);
 	}
 
-	@Override
-	public void visit(Code code) {
-		boolean interesting = true;
+    @Override
+    public void visit(Code code) {
+        boolean interesting = true;
 		if (interesting)  {
-			// initialize any variables we want to initialize for the method
-			super.visit(code); // make callbacks to sawOpcode for all opcodes
-		}
+            // initialize any variables we want to initialize for the method
+            super.visit(code); // make callbacks to sawOpcode for all opcodes
+        }
 		accumulator.reportAccumulatedBugs();
-	}
+    }
 
-	@Override
-	public void sawOpcode(int seen) {
-		if (seen == INVOKESTATIC 
+    @Override
+    public void sawOpcode(int seen) {
+        if (seen == INVOKESTATIC
 				&& getClassConstantOperand().equals("com/google/common/base/Preconditions")
-				&& getNameConstantOperand().startsWith("check")) {
-			SignatureParser parser = new SignatureParser(getSigConstantOperand());
-			int count = 0;
+                && getNameConstantOperand().startsWith("check")) {
+            SignatureParser parser = new SignatureParser(getSigConstantOperand());
+            int count = 0;
 			for(Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext(); count++) {
-				String parameter = i.next();
-				if (parameter.equals("Ljava/lang/Object;")) {
-					OpcodeStack.Item item = stack.getStackItem(parser.getNumParameters() - 1 - count);
+                String parameter = i.next();
+                if (parameter.equals("Ljava/lang/Object;")) {
+                    OpcodeStack.Item item = stack.getStackItem(parser.getNumParameters() - 1 - count);
 					XMethod m =  item.getReturnValueOf();
-					if (m == null) 
+                    if (m == null)
+                        continue;
+                    if (!m.getName().equals("toString"))
 						continue;
-					if (!m.getName().equals("toString"))
-						continue;
-					if (!m.getClassName().startsWith("java.lang.StringB"))
-						continue;
-					accumulator.accumulateBug(new BugInstance(this,
+                    if (!m.getClassName().startsWith("java.lang.StringB"))
+                        continue;
+                    accumulator.accumulateBug(new BugInstance(this,
 							"TESTING", NORMAL_PRIORITY)
-					.addClassAndMethod(this)
-					.addCalledMethod(this), this);
-				}
+                    .addClassAndMethod(this)
+                    .addCalledMethod(this), this);
+                }
 					
-			}		
-			
-		}
+            }
+
+        }
 				
-	}
+    }
 
 
-	
+
 
 }

@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -54,38 +54,38 @@ import net.infonode.docking.util.ViewMap;
  * @author pugh
  */
 public class DockLayout implements FindBugsLayoutManager {
-	private static class DockParentListener extends DockingWindowAdapter
-	{
-		@Override
+    private static class DockParentListener extends DockingWindowAdapter
+    {
+        @Override
 		public void windowClosed(DockingWindow window)
-		{
-			// Notify all children's listeners
-			ArrayList<DockingWindow> children = new ArrayList<DockingWindow>();
+        {
+            // Notify all children's listeners
+            ArrayList<DockingWindow> children = new ArrayList<DockingWindow>();
 			for (int i = 0; i < window.getChildWindowCount(); i++)
-				children.add(window.getChildWindow(i));
-			for (DockingWindow i : children)
-				i.close();
+                children.add(window.getChildWindow(i));
+            for (DockingWindow i : children)
+                i.close();
 		}
-	}
-	private class ViewMenuItem extends JCheckBoxMenuItem implements ItemListener
-	{
+    }
+    private class ViewMenuItem extends JCheckBoxMenuItem implements ItemListener
+    {
 		private View view;
 
-		public ViewMenuItem(View view, String title)
-		{
-			super(title, true);
+        public ViewMenuItem(View view, String title)
+        {
+            super(title, true);
 			addItemListener(this);
-			this.view = view;
+            this.view = view;
 //			view.addListener(new Listener());
-		}
+        }
 
-		// Menu item has been checked or unchecked
-		public void itemStateChanged(ItemEvent evt)
-		{
+        // Menu item has been checked or unchecked
+        public void itemStateChanged(ItemEvent evt)
+        {
 			if (evt.getStateChange() == ItemEvent.SELECTED)
-				DockingUtil.addWindow(view, rootWindow);
-			if (evt.getStateChange() == ItemEvent.DESELECTED)
-				view.close();
+                DockingUtil.addWindow(view, rootWindow);
+            if (evt.getStateChange() == ItemEvent.DESELECTED)
+                view.close();
 		}
 
 //		private class Listener extends DockingWindowAdapter
@@ -96,7 +96,7 @@ public class DockLayout implements FindBugsLayoutManager {
 //				if (addedWindow.equals(view))
 //					ViewMenuItem.this.setSelected(true);
 //			}
-//			
+//
 //			@Override
 //			public void windowRemoved(DockingWindow removedFromWindow, DockingWindow removedWindow)
 //			{
@@ -104,142 +104,142 @@ public class DockLayout implements FindBugsLayoutManager {
 //					ViewMenuItem.this.setSelected(false);
 //			}
 //		}
-	}
-	private View commentsView = null;
-	final MainFrame frame;
+    }
+    private View commentsView = null;
+    final MainFrame frame;
 	private RootWindow rootWindow;
-	private View sourceView = null;
-	private View summaryView = null;
-	private TabWindow tabs = null;
+    private View sourceView = null;
+    private View summaryView = null;
+    private TabWindow tabs = null;
 
-	private View topView = null;
-	private Map<View, ViewMenuItem> viewMenuItems = null;
-	/**
+    private View topView = null;
+    private Map<View, ViewMenuItem> viewMenuItems = null;
+    /**
 	 * @param frame
-	 */
-	public DockLayout(MainFrame frame) {
-		this.frame = frame;
+     */
+    public DockLayout(MainFrame frame) {
+        this.frame = frame;
 	}
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.gui2.LayoutManager#createWindowMenu()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.gui2.LayoutManager#createWindowMenu()
+     */
 	public JMenu createWindowMenu() {
 
-		viewMenuItems = new HashMap<View, ViewMenuItem>();
-		viewMenuItems.put(summaryView, new ViewMenuItem(summaryView, "Bug summary"));
-		viewMenuItems.put(commentsView, new ViewMenuItem(commentsView, "Comments"));
+        viewMenuItems = new HashMap<View, ViewMenuItem>();
+        viewMenuItems.put(summaryView, new ViewMenuItem(summaryView, "Bug summary"));
+        viewMenuItems.put(commentsView, new ViewMenuItem(commentsView, "Comments"));
 		viewMenuItems.put(sourceView, new ViewMenuItem(sourceView, "Source code"));
 
-		JMenu windowMenu = new JMenu("Window");
-		windowMenu.setMnemonic(KeyEvent.VK_W);
-		windowMenu.add(viewMenuItems.get(summaryView));
+        JMenu windowMenu = new JMenu("Window");
+        windowMenu.setMnemonic(KeyEvent.VK_W);
+        windowMenu.add(viewMenuItems.get(summaryView));
 		windowMenu.add(viewMenuItems.get(commentsView));
-		windowMenu.add(viewMenuItems.get(sourceView));
-		return windowMenu;
-	}
+        windowMenu.add(viewMenuItems.get(sourceView));
+        return windowMenu;
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.gui2.LayoutManager#initialize()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.gui2.LayoutManager#initialize()
+     */
 	public void initialize() {
-		ViewMap viewMap = new ViewMap();
-		topView = new View(L10N.getLocalString("view.bugs", "Bugs"), null, frame.bugListPanel());
-		topView.getWindowProperties().setCloseEnabled(false);
+        ViewMap viewMap = new ViewMap();
+        topView = new View(L10N.getLocalString("view.bugs", "Bugs"), null, frame.bugListPanel());
+        topView.getWindowProperties().setCloseEnabled(false);
 		viewMap.addView(0, topView);
-		summaryView = new View(L10N.getLocalString("view.bug_summary", "Bug Summary"), null, frame.summaryTab());
-		viewMap.addView(1, summaryView);
-		commentsView = new View(L10N.getLocalString("view.comments", "Comments"), null, frame.createCommentsInputPanel());
+        summaryView = new View(L10N.getLocalString("view.bug_summary", "Bug Summary"), null, frame.summaryTab());
+        viewMap.addView(1, summaryView);
+        commentsView = new View(L10N.getLocalString("view.comments", "Comments"), null, frame.createCommentsInputPanel());
 		viewMap.addView(2, commentsView);
-		sourceView = new View(L10N.getLocalString("view.source", "Source"), null, frame.createSourceCodePanel());
-		viewMap.addView(3, sourceView);
+        sourceView = new View(L10N.getLocalString("view.source", "Source"), null, frame.createSourceCodePanel());
+        viewMap.addView(3, sourceView);
 
-		rootWindow = DockingUtil.createRootWindow(viewMap, true);
+        rootWindow = DockingUtil.createRootWindow(viewMap, true);
 
-		tabs = new TabWindow(new DockingWindow[]{summaryView, commentsView, sourceView});
-		tabs.addListener(new DockParentListener());
-		tabs.setSelectedTab(0);
+        tabs = new TabWindow(new DockingWindow[]{summaryView, commentsView, sourceView});
+        tabs.addListener(new DockParentListener());
+        tabs.setSelectedTab(0);
 //		tabs.getWindowProperties().setCloseEnabled(false);
 
-		rootWindow.setWindow(new SplitWindow(false, 0.4f, topView, tabs));
+        rootWindow.setWindow(new SplitWindow(false, 0.4f, topView, tabs));
 
-		DockingWindowsTheme theme = new ShapedGradientDockingTheme();
-		rootWindow.getRootWindowProperties().addSuperObject(theme.getRootWindowProperties());
+        DockingWindowsTheme theme = new ShapedGradientDockingTheme();
+        rootWindow.getRootWindowProperties().addSuperObject(theme.getRootWindowProperties());
 
-		try
-		{
-			rootWindow.read(new ObjectInputStream(new ByteArrayInputStream(GUISaveState.getInstance().getDockingLayout())), true);
+        try
+        {
+            rootWindow.read(new ObjectInputStream(new ByteArrayInputStream(GUISaveState.getInstance().getDockingLayout())), true);
 		}
-		catch (IOException e) {}
+        catch (IOException e) {}
 
-		DockingWindowListener listener = new DockingWindowAdapter()
-		{
-			@Override
+        DockingWindowListener listener = new DockingWindowAdapter()
+        {
+            @Override
 			public void windowAdded(DockingWindow addedToWindow, DockingWindow addedWindow)
-			{
-				viewMenuItems.get(addedWindow).setSelected(true);
+            {
+                viewMenuItems.get(addedWindow).setSelected(true);
 
-				addedToWindow.addListener(new DockParentListener());
-			}
+                addedToWindow.addListener(new DockParentListener());
+            }
 
-			@Override
-			public void windowClosed(DockingWindow window)
-			{
+            @Override
+            public void windowClosed(DockingWindow window)
+            {
 				viewMenuItems.get(window).setSelected(false);
-			}
-		};
+            }
+        };
 
-		summaryView.addListener(listener);
-		commentsView.addListener(listener);
-		sourceView.addListener(listener);
+        summaryView.addListener(listener);
+        commentsView.addListener(listener);
+        sourceView.addListener(listener);
 
-		frame.setLayout(new BorderLayout());
-		frame.add(rootWindow, BorderLayout.CENTER);
-		frame.add(frame.statusBar(), BorderLayout.SOUTH);
+        frame.setLayout(new BorderLayout());
+        frame.add(rootWindow, BorderLayout.CENTER);
+        frame.add(frame.statusBar(), BorderLayout.SOUTH);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.gui2.LayoutManager#makeCommentsVisible()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.gui2.LayoutManager#makeCommentsVisible()
+     */
 	public void makeCommentsVisible() {
-		commentsView.makeVisible();
+        commentsView.makeVisible();
 
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.gui2.LayoutManager#makeSourceVisible()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.gui2.LayoutManager#makeSourceVisible()
+     */
 	public void makeSourceVisible() {
-		sourceView.makeVisible();
+        sourceView.makeVisible();
 
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.gui2.LayoutManager#saveState()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.gui2.LayoutManager#saveState()
+     */
 	public void saveState() {
-		try
-		{
-			// FIXME this is writing the wrong array and I don't know why
+        try
+        {
+            // FIXME this is writing the wrong array and I don't know why
 			ByteArrayOutputStream dockingLayout = new ByteArrayOutputStream();
-			ObjectOutputStream out = new ObjectOutputStream(dockingLayout);
-			rootWindow.write(out, true);
-			out.close();
+            ObjectOutputStream out = new ObjectOutputStream(dockingLayout);
+            rootWindow.write(out, true);
+            out.close();
 			GUISaveState.getInstance().setDockingLayout(dockingLayout.toByteArray());
-		}
-		catch (IOException e) {}
+        }
+        catch (IOException e) {}
 
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.gui2.LayoutManager#setSourceTitle(java.lang.String)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.gui2.LayoutManager#setSourceTitle(java.lang.String)
+     */
 	public void setSourceTitle(final String title) {
-	sourceView.getWindowProperties().setTitleProvider(new DockingWindowTitleProvider(){
-		public String getTitle(DockingWindow arg0) {
-			return title;
+    sourceView.getWindowProperties().setTitleProvider(new DockingWindowTitleProvider(){
+        public String getTitle(DockingWindow arg0) {
+            return title;
 		}				
-	});
-	}
+    });
+    }
 
 
 }

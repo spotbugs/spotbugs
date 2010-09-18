@@ -37,125 +37,125 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * @author David Hovemeyer
  */
 public class ClassPathImpl implements IClassPath {
-	private List<IScannableCodeBase> appCodeBaseList;
-	private List<ICodeBase> auxCodeBaseList;
-	private Map<String, ICodeBaseEntry> codeBaseEntryMap;
+    private List<IScannableCodeBase> appCodeBaseList;
+    private List<ICodeBase> auxCodeBaseList;
+    private Map<String, ICodeBaseEntry> codeBaseEntryMap;
 
-	public ClassPathImpl() {
-		this.appCodeBaseList = new LinkedList<IScannableCodeBase>();
-		this.auxCodeBaseList = new LinkedList<ICodeBase>();
+    public ClassPathImpl() {
+        this.appCodeBaseList = new LinkedList<IScannableCodeBase>();
+        this.auxCodeBaseList = new LinkedList<ICodeBase>();
 		this.codeBaseEntryMap = new HashMap<String, ICodeBaseEntry>();
-	}
+    }
 
-	@Override
+    @Override
     public String toString() {
-		StringBuilder buf = new StringBuilder();
-		for(IScannableCodeBase cb : appCodeBaseList) {
-			buf.append(cb);
+        StringBuilder buf = new StringBuilder();
+        for(IScannableCodeBase cb : appCodeBaseList) {
+            buf.append(cb);
 			buf.append(" ");
-		}
-		for(ICodeBase cb : auxCodeBaseList) {
-			buf.append("*");
+        }
+        for(ICodeBase cb : auxCodeBaseList) {
+            buf.append("*");
 			buf.append(cb);
-			buf.append(" ");
-		}
-		return buf.toString();
+            buf.append(" ");
+        }
+        return buf.toString();
 	}
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IClassPath#addCodeBase(edu.umd.cs.findbugs.classfile.ICodeBase)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.IClassPath#addCodeBase(edu.umd.cs.findbugs.classfile.ICodeBase)
+     */
 	public void addCodeBase(ICodeBase codeBase) {
-		if (codeBase.isApplicationCodeBase()) {
-			if (!(codeBase instanceof IScannableCodeBase)) {
-				throw new IllegalStateException();
+        if (codeBase.isApplicationCodeBase()) {
+            if (!(codeBase instanceof IScannableCodeBase)) {
+                throw new IllegalStateException();
 			}
-			appCodeBaseList.add((IScannableCodeBase) codeBase);
-		} else {
-			auxCodeBaseList.add(codeBase);
+            appCodeBaseList.add((IScannableCodeBase) codeBase);
+        } else {
+            auxCodeBaseList.add(codeBase);
 		}
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IClassPath#appCodeBaseIterator()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.IClassPath#appCodeBaseIterator()
+     */
 	public Iterator<? extends ICodeBase> appCodeBaseIterator() {
-		return appCodeBaseList.iterator();
-	}
+        return appCodeBaseList.iterator();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IClassPath#auxCodeBaseIterator()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.IClassPath#auxCodeBaseIterator()
+     */
 	public Iterator<? extends ICodeBase> auxCodeBaseIterator() {
-		return auxCodeBaseList.iterator();
-	}
+        return auxCodeBaseList.iterator();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IClassPath#close()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.IClassPath#close()
+     */
 	public void close() {
-		for (ICodeBase codeBase : appCodeBaseList) {
-			codeBase.close();
-		}
+        for (ICodeBase codeBase : appCodeBaseList) {
+            codeBase.close();
+        }
 		for (ICodeBase codeBase : auxCodeBaseList) {
-			codeBase.close();
-		}
-		appCodeBaseList.clear();
+            codeBase.close();
+        }
+        appCodeBaseList.clear();
 		auxCodeBaseList.clear();
-		codeBaseEntryMap.clear();
-	}
+        codeBaseEntryMap.clear();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IClassPath#lookupResource(java.lang.String)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.IClassPath#lookupResource(java.lang.String)
+     */
 	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
-		// See if we have cached the codebase entry for this resource
-		ICodeBaseEntry result = codeBaseEntryMap.get(resourceName);
+        // See if we have cached the codebase entry for this resource
+        ICodeBaseEntry result = codeBaseEntryMap.get(resourceName);
 
-		if (result == null) {
-			// No previously resolved entry - look up the resources in the codebases
+        if (result == null) {
+            // No previously resolved entry - look up the resources in the codebases
 
-			// First try application codebases
-			result = search(appCodeBaseList, resourceName);
-			if (result == null) {
+            // First try application codebases
+            result = search(appCodeBaseList, resourceName);
+            if (result == null) {
 				// Next try aux codebases
-				result = search(auxCodeBaseList, resourceName);
+                result = search(auxCodeBaseList, resourceName);
+            }
+
+            // If not found in any codebase, then throw ResourceNotFoundException
+            if (result == null) {
+                throw new ResourceNotFoundException(resourceName);
 			}
 
-			// If not found in any codebase, then throw ResourceNotFoundException
-			if (result == null) {
-				throw new ResourceNotFoundException(resourceName);
-			}
+            // Cache the entry for future lookups
+            codeBaseEntryMap.put(resourceName, result);
+        }
 
-			// Cache the entry for future lookups
-			codeBaseEntryMap.put(resourceName, result);
-		}
+        return result;
+    }
 
-		return result;
-	}
-
-	/**
-	 * Search list of codebases for named resource.
-	 *
+    /**
+     * Search list of codebases for named resource.
+     *
 	 * @param codeBaseList list of codebases to search
-	 * @param resourceName name of resourse
-	 * @return codebase entry for the named resource, or null if
-	 *          the named resource cannot be found
+     * @param resourceName name of resourse
+     * @return codebase entry for the named resource, or null if
+     *          the named resource cannot be found
 	 */
-	private ICodeBaseEntry search(List<? extends ICodeBase> codeBaseList, String resourceName) {
-		for (ICodeBase codeBase : codeBaseList) {
-			ICodeBaseEntry resource = codeBase.lookupResource(resourceName);
+    private ICodeBaseEntry search(List<? extends ICodeBase> codeBaseList, String resourceName) {
+        for (ICodeBase codeBase : codeBaseList) {
+            ICodeBaseEntry resource = codeBase.lookupResource(resourceName);
 			if(resource != null) {
                 return resource;
             }
-			// Ignore, continue trying other codebases
-		}
-		return null;
+            // Ignore, continue trying other codebases
+        }
+        return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IClassPath#mapResourceNameToCodeBaseEntry(java.lang.String, edu.umd.cs.findbugs.classfile.ICodeBaseEntry)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.IClassPath#mapResourceNameToCodeBaseEntry(java.lang.String, edu.umd.cs.findbugs.classfile.ICodeBaseEntry)
+     */
 	public void mapResourceNameToCodeBaseEntry(String resourceName, ICodeBaseEntry codeBaseEntry) {
-		codeBaseEntryMap.put(resourceName, codeBaseEntry);
-	}
+        codeBaseEntryMap.put(resourceName, codeBaseEntry);
+    }
 }

@@ -29,60 +29,60 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class AppendingToAnObjectOutputStream extends OpcodeStackDetector {
 
-	BugReporter bugReporter;
+    BugReporter bugReporter;
 
-	public AppendingToAnObjectOutputStream(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+    public AppendingToAnObjectOutputStream(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
+
+    boolean sawOpenInAppendMode;
+
+    @Override
+    public void visit(Method obj) {
+        sawOpenInAppendMode = false;
 	}
 
-	boolean sawOpenInAppendMode;
-
-	@Override
-	public void visit(Method obj) {
-		sawOpenInAppendMode = false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
+    /*
+     * (non-Javadoc)
+     *
 	 * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
-	 */
-	@Override
-	public void sawOpcode(int seen) {
+     */
+    @Override
+    public void sawOpcode(int seen) {
 		if (seen != INVOKESPECIAL) {
-			sawOpenInAppendMode = false;
-			return;
-		}
+            sawOpenInAppendMode = false;
+            return;
+        }
 		String calledClassName = getClassConstantOperand();
-		String calledMethodName = getNameConstantOperand();
-		String calledMethodSig = getSigConstantOperand();
-		if (!sawOpenInAppendMode) {
+        String calledMethodName = getNameConstantOperand();
+        String calledMethodSig = getSigConstantOperand();
+        if (!sawOpenInAppendMode) {
 			if (calledClassName.equals("java/io/ObjectOutputStream") && calledMethodName.equals("<init>")
-			        && calledMethodSig.equals("(Ljava/io/OutputStream;)V")
-			        && stack.getStackItem(0).getSpecialKind() == OpcodeStack.Item.FILE_OPENED_IN_APPEND_MODE)
-				bugReporter.reportBug(new BugInstance(this, "IO_APPENDING_TO_OBJECT_OUTPUT_STREAM", Priorities.HIGH_PRIORITY)
+                    && calledMethodSig.equals("(Ljava/io/OutputStream;)V")
+                    && stack.getStackItem(0).getSpecialKind() == OpcodeStack.Item.FILE_OPENED_IN_APPEND_MODE)
+                bugReporter.reportBug(new BugInstance(this, "IO_APPENDING_TO_OBJECT_OUTPUT_STREAM", Priorities.HIGH_PRIORITY)
 				        .addClassAndMethod(this).addSourceLine(this));
-			return;
-		}
-		if (calledClassName.equals("java/io/FileOutputStream") && calledMethodName.equals("<init>")
+            return;
+        }
+        if (calledClassName.equals("java/io/FileOutputStream") && calledMethodName.equals("<init>")
 		        && (calledMethodSig.equals("(Ljava/io/File;Z)V") || calledMethodSig.equals("(Ljava/lang/String;Z)V"))) {
-			OpcodeStack.Item item = stack.getStackItem(0);
-			Object value = item.getConstant();
-			sawOpenInAppendMode = value instanceof Integer && ((Integer) value).intValue() == 1;
+            OpcodeStack.Item item = stack.getStackItem(0);
+            Object value = item.getConstant();
+            sawOpenInAppendMode = value instanceof Integer && ((Integer) value).intValue() == 1;
 		} else if (!sawOpenInAppendMode) {
-			return;
-		} else if (calledClassName.equals("java/io/BufferedOutputStream") && calledMethodName.equals("<init>")
-		        && calledMethodSig.equals("(Ljava/io/OutputStream;)V")) {
+            return;
+        } else if (calledClassName.equals("java/io/BufferedOutputStream") && calledMethodName.equals("<init>")
+                && calledMethodSig.equals("(Ljava/io/OutputStream;)V")) {
 			// do nothing
 
-		} else if (calledClassName.equals("java/io/ObjectOutputStream") && calledMethodName.equals("<init>")
-		        && calledMethodSig.equals("(Ljava/io/OutputStream;)V")) {
-			bugReporter.reportBug(new BugInstance(this, "IO_APPENDING_TO_OBJECT_OUTPUT_STREAM", Priorities.HIGH_PRIORITY)
+        } else if (calledClassName.equals("java/io/ObjectOutputStream") && calledMethodName.equals("<init>")
+                && calledMethodSig.equals("(Ljava/io/OutputStream;)V")) {
+            bugReporter.reportBug(new BugInstance(this, "IO_APPENDING_TO_OBJECT_OUTPUT_STREAM", Priorities.HIGH_PRIORITY)
 			        .addClassAndMethod(this).addSourceLine(this));
-			sawOpenInAppendMode = false;
-		} else
-			sawOpenInAppendMode = false;
+            sawOpenInAppendMode = false;
+        } else
+            sawOpenInAppendMode = false;
 
-	}
+    }
 
 }

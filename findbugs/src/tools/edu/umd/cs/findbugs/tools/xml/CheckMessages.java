@@ -41,7 +41,7 @@ public class CheckMessages {
     private static class CheckMessagesException extends DocumentException {
         /**
          *
-		 */
+         */
         private static final long serialVersionUID = 1L;
 
         public CheckMessagesException(String msg, XMLFile xmlFile, Node node) {
@@ -144,7 +144,7 @@ public class CheckMessages {
 
     /**
      * Check given messages file for validity.
-     * 
+     *
      * @throws DocumentException
      *             if the messages file is invalid
      */

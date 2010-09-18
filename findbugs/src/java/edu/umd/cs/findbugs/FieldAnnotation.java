@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003-2005, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -50,312 +50,312 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  * @see BugAnnotation
  */
 public class FieldAnnotation extends PackageMemberAnnotation {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public static final String DEFAULT_ROLE = "FIELD_DEFAULT";
+    public static final String DEFAULT_ROLE = "FIELD_DEFAULT";
 
-	public static final String DID_YOU_MEAN_ROLE = "FIELD_DID_YOU_MEAN";
-	public static final String VALUE_OF_ROLE="FIELD_VALUE_OF";
-	public static final String LOADED_FROM_ROLE = VALUE_OF_ROLE;
+    public static final String DID_YOU_MEAN_ROLE = "FIELD_DID_YOU_MEAN";
+    public static final String VALUE_OF_ROLE="FIELD_VALUE_OF";
+    public static final String LOADED_FROM_ROLE = VALUE_OF_ROLE;
 	public static final String STORED_ROLE = "FIELD_STORED";
-	public static final String INVOKED_ON_ROLE="FIELD_INVOKED_ON";
-	public static final String ARGUMENT_ROLE="FIELD_ARGUMENT";
+    public static final String INVOKED_ON_ROLE="FIELD_INVOKED_ON";
+    public static final String ARGUMENT_ROLE="FIELD_ARGUMENT";
 
-	private String fieldName;
-	private String fieldSig;
-	private String fieldSourceSig;
+    private String fieldName;
+    private String fieldSig;
+    private String fieldSourceSig;
 	private boolean isStatic;
 
-	/**
-	 * Constructor.
-	 *
+    /**
+     * Constructor.
+     *
 	 * @param className the name of the class containing the field
-	 * @param fieldName the name of the field
-	 * @param fieldSig  the type signature of the field
-	 */
+     * @param fieldName the name of the field
+     * @param fieldSig  the type signature of the field
+     */
 	public FieldAnnotation(@DottedClassName String className, String fieldName, String fieldSig, boolean isStatic) {
-		super(className, DEFAULT_ROLE);
-		if (fieldSig.indexOf(".") >= 0) {
-			assert false : "signatures should not be dotted: " + fieldSig;
+        super(className, DEFAULT_ROLE);
+        if (fieldSig.indexOf(".") >= 0) {
+            assert false : "signatures should not be dotted: " + fieldSig;
 			fieldSig = fieldSig.replace('.','/');
-		}
-		this.fieldName = fieldName;
-		this.fieldSig = fieldSig;
+        }
+        this.fieldName = fieldName;
+        this.fieldSig = fieldSig;
 		this.isStatic = isStatic;
-	}
-	
-	public FieldAnnotation(@DottedClassName String className, String fieldName, String fieldSig, String fieldSourceSig, boolean isStatic) {
+    }
+
+    public FieldAnnotation(@DottedClassName String className, String fieldName, String fieldSig, String fieldSourceSig, boolean isStatic) {
 		this(className, fieldName, fieldSig, isStatic);
-		this.fieldSourceSig = fieldSourceSig;
-	}
-	/**
+        this.fieldSourceSig = fieldSourceSig;
+    }
+    /**
 	 * Constructor.
-	 *
-	 * @param className the name of the class containing the field
-	 * @param fieldName the name of the field
+     *
+     * @param className the name of the class containing the field
+     * @param fieldName the name of the field
 	 * @param fieldSig  the type signature of the field
-	 * @param accessFlags accessFlags for the field
-	 */
-	public FieldAnnotation(@DottedClassName String className, String fieldName, String fieldSig, int accessFlags) {
+     * @param accessFlags accessFlags for the field
+     */
+    public FieldAnnotation(@DottedClassName String className, String fieldName, String fieldSig, int accessFlags) {
 		this(className, fieldName, fieldSig, (accessFlags & Constants.ACC_STATIC) != 0);
-	}
-	/**
-	 * Factory method. Class name, field name, and field signatures are taken from
+    }
+    /**
+     * Factory method. Class name, field name, and field signatures are taken from
 	 * the given visitor, which is visiting the field.
-	 *
-	 * @param visitor the visitor which is visiting the field
-	 * @return the FieldAnnotation object
+     *
+     * @param visitor the visitor which is visiting the field
+     * @return the FieldAnnotation object
 	 */
-	public static FieldAnnotation fromVisitedField(PreorderVisitor visitor) {
-		return new FieldAnnotation(visitor.getDottedClassName(),
-				visitor.getFieldName(), visitor.getFieldSig(),
+    public static FieldAnnotation fromVisitedField(PreorderVisitor visitor) {
+        return new FieldAnnotation(visitor.getDottedClassName(),
+                visitor.getFieldName(), visitor.getFieldSig(),
 				visitor.getFieldIsStatic());
-	}
+    }
 
-	/**
-	 * Factory method. Class name, field name, and field signatures are taken from
-	 * the given visitor, which is visiting a reference to the field
+    /**
+     * Factory method. Class name, field name, and field signatures are taken from
+     * the given visitor, which is visiting a reference to the field
 	 * (i.e., a getfield or getstatic instruction).
-	 *
-	 * @param visitor the visitor which is visiting the field reference
-	 * @return the FieldAnnotation object
+     *
+     * @param visitor the visitor which is visiting the field reference
+     * @return the FieldAnnotation object
 	 */
-	public static FieldAnnotation fromReferencedField(DismantleBytecode visitor) {
-		String className = visitor.getDottedClassConstantOperand();
-		return new FieldAnnotation(className,
+    public static FieldAnnotation fromReferencedField(DismantleBytecode visitor) {
+        String className = visitor.getDottedClassConstantOperand();
+        return new FieldAnnotation(className,
 				visitor.getNameConstantOperand(),
-				visitor.getSigConstantOperand(), visitor.getRefFieldIsStatic());
-	}
+                visitor.getSigConstantOperand(), visitor.getRefFieldIsStatic());
+    }
 
-	/**
-	 * Factory method. Construct from class name and BCEL Field object.
-	 *
+    /**
+     * Factory method. Construct from class name and BCEL Field object.
+     *
 	 * @param className the name of the class which defines the field
-	 * @param field     the BCEL Field object
-	 * @return the FieldAnnotation
-	 */
+     * @param field     the BCEL Field object
+     * @return the FieldAnnotation
+     */
 	public static FieldAnnotation fromBCELField(@DottedClassName String className, Field field) {
-		return new FieldAnnotation(className, field.getName(), field.getSignature(), field.isStatic());
-	}
-	/**
+        return new FieldAnnotation(className, field.getName(), field.getSignature(), field.isStatic());
+    }
+    /**
 	 * Factory method. Construct from class name and BCEL Field object.
-	 *
-	 * @param jClass the class which defines the field
-	 * @param field     the BCEL Field object
+     *
+     * @param jClass the class which defines the field
+     * @param field     the BCEL Field object
 	 * @return the FieldAnnotation
-	 */
-	public static FieldAnnotation fromBCELField(JavaClass jClass, Field field) {
-		return new FieldAnnotation(jClass.getClassName(), field.getName(), field.getSignature(), field.isStatic());
+     */
+    public static FieldAnnotation fromBCELField(JavaClass jClass, Field field) {
+        return new FieldAnnotation(jClass.getClassName(), field.getName(), field.getSignature(), field.isStatic());
 	}
 
-	/**
-	 * Factory method.  Construct from a FieldDescriptor.
-	 * 
+    /**
+     * Factory method.  Construct from a FieldDescriptor.
+     *
 	 * @param fieldDescriptor the FieldDescriptor
-	 * @return the FieldAnnotation
-	 */
-	public static FieldAnnotation fromFieldDescriptor(FieldDescriptor fieldDescriptor) {
+     * @return the FieldAnnotation
+     */
+    public static FieldAnnotation fromFieldDescriptor(FieldDescriptor fieldDescriptor) {
 		return new FieldAnnotation(
-				fieldDescriptor.getClassDescriptor().getDottedClassName(),
-				fieldDescriptor.getName(),
-				fieldDescriptor.getSignature(),
+                fieldDescriptor.getClassDescriptor().getDottedClassName(),
+                fieldDescriptor.getName(),
+                fieldDescriptor.getSignature(),
 				fieldDescriptor.isStatic());
-	}
+    }
 
-	public static FieldAnnotation fromXField(XField fieldDescriptor) {
-		return new FieldAnnotation(
-				fieldDescriptor.getClassName(),
+    public static FieldAnnotation fromXField(XField fieldDescriptor) {
+        return new FieldAnnotation(
+                fieldDescriptor.getClassName(),
 				fieldDescriptor.getName(),
-				fieldDescriptor.getSignature(),
-				fieldDescriptor.getSourceSignature(),
-				fieldDescriptor.isStatic());
+                fieldDescriptor.getSignature(),
+                fieldDescriptor.getSourceSignature(),
+                fieldDescriptor.isStatic());
 	}
-	/**
-	 * Get the field name.
-	 */
+    /**
+     * Get the field name.
+     */
 	public String getFieldName() {
-		return fieldName;
-	}
+        return fieldName;
+    }
 
-	/**
-	 * Get the type signature of the field.
-	 */
+    /**
+     * Get the type signature of the field.
+     */
 	public String getFieldSignature() {
-		return fieldSig;
-	}
+        return fieldSig;
+    }
 
-	/**
-	 * Return whether or not the field is static.
-	 */
+    /**
+     * Return whether or not the field is static.
+     */
 	public boolean isStatic() {
-		return isStatic;
-	}
+        return isStatic;
+    }
 
-	/**
-	 * Is the given instruction a read of a field?
-	 *
+    /**
+     * Is the given instruction a read of a field?
+     *
 	 * @param ins the Instruction to check
-	 * @param cpg ConstantPoolGen of the method containing the instruction
-	 * @return the Field if the instruction is a read of a field, null otherwise
-	 */
+     * @param cpg ConstantPoolGen of the method containing the instruction
+     * @return the Field if the instruction is a read of a field, null otherwise
+     */
 	public static FieldAnnotation isRead(Instruction ins, ConstantPoolGen cpg) {
-		if (ins instanceof GETFIELD || ins instanceof GETSTATIC) {
-			FieldInstruction fins = (FieldInstruction) ins;
-			String className = fins.getClassName(cpg);
+        if (ins instanceof GETFIELD || ins instanceof GETSTATIC) {
+            FieldInstruction fins = (FieldInstruction) ins;
+            String className = fins.getClassName(cpg);
 			return new FieldAnnotation(className, fins.getName(cpg), fins.getSignature(cpg), fins instanceof GETSTATIC);
-		} else
-			return null;
-	}
+        } else
+            return null;
+    }
 
-	/**
-	 * Is the instruction a write of a field?
-	 *
+    /**
+     * Is the instruction a write of a field?
+     *
 	 * @param ins the Instruction to check
-	 * @param cpg ConstantPoolGen of the method containing the instruction
-	 * @return the Field if instruction is a write of a field, null otherwise
-	 */
+     * @param cpg ConstantPoolGen of the method containing the instruction
+     * @return the Field if instruction is a write of a field, null otherwise
+     */
 	public static FieldAnnotation isWrite(Instruction ins, ConstantPoolGen cpg) {
-		if (ins instanceof PUTFIELD || ins instanceof PUTSTATIC) {
-			FieldInstruction fins = (FieldInstruction) ins;
-			String className = fins.getClassName(cpg);
+        if (ins instanceof PUTFIELD || ins instanceof PUTSTATIC) {
+            FieldInstruction fins = (FieldInstruction) ins;
+            String className = fins.getClassName(cpg);
 			return new FieldAnnotation(className, fins.getName(cpg), fins.getSignature(cpg), fins instanceof PUTSTATIC);
-		} else
-			return null;
-	}
+        } else
+            return null;
+    }
 
-	public void accept(BugAnnotationVisitor visitor) {
-		visitor.visitFieldAnnotation(this);
-	}
+    public void accept(BugAnnotationVisitor visitor) {
+        visitor.visitFieldAnnotation(this);
+    }
 
-	@Override
-	protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
-		if (key.equals("") || key.equals("hash"))
+    @Override
+    protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
+        if (key.equals("") || key.equals("hash"))
 			return className + "." + fieldName;
-		else if (key.equals("givenClass")) {
-			String primaryClassName = primaryClass.getClassName();
-			if (className.equals(primaryClassName)) 
+        else if (key.equals("givenClass")) {
+            String primaryClassName = primaryClass.getClassName();
+            if (className.equals(primaryClassName))
 				return getNameInClass(primaryClass);
-			else return shorten(primaryClass.getPackageName(), className) + "." + fieldName;
-		}
-		else if (key.equals("name"))
+            else return shorten(primaryClass.getPackageName(), className) + "." + fieldName;
+        }
+        else if (key.equals("name"))
 			return fieldName;
-		else if (key.equals("fullField")) {
-			SignatureConverter converter = new SignatureConverter(fieldSig);
-			StringBuilder result = new StringBuilder();
+        else if (key.equals("fullField")) {
+            SignatureConverter converter = new SignatureConverter(fieldSig);
+            StringBuilder result = new StringBuilder();
 			if (isStatic)
-				result.append("static ");
-			result.append(converter.parseNext());
-			result.append(' ');
+                result.append("static ");
+            result.append(converter.parseNext());
+            result.append(' ');
 			result.append(className);
-			result.append('.');
-			result.append(fieldName);
-			return result.toString();
+            result.append('.');
+            result.append(fieldName);
+            return result.toString();
 		} else
-			throw new IllegalArgumentException("unknown key " + key);
-	}
+            throw new IllegalArgumentException("unknown key " + key);
+    }
 
-	/**
-	 * @param primaryClass
-	 * @return
+    /**
+     * @param primaryClass
+     * @return
 	 */
-	private String getNameInClass(ClassAnnotation primaryClass) {
-		if (primaryClass == null)
-			return   className + "." + fieldName;
+    private String getNameInClass(ClassAnnotation primaryClass) {
+        if (primaryClass == null)
+            return   className + "." + fieldName;
 		String givenPackageName = primaryClass.getPackageName();
-		String thisPackageName = this.getPackageName();
-		if (thisPackageName.equals(givenPackageName))
-			if (thisPackageName.length() == 0) return fieldName;
+        String thisPackageName = this.getPackageName();
+        if (thisPackageName.equals(givenPackageName))
+            if (thisPackageName.length() == 0) return fieldName;
 			else return className.substring(thisPackageName.length() + 1) +"." + fieldName;
-		return   className + "." + fieldName;
+        return   className + "." + fieldName;
+    }
+
+    @Override
+    public int hashCode() {
+        return className.hashCode() + fieldName.hashCode() + fieldSig.hashCode();
 	}
 
-	@Override
-	public int hashCode() {
-		return className.hashCode() + fieldName.hashCode() + fieldSig.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof FieldAnnotation))
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof FieldAnnotation))
 			return false;
-		FieldAnnotation other = (FieldAnnotation) o;
-		return className.equals(other.className)
-				&& fieldName.equals(other.fieldName)
+        FieldAnnotation other = (FieldAnnotation) o;
+        return className.equals(other.className)
+                && fieldName.equals(other.fieldName)
 				&& fieldSig.equals(other.fieldSig)
-				&& isStatic == other.isStatic;
-	}
+                && isStatic == other.isStatic;
+    }
 
-	public int compareTo(BugAnnotation o) {
-		if (!(o instanceof FieldAnnotation)) // BugAnnotations must be Comparable with any type of BugAnnotation
-			return this.getClass().getName().compareTo(o.getClass().getName());
+    public int compareTo(BugAnnotation o) {
+        if (!(o instanceof FieldAnnotation)) // BugAnnotations must be Comparable with any type of BugAnnotation
+            return this.getClass().getName().compareTo(o.getClass().getName());
 		FieldAnnotation other = (FieldAnnotation) o;
-		int cmp;
-		cmp = className.compareTo(other.className);
-		if (cmp != 0)
+        int cmp;
+        cmp = className.compareTo(other.className);
+        if (cmp != 0)
 			return cmp;
-		cmp = fieldName.compareTo(other.fieldName);
-		if (cmp != 0)
-			return cmp;
+        cmp = fieldName.compareTo(other.fieldName);
+        if (cmp != 0)
+            return cmp;
 		return fieldSig.compareTo(other.fieldSig);
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.PackageMemberAnnotation#getSourceLines()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.PackageMemberAnnotation#getSourceLines()
+     */
 	@Override
-	public SourceLineAnnotation getSourceLines() {
-		if (sourceLines == null) {
-			// Create source line annotation for field on demand
+    public SourceLineAnnotation getSourceLines() {
+        if (sourceLines == null) {
+            // Create source line annotation for field on demand
 			AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
-			if (currentAnalysisContext == null)
-				sourceLines = new SourceLineAnnotation(className, sourceFileName, -1, -1, -1, -1);
-			else {
+            if (currentAnalysisContext == null)
+                sourceLines = new SourceLineAnnotation(className, sourceFileName, -1, -1, -1, -1);
+            else {
 			SourceInfoMap.SourceLineRange fieldLine = currentAnalysisContext
-				.getSourceInfoMap()
-				.getFieldLine(className, fieldName);
-			if (fieldLine == null) 	sourceLines = new SourceLineAnnotation(
+                .getSourceInfoMap()
+                .getFieldLine(className, fieldName);
+            if (fieldLine == null) 	sourceLines = new SourceLineAnnotation(
 					className, sourceFileName, -1, -1, -1, -1);
-			else sourceLines = new SourceLineAnnotation(
-					className, sourceFileName, fieldLine.getStart(), fieldLine.getEnd(), -1, -1);
-			}
+            else sourceLines = new SourceLineAnnotation(
+                    className, sourceFileName, fieldLine.getStart(), fieldLine.getEnd(), -1, -1);
+            }
 		}
-		return sourceLines;
-	}
+        return sourceLines;
+    }
 
-	/* ----------------------------------------------------------------------
-	 * XML Conversion support
-	 * ---------------------------------------------------------------------- */
+    /* ----------------------------------------------------------------------
+     * XML Conversion support
+     * ---------------------------------------------------------------------- */
 
-	private static final String ELEMENT_NAME = "Field";
+    private static final String ELEMENT_NAME = "Field";
 
-	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		writeXML(xmlOutput, false, false);
-	}
+    public void writeXML(XMLOutput xmlOutput) throws IOException {
+        writeXML(xmlOutput, false, false);
+    }
 
-	public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
-		XMLAttributeList attributeList = new XMLAttributeList()
-			.addAttribute("classname", getClassName())
+    public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
+        XMLAttributeList attributeList = new XMLAttributeList()
+            .addAttribute("classname", getClassName())
 			.addAttribute("name", getFieldName())
-			.addAttribute("signature", getFieldSignature());
-		if (fieldSourceSig != null)
-			attributeList.addAttribute("sourceSignature", fieldSourceSig);
+            .addAttribute("signature", getFieldSignature());
+        if (fieldSourceSig != null)
+            attributeList.addAttribute("sourceSignature", fieldSourceSig);
 		attributeList.addAttribute("isStatic", String.valueOf(isStatic()));
-		if (isPrimary) attributeList.addAttribute("primary", "true");
+        if (isPrimary) attributeList.addAttribute("primary", "true");
 
 
-		String role = getDescription();
-		if (!role.equals(DEFAULT_ROLE))
-			attributeList.addAttribute("role", role);
+        String role = getDescription();
+        if (!role.equals(DEFAULT_ROLE))
+            attributeList.addAttribute("role", role);
 
-		xmlOutput.openTag(ELEMENT_NAME, attributeList);
-		getSourceLines().writeXML(xmlOutput, addMessages, false);
-		if (addMessages) {
+        xmlOutput.openTag(ELEMENT_NAME, attributeList);
+        getSourceLines().writeXML(xmlOutput, addMessages, false);
+        if (addMessages) {
 			xmlOutput.openTag(BugAnnotation.MESSAGE_TAG);
-			xmlOutput.writeText(this.toString());
-			xmlOutput.closeTag(BugAnnotation.MESSAGE_TAG);
-		}
+            xmlOutput.writeText(this.toString());
+            xmlOutput.closeTag(BugAnnotation.MESSAGE_TAG);
+        }
 		xmlOutput.closeTag(ELEMENT_NAME);
-	}
+    }
 }
 
 // vim:ts=4

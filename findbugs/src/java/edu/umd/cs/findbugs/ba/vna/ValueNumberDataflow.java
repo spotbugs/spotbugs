@@ -1,17 +1,17 @@
 /*
  * Bytecode Analysis Framework
  * Copyright (C) 2003,2004 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -32,49 +32,49 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, ValueNumberAnalysis> {
-	public ValueNumberDataflow(CFG cfg, ValueNumberAnalysis analysis) {
-		super(cfg, analysis);
-	}
+    public ValueNumberDataflow(CFG cfg, ValueNumberAnalysis analysis) {
+        super(cfg, analysis);
+    }
 
-	/**
-	 * Build map of value numbers to param indices.
-	 * The first parameter has index 0, the second has index 1, etc.
+    /**
+     * Build map of value numbers to param indices.
+     * The first parameter has index 0, the second has index 1, etc.
 	 * 
-	 * @param method the method analyzed by the ValueNumberAnalysis
-	 * @return the value number to parameter index map
-	 */
+     * @param method the method analyzed by the ValueNumberAnalysis
+     * @return the value number to parameter index map
+     */
 	public Map<ValueNumber, Integer> getValueNumberToParamMap(Method method) {
-		return getValueNumberToParamMap(method.getSignature(), method.isStatic());
-	}
+        return getValueNumberToParamMap(method.getSignature(), method.isStatic());
+    }
 
-	/**
-	 * Build map of value numbers to param indices.
-	 * The first parameter has index 0, the second has index 1, etc.
+    /**
+     * Build map of value numbers to param indices.
+     * The first parameter has index 0, the second has index 1, etc.
 	 * 
-	 * @param methodSignature signature of the method analyzed by the ValueNumberAnalysis
-	 * @param isStatic        true if the method is static, false if not
-	 * @return the value number to parameter index map
+     * @param methodSignature signature of the method analyzed by the ValueNumberAnalysis
+     * @param isStatic        true if the method is static, false if not
+     * @return the value number to parameter index map
 	 */
-	public Map<ValueNumber, Integer> getValueNumberToParamMap(String methodSignature, boolean isStatic) {
-		HashMap<ValueNumber, Integer> valueNumberToParamMap =
-			new HashMap<ValueNumber, Integer>();
+    public Map<ValueNumber, Integer> getValueNumberToParamMap(String methodSignature, boolean isStatic) {
+        HashMap<ValueNumber, Integer> valueNumberToParamMap =
+            new HashMap<ValueNumber, Integer>();
 
-		ValueNumberFrame frameAtEntry = getStartFact(getCFG().getEntry());
+        ValueNumberFrame frameAtEntry = getStartFact(getCFG().getEntry());
 
-		int numParams = new SignatureParser(methodSignature).getNumParameters(); 
-		int shift = isStatic ? 0 : 1;
-		for (int i = 0; i < numParams; ++i) {
+        int numParams = new SignatureParser(methodSignature).getNumParameters();
+        int shift = isStatic ? 0 : 1;
+        for (int i = 0; i < numParams; ++i) {
 			valueNumberToParamMap.put(
-					frameAtEntry.getValue(i + shift), i);
-		}
+                    frameAtEntry.getValue(i + shift), i);
+        }
 
-		return valueNumberToParamMap;
-	}
-	
+        return valueNumberToParamMap;
+    }
+
 	 public @CheckForNull @DottedClassName String getClassName(ValueNumber v) { 
-		 return getAnalysis().getClassName(v);
-	 
-	 }
+         return getAnalysis().getClassName(v);
+
+     }
 }
 
 // vim:ts=4

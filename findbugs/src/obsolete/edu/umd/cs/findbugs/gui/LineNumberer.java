@@ -31,60 +31,60 @@ import javax.swing.JTextArea;
 
 public class LineNumberer extends JComponent
 {
-	public static final int PAD = 10;
-	public static final String PROTOTYPE = "00000";
+    public static final int PAD = 10;
+    public static final String PROTOTYPE = "00000";
 
-	private JTextArea textArea;
-	private FontMetrics fm;
+    private JTextArea textArea;
+    private FontMetrics fm;
 
-	public LineNumberer(JTextArea ta) {
-		setFont( ta.getFont() );
-		textArea = ta;
+    public LineNumberer(JTextArea ta) {
+        setFont( ta.getFont() );
+        textArea = ta;
 		setForeground( Color.BLUE );
 
-		fm = this.getFontMetrics(ta.getFont());
-		setWidths();
-	}
+        fm = this.getFontMetrics(ta.getFont());
+        setWidths();
+    }
 
-	@Override
-	public void setFont(Font font)
-	{
+    @Override
+    public void setFont(Font font)
+    {
 		//ignore
-	}
+    }
 
-	private void setWidths() {
-		int width = fm.stringWidth( PROTOTYPE );
-		Dimension d = getPreferredSize();
+    private void setWidths() {
+        int width = fm.stringWidth( PROTOTYPE );
+        Dimension d = getPreferredSize();
 		d.setSize(PAD + width, Integer.MAX_VALUE);
-		setPreferredSize( d );
-		setSize( d );
-	}
+        setPreferredSize( d );
+        setSize( d );
+    }
 
 
-	@Override
-	public void paintComponent(Graphics g)
-	{
+    @Override
+    public void paintComponent(Graphics g)
+    {
 		int lineHeight = fm.getHeight();
-		int startOffset = textArea.getInsets().top + fm.getAscent();
+        int startOffset = textArea.getInsets().top + fm.getAscent();
 
-		Rectangle clip = g.getClipBounds();
+        Rectangle clip = g.getClipBounds();
 
-		g.setColor( getBackground() );
-		g.fillRect(clip.x, clip.y, clip.width, clip.height);
+        g.setColor( getBackground() );
+        g.fillRect(clip.x, clip.y, clip.width, clip.height);
 
-		g.setColor( getForeground() );
-		int beginLineNumber = (clip.y / lineHeight) + 1;
-		int endLineNumber = beginLineNumber + (clip.height / lineHeight);
+        g.setColor( getForeground() );
+        int beginLineNumber = (clip.y / lineHeight) + 1;
+        int endLineNumber = beginLineNumber + (clip.height / lineHeight);
 
-		int y = (clip.y / lineHeight) * lineHeight + startOffset;
+        int y = (clip.y / lineHeight) * lineHeight + startOffset;
 
-		for (int i = beginLineNumber; i <= endLineNumber; i++)
-		{
-			String ln = String.valueOf(i);
+        for (int i = beginLineNumber; i <= endLineNumber; i++)
+        {
+            String ln = String.valueOf(i);
 			int width = fm.stringWidth( ln );
-			int rowWidth = getSize().width;
-			g.drawString(ln, rowWidth - width - PAD, y);
-			y += lineHeight;
+            int rowWidth = getSize().width;
+            g.drawString(ln, rowWidth - width - PAD, y);
+            y += lineHeight;
 		}
-	}
+    }
 }

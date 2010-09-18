@@ -8,128 +8,128 @@ import java.util.ArrayList;
  * @author David Hovemeyer
  */
 public class AnalysisError {
-	private String message;
-	private String exceptionMessage;
-	private String[] stackTrace;
+    private String message;
+    private String exceptionMessage;
+    private String[] stackTrace;
 	private String nestedExceptionMessage;
-	private String[] nestedStackTrace;
-	private final Throwable exception;
-	/**
+    private String[] nestedStackTrace;
+    private final Throwable exception;
+    /**
 	 * Constructor.
-	 *
-	 * @param message message describing the error
-	 */
+     *
+     * @param message message describing the error
+     */
 	public AnalysisError(String message) {
-		this(message, null);
-	}
+        this(message, null);
+    }
 
-	/**
-	 * Constructor.
-	 *
+    /**
+     * Constructor.
+     *
 	 * @param message   message describing the error
-	 * @param exception exception which is the cause of the error
-	 */
-	public AnalysisError(String message, Throwable exception) {
+     * @param exception exception which is the cause of the error
+     */
+    public AnalysisError(String message, Throwable exception) {
 		this.message = message;
-		this.exception = exception;
-		if (exception != null) {
-			exceptionMessage = exception.toString();
+        this.exception = exception;
+        if (exception != null) {
+            exceptionMessage = exception.toString();
 			stackTrace =  getStackTraceAsStringArray(exception);
-			Throwable initCause = exception.getCause();
-			if (initCause != null) {
-				nestedExceptionMessage = initCause.toString();
+            Throwable initCause = exception.getCause();
+            if (initCause != null) {
+                nestedExceptionMessage = initCause.toString();
 				nestedStackTrace = getStackTraceAsStringArray(initCause);
-			}
+            }
 
-		}
-	}
+        }
+    }
 
-	/**
+    /**
      * @param exception
      * @return
      */
     private String[] getStackTraceAsStringArray(Throwable exception) {
-	    StackTraceElement[] exceptionStackTrace = exception.getStackTrace();
-	    ArrayList<String> arr = new ArrayList<String>();
-	    for (StackTraceElement aExceptionStackTrace : exceptionStackTrace) {
+        StackTraceElement[] exceptionStackTrace = exception.getStackTrace();
+        ArrayList<String> arr = new ArrayList<String>();
+        for (StackTraceElement aExceptionStackTrace : exceptionStackTrace) {
 	    	arr.add(aExceptionStackTrace.toString());
-	    }
-	    String[] tmp = arr.toArray(new String[arr.size()]);
-	    return tmp;
+        }
+        String[] tmp = arr.toArray(new String[arr.size()]);
+        return tmp;
     }
 
-	/**
-	 * Set the message describing the error.
-	 *
+    /**
+     * Set the message describing the error.
+     *
 	 * @param message message describing the error
-	 */
-	public void setMessage(String message) {
-		this.message = message;
+     */
+    public void setMessage(String message) {
+        this.message = message;
 	}
 
-	/**
-	 * Get the message describing the error.
-	 */
+    /**
+     * Get the message describing the error.
+     */
 	public String getMessage() {
-		return message;
-	}
+        return message;
+    }
 
-	/**
-	 * Set the exception message.  This is the value returned by
-	 * calling toString() on the original exception object.
+    /**
+     * Set the exception message.  This is the value returned by
+     * calling toString() on the original exception object.
 	 *
-	 * @param exceptionMessage the exception message
-	 */
-	public void setExceptionMessage(String exceptionMessage) {
+     * @param exceptionMessage the exception message
+     */
+    public void setExceptionMessage(String exceptionMessage) {
 		this.exceptionMessage = exceptionMessage;
-	}
+    }
 
-	/**
-	 * Get the exception message.  This is the value returned by
-	 * calling toString() on the original exception object.
+    /**
+     * Get the exception message.  This is the value returned by
+     * calling toString() on the original exception object.
 	 */
-	public String getExceptionMessage() {
-		return exceptionMessage;
-	}
+    public String getExceptionMessage() {
+        return exceptionMessage;
+    }
 	/**
-	 * Get the exception message.  This is the value returned by
-	 * calling toString() on the original exception object.
-	 */
+     * Get the exception message.  This is the value returned by
+     * calling toString() on the original exception object.
+     */
 	public String getNestedExceptionMessage() {
-		return nestedExceptionMessage;
-	}
-	/**
+        return nestedExceptionMessage;
+    }
+    /**
 	 * Set the stack trace elements.
-	 * These are the strings returned by calling toString()
-	 * on each StackTraceElement in the original exception.
-	 *
+     * These are the strings returned by calling toString()
+     * on each StackTraceElement in the original exception.
+     *
 	 * @param stackTraceList the stack trace elements
-	 */
-	public void setStackTrace(String[] stackTraceList) {
-		stackTrace = stackTraceList;
+     */
+    public void setStackTrace(String[] stackTraceList) {
+        stackTrace = stackTraceList;
 	}
 
-	/**
-	 * Get the stack trace elements.
-	 * These are the strings returned by calling toString()
+    /**
+     * Get the stack trace elements.
+     * These are the strings returned by calling toString()
 	 * on each StackTraceElement in the original exception.
-	 */
-	public String[] getStackTrace() {
-		return stackTrace;
+     */
+    public String[] getStackTrace() {
+        return stackTrace;
 	}
-	/**
-	 * Get the stack trace elements.
-	 * These are the strings returned by calling toString()
+    /**
+     * Get the stack trace elements.
+     * These are the strings returned by calling toString()
 	 * on each StackTraceElement in the original exception.
-	 */
-	public String[] getNestedStackTrace() {
-		return nestedStackTrace;
+     */
+    public String[] getNestedStackTrace() {
+        return nestedStackTrace;
 	}
 
-	/**
-	 * @return original exception object, or null if no exception was thrown
-	 */
+    /**
+     * @return original exception object, or null if no exception was thrown
+     */
 	public Throwable getException() {
-		return exception;
-	}
+        return exception;
+    }
 }

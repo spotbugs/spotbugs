@@ -56,269 +56,269 @@ import edu.umd.cs.findbugs.util.Util;
  * @author William Pugh
  */
 public class TypeQualifierValue {
-	public static final boolean DEBUG = SystemProperties.getBoolean("tqv.debug");
-	
-	private static final ClassDescriptor EXCLUSIVE_ANNOTATION =
-		DescriptorFactory.instance().getClassDescriptor(javax.annotation.meta.Exclusive.class);
-	private static final ClassDescriptor EXHAUSTIVE_ANNOTATION =
-		DescriptorFactory.instance().getClassDescriptor(javax.annotation.meta.Exhaustive.class);
-	
-	public final ClassDescriptor typeQualifier;
-	public final @CheckForNull Object value;
-	private final boolean isStrict;
-	private final boolean isExclusive;
-	private final boolean isExhaustive;
-	private final @CheckForNull TypeQualifierValidator validator;
-	private final static ClassLoader validatorLoader = new ValidatorClassLoader();
+    public static final boolean DEBUG = SystemProperties.getBoolean("tqv.debug");
 
-	private TypeQualifierValue(ClassDescriptor typeQualifier, @CheckForNull Object value) {
-		this.typeQualifier =  typeQualifier;
-		this.value = value;
+    private static final ClassDescriptor EXCLUSIVE_ANNOTATION =
+		DescriptorFactory.instance().getClassDescriptor(javax.annotation.meta.Exclusive.class);
+    private static final ClassDescriptor EXHAUSTIVE_ANNOTATION =
+        DescriptorFactory.instance().getClassDescriptor(javax.annotation.meta.Exhaustive.class);
+
+	public final ClassDescriptor typeQualifier;
+    public final @CheckForNull Object value;
+    private final boolean isStrict;
+    private final boolean isExclusive;
+	private final boolean isExhaustive;
+    private final @CheckForNull TypeQualifierValidator validator;
+    private final static ClassLoader validatorLoader = new ValidatorClassLoader();
+
+    private TypeQualifierValue(ClassDescriptor typeQualifier, @CheckForNull Object value) {
+        this.typeQualifier =  typeQualifier;
+        this.value = value;
 		boolean isStrict = false; // will be set to true if this is a strict type qualifier value
-		boolean isExclusive = false; // will be set to true if this is an exclusive type qualifier value
-		boolean isExhaustive = false; // will be set to true if this is an exhaustive type qualifier value
-		TypeQualifierValidator validator = null;
+        boolean isExclusive = false; // will be set to true if this is an exclusive type qualifier value
+        boolean isExhaustive = false; // will be set to true if this is an exhaustive type qualifier value
+        TypeQualifierValidator validator = null;
 		 try {
-			XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, typeQualifier);
-			
-			// Annotation elements appear as abstract methods in the annotation class (interface).
+            XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, typeQualifier);
+
+            // Annotation elements appear as abstract methods in the annotation class (interface).
 			// So, if the type qualifier annotation has specified a default When value,
-			// it will appear as an abstract method called "when".
-			XMethod whenMethod = xclass.findMethod("when", "()Ljavax/annotation/meta/When;", false);
-			if (whenMethod == null) {
+            // it will appear as an abstract method called "when".
+            XMethod whenMethod = xclass.findMethod("when", "()Ljavax/annotation/meta/When;", false);
+            if (whenMethod == null) {
 				isStrict = true;
-			}
-			for (XMethod xmethod : xclass.getXMethods()) {
-				if (xmethod.getName().equals("value") && xmethod.getSignature().startsWith("()")) {
+            }
+            for (XMethod xmethod : xclass.getXMethods()) {
+                if (xmethod.getName().equals("value") && xmethod.getSignature().startsWith("()")) {
 					isExhaustive = xmethod.getAnnotation(EXHAUSTIVE_ANNOTATION) != null;
-					if (isExhaustive) {
-						// exhaustive qualifiers are automatically exclusive
-						isExclusive = true;
+                    if (isExhaustive) {
+                        // exhaustive qualifiers are automatically exclusive
+                        isExclusive = true;
 					} else {
-						// see if there is an explicit @Exclusive annotation
-						isExclusive = xmethod.getAnnotation(EXCLUSIVE_ANNOTATION) != null;
-					}
+                        // see if there is an explicit @Exclusive annotation
+                        isExclusive = xmethod.getAnnotation(EXCLUSIVE_ANNOTATION) != null;
+                    }
 					
-					break;
-				}
-			}
+                    break;
+                }
+            }
 		} catch (MissingClassException e) {
-			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassNotFoundException());
-		} catch (CheckedAnalysisException e) {
-			AnalysisContext.logError("Error looking up annotation class " + typeQualifier.toDottedClassName(), e);
+            AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassNotFoundException());
+        } catch (CheckedAnalysisException e) {
+            AnalysisContext.logError("Error looking up annotation class " + typeQualifier.toDottedClassName(), e);
 		}
-		this.isStrict = isStrict;
-		this.isExclusive = isExclusive;
-		this.isExhaustive = isExhaustive;
+        this.isStrict = isStrict;
+        this.isExclusive = isExclusive;
+        this.isExhaustive = isExhaustive;
 		ClassDescriptor  checkerName = DescriptorFactory.createClassDescriptor(typeQualifier.getClassName() + "$Checker");
-		try {
-			Global.getAnalysisCache().getClassAnalysis(ClassData.class, checkerName);
-			// found it.
+        try {
+            Global.getAnalysisCache().getClassAnalysis(ClassData.class, checkerName);
+            // found it.
 			Class c = validatorLoader.loadClass(checkerName.getDottedClassName());
-			if (TypeQualifierValidator.class.isAssignableFrom(c)) {
-				Class<? extends TypeQualifierValidator> checkerClass = c.asSubclass(TypeQualifierValidator.class);
-				validator = checkerClass.newInstance();
+            if (TypeQualifierValidator.class.isAssignableFrom(c)) {
+                Class<? extends TypeQualifierValidator> checkerClass = c.asSubclass(TypeQualifierValidator.class);
+                validator = checkerClass.newInstance();
 			}
-		} catch (ClassNotFoundException e) {
-			assert true; // ignore
-		} catch (CheckedAnalysisException e) {
+        } catch (ClassNotFoundException e) {
+            assert true; // ignore
+        } catch (CheckedAnalysisException e) {
         		assert true; // ignore
         } catch (InstantiationException e) {
-	       AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName, e);
+           AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName, e);
         } catch (IllegalAccessException e) {
-        	   AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName, e);
-        } 
-        this.validator = validator;		
+               AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName, e);
+        }
+        this.validator = validator;
 	}
 
-	static class Data {
-		/**
-		 * Cache in which constructed TypeQualifierValues are interned.
+    static class Data {
+        /**
+         * Cache in which constructed TypeQualifierValues are interned.
 		 */
-		DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> typeQualifierMap =
-			new DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue>();
-		
+        DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> typeQualifierMap =
+            new DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue>();
+
 		/**
-		 * Set of all known TypeQualifierValues.
-		 */
-		Set<TypeQualifierValue> allKnownTypeQualifiers =
+         * Set of all known TypeQualifierValues.
+         */
+        Set<TypeQualifierValue> allKnownTypeQualifiers =
 			new HashSet<TypeQualifierValue>();
-	}
+    }
 
-	private static ThreadLocal<Data> instance = new ThreadLocal<Data>() {
-		@Override
-		protected Data initialValue() {
+    private static ThreadLocal<Data> instance = new ThreadLocal<Data>() {
+        @Override
+        protected Data initialValue() {
 			return new Data();
-		}
-	};
-	
+        }
+    };
+
 	public static void clearInstance() {
-		instance.remove();
-	}
+        instance.remove();
+    }
 
-	public boolean canValidate(Object constantValue) {
-		if (validator == null)
-			return false;
+    public boolean canValidate(Object constantValue) {
+        if (validator == null)
+            return false;
 		return true;
-	}
+    }
 
-	public When validate(Object constantValue) {
-		if (validator == null)
-			throw new IllegalStateException("No validator");
+    public When validate(Object constantValue) {
+        if (validator == null)
+            throw new IllegalStateException("No validator");
 		IAnalysisCache analysisCache = Global.getAnalysisCache();
-		Profiler profiler = analysisCache.getProfiler();		
-		profiler.start(validator.getClass());
-		try {
+        Profiler profiler = analysisCache.getProfiler();
+        profiler.start(validator.getClass());
+        try {
 			return validator.forConstantValue(null, constantValue);
-		} catch (Exception e) {
-			AnalysisContext.logError("Error executing custom validator for " + typeQualifier + " " + constantValue, e);
-			return When.UNKNOWN;
+        } catch (Exception e) {
+            AnalysisContext.logError("Error executing custom validator for " + typeQualifier + " " + constantValue, e);
+            return When.UNKNOWN;
 		} finally {
-			profiler.end(validator.getClass());
-			
-		}
+            profiler.end(validator.getClass());
+
+        }
 	}
-	/**
-	 * Given a ClassDescriptor/value pair, return the
-	 * interned TypeQualifierValue representing that pair.
+    /**
+     * Given a ClassDescriptor/value pair, return the
+     * interned TypeQualifierValue representing that pair.
 	 *
-	 * @param desc  a ClassDescriptor denoting a type qualifier annotation
-	 * @param value a value
-	 * @return an interned TypeQualifierValue object
+     * @param desc  a ClassDescriptor denoting a type qualifier annotation
+     * @param value a value
+     * @return an interned TypeQualifierValue object
 	 */
-	public static @NonNull TypeQualifierValue getValue(ClassDescriptor desc, Object value) {
-		DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue> map = instance.get().typeQualifierMap;
-		TypeQualifierValue result = map.get(desc, value);
+    public static @NonNull TypeQualifierValue getValue(ClassDescriptor desc, Object value) {
+        DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue> map = instance.get().typeQualifierMap;
+        TypeQualifierValue result = map.get(desc, value);
 		if (result != null) return result;
-		result = new TypeQualifierValue(desc, value);
-		map.put(desc, value, result);
-		instance.get().allKnownTypeQualifiers.add(result);
+        result = new TypeQualifierValue(desc, value);
+        map.put(desc, value, result);
+        instance.get().allKnownTypeQualifiers.add(result);
 		return result;
-	}
-	
-	/**
+    }
+
+    /**
 	 * Get Collection of all known TypeQualifierValues.
-	 * 
-	 * @return Collection of all known TypeQualifierValues
-	 */
+     *
+     * @return Collection of all known TypeQualifierValues
+     */
 	public static Collection<TypeQualifierValue> getAllKnownTypeQualifiers() {
-		return Collections.unmodifiableSet(instance.get().allKnownTypeQualifiers);
-	}
-	
+        return Collections.unmodifiableSet(instance.get().allKnownTypeQualifiers);
+    }
+
 	/**
-	 * Get the "complementary" TypeQualifierValues for given exclusive type qualifier.
-	 * 
-	 * @param tqv a type qualifier (which must be exclusive)
+     * Get the "complementary" TypeQualifierValues for given exclusive type qualifier.
+     *
+     * @param tqv a type qualifier (which must be exclusive)
 	 * @return Collection of complementary exclusive type qualifiers
-	 */
-	public static Collection<TypeQualifierValue> getComplementaryExclusiveTypeQualifierValue(TypeQualifierValue tqv) {
-		assert tqv.isExclusiveQualifier();
+     */
+    public static Collection<TypeQualifierValue> getComplementaryExclusiveTypeQualifierValue(TypeQualifierValue tqv) {
+        assert tqv.isExclusiveQualifier();
 		
-		LinkedList<TypeQualifierValue> result = new LinkedList<TypeQualifierValue>();
-		
-		for (TypeQualifierValue t : instance.get().allKnownTypeQualifiers) {
-			//
-			// Any TypeQualifierValue with the same
-			// annotation class but a different value is a complementary
-			// type qualifier.
-			//
-			if (t.typeQualifier.equals(tqv.typeQualifier) && !Util.nullSafeEquals(t.value, tqv.value)) {
-				result.add(t);
-			}
-		}
-		
-		return result;
-	}
+        LinkedList<TypeQualifierValue> result = new LinkedList<TypeQualifierValue>();
 
-	/**
-	 * Determine whether or not given TypeQualifierValue has multiple variants.
-	 * I.e., if Color is a type qualifier having values RED, GREEN, and BLUE,
+        for (TypeQualifierValue t : instance.get().allKnownTypeQualifiers) {
+			//
+            // Any TypeQualifierValue with the same
+            // annotation class but a different value is a complementary
+            // type qualifier.
+			//
+            if (t.typeQualifier.equals(tqv.typeQualifier) && !Util.nullSafeEquals(t.value, tqv.value)) {
+                result.add(t);
+            }
+		}
+
+        return result;
+    }
+
+    /**
+     * Determine whether or not given TypeQualifierValue has multiple variants.
+     * I.e., if Color is a type qualifier having values RED, GREEN, and BLUE,
 	 * then there are 3 variants, Color(RED), Color(GREEN), and COLOR(BLUE).
-	 *
-	 * @param tqv a TypeQualifierValue
-	 * @return true if there are multiple variants of this type qualifier, false otherwise
+     *
+     * @param tqv a TypeQualifierValue
+     * @return true if there are multiple variants of this type qualifier, false otherwise
 	 */
-	public static boolean hasMultipleVariants(TypeQualifierValue tqv) {
-		int count = 0;
-		for (TypeQualifierValue t : instance.get().allKnownTypeQualifiers) {
+    public static boolean hasMultipleVariants(TypeQualifierValue tqv) {
+        int count = 0;
+        for (TypeQualifierValue t : instance.get().allKnownTypeQualifiers) {
 			if (t.typeQualifier.equals(tqv.typeQualifier)) {
-				count++;
-			}
-		}
+                count++;
+            }
+        }
 		return count > 1;
-	}
-	
-	/**
+    }
+
+    /**
 	 * Get the ClassDescriptor which specifies the type qualifier annotation.
-	 *
-	 * @return ClassDescriptor which specifies the type qualifier annotation
-	 */
+     *
+     * @return ClassDescriptor which specifies the type qualifier annotation
+     */
 	public ClassDescriptor getTypeQualifierClassDescriptor() {
-		return typeQualifier;
-	}
+        return typeQualifier;
+    }
 
-	
 
-	/**
-	 * Return whether or not this TypeQualifierValue denotes
-	 * a strict qualifier.
+
+    /**
+     * Return whether or not this TypeQualifierValue denotes
+     * a strict qualifier.
 	 *
-	 * @return true if type qualifier is strict, false otherwise
-	 */
-	public boolean isStrictQualifier() {
+     * @return true if type qualifier is strict, false otherwise
+     */
+    public boolean isStrictQualifier() {
 		return isStrict;
-	}
+    }
+
+
 	
-	
-	
-	/**
-	 * Return whether or not this TypeQualifierValue denotes
-	 * an exclusive qualifier.
+    /**
+     * Return whether or not this TypeQualifierValue denotes
+     * an exclusive qualifier.
 	 * 
-	 * @return true if type qualifier is exclusive, false otherwise
-	 */
-	public boolean isExclusiveQualifier() {
+     * @return true if type qualifier is exclusive, false otherwise
+     */
+    public boolean isExclusiveQualifier() {
 		return isExclusive;
-	}
+    }
 
-	
-	/**
-	 * Return whether or not this TypeQualifierValue denotes
+
+    /**
+     * Return whether or not this TypeQualifierValue denotes
 	 * an exhaustive qualifier.
-	 * 
-	 * @return true if type qualifier is exhaustive, false otherwise
-	 */
+     *
+     * @return true if type qualifier is exhaustive, false otherwise
+     */
 	public boolean isExhaustiveQualifier() {
-		return isExhaustive;
-	}
+        return isExhaustive;
+    }
 
-	@Override
-	public int hashCode() {
-		int result = typeQualifier.hashCode();
+    @Override
+    public int hashCode() {
+        int result = typeQualifier.hashCode();
 		if (value != null) result += 37*value.hashCode();
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof TypeQualifierValue)) return false;
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof TypeQualifierValue)) return false;
 		TypeQualifierValue other = (TypeQualifierValue) o;
-		return typeQualifier.equals(other.typeQualifier) && Util.nullSafeEquals(value, other.value);
-	}
+        return typeQualifier.equals(other.typeQualifier) && Util.nullSafeEquals(value, other.value);
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
 	@Override
-	public String toString() {
-		StringBuilder buf = new StringBuilder();
-		buf.append(typeQualifier.toString());
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        buf.append(typeQualifier.toString());
 		if (value != null) {
-			buf.append(':');
-			buf.append(value.toString());
-		}
+            buf.append(':');
+            buf.append(value.toString());
+        }
 		return buf.toString();
-	}
+    }
 
 
 }

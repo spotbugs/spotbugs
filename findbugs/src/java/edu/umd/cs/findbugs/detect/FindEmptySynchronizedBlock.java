@@ -25,24 +25,24 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
-public class FindEmptySynchronizedBlock 
-	extends BytecodeScanningDetector  {
+public class FindEmptySynchronizedBlock
+    extends BytecodeScanningDetector  {
 
-	BugReporter bugReporter;
+    BugReporter bugReporter;
 
-	public FindEmptySynchronizedBlock(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
-
-
+    public FindEmptySynchronizedBlock(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
 
-	@Override
-		 public void sawOpcode(int seen) {
-		if (seen == MONITOREXIT && (getPrevOpcode(2) == MONITORENTER || getPrevOpcode(1) == MONITORENTER) )
+
+
+    @Override
+         public void sawOpcode(int seen) {
+        if (seen == MONITOREXIT && (getPrevOpcode(2) == MONITORENTER || getPrevOpcode(1) == MONITORENTER) )
 		  bugReporter.reportBug(new BugInstance(this, "ESync_EMPTY_SYNC", NORMAL_PRIORITY)
-								.addClassAndMethod(this)
-								.addSourceLine(this));
+                                .addClassAndMethod(this)
+                                .addSourceLine(this));
 
-		}
-	}
+        }
+    }

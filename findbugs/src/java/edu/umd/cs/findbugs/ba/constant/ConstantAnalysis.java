@@ -1,17 +1,17 @@
 /*
  * Bytecode Analysis Framework
  * Copyright (C) 2005, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -31,70 +31,70 @@ import edu.umd.cs.findbugs.ba.Location;
 
 /**
  * Dataflow analysis to find constant values.
- * 
+ *
  * @see edu.umd.cs.findbugs.ba.constant.Constant
  * @author David Hovemeyer
  */
 public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFrame> {
-	private MethodGen methodGen;
-	private ConstantFrameModelingVisitor visitor;
-	
+    private MethodGen methodGen;
+    private ConstantFrameModelingVisitor visitor;
+
 	public ConstantAnalysis(MethodGen methodGen, DepthFirstSearch dfs) {
-		super(dfs);
-		this.methodGen = methodGen;
-		this.visitor = new ConstantFrameModelingVisitor(methodGen.getConstantPool());
+        super(dfs);
+        this.methodGen = methodGen;
+        this.visitor = new ConstantFrameModelingVisitor(methodGen.getConstantPool());
 	}
 
-	public ConstantFrame createFact() {
-		return new ConstantFrame(methodGen.getMaxLocals());
-	}
+    public ConstantFrame createFact() {
+        return new ConstantFrame(methodGen.getMaxLocals());
+    }
 
-	public void initEntryFact(ConstantFrame frame) {
-		frame.setValid();
-		frame.clearStack();
+    public void initEntryFact(ConstantFrame frame) {
+        frame.setValid();
+        frame.clearStack();
 		int numSlots = frame.getNumSlots();
-		for (int i = 0; i < numSlots; ++i) {
-			frame.setValue(i, Constant.NOT_CONSTANT);
-		}
+        for (int i = 0; i < numSlots; ++i) {
+            frame.setValue(i, Constant.NOT_CONSTANT);
+        }
 	}
 
-	@Override
-		 public void transferInstruction(
-			InstructionHandle handle,
+    @Override
+         public void transferInstruction(
+            InstructionHandle handle,
 			BasicBlock basicBlock,
-			ConstantFrame frame) throws DataflowAnalysisException {
-		visitor.setFrameAndLocation(frame, new Location(handle, basicBlock));
-		visitor.analyzeInstruction(handle.getInstruction());
+            ConstantFrame frame) throws DataflowAnalysisException {
+        visitor.setFrameAndLocation(frame, new Location(handle, basicBlock));
+        visitor.analyzeInstruction(handle.getInstruction());
 	}
 
-	public void meetInto(
-			ConstantFrame fact,
-			Edge edge,
+    public void meetInto(
+            ConstantFrame fact,
+            Edge edge,
 			ConstantFrame result) throws DataflowAnalysisException {
 
-		if (fact.isValid()) {
-			ConstantFrame tmpFact = null;
+        if (fact.isValid()) {
+            ConstantFrame tmpFact = null;
 
-			if (edge.isExceptionEdge()) {
-				tmpFact = modifyFrame(fact, tmpFact);
-				tmpFact.clearStack();
+            if (edge.isExceptionEdge()) {
+                tmpFact = modifyFrame(fact, tmpFact);
+                tmpFact.clearStack();
 				tmpFact.pushValue(Constant.NOT_CONSTANT);
-			}
+            }
 
-			if (tmpFact != null) {
-				fact = tmpFact;
-			}
+            if (tmpFact != null) {
+                fact = tmpFact;
+            }
 		}
 
-		mergeInto(fact, result);
-	}
+        mergeInto(fact, result);
+    }
 
-	@Override
-		 protected void mergeValues(ConstantFrame otherFrame, ConstantFrame resultFrame, int slot)
-			throws DataflowAnalysisException {
+    @Override
+         protected void mergeValues(ConstantFrame otherFrame, ConstantFrame resultFrame, int slot)
+            throws DataflowAnalysisException {
 		Constant value = Constant.merge(resultFrame.getValue(slot), otherFrame.getValue(slot));
-		resultFrame.setValue(slot, value);
-	}
+        resultFrame.setValue(slot, value);
+    }
 
 //	/*
 //	 * Test driver.

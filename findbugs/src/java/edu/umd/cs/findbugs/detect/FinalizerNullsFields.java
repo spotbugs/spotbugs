@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Daniel Hakim
- * 
+ *
  */
 
 package edu.umd.cs.findbugs.detect;
@@ -33,68 +33,68 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 public class FinalizerNullsFields extends BytecodeScanningDetector {
 
-	final BugReporter bugReporter;
-	final BugAccumulator bugAccumulator;
-	int state=0;
+    final BugReporter bugReporter;
+    final BugAccumulator bugAccumulator;
+    int state=0;
 	boolean sawAnythingElse;
 
-	public FinalizerNullsFields(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-		this.bugAccumulator = new BugAccumulator(bugReporter);
+    public FinalizerNullsFields(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+        this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 
-	boolean inFinalize;
-	boolean sawFieldNulling;
-	@Override
+    boolean inFinalize;
+    boolean sawFieldNulling;
+    @Override
 	public void visit(Method obj) 
-	{
-		if (obj.getName().equals("finalize"))
-			inFinalize=true;
+    {
+        if (obj.getName().equals("finalize"))
+            inFinalize=true;
 		else
-			inFinalize=false;
-	}
-	
-	@Override
-	public void visit(Field obj) 
-	{
+            inFinalize=false;
+    }
 
-	}
-
-	
 	@Override
-	public void visit(Code obj) {
+    public void visit(Field obj)
+    {
+
+    }
+
+
+    @Override
+    public void visit(Code obj) {
 		state=0;
-		sawAnythingElse = false;
-		sawFieldNulling = false;
-		if (inFinalize) {
+        sawAnythingElse = false;
+        sawFieldNulling = false;
+        if (inFinalize) {
 			super.visit(obj);
-			bugAccumulator.reportAccumulatedBugs();
-			if (!sawAnythingElse && sawFieldNulling) {
-				BugInstance bug = new BugInstance(this, "FI_FINALIZER_ONLY_NULLS_FIELDS", HIGH_PRIORITY)
+            bugAccumulator.reportAccumulatedBugs();
+            if (!sawAnythingElse && sawFieldNulling) {
+                BugInstance bug = new BugInstance(this, "FI_FINALIZER_ONLY_NULLS_FIELDS", HIGH_PRIORITY)
 				.addClassAndMethod(this);
-				bugReporter.reportBug(bug);
-			}
-		}
+                bugReporter.reportBug(bug);
+            }
+        }
 	}
 
-	@Override
-	public void sawOpcode(int seen) {
-		if (state==0 && seen==ALOAD_0)
+    @Override
+    public void sawOpcode(int seen) {
+        if (state==0 && seen==ALOAD_0)
 			state++;
-		else if (state==1 && seen==ACONST_NULL)
-			state++;
-		else if (state==2 && seen==PUTFIELD) {
+        else if (state==1 && seen==ACONST_NULL)
+            state++;
+        else if (state==2 && seen==PUTFIELD) {
 			bugAccumulator.accumulateBug(new BugInstance(this, "FI_FINALIZER_NULLS_FIELDS", NORMAL_PRIORITY)
-			.addClassAndMethod(this).addReferencedField(this), this);
-			sawFieldNulling = true;
-			state=0;
+            .addClassAndMethod(this).addReferencedField(this), this);
+            sawFieldNulling = true;
+            state=0;
 		} else if (seen == RETURN) {
-			state = 0;
-		}
-		else {
+            state = 0;
+        }
+        else {
 			state=0;
-			sawAnythingElse = true;
-		}
-	}
+            sawAnythingElse = true;
+        }
+    }
 }

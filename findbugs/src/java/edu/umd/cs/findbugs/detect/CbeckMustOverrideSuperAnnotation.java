@@ -34,51 +34,51 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 
 public class CbeckMustOverrideSuperAnnotation extends OpcodeStackDetector {
 
-	BugReporter bugReporter;
+    BugReporter bugReporter;
 
-	ClassDescriptor mustOverrideAnnotation = DescriptorFactory.createClassDescriptor(OverridingMethodsMustInvokeSuper.class);
+    ClassDescriptor mustOverrideAnnotation = DescriptorFactory.createClassDescriptor(OverridingMethodsMustInvokeSuper.class);
 
-	public CbeckMustOverrideSuperAnnotation(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    public CbeckMustOverrideSuperAnnotation(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-	private boolean sawCallToSuper;
+    private boolean sawCallToSuper;
 
-	@Override
-	public void visit(Code code) {
-		if (getMethod().isStatic() || getMethod().isPrivate())
+    @Override
+    public void visit(Code code) {
+        if (getMethod().isStatic() || getMethod().isPrivate())
 			return;
-		XMethod overrides = Lookup.findSuperImplementorAsXMethod(getThisClass(), getMethodName(), getMethodSig(), bugReporter);
+        XMethod overrides = Lookup.findSuperImplementorAsXMethod(getThisClass(), getMethodName(), getMethodSig(), bugReporter);
 
-		if (overrides == null)
-			return;
-		AnnotationValue annotation = overrides.getAnnotation(mustOverrideAnnotation);
+        if (overrides == null)
+            return;
+        AnnotationValue annotation = overrides.getAnnotation(mustOverrideAnnotation);
 		if (annotation == null)
-			return;
-		sawCallToSuper = false;
-		super.visit(code);
+            return;
+        sawCallToSuper = false;
+        super.visit(code);
 		if (!sawCallToSuper)
-			bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this).addString("Method must invoke override method in superclass"));
-	}
+            bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this).addString("Method must invoke override method in superclass"));
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
+    /*
+     * (non-Javadoc)
+     *
 	 * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
-	 */
-	@Override
-	public void sawOpcode(int seen) {
+     */
+    @Override
+    public void sawOpcode(int seen) {
 		if (seen != INVOKESPECIAL)
-			return;
+            return;
 
-		String calledClassName = getClassConstantOperand();
-		String calledMethodName = getNameConstantOperand();
-		String calledMethodSig = getSigConstantOperand();
+        String calledClassName = getClassConstantOperand();
+        String calledMethodName = getNameConstantOperand();
+        String calledMethodSig = getSigConstantOperand();
 		if (calledClassName.equals(getSuperclassName()) && calledMethodName.equals(getMethodName())
-		        && calledMethodSig.equals(getMethodSig())) {
-			sawCallToSuper = true;
-		}
+                && calledMethodSig.equals(getMethodSig())) {
+            sawCallToSuper = true;
+        }
 
-	}
+    }
 
 }

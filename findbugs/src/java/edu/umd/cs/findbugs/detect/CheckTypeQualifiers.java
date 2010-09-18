@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2008 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -76,546 +76,546 @@ import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Check JSR-305 type qualifiers.
- * 
+ *
  * @author David Hovemeyer
  */
 public class CheckTypeQualifiers extends CFGDetector {
-	private static final boolean DEBUG = SystemProperties.getBoolean("ctq.debug");
-	private static final boolean DEBUG_DATAFLOW = SystemProperties.getBoolean("ctq.dataflow.debug");
-	private static final String DEBUG_DATAFLOW_MODE = SystemProperties.getProperty("ctq.dataflow.debug.mode", "both");
+    private static final boolean DEBUG = SystemProperties.getBoolean("ctq.debug");
+    private static final boolean DEBUG_DATAFLOW = SystemProperties.getBoolean("ctq.dataflow.debug");
+    private static final String DEBUG_DATAFLOW_MODE = SystemProperties.getProperty("ctq.dataflow.debug.mode", "both");
 	private static final String NONNULL_ANNOTATION = "javax/annotation/Nonnull";
-	
-	private static final String METHOD = SystemProperties.getProperty("ctq.method");
 
-	private final BugReporter bugReporter;
+    private static final String METHOD = SystemProperties.getProperty("ctq.method");
 
-	public CheckTypeQualifiers(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    private final BugReporter bugReporter;
+
+    public CheckTypeQualifiers(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 	boolean checked;
-	boolean shouldRunAnalysis;
-	
-	/* (non-Javadoc)
+    boolean shouldRunAnalysis;
+
+    /* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.bcel.CFGDetector#visitClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
-	 */
-	@Override
-	public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
+     */
+    @Override
+    public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 		
-		if (!checked) {
-			checked = true;
-			Collection<TypeQualifierValue> allKnownTypeQualifiers = TypeQualifierValue.getAllKnownTypeQualifiers();
+        if (!checked) {
+            checked = true;
+            Collection<TypeQualifierValue> allKnownTypeQualifiers = TypeQualifierValue.getAllKnownTypeQualifiers();
 			int size = allKnownTypeQualifiers.size();
-			if (size == 1) {
-				TypeQualifierValue value = Util.first(allKnownTypeQualifiers);
-				if (!value.typeQualifier.getClassName().equals(NONNULL_ANNOTATION))
+            if (size == 1) {
+                TypeQualifierValue value = Util.first(allKnownTypeQualifiers);
+                if (!value.typeQualifier.getClassName().equals(NONNULL_ANNOTATION))
 					shouldRunAnalysis = true;
 
-			}
-			else if (size > 1)
-				shouldRunAnalysis = true;
+            }
+            else if (size > 1)
+                shouldRunAnalysis = true;
 		}
 
 
-		if (shouldRunAnalysis)
-			super.visitClass(classDescriptor);
-	}
+        if (shouldRunAnalysis)
+            super.visitClass(classDescriptor);
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.bcel.CFGDetector#visitMethodCFG(edu.umd.cs.findbugs.classfile.MethodDescriptor, edu.umd.cs.findbugs.ba.CFG)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.bcel.CFGDetector#visitMethodCFG(edu.umd.cs.findbugs.classfile.MethodDescriptor, edu.umd.cs.findbugs.ba.CFG)
+     */
 	@Override
-	protected void visitMethodCFG(MethodDescriptor methodDescriptor,  CFG cfg) throws CheckedAnalysisException {
-		if (METHOD != null && !methodDescriptor.getName().equals(METHOD)) {
-			return;
+    protected void visitMethodCFG(MethodDescriptor methodDescriptor,  CFG cfg) throws CheckedAnalysisException {
+        if (METHOD != null && !methodDescriptor.getName().equals(METHOD)) {
+            return;
 		}
 
-		if (DEBUG) {
-			System.out.println("CheckTypeQualifiers: checking " + methodDescriptor.toString());
-		}
+        if (DEBUG) {
+            System.out.println("CheckTypeQualifiers: checking " + methodDescriptor.toString());
+        }
 
-		IAnalysisCache analysisCache = Global.getAnalysisCache();
-		ForwardTypeQualifierDataflowFactory forwardDataflowFactory =
-			analysisCache.getMethodAnalysis(ForwardTypeQualifierDataflowFactory.class, methodDescriptor);
+        IAnalysisCache analysisCache = Global.getAnalysisCache();
+        ForwardTypeQualifierDataflowFactory forwardDataflowFactory =
+            analysisCache.getMethodAnalysis(ForwardTypeQualifierDataflowFactory.class, methodDescriptor);
 		BackwardTypeQualifierDataflowFactory backwardDataflowFactory =
-			analysisCache.getMethodAnalysis(BackwardTypeQualifierDataflowFactory.class, methodDescriptor);
-		ValueNumberDataflow vnaDataflow =
-			analysisCache.getMethodAnalysis(ValueNumberDataflow.class, methodDescriptor);
+            analysisCache.getMethodAnalysis(BackwardTypeQualifierDataflowFactory.class, methodDescriptor);
+        ValueNumberDataflow vnaDataflow =
+            analysisCache.getMethodAnalysis(ValueNumberDataflow.class, methodDescriptor);
 
-		Collection<TypeQualifierValue> relevantQualifiers = Analysis.getRelevantTypeQualifiers(methodDescriptor, cfg);
-		if (DEBUG) {
-			System.out.println("  Relevant type qualifiers are " + relevantQualifiers);
+        Collection<TypeQualifierValue> relevantQualifiers = Analysis.getRelevantTypeQualifiers(methodDescriptor, cfg);
+        if (DEBUG) {
+            System.out.println("  Relevant type qualifiers are " + relevantQualifiers);
 		}
 
-		for (TypeQualifierValue typeQualifierValue : relevantQualifiers) {
-			if (typeQualifierValue.getTypeQualifierClassDescriptor().getClassName().equals(NONNULL_ANNOTATION)) {
-				// Checking @Nonnull annotations is the bailiwick of FindNullDeref.
+        for (TypeQualifierValue typeQualifierValue : relevantQualifiers) {
+            if (typeQualifierValue.getTypeQualifierClassDescriptor().getClassName().equals(NONNULL_ANNOTATION)) {
+                // Checking @Nonnull annotations is the bailiwick of FindNullDeref.
 				continue;
-			}
-			
-			try {
+            }
+
+            try {
 				checkQualifier(
-						methodDescriptor,
-						cfg,
-						typeQualifierValue,
+                        methodDescriptor,
+                        cfg,
+                        typeQualifierValue,
 						forwardDataflowFactory,
-						backwardDataflowFactory,
-						vnaDataflow
-				);
+                        backwardDataflowFactory,
+                        vnaDataflow
+                );
 			} catch (MissingClassException e) {
-				AnalysisContext.reportMissingClass(e);
-			} catch (CheckedAnalysisException e) {
-				bugReporter.logError(
+                AnalysisContext.reportMissingClass(e);
+            } catch (CheckedAnalysisException e) {
+                bugReporter.logError(
 						"Exception checking type qualifier " + typeQualifierValue.toString() +
-						" on method " + methodDescriptor.toString(),
-						e);
-			}
+                        " on method " + methodDescriptor.toString(),
+                        e);
+            }
 		}
-	}
+    }
 
-	private String checkLocation;
+    private String checkLocation;
 
-	/**
-	 * Check a specific TypeQualifierValue on a method.
-	 * 
+    /**
+     * Check a specific TypeQualifierValue on a method.
+     *
 	 * @param methodDescriptor       MethodDescriptor of method
-	 * @param cfg                    CFG of method
-	 * @param typeQualifierValue     TypeQualifierValue to check
-	 * @param forwardDataflowFactory ForwardTypeQualifierDataflowFactory used to create forward dataflow analysis objects
+     * @param cfg                    CFG of method
+     * @param typeQualifierValue     TypeQualifierValue to check
+     * @param forwardDataflowFactory ForwardTypeQualifierDataflowFactory used to create forward dataflow analysis objects
 	 * @param backwardDataflowFactory BackwardTypeQualifierDataflowFactory used to create backward dataflow analysis objects
-	 * @param vnaDataflow            ValueNumberDataflow for the method
-	 */
-	private void checkQualifier(
+     * @param vnaDataflow            ValueNumberDataflow for the method
+     */
+    private void checkQualifier(
 			MethodDescriptor methodDescriptor,
-			CFG cfg,
-			TypeQualifierValue typeQualifierValue,
-			ForwardTypeQualifierDataflowFactory forwardDataflowFactory,
+            CFG cfg,
+            TypeQualifierValue typeQualifierValue,
+            ForwardTypeQualifierDataflowFactory forwardDataflowFactory,
 			BackwardTypeQualifierDataflowFactory backwardDataflowFactory,
-			ValueNumberDataflow vnaDataflow) throws CheckedAnalysisException {
+            ValueNumberDataflow vnaDataflow) throws CheckedAnalysisException {
 
-		if (DEBUG) {
-			System.out.println("----------------------------------------------------------------------");
-			System.out.println("Checking type qualifier " + typeQualifierValue.toString() + " on method " + methodDescriptor.toString());
+        if (DEBUG) {
+            System.out.println("----------------------------------------------------------------------");
+            System.out.println("Checking type qualifier " + typeQualifierValue.toString() + " on method " + methodDescriptor.toString());
 			if (typeQualifierValue.isStrictQualifier()) {
-				System.out.println("  Strict type qualifier");
-			}
-			System.out.println("----------------------------------------------------------------------");
+                System.out.println("  Strict type qualifier");
+            }
+            System.out.println("----------------------------------------------------------------------");
 		}
 
-		ForwardTypeQualifierDataflow forwardDataflow = forwardDataflowFactory.getDataflow(typeQualifierValue);
+        ForwardTypeQualifierDataflow forwardDataflow = forwardDataflowFactory.getDataflow(typeQualifierValue);
 
-		if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("forward") || DEBUG_DATAFLOW_MODE.equals("both"))) {
-			System.out.println("********* Forwards analysis *********");
-			DataflowCFGPrinter<TypeQualifierValueSet, ForwardTypeQualifierDataflowAnalysis> p =
+        if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("forward") || DEBUG_DATAFLOW_MODE.equals("both"))) {
+            System.out.println("********* Forwards analysis *********");
+            DataflowCFGPrinter<TypeQualifierValueSet, ForwardTypeQualifierDataflowAnalysis> p =
 				new DataflowCFGPrinter<TypeQualifierValueSet, ForwardTypeQualifierDataflowAnalysis>(forwardDataflow);
-			p.print(System.out);
-		}
+            p.print(System.out);
+        }
 
-		BackwardTypeQualifierDataflow backwardDataflow = backwardDataflowFactory.getDataflow(typeQualifierValue);
+        BackwardTypeQualifierDataflow backwardDataflow = backwardDataflowFactory.getDataflow(typeQualifierValue);
 
-		if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("backward") || DEBUG_DATAFLOW_MODE.equals("both"))) {
-			System.out.println("********* Backwards analysis *********");
-			DataflowCFGPrinter<TypeQualifierValueSet, BackwardTypeQualifierDataflowAnalysis> p =
+        if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("backward") || DEBUG_DATAFLOW_MODE.equals("both"))) {
+            System.out.println("********* Backwards analysis *********");
+            DataflowCFGPrinter<TypeQualifierValueSet, BackwardTypeQualifierDataflowAnalysis> p =
 				new DataflowCFGPrinter<TypeQualifierValueSet, BackwardTypeQualifierDataflowAnalysis>(backwardDataflow);
-			p.print(System.out);
-		}
+            p.print(System.out);
+        }
 
-		checkDataflow(methodDescriptor, cfg, typeQualifierValue, vnaDataflow, forwardDataflow, backwardDataflow);
-		checkValueSources(methodDescriptor, cfg, typeQualifierValue, vnaDataflow, forwardDataflow, backwardDataflow);
-	}
+        checkDataflow(methodDescriptor, cfg, typeQualifierValue, vnaDataflow, forwardDataflow, backwardDataflow);
+        checkValueSources(methodDescriptor, cfg, typeQualifierValue, vnaDataflow, forwardDataflow, backwardDataflow);
+    }
 
-	private void checkDataflow(MethodDescriptor methodDescriptor, CFG cfg, TypeQualifierValue typeQualifierValue,
-			ValueNumberDataflow vnaDataflow, ForwardTypeQualifierDataflow forwardDataflow,
-			BackwardTypeQualifierDataflow backwardDataflow) throws DataflowAnalysisException, CheckedAnalysisException {
+    private void checkDataflow(MethodDescriptor methodDescriptor, CFG cfg, TypeQualifierValue typeQualifierValue,
+            ValueNumberDataflow vnaDataflow, ForwardTypeQualifierDataflow forwardDataflow,
+            BackwardTypeQualifierDataflow backwardDataflow) throws DataflowAnalysisException, CheckedAnalysisException {
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
-			Location loc = i.next();
+            Location loc = i.next();
 
-			TypeQualifierValueSet forwardsFact = forwardDataflow.getFactAtLocation(loc);
-			TypeQualifierValueSet backwardsFact = backwardDataflow.getFactAfterLocation(loc);
+            TypeQualifierValueSet forwardsFact = forwardDataflow.getFactAtLocation(loc);
+            TypeQualifierValueSet backwardsFact = backwardDataflow.getFactAfterLocation(loc);
 
-			if (!forwardsFact.isValid() || !backwardsFact.isValid()) {
-				continue;
-			}
+            if (!forwardsFact.isValid() || !backwardsFact.isValid()) {
+                continue;
+            }
 
-			if (DEBUG) {
-				checkLocation = "location " + loc.toCompactString();
-			}
+            if (DEBUG) {
+                checkLocation = "location " + loc.toCompactString();
+            }
 			checkForConflictingValues(
-					methodDescriptor,
-					typeQualifierValue,
-					forwardsFact,
+                    methodDescriptor,
+                    typeQualifierValue,
+                    forwardsFact,
 					backwardsFact,
-					loc, // location to report
-					loc, // location where doomed value is observed
-					vnaDataflow.getFactAtLocation(loc)
+                    loc, // location to report
+                    loc, // location where doomed value is observed
+                    vnaDataflow.getFactAtLocation(loc)
 			);
-		}
+        }
 
-		for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext(); ) {
-			Edge edge = i.next();
-			if (DEBUG) {
+        for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext(); ) {
+            Edge edge = i.next();
+            if (DEBUG) {
 				checkLocation = "edge " + edge.getLabel();
-				System.out.println("BEGIN CHECK EDGE " + edge.getLabel());
-			}
+                System.out.println("BEGIN CHECK EDGE " + edge.getLabel());
+            }
 
-			// NOTE: when checking forwards and backwards values on an edge,
-			// we don't want to apply BOTH edge transfer functions,
-			// since the purpose of the edge transfer function is to
+            // NOTE: when checking forwards and backwards values on an edge,
+            // we don't want to apply BOTH edge transfer functions,
+            // since the purpose of the edge transfer function is to
 			// propagate information across phi nodes (effectively
-			// copying information about one value to another).
-			// Due to pruning of backwards values when a conflict is detected,
-			// we need to check backwards values as "early" as possible,
+            // copying information about one value to another).
+            // Due to pruning of backwards values when a conflict is detected,
+            // we need to check backwards values as "early" as possible,
 			// meaning that we want to check at the edge target
-			// (before the backwards edge transfer function has pruned
-			// the backwards value.)
-			TypeQualifierValueSet forwardFact = forwardDataflow.getFactOnEdge(edge);
+            // (before the backwards edge transfer function has pruned
+            // the backwards value.)
+            TypeQualifierValueSet forwardFact = forwardDataflow.getFactOnEdge(edge);
 			TypeQualifierValueSet backwardFact = backwardDataflow.getResultFact(edge.getTarget());
 
-			// The edge target location is where we can check
-			// for conflicting flow values.
-			Location edgeTargetLocation = getEdgeTargetLocation(cfg, edge);
+            // The edge target location is where we can check
+            // for conflicting flow values.
+            Location edgeTargetLocation = getEdgeTargetLocation(cfg, edge);
 			ValueNumberFrame vnaFrame = (edgeTargetLocation != null) ? vnaDataflow.getFactAtLocation(edgeTargetLocation) : null; 
 
-			// What location do we want to report to the user
-			// as where the conflict occurs?
-			// The edge source location is generally better,
+            // What location do we want to report to the user
+            // as where the conflict occurs?
+            // The edge source location is generally better,
 			// but edge target location is ok as a fallback.
-			Location locationToReport;
-			if (edge.getSource().getLastInstruction() != null) {
-				locationToReport = getEdgeSourceLocation(cfg, edge);
+            Location locationToReport;
+            if (edge.getSource().getLastInstruction() != null) {
+                locationToReport = getEdgeSourceLocation(cfg, edge);
 			} else {
-				locationToReport = edgeTargetLocation;
-			}
+                locationToReport = edgeTargetLocation;
+            }
 
-			checkForConflictingValues(
-					methodDescriptor,
-					typeQualifierValue,
+            checkForConflictingValues(
+                    methodDescriptor,
+                    typeQualifierValue,
 					forwardFact,
-					backwardFact,
-					locationToReport,
-					edgeTargetLocation,
+                    backwardFact,
+                    locationToReport,
+                    edgeTargetLocation,
 					vnaFrame
-			);
-			if (DEBUG) {
-				System.out.println("END CHECK EDGE");
+            );
+            if (DEBUG) {
+                System.out.println("END CHECK EDGE");
 			}
-		}
-	}
+        }
+    }
 
-	private void checkValueSources(MethodDescriptor methodDescriptor, CFG cfg, TypeQualifierValue typeQualifierValue,
-			ValueNumberDataflow vnaDataflow, ForwardTypeQualifierDataflow forwardDataflow,
-			BackwardTypeQualifierDataflow backwardDataflow) throws DataflowAnalysisException {
+    private void checkValueSources(MethodDescriptor methodDescriptor, CFG cfg, TypeQualifierValue typeQualifierValue,
+            ValueNumberDataflow vnaDataflow, ForwardTypeQualifierDataflow forwardDataflow,
+            BackwardTypeQualifierDataflow backwardDataflow) throws DataflowAnalysisException {
 
-		// Check to see if any backwards ALWAYS or NEVER values
-		// reach incompatible sources.
+        // Check to see if any backwards ALWAYS or NEVER values
+        // reach incompatible sources.
 
-		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
-			Location location = i.next();
+        for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
+            Location location = i.next();
 
-			Set<SourceSinkInfo> sourceSet = forwardDataflow.getAnalysis().getSourceSinkInfoSet(location);
+            Set<SourceSinkInfo> sourceSet = forwardDataflow.getAnalysis().getSourceSinkInfoSet(location);
 
-			for (SourceSinkInfo source : sourceSet) {
-				ValueNumber vn = source.getValueNumber();
-				TypeQualifierValueSet backwardsFact = backwardDataflow.getFactAtLocation(location);
+            for (SourceSinkInfo source : sourceSet) {
+                ValueNumber vn = source.getValueNumber();
+                TypeQualifierValueSet backwardsFact = backwardDataflow.getFactAtLocation(location);
 				FlowValue backwardsFlowValue = backwardsFact.getValue(vn);
 
-				if (DEBUG) {
-					System.out.println("Checking value source at " + location.toCompactString());
-					System.out.println("  back=" + backwardsFact);
+                if (DEBUG) {
+                    System.out.println("Checking value source at " + location.toCompactString());
+                    System.out.println("  back=" + backwardsFact);
 					System.out.println("  source=" + source);
-				}
+                }
 
-				if (!(backwardsFlowValue == FlowValue.ALWAYS || backwardsFlowValue == FlowValue.NEVER)) {
-					continue;
-				}
+                if (!(backwardsFlowValue == FlowValue.ALWAYS || backwardsFlowValue == FlowValue.NEVER)) {
+                    continue;
+                }
 
-				// Check to see if this warning has already been reported because
-				// the dataflow values conflict directly with each other.
-				TypeQualifierValueSet forwardsFact = forwardDataflow.getFactAfterLocation(location);
+                // Check to see if this warning has already been reported because
+                // the dataflow values conflict directly with each other.
+                TypeQualifierValueSet forwardsFact = forwardDataflow.getFactAfterLocation(location);
 				FlowValue forwardsFlowValue = forwardsFact.getValue(vn);
-				if (FlowValue.valuesConflict(forwardsFlowValue, backwardsFlowValue)) {
-					continue;
-				}
+                if (FlowValue.valuesConflict(forwardsFlowValue, backwardsFlowValue)) {
+                    continue;
+                }
 
-				if (FlowValue.backwardsValueConflictsWithSource(backwardsFlowValue, source, typeQualifierValue)) {
-					String bugType =
-						(backwardsFlowValue == FlowValue.NEVER) ? "TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK" : "TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK";
+                if (FlowValue.backwardsValueConflictsWithSource(backwardsFlowValue, source, typeQualifierValue)) {
+                    String bugType =
+                        (backwardsFlowValue == FlowValue.NEVER) ? "TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK" : "TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK";
 
-					emitSourceWarning(
-							bugType,
-							methodDescriptor,
+                    emitSourceWarning(
+                            bugType,
+                            methodDescriptor,
 							typeQualifierValue,
-							backwardsFlowValue,
-							backwardsFact,
-							source,
+                            backwardsFlowValue,
+                            backwardsFact,
+                            source,
 							vn, location
-					);
-				} else if (source.getWhen() == When.UNKNOWN && source.getType() == SourceSinkType.PARAMETER) {
+                    );
+                } else if (source.getWhen() == When.UNKNOWN && source.getType() == SourceSinkType.PARAMETER) {
 
-					XMethod xmethod = XFactory.createXMethod(methodDescriptor);
-					int p = source.getParameter();
-					TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications.getDirectTypeQualifierAnnotation(xmethod, p, typeQualifierValue);
+                    XMethod xmethod = XFactory.createXMethod(methodDescriptor);
+                    int p = source.getParameter();
+                    TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications.getDirectTypeQualifierAnnotation(xmethod, p, typeQualifierValue);
 					if (directTypeQualifierAnnotation != null && directTypeQualifierAnnotation.when == When.UNKNOWN) {
-						String bugType =
-							(backwardsFlowValue == FlowValue.NEVER) ? "TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK" : "TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK";
+                        String bugType =
+                            (backwardsFlowValue == FlowValue.NEVER) ? "TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK" : "TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK";
 
 
-						emitSourceWarning(
-								bugType,
-								methodDescriptor,
+                        emitSourceWarning(
+                                bugType,
+                                methodDescriptor,
 								typeQualifierValue,
-								backwardsFlowValue,
-								backwardsFact,
-								source,
+                                backwardsFlowValue,
+                                backwardsFact,
+                                source,
 								vn, location
-						);
-					}
+                        );
+                    }
 
-				}}
+                }}
+        }
+
+    }
+
+
+    private Location getEdgeTargetLocation(CFG cfg, Edge edge) {
+        BasicBlock targetBlock = edge.getTarget();
+
+        // Target block is nonempty?
+        if (targetBlock.getFirstInstruction() != null) {
+            return new Location(targetBlock.getFirstInstruction(), targetBlock);
 		}
 
-	}
-
-
-	private Location getEdgeTargetLocation(CFG cfg, Edge edge) {
-		BasicBlock targetBlock = edge.getTarget();
-
-		// Target block is nonempty?
-		if (targetBlock.getFirstInstruction() != null) {
-			return new Location(targetBlock.getFirstInstruction(), targetBlock);
-		}
-
-		// Target block is an ETB?
-		if (targetBlock.isExceptionThrower()) {
-			BasicBlock fallThroughSuccessor = cfg.getSuccessorWithEdgeType(targetBlock, EdgeTypes.FALL_THROUGH_EDGE);
+        // Target block is an ETB?
+        if (targetBlock.isExceptionThrower()) {
+            BasicBlock fallThroughSuccessor = cfg.getSuccessorWithEdgeType(targetBlock, EdgeTypes.FALL_THROUGH_EDGE);
 			if (fallThroughSuccessor == null) {
-				// Fall through edge might have been pruned
-				for (Iterator<Edge> i = cfg.removedEdgeIterator(); i.hasNext(); ) {
-					Edge removedEdge = i.next();
+                // Fall through edge might have been pruned
+                for (Iterator<Edge> i = cfg.removedEdgeIterator(); i.hasNext(); ) {
+                    Edge removedEdge = i.next();
 					if (removedEdge.getSource() == targetBlock && removedEdge.getType() == EdgeTypes.FALL_THROUGH_EDGE) {
-						fallThroughSuccessor = removedEdge.getTarget();
-						break;
-					}
+                        fallThroughSuccessor = removedEdge.getTarget();
+                        break;
+                    }
 				}
-			}
+            }
 
-			if (fallThroughSuccessor != null && fallThroughSuccessor.getFirstInstruction() != null) {
-				return new Location(fallThroughSuccessor.getFirstInstruction(), fallThroughSuccessor);
-			}
+            if (fallThroughSuccessor != null && fallThroughSuccessor.getFirstInstruction() != null) {
+                return new Location(fallThroughSuccessor.getFirstInstruction(), fallThroughSuccessor);
+            }
 		}
 
-		return null;
+        return null;
+    }
+
+    private Location getEdgeSourceLocation(CFG cfg, Edge edge) {
+        BasicBlock sourceBlock = edge.getSource();
+        return (sourceBlock.getLastInstruction() != null) ? new Location(sourceBlock.getLastInstruction(), sourceBlock) : null;
 	}
 
-	private Location getEdgeSourceLocation(CFG cfg, Edge edge) {
-		BasicBlock sourceBlock = edge.getSource();
-		return (sourceBlock.getLastInstruction() != null) ? new Location(sourceBlock.getLastInstruction(), sourceBlock) : null;
-	}
-
-	private void checkForConflictingValues(
-			MethodDescriptor methodDescriptor,
-			TypeQualifierValue typeQualifierValue,
+    private void checkForConflictingValues(
+            MethodDescriptor methodDescriptor,
+            TypeQualifierValue typeQualifierValue,
 			TypeQualifierValueSet forwardsFact,
-			TypeQualifierValueSet backwardsFact,
-			Location locationToReport,
-			Location locationWhereDoomedValueIsObserved,
+            TypeQualifierValueSet backwardsFact,
+            Location locationToReport,
+            Location locationWhereDoomedValueIsObserved,
 			ValueNumberFrame vnaFrame) throws CheckedAnalysisException {
-		Set<ValueNumber> valueNumberSet = new HashSet<ValueNumber>();
-		valueNumberSet.addAll(forwardsFact.getValueNumbers());
-		valueNumberSet.addAll(backwardsFact.getValueNumbers());
+        Set<ValueNumber> valueNumberSet = new HashSet<ValueNumber>();
+        valueNumberSet.addAll(forwardsFact.getValueNumbers());
+        valueNumberSet.addAll(backwardsFact.getValueNumbers());
 
-		for (ValueNumber vn : valueNumberSet) {
-			FlowValue forward = forwardsFact.getValue(vn);
-			FlowValue backward = backwardsFact.getValue(vn);
+        for (ValueNumber vn : valueNumberSet) {
+            FlowValue forward = forwardsFact.getValue(vn);
+            FlowValue backward = backwardsFact.getValue(vn);
 
-			if (DEBUG) {
-				System.out.println("Check " + vn + ": forward=" + forward + ", backward=" + backward + " at " + checkLocation);
-			}
+            if (DEBUG) {
+                System.out.println("Check " + vn + ": forward=" + forward + ", backward=" + backward + " at " + checkLocation);
+            }
 
-			if (FlowValue.valuesConflict(forward, backward)) {
-				if (DEBUG) {
-					System.out.println("Emitting warning at " + checkLocation);
+            if (FlowValue.valuesConflict(forward, backward)) {
+                if (DEBUG) {
+                    System.out.println("Emitting warning at " + checkLocation);
 				}
-				emitDataflowWarning(
-						methodDescriptor,
-						typeQualifierValue,
+                emitDataflowWarning(
+                        methodDescriptor,
+                        typeQualifierValue,
 						forwardsFact,
-						backwardsFact,
-						vn,
-						forward,
+                        backwardsFact,
+                        vn,
+                        forward,
 						backward,
-						locationToReport,
-						locationWhereDoomedValueIsObserved,
-						vnaFrame);
+                        locationToReport,
+                        locationWhereDoomedValueIsObserved,
+                        vnaFrame);
 			}
-		}
-	}
+        }
+    }
 
-	private void emitDataflowWarning(
-			MethodDescriptor methodDescriptor,
-			TypeQualifierValue typeQualifierValue,
+    private void emitDataflowWarning(
+            MethodDescriptor methodDescriptor,
+            TypeQualifierValue typeQualifierValue,
 			TypeQualifierValueSet forwardsFact,
-			TypeQualifierValueSet backwardsFact,
-			ValueNumber vn,
-			FlowValue forward,
+            TypeQualifierValueSet backwardsFact,
+            ValueNumber vn,
+            FlowValue forward,
 			FlowValue backward,
-			Location locationToReport,
-			Location locationWhereDoomedValueIsObserved,
-			ValueNumberFrame vnaFrame) throws CheckedAnalysisException {
+            Location locationToReport,
+            Location locationWhereDoomedValueIsObserved,
+            ValueNumberFrame vnaFrame) throws CheckedAnalysisException {
 		String bugType =
-			(backward == FlowValue.NEVER) ? "TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED" : "TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED";
+            (backward == FlowValue.NEVER) ? "TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED" : "TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED";
 
-		// Issue warning
-		BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY)
-			.addClassAndMethod(methodDescriptor);
+        // Issue warning
+        BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY)
+            .addClassAndMethod(methodDescriptor);
 		annotateWarningWithTypeQualifier(warning, typeQualifierValue);
 
-		Set<SourceSinkInfo> sourceSet = (forward == FlowValue.ALWAYS) ? forwardsFact.getWhereAlways(vn) : forwardsFact.getWhereNever(vn);
-		for (SourceSinkInfo source : sourceSet) {
-			annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, source);
+        Set<SourceSinkInfo> sourceSet = (forward == FlowValue.ALWAYS) ? forwardsFact.getWhereAlways(vn) : forwardsFact.getWhereNever(vn);
+        for (SourceSinkInfo source : sourceSet) {
+            annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, source);
 		}
-		Set<SourceSinkInfo> sinkSet = (backward == FlowValue.ALWAYS) ? backwardsFact.getWhereAlways(vn) : backwardsFact.getWhereNever(vn);
-		
-		Location sinkLocation = getSinkLocation(sinkSet);
+        Set<SourceSinkInfo> sinkSet = (backward == FlowValue.ALWAYS) ? backwardsFact.getWhereAlways(vn) : backwardsFact.getWhereNever(vn);
+
+        Location sinkLocation = getSinkLocation(sinkSet);
 		 if (sinkLocation == null) {
-			 AnalysisContext.logError("Unable to compute sink location for " + methodDescriptor);
-			 return;
-		 }
+             AnalysisContext.logError("Unable to compute sink location for " + methodDescriptor);
+             return;
+         }
 		 
-		// Hopefully we can find the conflicted value in a local variable
-		if (locationWhereDoomedValueIsObserved != null) {
-			Method method = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor);
+        // Hopefully we can find the conflicted value in a local variable
+        if (locationWhereDoomedValueIsObserved != null) {
+            Method method = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor);
 
-			LocalVariableAnnotation localVariable = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method,
-					locationWhereDoomedValueIsObserved, vn, vnaFrame);
-			if (localVariable != null && !localVariable.equals(warning.getPrimaryLocalVariableAnnotation())) {
+            LocalVariableAnnotation localVariable = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method,
+                    locationWhereDoomedValueIsObserved, vn, vnaFrame);
+            if (localVariable != null && !localVariable.equals(warning.getPrimaryLocalVariableAnnotation())) {
 				localVariable.setDescription(localVariable.isSignificant() ? "LOCAL_VARIABLE_VALUE_DOOMED_NAMED"
-						: "LOCAL_VARIABLE_VALUE_DOOMED");
-				warning.add(localVariable);
+                        : "LOCAL_VARIABLE_VALUE_DOOMED");
+                warning.add(localVariable);
 
-			}
-			if (!sinkLocation.equals(locationToReport)) {
-				// Report where we observed the value.
+            }
+            if (!sinkLocation.equals(locationToReport)) {
+                // Report where we observed the value.
 				// Note that for conflicts detected on control edges,
-				// we REPORT the edge source location
-				// rather than the target location, even though it is the
-				// target location where the conflict is detected.
+                // we REPORT the edge source location
+                // rather than the target location, even though it is the
+                // target location where the conflict is detected.
 				// The only reason to use a different reporting location
-				// is to produce a more informative report for the user,
-				// since the edge source is where the branch is found.
-				SourceLineAnnotation observedLocation = SourceLineAnnotation.fromVisitedInstruction(methodDescriptor,
+                // is to produce a more informative report for the user,
+                // since the edge source is where the branch is found.
+                SourceLineAnnotation observedLocation = SourceLineAnnotation.fromVisitedInstruction(methodDescriptor,
 				        locationToReport);
-				observedLocation.setDescription("SOURCE_LINE_VALUE_DOOMED");
-				warning.add(observedLocation);
-			}
+                observedLocation.setDescription("SOURCE_LINE_VALUE_DOOMED");
+                warning.add(observedLocation);
+            }
 		}
 
-		// Add value sinks
-		for (SourceSinkInfo sink : sinkSet) {
-			annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, sink);
+        // Add value sinks
+        for (SourceSinkInfo sink : sinkSet) {
+            annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, sink);
 		}
 
-		bugReporter.reportBug(warning);
-	}
+        bugReporter.reportBug(warning);
+    }
 
-	private void emitSourceWarning(
-			String bugType,
-			MethodDescriptor methodDescriptor,
+    private void emitSourceWarning(
+            String bugType,
+            MethodDescriptor methodDescriptor,
 			TypeQualifierValue typeQualifierValue,
-			FlowValue backwardsFlowValue,
-			TypeQualifierValueSet backwardsFact,
-			SourceSinkInfo source,
+            FlowValue backwardsFlowValue,
+            TypeQualifierValueSet backwardsFact,
+            SourceSinkInfo source,
 			ValueNumber vn, Location location) {
-		
-		BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY)
-			.addClassAndMethod(methodDescriptor);
+
+        BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY)
+            .addClassAndMethod(methodDescriptor);
 		annotateWarningWithTypeQualifier(warning, typeQualifierValue);
-		
-		annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, source);
-		
+
+        annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, source);
+
 		Set<SourceSinkInfo> sinkSet = (backwardsFlowValue == FlowValue.NEVER) ? backwardsFact.getWhereNever(vn) : backwardsFact.getWhereAlways(vn);
-		for (SourceSinkInfo sink : sinkSet) {
-			annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, sink);
-		}
+        for (SourceSinkInfo sink : sinkSet) {
+            annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, sink);
+        }
 		
-		bugReporter.reportBug(warning);
-	}
+        bugReporter.reportBug(warning);
+    }
 
-	private void annotateWarningWithTypeQualifier(BugInstance warning, TypeQualifierValue typeQualifierValue) {
-		StringBuilder buf = new StringBuilder();
-		buf.append("@");
+    private void annotateWarningWithTypeQualifier(BugInstance warning, TypeQualifierValue typeQualifierValue) {
+        StringBuilder buf = new StringBuilder();
+        buf.append("@");
 		buf.append(typeQualifierValue.typeQualifier.getDottedClassName());
-		if (TypeQualifierValue.hasMultipleVariants(typeQualifierValue)) {
-			// When there are multiple variants, qualify the type
-			// qualifier with the value indicating which variant.
+        if (TypeQualifierValue.hasMultipleVariants(typeQualifierValue)) {
+            // When there are multiple variants, qualify the type
+            // qualifier with the value indicating which variant.
 			buf.append("(");
-			buf.append(typeQualifierValue.value);
-			buf.append(")");
-		}
+            buf.append(typeQualifierValue.value);
+            buf.append(")");
+        }
 		warning.addString(buf.toString()).describe(StringAnnotation.TYPE_QUALIFIER_ROLE);
-	}
+    }
 
-	private void annotateWarningWithSourceSinkInfo(BugInstance warning, MethodDescriptor methodDescriptor, ValueNumber vn, SourceSinkInfo sourceSinkInfo) {
-		switch (sourceSinkInfo.getType()) {
-		case PARAMETER:
+    private void annotateWarningWithSourceSinkInfo(BugInstance warning, MethodDescriptor methodDescriptor, ValueNumber vn, SourceSinkInfo sourceSinkInfo) {
+        switch (sourceSinkInfo.getType()) {
+        case PARAMETER:
 			try {
-				Method method = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor);
-				LocalVariableAnnotation lva = LocalVariableAnnotation.getParameterLocalVariableAnnotation(
-						method,
+                Method method = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor);
+                LocalVariableAnnotation lva = LocalVariableAnnotation.getParameterLocalVariableAnnotation(
+                        method,
 						sourceSinkInfo.getLocal());
-				lva.setDescription(lva.isSignificant()
-						? "LOCAL_VARIABLE_PARAMETER_VALUE_SOURCE_NAMED" : "LOCAL_VARIABLE_PARAMETER_VALUE_SOURCE");
-				warning.add(lva);
+                lva.setDescription(lva.isSignificant()
+                        ? "LOCAL_VARIABLE_PARAMETER_VALUE_SOURCE_NAMED" : "LOCAL_VARIABLE_PARAMETER_VALUE_SOURCE");
+                warning.add(lva);
 			} catch (CheckedAnalysisException e) {
-				warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation()).describe("SOURCE_LINE_VALUE_SOURCE");
-			}
-			break;
+                warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation()).describe("SOURCE_LINE_VALUE_SOURCE");
+            }
+            break;
 
-		case CONSTANT_VALUE:
-			Object constantValue = sourceSinkInfo.getConstantValue(); 
-			if (constantValue instanceof String){
+        case CONSTANT_VALUE:
+            Object constantValue = sourceSinkInfo.getConstantValue();
+            if (constantValue instanceof String){
 				warning.addString((String)constantValue).describe(StringAnnotation.STRING_CONSTANT_ROLE);
-			} else if (constantValue instanceof Integer){
-				warning.addInt((Integer)constantValue).describe(IntAnnotation.INT_VALUE);
-			} else 
+            } else if (constantValue instanceof Integer){
+                warning.addInt((Integer)constantValue).describe(IntAnnotation.INT_VALUE);
+            } else
 				warning.addString(constantValue.toString()).describe(StringAnnotation.STRING_CONSTANT_ROLE);
+            break;
+
+        case RETURN_VALUE_OF_CALLED_METHOD:
+        case FIELD_LOAD:
+            warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation()).describe("SOURCE_LINE_VALUE_SOURCE");
 			break;
 
-		case RETURN_VALUE_OF_CALLED_METHOD:
-		case FIELD_LOAD:
-			warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation()).describe("SOURCE_LINE_VALUE_SOURCE");
-			break;
-
-		case ARGUMENT_TO_CALLED_METHOD:
-		case RETURN_VALUE:
-		case FIELD_STORE:
+        case ARGUMENT_TO_CALLED_METHOD:
+        case RETURN_VALUE:
+        case FIELD_STORE:
 			warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation());
-			return;
+            return;
 
-		default:
-			throw new IllegalStateException();
-		}
+        default:
+            throw new IllegalStateException();
+        }
 	}
-	private @CheckForNull Location getSinkLocation(SourceSinkInfo sourceSinkInfo) {
-		switch (sourceSinkInfo.getType()) {
-		
+    private @CheckForNull Location getSinkLocation(SourceSinkInfo sourceSinkInfo) {
+        switch (sourceSinkInfo.getType()) {
+
 		case ARGUMENT_TO_CALLED_METHOD:
-		case RETURN_VALUE:
-		case FIELD_STORE:
-			return  sourceSinkInfo.getLocation();
+        case RETURN_VALUE:
+        case FIELD_STORE:
+            return  sourceSinkInfo.getLocation();
 
 
-		default:
-			return null;
-		}
+        default:
+            return null;
+        }
 	}
 
-	private @CheckForNull
-	Location getSinkLocation(Iterable<SourceSinkInfo> info) {
-		for (SourceSinkInfo s : info) {
+    private @CheckForNull
+    Location getSinkLocation(Iterable<SourceSinkInfo> info) {
+        for (SourceSinkInfo s : info) {
 			Location l = getSinkLocation(s);
-			if (l != null) return l;
-			
-		}
+            if (l != null) return l;
+
+        }
 		return null;
-	}
+    }
 }

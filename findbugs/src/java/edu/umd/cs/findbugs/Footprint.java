@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston MA 02111-1307, USA
@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 /**
 * Class to maintain a snapshot of a processes's time and memory usage.
-* 
+*
 * This uses some JDK 1.5 APIs so must be careful that it doesn't cause
 * any harm when run from 1.4.
 *
@@ -37,142 +37,142 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 */
 public class Footprint {
 
-	/**
-     * 
+    /**
+     *
      */
     private static final int NOCLASSDEF_ERROR = -9;
     private static final int CLASSCAST_ERROR = -8;
     private static final int ERROR_ERROR = -7;
     private static final int RUNTIME_EXCEPTION = -6;
-	private long cpuTime = -1;   // in nanoseconds
-	private long clockTime = -1; // in milliseconds
-	private long peakMem = -1;   // in bytes
+    private long cpuTime = -1;   // in nanoseconds
+    private long clockTime = -1; // in milliseconds
+    private long peakMem = -1;   // in bytes
 	private long collectionTime = -1; // in milliseconds
 
-	public Footprint() {
-		pullData();
-	}
+    public Footprint() {
+        pullData();
+    }
 
-	/** uses deltas from base for cpuTime and clockTime (but not peakMemory) */
-	public Footprint(Footprint base) {
-		pullData();
+    /** uses deltas from base for cpuTime and clockTime (but not peakMemory) */
+    public Footprint(Footprint base) {
+        pullData();
 		if (cpuTime >= 0) {
-			cpuTime = (base.cpuTime >= 0) ? cpuTime-base.cpuTime : base.cpuTime;
-		}
-		if (clockTime >= 0) {
+            cpuTime = (base.cpuTime >= 0) ? cpuTime-base.cpuTime : base.cpuTime;
+        }
+        if (clockTime >= 0) {
 			clockTime = (base.clockTime >= 0) ? clockTime-base.clockTime : base.clockTime;
-		}
-		// leave peakMem alone
-		if (collectionTime >= 0) {
+        }
+        // leave peakMem alone
+        if (collectionTime >= 0) {
 			collectionTime = (base.collectionTime >= 0) ? collectionTime-base.collectionTime : base.collectionTime;
-		}
-	}
+        }
+    }
 
-	private void pullData() {
-		
-		try {
+    private void pullData() {
+
+        try {
 			cpuTime = new OperatingSystemBeanWrapper().getProcessCpuTime();
-		} catch (NoClassDefFoundError ncdfe) { cpuTime = NOCLASSDEF_ERROR; }
-		  catch (ClassCastException cce) { cpuTime = CLASSCAST_ERROR; }
-		  catch (Error error) { cpuTime = ERROR_ERROR; } // catch possible Error thrown when complied by the Eclipse compiler
+        } catch (NoClassDefFoundError ncdfe) { cpuTime = NOCLASSDEF_ERROR; }
+          catch (ClassCastException cce) { cpuTime = CLASSCAST_ERROR; }
+          catch (Error error) { cpuTime = ERROR_ERROR; } // catch possible Error thrown when complied by the Eclipse compiler
 		  catch (RuntimeException error) { cpuTime = RUNTIME_EXCEPTION; } // catch possible Error thrown when complied by the Eclipse compiler
 
 
-		clockTime = System.currentTimeMillis(); // or new java.util.Date().getTime()	;
+        clockTime = System.currentTimeMillis(); // or new java.util.Date().getTime()	;
 
-		try {
-			peakMem = new MemoryBeanWrapper().getPeakUsage();
-		} catch (NoClassDefFoundError ncdfe) { peakMem = NOCLASSDEF_ERROR; }
+        try {
+            peakMem = new MemoryBeanWrapper().getPeakUsage();
+        } catch (NoClassDefFoundError ncdfe) { peakMem = NOCLASSDEF_ERROR; }
 		  catch (Error ncdfe) { peakMem = CLASSCAST_ERROR; }
-		  catch (RuntimeException ncdfe) { peakMem = RUNTIME_EXCEPTION; }
+          catch (RuntimeException ncdfe) { peakMem = RUNTIME_EXCEPTION; }
 
-		try {
-			collectionTime = new CollectionBeanWrapper().getCollectionTime();
-		} catch (NoClassDefFoundError ncdfe) { collectionTime = NOCLASSDEF_ERROR; }
+        try {
+            collectionTime = new CollectionBeanWrapper().getCollectionTime();
+        } catch (NoClassDefFoundError ncdfe) { collectionTime = NOCLASSDEF_ERROR; }
 		  catch (Error ncdfe) { peakMem = ERROR_ERROR; }
-		  catch (RuntimeException ncdfe) { collectionTime = RUNTIME_EXCEPTION; }
-	}
+          catch (RuntimeException ncdfe) { collectionTime = RUNTIME_EXCEPTION; }
+    }
 
-	public long getCpuTime() {
-		return cpuTime;
-	}
+    public long getCpuTime() {
+        return cpuTime;
+    }
 	public long getClockTime() {
-		return clockTime;
-	}
-	public long getPeakMemory() {
+        return clockTime;
+    }
+    public long getPeakMemory() {
 		return peakMem;
-	}
-	public long getCollectionTime() {
-		return collectionTime;
-	}
-
-	@Override
-	public String toString() {
-		return "cpuTime="+cpuTime+", clockTime="+clockTime+", peakMemory="+peakMem;
+    }
+    public long getCollectionTime() {
+        return collectionTime;
 	}
 
-	public static void main(String[] argv) {
-		System.out.println(new Footprint());
+    @Override
+    public String toString() {
+        return "cpuTime="+cpuTime+", clockTime="+clockTime+", peakMemory="+peakMem;
 	}
 
-	// -------- begin static inner classes --------
+    public static void main(String[] argv) {
+        System.out.println(new Footprint());
+    }
 
-	/** Wrapper so that possible NoClassDefFoundError can be caught. Instantiating
-	 *  this class will throw a NoClassDefFoundError on JDK 1.4 and earlier. */
-	public static class MemoryBeanWrapper {
+    // -------- begin static inner classes --------
+
+    /** Wrapper so that possible NoClassDefFoundError can be caught. Instantiating
+     *  this class will throw a NoClassDefFoundError on JDK 1.4 and earlier. */
+    public static class MemoryBeanWrapper {
 		List<MemoryPoolMXBean> mlist = ManagementFactory.getMemoryPoolMXBeans();
-		//java.lang.management.MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
-		//java.lang.management.MemoryUsage memUsage = memBean.getHeapMemoryUsage();
+        //java.lang.management.MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
+        //java.lang.management.MemoryUsage memUsage = memBean.getHeapMemoryUsage();
 
-		public long getPeakUsage() {
-			long sum = 0;
-			// problem: sum of the peaks is not necessarily the peak of the sum.
+        public long getPeakUsage() {
+            long sum = 0;
+            // problem: sum of the peaks is not necessarily the peak of the sum.
 			// For example, objects migrate from the 'eden' to the 'survivor' area.
-			for (MemoryPoolMXBean mpBean : mlist) {
-				try {
-					java.lang.management.MemoryUsage memUsage = mpBean.getPeakUsage();
+            for (MemoryPoolMXBean mpBean : mlist) {
+                try {
+                    java.lang.management.MemoryUsage memUsage = mpBean.getPeakUsage();
 					if (memUsage != null) 
-						sum += memUsage.getUsed(); // or getCommitted()
-					// System.out.println(mpBean.getType()+", "+mpBean.getName()+", "+memUsage.getUsed());
-					//System.out.println("Memory type="+mpBean.getType()+", Pool name="+mpBean.getName()+", Memory usage="+mpBean.getPeakUsage());
+                        sum += memUsage.getUsed(); // or getCommitted()
+                    // System.out.println(mpBean.getType()+", "+mpBean.getName()+", "+memUsage.getUsed());
+                    //System.out.println("Memory type="+mpBean.getType()+", Pool name="+mpBean.getName()+", Memory usage="+mpBean.getPeakUsage());
 				} catch (RuntimeException e) {
-					assert true;
-					// AnalysisContext.logError("Error getting peak usage", e);
-				}
+                    assert true;
+                    // AnalysisContext.logError("Error getting peak usage", e);
+                }
 			}
-			// System.out.println();
-			return sum;
-		}
+            // System.out.println();
+            return sum;
+        }
 	}
 
-	/** Wrapper so that possbile NoClassDefFoundError can be caught. Instantiating this
-	 *  class will throw a NoClassDefFoundError on JDK 1.4 and earlier, or will throw a
-	 *  ClassCastException on a 1.5-compliant non-sun JRE where the osBean is not a sunBean.
+    /** Wrapper so that possbile NoClassDefFoundError can be caught. Instantiating this
+     *  class will throw a NoClassDefFoundError on JDK 1.4 and earlier, or will throw a
+     *  ClassCastException on a 1.5-compliant non-sun JRE where the osBean is not a sunBean.
 	 *  (If compiled by Eclipse, instantiating it will throw an unsubclassed java.lang.Error.) */
-	public static class OperatingSystemBeanWrapper {
-		java.lang.management.	OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-		// next line compiles fine with sun JDK 1.5 but the eclipse compiler may complain "The type
+    public static class OperatingSystemBeanWrapper {
+        java.lang.management.	OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        // next line compiles fine with sun JDK 1.5 but the eclipse compiler may complain "The type
 		// OperatingSystemMXBean is not accessible due to restriction on required library classes.jar"
-		// depending on the contents of the .classpath file.
-		com.sun.management.OperatingSystemMXBean sunBean = (com.sun.management.OperatingSystemMXBean)osBean;
+        // depending on the contents of the .classpath file.
+        com.sun.management.OperatingSystemMXBean sunBean = (com.sun.management.OperatingSystemMXBean)osBean;
 
-		public long getProcessCpuTime() {
-			return sunBean.getProcessCpuTime();
-		}
+        public long getProcessCpuTime() {
+            return sunBean.getProcessCpuTime();
+        }
 	}
 
-	/** Wrapper so that possible NoClassDefFoundError can be caught. Instantiating
-	 *  this class will throw a NoClassDefFoundError on JDK 1.4 and earlier. */
-	public static class CollectionBeanWrapper {
+    /** Wrapper so that possible NoClassDefFoundError can be caught. Instantiating
+     *  this class will throw a NoClassDefFoundError on JDK 1.4 and earlier. */
+    public static class CollectionBeanWrapper {
 		List<GarbageCollectorMXBean> clist = ManagementFactory.getGarbageCollectorMXBeans();
 
-		public long getCollectionTime() {
-			long sum = 0;
-			for (GarbageCollectorMXBean gcBean : clist) {
+        public long getCollectionTime() {
+            long sum = 0;
+            for (GarbageCollectorMXBean gcBean : clist) {
 				sum += gcBean.getCollectionTime();
-			}
-			return sum;
-		}
+            }
+            return sum;
+        }
 	}
 
 }

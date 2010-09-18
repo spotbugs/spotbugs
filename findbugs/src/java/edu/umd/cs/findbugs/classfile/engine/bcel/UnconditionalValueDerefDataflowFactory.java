@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2007 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -35,59 +35,59 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * Analysis engine to produce UnconditionalValueDerefDataflow objects
  * for analyzed methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class UnconditionalValueDerefDataflowFactory extends AnalysisFactory<UnconditionalValueDerefDataflow> {
-	/**
-	 * Constructor.
-	 */
+    /**
+     * Constructor.
+     */
 	public UnconditionalValueDerefDataflowFactory() {
-		super("unconditional value dereference analysis", UnconditionalValueDerefDataflow.class);
-	}
+        super("unconditional value dereference analysis", UnconditionalValueDerefDataflow.class);
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+     */
 	public UnconditionalValueDerefDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
-		MethodGen methodGen =getMethodGen(analysisCache, descriptor);
-		if (methodGen == null) {
-			throw new MethodUnprofitableException(descriptor);
+        MethodGen methodGen =getMethodGen(analysisCache, descriptor);
+        if (methodGen == null) {
+            throw new MethodUnprofitableException(descriptor);
 		}
 
-		CFG cfg = getCFG(analysisCache, descriptor);
+        CFG cfg = getCFG(analysisCache, descriptor);
 
-		ValueNumberDataflow vnd = getValueNumberDataflow(analysisCache, descriptor);
+        ValueNumberDataflow vnd = getValueNumberDataflow(analysisCache, descriptor);
 
-		UnconditionalValueDerefAnalysis analysis = new UnconditionalValueDerefAnalysis(
-				getReverseDepthFirstSearch(analysisCache, descriptor),
-				getDepthFirstSearch(analysisCache, descriptor),
+        UnconditionalValueDerefAnalysis analysis = new UnconditionalValueDerefAnalysis(
+                getReverseDepthFirstSearch(analysisCache, descriptor),
+                getDepthFirstSearch(analysisCache, descriptor),
 				cfg,
-				getMethod(analysisCache, descriptor),
-				methodGen,
-				vnd,
+                getMethod(analysisCache, descriptor),
+                methodGen,
+                vnd,
 				getAssertionMethods(analysisCache, descriptor.getClassDescriptor())
-		);
+        );
 
-		IsNullValueDataflow inv = getIsNullValueDataflow(analysisCache, descriptor);
-		// XXX: hack to clear derefs on not-null branches
-		analysis.clearDerefsOnNonNullBranches(inv);
+        IsNullValueDataflow inv = getIsNullValueDataflow(analysisCache, descriptor);
+        // XXX: hack to clear derefs on not-null branches
+        analysis.clearDerefsOnNonNullBranches(inv);
 
-		TypeDataflow typeDataflow = getTypeDataflow(analysisCache, descriptor);
-		// XXX: type analysis is needed to resolve method calls for
-		// checking whether call targets unconditionally dereference parameters
+        TypeDataflow typeDataflow = getTypeDataflow(analysisCache, descriptor);
+        // XXX: type analysis is needed to resolve method calls for
+        // checking whether call targets unconditionally dereference parameters
 		analysis.setTypeDataflow(typeDataflow);
 
-		UnconditionalValueDerefDataflow dataflow =
-			new UnconditionalValueDerefDataflow(cfg, analysis);
-		dataflow.execute();
+        UnconditionalValueDerefDataflow dataflow =
+            new UnconditionalValueDerefDataflow(cfg, analysis);
+        dataflow.execute();
 		if (ClassContext.DUMP_DATAFLOW_ANALYSIS) {
-			dataflow.dumpDataflow(analysis);
-		}
-		if (UnconditionalValueDerefAnalysis.DEBUG) {
+            dataflow.dumpDataflow(analysis);
+        }
+        if (UnconditionalValueDerefAnalysis.DEBUG) {
 			ClassContext.dumpDataflowInformation(getMethod(analysisCache, descriptor), cfg, vnd, inv, dataflow, typeDataflow);
-		}
+        }
 
-		return dataflow;
-	}
+        return dataflow;
+    }
 }

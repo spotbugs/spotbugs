@@ -1,17 +1,17 @@
 /*
  * Generic graph library
  * Copyright (C) 2000,2003,2004 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -33,44 +33,44 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
  */
 public class VisitationTimeComparator <VertexType extends GraphVertex<VertexType>> implements Comparator<VertexType>,
 Serializable {
-	private static final long serialVersionUID = 0L;
-	/**
-	 * Compare in ascending order.
+    private static final long serialVersionUID = 0L;
+    /**
+     * Compare in ascending order.
 	 */
-	public static final int ASCENDING = 0;
+    public static final int ASCENDING = 0;
 
-	/**
-	 * Compare in descending order.
-	 */
+    /**
+     * Compare in descending order.
+     */
 	public static final int DESCENDING = 1;
 
-	private int[] m_visitationTimeList;
-	private int m_direction;
+    private int[] m_visitationTimeList;
+    private int m_direction;
 
-	/**
-	 * Constructor.
-	 *
+    /**
+     * Constructor.
+     *
 	 * @param visitationTimeList array of visitation times indexed by vertex label
-	 * @param direction          either ASCENDING or DESCENDING
-	 */
-	@SuppressWarnings("EI2")
+     * @param direction          either ASCENDING or DESCENDING
+     */
+    @SuppressWarnings("EI2")
 	public VisitationTimeComparator(int[] visitationTimeList, int direction) {
-		m_visitationTimeList = visitationTimeList;
-		m_direction = direction;
+        m_visitationTimeList = visitationTimeList;
+        m_direction = direction;
 
-		if (direction != ASCENDING && direction != DESCENDING)
-			throw new IllegalArgumentException();
-	}
+        if (direction != ASCENDING && direction != DESCENDING)
+            throw new IllegalArgumentException();
+    }
 
-	public int compare(VertexType v1, VertexType v2) {
-		int f1 = m_visitationTimeList[v1.getLabel()];
-		int f2 = m_visitationTimeList[v2.getLabel()];
+    public int compare(VertexType v1, VertexType v2) {
+        int f1 = m_visitationTimeList[v1.getLabel()];
+        int f2 = m_visitationTimeList[v2.getLabel()];
 
-		if (m_direction == ASCENDING)
-			return f1 - f2;
-		else
+        if (m_direction == ASCENDING)
+            return f1 - f2;
+        else
 			return f2 - f1;
-	}
+    }
 
 }
 

@@ -53,111 +53,111 @@ import java.util.Set;
 
 public class CallToUnsupportedMethod implements Detector  {
 
-	BugReporter bugReporter;
+    BugReporter bugReporter;
 
-	public CallToUnsupportedMethod(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    public CallToUnsupportedMethod(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-	public void visitClassContext(ClassContext classContext) {
-		JavaClass javaClass = classContext.getJavaClass();
-		Method[] methodList = javaClass.getMethods();
+    public void visitClassContext(ClassContext classContext) {
+        JavaClass javaClass = classContext.getJavaClass();
+        Method[] methodList = javaClass.getMethods();
 
-		for (Method method : methodList) {
-			if (method.getCode() == null)
-				continue;
+        for (Method method : methodList) {
+            if (method.getCode() == null)
+                continue;
 
-			try {
-				analyzeMethod(classContext, method);
-			} catch (MethodUnprofitableException e) {
+            try {
+                analyzeMethod(classContext, method);
+            } catch (MethodUnprofitableException e) {
 				assert true; // move along; nothing to see
-			} catch (CFGBuilderException e) {
-				String msg = "Detector " + this.getClass().getName()
-										+ " caught exception while analyzing " + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
+            } catch (CFGBuilderException e) {
+                String msg = "Detector " + this.getClass().getName()
+                                        + " caught exception while analyzing " + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
 				bugReporter.logError(msg , e);
-			} catch (DataflowAnalysisException e) {
-				String msg = "Detector " + this.getClass().getName()
-										+ " caught exception while analyzing " + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
+            } catch (DataflowAnalysisException e) {
+                String msg = "Detector " + this.getClass().getName()
+                                        + " caught exception while analyzing " + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
 				bugReporter.logError(msg, e);
-			}
-		}
-	}
+            }
+        }
+    }
 
-	
-	/**
+
+    /**
      * @param classContext
      * @param method
      */
     private void analyzeMethod(ClassContext classContext, Method method) throws MethodUnprofitableException, CFGBuilderException, DataflowAnalysisException {
-    	if (method.isSynthetic() || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE) return;
-		CFG cfg = classContext.getCFG(method);
-		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+        if (method.isSynthetic() || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE) return;
+        CFG cfg = classContext.getCFG(method);
+        TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 		ConstantPoolGen constantPoolGen = classContext.getConstantPoolGen();
-		
-		locationLoop: for (Iterator<Location> iter = cfg.locationIterator(); iter.hasNext();) {
-			Location location = iter.next();
-			InstructionHandle handle = location.getHandle();
-			Instruction ins = handle.getInstruction();
 
-			// Only consider invoke instructions
-			if (!(ins instanceof InvokeInstruction))
-				continue;
+        locationLoop: for (Iterator<Location> iter = cfg.locationIterator(); iter.hasNext();) {
+            Location location = iter.next();
+			InstructionHandle handle = location.getHandle();
+            Instruction ins = handle.getInstruction();
+
+            // Only consider invoke instructions
+            if (!(ins instanceof InvokeInstruction))
+                continue;
 			if (ins instanceof INVOKEINTERFACE) 
-				continue;
-			
-			InvokeInstruction inv = (InvokeInstruction) ins;
+                continue;
+
+            InvokeInstruction inv = (InvokeInstruction) ins;
 			TypeFrame frame = typeDataflow.getFactAtLocation(location);
-			
-			String methodName = inv.getMethodName(constantPoolGen);
-			if (methodName.toLowerCase().indexOf("unsupported") >= 0) 
+
+            String methodName = inv.getMethodName(constantPoolGen);
+            if (methodName.toLowerCase().indexOf("unsupported") >= 0)
 				continue;
-			String methodSig = inv.getSignature(constantPoolGen);
-			if (methodSig.equals("()Ljava/lang/UnsupportedOperationException;"))
-				continue;
+            String methodSig = inv.getSignature(constantPoolGen);
+            if (methodSig.equals("()Ljava/lang/UnsupportedOperationException;"))
+                continue;
 			
-			Set<XMethod> targets;
+            Set<XMethod> targets;
             try {
-	            
-				targets = Hierarchy2.resolveMethodCallTargets(inv, frame, constantPoolGen);
+
+                targets = Hierarchy2.resolveMethodCallTargets(inv, frame, constantPoolGen);
             } catch (ClassNotFoundException e) {
-	            AnalysisContext.reportMissingClass(e);
-	            continue locationLoop;
+                AnalysisContext.reportMissingClass(e);
+                continue locationLoop;
             }
-			if (targets.isEmpty()) 
-				continue locationLoop;
-			int priority = targets.size() == 1 ? Priorities.HIGH_PRIORITY : Priorities.NORMAL_PRIORITY;
+            if (targets.isEmpty())
+                continue locationLoop;
+            int priority = targets.size() == 1 ? Priorities.HIGH_PRIORITY : Priorities.NORMAL_PRIORITY;
 			for(XMethod m : targets) {
-				if (!m.isUnsupported()) 
-					continue locationLoop;
-				XClass xc = AnalysisContext.currentXFactory().getXClass(m.getClassDescriptor());
+                if (!m.isUnsupported())
+                    continue locationLoop;
+                XClass xc = AnalysisContext.currentXFactory().getXClass(m.getClassDescriptor());
 				if (!(inv instanceof INVOKESTATIC) && !(m.isFinal() || xc.isFinal()))
-					priority = Priorities.NORMAL_PRIORITY;
-				if (xc == null || xc.isAbstract()) {
-					try {
+                    priority = Priorities.NORMAL_PRIORITY;
+                if (xc == null || xc.isAbstract()) {
+                    try {
 	                    if (!AnalysisContext.currentAnalysisContext().getSubtypes2().hasSubtypes(m.getClassDescriptor()))
-	                    	continue locationLoop;
+                            continue locationLoop;
                     } catch (ClassNotFoundException e) {
-	                    AnalysisContext.reportMissingClass(e);
-	                    continue locationLoop;
+                        AnalysisContext.reportMissingClass(e);
+                        continue locationLoop;
                     }
-				}
-			}
-			BugInstance bug = new BugInstance(this, "DMI_UNSUPPORTED_METHOD", priority)
+                }
+            }
+            BugInstance bug = new BugInstance(this, "DMI_UNSUPPORTED_METHOD", priority)
 				.addClassAndMethod(classContext.getJavaClass(), method)
-				.addCalledMethod(constantPoolGen, inv)
-				.addSourceLine(classContext, method, location);
-			bugReporter.reportBug(bug);
+                .addCalledMethod(constantPoolGen, inv)
+                .addSourceLine(classContext, method, location);
+            bugReporter.reportBug(bug);
 			
-		}
-	    
+        }
+
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.Detector#report()
      */
     public void report() {
-	    // TODO Auto-generated method stub
-	    
+        // TODO Auto-generated method stub
+
     }
 
 }

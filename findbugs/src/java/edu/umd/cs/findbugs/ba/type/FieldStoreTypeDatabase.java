@@ -1,17 +1,17 @@
 /*
  * Bytecode analysis framework
  * Copyright (C) 2005, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -35,48 +35,48 @@ import edu.umd.cs.findbugs.classfile.FieldDescriptor;
  * @author David Hovemeyer
  */
 public class FieldStoreTypeDatabase
-	extends FieldPropertyDatabase<FieldStoreType> {
+    extends FieldPropertyDatabase<FieldStoreType> {
 
-	public static final String DEFAULT_FILENAME = "fieldStoreTypes.db";
+    public static final String DEFAULT_FILENAME = "fieldStoreTypes.db";
 
-	public void purgeBoringEntries() {
-		Collection<FieldDescriptor> keys = new ArrayList<FieldDescriptor>(getKeys());
-		for(FieldDescriptor f : keys) {
+    public void purgeBoringEntries() {
+        Collection<FieldDescriptor> keys = new ArrayList<FieldDescriptor>(getKeys());
+        for(FieldDescriptor f : keys) {
 			String s = f.getSignature();
-			FieldStoreType type = getProperty(f);
-			Type fieldType = Type.getType(f.getSignature());
-			if (!(fieldType instanceof ReferenceType)) {
+            FieldStoreType type = getProperty(f);
+            Type fieldType = Type.getType(f.getSignature());
+            if (!(fieldType instanceof ReferenceType)) {
 				removeProperty(f);
-				continue;
-			}
-			ReferenceType storeType = type.getLoadType((ReferenceType)fieldType);
+                continue;
+            }
+            ReferenceType storeType = type.getLoadType((ReferenceType)fieldType);
 			if (storeType.equals(fieldType)) 
-				removeProperty(f);
-		}
-	}
+                removeProperty(f);
+        }
+    }
 
-	@Override
-	protected FieldStoreType decodeProperty(String propStr) throws PropertyDatabaseFormatException {
-		FieldStoreType property = new FieldStoreType();
+    @Override
+    protected FieldStoreType decodeProperty(String propStr) throws PropertyDatabaseFormatException {
+        FieldStoreType property = new FieldStoreType();
 		StringTokenizer t = new StringTokenizer(propStr, ",");
-		while (t.hasMoreTokens()) {
-			String signature = t.nextToken();
-			property.addTypeSignature(signature);
+        while (t.hasMoreTokens()) {
+            String signature = t.nextToken();
+            property.addTypeSignature(signature);
 		}
-		return property;
-	}
+        return property;
+    }
 
 
-	@Override
-	protected String encodeProperty(FieldStoreType property) {
-		StringBuilder buf = new StringBuilder();
+    @Override
+    protected String encodeProperty(FieldStoreType property) {
+        StringBuilder buf = new StringBuilder();
 		for (Iterator<String> i = property.signatureIterator(); i.hasNext();) {
-			if (buf.length() > 0) {
-				buf.append(',');
-			}
+            if (buf.length() > 0) {
+                buf.append(',');
+            }
 			buf.append(i.next());
-		}
-		return buf.toString();
-	}
+        }
+        return buf.toString();
+    }
 
 }

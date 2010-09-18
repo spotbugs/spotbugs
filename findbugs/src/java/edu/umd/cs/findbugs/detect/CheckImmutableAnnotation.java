@@ -31,39 +31,39 @@ import edu.umd.cs.findbugs.ba.JCIPAnnotationDatabase;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class CheckImmutableAnnotation extends PreorderVisitor implements
-		Detector {
+        Detector {
 
-	BugReporter bugReporter;
+    BugReporter bugReporter;
 
-	public CheckImmutableAnnotation(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    public CheckImmutableAnnotation(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-	@Override
-	public void visitJavaClass(JavaClass obj) {
-		JCIPAnnotationDatabase jcipAnotationDatabase = AnalysisContext
+    @Override
+    public void visitJavaClass(JavaClass obj) {
+        JCIPAnnotationDatabase jcipAnotationDatabase = AnalysisContext
 				.currentAnalysisContext().getJCIPAnnotationDatabase();
-		if (jcipAnotationDatabase.hasClassAnnotation(obj.getClassName()
-				.replace('/', '.'), "Immutable"))
-			super.visitJavaClass(obj);
+        if (jcipAnotationDatabase.hasClassAnnotation(obj.getClassName()
+                .replace('/', '.'), "Immutable"))
+            super.visitJavaClass(obj);
 	}
 
-	@Override
-	public void visit(Field obj) {
-		if (!obj.isFinal())
+    @Override
+    public void visit(Field obj) {
+        if (!obj.isFinal())
 			bugReporter.reportBug(new BugInstance(this, "JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS",
-					NORMAL_PRIORITY).addClass(this).addVisitedField(this));
-	}
+                    NORMAL_PRIORITY).addClass(this).addVisitedField(this));
+    }
 
 
-	public void report() {
+    public void report() {
 
-	}
+    }
 
 
-	public void visitClassContext(ClassContext classContext) {
-		 classContext.getJavaClass().accept(this);
+    public void visitClassContext(ClassContext classContext) {
+         classContext.getJavaClass().accept(this);
 
-	}
+    }
 
 }

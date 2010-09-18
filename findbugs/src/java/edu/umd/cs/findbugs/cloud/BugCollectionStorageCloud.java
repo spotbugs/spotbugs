@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2008 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -42,15 +42,15 @@ public class BugCollectionStorageCloud extends AbstractCloud {
 
     private static CloudPlugin getFallbackPlugin() {
         return new CloudPluginBuilder()
-				.setCloudid("fallback local cloud")
-				.setDescription("Analysis XML file")
-				.setDetails("Comments will be stored in the analysis XML file.")
+                .setCloudid("fallback local cloud")
+                .setDescription("Analysis XML file")
+                .setDetails("Comments will be stored in the analysis XML file.")
 				.setClassLoader(BugCollectionStorageCloud.class.getClassLoader())
-				.setCloudClass(BugCollectionStorageCloud.class)
-				.setUsernameClass(NoNameLookup.class)
-				.setProperties(new PropertyBundle())
+                .setCloudClass(BugCollectionStorageCloud.class)
+                .setUsernameClass(NoNameLookup.class)
+                .setProperties(new PropertyBundle())
 				.setOnlineStorage(false)
-				.createCloudPlugin();
+                .createCloudPlugin();
     }
 
     /**
@@ -78,7 +78,7 @@ public class BugCollectionStorageCloud extends AbstractCloud {
 
     public void waitUntilIssueDataDownloaded() {
     }
-    public void initiateCommunication() {	
+    public void initiateCommunication() {
     }
 
     @Override
@@ -86,40 +86,40 @@ public class BugCollectionStorageCloud extends AbstractCloud {
         return Mode.COMMUNAL;
     }
 
-	public String getUser() {
-	    // TODO Auto-generated method stub
-	    return null;
+    public String getUser() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
-	@Override
+    @Override
     public UserDesignation getUserDesignation(BugInstance b) {
-	    BugDesignation bd = b.getUserDesignation();
-	    if (bd == null) return UserDesignation.UNCLASSIFIED;
-	    return UserDesignation.valueOf(bd.getDesignationKey());
+        BugDesignation bd = b.getUserDesignation();
+        if (bd == null) return UserDesignation.UNCLASSIFIED;
+        return UserDesignation.valueOf(bd.getDesignationKey());
     }
 
-	@Override
+    @Override
     public String getUserEvaluation(BugInstance b) {
-    	BugDesignation bd = b.getUserDesignation();
-  	    if (bd == null) return "";
-  	    return bd.getAnnotationText();
+        BugDesignation bd = b.getUserDesignation();
+          if (bd == null) return "";
+          return bd.getAnnotationText();
     }
 
-	@Override
+    @Override
     public long getUserTimestamp(BugInstance b) {
-    	BugDesignation bd = b.getUserDesignation();
-  	    if (bd == null) return Long.MAX_VALUE;
-  	    return bd.getTimestamp();
+        BugDesignation bd = b.getUserDesignation();
+          if (bd == null) return Long.MAX_VALUE;
+          return bd.getTimestamp();
     }
 
-	@Override
+    @Override
     public void setMode(Mode m) {
-	    // TODO Auto-generated method stub
+        // TODO Auto-generated method stub
     }
 
-  
-	public void bugsPopulated() {
-	    assert true;
+
+    public void bugsPopulated() {
+        assert true;
 	    
     }
 
@@ -137,37 +137,37 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     }
 
     public boolean availableForInitialization() {
-		return true;
-	}
+        return true;
+    }
 
     public void storeUserAnnotation(BugInstance bugInstance) {
-	    // TODO Auto-generated method stub
-	    
+        // TODO Auto-generated method stub
+
     }
 
     public void bugFiled(BugInstance b, Object bugLink) {
-    	 throw new UnsupportedOperationException();
-	    
+         throw new UnsupportedOperationException();
+
     }
 
     public BugDesignation getPrimaryDesignation(BugInstance b) {
-    	return  b.getUserDesignation();
+        return  b.getUserDesignation();
     }
 
-    
+
     protected Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd) {
-	    return Collections.emptyList();
+        return Collections.emptyList();
     }
 
     public Collection<String> getProjects(String className) {
-	    return Collections.emptyList();
+        return Collections.emptyList();
     }
 
-	public boolean isInCloud(BugInstance b) {
-		return b.getXmlProps().isInCloud();
-	}
+    public boolean isInCloud(BugInstance b) {
+        return b.getXmlProps().isInCloud();
+    }
 
-	public String getCloudName() {
+    public String getCloudName() {
         return "local storage cloud";
     }
 
@@ -200,15 +200,15 @@ public class BugCollectionStorageCloud extends AbstractCloud {
             return fromXmlTime;
         else if (fromXmlTime == 0 && computed > 0)
             return computed;
-        
-        return Math.min(fromXmlTime, computed);        
+
+        return Math.min(fromXmlTime, computed);
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.cloud.Cloud#waitUntilNewIssuesUploaded()
      */
     public void waitUntilNewIssuesUploaded() {
-	    // TODO Auto-generated method stub
-	    
+        // TODO Auto-generated method stub
+
     }
 }

@@ -7,78 +7,78 @@ import java.util.Properties;
 
 public class WriteOnceProperties  extends Properties {
 
-	private static final long serialVersionUID = 1L;
-	static class PropertyReadAt extends Exception {
-		private static final long serialVersionUID = 1L;};
+    private static final long serialVersionUID = 1L;
+    static class PropertyReadAt extends Exception {
+        private static final long serialVersionUID = 1L;};
 	private Map<String, PropertyReadAt> propertReadAt = new HashMap<String, PropertyReadAt>();
-	
-	private WriteOnceProperties(Properties initialValue) {
-		super.putAll(initialValue);
+
+    private WriteOnceProperties(Properties initialValue) {
+        super.putAll(initialValue);
 	}
-	
-	@Override
-	public boolean equals(Object o) {
+
+    @Override
+    public boolean equals(Object o) {
 		return super.equals(o);
-	}
-	
-	@Override
+    }
+
+    @Override
 	public int hashCode() {
-		return super.hashCode();
-	}
-	@Override
+        return super.hashCode();
+    }
+    @Override
 	public String getProperty(String key) {
-		String result =  super.getProperty(key);
-		if (result != null && result.length() > 0 && !propertReadAt.containsKey(key))
-			propertReadAt.put(key, new PropertyReadAt());
+        String result =  super.getProperty(key);
+        if (result != null && result.length() > 0 && !propertReadAt.containsKey(key))
+            propertReadAt.put(key, new PropertyReadAt());
 		return result;
-	}
-	@Override
-	public String getProperty(String key, String defaultValue) {
+    }
+    @Override
+    public String getProperty(String key, String defaultValue) {
 		String result =  super.getProperty(key, defaultValue);
-		if (result != null && result.length() > 0 && !propertReadAt.containsKey(key))
-			propertReadAt.put(key, new PropertyReadAt());
-		return result;
+        if (result != null && result.length() > 0 && !propertReadAt.containsKey(key))
+            propertReadAt.put(key, new PropertyReadAt());
+        return result;
 	}
-	@Override
-	public Object setProperty(String key, String value) {
-		if (propertReadAt.containsKey(key) && !value.equals(super.getProperty(key))) {
+    @Override
+    public Object setProperty(String key, String value) {
+        if (propertReadAt.containsKey(key) && !value.equals(super.getProperty(key))) {
 			IllegalStateException e = new IllegalStateException("Changing property '" + key
-					+ "' to '" + value + "' after it has already been read as '" + super.getProperty(key) +"'");
-			e.initCause(propertReadAt.get(key));
+                    + "' to '" + value + "' after it has already been read as '" + super.getProperty(key) +"'");
+            e.initCause(propertReadAt.get(key));
 
-			throw e;
-		}
-		return super.setProperty(key, value);
+            throw e;
+        }
+        return super.setProperty(key, value);
 	}
-	
-	public static void makeSystemPropertiesWriteOnce() {
-		Properties properties = System.getProperties();
+
+    public static void makeSystemPropertiesWriteOnce() {
+        Properties properties = System.getProperties();
 		if (properties instanceof WriteOnceProperties) return;
-		System.setProperties(new WriteOnceProperties(properties));
-	}
-	public static void main(String args[]) {
+        System.setProperties(new WriteOnceProperties(properties));
+    }
+    public static void main(String args[]) {
 		dumpProperties();
-		System.out.println("-----");
-		makeSystemPropertiesWriteOnce();
-		dumpProperties();
+        System.out.println("-----");
+        makeSystemPropertiesWriteOnce();
+        dumpProperties();
 		System.setProperty("x","1");
-		System.setProperty("y","1");
-		System.getProperty("y");
-		System.setProperty("x","2");
+        System.setProperty("y","1");
+        System.getProperty("y");
+        System.setProperty("x","2");
 		System.setProperty("y","2");
-		
-		
-	}
 
-	/**
-	 * 
-	 */
+
+    }
+
+    /**
+     *
+     */
 	private static void dumpProperties() {
-		
-		Properties properties = System.getProperties();
-		System.out.println("Total properties: " + properties.size());
+
+        Properties properties = System.getProperties();
+        System.out.println("Total properties: " + properties.size());
 		for(Object k  : properties.keySet()) {
-			System.out.println(k + " : " + System.getProperty((String)k));
-		}
-	}
+            System.out.println(k + " : " + System.getProperty((String)k));
+        }
+    }
 }

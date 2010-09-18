@@ -43,85 +43,85 @@ import edu.umd.cs.findbugs.io.IO;
  * @author David Hovemeyer
  */
 public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
-	private ICodeBase parentCodeBase;
-	private String resourceName;
-	private File tempFile;
+    private ICodeBase parentCodeBase;
+    private String resourceName;
+    private File tempFile;
 	private AbstractScannableCodeBase delegateCodeBase;
 
-	/**
-	 * Constructor.
-	 *
+    /**
+     * Constructor.
+     *
 	 * @param codeBaseLocator the codebase locator for this codebase
-	 */
-	public NestedZipFileCodeBase(NestedZipFileCodeBaseLocator codeBaseLocator)
-			throws ResourceNotFoundException, IOException {
+     */
+    public NestedZipFileCodeBase(NestedZipFileCodeBaseLocator codeBaseLocator)
+            throws ResourceNotFoundException, IOException {
 		super(codeBaseLocator);
-		this.parentCodeBase = codeBaseLocator.getParentCodeBase();
-		this.resourceName = codeBaseLocator.getResourceName();
+        this.parentCodeBase = codeBaseLocator.getParentCodeBase();
+        this.resourceName = codeBaseLocator.getResourceName();
 
-		InputStream inputStream = null;
-		OutputStream outputStream = null;
-		try {
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        try {
 			// Create a temp file
-			this.tempFile = File.createTempFile("findbugs", ".zip");
-			tempFile.deleteOnExit(); // just in case we crash before the codebase is closed
+            this.tempFile = File.createTempFile("findbugs", ".zip");
+            tempFile.deleteOnExit(); // just in case we crash before the codebase is closed
 
-			// Copy nested zipfile to the temporary file
-			// FIXME: potentially long blocking operation - should be interruptible
-			ICodeBaseEntry resource = parentCodeBase.lookupResource(resourceName);
+            // Copy nested zipfile to the temporary file
+            // FIXME: potentially long blocking operation - should be interruptible
+            ICodeBaseEntry resource = parentCodeBase.lookupResource(resourceName);
 			if(resource == null) {
-				throw new ResourceNotFoundException(resourceName);
-			}
-			inputStream = resource.openResource();
+                throw new ResourceNotFoundException(resourceName);
+            }
+            inputStream = resource.openResource();
 			outputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
-			IO.copy(inputStream, outputStream);
-			outputStream.flush();
+            IO.copy(inputStream, outputStream);
+            outputStream.flush();
 
-			// Create the delegate to read from the temporary file
-			delegateCodeBase = ZipCodeBaseFactory.makeZipCodeBase(codeBaseLocator, tempFile);
-		} finally {
+            // Create the delegate to read from the temporary file
+            delegateCodeBase = ZipCodeBaseFactory.makeZipCodeBase(codeBaseLocator, tempFile);
+        } finally {
 			if (inputStream != null) {
-				IO.close(inputStream);
-			}
+                IO.close(inputStream);
+            }
 
-			if (outputStream != null) {
-				IO.close(outputStream);
-			}
+            if (outputStream != null) {
+                IO.close(outputStream);
+            }
 		}
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#iterator()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#iterator()
+     */
 	public ICodeBaseIterator iterator() throws InterruptedException {
-		return new DelegatingCodeBaseIterator(this, delegateCodeBase);
-	}
+        return new DelegatingCodeBaseIterator(this, delegateCodeBase);
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
+     */
 	public ICodeBaseEntry lookupResource(String resourceName) {
-		ICodeBaseEntry delegateCodeBaseEntry = delegateCodeBase.lookupResource(resourceName);
-		if(delegateCodeBaseEntry == null) {
-			return null;
+        ICodeBaseEntry delegateCodeBaseEntry = delegateCodeBase.lookupResource(resourceName);
+        if(delegateCodeBaseEntry == null) {
+            return null;
 		}
-		return new DelegatingCodeBaseEntry(this, delegateCodeBaseEntry);
-	}
+        return new DelegatingCodeBaseEntry(this, delegateCodeBaseEntry);
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
+     */
 	public String getPathName() {
-		return null;
-	}
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
+     */
 	public void close() {
-		delegateCodeBase.close();
-		if (!tempFile.delete()) {
-	        AnalysisContext.logError("Could not delete " + tempFile);
+        delegateCodeBase.close();
+        if (!tempFile.delete()) {
+            AnalysisContext.logError("Could not delete " + tempFile);
         }
-	}
+    }
 }

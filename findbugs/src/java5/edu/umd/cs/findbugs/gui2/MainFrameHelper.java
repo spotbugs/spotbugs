@@ -12,30 +12,30 @@ import edu.umd.cs.findbugs.gui.AnnotatedString;
 
 public class MainFrameHelper {
     public static JButton newButton(String key, String name) {
-		JButton b = new JButton();
-		AnnotatedString.localiseButton(b, key, name, false);
-		return b;
+        JButton b = new JButton();
+        AnnotatedString.localiseButton(b, key, name, false);
+        return b;
 	}
 
     public static JMenuItem newJMenuItem(String key, String string, int vkF) {
-		JMenuItem m = new JMenuItem();
-		AnnotatedString.localiseButton(m, key, string, false);
-		m.setMnemonic(vkF);
+        JMenuItem m = new JMenuItem();
+        AnnotatedString.localiseButton(m, key, string, false);
+        m.setMnemonic(vkF);
 		return m;
 
-	}
+    }
 
     public static JMenuItem newJMenuItem(String key, String string) {
-		JMenuItem m = new JMenuItem();
-		AnnotatedString.localiseButton(m, key, string, true);
-		return m;
+        JMenuItem m = new JMenuItem();
+        AnnotatedString.localiseButton(m, key, string, true);
+        return m;
 
-	}
+    }
 
     public static JMenu newJMenu(String key, String string) {
-		JMenu m = new JMenu();
-		AnnotatedString.localiseButton(m, key, string, true);
-		return m;
+        JMenu m = new JMenu();
+        AnnotatedString.localiseButton(m, key, string, true);
+        return m;
 	}
 
     public static boolean isMacLookAndFeel() {

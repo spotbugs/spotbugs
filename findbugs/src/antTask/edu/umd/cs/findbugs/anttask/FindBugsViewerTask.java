@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2006 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston MA 02111-1307, USA
@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.ExitCodes;
 
 /**
  * FindBugsViewerTask.java -- Ant Task to launch the FindBugsFrame
- * 
+ *
  * To use, create a new task that refrences the ant task
  * (such as "findbugs-viewer"). Then call this task while
  * passing in parameters to modify it's behaviour. It
@@ -78,210 +78,210 @@ import edu.umd.cs.findbugs.ExitCodes;
  */
 public class FindBugsViewerTask extends Task {
 
-	private static final long DEFAULT_TIMEOUT = -1; // ten minutes
+    private static final long DEFAULT_TIMEOUT = -1; // ten minutes
 
-	//location to load bug report from
-	private boolean debug = false;
-	private File projectFile = null;
+    //location to load bug report from
+    private boolean debug = false;
+    private File projectFile = null;
 	private File loadbugs = null;
-	private long timeout = DEFAULT_TIMEOUT;
-	private String jvmargs = "";
-	private String look = "native";
+    private long timeout = DEFAULT_TIMEOUT;
+    private String jvmargs = "";
+    private String look = "native";
 	private File homeDir = null;
-	private Path classpath = null;
-	private Path pluginList = null;
+    private Path classpath = null;
+    private Path pluginList = null;
 
-	private Java findbugsEngine = null;
+    private Java findbugsEngine = null;
 
-	/** Creates a new instance of FindBugsViewerTask */
-	public FindBugsViewerTask() {
-	}
+    /** Creates a new instance of FindBugsViewerTask */
+    public FindBugsViewerTask() {
+    }
 
-	/**
-	 * Sets the file that contains the XML output of a findbugs report.
-	 *
+    /**
+     * Sets the file that contains the XML output of a findbugs report.
+     *
 	 * @param bugReport XML output from a findbugs session
-	 */
-	public void setLoadbugs(File loadbugs) 	{
-		this.loadbugs = loadbugs;
+     */
+    public void setLoadbugs(File loadbugs) 	{
+        this.loadbugs = loadbugs;
 	}
 
-	/**
-	 * Set the project file
-	 */
+    /**
+     * Set the project file
+     */
 	public void setProjectFile(File projectFile) {
-		this.projectFile = projectFile;
-	}
+        this.projectFile = projectFile;
+    }
 
-	/**
-	 * Set the debug flag
-	 */
+    /**
+     * Set the debug flag
+     */
 	public void setDebug(boolean flag) {
-		this.debug = flag;
-	}
+        this.debug = flag;
+    }
 
-	/**
-	 * Set any specific jvm args
-	 */
+    /**
+     * Set any specific jvm args
+     */
 	public void setJvmargs(String args) {
-		this.jvmargs = args;
-	}
+        this.jvmargs = args;
+    }
 
-	/**
-	 * Set look.  One of "native", "gtk" or "plastic"
-	 */
+    /**
+     * Set look.  One of "native", "gtk" or "plastic"
+     */
 	public void setLook(String look) {
-		this.look = look;
-	}
+        this.look = look;
+    }
 
 
-	/**
-	 * Set the home directory into which findbugs was installed
-	 */
+    /**
+     * Set the home directory into which findbugs was installed
+     */
 	public void setHome(File homeDir) {
-		this.homeDir = homeDir;
-	}
+        this.homeDir = homeDir;
+    }
 
 
-	/**
-	 * Path to use for classpath.
-	 */
+    /**
+     * Path to use for classpath.
+     */
 	public Path createClasspath() {
-		if (classpath == null) {
-			classpath = new Path(getProject());
-		}
+        if (classpath == null) {
+            classpath = new Path(getProject());
+        }
 		return classpath.createPath();
-	}
+    }
 
-	/**
-	 * Adds a reference to a classpath defined elsewhere.
-	 */
+    /**
+     * Adds a reference to a classpath defined elsewhere.
+     */
 	public void setClasspathRef(Reference r) {
-		createClasspath().setRefid(r);
-	}
+        createClasspath().setRefid(r);
+    }
 
 
-	/**
-	 * the plugin list to use.
-	 */
+    /**
+     * the plugin list to use.
+     */
 	public void setPluginList(Path src) {
-		if (pluginList == null) {
-			pluginList = src;
-		}
+        if (pluginList == null) {
+            pluginList = src;
+        }
 		else {
-			pluginList.append(src);
-		}
-	}
+            pluginList.append(src);
+        }
+    }
 
-	/**
-	 * Path to use for plugin list.
-	 */
+    /**
+     * Path to use for plugin list.
+     */
 	public Path createPluginList() {
-		if (pluginList == null) {
-			pluginList = new Path(getProject());
-		}
+        if (pluginList == null) {
+            pluginList = new Path(getProject());
+        }
 		return pluginList.createPath();
-	}
+    }
 
-	/**
-	 * Adds a reference to a plugin list defined elsewhere.
-	 */
+    /**
+     * Adds a reference to a plugin list defined elsewhere.
+     */
 	public void setPluginListRef(Reference r) 	{
-		createPluginList().setRefid(r);
-	}
+        createPluginList().setRefid(r);
+    }
 
-	/**
-	 * Set timeout in milliseconds.
-	 *
+    /**
+     * Set timeout in milliseconds.
+     *
 	 * @param timeout the timeout
-	 */
-	public void setTimeout(long timeout) {
-		this.timeout = timeout;
+     */
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
 	}
 
-	/**
-	 * Add an argument to the JVM used to execute FindBugs.
-	 * @param arg the argument
+    /**
+     * Add an argument to the JVM used to execute FindBugs.
+     * @param arg the argument
 	 */
-	private void addArg(String arg) {
-		findbugsEngine.createArg().setValue(arg);
-	}
+    private void addArg(String arg) {
+        findbugsEngine.createArg().setValue(arg);
+    }
 
-	@Override
-	public void execute() throws BuildException {
-		findbugsEngine = (Java)getProject().createTask("java");
+    @Override
+    public void execute() throws BuildException {
+        findbugsEngine = (Java)getProject().createTask("java");
 
-		findbugsEngine.setTaskName(getTaskName());
-		findbugsEngine.setFork(true);
+        findbugsEngine.setTaskName(getTaskName());
+        findbugsEngine.setFork(true);
 
-		if (timeout > 0) {
-			findbugsEngine.setTimeout(timeout);
-		}
+        if (timeout > 0) {
+            findbugsEngine.setTimeout(timeout);
+        }
 
 
-		if (debug) {
-			jvmargs = jvmargs + " -Dfindbugs.debug=true";
-		}
+        if (debug) {
+            jvmargs = jvmargs + " -Dfindbugs.debug=true";
+        }
 		findbugsEngine.createJvmarg().setLine(jvmargs);
 
-		if (homeDir != null) {
-			// Use findbugs.home to locate findbugs.jar and the standard
-			// plugins.  This is the usual means of initialization.
+        if (homeDir != null) {
+            // Use findbugs.home to locate findbugs.jar and the standard
+            // plugins.  This is the usual means of initialization.
 			File findbugsLib = new File(homeDir, "lib");
-			
-			File findbugsLibFindBugs = new File(findbugsLib, "findbugs.jar");
-			File findBugsFindBugs =  new File(homeDir, "findbugs.jar");
+
+            File findbugsLibFindBugs = new File(findbugsLib, "findbugs.jar");
+            File findBugsFindBugs =  new File(homeDir, "findbugs.jar");
 			//log("executing using home dir [" + homeDir + "]");
-			if (findbugsLibFindBugs.exists())
-				findbugsEngine.setClasspath(new Path(getProject(), findbugsLibFindBugs.getPath()));
-			else if (findBugsFindBugs.exists())
+            if (findbugsLibFindBugs.exists())
+                findbugsEngine.setClasspath(new Path(getProject(), findbugsLibFindBugs.getPath()));
+            else if (findBugsFindBugs.exists())
 				findbugsEngine.setClasspath(new Path(getProject(), findBugsFindBugs.getPath()));
-			else throw new IllegalArgumentException("Can't find findbugs.jar in " + homeDir);
+            else throw new IllegalArgumentException("Can't find findbugs.jar in " + homeDir);
 
-			findbugsEngine.setClassname("edu.umd.cs.findbugs.LaunchAppropriateUI");
-			findbugsEngine.createJvmarg().setValue("-Dfindbugs.home=" + homeDir.getPath());
-		}
+            findbugsEngine.setClassname("edu.umd.cs.findbugs.LaunchAppropriateUI");
+            findbugsEngine.createJvmarg().setValue("-Dfindbugs.home=" + homeDir.getPath());
+        }
 		else {
-			// Use an explicitly specified classpath and list of plugin Jars
-			// to initialize.  This is useful for other tools which may have
-			// FindBugs installed using a non-standard directory layout.
+            // Use an explicitly specified classpath and list of plugin Jars
+            // to initialize.  This is useful for other tools which may have
+            // FindBugs installed using a non-standard directory layout.
 
-			findbugsEngine.setClasspath(classpath);
-			findbugsEngine.setClassname("edu.umd.cs.findbugs.LaunchAppropriateUI");
+            findbugsEngine.setClasspath(classpath);
+            findbugsEngine.setClassname("edu.umd.cs.findbugs.LaunchAppropriateUI");
 
-			addArg("-pluginList");
-			addArg(pluginList.toString());
+            addArg("-pluginList");
+            addArg(pluginList.toString());
+        }
+
+        if (projectFile != null) {
+            addArg("-project");
+            addArg(projectFile.getPath());
 		}
 
-		if (projectFile != null) {
-			addArg("-project");
-			addArg(projectFile.getPath());
+        if (loadbugs != null) {
+            addArg("-loadbugs");
+            addArg(loadbugs.getPath());
 		}
 
-		if (loadbugs != null) {
-			addArg("-loadbugs");
-			addArg(loadbugs.getPath());
-		}
-
-		if (look != null) {
-			addArg("-look:" + look);
-			//addArg("-look");
+        if (look != null) {
+            addArg("-look:" + look);
+            //addArg("-look");
 			//addArg(look);
-		}
+        }
 
 
-		// findbugsEngine.setClassname("edu.umd.cs.findbugs.gui.FindBugsFrame");
+        // findbugsEngine.setClassname("edu.umd.cs.findbugs.gui.FindBugsFrame");
 
-		log("Launching FindBugs Viewer...");
+        log("Launching FindBugs Viewer...");
 
-		int rc = findbugsEngine.executeJava();
+        int rc = findbugsEngine.executeJava();
 
-		if ((rc & ExitCodes.ERROR_FLAG) != 0) {
-			throw new BuildException("Execution of findbugs failed.");
-		}
+        if ((rc & ExitCodes.ERROR_FLAG) != 0) {
+            throw new BuildException("Execution of findbugs failed.");
+        }
 		if ((rc & ExitCodes.MISSING_CLASS_FLAG) != 0) 	{
-			log("Classes needed for analysis were missing");
-		}
-	}
+            log("Classes needed for analysis were missing");
+        }
+    }
 
 }

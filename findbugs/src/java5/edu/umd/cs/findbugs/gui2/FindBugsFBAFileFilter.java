@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston MA 02111-1307, USA
@@ -23,21 +23,21 @@ import java.io.File;
 
 public final class FindBugsFBAFileFilter extends FindBugsFileFilter {
 
-	public static final  FindBugsFBAFileFilter INSTANCE = new FindBugsFBAFileFilter();
+    public static final  FindBugsFBAFileFilter INSTANCE = new FindBugsFBAFileFilter();
 
-	private FindBugsFBAFileFilter() {};
-	@Override
-	public boolean accept(File arg0) {
+    private FindBugsFBAFileFilter() {};
+    @Override
+    public boolean accept(File arg0) {
 		return arg0.getName().endsWith(".fba") || arg0.isDirectory();
-	}
+    }
 
-	@Override
-	public String getDescription() {
-		return "FindBugs analysis file (.fba)";
+    @Override
+    public String getDescription() {
+        return "FindBugs analysis file (.fba)";
 	}
 
     @Override
     SaveType getSaveType() {
-    	return SaveType.FBA_FILE;
+        return SaveType.FBA_FILE;
     }
 }

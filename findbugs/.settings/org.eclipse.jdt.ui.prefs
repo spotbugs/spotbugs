@@ -1,7 +1,7 @@
-#Mon Aug 11 11:29:54 GMT-08:00 2008
+#Sat Sep 18 14:45:29 EDT 2010
 eclipse.preferences.version=1
-formatter_profile=_FindBugs tabs
-formatter_settings_version=10
+formatter_profile=_FindBugs
+formatter_settings_version=11
 org.eclipse.jdt.ui.exception.name=e
 org.eclipse.jdt.ui.gettersetter.use.is=true
 org.eclipse.jdt.ui.javadoc=true

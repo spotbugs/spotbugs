@@ -1,17 +1,17 @@
 /*
  * Bytecode Analysis Framework
  * Copyright (C) 2005, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -25,88 +25,88 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public abstract class AbstractClassMember implements ClassMember {
-	private final @DottedClassName String className;
-	private final String name;
-	private final String signature;
+    private final @DottedClassName String className;
+    private final String name;
+    private final String signature;
 	private final int accessFlags;
-	private boolean resolved;
-	private int cachedHashCode = 0;
-	static  int slashCountClass = 0;
+    private boolean resolved;
+    private int cachedHashCode = 0;
+    static  int slashCountClass = 0;
 	static  int dottedCountClass = 0;
-	static  int slashCountSignature= 0;
-	static  int dottedCountSignature = 0;
+    static  int slashCountSignature= 0;
+    static  int dottedCountSignature = 0;
 
 
-	protected AbstractClassMember(@DottedClassName String className, String name, String signature, int accessFlags) {
-		if (className.indexOf('.') >= 0) {
-			// className = className.replace('.','/');
+    protected AbstractClassMember(@DottedClassName String className, String name, String signature, int accessFlags) {
+        if (className.indexOf('.') >= 0) {
+            // className = className.replace('.','/');
 			dottedCountClass++;
-		} else if (className.indexOf('/') >= 0)  {
-			assert false;
-			slashCountClass++;
+        } else if (className.indexOf('/') >= 0)  {
+            assert false;
+            slashCountClass++;
 			className = className.replace('/','.');
-		}
-		if (signature.indexOf('.') >= 0) {
-			assert false;
+        }
+        if (signature.indexOf('.') >= 0) {
+            assert false;
 			signature = signature.replace('.','/');
-			dottedCountSignature++;
-		} else if (signature.indexOf('/') >= 0)  slashCountSignature++;
-		this.className = DescriptorFactory.canonicalizeString(className);
+            dottedCountSignature++;
+        } else if (signature.indexOf('/') >= 0)  slashCountSignature++;
+        this.className = DescriptorFactory.canonicalizeString(className);
 		this.name = DescriptorFactory.canonicalizeString(name);
-		this.signature = DescriptorFactory.canonicalizeString(signature);
-		this.accessFlags = accessFlags;
-	}
+        this.signature = DescriptorFactory.canonicalizeString(signature);
+        this.accessFlags = accessFlags;
+    }
 
-	public @DottedClassName String getClassName() {
-		return className;
-	}
+    public @DottedClassName String getClassName() {
+        return className;
+    }
 	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getClassDescriptor()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getClassDescriptor()
+     */
 	public ClassDescriptor getClassDescriptor() {
-		return DescriptorFactory.instance().getClassDescriptorForDottedClassName(className);
-	}
+        return DescriptorFactory.instance().getClassDescriptorForDottedClassName(className);
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public @DottedClassName String getPackageName() {
-		int lastDot = className.lastIndexOf('.');
-		if (lastDot == -1) return className;
+    public @DottedClassName String getPackageName() {
+        int lastDot = className.lastIndexOf('.');
+        if (lastDot == -1) return className;
 		return className.substring(0,lastDot);
-	}
-	public String getSignature() {
-		return signature;
-	}
-
-	public boolean isReferenceType() {
-		return signature.startsWith("L") || signature.startsWith("[");
+    }
+    public String getSignature() {
+        return signature;
 	}
 
-	public int getAccessFlags() {
-		return accessFlags;
-	}
+    public boolean isReferenceType() {
+        return signature.startsWith("L") || signature.startsWith("[");
+    }
 
-	public boolean isStatic() {
-		return (accessFlags & Constants.ACC_STATIC) != 0;
-	}
+    public int getAccessFlags() {
+        return accessFlags;
+    }
+
+    public boolean isStatic() {
+        return (accessFlags & Constants.ACC_STATIC) != 0;
+    }
 	public boolean isFinal() {
-		return (accessFlags & Constants.ACC_FINAL) != 0;
-	}
+        return (accessFlags & Constants.ACC_FINAL) != 0;
+    }
 
-	public boolean isPublic() {
-		return (accessFlags & Constants.ACC_PUBLIC) != 0;
-	}
+    public boolean isPublic() {
+        return (accessFlags & Constants.ACC_PUBLIC) != 0;
+    }
 
-	public boolean isProtected() {
-		return (accessFlags & Constants.ACC_PROTECTED) != 0;
-	}
+    public boolean isProtected() {
+        return (accessFlags & Constants.ACC_PROTECTED) != 0;
+    }
 
-	public boolean isPrivate() {
-		return (accessFlags & Constants.ACC_PRIVATE) != 0;
-	}
+    public boolean isPrivate() {
+        return (accessFlags & Constants.ACC_PRIVATE) != 0;
+    }
 
 //	public int compareTo(ClassMember other) {
 //		// This may be compared to any kind of PackageMember object.
@@ -141,33 +141,33 @@ public abstract class AbstractClassMember implements ClassMember {
 //	public int compareTo(Object other) {
 //		return compareTo((FieldOrMethodName) other);
 //	}
-	public boolean isResolved() {
-		return resolved;
-	}
+    public boolean isResolved() {
+        return resolved;
+    }
 	  void markAsResolved() {
-		 resolved = true;
-	 }
-	@Override
+         resolved = true;
+     }
+    @Override
 		 public int hashCode() {
-		if (cachedHashCode == 0) {
-			cachedHashCode = className.hashCode() ^ name.hashCode() ^ signature.hashCode();
-		}
+        if (cachedHashCode == 0) {
+            cachedHashCode = className.hashCode() ^ name.hashCode() ^ signature.hashCode();
+        }
 		return cachedHashCode;
-	}
+    }
 
-	@Override
-		 public boolean equals(Object o) {
-		if (o == null || this.getClass() != o.getClass())
+    @Override
+         public boolean equals(Object o) {
+        if (o == null || this.getClass() != o.getClass())
 			return false;
-		AbstractClassMember other = (AbstractClassMember) o;
-		return className.equals(other.className)
-				&& name.equals(other.name)
+        AbstractClassMember other = (AbstractClassMember) o;
+        return className.equals(other.className)
+                && name.equals(other.name)
 				&& signature.equals(other.signature);
-	}
+    }
 
-	@Override
-		 public String toString() {
-		return className + "." + name;
+    @Override
+         public String toString() {
+        return className + "." + name;
 	}
 
 }

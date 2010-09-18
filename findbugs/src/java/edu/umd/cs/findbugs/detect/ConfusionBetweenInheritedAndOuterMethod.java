@@ -33,87 +33,87 @@ import edu.umd.cs.findbugs.ba.XMethod;
 public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDetector {
 
 
-	BugAccumulator bugAccumulator;
-	public ConfusionBetweenInheritedAndOuterMethod(BugReporter bugReporter) {
-		this.bugAccumulator = new BugAccumulator(bugReporter);
+    BugAccumulator bugAccumulator;
+    public ConfusionBetweenInheritedAndOuterMethod(BugReporter bugReporter) {
+        this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 
-	@Override
-	public void visitJavaClass(JavaClass obj) {
-		hasThisDollarZero = false;
+    @Override
+    public void visitJavaClass(JavaClass obj) {
+        hasThisDollarZero = false;
 		// totally skip methods not defined in inner classes
-		if (obj.getClassName().indexOf('$') >= 0) {
-			super.visitJavaClass(obj);
-			bugAccumulator.reportAccumulatedBugs();
+        if (obj.getClassName().indexOf('$') >= 0) {
+            super.visitJavaClass(obj);
+            bugAccumulator.reportAccumulatedBugs();
 		}
 
-	}
+    }
 
-	boolean hasThisDollarZero;
+    boolean hasThisDollarZero;
 
-	@Override
-	public void visit(Field f) {
-		if (f.getName().equals("this$0")) {
+    @Override
+    public void visit(Field f) {
+        if (f.getName().equals("this$0")) {
 			hasThisDollarZero = true;
-		}
-	}
+        }
+    }
 
-	@Override
-	public void visit(Code obj) {
-		if (hasThisDollarZero) {
+    @Override
+    public void visit(Code obj) {
+        if (hasThisDollarZero) {
 		super.visit(obj);
-		}
-	}
+        }
+    }
 
-	@Override
-	public void sawOpcode(int seen) {
-		if (seen != INVOKEVIRTUAL) {
+    @Override
+    public void sawOpcode(int seen) {
+        if (seen != INVOKEVIRTUAL) {
 			return;
+        }
+        if (!getClassName().equals(getClassConstantOperand())) {
+            return;
 		}
-		if (!getClassName().equals(getClassConstantOperand())) {
+        XMethod invokedMethod = XFactory.createXMethod(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(), false);
+        if (invokedMethod.isResolved() && invokedMethod.getClassName().equals(getDottedClassConstantOperand())) {
+            // method is not inherited
 			return;
-		}
-		XMethod invokedMethod = XFactory.createXMethod(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(), false);
-		if (invokedMethod.isResolved() && invokedMethod.getClassName().equals(getDottedClassConstantOperand())) {
-			// method is not inherited
-			return;
-		}
-		// method is inherited
-		String possibleTargetClass = getDottedClassName();
+        }
+        // method is inherited
+        String possibleTargetClass = getDottedClassName();
 		String superClassName = getDottedSuperclassName();
-		while(true) {
-			int i = possibleTargetClass.lastIndexOf('$');
-			if (i <= 0) {
+        while(true) {
+            int i = possibleTargetClass.lastIndexOf('$');
+            if (i <= 0) {
 				break;
-			}
-			possibleTargetClass = possibleTargetClass.substring(0,i);
-			if (possibleTargetClass.equals(superClassName)) {
+            }
+            possibleTargetClass = possibleTargetClass.substring(0,i);
+            if (possibleTargetClass.equals(superClassName)) {
 				break;
-			}
-			XMethod alternativeMethod = XFactory.createXMethod(possibleTargetClass, getNameConstantOperand(), getSigConstantOperand(), false);
-			if (alternativeMethod.isResolved() && alternativeMethod.getClassName().equals(possibleTargetClass)) 	{
+            }
+            XMethod alternativeMethod = XFactory.createXMethod(possibleTargetClass, getNameConstantOperand(), getSigConstantOperand(), false);
+            if (alternativeMethod.isResolved() && alternativeMethod.getClassName().equals(possibleTargetClass)) 	{
 				String targetPackage = invokedMethod.getPackageName();
-				String alternativePackage = alternativeMethod.getPackageName();
-				int priority = HIGH_PRIORITY;
-				if (targetPackage.equals(alternativePackage)) {
+                String alternativePackage = alternativeMethod.getPackageName();
+                int priority = HIGH_PRIORITY;
+                if (targetPackage.equals(alternativePackage)) {
 					priority++;
+                }
+                if (targetPackage.startsWith("javax.swing") || targetPackage.startsWith("java.awt")) {
+                    priority+=2;
 				}
-				if (targetPackage.startsWith("javax.swing") || targetPackage.startsWith("java.awt")) {
-					priority+=2;
-				}
-				if (invokedMethod.getName().equals(getMethodName())) {
-					priority++;
-				}
+                if (invokedMethod.getName().equals(getMethodName())) {
+                    priority++;
+                }
 
-				bugAccumulator.accumulateBug(new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", priority)
-						.addClassAndMethod(this)
-						  .addMethod(invokedMethod).describe("METHOD_INHERITED")
+                bugAccumulator.accumulateBug(new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", priority)
+                        .addClassAndMethod(this)
+                          .addMethod(invokedMethod).describe("METHOD_INHERITED")
 						.addMethod(alternativeMethod).describe("METHOD_ALTERNATIVE_TARGET"), this);
-				break;
-			}
-		}
+                break;
+            }
+        }
 
-	}
+    }
 
 }

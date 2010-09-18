@@ -45,129 +45,129 @@ import edu.umd.cs.findbugs.SystemProperties;
  */
 public class AnnotatedString {
 
-	private static final boolean MAC_OS_X =
-		SystemProperties.getProperty("os.name").toLowerCase().startsWith("mac os x");
+    private static final boolean MAC_OS_X =
+        SystemProperties.getProperty("os.name").toLowerCase().startsWith("mac os x");
 
-	private final String myAnnotatedString;
+    private final String myAnnotatedString;
 
-	public AnnotatedString(String s) {
-		myAnnotatedString = s;
-	}
+    public AnnotatedString(String s) {
+        myAnnotatedString = s;
+    }
 
-	/*
-	 * Return the string minus any annotation
-	 */
+    /*
+     * Return the string minus any annotation
+     */
 	@Override
-	public String toString() {
-		if (MAC_OS_X) {
-			// Support annotations like "File(&F)"
+    public String toString() {
+        if (MAC_OS_X) {
+            // Support annotations like "File(&F)"
 			if (myAnnotatedString.matches("[^&]+\\(&\\p{Alnum}\\)")) {
-				int endIndex = myAnnotatedString.length() - "(&X)".length();
+                int endIndex = myAnnotatedString.length() - "(&X)".length();
 
-				return myAnnotatedString.substring(0, endIndex);
-			}
+                return myAnnotatedString.substring(0, endIndex);
+            }
 
-			// Support annotations like "File(&F)..."
-			if (myAnnotatedString.matches("[^&]+\\(&\\p{Alnum}\\)\\.\\.\\.")) {
-				int startIndex = myAnnotatedString.length() - "(&X)...".length();
+            // Support annotations like "File(&F)..."
+            if (myAnnotatedString.matches("[^&]+\\(&\\p{Alnum}\\)\\.\\.\\.")) {
+                int startIndex = myAnnotatedString.length() - "(&X)...".length();
 				int endIndex = startIndex + "(&X)".length();
 
-				return new StringBuilder(myAnnotatedString).delete(startIndex, endIndex).toString();
-			}
-		}
+                return new StringBuilder(myAnnotatedString).delete(startIndex, endIndex).toString();
+            }
+        }
 		return myAnnotatedString.replaceFirst("&", "");
-	}
+    }
 
-	/**
-	 * Return the appropriate mnemonic character for this string. If no mnemonic
-	 * should be displayed, KeyEvent.VK_UNDEFINED is returned.
+    /**
+     * Return the appropriate mnemonic character for this string. If no mnemonic
+     * should be displayed, KeyEvent.VK_UNDEFINED is returned.
 	 *
-	 * @return the Mnemonic character, or VK_UNDEFINED if no mnemonic should
-	 *         be set
-	 */
+     * @return the Mnemonic character, or VK_UNDEFINED if no mnemonic should
+     *         be set
+     */
 	public int getMnemonic() {
-		int mnemonic = KeyEvent.VK_UNDEFINED;
-		if (!MAC_OS_X) {
-			int index = getMnemonicIndex();
+        int mnemonic = KeyEvent.VK_UNDEFINED;
+        if (!MAC_OS_X) {
+            int index = getMnemonicIndex();
 			if ((index >= 0) && ((index + 1) < myAnnotatedString.length())) {
-				mnemonic = Character.toUpperCase(myAnnotatedString.charAt(index + 1));
-			}
-		}
+                mnemonic = Character.toUpperCase(myAnnotatedString.charAt(index + 1));
+            }
+        }
 		return mnemonic;
-	}
+    }
 
-	/**
-	 * @return the index in the plain string at which the mnemonic should be
-	 *         displayed, or -1 if no mnemonic should be set
+    /**
+     * @return the index in the plain string at which the mnemonic should be
+     *         displayed, or -1 if no mnemonic should be set
 	 */
-	public int getMnemonicIndex() {
-		int index = -1;
-		if (!MAC_OS_X) {
+    public int getMnemonicIndex() {
+        int index = -1;
+        if (!MAC_OS_X) {
 			index = myAnnotatedString.indexOf('&');
-			if (index + 1 >= myAnnotatedString.length()) {
-				index = -1;
-			}
+            if (index + 1 >= myAnnotatedString.length()) {
+                index = -1;
+            }
 		}
-		return index;
-	}
+        return index;
+    }
 
 
-	/*
-	 * Some test code
-	 */	
+    /*
+     * Some test code
+     */
 	private static void addButton(JFrame frame, String s) {
-		AnnotatedString as = new AnnotatedString(s);
-		JButton button = new JButton(as.toString());
-		button.setMnemonic(as.getMnemonic());
+        AnnotatedString as = new AnnotatedString(s);
+        JButton button = new JButton(as.toString());
+        button.setMnemonic(as.getMnemonic());
 		button.setDisplayedMnemonicIndex(as.getMnemonicIndex());
-		frame.getContentPane().add(button);
+        frame.getContentPane().add(button);
 
-		System.out.println("\"" + s + "\" \"" + as + "\" '" +
-		as.getMnemonic() + "' " + as.getMnemonicIndex());
-	}
+        System.out.println("\"" + s + "\" \"" + as + "\" '" +
+        as.getMnemonic() + "' " + as.getMnemonicIndex());
+    }
 
-	public static void main(String[] args) {
-	// Some basic tests
+    public static void main(String[] args) {
+    // Some basic tests
 
-		JFrame frame = new JFrame();
-		frame.getContentPane().setLayout(new FlowLayout());
+        JFrame frame = new JFrame();
+        frame.getContentPane().setLayout(new FlowLayout());
 
-		addButton(frame, "&File");
-		addButton(frame, "S&ave As...");
-		addButton(frame, "Save &As...");
+        addButton(frame, "&File");
+        addButton(frame, "S&ave As...");
+        addButton(frame, "Save &As...");
 		addButton(frame, "Fo&o");
-		addButton(frame, "Foo");
+        addButton(frame, "Foo");
 
-		// Error cases - make sure we handle them sensibly
-		addButton(frame, "");
-		addButton(frame, "&");
+        // Error cases - make sure we handle them sensibly
+        addButton(frame, "");
+        addButton(frame, "&");
 		addButton(frame, "Foo&");
-		addButton(frame, "Cat & Dog");
-		addButton(frame, "Cat && Dog");
+        addButton(frame, "Cat & Dog");
+        addButton(frame, "Cat && Dog");
 
-		frame.pack();
-		frame.setVisible(true);
-	}
+        frame.pack();
+        frame.setVisible(true);
+    }
 
-	/**
-	 * Localise the given AbstractButton, setting the text and optionally mnemonic
-	 * Note that AbstractButton includes menus and menu items.
+    /**
+     * Localise the given AbstractButton, setting the text and optionally mnemonic
+     * Note that AbstractButton includes menus and menu items.
 	 * @param button		The button to localise
-	 * @param key		   The key to look up in resource bundle
-	 * @param defaultString default String to use if key not found
-	 * @param setMnemonic	whether or not to set the mnemonic. According to Sun's
+     * @param key		   The key to look up in resource bundle
+     * @param defaultString default String to use if key not found
+     * @param setMnemonic	whether or not to set the mnemonic. According to Sun's
 	 *					  guidelines, default/cancel buttons should not have mnemonics
-	 *					  but instead should use Return/Escape
-	 */
-	public static void localiseButton(AbstractButton button, String key, String defaultString,
+     *					  but instead should use Return/Escape
+     */
+    public static void localiseButton(AbstractButton button, String key, String defaultString,
 								boolean setMnemonic) {
-		AnnotatedString as = new AnnotatedString(L10N.getLocalString(key, defaultString));
-		button.setText(as.toString());
-		int mnemonic;
+        AnnotatedString as = new AnnotatedString(L10N.getLocalString(key, defaultString));
+        button.setText(as.toString());
+        int mnemonic;
 		if (setMnemonic &&
-			(mnemonic = as.getMnemonic()) != KeyEvent.VK_UNDEFINED) {
-			button.setMnemonic(mnemonic);
-			button.setDisplayedMnemonicIndex(as.getMnemonicIndex());
+            (mnemonic = as.getMnemonic()) != KeyEvent.VK_UNDEFINED) {
+            button.setMnemonic(mnemonic);
+            button.setDisplayedMnemonicIndex(as.getMnemonicIndex());
 		}
-	}
+    }
 }

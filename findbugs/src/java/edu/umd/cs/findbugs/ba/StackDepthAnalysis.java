@@ -1,17 +1,17 @@
 /*
  * Bytecode Analysis Framework
  * Copyright (C) 2003,2004 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -33,82 +33,82 @@ import org.apache.bcel.generic.InstructionHandle;
  * @see DataflowAnalysis
  */
 public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
-	public static final int TOP = -1;
-	public static final int BOTTOM = -2;
+    public static final int TOP = -1;
+    public static final int BOTTOM = -2;
 
-	private ConstantPoolGen cpg;
+    private ConstantPoolGen cpg;
 
-	/**
-	 * Constructor.
-	 *
+    /**
+     * Constructor.
+     *
 	 * @param cpg the ConstantPoolGen of the method whose CFG we're performing the analysis on
-	 * @param dfs DepthFirstSearch of the method's CFG
-	 */
-	public StackDepthAnalysis(ConstantPoolGen cpg, DepthFirstSearch dfs) {
+     * @param dfs DepthFirstSearch of the method's CFG
+     */
+    public StackDepthAnalysis(ConstantPoolGen cpg, DepthFirstSearch dfs) {
 		super(dfs);
-		this.cpg = cpg;
-	}
+        this.cpg = cpg;
+    }
 
-	public StackDepth createFact() {
-		return new StackDepth(TOP);
-	}
+    public StackDepth createFact() {
+        return new StackDepth(TOP);
+    }
 
-	public void makeFactTop(StackDepth fact) {
-		fact.setDepth(TOP);
-	}
+    public void makeFactTop(StackDepth fact) {
+        fact.setDepth(TOP);
+    }
 	public boolean isTop(StackDepth fact) {
-		return fact.getDepth() == TOP;
-	}
+        return fact.getDepth() == TOP;
+    }
 
-	@Override
-		 public boolean isFactValid(StackDepth fact) {
-		int depth = fact.getDepth();
+    @Override
+         public boolean isFactValid(StackDepth fact) {
+        int depth = fact.getDepth();
 		return depth != TOP && depth != BOTTOM;
-	}
+    }
 
-	public void copy(StackDepth source, StackDepth dest) {
-		dest.setDepth(source.getDepth());
-	}
+    public void copy(StackDepth source, StackDepth dest) {
+        dest.setDepth(source.getDepth());
+    }
 
-	public void initEntryFact(StackDepth entryFact) {
-		entryFact.setDepth(0); // stack depth == 0 at entry to CFG
-	}
+    public void initEntryFact(StackDepth entryFact) {
+        entryFact.setDepth(0); // stack depth == 0 at entry to CFG
+    }
 
-	public boolean same(StackDepth fact1, StackDepth fact2) {
-		return fact1.getDepth() == fact2.getDepth();
-	}
+    public boolean same(StackDepth fact1, StackDepth fact2) {
+        return fact1.getDepth() == fact2.getDepth();
+    }
 
-	@Override
-		 public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StackDepth fact) throws DataflowAnalysisException {
-		Instruction ins = handle.getInstruction();
+    @Override
+         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StackDepth fact) throws DataflowAnalysisException {
+        Instruction ins = handle.getInstruction();
 		int produced = ins.produceStack(cpg);
-		int consumed = ins.consumeStack(cpg);
-		if (produced == Constants.UNPREDICTABLE || consumed == Constants.UNPREDICTABLE)
-			throw new IllegalStateException("Unpredictable stack delta for instruction: " + handle);
+        int consumed = ins.consumeStack(cpg);
+        if (produced == Constants.UNPREDICTABLE || consumed == Constants.UNPREDICTABLE)
+            throw new IllegalStateException("Unpredictable stack delta for instruction: " + handle);
 		int depth = fact.getDepth();
-		depth += (produced - consumed);
-		if (depth < 0)
-			fact.setDepth(BOTTOM);
+        depth += (produced - consumed);
+        if (depth < 0)
+            fact.setDepth(BOTTOM);
 		else
-			fact.setDepth(depth);
-	}
+            fact.setDepth(depth);
+    }
 
-	public void meetInto(StackDepth fact, Edge edge, StackDepth result) {
-		int a = fact.getDepth();
-		int b = result.getDepth();
+    public void meetInto(StackDepth fact, Edge edge, StackDepth result) {
+        int a = fact.getDepth();
+        int b = result.getDepth();
 		int combined;
 
-		if (a == TOP)
-			combined = b;
-		else if (b == TOP)
+        if (a == TOP)
+            combined = b;
+        else if (b == TOP)
 			combined = a;
-		else if (a == BOTTOM || b == BOTTOM || a != b)
-			combined = BOTTOM;
-		else
+        else if (a == BOTTOM || b == BOTTOM || a != b)
+            combined = BOTTOM;
+        else
 			combined = a;
 
-		result.setDepth(combined);
-	}
+        result.setDepth(combined);
+    }
 
 //	/**
 //	 * Command line driver, for testing.

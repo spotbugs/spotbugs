@@ -11,90 +11,90 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
  * Codebase entry for a single-file codebase.
- * 
+ *
  * @author David Hovemeyer
  */
 public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
-	private final SingleFileCodeBase codeBase;
-	private String overriddenResourceName;
+    private final SingleFileCodeBase codeBase;
+    private String overriddenResourceName;
 
-	/**
-	 * Constructor.
-	 * 
+    /**
+     * Constructor.
+     *
 	 * @param codeBase parent codebase
-	 */
-	public SingleFileCodeBaseEntry(SingleFileCodeBase codeBase) {
-		this.codeBase = codeBase;
+     */
+    public SingleFileCodeBaseEntry(SingleFileCodeBase codeBase) {
+        this.codeBase = codeBase;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
+     */
 	public int getNumBytes() {
-		return codeBase.getNumBytes();
-	}
+        return codeBase.getNumBytes();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
+     */
 	public String getResourceName() {
-		if (overriddenResourceName != null) return overriddenResourceName;
-		return codeBase.getResourceName();
-	}
+        if (overriddenResourceName != null) return overriddenResourceName;
+        return codeBase.getResourceName();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
+     */
 	public InputStream openResource() throws IOException {
-		return codeBase.openFile();
-	}
+        return codeBase.openFile();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
+     */
 	public ICodeBase getCodeBase() {
-		return codeBase;
-	}
+        return codeBase;
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
+     */
 	public ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
-		return codeBase.getClassDescriptor();
-	}
+        return codeBase.getClassDescriptor();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java.lang.String)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java.lang.String)
+     */
 	public void overrideResourceName(String resourceName) {
-		overriddenResourceName = resourceName;
-	}
+        overriddenResourceName = resourceName;
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != this.getClass()) {
-			return false;
+    public boolean equals(Object obj) {
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
 		}
-		SingleFileCodeBaseEntry other = (SingleFileCodeBaseEntry) obj;
-		return other.codeBase.equals(this.codeBase);
-	}
+        SingleFileCodeBaseEntry other = (SingleFileCodeBaseEntry) obj;
+        return other.codeBase.equals(this.codeBase);
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
 	@Override
-	public int hashCode() {
-		return codeBase.hashCode();
-	}
+    public int hashCode() {
+        return codeBase.hashCode();
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
 	@Override
-	public String toString() {
-		return codeBase.getPathName();
-	}
+    public String toString() {
+        return codeBase.getPathName();
+    }
 }

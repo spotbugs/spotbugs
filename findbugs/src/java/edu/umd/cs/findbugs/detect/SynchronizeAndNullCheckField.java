@@ -30,70 +30,70 @@ import edu.umd.cs.findbugs.FieldAnnotation;
  * This is a very simply written detector. It checks if there is exactly
  * in the bytecode getting a field, DUP, a store, MONITORENTER, get same
  * field, and check if null.
- * 
+ *
  * Author: Kristin Stephens
  */
 
 public class SynchronizeAndNullCheckField extends BytecodeScanningDetector {
 
-	BugReporter bugReporter;
+    BugReporter bugReporter;
 
-	public SynchronizeAndNullCheckField(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    public SynchronizeAndNullCheckField(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
 
-	@Override
-	public void visit(Method obj) {
-		gottenField = null;
+    @Override
+    public void visit(Method obj) {
+        gottenField = null;
 		currState = 0;
-		syncField = null;
-	}
+        syncField = null;
+    }
 
-	FieldAnnotation gottenField;
-	FieldAnnotation syncField;
-	int currState;
+    FieldAnnotation gottenField;
+    FieldAnnotation syncField;
+    int currState;
 	@Override
-	public void sawOpcode(int seen) {
-		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + currState);
-		switch(currState){
+    public void sawOpcode(int seen) {
+        // System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + currState);
+        switch(currState){
 		case 0:
-			if(seen == GETFIELD || seen == GETSTATIC){
-				syncField = FieldAnnotation.fromReferencedField(this);
-				currState = 1;
+            if(seen == GETFIELD || seen == GETSTATIC){
+                syncField = FieldAnnotation.fromReferencedField(this);
+                currState = 1;
 			}
-			break;
-		case 1:
-			if (seen == DUP){
+            break;
+        case 1:
+            if (seen == DUP){
 				currState = 2;
-			} else currState = 0;
-			break;
-		case 2:
+            } else currState = 0;
+            break;
+        case 2:
 			if(seen == ASTORE || seen == ASTORE_0 || seen == ASTORE_1
-					|| seen == ASTORE_2 || seen == ASTORE_3)
-				currState = 3;
-			else currState = 0;
+                    || seen == ASTORE_2 || seen == ASTORE_3)
+                currState = 3;
+            else currState = 0;
 			break;
-		case 3:
-			if(seen == MONITORENTER){
-				currState = 4;
+        case 3:
+            if(seen == MONITORENTER){
+                currState = 4;
 			} else currState = 0;
-			break;
-		case 4:
-			if(seen == GETFIELD || seen == GETSTATIC){
+            break;
+        case 4:
+            if(seen == GETFIELD || seen == GETSTATIC){
 				gottenField = FieldAnnotation.fromReferencedField(this);
-				currState = 5;
-			} else currState = 0;
-			break;
+                currState = 5;
+            } else currState = 0;
+            break;
 		case 5:
-			if((seen == IFNONNULL || seen == IFNULL) && gottenField.equals(syncField)){
-				BugInstance bug = new BugInstance(this, "NP_SYNC_AND_NULL_CHECK_FIELD", NORMAL_PRIORITY)
-				.addClass(this).addMethod(this).addField(syncField).addSourceLine(this);
+            if((seen == IFNONNULL || seen == IFNULL) && gottenField.equals(syncField)){
+                BugInstance bug = new BugInstance(this, "NP_SYNC_AND_NULL_CHECK_FIELD", NORMAL_PRIORITY)
+                .addClass(this).addMethod(this).addField(syncField).addSourceLine(this);
 				bugReporter.reportBug(bug);
-			} else currState = 0;
-			break;
-		default:
+            } else currState = 0;
+            break;
+        default:
 			currState = 0;
-		}
-	}
+        }
+    }
 }

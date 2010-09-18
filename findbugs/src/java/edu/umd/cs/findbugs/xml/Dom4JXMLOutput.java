@@ -1,17 +1,17 @@
 /*
  * XML input/output support for FindBugs
  * Copyright (C) 2004, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -35,122 +35,122 @@ import org.dom4j.Element;
  * @author David Hovemeyer
  */
 public class Dom4JXMLOutput implements XMLOutput {
-	private LinkedList<Branch> stack;
+    private LinkedList<Branch> stack;
 
-	/**
-	 * Constructor.
-	 *
+    /**
+     * Constructor.
+     *
 	 * @param topLevel the Document or Element that is the root of
-	 *                 the tree to be built
-	 */
-	public Dom4JXMLOutput(Branch topLevel) {
+     *                 the tree to be built
+     */
+    public Dom4JXMLOutput(Branch topLevel) {
 		this.stack = new LinkedList<Branch>();
-		stack.addLast(topLevel);
-	}
+        stack.addLast(topLevel);
+    }
 
-	public void beginDocument() {
-	}
+    public void beginDocument() {
+    }
 
-	public void openTag(String tagName) {
-		Branch top = stack.getLast();
-		Element element = top.addElement(tagName);
+    public void openTag(String tagName) {
+        Branch top = stack.getLast();
+        Element element = top.addElement(tagName);
 		stack.addLast(element);
-	}
+    }
 
-	public void openTag(String tagName, XMLAttributeList attributeList) {
-		Branch top = stack.getLast();
-		Element element = top.addElement(tagName);
+    public void openTag(String tagName, XMLAttributeList attributeList) {
+        Branch top = stack.getLast();
+        Element element = top.addElement(tagName);
 		stack.addLast(element);
 
-		for (Iterator<XMLAttributeList.NameValuePair> i= attributeList.iterator();
-			i.hasNext(); ) {
-			XMLAttributeList.NameValuePair pair = i.next();
+        for (Iterator<XMLAttributeList.NameValuePair> i= attributeList.iterator();
+            i.hasNext(); ) {
+            XMLAttributeList.NameValuePair pair = i.next();
 			element.addAttribute(pair.getName(), pair.getValue());
-		}
+        }
+    }
+
+    public void openCloseTag(String tagName) {
+        openTag(tagName);
+        closeTag(tagName);
 	}
 
-	public void openCloseTag(String tagName) {
-		openTag(tagName);
-		closeTag(tagName);
+    public void openCloseTag(String tagName, XMLAttributeList attributeList) {
+        openTag(tagName, attributeList);
+        closeTag(tagName);
 	}
 
-	public void openCloseTag(String tagName, XMLAttributeList attributeList) {
-		openTag(tagName, attributeList);
-		closeTag(tagName);
-	}
-
-	public void startTag(String tagName) {
-		Branch top = stack.getLast();
-		Element element = top.addElement(tagName);
+    public void startTag(String tagName) {
+        Branch top = stack.getLast();
+        Element element = top.addElement(tagName);
 		stack.addLast(element);
+    }
+
+    public void addAttribute(String name, String value) {
+        Element element = (Element) stack.getLast();
+        element.addAttribute(name, value);
 	}
 
-	public void addAttribute(String name, String value) {
-		Element element = (Element) stack.getLast();
-		element.addAttribute(name, value);
-	}
-
-	public void stopTag(boolean close) {
-		if ( close ) {
-			closeTag(null);
+    public void stopTag(boolean close) {
+        if ( close ) {
+            closeTag(null);
 		}
+    }
+
+    public void closeTag(String tagName) {
+        stack.removeLast();
+    }
+
+    public void writeText(String text) {
+        Element top = (Element) stack.getLast();
+        top.addText(text);
 	}
 
-	public void closeTag(String tagName) {
-		stack.removeLast();
+    public void writeCDATA(String cdata) {
+        Element top = (Element) stack.getLast();
+        top.addCDATA(cdata);
 	}
 
-	public void writeText(String text) {
-		Element top = (Element) stack.getLast();
-		top.addText(text);
-	}
-
-	public void writeCDATA(String cdata) {
-		Element top = (Element) stack.getLast();
-		top.addCDATA(cdata);
-	}
-
-	/**
-	 * Add a list of Strings to document as elements
-	 * with given tag name to the tree.
+    /**
+     * Add a list of Strings to document as elements
+     * with given tag name to the tree.
 	 *
-	 * @param tagName    the tag name
-	 * @param listValues Collection of String values to add
-	 */
+     * @param tagName    the tag name
+     * @param listValues Collection of String values to add
+     */
 	public void writeElementList(String tagName, Collection<String> listValues) {
-		for (String listValue : listValues) {
-			openTag(tagName);
-			writeText(listValue);
+        for (String listValue : listValues) {
+            openTag(tagName);
+            writeText(listValue);
 			closeTag(tagName);
-		}
-	}
+        }
+    }
 
-	/**
-	 * Add given object to the tree.
-	 *
+    /**
+     * Add given object to the tree.
+     *
 	 * @param obj the object
-	 */
-	public void write(XMLWriteable obj) {
-		try {
+     */
+    public void write(XMLWriteable obj) {
+        try {
 			obj.writeXML(this);
-		} catch (java.io.IOException e) {
-			// Can't really happen
-		}
+        } catch (java.io.IOException e) {
+            // Can't really happen
+        }
 	}
 
-	/**
-	 * Add a Collection of XMLWriteable objects to the tree.
-	 *
+    /**
+     * Add a Collection of XMLWriteable objects to the tree.
+     *
 	 * @param collection Collection of XMLWriteable objects
-	 */
-	public void writeCollection(Collection<? extends XMLWriteable> collection) {
-		for (XMLWriteable obj : collection) {
+     */
+    public void writeCollection(Collection<? extends XMLWriteable> collection) {
+        for (XMLWriteable obj : collection) {
 			write(obj);
-		}
-	}
+        }
+    }
 
-	public void finish() {
-	}
+    public void finish() {
+    }
 }
 
 // vim:ts=4

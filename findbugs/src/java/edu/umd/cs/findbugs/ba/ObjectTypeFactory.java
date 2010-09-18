@@ -33,37 +33,37 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  */
 public class ObjectTypeFactory {
 
-	private static ThreadLocal<Map<String, ObjectType>> instance =
-		new ThreadLocal<Map<String, ObjectType>>() {
-		@Override
+    private static ThreadLocal<Map<String, ObjectType>> instance =
+        new ThreadLocal<Map<String, ObjectType>>() {
+        @Override
         protected
         Map<String, ObjectType> initialValue() {
-			return  new HashMap<String, ObjectType>();
-		}
-	};
+            return  new HashMap<String, ObjectType>();
+        }
+    };
 
 //	private Map<String, ObjectType> map = new HashMap<String, ObjectType>();
 
-	public static void clearInstance() {
-		instance.remove();
-	}
+    public static void clearInstance() {
+        instance.remove();
+    }
 
-	public static ObjectType getInstance(@DottedClassName String s) {
-		if (FindBugs.DEBUG && s.startsWith("[")) {
-			throw new IllegalArgumentException("Cannot create an ObjectType to represent an array type: " + s);
+    public static ObjectType getInstance(@DottedClassName String s) {
+        if (FindBugs.DEBUG && s.startsWith("[")) {
+            throw new IllegalArgumentException("Cannot create an ObjectType to represent an array type: " + s);
 		}
-		if (s.endsWith(";"))
-			throw new IllegalArgumentException(s);
-		if (s.indexOf("/") >= 0) {
+        if (s.endsWith(";"))
+            throw new IllegalArgumentException(s);
+        if (s.indexOf("/") >= 0) {
 			s = s.replace('/','.');
-		}
+        }
 
-		Map<String, ObjectType> map = instance.get();
-		ObjectType result = map.get(s);
-		if (result != null) return result;
+        Map<String, ObjectType> map = instance.get();
+        ObjectType result = map.get(s);
+        if (result != null) return result;
 		result = ObjectType.getInstance(s);
-		map.put(s, result);
-		return result;
-	}
+        map.put(s, result);
+        return result;
+    }
 
 }

@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2007 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -53,69 +53,69 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  */
 public class LoadedFieldSetFactory extends AnalysisFactory<LoadedFieldSet> {
 
-	static final BitSet fieldInstructionOpcodeSet = new BitSet();
-	static {
-		fieldInstructionOpcodeSet.set(Constants.GETFIELD);
+    static final BitSet fieldInstructionOpcodeSet = new BitSet();
+    static {
+        fieldInstructionOpcodeSet.set(Constants.GETFIELD);
 		fieldInstructionOpcodeSet.set(Constants.PUTFIELD);
-		fieldInstructionOpcodeSet.set(Constants.GETSTATIC);
-		fieldInstructionOpcodeSet.set(Constants.PUTSTATIC);
-	}
+        fieldInstructionOpcodeSet.set(Constants.GETSTATIC);
+        fieldInstructionOpcodeSet.set(Constants.PUTSTATIC);
+    }
 
-	/**
-	 * Constructor.
-	 */
+    /**
+     * Constructor.
+     */
 	public LoadedFieldSetFactory() {
-		super("loaded field set factory", LoadedFieldSet.class);
-	}
+        super("loaded field set factory", LoadedFieldSet.class);
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+     */
 	public LoadedFieldSet analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
-		MethodGen methodGen = getMethodGen(analysisCache, descriptor);
-		if (methodGen == null) return null;
-		InstructionList il = methodGen.getInstructionList();
+        MethodGen methodGen = getMethodGen(analysisCache, descriptor);
+        if (methodGen == null) return null;
+        InstructionList il = methodGen.getInstructionList();
 
-		LoadedFieldSet loadedFieldSet = new LoadedFieldSet(methodGen);
-		ConstantPoolGen cpg = getConstantPoolGen(analysisCache, descriptor.getClassDescriptor());
+        LoadedFieldSet loadedFieldSet = new LoadedFieldSet(methodGen);
+        ConstantPoolGen cpg = getConstantPoolGen(analysisCache, descriptor.getClassDescriptor());
 
-		for (InstructionHandle handle = il.getStart(); handle != null; handle = handle.getNext()) {
-			Instruction ins = handle.getInstruction();
-			short opcode = ins.getOpcode();
+        for (InstructionHandle handle = il.getStart(); handle != null; handle = handle.getNext()) {
+            Instruction ins = handle.getInstruction();
+            short opcode = ins.getOpcode();
 			try {
-				if (opcode == Constants.INVOKESTATIC) {
-					INVOKESTATIC inv = (INVOKESTATIC) ins;
-					if (Hierarchy.isInnerClassAccess(inv, cpg)) {
+                if (opcode == Constants.INVOKESTATIC) {
+                    INVOKESTATIC inv = (INVOKESTATIC) ins;
+                    if (Hierarchy.isInnerClassAccess(inv, cpg)) {
 						InnerClassAccess access = Hierarchy.getInnerClassAccess(inv, cpg);
-						/*
-    									if (access == null) {
-    										System.out.println("Missing inner class access in " +
+                        /*
+                                        if (access == null) {
+                                            System.out.println("Missing inner class access in " +
     											SignatureConverter.convertMethodSignature(methodGen) + " at " +
-    											inv);
-    									}
-						 */
+                                                inv);
+                                        }
+                         */
 						if (access != null) {
-							if (access.isLoad())
-								loadedFieldSet.addLoad(handle, access.getField());
-							else
+                            if (access.isLoad())
+                                loadedFieldSet.addLoad(handle, access.getField());
+                            else
 								loadedFieldSet.addStore(handle, access.getField());
-						}
-					}
-				} else if (fieldInstructionOpcodeSet.get(opcode)) {
+                        }
+                    }
+                } else if (fieldInstructionOpcodeSet.get(opcode)) {
 					boolean isLoad = (opcode == Constants.GETFIELD || opcode == Constants.GETSTATIC);
-					XField field = Hierarchy.findXField((FieldInstruction) ins, cpg);
-					if (field != null) {
-						if (isLoad)
+                    XField field = Hierarchy.findXField((FieldInstruction) ins, cpg);
+                    if (field != null) {
+                        if (isLoad)
 							loadedFieldSet.addLoad(handle, field);
-						else
-							loadedFieldSet.addStore(handle, field);
-					}
+                        else
+                            loadedFieldSet.addStore(handle, field);
+                    }
 				}
-			} catch (ClassNotFoundException e) {
-				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
-			}
+            } catch (ClassNotFoundException e) {
+                AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+            }
 		}
 
-		return loadedFieldSet;
-	}
+        return loadedFieldSet;
+    }
 }

@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -30,42 +30,42 @@ import java.util.List;
  * <li>Builds a list of application class descriptors</li>
  * <li>Adds system codebases</li>
  * </ul>
- * 
+ *
  * @author David Hovemeyer
  */
 public interface IClassPathBuilder {
-	/**
-	 * Add a project codebase.
-	 * 
+    /**
+     * Add a project codebase.
+     *
 	 * @param locator       locator for project codebase
-	 * @param isApplication true if the codebase is an application codebase, false otherwise
-	 */
-	public void addCodeBase(ICodeBaseLocator locator, boolean isApplication);
+     * @param isApplication true if the codebase is an application codebase, false otherwise
+     */
+    public void addCodeBase(ICodeBaseLocator locator, boolean isApplication);
 
-	/**
-	 * Set whether or not nested archives should be scanned.
-	 * This should be called before the build() method is called.
+    /**
+     * Set whether or not nested archives should be scanned.
+     * This should be called before the build() method is called.
 	 * 
-	 * @param scanNestedArchives true if nested archives should be scanned,
-	 *                            false otherwise
-	 */
+     * @param scanNestedArchives true if nested archives should be scanned,
+     *                            false otherwise
+     */
 	public void scanNestedArchives(boolean scanNestedArchives);
 
-	/**
-	 * Build the classpath.
-	 * 
+    /**
+     * Build the classpath.
+     *
 	 * @param classPath IClassPath object to build
-	 * @param progress  IClassPathBuilderProgress callback
-	 * @throws ResourceNotFoundException
-	 * @throws IOException
+     * @param progress  IClassPathBuilderProgress callback
+     * @throws ResourceNotFoundException
+     * @throws IOException
 	 * @throws InterruptedException
-	 */
-	public void build(IClassPath classPath, IClassPathBuilderProgress progress) throws CheckedAnalysisException, IOException, InterruptedException;
+     */
+    public void build(IClassPath classPath, IClassPathBuilderProgress progress) throws CheckedAnalysisException, IOException, InterruptedException;
 
-	/**
-	 * Get the list of application classes discovered while scanning the classpath.
-	 * 
+    /**
+     * Get the list of application classes discovered while scanning the classpath.
+     *
 	 * @return list of application classes
-	 */
-	public List<ClassDescriptor> getAppClassList();
+     */
+    public List<ClassDescriptor> getAppClassList();
 }

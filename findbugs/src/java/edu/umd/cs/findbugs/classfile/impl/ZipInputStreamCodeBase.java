@@ -40,199 +40,199 @@ import edu.umd.cs.findbugs.util.MapCache;
  * @author David Hovemeyer
  */
 public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
-	final static boolean DEBUG = false;
+    final static boolean DEBUG = false;
 
-	final File file;
+    final File file;
 
-	final MapCache<String, ZipInputStreamCodeBaseEntry> map 
-	  = new MapCache<String, ZipInputStreamCodeBaseEntry>(10000);
+    final MapCache<String, ZipInputStreamCodeBaseEntry> map
+      = new MapCache<String, ZipInputStreamCodeBaseEntry>(10000);
 
-	final HashSet<String> entries = new HashSet<String>();
+    final HashSet<String> entries = new HashSet<String>();
 
-	/**
-	 * Constructor.
-	 *
+    /**
+     * Constructor.
+     *
 	 * @param codeBaseLocator the codebase locator for this codebase
-	 * @param file the File containing the zip file (may be a temp file
-	 *         if the codebase was copied from a nested zipfile in
-	 *         another codebase)
+     * @param file the File containing the zip file (may be a temp file
+     *         if the codebase was copied from a nested zipfile in
+     *         another codebase)
 	 */
-	public ZipInputStreamCodeBase(ICodeBaseLocator codeBaseLocator, File file) throws IOException {
-		super(codeBaseLocator);
+    public ZipInputStreamCodeBase(ICodeBaseLocator codeBaseLocator, File file) throws IOException {
+        super(codeBaseLocator);
 
-		this.file = file;
-		setLastModifiedTime(file.lastModified());
-		ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
+        this.file = file;
+        setLastModifiedTime(file.lastModified());
+        ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
 		try {
-			ZipEntry ze;
+            ZipEntry ze;
 
-			if (DEBUG) {
-				System.out.println("Reading zip input stream " + file);
-			}
+            if (DEBUG) {
+                System.out.println("Reading zip input stream " + file);
+            }
 			
-			while ((ze = zis.getNextEntry()) != null) {
-				String name = ze.getName();
-				if (!ze.isDirectory() 
+            while ((ze = zis.getNextEntry()) != null) {
+                String name = ze.getName();
+                if (!ze.isDirectory()
 						&& (name.equals("META-INF/MANIFEST.MF") 
-								|| name.endsWith(".class")
-								|| Archive.isArchiveFileName(name)
-								)) {
+                                || name.endsWith(".class")
+                                || Archive.isArchiveFileName(name)
+                                )) {
 					entries.add(name);
-					if (name.equals("META-INF/MANIFEST.MF")) {
-						map.put(name, build(zis, ze));
-					}
+                    if (name.equals("META-INF/MANIFEST.MF")) {
+                        map.put(name, build(zis, ze));
+                    }
 				}
-				zis.closeEntry();
+                zis.closeEntry();
 
-			}
-		} finally {
-			zis.close();
+            }
+        } finally {
+            zis.close();
 		}
-		if (DEBUG) {
-	        System.out.println("Done with zip input stream " + file);
+        if (DEBUG) {
+            System.out.println("Done with zip input stream " + file);
         }
 
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
+     */
 	public ICodeBaseEntry lookupResource(String resourceName) {
 
-		// Translate resource name, in case a resource name
-		// has been overridden and the resource is being accessed
-		// using the overridden name.
+        // Translate resource name, in case a resource name
+        // has been overridden and the resource is being accessed
+        // using the overridden name.
 		resourceName = translateResourceName(resourceName);
-		if (!entries.contains(resourceName)) {
-	        return null;
+        if (!entries.contains(resourceName)) {
+            return null;
         }
 
-		try {
-			ZipInputStreamCodeBaseEntry z = map.get(resourceName);
-			if (z != null) {
+        try {
+            ZipInputStreamCodeBaseEntry z = map.get(resourceName);
+            if (z != null) {
 	            return z;
             }
-			ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
-			try {
-				ZipEntry ze;
+            ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
+            try {
+                ZipEntry ze;
 
-				boolean found = false;
-				int countDown = 20;
-				while ((ze = zis.getNextEntry()) != null && countDown >= 0) {
+                boolean found = false;
+                int countDown = 20;
+                while ((ze = zis.getNextEntry()) != null && countDown >= 0) {
 					if (ze.getName().equals(resourceName)) {
-						found = true;
-					}
-					if (found) {
+                        found = true;
+                    }
+                    if (found) {
 						countDown--;
-						if (map.containsKey(ze.getName())) {
-							continue;
-						}
+                        if (map.containsKey(ze.getName())) {
+                            continue;
+                        }
 						z = build(zis, ze);
-						map.put(ze.getName(), z);
-					}
-					zis.closeEntry();
+                        map.put(ze.getName(), z);
+                    }
+                    zis.closeEntry();
 				}
-			} finally {
-				zis.close();
-			}
-			z = map.get(resourceName);
-			if (z == null) {
-	            throw new AssertionError("Could not find " + resourceName);
+            } finally {
+                zis.close();
             }
-			return z;
-		} catch (IOException e) {
-			return null;
+			z = map.get(resourceName);
+            if (z == null) {
+                throw new AssertionError("Could not find " + resourceName);
+            }
+            return z;
+        } catch (IOException e) {
+            return null;
 		}
-	}
+    }
 
-	ZipInputStreamCodeBaseEntry build(ZipInputStream zis, ZipEntry ze) throws IOException {
-		long sz = ze.getSize();
-		ByteArrayOutputStream out;
+    ZipInputStreamCodeBaseEntry build(ZipInputStream zis, ZipEntry ze) throws IOException {
+        long sz = ze.getSize();
+        ByteArrayOutputStream out;
 		if (sz < 0 || sz > Integer.MAX_VALUE) {
-	        out = new ByteArrayOutputStream();
+            out = new ByteArrayOutputStream();
         } else {
-	        out = new ByteArrayOutputStream((int) sz);
+            out = new ByteArrayOutputStream((int) sz);
         }
-		IO.copy(zis, out);
-		byte[] bytes = out.toByteArray();
-		setLastModifiedTime(ze.getTime());
+        IO.copy(zis, out);
+        byte[] bytes = out.toByteArray();
+        setLastModifiedTime(ze.getTime());
 		return new ZipInputStreamCodeBaseEntry(this, ze, bytes);
-	}
+    }
 
-	class MyIterator implements ICodeBaseIterator {
-		ZipInputStream zis;
+    class MyIterator implements ICodeBaseIterator {
+        ZipInputStream zis;
 
-		ZipEntry ze;
+        ZipEntry ze;
 
-		MyIterator() {
-			try {
-				zis = new ZipInputStream(new FileInputStream(file));
+        MyIterator() {
+            try {
+                zis = new ZipInputStream(new FileInputStream(file));
 				ze = zis.getNextEntry();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 		}
 
-		private void getNextEntry() throws IOException {
-			ze = zis.getNextEntry();
-			if (ze == null) {
+        private void getNextEntry() throws IOException {
+            ze = zis.getNextEntry();
+            if (ze == null) {
 	            zis.close();
             }
-		}
+        }
 
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#hasNext()
-		 */
+        /* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#hasNext()
+         */
 		public boolean hasNext() throws InterruptedException {
-			if (Thread.interrupted()) {
-	            throw new InterruptedException();
+            if (Thread.interrupted()) {
+                throw new InterruptedException();
             }
 
-			return ze != null;
-		}
+            return ze != null;
+        }
 
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
-		 */
+        /* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
+         */
 		public ICodeBaseEntry next() throws InterruptedException {
-			try {
-				if (Thread.interrupted()) {
-	                throw new InterruptedException();
+            try {
+                if (Thread.interrupted()) {
+                    throw new InterruptedException();
                 }
-				ZipInputStreamCodeBaseEntry z = build(zis, ze);
-				zis.closeEntry();
-				getNextEntry();
+                ZipInputStreamCodeBaseEntry z = build(zis, ze);
+                zis.closeEntry();
+                getNextEntry();
 				return z;
-			} catch (IOException e) {
-				throw new RuntimeException("Failure getting next entry in " + file, e);
-			}
+            } catch (IOException e) {
+                throw new RuntimeException("Failure getting next entry in " + file, e);
+            }
 		}
 
-	}
+    }
 
-	public ICodeBaseIterator iterator() {
-		return new MyIterator();
-	}
+    public ICodeBaseIterator iterator() {
+        return new MyIterator();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
+     */
 	public String getPathName() {
-		return file.getName();
-	}
+        return file.getName();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
+     */
 	public void close() {
 
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
 	@Override
-	public String toString() {
-		return file.getName();
-	}
+    public String toString() {
+        return file.getName();
+    }
 }

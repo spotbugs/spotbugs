@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003,2004 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -51,144 +51,144 @@ import edu.umd.cs.findbugs.log.Profiler;
  * @author David Hovemeyer
  */
 public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType extends ResourceTracker<Resource>>
-		implements Detector {
+        implements Detector {
 
-	private static final boolean DEBUG = SystemProperties.getBoolean("rtd.debug");
+    private static final boolean DEBUG = SystemProperties.getBoolean("rtd.debug");
 
-	private static final String DEBUG_METHOD_NAME = SystemProperties.getProperty("rtd.method");
+    private static final String DEBUG_METHOD_NAME = SystemProperties.getProperty("rtd.method");
 
-	protected BugAccumulator bugAccumulator;
-	protected BugReporter bugReporter;
+    protected BugAccumulator bugAccumulator;
+    protected BugReporter bugReporter;
 
-	public ResourceTrackingDetector(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-		this.bugAccumulator = new BugAccumulator(bugReporter);
+    public ResourceTrackingDetector(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+        this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
-	public abstract boolean prescreen(ClassContext classContext, Method method, boolean mightClose);
+    public abstract boolean prescreen(ClassContext classContext, Method method, boolean mightClose);
 
-	public abstract ResourceTrackerType getResourceTracker(ClassContext classContext, Method method)
-			throws DataflowAnalysisException, CFGBuilderException;
+    public abstract ResourceTrackerType getResourceTracker(ClassContext classContext, Method method)
+            throws DataflowAnalysisException, CFGBuilderException;
 
-	public abstract void inspectResult(ClassContext classContext, MethodGen methodGen, CFG cfg,
-									   Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow, Resource resource);
+    public abstract void inspectResult(ClassContext classContext, MethodGen methodGen, CFG cfg,
+                                       Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow, Resource resource);
 
-	public void visitClassContext(ClassContext classContext) {
+    public void visitClassContext(ClassContext classContext) {
 
-		final JavaClass jclass = classContext.getJavaClass();
-		Method[] methodList = jclass.getMethods();
-		for (Method method : methodList) {
+        final JavaClass jclass = classContext.getJavaClass();
+        Method[] methodList = jclass.getMethods();
+        for (Method method : methodList) {
 			if (method.isAbstract() || method.isNative())
-				continue;
+                continue;
 
-			MethodGen methodGen = classContext.getMethodGen(method);
-			if (methodGen == null)
-				continue;
+            MethodGen methodGen = classContext.getMethodGen(method);
+            if (methodGen == null)
+                continue;
 
-			if (DEBUG_METHOD_NAME != null && !DEBUG_METHOD_NAME.equals(method.getName()))
-				continue;
+            if (DEBUG_METHOD_NAME != null && !DEBUG_METHOD_NAME.equals(method.getName()))
+                continue;
 
-			
-			if (DEBUG) {
-				System.out.println("----------------------------------------------------------------------");
+
+            if (DEBUG) {
+                System.out.println("----------------------------------------------------------------------");
 				System.out.println("Analyzing " + SignatureConverter.convertMethodSignature(methodGen));
-				System.out.println("----------------------------------------------------------------------");
-			}
+                System.out.println("----------------------------------------------------------------------");
+            }
 
-			try {
-				ResourceTrackerType resourceTracker = getResourceTracker(classContext, method);
-				boolean mightClose = mightCloseResource(classContext, method, resourceTracker);
+            try {
+                ResourceTrackerType resourceTracker = getResourceTracker(classContext, method);
+                boolean mightClose = mightCloseResource(classContext, method, resourceTracker);
 
-				if (!prescreen(classContext, method, mightClose))
+                if (!prescreen(classContext, method, mightClose))
+                    continue;
+
+                ResourceCollection<Resource> resourceCollection =
+                        buildResourceCollection(classContext, method, resourceTracker);
+                if (resourceCollection.isEmpty())
 					continue;
 
-				ResourceCollection<Resource> resourceCollection =
-						buildResourceCollection(classContext, method, resourceTracker);
-				if (resourceCollection.isEmpty())
-					continue;
-
-				analyzeMethod(classContext, method, resourceTracker, resourceCollection);
-			} catch (CFGBuilderException e) {
-				bugReporter.logError("Error analyzing method " + method.toString(), e);
+                analyzeMethod(classContext, method, resourceTracker, resourceCollection);
+            } catch (CFGBuilderException e) {
+                bugReporter.logError("Error analyzing method " + method.toString(), e);
 			} catch (DataflowAnalysisException e) {
-				bugReporter.logError("Error analyzing method " + method.toString(), e);
-			}
-			bugAccumulator.reportAccumulatedBugs();
+                bugReporter.logError("Error analyzing method " + method.toString(), e);
+            }
+            bugAccumulator.reportAccumulatedBugs();
 		}
 
-	}
+    }
 
-	private ResourceCollection<Resource> buildResourceCollection(ClassContext classContext,
-																 Method method, ResourceTrackerType resourceTracker)
-			throws CFGBuilderException, DataflowAnalysisException {
+    private ResourceCollection<Resource> buildResourceCollection(ClassContext classContext,
+                                                                 Method method, ResourceTrackerType resourceTracker)
+            throws CFGBuilderException, DataflowAnalysisException {
 
-		ResourceCollection<Resource> resourceCollection = new ResourceCollection<Resource>();
+        ResourceCollection<Resource> resourceCollection = new ResourceCollection<Resource>();
 
-		CFG cfg = classContext.getCFG(method);
-		ConstantPoolGen cpg = classContext.getConstantPoolGen();
+        CFG cfg = classContext.getCFG(method);
+        ConstantPoolGen cpg = classContext.getConstantPoolGen();
 
-		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
-			Location location = i.next();
-			Resource resource = resourceTracker.isResourceCreation(location.getBasicBlock(),
+        for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+            Location location = i.next();
+            Resource resource = resourceTracker.isResourceCreation(location.getBasicBlock(),
 					location.getHandle(), cpg);
-			if (resource != null)
-				resourceCollection.addCreatedResource(location, resource);
-		}
+            if (resource != null)
+                resourceCollection.addCreatedResource(location, resource);
+        }
 
-		return resourceCollection;
-	}
+        return resourceCollection;
+    }
 
-	private boolean mightCloseResource(ClassContext classContext, Method method,
-	        ResourceTrackerType resourceTracker) throws CFGBuilderException, DataflowAnalysisException {
+    private boolean mightCloseResource(ClassContext classContext, Method method,
+            ResourceTrackerType resourceTracker) throws CFGBuilderException, DataflowAnalysisException {
 
-		CFG cfg = classContext.getCFG(method);
-		ConstantPoolGen cpg = classContext.getConstantPoolGen();
+        CFG cfg = classContext.getCFG(method);
+        ConstantPoolGen cpg = classContext.getConstantPoolGen();
 
-		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
-			Location location = i.next();
-			if (resourceTracker.mightCloseResource(location.getBasicBlock(), location.getHandle(), cpg))
+        for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+            Location location = i.next();
+            if (resourceTracker.mightCloseResource(location.getBasicBlock(), location.getHandle(), cpg))
 				return true;
-			
-		}
 
-		return false;
-	}
-	public void analyzeMethod(ClassContext classContext, Method method,
+        }
+
+        return false;
+    }
+    public void analyzeMethod(ClassContext classContext, Method method,
 							  ResourceTrackerType resourceTracker, ResourceCollection<Resource> resourceCollection)
-			throws CFGBuilderException, DataflowAnalysisException {
+            throws CFGBuilderException, DataflowAnalysisException {
 
-		MethodGen methodGen = classContext.getMethodGen(method);
-		if (methodGen == null) return;
-		try {
+        MethodGen methodGen = classContext.getMethodGen(method);
+        if (methodGen == null) return;
+        try {
 		CFG cfg = classContext.getCFG(method);
-		DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+        DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 
-		if (DEBUG) System.out.println(SignatureConverter.convertMethodSignature(methodGen));
+        if (DEBUG) System.out.println(SignatureConverter.convertMethodSignature(methodGen));
 
-		for (Iterator<Resource> i = resourceCollection.resourceIterator(); i.hasNext();) {
-			Resource resource = i.next();
+        for (Iterator<Resource> i = resourceCollection.resourceIterator(); i.hasNext();) {
+            Resource resource = i.next();
 
-			ResourceValueAnalysis<Resource> analysis =
-					new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource);
-			Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
+            ResourceValueAnalysis<Resource> analysis =
+                    new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource);
+            Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
 					new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
 
-			Profiler profiler = Global.getAnalysisCache().getProfiler();
-			profiler.start(resourceTracker.getClass());
-			try {
+            Profiler profiler = Global.getAnalysisCache().getProfiler();
+            profiler.start(resourceTracker.getClass());
+            try {
 				dataflow.execute();
-			} finally {
-				profiler.end(resourceTracker.getClass());
-			}
+            } finally {
+                profiler.end(resourceTracker.getClass());
+            }
 			inspectResult(classContext, methodGen, cfg, dataflow, resource);
+        }
+        } catch (RuntimeException e) {
+            AnalysisContext.logError("Exception while analyzing " + methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature(), e);
 		}
-		} catch (RuntimeException e) {
-			AnalysisContext.logError("Exception while analyzing " + methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature(), e);
-		}
-	}
+    }
 
-	public void report() {
-	}
+    public void report() {
+    }
 
 }
 

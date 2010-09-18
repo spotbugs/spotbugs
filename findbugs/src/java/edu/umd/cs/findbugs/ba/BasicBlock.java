@@ -1,17 +1,17 @@
 /*
  * Bytecode Analysis Framework
  * Copyright (C) 2003-2007 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -40,395 +40,395 @@ import edu.umd.cs.findbugs.graph.AbstractVertex;
  */
 public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debug {
 
-	/* ----------------------------------------------------------------------
-	 * Static data
-	 * ---------------------------------------------------------------------- */
+    /* ----------------------------------------------------------------------
+     * Static data
+     * ---------------------------------------------------------------------- */
 
-	/**
-	 * Set of instruction opcodes that have an implicit null check.
-	 */
+    /**
+     * Set of instruction opcodes that have an implicit null check.
+     */
 	private static final BitSet nullCheckInstructionSet = new BitSet();
 
-	static {
-		nullCheckInstructionSet.set(Constants.GETFIELD);
-		nullCheckInstructionSet.set(Constants.PUTFIELD);
+    static {
+        nullCheckInstructionSet.set(Constants.GETFIELD);
+        nullCheckInstructionSet.set(Constants.PUTFIELD);
 		nullCheckInstructionSet.set(Constants.INVOKESPECIAL);
-		nullCheckInstructionSet.set(Constants.INVOKEVIRTUAL);
-		nullCheckInstructionSet.set(Constants.INVOKEINTERFACE);
-		nullCheckInstructionSet.set(Constants.AALOAD);
+        nullCheckInstructionSet.set(Constants.INVOKEVIRTUAL);
+        nullCheckInstructionSet.set(Constants.INVOKEINTERFACE);
+        nullCheckInstructionSet.set(Constants.AALOAD);
 		nullCheckInstructionSet.set(Constants.AASTORE);
-		nullCheckInstructionSet.set(Constants.BALOAD);
-		nullCheckInstructionSet.set(Constants.BASTORE);
-		nullCheckInstructionSet.set(Constants.CALOAD);
+        nullCheckInstructionSet.set(Constants.BALOAD);
+        nullCheckInstructionSet.set(Constants.BASTORE);
+        nullCheckInstructionSet.set(Constants.CALOAD);
 		nullCheckInstructionSet.set(Constants.CASTORE);
-		nullCheckInstructionSet.set(Constants.DALOAD);
-		nullCheckInstructionSet.set(Constants.DASTORE);
-		nullCheckInstructionSet.set(Constants.FALOAD);
+        nullCheckInstructionSet.set(Constants.DALOAD);
+        nullCheckInstructionSet.set(Constants.DASTORE);
+        nullCheckInstructionSet.set(Constants.FALOAD);
 		nullCheckInstructionSet.set(Constants.FASTORE);
-		nullCheckInstructionSet.set(Constants.IALOAD);
-		nullCheckInstructionSet.set(Constants.IASTORE);
-		nullCheckInstructionSet.set(Constants.LALOAD);
+        nullCheckInstructionSet.set(Constants.IALOAD);
+        nullCheckInstructionSet.set(Constants.IASTORE);
+        nullCheckInstructionSet.set(Constants.LALOAD);
 		nullCheckInstructionSet.set(Constants.LASTORE);
-		nullCheckInstructionSet.set(Constants.SALOAD);
-		nullCheckInstructionSet.set(Constants.SASTORE);
-		nullCheckInstructionSet.set(Constants.MONITORENTER);
+        nullCheckInstructionSet.set(Constants.SALOAD);
+        nullCheckInstructionSet.set(Constants.SASTORE);
+        nullCheckInstructionSet.set(Constants.MONITORENTER);
 		nullCheckInstructionSet.set(Constants.ARRAYLENGTH);
-		//nullCheckInstructionSet.set(Constants.MONITOREXIT);
-		if (!SystemProperties.getBoolean("npe.noAthrow")) {
-			nullCheckInstructionSet.set(Constants.ATHROW);
+        //nullCheckInstructionSet.set(Constants.MONITOREXIT);
+        if (!SystemProperties.getBoolean("npe.noAthrow")) {
+            nullCheckInstructionSet.set(Constants.ATHROW);
 		}
-		// Any others?
-	}
+        // Any others?
+    }
 
-	/* ----------------------------------------------------------------------
-	 * Fields
-	 * ---------------------------------------------------------------------- */
+    /* ----------------------------------------------------------------------
+     * Fields
+     * ---------------------------------------------------------------------- */
 
-	private InstructionHandle firstInstruction;
-	private InstructionHandle lastInstruction;
-	private InstructionHandle exceptionThrower; // instruction for which this block is the ETB
+    private InstructionHandle firstInstruction;
+    private InstructionHandle lastInstruction;
+    private InstructionHandle exceptionThrower; // instruction for which this block is the ETB
 	private CodeExceptionGen exceptionGen; // set if this block is the entry point of an exception handler
-	private boolean inJSRSubroutine;
-	private int numNonExceptionSuccessors;
+    private boolean inJSRSubroutine;
+    private int numNonExceptionSuccessors;
 
-	/* ----------------------------------------------------------------------
-	 * Public methods
-	 * ---------------------------------------------------------------------- */
+    /* ----------------------------------------------------------------------
+     * Public methods
+     * ---------------------------------------------------------------------- */
 
-	/**
-	 * Constructor.
-	 */
+    /**
+     * Constructor.
+     */
 	public BasicBlock() {
-		this.firstInstruction = null;
-		this.lastInstruction = null;
-		this.exceptionThrower = null;
+        this.firstInstruction = null;
+        this.lastInstruction = null;
+        this.exceptionThrower = null;
 		this.exceptionGen = null;
-		this.inJSRSubroutine = false;
-		this.numNonExceptionSuccessors = -1;
-	}
+        this.inJSRSubroutine = false;
+        this.numNonExceptionSuccessors = -1;
+    }
 
-	public boolean isInJSRSubroutine() {
-		return inJSRSubroutine;
-	}
+    public boolean isInJSRSubroutine() {
+        return inJSRSubroutine;
+    }
 
-	void setInJSRSubroutine(boolean inJSRSubroutine) {
-		this.inJSRSubroutine = inJSRSubroutine;
-	}
+    void setInJSRSubroutine(boolean inJSRSubroutine) {
+        this.inJSRSubroutine = inJSRSubroutine;
+    }
 
 
-	/**
-	 * Get the basic block's integer label.
-	 * 
+    /**
+     * Get the basic block's integer label.
+     *
 	 * @deprecated call getLabel() instead
-	 * @return the BasicBlock's integer label
-	 */
-	@Deprecated public int getId() {
+     * @return the BasicBlock's integer label
+     */
+    @Deprecated public int getId() {
 		return getLabel();
+    }
+
+    @Override
+    public String toString() {
+        return "block " + String.valueOf(getLabel());
 	}
 
-	@Override
-	public String toString() {
-		return "block " + String.valueOf(getLabel());
-	}
-
-	/**
-	 * Set the instruction for which this block is the ETB.
-	 *
+    /**
+     * Set the instruction for which this block is the ETB.
+     *
 	 * @param exceptionThrower the instruction
-	 */
-	public void setExceptionThrower(InstructionHandle exceptionThrower) {
-		this.exceptionThrower = exceptionThrower;
+     */
+    public void setExceptionThrower(InstructionHandle exceptionThrower) {
+        this.exceptionThrower = exceptionThrower;
 	}
 
-	/**
-	 * Return whether or not this block is an exception thrower.
-	 */
+    /**
+     * Return whether or not this block is an exception thrower.
+     */
 	public boolean isExceptionThrower() {
-		return exceptionThrower != null;
-	}
+        return exceptionThrower != null;
+    }
 
-	/**
-	 * Get the instruction for which this block is an exception thrower.
-	 *
+    /**
+     * Get the instruction for which this block is an exception thrower.
+     *
 	 * @return the instruction, or null if this block is not an exception thrower
-	 */
-	public InstructionHandle getExceptionThrower() {
-		return exceptionThrower;
+     */
+    public InstructionHandle getExceptionThrower() {
+        return exceptionThrower;
 	}
 
-	/**
-	 * Return whether or not this block is a null check.
-	 */
+    /**
+     * Return whether or not this block is a null check.
+     */
 	public boolean isNullCheck() {
-		// Null check blocks must be exception throwers,
-		// and are always empty.  (The only kind of non-empty
-		// exception throwing block is one terminated by an ATHROW).
+        // Null check blocks must be exception throwers,
+        // and are always empty.  (The only kind of non-empty
+        // exception throwing block is one terminated by an ATHROW).
 		if (!isExceptionThrower() || getFirstInstruction() != null)
-			return false;
-		short opcode = exceptionThrower.getInstruction().getOpcode();
-		return nullCheckInstructionSet.get(opcode);
+            return false;
+        short opcode = exceptionThrower.getInstruction().getOpcode();
+        return nullCheckInstructionSet.get(opcode);
 	}
 
-	/**
-	 * Get the first instruction in the basic block.
-	 */
+    /**
+     * Get the first instruction in the basic block.
+     */
 	public InstructionHandle getFirstInstruction() {
-		return firstInstruction;
-	}
+        return firstInstruction;
+    }
 
-	/**
-	 * Get the last instruction in the basic block.
-	 */
+    /**
+     * Get the last instruction in the basic block.
+     */
 	public InstructionHandle getLastInstruction() {
-		return lastInstruction;
-	}
+        return lastInstruction;
+    }
 
-	/**
-	 * Get the successor of given instruction within the basic block.
-	 * @param handle the instruction
+    /**
+     * Get the successor of given instruction within the basic block.
+     * @param handle the instruction
 	 * @return the instruction's successor, or null if the instruction
-	 *         is the last in the basic block
-	 */
-	public @CheckForNull InstructionHandle getSuccessorOf(InstructionHandle handle) {
+     *         is the last in the basic block
+     */
+    public @CheckForNull InstructionHandle getSuccessorOf(InstructionHandle handle) {
 		if (VERIFY_INTEGRITY) {
-			if (!containsInstruction(handle))
-				throw new IllegalStateException();
-		}
+            if (!containsInstruction(handle))
+                throw new IllegalStateException();
+        }
 		return handle == lastInstruction
-		? null
-				: handle.getNext();
-	}
+        ? null
+                : handle.getNext();
+    }
 
-	/**
-	 * Get the predecessor of given instruction within the basic block.
-	 * @param handle the instruction
+    /**
+     * Get the predecessor of given instruction within the basic block.
+     * @param handle the instruction
 	 * @return the instruction's predecessor, or null if the instruction
-	 *         is the first in the basic block
-	 */
-	public InstructionHandle getPredecessorOf(InstructionHandle handle) {
+     *         is the first in the basic block
+     */
+    public InstructionHandle getPredecessorOf(InstructionHandle handle) {
 		if (VERIFY_INTEGRITY) {
-			if (!containsInstruction(handle))
-				throw new IllegalStateException();
-		}
+            if (!containsInstruction(handle))
+                throw new IllegalStateException();
+        }
 		return handle == firstInstruction
-		? null
-				: handle.getPrev();
-	}
+        ? null
+                : handle.getPrev();
+    }
 
-	/**
-	 * Add an InstructionHandle to the basic block.
-	 *
+    /**
+     * Add an InstructionHandle to the basic block.
+     *
 	 * @param handle the InstructionHandle
-	 */
-	public void addInstruction(InstructionHandle handle) {
-		if (firstInstruction == null) {
+     */
+    public void addInstruction(InstructionHandle handle) {
+        if (firstInstruction == null) {
 			firstInstruction = lastInstruction = handle;
-		} else {
-			if (VERIFY_INTEGRITY && handle != lastInstruction.getNext())
-				throw new IllegalStateException("Adding non-consecutive instruction");
+        } else {
+            if (VERIFY_INTEGRITY && handle != lastInstruction.getNext())
+                throw new IllegalStateException("Adding non-consecutive instruction");
 			lastInstruction = handle;
-		}
-	}
+        }
+    }
 
-	/**
-	 * A forward Iterator over the instructions of a basic block.
-	 * The duplicate() method can be used to make an exact copy of
+    /**
+     * A forward Iterator over the instructions of a basic block.
+     * The duplicate() method can be used to make an exact copy of
 	 * this iterator.  Calling next() on the duplicate will not affect
-	 * the original, and vice versa.
-	 */
-	public class InstructionIterator implements Iterator<InstructionHandle> {
+     * the original, and vice versa.
+     */
+    public class InstructionIterator implements Iterator<InstructionHandle> {
 		private InstructionHandle next, last;
 
-		public InstructionIterator(InstructionHandle first, InstructionHandle last) {
-			this.next = first;
-			this.last = last;
+        public InstructionIterator(InstructionHandle first, InstructionHandle last) {
+            this.next = first;
+            this.last = last;
 		}
 
-		public boolean hasNext() {
-			return next != null;
-		}
+        public boolean hasNext() {
+            return next != null;
+        }
 
-		public InstructionHandle next() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+        public InstructionHandle next() {
+            if (!hasNext())
+                throw new NoSuchElementException();
 			InstructionHandle result = next;
-			next = (result == last) ? null : next.getNext();
-			return result;
-		}
+            next = (result == last) ? null : next.getNext();
+            return result;
+        }
 
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
 
-		public InstructionIterator duplicate() {
-			return new InstructionIterator(next, last);
-		}
+        public InstructionIterator duplicate() {
+            return new InstructionIterator(next, last);
+        }
 
-		@Override
-		public boolean equals(Object o) {
-			if (!(o instanceof InstructionIterator))
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof InstructionIterator))
 				return false;
-			InstructionIterator other = (InstructionIterator) o;
-			return this.next == other.next && this.last == other.last;
-		}
+            InstructionIterator other = (InstructionIterator) o;
+            return this.next == other.next && this.last == other.last;
+        }
 
-		@Override
-		public int hashCode() {
-			int code = getBasicBlock().hashCode() * 227;
+        @Override
+        public int hashCode() {
+            int code = getBasicBlock().hashCode() * 227;
 			if (next != null)
-				code += next.getPosition() + 1;
-			return code;
-		}
+                code += next.getPosition() + 1;
+            return code;
+        }
 
-		private BasicBlock getBasicBlock() {
-			return BasicBlock.this;
-		}
+        private BasicBlock getBasicBlock() {
+            return BasicBlock.this;
+        }
 
-		@Override
-		public String toString() {
-			StringBuilder buf = new StringBuilder();
+        @Override
+        public String toString() {
+            StringBuilder buf = new StringBuilder();
 			buf.append("[basicBlock=");
-			buf.append(getBasicBlock().getLabel());
-			if (next != null) {
-				buf.append(", next=" + next);
+            buf.append(getBasicBlock().getLabel());
+            if (next != null) {
+                buf.append(", next=" + next);
 			} else if (getBasicBlock().isExceptionThrower()) {
-				buf.append(", check for" +getBasicBlock().getExceptionThrower());
-			} else  {
-				buf.append(", end");
+                buf.append(", check for" +getBasicBlock().getExceptionThrower());
+            } else  {
+                buf.append(", end");
 			}
-			buf.append(']');
-			return buf.toString();
-		}
+            buf.append(']');
+            return buf.toString();
+        }
 	}
 
-	/**
-	 * Get an Iterator over the instructions in the basic block.
-	 */
+    /**
+     * Get an Iterator over the instructions in the basic block.
+     */
 	public InstructionIterator instructionIterator() {
-		return new InstructionIterator(firstInstruction, lastInstruction);
-	}
+        return new InstructionIterator(firstInstruction, lastInstruction);
+    }
 
-	/**
-	 * A reverse Iterator over the instructions in a basic block.
-	 */
+    /**
+     * A reverse Iterator over the instructions in a basic block.
+     */
 	private static class InstructionReverseIterator implements Iterator<InstructionHandle> {
-		private InstructionHandle next, first;
+        private InstructionHandle next, first;
 
-		public InstructionReverseIterator(InstructionHandle last, InstructionHandle first) {
-			this.next = last;
-			this.first = first;
+        public InstructionReverseIterator(InstructionHandle last, InstructionHandle first) {
+            this.next = last;
+            this.first = first;
 		}
 
-		public boolean hasNext() {
-			return next != null;
-		}
+        public boolean hasNext() {
+            return next != null;
+        }
 
-		public InstructionHandle next() throws NoSuchElementException {
-			if (!hasNext())
-				throw new NoSuchElementException();
+        public InstructionHandle next() throws NoSuchElementException {
+            if (!hasNext())
+                throw new NoSuchElementException();
 			InstructionHandle result = next;
-			next = (result == first) ? null : next.getPrev();
-			return result;
-		}
+            next = (result == first) ? null : next.getPrev();
+            return result;
+        }
 
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
 	}
 
-	/**
-	 * Get an Iterator over the instructions in the basic block in reverse order.
-	 * This is useful for backwards dataflow analyses.
+    /**
+     * Get an Iterator over the instructions in the basic block in reverse order.
+     * This is useful for backwards dataflow analyses.
 	 */
-	public Iterator<InstructionHandle> instructionReverseIterator() {
-		return new InstructionReverseIterator(lastInstruction, firstInstruction);
-	}
+    public Iterator<InstructionHandle> instructionReverseIterator() {
+        return new InstructionReverseIterator(lastInstruction, firstInstruction);
+    }
 
-	/**
-	 * Return true if there are no Instructions in this basic block.
-	 */
+    /**
+     * Return true if there are no Instructions in this basic block.
+     */
 	public boolean isEmpty() {
-		return firstInstruction == null;
-	}
+        return firstInstruction == null;
+    }
 
-	public int pos() {
-		
-		if (isEmpty())
+    public int pos() {
+
+        if (isEmpty())
 			return getExceptionThrower().getPosition();
-		return firstInstruction.getPosition();
-	}
-	/**
+        return firstInstruction.getPosition();
+    }
+    /**
 	 * Is this block an exception handler?
-	 */
-	public boolean isExceptionHandler() {
-		return exceptionGen != null;
+     */
+    public boolean isExceptionHandler() {
+        return exceptionGen != null;
 	}
 
-	/**
-	 * Get CodeExceptionGen object; returns null if this basic block is
-	 * not the entry point of an exception handler.
+    /**
+     * Get CodeExceptionGen object; returns null if this basic block is
+     * not the entry point of an exception handler.
 	 *
-	 * @return the CodeExceptionGen object, or null
-	 */
-	public CodeExceptionGen getExceptionGen() {
+     * @return the CodeExceptionGen object, or null
+     */
+    public CodeExceptionGen getExceptionGen() {
 		return exceptionGen;
-	}
+    }
 
-	/**
-	 * Set the CodeExceptionGen object.  Marks this basic block as
-	 * the entry point of an exception handler.
+    /**
+     * Set the CodeExceptionGen object.  Marks this basic block as
+     * the entry point of an exception handler.
 	 *
-	 * @param exceptionGen the CodeExceptionGen object for the block
-	 */
-	public void setExceptionGen(CodeExceptionGen exceptionGen) {
+     * @param exceptionGen the CodeExceptionGen object for the block
+     */
+    public void setExceptionGen(CodeExceptionGen exceptionGen) {
 		this.exceptionGen = exceptionGen;
-	}
+    }
 
-	/**
-	 * Return whether or not the basic block contains the given instruction.
-	 *
+    /**
+     * Return whether or not the basic block contains the given instruction.
+     *
 	 * @param handle the instruction
-	 * @return true if the block contains the instruction, false otherwise
-	 */
-	public boolean containsInstruction(InstructionHandle handle) {
+     * @return true if the block contains the instruction, false otherwise
+     */
+    public boolean containsInstruction(InstructionHandle handle) {
 		Iterator<InstructionHandle> i = instructionIterator();
-		while (i.hasNext()) {
-			if (i.next() == handle)
-				return true;
+        while (i.hasNext()) {
+            if (i.next() == handle)
+                return true;
 		}
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Return whether or not the basic block contains the instruction
-	 * with the given bytecode offset.
+    /**
+     * Return whether or not the basic block contains the instruction
+     * with the given bytecode offset.
 	 *
-	 * @param offset the bytecode offset
-	 * @return true if the block contains an instruction with the given offset,
-	 *         false if it does not
+     * @param offset the bytecode offset
+     * @return true if the block contains an instruction with the given offset,
+     *         false if it does not
 	 */
-	public boolean containsInstructionWithOffset(int offset) {
-		Iterator<InstructionHandle> i = instructionIterator();
-		while (i.hasNext()) {
+    public boolean containsInstructionWithOffset(int offset) {
+        Iterator<InstructionHandle> i = instructionIterator();
+        while (i.hasNext()) {
 			if (i.next().getPosition() == offset)
-				return true;
-		}
-		return false;
+                return true;
+        }
+        return false;
 	}
 
-	/**
-	 * @return Returns the numNonExceptionSuccessors.
-	 */
+    /**
+     * @return Returns the numNonExceptionSuccessors.
+     */
 	int getNumNonExceptionSuccessors() {
-		return numNonExceptionSuccessors;
-	}
+        return numNonExceptionSuccessors;
+    }
 
-	/**
-	 * @param numNonExceptionSuccessors The numNonExceptionSuccessors to set.
-	 */
+    /**
+     * @param numNonExceptionSuccessors The numNonExceptionSuccessors to set.
+     */
 	void setNumNonExceptionSuccessors(int numNonExceptionSuccessors) {
-		this.numNonExceptionSuccessors = numNonExceptionSuccessors;
-	}
+        this.numNonExceptionSuccessors = numNonExceptionSuccessors;
+    }
 }
 
 //vim:ts=4

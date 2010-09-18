@@ -32,50 +32,50 @@ import edu.umd.cs.findbugs.bcel.PreorderDetector;
 
 public class DontUseEnum extends PreorderDetector {
 
-	BugReporter bugReporter;
+    BugReporter bugReporter;
 
-	public DontUseEnum(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
-
-
-	@Override
-	public void visit(Method obj) {
-		if (isReservedName(obj.getName())) {
-			BugInstance bug = new BugInstance(this, "NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER", isVisible(obj) ? HIGH_PRIORITY : NORMAL_PRIORITY)
-			.addClassAndMethod(this);
-			bugReporter.reportBug(bug);
-		}
-	}
-
-
-	private boolean isVisible(FieldOrMethod obj) {
-	    return (obj.getAccessFlags() & ACC_PUBLIC) != 0 || (obj.getAccessFlags() & ACC_PROTECTED) != 0;
+    public DontUseEnum(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
     }
 
 
-	private boolean isReservedName(String name) {
-	    return name.equals("enum") || name.equals("assert");
-    }
-	
-	@Override
-	public void visit(Field obj) {
-		if (isReservedName(obj.getName())) {
+    @Override
+    public void visit(Method obj) {
+        if (isReservedName(obj.getName())) {
 			BugInstance bug = new BugInstance(this, "NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER", isVisible(obj) ? HIGH_PRIORITY : NORMAL_PRIORITY)
-			.addClass(this).addField(this);
-			bugReporter.reportBug(bug);
-		}
+            .addClassAndMethod(this);
+            bugReporter.reportBug(bug);
+        }
 	}
 
-	@Override
-	public void visit(LocalVariable obj) {
+
+    private boolean isVisible(FieldOrMethod obj) {
+        return (obj.getAccessFlags() & ACC_PUBLIC) != 0 || (obj.getAccessFlags() & ACC_PROTECTED) != 0;
+    }
+
+
+    private boolean isReservedName(String name) {
+        return name.equals("enum") || name.equals("assert");
+    }
+
+    @Override
+    public void visit(Field obj) {
 		if (isReservedName(obj.getName())) {
+            BugInstance bug = new BugInstance(this, "NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER", isVisible(obj) ? HIGH_PRIORITY : NORMAL_PRIORITY)
+            .addClass(this).addField(this);
+            bugReporter.reportBug(bug);
+		}
+    }
+
+    @Override
+    public void visit(LocalVariable obj) {
+        if (isReservedName(obj.getName())) {
 			LocalVariableAnnotation var = new LocalVariableAnnotation(obj.getName(), obj.getIndex(), obj.getStartPC());
-			SourceLineAnnotation source = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, obj.getStartPC());
-			BugInstance bug = new BugInstance(this, "NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER", NORMAL_PRIORITY)
-			.addClassAndMethod(this).add(var).add(source);
+            SourceLineAnnotation source = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, obj.getStartPC());
+            BugInstance bug = new BugInstance(this, "NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER", NORMAL_PRIORITY)
+            .addClassAndMethod(this).add(var).add(source);
 			bugReporter.reportBug(bug);
-		}
-	}
-	
+        }
+    }
+
 }

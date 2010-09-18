@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003,2004 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -58,632 +58,632 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 
 public class SerializableIdiom extends OpcodeStackDetector
-		{
+        {
 
-	private static final boolean DEBUG = SystemProperties.getBoolean("se.debug");
+    private static final boolean DEBUG = SystemProperties.getBoolean("se.debug");
 
-	final static boolean reportTransientFieldOfNonSerializableClass =
-		SystemProperties.getBoolean("reportTransientFieldOfNonSerializableClass");
+    final static boolean reportTransientFieldOfNonSerializableClass =
+        SystemProperties.getBoolean("reportTransientFieldOfNonSerializableClass");
 
-	boolean sawSerialVersionUID;
-	boolean isSerializable, implementsSerializableDirectly;
-	boolean isExternalizable;
+    boolean sawSerialVersionUID;
+    boolean isSerializable, implementsSerializableDirectly;
+    boolean isExternalizable;
 	boolean isGUIClass;
-	boolean isEjbImplClass;
-	boolean foundSynthetic;
-	boolean seenTransientField;
+    boolean isEjbImplClass;
+    boolean foundSynthetic;
+    boolean seenTransientField;
 	boolean foundSynchronizedMethods;
-	boolean writeObjectIsSynchronized;
-	private BugReporter bugReporter;
-	boolean isAbstract;
+    boolean writeObjectIsSynchronized;
+    private BugReporter bugReporter;
+    boolean isAbstract;
 	private List<BugInstance> fieldWarningList = new LinkedList<BugInstance>();
-	private HashMap<String, XField> fieldsThatMightBeAProblem = new HashMap<String, XField>();
-	private HashMap<XField, Integer> transientFieldsUpdates = new HashMap<XField, Integer>();
-	private HashSet<XField> transientFieldsSetInConstructor = new HashSet<XField>();
+    private HashMap<String, XField> fieldsThatMightBeAProblem = new HashMap<String, XField>();
+    private HashMap<XField, Integer> transientFieldsUpdates = new HashMap<XField, Integer>();
+    private HashSet<XField> transientFieldsSetInConstructor = new HashSet<XField>();
 	private HashSet<XField> transientFieldsSetToDefaultValueInConstructor = new HashSet<XField>();
 
-	private boolean sawReadExternal;
-	private boolean sawWriteExternal;
-	private boolean sawReadObject;
+    private boolean sawReadExternal;
+    private boolean sawWriteExternal;
+    private boolean sawReadObject;
 	private boolean sawReadResolve;
-	private boolean sawWriteObject;
-	private boolean superClassImplementsSerializable;
-	private boolean superClassHasReadObject;
+    private boolean sawWriteObject;
+    private boolean superClassImplementsSerializable;
+    private boolean superClassHasReadObject;
 	private boolean hasPublicVoidConstructor;
-	private boolean superClassHasVoidConstructor;
-	private boolean directlyImplementsExternalizable;
-	//private JavaClass serializable;
+    private boolean superClassHasVoidConstructor;
+    private boolean directlyImplementsExternalizable;
+    //private JavaClass serializable;
 	//private JavaClass collection;
-	//private JavaClass map;
-	//private boolean isRemote;
+    //private JavaClass map;
+    //private boolean isRemote;
 
-	public SerializableIdiom(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    public SerializableIdiom(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		classContext.getJavaClass().accept(this);
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        classContext.getJavaClass().accept(this);
 		flush();
-	}
+    }
 
-	private void flush() {
-		if (!isAbstract &&
-				!((sawReadExternal && sawWriteExternal) || (sawReadObject && sawWriteObject))) {
+    private void flush() {
+        if (!isAbstract &&
+                !((sawReadExternal && sawWriteExternal) || (sawReadObject && sawWriteObject))) {
 			for (BugInstance aFieldWarningList : fieldWarningList)
-				bugReporter.reportBug(aFieldWarningList);
-		}
-		fieldWarningList.clear();
+                bugReporter.reportBug(aFieldWarningList);
+        }
+        fieldWarningList.clear();
 	}
 
-	static final Pattern anonymousInnerClassNamePattern =
-			Pattern.compile(".+\\$\\d+");
-	boolean isAnonymousInnerClass;
+    static final Pattern anonymousInnerClassNamePattern =
+            Pattern.compile(".+\\$\\d+");
+    boolean isAnonymousInnerClass;
 	boolean innerClassHasOuterInstance;
-	private boolean isEnum;
-	@Override
-		 public void visit(JavaClass obj) {
+    private boolean isEnum;
+    @Override
+         public void visit(JavaClass obj) {
 		String superClassname = obj.getSuperclassName();
-		// System.out.println("superclass of " + getClassName() + " is " + superClassname);
-		isEnum = superClassname.equals("java.lang.Enum");
-		if (isEnum) return;
+        // System.out.println("superclass of " + getClassName() + " is " + superClassname);
+        isEnum = superClassname.equals("java.lang.Enum");
+        if (isEnum) return;
 		int flags = obj.getAccessFlags();
-		isAbstract = (flags & ACC_ABSTRACT) != 0
-				|| (flags & ACC_INTERFACE) != 0;
-		isAnonymousInnerClass 
+        isAbstract = (flags & ACC_ABSTRACT) != 0
+                || (flags & ACC_INTERFACE) != 0;
+        isAnonymousInnerClass
 		  = anonymousInnerClassNamePattern
-			.matcher(getClassName()).matches();
-		innerClassHasOuterInstance = false;
-		for(Field f : obj.getFields()) {
+            .matcher(getClassName()).matches();
+        innerClassHasOuterInstance = false;
+        for(Field f : obj.getFields()) {
 			if (f.getName().equals("this$0")) {
-				innerClassHasOuterInstance = true;
-				break;
-			}
+                innerClassHasOuterInstance = true;
+                break;
+            }
 		}
 
-		sawSerialVersionUID = false;
-		isSerializable = implementsSerializableDirectly = false;
-		isExternalizable = false;
+        sawSerialVersionUID = false;
+        isSerializable = implementsSerializableDirectly = false;
+        isExternalizable = false;
 		directlyImplementsExternalizable = false;
-		isGUIClass = false;
-		isEjbImplClass = false;
-		seenTransientField = false;
+        isGUIClass = false;
+        isEjbImplClass = false;
+        seenTransientField = false;
 		// boolean isEnum = obj.getSuperclassName().equals("java.lang.Enum");
-		fieldsThatMightBeAProblem.clear();
-		transientFieldsUpdates.clear();
-		transientFieldsSetInConstructor.clear();
+        fieldsThatMightBeAProblem.clear();
+        transientFieldsUpdates.clear();
+        transientFieldsSetInConstructor.clear();
 		transientFieldsSetToDefaultValueInConstructor.clear();
-		//isRemote = false;
+        //isRemote = false;
 
-		// Does this class directly implement Serializable?
-		String[] interface_names = obj.getInterfaceNames();
-		for (String interface_name : interface_names) {
+        // Does this class directly implement Serializable?
+        String[] interface_names = obj.getInterfaceNames();
+        for (String interface_name : interface_names) {
 			if (interface_name.equals("java.io.Externalizable")) {
-				directlyImplementsExternalizable = true;
-				isExternalizable = true;
-				if(DEBUG) {
+                directlyImplementsExternalizable = true;
+                isExternalizable = true;
+                if(DEBUG) {
 					System.out.println("Directly implements Externalizable: " + getClassName());
-				}
-			} else if (interface_name.equals("java.io.Serializable")) {
-				implementsSerializableDirectly = true;
+                }
+            } else if (interface_name.equals("java.io.Serializable")) {
+                implementsSerializableDirectly = true;
 				isSerializable = true;
-				if(DEBUG) {
-					System.out.println("Directly implements Serializable: " + getClassName());
-				}
+                if(DEBUG) {
+                    System.out.println("Directly implements Serializable: " + getClassName());
+                }
 				break;
-			}
-		}
+            }
+        }
 
-		// Does this class indirectly implement Serializable?
-		if (!isSerializable) {
-			if (Subtypes2.instanceOf(obj, "java.io.Externalizable")) {
+        // Does this class indirectly implement Serializable?
+        if (!isSerializable) {
+            if (Subtypes2.instanceOf(obj, "java.io.Externalizable")) {
 				isExternalizable = true;
-				if(DEBUG) {
-					System.out.println("Indirectly implements Externalizable: " + getClassName());
-				}
+                if(DEBUG) {
+                    System.out.println("Indirectly implements Externalizable: " + getClassName());
+                }
 			}
-			if (Subtypes2.instanceOf(obj, "java.io.Serializable")) {
-				isSerializable = true;
-				if(DEBUG) {
+            if (Subtypes2.instanceOf(obj, "java.io.Serializable")) {
+                isSerializable = true;
+                if(DEBUG) {
 					System.out.println("Indirectly implements Serializable: " + getClassName());
-				}
-			}
-		}
+                }
+            }
+        }
 
-		hasPublicVoidConstructor = false;
-		superClassHasVoidConstructor = true;
-		superClassHasReadObject = false;
+        hasPublicVoidConstructor = false;
+        superClassHasVoidConstructor = true;
+        superClassHasReadObject = false;
 		superClassImplementsSerializable = isSerializable && !implementsSerializableDirectly;
-		ClassDescriptor superclassDescriptor = getXClass().getSuperclassDescriptor();
-		if (superclassDescriptor != null)
-			try {
+        ClassDescriptor superclassDescriptor = getXClass().getSuperclassDescriptor();
+        if (superclassDescriptor != null)
+            try {
 			XClass superXClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, superclassDescriptor);
-			if (superXClass != null) {
-				superClassImplementsSerializable 
-				= AnalysisContext.currentAnalysisContext().getSubtypes2().isSubtype(superXClass.getClassDescriptor(),
+            if (superXClass != null) {
+                superClassImplementsSerializable
+                = AnalysisContext.currentAnalysisContext().getSubtypes2().isSubtype(superXClass.getClassDescriptor(),
 						DescriptorFactory.createClassDescriptor(java.io.Serializable.class));
-				superClassHasVoidConstructor = false;
-				for (XMethod m : superXClass.getXMethods()) {
-					if (m.getName().equals("<init>")
+                superClassHasVoidConstructor = false;
+                for (XMethod m : superXClass.getXMethods()) {
+                    if (m.getName().equals("<init>")
 							&& m.getSignature().equals("()V")
-							&& !m.isPrivate()
-							) {
-						superClassHasVoidConstructor = true;
+                            && !m.isPrivate()
+                            ) {
+                        superClassHasVoidConstructor = true;
 					}
-					if (m.getName().equals("readObject") && m.getSignature().equals("(Ljava/io/ObjectInputStream;)V") 
-							&& m.isPrivate())
-						superClassHasReadObject = true;
+                    if (m.getName().equals("readObject") && m.getSignature().equals("(Ljava/io/ObjectInputStream;)V")
+                            && m.isPrivate())
+                        superClassHasReadObject = true;
 				}
-			}
-		} catch (ClassNotFoundException e) {
-			bugReporter.reportMissingClass(e);
+            }
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
 		} catch (CheckedAnalysisException e) {
-			AnalysisContext.logError("Error while analyzing " + obj.getClassName(), e);
+            AnalysisContext.logError("Error while analyzing " + obj.getClassName(), e);
         }
 
 
-		// Is this a GUI  or other class that is rarely serialized?
+        // Is this a GUI  or other class that is rarely serialized?
 
-			isGUIClass = false;
-			isEjbImplClass = false;
-			if (true || !directlyImplementsExternalizable && !implementsSerializableDirectly) {
+            isGUIClass = false;
+            isEjbImplClass = false;
+            if (true || !directlyImplementsExternalizable && !implementsSerializableDirectly) {
 				isEjbImplClass = Subtypes2.instanceOf(obj, "javax.ejb.SessionBean");
-				isGUIClass =
-				(Subtypes2.instanceOf(obj, "java.lang.Throwable")
-						|| Subtypes2.instanceOf(obj, "java.awt.Component")
+                isGUIClass =
+                (Subtypes2.instanceOf(obj, "java.lang.Throwable")
+                        || Subtypes2.instanceOf(obj, "java.awt.Component")
 						|| Subtypes2.instanceOf(obj, "java.awt.Component$AccessibleAWTComponent")
-						|| Subtypes2.instanceOf(obj, "java.awt.event.ActionListener")
-						|| Subtypes2.instanceOf(obj, "java.util.EventListener"))
-					;
+                        || Subtypes2.instanceOf(obj, "java.awt.event.ActionListener")
+                        || Subtypes2.instanceOf(obj, "java.util.EventListener"))
+                    ;
 				if (!isGUIClass) {
-					JavaClass o = obj;
-					while (o != null) {
-						if (o.getClassName().startsWith("java.awt") 
+                    JavaClass o = obj;
+                    while (o != null) {
+                        if (o.getClassName().startsWith("java.awt")
 								|| o.getClassName().startsWith("javax.swing")) {
-							isGUIClass = true;
-							break;
-						}
-						try {
-	                        o = o.getSuperClass();
-                        } catch (ClassNotFoundException e) {
-	                       break;
+                            isGUIClass = true;
+                            break;
                         }
-					}
-					
-				}
+						try {
+                            o = o.getSuperClass();
+                        } catch (ClassNotFoundException e) {
+                           break;
+                        }
+                    }
+
+                }
 			}
-	
-			 
 
-		foundSynthetic = false;
-		foundSynchronizedMethods = false;
-		writeObjectIsSynchronized = false;
 
-		sawReadExternal = sawWriteExternal = sawReadObject = sawReadResolve = sawWriteObject = false;
-		if (isSerializable) {
-			for (Method m : obj.getMethods()) {
 
-				if (m.getName().equals("readObject") && m.getSignature().equals("(Ljava/io/ObjectInputStream;)V"))
-					sawReadObject = true;
-				else if (m.getName().equals("readResolve") && m.getSignature().startsWith("()"))
+        foundSynthetic = false;
+        foundSynchronizedMethods = false;
+        writeObjectIsSynchronized = false;
+
+        sawReadExternal = sawWriteExternal = sawReadObject = sawReadResolve = sawWriteObject = false;
+        if (isSerializable) {
+            for (Method m : obj.getMethods()) {
+
+                if (m.getName().equals("readObject") && m.getSignature().equals("(Ljava/io/ObjectInputStream;)V"))
+                    sawReadObject = true;
+                else if (m.getName().equals("readResolve") && m.getSignature().startsWith("()"))
 					sawReadResolve = true;
-				else if (m.getName().equals("readObjectNoData") && m.getSignature().equals("()V"))
-					sawReadObject = true;
-				else if (m.getName().equals("writeObject") && m.getSignature().equals("(Ljava/io/ObjectOutputStream;)V"))
+                else if (m.getName().equals("readObjectNoData") && m.getSignature().equals("()V"))
+                    sawReadObject = true;
+                else if (m.getName().equals("writeObject") && m.getSignature().equals("(Ljava/io/ObjectOutputStream;)V"))
 					sawWriteObject = true;
-			}
-			for (Field f : obj.getFields()) {
-				if (f.isTransient())
+            }
+            for (Field f : obj.getFields()) {
+                if (f.isTransient())
 					seenTransientField = true;
-			}
-		}
-	}
+            }
+        }
+    }
 	
-		private boolean strongEvidenceForIntendedSerialization() {
-		return implementsSerializableDirectly ||  sawReadObject || sawReadResolve || sawWriteObject || seenTransientField
-		  ||AnalysisContext.currentAnalysisContext().getUnreadFields().existsStrongEvidenceForIntendedSerialization(this.getClassDescriptor());
+        private boolean strongEvidenceForIntendedSerialization() {
+        return implementsSerializableDirectly ||  sawReadObject || sawReadResolve || sawWriteObject || seenTransientField
+          ||AnalysisContext.currentAnalysisContext().getUnreadFields().existsStrongEvidenceForIntendedSerialization(this.getClassDescriptor());
 	}
 
-	@Override
-		 public void visitAfter(JavaClass obj) {
-		if (isEnum) return;
+    @Override
+         public void visitAfter(JavaClass obj) {
+        if (isEnum) return;
 		if (DEBUG) {
-			System.out.println(getDottedClassName());
-			System.out.println("  hasPublicVoidConstructor: " + hasPublicVoidConstructor);
-			System.out.println("  superClassHasVoidConstructor: " + superClassHasVoidConstructor);
+            System.out.println(getDottedClassName());
+            System.out.println("  hasPublicVoidConstructor: " + hasPublicVoidConstructor);
+            System.out.println("  superClassHasVoidConstructor: " + superClassHasVoidConstructor);
 			System.out.println("  isExternalizable: " + isExternalizable);
-			System.out.println("  isSerializable: " + isSerializable);
-			System.out.println("  isAbstract: " + isAbstract);
-			System.out.println("  superClassImplementsSerializable: " + superClassImplementsSerializable);
+            System.out.println("  isSerializable: " + isSerializable);
+            System.out.println("  isAbstract: " + isAbstract);
+            System.out.println("  superClassImplementsSerializable: " + superClassImplementsSerializable);
 			System.out.println("  isGUIClass: " + isGUIClass);
-			System.out.println("  isEjbImplClass: " + isEjbImplClass);
-		}
-		if (isSerializable && !sawReadObject && !sawReadResolve && seenTransientField && !superClassHasReadObject) {
+            System.out.println("  isEjbImplClass: " + isEjbImplClass);
+        }
+        if (isSerializable && !sawReadObject && !sawReadResolve && seenTransientField && !superClassHasReadObject) {
 			for(Map.Entry<XField,Integer> e : transientFieldsUpdates.entrySet()) {
 
-					XField fieldX = e.getKey();
-					int priority = NORMAL_PRIORITY;
-					if (transientFieldsSetInConstructor.contains(e.getKey()))
+                    XField fieldX = e.getKey();
+                    int priority = NORMAL_PRIORITY;
+                    if (transientFieldsSetInConstructor.contains(e.getKey()))
 						priority--;
 
-					if (isGUIClass) 
+                    if (isGUIClass)
+                        priority++;
+                    if (isEjbImplClass)
 						priority++;
-					if (isEjbImplClass) 
+                    if (e.getValue() < 3)
+                        priority++;
+                    if (transientFieldsSetToDefaultValueInConstructor.contains(e.getKey()))
 						priority++;
-					if (e.getValue() < 3) 
-						priority++;
-					if (transientFieldsSetToDefaultValueInConstructor.contains(e.getKey()))
-						priority++;
-					if (obj.isAbstract()) {
-						priority++;
-						if (priority < Priorities.LOW_PRIORITY)
+                    if (obj.isAbstract()) {
+                        priority++;
+                        if (priority < Priorities.LOW_PRIORITY)
 						  priority = Priorities.LOW_PRIORITY;
-						}
+                        }
 
-					try {
-						double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(fieldX.getSignature());
-						if (isSerializable < 0.6) priority++;
+                    try {
+                        double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(fieldX.getSignature());
+                        if (isSerializable < 0.6) priority++;
 					} catch (ClassNotFoundException e1) {
-						// ignore it
-					}
+                        // ignore it
+                    }
 
-					bugReporter.reportBug(new BugInstance(this, "SE_TRANSIENT_FIELD_NOT_RESTORED",
-							priority )
-							.addClass(getThisClass())
+                    bugReporter.reportBug(new BugInstance(this, "SE_TRANSIENT_FIELD_NOT_RESTORED",
+                            priority )
+                            .addClass(getThisClass())
 							.addField(fieldX));
 
-			}
+            }
 
-		}
-		if (isSerializable && !isExternalizable
-				&& !superClassHasVoidConstructor
+        }
+        if (isSerializable && !isExternalizable
+                && !superClassHasVoidConstructor
 				&& !superClassImplementsSerializable) {
-			int priority = implementsSerializableDirectly|| seenTransientField ? HIGH_PRIORITY : 
-				( sawSerialVersionUID ?  NORMAL_PRIORITY : LOW_PRIORITY);
-			if (isGUIClass) priority++;
+            int priority = implementsSerializableDirectly|| seenTransientField ? HIGH_PRIORITY :
+                ( sawSerialVersionUID ?  NORMAL_PRIORITY : LOW_PRIORITY);
+            if (isGUIClass) priority++;
 			if (isEjbImplClass) priority++;
-			bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR", priority)
-					.addClass(getThisClass().getClassName()));
-		}
+            bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR", priority)
+                    .addClass(getThisClass().getClassName()));
+        }
 		// Downgrade class-level warnings if it's a GUI or EJB-implementation class.
-		int priority = (isGUIClass || isEjbImplClass) ? LOW_PRIORITY : NORMAL_PRIORITY;
-		if (obj.getClassName().endsWith("_Stub")) priority++;
+        int priority = (isGUIClass || isEjbImplClass) ? LOW_PRIORITY : NORMAL_PRIORITY;
+        if (obj.getClassName().endsWith("_Stub")) priority++;
 
-		if (isExternalizable && !hasPublicVoidConstructor && !isAbstract)
-			bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION",
-					directlyImplementsExternalizable ?
+        if (isExternalizable && !hasPublicVoidConstructor && !isAbstract)
+            bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION",
+                    directlyImplementsExternalizable ?
 					HIGH_PRIORITY : NORMAL_PRIORITY)
-					.addClass(getThisClass().getClassName()));
-		if (!foundSynthetic) priority++;
-		if (seenTransientField) priority--;
+                    .addClass(getThisClass().getClassName()));
+        if (!foundSynthetic) priority++;
+        if (seenTransientField) priority--;
 		if (!isAnonymousInnerClass 
-			&& !isExternalizable && !isGUIClass && !obj.isAbstract()
-				&& isSerializable && !isAbstract && !sawSerialVersionUID
-				&& !isEjbImplClass)
+            && !isExternalizable && !isGUIClass && !obj.isAbstract()
+                && isSerializable && !isAbstract && !sawSerialVersionUID
+                && !isEjbImplClass)
 			bugReporter.reportBug(new BugInstance(this, "SE_NO_SERIALVERSIONID", priority).addClass(this));
 
-		if (writeObjectIsSynchronized && !foundSynchronizedMethods)
-			bugReporter.reportBug(new BugInstance(this, "WS_WRITEOBJECT_SYNC", LOW_PRIORITY).addClass(this));
-	}
+        if (writeObjectIsSynchronized && !foundSynchronizedMethods)
+            bugReporter.reportBug(new BugInstance(this, "WS_WRITEOBJECT_SYNC", LOW_PRIORITY).addClass(this));
+    }
 
-	@Override
-		 public void visit(Method obj) {
+    @Override
+         public void visit(Method obj) {
 
-		int accessFlags = obj.getAccessFlags();
-		boolean isSynchronized = (accessFlags & ACC_SYNCHRONIZED) != 0;
-		if (getMethodName().equals("<init>") && getMethodSig().equals("()V")
+        int accessFlags = obj.getAccessFlags();
+        boolean isSynchronized = (accessFlags & ACC_SYNCHRONIZED) != 0;
+        if (getMethodName().equals("<init>") && getMethodSig().equals("()V")
 				&& (accessFlags & ACC_PUBLIC) != 0
-		)
-			hasPublicVoidConstructor = true;
-		if (!getMethodName().equals("<init>")
+        )
+            hasPublicVoidConstructor = true;
+        if (!getMethodName().equals("<init>")
 				&& isSynthetic(obj))
-			foundSynthetic = true;
-		// System.out.println(methodName + isSynchronized);
+            foundSynthetic = true;
+        // System.out.println(methodName + isSynchronized);
 
-		if (getMethodName().equals("readExternal")
-				&& getMethodSig().equals("(Ljava/io/ObjectInput;)V")) {
-			sawReadExternal = true;
+        if (getMethodName().equals("readExternal")
+                && getMethodSig().equals("(Ljava/io/ObjectInput;)V")) {
+            sawReadExternal = true;
 			if (DEBUG && !obj.isPrivate())
-				System.out.println("Non-private readExternal method in: " + getDottedClassName());
-		} else if (getMethodName().equals("writeExternal")
-				&& getMethodSig().equals("(Ljava/io/Objectoutput;)V")) {
+                System.out.println("Non-private readExternal method in: " + getDottedClassName());
+        } else if (getMethodName().equals("writeExternal")
+                && getMethodSig().equals("(Ljava/io/Objectoutput;)V")) {
 			sawWriteExternal = true;
-			if (DEBUG && !obj.isPrivate())
-				System.out.println("Non-private writeExternal method in: " + getDottedClassName());
-		}
+            if (DEBUG && !obj.isPrivate())
+                System.out.println("Non-private writeExternal method in: " + getDottedClassName());
+        }
 		else if (getMethodName().equals("readResolve")
-				&& getMethodSig().startsWith("()")
-				&& isSerializable) {
-			sawReadResolve = true;
+                && getMethodSig().startsWith("()")
+                && isSerializable) {
+            sawReadResolve = true;
 			if (!getMethodSig().equals("()Ljava/lang/Object;"))
-				bugReporter.reportBug(new BugInstance(this, "SE_READ_RESOLVE_MUST_RETURN_OBJECT", HIGH_PRIORITY)
-						.addClassAndMethod(this));
-			else if (obj.isStatic())
+                bugReporter.reportBug(new BugInstance(this, "SE_READ_RESOLVE_MUST_RETURN_OBJECT", HIGH_PRIORITY)
+                        .addClassAndMethod(this));
+            else if (obj.isStatic())
 				bugReporter.reportBug(new BugInstance(this, "SE_READ_RESOLVE_IS_STATIC", HIGH_PRIORITY)
-						.addClassAndMethod(this));
-			else if (obj.isPrivate())
-				try {
+                        .addClassAndMethod(this));
+            else if (obj.isPrivate())
+                try {
 					Set<ClassDescriptor> subtypes = AnalysisContext.currentAnalysisContext().getSubtypes2().getSubtypes(getClassDescriptor());
-	                if (subtypes.size() > 1) {
-	                	BugInstance bug = new BugInstance(this, "SE_PRIVATE_READ_RESOLVE_NOT_INHERITED", NORMAL_PRIORITY)
-	                	.addClassAndMethod(this);
+                    if (subtypes.size() > 1) {
+                        BugInstance bug = new BugInstance(this, "SE_PRIVATE_READ_RESOLVE_NOT_INHERITED", NORMAL_PRIORITY)
+                        .addClassAndMethod(this);
 	                	boolean nasty = false;
-	                	for(ClassDescriptor subclass : subtypes) if (!subclass.equals(getClassDescriptor())) {
-	        
-	                		XClass xSub = AnalysisContext.currentXFactory().getXClass(subclass);
+                        for(ClassDescriptor subclass : subtypes) if (!subclass.equals(getClassDescriptor())) {
+
+                            XClass xSub = AnalysisContext.currentXFactory().getXClass(subclass);
 	                		if (xSub != null && xSub.findMethod("readResolve", "()Ljava/lang/Object;", false) == null && xSub.findMethod("writeReplace", "()Ljava/lang/Object;", false) == null) {
-	                			bug.addClass(subclass).describe(ClassAnnotation.SUBCLASS_ROLE);
-	                			nasty = true;
-	                		}
+                                bug.addClass(subclass).describe(ClassAnnotation.SUBCLASS_ROLE);
+                                nasty = true;
+                            }
 	                	}
-	                	if (nasty) bug.setPriority(HIGH_PRIORITY);
-	                	else if (!getThisClass().isPublic())
-	                		bug.setPriority(LOW_PRIORITY);
+                        if (nasty) bug.setPriority(HIGH_PRIORITY);
+                        else if (!getThisClass().isPublic())
+                            bug.setPriority(LOW_PRIORITY);
 	                	bugReporter.reportBug(bug);
-	                }
-	            
+                    }
+
             } catch (ClassNotFoundException e) {
-	            bugReporter.reportMissingClass(e);
+                bugReporter.reportMissingClass(e);
             }
-			
 
-		}else if (getMethodName().equals("readObject")
-				&& getMethodSig().equals("(Ljava/io/ObjectInputStream;)V")
-				&& isSerializable) {
+
+        }else if (getMethodName().equals("readObject")
+                && getMethodSig().equals("(Ljava/io/ObjectInputStream;)V")
+                && isSerializable) {
 			sawReadObject = true;
-			if (!obj.isPrivate())
-				bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", HIGH_PRIORITY)
-						.addClassAndMethod(this));
+            if (!obj.isPrivate())
+                bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", HIGH_PRIORITY)
+                        .addClassAndMethod(this));
 
-		} else if (getMethodName().equals("readObjectNoData")
-				&& getMethodSig().equals("()V")
-				&& isSerializable) {
+        } else if (getMethodName().equals("readObjectNoData")
+                && getMethodSig().equals("()V")
+                && isSerializable) {
 
-			if (!obj.isPrivate())
-				bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", HIGH_PRIORITY)
-						.addClassAndMethod(this));
+            if (!obj.isPrivate())
+                bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", HIGH_PRIORITY)
+                        .addClassAndMethod(this));
 
-		}else if (getMethodName().equals("writeObject")
-				&& getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V")
-				&& isSerializable) {
+        }else if (getMethodName().equals("writeObject")
+                && getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V")
+                && isSerializable) {
 			sawWriteObject = true;
-			if (!obj.isPrivate())
-				bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", HIGH_PRIORITY)
-						.addClassAndMethod(this));
+            if (!obj.isPrivate())
+                bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", HIGH_PRIORITY)
+                        .addClassAndMethod(this));
 		}
 
-		if (isSynchronized) {
-		if (getMethodName().equals("readObject") &&
-				getMethodSig().equals("(Ljava/io/ObjectInputStream;)V") &&
+        if (isSynchronized) {
+        if (getMethodName().equals("readObject") &&
+                getMethodSig().equals("(Ljava/io/ObjectInputStream;)V") &&
 				isSerializable)
-			bugReporter.reportBug(new BugInstance(this, "RS_READOBJECT_SYNC", NORMAL_PRIORITY).addClass(this));
-		else if (getMethodName().equals("writeObject")
-				&& getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V")
+            bugReporter.reportBug(new BugInstance(this, "RS_READOBJECT_SYNC", NORMAL_PRIORITY).addClass(this));
+        else if (getMethodName().equals("writeObject")
+                && getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V")
 				&& isSerializable)
-			writeObjectIsSynchronized = true;
-		else
-			foundSynchronizedMethods = true;
+            writeObjectIsSynchronized = true;
+        else
+            foundSynchronizedMethods = true;
 		}
-		super.visit(obj);
+        super.visit(obj);
 
-	}
+    }
 
-	boolean isSynthetic(FieldOrMethod obj) {
-		Attribute[] a = obj.getAttributes();
-		for (Attribute aA : a)
+    boolean isSynthetic(FieldOrMethod obj) {
+        Attribute[] a = obj.getAttributes();
+        for (Attribute aA : a)
 			if (aA instanceof Synthetic) return true;
-		return false;
-	}
+        return false;
+    }
 
 
-	@Override
-		 public void visit(Code obj) {
-		if (isSerializable) {
+    @Override
+         public void visit(Code obj) {
+        if (isSerializable) {
 			super.visit(obj);
-		}
-	}
-	@Override
+        }
+    }
+    @Override
 	public void sawOpcode(int seen) {
-		if (seen == PUTFIELD) {
-			XField xField = getXFieldOperand();
-			if ( xField != null && xField.getClassDescriptor().equals(getClassDescriptor()))  {
+        if (seen == PUTFIELD) {
+            XField xField = getXFieldOperand();
+            if ( xField != null && xField.getClassDescriptor().equals(getClassDescriptor()))  {
 				Item first = stack.getStackItem(0);
-				boolean isPutOfDefaultValue = first.isNull(); // huh?? || first.isInitialParameter();
-				if (!isPutOfDefaultValue && first.getConstant() != null) {
-					Object constant = first.getConstant();
+                boolean isPutOfDefaultValue = first.isNull(); // huh?? || first.isInitialParameter();
+                if (!isPutOfDefaultValue && first.getConstant() != null) {
+                    Object constant = first.getConstant();
 					if (constant instanceof Number && ((Number)constant).intValue() == 0 
-							|| constant.equals(Boolean.FALSE))
-						isPutOfDefaultValue = true;
-				}
+                            || constant.equals(Boolean.FALSE))
+                        isPutOfDefaultValue = true;
+                }
 
-				if (isPutOfDefaultValue) {
-					if (getMethodName().equals("<init>")) transientFieldsSetToDefaultValueInConstructor.add(xField);
-				} else {
+                if (isPutOfDefaultValue) {
+                    if (getMethodName().equals("<init>")) transientFieldsSetToDefaultValueInConstructor.add(xField);
+                } else {
 					String nameOfField = getNameConstantOperand();
-					
-					if (transientFieldsUpdates.containsKey(xField) ) {
-						if (getMethodName().equals("<init>")) transientFieldsSetInConstructor.add(xField);
-						else transientFieldsUpdates.put(xField, transientFieldsUpdates.get(xField)+1);
-					} else if (fieldsThatMightBeAProblem.containsKey(nameOfField)) {
-						try {
 
-							JavaClass classStored = first.getJavaClass();
-							if (classStored == null) {
-								return;
+                    if (transientFieldsUpdates.containsKey(xField) ) {
+                        if (getMethodName().equals("<init>")) transientFieldsSetInConstructor.add(xField);
+						else transientFieldsUpdates.put(xField, transientFieldsUpdates.get(xField)+1);
+                    } else if (fieldsThatMightBeAProblem.containsKey(nameOfField)) {
+                        try {
+
+                            JavaClass classStored = first.getJavaClass();
+                            if (classStored == null) {
+                                return;
 							}
-							double isSerializable = DeepSubtypeAnalysis
-							.isDeepSerializable(classStored);
-							if (isSerializable <= 0.2) {
+                            double isSerializable = DeepSubtypeAnalysis
+                            .isDeepSerializable(classStored);
+                            if (isSerializable <= 0.2) {
 								XField f = fieldsThatMightBeAProblem.get(nameOfField);
 
-								String sig = f.getSignature();
-								// System.out.println("Field signature: " + sig);
-								// System.out.println("Class stored: " +
+                                String sig = f.getSignature();
+                                // System.out.println("Field signature: " + sig);
+                                // System.out.println("Class stored: " +
 								// classStored.getClassName());
-								String genSig = "L"
-									+ classStored.getClassName().replace('.', '/')
-									+ ";";
+                                String genSig = "L"
+                                    + classStored.getClassName().replace('.', '/')
+                                    + ";";
 								if (!sig.equals(genSig)) {
-									double bias = 0.0;
-									if (!getMethodName().equals("<init>")) bias = 1.0;
-									int priority = computePriority(isSerializable, bias);
+                                    double bias = 0.0;
+                                    if (!getMethodName().equals("<init>")) bias = 1.0;
+                                    int priority = computePriority(isSerializable, bias);
 
-									fieldWarningList.add(new BugInstance(this,
-											"SE_BAD_FIELD_STORE", priority).addClass(
-													getThisClass().getClassName()).addField(f)
+                                    fieldWarningList.add(new BugInstance(this,
+                                            "SE_BAD_FIELD_STORE", priority).addClass(
+                                                    getThisClass().getClassName()).addField(f)
 													.addType(genSig).describe("TYPE_FOUND").addSourceLine(this));
-								}
-							}
-						} catch (Exception e) {
+                                }
+                            }
+                        } catch (Exception e) {
 							// ignore it
-						}
-					}
-				}
+                        }
+                    }
+                }
 			}
 
-		}
+        }
 
-	}
-	
-	@Override
+    }
+
+    @Override
 	public void visit(Field obj) {
-		int flags = obj.getAccessFlags();
-		FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
-		Item summary = fieldSummary.getSummary(getXField());
+        int flags = obj.getAccessFlags();
+        FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+        Item summary = fieldSummary.getSummary(getXField());
 		String fieldSig = summary.getSignature();
-		
-		if (isEjbImplClass) {
-			ClassDescriptor fieldType = DescriptorFactory.createClassDescriptorFromFieldSignature(fieldSig);
+
+        if (isEjbImplClass) {
+            ClassDescriptor fieldType = DescriptorFactory.createClassDescriptorFromFieldSignature(fieldSig);
 			if (fieldType != null) {
-				if (Subtypes2.instanceOf(fieldType, "javax.ejb.SessionContext")
-						|| Subtypes2.instanceOf(fieldType, "javax.transaction.UserTransaction")
-						|| Subtypes2.instanceOf(fieldType, "javax.ejb.EJBHome")
+                if (Subtypes2.instanceOf(fieldType, "javax.ejb.SessionContext")
+                        || Subtypes2.instanceOf(fieldType, "javax.transaction.UserTransaction")
+                        || Subtypes2.instanceOf(fieldType, "javax.ejb.EJBHome")
 						|| Subtypes2.instanceOf(fieldType, "javax.ejb.EJBObject")
-						|| Subtypes2.instanceOf(fieldType, "javax.naming.Context")) {
-					if (obj.isTransient()) 
-						bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY)
+                        || Subtypes2.instanceOf(fieldType, "javax.naming.Context")) {
+                    if (obj.isTransient())
+                        bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY)
 						.addClass(this)
-						.addVisitedField(this)
-						.addString("EJB implementation classes should not have fields of this type"));
-					return;
+                        .addVisitedField(this)
+                        .addString("EJB implementation classes should not have fields of this type"));
+                    return;
 				}
-			}
-		}
+            }
+        }
 
 
-		if (obj.isTransient()) {
-			if (isSerializable && !isExternalizable) {
-				seenTransientField = true;
+        if (obj.isTransient()) {
+            if (isSerializable && !isExternalizable) {
+                seenTransientField = true;
 				transientFieldsUpdates.put(getXField(), 0);
-			} else if (reportTransientFieldOfNonSerializableClass) {
-				bugReporter.reportBug(new BugInstance(this, "SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS", NORMAL_PRIORITY)
-				.addClass(this)
+            } else if (reportTransientFieldOfNonSerializableClass) {
+                bugReporter.reportBug(new BugInstance(this, "SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS", NORMAL_PRIORITY)
+                .addClass(this)
 				.addVisitedField(this));
-			}
-		}
-		else if (getClassName().indexOf("ObjectStreamClass") == -1
+            }
+        }
+        else if (getClassName().indexOf("ObjectStreamClass") == -1
 				&& isSerializable
-				&& !isExternalizable
-				&& fieldSig.indexOf("L") >= 0 && !obj.isTransient() && !obj.isStatic()) {
-			if(DEBUG) {
+                && !isExternalizable
+                && fieldSig.indexOf("L") >= 0 && !obj.isTransient() && !obj.isStatic()) {
+            if(DEBUG) {
 				System.out.println("Examining non-transient field with name: "
-				                   + getFieldName() + ", sig: " + fieldSig);
-			}
-			try {
+                                   + getFieldName() + ", sig: " + fieldSig);
+            }
+            try {
 
-				double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(fieldSig);
-				if(DEBUG) {
-					System.out.println("  isSerializable: " + isSerializable);
+                double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(fieldSig);
+                if(DEBUG) {
+                    System.out.println("  isSerializable: " + isSerializable);
 				}
-				if (isSerializable < 1.0)
-					fieldsThatMightBeAProblem.put(obj.getName(), XFactory.createXField(this));
-				if (isSerializable < 0.9) {
+                if (isSerializable < 1.0)
+                    fieldsThatMightBeAProblem.put(obj.getName(), XFactory.createXField(this));
+                if (isSerializable < 0.9) {
 
-					// Priority is LOW for GUI classes (unless explicitly marked Serializable),
-					// HIGH if the class directly implements Serializable,
-					// NORMAL otherwise.
+                    // Priority is LOW for GUI classes (unless explicitly marked Serializable),
+                    // HIGH if the class directly implements Serializable,
+                    // NORMAL otherwise.
 					int priority = computePriority(isSerializable, 0);
-					if (!strongEvidenceForIntendedSerialization()) {
-						if (obj.getName().startsWith("this$"))
-							priority = Math.max(priority, NORMAL_PRIORITY);
+                    if (!strongEvidenceForIntendedSerialization()) {
+                        if (obj.getName().startsWith("this$"))
+                            priority = Math.max(priority, NORMAL_PRIORITY);
 						else if (innerClassHasOuterInstance) {
-							if (isAnonymousInnerClass) 
-								priority+=2;
-							else 
+                            if (isAnonymousInnerClass)
+                                priority+=2;
+                            else
 								priority+=1;
-						}
-						if (isGUIClass || isEjbImplClass) 
-							priority++;
+                        }
+                        if (isGUIClass || isEjbImplClass)
+                            priority++;
 					} else if (isGUIClass || isEjbImplClass) 
-						priority = Math.max(priority, NORMAL_PRIORITY);
-					if (DEBUG)
-					System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName()
+                        priority = Math.max(priority, NORMAL_PRIORITY);
+                    if (DEBUG)
+                    System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName()
 						+" " +  obj.getName()	
-						+" " +  isSerializable
-						+" " +  implementsSerializableDirectly
-						+" " +  sawSerialVersionUID
+                        +" " +  isSerializable
+                        +" " +  implementsSerializableDirectly
+                        +" " +  sawSerialVersionUID
 						+" " +  isGUIClass
-						+" " +  isEjbImplClass);
-					// Report is queued until after the entire class has been seen.
+                        +" " +  isEjbImplClass);
+                    // Report is queued until after the entire class has been seen.
 
-					if (obj.getName().equals("this$0"))
-						fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD_INNER_CLASS", priority)
-							.addClass(getThisClass().getClassName()));
+                    if (obj.getName().equals("this$0"))
+                        fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD_INNER_CLASS", priority)
+                            .addClass(getThisClass().getClassName()));
 						else if (isSerializable < 0.9) fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
-							.addClass(getThisClass().getClassName())
-							.addField(getDottedClassName(), obj.getName(), fieldSig, false)
-							.addType(fieldSig).describe("TYPE_FOUND"));
+                            .addClass(getThisClass().getClassName())
+                            .addField(getDottedClassName(), obj.getName(), fieldSig, false)
+                            .addType(fieldSig).describe("TYPE_FOUND"));
 				} else if (!isGUIClass && !isEjbImplClass && obj.getName().equals("this$0"))
-					fieldWarningList.add(new BugInstance(this, "SE_INNER_CLASS",
-							implementsSerializableDirectly ? NORMAL_PRIORITY : LOW_PRIORITY)
-					.addClass(getThisClass().getClassName()));
+                    fieldWarningList.add(new BugInstance(this, "SE_INNER_CLASS",
+                            implementsSerializableDirectly ? NORMAL_PRIORITY : LOW_PRIORITY)
+                    .addClass(getThisClass().getClassName()));
 			} catch (ClassNotFoundException e) {
-				if (DEBUG) {
-					System.out.println("Caught ClassNotFoundException");
-				}
+                if (DEBUG) {
+                    System.out.println("Caught ClassNotFoundException");
+                }
 				bugReporter.reportMissingClass(e);
-			}
-		}
+            }
+        }
 
-		if (!getFieldName().startsWith("this")
-				&& isSynthetic(obj))
-			foundSynthetic = true;
+        if (!getFieldName().startsWith("this")
+                && isSynthetic(obj))
+            foundSynthetic = true;
 		if (!getFieldName().equals("serialVersionUID")) return;
-		int mask = ACC_STATIC | ACC_FINAL;
-		if (!fieldSig.equals("I")
-				&& !fieldSig.equals("J"))
+        int mask = ACC_STATIC | ACC_FINAL;
+        if (!fieldSig.equals("I")
+                && !fieldSig.equals("J"))
 			return;
-		if ((flags & mask) == mask
-				&& fieldSig.equals("I")) {
-			bugReporter.reportBug(new BugInstance(this, "SE_NONLONG_SERIALVERSIONID", LOW_PRIORITY)
+        if ((flags & mask) == mask
+                && fieldSig.equals("I")) {
+            bugReporter.reportBug(new BugInstance(this, "SE_NONLONG_SERIALVERSIONID", LOW_PRIORITY)
 					.addClass(this)
-					.addVisitedField(this));
-			sawSerialVersionUID = true;
-			return;
+                    .addVisitedField(this));
+            sawSerialVersionUID = true;
+            return;
 		} else if ((flags & ACC_STATIC) == 0) {
-			bugReporter.reportBug(new BugInstance(this, "SE_NONSTATIC_SERIALVERSIONID", NORMAL_PRIORITY)
-					.addClass(this)
-					.addVisitedField(this));
+            bugReporter.reportBug(new BugInstance(this, "SE_NONSTATIC_SERIALVERSIONID", NORMAL_PRIORITY)
+                    .addClass(this)
+                    .addVisitedField(this));
 			return;
-		} else if ((flags & ACC_FINAL) == 0) {
-			bugReporter.reportBug(new BugInstance(this, "SE_NONFINAL_SERIALVERSIONID", NORMAL_PRIORITY)
-					.addClass(this)
+        } else if ((flags & ACC_FINAL) == 0) {
+            bugReporter.reportBug(new BugInstance(this, "SE_NONFINAL_SERIALVERSIONID", NORMAL_PRIORITY)
+                    .addClass(this)
 					.addVisitedField(this));
-			return;
-		}
-		sawSerialVersionUID = true;
+            return;
+        }
+        sawSerialVersionUID = true;
 	}
 
-	private int computePriority(double isSerializable, double bias) {
-		int priority = (int)(1.9+isSerializable*3 + bias);
+    private int computePriority(double isSerializable, double bias) {
+        int priority = (int)(1.9+isSerializable*3 + bias);
 
-		if (strongEvidenceForIntendedSerialization())
+        if (strongEvidenceForIntendedSerialization())
+            priority--;
+        else if (sawSerialVersionUID && priority > NORMAL_PRIORITY)
 			priority--;
-		else if (sawSerialVersionUID && priority > NORMAL_PRIORITY)
-			priority--;
-		else 
-		    priority = Math.max(priority, NORMAL_PRIORITY);
-		return priority;
+        else
+            priority = Math.max(priority, NORMAL_PRIORITY);
+        return priority;
 	}
 
 

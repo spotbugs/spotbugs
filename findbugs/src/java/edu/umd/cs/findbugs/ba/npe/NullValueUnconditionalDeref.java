@@ -11,70 +11,70 @@ import edu.umd.cs.findbugs.ba.Location;
  * definitely-null and unconditionally dereferenced.
  */
 public class NullValueUnconditionalDeref {
-	private boolean alwaysOnExceptionPath;
-	private boolean alwaysFieldValue;
-	private boolean alwaysMethodReturnValue;
+    private boolean alwaysOnExceptionPath;
+    private boolean alwaysFieldValue;
+    private boolean alwaysMethodReturnValue;
 	private boolean alwaysReadlineValue;
-	private Set<Location> derefLocationSet;
-	private Set<IsNullValue> values = new HashSet<IsNullValue>();
+    private Set<Location> derefLocationSet;
+    private Set<IsNullValue> values = new HashSet<IsNullValue>();
 
-	public NullValueUnconditionalDeref() {
-		this.alwaysOnExceptionPath = true;
-		this.alwaysMethodReturnValue = true;
+    public NullValueUnconditionalDeref() {
+        this.alwaysOnExceptionPath = true;
+        this.alwaysMethodReturnValue = true;
 		this.alwaysFieldValue = true;
-		this.alwaysReadlineValue = true;
-		this.derefLocationSet = new HashSet<Location>();
-	}
+        this.alwaysReadlineValue = true;
+        this.derefLocationSet = new HashSet<Location>();
+    }
 
-	/**
-	 * @param isNullValue
-	 * @param unconditionalDerefLocationSet
+    /**
+     * @param isNullValue
+     * @param unconditionalDerefLocationSet
 	 */
-	public void add(IsNullValue isNullValue, Set<Location> unconditionalDerefLocationSet) {
-		if (!isNullValue.isException()) { 
-			alwaysOnExceptionPath = false;
+    public void add(IsNullValue isNullValue, Set<Location> unconditionalDerefLocationSet) {
+        if (!isNullValue.isException()) {
+            alwaysOnExceptionPath = false;
 		}
-		if (!isNullValue.isFieldValue())
-			alwaysFieldValue = false;
-		if (!isNullValue.isReturnValue()) { 
+        if (!isNullValue.isFieldValue())
+            alwaysFieldValue = false;
+        if (!isNullValue.isReturnValue()) {
 			alwaysMethodReturnValue = false;
+        }
+        if (!isNullValue.isReadlineValue()) {
+            alwaysReadlineValue = false;
 		}
-		if (!isNullValue.isReadlineValue()) {
-			alwaysReadlineValue = false;
-		}
-		values.add(isNullValue);
-		derefLocationSet.addAll(unconditionalDerefLocationSet);
-	}
+        values.add(isNullValue);
+        derefLocationSet.addAll(unconditionalDerefLocationSet);
+    }
 
-	/**
-	 * @return Returns the derefLocationSet.
-	 */
+    /**
+     * @return Returns the derefLocationSet.
+     */
 	public Set<Location> getDerefLocationSet() {
-		return derefLocationSet;
-	}
+        return derefLocationSet;
+    }
 
-	/**
-	 * @return Returns the alwaysOnExceptionPath.
-	 */
+    /**
+     * @return Returns the alwaysOnExceptionPath.
+     */
 	public boolean isAlwaysOnExceptionPath() {
-		return alwaysOnExceptionPath;
-	}
-	/**
+        return alwaysOnExceptionPath;
+    }
+    /**
 	 * @return Returns the alwaysMethodReturnValue.
-	 */
-	public boolean isMethodReturnValue() {
-		return alwaysMethodReturnValue;
+     */
+    public boolean isMethodReturnValue() {
+        return alwaysMethodReturnValue;
 	}
-	/**
-	 * @return Returns the alwaysMethodReturnValue.
-	 */
+    /**
+     * @return Returns the alwaysMethodReturnValue.
+     */
 	public boolean isReadlineValue() {
-		return alwaysReadlineValue;
-	}
-	/**
+        return alwaysReadlineValue;
+    }
+    /**
 	 * @return Returns the alwaysFieldValue.
-	 */
-	public boolean isFieldValue() {
-		return alwaysFieldValue;
+     */
+    public boolean isFieldValue() {
+        return alwaysFieldValue;
 	}
 }

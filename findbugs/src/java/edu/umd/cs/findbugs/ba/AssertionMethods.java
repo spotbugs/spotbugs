@@ -1,17 +1,17 @@
 /*
  * Bytecode Analysis Framework
  * Copyright (C) 2003,2004 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -53,184 +53,184 @@ import edu.umd.cs.findbugs.SystemProperties;
  */
 public class AssertionMethods implements Constants {
 
-	private static final boolean DEBUG = SystemProperties.getBoolean("assertionmethods.debug");
+    private static final boolean DEBUG = SystemProperties.getBoolean("assertionmethods.debug");
 
-	/**
-	 * Bitset of methodref constant pool indexes referring to likely assertion methods.
-	 */
+    /**
+     * Bitset of methodref constant pool indexes referring to likely assertion methods.
+     */
 	private BitSet assertionMethodRefSet;
 
-	private static class UserAssertionMethod {
-		private String className;
-		private String methodName;
+    private static class UserAssertionMethod {
+        private String className;
+        private String methodName;
 
-		public UserAssertionMethod(String className, String methodName) {
-			this.className = className;
-			this.methodName = methodName;
+        public UserAssertionMethod(String className, String methodName) {
+            this.className = className;
+            this.methodName = methodName;
 		}
 
-		public String getClassName() {
-			return className;
-		}
+        public String getClassName() {
+            return className;
+        }
 
-		public String getMethodName() {
-			return methodName;
-		}
+        public String getMethodName() {
+            return methodName;
+        }
 	}
 
-	private static final List<UserAssertionMethod> userAssertionMethodList = new ArrayList<UserAssertionMethod>();
+    private static final List<UserAssertionMethod> userAssertionMethodList = new ArrayList<UserAssertionMethod>();
 
-	static {
-		String userProperty = SystemProperties.getProperty("findbugs.assertionmethods");
-		if (userProperty != null) {
+    static {
+        String userProperty = SystemProperties.getProperty("findbugs.assertionmethods");
+        if (userProperty != null) {
 			StringTokenizer tok = new StringTokenizer(userProperty, ",");
-			while (tok.hasMoreTokens()) {
-				String fullyQualifiedName = tok.nextToken();
-				int lastDot = fullyQualifiedName.lastIndexOf('.');
+            while (tok.hasMoreTokens()) {
+                String fullyQualifiedName = tok.nextToken();
+                int lastDot = fullyQualifiedName.lastIndexOf('.');
 				if (lastDot < 0)
-					continue;
-				String className = fullyQualifiedName.substring(0, lastDot);
-				String methodName = fullyQualifiedName.substring(lastDot + 1);
+                    continue;
+                String className = fullyQualifiedName.substring(0, lastDot);
+                String methodName = fullyQualifiedName.substring(lastDot + 1);
 				userAssertionMethodList.add(new UserAssertionMethod(className, methodName));
-			}
-		}
-	}
+            }
+        }
+    }
 
-	/**
-	 * Constructor.
-	 *
+    /**
+     * Constructor.
+     *
 	 * @param jclass the JavaClass containing the methodrefs
-	 */
-	public AssertionMethods(JavaClass jclass) {
-		this.assertionMethodRefSet = new BitSet();
+     */
+    public AssertionMethods(JavaClass jclass) {
+        this.assertionMethodRefSet = new BitSet();
 		init(jclass);
-	}
+    }
 
-	private void init(JavaClass jclass) {
-		ConstantPool cp = jclass.getConstantPool();
-		int numConstants = cp.getLength();
+    private void init(JavaClass jclass) {
+        ConstantPool cp = jclass.getConstantPool();
+        int numConstants = cp.getLength();
 		for (int i = 0; i < numConstants; ++i) {
-			try {
-				Constant c = cp.getConstant(i);
-				if (c instanceof ConstantMethodref) {
+            try {
+                Constant c = cp.getConstant(i);
+                if (c instanceof ConstantMethodref) {
 					ConstantMethodref cmr = (ConstantMethodref) c;
-					ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(cmr.getNameAndTypeIndex(), CONSTANT_NameAndType);
-					String methodName = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex(), CONSTANT_Utf8)).getBytes();
-					String className = cp.getConstantString(cmr.getClassIndex(), CONSTANT_Class).replace('/', '.');
+                    ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(cmr.getNameAndTypeIndex(), CONSTANT_NameAndType);
+                    String methodName = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex(), CONSTANT_Utf8)).getBytes();
+                    String className = cp.getConstantString(cmr.getClassIndex(), CONSTANT_Class).replace('/', '.');
 					String methodSig = ((ConstantUtf8) cp.getConstant(cnat.getSignatureIndex(), CONSTANT_Utf8)).getBytes();
 
-					String classNameLC = className.toLowerCase();
-					String methodNameLC = methodName.toLowerCase();
-					boolean voidReturnType = methodSig.endsWith(")V");
+                    String classNameLC = className.toLowerCase();
+                    String methodNameLC = methodName.toLowerCase();
+                    boolean voidReturnType = methodSig.endsWith(")V");
 
-					if (DEBUG) {
-						System.out.print("Is " + className + "." + methodName + " assertion method: " + voidReturnType);
-					}
+                    if (DEBUG) {
+                        System.out.print("Is " + className + "." + methodName + " assertion method: " + voidReturnType);
+                    }
 
-					if (isUserAssertionMethod(className, methodName)
-							|| className.endsWith("Assert")
-							&& methodName.startsWith("is")
+                    if (isUserAssertionMethod(className, methodName)
+                            || className.endsWith("Assert")
+                            && methodName.startsWith("is")
 							|| voidReturnType
-							&& (classNameLC.indexOf("assert") >= 0
-									|| methodNameLC.startsWith("throw")
-									|| methodName.startsWith("affirm")
+                            && (classNameLC.indexOf("assert") >= 0
+                                    || methodNameLC.startsWith("throw")
+                                    || methodName.startsWith("affirm")
 									|| methodName.startsWith("panic")
-									|| methodName.equals("logTerminal")
-									|| methodName.startsWith("logAndThrow")
-									|| methodNameLC.equals("insist")
+                                    || methodName.equals("logTerminal")
+                                    || methodName.startsWith("logAndThrow")
+                                    || methodNameLC.equals("insist")
 									|| methodNameLC.equals("usage")
-									|| methodNameLC.equals("exit")
-									|| methodNameLC.startsWith("fail")
-									|| methodNameLC.startsWith("fatal")
+                                    || methodNameLC.equals("exit")
+                                    || methodNameLC.startsWith("fail")
+                                    || methodNameLC.startsWith("fatal")
 									|| methodNameLC.indexOf("assert") >= 0
-									|| methodNameLC.indexOf("legal") >= 0
-									|| methodNameLC.indexOf("error") >= 0
-									|| methodNameLC.indexOf("abort") >= 0
+                                    || methodNameLC.indexOf("legal") >= 0
+                                    || methodNameLC.indexOf("error") >= 0
+                                    || methodNameLC.indexOf("abort") >= 0
 									|| methodNameLC.indexOf("check") >= 0 || methodNameLC.indexOf("failed") >= 0)
-									|| methodName.equals("addOrThrowException")
-									) {
-						assertionMethodRefSet.set(i);
+                                    || methodName.equals("addOrThrowException")
+                                    ) {
+                        assertionMethodRefSet.set(i);
 						if (DEBUG) {
-							System.out.println("==> YES");
-						}
-					} else {
+                            System.out.println("==> YES");
+                        }
+                    } else {
 						if (DEBUG) {
-							System.out.println("==> NO");
-						}
-					}
+                            System.out.println("==> NO");
+                        }
+                    }
 				}
-			} catch (ClassFormatException e) {
-				// FIXME: should report
-			}
+            } catch (ClassFormatException e) {
+                // FIXME: should report
+            }
 		}
-	}
+    }
 
-	private static boolean isUserAssertionMethod(String className, String methodName) {
-		for (UserAssertionMethod uam : userAssertionMethodList) {
-			if (className.equals(uam.getClassName()) && methodName.equals(uam.getMethodName()))
+    private static boolean isUserAssertionMethod(String className, String methodName) {
+        for (UserAssertionMethod uam : userAssertionMethodList) {
+            if (className.equals(uam.getClassName()) && methodName.equals(uam.getMethodName()))
 				return true;
-		}
-		return false;
-	}
+        }
+        return false;
+    }
 
-	public boolean isAssertionHandle(InstructionHandle handle, ConstantPoolGen cpg) {
-		Instruction ins = handle.getInstruction();
-		if (isAssertionInstruction(ins, cpg)) return true;
+    public boolean isAssertionHandle(InstructionHandle handle, ConstantPoolGen cpg) {
+        Instruction ins = handle.getInstruction();
+        if (isAssertionInstruction(ins, cpg)) return true;
 
-		if (ins instanceof SIPUSH) {
-			int v = ((SIPUSH) ins).getValue().intValue();
-			if (v == 500) {
+        if (ins instanceof SIPUSH) {
+            int v = ((SIPUSH) ins).getValue().intValue();
+            if (v == 500) {
 				Instruction next = handle.getNext().getInstruction();
-				if (next instanceof INVOKEINTERFACE) {
-					INVOKEINTERFACE iInterface = (INVOKEINTERFACE) next;
-					String className = iInterface.getClassName(cpg);
+                if (next instanceof INVOKEINTERFACE) {
+                    INVOKEINTERFACE iInterface = (INVOKEINTERFACE) next;
+                    String className = iInterface.getClassName(cpg);
 					String fieldName = iInterface.getMethodName(cpg);
-					if (className.equals("javax.servlet.http.HttpServletResponse") && fieldName.equals("setStatus"))
-						return true;
-				
+                    if (className.equals("javax.servlet.http.HttpServletResponse") && fieldName.equals("setStatus"))
+                        return true;
+
 				}
-			}
-		}
-		return false;
+            }
+        }
+        return false;
 	}
-	
-	/**
-	 * Does the given instruction refer to a likely assertion method?
+
+    /**
+     * Does the given instruction refer to a likely assertion method?
 	 *
-	 * @param ins the instruction
-	 * @return true if the instruction likely refers to an assertion, false if not
-	 */
+     * @param ins the instruction
+     * @return true if the instruction likely refers to an assertion, false if not
+     */
 
-	public boolean isAssertionInstruction(Instruction ins, ConstantPoolGen cpg) {
+    public boolean isAssertionInstruction(Instruction ins, ConstantPoolGen cpg) {
 
-		if (ins instanceof InvokeInstruction)
-			return isAssertionCall((InvokeInstruction)ins);
-		if (ins instanceof GETSTATIC) {
+        if (ins instanceof InvokeInstruction)
+            return isAssertionCall((InvokeInstruction)ins);
+        if (ins instanceof GETSTATIC) {
 			GETSTATIC getStatic = (GETSTATIC) ins;
-			String className = getStatic.getClassName(cpg);
-			String fieldName = getStatic.getFieldName(cpg);
-			if (className.equals("java.util.logging.Level")
+            String className = getStatic.getClassName(cpg);
+            String fieldName = getStatic.getFieldName(cpg);
+            if (className.equals("java.util.logging.Level")
 					&& fieldName.equals("SEVERE")) return true;
-			if (className.equals("org.apache.log4j.Level") 
-					&& (fieldName.equals("ERROR") || fieldName.equals("FATAL")))
-					return true;
+            if (className.equals("org.apache.log4j.Level")
+                    && (fieldName.equals("ERROR") || fieldName.equals("FATAL")))
+                    return true;
 			return false;
 
-		}
-		return false;
-	}
+        }
+        return false;
+    }
 
 
-	public boolean isAssertionCall(InvokeInstruction inv) {
-		if (DEBUG) {
-			System.out.print("Checking if " + inv + " is an assertion method: ");
+    public boolean isAssertionCall(InvokeInstruction inv) {
+        if (DEBUG) {
+            System.out.print("Checking if " + inv + " is an assertion method: ");
 		}
-		boolean isAssertionMethod = assertionMethodRefSet.get(inv.getIndex());
-		if (DEBUG) {
-			System.out.println("==> " + isAssertionMethod);
+        boolean isAssertionMethod = assertionMethodRefSet.get(inv.getIndex());
+        if (DEBUG) {
+            System.out.println("==> " + isAssertionMethod);
 		}
-		return isAssertionMethod;
-	}
+        return isAssertionMethod;
+    }
 }
 
 // vim:ts=4

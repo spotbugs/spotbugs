@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003,2004 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -82,544 +82,544 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  */
 public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
-	// Available when visiting a class
-	private ConstantPool constantPool;
-	private JavaClass thisClass;
+    // Available when visiting a class
+    private ConstantPool constantPool;
+    private JavaClass thisClass;
 	private ClassInfo thisClassInfo;
-	private MethodInfo thisMethodInfo;
-	private FieldInfo thisFieldInfo;
-	
+    private MethodInfo thisMethodInfo;
+    private FieldInfo thisFieldInfo;
+
 	private String className = "none";
-	private String dottedClassName = "none";
-	private String packageName = "none";
-	private String sourceFile = "none";
+    private String dottedClassName = "none";
+    private String packageName = "none";
+    private String sourceFile = "none";
 	private String superclassName = "none";
-	private String dottedSuperclassName = "none";
+    private String dottedSuperclassName = "none";
 
-	// Available when visiting a method
-	private boolean visitingMethod = false;
-	private String methodSig = "none";
+    // Available when visiting a method
+    private boolean visitingMethod = false;
+    private String methodSig = "none";
 	private String dottedMethodSig = "none";
-	private Method method = null;
-	private String methodName = "none";
-	private String fullyQualifiedMethodName = "none";
+    private Method method = null;
+    private String methodName = "none";
+    private String fullyQualifiedMethodName = "none";
 
-	// Available when visiting a field
-	private Field field;
-	private boolean visitingField = false;
+    // Available when visiting a field
+    private Field field;
+    private boolean visitingField = false;
 	private String fullyQualifiedFieldName = "none";
-	private String fieldName = "none";
-	private String fieldSig = "none";
-	private String dottedFieldSig = "none";
+    private String fieldName = "none";
+    private String fieldSig = "none";
+    private String dottedFieldSig = "none";
 	private boolean fieldIsStatic;
 
-	// Available when visiting a Code
-	private Code code;
+    // Available when visiting a Code
+    private Code code;
 
-	protected String getStringFromIndex(int i) {
-		ConstantUtf8 name = (ConstantUtf8) constantPool.getConstant(i);
-		return name.getBytes();
+    protected String getStringFromIndex(int i) {
+        ConstantUtf8 name = (ConstantUtf8) constantPool.getConstant(i);
+        return name.getBytes();
 	}
 
-	protected int asUnsignedByte(byte b) {
-		return 0xff & b;
-	}
+    protected int asUnsignedByte(byte b) {
+        return 0xff & b;
+    }
 
-	/**
-	 * Return the current Code attribute; assuming one is being visited
-	 * @return current code attribute
+    /**
+     * Return the current Code attribute; assuming one is being visited
+     * @return current code attribute
 	 */
-	 public Code getCode() {
-		if (code == null) throw new IllegalStateException("Not visiting Code");
-		return code;
+     public Code getCode() {
+        if (code == null) throw new IllegalStateException("Not visiting Code");
+        return code;
 	}
 
-	 public Set<String> getSurroundingCaughtExceptions(int pc) {
-		 return getSurroundingCaughtExceptions(pc, Integer.MAX_VALUE);
-	 }
+     public Set<String> getSurroundingCaughtExceptions(int pc) {
+         return getSurroundingCaughtExceptions(pc, Integer.MAX_VALUE);
+     }
 	 public Set<String> getSurroundingCaughtExceptions(int pc, int maxTryBlockSize) {
-		 HashSet<String> result = new HashSet<String>();
-			if (code == null) throw new IllegalStateException("Not visiting Code");
-			int size = maxTryBlockSize;
+         HashSet<String> result = new HashSet<String>();
+            if (code == null) throw new IllegalStateException("Not visiting Code");
+            int size = maxTryBlockSize;
 			if (code.getExceptionTable() == null) return result;
-			for (CodeException catchBlock : code.getExceptionTable()) {
-				int startPC = catchBlock.getStartPC();
-				int endPC = catchBlock.getEndPC();
+            for (CodeException catchBlock : code.getExceptionTable()) {
+                int startPC = catchBlock.getStartPC();
+                int endPC = catchBlock.getEndPC();
 				if (pc >= startPC && pc <= endPC) {
-					int thisSize = endPC - startPC;
-					if (size > thisSize) {
-						result.clear();
+                    int thisSize = endPC - startPC;
+                    if (size > thisSize) {
+                        result.clear();
 						size = thisSize;
-						Constant kind = constantPool.getConstant(catchBlock.getCatchType());
+                        Constant kind = constantPool.getConstant(catchBlock.getCatchType());
+                        result.add("C" + catchBlock.getCatchType());
+                    } else if (size == thisSize)
 						result.add("C" + catchBlock.getCatchType());
-					} else if (size == thisSize)
-						result.add("C" + catchBlock.getCatchType());
-				}
-			}
-			return result;
+                }
+            }
+            return result;
 	 }
-	 /**
-	  * Get lines of code in try block that surround pc
-	  * @param pc
+     /**
+      * Get lines of code in try block that surround pc
+      * @param pc
 	  * @return number of lines of code in try block
-	  */
-	 public int getSizeOfSurroundingTryBlock(int pc) {
-		 return getSizeOfSurroundingTryBlock(null, pc);
+      */
+     public int getSizeOfSurroundingTryBlock(int pc) {
+         return getSizeOfSurroundingTryBlock(null, pc);
 	 }
-	 /**
-	  * Get lines of code in try block that surround pc
-	  * @param pc
+     /**
+      * Get lines of code in try block that surround pc
+      * @param pc
 	  * @return number of lines of code in try block
-	  */
-	 public int getSizeOfSurroundingTryBlock(String vmNameOfExceptionClass, int pc) {
-			if (code == null) throw new IllegalStateException("Not visiting Code");
+      */
+     public int getSizeOfSurroundingTryBlock(String vmNameOfExceptionClass, int pc) {
+            if (code == null) throw new IllegalStateException("Not visiting Code");
 			return Util.getSizeOfSurroundingTryBlock(constantPool, code, vmNameOfExceptionClass, pc);
-	 }
-	
-	 public CodeException getSurroundingTryBlock(int pc) {
+     }
+
+     public CodeException getSurroundingTryBlock(int pc) {
 			return getSurroundingTryBlock(null, pc);
-	 }
-	 public CodeException getSurroundingTryBlock(String vmNameOfExceptionClass, int pc) {
-			if (code == null) throw new IllegalStateException("Not visiting Code");
+     }
+     public CodeException getSurroundingTryBlock(String vmNameOfExceptionClass, int pc) {
+            if (code == null) throw new IllegalStateException("Not visiting Code");
 			return Util.getSurroundingTryBlock(constantPool, code, vmNameOfExceptionClass, pc);
-	 }
-	// Attributes
-	@Override
+     }
+    // Attributes
+    @Override
 		 public void visitCode(Code obj) {
-		code = obj;
-		super.visitCode(obj);
-		CodeException[] exceptions = obj.getExceptionTable();
+        code = obj;
+        super.visitCode(obj);
+        CodeException[] exceptions = obj.getExceptionTable();
 		for (CodeException exception : exceptions)
-			exception.accept(this);
-		Attribute[] attributes = obj.getAttributes();
-		for (Attribute attribute : attributes)
+            exception.accept(this);
+        Attribute[] attributes = obj.getAttributes();
+        for (Attribute attribute : attributes)
 			attribute.accept(this);
-		visitAfter(obj);
-		code = null;
-	}
+        visitAfter(obj);
+        code = null;
+    }
 
-	/**
-	 * Called after visiting a code attribute
-	 * @param obj Code that was just visited
+    /**
+     * Called after visiting a code attribute
+     * @param obj Code that was just visited
 	 */
-	public void visitAfter(Code obj) {
-	}
+    public void visitAfter(Code obj) {
+    }
 
-	// Constants
-	@Override
-		 public void visitConstantPool(ConstantPool obj) {
+    // Constants
+    @Override
+         public void visitConstantPool(ConstantPool obj) {
 		super.visitConstantPool(obj);
-		Constant[] constant_pool = obj.getConstantPool();
-		for (int i = 1; i < constant_pool.length; i++) {
-			constant_pool[i].accept(this);
+        Constant[] constant_pool = obj.getConstantPool();
+        for (int i = 1; i < constant_pool.length; i++) {
+            constant_pool[i].accept(this);
 			byte tag = constant_pool[i].getTag();
-			if ((tag == CONSTANT_Double) || (tag == CONSTANT_Long))
-				i++;
-		}
+            if ((tag == CONSTANT_Double) || (tag == CONSTANT_Long))
+                i++;
+        }
 	}
 
-	private void doVisitField(Field field) {
-		if (visitingField)
-			throw new IllegalStateException("visitField called when already visiting a field");
+    private void doVisitField(Field field) {
+        if (visitingField)
+            throw new IllegalStateException("visitField called when already visiting a field");
 		visitingField = true;
-		this.field = field;
-		try {
-			fieldName = fieldSig = dottedFieldSig = fullyQualifiedFieldName = null;
+        this.field = field;
+        try {
+            fieldName = fieldSig = dottedFieldSig = fullyQualifiedFieldName = null;
 			thisFieldInfo = (FieldInfo) thisClassInfo.findField(getFieldName(), getFieldSig(), field.isStatic());
-			if (thisFieldInfo == null) {
-				throw new AssertionError("Can't get field info for " + getFullyQualifiedFieldName());
-			}
+            if (thisFieldInfo == null) {
+                throw new AssertionError("Can't get field info for " + getFullyQualifiedFieldName());
+            }
 			
-			fieldIsStatic = field.isStatic();
-			field.accept(this);
-			Attribute[] attributes = field.getAttributes();
+            fieldIsStatic = field.isStatic();
+            field.accept(this);
+            Attribute[] attributes = field.getAttributes();
 			for (Attribute attribute : attributes)
-				attribute.accept(this);
-		} finally {
-			visitingField = false;
+                attribute.accept(this);
+        } finally {
+            visitingField = false;
 			this.field = null;
-			this.thisFieldInfo = null;
-		}
-	}
+            this.thisFieldInfo = null;
+        }
+    }
 
-	public void doVisitMethod(Method method) {
-		if (visitingMethod)
-			throw new IllegalStateException("doVisitMethod called when already visiting a method");
+    public void doVisitMethod(Method method) {
+        if (visitingMethod)
+            throw new IllegalStateException("doVisitMethod called when already visiting a method");
 		visitingMethod = true;
-		try {
-			this.method = method;
-			methodName = methodSig = dottedMethodSig = fullyQualifiedMethodName = null;
+        try {
+            this.method = method;
+            methodName = methodSig = dottedMethodSig = fullyQualifiedMethodName = null;
 			thisMethodInfo = (MethodInfo) thisClassInfo.findMethod(getMethodName(), getMethodSig(), method.isStatic());
-			if (thisMethodInfo == null)
-				throw new AssertionError("Can't get method info for " + getFullyQualifiedMethodName());
-			this.method.accept(this);
+            if (thisMethodInfo == null)
+                throw new AssertionError("Can't get method info for " + getFullyQualifiedMethodName());
+            this.method.accept(this);
 			Attribute[] attributes = method.getAttributes();
-			for (Attribute attribute : attributes)
-				attribute.accept(this);
-		} finally {
+            for (Attribute attribute : attributes)
+                attribute.accept(this);
+        } finally {
 			visitingMethod = false;
-			this.method = null;
-			this.thisMethodInfo = null;
-		}
+            this.method = null;
+            this.thisMethodInfo = null;
+        }
 	}
 
-	public boolean amVisitingMainMethod() {
-		if (!visitingMethod)
-			throw new IllegalStateException("Not visiting a method");
+    public boolean amVisitingMainMethod() {
+        if (!visitingMethod)
+            throw new IllegalStateException("Not visiting a method");
 		if (!method.isStatic()) return false;
-		if (!getMethodName().equals("main")) return false;
-		if (!getMethodSig().equals("([Ljava/lang/String;)V")) return false;
-		return true;
+        if (!getMethodName().equals("main")) return false;
+        if (!getMethodSig().equals("([Ljava/lang/String;)V")) return false;
+        return true;
 
-	}
-	// Extra classes (i.e. leaves in this context)
-	@Override
+    }
+    // Extra classes (i.e. leaves in this context)
+    @Override
 		 public void visitInnerClasses(InnerClasses obj) {
-		super.visitInnerClasses(obj);
-		InnerClass[] inner_classes = obj.getInnerClasses();
-		for (InnerClass inner_class : inner_classes)
+        super.visitInnerClasses(obj);
+        InnerClass[] inner_classes = obj.getInnerClasses();
+        for (InnerClass inner_class : inner_classes)
 			inner_class.accept(this);
-	}
+    }
 
-	public void visitAfter(JavaClass obj) {
-	}
+    public void visitAfter(JavaClass obj) {
+    }
 
-	
-	public boolean shouldVisit(JavaClass obj) {
-		return true;
+
+    public boolean shouldVisit(JavaClass obj) {
+        return true;
 	}
-	// General classes
-	@Override
-		 public void visitJavaClass(JavaClass obj) {
+    // General classes
+    @Override
+         public void visitJavaClass(JavaClass obj) {
 		setupVisitorForClass(obj);
-		if (shouldVisit(obj)) {
-		constantPool.accept(this);
-		Field[] fields = obj.getFields();
+        if (shouldVisit(obj)) {
+        constantPool.accept(this);
+        Field[] fields = obj.getFields();
 		Method[] methods = obj.getMethods();
-		Attribute[] attributes = obj.getAttributes();
-		for (Field field : fields)
-			doVisitField(field);
+        Attribute[] attributes = obj.getAttributes();
+        for (Field field : fields)
+            doVisitField(field);
 		for (Method method1 : methods)
-			doVisitMethod(method1);
-		for (Attribute attribute : attributes)
-			attribute.accept(this);
+            doVisitMethod(method1);
+        for (Attribute attribute : attributes)
+            attribute.accept(this);
 		visitAfter(obj);
-		}
-	}
+        }
+    }
 
-	public void setupVisitorForClass(JavaClass obj) {
-		constantPool = obj.getConstantPool();
-		thisClass = obj;
+    public void setupVisitorForClass(JavaClass obj) {
+        constantPool = obj.getConstantPool();
+        thisClass = obj;
 		ConstantClass c = (ConstantClass) constantPool.getConstant(obj.getClassNameIndex());
-		className = getStringFromIndex(c.getNameIndex());
-		dottedClassName = className.replace('/', '.');
-		packageName = obj.getPackageName();
+        className = getStringFromIndex(c.getNameIndex());
+        dottedClassName = className.replace('/', '.');
+        packageName = obj.getPackageName();
 		sourceFile = obj.getSourceFileName();
-		dottedSuperclassName = obj.getSuperclassName();
-		superclassName = dottedSuperclassName.replace('.', '/');
-	
+        dottedSuperclassName = obj.getSuperclassName();
+        superclassName = dottedSuperclassName.replace('.', '/');
+
 		ClassDescriptor cDesc = DescriptorFactory.createClassDescriptor(className);
-		try {
-	        thisClassInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, cDesc);
+        try {
+            thisClassInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, cDesc);
         } catch (CheckedAnalysisException e) {
-	       throw new AssertionError ("Can't find ClassInfo for " + cDesc);
+           throw new AssertionError ("Can't find ClassInfo for " + cDesc);
         }
 
-		super.visitJavaClass(obj);
-	}
+        super.visitJavaClass(obj);
+    }
 
-	@Override
-		 public void visitLineNumberTable(LineNumberTable obj) {
-		super.visitLineNumberTable(obj);
+    @Override
+         public void visitLineNumberTable(LineNumberTable obj) {
+        super.visitLineNumberTable(obj);
 		LineNumber[] line_number_table = obj.getLineNumberTable();
-		for (LineNumber aLine_number_table : line_number_table)
-			aLine_number_table.accept(this);
-	}
+        for (LineNumber aLine_number_table : line_number_table)
+            aLine_number_table.accept(this);
+    }
 
-	@Override
-		 public void visitLocalVariableTable(LocalVariableTable obj) {
-		super.visitLocalVariableTable(obj);
+    @Override
+         public void visitLocalVariableTable(LocalVariableTable obj) {
+        super.visitLocalVariableTable(obj);
 		LocalVariable[] local_variable_table = obj.getLocalVariableTable();
-		for (LocalVariable aLocal_variable_table : local_variable_table)
-			aLocal_variable_table.accept(this);
-	}
+        for (LocalVariable aLocal_variable_table : local_variable_table)
+            aLocal_variable_table.accept(this);
+    }
 
-	// Accessors
+    // Accessors
 
-	public XClass getXClass() {
-		if (thisClassInfo == null) throw new AssertionError("XClass information not set");
-		return thisClassInfo;
+    public XClass getXClass() {
+        if (thisClassInfo == null) throw new AssertionError("XClass information not set");
+        return thisClassInfo;
 	}
-	public ClassDescriptor getClassDescriptor() {
-		return thisClassInfo;
-	}
+    public ClassDescriptor getClassDescriptor() {
+        return thisClassInfo;
+    }
 	public XMethod getXMethod() {
+        return thisMethodInfo;
+    }
+    public MethodDescriptor getMethodDescriptor() {
 		return thisMethodInfo;
+    }
+    public XField getXField() {
+        return thisFieldInfo;
 	}
-	public MethodDescriptor getMethodDescriptor() {
-		return thisMethodInfo;
-	}
-	public XField getXField() {
-		return thisFieldInfo;
-	}
-	public FieldDescriptor getFieldDescriptor() {
-		return thisFieldInfo;
-	}
+    public FieldDescriptor getFieldDescriptor() {
+        return thisFieldInfo;
+    }
 	/** Get the constant pool for the current or most recently visited class */
-	public ConstantPool getConstantPool() {
-		return constantPool;
+    public ConstantPool getConstantPool() {
+        return constantPool;
+    }
+
+    /** Get the slash-formatted class name for the current or most recently visited class */
+    public @SlashedClassName String getClassName() {
+        return className;
 	}
 
-	/** Get the slash-formatted class name for the current or most recently visited class */
-	public @SlashedClassName String getClassName() {
-		return className;
+    /** Get the dotted class name for the current or most recently visited class */
+    public @DottedClassName  String getDottedClassName() {
+        return dottedClassName;
 	}
 
-	/** Get the dotted class name for the current or most recently visited class */
-	public @DottedClassName  String getDottedClassName() {
-		return dottedClassName;
+    /** Get the (slash-formatted?) package name for the current or most recently visited class */
+    public String getPackageName() {
+        return packageName;
 	}
 
-	/** Get the (slash-formatted?) package name for the current or most recently visited class */
-	public String getPackageName() {
-		return packageName;
+    /** Get the source file name for the current or most recently visited class */
+    public String getSourceFile() {
+        return sourceFile;
 	}
 
-	/** Get the source file name for the current or most recently visited class */
-	public String getSourceFile() {
-		return sourceFile;
+    /** Get the slash-formatted superclass name for the current or most recently visited class */
+    public @SlashedClassName String getSuperclassName() {
+        return superclassName;
 	}
 
-	/** Get the slash-formatted superclass name for the current or most recently visited class */
-	public @SlashedClassName String getSuperclassName() {
-		return superclassName;
+    /** Get the dotted superclass name for the current or most recently visited class */
+    public @DottedClassName String getDottedSuperclassName() {
+        return dottedSuperclassName;
 	}
 
-	/** Get the dotted superclass name for the current or most recently visited class */
-	public @DottedClassName String getDottedSuperclassName() {
-		return dottedSuperclassName;
+    /** Get the JavaClass object for the current or most recently visited class */
+    public JavaClass getThisClass() {
+        return thisClass;
 	}
 
-	/** Get the JavaClass object for the current or most recently visited class */
-	public JavaClass getThisClass() {
-		return thisClass;
-	}
-
-	/** If currently visiting a method, get the method's fully qualified name */
-	public String getFullyQualifiedMethodName() {
-		if (!visitingMethod)
+    /** If currently visiting a method, get the method's fully qualified name */
+    public String getFullyQualifiedMethodName() {
+        if (!visitingMethod)
 			throw new IllegalStateException("getFullyQualifiedMethodName called while not visiting method");
-		if (fullyQualifiedMethodName == null) {
-			getDottedSuperclassName();
-			getMethodName();
+        if (fullyQualifiedMethodName == null) {
+            getDottedSuperclassName();
+            getMethodName();
 			getDottedMethodSig();
-			StringBuilder ref = new StringBuilder(5 + dottedClassName.length()
-					+ methodName.length()
-					+ dottedMethodSig.length());
+            StringBuilder ref = new StringBuilder(5 + dottedClassName.length()
+                    + methodName.length()
+                    + dottedMethodSig.length());
 
-			ref.append(dottedClassName)
-					.append(".")
-					.append(methodName)
+            ref.append(dottedClassName)
+                    .append(".")
+                    .append(methodName)
 					.append(" : ")
-					.append(dottedMethodSig);
-			fullyQualifiedMethodName = ref.toString();
-		}
+                    .append(dottedMethodSig);
+            fullyQualifiedMethodName = ref.toString();
+        }
 		return fullyQualifiedMethodName;
-	}
+    }
 
-	/**
-	* is the visitor currently visiting a method? 
-	*/
+    /**
+    * is the visitor currently visiting a method?
+    */
 	public boolean visitingMethod() {
-		return visitingMethod;
-		}
-	/**
+        return visitingMethod;
+        }
+    /**
 	* is the visitor currently visiting a field? 
-	*/
-	public boolean visitingField() {
-		return visitingField;
+    */
+    public boolean visitingField() {
+        return visitingField;
 		}
-	/** If currently visiting a method, get the method's Method object */
-	public Field getField() {
-		if (!visitingField)
+    /** If currently visiting a method, get the method's Method object */
+    public Field getField() {
+        if (!visitingField)
 			throw new IllegalStateException("getField called while not visiting method");
-		return field;
-	}
-	/** If currently visiting a method, get the method's Method object */
+        return field;
+    }
+    /** If currently visiting a method, get the method's Method object */
 	public Method getMethod() {
-		if (!visitingMethod)
-			throw new IllegalStateException("getMethod called while not visiting method");
-		return method;
+        if (!visitingMethod)
+            throw new IllegalStateException("getMethod called while not visiting method");
+        return method;
 	}
 
-	/** If currently visiting a method, get the method's name */
-	public String getMethodName() {
-		if (!visitingMethod)
+    /** If currently visiting a method, get the method's name */
+    public String getMethodName() {
+        if (!visitingMethod)
 			throw new IllegalStateException("getMethodName called while not visiting method");
-		if (methodName == null) 
-			methodName = getStringFromIndex(method.getNameIndex());
+        if (methodName == null)
+            methodName = getStringFromIndex(method.getNameIndex());
 
-		return methodName;
-	}
+        return methodName;
+    }
 
-	static Pattern argumentSignature = Pattern.compile("\\[*([BCDFIJSZ]|L[^;]*;)");
+    static Pattern argumentSignature = Pattern.compile("\\[*([BCDFIJSZ]|L[^;]*;)");
 
-	public static int getNumberArguments(String signature) {
-		int count = 0;
-		int pos = 1;
+    public static int getNumberArguments(String signature) {
+        int count = 0;
+        int pos = 1;
 		boolean inArray = false;
 
-		while (true) {
-			switch (signature.charAt(pos++)) {
-			case ')' : return count;
+        while (true) {
+            switch (signature.charAt(pos++)) {
+            case ')' : return count;
 			case '[' :
-				if (!inArray) count++;
-				inArray = true;
-				break;
+                if (!inArray) count++;
+                inArray = true;
+                break;
 			case 'L' :
-				if (!inArray) count++;
-				while (signature.charAt(pos) != ';') pos++;
-				pos++;
+                if (!inArray) count++;
+                while (signature.charAt(pos) != ';') pos++;
+                pos++;
 				inArray = false;
-				break;
-			default: 
-				if (!inArray) count++;
+                break;
+            default:
+                if (!inArray) count++;
 			inArray = false;
-			break;
-			}
-		}
+            break;
+            }
+        }
 
-		}
+        }
 
 
-	public int getNumberMethodArguments() {
-		return getNumberArguments(getMethodSig());
-	}
+    public int getNumberMethodArguments() {
+        return getNumberArguments(getMethodSig());
+    }
 	/** If currently visiting a method, get the method's slash-formatted signature */
-	public String getMethodSig() {
-		if (!visitingMethod)
-			throw new IllegalStateException("getMethodSig called while not visiting method");
+    public String getMethodSig() {
+        if (!visitingMethod)
+            throw new IllegalStateException("getMethodSig called while not visiting method");
 		if (methodSig == null)
-			methodSig = getStringFromIndex(method.getSignatureIndex());
-		return methodSig;
-	}
+            methodSig = getStringFromIndex(method.getSignatureIndex());
+        return methodSig;
+    }
 
-	/** If currently visiting a method, get the method's dotted method signature */
-	public String getDottedMethodSig() {
-		if (!visitingMethod)
+    /** If currently visiting a method, get the method's dotted method signature */
+    public String getDottedMethodSig() {
+        if (!visitingMethod)
 			throw new IllegalStateException("getDottedMethodSig called while not visiting method");
-		if (dottedMethodSig == null) 
-			dottedMethodSig = getMethodSig().replace('/', '.');
-		return dottedMethodSig;
+        if (dottedMethodSig == null)
+            dottedMethodSig = getMethodSig().replace('/', '.');
+        return dottedMethodSig;
 	}
 
-	/** If currently visiting a field, get the field's name */
-	public String getFieldName() {
-		if (!visitingField)
+    /** If currently visiting a field, get the field's name */
+    public String getFieldName() {
+        if (!visitingField)
 			throw new IllegalStateException("getFieldName called while not visiting field");
-		if (fieldName == null)
-			fieldName = getStringFromIndex(field.getNameIndex());
+        if (fieldName == null)
+            fieldName = getStringFromIndex(field.getNameIndex());
 
 
 
-		return fieldName;
-	}
+        return fieldName;
+    }
 
-	/** If currently visiting a field, get the field's slash-formatted signature */
-	public String getFieldSig() {
-		if (!visitingField)
+    /** If currently visiting a field, get the field's slash-formatted signature */
+    public String getFieldSig() {
+        if (!visitingField)
 			throw new IllegalStateException("getFieldSig called while not visiting field");
-		if (fieldSig == null) 	fieldSig = getStringFromIndex(field.getSignatureIndex());
-		return fieldSig;
-	}
+        if (fieldSig == null) 	fieldSig = getStringFromIndex(field.getSignatureIndex());
+        return fieldSig;
+    }
 
-	/** If currently visiting a field, return whether or not the field is static */
-	public boolean getFieldIsStatic() {
-		if (!visitingField)
+    /** If currently visiting a field, return whether or not the field is static */
+    public boolean getFieldIsStatic() {
+        if (!visitingField)
 			throw new IllegalStateException("getFieldIsStatic called while not visiting field");
-		return fieldIsStatic;
-	}
+        return fieldIsStatic;
+    }
 
-	/** If currently visiting a field, get the field's fully qualified name */
-	public String getFullyQualifiedFieldName() {
-		if (!visitingField)
+    /** If currently visiting a field, get the field's fully qualified name */
+    public String getFullyQualifiedFieldName() {
+        if (!visitingField)
 			throw new IllegalStateException("getFullyQualifiedFieldName called while not visiting field");
-		if (fullyQualifiedFieldName == null)
-			fullyQualifiedFieldName = getDottedClassName() + "." + getFieldName()
-			+ " : " + getFieldSig();
+        if (fullyQualifiedFieldName == null)
+            fullyQualifiedFieldName = getDottedClassName() + "." + getFieldName()
+            + " : " + getFieldSig();
 		return fullyQualifiedFieldName;
-	}
+    }
 
-	/** If currently visiting a field, get the field's dot-formatted signature */
-	@Deprecated
-	public String getDottedFieldSig() {
+    /** If currently visiting a field, get the field's dot-formatted signature */
+    @Deprecated
+    public String getDottedFieldSig() {
 		if (!visitingField)
-			throw new IllegalStateException("getDottedFieldSig called while not visiting field");
-		if (dottedFieldSig == null) 
-			dottedFieldSig = fieldSig.replace('/', '.');
+            throw new IllegalStateException("getDottedFieldSig called while not visiting field");
+        if (dottedFieldSig == null)
+            dottedFieldSig = fieldSig.replace('/', '.');
 		return dottedFieldSig;
-	}
+    }
 
-	@Override
+    @Override
     public String toString() {
-		if (visitingMethod)
-			return this.getClass().getSimpleName() + " analyzing " + getClassName() +"." + getMethodName() + getMethodSig();
-		else if (visitingField)
+        if (visitingMethod)
+            return this.getClass().getSimpleName() + " analyzing " + getClassName() +"." + getMethodName() + getMethodSig();
+        else if (visitingField)
 			return this.getClass().getSimpleName() + " analyzing " + getClassName() +"." + getFieldName();
-		return this.getClass().getSimpleName() + " analyzing " + getClassName();
-	}
+        return this.getClass().getSimpleName() + " analyzing " + getClassName();
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.apache.bcel.classfile.Visitor#visitAnnotation(org.apache.bcel.classfile.Annotations)
      */
     public void visitAnnotation(Annotations arg0) {
-	    // TODO Auto-generated method stub
-	    
+        // TODO Auto-generated method stub
+
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.apache.bcel.classfile.Visitor#visitAnnotationDefault(org.apache.bcel.classfile.AnnotationDefault)
      */
     public void visitAnnotationDefault(AnnotationDefault arg0) {
-	    // TODO Auto-generated method stub
-	    
+        // TODO Auto-generated method stub
+
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.apache.bcel.classfile.Visitor#visitAnnotationEntry(org.apache.bcel.classfile.AnnotationEntry)
      */
     public void visitAnnotationEntry(AnnotationEntry arg0) {
-	    // TODO Auto-generated method stub
-	    
+        // TODO Auto-generated method stub
+
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.apache.bcel.classfile.Visitor#visitEnclosingMethod(org.apache.bcel.classfile.EnclosingMethod)
      */
     public void visitEnclosingMethod(EnclosingMethod arg0) {
-	    // TODO Auto-generated method stub
-	    
+        // TODO Auto-generated method stub
+
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.apache.bcel.classfile.Visitor#visitParameterAnnotation(org.apache.bcel.classfile.ParameterAnnotations)
      */
     public void visitParameterAnnotation(ParameterAnnotations arg0) {
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.apache.bcel.classfile.Visitor#visitStackMapTable(org.apache.bcel.classfile.StackMapTable)
      */
     public void visitStackMapTable(StackMapTable arg0) {
-	    // TODO Auto-generated method stub
-	    
+        // TODO Auto-generated method stub
+
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.apache.bcel.classfile.Visitor#visitStackMapTableEntry(org.apache.bcel.classfile.StackMapTableEntry)
      */
     public void visitStackMapTableEntry(StackMapTableEntry arg0) {
-	    // TODO Auto-generated method stub
-	    
+        // TODO Auto-generated method stub
+
     }
 }

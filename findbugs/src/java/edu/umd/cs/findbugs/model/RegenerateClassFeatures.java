@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2005, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -36,68 +36,68 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 /**
  * Repopulate a BugCollection with class features from
  * the classes in a specified jar file.
- * 
+ *
  * @author David Hovemeyer
  */
 public class RegenerateClassFeatures {
-	private BugCollection bugCollection;
-	private String jarFile;
+    private BugCollection bugCollection;
+    private String jarFile;
 
-	public RegenerateClassFeatures(BugCollection bugCollection, String jarFile) {
-		this.bugCollection = bugCollection;
-		this.jarFile = jarFile;
+    public RegenerateClassFeatures(BugCollection bugCollection, String jarFile) {
+        this.bugCollection = bugCollection;
+        this.jarFile = jarFile;
 	}
 
-	public RegenerateClassFeatures execute() throws IOException {
-		bugCollection.clearClassFeatures();
+    public RegenerateClassFeatures execute() throws IOException {
+        bugCollection.clearClassFeatures();
 
-		ZipFile zipFile = new ZipFile(jarFile);
+        ZipFile zipFile = new ZipFile(jarFile);
 
-		ArrayList<JavaClass> classList = new ArrayList<JavaClass>();
+        ArrayList<JavaClass> classList = new ArrayList<JavaClass>();
 
-		// Add all classes to repository (for hierarchy queries)
-		Enumeration<? extends ZipEntry> entries = zipFile.entries();
-		while (entries.hasMoreElements()) {
+        // Add all classes to repository (for hierarchy queries)
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        while (entries.hasMoreElements()) {
 			ZipEntry entry = entries.nextElement();
 
-			if (!entry.getName().endsWith(".class"))
-				continue;
+            if (!entry.getName().endsWith(".class"))
+                continue;
 
-			ClassParser parser = new ClassParser(zipFile.getInputStream(entry), entry.getName());
-			JavaClass javaClass = parser.parse();
+            ClassParser parser = new ClassParser(zipFile.getInputStream(entry), entry.getName());
+            JavaClass javaClass = parser.parse();
 
-			Repository.addClass(javaClass);
-			classList.add(javaClass);
-		}
+            Repository.addClass(javaClass);
+            classList.add(javaClass);
+        }
 		zipFile.close();
 
-		for (JavaClass javaClass : classList) {
-			ClassFeatureSet classFeatureSet = new ClassFeatureSet().initialize(javaClass);
-			bugCollection.setClassFeatureSet(classFeatureSet);
+        for (JavaClass javaClass : classList) {
+            ClassFeatureSet classFeatureSet = new ClassFeatureSet().initialize(javaClass);
+            bugCollection.setClassFeatureSet(classFeatureSet);
 		}
 
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * @return Returns the bugCollection.
-	 */
+    /**
+     * @return Returns the bugCollection.
+     */
 	public BugCollection getBugCollection() {
-		return bugCollection;
-	}
+        return bugCollection;
+    }
 
-	public static void main(String[] args) throws Exception {
-		if (args.length != 2) {
-			System.err.println("Usage: " + RegenerateClassFeatures.class.getName() + " <bug collection> <jar file>");
+    public static void main(String[] args) throws Exception {
+        if (args.length != 2) {
+            System.err.println("Usage: " + RegenerateClassFeatures.class.getName() + " <bug collection> <jar file>");
 			System.exit(1);
-		}
+        }
 
-		SortedBugCollection bugCollection = new SortedBugCollection();
-		
-		bugCollection.readXML(args[0]);
+        SortedBugCollection bugCollection = new SortedBugCollection();
 
-		new RegenerateClassFeatures(bugCollection, args[1]).execute();
+        bugCollection.readXML(args[0]);
 
-		bugCollection.writeXML(System.out);
-	}
+        new RegenerateClassFeatures(bugCollection, args[1]).execute();
+
+        bugCollection.writeXML(System.out);
+    }
 }

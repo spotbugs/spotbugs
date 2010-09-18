@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003-2005 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -34,35 +34,35 @@ import edu.umd.cs.findbugs.util.ClassName;
  */
 public class ReflectiveClasses extends BytecodeScanningDetector implements NonReportingDetector {
 
-	public ReflectiveClasses(BugReporter bugReporter) {
+    public ReflectiveClasses(BugReporter bugReporter) {
 
-	}
+    }
 
     String constantString;
-	@Override
-	public void sawString(String s) {
-		constantString = s;
+    @Override
+    public void sawString(String s) {
+        constantString = s;
 	}
-	@Override
+    @Override
     public void sawClass() {
-		int opcode = getOpcode();
-		if ((opcode == LDC) || (opcode == LDC_W)) process(getClassConstantOperand());
-	}
+        int opcode = getOpcode();
+        if ((opcode == LDC) || (opcode == LDC_W)) process(getClassConstantOperand());
+    }
 	@Override
-	public void sawOpcode(int seen) {
-		if (seen == INVOKESTATIC) {
-			// System.out.println(getClassConstantOperand()+ "." + getNameConstantOperand());
+    public void sawOpcode(int seen) {
+        if (seen == INVOKESTATIC) {
+            // System.out.println(getClassConstantOperand()+ "." + getNameConstantOperand());
 			if (constantString != null && getClassConstantOperand().equals("java/lang/Class") && getNameConstantOperand().equals("forName")) {
-				process(ClassName.toSlashedClassName(constantString));
-		}
-			
-		}
-		constantString = null;
-	}
+                process(ClassName.toSlashedClassName(constantString));
+        }
 
-	private void process(@SlashedClassName String className) {
-		ClassDescriptor d = DescriptorFactory.createClassDescriptor(className);
-		AnalysisContext.currentXFactory().addReflectiveClasses(d);
+		}
+        constantString = null;
+    }
+
+    private void process(@SlashedClassName String className) {
+        ClassDescriptor d = DescriptorFactory.createClassDescriptor(className);
+        AnalysisContext.currentXFactory().addReflectiveClasses(d);
 	}
 }
 

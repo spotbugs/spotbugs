@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -31,88 +31,88 @@ import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
  * Provides an implementation of the
  * getCodeBaseLocator(), containsSourceFiles(),
  * setApplicationCodeBase(), and isApplicationCodeBase() methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
-	private ICodeBaseLocator codeBaseLocator;
-	private boolean isAppCodeBase;
-	private int howDiscovered;
+    private ICodeBaseLocator codeBaseLocator;
+    private boolean isAppCodeBase;
+    private int howDiscovered;
 	private long lastModifiedTime;
-	private Map<String, String> resourceNameTranslationMap;
+    private Map<String, String> resourceNameTranslationMap;
 
-	public AbstractScannableCodeBase(ICodeBaseLocator codeBaseLocator) {
-		this.codeBaseLocator = codeBaseLocator;
-		this.lastModifiedTime = -1L;
+    public AbstractScannableCodeBase(ICodeBaseLocator codeBaseLocator) {
+        this.codeBaseLocator = codeBaseLocator;
+        this.lastModifiedTime = -1L;
 		this.resourceNameTranslationMap = new HashMap<String, String>();
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getCodeBaseLocator()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBase#getCodeBaseLocator()
+     */
 	public ICodeBaseLocator getCodeBaseLocator() {
-		return codeBaseLocator;
-	}
+        return codeBaseLocator;
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#containsSourceFiles()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#containsSourceFiles()
+     */
 	public boolean containsSourceFiles()  {
-		return false;
+        return false;
 
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setApplicationCodeBase(boolean)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBase#setApplicationCodeBase(boolean)
+     */
 	public void setApplicationCodeBase(boolean isAppCodeBase) {
-		this.isAppCodeBase = isAppCodeBase;
-	}
+        this.isAppCodeBase = isAppCodeBase;
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#isApplicationCodeBase()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBase#isApplicationCodeBase()
+     */
 	public boolean isApplicationCodeBase() {
-		return isAppCodeBase;
-	}
+        return isAppCodeBase;
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setHowDiscovered(int)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBase#setHowDiscovered(int)
+     */
 	public void setHowDiscovered(int howDiscovered) {
-		this.howDiscovered = howDiscovered;
-	}
+        this.howDiscovered = howDiscovered;
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getHowDiscovered()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBase#getHowDiscovered()
+     */
 	public int getHowDiscovered() {
-		return howDiscovered;
-	}
+        return howDiscovered;
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setLastModifiedTime(long)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBase#setLastModifiedTime(long)
+     */
 	public void setLastModifiedTime(long lastModifiedTime) {
-		if (lastModifiedTime > 0 && FindBugs.validTimestamp(lastModifiedTime)) {
-			this.lastModifiedTime = lastModifiedTime;
-		}
+        if (lastModifiedTime > 0 && FindBugs.validTimestamp(lastModifiedTime)) {
+            this.lastModifiedTime = lastModifiedTime;
+        }
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getLastModifiedTime()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBase#getLastModifiedTime()
+     */
 	public long getLastModifiedTime() {
-		return lastModifiedTime;
+        return lastModifiedTime;
+    }
+
+    public void addResourceNameTranslation(String origResourceName, String newResourceName) {
+        if (!origResourceName.equals(newResourceName))
+          resourceNameTranslationMap.put(origResourceName, newResourceName);
 	}
 
-	public void addResourceNameTranslation(String origResourceName, String newResourceName) {
-		if (!origResourceName.equals(newResourceName))
-		  resourceNameTranslationMap.put(origResourceName, newResourceName);
-	}
-
-	public String translateResourceName(String resourceName) {
-		String translatedName = resourceNameTranslationMap.get(resourceName);
-		return translatedName != null ? translatedName : resourceName;
+    public String translateResourceName(String resourceName) {
+        String translatedName = resourceNameTranslationMap.get(resourceName);
+        return translatedName != null ? translatedName : resourceName;
 	}
 }

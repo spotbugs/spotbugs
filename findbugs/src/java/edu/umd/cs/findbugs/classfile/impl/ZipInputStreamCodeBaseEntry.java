@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -30,86 +30,86 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 
 /**
  * Implementation of ICodeBaseEntry for resources in zipfile codebases.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ZipInputStreamCodeBaseEntry extends AbstractScannableCodeBaseEntry {
-	private final ZipInputStreamCodeBase codeBase;
-	private final ZipEntry zipEntry;
-	private final byte [] bytes;
+    private final ZipInputStreamCodeBase codeBase;
+    private final ZipEntry zipEntry;
+    private final byte [] bytes;
 
-	public ZipInputStreamCodeBaseEntry(ZipInputStreamCodeBase codeBase, ZipEntry zipEntry, byte [] bytes) {
-		this.codeBase = codeBase;
-		this.zipEntry = zipEntry;
+    public ZipInputStreamCodeBaseEntry(ZipInputStreamCodeBase codeBase, ZipEntry zipEntry, byte [] bytes) {
+        this.codeBase = codeBase;
+        this.zipEntry = zipEntry;
 		this.bytes = bytes;
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
+     */
 	public int getNumBytes() {
-		return (int) zipEntry.getSize();
-	}
+        return (int) zipEntry.getSize();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
+     */
 	public InputStream openResource() throws IOException {
-		return new ByteArrayInputStream(bytes);
-	}
-	public byte[] getBytes() {
+        return new ByteArrayInputStream(bytes);
+    }
+    public byte[] getBytes() {
 		return bytes;
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getCodeBase()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getCodeBase()
+     */
 	@Override
-	public AbstractScannableCodeBase getCodeBase() {
-		return codeBase;
-	}
+    public AbstractScannableCodeBase getCodeBase() {
+        return codeBase;
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getRealResourceName()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getRealResourceName()
+     */
 	@Override
-	public String getRealResourceName() {
-		return zipEntry.getName();
-	}
+    public String getRealResourceName() {
+        return zipEntry.getName();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
+     */
 	public ClassDescriptor getClassDescriptor() {
-		return DescriptorFactory.createClassDescriptorFromResourceName(getResourceName());
-	}
+        return DescriptorFactory.createClassDescriptorFromResourceName(getResourceName());
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != this.getClass()) {
-			return false;
+    public boolean equals(Object obj) {
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
 		}
-		ZipInputStreamCodeBaseEntry other = (ZipInputStreamCodeBaseEntry) obj;
-		return this.codeBase.equals(other.codeBase)
-			&& this.zipEntry.equals(other.zipEntry);
+        ZipInputStreamCodeBaseEntry other = (ZipInputStreamCodeBaseEntry) obj;
+        return this.codeBase.equals(other.codeBase)
+            && this.zipEntry.equals(other.zipEntry);
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
 	@Override
-	public int hashCode() {
-		return 7919 * codeBase.hashCode() + zipEntry.hashCode();
-	}
+    public int hashCode() {
+        return 7919 * codeBase.hashCode() + zipEntry.hashCode();
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
 	@Override
-	public String toString() {
-		return getCodeBase() + ":" + getResourceName();
-	}
+    public String toString() {
+        return getCodeBase() + ":" + getResourceName();
+    }
 }

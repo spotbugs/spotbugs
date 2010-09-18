@@ -28,79 +28,79 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.cloud.Cloud;
 
 public class BugCollectionBugReporter extends TextUIBugReporter implements Debug {
-	private final SortedBugCollection bugCollection;
-	private final Project project;
+    private final SortedBugCollection bugCollection;
+    private final Project project;
 
-	public BugCollectionBugReporter(Project project) {
-		this.project = project;
-		this.bugCollection = new SortedBugCollection(getProjectStats(), project);
+    public BugCollectionBugReporter(Project project) {
+        this.project = project;
+        this.bugCollection = new SortedBugCollection(getProjectStats(), project);
 		bugCollection.setTimestamp(System.currentTimeMillis());
-	}
+    }
 
-	public Project getProject() {
-		return project;
-	}
+    public Project getProject() {
+        return project;
+    }
 
-	public @Nonnull BugCollection getBugCollection() {
-		return bugCollection;
-	}
+    public @Nonnull BugCollection getBugCollection() {
+        return bugCollection;
+    }
 
-	public void observeClass(ClassDescriptor classDescriptor) {
-	}
+    public void observeClass(ClassDescriptor classDescriptor) {
+    }
 
-	@Override
-	public void logError(String message) {
-		bugCollection.addError(message);
+    @Override
+    public void logError(String message) {
+        bugCollection.addError(message);
 		super.logError(message);
-	}
+    }
 
-	@Override
-	public void logError(String message, Throwable e) {
-		if (e instanceof MissingClassException) {
+    @Override
+    public void logError(String message, Throwable e) {
+        if (e instanceof MissingClassException) {
 			MissingClassException e2 = (MissingClassException)e;
-			reportMissingClass(e2.getClassNotFoundException());
-			return;
-		}
+            reportMissingClass(e2.getClassNotFoundException());
+            return;
+        }
 		if (e instanceof MethodUnprofitableException) {
-			// TODO: log this
-			return;
-		}
+            // TODO: log this
+            return;
+        }
 		bugCollection.addError(message, e);
-		super.logError(message, e);
-	}
+        super.logError(message, e);
+    }
 
-	@Override
-	public void reportMissingClass(ClassNotFoundException ex) {
-		String missing = AbstractBugReporter.getMissingClassName(ex);
+    @Override
+    public void reportMissingClass(ClassNotFoundException ex) {
+        String missing = AbstractBugReporter.getMissingClassName(ex);
 		if (!isValidMissingClassMessage(missing)) {
-			return;
-		}
-		bugCollection.addMissingClass(missing);
+            return;
+        }
+        bugCollection.addMissingClass(missing);
 		super.reportMissingClass(ex);
-	}
+    }
 
-	@Override
-	public void doReportBug(BugInstance bugInstance) {
-		if (VERIFY_INTEGRITY) checkBugInstance(bugInstance);
+    @Override
+    public void doReportBug(BugInstance bugInstance) {
+        if (VERIFY_INTEGRITY) checkBugInstance(bugInstance);
 		if (bugCollection.add(bugInstance))
-			notifyObservers(bugInstance);
-	}
+            notifyObservers(bugInstance);
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
+     */
 	@Override
-	public BugReporter getRealBugReporter() {
-		return this;
-	}
+    public BugReporter getRealBugReporter() {
+        return this;
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.BugReporter#finish()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.BugReporter#finish()
+     */
 	public void finish() {
-		Cloud userAnnotationPlugin = bugCollection.getCloud();
-		if (userAnnotationPlugin != null)
-			userAnnotationPlugin.bugsPopulated();
+        Cloud userAnnotationPlugin = bugCollection.getCloud();
+        if (userAnnotationPlugin != null)
+            userAnnotationPlugin.bugsPopulated();
 	}
 }
 

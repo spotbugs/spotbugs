@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2008 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -42,118 +42,118 @@ import edu.umd.cs.findbugs.I18N;
 
 public class HTML {
 
-	private static final class HTMLtoPlainTextWriter2 extends HTMLWriter {
+    private static final class HTMLtoPlainTextWriter2 extends HTMLWriter {
 
-		boolean inPre = false;
-		boolean startingParagraph = false;
+        boolean inPre = false;
+        boolean startingParagraph = false;
 
-		/**
-		 * @param w
-		 * @param doc
+        /**
+         * @param w
+         * @param doc
 		 */
-		public HTMLtoPlainTextWriter2(Writer w, HTMLDocument doc) {
-			super(w, doc);
-			setLineLength(80);
+        public HTMLtoPlainTextWriter2(Writer w, HTMLDocument doc) {
+            super(w, doc);
+            setLineLength(80);
 			setCanWrapLines(true);
-		}
+        }
 
-		@Override
-		protected void startTag(Element elem) throws IOException {
-			String name = elem.getName();
+        @Override
+        protected void startTag(Element elem) throws IOException {
+            String name = elem.getName();
 			startingParagraph = true;
-			if (name.equals("ul")) {
-				super.incrIndent();
-				write("  ");
+            if (name.equals("ul")) {
+                super.incrIndent();
+                write("  ");
 			} else if (name.equals("pre")) {
-				inPre = true;
-			} else if (name.equals("li")) {
-				super.incrIndent();
+                inPre = true;
+            } else if (name.equals("li")) {
+                super.incrIndent();
 				write("* ");
-			} else if (name.equals("p")) {
-				
-			}
+            } else if (name.equals("p")) {
+
+            }
 		};
 
-		@Override
-		protected void writeEmbeddedTags(AttributeSet attr) throws IOException {
+        @Override
+        protected void writeEmbeddedTags(AttributeSet attr) throws IOException {
 
-		}
+        }
 
-		@Override
-		protected void endTag(Element elem) throws IOException {
-			String name = elem.getName();
+        @Override
+        protected void endTag(Element elem) throws IOException {
+            String name = elem.getName();
 			if (name.equals("p")) {
-				writeLineSeparator();
-				indent();
-			} else if (name.equals("pre")) {
+                writeLineSeparator();
+                indent();
+            } else if (name.equals("pre")) {
 				inPre = false;
-			} else if (name.equals("ul")) {
-				super.decrIndent();
-				writeLineSeparator();
+            } else if (name.equals("ul")) {
+                super.decrIndent();
+                writeLineSeparator();
 				indent();
-			} else if (name.equals("li")) {
-				super.decrIndent();
-				writeLineSeparator();
+            } else if (name.equals("li")) {
+                super.decrIndent();
+                writeLineSeparator();
 				indent();
-			}
-		}
+            }
+        }
 
-		@Override
-		protected void incrIndent() {
-		};
+        @Override
+        protected void incrIndent() {
+        };
 
-		@Override
-		protected void decrIndent() {
-		};
+        @Override
+        protected void decrIndent() {
+        };
 
-		@Override
-		protected void emptyTag(Element elem) throws IOException, BadLocationException {
-			if (elem.getName().equals("content"))
+        @Override
+        protected void emptyTag(Element elem) throws IOException, BadLocationException {
+            if (elem.getName().equals("content"))
 				super.emptyTag(elem);
-		};
+        };
 
-		@Override
-		protected void text(Element elem) throws IOException, BadLocationException {
-			String contentStr = getText(elem);
+        @Override
+        protected void text(Element elem) throws IOException, BadLocationException {
+            String contentStr = getText(elem);
 			if (!inPre) {
-				contentStr = contentStr.replaceAll("\\s+", " ");
+                contentStr = contentStr.replaceAll("\\s+", " ");
 
-				if (startingParagraph) {
-					while (contentStr.length() > 0 && contentStr.charAt(0) == ' ')
-						contentStr = contentStr.substring(1);
+                if (startingParagraph) {
+                    while (contentStr.length() > 0 && contentStr.charAt(0) == ' ')
+                        contentStr = contentStr.substring(1);
 				}
 
-				startingParagraph = false;
-			}
-			if (contentStr.length() > 0) {
+                startingParagraph = false;
+            }
+            if (contentStr.length() > 0) {
 				
-				setCanWrapLines(!inPre);
-				write(contentStr);
-			}
+                setCanWrapLines(!inPre);
+                write(contentStr);
+            }
 		}
-	}
+    }
 
-	private HTML() {
-	};
+    private HTML() {
+    };
 
-	public static void convertHtmlToText(Reader reader, Writer writer) throws IOException, BadLocationException {
+    public static void convertHtmlToText(Reader reader, Writer writer) throws IOException, BadLocationException {
 
-		EditorKit kit = new HTMLEditorKit();
-		HTMLDocument doc = new HTMLDocument();
-		kit.read(reader, doc, 0);
+        EditorKit kit = new HTMLEditorKit();
+        HTMLDocument doc = new HTMLDocument();
+        kit.read(reader, doc, 0);
 
-		HTMLtoPlainTextWriter2 x = new HTMLtoPlainTextWriter2(writer, doc);
-		x.write();
-		writer.close();
+        HTMLtoPlainTextWriter2 x = new HTMLtoPlainTextWriter2(writer, doc);
+        x.write();
+        writer.close();
 
-	}
+    }
 
-	public static String convertHtmlSnippetToText(String htmlSnippet) throws IOException, BadLocationException {
-		StringWriter writer = new StringWriter();
-		StringReader reader = new StringReader("<HTML><BODY>" + htmlSnippet + "</BODY></HTML>");
+    public static String convertHtmlSnippetToText(String htmlSnippet) throws IOException, BadLocationException {
+        StringWriter writer = new StringWriter();
+        StringReader reader = new StringReader("<HTML><BODY>" + htmlSnippet + "</BODY></HTML>");
 		convertHtmlToText(reader, writer);
-		return writer.toString();
-	}
-	
+        return writer.toString();
+    }
+
 
 }

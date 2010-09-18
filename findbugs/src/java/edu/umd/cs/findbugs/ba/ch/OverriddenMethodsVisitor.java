@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2007 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -29,74 +29,74 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  * Objects extending this class can be used with the
  * {@link Subtypes2#traverseSupertypes(ClassDescriptor, InheritanceGraphVisitor)}
  * method.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class OverriddenMethodsVisitor implements InheritanceGraphVisitor {
-	private XMethod xmethod;
+    private XMethod xmethod;
 
-	/**
-	 * Constructor. 
-	 * 
+    /**
+     * Constructor.
+     *
 	 * @param xmethod a derived method
-	 */
-	public OverriddenMethodsVisitor(XMethod xmethod) {
-		assert !xmethod.isStatic();
+     */
+    public OverriddenMethodsVisitor(XMethod xmethod) {
+        assert !xmethod.isStatic();
 		this.xmethod = xmethod;
-	}
+    }
 
-	/**
-	 * @return Returns the xmethod.
-	 */
+    /**
+     * @return Returns the xmethod.
+     */
 	public XMethod getXmethod() {
-		return xmethod;
-	}
+        return xmethod;
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor#visitClass(edu.umd.cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor#visitClass(edu.umd.cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass)
+     */
 	public boolean visitClass(ClassDescriptor classDescriptor, XClass xclass) {
-		assert xclass != null;
-		String methodSignature;
-		XMethod bridgedFrom = xmethod.bridgeFrom();
+        assert xclass != null;
+        String methodSignature;
+        XMethod bridgedFrom = xmethod.bridgeFrom();
 		if (bridgedFrom != null && !classDescriptor.equals(xmethod.getClassDescriptor())) {
-			methodSignature = bridgedFrom.getSignature();
-		} else {
-			methodSignature = xmethod.getSignature();			
+            methodSignature = bridgedFrom.getSignature();
+        } else {
+            methodSignature = xmethod.getSignature();
 		}
-		// See if this class has an overridden method
-		XMethod xm = xclass.findMethod(xmethod.getName(), methodSignature, false);
-		if (xm == null && bridgedFrom != null && xclass.isInterface()) {
+        // See if this class has an overridden method
+        XMethod xm = xclass.findMethod(xmethod.getName(), methodSignature, false);
+        if (xm == null && bridgedFrom != null && xclass.isInterface()) {
 			// if the method is bridged and the superclass is an interface, 
-			// check the exact signature as well
-			xm = xclass.findMethod(xmethod.getName(), xmethod.getSignature(), false);
-		}
+            // check the exact signature as well
+            xm = xclass.findMethod(xmethod.getName(), xmethod.getSignature(), false);
+        }
 
-		if (xm != null) {
-			return visitOverriddenMethod(xm) || bridgedFrom != null;
-		} else {
+        if (xm != null) {
+            return visitOverriddenMethod(xm) || bridgedFrom != null;
+        } else {
 			// Even though this particular class doesn't contain the method we're
-			// looking for, a superclass might, so we need to keep going.
-			return true;
-		}
+            // looking for, a superclass might, so we need to keep going.
+            return true;
+        }
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor#visitEdge(edu.umd.cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass, edu.umd.cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor#visitEdge(edu.umd.cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass, edu.umd.cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass)
+     */
 	public boolean visitEdge(ClassDescriptor sourceDesc, XClass source, ClassDescriptor targetDesc, XClass target) {
-		return (target != null);
-	}
+        return (target != null);
+    }
 
-	/**
-	 * Downcall method: will be called for each method overridden by
-	 * the derived method object passed to the constructor.
+    /**
+     * Downcall method: will be called for each method overridden by
+     * the derived method object passed to the constructor.
 	 * Note that this method will be called <em>for</em> the original
-	 * derived method, since this is useful for some applications.
-	 * 
-	 * @param xmethod a method which is overridden by the
+     * derived method, since this is useful for some applications.
+     *
+     * @param xmethod a method which is overridden by the
 	 *                original derived method, or is the original derived method 
-	 * @return true if the traversal should continue into superclasses, false otherwise
-	 */
-	protected abstract boolean visitOverriddenMethod(XMethod xmethod);
+     * @return true if the traversal should continue into superclasses, false otherwise
+     */
+    protected abstract boolean visitOverriddenMethod(XMethod xmethod);
 }

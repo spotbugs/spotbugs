@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003-2005 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -46,93 +46,93 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 public class NoteSuppressedWarnings
-		extends AnnotationVisitor
-		implements Detector, NonReportingDetector {
+        extends AnnotationVisitor
+        implements Detector, NonReportingDetector {
 
-	private final Set<String> packages = new HashSet<String>();
+    private final Set<String> packages = new HashSet<String>();
 
-	private final SuppressionMatcher suppressionMatcher;
+    private final SuppressionMatcher suppressionMatcher;
 
-	public NoteSuppressedWarnings(BugReporter bugReporter) {
-		suppressionMatcher = AnalysisContext.currentAnalysisContext().getSuppressionMatcher();
-	}
+    public NoteSuppressedWarnings(BugReporter bugReporter) {
+        suppressionMatcher = AnalysisContext.currentAnalysisContext().getSuppressionMatcher();
+    }
 
-	public void visitClassContext(ClassContext classContext) {
-		JavaClass javaClass = classContext.getJavaClass();
-		if  (!BCELUtil.preTiger(javaClass)) {
+    public void visitClassContext(ClassContext classContext) {
+        JavaClass javaClass = classContext.getJavaClass();
+        if  (!BCELUtil.preTiger(javaClass)) {
 			@DottedClassName String name = javaClass.getClassName();
-			int i = name.lastIndexOf('.');
-			String packageName = i < 0 ? "" : name.substring(0, i);
-			if (name.endsWith(".package-info")) {
+            int i = name.lastIndexOf('.');
+            String packageName = i < 0 ? "" : name.substring(0, i);
+            if (name.endsWith(".package-info")) {
 				if (!packages.add(packageName))
-					return;
-			} else if (packages.add(packageName)) {
-				JavaClass packageInfoClass;
+                    return;
+            } else if (packages.add(packageName)) {
+                JavaClass packageInfoClass;
 				try {
-					packageInfoClass = Repository.lookupClass(packageName + ".package-info");
-					packageInfoClass.accept(this);
-				} catch (ClassNotFoundException e) {
+                    packageInfoClass = Repository.lookupClass(packageName + ".package-info");
+                    packageInfoClass.accept(this);
+                } catch (ClassNotFoundException e) {
 					assert true;
-				}
-			}
-			javaClass.accept(this);
+                }
+            }
+            javaClass.accept(this);
 		}
-	}
+    }
 
-	@Override
-	public void visitAnnotation(String annotationClass, Map<String, ElementValue> map,
-			boolean runtimeVisible) {
+    @Override
+    public void visitAnnotation(String annotationClass, Map<String, ElementValue> map,
+            boolean runtimeVisible) {
 		if (!annotationClass.endsWith("SuppressWarnings"))
-			return;
-		String [] suppressed = getAnnotationParameterAsStringArray(map, "value");
-		if (suppressed == null || suppressed.length == 0)
+            return;
+        String [] suppressed = getAnnotationParameterAsStringArray(map, "value");
+        if (suppressed == null || suppressed.length == 0)
 			suppressWarning(null);
-		else 
-			for (String s : suppressed)
-				suppressWarning( s);
+        else
+            for (String s : suppressed)
+                suppressWarning( s);
 	}
 
-	@Override
-	public void visitParameterAnnotation(int p, String annotationClass,
-			Map<String, ElementValue> map, boolean runtimeVisible) {
+    @Override
+    public void visitParameterAnnotation(int p, String annotationClass,
+            Map<String, ElementValue> map, boolean runtimeVisible) {
 		if (!annotationClass.endsWith("SuppressWarnings"))
-			return;
-		if (!getMethod().isStatic()) p++;
-		
+            return;
+        if (!getMethod().isStatic()) p++;
+
 		String [] suppressed = getAnnotationParameterAsStringArray(map, "value");
-		if (suppressed == null || suppressed.length == 0)
-			suppressWarning(p, null);
-		else 
+        if (suppressed == null || suppressed.length == 0)
+            suppressWarning(p, null);
+        else
 			for (String s : suppressed)
-				suppressWarning(p, s);
-	}
-	
+                suppressWarning(p, s);
+    }
+
 	private void suppressWarning(int parameter, String pattern) {
-		String className = getDottedClassName();
-		ClassAnnotation clazz = new ClassAnnotation(className);
-		suppressionMatcher.addSuppressor(new ParameterWarningSuppressor(pattern, clazz,
+        String className = getDottedClassName();
+        ClassAnnotation clazz = new ClassAnnotation(className);
+        suppressionMatcher.addSuppressor(new ParameterWarningSuppressor(pattern, clazz,
 					MethodAnnotation.fromVisitedMethod(this), parameter));
-		
-	}
 
-	private void suppressWarning(String pattern) {
-		String className = getDottedClassName();
-		ClassAnnotation clazz = new ClassAnnotation(className);
+    }
+
+    private void suppressWarning(String pattern) {
+        String className = getDottedClassName();
+        ClassAnnotation clazz = new ClassAnnotation(className);
 		if (className.endsWith(".package-info"))
-			suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern,
-					getPackageName().replace('/', '.')));
-		else if (visitingMethod())
+            suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern,
+                    getPackageName().replace('/', '.')));
+        else if (visitingMethod())
 			suppressionMatcher.addSuppressor(new MethodWarningSuppressor(pattern, clazz,
-					MethodAnnotation.fromVisitedMethod(this)));
-		else if (visitingField())
-			suppressionMatcher.addSuppressor(new FieldWarningSuppressor(pattern, clazz,
+                    MethodAnnotation.fromVisitedMethod(this)));
+        else if (visitingField())
+            suppressionMatcher.addSuppressor(new FieldWarningSuppressor(pattern, clazz,
 					FieldAnnotation.fromVisitedField(this)));
-		else
-			suppressionMatcher.addSuppressor(new ClassWarningSuppressor(pattern, clazz));
-	}
+        else
+            suppressionMatcher.addSuppressor(new ClassWarningSuppressor(pattern, clazz));
+    }
 
-	public void report() {
+    public void report() {
 
-	}
+    }
 
 }

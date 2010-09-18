@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -33,86 +33,86 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * codebase entry.  This is needed for codebase entries in
  * nested zipfiles, which are implemented using a private
  * zipfile codebase.
- * 
+ *
  * @author David Hovemeyer
  */
 public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
-	private ICodeBase frontEndCodeBase;
-	private ICodeBaseEntry delegateCodeBaseEntry;
+    private ICodeBase frontEndCodeBase;
+    private ICodeBaseEntry delegateCodeBaseEntry;
 
-	public DelegatingCodeBaseEntry(ICodeBase frontEndCodeBase, ICodeBaseEntry delegateCodeBaseEntry) {
-		this.frontEndCodeBase = frontEndCodeBase;
-		this.delegateCodeBaseEntry = delegateCodeBaseEntry;
+    public DelegatingCodeBaseEntry(ICodeBase frontEndCodeBase, ICodeBaseEntry delegateCodeBaseEntry) {
+        this.frontEndCodeBase = frontEndCodeBase;
+        this.delegateCodeBaseEntry = delegateCodeBaseEntry;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
+     */
 	public int getNumBytes() {
-		return delegateCodeBaseEntry.getNumBytes();
-	}
+        return delegateCodeBaseEntry.getNumBytes();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
+     */
 	public String getResourceName() {
-		return delegateCodeBaseEntry.getResourceName();
-	}
+        return delegateCodeBaseEntry.getResourceName();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
+     */
 	public InputStream openResource() throws IOException {
-		return delegateCodeBaseEntry.openResource();
-	}
+        return delegateCodeBaseEntry.openResource();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
+     */
 	public ICodeBase getCodeBase() {
-		return frontEndCodeBase;
-	}
+        return frontEndCodeBase;
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
+     */
 	public ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
-		return delegateCodeBaseEntry.getClassDescriptor();
-	}
+        return delegateCodeBaseEntry.getClassDescriptor();
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java.lang.String)
-	 */
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java.lang.String)
+     */
 	public void overrideResourceName(String resourceName) {
-		delegateCodeBaseEntry.overrideResourceName(resourceName);
-	}
+        delegateCodeBaseEntry.overrideResourceName(resourceName);
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != this.getClass()) {
-			return false;
+    public boolean equals(Object obj) {
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
 		}
-		DelegatingCodeBaseEntry other = (DelegatingCodeBaseEntry) obj;
-		return this.frontEndCodeBase.equals(other.frontEndCodeBase)
-			&& this.delegateCodeBaseEntry.equals(other.delegateCodeBaseEntry);
+        DelegatingCodeBaseEntry other = (DelegatingCodeBaseEntry) obj;
+        return this.frontEndCodeBase.equals(other.frontEndCodeBase)
+            && this.delegateCodeBaseEntry.equals(other.delegateCodeBaseEntry);
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
 	@Override
-	public int hashCode() {
-		return 7919 * frontEndCodeBase.hashCode() + delegateCodeBaseEntry.hashCode();
-	}
+    public int hashCode() {
+        return 7919 * frontEndCodeBase.hashCode() + delegateCodeBaseEntry.hashCode();
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
 	@Override
-	public String toString() {
-		return delegateCodeBaseEntry.toString();
-	}
+    public String toString() {
+        return delegateCodeBaseEntry.toString();
+    }
 }

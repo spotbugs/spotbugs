@@ -1,17 +1,17 @@
 /*
  * Bytecode Analysis Framework
  * Copyright (C) 2003,2004 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -73,158 +73,158 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public class Invoke extends PatternElement {
 
-	/**
-	 * Match ordinary (non-constructor) instance invocations.
-	 */
+    /**
+     * Match ordinary (non-constructor) instance invocations.
+     */
 	public static final int INSTANCE = 1;
 
-	/**
-	 * Match static invocations.
-	 */
+    /**
+     * Match static invocations.
+     */
 	public static final int STATIC = 2;
 
-	/**
-	 * Match object constructor invocations.
-	 */
+    /**
+     * Match object constructor invocations.
+     */
 	public static final int CONSTRUCTOR = 4;
 
-	/**
-	 * Match ordinary methods (everything except constructors).
-	 */
+    /**
+     * Match ordinary methods (everything except constructors).
+     */
 	public static final int ORDINARY_METHOD = INSTANCE | STATIC;
 
-	/**
-	 * Match both static and instance invocations.
-	 */
+    /**
+     * Match both static and instance invocations.
+     */
 	public static final int ANY = INSTANCE | STATIC | CONSTRUCTOR;
 
-	private interface StringMatcher {
-		public boolean match(String s);
+    private interface StringMatcher {
+        public boolean match(String s);
+    }
+
+    private static class ExactStringMatcher implements StringMatcher {
+        private String value;
+
+        public ExactStringMatcher(String value) {
+            this.value = value;
+        }
+
+        public boolean match(String s) {
+            return s.equals(value);
+        }
 	}
 
-	private static class ExactStringMatcher implements StringMatcher {
-		private String value;
+    private static class RegexpStringMatcher implements StringMatcher {
+        private Pattern pattern;
 
-		public ExactStringMatcher(String value) {
-			this.value = value;
-		}
+        public RegexpStringMatcher(String re) {
+            pattern = Pattern.compile(re);
+        }
 
-		public boolean match(String s) {
-			return s.equals(value);
-		}
+        public boolean match(String s) {
+            return pattern.matcher(s).matches();
+        }
 	}
 
-	private static class RegexpStringMatcher implements StringMatcher {
-		private Pattern pattern;
+    private static class SubclassMatcher implements StringMatcher {
+        private String className;
 
-		public RegexpStringMatcher(String re) {
-			pattern = Pattern.compile(re);
-		}
+        public SubclassMatcher(String className) {
+            this.className = className;
+        }
 
-		public boolean match(String s) {
-			return pattern.matcher(s).matches();
-		}
-	}
-
-	private static class SubclassMatcher implements StringMatcher {
-		private String className;
-
-		public SubclassMatcher(String className) {
-			this.className = className;
-		}
-
-		public boolean match(String s) {
-			try {
-				return Hierarchy.isSubtype(s, className);
+        public boolean match(String s) {
+            try {
+                return Hierarchy.isSubtype(s, className);
 			} catch (ClassNotFoundException e) {
-				AnalysisContext.reportMissingClass(e);
-				return false;
-			}
+                AnalysisContext.reportMissingClass(e);
+                return false;
+            }
 		}
-	}
+    }
 
-	private final StringMatcher classNameMatcher;
-	private final StringMatcher methodNameMatcher;
-	private final StringMatcher methodSigMatcher;
+    private final StringMatcher classNameMatcher;
+    private final StringMatcher methodNameMatcher;
+    private final StringMatcher methodSigMatcher;
 	private final int mode;
 
-	/**
-	 * Constructor.
-	 *
+    /**
+     * Constructor.
+     *
 	 * @param className  the class name of the method; may be specified exactly,
-	 *                   as a regexp, or as a subtype match
-	 * @param methodName the name of the method; may be specified exactly or as a regexp
-	 * @param methodSig  the signature of the method; may be specified exactly or as a regexp
+     *                   as a regexp, or as a subtype match
+     * @param methodName the name of the method; may be specified exactly or as a regexp
+     * @param methodSig  the signature of the method; may be specified exactly or as a regexp
 	 * @param mode       the mode of invocation
-	 */
-	public Invoke(String className, String methodName, String methodSig, int mode,
-				  @Nullable RepositoryLookupFailureCallback lookupFailureCallback) {
+     */
+    public Invoke(String className, String methodName, String methodSig, int mode,
+                  @Nullable RepositoryLookupFailureCallback lookupFailureCallback) {
 		this.classNameMatcher = createClassMatcher(className);
-		this.methodNameMatcher = createMatcher(methodName);
-		this.methodSigMatcher = createMatcher(methodSig);
-		this.mode = mode;
+        this.methodNameMatcher = createMatcher(methodName);
+        this.methodSigMatcher = createMatcher(methodSig);
+        this.mode = mode;
 	}
 
-	private StringMatcher createClassMatcher(String s) {
-		return s.startsWith("+")
-				? new SubclassMatcher(s.substring(1))
+    private StringMatcher createClassMatcher(String s) {
+        return s.startsWith("+")
+                ? new SubclassMatcher(s.substring(1))
 				: createMatcher(s);
-	}
+    }
 
-	private StringMatcher createMatcher(String s) {
-		return s.startsWith("/")
-				? (StringMatcher) new RegexpStringMatcher(s.substring(1))
+    private StringMatcher createMatcher(String s) {
+        return s.startsWith("/")
+                ? (StringMatcher) new RegexpStringMatcher(s.substring(1))
 				: (StringMatcher) new ExactStringMatcher(s);
-	}
+    }
 
-	@Override
-		 public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-							 ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+    @Override
+         public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
+                             ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
-		// See if the instruction is an InvokeInstruction
-		Instruction ins = handle.getInstruction();
-		if (!(ins instanceof InvokeInstruction))
+        // See if the instruction is an InvokeInstruction
+        Instruction ins = handle.getInstruction();
+        if (!(ins instanceof InvokeInstruction))
 			return null;
-		InvokeInstruction inv = (InvokeInstruction) ins;
+        InvokeInstruction inv = (InvokeInstruction) ins;
 
-		String methodName = inv.getMethodName(cpg);
-		boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
-		boolean isCtor = methodName.equals("<init>");
+        String methodName = inv.getMethodName(cpg);
+        boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
+        boolean isCtor = methodName.equals("<init>");
 
-		int actualMode = 0;
+        int actualMode = 0;
 
-		if (isStatic) actualMode |= STATIC;
-		if (isCtor) actualMode |= CONSTRUCTOR;
-		if (!isStatic && !isCtor) actualMode |= INSTANCE;
+        if (isStatic) actualMode |= STATIC;
+        if (isCtor) actualMode |= CONSTRUCTOR;
+        if (!isStatic && !isCtor) actualMode |= INSTANCE;
 
-		// Intersection of actual and desired modes must be nonempty.
-		if ((actualMode & mode) == 0)
-			return null;
+        // Intersection of actual and desired modes must be nonempty.
+        if ((actualMode & mode) == 0)
+            return null;
 
-		// Check class name, method name, and method signature.
-		if (!methodNameMatcher.match(methodName) ||
-				!methodSigMatcher.match(inv.getSignature(cpg)) ||
+        // Check class name, method name, and method signature.
+        if (!methodNameMatcher.match(methodName) ||
+                !methodSigMatcher.match(inv.getSignature(cpg)) ||
 				!classNameMatcher.match(inv.getClassName(cpg)))
-			return null;
+            return null;
 
-		// It's a match!
-		return new MatchResult(this, bindingSet);
+        // It's a match!
+        return new MatchResult(this, bindingSet);
 
+    }
+
+    @Override
+         public boolean acceptBranch(Edge edge, InstructionHandle source) {
+        return true;
 	}
 
-	@Override
-		 public boolean acceptBranch(Edge edge, InstructionHandle source) {
-		return true;
+    @Override
+         public int minOccur() {
+        return 1;
 	}
 
-	@Override
-		 public int minOccur() {
-		return 1;
-	}
-
-	@Override
-		 public int maxOccur() {
-		return 1;
+    @Override
+         public int maxOccur() {
+        return 1;
 	}
 }
 

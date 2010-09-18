@@ -26,110 +26,110 @@ import javax.swing.UIManager;
 
 /**
  * Command line switches/options for GUI2.
- * 
+ *
  * @author David Hovemeyer
  */
 public class GUI2CommandLine extends FindBugsCommandLine {
-	private float fontSize = 12;
-	private boolean fontSizeSpecified = false;
-	private boolean docking = true;
+    private float fontSize = 12;
+    private boolean fontSizeSpecified = false;
+    private boolean docking = true;
 	private int priority = Thread.NORM_PRIORITY-1;
-	private File saveFile;
+    private File saveFile;
 
-	public GUI2CommandLine() {
-		// Additional constuctor just as hack for decoupling the core package from gui2 package
-		// please add all options in the super class 
+    public GUI2CommandLine() {
+        // Additional constuctor just as hack for decoupling the core package from gui2 package
+        // please add all options in the super class
 		super(true);
-	}
+    }
 
-	@Override
-	protected void handleOption(String option, String optionExtraPart) {
-		if (option.equals("-clear")) {
+    @Override
+    protected void handleOption(String option, String optionExtraPart) {
+        if (option.equals("-clear")) {
 			GUISaveState.clear();
-			System.exit(0);
-		} else if (option.equals("-d") || option.equals("--nodock")) {
-			docking = false;
+            System.exit(0);
+        } else if (option.equals("-d") || option.equals("--nodock")) {
+            docking = false;
 		} else if (option.equals("-look")) {
-			String arg = optionExtraPart;
-			String theme = null;
-			
+            String arg = optionExtraPart;
+            String theme = null;
+
 			if (arg.equals("plastic")) {
-				// You can get the Plastic look and feel from jgoodies.com:
-				//	http://www.jgoodies.com/downloads/libraries.html
-				// Just put "plastic.jar" in the lib directory, right next
+                // You can get the Plastic look and feel from jgoodies.com:
+                //	http://www.jgoodies.com/downloads/libraries.html
+                // Just put "plastic.jar" in the lib directory, right next
 				// to the other jar files.
-				theme = "com.jgoodies.plaf.plastic.PlasticXPLookAndFeel";
-			} else if (arg.equals("gtk")) {
-				theme = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
+                theme = "com.jgoodies.plaf.plastic.PlasticXPLookAndFeel";
+            } else if (arg.equals("gtk")) {
+                theme = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
 			} else if (arg.equals("native")) {
-				theme = UIManager.getSystemLookAndFeelClassName();
-			} else {
-				System.err.println("Style '" + arg + "' not supported");
+                theme = UIManager.getSystemLookAndFeelClassName();
+            } else {
+                System.err.println("Style '" + arg + "' not supported");
 			}
 
-			if (theme != null) {
-				try {
-					UIManager.setLookAndFeel(theme);
+            if (theme != null) {
+                try {
+                    UIManager.setLookAndFeel(theme);
 				} catch (Exception e) {
-					System.err.println("Couldn't load " + arg +
-						" look and feel: " + e.toString());
-				}
+                    System.err.println("Couldn't load " + arg +
+                        " look and feel: " + e.toString());
+                }
 			}
-		} else {
-			super.handleOption(option, optionExtraPart);
-		}
+        } else {
+            super.handleOption(option, optionExtraPart);
+        }
 	}
 
-	@Override
-	protected void handleOptionWithArgument(String option, String argument) throws IOException {
-		if (option.equals("-f")) {
+    @Override
+    protected void handleOptionWithArgument(String option, String argument) throws IOException {
+        if (option.equals("-f")) {
 			try {
-				fontSize = Float.parseFloat(argument);
-				fontSizeSpecified = true;
-			} catch (NumberFormatException e) {
+                fontSize = Float.parseFloat(argument);
+                fontSizeSpecified = true;
+            } catch (NumberFormatException e) {
 				// ignore
-			}
-		} else if (option.equals("-priority")) {
-			try {
+            }
+        } else if (option.equals("-priority")) {
+            try {
 				priority = Integer.parseInt(argument);
-			} catch (NumberFormatException e) {
-				// ignore
-			}
+            } catch (NumberFormatException e) {
+                // ignore
+            }
 		} else if (option.equals("-loadBugs") || option.equals("-loadbugs")) {
-			saveFile = new File(argument);
-			if (!saveFile.exists()) {
-				System.err.println("Bugs file \"" + argument + "\" could not be found");
+            saveFile = new File(argument);
+            if (!saveFile.exists()) {
+                System.err.println("Bugs file \"" + argument + "\" could not be found");
 				System.exit(1);
-			}
-		} else {
-			super.handleOptionWithArgument(option, argument);
+            }
+        } else {
+            super.handleOptionWithArgument(option, argument);
 		}
-	}
+    }
 
-	public float getFontSize() {
-		return fontSize;
-	}
+    public float getFontSize() {
+        return fontSize;
+    }
 	public boolean isFontSizeSpecified() {
-		return fontSizeSpecified;
-	}
-	
+        return fontSizeSpecified;
+    }
+
 	public boolean getDocking() {
-		return docking;
-	}
-	
+        return docking;
+    }
+
 	public void setDocking(boolean docking) {
-		this.docking = docking;
-	}
+        this.docking = docking;
+    }
 
-	public int getPriority() {
-		return priority;
-	}
+    public int getPriority() {
+        return priority;
+    }
 
-	public File getSaveFile() {
-		return saveFile;
-	}
+    public File getSaveFile() {
+        return saveFile;
+    }
 	
-	public void setSaveFile(File saveFile) {
-		this.saveFile = saveFile;
-	}
+    public void setSaveFile(File saveFile) {
+        this.saveFile = saveFile;
+    }
 }

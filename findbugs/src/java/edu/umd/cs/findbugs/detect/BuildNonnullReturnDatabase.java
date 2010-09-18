@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2005, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -43,75 +43,75 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 
 /**
  * Build database of methods that return values guaranteed to be nonnull
- * 
+ *
  */
 public class BuildNonnullReturnDatabase {
-	public static final boolean VERBOSE_DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg.verbose");
-	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg") || VERBOSE_DEBUG;
+    public static final boolean VERBOSE_DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg.verbose");
+    private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg") || VERBOSE_DEBUG;
 
-	public void visitClassContext(ClassContext classContext) {
-		boolean fullAnalysis = AnalysisContext.currentAnalysisContext().getBoolProperty(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES);
-		if (!fullAnalysis && !AnalysisContext.currentAnalysisContext()./*getSubtypes().*/isApplicationClass(classContext.getJavaClass()))
+    public void visitClassContext(ClassContext classContext) {
+        boolean fullAnalysis = AnalysisContext.currentAnalysisContext().getBoolProperty(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES);
+        if (!fullAnalysis && !AnalysisContext.currentAnalysisContext()./*getSubtypes().*/isApplicationClass(classContext.getJavaClass()))
 				return;
-		if (VERBOSE_DEBUG) System.out.println("Visiting class " + classContext.getJavaClass().getClassName());
+        if (VERBOSE_DEBUG) System.out.println("Visiting class " + classContext.getJavaClass().getClassName());
 
-		for(Method m : classContext.getMethodsInCallOrder()) 
-			considerMethod(classContext, m);
-	}
+        for(Method m : classContext.getMethodsInCallOrder())
+            considerMethod(classContext, m);
+    }
 
 
-	private void considerMethod(ClassContext classContext, Method method) {
-		if ((method.getReturnType() instanceof ReferenceType)  && classContext.getMethodGen(method) != null) {
-			if (VERBOSE_DEBUG) System.out.println("Check " + method);
+    private void considerMethod(ClassContext classContext, Method method) {
+        if ((method.getReturnType() instanceof ReferenceType)  && classContext.getMethodGen(method) != null) {
+            if (VERBOSE_DEBUG) System.out.println("Check " + method);
 			analyzeMethod(classContext, method);
-		}
-	}
-	protected int returnsReference;
+        }
+    }
+    protected int returnsReference;
 	protected int returnsNonNull;
 
-	private void analyzeMethod(ClassContext classContext, Method method) {
-		returnsReference++;
-		try {
+    private void analyzeMethod(ClassContext classContext, Method method) {
+        returnsReference++;
+        try {
 			CFG cfg = classContext.getCFG(method);
 
-			IsNullValueDataflow inv = classContext.getIsNullValueDataflow(method);
-			boolean guaranteedNonNull = true;
-			for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+            IsNullValueDataflow inv = classContext.getIsNullValueDataflow(method);
+            boolean guaranteedNonNull = true;
+            for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 				Location location = i.next();
-				InstructionHandle handle = location.getHandle();
-				Instruction ins = handle.getInstruction();
+                InstructionHandle handle = location.getHandle();
+                Instruction ins = handle.getInstruction();
 
-				if (!(ins instanceof ARETURN)) continue;
-				IsNullValueFrame frame = inv.getFactAtLocation(location);
-				if (!frame.isValid()) continue;
+                if (!(ins instanceof ARETURN)) continue;
+                IsNullValueFrame frame = inv.getFactAtLocation(location);
+                if (!frame.isValid()) continue;
 				IsNullValue value = frame.getTopValue();
-				if (!value.isDefinitelyNotNull()) {
-					guaranteedNonNull = false;
-					break;
+                if (!value.isDefinitelyNotNull()) {
+                    guaranteedNonNull = false;
+                    break;
 				}
 
-			}
+            }
 
-			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-			if (guaranteedNonNull) {
-				returnsNonNull++;
+            XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+            if (guaranteedNonNull) {
+                returnsNonNull++;
 				AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase()
-					.setProperty(xmethod.getMethodDescriptor(), guaranteedNonNull);
-				if (DEBUG) 
-					System.out.println("Unconditional deref: " + xmethod + "=" + guaranteedNonNull);
+                    .setProperty(xmethod.getMethodDescriptor(), guaranteedNonNull);
+                if (DEBUG)
+                    System.out.println("Unconditional deref: " + xmethod + "=" + guaranteedNonNull);
 
-				}
+                }
 
-		} catch (CFGBuilderException e) {
+        } catch (CFGBuilderException e) {
+            XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+
+            AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError(
+                    "Error analyzing " + xmethod + " for unconditional deref training", e);
+        } catch (DataflowAnalysisException e) {
 			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-
-			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError(
-					"Error analyzing " + xmethod + " for unconditional deref training", e);
-		} catch (DataflowAnalysisException e) {
-			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-			   AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError(
-					"Error analyzing " + xmethod + " for unconditional deref training", e);
-		}
+               AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError(
+                    "Error analyzing " + xmethod + " for unconditional deref training", e);
+        }
 	}
 
 }

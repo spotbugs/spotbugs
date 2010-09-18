@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2004, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -38,94 +38,94 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
  * of calling a method on an object.
  */
 public class MethodReturnValueStreamFactory implements StreamFactory {
-	private static final BitSet invokeOpcodeSet = new BitSet();
+    private static final BitSet invokeOpcodeSet = new BitSet();
 
-	static {
-		invokeOpcodeSet.set(Constants.INVOKEINTERFACE);
-		invokeOpcodeSet.set(Constants.INVOKESPECIAL);
+    static {
+        invokeOpcodeSet.set(Constants.INVOKEINTERFACE);
+        invokeOpcodeSet.set(Constants.INVOKESPECIAL);
 		invokeOpcodeSet.set(Constants.INVOKESTATIC);
-		invokeOpcodeSet.set(Constants.INVOKEVIRTUAL);
-	}
+        invokeOpcodeSet.set(Constants.INVOKEVIRTUAL);
+    }
 
-	private ObjectType baseClassType;
-	private String methodName;
-	private String methodSig;
+    private ObjectType baseClassType;
+    private String methodName;
+    private String methodSig;
 	private boolean isUninteresting;
-	private String bugType;
+    private String bugType;
 
-	/**
-	 * Constructor.
-	 * The Streams created will be marked as uninteresting.
+    /**
+     * Constructor.
+     * The Streams created will be marked as uninteresting.
 	 *
-	 * @param baseClass  base class through which the method will be
-	 *                   called (we check instances of the base class and all subtypes)
-	 * @param methodName name of the method called
+     * @param baseClass  base class through which the method will be
+     *                   called (we check instances of the base class and all subtypes)
+     * @param methodName name of the method called
 	 * @param methodSig  signature of the method called
-	 */
-	public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig) {
-		this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
+     */
+    public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig) {
+        this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
 		this.methodName = methodName;
-		this.methodSig = methodSig;
-		this.isUninteresting = true;
-	}
+        this.methodSig = methodSig;
+        this.isUninteresting = true;
+    }
 
-	/**
-	 * Constructor.
-	 * The Streams created will be marked as interesting.
+    /**
+     * Constructor.
+     * The Streams created will be marked as interesting.
 	 *
-	 * @param baseClass  base class through which the method will be
-	 *                   called (we check instances of the base class and all subtypes)
-	 * @param methodName name of the method called
+     * @param baseClass  base class through which the method will be
+     *                   called (we check instances of the base class and all subtypes)
+     * @param methodName name of the method called
 	 * @param methodSig  signature of the method called
-	 * @param bugType    the bug type that should be reported if
-	 *                   the stream is not closed on all paths out of the method
-	 */
+     * @param bugType    the bug type that should be reported if
+     *                   the stream is not closed on all paths out of the method
+     */
 	public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig,
-										  String bugType) {
-		this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
-		this.methodName = methodName;
+                                          String bugType) {
+        this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
+        this.methodName = methodName;
 		this.methodSig = methodSig;
-		this.isUninteresting = false;
-		this.bugType = bugType;
-	}
+        this.isUninteresting = false;
+        this.bugType = bugType;
+    }
 
-	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-							   RepositoryLookupFailureCallback lookupFailureCallback) {
+    public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
+                               RepositoryLookupFailureCallback lookupFailureCallback) {
 
-		try {
-			Instruction ins = location.getHandle().getInstruction();
+        try {
+            Instruction ins = location.getHandle().getInstruction();
 
-			// For now, just support instance methods
-			short opcode = ins.getOpcode();
-			if (!invokeOpcodeSet.get(opcode))
+            // For now, just support instance methods
+            short opcode = ins.getOpcode();
+            if (!invokeOpcodeSet.get(opcode))
 				return null;
 
-			// Is invoked class a subtype of the base class we want
-			// FIXME: should test be different for INVOKESPECIAL and INVOKESTATIC?
-			InvokeInstruction inv = (InvokeInstruction) ins;
+            // Is invoked class a subtype of the base class we want
+            // FIXME: should test be different for INVOKESPECIAL and INVOKESTATIC?
+            InvokeInstruction inv = (InvokeInstruction) ins;
 			ReferenceType classType = inv.getReferenceType(cpg);
-			if (!Hierarchy.isSubtype(classType, baseClassType))
-				return null;
+            if (!Hierarchy.isSubtype(classType, baseClassType))
+                return null;
 
-			// See if method name and signature match
-			String methodName = inv.getMethodName(cpg);
-			String methodSig = inv.getSignature(cpg);
+            // See if method name and signature match
+            String methodName = inv.getMethodName(cpg);
+            String methodSig = inv.getSignature(cpg);
 			if (!this.methodName.equals(methodName) || !this.methodSig.equals(methodSig))
-				return null;
+                return null;
 
-			String streamClass = type.getClassName();
-			Stream result = new Stream(location, streamClass, streamClass)
-					.setIgnoreImplicitExceptions(true)
+            String streamClass = type.getClassName();
+            Stream result = new Stream(location, streamClass, streamClass)
+                    .setIgnoreImplicitExceptions(true)
 					.setIsOpenOnCreation(true);
-			if (!isUninteresting)
-				result.setInteresting(bugType);
-			return result;
+            if (!isUninteresting)
+                result.setInteresting(bugType);
+            return result;
 		} catch (ClassNotFoundException e) {
-			lookupFailureCallback.reportMissingClass(e);
-		}
+            lookupFailureCallback.reportMissingClass(e);
+        }
 
-		return null;
-	}
+        return null;
+    }
 }
 
 // vim:ts=3

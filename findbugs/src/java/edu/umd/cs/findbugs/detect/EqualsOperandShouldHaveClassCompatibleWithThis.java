@@ -43,98 +43,98 @@ import java.util.Set;
 
 public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackDetector implements FirstPassDetector {
 
-	
-	final BugReporter bugReporter;
-	final BugAccumulator bugAccumulator;
 
-	final ClassSummary classSummary = new ClassSummary();
-	
-		
+    final BugReporter bugReporter;
+    final BugAccumulator bugAccumulator;
+
+    final ClassSummary classSummary = new ClassSummary();
+
+
 	public EqualsOperandShouldHaveClassCompatibleWithThis(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-		this.bugAccumulator = new BugAccumulator(bugReporter);
-		AnalysisContext context = AnalysisContext.currentAnalysisContext();
+        this.bugReporter = bugReporter;
+        this.bugAccumulator = new BugAccumulator(bugReporter);
+        AnalysisContext context = AnalysisContext.currentAnalysisContext();
 		context.setClassSummary(classSummary);
-		}
+        }
 
-    
+
     @Override
     public void visit(Code obj) {
-    	if (getMethodName().equals("equals") && getMethodSig().equals("(Ljava/lang/Object;)Z") ) {
-    		super.visit(obj);
-    		if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass()))
+        if (getMethodName().equals("equals") && getMethodSig().equals("(Ljava/lang/Object;)Z") ) {
+            super.visit(obj);
+            if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass()))
     				bugAccumulator.reportAccumulatedBugs();
-    		bugAccumulator.clearBugs();
-    	}
-    	
+            bugAccumulator.clearBugs();
+        }
+
     }
- 
-	/* (non-Javadoc)
+
+    /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
      */
     @Override
     public void sawOpcode(int seen) {
-    	if (seen == INVOKEVIRTUAL) {
-    		if (getNameConstantOperand().equals("equals") && getSigConstantOperand().equals("(Ljava/lang/Object;)Z")) {
-    			OpcodeStack.Item item = stack.getStackItem(1);
+        if (seen == INVOKEVIRTUAL) {
+            if (getNameConstantOperand().equals("equals") && getSigConstantOperand().equals("(Ljava/lang/Object;)Z")) {
+                OpcodeStack.Item item = stack.getStackItem(1);
     			ClassDescriptor c = DescriptorFactory.createClassDescriptorFromSignature(item.getSignature());
-    			check(c);
-				 
-    		} else if (getClassConstantOperand().equals("java/lang/Class") 
+                check(c);
+
+            } else if (getClassConstantOperand().equals("java/lang/Class")
     					&& (getNameConstantOperand().equals("isInstance") || getNameConstantOperand().equals("cast"))
-    				) {
-    			 OpcodeStack.Item item = stack.getStackItem(1);
-    			 if (item.getSignature().equals("Ljava/lang/Class;")) {
+                    ) {
+                 OpcodeStack.Item item = stack.getStackItem(1);
+                 if (item.getSignature().equals("Ljava/lang/Class;")) {
     				 Object value = item.getConstant();
-    				 if (value instanceof String) {
-    					 ClassDescriptor c = DescriptorFactory.createClassDescriptor((String)value);
-    					 check(c);
+                     if (value instanceof String) {
+                         ClassDescriptor c = DescriptorFactory.createClassDescriptor((String)value);
+                         check(c);
     				 }
-    			 }
-    			    
-    		}
+                 }
+
+            }
     		
-    	}
-    	else if (seen == INSTANCEOF || seen == CHECKCAST) {
-	    	check(getClassDescriptorOperand());
+        }
+        else if (seen == INSTANCEOF || seen == CHECKCAST) {
+            check(getClassDescriptorOperand());
 	    }
-	    
+
     }
 
 
-	/**
-     * 
+    /**
+     *
      */
     private void check(ClassDescriptor c) {
-	    OpcodeStack.Item item = stack.getStackItem(0);
-	    if (item.isInitialParameter() && item.getRegisterNumber() == 1) {
-	    	ClassDescriptor thisClassDescriptor = getClassDescriptor();
+        OpcodeStack.Item item = stack.getStackItem(0);
+        if (item.isInitialParameter() && item.getRegisterNumber() == 1) {
+            ClassDescriptor thisClassDescriptor = getClassDescriptor();
 	    	if (c.equals(thisClassDescriptor)) return;
-	    	Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-	    	try {
-	            if (!c.isArray() 
+            Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+            try {
+                if (!c.isArray()
 	            		&& (subtypes2.isSubtype(c, thisClassDescriptor) || subtypes2.isSubtype(thisClassDescriptor,c))) return;
-	        
-	            Type thisType = Type.getType(thisClassDescriptor.getSignature());
-	            Type cType = Type.getType(c.getSignature());
+
+                Type thisType = Type.getType(thisClassDescriptor.getSignature());
+                Type cType = Type.getType(c.getSignature());
 	            IncompatibleTypes check = IncompatibleTypes.getPriorityForAssumingCompatible(thisType, cType, false);
-	            int priority = check.getPriority();
-	            if ("java/lang/Object".equals(getSuperclassName()) && ClassName.isAnonymous(getClassName()))
-	            		priority++;
+                int priority = check.getPriority();
+                if ("java/lang/Object".equals(getSuperclassName()) && ClassName.isAnonymous(getClassName()))
+                        priority++;
 	            bugAccumulator.accumulateBug(new BugInstance(this, "EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS", priority).addClassAndMethod(this)
-	            		.addType(c).describe(TypeAnnotation.FOUND_ROLE), this);
-	            classSummary.checksForEqualTo(thisClassDescriptor, c);
-	            
+                        .addType(c).describe(TypeAnnotation.FOUND_ROLE), this);
+                classSummary.checksForEqualTo(thisClassDescriptor, c);
+
 	    		
-	    	} catch (ClassNotFoundException e) {
-	            bugReporter.reportMissingClass(e);
-	        } 
+            } catch (ClassNotFoundException e) {
+                bugReporter.reportMissingClass(e);
+            }
 	    	
-	    	
-	    	
-	    	
+
+
+
 	    }
     }
 
-	
+
 }

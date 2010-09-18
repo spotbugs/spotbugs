@@ -37,7 +37,7 @@ import junit.framework.TestSuite;
  * Run all of the JUnit tests in a jar file using the JUnit textui. There might
  * be a simple way of doing this directly with JUnit. However, I'm lazy and
  * impatient, and writing some code to do this was very simple.
- * 
+ *
  * @author David Hovemeyer
  */
 public class JUnitJarRunner {
@@ -47,7 +47,7 @@ public class JUnitJarRunner {
 
     /**
      * Constructor.
-     * 
+     *
      * @param jarFileName
      *            name of jar file to load tests from
      */
@@ -58,7 +58,7 @@ public class JUnitJarRunner {
     /**
      * Set the classpath containing the code to be tested (if it is not already
      * on the system classpath).
-     * 
+     *
      * @param classpath
      *            the classpath
      */
@@ -68,7 +68,7 @@ public class JUnitJarRunner {
 
     /**
      * Build a TestSuite of all the tests contained in the jar file.
-     * 
+     *
      * @return TestSuite for running all of the tests in the jar file
      */
     public TestSuite buildTestSuite() throws Exception {

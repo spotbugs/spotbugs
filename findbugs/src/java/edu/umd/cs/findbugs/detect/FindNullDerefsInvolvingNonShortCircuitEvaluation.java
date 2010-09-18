@@ -49,153 +49,153 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStackDetector {
 
-	private static boolean DEBUG = false;
+    private static boolean DEBUG = false;
 
-	BugReporter bugReporter;
+    BugReporter bugReporter;
 
-	public FindNullDerefsInvolvingNonShortCircuitEvaluation(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    public FindNullDerefsInvolvingNonShortCircuitEvaluation(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-	@Override
-	public void visit(Code code) {
-		boolean interesting = true;
+    @Override
+    public void visit(Code code) {
+        boolean interesting = true;
 		if (interesting) {
-			// initialize any variables we want to initialize for the method
-			super.visit(code); // make callbacks to sawOpcode for all opcodes
-		}
+            // initialize any variables we want to initialize for the method
+            super.visit(code); // make callbacks to sawOpcode for all opcodes
+        }
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+    /*
+     * (non-Javadoc)
+     *
 	 * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
-	 */
-	@Override
-	public void sawOpcode(int seen) {
+     */
+    @Override
+    public void sawOpcode(int seen) {
 		if (seen == IAND || seen == IOR) {
 
-			int nextOpcode = getCodeByte(getPC() + 1);
-			if (nextOpcode == IFEQ || nextOpcode == IFNE) {
-				OpcodeStack.Item left = stack.getStackItem(1);
+            int nextOpcode = getCodeByte(getPC() + 1);
+            if (nextOpcode == IFEQ || nextOpcode == IFNE) {
+                OpcodeStack.Item left = stack.getStackItem(1);
 				OpcodeStack.Item right = stack.getStackItem(0);
-				checkForNullForcingABranch(seen, nextOpcode, left);
-				checkForNullForcingABranch(seen, nextOpcode, right);
-			}
+                checkForNullForcingABranch(seen, nextOpcode, left);
+                checkForNullForcingABranch(seen, nextOpcode, right);
+            }
 
-		}
-	}
+        }
+    }
 
-	private void checkForNullForcingABranch(int seen, int nextOpcode, OpcodeStack.Item item) {
-		if (nullGuaranteesBranch(seen, item)) {
-			// null guarantees a branch
+    private void checkForNullForcingABranch(int seen, int nextOpcode, OpcodeStack.Item item) {
+        if (nullGuaranteesBranch(seen, item)) {
+            // null guarantees a branch
 			boolean nullGuaranteesZero = seen == IAND;
-			boolean nullGuaranteesBranch = nullGuaranteesZero ^ (nextOpcode == IFNE);
-			if (DEBUG)
-				System.out.println(item.getPC() + " null guarantees " + nullGuaranteesBranch + " branch");
+            boolean nullGuaranteesBranch = nullGuaranteesZero ^ (nextOpcode == IFNE);
+            if (DEBUG)
+                System.out.println(item.getPC() + " null guarantees " + nullGuaranteesBranch + " branch");
 			try {
-				CFG cfg = getClassContext().getCFG(getMethod());
-				Location produced = findLocation(cfg, item.getPC());
-				Location branch = findLocation(cfg, getPC() + 1);
+                CFG cfg = getClassContext().getCFG(getMethod());
+                Location produced = findLocation(cfg, item.getPC());
+                Location branch = findLocation(cfg, getPC() + 1);
 				if (produced == null || branch == null)
-					return;
+                    return;
 
-				IfInstruction branchInstruction = (IfInstruction) branch.getHandle().getInstruction();
+                IfInstruction branchInstruction = (IfInstruction) branch.getHandle().getInstruction();
 
-				IsNullValueDataflow isNullValueDataflow = getClassContext().getIsNullValueDataflow(getMethod());
-				ValueNumberDataflow valueNumberDataflow = getClassContext().getValueNumberDataflow(getMethod());
-				UnconditionalValueDerefDataflow unconditionalValueDerefDataflow = getClassContext()
+                IsNullValueDataflow isNullValueDataflow = getClassContext().getIsNullValueDataflow(getMethod());
+                ValueNumberDataflow valueNumberDataflow = getClassContext().getValueNumberDataflow(getMethod());
+                UnconditionalValueDerefDataflow unconditionalValueDerefDataflow = getClassContext()
 				        .getUnconditionalValueDerefDataflow(getMethod());
-				ValueNumberFrame valueNumberFact = valueNumberDataflow.getFactAtLocation(produced);
-				IsNullValueFrame isNullFact = isNullValueDataflow.getFactAtLocation(produced);
-				ValueNumber value = valueNumberFact.getTopValue();
+                ValueNumberFrame valueNumberFact = valueNumberDataflow.getFactAtLocation(produced);
+                IsNullValueFrame isNullFact = isNullValueDataflow.getFactAtLocation(produced);
+                ValueNumber value = valueNumberFact.getTopValue();
 				if (isNullFact.getTopValue().isDefinitelyNotNull())
-					return;
-				if (DEBUG) {
-					System.out.println("Produced: " + produced);
+                    return;
+                if (DEBUG) {
+                    System.out.println("Produced: " + produced);
 					System.out.println(valueNumberFact);
-					System.out.println(isNullFact);
-					System.out.println("value: " + value);
-					System.out.println("branch: " + branch);
+                    System.out.println(isNullFact);
+                    System.out.println("value: " + value);
+                    System.out.println("branch: " + branch);
 					System.out.println("instruction: " + branchInstruction);
-					System.out.println("target: " + branchInstruction.getTarget());
-					System.out.println("next: " + branch.getHandle().getNext());
-				}
+                    System.out.println("target: " + branchInstruction.getTarget());
+                    System.out.println("next: " + branch.getHandle().getNext());
+                }
 				Location guaranteed = findLocation(cfg, nullGuaranteesBranch ? branchInstruction.getTarget() : branch.getHandle()
-				        .getNext());
-				if (guaranteed == null)
-					return;
+                        .getNext());
+                if (guaranteed == null)
+                    return;
 
-				UnconditionalValueDerefSet unconditionalDeref = unconditionalValueDerefDataflow.getFactAtLocation(guaranteed);
-				if (DEBUG) {
-					System.out.println("Guaranteed on null: " + guaranteed);
+                UnconditionalValueDerefSet unconditionalDeref = unconditionalValueDerefDataflow.getFactAtLocation(guaranteed);
+                if (DEBUG) {
+                    System.out.println("Guaranteed on null: " + guaranteed);
 					System.out.println(unconditionalDeref);
-				}
+                }
 
-				if (unconditionalDeref.isUnconditionallyDereferenced(value)) {
-					SourceLineAnnotation tested = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), getMethod(),
-					        produced);
+                if (unconditionalDeref.isUnconditionallyDereferenced(value)) {
+                    SourceLineAnnotation tested = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), getMethod(),
+                            produced);
 					BugAnnotation variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(getMethod(), produced,
-					        value, valueNumberFact, "VALUE_OF");
-					Set<Location> unconditionalDerefLocationSet = unconditionalDeref.getUnconditionalDerefLocationSet(value);
+                            value, valueNumberFact, "VALUE_OF");
+                    Set<Location> unconditionalDerefLocationSet = unconditionalDeref.getUnconditionalDerefLocationSet(value);
 
-					BugInstance bug;
-					if (unconditionalDerefLocationSet.size() > 1) {
-						bug = new BugInstance(this, "NP_GUARANTEED_DEREF", NORMAL_PRIORITY).addClassAndMethod(this);
+                    BugInstance bug;
+                    if (unconditionalDerefLocationSet.size() > 1) {
+                        bug = new BugInstance(this, "NP_GUARANTEED_DEREF", NORMAL_PRIORITY).addClassAndMethod(this);
 						bug.addOptionalAnnotation(variableAnnotation);
-						bug.addSourceLine(tested).describe("SOURCE_LINE_KNOWN_NULL");
+                        bug.addSourceLine(tested).describe("SOURCE_LINE_KNOWN_NULL");
+                        for (Location dereferenced : unconditionalDerefLocationSet)
+                            bug.addSourceLine(getClassContext(), getMethod(), dereferenced).describe("SOURCE_LINE_DEREF");
+
+                    } else {
+                        bug = new BugInstance(this, "NP_NULL_ON_SOME_PATH", NORMAL_PRIORITY).addClassAndMethod(this);
+                        bug.addOptionalAnnotation(variableAnnotation);
 						for (Location dereferenced : unconditionalDerefLocationSet)
-							bug.addSourceLine(getClassContext(), getMethod(), dereferenced).describe("SOURCE_LINE_DEREF");
+                            bug.addSourceLine(getClassContext(), getMethod(), dereferenced).describe("SOURCE_LINE_DEREF");
 
-					} else {
-						bug = new BugInstance(this, "NP_NULL_ON_SOME_PATH", NORMAL_PRIORITY).addClassAndMethod(this);
-						bug.addOptionalAnnotation(variableAnnotation);
-						for (Location dereferenced : unconditionalDerefLocationSet)
-							bug.addSourceLine(getClassContext(), getMethod(), dereferenced).describe("SOURCE_LINE_DEREF");
+                        bug.addSourceLine(tested).describe("SOURCE_LINE_KNOWN_NULL");
 
-						bug.addSourceLine(tested).describe("SOURCE_LINE_KNOWN_NULL");
+                    }
 
-					}
+                    bugReporter.reportBug(bug);
+                }
 
-					bugReporter.reportBug(bug);
-				}
-
-			} catch (DataflowAnalysisException e) {
+            } catch (DataflowAnalysisException e) {
+                bugReporter.logError("Error getting analysis for " + getFullyQualifiedMethodName(), e);
+            } catch (CFGBuilderException e) {
 				bugReporter.logError("Error getting analysis for " + getFullyQualifiedMethodName(), e);
-			} catch (CFGBuilderException e) {
-				bugReporter.logError("Error getting analysis for " + getFullyQualifiedMethodName(), e);
-			}
+            }
 
-		}
-	}
+        }
+    }
 
-	@CheckForNull
-	Location findLocation(CFG cfg, int pc) {
-		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+    @CheckForNull
+    Location findLocation(CFG cfg, int pc) {
+        for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location loc = i.next();
-			if (loc.getHandle().getPosition() == pc)
-				return loc;
-		}
+            if (loc.getHandle().getPosition() == pc)
+                return loc;
+        }
 		return null;
-	}
+    }
 
-	@CheckForNull
-	Location findLocation(CFG cfg, InstructionHandle handle) {
-		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+    @CheckForNull
+    Location findLocation(CFG cfg, InstructionHandle handle) {
+        for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location loc = i.next();
-			if (loc.getHandle() == handle)
-				return loc;
-		}
+            if (loc.getHandle() == handle)
+                return loc;
+        }
 		return null;
+    }
+
+    private boolean nullGuaranteesBranch(int seen, OpcodeStack.Item item) {
+        return item.getSpecialKind() == OpcodeStack.Item.ZERO_MEANS_NULL && seen == IAND
+                || item.getSpecialKind() == OpcodeStack.Item.NONZERO_MEANS_NULL && seen == IOR;
 	}
 
-	private boolean nullGuaranteesBranch(int seen, OpcodeStack.Item item) {
-		return item.getSpecialKind() == OpcodeStack.Item.ZERO_MEANS_NULL && seen == IAND
-		        || item.getSpecialKind() == OpcodeStack.Item.NONZERO_MEANS_NULL && seen == IOR;
-	}
-
-	private void emitWarning() {
-		System.out.println("Warn about " + getMethodName()); // TODO
-	}
+    private void emitWarning() {
+        System.out.println("Warn about " + getMethodName()); // TODO
+    }
 
 }

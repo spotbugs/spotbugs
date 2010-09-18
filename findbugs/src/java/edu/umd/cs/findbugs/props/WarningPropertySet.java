@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2005, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -33,242 +33,242 @@ import edu.umd.cs.findbugs.Priorities;
  * WarningPropertySet is useful for collecting heuristics to use in the
  * determination of whether or not a warning is a false positive, or what the
  * warning's priority should be.
- * 
+ *
  * @author David Hovemeyer
  */
 public class WarningPropertySet<T extends WarningProperty> implements Cloneable {
-	private Map<T, Object> map;
+    private Map<T, Object> map;
 
-	@Override
-	public String toString() {
-		StringBuilder buf = new StringBuilder("{ ");
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder("{ ");
 		for (Map.Entry<T, Object> entry : map.entrySet()) {
-			WarningProperty prop = entry.getKey();
-			Object attribute = entry.getValue();
-			buf.append("  ");
+            WarningProperty prop = entry.getKey();
+            Object attribute = entry.getValue();
+            buf.append("  ");
 			buf.append(prop.getPriorityAdjustment());
-			buf.append("\t");
-			buf.append(prop.getName());
-			buf.append("\t");
+            buf.append("\t");
+            buf.append(prop.getName());
+            buf.append("\t");
 			buf.append(attribute);
-			buf.append("\n");
-		}
-		buf.append("}\n");
+            buf.append("\n");
+        }
+        buf.append("}\n");
 		return buf.toString();
-	}
+    }
 
-	/**
-	 * Constructor Creates empty object.
-	 */
+    /**
+     * Constructor Creates empty object.
+     */
 	public WarningPropertySet() {
-		this.map = new HashMap<T, Object>();
-	}
+        this.map = new HashMap<T, Object>();
+    }
 
-	@Override
-	public Object clone() {
-		try {
+    @Override
+    public Object clone() {
+        try {
 			return super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new AssertionError(e);
-		}
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
 	}
 
-	/**
-	 * Add a warning property to the set. The warning implicitly has the boolean
-	 * value "true" as its attribute.
+    /**
+     * Add a warning property to the set. The warning implicitly has the boolean
+     * value "true" as its attribute.
 	 * 
-	 * @param prop
-	 *            the WarningProperty
-	 * @return this object
+     * @param prop
+     *            the WarningProperty
+     * @return this object
 	 */
-	public WarningPropertySet<T> addProperty(T prop) {
-		map.put(prop, Boolean.TRUE);
-		return this;
+    public WarningPropertySet<T> addProperty(T prop) {
+        map.put(prop, Boolean.TRUE);
+        return this;
 	}
 
-	/**
-	 * Remove a warning property from the set.
-	 * 
+    /**
+     * Remove a warning property from the set.
+     *
 	 * @param prop
-	 *            the WarningProperty
-	 * @return this object
-	 */
+     *            the WarningProperty
+     * @return this object
+     */
 	public WarningPropertySet<T> removeProperty(T prop) {
-		map.remove(prop);
-		return this;
-	}
+        map.remove(prop);
+        return this;
+    }
 
-	/**
-	 * Add a warning property and its attribute value.
-	 * 
+    /**
+     * Add a warning property and its attribute value.
+     *
 	 * @param prop
-	 *            the WarningProperty
-	 * @param value
-	 *            the attribute value
+     *            the WarningProperty
+     * @param value
+     *            the attribute value
 	 * @return this object
-	 */
-	public WarningPropertySet<T> setProperty(T prop, String value) {
-		map.put(prop, value);
+     */
+    public WarningPropertySet<T> setProperty(T prop, String value) {
+        map.put(prop, value);
 		return this;
-	}
+    }
 
-	/**
-	 * Add a warning property and its attribute value.
-	 * 
+    /**
+     * Add a warning property and its attribute value.
+     *
 	 * @param prop
-	 *            the WarningProperty
-	 * @param value
-	 *            the attribute value
+     *            the WarningProperty
+     * @param value
+     *            the attribute value
 	 */
-	public void setProperty(T prop, Boolean value) {
-		map.put(prop, value);
-	}
+    public void setProperty(T prop, Boolean value) {
+        map.put(prop, value);
+    }
 
-	/**
-	 * Return whether or not the set contains the given WarningProperty.
-	 * 
+    /**
+     * Return whether or not the set contains the given WarningProperty.
+     *
 	 * @param prop
-	 *            the WarningProperty
-	 * @return true if the set contains the WarningProperty, false if not
-	 */
+     *            the WarningProperty
+     * @return true if the set contains the WarningProperty, false if not
+     */
 	public @CheckReturnValue boolean containsProperty(T prop) {
-		return map.keySet().contains(prop);
-	}
+        return map.keySet().contains(prop);
+    }
 
-	/**
-	 * Check whether or not the given WarningProperty has the given attribute
-	 * value.
+    /**
+     * Check whether or not the given WarningProperty has the given attribute
+     * value.
 	 * 
-	 * @param prop
-	 *            the WarningProperty
-	 * @param value
+     * @param prop
+     *            the WarningProperty
+     * @param value
 	 *            the attribute value
-	 * @return true if the set contains the WarningProperty and has an attribute
-	 *         equal to the one given, false otherwise
-	 */
+     * @return true if the set contains the WarningProperty and has an attribute
+     *         equal to the one given, false otherwise
+     */
 	public boolean checkProperty(T prop, Object value) {
-		Object attribute = getProperty(prop);
-		return (attribute != null && attribute.equals(value));
-	}
+        Object attribute = getProperty(prop);
+        return (attribute != null && attribute.equals(value));
+    }
 
-	/**
-	 * Get the value of the attribute for the given WarningProperty. Returns
-	 * null if the set does not contain the WarningProperty.
+    /**
+     * Get the value of the attribute for the given WarningProperty. Returns
+     * null if the set does not contain the WarningProperty.
 	 * 
-	 * @param prop
-	 *            the WarningProperty
-	 * @return the WarningProperty's attribute value, or null if the set does
+     * @param prop
+     *            the WarningProperty
+     * @return the WarningProperty's attribute value, or null if the set does
 	 *         not contain the WarningProperty
-	 */
-	public Object getProperty(T prop) {
-		return map.get(prop);
+     */
+    public Object getProperty(T prop) {
+        return map.get(prop);
 	}
 
-	/**
-	 * Use the PriorityAdjustments specified by the set's WarningProperty
-	 * elements to compute a warning priority from the given base priority.
+    /**
+     * Use the PriorityAdjustments specified by the set's WarningProperty
+     * elements to compute a warning priority from the given base priority.
 	 * 
-	 * @param basePriority
-	 *            the base priority
-	 * @return the computed warning priority
+     * @param basePriority
+     *            the base priority
+     * @return the computed warning priority
 	 */
-	public int computePriority(int basePriority) {
-		boolean relaxedReporting = FindBugsAnalysisFeatures.isRelaxedMode();
+    public int computePriority(int basePriority) {
+        boolean relaxedReporting = FindBugsAnalysisFeatures.isRelaxedMode();
 
-		boolean atLeastMedium = false;
-		boolean falsePositive = false;
-		boolean atMostLow = false;
+        boolean atLeastMedium = false;
+        boolean falsePositive = false;
+        boolean atMostLow = false;
 		boolean atMostMedium = false;
-		int aLittleBitLower = 0;
-		int priority = basePriority;
-		if (!relaxedReporting) {
+        int aLittleBitLower = 0;
+        int priority = basePriority;
+        if (!relaxedReporting) {
 			for (T warningProperty : map.keySet()) {
-				PriorityAdjustment adj = warningProperty.getPriorityAdjustment();
-				if (adj == PriorityAdjustment.PEGGED_HIGH)
-					return Priorities.HIGH_PRIORITY;
+                PriorityAdjustment adj = warningProperty.getPriorityAdjustment();
+                if (adj == PriorityAdjustment.PEGGED_HIGH)
+                    return Priorities.HIGH_PRIORITY;
 				if (adj == PriorityAdjustment.FALSE_POSITIVE) {
-					falsePositive = true;
-					atMostLow = true;
-				} else if (adj == PriorityAdjustment.A_LITTLE_BIT_LOWER_PRIORITY)
+                    falsePositive = true;
+                    atMostLow = true;
+                } else if (adj == PriorityAdjustment.A_LITTLE_BIT_LOWER_PRIORITY)
 					aLittleBitLower++;
-				else if (adj == PriorityAdjustment.A_LITTLE_BIT_HIGHER_PRIORITY)
-					aLittleBitLower--;
-				else if (adj == PriorityAdjustment.RAISE_PRIORITY)
+                else if (adj == PriorityAdjustment.A_LITTLE_BIT_HIGHER_PRIORITY)
+                    aLittleBitLower--;
+                else if (adj == PriorityAdjustment.RAISE_PRIORITY)
 					--priority;
-				else if (adj == PriorityAdjustment.RAISE_PRIORITY_TO_AT_LEAST_NORMAL) {
-					--priority;
-					atLeastMedium = true;
+                else if (adj == PriorityAdjustment.RAISE_PRIORITY_TO_AT_LEAST_NORMAL) {
+                    --priority;
+                    atLeastMedium = true;
 				} else if (adj == PriorityAdjustment.LOWER_PRIORITY_TO_AT_MOST_NORMAL) {
-					++priority;
-					atMostMedium = true;
-				} else if (adj == PriorityAdjustment.RAISE_PRIORITY_TO_HIGH) {
+                    ++priority;
+                    atMostMedium = true;
+                } else if (adj == PriorityAdjustment.RAISE_PRIORITY_TO_HIGH) {
 
-					return Detector.HIGH_PRIORITY;
-				} else if (adj == PriorityAdjustment.LOWER_PRIORITY) {
-					++priority;
+                    return Detector.HIGH_PRIORITY;
+                } else if (adj == PriorityAdjustment.LOWER_PRIORITY) {
+                    ++priority;
 				} else if (adj == PriorityAdjustment.AT_MOST_LOW) {
-					priority++;
-					atMostLow = true;
-				} else if (adj == PriorityAdjustment.AT_MOST_MEDIUM) {
+                    priority++;
+                    atMostLow = true;
+                } else if (adj == PriorityAdjustment.AT_MOST_MEDIUM) {
 					atMostMedium = true;
-				} else if (adj == PriorityAdjustment.NO_ADJUSTMENT) {
-					assert true; // do nothing
-				} else
+                } else if (adj == PriorityAdjustment.NO_ADJUSTMENT) {
+                    assert true; // do nothing
+                } else
 					throw new IllegalStateException("Unknown priority " + adj);
 
-			}
+            }
 
-			if (aLittleBitLower >= 3 || priority == 1 && aLittleBitLower == 2)
-				priority++;
-			else if (aLittleBitLower <= -2)
+            if (aLittleBitLower >= 3 || priority == 1 && aLittleBitLower == 2)
+                priority++;
+            else if (aLittleBitLower <= -2)
 				priority--;
-			if (atMostMedium)
-				priority = Math.max(Detector.NORMAL_PRIORITY, priority);
-			
+            if (atMostMedium)
+                priority = Math.max(Detector.NORMAL_PRIORITY, priority);
+
 			if (falsePositive && !atLeastMedium)
-				return Detector.EXP_PRIORITY + 1;
-			else if (atMostLow)
-				return Math.min(Math.max(Detector.LOW_PRIORITY, priority), Detector.EXP_PRIORITY);
+                return Detector.EXP_PRIORITY + 1;
+            else if (atMostLow)
+                return Math.min(Math.max(Detector.LOW_PRIORITY, priority), Detector.EXP_PRIORITY);
 			if (atLeastMedium && priority > Detector.NORMAL_PRIORITY)
-				priority = Detector.NORMAL_PRIORITY;
-	
-			if (priority < Detector.HIGH_PRIORITY)
+                priority = Detector.NORMAL_PRIORITY;
+
+            if (priority < Detector.HIGH_PRIORITY)
 				priority = Detector.HIGH_PRIORITY;
-			else if (priority > Detector.EXP_PRIORITY)
-				priority = Detector.EXP_PRIORITY;
-		}
+            else if (priority > Detector.EXP_PRIORITY)
+                priority = Detector.EXP_PRIORITY;
+        }
 
-		return priority;
-	}
+        return priority;
+    }
 
-	/**
-	 * Determine whether or not a warning with given priority is expected to be
-	 * a false positive.
+    /**
+     * Determine whether or not a warning with given priority is expected to be
+     * a false positive.
 	 * 
-	 * @param priority
-	 *            the priority
-	 * @return true if the warning is expected to be a false positive, false if
+     * @param priority
+     *            the priority
+     * @return true if the warning is expected to be a false positive, false if
 	 *         not
-	 */
-	public boolean isFalsePositive(int priority) {
-		return priority > Detector.EXP_PRIORITY;
+     */
+    public boolean isFalsePositive(int priority) {
+        return priority > Detector.EXP_PRIORITY;
 	}
 
-	/**
-	 * Decorate given BugInstance with properties.
-	 * 
+    /**
+     * Decorate given BugInstance with properties.
+     *
 	 * @param bugInstance
-	 *            the BugInstance
-	 */
-	public void decorateBugInstance(BugInstance bugInstance) {
+     *            the BugInstance
+     */
+    public void decorateBugInstance(BugInstance bugInstance) {
 		int priority = computePriority(bugInstance.getPriority());
-		bugInstance.setPriority(priority);
-		for (Map.Entry<T, Object> entry : map.entrySet()) {
-			WarningProperty prop = entry.getKey();
+        bugInstance.setPriority(priority);
+        for (Map.Entry<T, Object> entry : map.entrySet()) {
+            WarningProperty prop = entry.getKey();
 			Object attribute = entry.getValue();
-			if (attribute == null)
-				attribute = "";
-			bugInstance.setProperty(prop.getName(), attribute.toString());
+            if (attribute == null)
+                attribute = "";
+            bugInstance.setProperty(prop.getName(), attribute.toString());
 		}
-	}
+    }
 }

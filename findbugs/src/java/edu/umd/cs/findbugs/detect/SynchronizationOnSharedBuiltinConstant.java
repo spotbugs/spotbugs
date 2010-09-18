@@ -41,94 +41,94 @@ import edu.umd.cs.findbugs.util.ClassName;
 
 public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector {
 
-	final Set<String> badSignatures;
-	final BugAccumulator bugAccumulator;
-	public SynchronizationOnSharedBuiltinConstant(BugReporter bugReporter) {
+    final Set<String> badSignatures;
+    final BugAccumulator bugAccumulator;
+    public SynchronizationOnSharedBuiltinConstant(BugReporter bugReporter) {
 		this.bugAccumulator = new BugAccumulator(bugReporter);
-		badSignatures = new HashSet<String>();
-		badSignatures.addAll(Arrays.asList(new String[] { "Ljava/lang/Boolean;",
-				"Ljava/lang/Double;","Ljava/lang/Float;","Ljava/lang/Byte;","Ljava/lang/Character;",
+        badSignatures = new HashSet<String>();
+        badSignatures.addAll(Arrays.asList(new String[] { "Ljava/lang/Boolean;",
+                "Ljava/lang/Double;","Ljava/lang/Float;","Ljava/lang/Byte;","Ljava/lang/Character;",
 				"Ljava/lang/Short;","Ljava/lang/Integer;", "Ljava/lang/Long;"}));
-	}
+    }
 
 
 
-	private static boolean newlyConstructedObject(OpcodeStack.Item item) {
-		XMethod method = item.getReturnValueOf();
-		if (method == null) return false;
+    private static boolean newlyConstructedObject(OpcodeStack.Item item) {
+        XMethod method = item.getReturnValueOf();
+        if (method == null) return false;
 		return method.getName().equals("<init>");
-	}
-	
-	private static final Pattern identified = Pattern.compile("\\p{Alnum}+");
+    }
+
+    private static final Pattern identified = Pattern.compile("\\p{Alnum}+");
 	BugInstance pendingBug;
-	
-	int monitorEnterPC;
-	String syncSignature;
+
+    int monitorEnterPC;
+    String syncSignature;
 	boolean isSyncOnBoolean;
-	
-	@Override
-	public void visit(Code obj) {
+
+    @Override
+    public void visit(Code obj) {
 		super.visit(obj);
-		accumulateBug();
-		bugAccumulator.reportAccumulatedBugs();
-	}
+        accumulateBug();
+        bugAccumulator.reportAccumulatedBugs();
+    }
 	@Override
-	public void sawOpcode(int seen) {
-		switch(seen) {
-		case MONITORENTER:
+    public void sawOpcode(int seen) {
+        switch(seen) {
+        case MONITORENTER:
 			OpcodeStack.Item top = stack.getStackItem(0);
-			
-			if (pendingBug != null) {
-				 accumulateBug();
+
+            if (pendingBug != null) {
+                 accumulateBug();
 			}
-			monitorEnterPC = getPC();
-			
-			syncSignature = top.getSignature();
+            monitorEnterPC = getPC();
+
+            syncSignature = top.getSignature();
 			isSyncOnBoolean = false;
-			Object constant = top.getConstant();
-			if (syncSignature.equals("Ljava/lang/String;") && constant instanceof String) {
+            Object constant = top.getConstant();
+            if (syncSignature.equals("Ljava/lang/String;") && constant instanceof String) {
 
-				pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY).addClassAndMethod(this);
+                pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY).addClassAndMethod(this);
 
-				String value = (String) constant;
-				if (identified.matcher(value).matches())
-					pendingBug.addString(value).describe(StringAnnotation.STRING_CONSTANT_ROLE);
+                String value = (String) constant;
+                if (identified.matcher(value).matches())
+                    pendingBug.addString(value).describe(StringAnnotation.STRING_CONSTANT_ROLE);
 				
-			} else if (badSignatures.contains(syncSignature)) {
-				isSyncOnBoolean = syncSignature.equals("Ljava/lang/Boolean;");
-				XField field = top.getXField();
+            } else if (badSignatures.contains(syncSignature)) {
+                isSyncOnBoolean = syncSignature.equals("Ljava/lang/Boolean;");
+                XField field = top.getXField();
 				FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
-				OpcodeStack.Item summary = fieldSummary.getSummary(field);
-				int priority = NORMAL_PRIORITY;
-				if (isSyncOnBoolean) priority--;
+                OpcodeStack.Item summary = fieldSummary.getSummary(field);
+                int priority = NORMAL_PRIORITY;
+                if (isSyncOnBoolean) priority--;
 				if (newlyConstructedObject(summary))
-					pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE", NORMAL_PRIORITY)
-					.addClassAndMethod(this).addType(syncSignature).addOptionalField(field).addOptionalLocalVariable(this, top);
-				else if (isSyncOnBoolean) 
+                    pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE", NORMAL_PRIORITY)
+                    .addClassAndMethod(this).addType(syncSignature).addOptionalField(field).addOptionalLocalVariable(this, top);
+                else if (isSyncOnBoolean)
 					pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", priority)
-					.addClassAndMethod(this).addOptionalField(field).addOptionalLocalVariable(this, top);
-				else pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE", priority)
-				.addClassAndMethod(this).addType(syncSignature).addOptionalField(field).addOptionalLocalVariable(this, top);
+                    .addClassAndMethod(this).addOptionalField(field).addOptionalLocalVariable(this, top);
+                else pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE", priority)
+                .addClassAndMethod(this).addType(syncSignature).addOptionalField(field).addOptionalLocalVariable(this, top);
 			}
-			break;
-		case MONITOREXIT:
+            break;
+        case MONITOREXIT:
 
-			accumulateBug();
+            accumulateBug();
+
+            break;
 			
-			break;
-			
-		}
-	}
+        }
+    }
 
 
 
-	/**
-     * 
+    /**
+     *
      */
-	private void accumulateBug() {
-		if (pendingBug == null)
-			return;
+    private void accumulateBug() {
+        if (pendingBug == null)
+            return;
 		bugAccumulator.accumulateBug(pendingBug, SourceLineAnnotation.fromVisitedInstruction(this, monitorEnterPC));
-		pendingBug = null;
+        pendingBug = null;
     }
 }

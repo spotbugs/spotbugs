@@ -12,97 +12,97 @@ import com.apple.eawt.ApplicationEvent;
  */
 public class OSXAdapter extends ApplicationAdapter {
 
-	// pseudo-singleton model; no point in making multiple instances
-	// of the EAWT application or our adapter
-	private static OSXAdapter theAdapter;
+    // pseudo-singleton model; no point in making multiple instances
+    // of the EAWT application or our adapter
+    private static OSXAdapter theAdapter;
 	private static com.apple.eawt.Application theApplication;
 
-	// reference to the app where the existing quit, about, prefs code is
-	private FindBugsFrame mainApp;
+    // reference to the app where the existing quit, about, prefs code is
+    private FindBugsFrame mainApp;
 
-	private OSXAdapter (FindBugsFrame inApp) {
-		mainApp = inApp;
-	}
+    private OSXAdapter (FindBugsFrame inApp) {
+        mainApp = inApp;
+    }
 
-	// implemented handler methods. These are basically hooks into
-	// existing functionality from the main app, as if it came
-	// over from another platform.
+    // implemented handler methods. These are basically hooks into
+    // existing functionality from the main app, as if it came
+    // over from another platform.
 
-	@Override
-	public void handleAbout(ApplicationEvent ae) {
-		if (mainApp != null) {
+    @Override
+    public void handleAbout(ApplicationEvent ae) {
+        if (mainApp != null) {
 			ae.setHandled(true);
-						// We need to invoke modal About Dialog asynchronously
-						// otherwise the Application queue is locked for the duration
-						// of the about Dialog, which results in a deadlock if a URL is
+                        // We need to invoke modal About Dialog asynchronously
+                        // otherwise the Application queue is locked for the duration
+                        // of the about Dialog, which results in a deadlock if a URL is
 						// selected, and we get a ReOpenApplication event when user
-						// switches back to Findbugs.
-						javax.swing.SwingUtilities.invokeLater(new Runnable() {
-								public void run() {
+                        // switches back to Findbugs.
+                        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
 									mainApp.about();
-								}
-							});
-		} else {
+                                }
+                            });
+        } else {
 			throw new IllegalStateException("handleAbout: " +
-														"MyApp instance detached from listener");
-		}
-	}
+                                                        "MyApp instance detached from listener");
+        }
+    }
 
-	@Override
-	public void handlePreferences(ApplicationEvent ae) {
-		if (mainApp != null) {
+    @Override
+    public void handlePreferences(ApplicationEvent ae) {
+        if (mainApp != null) {
 //			mainApp.preferences();
-			ae.setHandled(true);
-		} else {
-			throw new IllegalStateException("handlePreferences: MyApp instance " +
+            ae.setHandled(true);
+        } else {
+            throw new IllegalStateException("handlePreferences: MyApp instance " +
 														"detached from listener");
-		}
-	}
+        }
+    }
 
-	@Override
-	public void handleQuit(ApplicationEvent ae) {
-		if (mainApp != null) {
+    @Override
+    public void handleQuit(ApplicationEvent ae) {
+        if (mainApp != null) {
 
-			/*
-						 * You MUST setHandled(false) if you want to
-			 * delay or cancel the quit. This is important
+            /*
+                         * You MUST setHandled(false) if you want to
+             * delay or cancel the quit. This is important
 			 * for cross-platform development -- have a
-			 * universal quit routine that chooses whether
-			 * or not to quit, so the functionality is
-			 * identical on all platforms.  This example
+             * universal quit routine that chooses whether
+             * or not to quit, so the functionality is
+             * identical on all platforms.  This example
 			 * simply cancels the AppleEvent-based quit and 
-			 * defers to that universal method.
-			*/
+             * defers to that universal method.
+            */
 
-			ae.setHandled(false);
-			mainApp.exitFindBugs();
-		} else {
+            ae.setHandled(false);
+            mainApp.exitFindBugs();
+        } else {
 			throw new IllegalStateException("handleQuit: MyApp instance detached " +
-														"from listener");
-		}
-	}
+                                                        "from listener");
+        }
+    }
 
 
-	// The main entry-point for this functionality.  This is the only method
-	// that needs to be called at runtime, and it can easily be done using
-	// reflection (see MyApp.java) 
+    // The main entry-point for this functionality.  This is the only method
+    // that needs to be called at runtime, and it can easily be done using
+    // reflection (see MyApp.java)
 	public static synchronized void registerMacOSXApplication(FindBugsFrame inApp) {
-		if (theApplication == null) {
-			theApplication = new com.apple.eawt.Application();
-		}			
+        if (theApplication == null) {
+            theApplication = new com.apple.eawt.Application();
+        }
 
-		if (theAdapter == null) {
-			theAdapter = new OSXAdapter(inApp);
-		}
+        if (theAdapter == null) {
+            theAdapter = new OSXAdapter(inApp);
+        }
 		theApplication.addApplicationListener(theAdapter);
-	}
+    }
 
-	// Another static entry point for EAWT functionality.  Enables the 
-	// "Preferences..." menu item in the application menu. 
-	public static synchronized void enablePrefs(boolean enabled) {
+    // Another static entry point for EAWT functionality.  Enables the
+    // "Preferences..." menu item in the application menu.
+    public static synchronized void enablePrefs(boolean enabled) {
 		if (theApplication == null) {
-			theApplication = new com.apple.eawt.Application();
-		}
-		theApplication.setEnabledPreferencesMenu(enabled);
+            theApplication = new com.apple.eawt.Application();
+        }
+        theApplication.setEnabledPreferencesMenu(enabled);
 	}
 }

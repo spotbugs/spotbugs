@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2007 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -36,96 +36,96 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
  * entity.  This object makes it possible to report
  * such conflicts, while still providing a convenient
  * interface for getting the "effective" TypeQualifierAnnotation.
- * 
+ *
  * @author David Hovemeyer
  */
 public class TypeQualifierAnnotationLookupResult {
-	/**
-	 * Partial result of looking up a TypeQualifierAnnotation.
-	 */
+    /**
+     * Partial result of looking up a TypeQualifierAnnotation.
+     */
 	public static class PartialResult {
-		private AnnotatedObject annotatedObject;
-		private TypeQualifierAnnotation typeQualifierAnnotation;
+        private AnnotatedObject annotatedObject;
+        private TypeQualifierAnnotation typeQualifierAnnotation;
 
-		PartialResult(AnnotatedObject annotatedObject, TypeQualifierAnnotation typeQualifierAnnotation) {
-			this.annotatedObject = annotatedObject;
-			this.typeQualifierAnnotation = typeQualifierAnnotation;
+        PartialResult(AnnotatedObject annotatedObject, TypeQualifierAnnotation typeQualifierAnnotation) {
+            this.annotatedObject = annotatedObject;
+            this.typeQualifierAnnotation = typeQualifierAnnotation;
 		}
 
-		/**
-		 * @return Returns the annotatedObject.
-		 */
+        /**
+         * @return Returns the annotatedObject.
+         */
 		public AnnotatedObject getAnnotatedObject() {
-			return annotatedObject;
-		}
+            return annotatedObject;
+        }
 
-		/**
-		 * @return Returns the typeQualifierAnnotation.
-		 */
+        /**
+         * @return Returns the typeQualifierAnnotation.
+         */
 		public TypeQualifierAnnotation getTypeQualifierAnnotation() {
-			return typeQualifierAnnotation;
-		}
-		
+            return typeQualifierAnnotation;
+        }
+
 		/* (non-Javadoc)
-		 * @see java.lang.Object#toString()
-		 */
-		@Override
+         * @see java.lang.Object#toString()
+         */
+        @Override
 		public String toString() {
-			return annotatedObject + ":" + typeQualifierAnnotation;
-		}
-	}
+            return annotatedObject + ":" + typeQualifierAnnotation;
+        }
+    }
 
-	private List<PartialResult> partialResultList;
+    private List<PartialResult> partialResultList;
 
-	TypeQualifierAnnotationLookupResult() {
-		this.partialResultList = new LinkedList<PartialResult>();
-	}
+    TypeQualifierAnnotationLookupResult() {
+        this.partialResultList = new LinkedList<PartialResult>();
+    }
 	
-	void addPartialResult(PartialResult partialResult) {
-		partialResultList.add(partialResult);
-	}
+    void addPartialResult(PartialResult partialResult) {
+        partialResultList.add(partialResult);
+    }
 
-	/**
-	 * Get the effective TypeQualifierAnnotation.
-	 * 
+    /**
+     * Get the effective TypeQualifierAnnotation.
+     *
 	 * @return the effective TypeQualifierAnnotation,
-	 *         or null if no effective TypeQualifierAnnotation
-	 *         can be found
-	 */
+     *         or null if no effective TypeQualifierAnnotation
+     *         can be found
+     */
 	public @CheckForNull TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation() {
-		boolean firstPartialResult = true;
-		TypeQualifierAnnotation effective = null;
+        boolean firstPartialResult = true;
+        TypeQualifierAnnotation effective = null;
 
-		for (PartialResult partialResult : partialResultList) {
-			if (firstPartialResult) {
-				effective = partialResult.getTypeQualifierAnnotation();
+        for (PartialResult partialResult : partialResultList) {
+            if (firstPartialResult) {
+                effective = partialResult.getTypeQualifierAnnotation();
 				firstPartialResult = false;
-			} else {
-				effective = combine(effective, partialResult.getTypeQualifierAnnotation());
-			}
+            } else {
+                effective = combine(effective, partialResult.getTypeQualifierAnnotation());
+            }
 		}
-		
-		return effective;
+
+        return effective;
+    }
+
+    /**
+     * Subclasses must override this method to combine TypeQualifierAnnotations
+     * found in multiple superclasses.
+	 * 
+     * @param a a TypeQualifierAnnotation
+     * @param b another TypeQualifierAnnotation
+     * @return combined TypeQualifierAnnotation compatible with both input TypeQualifierAnnotations,
+	 *         or null if no such TypeQualifierAnnotation exists
+     */
+    protected TypeQualifierAnnotation combine(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
+        return null;
 	}
 
-	/**
-	 * Subclasses must override this method to combine TypeQualifierAnnotations
-	 * found in multiple superclasses.
-	 * 
-	 * @param a a TypeQualifierAnnotation
-	 * @param b another TypeQualifierAnnotation
-	 * @return combined TypeQualifierAnnotation compatible with both input TypeQualifierAnnotations,
-	 *         or null if no such TypeQualifierAnnotation exists
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
 	 */
-	protected TypeQualifierAnnotation combine(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
-		return null;
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return partialResultList.toString();
+    @Override
+    public String toString() {
+        return partialResultList.toString();
 	}
 }

@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2007 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -26,363 +26,363 @@ import java.util.Locale;
 
 /**
  * Parse an external annotation file.
- * 
+ *
  * @author David Hovemeyer
  * @see <a href="http://groups.csail.mit.edu/pag/jsr308/annotation-file-utilities/">Annotation File Utilities/</a>
  */
 public class JAIFParser {
-	private JAIFScanner scanner;
-	private JAIFEvents callback;
-	
+    private JAIFScanner scanner;
+    private JAIFEvents callback;
+
 	public JAIFParser(Reader reader, JAIFEvents callback) {
-		this.scanner = new JAIFScanner(reader);
-		this.callback = callback;
-	}
+        this.scanner = new JAIFScanner(reader);
+        this.callback = callback;
+    }
 	
-	public void parse() throws IOException, JAIFSyntaxException {
-		parseAnnotationFile();
-	}
+    public void parse() throws IOException, JAIFSyntaxException {
+        parseAnnotationFile();
+    }
 
-	int getLineNumber() {
-		return scanner.getLineNumber();
-	}
+    int getLineNumber() {
+        return scanner.getLineNumber();
+    }
 	
-	private JAIFToken expect(String s) throws IOException, JAIFSyntaxException {
-		JAIFToken t = scanner.nextToken();
-		if (!t.lexeme.equals(s)) {
+    private JAIFToken expect(String s) throws IOException, JAIFSyntaxException {
+        JAIFToken t = scanner.nextToken();
+        if (!t.lexeme.equals(s)) {
 			throw new JAIFSyntaxException(this, "Unexpected token " + t + " (was expecting " + s + ")");
-		}
-		return t;
-	}
+        }
+        return t;
+    }
 	
-	private JAIFToken expect(JAIFTokenKind kind) throws IOException, JAIFSyntaxException {
-		JAIFToken t = scanner.nextToken();
-		if (t.kind != kind) {
+    private JAIFToken expect(JAIFTokenKind kind) throws IOException, JAIFSyntaxException {
+        JAIFToken t = scanner.nextToken();
+        if (t.kind != kind) {
 			throw new JAIFSyntaxException(this, "Unexpected token " + t + " (was expecting a `" + kind.toString() + "' token)");
-		}
-		return t;
-	}
+        }
+        return t;
+    }
 	
-	private void expectEndOfLine() throws IOException, JAIFSyntaxException {
-		// extract-annotations seems to sometimes produce multiple newlines where
-		// the grammar indicates that only one will appear.
+    private void expectEndOfLine() throws IOException, JAIFSyntaxException {
+        // extract-annotations seems to sometimes produce multiple newlines where
+        // the grammar indicates that only one will appear.
 		// So, we treat any sequence of one or more newlines as one newline.
-		int nlCount = 0;
-		JAIFToken t;
+        int nlCount = 0;
+        JAIFToken t;
 
-		while (true) {
-			if (scanner.atEOF()) {
-				t = null;
+        while (true) {
+            if (scanner.atEOF()) {
+                t = null;
 				break;
-			}
-			
-			t = scanner.peekToken();
+            }
+
+            t = scanner.peekToken();
 			if (t.kind != JAIFTokenKind.NEWLINE) {
-				break;
-			}
-			
+                break;
+            }
+
 			++nlCount;
-			scanner.nextToken();
-		}
-		
+            scanner.nextToken();
+        }
+
 		if (nlCount < 1) {
-			String msg = (t == null) ? "Unexpected end of file" : "Unexpected token " + t + " (was expecting <newline>)";
-			throw new JAIFSyntaxException(this, msg);
-		}
+            String msg = (t == null) ? "Unexpected end of file" : "Unexpected token " + t + " (was expecting <newline>)";
+            throw new JAIFSyntaxException(this, msg);
+        }
 	}
 
-	private String readCompoundName() throws IOException, JAIFSyntaxException {
-		StringBuilder buf = new StringBuilder();
-		
+    private String readCompoundName() throws IOException, JAIFSyntaxException {
+        StringBuilder buf = new StringBuilder();
+
 		boolean firstToken = true;
-		
-		while (true) {
-			JAIFToken t = scanner.nextToken();
+
+        while (true) {
+            JAIFToken t = scanner.nextToken();
 			assert t.kind == JAIFTokenKind.IDENTIFIER_OR_KEYWORD;
 
-			if (firstToken) {
-				firstToken = false;
-			} else if (t.lexeme.startsWith("@")) {
+            if (firstToken) {
+                firstToken = false;
+            } else if (t.lexeme.startsWith("@")) {
 				throw new JAIFSyntaxException(this, "Illegal compound name (unexpected '@' character)");
-			}
-			
-			buf.append(t.lexeme);
+            }
 
-			t = scanner.peekToken();
-			if (t.kind != JAIFTokenKind.DOT) {
-				break;
+            buf.append(t.lexeme);
+
+            t = scanner.peekToken();
+            if (t.kind != JAIFTokenKind.DOT) {
+                break;
 			} else {
-				buf.append(t.lexeme);
-				scanner.nextToken();
-			}
+                buf.append(t.lexeme);
+                scanner.nextToken();
+            }
 		}
-		
-		return buf.toString();
-	}
+
+        return buf.toString();
+    }
 	
-	private String readType() throws IOException, JAIFSyntaxException {
-		StringBuilder buf = new StringBuilder();
-		
+    private String readType() throws IOException, JAIFSyntaxException {
+        StringBuilder buf = new StringBuilder();
+
 		JAIFToken t = expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
-		
-		if (t.lexeme.equals("enum")) {
-			
+
+        if (t.lexeme.equals("enum")) {
+
 		}
-		
-		return buf.toString();
-	}
+
+        return buf.toString();
+    }
 	
-	private void parseAnnotationFile() throws IOException, JAIFSyntaxException {
-		parsePackageDefinition();
-		while (!scanner.atEOF()) {
+    private void parseAnnotationFile() throws IOException, JAIFSyntaxException {
+        parsePackageDefinition();
+        while (!scanner.atEOF()) {
 			parsePackageDefinition();
-		}
-	}
-	
+        }
+    }
+
 	private void parsePackageDefinition() throws IOException, JAIFSyntaxException {
-		expect("package");
-		JAIFToken t = scanner.peekToken();
-		
+        expect("package");
+        JAIFToken t = scanner.peekToken();
+
 		String pkgName;
-		
-		if (t.kind != JAIFTokenKind.NEWLINE) {
-			// Optional package name and package-level annotations
+
+        if (t.kind != JAIFTokenKind.NEWLINE) {
+            // Optional package name and package-level annotations
 			
-			// Hmmm....the spec says just a plain identifier here.
-			// However, I'm pretty sure we want a compound name.
-			pkgName = readCompoundName();
+            // Hmmm....the spec says just a plain identifier here.
+            // However, I'm pretty sure we want a compound name.
+            pkgName = readCompoundName();
 
-			expect(":");
+            expect(":");
 
-			t = scanner.peekToken();
-			while (t.isStartOfAnnotationName()) {
-				parseAnnotation();
+            t = scanner.peekToken();
+            while (t.isStartOfAnnotationName()) {
+                parseAnnotation();
 			}
-		} else {
-			pkgName = ""; // default package
-		}
+        } else {
+            pkgName = ""; // default package
+        }
 		
-		expectEndOfLine();
+        expectEndOfLine();
 
-		callback.startPackageDefinition(pkgName);
+        callback.startPackageDefinition(pkgName);
 
-		while (!scanner.atEOF()) {
-			t = scanner.peekToken();
-			if (t.lexeme.equals("package")) {
+        while (!scanner.atEOF()) {
+            t = scanner.peekToken();
+            if (t.lexeme.equals("package")) {
 				break;
-			}
-			
-			parseAnnotationDefinitionOrClassDefinition();
+            }
+
+            parseAnnotationDefinitionOrClassDefinition();
 		}
-		
-		callback.endPackageDefinition(pkgName);
-	}
+
+        callback.endPackageDefinition(pkgName);
+    }
 	
-	private void parseAnnotation() throws IOException, JAIFSyntaxException {
-		String annotationName = readCompoundName();
-		assert annotationName.startsWith("@");
+    private void parseAnnotation() throws IOException, JAIFSyntaxException {
+        String annotationName = readCompoundName();
+        assert annotationName.startsWith("@");
 		
-		callback.startAnnotation(annotationName);
-		
-		JAIFToken t = scanner.peekToken();
+        callback.startAnnotation(annotationName);
+
+        JAIFToken t = scanner.peekToken();
 		if (t.kind == JAIFTokenKind.LPAREN) {
-			parseAnnotationField();
-			t = scanner.peekToken();
-			while (t.kind != JAIFTokenKind.RPAREN) {
+            parseAnnotationField();
+            t = scanner.peekToken();
+            while (t.kind != JAIFTokenKind.RPAREN) {
 				expect(",");
-				parseAnnotationField();
-				t = scanner.peekToken();
-			}
+                parseAnnotationField();
+                t = scanner.peekToken();
+            }
 			assert t.kind == JAIFTokenKind.RPAREN;
-			scanner.nextToken();
-		}
-		
+            scanner.nextToken();
+        }
+
 		callback.endAnnotation(annotationName);
-	}
+    }
 
-	private void parseAnnotationField() throws IOException, JAIFSyntaxException {
-		JAIFToken id = expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
-		expect("=");
+    private void parseAnnotationField() throws IOException, JAIFSyntaxException {
+        JAIFToken id = expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
+        expect("=");
 		Object constant = parseConstant();
-		
-		callback.annotationField(id.lexeme, constant);
-	}
 
-	private Object parseConstant() throws IOException, JAIFSyntaxException {
-		JAIFToken t = scanner.peekToken();
-		
+        callback.annotationField(id.lexeme, constant);
+    }
+
+    private Object parseConstant() throws IOException, JAIFSyntaxException {
+        JAIFToken t = scanner.peekToken();
+
 		switch (t.kind) {
-		case IDENTIFIER_OR_KEYWORD:
-			// This is an enum constant specified by a compound name.
-			// Represent it as a JAIFEnumConstant object.
+        case IDENTIFIER_OR_KEYWORD:
+            // This is an enum constant specified by a compound name.
+            // Represent it as a JAIFEnumConstant object.
 			String name = readCompoundName();
-			return new JAIFEnumConstant(name);
-		case DECIMAL_LITERAL:
-			t = scanner.nextToken();
+            return new JAIFEnumConstant(name);
+        case DECIMAL_LITERAL:
+            t = scanner.nextToken();
 			return Integer.parseInt(t.lexeme);
-		case OCTAL_LITERAL:
-			t = scanner.nextToken();
-			return Integer.parseInt(t.lexeme, 8);
+        case OCTAL_LITERAL:
+            t = scanner.nextToken();
+            return Integer.parseInt(t.lexeme, 8);
 		case HEX_LITERAL:
+            t = scanner.nextToken();
+            return Integer.parseInt(t.lexeme, 16);
+        case FLOATING_POINT_LITERAL:
 			t = scanner.nextToken();
-			return Integer.parseInt(t.lexeme, 16);
-		case FLOATING_POINT_LITERAL:
-			t = scanner.nextToken();
-			boolean isFloat = t.lexeme.toLowerCase(Locale.ENGLISH).endsWith("f");
-			if (isFloat) {
-				return Float.parseFloat(t.lexeme);
+            boolean isFloat = t.lexeme.toLowerCase(Locale.ENGLISH).endsWith("f");
+            if (isFloat) {
+                return Float.parseFloat(t.lexeme);
 			} else {
-				return Double.parseDouble(t.lexeme);
-			}
-		case STRING_LITERAL:
+                return Double.parseDouble(t.lexeme);
+            }
+        case STRING_LITERAL:
 			t = scanner.nextToken();
-			return unparseStringLiteral(t.lexeme);
-		default:
-			throw new JAIFSyntaxException(this, "Illegal constant");
+            return unparseStringLiteral(t.lexeme);
+        default:
+            throw new JAIFSyntaxException(this, "Illegal constant");
 		}
-	}
+    }
 
-	private Object unparseStringLiteral(String lexeme) {
-		StringBuilder buf = new StringBuilder();
+    private Object unparseStringLiteral(String lexeme) {
+        StringBuilder buf = new StringBuilder();
 
-		int where = 1; // skip initial double quote char
+        int where = 1; // skip initial double quote char
 
-		while (true) {
-			assert where < lexeme.length();
-			char c = lexeme.charAt(where); 
+        while (true) {
+            assert where < lexeme.length();
+            char c = lexeme.charAt(where);
 
-			if (c == '"') {
-				break;
-			}
+            if (c == '"') {
+                break;
+            }
 
-			if (c != '\\') {
-				buf.append(c);
-				where++;
+            if (c != '\\') {
+                buf.append(c);
+                where++;
 				continue;
-			}
+            }
 
-			where++;
-			assert where < lexeme.length();
-			
+            where++;
+            assert where < lexeme.length();
+
 			c = lexeme.charAt(where);
-			switch (c) {
-			case 'b':
-				buf.append('\b'); where++; break;
+            switch (c) {
+            case 'b':
+                buf.append('\b'); where++; break;
 			case 't':
-				buf.append('\t'); where++; break;
-			case 'n':
-				buf.append('\n'); where++; break;
+                buf.append('\t'); where++; break;
+            case 'n':
+                buf.append('\n'); where++; break;
 			case 'f':
-				buf.append('\t'); where++; break;
-			case 'r':
-				buf.append('\r'); where++; break;
+                buf.append('\t'); where++; break;
+            case 'r':
+                buf.append('\r'); where++; break;
 			case '"':
-				buf.append('"'); where++; break;
-			case '\'':
-				buf.append('\''); where++; break;
+                buf.append('"'); where++; break;
+            case '\'':
+                buf.append('\''); where++; break;
 			case '\\':
-				buf.append('\\'); where++; break;
-			default:
-				char value = (char) 0;
+                buf.append('\\'); where++; break;
+            default:
+                char value = (char) 0;
 				while (c >= '0' && c <= '7') {
-					value *= 8;
-					value += (c - '0');
-					where++;
+                    value *= 8;
+                    value += (c - '0');
+                    where++;
 					assert where < lexeme.length();
-					c = lexeme.charAt(where);
-				}
-				buf.append(value);
+                    c = lexeme.charAt(where);
+                }
+                buf.append(value);
 			}
-		}
+        }
 
-		return buf.toString();
-	}
-	
+        return buf.toString();
+    }
+
 	private void parseAnnotationDefinitionOrClassDefinition() throws IOException, JAIFSyntaxException {
-		JAIFToken t = scanner.peekToken();
-		
-		if (t.lexeme.equals("annotation")) {
+        JAIFToken t = scanner.peekToken();
+
+        if (t.lexeme.equals("annotation")) {
 			parseAnnotationDefinition();
-		} else if (t.lexeme.equals("class")) {
-			parseClassDefinition();
-		} else {
+        } else if (t.lexeme.equals("class")) {
+            parseClassDefinition();
+        } else {
 			throw new JAIFSyntaxException(this, "Unexpected token " + t + " (expected `annotation' or `class')");
-		}
-	}
-	
+        }
+    }
+
 	private void parseAnnotationDefinition() throws IOException, JAIFSyntaxException {
-		expect("annotation");
+        expect("annotation");
+
+        String retention = null;
 		
-		String retention = null;
-		
-		JAIFToken t = scanner.peekToken();
-		if (t.lexeme.equals("visible") || t.lexeme.equals("invisible") || t.lexeme.equals("source")) {
-			retention = t.lexeme;
+        JAIFToken t = scanner.peekToken();
+        if (t.lexeme.equals("visible") || t.lexeme.equals("invisible") || t.lexeme.equals("source")) {
+            retention = t.lexeme;
 			scanner.nextToken();
-		}
+        }
+
+        String annotationName = expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD).lexeme;
 		
-		String annotationName = expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD).lexeme;
-		
-		expect(JAIFTokenKind.COLON);
-		expectEndOfLine();
-		
+        expect(JAIFTokenKind.COLON);
+        expectEndOfLine();
+
 		callback.startAnnotationDefinition(annotationName, retention);
-		
-		t = scanner.peekToken();
-		while (t.kind != JAIFTokenKind.NEWLINE) {
+
+        t = scanner.peekToken();
+        while (t.kind != JAIFTokenKind.NEWLINE) {
 			parseAnnotationFieldDefinition();
-		}
-	}
-	
+        }
+    }
+
 	private void parseAnnotationFieldDefinition() throws IOException, JAIFSyntaxException {
-		String type = readType();
-		String fieldName = expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD).lexeme;
-		
+        String type = readType();
+        String fieldName = expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD).lexeme;
+
 		callback.annotationFieldDefinition(type, fieldName);
-	}
+    }
 
-	private void parseClassDefinition() {
-		
-	}
+    private void parseClassDefinition() {
 
-	public static void main(String[] args) throws Exception {
-	    if (args.length != 1) {
-	    	System.err.println("Usage: " + JAIFParser.class.getName() + " <jaif file>");
+    }
+
+    public static void main(String[] args) throws Exception {
+        if (args.length != 1) {
+            System.err.println("Usage: " + JAIFParser.class.getName() + " <jaif file>");
 	    	System.exit(1);
-	    }
-	    
-	    JAIFEvents callback = new JAIFEvents() {
+        }
+
+        JAIFEvents callback = new JAIFEvents() {
 	    	public void annotationField(String fieldName, Object constant) {
-	    		System.out.println("    " + fieldName + "=" + constant);
-	    	}
+                System.out.println("    " + fieldName + "=" + constant);
+            }
 
-	    	public void endAnnotation(String annotationName) {
-	    	}
+            public void endAnnotation(String annotationName) {
+            }
 
-	    	public void endPackageDefinition(String pkgName) {
-	    	}
+            public void endPackageDefinition(String pkgName) {
+            }
 
-	    	public void startAnnotation(String annotationName) {
-	    		System.out.println("  annotation " + annotationName);
-	    	}
+            public void startAnnotation(String annotationName) {
+                System.out.println("  annotation " + annotationName);
+            }
 
-	    	public void startPackageDefinition(String pkgName) {
-	    		System.out.println("package " + pkgName);
-	    	}
+            public void startPackageDefinition(String pkgName) {
+                System.out.println("package " + pkgName);
+            }
 	    	
-	    	public void startAnnotationDefinition(String annotationName, String retention) {
-	    		System.out.println("  annotation " + annotationName + " " + retention);
-	    	}
+            public void startAnnotationDefinition(String annotationName, String retention) {
+                System.out.println("  annotation " + annotationName + " " + retention);
+            }
 	    	
-	    	public void endAnnotationDefinition(String annotationName) {
-	    	}
-	    	
+            public void endAnnotationDefinition(String annotationName) {
+            }
+
 	    	public void annotationFieldDefinition(String type, String fieldName) {
-	    		System.out.println("    " + type + " " + fieldName);
-	    	}
-	    };
+                System.out.println("    " + type + " " + fieldName);
+            }
+        };
     	
-    	JAIFParser parser = new JAIFParser(new FileReader(args[0]), callback);
-    	parser.parse();
+        JAIFParser parser = new JAIFParser(new FileReader(args[0]), callback);
+        parser.parse();
     }
 }
