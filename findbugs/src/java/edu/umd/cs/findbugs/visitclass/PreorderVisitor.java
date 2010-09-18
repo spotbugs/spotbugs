@@ -562,6 +562,10 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
 	@Override
     public String toString() {
+		if (visitingMethod)
+			return this.getClass().getSimpleName() + " analyzing " + getClassName() +"." + getMethodName() + getMethodSig();
+		else if (visitingField)
+			return this.getClass().getSimpleName() + " analyzing " + getClassName() +"." + getFieldName();
 		return this.getClass().getSimpleName() + " analyzing " + getClassName();
 	}
 
