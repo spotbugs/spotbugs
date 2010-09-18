@@ -30,42 +30,50 @@ import junit.framework.TestCase;
 public class MethodHashTest extends TestCase {
 
     byte[] hash;
+
     String s;
+
     byte[] sameHash;
-	byte[] greaterHash;
+
+    byte[] greaterHash;
+
     byte[] lesserHash;
+
     byte[] shorterHash;
+
     byte[] longerHash;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see junit.framework.TestCase#setUp()
      */
 
     @Override
-         protected void setUp() throws Exception {
-        hash = new byte[]{0x06, 0x04, (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF};
-		s = "0604deadbeef";
-        sameHash = new byte[]{0x06, 0x04, (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF};
-        greaterHash = new byte[]{0x06, 0x05, (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF};
-        lesserHash = new byte[]{0x06, 0x03, (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF};
-		shorterHash = new byte[]{0x06, 0x04, (byte)0xDE, (byte)0xAD, (byte)0xBE};
-        longerHash = new byte[]{0x06, 0x04, (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF, (byte)0x01};
+    protected void setUp() throws Exception {
+        hash = new byte[] { 0x06, 0x04, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF };
+        s = "0604deadbeef";
+        sameHash = new byte[] { 0x06, 0x04, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF };
+        greaterHash = new byte[] { 0x06, 0x05, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF };
+        lesserHash = new byte[] { 0x06, 0x03, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF };
+        shorterHash = new byte[] { 0x06, 0x04, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE };
+        longerHash = new byte[] { 0x06, 0x04, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF, (byte) 0x01 };
     }
 
     public void testHashToString() {
         String s2 = ClassHash.hashToString(hash);
         Assert.assertEquals(s, s2);
-	}
+    }
 
     public void testStringToHash() {
         byte[] hash2 = ClassHash.stringToHash(s);
         Assert.assertTrue(Arrays.equals(hash, hash2));
-	}
+    }
 
     public void testSame() {
         Assert.assertTrue(MethodHash.compareHashes(hash, sameHash) == 0);
         Assert.assertTrue(MethodHash.compareHashes(sameHash, hash) == 0);
-	}
+    }
 
     public void testGreater() {
         Assert.assertTrue(MethodHash.compareHashes(hash, greaterHash) < 0);

@@ -21,15 +21,14 @@ package edu.umd.cs.findbugs;
 
 import junit.framework.TestCase;
 
-
 public class OpcodeStackItemTest extends TestCase {
     public void testMergeIntAndZero() {
         OpcodeStack.Item intItem = new OpcodeStack.Item("I");
-        OpcodeStack.Item zeroItem = new OpcodeStack.Item("I",0);
-		OpcodeStack.Item m1 = OpcodeStack.Item.merge(intItem, zeroItem);
+        OpcodeStack.Item zeroItem = new OpcodeStack.Item("I", 0);
+        OpcodeStack.Item m1 = OpcodeStack.Item.merge(intItem, zeroItem);
         assertNull(m1.getConstant());
-        OpcodeStack.Item m2 = OpcodeStack.Item.merge(zeroItem, intItem );
+        OpcodeStack.Item m2 = OpcodeStack.Item.merge(zeroItem, intItem);
         assertNull(m2.getConstant());
-	}
+    }
 
 }

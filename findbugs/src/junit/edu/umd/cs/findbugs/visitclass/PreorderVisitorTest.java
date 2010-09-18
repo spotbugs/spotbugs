@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
-
 import junit.framework.TestCase;
 
 /**
@@ -29,14 +28,14 @@ public class PreorderVisitorTest extends TestCase {
 
     public void testGetNumberArguments() {
         assertEquals(0, PreorderVisitor.getNumberArguments("()V"));
-		assertEquals(0, PreorderVisitor.getNumberArguments("()I"));
+        assertEquals(0, PreorderVisitor.getNumberArguments("()I"));
         assertEquals(0, PreorderVisitor.getNumberArguments("()J"));
         assertEquals(1, PreorderVisitor.getNumberArguments("(I)V"));
         assertEquals(1, PreorderVisitor.getNumberArguments("(I)I"));
-		assertEquals(1, PreorderVisitor.getNumberArguments("(J)I"));
+        assertEquals(1, PreorderVisitor.getNumberArguments("(J)I"));
         assertEquals(1, PreorderVisitor.getNumberArguments("([J)I"));
         assertEquals(1, PreorderVisitor.getNumberArguments("([Ljava/lang/String;)I"));
         assertEquals(3, PreorderVisitor.getNumberArguments("(J[Ljava/lang/String;J)I"));
-	}
+    }
 
 }

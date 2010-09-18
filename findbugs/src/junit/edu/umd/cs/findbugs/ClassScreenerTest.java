@@ -24,9 +24,12 @@ import junit.framework.TestCase;
 
 public class ClassScreenerTest extends TestCase {
     private IClassScreener emptyScreener;
+
     private ClassScreener particularClassScreener;
+
     private ClassScreener particularPackageScreener;
-	private ClassScreener particularPackageScreener2;
+
+    private ClassScreener particularPackageScreener2;
 
     private static String makeFileName(String className) {
         return className.replace('.', '/') + ".class";
@@ -37,19 +40,27 @@ public class ClassScreenerTest extends TestCase {
     }
 
     private static final String FOOBAR_PACKAGE = "com.foobar";
+
     private static final String FOOBAR_PACKAGE_WITH_TRAILING_DOT = "com.foobar.";
+
     private static final String FURRYLEMUR_PACKAGE = "org.furrylemur";
 
     private static final String SOME_CLASS = FOOBAR_PACKAGE + ".SomeClass";
+
     private static final String SOME_OTHER_CLASS = FOOBAR_PACKAGE + ".SomeOtherClass";
+
     private static final String UNRELATED_THING_CLASS = FURRYLEMUR_PACKAGE + ".UnrelatedThing";
 
     private static final String SOME_CLASS_FILENAME = makeFileName(SOME_CLASS);
+
     private static final String SOME_OTHER_CLASS_FILENAME = makeFileName(SOME_OTHER_CLASS);
+
     private static final String UNRELATED_THING_CLASS_FILENAME = makeFileName(UNRELATED_THING_CLASS);
 
     private static final String SOME_CLASS_JARFILENAME = makeJarURL(SOME_CLASS_FILENAME);
+
     private static final String SOME_OTHER_CLASS_JARFILENAME = makeJarURL(SOME_OTHER_CLASS_FILENAME);
+
     private static final String UNRELATED_THING_CLASS_JARFILENAME = makeJarURL(UNRELATED_THING_CLASS_FILENAME);
 
     @Override
@@ -69,36 +80,36 @@ public class ClassScreenerTest extends TestCase {
     public void testEmptyClassScreener() {
         Assert.assertTrue(emptyScreener.matches(SOME_CLASS_FILENAME));
         Assert.assertTrue(emptyScreener.matches(SOME_OTHER_CLASS_FILENAME));
-		Assert.assertTrue(emptyScreener.matches(UNRELATED_THING_CLASS_FILENAME));
+        Assert.assertTrue(emptyScreener.matches(UNRELATED_THING_CLASS_FILENAME));
 
         Assert.assertTrue(emptyScreener.matches(SOME_CLASS_JARFILENAME));
         Assert.assertTrue(emptyScreener.matches(SOME_OTHER_CLASS_JARFILENAME));
         Assert.assertTrue(emptyScreener.matches(UNRELATED_THING_CLASS_JARFILENAME));
-	}
+    }
 
     public void testParticularClassScreener() {
         Assert.assertTrue(particularClassScreener.matches(SOME_CLASS_FILENAME));
         Assert.assertFalse(particularClassScreener.matches(SOME_OTHER_CLASS_FILENAME));
-		Assert.assertFalse(particularClassScreener.matches(UNRELATED_THING_CLASS_FILENAME));
+        Assert.assertFalse(particularClassScreener.matches(UNRELATED_THING_CLASS_FILENAME));
 
         Assert.assertTrue(particularClassScreener.matches(SOME_CLASS_JARFILENAME));
         Assert.assertFalse(particularClassScreener.matches(SOME_OTHER_CLASS_JARFILENAME));
         Assert.assertFalse(particularClassScreener.matches(UNRELATED_THING_CLASS_JARFILENAME));
-	}
+    }
 
     public void testParticularPackageScreener() {
         testPackageScreener(particularPackageScreener);
         testPackageScreener(particularPackageScreener2);
-	}
+    }
 
     private void testPackageScreener(IClassScreener screener) {
         Assert.assertTrue(screener.matches(SOME_CLASS_FILENAME));
         Assert.assertTrue(screener.matches(SOME_OTHER_CLASS_FILENAME));
-		Assert.assertFalse(screener.matches(UNRELATED_THING_CLASS_FILENAME));
+        Assert.assertFalse(screener.matches(UNRELATED_THING_CLASS_FILENAME));
         Assert.assertTrue(screener.matches(SOME_CLASS_JARFILENAME));
         Assert.assertTrue(screener.matches(SOME_OTHER_CLASS_JARFILENAME));
         Assert.assertFalse(screener.matches(UNRELATED_THING_CLASS_JARFILENAME));
-	}
+    }
 }
 
 // vim:ts=4

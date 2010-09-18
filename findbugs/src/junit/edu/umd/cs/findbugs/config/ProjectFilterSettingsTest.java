@@ -26,14 +26,19 @@ import edu.umd.cs.findbugs.I18N;
 
 public class ProjectFilterSettingsTest extends TestCase {
     ProjectFilterSettings plain;
+
     ProjectFilterSettings otherPlain;
+
     ProjectFilterSettings changed;
-	ProjectFilterSettings changed2;
+
+    ProjectFilterSettings changed2;
+
     ProjectFilterSettings changed3;
+
     ProjectFilterSettings changed4;
 
     @Override
-         protected void setUp() {
+    protected void setUp() {
         plain = ProjectFilterSettings.createDefault();
 
         otherPlain = ProjectFilterSettings.createDefault();
@@ -50,7 +55,7 @@ public class ProjectFilterSettingsTest extends TestCase {
         changed4 = ProjectFilterSettings.createDefault();
         changed4.setMinPriority("High");
         changed4.removeCategory("MALICIOUS_CODE");
-		changed4.addCategory("FAKE_CATEGORY");
+        changed4.addCategory("FAKE_CATEGORY");
 
     }
 
@@ -60,33 +65,39 @@ public class ProjectFilterSettingsTest extends TestCase {
 
     public void testPlainCategories() {
         int count = 0;
-        for (String category : I18N.instance().getBugCategories()) if (!category.equals("NOISE")){
-			Assert.assertTrue(plain.containsCategory(category));
-            ++count;
-        }
+        for (String category : I18N.instance().getBugCategories())
+            if (!category.equals("NOISE")) {
+                Assert.assertTrue(plain.containsCategory(category));
+                ++count;
+            }
         Assert.assertEquals(count, plain.getActiveCategorySet().size());
-	}
+    }
 
     public void testAddCategory() {
-        Assert.assertTrue(plain.containsCategory("FAKE_CATEGORY")); // unknown categories should be unhidden by default
+        Assert.assertTrue(plain.containsCategory("FAKE_CATEGORY")); // unknown
+                                                                    // categories
+                                                                    // should be
+                                                                    // unhidden
+                                                                    // by
+                                                                    // default
         plain.addCategory("FAKE_CATEGORY");
-		Assert.assertTrue(plain.containsCategory("FAKE_CATEGORY"));
+        Assert.assertTrue(plain.containsCategory("FAKE_CATEGORY"));
     }
 
     public void testRemoveCategory() {
         Assert.assertTrue(plain.containsCategory("MALICIOUS_CODE"));
         plain.removeCategory("MALICIOUS_CODE");
-		Assert.assertFalse(plain.containsCategory("MALICIOUS_CODE"));
+        Assert.assertFalse(plain.containsCategory("MALICIOUS_CODE"));
     }
 
     public void testSetMinPriority() {
         plain.setMinPriority("High");
         Assert.assertTrue(plain.getMinPriority().equals("High"));
-		Assert.assertTrue(plain.getMinPriorityAsInt() == Detector.HIGH_PRIORITY);
+        Assert.assertTrue(plain.getMinPriorityAsInt() == Detector.HIGH_PRIORITY);
         plain.setMinPriority("Medium");
         Assert.assertTrue(plain.getMinPriority().equals("Medium"));
         Assert.assertTrue(plain.getMinPriorityAsInt() == Detector.NORMAL_PRIORITY);
-		plain.setMinPriority("Low");
+        plain.setMinPriority("Low");
         Assert.assertTrue(plain.getMinPriority().equals("Low"));
         Assert.assertTrue(plain.getMinPriorityAsInt() == Detector.LOW_PRIORITY);
     }
@@ -103,7 +114,7 @@ public class ProjectFilterSettingsTest extends TestCase {
         // The activeBugCategorySet doesn't matter for equals(), only
         // the hiddenBugCategorySet does (along with minPriority and
         // displayFalseWarnings) so 'plain' and 'changed3' should test equal.
-		Assert.assertTrue(plain.equals(changed3));
+        Assert.assertTrue(plain.equals(changed3));
         Assert.assertTrue(changed3.equals(plain));
 
         Assert.assertFalse(plain.equals(changed4));
@@ -111,15 +122,13 @@ public class ProjectFilterSettingsTest extends TestCase {
     }
 
     public void testEncodeDecode() {
-        ProjectFilterSettings copyOfPlain =
-            ProjectFilterSettings.fromEncodedString(plain.toEncodedString());
-		ProjectFilterSettings.hiddenFromEncodedString(copyOfPlain, plain.hiddenToEncodedString());
+        ProjectFilterSettings copyOfPlain = ProjectFilterSettings.fromEncodedString(plain.toEncodedString());
+        ProjectFilterSettings.hiddenFromEncodedString(copyOfPlain, plain.hiddenToEncodedString());
         Assert.assertEquals(plain, copyOfPlain);
 
-        ProjectFilterSettings copyOfChanged4 =
-            ProjectFilterSettings.fromEncodedString(changed4.toEncodedString());
+        ProjectFilterSettings copyOfChanged4 = ProjectFilterSettings.fromEncodedString(changed4.toEncodedString());
         ProjectFilterSettings.hiddenFromEncodedString(copyOfChanged4, changed4.hiddenToEncodedString());
-		Assert.assertEquals(changed4, copyOfChanged4);
+        Assert.assertEquals(changed4, copyOfChanged4);
     }
 
     public void testDisplayFalseWarnings() {
@@ -130,13 +139,12 @@ public class ProjectFilterSettingsTest extends TestCase {
 
         Assert.assertFalse(plain.equals(otherPlain));
 
-        ProjectFilterSettings copyOfPlain =
-            ProjectFilterSettings.fromEncodedString(plain.toEncodedString());
+        ProjectFilterSettings copyOfPlain = ProjectFilterSettings.fromEncodedString(plain.toEncodedString());
 
         Assert.assertTrue(copyOfPlain.displayFalseWarnings());
         Assert.assertEquals(copyOfPlain, plain);
         Assert.assertEquals(plain, copyOfPlain);
-	}
+    }
 }
 
 // vim:ts=4

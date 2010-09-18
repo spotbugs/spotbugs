@@ -29,14 +29,15 @@ public class FindSqlInjectionTest extends TestCase {
     public void testOpenQuote() {
         assertTrue(FindSqlInjection.isOpenQuote("'"));
         assertTrue(FindSqlInjection.isOpenQuote(" '"));
-		assertTrue(FindSqlInjection.isOpenQuote("='"));
+        assertTrue(FindSqlInjection.isOpenQuote("='"));
         assertTrue(FindSqlInjection.isOpenQuote(",'"));
         assertTrue(FindSqlInjection.isOpenQuote("('"));
 
         assertFalse(FindSqlInjection.isOpenQuote("'abc'"));
         assertFalse(FindSqlInjection.isOpenQuote("='abc'"));
     }
-	public void testCloseQuote() {
+
+    public void testCloseQuote() {
         assertTrue(FindSqlInjection.isCloseQuote("'"));
         assertTrue(FindSqlInjection.isCloseQuote("' "));
 

@@ -28,14 +28,15 @@ public class ObfuscateTest extends TestCase {
 
     public void testMethodSignature() {
         String sig = "([Lcom.google.Search;I)Lcom.google.Money;";
-		String result  = Obfuscate.hashMethodSignature(sig);
-        assertTrue("hash of " +sig+ " gives " + result , result.indexOf("google") == -1);
+        String result = Obfuscate.hashMethodSignature(sig);
+        assertTrue("hash of " + sig + " gives " + result, result.indexOf("google") == -1);
         System.out.println(result);
     }
-	public void testMethodSignatureDoesntChangeForCoreTypes() {
+
+    public void testMethodSignatureDoesntChangeForCoreTypes() {
         String sig = "([Ljava/lang/String;I)Ljava/util/Map;";
-        String result  = Obfuscate.hashMethodSignature(sig);
+        String result = Obfuscate.hashMethodSignature(sig);
         assertEquals(sig, result);
-	}
+    }
 
 }

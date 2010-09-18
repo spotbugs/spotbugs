@@ -28,10 +28,12 @@ import junit.framework.TestCase;
 public class TestDefinitelyNullSet extends TestCase {
     DefinitelyNullSet s;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see junit.framework.TestCase#setUp()
      */
-	@Override
+    @Override
     protected void setUp() throws Exception {
         s = new DefinitelyNullSet(10);
     }

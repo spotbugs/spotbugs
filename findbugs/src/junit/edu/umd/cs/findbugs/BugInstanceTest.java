@@ -14,14 +14,14 @@ public class BugInstanceTest extends TestCase {
     static {
         // Load detector plugins
         DetectorFactoryCollection.instance();
-	}
+    }
 
     BugInstance b;
 
     @Override
     protected void setUp() throws Exception {
         b = new BugInstance("NP_NULL_DEREF", Detector.NORMAL_PRIORITY);
-		b.setProperty("A", "a");
+        b.setProperty("A", "a");
         b.setProperty("B", "b");
         b.setProperty("C", "c");
     }
@@ -33,22 +33,22 @@ public class BugInstanceTest extends TestCase {
     public void testRemoveThroughIterator1() {
         removeThroughIterator(b.propertyIterator(), "A");
         checkPropertyIterator(b.propertyIterator(), new String[] { "B", "C" }, new String[] { "b", "c" });
-	}
+    }
 
     public void testRemoveThroughIterator2() {
         removeThroughIterator(b.propertyIterator(), "B");
         checkPropertyIterator(b.propertyIterator(), new String[] { "A", "C" }, new String[] { "a", "c" });
-	}
+    }
 
     public void testRemoveThroughIterator3() {
         removeThroughIterator(b.propertyIterator(), "C");
         checkPropertyIterator(b.propertyIterator(), new String[] { "A", "B" }, new String[] { "a", "b" });
-	}
+    }
 
     public void testIterateTooFar() {
         Iterator<BugProperty> iter = b.propertyIterator();
         get(iter);
-		get(iter);
+        get(iter);
         get(iter);
         noMore(iter);
     }
@@ -56,11 +56,11 @@ public class BugInstanceTest extends TestCase {
     public void testMultipleRemove() {
         Iterator<BugProperty> iter = b.propertyIterator();
         iter.next();
-		iter.remove();
+        iter.remove();
         try {
             iter.remove();
             fail();
-		} catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             assert true;
         }
     }
@@ -68,17 +68,17 @@ public class BugInstanceTest extends TestCase {
     public void testRemoveBeforeNext() {
         Iterator<BugProperty> iter = b.propertyIterator();
         try {
-			iter.remove();
+            iter.remove();
             Assert.fail();
         } catch (IllegalStateException e) {
             assert true;
-		}
+        }
     }
 
     public void testRemoveAndAdd() {
         removeThroughIterator(b.propertyIterator(), "C");
         b.setProperty("D", "d");
-		checkPropertyIterator(b.propertyIterator(), new String[] { "A", "B", "D" }, new String[] { "a", "b", "d" });
+        checkPropertyIterator(b.propertyIterator(), new String[] { "A", "B", "D" }, new String[] { "a", "b", "d" });
         b.setProperty("E", "e");
         checkPropertyIterator(b.propertyIterator(), new String[] { "A", "B", "D", "E" }, new String[] { "a", "b", "d", "e" });
     }
@@ -86,11 +86,11 @@ public class BugInstanceTest extends TestCase {
     public void testRemoveAll1() {
         removeThroughIterator(b.propertyIterator(), "A");
         checkPropertyIterator(b.propertyIterator(), new String[] { "B", "C" }, new String[] { "b", "c" });
-		removeThroughIterator(b.propertyIterator(), "B");
+        removeThroughIterator(b.propertyIterator(), "B");
         checkPropertyIterator(b.propertyIterator(), new String[] { "C" }, new String[] { "c" });
         removeThroughIterator(b.propertyIterator(), "C");
         checkPropertyIterator(b.propertyIterator(), new String[0], new String[0]);
-	}
+    }
 
     public void testWriteCloudPropertiesWithoutMessagesEnabled() throws Exception {
         BugInstance inst = new BugInstance("ABC", 2);
@@ -143,7 +143,7 @@ public class BugInstanceTest extends TestCase {
         try {
             iter.next();
             // Good
-		} catch (NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             Assert.assertTrue(false);
         }
     }
@@ -151,20 +151,20 @@ public class BugInstanceTest extends TestCase {
     private void noMore(Iterator<BugProperty> iter) {
         try {
             iter.next();
-			Assert.fail();
+            Assert.fail();
         } catch (NoSuchElementException e) {
             assert true;
         }
-	}
+    }
 
     private void checkPropertyIterator(Iterator<BugProperty> iter, String[] names, String[] values) {
         if (names.length != values.length)
             throw new IllegalArgumentException();
-		for (int i = 0; i < names.length; ++i) {
+        for (int i = 0; i < names.length; ++i) {
             Assert.assertTrue(iter.hasNext());
             String name = names[i];
             String value = values[i];
-			checkProperty(iter.next(), name, value);
+            checkProperty(iter.next(), name, value);
         }
         Assert.assertFalse(iter.hasNext());
     }
@@ -172,12 +172,12 @@ public class BugInstanceTest extends TestCase {
     private void checkProperty(BugProperty property, String name, String value) {
         Assert.assertEquals(property.getName(), name);
         Assert.assertEquals(property.getValue(), value);
-	}
+    }
 
     private void removeThroughIterator(Iterator<BugProperty> iter, String name) {
         while (iter.hasNext()) {
             BugProperty prop = iter.next();
-			if (prop.getName().equals(name))
+            if (prop.getName().equals(name))
                 iter.remove();
         }
     }

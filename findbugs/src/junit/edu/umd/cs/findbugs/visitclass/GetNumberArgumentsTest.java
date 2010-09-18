@@ -27,27 +27,29 @@ import junit.framework.TestCase;
 
 public class GetNumberArgumentsTest extends TestCase {
 
-    static String [] simpleTypes = "I J B C D F I S Z".split(" ");
+    static String[] simpleTypes = "I J B C D F I S Z".split(" ");
+
     public void testSimpleWithVoidReturnType() {
-        for(String s : simpleTypes)
-			assertEquals(1,  PreorderVisitor.getNumberArguments("(" +s+ ")V") );
+        for (String s : simpleTypes)
+            assertEquals(1, PreorderVisitor.getNumberArguments("(" + s + ")V"));
     }
 
     public void testSimpleWithVoidIntegerType() {
-        for(String s : simpleTypes)
-            assertEquals(1,  PreorderVisitor.getNumberArguments("(" +s+ ")I") );
-	}
+        for (String s : simpleTypes)
+            assertEquals(1, PreorderVisitor.getNumberArguments("(" + s + ")I"));
+    }
+
     public void testArrays() {
-        for(String s : simpleTypes) {
+        for (String s : simpleTypes) {
             assertEquals(1, PreorderVisitor.getNumberArguments("([" + s + ")V"));
-			assertEquals(1, PreorderVisitor.getNumberArguments("([[" + s + ")I"));
+            assertEquals(1, PreorderVisitor.getNumberArguments("([[" + s + ")I"));
         }
     }
 
     public void testStringArguments() {
-        for(String s : simpleTypes) {
+        for (String s : simpleTypes) {
             assertEquals(2, PreorderVisitor.getNumberArguments("([Ljava/lang/String;" + s + ")V"));
-			assertEquals(2, PreorderVisitor.getNumberArguments("([[" + s + "Ljava/lang/String;)I"));
+            assertEquals(2, PreorderVisitor.getNumberArguments("([[" + s + "Ljava/lang/String;)I"));
         }
     }
 

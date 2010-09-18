@@ -32,35 +32,41 @@ public class GenericUtilitiesTest extends TestCase {
     /**
      *
      */
-	private static final String SAMPLE_SIGNATURE = "Lcom/sleepycat/persist/EntityJoin<TPK;TE;>.JoinForwardCursor<TV;>;";
+    private static final String SAMPLE_SIGNATURE = "Lcom/sleepycat/persist/EntityJoin<TPK;TE;>.JoinForwardCursor<TV;>;";
 
     public void testUnmatchedRightAngleBracket() {
-        assertEquals(3,GenericUtilities.nextUnmatchedRightAngleBracket("<I>>", 0));
-        assertEquals(1,GenericUtilities.nextUnmatchedRightAngleBracket("I><I>", 0));
-	}
+        assertEquals(3, GenericUtilities.nextUnmatchedRightAngleBracket("<I>>", 0));
+        assertEquals(1, GenericUtilities.nextUnmatchedRightAngleBracket("I><I>", 0));
+    }
+
     public void notestNestedSignature() {
         GenericObjectType t = (GenericObjectType) GenericUtilities.getType(SAMPLE_SIGNATURE);
-        assertEquals(1,t.getNumParameters());
-	}
+        assertEquals(1, t.getNumParameters());
+    }
+
     public void notestNestedSignature2() {
-        List<ReferenceType> parameters = GenericUtilities.getTypeParameters("Lcom/google/common/util/WeakIdentityHashMap<TK;TV;>.IdentityWeakReference;TV;");
+        List<ReferenceType> parameters = GenericUtilities
+                .getTypeParameters("Lcom/google/common/util/WeakIdentityHashMap<TK;TV;>.IdentityWeakReference;TV;");
 
         System.out.println(parameters);
-        assertEquals(2,parameters.size());
+        assertEquals(2, parameters.size());
         ReferenceType t = parameters.get(0);
-		assertEquals("com.google.common.util.WeakIdentityHashMap$IdentityWeakReference",t.toString());
+        assertEquals("com.google.common.util.WeakIdentityHashMap$IdentityWeakReference", t.toString());
     }
 
     public void testMapSignature() {
-		GenericObjectType t = (GenericObjectType) GenericUtilities.getType("Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;");
-        assertEquals(2,t.getNumParameters());
+        GenericObjectType t = (GenericObjectType) GenericUtilities
+                .getType("Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;");
+        assertEquals(2, t.getNumParameters());
     }
+
     public void testNestedSignatureParser() {
-		GenericSignatureParser parser = new GenericSignatureParser("("+SAMPLE_SIGNATURE+")V");
-        assertEquals(1,parser.getNumParameters());
+        GenericSignatureParser parser = new GenericSignatureParser("(" + SAMPLE_SIGNATURE + ")V");
+        assertEquals(1, parser.getNumParameters());
     }
+
     public void testOKSignaturesThatHaveCausedProblems() {
-		GenericUtilities.getType("[Ljava/util/Map$Entry<Ljava/lang/String;[B>;");
+        GenericUtilities.getType("[Ljava/util/Map$Entry<Ljava/lang/String;[B>;");
         GenericUtilities.getType("[Ljava/util/Map<Ljava/lang/String;[Ljava/lang/String;>;");
     }
 }

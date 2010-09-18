@@ -30,16 +30,16 @@ import junit.framework.TestCase;
  */
 public class SaveTypeTest extends TestCase {
 
-
     private void check(SaveType type, String file) {
-		assertEquals(type, SaveType.forFile(new File(file)));
+        assertEquals(type, SaveType.forFile(new File(file)));
     }
+
     public void testSaveTypes() {
         check(SaveType.XML_ANALYSIS, "/home/pugh/bugs.xml");
-		check(SaveType.XML_ANALYSIS, "/home/pugh/bugs.XML");
+        check(SaveType.XML_ANALYSIS, "/home/pugh/bugs.XML");
         check(SaveType.XML_ANALYSIS, "/home/pugh/bugs.xml.gz");
         check(SaveType.FBP_FILE, "/home/pugh/bugs.fbp");
         check(SaveType.FBA_FILE, "/home/pugh/bugs.fba");
-	}
+    }
 
 }

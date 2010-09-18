@@ -6,11 +6,10 @@ import junit.framework.TestCase;
 public class UserPreferencesTest extends TestCase {
     UserPreferences prefs;
 
-
     @Override
-         protected void setUp() throws Exception {
+    protected void setUp() throws Exception {
         prefs = UserPreferences.createDefaultUserPreferences();
-	}
+    }
 
     public void testClone() {
         UserPreferences clone = (UserPreferences) prefs.clone();

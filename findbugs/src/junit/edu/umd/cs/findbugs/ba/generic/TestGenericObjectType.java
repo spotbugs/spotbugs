@@ -35,158 +35,101 @@ import edu.umd.cs.findbugs.ba.generic.GenericUtilities.TypeCategory;
 public class TestGenericObjectType extends TestCase {
 
     GenericObjectType obj;
+
     String javaSignature;
+
     String underlyingClass;
-	GenericUtilities.TypeCategory typeCategory;
+
+    GenericUtilities.TypeCategory typeCategory;
 
     String variable;
+
     Type extension;
+
     List<ReferenceType> parameters;
 
-
-    public void initTest(
-            String bytecodeSignature,
-            String javaSignature,
-			String underlyingClass, 
-            GenericUtilities.TypeCategory typeCategory,
-            String variable,
-            Type extension,
-			List<ReferenceType> parameters) {
+    public void initTest(String bytecodeSignature, String javaSignature, String underlyingClass,
+            GenericUtilities.TypeCategory typeCategory, String variable, Type extension, List<ReferenceType> parameters) {
         this.obj = (GenericObjectType) GenericUtilities.getType(bytecodeSignature);
         this.javaSignature = javaSignature;
         this.underlyingClass = underlyingClass;
-		this.typeCategory = typeCategory;
+        this.typeCategory = typeCategory;
         this.variable = variable;
         this.extension = extension;
         this.parameters = parameters;
-	}
+    }
 
     public void processTest() {
         assertEquals(obj.toString(true), javaSignature);
         assertEquals(obj.getClassName(), underlyingClass);
-		assertEquals(obj.getTypeCategory(), typeCategory);
+        assertEquals(obj.getTypeCategory(), typeCategory);
 
         if (typeCategory == TypeCategory.PARAMETERIZED) {
             assertTrue(obj.hasParameters());
             assertTrue(obj.getNumParameters() == parameters.size());
-			for (int i=0; i<obj.getNumParameters(); i++)
+            for (int i = 0; i < obj.getNumParameters(); i++)
                 compareTypes(obj.getParameterAt(i), parameters.get(i));
             assertNull(obj.getVariable());
             assertNull(obj.getExtension());
-		}else if (typeCategory == TypeCategory.TYPE_VARIABLE) { 
+        } else if (typeCategory == TypeCategory.TYPE_VARIABLE) {
             assertFalse(obj.hasParameters());
             assertNull(obj.getExtension());
             assertNotNull(obj.getVariable());
-			assertEquals(obj.getVariable(), variable);
-        }else if (typeCategory == TypeCategory.WILDCARD) {
+            assertEquals(obj.getVariable(), variable);
+        } else if (typeCategory == TypeCategory.WILDCARD) {
             assertFalse(obj.hasParameters());
             assertNull(obj.getExtension());
-			assertNotNull(obj.getVariable());
+            assertNotNull(obj.getVariable());
             assertEquals(obj.getVariable(), "*");
         } else if (typeCategory == TypeCategory.WILDCARD_EXTENDS || typeCategory == TypeCategory.WILDCARD_SUPER) {
             assertFalse(obj.hasParameters());
-			assertNotNull(obj.getExtension());
+            assertNotNull(obj.getExtension());
             assertNotNull(obj.getVariable());
             assertEquals(obj.getVariable(), variable);
             compareTypes(obj.getExtension(), extension);
-		}
+        }
     }
-
 
     private void compareTypes(Type a, Type b) {
         assertEquals(a, b);
         if (a instanceof GenericObjectType || b instanceof GenericObjectType) {
-			assertTrue(a instanceof GenericObjectType && b instanceof GenericObjectType);
-            assertEquals(
-                    ((GenericObjectType)a).toString(true),
-                    ((GenericObjectType)b).toString(true)
-					);
+            assertTrue(a instanceof GenericObjectType && b instanceof GenericObjectType);
+            assertEquals(((GenericObjectType) a).toString(true), ((GenericObjectType) b).toString(true));
         }
     }
 
     public void testParameterizedList() {
-        initTest(
-                "Ljava/util/List<Ljava/lang/Comparable;>;",
-				"java.util.List<java.lang.Comparable>", 
-                "java.util.List",
-                GenericUtilities.TypeCategory.PARAMETERIZED,
-                null,
-				null,
-                GenericUtilities.getTypeParameters("Ljava/lang/Comparable;")
-            );
+        initTest("Ljava/util/List<Ljava/lang/Comparable;>;", "java.util.List<java.lang.Comparable>", "java.util.List",
+                GenericUtilities.TypeCategory.PARAMETERIZED, null, null,
+                GenericUtilities.getTypeParameters("Ljava/lang/Comparable;"));
         processTest();
-	}
+    }
 
     public void notestCreateTypes() {
-        initTest(
-                "LDummyClass<Ljava/lang/Comparable;TE;>;",
-				"DummyClass<java.lang.Comparable,E>", 
-                "DummyClass",
-                GenericUtilities.TypeCategory.PARAMETERIZED,
-                null,
-				null,
-                Arrays.asList(
+        initTest("LDummyClass<Ljava/lang/Comparable;TE;>;", "DummyClass<java.lang.Comparable,E>", "DummyClass",
+                GenericUtilities.TypeCategory.PARAMETERIZED, null, null, Arrays.asList(
                         (ReferenceType) GenericUtilities.getType("Ljava/lang/Comparable;"),
-                        (ReferenceType) GenericUtilities.getType("TE;")
-				)
-            );
+                        (ReferenceType) GenericUtilities.getType("TE;")));
         processTest();
     }
 
     public void notestTypeVariables() {
-        initTest(
-                "TE;",
-				"E", 
-                "java.lang.Object",
-                GenericUtilities.TypeCategory.TYPE_VARIABLE,
-                "E",
-				null,
-                null
-            );
+        initTest("TE;", "E", "java.lang.Object", GenericUtilities.TypeCategory.TYPE_VARIABLE, "E", null, null);
         processTest();
 
-        initTest(
-                "*",
-                "?",
-				"java.lang.Object", 
-                GenericUtilities.TypeCategory.WILDCARD,
-                "*",
-                null,
-				null
-            );
+        initTest("*", "?", "java.lang.Object", GenericUtilities.TypeCategory.WILDCARD, "*", null, null);
         processTest();
 
-        initTest(
-                "+TE;",
-                "? extends E",
-				"java.lang.Object", 
-                GenericUtilities.TypeCategory.WILDCARD_EXTENDS,
-                "+",
-                GenericUtilities.getType("TE;"),
-				null
-            );
+        initTest("+TE;", "? extends E", "java.lang.Object", GenericUtilities.TypeCategory.WILDCARD_EXTENDS, "+",
+                GenericUtilities.getType("TE;"), null);
         processTest();
 
-        initTest(
-                "-TE;",
-                "? super E",
-				"java.lang.Object", 
-                GenericUtilities.TypeCategory.WILDCARD_SUPER,
-                "-",
-                GenericUtilities.getType("TE;"),
-				null
-            );
+        initTest("-TE;", "? super E", "java.lang.Object", GenericUtilities.TypeCategory.WILDCARD_SUPER, "-",
+                GenericUtilities.getType("TE;"), null);
         processTest();
 
-        initTest(
-                "-[TE;",
-                "? super E[]",
-				"java.lang.Object", 
-                GenericUtilities.TypeCategory.WILDCARD_SUPER,
-                "-",
-                GenericUtilities.getType("[TE;"),
-				null
-            );
+        initTest("-[TE;", "? super E[]", "java.lang.Object", GenericUtilities.TypeCategory.WILDCARD_SUPER, "-",
+                GenericUtilities.getType("[TE;"), null);
         processTest();
 
     }

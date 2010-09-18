@@ -31,7 +31,7 @@ public class TestNullnessValue extends TestCase {
     @Override
     protected void setUp() {
         definitelyNull = NullnessValue.definitelyNullValue();
-	}
+    }
 
     public void testDefinitelyNullToString() {
         Assert.assertEquals("n", definitelyNull.toString());

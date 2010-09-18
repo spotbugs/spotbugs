@@ -23,32 +23,33 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
- * A special Detector2 class designed to run some JUnit test code.
- * Only used by FindBugsTestCase.
- *
+ * A special Detector2 class designed to run some JUnit test code. Only used by
+ * FindBugsTestCase.
+ * 
  * @author David Hovemeyer
  * @see FindBugsTestCase
  */
 public class JUnitDetectorAdapter implements Detector2 {
 
     private Throwable throwable;
+
     private boolean testExecuted;
-	
-    private static InheritableThreadLocal<JUnitDetectorAdapter> instance =
-        new InheritableThreadLocal<JUnitDetectorAdapter>();
-    private static InheritableThreadLocal<RunnableWithExceptions> runnableInstance =
-		new InheritableThreadLocal<RunnableWithExceptions>();
+
+    private static InheritableThreadLocal<JUnitDetectorAdapter> instance = new InheritableThreadLocal<JUnitDetectorAdapter>();
+
+    private static InheritableThreadLocal<RunnableWithExceptions> runnableInstance = new InheritableThreadLocal<RunnableWithExceptions>();
 
     public JUnitDetectorAdapter(BugReporter bugReporter) {
         instance.set(this);
-	}
+    }
 
     public static JUnitDetectorAdapter instance() {
         return instance.get();
-	}
+    }
 
     /**
-     * @param runnable The runnable to set.
+     * @param runnable
+     *            The runnable to set.
      */
     public static void setRunnable(RunnableWithExceptions runnable) {
         runnableInstance.set(runnable);
@@ -58,38 +59,47 @@ public class JUnitDetectorAdapter implements Detector2 {
         if (throwable instanceof Exception)
             throw (Exception) throwable;
         if (throwable instanceof Error)
-        		throw (Error) throwable;
-        if (throwable != null) throw new Error(throwable);
+            throw (Error) throwable;
+        if (throwable != null)
+            throw new Error(throwable);
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.Detector2#finishPass()
-	 */
+     */
     public void finishPass() {
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
      */
-	public String getDetectorClassName() {
+    public String getDetectorClassName() {
         return this.getClass().getName();
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile
+     * .ClassDescriptor)
      */
-	public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
+    public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
         // Only execute the test once
         if (testExecuted) {
             return;
-		}
-        testExecuted= true;
+        }
+        testExecuted = true;
 
         try {
-			runnableInstance.get().run();
+            runnableInstance.get().run();
         } catch (Throwable e) {
-//			e.printStackTrace();
+            // e.printStackTrace();
             throwable = e;
         }
     }

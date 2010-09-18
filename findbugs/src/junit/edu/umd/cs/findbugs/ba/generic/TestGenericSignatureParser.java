@@ -35,31 +35,16 @@ public class TestGenericSignatureParser extends TestCase {
         for (String s : substrings) {
             assertTrue(iter.hasNext());
             assertEquals(s, iter.next());
-		}
+        }
         assertFalse(iter.hasNext());
     }
 
     public void testSignatures() {
-        processTest(
-                "(Ljava/lang/Comparable;)V",
-				"Ljava/lang/Comparable;"
-                );
+        processTest("(Ljava/lang/Comparable;)V", "Ljava/lang/Comparable;");
 
-        processTest(
-                "(Ljava/lang/Comparable;TE;**[Ljava/lang/Comparable;)V",
-                "Ljava/lang/Comparable;",
-				"TE;",
-                "*",
-                "*",
-                "[Ljava/lang/Comparable;"
-				);
+        processTest("(Ljava/lang/Comparable;TE;**[Ljava/lang/Comparable;)V", "Ljava/lang/Comparable;", "TE;", "*", "*",
+                "[Ljava/lang/Comparable;");
 
-        processTest(
-                "(TE;*+[Ljava/lang/Comparable;-TV;)V",
-                "TE;",
-				"*",
-                "+[Ljava/lang/Comparable;",
-                "-TV;"
-                );
-	}
+        processTest("(TE;*+[Ljava/lang/Comparable;-TV;)V", "TE;", "*", "+[Ljava/lang/Comparable;", "-TV;");
+    }
 }

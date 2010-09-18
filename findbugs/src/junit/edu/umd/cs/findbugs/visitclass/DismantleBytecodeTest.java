@@ -29,9 +29,9 @@ public class DismantleBytecodeTest extends TestCase {
     public void testAreOppositeBranches() {
         assertTrue(DismantleBytecode.areOppositeBranches(DismantleBytecode.IF_ACMPEQ, DismantleBytecode.IF_ACMPNE));
         assertTrue(DismantleBytecode.areOppositeBranches(DismantleBytecode.IF_ICMPEQ, DismantleBytecode.IF_ICMPNE));
-		assertTrue(DismantleBytecode.areOppositeBranches(DismantleBytecode.IF_ICMPLT, DismantleBytecode.IF_ICMPGE));
+        assertTrue(DismantleBytecode.areOppositeBranches(DismantleBytecode.IF_ICMPLT, DismantleBytecode.IF_ICMPGE));
         assertTrue(DismantleBytecode.areOppositeBranches(DismantleBytecode.IFNE, DismantleBytecode.IFEQ));
         assertTrue(DismantleBytecode.areOppositeBranches(DismantleBytecode.IFLT, DismantleBytecode.IFGE));
         assertTrue(DismantleBytecode.areOppositeBranches(DismantleBytecode.IFNULL, DismantleBytecode.IFNONNULL));
-}
+    }
 }

@@ -29,23 +29,24 @@ public class IncompatMaskTest extends TestCase {
 
     void check(long value) {
         assertEquals(1, IncompatMask.populationCount(value));
-		boolean isLong =  (value >>> 32) != 0;
+        boolean isLong = (value >>> 32) != 0;
         assertEquals(value, IncompatMask.getFlagBits(true, value));
         assertEquals(value, IncompatMask.getFlagBits(true, ~value));
-        if (!isLong)  {
-			assertEquals(value, IncompatMask.getFlagBits(false, value));
+        if (!isLong) {
+            assertEquals(value, IncompatMask.getFlagBits(false, value));
             assertEquals(value, IncompatMask.getFlagBits(false, ~value));
         }
     }
-	public void testGetFlagBits() {
+
+    public void testGetFlagBits() {
         check(1);
         check(4);
         check(0x10000000L);
-		check(0x80000000L);
+        check(0x80000000L);
         check(0x100000000L);
         check(0x10000000000L);
         check(Long.MIN_VALUE >>> 1);
-		check(Long.MIN_VALUE);
+        check(Long.MIN_VALUE);
 
     }
 
