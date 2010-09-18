@@ -36,9 +36,6 @@ import java.util.Set;
  * @author pugh
  */
 public class FixIndentation {
-	static final String TABS = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
-			+ "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
-
 	static final String SPACES = "                                                     ";
 	public static void main(String args[]) throws Exception {
 		recursiveFix(new File(args[0]), true);
@@ -62,7 +59,8 @@ public class FixIndentation {
 					for (File c : contents)
 						if (seen.add(c))
 							todo.add(c);
-			} else if (nextPath.endsWith(".java"))
+			} else if (nextPath.endsWith(".java")
+					|| nextPath.endsWith(".xml"))
 				fix(next, partial);
 		}
 	}
