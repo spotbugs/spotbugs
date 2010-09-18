@@ -110,20 +110,27 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 	public void sawOpcode(int seen) {
 
 		if (DEBUG) 
-			System.out.println(state + " " + OPCODE_NAMES[seen]);
+			System.out.printf("%3d %10s %3s %s%n", getPC(), OPCODE_NAMES[seen], state, stack);
 		
-		if (seen == INVOKESPECIAL && getNameConstantOperand().equals("<init>")) {
+		checkForInitWithoutCopyOnStack: if (seen == INVOKESPECIAL && getNameConstantOperand().equals("<init>")) {
 			int arguments = PreorderVisitor.getNumberArguments(getSigConstantOperand());
-			
-			if (arguments + 1 == stack.getStackDepth()) {
-				OpcodeStack.Item invokedOn = stack.getStackItem(arguments);
-				if (!getMethodName().equals("<init>") || invokedOn.getRegisterNumber() != 0) {
-					callSeen = XFactory.createReferencedXMethod(this);
-					callPC = getPC();
-					sawMethodCallWithIgnoredReturnValue();
+			OpcodeStack.Item invokedOn = stack.getStackItem(arguments);
+			if (invokedOn.isNewlyAllocated() && (!getMethodName().equals("<init>") || invokedOn.getRegisterNumber() != 0)) {
+
+				for (int i = arguments + 1; i < stack.getStackDepth(); i++) {
+					OpcodeStack.Item item = stack.getStackItem(i);
+					if (item.isNewlyAllocated() && item.getSignature().equals(invokedOn.getSignature()))
+						break checkForInitWithoutCopyOnStack;
 				}
+				
+				callSeen = XFactory.createReferencedXMethod(this);
+				callPC = getPC();
+				sawMethodCallWithIgnoredReturnValue();
+
 			}
 		}
+			
+			
 		if (state == SAW_INVOKE && isPop(seen))
 	        sawMethodCallWithIgnoredReturnValue();
         else if (INVOKE_OPCODE_SET.get(seen)) {
