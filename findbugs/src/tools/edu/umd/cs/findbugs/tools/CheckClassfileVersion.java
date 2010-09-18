@@ -27,63 +27,63 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
- * Verify that a set of jar files are compiled for Java 5.0, the
- * release standard for FindBugs
- *
+ * Verify that a set of jar files are compiled for Java 5.0, the release
+ * standard for FindBugs
+ * 
  */
 public class CheckClassfileVersion {
 
     private static boolean isJarFile(File f) {
         String name = f.getName();
-		return name.endsWith(".jar") || name.endsWith(".zip") || name.endsWith("war")
-        || name.endsWith(".ear");
+        return name.endsWith(".jar") || name.endsWith(".zip") || name.endsWith("war") || name.endsWith(".ear");
     }
+
     public static void main(String args[]) throws Exception {
 
         boolean fail = false;
         ArrayList<File> s = new ArrayList<File>(args.length);
         for (String f : args) {
-			File file = new File(f);
+            File file = new File(f);
             if (!file.canRead())
                 System.out.println("Can't read " + f);
             if (file.isDirectory()) {
-				for(File f2 : file.listFiles())
+                for (File f2 : file.listFiles())
                     if (isJarFile(f2))
                         s.add(f2);
             } else if (isJarFile(file))
-				s.add(file);
+                s.add(file);
         }
 
-        for(File jarFile : s) {
-			String jarFileName = jarFile.getName();
+        for (File jarFile : s) {
+            String jarFileName = jarFile.getName();
             System.out.println("Checking " + jarFileName);
             JarFile z = new JarFile(jarFile);
             for (Enumeration e = z.entries(); e.hasMoreElements();) {
-				JarEntry ze = (JarEntry) e.nextElement();
+                JarEntry ze = (JarEntry) e.nextElement();
                 if (ze.isDirectory())
                     continue;
 
                 String name = ze.getName();
                 boolean isClassFile = name.endsWith(".class");
                 if (!isClassFile)
-					continue;
+                    continue;
 
                 DataInputStream zipIn = new DataInputStream(z.getInputStream(ze));
                 int magic = zipIn.readInt();
                 int minorVersion = zipIn.readUnsignedShort();
-				int majorVersion = zipIn.readUnsignedShort();
+                int majorVersion = zipIn.readUnsignedShort();
                 if (magic != 0xCAFEBABE) {
                     System.out.printf("bad magic %x: %s %s%n", magic, jarFileName, name);
                     fail = true;
-				} else if (minorVersion >= 60) {
+                } else if (minorVersion >= 60) {
                     System.out.printf("bad version %d:%s %s%n", minorVersion, jarFileName, name);
                     fail = true;
                 }
-				zipIn.close();
+                zipIn.close();
             }
             z.close();
         }
-		if (fail)
+        if (fail)
             System.exit(1);
     }
 

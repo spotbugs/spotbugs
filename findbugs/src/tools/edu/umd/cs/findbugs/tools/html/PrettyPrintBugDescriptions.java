@@ -33,28 +33,35 @@ import edu.umd.cs.findbugs.I18N;
 
 public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
     private Set<BugPattern> bugPatternSet;
+
     private String headerText;
+
     private String beginBodyText;
-	private String prologueText;
+
+    private String prologueText;
+
     private String endBodyText;
+
     private boolean unabridged;
 
-    private static final String[] TABLE_COLORS = new String[]{ "#eeeeee", "#ffffff" };
+    private static final String[] TABLE_COLORS = new String[] { "#eeeeee", "#ffffff" };
 
     private static class BugPatternComparator implements Comparator<BugPattern>, Serializable {
         public int compare(BugPattern a, BugPattern b) {
             int cmp = a.getCategory().compareTo(b.getCategory());
-			if (cmp != 0) return cmp;
+            if (cmp != 0)
+                return cmp;
             cmp = a.getAbbrev().compareTo(b.getAbbrev());
-            if (cmp != 0) return cmp;
+            if (cmp != 0)
+                return cmp;
             return a.getType().compareTo(b.getType());
-		}
+        }
     }
 
     public PrettyPrintBugDescriptions(String docTitle, OutputStream out) {
         super(docTitle, out);
         this.bugPatternSet = new TreeSet<BugPattern>(new BugPatternComparator());
-		this.headerText = this.beginBodyText = this.prologueText = this.endBodyText = "";
+        this.headerText = this.beginBodyText = this.prologueText = this.endBodyText = "";
     }
 
     public void setHeaderText(String headerText) {
@@ -76,39 +83,39 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
     @Override
     protected void prologue() throws IOException {
         super.prologue();
-		PrintStream out = getPrintStream();
+        PrintStream out = getPrintStream();
         out.println(prologueText);
     }
 
     @Override
     protected void emit(BugPattern bugPattern) throws IOException {
         bugPatternSet.add(bugPattern);
-	}
+    }
 
     @Override
     protected void epilogue() throws IOException {
         emitSummaryTable();
-		emitBugDescriptions();
+        emitBugDescriptions();
         super.epilogue();
     }
 
     @Override
     protected void header() throws IOException {
         PrintStream out = getPrintStream();
-		out.println(headerText);
+        out.println(headerText);
     }
 
     /** Extra stuff printed at the beginning of the &lt;body&gt; element. */
     @Override
     protected void beginBody() throws IOException {
-		PrintStream out = getPrintStream();
+        PrintStream out = getPrintStream();
         out.println(beginBodyText);
     }
 
     /** Extra stuff printed at the end of the &lt;body&gt; element. */
     @Override
     protected void endBody() throws IOException {
-		PrintStream out = getPrintStream();
+        PrintStream out = getPrintStream();
         out.println(endBodyText);
     }
 
@@ -125,9 +132,8 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 
         for (BugPattern bugPattern : bugPatternSet) {
             out.print("<tr bgcolor=\"" + colorAlternator.nextColor() + "\">");
-            out.print("<td><a href=\"#" + bugPattern.getType() + "\">" +
-					bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription() +
-                    "</a></td>");
+            out.print("<td><a href=\"#" + bugPattern.getType() + "\">" + bugPattern.getAbbrev() + ": "
+                    + bugPattern.getShortDescription() + "</a></td>");
             out.println("<td>" + I18N.instance().getBugCategoryDescription(bugPattern.getCategory()) + "</td></tr>");
         }
 
@@ -140,19 +146,16 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
         out.println("<h2>Descriptions</h2>");
 
         for (BugPattern bugPattern : bugPatternSet) {
-            out.println("<h3><a name=\"" +
-                    bugPattern.getType() + "\">" +
-					bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription() +
-                    " (" + bugPattern.getType() + ")" +
-                    "</a></h3>");
+            out.println("<h3><a name=\"" + bugPattern.getType() + "\">" + bugPattern.getAbbrev() + ": "
+                    + bugPattern.getShortDescription() + " (" + bugPattern.getType() + ")" + "</a></h3>");
             out.println(bugPattern.getDetailText());
-		}
+        }
     }
 
     @Override
     protected boolean isEnabled(DetectorFactory factory) {
         return unabridged || super.isEnabled(factory);
-	}
+    }
 
     public static void main(String[] args) throws Exception {
         int argCount = 0;
@@ -161,7 +164,7 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
         if (argCount < args.length && args[argCount].equals("-unabridged")) {
             ++argCount;
             // Unabridged mode: emit all warnings reported by at least one
-			// detector, even for disabled detectors.
+            // detector, even for disabled detectors.
             unabridged = true;
         }
 
@@ -172,21 +175,21 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
         String docTitle = "FindBugs Bug Descriptions";
         if (argCount < args.length) {
             docTitle = args[argCount++];
-		}
+        }
         PrettyPrintBugDescriptions pp = new PrettyPrintBugDescriptions(docTitle, System.out);
 
         if (argCount < args.length) {
             pp.setHeaderText(args[argCount++]);
         }
-		if (argCount < args.length) {
+        if (argCount < args.length) {
             pp.setBeginBodyText(args[argCount++]);
         }
         if (argCount < args.length) {
-			pp.setPrologueText(args[argCount++]);
+            pp.setPrologueText(args[argCount++]);
         }
         if (argCount < args.length) {
             pp.setEndBodyText(args[argCount++]);
-		}
+        }
 
         if (unabridged)
             pp.unabridged = true;

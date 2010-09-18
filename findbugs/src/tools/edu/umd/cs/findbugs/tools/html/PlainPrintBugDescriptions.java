@@ -27,37 +27,41 @@ import edu.umd.cs.findbugs.BugPattern;
 
 public class PlainPrintBugDescriptions extends PrintBugDescriptions {
     private String docTitle;
+
     private PrintStream out;
 
     public PlainPrintBugDescriptions(String docTitle, OutputStream out) {
         this.docTitle = docTitle;
         this.out = new PrintStream(out);
-	}
+    }
 
-    protected String getDocTitle() { return docTitle; }
+    protected String getDocTitle() {
+        return docTitle;
+    }
 
-    protected PrintStream getPrintStream() { return out; }
+    protected PrintStream getPrintStream() {
+        return out;
+    }
 
     @Override
     protected void prologue() throws IOException {
         out.println("<html><head><title>" + docTitle + "</title>");
-		header();
+        header();
         out.println("</head><body>");
         beginBody();
         out.println("<h1>" + docTitle + "</h1>");
-	}
+    }
 
     @Override
     protected void emit(BugPattern bugPattern) throws IOException {
-        out.println("<h2>" + bugPattern.getAbbrev() + ": " +
-			bugPattern.getShortDescription() + "</h2>");
+        out.println("<h2>" + bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription() + "</h2>");
         out.println(bugPattern.getDetailText());
     }
 
     @Override
     protected void epilogue() throws IOException {
         endBody();
-		out.println("</body></html>");
+        out.println("</body></html>");
     }
 
     /** Extra stuff that can be printed in the &lt;head&gt; element. */
@@ -75,7 +79,7 @@ public class PlainPrintBugDescriptions extends PrintBugDescriptions {
     public static void main(String[] args) throws Exception {
         String docTitle = "FindBugs Bug Descriptions";
         if (args.length > 0)
-			docTitle = args[0];
+            docTitle = args[0];
         new PlainPrintBugDescriptions(docTitle, System.out).print();
     }
 }

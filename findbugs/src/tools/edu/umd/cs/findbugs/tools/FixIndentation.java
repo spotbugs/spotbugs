@@ -37,18 +37,19 @@ import java.util.Set;
  */
 public class FixIndentation {
     static final String SPACES = "                                                     ";
+
     public static void main(String args[]) throws Exception {
         recursiveFix(new File(args[0]), true);
-	}
+    }
 
     static void recursiveFix(File root, boolean partial) throws IOException {
         String rootPath = root.getAbsolutePath();
         Set<File> seen = new HashSet<File>();
-		Queue<File> todo = new LinkedList<File>();
+        Queue<File> todo = new LinkedList<File>();
         seen.add(root);
         todo.add(root);
         while (!todo.isEmpty()) {
-			File next = todo.remove().getAbsoluteFile();
+            File next = todo.remove().getAbsoluteFile();
             String nextPath = next.getAbsolutePath();
             if (!nextPath.startsWith(rootPath))
                 continue;
@@ -56,11 +57,10 @@ public class FixIndentation {
             if (next.isDirectory()) {
                 File[] contents = next.listFiles();
                 if (contents != null)
-					for (File c : contents)
+                    for (File c : contents)
                         if (seen.add(c))
                             todo.add(c);
-            } else if (nextPath.endsWith(".java")
-					|| nextPath.endsWith(".xml"))
+            } else if (nextPath.endsWith(".java") || nextPath.endsWith(".xml"))
                 fix(next, partial);
         }
     }
@@ -68,66 +68,68 @@ public class FixIndentation {
     static String fix(String s) {
         if (s.length() == 0)
             return s;
-		if (s.trim().length() == 0) return "";
+        if (s.trim().length() == 0)
+            return "";
         int spaces = 0;
         int pos = 0;
         int indentation = 0;
-		for (;pos < s.length(); pos++) {
+        for (; pos < s.length(); pos++) {
             char c = s.charAt(pos);
             if (c == ' ') {
                 indentation++;
-				spaces++;
+                spaces++;
             } else if (c == '\t') {
                 indentation += 4;
             } else
-				break;
+                break;
         }
 
         return SPACES.substring(0, indentation) + s.substring(pos).trim();
-		
 
     }
 
     static void fix(File fileToUpdate, boolean partial) throws IOException {
         boolean anyChanges = false;
         BufferedReader in = new BufferedReader(new FileReader(fileToUpdate));
-		StringWriter stringWriter = new StringWriter();
+        StringWriter stringWriter = new StringWriter();
         PrintWriter out = new PrintWriter(stringWriter);
         int consecutiveFixes = 0;
         try {
-			while (true) {
+            while (true) {
                 String s = in.readLine();
                 if (s == null)
                     break;
-				String s2 = fix(s);
+                String s2 = fix(s);
                 if (!s2.equals(s)) {
                     consecutiveFixes++;
                     if (consecutiveFixes > 3 && partial) {
-						s2 = s;
+                        s2 = s;
                         consecutiveFixes = 0;
-                    } else anyChanges = true;
+                    } else
+                        anyChanges = true;
                 } else
-					consecutiveFixes = 0;
+                    consecutiveFixes = 0;
                 out.println(s2);
             }
         } finally {
-			in.close();
+            in.close();
         }
-        if (!anyChanges) return;
+        if (!anyChanges)
+            return;
         StringReader stringReader = new StringReader(stringWriter.toString());
-		FileWriter outFile = new FileWriter(fileToUpdate);
+        FileWriter outFile = new FileWriter(fileToUpdate);
         char[] buffer = new char[1000];
         try {
             while (true) {
-				int sz = stringReader.read(buffer);
+                int sz = stringReader.read(buffer);
                 if (sz < 0)
                     break;
                 outFile.write(buffer, 0, sz);
-			}
+            }
         } finally {
             outFile.close();
         }
-		System.out.println("Updated " + fileToUpdate);
+        System.out.println("Updated " + fileToUpdate);
     }
 
 }

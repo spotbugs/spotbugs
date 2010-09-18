@@ -42,11 +42,11 @@ public class FilterPropertyDatabase {
     /**
      * @param args
      * @throws IOException
-	 */
+     */
     public static void main(String[] args) throws IOException {
         InputStream inSource = System.in;
         if (args.length > 0)
-			inSource = new FileInputStream(args[0]);
+            inSource = new FileInputStream(args[0]);
         process(inSource);
 
     }
@@ -54,21 +54,21 @@ public class FilterPropertyDatabase {
     /**
      * @param inSource
      * @throws UnsupportedEncodingException
-	 * @throws IOException
+     * @throws IOException
      */
     private static void process(InputStream inSource) throws UnsupportedEncodingException, IOException {
         BufferedReader in = null;
-		try {
+        try {
             in = new BufferedReader(Util.getReader(inSource));
 
             Pattern p = Pattern.compile(",([0-9]+)\\|");
             while (true) {
                 String s = in.readLine();
-				if (s == null)
+                if (s == null)
                     break;
                 Matcher m = p.matcher(s);
                 if (m.find()) {
-					int value = Integer.parseInt(m.group(1));
+                    int value = Integer.parseInt(m.group(1));
                     if ((value & FLAGS) != 0)
                         System.out.println(s);
                 }
@@ -76,7 +76,7 @@ public class FilterPropertyDatabase {
             }
         } finally {
             Util.closeSilently(in);
-		}
+        }
     }
 
 }

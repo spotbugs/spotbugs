@@ -47,44 +47,49 @@ public class FilterAndCombineBitfieldPropertyDatabase {
     /**
      * @param args
      * @throws IOException
-	 */
+     */
     public static void main(String[] args) throws IOException {
         Map<String, Integer> properties = new TreeMap<String, Integer>();
         Map<String, Integer> accessFlags = new TreeMap<String, Integer>();
-		
+
         if (args.length == 0)
             process(System.in, properties, accessFlags);
-        else for(String f : args)
-			process(new FileInputStream(f), properties, accessFlags);
+        else
+            for (String f : args)
+                process(new FileInputStream(f), properties, accessFlags);
 
-        for(Entry<String,Integer> e : properties.entrySet()) {
+        for (Entry<String, Integer> e : properties.entrySet()) {
             String key = e.getKey();
-	        System.out.println(key + "," + accessFlags.get(key) + "|" + e.getValue());
+            System.out.println(key + "," + accessFlags.get(key) + "|" + e.getValue());
         }
     }
 
-    enum Status { NOT_FOUND, EXPOSED, UNEXPOSED };
-	static Map<String, Status> classStatus = new HashMap<String, Status>();
+    enum Status {
+        NOT_FOUND, EXPOSED, UNEXPOSED
+    };
+
+    static Map<String, Status> classStatus = new HashMap<String, Status>();
 
     static Status getStatus(@DottedClassName String name) {
         if (name.startsWith("com.sun") || name.startsWith("sun") || name.startsWith("netscape"))
-			return Status.UNEXPOSED;
+            return Status.UNEXPOSED;
         Status result = classStatus.get(name);
-        if (result != null) return result;
+        if (result != null)
+            return result;
 
-		try {
-            Class <?> c = Class.forName(name, false, ClassLoader.getSystemClassLoader());
+        try {
+            Class<?> c = Class.forName(name, false, ClassLoader.getSystemClassLoader());
             int accessFlags = c.getModifiers();
             if ((accessFlags & FLAGS) != 0)
-				result = Status.EXPOSED;
+                result = Status.EXPOSED;
             else {
                 result = Status.UNEXPOSED;
             }
-		} catch (Exception e) {
+        } catch (Exception e) {
             result = Status.NOT_FOUND;
             // System.out.println("# can't find " + name);
         }
-		classStatus.put(name, result);
+        classStatus.put(name, result);
         return result;
     }
 
@@ -93,35 +98,36 @@ public class FilterAndCombineBitfieldPropertyDatabase {
      * @throws UnsupportedEncodingException
      * @throws IOException
      */
-    private static void process(InputStream inSource, Map<String, Integer> properties,  Map<String, Integer> accessFlags) throws UnsupportedEncodingException, IOException {
+    private static void process(InputStream inSource, Map<String, Integer> properties, Map<String, Integer> accessFlags)
+            throws UnsupportedEncodingException, IOException {
         BufferedReader in = new BufferedReader(Util.getReader(inSource));
         Pattern p = Pattern.compile("^(([^,]+),.+),([0-9]+)\\|([0-9]+)$");
         try {
-		while (true) {
-            String s = in.readLine();
-            if (s == null)
-                break;
-			Matcher m = p.matcher(s);
-            if (m.find()) {
-                String key = m.group(1);
-                String className = m.group(2);
-				if (getStatus(className) == Status.UNEXPOSED)
-                    continue;
-                int accFlags = Integer.parseInt(m.group(3));
-                int bits = Integer.parseInt(m.group(4));
-				if ((accFlags & FLAGS) != 0) {
-                    accessFlags.put(key, accFlags);
-                    if (properties.containsKey(key))
-                        properties.put(key, bits | properties.get(key));
-					else
-                        properties.put(key, bits );
+            while (true) {
+                String s = in.readLine();
+                if (s == null)
+                    break;
+                Matcher m = p.matcher(s);
+                if (m.find()) {
+                    String key = m.group(1);
+                    String className = m.group(2);
+                    if (getStatus(className) == Status.UNEXPOSED)
+                        continue;
+                    int accFlags = Integer.parseInt(m.group(3));
+                    int bits = Integer.parseInt(m.group(4));
+                    if ((accFlags & FLAGS) != 0) {
+                        accessFlags.put(key, accFlags);
+                        if (properties.containsKey(key))
+                            properties.put(key, bits | properties.get(key));
+                        else
+                            properties.put(key, bits);
+                    }
                 }
-            }
 
-        }
+            }
         } finally {
             Util.closeSilently(in);
-		}
+        }
     }
 
 }

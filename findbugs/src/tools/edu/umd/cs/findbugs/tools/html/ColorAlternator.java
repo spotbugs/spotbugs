@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.tools.html;
 
 public class ColorAlternator {
     private String[] colorList;
+
     int index;
 
     public ColorAlternator(String[] colorList) {

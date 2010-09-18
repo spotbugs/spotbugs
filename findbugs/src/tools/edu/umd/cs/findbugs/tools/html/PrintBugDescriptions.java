@@ -36,8 +36,8 @@ public abstract class PrintBugDescriptions {
 
         // Find all bug patterns reported by at least one non-disabled detector.
         Collection<BugPattern> enabledPatternSet = new HashSet<BugPattern>();
-        for (Iterator<DetectorFactory> i = factories.factoryIterator(); i.hasNext(); ) {
-			DetectorFactory factory = i.next();
+        for (Iterator<DetectorFactory> i = factories.factoryIterator(); i.hasNext();) {
+            DetectorFactory factory = i.next();
             if (isEnabled(factory))
                 enabledPatternSet.addAll(factory.getReportedBugPatterns());
         }
@@ -47,7 +47,7 @@ public abstract class PrintBugDescriptions {
         Iterator<BugPattern> i = I18N.instance().bugPatternIterator();
         while (i.hasNext()) {
             BugPattern bugPattern = i.next();
-			if (!enabledPatternSet.contains(bugPattern))
+            if (!enabledPatternSet.contains(bugPattern))
                 continue;
             emit(bugPattern);
         }
