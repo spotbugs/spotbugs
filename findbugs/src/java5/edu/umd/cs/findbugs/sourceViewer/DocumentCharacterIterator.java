@@ -26,8 +26,7 @@ import javax.swing.text.Document;
 import javax.swing.text.Segment;
 
 /**
- * A CharacterIterator over a Document.
- * Only a partial implementation.
+ * A CharacterIterator over a Document. Only a partial implementation.
  */
 public class DocumentCharacterIterator implements CharacterIterator {
 
@@ -44,12 +43,12 @@ public class DocumentCharacterIterator implements CharacterIterator {
     DocumentCharacterIterator(Document doc) {
         this.doc = doc;
         text = new Segment();
-		text.setPartialReturn(true);
+        text.setPartialReturn(true);
 
         try {
             doc.getText(0, doc.getLength(), text);
         } catch (BadLocationException e) {
-			throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
         segmentEnd = text.count;
     }
@@ -57,7 +56,7 @@ public class DocumentCharacterIterator implements CharacterIterator {
     @Override
     public Object clone() {
         throw new UnsupportedOperationException();
-	}
+    }
 
     public char current() {
         return text.current();
@@ -83,22 +82,26 @@ public class DocumentCharacterIterator implements CharacterIterator {
         throw new UnsupportedOperationException();
     }
 
-    /** Increments the iterator's index by one and returns the character at the new index.
-     * @return the character at the new position, or DONE if the new position is off the end
+    /**
+     * Increments the iterator's index by one and returns the character at the
+     * new index.
+     * 
+     * @return the character at the new position, or DONE if the new position is
+     *         off the end
      */
-	public char next() {
+    public char next() {
         ++docPos;
         if (docPos < segmentEnd || segmentEnd >= doc.getLength()) {
             return text.next();
-		}
+        }
         try {
             doc.getText(segmentEnd, doc.getLength() - segmentEnd, text);
         } catch (BadLocationException e) {
-			throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
         segmentEnd += text.count;
         return text.current();
-	}
+    }
 
     public char previous() {
         throw new UnsupportedOperationException();

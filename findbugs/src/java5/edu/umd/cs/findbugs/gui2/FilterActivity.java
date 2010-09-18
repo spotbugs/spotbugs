@@ -34,32 +34,29 @@ public class FilterActivity {
 
     static HashSet<FilterListener> listeners = new HashSet<FilterListener>();
 
-    public static boolean addFilterListener(FilterListener newListener)
-    {
+    public static boolean addFilterListener(FilterListener newListener) {
         return listeners.add(newListener);
     }
 
-    public static void removeFilterListener(FilterListener toRemove)
-    {
+    public static void removeFilterListener(FilterListener toRemove) {
         listeners.remove(toRemove);
     }
 
-    public static void notifyListeners(FilterListener.Action whatsGoingOnCode,
-            @CheckForNull TreePath optionalPath) {
+    public static void notifyListeners(FilterListener.Action whatsGoingOnCode, @CheckForNull TreePath optionalPath) {
         Collection<FilterListener> listeners = new ArrayList<FilterListener>(FilterActivity.listeners);
-    	switch (whatsGoingOnCode) {
+        switch (whatsGoingOnCode) {
         case FILTERING:
         case UNFILTERING:
             for (FilterListener i : listeners)
-    			i.clearCache();
+                i.clearCache();
             break;
         case SUPPRESSING:
             for (FilterListener i : listeners)
-    			i.suppressBug(optionalPath);
+                i.suppressBug(optionalPath);
             break;
         case UNSUPPRESSING:
             for (FilterListener i : listeners)
-    			i.unsuppressBug(optionalPath);
+                i.unsuppressBug(optionalPath);
             break;
         }
     }

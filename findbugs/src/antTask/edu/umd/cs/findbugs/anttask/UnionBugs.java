@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.anttask;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -35,32 +34,30 @@ import org.apache.tools.ant.types.FileSet;
 import edu.umd.cs.findbugs.workflow.UnionResults;
 
 /**
- * An ant task that is wraps the behavior of the UnionResults
- * executable into an ant task.
- *
- * <taskdef name="UnionBugs" classname="edu.umd.cs.findbugs.anttask.UnionBugs" classpath="...">
- *
- *  <UnionBugs to="${basedir}/findbugs.xml" >
- * 	  <fileset dir="plugins">
- * 	  	   	<include name="*_findbugs_partial.xml" />
- * 	  </fileset>
- *	</UnionBugs>
- *
+ * An ant task that is wraps the behavior of the UnionResults executable into an
+ * ant task.
+ * 
+ * <taskdef name="UnionBugs" classname="edu.umd.cs.findbugs.anttask.UnionBugs"
+ * classpath="...">
+ * 
+ * <UnionBugs to="${basedir}/findbugs.xml" > <fileset dir="plugins"> <include
+ * name="*_findbugs_partial.xml" /> </fileset> </UnionBugs>
+ * 
  * @author Peter Franza <a href="mailto:pfranza@gmail.com">pfranza@gmail.com</a>
  * @version 1.0
- *
+ * 
  * @ant.task category="utility"
- *
+ * 
  */
 public class UnionBugs extends Task {
 
     private List<FileSet> sets = new ArrayList<FileSet>();
-    private String into;
 
+    private String into;
 
     /**
      * The fileset containing all the findbugs xml files that need to be merged
-     *
+     * 
      * @param set
      */
     public void addFileset(FileSet set) {
@@ -69,66 +66,67 @@ public class UnionBugs extends Task {
 
     /**
      * The File everything should get merged into
-	 * 
+     * 
      * @param file
      */
     public void setTo(String file) {
-		into = file;
+        into = file;
     }
 
     @Override
-	public void execute() throws BuildException {
+    public void execute() throws BuildException {
         super.execute();
 
         try {
-		
+
             List<File> fileList = createListOfAllFilesToMerge();
 
-            //If there is nothing to merge, don't
-            if(fileList.isEmpty()) {
+            // If there is nothing to merge, don't
+            if (fileList.isEmpty()) {
                 return;
-			}
+            }
 
-            //if the merge target doesn't exist yet, then the first file becomes
-            //   the merge target
+            // if the merge target doesn't exist yet, then the first file
+            // becomes
+            // the merge target
             File to = new File(into);
-			if(!to.exists()) {
+            if (!to.exists()) {
                 File from = fileList.remove(0);
                 copyFile(from, to);
             }
 
-            //If there was only one file, and it has been copied as
-            //  the merge target then you're done
-            if(fileList.isEmpty()) {
-				return;
+            // If there was only one file, and it has been copied as
+            // the merge target then you're done
+            if (fileList.isEmpty()) {
+                return;
             }
 
             UnionResults.main(createCommandArgumentsArray(fileList));
-		} catch (Exception e) {
+        } catch (Exception e) {
             throw new BuildException(e);
         }
     }
 
     private List<File> createListOfAllFilesToMerge() {
         List<File> fileList = new ArrayList<File>();
-        for(FileSet s: sets) {
-			File fromDir = s.getDir(getProject());
-            for(String file: s.getDirectoryScanner(getProject()).getIncludedFiles()) {
+        for (FileSet s : sets) {
+            File fromDir = s.getDir(getProject());
+            for (String file : s.getDirectoryScanner(getProject()).getIncludedFiles()) {
                 fileList.add(new File(fromDir, file));
             }
-		}
+        }
         return fileList;
     }
 
     private String[] createCommandArgumentsArray(List<File> fileList) {
         List<String> parts = new ArrayList<String>();
         parts.add("-withMessages");
-		parts.add("-output");
+        parts.add("-output");
         parts.add(into);
 
         parts.add(into);
 
-        for(File f: fileList) {
+        for (File f : fileList) {
             parts.add(f.getAbsolutePath());
         }
 
@@ -138,24 +136,26 @@ public class UnionBugs extends Task {
 
     /**
      * Copy a File
-     *
-	 * @param File to Copy From
-     * @param File to Copy To
+     * 
+     * @param File
+     *            to Copy From
+     * @param File
+     *            to Copy To
      * @throws IOException
      */
-	private static void copyFile(File in, File out) throws IOException {
-        FileChannel inChannel = new	FileInputStream(in).getChannel();
+    private static void copyFile(File in, File out) throws IOException {
+        FileChannel inChannel = new FileInputStream(in).getChannel();
         FileChannel outChannel = new FileOutputStream(out).getChannel();
         try {
-			inChannel.transferTo(0, inChannel.size(),
-                    outChannel);
+            inChannel.transferTo(0, inChannel.size(), outChannel);
         } catch (IOException e) {
             throw e;
-		} finally {
-            if (inChannel != null) inChannel.close();
-            if (outChannel != null) outChannel.close();
+        } finally {
+            if (inChannel != null)
+                inChannel.close();
+            if (outChannel != null)
+                outChannel.close();
         }
-	}
-
+    }
 
 }

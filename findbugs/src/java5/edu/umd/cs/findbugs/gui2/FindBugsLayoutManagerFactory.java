@@ -26,17 +26,19 @@ import java.lang.reflect.Constructor;
  */
 public class FindBugsLayoutManagerFactory {
     Constructor<? extends FindBugsLayoutManager> constructor;
+
     public FindBugsLayoutManagerFactory(String classname) throws SecurityException, NoSuchMethodException, ClassNotFoundException {
         constructor = Class.forName(classname).asSubclass(FindBugsLayoutManager.class).getConstructor(MainFrame.class);
-	}
+    }
+
     public FindBugsLayoutManager getInstance(MainFrame frame) {
         try {
             return constructor.newInstance(frame);
-		} catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
-		}
+        }
 
     }
 

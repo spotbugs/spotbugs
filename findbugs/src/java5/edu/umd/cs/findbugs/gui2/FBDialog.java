@@ -28,29 +28,31 @@ import javax.swing.JDialog;
 
 /**
  * All Dialogs are FBDialogs so font size will work.
+ * 
  * @author Kristin
- *
+ * 
  */
 @SuppressWarnings("serial")
 public class FBDialog extends JDialog {
 
-    public FBDialog(){
+    public FBDialog() {
         super(MainFrame.getInstance());
     }
 
-    public FBDialog(Frame f){
+    public FBDialog(Frame f) {
         super(f);
     }
 
-    public FBDialog(Dialog d){
+    public FBDialog(Dialog d) {
         super(d);
     }
 
     /**
      * Sets size of font
+     * 
      * @param size
-	 */
-    protected void setFontSize(float size){
+     */
+    protected void setFontSize(float size) {
         setFont(this.getFont().deriveFont(size));
 
         setFontSizeHelper(this.getComponents(), size);
@@ -59,19 +61,19 @@ public class FBDialog extends JDialog {
     /*
      * Helps above method, runs through all components recursively.
      */
-	protected void setFontSizeHelper(Component[] comps, float size){
-        if(comps.length <= 0)
+    protected void setFontSizeHelper(Component[] comps, float size) {
+        if (comps.length <= 0)
             return;
 
-        for(Component comp : comps){
+        for (Component comp : comps) {
             comp.setFont(comp.getFont().deriveFont(size));
-            if(comp instanceof Container)
-				setFontSizeHelper(((Container)comp).getComponents(), size);
+            if (comp instanceof Container)
+                setFontSizeHelper(((Container) comp).getComponents(), size);
         }
     }
 
     @Override
-    public void addNotify(){
+    public void addNotify() {
         super.addNotify();
 
         setFontSize(Driver.getFontSize());

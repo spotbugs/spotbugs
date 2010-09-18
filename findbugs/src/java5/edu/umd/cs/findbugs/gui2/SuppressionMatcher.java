@@ -30,23 +30,21 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  * A list of all bugs to filter out, only we call it suppressing them
  */
 @Deprecated
-public class SuppressionMatcher extends ArrayList<BugInstance> implements Matcher
-{
+public class SuppressionMatcher extends ArrayList<BugInstance> implements Matcher {
     private static final long serialVersionUID = -689204051024507484L;
 
-    public boolean match(BugInstance bugInstance)
-    {
+    public boolean match(BugInstance bugInstance) {
         return (!contains(bugInstance));
-	}
+    }
 
     @Override
-    public boolean add(BugInstance bugInstance)
-    {
-		if (contains(bugInstance))
+    public boolean add(BugInstance bugInstance) {
+        if (contains(bugInstance))
             return false;
         return super.add(bugInstance);
     }
-	 public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-            throw new UnsupportedOperationException();
-        }
+
+    public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
+        throw new UnsupportedOperationException();
+    }
 }

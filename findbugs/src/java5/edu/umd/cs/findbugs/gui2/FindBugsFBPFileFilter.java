@@ -23,18 +23,20 @@ import java.io.File;
 
 public final class FindBugsFBPFileFilter extends FindBugsFileFilter {
 
-    public static final  FindBugsFBPFileFilter INSTANCE = new FindBugsFBPFileFilter();
+    public static final FindBugsFBPFileFilter INSTANCE = new FindBugsFBPFileFilter();
 
-    private FindBugsFBPFileFilter() {};
+    private FindBugsFBPFileFilter() {
+    };
+
     @Override
     public boolean accept(File arg0) {
-		return arg0.getName().endsWith(".fbp") || arg0.isDirectory();
+        return arg0.getName().endsWith(".fbp") || arg0.isDirectory();
     }
 
     @Override
     public String getDescription() {
         return "FindBugs project file (.fbp)";
-	}
+    }
 
     @Override
     SaveType getSaveType() {

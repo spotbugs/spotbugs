@@ -25,15 +25,16 @@ import javax.swing.filechooser.FileFilter;
 
 public final class FindBugsFilterFileFilter extends FileFilter {
 
-    public static final  FindBugsFilterFileFilter INSTANCE = new FindBugsFilterFileFilter();
+    public static final FindBugsFilterFileFilter INSTANCE = new FindBugsFilterFileFilter();
+
     @Override
     public boolean accept(File arg0) {
-		return arg0.getName().endsWith(".xml") ;
+        return arg0.getName().endsWith(".xml");
     }
 
     @Override
     public String getDescription() {
         return "FindBugs filter file results (.xml)";
-	}
+    }
 
 }

@@ -24,62 +24,88 @@ import java.io.File;
 import org.apache.tools.ant.BuildException;
 
 /**
- * Ant task to invoke the FilterBugs program in the
- * workflow package (a.k.a. the filterBugs script.)
- *
+ * Ant task to invoke the FilterBugs program in the workflow package (a.k.a. the
+ * filterBugs script.)
+ * 
  * @author David Hovemeyer
  */
 public class FilterBugsTask extends AbstractFindBugsTask {
 
     private File outputFile;
+
     private String applySuppression;
+
     private String not;
+
     private String withSource;
+
     private String exclude;
+
     private String include;
-	private String annotation;
+
+    private String annotation;
+
     private String after;
+
     private String before;
+
     private String first;
-	private String last;
+
+    private String last;
+
     private String fixed;
+
     private String present;
+
     private String absent;
-	private String active;
+
+    private String active;
+
     private String introducedByChange;
+
     private String removedByChange;
+
     private String newCode;
-	private String removedCode;
+
+    private String removedCode;
+
     private String priority;
+
     private String clazz;
+
     private String bugPattern;
-	private String category;
+
+    private String category;
+
     private String designation;
+
     private String withMessages;
+
     private String excludeBugs;
-	private DataFile inputFile;
+
+    private DataFile inputFile;
 
     public FilterBugsTask() {
         super("edu.umd.cs.findbugs.workflow.Filter");
 
-    	setFailOnError(true);
+        setFailOnError(true);
     }
 
     public DataFile createDataFile() {
         if (inputFile != null) {
-			throw new BuildException("only one dataFile element is allowed", getLocation());
+            throw new BuildException("only one dataFile element is allowed", getLocation());
         }
         inputFile = new DataFile();
         return inputFile;
-	}
+    }
 
     public void setOutput(File output) {
         this.outputFile = output;
-	}
+    }
 
     public void setInput(String input) {
         this.inputFile = new DataFile();
-		this.inputFile.name = input;
+        this.inputFile.name = input;
     }
 
     public void setNot(String arg) {
@@ -93,6 +119,7 @@ public class FilterBugsTask extends AbstractFindBugsTask {
     public void setExclude(String arg) {
         this.exclude = arg;
     }
+
     public void setApplySuppression(String arg) {
         this.applySuppression = arg;
     }
@@ -185,13 +212,15 @@ public class FilterBugsTask extends AbstractFindBugsTask {
         if (attrVal == null) {
             return;
         }
-    	attrVal = attrVal.toLowerCase();
+        attrVal = attrVal.toLowerCase();
         if (!attrVal.equals("true") && !attrVal.equals("false")) {
             throw new BuildException("attribute " + attrName + " requires boolean value", getLocation());
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#checkParameters()
      */
     @Override
@@ -199,19 +228,19 @@ public class FilterBugsTask extends AbstractFindBugsTask {
         super.checkParameters();
 
         if (outputFile == null) {
-    		throw new BuildException("output attribute is required", getLocation());
+            throw new BuildException("output attribute is required", getLocation());
         }
 
         if (inputFile == null) {
-    		throw new BuildException("inputFile element is required");
+            throw new BuildException("inputFile element is required");
         }
 
         checkBoolean(withSource, "withSource");
-    	checkBoolean(applySuppression, "applySuppression");
+        checkBoolean(applySuppression, "applySuppression");
         checkBoolean(active, "active");
         checkBoolean(introducedByChange, "introducedByChange");
         checkBoolean(removedByChange, "removedByChange");
-    	checkBoolean(newCode, "newCode");
+        checkBoolean(newCode, "newCode");
         checkBoolean(removedCode, "removedCode");
         checkBoolean(withMessages, "withMessages");
     }
@@ -220,7 +249,7 @@ public class FilterBugsTask extends AbstractFindBugsTask {
         if (value != null) {
             addArg(name);
             addArg(value);
-    	}
+        }
     }
 
     public void addBoolOption(String option, String value) {
@@ -229,63 +258,75 @@ public class FilterBugsTask extends AbstractFindBugsTask {
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#configureFindbugsEngine()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#configureFindbugsEngine
+     * ()
      */
-	@Override
+    @Override
     protected void configureFindbugsEngine() {
         if (not != null) {
             addArg("-not");
-		}
+        }
         addBoolOption("-withSource", withSource);
         addOption("-exclude", exclude);
         addOption("-include", include);
-		addOption("-annotation", annotation);
+        addOption("-annotation", annotation);
         addOption("-after", after);
         addOption("-before", before);
         addOption("-first", first);
-		addOption("-last", last);
+        addOption("-last", last);
         addOption("-fixed", fixed);
         addOption("-present", present);
         addOption("-absent", absent);
-		addBoolOption("-active", active);
+        addBoolOption("-active", active);
         addBoolOption("-introducedByChange", introducedByChange);
         addBoolOption("-removedByChange", removedByChange);
         addBoolOption("-newCode", newCode);
-		addBoolOption("-removedCode", removedCode);
+        addBoolOption("-removedCode", removedCode);
         addOption("-priority", priority);
         addOption("-class", clazz);
         addOption("-bugPattern", bugPattern);
-		addOption("-category", category);
+        addOption("-category", category);
         addOption("-designation", designation);
         addBoolOption("-withMessages", withMessages);
         addBoolOption("-applySuppression", applySuppression);
-		if (excludeBugs != null) {
+        if (excludeBugs != null) {
             addArg("-excludeBugs");
             addArg(excludeBugs);
         }
-		
+
         addArg(inputFile.getName());
 
         addArg(outputFile.getPath());
-	}
+    }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess
+     * ()
      */
-	@Override
+    @Override
     protected void beforeExecuteJavaProcess() {
         log("running filterBugs...");
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess(int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess
+     * (int)
      */
-	@Override
+    @Override
     protected void afterExecuteJavaProcess(int rc) {
         if (rc != 0) {
             throw new BuildException("execution of " + getTaskName() + " failed");
-		}
+        }
     }
 
 }

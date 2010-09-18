@@ -29,16 +29,16 @@ import org.apache.tools.ant.types.FileSet;
 /**
  * An ant task that is wraps the behavior of the UnionResults executable into an
  * ant task.
- *
+ * 
  * <taskdef name="UnionBugs2" classname="edu.umd.cs.findbugs.anttask.UnionBugs2"
  * classpath="...">
- *
+ * 
  * <UnionBugs2 to="${basedir}/findbugs.xml" > <fileset dir="plugins"> <include
  * name="*_findbugs_partial.xml" /> </fileset> </UnionBugs>
- *
- *
+ * 
+ * 
  * @ant.task category="utility"
- *
+ * 
  */
 
 public class UnionBugs2 extends AbstractFindBugsTask {
@@ -50,7 +50,7 @@ public class UnionBugs2 extends AbstractFindBugsTask {
     public UnionBugs2() {
         super("edu.umd.cs.findbugs.workflow.UnionResults");
         setFailOnError(true);
-	}
+    }
 
     public void setTo(String arg) {
         this.to = arg;
@@ -74,23 +74,23 @@ public class UnionBugs2 extends AbstractFindBugsTask {
     @Override
     protected void afterExecuteJavaProcess(int rc) {
         if (rc != 0)
-			throw new BuildException("execution of " + getTaskName() + " failed");
+            throw new BuildException("execution of " + getTaskName() + " failed");
 
     }
 
     @Override
     protected void beforeExecuteJavaProcess() {
         log("unioning bugs...");
-	}
+    }
 
     @Override
     protected void configureFindbugsEngine() {
         addArg("-withMessages");
-		addArg("-output");
+        addArg("-output");
         addArg(to);
         for (FileSet s : fileSets) {
             File fromDir = s.getDir(getProject());
-			for(String file: s.getDirectoryScanner(getProject()).getIncludedFiles()) {
+            for (String file : s.getDirectoryScanner(getProject()).getIncludedFiles()) {
                 addArg(new File(fromDir, file).toString());
             }
         }

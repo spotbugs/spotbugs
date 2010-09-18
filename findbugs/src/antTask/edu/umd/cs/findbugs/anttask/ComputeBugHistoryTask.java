@@ -27,126 +27,147 @@ import org.apache.tools.ant.BuildException;
 
 /**
  * Ant task to create/update a bug history database.
- *
+ * 
  * @author David Hovemeyer
  */
 public class ComputeBugHistoryTask extends AbstractFindBugsTask {
 
     private File outputFile;
+
     private boolean overrideRevisionNames;
-	private boolean noPackageMoves;
+
+    private boolean noPackageMoves;
+
     private boolean preciseMatch;
+
     private boolean precisePriorityMatch;
+
     private boolean quiet;
-	private boolean withMessages;
+
+    private boolean withMessages;
+
     private List<DataFile> dataFileList;
 
     public ComputeBugHistoryTask() {
-		super("edu.umd.cs.findbugs.workflow.Update");
+        super("edu.umd.cs.findbugs.workflow.Update");
         dataFileList = new LinkedList<DataFile>();
 
         setFailOnError(true);
-	}
+    }
 
     public void setOutput(File arg) {
         this.outputFile = arg;
-	}
+    }
 
     public void setOverrideRevisionNames(boolean arg) {
         this.overrideRevisionNames = arg;
-	}
+    }
 
     public void setNoPackageMoves(boolean arg) {
         this.noPackageMoves = arg;
-	}
+    }
 
     public void setPreciseMatch(boolean arg) {
         this.preciseMatch = arg;
-	}
+    }
 
     public void setPrecisePriorityMatch(boolean arg) {
         this.precisePriorityMatch = arg;
-	}
+    }
 
     public void setQuiet(boolean arg) {
         this.quiet = arg;
-	}
+    }
 
     public void setWithMessages(boolean arg) {
         this.withMessages = arg;
-	}
+    }
 
     /**
-     * Called to create DataFile objects in response to nested
-	 * &lt;DataFile&gt; elements.
-     *
+     * Called to create DataFile objects in response to nested &lt;DataFile&gt;
+     * elements.
+     * 
      * @return new DataFile object specifying the location of an input data file
      */
-	public DataFile createDataFile() {
+    public DataFile createDataFile() {
         DataFile dataFile = new DataFile();
         dataFileList.add(dataFile);
         return dataFile;
-	}
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#checkParameters()
-	 */
+     */
     @Override
     protected void checkParameters() {
         super.checkParameters();
-		
+
         if (outputFile == null) {
             throw new BuildException("outputFile attribute must be set", getLocation());
         }
-	}
+    }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#configureFindbugsEngine()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#configureFindbugsEngine
+     * ()
      */
-	@Override
+    @Override
     protected void configureFindbugsEngine() {
         addArg("-output");
         addArg(outputFile.getPath());
-		if (overrideRevisionNames) {
+        if (overrideRevisionNames) {
             addArg("-overrideRevisionNames");
         }
         if (noPackageMoves) {
-			addArg("-noPackageMoves");
+            addArg("-noPackageMoves");
         }
         if (preciseMatch) {
             addArg("-preciseMatch");
-		}
+        }
         if (precisePriorityMatch) {
             addArg("-precisePriorityMatch");
         }
-		if (quiet) {
+        if (quiet) {
             addArg("-quiet");
         }
         if (withMessages) {
-			addArg("-withMessages");
+            addArg("-withMessages");
         }
 
         for (DataFile dataFile : dataFileList) {
-			addArg(dataFile.getName());
+            addArg(dataFile.getName());
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess
+     * ()
      */
-	@Override
+    @Override
     protected void beforeExecuteJavaProcess() {
         log("Running computeBugHistory...");
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess(int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess
+     * (int)
      */
-	@Override
+    @Override
     protected void afterExecuteJavaProcess(int rc) {
         if (rc == 0) {
             log("History database written to " + outputFile.getPath());
-		} else {
+        } else {
             throw new BuildException("execution of " + getTaskName() + " failed");
         }
     }

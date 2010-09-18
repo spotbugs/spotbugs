@@ -23,84 +23,73 @@ import java.util.ArrayList;
 
 import javax.swing.JMenu;
 
-
 /**
  * @author Dan
  */
 
+public class RecentMenu {
 
-public class RecentMenu{
+    private static class LimitedArrayList<T> extends ArrayList<T> {
+        public static final int MAX_ENTRIES = 5;
 
-    private static class LimitedArrayList<T> extends ArrayList<T>
-    {
-        public static final int MAX_ENTRIES=5;
-
-        public LimitedArrayList()
-        {
+        public LimitedArrayList() {
             super(MAX_ENTRIES);
-		}
+        }
 
         @Override
-        public boolean add(T element)
-        {
-			if (!this.contains(element))
-            {
-                super.add(0,element);
-                if (this.size()>MAX_ENTRIES)
-				{
+        public boolean add(T element) {
+            if (!this.contains(element)) {
+                super.add(0, element);
+                if (this.size() > MAX_ENTRIES) {
                     this.remove(MAX_ENTRIES);
                 }
-            }
-			else
-            {
+            } else {
                 this.remove(element);
-                super.add(0,element);
-			}
+                super.add(0, element);
+            }
             return true;
         }
     }
 
-    LimitedArrayList<File> recentFiles;//Originally called recentProjects before merge two lists into one.
+    LimitedArrayList<File> recentFiles;// Originally called recentProjects
+                                       // before merge two lists into one.
+
     JMenu recentMenu;
 
-    public RecentMenu(JMenu menu)
-    {
-        recentFiles=new LimitedArrayList<File>();
-		recentMenu=menu;
+    public RecentMenu(JMenu menu) {
+        recentFiles = new LimitedArrayList<File>();
+        recentMenu = menu;
 
-        for (File f: GUISaveState.getInstance().getRecentFiles())
-        {
-			recentFiles.add(f);
+        for (File f : GUISaveState.getInstance().getRecentFiles()) {
+            recentFiles.add(f);
         }
 
         makeRecentMenu();
     }
 
-    public void makeRecentMenu()
-    {
+    public void makeRecentMenu() {
         recentMenu.removeAll();
-		for (File f: recentFiles)
-        {
+        for (File f : recentFiles) {
             Debug.println(f);
-            if (!f.exists())
-			{
-                if (MainFrame.GUI2_DEBUG) System.err.println("a recent project was not found, removing it from menu");
+            if (!f.exists()) {
+                if (MainFrame.GUI2_DEBUG)
+                    System.err.println("a recent project was not found, removing it from menu");
                 continue;
             }
 
             recentMenu.add(MainFrame.getInstance().createRecentItem(f, SaveType.forFile(f)));
         }
 
-	}
+    }
 
     /**
      * Adds a file to the list of recent files used.
+     * 
      * @param f
-	 */
-    public void addRecentFile(final File f)
-    {
+     */
+    public void addRecentFile(final File f) {
         if (f != null)
-		  recentFiles.add(f);
+            recentFiles.add(f);
 
         makeRecentMenu();
     }

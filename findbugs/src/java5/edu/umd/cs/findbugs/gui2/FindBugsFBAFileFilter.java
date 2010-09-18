@@ -23,18 +23,20 @@ import java.io.File;
 
 public final class FindBugsFBAFileFilter extends FindBugsFileFilter {
 
-    public static final  FindBugsFBAFileFilter INSTANCE = new FindBugsFBAFileFilter();
+    public static final FindBugsFBAFileFilter INSTANCE = new FindBugsFBAFileFilter();
 
-    private FindBugsFBAFileFilter() {};
+    private FindBugsFBAFileFilter() {
+    };
+
     @Override
     public boolean accept(File arg0) {
-		return arg0.getName().endsWith(".fba") || arg0.isDirectory();
+        return arg0.getName().endsWith(".fba") || arg0.isDirectory();
     }
 
     @Override
     public String getDescription() {
         return "FindBugs analysis file (.fba)";
-	}
+    }
 
     @Override
     SaveType getSaveType() {

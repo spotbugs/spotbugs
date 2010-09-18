@@ -19,32 +19,30 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-
 /**
- * For debugging purposes only... Make sure DEBUG is set to false before you release a new version.
+ * For debugging purposes only... Make sure DEBUG is set to false before you
+ * release a new version.
+ * 
  * @author Dan
- *
+ * 
  */
 public class Debug {
-    public static void println(Object s)
-    {
+    public static void println(Object s) {
         if (MainFrame.GUI2_DEBUG)
-			System.out.println(s);
+            System.out.println(s);
     }
 
-    public static void printf(String format, Object... args)
-    {
+    public static void printf(String format, Object... args) {
         if (MainFrame.GUI2_DEBUG)
-			System.out.printf(format, args);
+            System.out.printf(format, args);
     }
 
-    public static void println(Exception e){
-        if(MainFrame.GUI2_DEBUG)
+    public static void println(Exception e) {
+        if (MainFrame.GUI2_DEBUG)
             e.printStackTrace();
-	}
+    }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
 
     }
 }

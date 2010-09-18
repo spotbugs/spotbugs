@@ -38,53 +38,62 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import edu.umd.cs.findbugs.L10N;
 
-
 /**
  * @author pugh
  */
 public class SplitLayout implements FindBugsLayoutManager {
 
     final MainFrame frame;
+
     JLabel sourceTitle;
+
     JSplitPane topLeftSPane;
-	JSplitPane topSPane;
+
+    JSplitPane topSPane;
+
     JSplitPane summarySPane;
+
     JSplitPane mainSPane;
 
     JButton viewSource = new JButton("View in browser");
+
     /**
      * @param frame
-	 */
+     */
     public SplitLayout(MainFrame frame) {
         this.frame = frame;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#createWindowMenu()
      */
-	public JMenu createWindowMenu() {
+    public JMenu createWindowMenu() {
         return null;
     }
 
-
     public void resetCommentsInputPane() {
         int position = topLeftSPane.getDividerLocation();
-		topLeftSPane.setRightComponent(frame.createCommentsInputPanel());
+        topLeftSPane.setRightComponent(frame.createCommentsInputPanel());
         topLeftSPane.setDividerLocation(position);
     }
-    /* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#initialize()
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#initialize()
      */
     public void initialize() {
 
         Font buttonFont = viewSource.getFont();
-        viewSource.setFont(buttonFont.deriveFont(buttonFont.getSize()/2));
-        viewSource.setPreferredSize(new Dimension(150,15));
-		viewSource.setEnabled(false);
+        viewSource.setFont(buttonFont.deriveFont(buttonFont.getSize() / 2));
+        viewSource.setPreferredSize(new Dimension(150, 15));
+        viewSource.setEnabled(false);
 
-        topLeftSPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-                frame.mainFrameTree.bugListPanel(), frame.createCommentsInputPanel());
-		topLeftSPane.setOneTouchExpandable(true);
+        topLeftSPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, frame.mainFrameTree.bugListPanel(),
+                frame.createCommentsInputPanel());
+        topLeftSPane.setOneTouchExpandable(true);
         topLeftSPane.setDividerLocation(GUISaveState.getInstance().getSplitTreeComments());
         removeSplitPaneBorders(topLeftSPane);
 
@@ -99,7 +108,7 @@ public class SplitLayout implements FindBugsLayoutManager {
         sourceTitle = new JLabel();
         sourceTitle.setText(L10N.getLocalString("txt.source_listing", ""));
 
-        sourceTitlePanel.setBorder(new EmptyBorder(3,3,3,3));
+        sourceTitlePanel.setBorder(new EmptyBorder(3, 3, 3, 3));
         sourceTitlePanel.add(viewSource, BorderLayout.EAST);
         sourceTitlePanel.add(sourceTitle, BorderLayout.CENTER);
 
@@ -107,16 +116,14 @@ public class SplitLayout implements FindBugsLayoutManager {
         sourcePanel.add(sourceTitlePanel, BorderLayout.NORTH);
         sourcePanel.add(frame.createSourceCodePanel(), BorderLayout.CENTER);
         sourcePanel.add(frame.createSourceSearchPanel(), BorderLayout.SOUTH);
-		topSPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, 
-                topLeftSPane, sourcePanel);
+        topSPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, topLeftSPane, sourcePanel);
         topSPane.setOneTouchExpandable(true);
         topSPane.setDividerLocation(GUISaveState.getInstance().getSplitTop());
         removeSplitPaneBorders(topSPane);
 
         summarySPane = frame.summaryTab();
-        mainSPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-                topSPane, summarySPane);
-		mainSPane.setOneTouchExpandable(true);
+        mainSPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topSPane, summarySPane);
+        mainSPane.setOneTouchExpandable(true);
         mainSPane.setDividerLocation(GUISaveState.getInstance().getSplitMain());
         removeSplitPaneBorders(mainSPane);
 
@@ -137,43 +144,56 @@ public class SplitLayout implements FindBugsLayoutManager {
                 };
             }
         });
-        pane.setBorder(new EmptyBorder(3,3,3,3));
+        pane.setBorder(new EmptyBorder(3, 3, 3, 3));
     }
 
-    /* (non-Javadoc)
-      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#makeCommentsVisible()
-      */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#makeCommentsVisible()
+     */
     public void makeCommentsVisible() {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#makeSourceVisible()
      */
-	public void makeSourceVisible() {
+    public void makeSourceVisible() {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#saveState()
      */
-	public void saveState() {
+    public void saveState() {
         GUISaveState.getInstance().setSplitTreeComments(topLeftSPane.getDividerLocation());
         GUISaveState.getInstance().setSplitTop(topSPane.getDividerLocation());
         GUISaveState.getInstance().setSplitSummary(summarySPane.getDividerLocation());
-		GUISaveState.getInstance().setSplitMain(mainSPane.getDividerLocation());
+        GUISaveState.getInstance().setSplitMain(mainSPane.getDividerLocation());
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#setSourceTitle(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#setSourceTitle(java.lang
+     * .String)
      */
-	public void setSourceTitle(String title) {
+    public void setSourceTitle(String title) {
         sourceTitle.setText(title);
 
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#getSourceTitleComponent()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#getSourceTitleComponent()
      */
     public JComponent getSourceViewComponent() {
         return viewSource;

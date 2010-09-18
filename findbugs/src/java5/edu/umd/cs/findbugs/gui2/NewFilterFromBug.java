@@ -39,76 +39,70 @@ import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 
 /**
- * Allows you to make a new Filter by right clicking (control clicking) on a bug in the tree
+ * Allows you to make a new Filter by right clicking (control clicking) on a bug
+ * in the tree
  */
 @SuppressWarnings("serial")
-public class NewFilterFromBug extends FBDialog
-{
+public class NewFilterFromBug extends FBDialog {
     private HashMap<JCheckBox, Sortables> map = new HashMap<JCheckBox, Sortables>();
-    static List<NewFilterFromBug> listOfAllFrames=new ArrayList<NewFilterFromBug>();
 
-    public NewFilterFromBug(final BugInstance bug)
-    {
+    static List<NewFilterFromBug> listOfAllFrames = new ArrayList<NewFilterFromBug>();
+
+    public NewFilterFromBug(final BugInstance bug) {
         this.setModal(true);
-		listOfAllFrames.add(this);
+        listOfAllFrames.add(this);
         setLayout(new BorderLayout());
         add(new JLabel("Filter out all bugs whose..."), BorderLayout.NORTH);
 
         JPanel center = new JPanel();
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
-        for (Sortables s : MainFrame.getInstance().getAvailableSortables())
-		{
+        for (Sortables s : MainFrame.getInstance().getAvailableSortables()) {
             if (s.equals(Sortables.DIVIDER))
                 continue;
             JCheckBox radio = new JCheckBox(s.toString() + " is " + s.formatValue(s.getFrom(bug)));
-			
+
             map.put(radio, s);
             center.add(radio);
         }
-		add(center, BorderLayout.CENTER);
+        add(center, BorderLayout.CENTER);
 
         JPanel south = new JPanel();
         JButton okButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
-        okButton.addActionListener(new ActionListener()
-		{
-            public void actionPerformed(ActionEvent evt)
-            {
+        okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 HashSet<Sortables> set = new HashSet<Sortables>();
-				for(Map.Entry<JCheckBox,Sortables> e : map.entrySet()) {
-                    if (e.getKey().isSelected()) set.add(e.getValue());
+                for (Map.Entry<JCheckBox, Sortables> e : map.entrySet()) {
+                    if (e.getKey().isSelected())
+                        set.add(e.getValue());
                 }
-                if (!set.isEmpty() )
-				{
+                if (!set.isEmpty()) {
                     Matcher m = FilterFactory.makeMatcher(set, bug);
                     Filter f = MainFrame.getInstance().getProject().getSuppressionFilter();
 
-					f.addChild(m);
+                    f.addChild(m);
 
                     PreferencesFrame.getInstance().updateFilterPanel();
                     FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
                     NewFilterFromBug.this.dispose();
-				}
+                }
             }
         });
         JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
-		cancelButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent evt)
-            {
-				NewFilterFromBug.this.dispose();
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                NewFilterFromBug.this.dispose();
             }
         });
         Util.addOkAndCancelButtons(south, okButton, cancelButton);
-		add(south, BorderLayout.SOUTH);
+        add(south, BorderLayout.SOUTH);
 
         pack();
         setVisible(true);
     }
 
-    static void closeAll()
-    {
-        for(NewFilterFromBug frame: listOfAllFrames)
-			frame.dispose();
+    static void closeAll() {
+        for (NewFilterFromBug frame : listOfAllFrames)
+            frame.dispose();
         listOfAllFrames.clear();
     }
 }

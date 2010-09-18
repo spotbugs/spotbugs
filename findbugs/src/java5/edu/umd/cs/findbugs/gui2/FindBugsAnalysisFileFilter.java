@@ -24,16 +24,17 @@ import java.io.File;
 public final class FindBugsAnalysisFileFilter extends FindBugsFileFilter {
 
     public static final FindBugsAnalysisFileFilter INSTANCE = new FindBugsAnalysisFileFilter();
+
     @Override
     public boolean accept(File arg0) {
-		boolean accept = arg0.getName().endsWith(".xml") ||  arg0.getName().endsWith(".xml.gz");
+        boolean accept = arg0.getName().endsWith(".xml") || arg0.getName().endsWith(".xml.gz");
         return accept;
     }
 
     @Override
     public String getDescription() {
         return "FindBugs analysis results (.xml)";
-	}
+    }
 
     @Override
     SaveType getSaveType() {

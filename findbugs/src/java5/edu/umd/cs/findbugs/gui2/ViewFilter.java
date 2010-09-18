@@ -51,17 +51,17 @@ public class ViewFilter {
         private RankFilter(int maxRank, String displayName) {
             this.maxRank = maxRank;
             this.displayName = displayName;
-		}
+        }
 
         public boolean show(MainFrame mf, BugInstance b) {
             int rank = BugRanker.findRank(b);
             return rank <= maxRank;
-		}
+        }
 
         @Override
         public String toString() {
             if (maxRank < Integer.MAX_VALUE)
-				return displayName + " (Ranks 1 - " + maxRank + ")";
+                return displayName + " (Ranks 1 - " + maxRank + ")";
             return displayName;
         }
 
@@ -70,53 +70,53 @@ public class ViewFilter {
     enum OverallClassificationFilter implements ViewFilterEnum {
         SHOULD_FIX("Overall classification is should fix") {
             @Override
-			boolean show(Cloud cloud, BugInstance b) {
+            boolean show(Cloud cloud, BugInstance b) {
                 double score = cloud.getClassificationScore(b);
                 return score >= UserDesignation.SHOULD_FIX.score();
             }
-		},
+        },
         DONT_FIX("Overall classification is don't fix") {
             @Override
             boolean show(Cloud cloud, BugInstance b) {
-				double score = cloud.getClassificationScore(b);
+                double score = cloud.getClassificationScore(b);
                 return score <= UserDesignation.MOSTLY_HARMLESS.score();
             }
         },
-		OBSOLETE("Overall classification is obsolete code") {
+        OBSOLETE("Overall classification is obsolete code") {
             @Override
             boolean show(Cloud cloud, BugInstance b) {
                 double score = cloud.getPortionObsoleteClassifications(b);
-				return score >= 0.5;
+                return score >= 0.5;
             }
         },
         UNCERTAIN("Overall classification is uncertain") {
-			@Override
+            @Override
             boolean show(Cloud cloud, BugInstance b) {
                 if (SHOULD_FIX.show(cloud, b) || DONT_FIX.show(cloud, b) || OBSOLETE.show(cloud, b))
                     return false;
-				if (cloud.getNumberReviewers(b) >= 2)
+                if (cloud.getNumberReviewers(b) >= 2)
                     return true;
                 return false;
             }
-		},
+        },
         HIGH_VARIANCE("Controversial") {
             @Override
             boolean show(Cloud cloud, BugInstance b) {
-				double variance = cloud.getClassificationDisagreement(b);
+                double variance = cloud.getClassificationDisagreement(b);
                 return variance > 0.26;
             }
 
         },
         ALL("All issues") {
             @Override
-			boolean show(Cloud cloud, BugInstance b) {
+            boolean show(Cloud cloud, BugInstance b) {
                 return true;
             }
 
         };
         OverallClassificationFilter(String displayName) {
             this.displayName = displayName;
-		}
+        }
 
         final String displayName;
 
@@ -135,13 +135,12 @@ public class ViewFilter {
         @Override
         public String toString() {
             return displayName;
-		}
+        }
     }
-
 
     enum CloudFilter implements ViewFilterEnum {
         MY_REVIEWS("Classified by me") {
-			@Override
+            @Override
             boolean show(Cloud cloud, BugInstance b) {
                 return cloud.getReviewers(b).contains(cloud.getUser());
             }
@@ -149,132 +148,138 @@ public class ViewFilter {
         },
         NOT_REVIEWED_BY_ME("Not classified by me") {
             @Override
-			boolean show(Cloud cloud, BugInstance b) {
+            boolean show(Cloud cloud, BugInstance b) {
                 return !cloud.getReviewers(b).contains(cloud.getUser());
             }
 
         },
         NO_REVIEWS("No one has classified") {
             @Override
-			boolean show(Cloud cloud, BugInstance b) {
+            boolean show(Cloud cloud, BugInstance b) {
                 return cloud.getReviewers(b).isEmpty();
             }
 
             @Override
             public boolean supported(Cloud cloud) {
-               return cloud.getMode() != Cloud.Mode.SECRET;
+                return cloud.getMode() != Cloud.Mode.SECRET;
             }
         },
         HAS_REVIEWS("Someone has classified") {
             @Override
-			boolean show(Cloud cloud, BugInstance b) {
+            boolean show(Cloud cloud, BugInstance b) {
                 return !cloud.getReviewers(b).isEmpty();
             }
 
-
             @Override
-           public  boolean supported(Cloud cloud) {
-               return cloud.getMode() != Cloud.Mode.SECRET;
+            public boolean supported(Cloud cloud) {
+                return cloud.getMode() != Cloud.Mode.SECRET;
             }
         },
         NO_ONE_COMMITTED_TO_FIXING("Has no fixers") {
             @Override
-			boolean show(Cloud cloud, BugInstance b) {
+            boolean show(Cloud cloud, BugInstance b) {
                 return supported(cloud) && cloud.claimedBy(b) != null;
             }
+
             @Override
             public boolean supported(Cloud cloud) {
-               return cloud.supportsClaims() &&  cloud.getMode() != Cloud.Mode.SECRET;
+                return cloud.supportsClaims() && cloud.getMode() != Cloud.Mode.SECRET;
             }
         },
         I_WILL_FIX("I will fix") {
             @Override
-			boolean show(Cloud cloud, BugInstance b) {
+            boolean show(Cloud cloud, BugInstance b) {
                 return cloud.getIWillFix(b);
 
             }
 
         },
-		HAS_FILED_BUGS("Has entry in bug database") {
+        HAS_FILED_BUGS("Has entry in bug database") {
             @Override
             boolean show(Cloud cloud, BugInstance b) {
                 return cloud.getBugLinkStatus(b).bugIsFiled();
 
             }
+
             @Override
             public boolean supported(Cloud cloud) {
-	           return  cloud.supportsBugLinks();
+                return cloud.supportsBugLinks();
             }
         },
         NO_FILED_BUGS("Don't have entry in bug database") {
             @Override
-			boolean show(Cloud cloud, BugInstance b) {
+            boolean show(Cloud cloud, BugInstance b) {
                 return !cloud.getBugLinkStatus(b).bugIsFiled();
             }
+
             @Override
-			public boolean supported(Cloud cloud) {
-               return  cloud.supportsBugLinks();
+            public boolean supported(Cloud cloud) {
+                return cloud.supportsBugLinks();
             }
         },
         WILL_NOT_FIX("bug database entry marked Will Not Fix") {
             @Override
-			boolean show(Cloud cloud, BugInstance b) {
+            boolean show(Cloud cloud, BugInstance b) {
                 return cloud.getWillNotBeFixed(b);
             }
+
             @Override
-			public boolean supported(Cloud cloud) {
-               return  cloud.supportsBugLinks();
+            public boolean supported(Cloud cloud) {
+                return cloud.supportsBugLinks();
             }
         },
         BUG_STATUS_IS_UNASSIGNED("bug database entry is unassigned") {
             @Override
-			boolean show(Cloud cloud, BugInstance b) {
+            boolean show(Cloud cloud, BugInstance b) {
                 return cloud.getBugIsUnassigned(b);
             }
+
             @Override
-			public boolean supported(Cloud cloud) {
-               return  cloud.supportsBugLinks();
+            public boolean supported(Cloud cloud) {
+                return cloud.supportsBugLinks();
             }
         },
         ALL("All issues") {
             @Override
-			boolean show(Cloud cloud, BugInstance b) {
+            boolean show(Cloud cloud, BugInstance b) {
                 return true;
             }
         };
-        
+
         CloudFilter(String displayName) {
             this.displayName = displayName;
         }
+
         final String displayName;
 
         abstract boolean show(Cloud cloud, BugInstance b);
+
         public boolean supported(Cloud cloud) {
             return true;
-		}
+        }
 
         public boolean show(MainFrame mf, BugInstance b) {
             Cloud c = mf.getBugCollection().getCloud();
             return show(c, b);
         }
+
         @Override
         public String toString() {
             return displayName;
         }
     }
+
     static final int NO_MATTER_WHEN_FIRST_SEEN = 400000;
 
     enum FirstSeenFilter implements ViewFilterEnum {
-        LAST_DAY(1, "Last day"),
-        LAST_3_DAYS(3, "Last 3 days"),
-		LAST_WEEK(7, "Last week"), LAST_MONTH(30, "Last month"), LAST_THREE_MONTHS(91, "Last 90 days"), ALL(
-                Integer.MAX_VALUE, "No matter when first seen") {
+        LAST_DAY(1, "Last day"), LAST_3_DAYS(3, "Last 3 days"), LAST_WEEK(7, "Last week"), LAST_MONTH(30, "Last month"), LAST_THREE_MONTHS(
+                91, "Last 90 days"), ALL(Integer.MAX_VALUE, "No matter when first seen") {
             @Override
             public boolean show(MainFrame mf, BugInstance b) {
                 return true;
             }
 
-		};
+        };
 
         final int maxDays;
 
@@ -283,47 +288,49 @@ public class ViewFilter {
         private FirstSeenFilter(int days, String displayName) {
             this.maxDays = days;
             this.displayName = displayName;
-		}
+        }
 
         public boolean show(MainFrame mf, BugInstance b) {
             long firstSeen = mf.getBugCollection().getCloud().getFirstSeen(b);
             long time = System.currentTimeMillis() - firstSeen;
-			long days = TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS) / 3600 / 24;
+            long days = TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS) / 3600 / 24;
             return days < this.maxDays;
         }
 
         @Override
         public String toString() {
             return displayName;
-		}
+        }
     }
 
     final MainFrame mf;
 
     RankFilter rank = RankFilter.ALL;
+
     CloudFilter eval = CloudFilter.ALL;
+
     OverallClassificationFilter classificationFilter = OverallClassificationFilter.ALL;
 
     FirstSeenFilter firstSeen = FirstSeenFilter.ALL;
 
     String[] classSearchStrings;
 
-    static final Pattern legalClassSearchString =
-        Pattern.compile("[\\p{javaLowerCase}\\p{javaUpperCase}0-9.$/_]*");
+    static final Pattern legalClassSearchString = Pattern.compile("[\\p{javaLowerCase}\\p{javaUpperCase}0-9.$/_]*");
+
     void setPackagesToDisplay(String value) {
-		value = value.replace('/', '.').trim();
+        value = value.replace('/', '.').trim();
         if (value.length() == 0)
             classSearchStrings = new String[0];
         else {
-			String [] parts = value.split("[ ,:]+");
-            for(String p : parts)
+            String[] parts = value.split("[ ,:]+");
+            for (String p : parts)
                 if (!legalClassSearchString.matcher(p).matches())
                     throw new IllegalArgumentException("Classname filter must be legal Java identifier: " + p);
-			
+
             classSearchStrings = parts;
         }
         FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
-	}
+    }
 
     public RankFilter getRank() {
         return rank;
@@ -336,18 +343,20 @@ public class ViewFilter {
     }
 
     public CloudFilter getEvaluation() {
-		return eval;
+        return eval;
     }
+
     public void setEvaluation(CloudFilter eval) {
         if (this.eval == eval)
-			return;
+            return;
         this.eval = eval;
         FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 
     }
+
     public void setClassification(OverallClassificationFilter classificationFilter) {
         if (this.classificationFilter == classificationFilter)
-			return;
+            return;
         this.classificationFilter = classificationFilter;
         FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 
@@ -367,33 +376,34 @@ public class ViewFilter {
         return classSearchStrings;
     }
 
-
     public boolean showIgnoringPackagePrefixes(BugInstance b) {
         if (!firstSeen.show(mf, b)) {
             return false;
-		}
+        }
         if (!rank.show(mf, b)) {
             return false;
         }
-		if (!eval.show(mf, b)) {
+        if (!eval.show(mf, b)) {
             return false;
         }
         if (!classificationFilter.show(mf, b)) {
-			return false;
+            return false;
         }
         return true;
     }
-	
+
     /**
-     * @deprecated Use {@link ClassName#matchedPrefixes(String[],String)} instead
+     * @deprecated Use {@link ClassName#matchedPrefixes(String[],String)}
+     *             instead
      */
     public static boolean matchedPrefixes(String[] classSearchStrings, @DottedClassName String className) {
         return ClassName.matchedPrefixes(classSearchStrings, className);
     }
+
     public boolean show(BugInstance b) {
 
         String className = b.getPrimaryClass().getClassName();
-		
+
         return ClassName.matchedPrefixes(classSearchStrings, className) && showIgnoringPackagePrefixes(b);
 
     }

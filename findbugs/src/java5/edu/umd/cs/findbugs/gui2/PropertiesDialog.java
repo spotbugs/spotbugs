@@ -34,31 +34,32 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 /**
- * This is the properties dialog of the GUI. It allows the user to set the
- * size of the tabs and font size. If the user changes the font size they
- * will be told to restart the computer before the new size takes affect.
+ * This is the properties dialog of the GUI. It allows the user to set the size
+ * of the tabs and font size. If the user changes the font size they will be
+ * told to restart the computer before the new size takes affect.
+ * 
  * @author Kristin Stephens
  */
 public class PropertiesDialog extends FBDialog {
     private static PropertiesDialog instance;
+
     private JTextField tabTextField;
+
     private JTextField fontTextField;
 
-    public static PropertiesDialog getInstance()
-    {
-        if(instance == null)
-			instance = new PropertiesDialog();
+    public static PropertiesDialog getInstance() {
+        if (instance == null)
+            instance = new PropertiesDialog();
         return instance;
     }
 
-    private PropertiesDialog()
-    {
+    private PropertiesDialog() {
         JPanel contentPanel = new JPanel(new BorderLayout());
-		JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayout(2,2));
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new GridLayout(2, 2));
         mainPanel.add(new JLabel("Tab Size"));
         tabTextField = new JTextField(Integer.toString(GUISaveState.getInstance().getTabSize()));
-		mainPanel.add(tabTextField);
+        mainPanel.add(tabTextField);
 
         mainPanel.add(new JLabel("Font Size"));
         fontTextField = new JTextField(Float.toString(GUISaveState.getInstance().getFontSize()));
@@ -67,50 +68,50 @@ public class PropertiesDialog extends FBDialog {
         contentPanel.add(mainPanel, BorderLayout.CENTER);
 
         JPanel bottomPanel = new JPanel();
-        bottomPanel.add(new JButton(new AbstractAction("Apply")
-        {
-			public void actionPerformed(ActionEvent evt)
-            {
-                if(Integer.decode(tabTextField.getText()).intValue() != GUISaveState.getInstance().getTabSize()){
+        bottomPanel.add(new JButton(new AbstractAction("Apply") {
+            public void actionPerformed(ActionEvent evt) {
+                if (Integer.decode(tabTextField.getText()).intValue() != GUISaveState.getInstance().getTabSize()) {
                     GUISaveState.getInstance().setTabSize(Integer.decode(tabTextField.getText()).intValue());
-					MainFrame.getInstance().getSourceCodeDisplayer().clearCache();
-                    MainFrame.getInstance().syncBugInformation(); //This causes the GUI to redisplay the current code
+                    MainFrame.getInstance().getSourceCodeDisplayer().clearCache();
+                    MainFrame.getInstance().syncBugInformation(); // This causes
+                                                                  // the GUI to
+                                                                  // redisplay
+                                                                  // the current
+                                                                  // code
                 }
 
-                if(Float.parseFloat(fontTextField.getText()) != GUISaveState.getInstance().getFontSize()){
+                if (Float.parseFloat(fontTextField.getText()) != GUISaveState.getInstance().getFontSize()) {
                     GUISaveState.getInstance().setFontSize(Float.parseFloat(fontTextField.getText()));
                     JOptionPane.showMessageDialog(PropertiesDialog.getInstance(),
-							"To implement the new font size, please restart FindBugs.",
-                            "Changing Font", JOptionPane.INFORMATION_MESSAGE);
+                            "To implement the new font size, please restart FindBugs.", "Changing Font",
+                            JOptionPane.INFORMATION_MESSAGE);
                 }
             }
-		}));
+        }));
 
-        bottomPanel.add(new JButton(new AbstractAction("Reset")
-        {
-            public void actionPerformed(ActionEvent evt)
-			{
+        bottomPanel.add(new JButton(new AbstractAction("Reset") {
+            public void actionPerformed(ActionEvent evt) {
                 tabTextField.setText(Integer.toString(GUISaveState.getInstance().getTabSize()));
                 fontTextField.setText(Float.toString(GUISaveState.getInstance().getFontSize()));
             }
-		}));
+        }));
 
         contentPanel.add(bottomPanel, BorderLayout.SOUTH);
         setContentPane(contentPanel);
         setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-		setModal(true);
+        setModal(true);
         pack();
 
-        addWindowListener(new WindowAdapter(){
+        addWindowListener(new WindowAdapter() {
             @Override
             public void windowDeactivated(WindowEvent e) {
-				if(Integer.decode(tabTextField.getText()).intValue() != GUISaveState.getInstance().getTabSize())
+                if (Integer.decode(tabTextField.getText()).intValue() != GUISaveState.getInstance().getTabSize())
                     tabTextField.setText(Integer.toString(GUISaveState.getInstance().getTabSize()));
 
-                if(Float.parseFloat(fontTextField.getText()) != GUISaveState.getInstance().getFontSize()){
+                if (Float.parseFloat(fontTextField.getText()) != GUISaveState.getInstance().getFontSize()) {
                     fontTextField.setText(Float.toString(GUISaveState.getInstance().getFontSize()));
                 }
-			}
+            }
         });
     }
 }

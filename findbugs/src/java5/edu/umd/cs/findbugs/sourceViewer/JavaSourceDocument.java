@@ -55,24 +55,22 @@ public class JavaSourceDocument {
 
     static final SimpleAttributeSet whiteAttributes = new SimpleAttributeSet();
 
-    static Font sourceFont = new Font("Monospaced", Font.PLAIN, (int)Driver.getFontSize());
+    static Font sourceFont = new Font("Monospaced", Font.PLAIN, (int) Driver.getFontSize());
+
     final static Color HIGHLIGHT_COLOR = new Color(1f, 1f, .3f);
+
     TabSet TAB_SET;
-	static {
-        commentAttributes.addAttribute(StyleConstants.Foreground, new Color(
-                0.0f, 0.5f, 0.0f));
-        javadocAttributes.addAttribute(StyleConstants.Foreground, new Color(
-				0.25f, 0.37f, 0.75f));
-        quotesAttributes.addAttribute(StyleConstants.Foreground, new Color(
-                0.0f, 0.0f, 1.0f));
-        keywordsAttributes.addAttribute(StyleConstants.Foreground, new Color(
-				0.5f, 0.0f, 0.5f));
+    static {
+        commentAttributes.addAttribute(StyleConstants.Foreground, new Color(0.0f, 0.5f, 0.0f));
+        javadocAttributes.addAttribute(StyleConstants.Foreground, new Color(0.25f, 0.37f, 0.75f));
+        quotesAttributes.addAttribute(StyleConstants.Foreground, new Color(0.0f, 0.0f, 1.0f));
+        keywordsAttributes.addAttribute(StyleConstants.Foreground, new Color(0.5f, 0.0f, 0.5f));
         keywordsAttributes.addAttribute(StyleConstants.Bold, true);
 
     }
 
-
     final HighlightInformation highlights = new HighlightInformation();
+
     final NumberedEditorKit dek = new NumberedEditorKit(highlights);
 
     final StyleContext styleContext = new StyleContext();
@@ -86,43 +84,47 @@ public class JavaSourceDocument {
     public HighlightInformation getHighlightInformation() {
         return highlights;
     }
-	public StyledDocument getDocument() {
+
+    public StyledDocument getDocument() {
         return doc;
     }
+
     public NumberedEditorKit getEditorKit() {
-		return dek;
+        return dek;
     }
+
     private final String title;
+
     public String getTitle() {
-		return title;
+        return title;
     }
 
     public SourceFile getSourceFile() {
         return sourceFile;
     }
 
-    public JavaSourceDocument(String title, Reader in, SourceFile theSource) throws IOException  {
+    public JavaSourceDocument(String title, Reader in, SourceFile theSource) throws IOException {
         doc = new DefaultStyledDocument();
         this.title = title;
-		this.sourceFile = theSource;
+        this.sourceFile = theSource;
         Debug.println("Created JavaSourceDocument for " + title);
         try {
             dek.read(in, doc, 0);
-		} catch (BadLocationException e) {
+        } catch (BadLocationException e) {
             throw new RuntimeException(e);
         }
         in.close();
-		doc.putProperty(Document.TitleProperty, title);
+        doc.putProperty(Document.TitleProperty, title);
         root = doc.getDefaultRootElement();
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         FontMetrics fontMetrics = toolkit.getFontMetrics(sourceFont);
-		TabStop[] tabs = new TabStop[50];
+        TabStop[] tabs = new TabStop[50];
         float width = fontMetrics.stringWidth(" ");
 
         int tabSize = GUISaveState.getInstance().getTabSize();
         for (int i = 0; i < tabs.length; i++)
             tabs[i] = new TabStop(width * (tabSize + tabSize * i));
-		TAB_SET = new TabSet(tabs);
+        TAB_SET = new TabSet(tabs);
         StyleConstants.setTabSet(commentAttributes, TAB_SET);
         StyleConstants.setTabSet(javadocAttributes, TAB_SET);
 
@@ -135,31 +137,27 @@ public class JavaSourceDocument {
         StyleConstants.setTabSet(whiteAttributes, TAB_SET);
         StyleConstants.setFontFamily(whiteAttributes, sourceFont.getFamily());
         StyleConstants.setFontSize(whiteAttributes, sourceFont.getSize());
-		StyleConstants.setLeftIndent(whiteAttributes, NumberedParagraphView.NUMBERS_WIDTH);
+        StyleConstants.setLeftIndent(whiteAttributes, NumberedParagraphView.NUMBERS_WIDTH);
 
         doc.setParagraphAttributes(0, doc.getLength(), whiteAttributes, true);
         JavaScanner parser = new JavaScanner(new DocumentCharacterIterator(doc));
         while (parser.next() != JavaScanner.EOF) {
-			int kind = parser.getKind();
+            int kind = parser.getKind();
             switch (kind) {
             case JavaScanner.COMMENT:
-                doc.setCharacterAttributes(parser.getStartPosition(), parser
-						.getLength(), commentAttributes, true);
+                doc.setCharacterAttributes(parser.getStartPosition(), parser.getLength(), commentAttributes, true);
 
                 break;
             case JavaScanner.KEYWORD:
-                doc.setCharacterAttributes(parser.getStartPosition(), parser
-						.getLength(), keywordsAttributes, true);
+                doc.setCharacterAttributes(parser.getStartPosition(), parser.getLength(), keywordsAttributes, true);
 
                 break;
             case JavaScanner.JAVADOC:
-                doc.setCharacterAttributes(parser.getStartPosition(), parser
-						.getLength(), javadocAttributes, true);
+                doc.setCharacterAttributes(parser.getStartPosition(), parser.getLength(), javadocAttributes, true);
 
                 break;
             case JavaScanner.QUOTE:
-                doc.setCharacterAttributes(parser.getStartPosition(), parser
-						.getLength(), quotesAttributes, true);
+                doc.setCharacterAttributes(parser.getStartPosition(), parser.getLength(), quotesAttributes, true);
 
                 break;
             }
@@ -167,13 +165,15 @@ public class JavaSourceDocument {
         }
 
     }
+
     private static final long serialVersionUID = 0L;
+
     public static final JavaSourceDocument UNKNOWNSOURCE;
-	static {
+    static {
         try {
-            UNKNOWNSOURCE= new JavaSourceDocument("Unknown source", new StringReader("Unable to find source"), null);
+            UNKNOWNSOURCE = new JavaSourceDocument("Unknown source", new StringReader("Unable to find source"), null);
         } catch (IOException e) {
-			throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 

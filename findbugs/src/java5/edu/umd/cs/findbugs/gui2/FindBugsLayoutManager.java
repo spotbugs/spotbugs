@@ -22,12 +22,10 @@ package edu.umd.cs.findbugs.gui2;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 
-
 /**
  * @author pugh
  */
 public interface FindBugsLayoutManager {
-
 
     public JMenu createWindowMenu();
 
@@ -42,7 +40,7 @@ public interface FindBugsLayoutManager {
     public void setSourceTitle(String title);
 
     public JComponent getSourceViewComponent();
-	
+
     public void resetCommentsInputPane();
 
 }

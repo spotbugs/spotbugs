@@ -15,13 +15,13 @@ public class MainFrameHelper {
         JButton b = new JButton();
         AnnotatedString.localiseButton(b, key, name, false);
         return b;
-	}
+    }
 
     public static JMenuItem newJMenuItem(String key, String string, int vkF) {
         JMenuItem m = new JMenuItem();
         AnnotatedString.localiseButton(m, key, string, false);
         m.setMnemonic(vkF);
-		return m;
+        return m;
 
     }
 
@@ -36,7 +36,7 @@ public class MainFrameHelper {
         JMenu m = new JMenu();
         AnnotatedString.localiseButton(m, key, string, true);
         return m;
-	}
+    }
 
     public static boolean isMacLookAndFeel() {
         return UIManager.getLookAndFeel().getClass().getName().startsWith("apple");
@@ -46,8 +46,7 @@ public class MainFrameHelper {
         attachAcceleratorKey(item, keystroke, 0);
     }
 
-    public static void attachAcceleratorKey(JMenuItem item, int keystroke,
-                                                                     int additionalMask) {
+    public static void attachAcceleratorKey(JMenuItem item, int keystroke, int additionalMask) {
         // As far as I know, Mac is the only platform on which it is normal
         // practice to use accelerator masks such as Shift and Alt, so
         // if we're not running on Mac, just ignore them
@@ -55,6 +54,7 @@ public class MainFrameHelper {
             return;
         }
 
-        item.setAccelerator(KeyStroke.getKeyStroke(keystroke, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | additionalMask));
+        item.setAccelerator(KeyStroke.getKeyStroke(keystroke, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+                | additionalMask));
     }
 }

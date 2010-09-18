@@ -26,98 +26,103 @@ import javax.swing.UIManager;
 
 /**
  * Command line switches/options for GUI2.
- *
+ * 
  * @author David Hovemeyer
  */
 public class GUI2CommandLine extends FindBugsCommandLine {
     private float fontSize = 12;
+
     private boolean fontSizeSpecified = false;
+
     private boolean docking = true;
-	private int priority = Thread.NORM_PRIORITY-1;
+
+    private int priority = Thread.NORM_PRIORITY - 1;
+
     private File saveFile;
 
     public GUI2CommandLine() {
-        // Additional constuctor just as hack for decoupling the core package from gui2 package
+        // Additional constuctor just as hack for decoupling the core package
+        // from gui2 package
         // please add all options in the super class
-		super(true);
+        super(true);
     }
 
     @Override
     protected void handleOption(String option, String optionExtraPart) {
         if (option.equals("-clear")) {
-			GUISaveState.clear();
+            GUISaveState.clear();
             System.exit(0);
         } else if (option.equals("-d") || option.equals("--nodock")) {
             docking = false;
-		} else if (option.equals("-look")) {
+        } else if (option.equals("-look")) {
             String arg = optionExtraPart;
             String theme = null;
 
-			if (arg.equals("plastic")) {
+            if (arg.equals("plastic")) {
                 // You can get the Plastic look and feel from jgoodies.com:
-                //	http://www.jgoodies.com/downloads/libraries.html
+                // http://www.jgoodies.com/downloads/libraries.html
                 // Just put "plastic.jar" in the lib directory, right next
-				// to the other jar files.
+                // to the other jar files.
                 theme = "com.jgoodies.plaf.plastic.PlasticXPLookAndFeel";
             } else if (arg.equals("gtk")) {
                 theme = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
-			} else if (arg.equals("native")) {
+            } else if (arg.equals("native")) {
                 theme = UIManager.getSystemLookAndFeelClassName();
             } else {
                 System.err.println("Style '" + arg + "' not supported");
-			}
+            }
 
             if (theme != null) {
                 try {
                     UIManager.setLookAndFeel(theme);
-				} catch (Exception e) {
-                    System.err.println("Couldn't load " + arg +
-                        " look and feel: " + e.toString());
+                } catch (Exception e) {
+                    System.err.println("Couldn't load " + arg + " look and feel: " + e.toString());
                 }
-			}
+            }
         } else {
             super.handleOption(option, optionExtraPart);
         }
-	}
+    }
 
     @Override
     protected void handleOptionWithArgument(String option, String argument) throws IOException {
         if (option.equals("-f")) {
-			try {
+            try {
                 fontSize = Float.parseFloat(argument);
                 fontSizeSpecified = true;
             } catch (NumberFormatException e) {
-				// ignore
+                // ignore
             }
         } else if (option.equals("-priority")) {
             try {
-				priority = Integer.parseInt(argument);
+                priority = Integer.parseInt(argument);
             } catch (NumberFormatException e) {
                 // ignore
             }
-		} else if (option.equals("-loadBugs") || option.equals("-loadbugs")) {
+        } else if (option.equals("-loadBugs") || option.equals("-loadbugs")) {
             saveFile = new File(argument);
             if (!saveFile.exists()) {
                 System.err.println("Bugs file \"" + argument + "\" could not be found");
-				System.exit(1);
+                System.exit(1);
             }
         } else {
             super.handleOptionWithArgument(option, argument);
-		}
+        }
     }
 
     public float getFontSize() {
         return fontSize;
     }
-	public boolean isFontSizeSpecified() {
+
+    public boolean isFontSizeSpecified() {
         return fontSizeSpecified;
     }
 
-	public boolean getDocking() {
+    public boolean getDocking() {
         return docking;
     }
 
-	public void setDocking(boolean docking) {
+    public void setDocking(boolean docking) {
         this.docking = docking;
     }
 
@@ -128,7 +133,7 @@ public class GUI2CommandLine extends FindBugsCommandLine {
     public File getSaveFile() {
         return saveFile;
     }
-	
+
     public void setSaveFile(File saveFile) {
         this.saveFile = saveFile;
     }

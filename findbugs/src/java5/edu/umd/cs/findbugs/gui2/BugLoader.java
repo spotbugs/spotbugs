@@ -51,71 +51,77 @@ import edu.umd.cs.findbugs.workflow.Update;
 
 /**
  * Everything having to do with loading bugs should end up here.
+ * 
  * @author Dan
- *
+ * 
  */
 public class BugLoader {
 
     /**
      * Performs an analysis and returns the BugSet created
-     *
-	 * @param p The Project to run the analysis on
-     * @param progressCallback the progressCallBack is supposed to be supplied by analyzing dialog, FindBugs supplies progress information while it runs the analysis
+     * 
+     * @param p
+     *            The Project to run the analysis on
+     * @param progressCallback
+     *            the progressCallBack is supposed to be supplied by analyzing
+     *            dialog, FindBugs supplies progress information while it runs
+     *            the analysis
      * @return the bugs found
      * @throws InterruptedException
-	 * @throws IOException 
+     * @throws IOException
      */
-    public static BugCollection doAnalysis(@NonNull Project p, FindBugsProgress progressCallback) throws IOException, InterruptedException
-    {
-		BugCollectionBugReporter  pcb=new BugCollectionBugReporter(p);
+    public static BugCollection doAnalysis(@NonNull Project p, FindBugsProgress progressCallback) throws IOException,
+            InterruptedException {
+        BugCollectionBugReporter pcb = new BugCollectionBugReporter(p);
         pcb.setPriorityThreshold(Priorities.NORMAL_PRIORITY);
-        IFindBugsEngine fb=createEngine(p, pcb);
+        IFindBugsEngine fb = createEngine(p, pcb);
         fb.setUserPreferences(UserPreferences.getUserPreferences());
-		fb.setProgressCallback(progressCallback);
+        fb.setProgressCallback(progressCallback);
         fb.setProjectName(p.getProjectName());
 
         fb.execute();
 
         return pcb.getBugCollection();
-	}
+    }
 
     /**
-     * Create the IFindBugsEngine that will be used to
-     * analyze the application.
-	 * 
-     * @param p   the Project
-     * @param pcb the PrintCallBack
+     * Create the IFindBugsEngine that will be used to analyze the application.
+     * 
+     * @param p
+     *            the Project
+     * @param pcb
+     *            the PrintCallBack
      * @return the IFindBugsEngine
-	 */
-    private static IFindBugsEngine createEngine(@NonNull Project p, BugReporter pcb)
-    {
+     */
+    private static IFindBugsEngine createEngine(@NonNull Project p, BugReporter pcb) {
         FindBugs2 engine = new FindBugs2();
-		engine.setBugReporter(pcb);
+        engine.setBugReporter(pcb);
         engine.setProject(p);
 
         engine.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
 
         //
-		// Honor -effort option if one was given on the command line.
+        // Honor -effort option if one was given on the command line.
         //
         engine.setAnalysisFeatureSettings(Driver.getAnalysisSettingList());
 
         return engine;
     }
 
-    public static @CheckForNull SortedBugCollection loadBugs(MainFrame mainFrame, Project project, File source) {
+    public static @CheckForNull
+    SortedBugCollection loadBugs(MainFrame mainFrame, Project project, File source) {
         if (!source.isFile() || !source.canRead()) {
-            JOptionPane.showMessageDialog(mainFrame,"Unable to read " + source);
-			return null;
+            JOptionPane.showMessageDialog(mainFrame, "Unable to read " + source);
+            return null;
         }
-        SortedBugCollection col=new SortedBugCollection(project);
+        SortedBugCollection col = new SortedBugCollection(project);
         try {
-	        col.readXML(source);
+            col.readXML(source);
             initiateCommunication(col);
             addDeadBugMatcher(project);
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(mainFrame,"Could not read " +  source+ "; " + e.getMessage());
+            JOptionPane.showMessageDialog(mainFrame, "Could not read " + source + "; " + e.getMessage());
         }
         MainFrame.getInstance().setProjectAndBugCollectionInSwingThread(project, col);
         return col;
@@ -130,185 +136,205 @@ public class BugLoader {
             cloud.initiateCommunication();
     }
 
-    public static @CheckForNull SortedBugCollection loadBugs(MainFrame mainFrame, Project project, URL url) {
+    public static @CheckForNull
+    SortedBugCollection loadBugs(MainFrame mainFrame, Project project, URL url) {
 
-		SortedBugCollection col=new SortedBugCollection(project);
+        SortedBugCollection col = new SortedBugCollection(project);
         try {
             if (MainFrame.GUI2_DEBUG) {
                 System.out.println("loading from: " + url);
-				JOptionPane.showMessageDialog(mainFrame,"loading from: " + url);
+                JOptionPane.showMessageDialog(mainFrame, "loading from: " + url);
 
             }
             col.readXML(url);
-	        if (MainFrame.GUI2_DEBUG) {
+            if (MainFrame.GUI2_DEBUG) {
                 System.out.println("finished reading: " + url);
-                JOptionPane.showMessageDialog(mainFrame,"loaded: " + url);
+                JOptionPane.showMessageDialog(mainFrame, "loaded: " + url);
             }
-	        initiateCommunication(col);
+            initiateCommunication(col);
             addDeadBugMatcher(project);
 
         } catch (Exception e) {
             String msg = SystemProperties.getOSDependentProperty("findbugs.unableToLoadViaURL");
             if (msg == null)
                 msg = e.getMessage();
-        	else 
+            else
                 msg = String.format(msg);
-            JOptionPane.showMessageDialog(mainFrame,"Could not read " +  url + "\n" +  msg);
+            JOptionPane.showMessageDialog(mainFrame, "Could not read " + url + "\n" + msg);
             if (SystemProperties.getBoolean("findbugs.failIfUnableToLoadViaURL"))
-        		System.exit(1);
+                System.exit(1);
         }
         MainFrame.getInstance().setProjectAndBugCollectionInSwingThread(project, col);
         return col;
     }
 
-	static void addDeadBugMatcher(Project p) {
+    static void addDeadBugMatcher(Project p) {
         Filter suppressionMatcher = p.getSuppressionFilter();
         if (suppressionMatcher != null) {
             suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
-		}
+        }
     }
 
-
-    public static @CheckForNull Project loadProject(MainFrame mainFrame,  File f)
-    {
-        try
-		{
+    public static @CheckForNull
+    Project loadProject(MainFrame mainFrame, File f) {
+        try {
             Project project = Project.readXML(f);
 
             Filter suppressionMatcher = project.getSuppressionFilter();
             if (suppressionMatcher != null) {
                 suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
-			}
+            }
             project.setGuiCallback(mainFrame.getGuiCallback());
             return project;
         } catch (IOException e) {
-			JOptionPane.showMessageDialog(mainFrame,"Could not read " + f + "; " + e.getMessage());
+            JOptionPane.showMessageDialog(mainFrame, "Could not read " + f + "; " + e.getMessage());
         } catch (DocumentException e) {
             JOptionPane.showMessageDialog(mainFrame, "Could not read project from " + f + "; " + e.getMessage());
         } catch (SAXException e) {
-			JOptionPane.showMessageDialog(mainFrame, "Could not read  project from " + f + "; " + e.getMessage());
+            JOptionPane.showMessageDialog(mainFrame, "Could not read  project from " + f + "; " + e.getMessage());
         }
         return null;
     }
 
-    private BugLoader()
-    {
+    private BugLoader() {
         throw new UnsupportedOperationException();
-	}
+    }
 
     /**
-     * TODO: This really needs to be rewritten such that they don't have to choose ALL xmls in one fel swoop.  I'm thinking something more like new project wizard's functionality. -Dan
-     *
-	 * Merges bug collection histories from xmls selected by the user.  Right now all xmls must be in the same folder and he must select all of them at once
-     * Makes use of FindBugs's mergeCollection method in the Update class of the workflow package
+     * TODO: This really needs to be rewritten such that they don't have to
+     * choose ALL xmls in one fel swoop. I'm thinking something more like new
+     * project wizard's functionality. -Dan
+     * 
+     * Merges bug collection histories from xmls selected by the user. Right now
+     * all xmls must be in the same folder and he must select all of them at
+     * once Makes use of FindBugs's mergeCollection method in the Update class
+     * of the workflow package
+     * 
      * @return the merged collecction of bugs
      */
-	public static BugCollection combineBugHistories()
-    {
-        try
-        {
-			FBFileChooser chooser=new FBFileChooser();
+    public static BugCollection combineBugHistories() {
+        try {
+            FBFileChooser chooser = new FBFileChooser();
             chooser.setFileFilter(new FindBugsAnalysisFileFilter());
-//			chooser.setCurrentDirectory(GUISaveState.getInstance().getStarterDirectoryForLoadBugs());  This is done by FBFileChooser.
+            // chooser.setCurrentDirectory(GUISaveState.getInstance().getStarterDirectoryForLoadBugs());
+            // This is done by FBFileChooser.
             chooser.setMultiSelectionEnabled(true);
             chooser.setDialogTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.choose_xmls_ttl", "Choose All XML's To Combine"));
-            if (chooser.showOpenDialog(MainFrame.getInstance())==JFileChooser.CANCEL_OPTION)
-				return null;
+            if (chooser.showOpenDialog(MainFrame.getInstance()) == JFileChooser.CANCEL_OPTION)
+                return null;
 
-            SortedBugCollection conglomeration=new SortedBugCollection();
+            SortedBugCollection conglomeration = new SortedBugCollection();
             conglomeration.readXML(chooser.getSelectedFiles()[0]);
             Update update = new Update();
-			for (int x=1; x<chooser.getSelectedFiles().length;x++)
-            {
-                File f=chooser.getSelectedFiles()[x];
-                SortedBugCollection col=new SortedBugCollection();
-				col.readXML(f);
-                conglomeration=(SortedBugCollection) update.mergeCollections(conglomeration, col, false, false);//False means dont show dead bugs
+            for (int x = 1; x < chooser.getSelectedFiles().length; x++) {
+                File f = chooser.getSelectedFiles()[x];
+                SortedBugCollection col = new SortedBugCollection();
+                col.readXML(f);
+                conglomeration = (SortedBugCollection) update.mergeCollections(conglomeration, col, false, false);// False
+                                                                                                                  // means
+                                                                                                                  // dont
+                                                                                                                  // show
+                                                                                                                  // dead
+                                                                                                                  // bugs
             }
 
             return conglomeration;
         } catch (IOException e) {
             Debug.println(e);
-			return null;
+            return null;
         } catch (DocumentException e) {
             Debug.println(e);
             return null;
-		}
+        }
 
     }
 
     /**
-     * Does what it says it does, hit apple r (control r on pc) and the analysis is redone using the current project
+     * Does what it says it does, hit apple r (control r on pc) and the analysis
+     * is redone using the current project
+     * 
      * @param p
-	 * @return the bugs from the reanalysis, or null if cancelled
+     * @return the bugs from the reanalysis, or null if cancelled
      */
-    public static @CheckForNull BugCollection doAnalysis(@NonNull Project p)
-    {
-		if (p == null) 
+    public static @CheckForNull
+    BugCollection doAnalysis(@NonNull Project p) {
+        if (p == null)
             throw new NullPointerException("null project");
 
-        RedoAnalysisCallback ac= new RedoAnalysisCallback();
+        RedoAnalysisCallback ac = new RedoAnalysisCallback();
 
-        new AnalyzingDialog(p,ac,true);
+        new AnalyzingDialog(p, ac, true);
 
         if (ac.finished)
-            return  ac.getBugCollection();
-        else
-			return null;
-
-    }
-
-    /**
-     * Does what it says it does, hit apple r (control r on pc) and the analysis is redone using the current project
-     * @param p
-	 * @return the bugs from the reanalysis, or null if canceled
-     */
-    public static @CheckForNull  BugCollection redoAnalysisKeepComments(@NonNull Project p)
-    {
-		if (p == null) 
-            throw new NullPointerException("null project");
-
-        BugSet oldSet=BugSet.getMainBugSet();
-        BugCollection current= MainFrame.getInstance().getBugCollection();//Now we should no longer get this December 31st 1969 business.
-        // Sourceforge bug 1800962 indicates 'current' can be null here
-		if(current != null) for (BugLeafNode node: oldSet)
-        {
-            BugInstance bug=node.getBug();
-            current.add(bug);
-		}
-        Update update = new Update();
-
-        RedoAnalysisCallback ac= new RedoAnalysisCallback();
-
-        new AnalyzingDialog(p,ac,true);
-
-        if(current == null)
             return ac.getBugCollection();
-        else if (ac.finished)
-			return update.mergeCollections(current, ac.getBugCollection(), true, false);
         else
             return null;
 
     }
 
-    /** just used to know how the new analysis went*/
-    private static class RedoAnalysisCallback implements AnalysisCallback
-    {
+    /**
+     * Does what it says it does, hit apple r (control r on pc) and the analysis
+     * is redone using the current project
+     * 
+     * @param p
+     * @return the bugs from the reanalysis, or null if canceled
+     */
+    public static @CheckForNull
+    BugCollection redoAnalysisKeepComments(@NonNull Project p) {
+        if (p == null)
+            throw new NullPointerException("null project");
+
+        BugSet oldSet = BugSet.getMainBugSet();
+        BugCollection current = MainFrame.getInstance().getBugCollection();// Now
+                                                                           // we
+                                                                           // should
+                                                                           // no
+                                                                           // longer
+                                                                           // get
+                                                                           // this
+                                                                           // December
+                                                                           // 31st
+                                                                           // 1969
+                                                                           // business.
+        // Sourceforge bug 1800962 indicates 'current' can be null here
+        if (current != null)
+            for (BugLeafNode node : oldSet) {
+                BugInstance bug = node.getBug();
+                current.add(bug);
+            }
+        Update update = new Update();
+
+        RedoAnalysisCallback ac = new RedoAnalysisCallback();
+
+        new AnalyzingDialog(p, ac, true);
+
+        if (current == null)
+            return ac.getBugCollection();
+        else if (ac.finished)
+            return update.mergeCollections(current, ac.getBugCollection(), true, false);
+        else
+            return null;
+
+    }
+
+    /** just used to know how the new analysis went */
+    private static class RedoAnalysisCallback implements AnalysisCallback {
 
         BugCollection getBugCollection() {
             return justAnalyzed;
         }
-		BugCollection justAnalyzed;
+
+        BugCollection justAnalyzed;
+
         volatile boolean finished;
-        public void analysisFinished(BugCollection b)
-        {
-			justAnalyzed = b;
+
+        public void analysisFinished(BugCollection b) {
+            justAnalyzed = b;
             finished = true;
         }
 
-        public void analysisInterrupted()
-        {
-            finished=false;
-		}
+        public void analysisInterrupted() {
+            finished = false;
+        }
     }
 }

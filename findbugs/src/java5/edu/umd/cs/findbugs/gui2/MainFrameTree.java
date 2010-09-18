@@ -53,17 +53,28 @@ import edu.umd.cs.findbugs.filter.Matcher;
 
 public class MainFrameTree implements Serializable {
     private final MainFrame mainFrame;
+
     JTree tree;
+
     SorterTableColumnModel sorter;
-	JTableHeader tableheader;
+
+    JTableHeader tableheader;
+
     BugLeafNode currentSelectedBugLeaf;
+
     JPanel treePanel;
+
     JScrollPane treeScrollPane;
-	JPopupMenu bugPopupMenu;
+
+    JPopupMenu bugPopupMenu;
+
     JPopupMenu branchPopupMenu;
+
     JPanel cardPanel;
+
     private JTextField textFieldForPackagesToDisplay;
-	private JLabel waitStatusLabel;
+
+    private JLabel waitStatusLabel;
 
     public MainFrameTree(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -72,22 +83,22 @@ public class MainFrameTree implements Serializable {
     public void newTree(final JTree newTree, final BugTreeModel newModel) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-				tree = newTree;
+                tree = newTree;
                 tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
                 tree.setLargeModel(true);
                 tree.setCellRenderer(new BugRenderer());
-				treePanel.remove(treeScrollPane);
+                treePanel.remove(treeScrollPane);
                 treeScrollPane = new JScrollPane(newTree);
                 treePanel.add(treeScrollPane);
                 mainFrame.setFontSizeHelper(Driver.getFontSize(), treeScrollPane);
-				tree.setRowHeight((int) (Driver.getFontSize() + 7));
+                tree.setRowHeight((int) (Driver.getFontSize() + 7));
                 mainFrame.getContentPane().validate();
                 mainFrame.getContentPane().repaint();
 
                 setupTreeListeners();
                 newModel.openPreviouslySelected(((BugTreeModel) (tree.getModel())).getOldSelectedBugs());
                 expandTree(10);
-				expandToFirstLeaf(14);
+                expandToFirstLeaf(14);
                 mainFrame.getSorter().addColumnModelListener(newModel);
                 FilterActivity.addFilterListener(newModel.bugTreeFilterListener);
                 mainFrame.mainFrameTree.setSorting(true);
@@ -107,30 +118,28 @@ public class MainFrameTree implements Serializable {
     public Sortables[] getAvailableSortables() {
         Sortables[] sortables;
         ArrayList<Sortables> a = new ArrayList<Sortables>(Sortables.values().length);
-		for (Sortables s : Sortables.values())
+        for (Sortables s : Sortables.values())
             if (s.isAvailable(mainFrame))
                 a.add(s);
         sortables = new Sortables[a.size()];
-		a.toArray(sortables);
+        a.toArray(sortables);
         return sortables;
     }
 
     /**
      * Returns the SorterTableColumnModel of the MainFrame.
-     *
-	 * @return
+     * 
+     * @return
      */
     SorterTableColumnModel getSorter() {
         return sorter;
-	}
+    }
 
     void rebuildBugTreeIfSortablesDependOnCloud() {
         BugTreeModel bt = (BugTreeModel) (mainFrame.getTree().getModel());
         List<Sortables> sortables = sorter.getOrderBeforeDivider();
-		if (sortables.contains(Sortables.DESIGNATION)
-                || sortables.contains(Sortables.FIRST_SEEN)
-                || sortables.contains(Sortables.FIRSTVERSION)
-                || sortables.contains(Sortables.LASTVERSION)) {
+        if (sortables.contains(Sortables.DESIGNATION) || sortables.contains(Sortables.FIRST_SEEN)
+                || sortables.contains(Sortables.FIRSTVERSION) || sortables.contains(Sortables.LASTVERSION)) {
 
             bt.rebuild();
         }
@@ -139,58 +148,68 @@ public class MainFrameTree implements Serializable {
     public void updateBugTree() {
         mainFrame.acquireDisplayWait();
         try {
-			BugTreeModel model = (BugTreeModel) getTree().getModel();
+            BugTreeModel model = (BugTreeModel) getTree().getModel();
             if (mainFrame.getBugCollection() != null) {
                 BugSet bs = new BugSet(mainFrame.getBugCollection());
                 model.getOffListenerList();
-				model.changeSet(bs);
+                model.changeSet(bs);
                 if (bs.size() == 0 && bs.sizeUnfiltered() > 0) {
                     warnUserOfFilters();
                 }
-			}
+            }
 
             mainFrame.updateStatusBar();
             mainFrame.updateTitle();
         } finally {
-			mainFrame.releaseDisplayWait();
+            mainFrame.releaseDisplayWait();
         }
     }
 
     private void warnUserOfFilters() {
-        JOptionPane.showMessageDialog(mainFrame, edu.umd.cs.findbugs.L10N.getLocalString("dlg.everything_is_filtered",
-                "All bugs in this project appear to be filtered out.  \nYou may wish to check your filter settings in the preferences menu."),
-				"Warning",JOptionPane.WARNING_MESSAGE);
+        JOptionPane
+                .showMessageDialog(
+                        mainFrame,
+                        edu.umd.cs.findbugs.L10N
+                                .getLocalString("dlg.everything_is_filtered",
+                                        "All bugs in this project appear to be filtered out.  \nYou may wish to check your filter settings in the preferences menu."),
+                        "Warning", JOptionPane.WARNING_MESSAGE);
     }
 
     /**
      * Creates popup menu for bugs on tree.
-     *
-	 * @return
+     * 
+     * @return
      */
     JPopupMenu createBugPopupMenu() {
         JPopupMenu popupMenu = new JPopupMenu();
-
 
         JMenuItem filterMenuItem = MainFrameHelper.newJMenuItem("menu.filterBugsLikeThis", "Filter bugs like this");
 
         filterMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 mainFrame.saveComments(currentSelectedBugLeaf, mainFrame.getCurrentSelectedBugAspects());
-				new NewFilterFromBug(currentSelectedBugLeaf.getBug());
+                new NewFilterFromBug(currentSelectedBugLeaf.getBug());
 
                 mainFrame.setProjectChanged(true);
-                MainFrame.getInstance().getTree().setSelectionRow(0);//Selects the top of the Jtree so the CommentsArea syncs up.
+                MainFrame.getInstance().getTree().setSelectionRow(0);// Selects
+                                                                     // the top
+                                                                     // of the
+                                                                     // Jtree so
+                                                                     // the
+                                                                     // CommentsArea
+                                                                     // syncs
+                                                                     // up.
             }
-		});
+        });
 
         popupMenu.add(filterMenuItem);
 
         JMenu changeDesignationMenu = MainFrameHelper.newJMenu("menu.changeDesignation", "Change bug designation");
 
         int i = 0;
-        int keyEvents[] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5,
-                KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
-		for (String key : I18N.instance().getUserDesignationKeys(true)) {
+        int keyEvents[] = { KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6,
+                KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9 };
+        for (String key : I18N.instance().getUserDesignationKeys(true)) {
             String name = I18N.instance().getUserDesignation(key);
             mainFrame.getComments().addDesignationItem(changeDesignationMenu, name, keyEvents[i++]);
         }
@@ -201,67 +220,87 @@ public class MainFrameTree implements Serializable {
     }
 
     /**
-     * Creates the branch pop up menu that ask if the user wants
-     * to hide all the bugs in that branch.
-	 *
+     * Creates the branch pop up menu that ask if the user wants to hide all the
+     * bugs in that branch.
+     * 
      * @return
      */
     JPopupMenu createBranchPopUpMenu() {
-		JPopupMenu popupMenu = new JPopupMenu();
+        JPopupMenu popupMenu = new JPopupMenu();
 
         JMenuItem filterMenuItem = MainFrameHelper.newJMenuItem("menu.filterTheseBugs", "Filter these bugs");
 
         filterMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                //TODO This code does a smarter version of filtering that is only possible for branches, and does so correctly
-				//However, it is still somewhat of a hack, because if we ever add more tree listeners than simply the bugtreemodel,
-                //They will not be called by this code.  Using FilterActivity to notify all listeners will however destroy any
-                //benefit of using the smarter deletion method.
+                // TODO This code does a smarter version of filtering that is
+                // only possible for branches, and does so correctly
+                // However, it is still somewhat of a hack, because if we ever
+                // add more tree listeners than simply the bugtreemodel,
+                // They will not be called by this code. Using FilterActivity to
+                // notify all listeners will however destroy any
+                // benefit of using the smarter deletion method.
 
                 try {
                     mainFrame.saveComments(currentSelectedBugLeaf, mainFrame.getCurrentSelectedBugAspects());
                     int startCount;
-					TreePath path = MainFrame.getInstance().getTree().getSelectionPath();
+                    TreePath path = MainFrame.getInstance().getTree().getSelectionPath();
                     TreePath deletePath = path;
                     startCount = ((BugAspects) (path.getLastPathComponent())).getCount();
                     int count = ((BugAspects) (path.getParentPath().getLastPathComponent())).getCount();
-					while (count == startCount) {
+                    while (count == startCount) {
                         deletePath = deletePath.getParentPath();
-                        if (deletePath.getParentPath() == null)//We are at the top of the tree, don't let this be removed, rebuild tree from root.
+                        if (deletePath.getParentPath() == null)// We are at the
+                                                               // top of the
+                                                               // tree, don't
+                                                               // let this be
+                                                               // removed,
+                                                               // rebuild tree
+                                                               // from root.
                         {
-							Matcher m = mainFrame.getCurrentSelectedBugAspects().getMatcher();
+                            Matcher m = mainFrame.getCurrentSelectedBugAspects().getMatcher();
                             Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
                             suppressionFilter.addChild(m);
                             PreferencesFrame.getInstance().updateFilterPanel();
-							FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
+                            FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
                             return;
                         }
                         count = ((BugAspects) (deletePath.getParentPath().getLastPathComponent())).getCount();
-					}
-/*
-                deletePath should now be a path to the highest
-                ancestor branch with the same number of elements
-				as the branch to be deleted
-                in other words, the branch that we actually have
-                to remove in order to correctly remove the selected branch.
-*/
+                    }
+                    /*
+                     * deletePath should now be a path to the highest ancestor
+                     * branch with the same number of elements as the branch to
+                     * be deleted in other words, the branch that we actually
+                     * have to remove in order to correctly remove the selected
+                     * branch.
+                     */
                     BugTreeModel model = MainFrame.getInstance().getBugTreeModel();
                     TreeModelEvent event = new TreeModelEvent(mainFrame, deletePath.getParentPath(),
-                            new int[]{model.getIndexOfChild(deletePath.getParentPath().getLastPathComponent(), deletePath.getLastPathComponent())},
-							new Object[]{deletePath.getLastPathComponent()});
+                            new int[] { model.getIndexOfChild(deletePath.getParentPath().getLastPathComponent(),
+                                    deletePath.getLastPathComponent()) }, new Object[] { deletePath.getLastPathComponent() });
                     Matcher m = mainFrame.getCurrentSelectedBugAspects().getMatcher();
                     Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
                     suppressionFilter.addChild(m);
-					PreferencesFrame.getInstance().updateFilterPanel();
+                    PreferencesFrame.getInstance().updateFilterPanel();
                     model.sendEvent(event, BugTreeModel.TreeModification.REMOVE);
-//				FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
+                    // FilterActivity.notifyListeners(FilterListener.Action.FILTERING,
+                    // null);
 
                     mainFrame.setProjectChanged(true);
 
-                    MainFrame.getInstance().getTree().setSelectionRow(0);//Selects the top of the Jtree so the CommentsArea syncs up.
+                    MainFrame.getInstance().getTree().setSelectionRow(0);// Selects
+                                                                         // the
+                                                                         // top
+                                                                         // of
+                                                                         // the
+                                                                         // Jtree
+                                                                         // so
+                                                                         // the
+                                                                         // CommentsArea
+                                                                         // syncs
+                                                                         // up.
                 } catch (RuntimeException e) {
                     MainFrame.getInstance().showMessageDialog("Unable to create filter: " + e.getMessage());
-				}
+                }
             }
         });
 
@@ -270,9 +309,10 @@ public class MainFrameTree implements Serializable {
         JMenu changeDesignationMenu = MainFrameHelper.newJMenu("menu.changeDesignation", "Change bug designation");
 
         int i = 0;
-        int keyEvents[] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
+        int keyEvents[] = { KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6,
+                KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9 };
         for (String key : I18N.instance().getUserDesignationKeys(true)) {
-			String name = I18N.instance().getUserDesignation(key);
+            String name = I18N.instance().getUserDesignation(key);
             mainFrame.addDesignationItem(changeDesignationMenu, name, keyEvents[i++]);
         }
 
@@ -284,25 +324,25 @@ public class MainFrameTree implements Serializable {
     ActionListener treeActionAdapter(ActionMap map, String actionName) {
         final Action selectPrevious = map.get(actionName);
         return new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 e.setSource(tree);
                 selectPrevious.actionPerformed(e);
             }
-		};
+        };
     }
 
     @SwingThread
     void expandTree(int max) {
         Debug.printf("expandTree(%d)\n", max);
-		JTree jTree = getTree();
+        JTree jTree = getTree();
         int i = 0;
         while (true) {
             int rows = jTree.getRowCount();
-			if (i >= rows || rows >= max)
+            if (i >= rows || rows >= max)
                 break;
             jTree.expandRow(i++);
         }
-	}
+    }
 
     @SwingThread
     boolean leavesShown() {
@@ -311,35 +351,36 @@ public class MainFrameTree implements Serializable {
         int rows = jTree.getRowCount();
         for (int i = 0; i < rows; i++) {
             TreePath treePath = jTree.getPathForRow(i);
-			Object lastPathComponent = treePath.getLastPathComponent();
+            Object lastPathComponent = treePath.getLastPathComponent();
             if (lastPathComponent instanceof BugLeafNode)
                 return true;
         }
-		return false;
+        return false;
     }
 
     @SwingThread
     void expandToFirstLeaf(int max) {
         Debug.println("expand to first leaf");
-		if (leavesShown())
+        if (leavesShown())
             return;
         JTree jTree = getTree();
         int i = 0;
-		while (true) {
+        while (true) {
             int rows = jTree.getRowCount();
             if (i >= rows || rows >= max)
                 break;
-			TreePath treePath = jTree.getPathForRow(i);
+            TreePath treePath = jTree.getPathForRow(i);
             Object lastPathComponent = treePath.getLastPathComponent();
-            if (lastPathComponent instanceof BugLeafNode) return;
+            if (lastPathComponent instanceof BugLeafNode)
+                return;
             jTree.expandRow(i++);
-		}
+        }
     }
 
     void setupTreeListeners() {
-        //noinspection ConstantIfStatement
+        // noinspection ConstantIfStatement
         if (false)
-			tree.addTreeExpansionListener(new MyTreeExpansionListener());
+            tree.addTreeExpansionListener(new MyTreeExpansionListener());
         tree.addTreeSelectionListener(new MyTreeSelectionListener());
 
         tree.addMouseListener(new TreeMouseListener());
@@ -357,51 +398,50 @@ public class MainFrameTree implements Serializable {
         return currentSelectedBugLeaf;
     }
 
-    public JPanel bugListPanel()
-    {
+    public JPanel bugListPanel() {
         tableheader = new JTableHeader();
         getTableheader().setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
-        //Listener put here for when user double clicks on sorting
-    	//column header SorterDialog appears.
-        getTableheader().addMouseListener(new MouseAdapter(){
+        // Listener put here for when user double clicks on sorting
+        // column header SorterDialog appears.
+        getTableheader().addMouseListener(new MouseAdapter() {
 
             @Override
-    		public void mouseClicked(MouseEvent e) {
+            public void mouseClicked(MouseEvent e) {
                 Debug.println("tableheader.getReorderingAllowed() = " + getTableheader().getReorderingAllowed());
                 if (!getTableheader().getReorderingAllowed())
                     return;
-    			if (e.getClickCount()==2)
+                if (e.getClickCount() == 2)
                     SorterDialog.getInstance().setVisible(true);
             }
 
-    		@Override
+            @Override
             public void mouseReleased(MouseEvent arg0) {
                 if (!getTableheader().getReorderingAllowed())
                     return;
-    			BugTreeModel bt=(BugTreeModel) (getTree().getModel());
+                BugTreeModel bt = (BugTreeModel) (getTree().getModel());
                 bt.checkSorter();
             }
         });
-		sorter = GUISaveState.getInstance().getStarterTable();
+        sorter = GUISaveState.getInstance().getStarterTable();
         getTableheader().setColumnModel(getSorter());
-        getTableheader().setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.reorder_message", "Drag to reorder tree folder and sort order"));
+        getTableheader().setToolTipText(
+                edu.umd.cs.findbugs.L10N.getLocalString("tooltip.reorder_message", "Drag to reorder tree folder and sort order"));
 
         tree = new JTree();
         getTree().setLargeModel(true);
         getTree().getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		getTree().setCellRenderer(new BugRenderer());
-        getTree().setRowHeight((int)(Driver.getFontSize() + 7));
+        getTree().setCellRenderer(new BugRenderer());
+        getTree().setRowHeight((int) (Driver.getFontSize() + 7));
         getTree().setModel(new BugTreeModel(mainFrame, getTree(), getSorter(), new BugSet(new ArrayList<BugLeafNode>())));
         setupTreeListeners();
-    	mainFrame.setProject(new Project());
-
+        mainFrame.setProject(new Project());
 
         treeScrollPane = new JScrollPane(getTree());
 
         treePanel = new JPanel(new BorderLayout());
         treePanel.add(treeScrollPane, BorderLayout.CENTER);
         JTable t = new JTable(new DefaultTableModel(0, sortables().length));
-    	t.setTableHeader(getTableheader());
+        t.setTableHeader(getTableheader());
 
         textFieldForPackagesToDisplay = new JTextField();
         ActionListener filterAction = new ActionListener() {
@@ -411,7 +451,8 @@ public class MainFrameTree implements Serializable {
                     mainFrame.getViewFilter().setPackagesToDisplay(textFieldForPackagesToDisplay.getText());
                     mainFrame.resetViewCache();
                 } catch (IllegalArgumentException err) {
-                    JOptionPane.showMessageDialog(mainFrame, err.getMessage(), "Bad class search string", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(mainFrame, err.getMessage(), "Bad class search string",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         };
@@ -439,7 +480,7 @@ public class MainFrameTree implements Serializable {
         gbc = new GridBagConstraints();
         gbc.weightx = 0;
         gbc.gridy = 1;
-        gbc.insets = new Insets(3,3,3,3);
+        gbc.insets = new Insets(3, 3, 3, 3);
         gbc.fill = GridBagConstraints.BOTH;
         sortablePanel.add(sortableLabel, gbc);
         gbc.weightx = 1;
@@ -453,9 +494,9 @@ public class MainFrameTree implements Serializable {
         waitPanel.setLayout(new BoxLayout(waitPanel, BoxLayout.Y_AXIS));
         waitPanel.add(new JLabel("Please wait..."));
         waitStatusLabel = new JLabel();
-		waitPanel.add(waitStatusLabel);
+        waitPanel.add(waitStatusLabel);
         cardPanel.add(topPanel, MainFrame.BugCard.TREECARD.name());
-        cardPanel.add(waitPanel,  MainFrame.BugCard.WAITCARD.name());
+        cardPanel.add(waitPanel, MainFrame.BugCard.WAITCARD.name());
         return cardPanel;
     }
 
@@ -482,59 +523,59 @@ public class MainFrameTree implements Serializable {
     void showCard(final MainFrame.BugCard card, final Cursor cursor, final Window window) {
         Runnable doRun = new Runnable() {
             public void run() {
-				mainFrame.enableRecentMenu(card == MainFrame.BugCard.TREECARD);
+                mainFrame.enableRecentMenu(card == MainFrame.BugCard.TREECARD);
                 getTableheader().setReorderingAllowed(card == MainFrame.BugCard.TREECARD);
                 mainFrame.getMainFrameMenu().enablePreferencesMenuItem(card == MainFrame.BugCard.TREECARD);
                 window.setCursor(cursor);
-				CardLayout layout = (CardLayout) cardPanel.getLayout();
+                CardLayout layout = (CardLayout) cardPanel.getLayout();
                 layout.show(cardPanel, card.name());
                 if (card == MainFrame.BugCard.TREECARD)
                     SorterDialog.getInstance().thaw();
-				else
+                else
                     SorterDialog.getInstance().freeze();
             }
         };
-		if (SwingUtilities.isEventDispatchThread())
+        if (SwingUtilities.isEventDispatchThread())
             doRun.run();
         else
             SwingUtilities.invokeLater(doRun);
-	}
+    }
 
-    private JPanel makeNavigationPanel(String packageSelectorLabel,
-            JComponent packageSelector, JComponent treeHeader, JComponent tree) {
+    private JPanel makeNavigationPanel(String packageSelectorLabel, JComponent packageSelector, JComponent treeHeader,
+            JComponent tree) {
         JPanel topPanel = new JPanel();
-		topPanel.setMinimumSize(new Dimension(150,150));
+        topPanel.setMinimumSize(new Dimension(150, 150));
 
         topPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.ipadx = c.ipady = 3;
-		c.insets = new Insets(6,6,6,6);
+        c.insets = new Insets(6, 6, 6, 6);
         c.gridx = 0;
         c.gridy = 0;
-        c.fill=GridBagConstraints.NONE;
-		JLabel label = new JLabel(packageSelectorLabel);
+        c.fill = GridBagConstraints.NONE;
+        JLabel label = new JLabel(packageSelectorLabel);
         topPanel.add(label, c);
 
         c.gridx = 1;
-        c.fill=GridBagConstraints.HORIZONTAL;
+        c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 1;
-		topPanel.add(packageSelector, c);
+        topPanel.add(packageSelector, c);
 
         c.gridx = 0;
-        c.gridwidth=2;
+        c.gridwidth = 2;
         c.gridy++;
-		c.ipadx = c.ipady = 2;
+        c.ipadx = c.ipady = 2;
         c.fill = GridBagConstraints.HORIZONTAL;
         topPanel.add(treeHeader, c);
 
         c.fill = GridBagConstraints.BOTH;
         c.gridy++;
         c.weighty = 1;
-		c.ipadx = c.ipady = 0;
-        c.insets = new Insets(0,0,0,0);
+        c.ipadx = c.ipady = 0;
+        c.insets = new Insets(0, 0, 0, 0);
         topPanel.add(tree, c);
         return topPanel;
-	}
+    }
 
     public void setWaitStatusLabelText(String msg) {
         waitStatusLabel.setText(msg);
@@ -551,17 +592,20 @@ public class MainFrameTree implements Serializable {
             if (path == null)
                 return;
 
-            if ((e.getButton() == MouseEvent.BUTTON3) ||
-                    (e.getButton() == MouseEvent.BUTTON1 && e.isControlDown())) {
+            if ((e.getButton() == MouseEvent.BUTTON3) || (e.getButton() == MouseEvent.BUTTON1 && e.isControlDown())) {
 
                 if (tree.getModel().isLeaf(path.getLastPathComponent())) {
                     tree.setSelectionPath(path);
                     bugPopupMenu.show(tree, e.getX(), e.getY());
-				} else {
+                } else {
                     tree.setSelectionPath(path);
-                    if (!(path.getParentPath() == null))//If the path's parent path is null, the root was selected, dont allow them to filter out the root.
+                    if (!(path.getParentPath() == null))// If the path's parent
+                                                        // path is null, the
+                                                        // root was selected,
+                                                        // dont allow them to
+                                                        // filter out the root.
                         branchPopupMenu.show(tree, e.getX(), e.getY());
-				}
+                }
             }
         }
 
@@ -588,47 +632,47 @@ public class MainFrameTree implements Serializable {
                 Object lastPathComponent = path.getLastPathComponent();
                 if (lastPathComponent instanceof BugLeafNode) {
                     boolean beforeProjectChanged = mainFrame.isProjectChanged();
-					currentSelectedBugLeaf = (BugLeafNode) lastPathComponent;
+                    currentSelectedBugLeaf = (BugLeafNode) lastPathComponent;
                     mainFrame.setCurrentSelectedBugAspects(null);
                     mainFrame.syncBugInformation();
                     mainFrame.setProjectChanged(beforeProjectChanged);
-				} else {
+                } else {
                     boolean beforeProjectChanged = mainFrame.isProjectChanged();
                     mainFrame.updateDesignationDisplay();
                     currentSelectedBugLeaf = null;
-					mainFrame.setCurrentSelectedBugAspects((BugAspects) lastPathComponent);
+                    mainFrame.setCurrentSelectedBugAspects((BugAspects) lastPathComponent);
                     mainFrame.syncBugInformation();
                     mainFrame.setProjectChanged(beforeProjectChanged);
                 }
-			}
+            }
 
-
-//				Debug.println("Tree selection count:" + tree.getSelectionCount());
+            // Debug.println("Tree selection count:" +
+            // tree.getSelectionCount());
             if (tree.getSelectionCount() != 1) {
                 Debug.println("Tree selection count not equal to 1, disabling comments tab" + selectionEvent);
 
                 mainFrame.setUserCommentInputEnable(false);
             }
         }
-	}
+    }
 
     private class MyTreeExpansionListener implements TreeExpansionListener {
 
         public void treeExpanded(TreeExpansionEvent event) {
             System.out.println("Tree expanded");
             TreePath path = event.getPath();
-			Object lastPathComponent = path.getLastPathComponent();
+            Object lastPathComponent = path.getLastPathComponent();
             int children = tree.getModel().getChildCount(lastPathComponent);
             if (children == 1) {
                 Object o = tree.getModel().getChild(lastPathComponent, 0);
-				if (o instanceof BugAspects) {
+                if (o instanceof BugAspects) {
                     final TreePath p = path.pathByAddingChild(o);
                     SwingUtilities.invokeLater(new Runnable() {
 
                         public void run() {
                             try {
                                 System.out.println("auto expanding " + p);
-								tree.expandPath(p);
+                                tree.expandPath(p);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -643,5 +687,5 @@ public class MainFrameTree implements Serializable {
         public void treeCollapsed(TreeExpansionEvent event) {
             // do nothing
         }
-	}
+    }
 }

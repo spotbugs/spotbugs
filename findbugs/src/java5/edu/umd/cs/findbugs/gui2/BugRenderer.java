@@ -32,41 +32,38 @@ import edu.umd.cs.findbugs.Detector;
  *  Sets colors for JTree nodes
  * 	@author Dan
  */
-public class BugRenderer extends DefaultTreeCellRenderer
-{
+public class BugRenderer extends DefaultTreeCellRenderer {
     @Override
-    public Component getTreeCellRendererComponent(JTree tree, Object node, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus)
-    {
-		Component toReturn=super.getTreeCellRendererComponent(tree,node,selected,expanded,leaf,row,hasFocus);
+    public Component getTreeCellRendererComponent(JTree tree, Object node, boolean selected, boolean expanded, boolean leaf,
+            int row, boolean hasFocus) {
+        Component toReturn = super.getTreeCellRendererComponent(tree, node, selected, expanded, leaf, row, hasFocus);
 
         if (!(node instanceof BugLeafNode))
             return toReturn;
-        else
-		{
-            BugInstance bug=((BugLeafNode) node).getBug();
+        else {
+            BugInstance bug = ((BugLeafNode) node).getBug();
             final Color c;
-            switch (bug.getPriority())
-			{
-                case Detector.LOW_PRIORITY:
-                    c=new Color(0.4f, 0.4f, 0.6f);
-                    break;
-				case Detector.NORMAL_PRIORITY:
-                    if (bug.isDead())
-                        c = new Color(0.2f, 0.2f, 0.2f);
-                    else
-						c= new Color(255, 204, 0);
-                    break;
-                case Detector.HIGH_PRIORITY:
-                    if (bug.isDead())
-						c=new Color(.65f, 0.2f, 0.2f);
-                    else
-                        c=new Color(.85f, 0, 0);
-                    break;
-				case Detector.EXP_PRIORITY: 
-                case Detector.IGNORE_PRIORITY:
-                default:
-                    c=Color.blue;
-					break;
+            switch (bug.getPriority()) {
+            case Detector.LOW_PRIORITY:
+                c = new Color(0.4f, 0.4f, 0.6f);
+                break;
+            case Detector.NORMAL_PRIORITY:
+                if (bug.isDead())
+                    c = new Color(0.2f, 0.2f, 0.2f);
+                else
+                    c = new Color(255, 204, 0);
+                break;
+            case Detector.HIGH_PRIORITY:
+                if (bug.isDead())
+                    c = new Color(.65f, 0.2f, 0.2f);
+                else
+                    c = new Color(.85f, 0, 0);
+                break;
+            case Detector.EXP_PRIORITY:
+            case Detector.IGNORE_PRIORITY:
+            default:
+                c = Color.blue;
+                break;
             }
             if (leaf) {
                 Icon icon = new Icon() {
@@ -87,10 +84,9 @@ public class BugRenderer extends DefaultTreeCellRenderer
                         return 16;
                     }
                 };
-                ((BugRenderer)toReturn).setLeafIcon(icon);
+                ((BugRenderer) toReturn).setLeafIcon(icon);
             }
             return toReturn;
         }
     }
-}	
-
+}

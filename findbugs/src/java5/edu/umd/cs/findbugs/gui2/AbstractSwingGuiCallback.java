@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 public abstract class AbstractSwingGuiCallback implements IGuiCallback {
     private AWTEventQueueExecutor bugUpdateExecutor = new AWTEventQueueExecutor();
+
     private final Component parent;
 
     public AbstractSwingGuiCallback(Component parent) {
@@ -60,17 +61,16 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
         if (SwingUtilities.isEventDispatchThread())
             JOptionPane.showMessageDialog(parent, message);
         else
-            SwingUtilities.invokeLater(new Runnable(){
+            SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     JOptionPane.showMessageDialog(parent, message);
-                }});
+                }
+            });
     }
 
     public int showConfirmDialog(String message, String title, String ok, String cancel) {
-        return JOptionPane.showOptionDialog(parent, message, title,
-                                            JOptionPane.OK_CANCEL_OPTION,
-                                            JOptionPane.PLAIN_MESSAGE, null,
-                                            new Object[] { ok, cancel }, ok);
+        return JOptionPane.showOptionDialog(parent, message, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, new Object[] { ok, cancel }, ok);
     }
 
     public InputStream getProgressMonitorInputStream(InputStream in, int length, String msg) {
@@ -83,11 +83,12 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
     }
 
     public void displayNonmodelMessage(String title, String message) {
-       DisplayNonmodelMessage.displayNonmodelMessage(title, message, parent, true);
+        DisplayNonmodelMessage.displayNonmodelMessage(title, message, parent, true);
     }
 
     public String showQuestionDialog(String message, String title, String defaultValue) {
-        return (String) JOptionPane.showInputDialog(parent, message, title, JOptionPane.QUESTION_MESSAGE, null, null, defaultValue);
+        return (String) JOptionPane.showInputDialog(parent, message, title, JOptionPane.QUESTION_MESSAGE, null, null,
+                defaultValue);
     }
 
     public List<String> showForm(String message, String title, List<FormItem> items) {
@@ -99,7 +100,7 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
         gbc.weighty = 0;
         gbc.gridwidth = 2;
         gbc.gridy = 1;
-        gbc.insets = new Insets(5,5,5,5);
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel.add(new JLabel(message), gbc);
         gbc.gridwidth = 1;
         for (FormItem item : items) {

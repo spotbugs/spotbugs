@@ -47,29 +47,35 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.tree.TreeModel;
 
 /**
- * Handles the sorting order and informs the treeModel when changes are necessary
+ * Handles the sorting order and informs the treeModel when changes are
+ * necessary
+ * 
  * @author Dan
- *
+ * 
  */
 public class SorterTableColumnModel implements TableColumnModel {
 
-    private ArrayList<Sortables> order=new ArrayList<Sortables>();
-    private Set<Sortables> shown = new HashSet<Sortables>();
-    private ArrayList<TableColumn> columnList=new ArrayList<TableColumn>();
-	private DefaultListSelectionModel dlsm;
-    private ArrayList<TableColumnModelListener> watchers=new ArrayList<TableColumnModelListener>();
-    private boolean frozen=false;
+    private ArrayList<Sortables> order = new ArrayList<Sortables>();
 
+    private Set<Sortables> shown = new HashSet<Sortables>();
+
+    private ArrayList<TableColumn> columnList = new ArrayList<TableColumn>();
+
+    private DefaultListSelectionModel dlsm;
+
+    private ArrayList<TableColumnModelListener> watchers = new ArrayList<TableColumnModelListener>();
+
+    private boolean frozen = false;
 
     public boolean isShown(Sortables s) {
         return shown.contains(s);
-	}
-    public SorterTableColumnModel(Sortables[] columnHeaders){
+    }
 
+    public SorterTableColumnModel(Sortables[] columnHeaders) {
 
         MainFrame mainFrame = MainFrame.getInstance();
         int x = 0;
-		for(Sortables c : columnHeaders) {
+        for (Sortables c : columnHeaders) {
             if (!c.isAvailable(mainFrame))
                 continue;
             shown.add(c);
@@ -77,151 +83,134 @@ public class SorterTableColumnModel implements TableColumnModel {
             TableColumn tc = makeTableColumn(x, c);
             columnList.add(tc);
             x++;
-		}
-        dlsm=new DefaultListSelectionModel();
+        }
+        dlsm = new DefaultListSelectionModel();
         dlsm.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         orderUpdate();
-	}
+    }
+
     /**
      * @param x
      * @param c
      * @return
      */
     private TableColumn makeTableColumn(int x, Sortables c) {
-        TableColumn tc=new TableColumn(x);
+        TableColumn tc = new TableColumn(x);
         FBTableCellRenderer temp = new FBTableCellRenderer();
         tc.setHeaderRenderer(temp);
-	    tc.setIdentifier(c);
+        tc.setIdentifier(c);
         tc.setHeaderValue(c);
         tc.setResizable(false);
         tc.sizeWidthToFit();
-	    return tc;
+        return tc;
     }
 
-
-    public void createFrom(SorterTableColumnModel other)
-    {
-		if (this.getOrder().equals(other.getOrder()))
+    public void createFrom(SorterTableColumnModel other) {
+        if (this.getOrder().equals(other.getOrder()))
             return;
         columnList.clear();
-        for (int x=0; x<order.size(); x++)
-		{
-            for (TableColumnModelListener l: watchers)
-                l.columnRemoved(new TableColumnModelEvent(this,x,x));
+        for (int x = 0; x < order.size(); x++) {
+            for (TableColumnModelListener l : watchers)
+                l.columnRemoved(new TableColumnModelEvent(this, x, x));
         }
 
-        //First, empty showOrder
+        // First, empty showOrder
         shown.clear();
         MainFrame mainFrame = MainFrame.getInstance();
-		int x = 0;
-        for(Sortables c : other.order) {
-            if (!c.isAvailable(mainFrame)) continue;
+        int x = 0;
+        for (Sortables c : other.order) {
+            if (!c.isAvailable(mainFrame))
+                continue;
 
-			TableColumn tc = makeTableColumn(x, c);
+            TableColumn tc = makeTableColumn(x, c);
             columnList.add(tc);
-            for (TableColumnModelListener l: watchers)
-                l.columnAdded(new TableColumnModelEvent(this,x,x));
-			x++;
+            for (TableColumnModelListener l : watchers)
+                l.columnAdded(new TableColumnModelEvent(this, x, x));
+            x++;
         }
-        dlsm=new DefaultListSelectionModel();
+        dlsm = new DefaultListSelectionModel();
         dlsm.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         orderUpdate();
 
     }
 
-    public SorterTableColumnModel(Collection<Sortables> columnHeaders)
-    {
+    public SorterTableColumnModel(Collection<Sortables> columnHeaders) {
         this(columnHeaders.toArray(new Sortables[columnHeaders.size()]));
-	}
-
+    }
 
     static class FBTableCellRenderer implements TableCellRenderer {
 
         private TableCellRenderer defaultRenderer = new JTableHeader().getDefaultRenderer();
 
-        public Component getTableCellRendererComponent(JTable table,
-                Object value, boolean isSelected, boolean hasFocus, int row, int column){
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
 
             Component comp = defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             if (comp instanceof JLabel) {
-                JLabel cell = (JLabel)comp;
-				cell.setFont(cell.getFont().deriveFont(Driver.getFontSize()));
+                JLabel cell = (JLabel) comp;
+                cell.setFont(cell.getFont().deriveFont(Driver.getFontSize()));
                 cell.setFont(cell.getFont().deriveFont(Font.BOLD));
                 cell.setBorder(BorderFactory.createCompoundBorder(cell.getBorder(), BorderFactory.createEmptyBorder(0, 6, 0, 6)));
                 cell.setHorizontalAlignment(SwingConstants.CENTER);
-				if (value == Sortables.DIVIDER)
-                {
+                if (value == Sortables.DIVIDER) {
                     URL arrows = MainFrame.class.getResource("arrows.png");
 
-					if (arrows != null) {
+                    if (arrows != null) {
                         cell.setText("");
                         cell.setIcon(new ImageIcon(arrows));
                     } else {
-						cell.setText("<->");
+                        cell.setText("<->");
                     }
 
-
-				}
+                }
             }
             return comp;
         }
-	}
+    }
 
-    public void addColumn(TableColumn arg0)
-    {
+    public void addColumn(TableColumn arg0) {
         throw new UnsupportedOperationException("Can't change sorter table columns using addColumn");
-	}
+    }
 
-    public void removeColumn(TableColumn arg0)
-    {
+    public void removeColumn(TableColumn arg0) {
         throw new UnsupportedOperationException("Can't change sorter table columns using removeColumn");
-	}
-
+    }
 
     public void setVisible(Sortables s, boolean on) {
 
         if (shown.contains(s) == on) {
             // no op
             return;
-		}
-        if (on)
-        {
+        }
+        if (on) {
             shown.add(s);
-			TableColumn tc = makeTableColumn(columnList.size(), s);
+            TableColumn tc = makeTableColumn(columnList.size(), s);
             columnList.add(tc);
-            for (int x=0;x<columnList.size();x++)
-            {
-				columnList.get(x).setModelIndex(x);
+            for (int x = 0; x < columnList.size(); x++) {
+                columnList.get(x).setModelIndex(x);
             }
             orderUpdate();
-            for (TableColumnModelListener l: watchers)
-			{
-                l.columnAdded(new TableColumnModelEvent(this,columnList.size()-1,columnList.size()-1));
+            for (TableColumnModelListener l : watchers) {
+                l.columnAdded(new TableColumnModelEvent(this, columnList.size() - 1, columnList.size() - 1));
             }
-        }
-		else if (!on)
-        {
+        } else if (!on) {
             shown.remove(s);
-            for (int x=0;x<columnList.size();x++)
-			{
+            for (int x = 0; x < columnList.size(); x++) {
                 columnList.get(x).setModelIndex(x);
             }
 
-            for (int counter=0;counter<columnList.size();counter++)
-            {
-                TableColumn tc=columnList.get(counter);
-				if (tc.getIdentifier().equals(s))
-                {
+            for (int counter = 0; counter < columnList.size(); counter++) {
+                TableColumn tc = columnList.get(counter);
+                if (tc.getIdentifier().equals(s)) {
                     columnList.remove(counter);
-                    for (int x=counter;x<columnList.size();x++)
-					{
+                    for (int x = counter; x < columnList.size(); x++) {
                         columnList.get(x).setModelIndex(x);
                     }
 
                     orderUpdate();
-                    for (TableColumnModelListener l: watchers)
-                        l.columnRemoved(new TableColumnModelEvent(this,counter,counter));
+                    for (TableColumnModelListener l : watchers)
+                        l.columnRemoved(new TableColumnModelEvent(this, counter, counter));
 
                 }
             }
@@ -233,21 +222,20 @@ public class SorterTableColumnModel implements TableColumnModel {
 
         MainFrame.getInstance().updateDesignationDisplay();
         MainFrame.getInstance().saveComments();
-        TableColumn from=columnList.get(fromIndex);
-		TableColumn to=columnList.get(toIndex);
+        TableColumn from = columnList.get(fromIndex);
+        TableColumn to = columnList.get(toIndex);
 
-        columnList.set(fromIndex,to);
+        columnList.set(fromIndex, to);
         to.setModelIndex(fromIndex);
 
-        columnList.set(toIndex,from);
+        columnList.set(toIndex, from);
         from.setModelIndex(toIndex);
 
         orderUpdate();
 
-        for (TableColumnModelListener w: new ArrayList<TableColumnModelListener>(watchers))
-        {
-            w.columnMoved(new TableColumnModelEvent(this,fromIndex,toIndex));
-		}
+        for (TableColumnModelListener w : new ArrayList<TableColumnModelListener>(watchers)) {
+            w.columnMoved(new TableColumnModelEvent(this, fromIndex, toIndex));
+        }
     }
 
     public void setColumnMargin(int arg0) {
@@ -259,18 +247,17 @@ public class SorterTableColumnModel implements TableColumnModel {
     }
 
     public Enumeration<TableColumn> getColumns() {
-        return Collections.<TableColumn>enumeration(columnList);
+        return Collections.<TableColumn> enumeration(columnList);
     }
 
     public int getColumnIndex(Object columnIdentifier) {
 
-        if (columnIdentifier==null)
+        if (columnIdentifier == null)
             throw new IllegalArgumentException("Dont send null to getColumnIndex, null shouldn't be in the sorting table.");
 
-        for(int x=0;x<columnList.size();x++)
-        {
+        for (int x = 0; x < columnList.size(); x++) {
             if (columnList.get(x).getIdentifier().equals(columnIdentifier))
-				return x;
+                return x;
         }
 
         throw new IllegalArgumentException();
@@ -286,26 +273,24 @@ public class SorterTableColumnModel implements TableColumnModel {
 
     public int getColumnIndexAtX(int XPosition) {
 
-        for (TableColumn tc:columnList)
-        {
-            XPosition-=tc.getWidth();
-			if (XPosition < 0)
+        for (TableColumn tc : columnList) {
+            XPosition -= tc.getWidth();
+            if (XPosition < 0)
                 return tc.getModelIndex();
         }
         return -1;
-	}
+    }
 
     public int getTotalColumnWidth() {
-        int total=0;
-        for (TableColumn tc: columnList)
-		{
-            total+=tc.getWidth();
+        int total = 0;
+        for (TableColumn tc : columnList) {
+            total += tc.getWidth();
         }
         return total;
-	}
+    }
 
     public void setColumnSelectionAllowed(boolean arg0) {
-        throw new UnsupportedOperationException("BAH");//BAH
+        throw new UnsupportedOperationException("BAH");// BAH
     }
 
     public boolean getColumnSelectionAllowed() {
@@ -313,18 +298,18 @@ public class SorterTableColumnModel implements TableColumnModel {
     }
 
     public int[] getSelectedColumns() {
-        int index=dlsm.getMinSelectionIndex();
-        if (index==-1)
-			return new int[]{};
-        return new int[]{index};
+        int index = dlsm.getMinSelectionIndex();
+        if (index == -1)
+            return new int[] {};
+        return new int[] { index };
     }
 
     public int getSelectedColumnCount() {
 
-        if (dlsm.getMinSelectionIndex()==-1)
+        if (dlsm.getMinSelectionIndex() == -1)
             return 0;
         return 1;
-	}
+    }
 
     public void setSelectionModel(ListSelectionModel arg0) {
         throw new UnsupportedOperationException("No... NO NO NO NO");
@@ -346,50 +331,44 @@ public class SorterTableColumnModel implements TableColumnModel {
         throw new UnsupportedOperationException("columnSelectionChangedBAH");
     }
 
-    ArrayList<Sortables> getOrder()
-    {
+    ArrayList<Sortables> getOrder() {
         return order;
-	}
+    }
 
-    List<Sortables> getOrderBeforeDivider()
-    {
+    List<Sortables> getOrderBeforeDivider() {
         if (!order.contains(Sortables.DIVIDER))
-			return order;
+            return order;
 
         return order.subList(0, order.indexOf(Sortables.DIVIDER));
     }
 
-    List<Sortables> getOrderAfterDivider()
-    {
+    List<Sortables> getOrderAfterDivider() {
         if (!order.contains(Sortables.DIVIDER) || order.indexOf(Sortables.DIVIDER) == order.size() - 1)
-			return new ArrayList<Sortables>();
+            return new ArrayList<Sortables>();
 
         return order.subList(order.indexOf(Sortables.DIVIDER) + 1, order.size());
     }
 
-    private void orderUpdate()
-    {
-        //order.clear();
-		if (!frozen)
-        {
-            order=new ArrayList<Sortables>();
-            for(TableColumn c : columnList)
-				order.add((Sortables) c.getIdentifier());
+    private void orderUpdate() {
+        // order.clear();
+        if (!frozen) {
+            order = new ArrayList<Sortables>();
+            for (TableColumn c : columnList)
+                order.add((Sortables) c.getIdentifier());
         }
     }
 
     public void freezeOrder() {
-        frozen=true;
+        frozen = true;
     }
 
     @SwingThread
     public void thawOrder() {
-        frozen=false;
-		orderUpdate();
-        TreeModel model=MainFrame.getInstance().getTree().getModel();
-        if (model instanceof BugTreeModel)
-        {
-			((BugTreeModel) model).checkSorter();
+        frozen = false;
+        orderUpdate();
+        TreeModel model = MainFrame.getInstance().getTree().getModel();
+        if (model instanceof BugTreeModel) {
+            ((BugTreeModel) model).checkSorter();
         }
     }
 }

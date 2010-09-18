@@ -23,46 +23,54 @@ import java.io.File;
 
 import edu.umd.cs.findbugs.util.Util;
 
-enum SaveType {NOT_KNOWN, XML_ANALYSIS, FBP_FILE, FBA_FILE;
-public FindBugsFileFilter getFilter() {
-    switch (this) {
-    case XML_ANALYSIS:
-        return FindBugsAnalysisFileFilter.INSTANCE;
-	case FBP_FILE:
-        return FindBugsFBPFileFilter.INSTANCE;
-    case FBA_FILE:
-        return FindBugsFBAFileFilter.INSTANCE;
-	default: 
+enum SaveType {
+    NOT_KNOWN, XML_ANALYSIS, FBP_FILE, FBA_FILE;
+    public FindBugsFileFilter getFilter() {
+        switch (this) {
+        case XML_ANALYSIS:
+            return FindBugsAnalysisFileFilter.INSTANCE;
+        case FBP_FILE:
+            return FindBugsFBPFileFilter.INSTANCE;
+        case FBA_FILE:
+            return FindBugsFBAFileFilter.INSTANCE;
+        default:
             throw new IllegalArgumentException("No filter for type NOT_UNKNOWN");
+        }
     }
-}
-public boolean isValid(File f) {
 
-    if (f.isDirectory()) return false;
-    FindBugsFileFilter filter = getFilter();
-    return filter.accept(f);
-}
-public String getFileExtension() {
-    switch (this) {
+    public boolean isValid(File f) {
 
-    case XML_ANALYSIS:
-        return ".xml";
-    case FBP_FILE:
-		return ".fbp";
-    case FBA_FILE:
-        return ".fba";
-    default:
-			throw new IllegalArgumentException("No filter for type NOT_UNKNOWN");
+        if (f.isDirectory())
+            return false;
+        FindBugsFileFilter filter = getFilter();
+        return filter.accept(f);
     }
-}
-public static SaveType forFile(File f) {
-    String extension = Util.getFileExtension(f);
 
-    if (extension.equals("fbp")) return FBP_FILE;
-    if (extension.equals("fba")) return FBA_FILE;
-    if (extension.equals("xml")) return XML_ANALYSIS;
-	if (f.getName().toLowerCase().endsWith("xml.gz"))
-        return XML_ANALYSIS;
-    return NOT_KNOWN;
-}
+    public String getFileExtension() {
+        switch (this) {
+
+        case XML_ANALYSIS:
+            return ".xml";
+        case FBP_FILE:
+            return ".fbp";
+        case FBA_FILE:
+            return ".fba";
+        default:
+            throw new IllegalArgumentException("No filter for type NOT_UNKNOWN");
+        }
+    }
+
+    public static SaveType forFile(File f) {
+        String extension = Util.getFileExtension(f);
+
+        if (extension.equals("fbp"))
+            return FBP_FILE;
+        if (extension.equals("fba"))
+            return FBA_FILE;
+        if (extension.equals("xml"))
+            return XML_ANALYSIS;
+        if (f.getName().toLowerCase().endsWith("xml.gz"))
+            return XML_ANALYSIS;
+        return NOT_KNOWN;
+    }
 }

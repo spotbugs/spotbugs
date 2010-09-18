@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.anttask;
 
 /**
  * Input file used with ComputeBugHistoryTask or FilterBugsTask.
- *
+ * 
  * @author David Hovemeyer
  */
 public class DataFile {
@@ -31,16 +31,17 @@ public class DataFile {
     }
 
     /**
-     * @param name The name to set.
+     * @param name
+     *            The name to set.
      */
-	public void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
     /**
      * @return Returns the name.
      */
-	public String getName() {
+    public String getName() {
         return name;
     }
 }

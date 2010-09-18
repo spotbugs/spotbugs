@@ -41,20 +41,18 @@ public class Util {
     public static void addOkAndCancelButtons(JPanel panel, JButton ok, JButton cancel) {
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         if (MainFrame.MAC_OS_X) {
-			panel.add(Box.createHorizontalGlue());
+            panel.add(Box.createHorizontalGlue());
             panel.add(cancel);
             panel.add(Box.createHorizontalStrut(5));
             panel.add(ok);
-			panel.add(Box.createHorizontalStrut(20));
+            panel.add(Box.createHorizontalStrut(20));
         } else {
             panel.add(Box.createHorizontalGlue());
             panel.add(ok);
-			panel.add(Box.createHorizontalStrut(5));
+            panel.add(Box.createHorizontalStrut(5));
             panel.add(cancel);
             panel.add(Box.createHorizontalStrut(5));
         }
-	}
-
-
+    }
 
 }

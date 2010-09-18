@@ -28,8 +28,8 @@ import java.util.prefs.Preferences;
 public class ClearGuiSaveState {
 
     public static void main(String args[]) throws BackingStoreException {
-        Preferences p=Preferences.userNodeForPackage(GUISaveState.class);
-		p.clear();
+        Preferences p = Preferences.userNodeForPackage(GUISaveState.class);
+        p.clear();
     }
 
 }

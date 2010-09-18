@@ -29,20 +29,19 @@ public class DeadBugFilter extends FilterMatcher {
     /**
      * @param filterBy
      * @param value
-	 * @param mode
+     * @param mode
      */
     public DeadBugFilter(Sortables filterBy, String value, FilterWhere mode) {
         super(filterBy, value, mode);
-	}
+    }
 
     @Override
-    public String toString()
-    {
-		return edu.umd.cs.findbugs.L10N.getLocalString("pref.dead_bugs", "Dead Bugs");
+    public String toString() {
+        return edu.umd.cs.findbugs.L10N.getLocalString("pref.dead_bugs", "Dead Bugs");
     }
 
     @Override
     public boolean match(BugInstance bugInstance) {
         return super.match(bugInstance);
-	}
+    }
 }

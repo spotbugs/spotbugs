@@ -27,24 +27,27 @@ import java.lang.reflect.Method;
 import javax.swing.JFileChooser;
 
 import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * All FileChoosers are FBFileChoosers so font size will work
+ * 
  * @author Kristin
- *
+ * 
  */
 public class FBFileChooser extends JFileChooser {
 
-    public FBFileChooser(){
+    public FBFileChooser() {
         super();
         assert java.awt.EventQueue.isDispatchThread();
-		this.setCurrentDirectory(GUISaveState.getInstance().getStarterDirectoryForLoadBugs());
+        this.setCurrentDirectory(GUISaveState.getInstance().getStarterDirectoryForLoadBugs());
     }
 
     /**
      * Sets size of font
+     * 
      * @param size
-	 */
-    protected void setFontSize(float size){
+     */
+    protected void setFontSize(float size) {
         setFont(this.getFont().deriveFont(size));
 
         setFontSizeHelper(this.getComponents(), size);
@@ -53,43 +56,44 @@ public class FBFileChooser extends JFileChooser {
     /*
      * Helps above method, runs through all components recursively.
      */
-	protected void setFontSizeHelper(Component[] comps, float size){
-        if(comps.length <= 0)
+    protected void setFontSizeHelper(Component[] comps, float size) {
+        if (comps.length <= 0)
             return;
 
-        for(Component comp : comps){
+        for (Component comp : comps) {
             comp.setFont(comp.getFont().deriveFont(size));
-            if(comp instanceof Container)
-				setFontSizeHelper(((Container)comp).getComponents(), size);
+            if (comp instanceof Container)
+                setFontSizeHelper(((Container) comp).getComponents(), size);
         }
     }
 
     @Override
-    public void addNotify(){
+    public void addNotify() {
         super.addNotify();
-		setFontSize(Driver.getFontSize());
+        setFontSize(Driver.getFontSize());
 
     }
 
     private static void workAroundJFileChooserBug() {
-        //Travis McLeskey
+        // Travis McLeskey
         // http://www.mcleskey.org/bugs.html
-		try {
-            Object o = javax.swing.UIManager.getBorder( "TableHeader.cellBorder" );
-            Method m = o.getClass().getMethod( "setHorizontalShift",
-                    new Class[] { int.class } );
-			m.invoke( o, 0 );
+        try {
+            Object o = javax.swing.UIManager.getBorder("TableHeader.cellBorder");
+            Method m = o.getClass().getMethod("setHorizontalShift", new Class[] { int.class });
+            m.invoke(o, 0);
+        } catch (NoSuchMethodException e) {
+            assert false;
+        } catch (InvocationTargetException e) {
+            assert false;
+        } catch (IllegalAccessException e) {
+            assert false;
         }
-        catch ( NoSuchMethodException e ) { assert false; }
-        catch ( InvocationTargetException e ) { assert false; }
-		catch ( IllegalAccessException e ) { assert false; }
     }
 
     @Override
-    public int showOpenDialog(Component parent)
-    {
-		 assert java.awt.EventQueue.isDispatchThread();
-        int x=super.showOpenDialog(parent);
+    public int showOpenDialog(Component parent) {
+        assert java.awt.EventQueue.isDispatchThread();
+        int x = super.showOpenDialog(parent);
         if (SystemProperties.getProperty("os.name").startsWith("Mac"))
             workAroundJFileChooserBug();
 
@@ -99,9 +103,9 @@ public class FBFileChooser extends JFileChooser {
     }
 
     @Override
-    public int showSaveDialog(Component parent){
-         assert java.awt.EventQueue.isDispatchThread();
-		int x=super.showSaveDialog(parent);
+    public int showSaveDialog(Component parent) {
+        assert java.awt.EventQueue.isDispatchThread();
+        int x = super.showSaveDialog(parent);
         if (SystemProperties.getProperty("os.name").startsWith("Mac"))
             workAroundJFileChooserBug();
 
@@ -111,9 +115,9 @@ public class FBFileChooser extends JFileChooser {
     }
 
     @Override
-    public int showDialog(Component parent, String approveButtonText){
-         assert java.awt.EventQueue.isDispatchThread();
-		int x=super.showDialog(parent, approveButtonText);
+    public int showDialog(Component parent, String approveButtonText) {
+        assert java.awt.EventQueue.isDispatchThread();
+        int x = super.showDialog(parent, approveButtonText);
         if (SystemProperties.getProperty("os.name").startsWith("Mac"))
             workAroundJFileChooserBug();
 
@@ -121,6 +125,5 @@ public class FBFileChooser extends JFileChooser {
 
         return x;
     }
-
 
 }

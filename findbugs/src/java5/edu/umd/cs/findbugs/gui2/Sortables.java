@@ -41,24 +41,22 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
- * A useful enum for dealing with all the types of filterable and sortable data in BugInstances
- * This is the preferred way for getting the information out of a BugInstance and formatting it for display
- * It also has the comparators for the different types of data
- *
+ * A useful enum for dealing with all the types of filterable and sortable data
+ * in BugInstances This is the preferred way for getting the information out of
+ * a BugInstance and formatting it for display It also has the comparators for
+ * the different types of data
+ * 
  * @author Reuven
  */
 
-public enum Sortables implements Comparator<String>
-{
+public enum Sortables implements Comparator<String> {
 
-    FIRST_SEEN(edu.umd.cs.findbugs.L10N.getLocalString("sort.first_seen", "First Seen"))
-    {
+    FIRST_SEEN(edu.umd.cs.findbugs.L10N.getLocalString("sort.first_seen", "First Seen")) {
         @Override
-		public String getFrom(BugInstance bug)
-        {
+        public String getFrom(BugInstance bug) {
             long firstSeen = getFirstSeen(bug);
             return Long.toString(firstSeen);
-		}
+        }
 
         /**
          * @param bug
@@ -71,404 +69,380 @@ public enum Sortables implements Comparator<String>
         }
 
         @Override
-        public String formatValue(String value)
-        {
-			long when = Long.parseLong(value);
-            return DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT).format(when);
+        public String formatValue(String value) {
+            long when = Long.parseLong(value);
+            return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(when);
         }
 
         @Override
-        public int compare(String one, String two)
-        {
-			// Numerical (zero is first)
+        public int compare(String one, String two) {
+            // Numerical (zero is first)
             return Long.valueOf(one).compareTo(Long.valueOf(two));
         }
 
-		@Override
+        @Override
         public boolean isAvailable(MainFrame mainframe) {
             BugCollection bugCollection = mainframe.getBugCollection();
             return bugCollection != null;
-		}
+        }
     },
 
-    FIRSTVERSION(edu.umd.cs.findbugs.L10N.getLocalString("sort.first_version", "First Version"))
-	{
+    FIRSTVERSION(edu.umd.cs.findbugs.L10N.getLocalString("sort.first_version", "First Version")) {
         @Override
-        public String getFrom(BugInstance bug)
-        {
-			return Long.toString(bug.getFirstVersion());
+        public String getFrom(BugInstance bug) {
+            return Long.toString(bug.getFirstVersion());
         }
 
         @Override
-        public String formatValue(String value)
-        {
-			int seqNum = Integer.parseInt(value);
+        public String formatValue(String value) {
+            int seqNum = Integer.parseInt(value);
             BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
-            if (bugCollection == null) return "--";
+            if (bugCollection == null)
+                return "--";
             AppVersion appVersion = bugCollection.getAppVersionFromSequenceNumber(seqNum);
-			String appendItem = "";
-            if(appVersion != null)
-            {
+            String appendItem = "";
+            if (appVersion != null) {
                 String timestamp = new Timestamp(appVersion.getTimestamp()).toString();
-				appendItem = appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
+                appendItem = appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
             }
-            if(appendItem == "")
-                appendItem = "#" +seqNum;
-			return  appendItem;
+            if (appendItem == "")
+                appendItem = "#" + seqNum;
+            return appendItem;
         }
 
         @Override
-        public int compare(String one, String two)
-        {
-			// Numerical (zero is first)
+        public int compare(String one, String two) {
+            // Numerical (zero is first)
             return Integer.valueOf(one).compareTo(Integer.valueOf(two));
         }
 
-		@Override
+        @Override
         public boolean isAvailable(MainFrame mainframe) {
             BugCollection bugCollection = mainframe.getBugCollection();
             if (bugCollection == null) {
-				return true;
+                return true;
             }
             long sequenceNumber = bugCollection.getCurrentAppVersion().getSequenceNumber();
             return sequenceNumber > 0;
-			
+
         }
     },
 
-    LASTVERSION(edu.umd.cs.findbugs.L10N.getLocalString("sort.last_version", "Last Version"))
-    {
+    LASTVERSION(edu.umd.cs.findbugs.L10N.getLocalString("sort.last_version", "Last Version")) {
         @Override
-		public String getFrom(BugInstance bug)
-        {
+        public String getFrom(BugInstance bug) {
             return Long.toString(bug.getLastVersion());
         }
 
         @Override
-        public String formatValue(String value)
-        {
-			//System.out.println("Formatting last version value");
-            if(value.equals("-1"))
+        public String formatValue(String value) {
+            // System.out.println("Formatting last version value");
+            if (value.equals("-1"))
                 return "";
             int seqNum = Integer.parseInt(value);
-			BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
-            if (bugCollection == null) return "--";
+            BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
+            if (bugCollection == null)
+                return "--";
             AppVersion appVersion = bugCollection.getAppVersionFromSequenceNumber(seqNum);
             String appendItem = "";
-			if(appVersion != null)
-            {
+            if (appVersion != null) {
                 String timestamp = new Timestamp(appVersion.getTimestamp()).toString();
                 appendItem = appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
-			}
-            if(appendItem == "")
+            }
+            if (appendItem == "")
                 appendItem = "#" + seqNum;
             return appendItem;
-			}
+        }
 
         @Override
-        public int compare(String one, String two)
-        {
-			if (one.equals(two)) return 0;
+        public int compare(String one, String two) {
+            if (one.equals(two))
+                return 0;
 
             // Numerical (except that -1 is last)
             int first = Integer.valueOf(one);
             int second = Integer.valueOf(two);
-			if (first == second) return 0;
-            if (first < 0) return 1;
-            if (second < 0) return -1;
-            if (first < second) return -1;
-			return 1;
+            if (first == second)
+                return 0;
+            if (first < 0)
+                return 1;
+            if (second < 0)
+                return -1;
+            if (first < second)
+                return -1;
+            return 1;
         }
 
         @Override
-		public boolean isAvailable(MainFrame mainframe) {
+        public boolean isAvailable(MainFrame mainframe) {
             BugCollection bugCollection = mainframe.getBugCollection();
             if (bugCollection == null)
                 return true;
-			return bugCollection.getCurrentAppVersion().getSequenceNumber() > 0;
+            return bugCollection.getCurrentAppVersion().getSequenceNumber() > 0;
 
         }
 
     },
 
-    PRIORITY(edu.umd.cs.findbugs.L10N.getLocalString("sort.priority", "Priority"))
-    {
+    PRIORITY(edu.umd.cs.findbugs.L10N.getLocalString("sort.priority", "Priority")) {
         @Override
-		public String getFrom(BugInstance bug)
-        {
+        public String getFrom(BugInstance bug) {
             return String.valueOf(bug.getPriority());
         }
 
         @Override
-        public String formatValue(String value)
-        {
-			if (value.equals(String.valueOf(Detector.HIGH_PRIORITY)))
+        public String formatValue(String value) {
+            if (value.equals(String.valueOf(Detector.HIGH_PRIORITY)))
                 return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_high", "High");
             if (value.equals(String.valueOf(Detector.NORMAL_PRIORITY)))
                 return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_normal", "Normal");
-			if (value.equals(String.valueOf(Detector.LOW_PRIORITY)))
+            if (value.equals(String.valueOf(Detector.LOW_PRIORITY)))
                 return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_low", "Low");
             if (value.equals(String.valueOf(Detector.EXP_PRIORITY)))
                 return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_experimental", "Experimental");
-			return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_ignore", "Ignore"); // This probably shouldn't ever happen, but what the hell, let's be complete
+            return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_ignore", "Ignore"); // This
+                                                                                              // probably
+                                                                                              // shouldn't
+                                                                                              // ever
+                                                                                              // happen,
+                                                                                              // but
+                                                                                              // what
+                                                                                              // the
+                                                                                              // hell,
+                                                                                              // let's
+                                                                                              // be
+                                                                                              // complete
 
         }
 
         @Override
-        public int compare(String one, String two)
-        {
-			// Numerical
+        public int compare(String one, String two) {
+            // Numerical
             return Integer.valueOf(one).compareTo(Integer.valueOf(two));
         }
     },
-	CLASS(edu.umd.cs.findbugs.L10N.getLocalString("sort.class", "Class"))
-    {
+    CLASS(edu.umd.cs.findbugs.L10N.getLocalString("sort.class", "Class")) {
         @Override
-        public String getFrom(BugInstance bug)
-		{
+        public String getFrom(BugInstance bug) {
             return bug.getPrimarySourceLineAnnotation().getClassName();
         }
 
         @Override
-        public int compare(String one, String two)
-        {
-			// If both have dollar signs and are of the same outer class, compare the numbers after the dollar signs.
-            try
-            {
+        public int compare(String one, String two) {
+            // If both have dollar signs and are of the same outer class,
+            // compare the numbers after the dollar signs.
+            try {
                 if (one.contains("$") && two.contains("$")
-						&& one.substring(0, one.lastIndexOf("$")).equals(two.substring(0, two.lastIndexOf("$"))))
-                    return Integer.valueOf(one.substring(one.lastIndexOf("$"))).compareTo(Integer.valueOf(two.substring(two.lastIndexOf("$"))));
-            }
-            catch (NumberFormatException e) {} // Somebody's playing silly buggers with dollar signs, just do it lexicographically
+                        && one.substring(0, one.lastIndexOf("$")).equals(two.substring(0, two.lastIndexOf("$"))))
+                    return Integer.valueOf(one.substring(one.lastIndexOf("$"))).compareTo(
+                            Integer.valueOf(two.substring(two.lastIndexOf("$"))));
+            } catch (NumberFormatException e) {
+            } // Somebody's playing silly buggers with dollar signs, just do it
+              // lexicographically
 
             // Otherwise, lexicographicalify it
             return one.compareTo(two);
         }
-	},
-    PACKAGE(edu.umd.cs.findbugs.L10N.getLocalString("sort.package", "Package"))
-    {
+    },
+    PACKAGE(edu.umd.cs.findbugs.L10N.getLocalString("sort.package", "Package")) {
         @Override
-		public String getFrom(BugInstance bug)
-        {
+        public String getFrom(BugInstance bug) {
             return bug.getPrimarySourceLineAnnotation().getPackageName();
         }
 
         @Override
-        public String formatValue(String value)
-        {
-			if (value.equals(""))
+        public String formatValue(String value) {
+            if (value.equals(""))
                 return "(Default)";
             return value;
         }
-	},
+    },
     PACKAGE_PREFIX(edu.umd.cs.findbugs.L10N.getLocalString("sort.package_prefix", "Package prefix")) {
         @Override
-        public String getFrom(BugInstance bug)
-		{
+        public String getFrom(BugInstance bug) {
             int count = GUISaveState.getInstance().getPackagePrefixSegments();
 
             if (count < 1)
-				count = 1;
+                count = 1;
             String packageName = bug.getPrimarySourceLineAnnotation().getPackageName();
             return ClassName.extractPackagePrefix(packageName, count);
         }
 
         @Override
-        public String formatValue(String value)
-        {
-			return value + "...";
+        public String formatValue(String value) {
+            return value + "...";
         }
     },
-    CATEGORY(edu.umd.cs.findbugs.L10N.getLocalString("sort.category", "Category"))
-	{
+    CATEGORY(edu.umd.cs.findbugs.L10N.getLocalString("sort.category", "Category")) {
         @Override
-        public String getFrom(BugInstance bug)
-        {
+        public String getFrom(BugInstance bug) {
 
             BugPattern bugPattern = bug.getBugPattern();
             if (bugPattern == null) {
                 return "?";
-			}
+            }
             return bugPattern.getCategory();
         }
 
         @Override
-        public String formatValue(String value)
-        {
-			return I18N.instance().getBugCategoryDescription(value);
+        public String formatValue(String value) {
+            return I18N.instance().getBugCategoryDescription(value);
         }
 
         @Override
-		public int compare(String one, String two)
-        {
+        public int compare(String one, String two) {
             String catOne = one;
             String catTwo = two;
-			int compare = catOne.compareTo(catTwo);
+            int compare = catOne.compareTo(catTwo);
             if (compare == 0)
                 return 0;
             if (catOne.equals("CORRECTNESS"))
-				return -1;
+                return -1;
             if (catTwo.equals("CORRECTNESS"))
                 return 1;
             return compare;
-			
+
         }
 
-
     },
-    DESIGNATION(edu.umd.cs.findbugs.L10N.getLocalString("sort.designation", "Designation"))
-	{
+    DESIGNATION(edu.umd.cs.findbugs.L10N.getLocalString("sort.designation", "Designation")) {
         @Override
-        public String getFrom(BugInstance bug)
-        {
-			return bug.getUserDesignationKey();
+        public String getFrom(BugInstance bug) {
+            return bug.getUserDesignationKey();
         }
 
         /**
          * value is the key of the designations.
+         * 
          * @param value
-		 * @return
+         * @return
          */
         @Override
-        public String formatValue(String value)
-		{
+        public String formatValue(String value) {
             return I18N.instance().getUserDesignation(value);
         }
 
         @Override
-        public String[] getAllSorted()
-        {//FIXME I think we always want user to see all possible designations, not just the ones he has set in his project, Agreement?  -Dan
-			List<String> sortedDesignations=I18N.instance().getUserDesignationKeys(true);
+        public String[] getAllSorted() {// FIXME I think we always want user to
+                                        // see all possible designations, not
+                                        // just the ones he has set in his
+                                        // project, Agreement? -Dan
+            List<String> sortedDesignations = I18N.instance().getUserDesignationKeys(true);
             return sortedDesignations.toArray(new String[sortedDesignations.size()]);
         }
     },
-	BUGCODE(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_kind", "Bug Kind"))
-    {
+    BUGCODE(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_kind", "Bug Kind")) {
         @Override
-        public String getFrom(BugInstance bug)
-		{
+        public String getFrom(BugInstance bug) {
             BugPattern bugPattern = bug.getBugPattern();
-            if (bugPattern == null) return null;
+            if (bugPattern == null)
+                return null;
             return bugPattern.getAbbrev();
-		}
-
-        @Override
-        public String formatValue(String value)
-        {
-			return I18N.instance().getBugTypeDescription(value);
         }
 
         @Override
-        public int compare(String one, String two)
-        {
-			return formatValue(one).compareTo(formatValue(two));
+        public String formatValue(String value) {
+            return I18N.instance().getBugTypeDescription(value);
+        }
+
+        @Override
+        public int compare(String one, String two) {
+            return formatValue(one).compareTo(formatValue(two));
         }
     },
-    TYPE(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_pattern", "Bug Pattern"))
-	{
+    TYPE(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_pattern", "Bug Pattern")) {
         @Override
-        public String getFrom(BugInstance bug)
-        {
-			if((bug.getBugPattern()) == null)
+        public String getFrom(BugInstance bug) {
+            if ((bug.getBugPattern()) == null)
                 return "?";
-            else return bug.getBugPattern().getType();
+            else
+                return bug.getBugPattern().getType();
         }
 
         @Override
-        public String formatValue(String value)
-        {
-			return I18N.instance().getShortMessageWithoutCode(value);
+        public String formatValue(String value) {
+            return I18N.instance().getShortMessageWithoutCode(value);
         }
     },
-    CONSENSUS(edu.umd.cs.findbugs.L10N.getLocalString("sort.consensus", "Consensus"))
-	{
+    CONSENSUS(edu.umd.cs.findbugs.L10N.getLocalString("sort.consensus", "Consensus")) {
         @Override
-        public String getFrom(BugInstance bug)
-        {
-			 BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
+        public String getFrom(BugInstance bug) {
+            BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
 
-            return bugCollection.getCloud().getConsensusDesignation(bug)
-                 .name();
-		}
-
-        @Override
-        public String formatValue(String value)
-        {
-			return I18N.instance().getUserDesignation(value);
+            return bugCollection.getCloud().getConsensusDesignation(bug).name();
         }
 
         @Override
-		public boolean isAvailable(MainFrame mf) {
+        public String formatValue(String value) {
+            return I18N.instance().getUserDesignation(value);
+        }
+
+        @Override
+        public boolean isAvailable(MainFrame mf) {
             BugCollection bugCollection = mf.getBugCollection();
             if (bugCollection == null || bugCollection.getCloud() == null)
                 return false;
-			return bugCollection.getCloud().getMode() == Mode.COMMUNAL;
+            return bugCollection.getCloud().getMode() == Mode.COMMUNAL;
 
         }
     },
-	
-    BUG_RANK(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_bugrank", "Bug Rank"))
-    {
-        String [] values;
-		{ values = new String[40];
-          for(int i = 0; i < values.length; i++)
-              values[i] = String.format("%2d", i);
-        }
-		@Override
-        public String getFrom(BugInstance bug)
+
+    BUG_RANK(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_bugrank", "Bug Rank")) {
+        String[] values;
         {
-            if((bug.getBugPattern()) == null)
-				return "??";
+            values = new String[40];
+            for (int i = 0; i < values.length; i++)
+                values[i] = String.format("%2d", i);
+        }
+
+        @Override
+        public String getFrom(BugInstance bug) {
+            if ((bug.getBugPattern()) == null)
+                return "??";
 
             int rank = BugRanker.findRank(bug);
             return values[rank];
-		}
+        }
 
         @Override
-        public String formatValue(String value)
-        {
-			return value;
+        public String formatValue(String value) {
+            return value;
         }
     },
 
-	BUG_STATUS(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_bugstatus", "Status"))
-    {
+    BUG_STATUS(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_bugstatus", "Status")) {
         @Override
-        public String getFrom(BugInstance bug)
-		{
+        public String getFrom(BugInstance bug) {
 
             BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
 
-			Cloud cloud =  bugCollection.getCloud();
+            Cloud cloud = bugCollection.getCloud();
             assert cloud != null;
             BugFilingStatus status = cloud.getBugLinkStatus(bug);
             if (status == BugFilingStatus.VIEW_BUG) {
-				String bugStatus = cloud.getBugStatus(bug);
+                String bugStatus = cloud.getBugStatus(bug);
                 if (bugStatus != null)
                     return bugStatus;
             }
-			
+
             return CONSENSUS.getFrom(bug);
         }
 
         @Override
-        public String formatValue(String value)
-        {
-			return value;
+        public String formatValue(String value) {
+            return value;
         }
+
         @Override
         public boolean isAvailable(MainFrame mf) {
-			BugCollection bugCollection = mf.getBugCollection();
+            BugCollection bugCollection = mf.getBugCollection();
             if (bugCollection == null || bugCollection.getCloud() == null)
                 return false;
-            boolean a = bugCollection.getCloud().supportsBugLinks()
-				&&  bugCollection.getCloud().getMode() == Mode.COMMUNAL;
+            boolean a = bugCollection.getCloud().supportsBugLinks() && bugCollection.getCloud().getMode() == Mode.COMMUNAL;
             return a;
 
         }
-	},
-
-
+    },
 
     PROJECT(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_project", "Project")) {
 
@@ -477,121 +451,107 @@ public enum Sortables implements Comparator<String>
             ProjectPackagePrefixes p = MainFrame.getInstance().getProjectPackagePrefixes();
             Collection<String> projects = p.getProjects(bug.getPrimaryClass().getClassName());
             if (projects.size() == 0)
-	        	return "unclassified";
+                return "unclassified";
             String result = projects.toString();
 
-            return result.substring(1, result.length() -1);
+            return result.substring(1, result.length() - 1);
         }
 
         @Override
         public boolean isAvailable(MainFrame mf) {
-			return mf.getProjectPackagePrefixes().size() > 0;
+            return mf.getProjectPackagePrefixes().size() > 0;
         }
 
     },
-	
-    DIVIDER(" ")
-    {
+
+    DIVIDER(" ") {
         @Override
-		public String getFrom(BugInstance bug)
-        {
+        public String getFrom(BugInstance bug) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public String[] getAll()
-        {
-			throw new UnsupportedOperationException();
+        public String[] getAll() {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public String formatValue(String value)
-        {
-			throw new UnsupportedOperationException();
+        public String formatValue(String value) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public int compare(String one, String two)
-        {
-			throw new UnsupportedOperationException();
+        public int compare(String one, String two) {
+            throw new UnsupportedOperationException();
         }
     };
 
     String prettyName;
 
-    Sortables(String prettyName)
-    {
+    Sortables(String prettyName) {
         this.prettyName = prettyName;
-		this.bugLeafNodeComparator = new Comparator<BugLeafNode>() {
+        this.bugLeafNodeComparator = new Comparator<BugLeafNode>() {
             public int compare(BugLeafNode one, BugLeafNode two) {
-                return Sortables.this.compare(
-                        Sortables.this.getFrom(one.getBug()),
-				        Sortables.this.getFrom(two.getBug()));
+                return Sortables.this.compare(Sortables.this.getFrom(one.getBug()), Sortables.this.getFrom(two.getBug()));
             }
         };
     }
 
     @Override
-    public String toString()
-    {
-		return prettyName;
+    public String toString() {
+        return prettyName;
     }
 
     public abstract String getFrom(BugInstance bug);
-    public String[] getAll()
-    {
-		return getAll(BugSet.getMainBugSet());
-    }
-    public String[] getAll(BugSet set)
-    {
-		return set.getAll(this);
+
+    public String[] getAll() {
+        return getAll(BugSet.getMainBugSet());
     }
 
-    public String formatValue(String value)
-    {
+    public String[] getAll(BugSet set) {
+        return set.getAll(this);
+    }
+
+    public String formatValue(String value) {
         return value;
-	}
-
-    public int compare(String one, String two)
-    {
-        // Lexicographical by default
-		return one.compareTo(two);
     }
 
-    public String[] getAllSorted()
-    {
-        return getAllSorted(BugSet.getMainBugSet());
-	}
+    public int compare(String one, String two) {
+        // Lexicographical by default
+        return one.compareTo(two);
+    }
 
-    public String[] getAllSorted(BugSet set)
-    {
+    public String[] getAllSorted() {
+        return getAllSorted(BugSet.getMainBugSet());
+    }
+
+    public String[] getAllSorted(BugSet set) {
         String[] values = getAll(set);
-		Arrays.sort(values, this);
+        Arrays.sort(values, this);
         return values;
     }
 
     private SortableStringComparator comparator = new SortableStringComparator(this);
 
     public SortableStringComparator getComparator() {
-		return comparator;
+        return comparator;
     }
+
     final Comparator<BugLeafNode> bugLeafNodeComparator;
-    public Comparator<BugLeafNode> getBugLeafNodeComparator()
-	{
+
+    public Comparator<BugLeafNode> getBugLeafNodeComparator() {
         return bugLeafNodeComparator;
     }
 
-	public boolean isAvailable(MainFrame frame) {
+    public boolean isAvailable(MainFrame frame) {
         return true;
     }
 
-    public static Sortables getSortableByPrettyName(String name)
-    {
-        for (Sortables s: values())
-		{
+    public static Sortables getSortableByPrettyName(String name) {
+        for (Sortables s : values()) {
             if (s.prettyName.equals(name))
                 return s;
         }
-			return null;
+        return null;
     }
 }

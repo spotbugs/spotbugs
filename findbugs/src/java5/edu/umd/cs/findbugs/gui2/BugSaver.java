@@ -32,36 +32,34 @@ import edu.umd.cs.findbugs.Project;
 
 /**
  * Save bugs here, uses SortedBugCollection.writeXML()
+ * 
  * @author Dan
- *
+ * 
  */
 public class BugSaver {
 
     private static String lastPlaceSaved;
-    public static void saveBugs(@WillClose OutputStream out, BugCollection data, Project p)
-    {
 
+    public static void saveBugs(@WillClose OutputStream out, BugCollection data, Project p) {
 
         try {
             data.writeXML(out);
         } catch (IOException e) {
-			Debug.println(e);
+            Debug.println(e);
         }
     }
 
-    public static void saveBugs(File out, BugCollection data, Project p)
-    {
+    public static void saveBugs(File out, BugCollection data, Project p) {
         try {
-			saveBugs(new FileOutputStream(out),data,p);
-            lastPlaceSaved=out.getAbsolutePath();
+            saveBugs(new FileOutputStream(out), data, p);
+            lastPlaceSaved = out.getAbsolutePath();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "An error has occured in saving your file");
-		}
+        }
     }
 
-    public static String getLastPlaceSaved()
-    {
+    public static String getLastPlaceSaved() {
         return lastPlaceSaved;
-	}
+    }
 
 }

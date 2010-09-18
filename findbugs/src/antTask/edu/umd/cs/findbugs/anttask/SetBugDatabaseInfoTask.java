@@ -24,22 +24,29 @@ import java.io.File;
 import org.apache.tools.ant.BuildException;
 
 /**
- * Ant task to invoke the SetBugDatabaseInfo program in the
- * workflow package
- *
+ * Ant task to invoke the SetBugDatabaseInfo program in the workflow package
+ * 
  * @author David Hovemeyer
  * @author Ben Langmead
  */
 public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
 
     private String outputFile;
+
     private String name;
+
     private String timestamp;
+
     private String source;
+
     private String findSource;
+
     private String suppress;
+
     private String withMessages;
+
     private String resetSource;
+
     private String inputFile;
 
     public SetBugDatabaseInfoTask() {
@@ -59,7 +66,7 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
         this.outputFile = output;
     }
 
-	public void setInput(String input) {
+    public void setInput(String input) {
         this.inputFile = input;
     }
 
@@ -87,13 +94,15 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
         if (attrVal == null) {
             return;
         }
-    	attrVal = attrVal.toLowerCase();
+        attrVal = attrVal.toLowerCase();
         if (!attrVal.equals("true") && !attrVal.equals("false")) {
             throw new BuildException("attribute " + attrName + " requires boolean value", getLocation());
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#checkParameters()
      */
     @Override
@@ -101,22 +110,22 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
         super.checkParameters();
 
         if (outputFile == null) {
-    		throw new BuildException("output attribute is required", getLocation());
+            throw new BuildException("output attribute is required", getLocation());
         }
 
         if (inputFile == null) {
-    		throw new BuildException("inputFile element is required");
+            throw new BuildException("inputFile element is required");
         }
 
         checkBoolean(withMessages, "withMessages");
-    	checkBoolean(resetSource, "resetSource");
+        checkBoolean(resetSource, "resetSource");
     }
 
     private void addOption(String name, String value) {
         if (value != null) {
             addArg(name);
             addArg(value);
-    	}
+        }
     }
 
     public void addBoolOption(String option, String value) {
@@ -125,42 +134,54 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#configureFindbugsEngine()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#configureFindbugsEngine
+     * ()
      */
-	@Override
+    @Override
     protected void configureFindbugsEngine() {
         addOption("-name", name);
         addOption("-timestamp", timestamp);
         addOption("-source", source);
         addOption("-findSource", findSource);
         addOption("-suppress", suppress);
-		addBoolOption("-withMessages", withMessages);
-        if(resetSource != null && resetSource.equals("true")) {
+        addBoolOption("-withMessages", withMessages);
+        if (resetSource != null && resetSource.equals("true")) {
             addArg("-resetSource");
         }
         addArg(inputFile);
-        if(outputFile != null) {
-	        addArg(outputFile);
+        if (outputFile != null) {
+            addArg(outputFile);
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess
+     * ()
      */
-	@Override
+    @Override
     protected void beforeExecuteJavaProcess() {
         log("running setBugDatabaseInfo...");
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess(int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess
+     * (int)
      */
-	@Override
+    @Override
     protected void afterExecuteJavaProcess(int rc) {
         if (rc != 0) {
             throw new BuildException("execution of " + getTaskName() + " failed");
-		}
+        }
     }
 
 }

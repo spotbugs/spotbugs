@@ -22,125 +22,150 @@ package edu.umd.cs.findbugs.anttask;
 import org.apache.tools.ant.BuildException;
 
 /**
- * Ant task to generate HTML or plain text from a
- * saved XML analysis results file.
- *
+ * Ant task to generate HTML or plain text from a saved XML analysis results
+ * file.
+ * 
  * @author David Hovemeyer
  */
 public class ConvertXmlToTextTask extends AbstractFindBugsTask {
 
     private boolean longBugCodes;
+
     private boolean applySuppression;
+
     private String input;
-	private String output;
+
+    private String output;
+
     private String format = "html";
 
     public ConvertXmlToTextTask() {
-		super("edu.umd.cs.findbugs.PrintingBugReporter");
+        super("edu.umd.cs.findbugs.PrintingBugReporter");
 
         setFailOnError(true);
     }
-	
+
     /**
-     * @param longBugCodes The longBugCodes to set.
+     * @param longBugCodes
+     *            The longBugCodes to set.
      */
     public void setLongBugCodes(boolean longBugCodes) {
         this.longBugCodes = longBugCodes;
     }
+
     /**
-     * @param applySuppression The applySuppression to set.
+     * @param applySuppression
+     *            The applySuppression to set.
      */
     public void setApplySuppression(boolean applySuppression) {
         this.applySuppression = applySuppression;
     }
+
     /**
-     * @param input The input to set.
+     * @param input
+     *            The input to set.
      */
     public void setInput(String input) {
         this.input = input;
     }
 
     /**
-     * @param output The output to set.
+     * @param output
+     *            The output to set.
      */
     public void setOutput(String output) {
         this.output = output;
     }
 
     /**
-     * @param input The input to set.
+     * @param input
+     *            The input to set.
      */
     public void setInputFile(String input) {
         this.input = input;
     }
 
     /**
-     * @param output The output to set.
+     * @param output
+     *            The output to set.
      */
     public void setOutputFile(String output) {
         this.output = output;
     }
 
     /**
-     * @param format The format to set.
+     * @param format
+     *            The format to set.
      */
     public void setFormat(String format) {
         this.format = format;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#checkParameters()
-	 */
+     */
     @Override
     protected void checkParameters() {
         if (input == null) {
-			throw new BuildException("input attribute is required", getLocation());
+            throw new BuildException("input attribute is required", getLocation());
         }
         if (output == null) {
             throw new BuildException("output attribute is required", getLocation());
-		}
+        }
         if (!format.equals("text") && !(format.equals("html") || format.startsWith("html:"))) {
-            throw new BuildException(
-                    "invalid value " + format + " for format attribute",
-					getLocation());
+            throw new BuildException("invalid value " + format + " for format attribute", getLocation());
         }
 
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#configureFindbugsEngine()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#configureFindbugsEngine
+     * ()
      */
-	@Override
+    @Override
     protected void configureFindbugsEngine() {
         if (format.startsWith("html")) {
             addArg("-" + format);
-		}
+        }
         if (longBugCodes) {
             addArg("-longBugCodes");
         }
-		if (applySuppression) {
+        if (applySuppression) {
             addArg("-applySuppression");
         }
         addArg(input);
-		addArg(output);
+        addArg(output);
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess
+     * ()
      */
-	@Override
+    @Override
     protected void beforeExecuteJavaProcess() {
         log("Converting " + input + " to " + output + " using format " + format);
     }
-	
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess(int)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess
+     * (int)
      */
-	@Override
+    @Override
     protected void afterExecuteJavaProcess(int rc) {
         if (rc == 0) {
             log("Success");
-		}
+        }
     }
 
 }

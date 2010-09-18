@@ -26,6 +26,6 @@ import javax.swing.filechooser.FileFilter;
  */
 abstract class FindBugsFileFilter extends FileFilter {
 
-     abstract SaveType getSaveType();
+    abstract SaveType getSaveType();
 
 }

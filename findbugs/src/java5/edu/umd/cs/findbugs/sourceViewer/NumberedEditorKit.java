@@ -24,11 +24,13 @@ import javax.swing.text.ViewFactory;
 
 class NumberedEditorKit extends StyledEditorKit {
     final HighlightInformation highlight;
-    public  NumberedEditorKit(HighlightInformation highlight) {
+
+    public NumberedEditorKit(HighlightInformation highlight) {
         this.highlight = highlight;
-	}
+    }
+
     @Override
     public ViewFactory getViewFactory() {
         return new NumberedViewFactory(highlight);
-	}
+    }
 }

@@ -22,16 +22,22 @@ package edu.umd.cs.findbugs.gui2;
 import javax.swing.tree.TreePath;
 
 /**
- * Implemented by BugTreeModel.  Allows the model to clear its
- * cache when the set of filters changes.
+ * Implemented by BugTreeModel. Allows the model to clear its cache when the set
+ * of filters changes.
  */
-public interface FilterListener
-{
-    enum Action {FILTERING, UNFILTERING, @Deprecated SUPPRESSING, @Deprecated UNSUPPRESSING};
-
+public interface FilterListener {
+    enum Action {
+        FILTERING, UNFILTERING, @Deprecated
+        SUPPRESSING, @Deprecated
+        UNSUPPRESSING
+    };
 
     public void clearCache();
-    @Deprecated public void suppressBug(TreePath path);
-    @Deprecated public void unsuppressBug(TreePath path);
+
+    @Deprecated
+    public void suppressBug(TreePath path);
+
+    @Deprecated
+    public void unsuppressBug(TreePath path);
 
 }

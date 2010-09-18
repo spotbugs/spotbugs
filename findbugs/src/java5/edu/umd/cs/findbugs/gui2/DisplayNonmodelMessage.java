@@ -40,64 +40,66 @@ import javax.swing.SwingUtilities;
  */
 public class DisplayNonmodelMessage {
 
-
     public static void main(String args[]) {
-		displayNonmodelMessage("Hello", "The quick brown fox jumped over the lazy dog", null, false);
+        displayNonmodelMessage("Hello", "The quick brown fox jumped over the lazy dog", null, false);
     }
-    static  JFrame messageFrame;
+
+    static JFrame messageFrame;
+
     static JTextArea messageTextArea;
-    static Font sourceFont = new Font("Monospaced", Font.PLAIN, (int)Driver.getFontSize());
+
+    static Font sourceFont = new Font("Monospaced", Font.PLAIN, (int) Driver.getFontSize());
+
     public static void displayNonmodelMessage(String title, String message, @CheckForNull Component centerOver, boolean onTop) {
         boolean positionWindow = false;
         if (messageFrame == null) {
             positionWindow = true;
-	    	messageFrame = new JFrame(title);
+            messageFrame = new JFrame(title);
 
             messageTextArea = new JTextArea(40, 80);
             messageTextArea.setEditable(false);
             messageTextArea.setLineWrap(true);
-	    	messageTextArea.setWrapStyleWord(true);
+            messageTextArea.setWrapStyleWord(true);
             messageTextArea.setFont(sourceFont);
             try {
                 messageFrame.setIconImage(ImageIO.read(MainFrame.class.getResource("smallBuggy.png")));
             } catch (IOException e1) {
-               assert true; // ignore
+                assert true; // ignore
             }
             Container contentPane = messageFrame.getContentPane();
             contentPane.setLayout(new BorderLayout());
             JScrollPane scrollPane = new JScrollPane(messageTextArea);
 
             contentPane.add(scrollPane, BorderLayout.CENTER);
-            messageFrame.addWindowListener(new WindowAdapter(){
-                 @Override
+            messageFrame.addWindowListener(new WindowAdapter() {
+                @Override
                 public void windowClosed(WindowEvent e) {
-                     JFrame tmp = messageFrame;
-                     messageFrame = null;
-                     tmp.setVisible(false);
-	    			 tmp.dispose();
-                 }});
+                    JFrame tmp = messageFrame;
+                    messageFrame = null;
+                    tmp.setVisible(false);
+                    tmp.dispose();
+                }
+            });
         }
         messageTextArea.setText(message);
-	    messageFrame.setTitle(title);
+        messageFrame.setTitle(title);
         messageFrame.pack();
         if (positionWindow)
             messageFrame.setLocationRelativeTo(centerOver);
 
-
-
         messageFrame.setVisible(true);
-	    messageFrame.toFront();
+        messageFrame.toFront();
         if (onTop) {
             messageFrame.setAlwaysOnTop(true);
             new Thread(clearAlwaysOnTopLater).start();
-	    }
-     }
+        }
+    }
 
     static void sleep(int seconds) {
         try {
             TimeUnit.SECONDS.sleep(seconds);
         } catch (InterruptedException e) {
-           assert true;
+            assert true;
         }
     }
 
@@ -105,26 +107,29 @@ public class DisplayNonmodelMessage {
         public void run() {
             sleep(5);
             SwingUtilities.invokeLater(moveToFront);
-    	}
+        }
     };
+
     static Runnable clearAlwaysOnTopLater = new Runnable() {
         public void run() {
             sleep(5);
             SwingUtilities.invokeLater(clearAlwaysOnTop);
-    	}
+        }
     };
+
     static Runnable moveToFront = new Runnable() {
         public void run() {
             JFrame frame = messageFrame;
             if (frame != null)
-				frame.toFront();
+                frame.toFront();
         }
     };
+
     static Runnable clearAlwaysOnTop = new Runnable() {
         public void run() {
             JFrame frame = messageFrame;
             if (frame != null)
-				frame.setAlwaysOnTop(false);
+                frame.setAlwaysOnTop(false);
         }
     };
 }

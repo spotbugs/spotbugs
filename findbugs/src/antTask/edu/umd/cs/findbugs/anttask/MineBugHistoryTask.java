@@ -24,18 +24,21 @@ import java.io.File;
 import org.apache.tools.ant.BuildException;
 
 /**
- * Ant task to invoke the MineBugHistory program in the
- * workflow package
- *
+ * Ant task to invoke the MineBugHistory program in the workflow package
+ * 
  * @author David Hovemeyer
  * @author Ben Langmead
  */
 public class MineBugHistoryTask extends AbstractFindBugsTask {
 
     private File outputFile;
+
     private String formatDates;
+
     private String noTabs;
+
     private String summary;
+
     private DataFile inputFile;
 
     public MineBugHistoryTask() {
@@ -45,21 +48,21 @@ public class MineBugHistoryTask extends AbstractFindBugsTask {
 
     public DataFile createDataFile() {
         if (inputFile != null) {
-			throw new BuildException("only one dataFile element is allowed", getLocation());
+            throw new BuildException("only one dataFile element is allowed", getLocation());
         }
         inputFile = new DataFile();
         return inputFile;
-	}
+    }
 
     public void setOutput(File output) {
         this.outputFile = output;
     }
 
-	public void setInput(String input) {
+    public void setInput(String input) {
         this.inputFile = new DataFile();
         this.inputFile.name = input;
     }
-            
+
     public void setFormatDates(String arg) {
         this.formatDates = arg;
     }
@@ -76,13 +79,15 @@ public class MineBugHistoryTask extends AbstractFindBugsTask {
         if (attrVal == null) {
             return;
         }
-    	attrVal = attrVal.toLowerCase();
+        attrVal = attrVal.toLowerCase();
         if (!attrVal.equals("true") && !attrVal.equals("false")) {
             throw new BuildException("attribute " + attrName + " requires boolean value", getLocation());
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#checkParameters()
      */
     @Override
@@ -90,11 +95,11 @@ public class MineBugHistoryTask extends AbstractFindBugsTask {
         super.checkParameters();
 
         if (inputFile == null) {
-    		throw new BuildException("inputFile element is required");
+            throw new BuildException("inputFile element is required");
         }
 
         checkBoolean(formatDates, "formatDates");
-    	checkBoolean(noTabs, "noTabs");
+        checkBoolean(noTabs, "noTabs");
         checkBoolean(summary, "summary");
     }
 
@@ -104,37 +109,49 @@ public class MineBugHistoryTask extends AbstractFindBugsTask {
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#configureFindbugsEngine()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#configureFindbugsEngine
+     * ()
      */
-	@Override
+    @Override
     protected void configureFindbugsEngine() {
         addBoolOption("-formatDates", formatDates);
         addBoolOption("-noTabs", noTabs);
         addBoolOption("-summary", summary);
         addArg(inputFile.getName());
-        if(outputFile != null) {
+        if (outputFile != null) {
             // Don't use .getName() because it discards path
-	        addArg(outputFile.getAbsolutePath());
+            addArg(outputFile.getAbsolutePath());
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess
+     * ()
      */
-	@Override
+    @Override
     protected void beforeExecuteJavaProcess() {
         log("running mineBugHistory...");
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess(int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess
+     * (int)
      */
-	@Override
+    @Override
     protected void afterExecuteJavaProcess(int rc) {
         if (rc != 0) {
             throw new BuildException("execution of " + getTaskName() + " failed");
-		}
+        }
     }
 
 }
