@@ -72,30 +72,21 @@ public class FixIndentation {
 			return s;
 		if (s.trim().length() == 0) return "";
 		int spaces = 0;
-		boolean seenTabs = false;
-		boolean badSpaces = false;
 		int pos = 0;
 		int indentation = 0;
-		while (pos < s.length()) {
+		for (;pos < s.length(); pos++) {
 			char c = s.charAt(pos);
 			if (c == ' ') {
 				indentation++;
 				spaces++;
 			} else if (c == '\t') {
 				indentation += 4;
-				seenTabs = true;
-				if (spaces > 0)
-					badSpaces = true;
 			} else
 				break;
-			pos++;
 		}
-		if (badSpaces || spaces > 1) {
-			int tabs = (indentation) / 4;
-			String result = TABS.substring(0, tabs) + SPACES.substring(0, indentation - tabs*4) + s.substring(pos);
-			return result;
-		}
-		return s;
+			
+		return SPACES.substring(0, indentation) + s.substring(pos).trim();
+		
 
 	}
 
