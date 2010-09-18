@@ -32,17 +32,17 @@ public class Version {
 	/**
 	 * Major version number.
 	 */
-	public static final int MAJOR = 1;
+	public static final int MAJOR = 2;
 
 	/**
 	 * Minor version number.
 	 */
-	public static final int MINOR = 3;
+	public static final int MINOR = 0;
 
 	/**
 	 * Patch level.
 	 */
-	public static final int PATCHLEVEL = 10;
+	public static final int PATCHLEVEL = 0;
 
 	/**
 	 * Development version or release candidate?
