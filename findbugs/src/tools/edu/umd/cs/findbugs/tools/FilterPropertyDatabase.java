@@ -15,17 +15,17 @@ import edu.umd.cs.findbugs.util.Util;
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -37,46 +37,46 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class FilterPropertyDatabase {
 
-	final static int FLAGS = Constants.ACC_PROTECTED | Constants.ACC_PUBLIC;
+    final static int FLAGS = Constants.ACC_PROTECTED | Constants.ACC_PUBLIC;
 
-	/**
-	 * @param args
-	 * @throws IOException
+    /**
+     * @param args
+     * @throws IOException
 	 */
-	public static void main(String[] args) throws IOException {
-		InputStream inSource = System.in;
-		if (args.length > 0)
+    public static void main(String[] args) throws IOException {
+        InputStream inSource = System.in;
+        if (args.length > 0)
 			inSource = new FileInputStream(args[0]);
-		process(inSource);
+        process(inSource);
 
-	}
+    }
 
-	/**
-	 * @param inSource
-	 * @throws UnsupportedEncodingException
+    /**
+     * @param inSource
+     * @throws UnsupportedEncodingException
 	 * @throws IOException
-	 */
-	private static void process(InputStream inSource) throws UnsupportedEncodingException, IOException {
-		BufferedReader in = null;
+     */
+    private static void process(InputStream inSource) throws UnsupportedEncodingException, IOException {
+        BufferedReader in = null;
 		try {
-			in = new BufferedReader(Util.getReader(inSource));
+            in = new BufferedReader(Util.getReader(inSource));
 
-			Pattern p = Pattern.compile(",([0-9]+)\\|");
-			while (true) {
-				String s = in.readLine();
+            Pattern p = Pattern.compile(",([0-9]+)\\|");
+            while (true) {
+                String s = in.readLine();
 				if (s == null)
-					break;
-				Matcher m = p.matcher(s);
-				if (m.find()) {
+                    break;
+                Matcher m = p.matcher(s);
+                if (m.find()) {
 					int value = Integer.parseInt(m.group(1));
-					if ((value & FLAGS) != 0)
-						System.out.println(s);
-				}
+                    if ((value & FLAGS) != 0)
+                        System.out.println(s);
+                }
 
-			}
-		} finally {
-			Util.closeSilently(in);
+            }
+        } finally {
+            Util.closeSilently(in);
 		}
-	}
+    }
 
 }

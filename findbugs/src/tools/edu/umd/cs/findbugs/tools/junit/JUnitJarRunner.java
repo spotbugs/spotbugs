@@ -1,17 +1,17 @@
 /*
  * Run JUnit tests contained in a Jar file
  * Copyright (C) 2004, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -43,104 +43,104 @@ import junit.framework.TestSuite;
  * @author David Hovemeyer
  */
 public class JUnitJarRunner {
-	private String jarFileName;
-	private String classpath;
+    private String jarFileName;
+    private String classpath;
 
-	/**
-	 * Constructor.
-	 * @param jarFileName name of jar file to load tests from
+    /**
+     * Constructor.
+     * @param jarFileName name of jar file to load tests from
 	 */
-	public JUnitJarRunner(String jarFileName) {
-		this.jarFileName = jarFileName;
-	}
+    public JUnitJarRunner(String jarFileName) {
+        this.jarFileName = jarFileName;
+    }
 
-	/**
-	 * Set the classpath containing the code to be tested
-	 * (if it is not already on the system classpath).
+    /**
+     * Set the classpath containing the code to be tested
+     * (if it is not already on the system classpath).
 	 * @param classpath the classpath
-	 */
-	public void setClassPath(String classpath) {
-		this.classpath = classpath;
+     */
+    public void setClassPath(String classpath) {
+        this.classpath = classpath;
 	}
 
-	/**
-	 * Build a TestSuite of all the tests contained in the
-	 * jar file.
+    /**
+     * Build a TestSuite of all the tests contained in the
+     * jar file.
 	 * @return TestSuite for running all of the tests in the jar file
-	 */
-	public TestSuite buildTestSuite() throws Exception {
-		TestSuite suite = new TestSuite();
+     */
+    public TestSuite buildTestSuite() throws Exception {
+        TestSuite suite = new TestSuite();
 
-		final ArrayList<URL> urlList = new ArrayList<URL>();
-		urlList.add(new URL("file:" + jarFileName));
-		if (classpath != null) {
+        final ArrayList<URL> urlList = new ArrayList<URL>();
+        urlList.add(new URL("file:" + jarFileName));
+        if (classpath != null) {
 			StringTokenizer tok = new StringTokenizer(classpath, File.pathSeparator);
-			while (tok.hasMoreTokens()) {
-				urlList.add(new URL("file:" + tok.nextToken()));
-			}
+            while (tok.hasMoreTokens()) {
+                urlList.add(new URL("file:" + tok.nextToken()));
+            }
 		}
 
-		ClassLoader cl = 
-			AccessController.doPrivileged(new PrivilegedExceptionAction<URLClassLoader>() {
+        ClassLoader cl =
+            AccessController.doPrivileged(new PrivilegedExceptionAction<URLClassLoader>() {
 
-				public URLClassLoader run() throws Exception {
-					return new URLClassLoader(urlList.toArray(new URL[urlList.size()]));
+                public URLClassLoader run() throws Exception {
+                    return new URLClassLoader(urlList.toArray(new URL[urlList.size()]));
 
-				}});
+                }});
 
-		Class<junit.framework.TestCase> testCaseClass = (Class<TestCase>) cl.loadClass("junit.framework.TestCase");
+        Class<junit.framework.TestCase> testCaseClass = (Class<TestCase>) cl.loadClass("junit.framework.TestCase");
 
-		JarFile jarFile = new JarFile(jarFileName);
-		Enumeration<JarEntry> e = jarFile.entries();
-		while (e.hasMoreElements()) {
+        JarFile jarFile = new JarFile(jarFileName);
+        Enumeration<JarEntry> e = jarFile.entries();
+        while (e.hasMoreElements()) {
 			JarEntry entry =  e.nextElement();
-			String entryName = entry.getName();
-			if (entryName.endsWith(".class")) {
-				String className =
+            String entryName = entry.getName();
+            if (entryName.endsWith(".class")) {
+                String className =
 					entryName.substring(0, entryName.length() - ".class".length()).replace('/', '.');
-				if (!className.endsWith("Test"))
-					continue;
-				System.out.println("Loading test class: " + className);
+                if (!className.endsWith("Test"))
+                    continue;
+                System.out.println("Loading test class: " + className);
 				System.out.flush();
-				Class<junit.framework.TestCase> jarClass = (Class<TestCase>) cl.loadClass(className);
-				if (testCaseClass.isAssignableFrom(jarClass))
-					suite.addTestSuite(jarClass);
+                Class<junit.framework.TestCase> jarClass = (Class<TestCase>) cl.loadClass(className);
+                if (testCaseClass.isAssignableFrom(jarClass))
+                    suite.addTestSuite(jarClass);
 			}
-		}
-		jarFile.close();
+        }
+        jarFile.close();
 
-		return suite;
-	}
+        return suite;
+    }
 
-	public void run(TestSuite suite, String how) {
-		if (how.equals("-textui")) {
-			junit.textui.TestRunner.run(suite);
+    public void run(TestSuite suite, String how) {
+        if (how.equals("-textui")) {
+            junit.textui.TestRunner.run(suite);
 		} else if (how.equals("-swingui")) {
-			//junit.swingui.TestRunner.run(suite);
-			throw new UnsupportedOperationException("I don't know how to run the Swing UI on a test suite yet");
-		} else
+            //junit.swingui.TestRunner.run(suite);
+            throw new UnsupportedOperationException("I don't know how to run the Swing UI on a test suite yet");
+        } else
 			throw new IllegalArgumentException("Unknown option: " + how);
-	}
+    }
 
-	public static void main(String[] argv) throws Exception {
-		if (argv.length < 1) {
-			System.err.println("Usage: " + JUnitJarRunner.class.getName() +
+    public static void main(String[] argv) throws Exception {
+        if (argv.length < 1) {
+            System.err.println("Usage: " + JUnitJarRunner.class.getName() +
 				" [-textui|-swingui]" +
-				" <test suite jar file> [<classpath with code to test>]");
-			System.exit(1);
-		}
+                " <test suite jar file> [<classpath with code to test>]");
+            System.exit(1);
+        }
 		String how = "-textui";
-		int arg = 0;
-		if (argv[arg].startsWith("-")) {
-			how = argv[arg++];
+        int arg = 0;
+        if (argv[arg].startsWith("-")) {
+            how = argv[arg++];
 		}
-		String jarFileName = argv[arg++];
-		JUnitJarRunner runner = new JUnitJarRunner(jarFileName);
-		if (arg < argv.length)
+        String jarFileName = argv[arg++];
+        JUnitJarRunner runner = new JUnitJarRunner(jarFileName);
+        if (arg < argv.length)
 			runner.setClassPath(argv[arg++]);
-		TestSuite suite = runner.buildTestSuite();
-		runner.run(suite, how);
-	}
+        TestSuite suite = runner.buildTestSuite();
+        runner.run(suite, how);
+    }
 }
 
 // vim:ts=4
