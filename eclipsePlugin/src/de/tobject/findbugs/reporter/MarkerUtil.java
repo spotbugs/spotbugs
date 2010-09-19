@@ -73,9 +73,11 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
+import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
@@ -83,7 +85,7 @@ import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 /**
  * Utility methods for converting FindBugs BugInstance objects into Eclipse
  * markers.
- * 
+ *
  * @author Peter Friese
  * @author David Hovemeyer
  */
@@ -104,7 +106,7 @@ public final class MarkerUtil {
 
     /**
      * Create an Eclipse marker for given BugInstance.
-     * 
+     *
      * @param javaProject
      *            the project
      * @param monitor
@@ -133,7 +135,7 @@ public final class MarkerUtil {
     /**
      * As a side-effect this method updates missing line information for some
      * bugs stored in the given bug collection
-     * 
+     *
      * @param project
      * @param theCollection
      * @return never null
@@ -239,7 +241,7 @@ public final class MarkerUtil {
 
     /**
      * Get the underlying resource (Java class) for given BugInstance.
-     * 
+     *
      * @param bug
      *            the BugInstance
      * @param project
@@ -501,7 +503,7 @@ public final class MarkerUtil {
     /**
      * Remove all FindBugs problem markers for given resource. If the given
      * resource is project, will also clear bug collection.
-     * 
+     *
      * @param res
      *            the resource
      */
@@ -520,7 +522,7 @@ public final class MarkerUtil {
      * Given current active bug category set, minimum warning priority, and
      * previous user classification, return whether or not a warning (bug
      * instance) should be displayed using a marker.
-     * 
+     *
      * @param bugInstance
      *            the warning
      * @param filterSettings
@@ -533,7 +535,7 @@ public final class MarkerUtil {
 
     /**
      * Attempt to redisplay FindBugs problem markers for given project.
-     * 
+     *
      * @param javaProject
      *            the project
      */
@@ -599,6 +601,20 @@ public final class MarkerUtil {
         return null;
     }
 
+    public static @CheckForNull
+    Plugin findDetectorPluginFor(IMarker marker) {
+        try {
+            Object pluginId = marker.getAttribute(FindBugsMarker.DETECTOR_PLUGIN_ID);
+            if (pluginId instanceof String) {
+                return DetectorFactoryCollection.instance().getPluginById((String) pluginId);
+            }
+        } catch (CoreException e) {
+            FindbugsPlugin.getDefault().logException(e, "Marker does not contain valid plugin id");
+            return null;
+        }
+        return null;
+    }
+
     public static Set<IMarker> findMarkerForJavaElement(IJavaElement elt, IMarker[] possibleCandidates, boolean recursive) {
         String id = elt.getHandleIdentifier();
         Set<IMarker> markers = new HashSet<IMarker>();
@@ -631,7 +647,7 @@ public final class MarkerUtil {
     }
 
     /**
-     * 
+     *
      * @param parentId
      *            java element id of a parent element
      * @param childId
@@ -667,7 +683,7 @@ public final class MarkerUtil {
 
     /**
      * Find the BugInstance associated with given FindBugs marker.
-     * 
+     *
      * @param marker
      *            a FindBugs marker
      * @return the BugInstance associated with the marker, or null if we can't
@@ -684,7 +700,7 @@ public final class MarkerUtil {
 
     /**
      * Find the BugCollectionAndInstance associated with given FindBugs marker.
-     * 
+     *
      * @param marker
      *            a FindBugs marker
      * @return the BugInstance associated with the marker, or null if we can't
@@ -751,7 +767,7 @@ public final class MarkerUtil {
 
     /**
      * Fish an IMarker out of given selection.
-     * 
+     *
      * @param selection
      *            the selection
      * @return the selected IMarker, or null if we can't find an IMarker in the
@@ -810,7 +826,7 @@ public final class MarkerUtil {
      * markers for given editor, and text selection doesn't match any of them,
      * return null. If there is only one marker for given editor, returns this
      * marker in any case.
-     * 
+     *
      * @param selection
      * @param editor
      * @return may return null
@@ -899,7 +915,7 @@ public final class MarkerUtil {
 
     /**
      * Retrieves all the FB markers from given resource and all its descendants
-     * 
+     *
      * @param fileOrFolder
      * @return never null (empty array if nothing there or exception happens).
      *         Exception will be logged
@@ -910,7 +926,7 @@ public final class MarkerUtil {
 
     /**
      * Retrieves all the FB markers from given resource and all its descendants
-     * 
+     *
      * @param fileOrFolder
      * @return never null (empty array if nothing there or exception happens).
      *         Exception will be logged

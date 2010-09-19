@@ -184,6 +184,16 @@ public class MarkerReporter implements IWorkspaceRunnable {
             attributes.put(FindBugsMarker.UNIQUE_ID, uniqueId);
         }
 
+        // Set unique id of the plugin, so we can easily refer back
+        // to it later: for example, when the user group markers by plugin.
+        String pluginId = mp.bug.getDetectorFactory().getPlugin().getPluginId();
+        if (pluginId != null) {
+            attributes.put(FindBugsMarker.DETECTOR_PLUGIN_ID, pluginId);
+        } else {
+            // XXX to avoid errors. Don't know what to do if the plugin is missing
+            attributes.put(FindBugsMarker.DETECTOR_PLUGIN_ID, "edu.umd.cs.findbugs.plugins.core");
+        }
+
         IJavaElement javaElt = mp.resource.getCorespondingJavaElement();
         if (javaElt != null) {
             attributes.put(FindBugsMarker.UNIQUE_JAVA_ID, javaElt.getHandleIdentifier());
@@ -201,7 +211,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 
     /**
      * Set all the attributes to marker in one 'workspace transaction'
-     * 
+     *
      * @param marker
      *            non null
      * @throws CoreException

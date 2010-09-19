@@ -38,11 +38,12 @@ import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.Priorities;
 
 /**
  * Type of the bug groups, shown inside the bug explorer
- * 
+ *
  * @author Andrei
  */
 public enum GroupType {
@@ -50,6 +51,18 @@ public enum GroupType {
     Workspace(false, MarkerMapper.NO_MAPPING),
 
     WorkingSet(false, MarkerMapper.NO_MAPPING),
+
+    DetectorPlugin(true, new MarkerMapper<Plugin>() {
+        @Override
+        Plugin getIdentifier(IMarker marker) {
+            return MarkerUtil.findDetectorPluginFor(marker);
+        }
+
+        @Override
+        String getShortDescription(Object id) {
+            return ((Plugin) id).getProvider();
+        }
+    }),
 
     Project(true, new MarkerMapper<IProject>() {
         @Override

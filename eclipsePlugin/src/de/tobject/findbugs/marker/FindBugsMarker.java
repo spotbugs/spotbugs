@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.Priorities;
 
 /**
  * Marker ids for the findbugs.
- * 
+ *
  * @author Peter Friese
  * @version 1.0
  * @since 13.08.2003
@@ -67,6 +67,11 @@ public interface FindBugsMarker {
      * {@link IJavaElement#getHandleIdentifier()}
      */
     public static final String UNIQUE_JAVA_ID = "UNIQUE_JAVA_ID";
+
+    /**
+     * Marker attribute recording the FindBugs detector plugin id
+     */
+    public static final String DETECTOR_PLUGIN_ID = "DETECTOR_PLUGIN_ID";
 
     /**
      * Marker attribute recording the primary (first) line of the BugInstance in
