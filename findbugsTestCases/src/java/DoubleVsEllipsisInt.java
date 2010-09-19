@@ -14,7 +14,7 @@ public class DoubleVsEllipsisInt {
         DoubleVsEllipsisInt obj = new DoubleVsEllipsisInt();
         Integer i = 1;
         obj.method(i);
-        obj.method((int) i);
+        obj.method(i);
         obj.method(1);
         obj.method(i, 0);
     }

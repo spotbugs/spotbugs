@@ -31,6 +31,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tobject.findbugs.test.AbstractFindBugsTest;
+import de.tobject.findbugs.test.AbstractPluginTest;
 import de.tobject.findbugs.test.TestScenario;
 
 /**
@@ -60,7 +61,7 @@ public class FindBugsPerspectiveTest extends AbstractFindBugsTest {
         page.resetPerspective();
 
         // Assert the FindBugs explorer view is visible
-        IViewPart bugExplorerView = page.findView(AbstractFindBugsTest.BUG_EXPLORER_VIEW_ID);
+        IViewPart bugExplorerView = page.findView(AbstractPluginTest.BUG_EXPLORER_VIEW_ID);
         assertNotNull(bugExplorerView);
         assertTrue(page.isPartVisible(bugExplorerView));
     }

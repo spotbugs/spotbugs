@@ -2,10 +2,10 @@ public class CreateStaticObject {
     public void test() {
         Utils u = new Utils();
 
-        int count = u.getMaxTimes();
+        int count = Utils.getMaxTimes();
 
         while (count-- > 0) {
-            System.out.println(u.getGreeting());
+            System.out.println(Utils.getGreeting());
         }
     }
 }

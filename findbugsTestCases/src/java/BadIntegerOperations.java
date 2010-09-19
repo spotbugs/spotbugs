@@ -39,9 +39,9 @@ class BadIntegerOperations {
     @ExpectWarning("BIT")
     int getBytesAsIntUsingOr(byte b[]) {
         int stamp = b[0];
-        stamp |= (int) b[1] << 8;
-        stamp |= (int) b[2] << 16;
-        stamp |= (int) b[3] << 24;
+        stamp |= b[1] << 8;
+        stamp |= b[2] << 16;
+        stamp |= b[3] << 24;
         return stamp;
 
     }
@@ -49,9 +49,9 @@ class BadIntegerOperations {
     @ExpectWarning("BIT")
     int getBytesAsIntUsingPlus(byte b[]) {
         int stamp = b[0];
-        stamp += (int) b[1] << 8;
-        stamp += (int) b[2] << 16;
-        stamp += (int) b[3] << 24;
+        stamp += b[1] << 8;
+        stamp += b[2] << 16;
+        stamp += b[3] << 24;
         return stamp;
 
     }

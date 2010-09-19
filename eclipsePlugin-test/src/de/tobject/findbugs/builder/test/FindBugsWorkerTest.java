@@ -19,8 +19,6 @@
 package de.tobject.findbugs.builder.test;
 
 import static junit.framework.Assert.*;
-import static org.eclipse.jdt.testplugin.JavaProjectHelper.*;
-
 import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
@@ -31,7 +29,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.tobject.findbugs.FindbugsTestPlugin;
 import de.tobject.findbugs.builder.FindBugsWorker;
 import de.tobject.findbugs.test.AbstractFindBugsTest;
 import de.tobject.findbugs.test.TestScenario;

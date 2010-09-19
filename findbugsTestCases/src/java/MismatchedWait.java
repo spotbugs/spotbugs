@@ -74,6 +74,7 @@ public class MismatchedWait {
 
     public void doNotReportInnerClass() {
         new Runnable() {
+            @Override
             public void run() {
                 synchronized (lock) {
                     try {

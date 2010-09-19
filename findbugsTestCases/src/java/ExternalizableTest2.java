@@ -10,9 +10,11 @@ public class ExternalizableTest2 implements Externalizable {
     ExternalizableTest2() {
     }
 
+    @Override
     public void readExternal(ObjectInput in) {
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) {
     }
 

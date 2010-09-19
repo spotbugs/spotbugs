@@ -13,10 +13,12 @@ public class ExternalizableTest implements Externalizable {
         x = i;
     }
 
+    @Override
     public void readExternal(ObjectInput in) {
         x = 17;
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) {
     }
 

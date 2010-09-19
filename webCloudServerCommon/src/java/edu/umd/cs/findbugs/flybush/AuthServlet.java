@@ -23,6 +23,7 @@ public class AuthServlet extends AbstractFlybushServlet {
         RelyingParty.getInstance().addListener(new AxSchemaExtension().addExchange("email"));
     }
 
+    @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         String uri = req.getRequestURI();

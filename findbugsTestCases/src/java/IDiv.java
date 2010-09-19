@@ -3,7 +3,7 @@ public class IDiv {
         int a = Integer.parseInt(argv[0]);
         int b = Integer.parseInt(argv[1]);
 
-        double value = (double) (a / b);
+        double value = (a / b);
         System.out.println(value);
     }
 }

@@ -34,7 +34,7 @@ class BadCast {
     @ExpectWarning("BC")
     public Vector swap(List b) {
         Vector v = (Vector) a;
-        a = (Vector) b;
+        a = b;
         return v;
     }
 

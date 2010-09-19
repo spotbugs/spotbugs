@@ -335,6 +335,7 @@ public class AppEngineCloudClient extends AbstractCloud {
         return firstSeen;
     }
 
+    @Override
     protected Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd) {
         Issue issue = networkClient.getIssueByHash(bd.getInstanceHash());
         if (issue == null)

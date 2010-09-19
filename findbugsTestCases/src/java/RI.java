@@ -2,6 +2,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 class SuperRI implements ActionListener, Cloneable {
+    @Override
     public void actionPerformed(ActionEvent ae) {
     }
 }

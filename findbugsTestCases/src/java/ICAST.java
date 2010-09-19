@@ -18,9 +18,9 @@ public class ICAST {
         x = q + s + x;
         x = x >> 38;
 
-        double y = (double) x;
+        double y = x;
         y = Math.ceil(y);
-        double z = Math.ceil((double) x);
+        double z = Math.ceil(x);
         System.out.println(x + q + s + x + y + z);
     }
 
@@ -31,7 +31,7 @@ public class ICAST {
 
     @ExpectWarning("ICAST")
     public double doubleDivision(int a, int b) {
-        return (double) (a / b);
+        return (a / b);
     }
 
     @ExpectWarning("ICAST")

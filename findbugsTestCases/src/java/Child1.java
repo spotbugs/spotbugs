@@ -13,6 +13,7 @@ public class Child1 extends Parent implements BC_Unconfirmed_Cast.CastToMe {
 
     }
 
+    @Override
     public void Blargh() {
         // TODO Auto-generated method stub
 

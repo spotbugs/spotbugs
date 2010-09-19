@@ -9,6 +9,8 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
+
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
@@ -208,7 +210,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         // execution
         MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
         AppEngineCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
-        Mockito.doThrow(new IOException()).when(spyNetworkClient).signIn(Mockito.anyBoolean());
+        Mockito.doThrow(new IOException()).when(spyNetworkClient).signIn(Matchers.anyBoolean());
         cloud.initialize();
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.bugsPopulated();

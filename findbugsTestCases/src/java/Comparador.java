@@ -10,6 +10,7 @@ public class Comparador implements Comparator {
 
     }
 
+    @Override
     public int compare(Object arg0, Object arg1) {
         return arg0.hashCode() - arg1.hashCode();
     }

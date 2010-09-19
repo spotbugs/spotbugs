@@ -26,6 +26,7 @@ public class UMAC {
     Iterator<Integer> emptyIterator() {
         return new Iterator<Integer>() {
 
+            @Override
             public boolean hasNext() {
                 return false;
             }
@@ -34,10 +35,12 @@ public class UMAC {
                 return false;
             }
 
+            @Override
             public Integer next() {
                 throw new NoSuchElementException();
             }
 
+            @Override
             public void remove() {
                 throw new UnsupportedOperationException();
 
@@ -77,6 +80,7 @@ public class UMAC {
             if (primahome != null) {
                 final URL[] url = new URL[] { new URL("http://localhost/foo") };
                 AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                    @Override
                     public ClassLoader run() {
                         s_classLoader = new URLClassLoader(url);
 

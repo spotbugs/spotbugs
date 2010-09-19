@@ -26,14 +26,17 @@ class DumbMethodInvocations implements Iterator {
         return null;
     }
 
+    @Override
     public boolean hasNext() {
         return next() != null;
     }
 
+    @Override
     public Object next() {
         return null;
     }
 
+    @Override
     public void remove() {
     }
 

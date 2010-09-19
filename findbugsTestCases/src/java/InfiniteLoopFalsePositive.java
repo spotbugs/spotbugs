@@ -32,12 +32,12 @@ public class InfiniteLoopFalsePositive {
     }
 
     int z(Object o) {
-        o = (Object) o;
+        o = o;
         return ((int[]) o).length;
     }
 
     public int x() {
-        int y = ((HashSet) (Set) new HashSet()).size();
+        int y = ((HashSet) new HashSet()).size();
         return ((InnerClass) this).x();
     }
 

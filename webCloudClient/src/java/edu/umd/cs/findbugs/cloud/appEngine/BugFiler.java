@@ -1,7 +1,5 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import com.google.gdata.client.authn.oauth.OAuthException;
-import com.google.gdata.util.ServiceException;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 

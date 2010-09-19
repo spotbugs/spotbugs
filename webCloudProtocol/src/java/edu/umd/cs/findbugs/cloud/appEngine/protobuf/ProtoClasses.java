@@ -33,6 +33,7 @@ public final class ProtoClasses {
             return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogIn_descriptor;
         }
 
+        @Override
         protected com.google.protobuf.GeneratedMessage.FieldAccessorTable internalGetFieldAccessorTable() {
             return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogIn_fieldAccessorTable;
         }

@@ -25,6 +25,8 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 import junit.framework.Assert;
+
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -70,7 +72,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
                 r.run();
                 return null;
             }
-        }).when(mockGuiCallback).invokeInGUIThread(Mockito.isA(Runnable.class));
+        }).when(mockGuiCallback).invokeInGUIThread(Matchers.isA(Runnable.class));
 
         initStatusBarHistory();
     }
@@ -141,7 +143,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
                     latch.countDown();
                 return null;
             }
-        }).when(mockGuiCallback).showMessageDialog(Mockito.anyString());
+        }).when(mockGuiCallback).showMessageDialog(Matchers.anyString());
         return latch;
     }
 
@@ -186,7 +188,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
                 return mockSessionId;
             }
         });
-        when(mockNameLookup.signIn(Mockito.<CloudPlugin> any(), Mockito.<BugCollection> any())).thenAnswer(new Answer<Boolean>() {
+        when(mockNameLookup.signIn(Matchers.<CloudPlugin> any(), Matchers.<BugCollection> any())).thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocationOnMock) throws Throwable {
                 mockSessionId = 555L;
                 return true;

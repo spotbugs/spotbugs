@@ -76,6 +76,7 @@ public abstract class AbstractFlybushServletTest extends TestCase {
         mockResponse = Mockito.mock(HttpServletResponse.class);
         outputCollector = new ByteArrayOutputStream();
         ServletOutputStream servletOutputStream = new ServletOutputStream() {
+            @Override
             public void write(int b) throws IOException {
                 outputCollector.write(b);
             }
@@ -140,6 +141,7 @@ public abstract class AbstractFlybushServletTest extends TestCase {
         if (input != null) {
             final ByteArrayInputStream inputStream = new ByteArrayInputStream(input);
             Mockito.when(mockRequest.getInputStream()).thenReturn(new ServletInputStream() {
+                @Override
                 public int read() throws IOException {
                     return inputStream.read();
                 }

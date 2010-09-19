@@ -1,6 +1,7 @@
 public class BadCompareTo implements Comparable<BadCompareTo> {
     int x;
 
+    @Override
     public int compareTo(BadCompareTo b) {
         return x - b.x;
     }

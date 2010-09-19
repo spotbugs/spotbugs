@@ -25,6 +25,8 @@ import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
 import edu.umd.cs.findbugs.cloud.CloudPluginBuilder;
 import junit.framework.TestCase;
+
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -122,8 +124,8 @@ public class BugFilingTest extends TestCase {
     public void testGoogleCodeFileSuccess() throws Exception {
         // setup
         when(
-                projectHostingService.insert(Mockito.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
-                        Mockito.<IEntry> any())).thenAnswer(createIssueEntryAnswer());
+                projectHostingService.insert(Matchers.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
+                        Matchers.<IEntry> any())).thenAnswer(createIssueEntryAnswer());
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
@@ -138,8 +140,8 @@ public class BugFilingTest extends TestCase {
     public void testGoogleCodeFileSuccessWithFullUrlForProjectName() throws Exception {
         // setup
         when(
-                projectHostingService.insert(Mockito.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
-                        Mockito.<IEntry> any())).thenAnswer(createIssueEntryAnswer());
+                projectHostingService.insert(Matchers.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
+                        Matchers.<IEntry> any())).thenAnswer(createIssueEntryAnswer());
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
@@ -154,8 +156,8 @@ public class BugFilingTest extends TestCase {
     public void testGoogleCodeFileSuccessWithLongUrlForProjectName() throws Exception {
         // setup
         when(
-                projectHostingService.insert(Mockito.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
-                        Mockito.<IEntry> any())).thenAnswer(createIssueEntryAnswer());
+                projectHostingService.insert(Matchers.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
+                        Matchers.<IEntry> any())).thenAnswer(createIssueEntryAnswer());
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
@@ -170,7 +172,7 @@ public class BugFilingTest extends TestCase {
     @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public void testGoogleCodeFileServiceAuthenticationExceptionOnFirstTry() throws Exception {
         // setup
-        when(projectHostingService.insert(Mockito.<URL> any(), Mockito.<IEntry> any())).thenThrow(
+        when(projectHostingService.insert(Matchers.<URL> any(), Matchers.<IEntry> any())).thenThrow(
                 new AuthenticationException("Not logged in")).thenAnswer(createIssueEntryAnswer());
 
         // execute
@@ -187,7 +189,7 @@ public class BugFilingTest extends TestCase {
     @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public void testGoogleCodeFileServiceDoubleException() throws Exception {
         // setup
-        when(projectHostingService.insert(Mockito.<URL> any(), Mockito.<IEntry> any())).thenThrow(
+        when(projectHostingService.insert(Matchers.<URL> any(), Matchers.<IEntry> any())).thenThrow(
                 new ServiceException("Invalid request URI"));
 
         // execute
@@ -208,14 +210,14 @@ public class BugFilingTest extends TestCase {
         // setup
         filer.setProjectHostingService(null);
         final AtomicReference<OAuthParameters> oauthParams = new AtomicReference<OAuthParameters>();
-        when(mockOAuthHelper.createUserAuthorizationUrl(Mockito.<OAuthParameters> any())).thenAnswer(new Answer<String>() {
+        when(mockOAuthHelper.createUserAuthorizationUrl(Matchers.<OAuthParameters> any())).thenAnswer(new Answer<String>() {
             public String answer(InvocationOnMock invocationOnMock) throws Throwable {
                 oauthParams.set((OAuthParameters) invocationOnMock.getArguments()[0]);
                 return "http://auth.url";
             }
         });
         when(mockGuiCallback.showDocument(new URL("http://auth.url"))).thenReturn(true);
-        when(mockOAuthHelper.getAccessToken(Mockito.<OAuthParameters> any())).thenAnswer(new Answer<String>() {
+        when(mockOAuthHelper.getAccessToken(Matchers.<OAuthParameters> any())).thenAnswer(new Answer<String>() {
             public String answer(InvocationOnMock invocationOnMock) throws Throwable {
                 oauthParams.get().setOAuthTokenSecret("SECRET");
                 return "TOKEN";
@@ -224,8 +226,8 @@ public class BugFilingTest extends TestCase {
 
         // after authenticating..
         when(
-                projectHostingService.insert(Mockito.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
-                        Mockito.<IEntry> any())).thenAnswer(createIssueEntryAnswer());
+                projectHostingService.insert(Matchers.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
+                        Matchers.<IEntry> any())).thenAnswer(createIssueEntryAnswer());
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
@@ -250,17 +252,17 @@ public class BugFilingTest extends TestCase {
 
         // after authenticating..
         when(
-                projectHostingService.insert(Mockito.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
-                        Mockito.<IEntry> any())).thenAnswer(createIssueEntryAnswer());
+                projectHostingService.insert(Matchers.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
+                        Matchers.<IEntry> any())).thenAnswer(createIssueEntryAnswer());
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
         URL url = filer.file(bug);
 
         // verify
-        verify(mockOAuthHelper, Mockito.never()).createUserAuthorizationUrl(Mockito.<OAuthParameters> any());
-        verify(mockOAuthHelper, Mockito.never()).getUnauthorizedRequestToken(Mockito.<OAuthParameters> any());
-        verify(mockGuiCallback, Mockito.never()).showMessageDialogAndWait(Mockito.anyString());
+        verify(mockOAuthHelper, Mockito.never()).createUserAuthorizationUrl(Matchers.<OAuthParameters> any());
+        verify(mockOAuthHelper, Mockito.never()).getUnauthorizedRequestToken(Matchers.<OAuthParameters> any());
+        verify(mockGuiCallback, Mockito.never()).showMessageDialogAndWait(Matchers.anyString());
 
         assertEquals("TOKEN", props.getProperty(GoogleCodeBugFiler.KEY_PROJECTHOSTING_OAUTH_TOKEN));
         assertEquals("SECRET", props.getProperty(GoogleCodeBugFiler.KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET));
@@ -272,7 +274,7 @@ public class BugFilingTest extends TestCase {
     // =============================== end of tests ==========================
 
     private static void createPreferencesToPropertiesBridge(Preferences mockPrefs, final Properties props) {
-        when(mockPrefs.get(Mockito.anyString(), Mockito.anyString())).thenAnswer(new Answer<String>() {
+        when(mockPrefs.get(Matchers.anyString(), Matchers.anyString())).thenAnswer(new Answer<String>() {
             public String answer(InvocationOnMock invocationOnMock) throws Throwable {
                 Object[] args = invocationOnMock.getArguments();
                 return props.getProperty((String) args[0], (String) args[1]);
@@ -284,7 +286,7 @@ public class BugFilingTest extends TestCase {
                 props.setProperty((String) args[0], (String) args[1]);
                 return null;
             }
-        }).when(mockPrefs).put(Mockito.anyString(), Mockito.anyString());
+        }).when(mockPrefs).put(Matchers.anyString(), Matchers.anyString());
     }
 
     private Answer<IEntry> createIssueEntryAnswer() {

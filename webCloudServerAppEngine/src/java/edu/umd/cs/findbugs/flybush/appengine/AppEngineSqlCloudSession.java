@@ -1,6 +1,5 @@
 package edu.umd.cs.findbugs.flybush.appengine;
 
-import com.google.appengine.api.datastore.Key;
 import edu.umd.cs.findbugs.flybush.DbInvocation;
 import edu.umd.cs.findbugs.flybush.SqlCloudSession;
 
@@ -8,7 +7,6 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import java.util.Date;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class AppEngineSqlCloudSession implements SqlCloudSession {

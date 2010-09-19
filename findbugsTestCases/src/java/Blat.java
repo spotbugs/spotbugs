@@ -64,6 +64,7 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
         b.run();
     }
 
+    @Override
     public void run() {
     }
 
@@ -112,14 +113,17 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
             ;
     }
 
+    @Override
     public boolean hasNext() {
         return false;
     }
 
+    @Override
     public Object next() {
         return null;
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }
