@@ -15,6 +15,9 @@ At startup, each of those jar files is checked for a "findbugs.xml"
 file.  That XML file registers instances of Detectors, as well
 as particular "bug patterns" that the detector reports.
 
+Additionally to the findbugs.xml, bugrank.txt and messages.xml files are
+required for each FindBugs detector plugin.
+
 At startup, FindBugs loads all plugin Jar files.  At analysis time,
 all detectors named in the findbugs.xml files from those plugins
 are instantiated and applied to analyzed class files.
@@ -150,7 +153,7 @@ of the findbugs source distribution.
   <BugCategory> elements optionally describe any categories you
   may have created for your bug patterns. You can skip these if
   you are using only the categories defined by the core plugin.
-  
+
     The <Description> child element has a brief (a word or three)
     description of the category. The <Abbreviation> child element
     is typically a single capital latter. The optional <Details>
@@ -171,23 +174,47 @@ of the findbugs source distribution.
   BugPattern elements must have the following child elements:
 
     <ShortDescription> this is used for when "View->Full Descriptions"
-    is turned off in the GUI, and it's also used as the title for 
+    is turned off in the GUI, and it's also used as the title for
     descriptions in the Details window.
-  
+
     <LongDescription> this is used for when "View->Full Descriptions"
     is turned on in the GUI, and for output using the command line UI.
     The placeholders in the long description ({0}, {1}, etc.)
     refer to BugAnnotations attached to the BugInstances reported by
     the detector for this bug pattern. You may also use constructs
     like {1.name} or {1.returnType}.
-  
+
     <Details> this is the descriptive text to be used in the Details
     window.  It consists of HTML markup to appear in the BODY element of an HTML
     document.  It should be specified in a CDATA section so that the HTML
     tags are not misinterpreted as XML.
-  
+
     <BugCode> is the text which describes the common characteristic of all
     of the BugPatterns which share an abbreviation.  In the example above,
     the abbreviation "UL" is for bugs in which a lock is not released.
     The text of a BugCode element is shown for tree nodes in the GUI
     which group bug instances by "bug type".
+
+======================================
+6. Meaning of elements in bugrank.txt
+======================================
+
+For the detailed and up to date information, please read the javadoc of the
+edu.umd.cs.findbugs.BugRanker class.
+
+======================================
+7. Adding detectors to Eclipse plugin
+======================================
+
+Since version 2.0.0 Eclipse plugin allows to configure or contribute custom detectors.
+
+7.1. It is possible to contribute custom detectors via standard Eclipse extensions mechanism.
+Please check the documentation of the "findBugsEclipsePlugin/schema/detectorPlugins.exsd"
+extension point how to update the plugin.xml. Existing FindBugs detector plugins can
+be easily "extended" to be full featured FindBugs & Eclipse detector plugins.
+Usually you only need to add META-INF/MANIFEST.MF and plugin.xml to the jar and
+update your build scripts to not to override the MANIFEST.MF during the build.
+
+7.2 It is possible to configure custom detectors via Eclipse workspace preferences.
+Go to "Window->Preferences->Java->FindBugs->Misc. Settings->Custom Detectors"
+and specify there locations of any additional plugin libraries.

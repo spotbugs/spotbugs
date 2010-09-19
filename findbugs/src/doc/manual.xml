@@ -23,7 +23,7 @@
     <author>
         <firstname>William</firstname>
         <othername>W.</othername>
-		<surname>Pugh</surname>
+        <surname>Pugh</surname>
     </author>
 </authorgroup>
 
@@ -180,11 +180,11 @@ To compile &FindBugs; from source, you will need the following:
     <para>
         The version of &Ant; included as <filename>/usr/bin/ant</filename> on
         Redhat Linux systems will <emphasis>not</emphasis> work for compiling
-		&FindBugs;.  We recommend you install a binary distribution of &Ant;
+        &FindBugs;.  We recommend you install a binary distribution of &Ant;
         downloaded from the <ulink url="http://ant.apache.org/">&Ant; website</ulink>.
         Make sure that when you run &Ant; your <replaceable>JAVA_HOME</replaceable>
         environment variable points to the directory in which you installed
-		JDK 1.5 (or later).
+        JDK 1.5 (or later).
     </para>
 </warning>
 
@@ -318,22 +318,22 @@ where <replaceable>target</replaceable> is one of the following:
     <term><command>runjunit</command></term>
     <listitem>
         <para>
-			This target compiles and runs the internal JUnit tests included
+            This target compiles and runs the internal JUnit tests included
             in &FindBugs;.  It will print an error message if any unit
             tests fail.
         </para>
-	</listitem>
+    </listitem>
   </varlistentry>
 
   <varlistentry>
     <term><command>bindist</command></term>
     <listitem>
         <para>
-			Builds a binary distribution of &FindBugs;.
+            Builds a binary distribution of &FindBugs;.
             The target creates both <filename>.zip</filename> and
             <filename>.tar.gz</filename> archives.
         </para>
-	</listitem>
+    </listitem>
   </varlistentry>
 </variablelist>
 </para>
@@ -384,7 +384,7 @@ how to run each of these user interfaces.
     <warning>
         <para>
             This chapter is in the process of being re-written.
-			The rewrite is not complete yet.
+            The rewrite is not complete yet.
         </para>
     </warning>
 
@@ -398,17 +398,17 @@ how to run each of these user interfaces.
     <title>Quick Start</title>
     <para>
         If you are running &FindBugs; on a  Windows system,
-		double-click on the file <filename>&FBHomeWin;\lib\findbugs.jar</filename> to start the &FindBugs; GUI.
+        double-click on the file <filename>&FBHomeWin;\lib\findbugs.jar</filename> to start the &FindBugs; GUI.
     </para>
 
     <para>
-		On a Unix, Linux, or Mac OS X system, run the <filename>&FBHome;/bin/findbugs</filename>
+        On a Unix, Linux, or Mac OS X system, run the <filename>&FBHome;/bin/findbugs</filename>
         script, or run the command <screen>
 <command>java -jar &FBHome;/lib/findbugs.jar</command></screen>
     to run the &FindBugs; GUI.
     </para>
 
-	<para>
+    <para>
     Refer to <xref linkend="gui"/> for information on how to use the GUI.
     </para>
 </sect1>
@@ -420,22 +420,22 @@ how to run each of these user interfaces.
     <para>
         This section describes how to invoke the &FindBugs; program.
         There are two ways to invoke &FindBugs;: directly, or using a
-		wrapper script.
+        wrapper script.
     </para>
 
 
     <sect2 id="directInvocation">
         <title>Direct invocation of &FindBugs;</title>
 
-		<para>
+        <para>
             The preferred method of running &FindBugs; is to directly execute
             <filename>&FBHome;/lib/findbugs.jar</filename> using the <command>-jar</command>
             command line switch of the JVM (<command>java</command>) executable.
-			(Versions of &FindBugs; prior to 1.3.5 required a wrapper script
+            (Versions of &FindBugs; prior to 1.3.5 required a wrapper script
             to invoke &FindBugs;.)
         </para>
 
-		<para>
+        <para>
             The general syntax of invoking &FindBugs; directly is the following:
 <screen>
     <command>java <replaceable>[JVM arguments]</replaceable> -jar &FBHome;/lib/findbugs.jar <replaceable>options...</replaceable></command>
@@ -445,7 +445,7 @@ how to run each of these user interfaces.
 <!--
         <para>
             By default, executing <filename>findbugs.jar</filename> runs the
-			&FindBugs; graphical user interface (GUI).  On windows systems,
+            &FindBugs; graphical user interface (GUI).  On windows systems,
             you can double-click on <filename>findbugs.jar</filename> to launch
             the GUI.  From a command line, the command
             <screen>
@@ -457,19 +457,19 @@ java -jar <replaceable>&FBHome;</replaceable>/lib/findbugs.jar</screen>
         <sect3 id="chooseUI">
             <title>Choosing the User Interface</title>
 
-		<para>
+        <para>
             The first command line option chooses the &FindBugs; user interface to execute.
             Possible values are:
         </para>
-		<itemizedlist>
+        <itemizedlist>
             <listitem>
                 <para>
                 <command>-gui</command>: runs the graphical user interface (GUI)
-				</para>
+                </para>
             </listitem>
 
             <listitem>
-				<para>
+                <para>
                     <command>-textui</command>: runs the command line user interface
                 </para>
             </listitem>
@@ -477,74 +477,74 @@ java -jar <replaceable>&FBHome;</replaceable>/lib/findbugs.jar</screen>
             <listitem>
                 <para>
                     <command>-version</command>: displays the &FindBugs; version number
-				</para>
+                </para>
             </listitem>
 
             <listitem>
                 <para>
                     <command>-help</command>: displays help information for the
-					&FindBugs; command line user interface
+                    &FindBugs; command line user interface
                 </para>
             </listitem>
 
             <listitem>
                 <para>
                     <command>-gui1</command>: executes the original (obsolete)
-					&FindBugs; graphical user interface
+                    &FindBugs; graphical user interface
                 </para>
             </listitem>
         </itemizedlist>
-		
+
         </sect3>
 
         <sect3 id="jvmArgs">
-			<title>Java Virtual Machine (JVM) arguments</title>
+            <title>Java Virtual Machine (JVM) arguments</title>
 
             <para>
                 Several Java Virtual Machine arguments are useful when invoking
-				&FindBugs;.
+                &FindBugs;.
             </para>
 
             <variablelist>
-				<varlistentry>
+                <varlistentry>
                     <term><command>-Xmx<replaceable>NN</replaceable>m</command></term>
                     <listitem>
                         <para>
-							Set the maximum Java heap size to <replaceable>NN</replaceable>
+                            Set the maximum Java heap size to <replaceable>NN</replaceable>
                             megabytes.  &FindBugs; generally requires a large amount of
                             memory.  For a very large project, using 1500 megabytes
                             is not unusual.
-						</para>
+                        </para>
                     </listitem>
                 </varlistentry>
 
                 <varlistentry>
                     <term><command>-D<replaceable>name</replaceable>=<replaceable>value</replaceable></command></term>
                     <listitem>
-						<para>
+                        <para>
                             Set a Java system property.  For example, you might use the
                             argument <command>-Duser.language=ja</command> to display
                             GUI messages in Japanese.
-						</para>
+                        </para>
                     </listitem>
                 </varlistentry>
 
                 <!--
                 <varlistentry>
                     <term></term>
-					<listitem>
+                    <listitem>
                         <para>
                         </para>
                     </listitem>
-				</varlistentry>
+                </varlistentry>
                 -->
             </variablelist>
         </sect3>
-		
+
     </sect2>
 
     <sect2 id="wrapperScript">
-		<title>Invocation of &FindBugs; using a wrapper script</title>
+        <title>Invocation of &FindBugs; using a wrapper script</title>
 
         <para>
             Another way to run &FindBugs; is to use a wrapper script.
@@ -573,11 +573,11 @@ FindBugs using the <command>findbugs</command> command.
     <sect3 id="wrapperOptions">
         <title>Wrapper script command line options</title>
         <para>The &FindBugs; wrapper scripts support the following command-line options.
-		Note that these command line options are <emphasis>not</emphasis> handled by
+        Note that these command line options are <emphasis>not</emphasis> handled by
         the &FindBugs; program per se; rather, they are handled by the wrapper
         script.
         </para>
-	<variablelist>
+    <variablelist>
   <varlistentry>
     <term><command>-jvmArgs <replaceable>args</replaceable></command></term>
     <listitem>
@@ -716,7 +716,7 @@ These options may be used with both the GUI and command-line interfaces.
       <term><command></command></term>
       <listitem>
           <para>
-			  
+
           </para>
       </listitem>
   </varlistentry>
@@ -836,7 +836,7 @@ These options are only accepted by the Text User Interface.
     <term><command>-relaxed</command></term>
     <listitem>
         <para>
-			Relaxed reporting mode.  For many detectors, this option
+            Relaxed reporting mode.  For many detectors, this option
             suppresses the heuristics used to avoid reporting false positives.
         </para>
     </listitem>
@@ -867,11 +867,11 @@ These options are only accepted by the Text User Interface.
     <command>-html:plain.xsl</command>, <command>-html:fancy.xsl</command> and <command>-html:fancy-hist.xsl</command>.
     The <filename>plain.xsl</filename> stylesheet does not use Javascript or DOM,
     and may work better with older web browsers, or for printing.  The <filename>fancy.xsl</filename>
-	stylesheet uses DOM and Javascript for navigation and CSS for
+    stylesheet uses DOM and Javascript for navigation and CSS for
     visual presentation. The <command>fancy-hist.xsl</command> an evolution of <command>fancy.xsl</command> stylesheet.
     It makes an extensive use of DOM and Javascript for dynamically filtering the lists of bugs.
     </para>
-		
+
     <para>
       If you want to specify your own
     XSLT stylesheet to perform the transformation to HTML, specify the option as
@@ -1306,7 +1306,7 @@ using the &FindBugs; task.
        If set to "xml:withMessages", output is in XML format augmented with
        human-readable messages.  (You should use this format if you plan
         to generate a report using an XSL stylesheet.)
-	   If set to "html", output is in HTML formatted (default stylesheet is default.xsl).
+       If set to "html", output is in HTML formatted (default stylesheet is default.xsl).
         If set to "text", output is in ad-hoc text format.
        If set to "emacs", output is in <ulink url="http://www.gnu.org/software/emacs/">Emacs</ulink> error message format.
        If set to "xdocs", output is xdoc XML for use with Apache Maven.
@@ -1363,11 +1363,11 @@ using the &FindBugs; task.
       <term><literal>effort</literal></term>
       <listitem>
           <para>
-			  Set the analysis effort level.  The value specified should be
+              Set the analysis effort level.  The value specified should be
               one of <literal>min</literal>, <literal>default</literal>,
               or <literal>max</literal>.  See <xref linkend="commandLineOptions"/>
               for more information about setting the analysis level.
-		  </para>
+          </para>
       </listitem>
   </varlistentry>
 
@@ -1504,11 +1504,11 @@ using the &FindBugs; task.
       <term><literal>warningsProperty</literal></term>
       <listitem>
           <para>
-			  Optional attribute which specifies the name of a property
+              Optional attribute which specifies the name of a property
               that will be set to "true" if any warnings are reported by
               &FindBugs; on the analyzed program.
           </para>
-	  </listitem>
+      </listitem>
   </varlistentry>
 
 </variablelist>
@@ -1663,14 +1663,84 @@ Options you may choose include:
 </sect1>
 
 <sect1>
+<title>Extending the Eclipse Plugin (since 2.0.0)</title>
+<para>
+Eclipse plugin supports contribution of custom &FindBugs; detectors (see also
+<ulink url="http://code.google.com/p/findbugs/source/browse/trunk/findbugs/src/doc/AddingDetectors.txt">AddingDetectors.txt</ulink>
+for more information). There are two ways to contribute custom plugins to the Eclipse:
+</para>
+<itemizedlist>
+  <listitem>
+    <para>
+    Existing standard &FindBugs; detector packages can be configured via
+    <menuchoice>
+        <guimenu>Window</guimenu>
+        <guimenuitem>Preferences</guimenuitem>
+        <guimenuitem>Java</guimenuitem>
+        <guimenuitem>&FindBugs;</guimenuitem>
+        <guimenuitem>Misc. Settings</guimenuitem>
+        <guimenuitem>Custom Detectors</guimenuitem>
+    </menuchoice>.
+    Simply specify there locations of any additional plugin libraries.
+    </para>
+
+    <para>
+    The benefit of this solution is that already existing detector packages can be
+    used "as is", and that you can quickly verify the quality of third party detectors.
+    The drawback is that you have to apply this settings in each
+    new Eclipse workspace, and this settings can't be shared between team members.
+    </para>
+  </listitem>
+
+  <listitem>
+    <para>
+    It is possible to contribute custom detectors via standard Eclipse extensions mechanism.
+    </para>
+
+    <para>
+    Please check the documentation of the
+    <ulink url="http://code.google.com/p/findbugs/source/browse/trunk/eclipsePlugin/schema/detectorPlugins.exsd">
+    findBugsEclipsePlugin/schema/detectorPlugins.exsd</ulink>
+    extension point how to update the plugin.xml. Existing &FindBugs; detector plugins can
+    be easily "extended" to be full featured &FindBugs; AND Eclipse detector plugins.
+    Usually you only need to add META-INF/MANIFEST.MF and plugin.xml to the jar and
+    update your build scripts to not to override the MANIFEST.MF during the build.
+    </para>
+
+    <para>
+    The benefit of this solution is that for given (shared) Eclipse installation
+    each team member has exactly same detectors set, and there is no need to configure
+    anything anymore. The (really small) precondition
+    is that you have to convert your existing detectors package to the valid
+    Eclipse plugin. You can do this even for third-party detector packages.
+    </para>
+  </listitem>
+
+</itemizedlist>
+
+</sect1>
+
+<sect1>
 <title>Troubleshooting</title>
 
 <para>
-The &FindBugs; Eclipse plugin is still experimental.&nbsp; This section
-lists common problems with the plugin and (if known) how to resolve them.
+This section lists common problems with the plugin and (if known) how to resolve them.
 </para>
 
 <itemizedlist>
+  <listitem>
+    <para>
+    If you see OutOfMemory error dialogs after starting &FindBugs; analysis in Eclipse,
+    please increase JVM available memory: change eclipse.ini and add the lines below
+    to the end of the file:
+    <programlisting>
+    -vmargs
+    -Xmx1000m
+    </programlisting>
+    Important: the configuration arguments starting with the line "-vmargs" must
+    be last lines in the eclipse.ini file, and only one argument per line is allowed!
+    </para>
+  </listitem>
   <listitem>
     <para>
     If you do not see any &FindBugs; problem markers (in your source
@@ -1755,7 +1825,7 @@ In other words, each of the children must be true for the predicate to be true.
             This element specifies a particular bug pattern or patterns to match.
             The <literal>pattern</literal> attribute is a comma-separated list of
             bug pattern types.  You can find the bug pattern types for particular
-			warnings by looking at the output produced by the <command>-xml</command>
+            warnings by looking at the output produced by the <command>-xml</command>
             output option (the <literal>type</literal> attribute of <literal>BugInstance</literal>
             elements), or from the <ulink url="../bugDescriptions.html">bug
             descriptions document</ulink>.
@@ -1763,15 +1833,15 @@ In other words, each of the children must be true for the predicate to be true.
                For more coarse-grained matching, use <literal>code</literal> attribute. It takes
                a comma-separated list of bug abbreviations. For most-coarse grained matching use
                <literal>category</literal> attriute, that takes a comma separated list of bug category names:
-   			<literal>CORRECTNESS</literal>, <literal>MT_CORRECTNESS</literal>, 
+               <literal>CORRECTNESS</literal>, <literal>MT_CORRECTNESS</literal>,
                <literal>BAD_PRACTICICE</literal>, <literal>PERFORMANCE</literal>, <literal>STYLE</literal>.
    </para><para>
                If more than one of the attributes mentioned above are specified on the same
-   			<literal>&lt;Bug&gt;</literal> element, all bug patterns that match either one of specified 
+               <literal>&lt;Bug&gt;</literal> element, all bug patterns that match either one of specified
                pattern names, or abreviations, or categories will be matched.
    </para><para>
                As a backwards compatibility measure, <literal>&lt;BugPattern&gt;</literal> and
-   			<literal>&lt;BugCode&gt;</literal> elements may be used instead of 
+               <literal>&lt;BugCode&gt;</literal> elements may be used instead of
                <literal>&lt;Bug&gt;</literal> element. Each of these uses a
                <literal>name</literal> attribute for specifying accepted values list. Support for these
                elements may be removed in a future release.
@@ -1782,11 +1852,11 @@ In other words, each of the children must be true for the predicate to be true.
     <term><literal>&lt;Priority&gt;</literal></term>
     <listitem>
         <para>
-			This element matches warnings with a particular priority.
+            This element matches warnings with a particular priority.
             The <literal>value</literal> attribute should be an integer value:
             1 to match high-priority warnings, 2 to match medium-priority warnings,
             or 3 to match low-priority warnings.
-		</para>
+        </para>
     </listitem>
  </varlistentry>
 
@@ -1796,11 +1866,11 @@ In other words, each of the children must be true for the predicate to be true.
     <listitem>
         <para>
             This element matches warnings associated with classes within the package specified
-			using <literal>name</literal> attribute. Nested packages are not included (along the 
+            using <literal>name</literal> attribute. Nested packages are not included (along the
             lines of Java import statement). However matching multiple packages can be achieved
             easily using regex name match.
         </para>
-	</listitem>
+    </listitem>
   </varlistentry>
 
  <varlistentry>
@@ -1808,23 +1878,23 @@ In other words, each of the children must be true for the predicate to be true.
     <listitem>
         <para>
             This element matches warnings associated with a particular class. The
-			<literal>name</literal> attribute is used to specify the exact or regex match pattern 
+            <literal>name</literal> attribute is used to specify the exact or regex match pattern
             for the class name.
         </para>
 
-		<para>
+        <para>
             As a backward compatibility measure, instead of element of this type, you can use
              <literal>class</literal> attribute on a <literal>Match</literal> element to specify
              exact an class name or <literal>classregex</literal> attribute to specify a regular
-			 expression to match the class name against.
+             expression to match the class name against.
         </para>
 
         <para>
-			If the <literal>Match</literal> element contains neither a <literal>Class</literal> element, 
+            If the <literal>Match</literal> element contains neither a <literal>Class</literal> element,
             nor a <literal>class</literal> / <literal>classregex</literal> attribute, the predicate will apply
             to all classes. Such predicate is likely to match more bug instances than you want, unless it is
             refined further down with apropriate method or field predicates.
-		</para>
+        </para>
     </listitem>
  </varlistentry>
 
@@ -2088,11 +2158,11 @@ as expected.
     <!-- match System.exit(...) usage warnings in void main(String[]) methods in all classes -->
     <Match>
       <Method returns="void" name="main" params="java.lang.String[]" />
-	  <Method pattern="DM_EXIT" />
+      <Method pattern="DM_EXIT" />
     </Match>
     <!-- match UuF warnings on fields of type com.foobar.DebugInfo on all classes -->
     <Match>
-	  <Field type="com.foobar.DebugInfo" />
+      <Field type="com.foobar.DebugInfo" />
       <Bug code="UuF" />
     </Match>
 ]]>
@@ -2735,7 +2805,7 @@ the examples assume that the <literal>findbugs.lib</literal>
     <sect1 id="commands">
         <title>Commands</title>
 
-		<para>
+        <para>
 All tools for FindBugs data mining are can be invoked from the command line,
 and some of the more useful tools can also be invoked from an
 ant build file.</para>
@@ -2746,68 +2816,68 @@ Briefly, the command-line tools are:</para>
         <variablelist>
             <varlistentry>
                 <term><command><link linkend="unionBugs">unionBugs</link></command></term>
-				<listitem>
+                <listitem>
                     <para>
                          combine the results from separate analysis of disjoint
         classes
-					</para>
+                    </para>
                 </listitem>
             </varlistentry>
             <varlistentry>
-				<term><command><link linkend="computeBugHistory">computeBugHistory</link></command></term>
+                <term><command><link linkend="computeBugHistory">computeBugHistory</link></command></term>
                 <listitem>
                     <para>Merge bug warnings from multiple versions of
             analyzed code into
-			a single multiversion bug database. This can either be used
+            a single multiversion bug database. This can either be used
             to add more versions to an existing multiversion database,
             or to create a multiversion database from a sequence of single version
             bug warning databases.</para>
-				</listitem>
+                </listitem>
             </varlistentry>
             <varlistentry>
                 <term><command><link linkend="setBugDatabaseInfo">setBugDatabaseInfo</link></command></term>
-				<listitem>
+                <listitem>
                     <para>Set information such as the revision name or
 timestamp in an XML bug database</para>
                 </listitem>
             </varlistentry>
             <varlistentry>
-				<term><command><link linkend="listBugDatabaseInfo">listBugDatabaseInfo</link></command></term>
+                <term><command><link linkend="listBugDatabaseInfo">listBugDatabaseInfo</link></command></term>
                 <listitem>
                     <para>List information such as the revision name and
 timestamp for a list of XML bug databases</para>
                 </listitem>
             </varlistentry>
             <varlistentry>
-				<term><command><link linkend="filterBugs">filterBugs</link></command></term>
+                <term><command><link linkend="filterBugs">filterBugs</link></command></term>
                 <listitem>
                     <para>Select a subset of a bug database</para>
                 </listitem>
-			</varlistentry>
+            </varlistentry>
             <varlistentry>
                 <term><command><link linkend="mineBugHistory">mineBugHistory</link></command></term>
                 <listitem>
-					<para>Generate a tabular listing of the number of warnings in each
+                    <para>Generate a tabular listing of the number of warnings in each
         version of a multiversion bug database</para>
                 </listitem>
             </varlistentry>
-			<varlistentry>
+            <varlistentry>
                 <term><command><link linkend="defectDensity">defectDensity</link></command></term>
                 <listitem>
                     <para>List information about defect density
-						 (warnings per 1000 NCSS)
+                         (warnings per 1000 NCSS)
                          for the entire project and each class and package</para>
                 </listitem>
             </varlistentry>
-			<varlistentry>
+            <varlistentry>
                 <term><command><link linkend="convertXmlToText">convertXmlToText</link></command></term>
                 <listitem>
                     <para>Convert bug warnings in XML format to
-					a textual one-line-per-bug format, or to HTML</para>
+                    a textual one-line-per-bug format, or to HTML</para>
                 </listitem>
             </varlistentry>
         </variablelist>
-		
+
 
         <sect2 id="unionBugs">
             <title>unionBugs</title>
@@ -2815,7 +2885,7 @@ timestamp for a list of XML bug databases</para>
         <para>
         If you have, for example, separately analyzing each jar file used in an application,
         you can use this command to combine the separately generated xml bug warning files into
-		a single file containing all of the warnings.</para>
+        a single file containing all of the warnings.</para>
 
             <para>Do <emphasis>not</emphasis> use this command to combine results from analyzing different versions of the same
             file; use <command>computeBugHistory</command> instead.</para>
@@ -2864,11 +2934,11 @@ To specify input files, nest them inside with a
         <table id="computeBugHistoryTable">
             <title>Options for computeBugHistory command</title>
             <tgroup cols="3" align="left">
-  				<thead>
+                  <thead>
                     <row>
                           <entry>Command-line option</entry>
                           <entry>Ant attribute</entry>
-      					<entry>Meaning</entry>
+                          <entry>Meaning</entry>
                     </row>
                       </thead>
                   <tbody>
@@ -2926,11 +2996,11 @@ the ant call with a <literal>&lt;datafile&gt;</literal> element.  For example:
         <table id="filterOptionsTable">
             <title>Options for filterBugs command</title>
             <tgroup cols="3" align="left">
-  				<thead>
+                  <thead>
                     <row>
                           <entry>Command-line option</entry>
                           <entry>Ant attribute</entry>
-      					<entry>Meaning</entry>
+                          <entry>Meaning</entry>
                     </row>
                       </thead>
                   <tbody>
@@ -2962,11 +3032,11 @@ the ant call with a <literal>&lt;datafile&gt;</literal> element.  For example:
                 </tbody>
             </tgroup>
         </table>
-		  		
+
         </sect2>
 
         <sect2 id="mineBugHistory">
-			<title>mineBugHistory</title>
+            <title>mineBugHistory</title>
 <para>This command generates a table containing counts of the numbers of warnings
 in each version of a multiversion bug database.</para>
 
@@ -3001,11 +3071,11 @@ attribute or nest it inside the ant call with a
         <table id="mineBugHistoryOptionsTable">
             <title>Options for mineBugHistory command</title>
             <tgroup cols="3" align="left">
-  				<thead>
+                  <thead>
                     <row>
                           <entry>Command-line option</entry>
                           <entry>Ant attribute</entry>
-      					<entry>Meaning</entry>
+                          <entry>Meaning</entry>
                     </row>
                   </thead>
                   <tbody>
@@ -3021,7 +3091,7 @@ attribute or nest it inside the ant call with a
         <para>
         The <option>-noTabs</option> output can be easier to read from a shell
         with a fixed-width font.
-		Because numeric columns are right-justified, spaces may precede the
+        Because numeric columns are right-justified, spaces may precede the
         first column value. This option also causes <option>-formatDates</option>
         to render dates in terser format without embedded whitespace.
         </para>
@@ -3032,31 +3102,31 @@ attribute or nest it inside the ant call with a
         <table id="mineBugHistoryColumns">
             <title>Columns in mineBugHistory output</title>
             <tgroup cols="2" align="left">
-  				<thead>
+                  <thead>
                     <row>
                           <entry>Title</entry>
                           <entry>Meaning</entry>
-    				</row>
+                    </row>
                       </thead>
                   <tbody>
                       <row><entry>seq</entry><entry>Sequence number (successive integers, starting at 0)</entry></row>
-					  <row><entry>version</entry><entry>Version name</entry></row>
+                      <row><entry>version</entry><entry>Version name</entry></row>
                       <row><entry>time</entry><entry>Release timestamp</entry></row>
                       <row><entry>classes</entry><entry>Number of classes analyzed</entry></row>
                       <row><entry>NCSS</entry><entry>Non Commenting Source Statements</entry></row>
-					  <row><entry>added</entry><entry>Count of new warnings for a class that existed in the previous version</entry></row>
+                      <row><entry>added</entry><entry>Count of new warnings for a class that existed in the previous version</entry></row>
                       <row><entry>newCode</entry><entry>Count of new warnings for a class that did not exist in the previous version</entry></row>
                       <row><entry>fixed</entry><entry>Count of warnings removed from a class that remains in the current version</entry></row>
                       <row><entry>removed</entry><entry>Count of warnings in the previous version for a class that is not present in the current version</entry></row>
-					  <row><entry>retained</entry><entry>Count of warnings that were in both the previous and current version</entry></row>
+                      <row><entry>retained</entry><entry>Count of warnings that were in both the previous and current version</entry></row>
                       <row><entry>dead</entry><entry>Warnings that were present in earlier versions but in neither the current version or the immediately preceeding version</entry></row>
                       <row><entry>active</entry><entry>Total warnings present in the current version</entry></row>
                 </tbody>
-				</tgroup>
+                </tgroup>
         </table>
         </sect2>
 
-		<sect2 id="defectDensity">
+        <sect2 id="defectDensity">
             <title>defectDensity</title>
 <para>
 This command lists information about defect density (warnings per 1000 NCSS) for the entire project and each class and package.
@@ -3068,27 +3138,27 @@ row for the entire project, and one row for each package or class that contains 
         <table id="defectDensityColumns">
             <title>Columns in defectDensity output</title>
             <tgroup cols="2" align="left">
-  				<thead>
+                  <thead>
                     <row>
                           <entry>Title</entry>
                           <entry>Meaning</entry>
-    				</row>
+                    </row>
                       </thead>
                   <tbody>
                       <row><entry>kind</entry><entry>project, package or class</entry></row>
-					  <row><entry>name</entry><entry>The name of the project, package or class</entry></row>
+                      <row><entry>name</entry><entry>The name of the project, package or class</entry></row>
                       <row><entry>density</entry><entry>Number of warnings generated per 1000 lines of NCSS.</entry></row>
                       <row><entry>bugs</entry><entry>Number of warnings</entry></row>
                       <row><entry>NCSS</entry><entry>Calculated number of NCSS</entry></row>
-				</tbody>
+                </tbody>
                 </tgroup>
             </table>
         </sect2>
-		
+
         <sect2 id="convertXmlToText">
             <title>convertXmlToText</title>
 
-			<para>
+            <para>
                 This command converts a warning collection in XML format to a text
                 format with one line per warning, or to HTML.
             </para>
@@ -3110,15 +3180,15 @@ build file:
 
             <table id="convertXmlToTextTable">
             <title>Options for convertXmlToText command</title>
-			<tgroup cols="3" align="left">
+            <tgroup cols="3" align="left">
                   <thead>
                     <row>
                           <entry>Command-line option</entry>
-      					<entry>Ant attribute</entry>
+                          <entry>Ant attribute</entry>
                           <entry>Meaning</entry>
                     </row>
                       </thead>
-  				<tbody>
+                  <tbody>
 <row><entry></entry>                   <entry>input="&lt;filename&gt;"</entry>         <entry>use file as input</entry></row>
 <row><entry></entry>                   <entry>output="&lt;filename&gt;"</entry>        <entry>output results to file</entry></row>
 <row><entry>-longBugCodes</entry>      <entry>longBugCodes="[true|false]"</entry>      <entry>use the full bug pattern code instead of two-letter abbreviation</entry></row>
@@ -3127,23 +3197,23 @@ build file:
                 </tbody>
             </tgroup>
             </table>
-			
+
             <para>
             You may specify plain.xsl, default.xsl, fancy.xsl, fancy-hist.xsl,
             or your own XSL stylesheet for the -html/format option.
-			Despite the name of this option, you may specify
+            Despite the name of this option, you may specify
             a stylesheet that emits something other than html.
             When applying a stylesheet other than those included
             with FindBugs (listed above), the -html/format option should be used
-			with a path or URL to the stylesheet.
+            with a path or URL to the stylesheet.
             </para>
         </sect2>
 
-		<sect2 id="setBugDatabaseInfo">
+        <sect2 id="setBugDatabaseInfo">
             <title>setBugDatabaseInfo</title>
 
             <para>
-				This command sets meta-information in a specified warning collection.
+                This command sets meta-information in a specified warning collection.
                 It takes the following options:
             </para>
 
@@ -3177,31 +3247,31 @@ attribute or nest it inside the ant call with a
         <table id="setBugDatabaseInfoOptions">
             <title>setBugDatabaseInfo Options</title>
             <tgroup cols="3" align="left">
-  				<thead>
+                  <thead>
                     <row>
                           <entry>Command-line option</entry>
                           <entry>Ant attribute</entry>
-      					<entry>Meaning</entry>
+                          <entry>Meaning</entry>
                     </row>
                   </thead>
                   <tbody>
-					  <row><entry></entry>                              <entry>input="&lt;file&gt;"</entry>           <entry>use file as input</entry></row>
+                      <row><entry></entry>                              <entry>input="&lt;file&gt;"</entry>           <entry>use file as input</entry></row>
                       <row><entry></entry>                              <entry>output="&lt;file&gt;"</entry>          <entry>write output to file</entry></row>
                       <row><entry>-name &lt;name&gt;</entry>            <entry>name="&lt;name&gt;"</entry>            <entry>set name for (last) revision</entry></row>
                       <row><entry>-timestamp &lt;when&gt;</entry>       <entry>timestamp="&lt;when&gt;"</entry>       <entry>set timestamp for (last) revision</entry></row>
-					  <row><entry>-source &lt;directory&gt;</entry>     <entry>source="&lt;directory&gt;"</entry>     <entry>add specified directory to the source search path</entry></row>
+                      <row><entry>-source &lt;directory&gt;</entry>     <entry>source="&lt;directory&gt;"</entry>     <entry>add specified directory to the source search path</entry></row>
                       <row><entry>-findSource &lt;directory&gt;</entry> <entry>findSource="&lt;directory&gt;"</entry> <entry>find and add all relevant source directions contained within specified directory</entry></row>
                       <row><entry>-suppress &lt;filter file&gt;</entry> <entry>suppress="&lt;filter file&gt;"</entry> <entry>suppress warnings matched by this file (replaces previous suppressions)</entry></row>
                       <row><entry>-withMessages</entry>                 <entry>withMessages="[true|false]"</entry>    <entry>add textual messages to XML</entry></row>
-					  <row><entry>-resetSource</entry>                  <entry>resetSource="[true|false]"</entry>     <entry>remove all source search paths</entry></row>
+                      <row><entry>-resetSource</entry>                  <entry>resetSource="[true|false]"</entry>     <entry>remove all source search paths</entry></row>
                  </tbody>
                 </tgroup>
             </table>
-		</sect2>
+        </sect2>
 
         <sect2 id="listBugDatabaseInfo">
             <title>listBugDatabaseInfo</title>
-			
+
             <para>This command takes a list of zero or more xml bug database filenames on the command line.
 If zero file names are provided, it reads from standard input and does not generate
 a table header.</para>
@@ -3214,19 +3284,19 @@ a table header.</para>
         <table id="listBugDatabaseInfoColumns">
             <title>listBugDatabaseInfo Columns</title>
             <tgroup cols="2" align="left">
-  				<thead>
+                  <thead>
                     <row>
                           <entry>Column</entry>
                           <entry>Meaning</entry>
-    				</row>
+                    </row>
                   </thead>
                   <tbody>
                       <row><entry>version</entry><entry>version name</entry></row>
-					  <row><entry>time</entry><entry>Release timestamp</entry></row>
+                      <row><entry>time</entry><entry>Release timestamp</entry></row>
                       <row><entry>classes</entry><entry>Number of classes analyzed</entry></row>
                       <row><entry>NCSS</entry><entry>Non Commenting Source Statements analyzed</entry></row>
                       <row><entry>total</entry><entry>Total number of warnings of all kinds</entry></row>
-					  <row><entry>high</entry><entry>Total number of high priority warnings of all kinds</entry></row>
+                      <row><entry>high</entry><entry>Total number of high priority warnings of all kinds</entry></row>
                       <row><entry>medium</entry><entry>Total number of medium/normal priority warnings of all kinds</entry></row>
                       <row><entry>low</entry><entry>Total number of low priority warnings of all kinds</entry></row>
                       <row><entry>filename</entry><entry>filename of database</entry></row>
@@ -3234,20 +3304,20 @@ a table header.</para>
                       <row><entry></entry><entry></entry></row>
                       <row><entry></entry><entry></entry></row>
                       <row><entry></entry><entry></entry></row>
-					  <row><entry></entry><entry></entry></row>
+                      <row><entry></entry><entry></entry></row>
                       <row><entry></entry><entry></entry></row>
                       <row><entry></entry><entry></entry></row>
 -->
                  </tbody>
                 </tgroup>
             </table>
-			
+
         </sect2>
 
     </sect1>
 
     <sect1 id="examples">
-		<title>Examples</title>
+        <title>Examples</title>
 <sect2 id="unixscriptsexamples">
    <title>Mining history using proveded shell scrips</title>
 <para>In all of the following, the commands are given in a directory that contains
@@ -3470,7 +3540,7 @@ Here is a complete ant script example for both running findbugs and running a ch
                             withMessages="true"
                             name="asm-util-3.0.jar"
                             input="out.xml"
-      	                  output="out-rel.xml"/>
+                            output="out-rel.xml"/>
 
       <!-- Checking if history file already exists (out-hist.xml) -->
       <condition property="mining.historyfile.available">
@@ -3507,7 +3577,7 @@ Here is a complete ant script example for both running findbugs and running a ch
                            withMessages="true"
                            output="${hist.file}">
             <dataFile name="${hist.file}"/>
-      	  <dataFile name="${data.file}"/>
+            <dataFile name="${data.file}"/>
       </computeBugHistory>
 
       <!-- Compute history into ${hist.summary.file} -->
