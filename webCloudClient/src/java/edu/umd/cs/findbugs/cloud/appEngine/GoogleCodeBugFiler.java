@@ -36,23 +36,28 @@ public class GoogleCodeBugFiler implements BugFiler {
     private static final Logger LOGGER = Logger.getLogger(GoogleCodeBugFiler.class.getName());
 
     static final String KEY_PROJECTHOSTING_OAUTH_TOKEN = "projecthosting_oauth_token";
+
     static final String KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET = "projecthosting_oauth_token_secret";
 
     private static final String PROJECTION = "/full";
 
     private static final String DEFAULT_STATUS = "New";
+
     private static final String DEFAULT_LABELS = "FindBugsGenerated";
 
-    private static final Pattern PATTERN_GOOGLE_CODE_URL = Pattern.compile(
-            "\\s*(?:http://)?code.google.com/p/([^/\\s]*)(?:/.*)?\\s*");
+    private static final Pattern PATTERN_GOOGLE_CODE_URL = Pattern
+            .compile("\\s*(?:http://)?code.google.com/p/([^/\\s]*)(?:/.*)?\\s*");
+
     private static final Pattern URL_REGEX = Pattern.compile("http://code.google.com/p/(.*?)/issues/detail\\?id=(\\d+)");
 
     private final AppEngineCloudClient appEngineCloudClient;
+
     private BugFilingCommentHelper bugFilingCommentHelper;
 
-	private final String url;
+    private final String url;
 
-    private @CheckForNull ProjectHostingService projectHostingService;
+    private @CheckForNull
+    ProjectHostingService projectHostingService;
 
     public GoogleCodeBugFiler(AppEngineCloudClient appEngineCloudClient, String url) {
         this.appEngineCloudClient = appEngineCloudClient;
@@ -70,8 +75,7 @@ public class GoogleCodeBugFiler implements BugFiler {
         projectHostingService = service;
     }
 
-    public URL file(BugInstance b)
-            throws IOException, SignInCancelledException {
+    public URL file(BugInstance b) throws IOException, SignInCancelledException {
         if (url == null)
             return null;
         Matcher m = PATTERN_GOOGLE_CODE_URL.matcher(url);
@@ -90,8 +94,8 @@ public class GoogleCodeBugFiler implements BugFiler {
         }
     }
 
-    public String getBugStatus(String bugLink)
-            throws MalformedURLException, OAuthException, InterruptedException, AuthenticationException {
+    public String getBugStatus(String bugLink) throws MalformedURLException, OAuthException, InterruptedException,
+            AuthenticationException {
 
         Matcher m = URL_REGEX.matcher(bugLink);
         if (!m.matches()) {
@@ -102,9 +106,8 @@ public class GoogleCodeBugFiler implements BugFiler {
 
         return initProjectHostingServiceAndExecute(new Callable<String>() {
             public String call() throws Exception {
-                IssuesEntry issue = projectHostingService.getEntry(
-                        new URL("http://code.google.com/feeds/issues/p/" + project + "/issues/full/" + issueID),
-                        IssuesEntry.class);
+                IssuesEntry issue = projectHostingService.getEntry(new URL("http://code.google.com/feeds/issues/p/" + project
+                        + "/issues/full/" + issueID), IssuesEntry.class);
                 Status status = issue.getStatus();
                 if (status == null)
                     return null;
@@ -113,10 +116,11 @@ public class GoogleCodeBugFiler implements BugFiler {
         });
     }
 
-    // ============================= end of public methods =====================================
+    // ============================= end of public methods
+    // =====================================
 
-    private IssuesEntry fileWithProject(final BugInstance instance, String project)
-            throws IOException, ServiceException, OAuthException, InterruptedException {
+    private IssuesEntry fileWithProject(final BugInstance instance, String project) throws IOException, ServiceException,
+            OAuthException, InterruptedException {
         final URL issuesFeedUrl = getIssuesFeedUrl(project);
 
         if (projectHostingService == null)
@@ -136,8 +140,8 @@ public class GoogleCodeBugFiler implements BugFiler {
         return ioe;
     }
 
-    private <E> E initProjectHostingServiceAndExecute(Callable<E> callable)
-            throws OAuthException, MalformedURLException, InterruptedException, AuthenticationException {
+    private <E> E initProjectHostingServiceAndExecute(Callable<E> callable) throws OAuthException, MalformedURLException,
+            InterruptedException, AuthenticationException {
         if (projectHostingService == null)
             initProjectHostingService(false);
         try {
@@ -154,8 +158,8 @@ public class GoogleCodeBugFiler implements BugFiler {
     }
 
     /** package-private for testing */
-    <E> E tryAgain(Callable<E> callable, Exception e)
-            throws OAuthException, MalformedURLException, InterruptedException, AuthenticationException {
+    <E> E tryAgain(Callable<E> callable, Exception e) throws OAuthException, MalformedURLException, InterruptedException,
+            AuthenticationException {
         // something failed, so maybe the OAuth token is expired
         clearAuthTokenCache();
         initProjectHostingService(true);
@@ -179,8 +183,8 @@ public class GoogleCodeBugFiler implements BugFiler {
         return new URL("http://code.google.com/feeds/issues/p/" + proj + "/issues" + PROJECTION);
     }
 
-    private void initProjectHostingService(boolean forceGetNewToken)
-            throws OAuthException, MalformedURLException, InterruptedException {
+    private void initProjectHostingService(boolean forceGetNewToken) throws OAuthException, MalformedURLException,
+            InterruptedException {
 
         OAuthHmacSha1Signer oauthSigner = new OAuthHmacSha1Signer();
         GoogleOAuthParameters oauthParameters = new GoogleOAuthParameters();
@@ -207,8 +211,7 @@ public class GoogleCodeBugFiler implements BugFiler {
             throw new IllegalStateException("cannot launch browser");
         }
 
-        callback.showMessageDialogAndWait("Please sign into your Google Account in\n" +
-                                   "your web browser, then click OK.");
+        callback.showMessageDialogAndWait("Please sign into your Google Account in\n" + "your web browser, then click OK.");
 
         // convert the request token to a session token
         token = oauthHelper.getAccessToken(oauthParameters);
@@ -220,7 +223,8 @@ public class GoogleCodeBugFiler implements BugFiler {
     }
 
     /** package-private for testing */
-    ProjectHostingService createProjectHostingService(OAuthHmacSha1Signer oauthSigner, GoogleOAuthParameters oauthParameters) throws OAuthException {
+    ProjectHostingService createProjectHostingService(OAuthHmacSha1Signer oauthSigner, GoogleOAuthParameters oauthParameters)
+            throws OAuthException {
         ProjectHostingService projectHostingService = new ProjectHostingService("findbugs-cloud-client");
         projectHostingService.setOAuthCredentials(oauthParameters, oauthSigner);
         return projectHostingService;
@@ -249,15 +253,15 @@ public class GoogleCodeBugFiler implements BugFiler {
         entry.setContent(new HtmlTextConstruct(bugFilingCommentHelper.getBugReportText(bug)));
         entry.setStatus(new Status(DEFAULT_STATUS));
         for (String label : DEFAULT_LABELS.split(" ")) {
-			entry.addLabel(new Label(label));
+            entry.addLabel(new Label(label));
         }
         entry.setSendEmail(new SendEmail("True"));
 
         return entry;
     }
 
-    private URL fileGoogleCodeBug(BugInstance b, String projectName)
-            throws IOException, ServiceException, OAuthException, InterruptedException, SignInCancelledException {
+    private URL fileGoogleCodeBug(BugInstance b, String projectName) throws IOException, ServiceException, OAuthException,
+            InterruptedException, SignInCancelledException {
         IssuesEntry googleCodeIssue;
         try {
             googleCodeIssue = fileWithProject(b, projectName);
@@ -284,8 +288,7 @@ public class GoogleCodeBugFiler implements BugFiler {
 
         appEngineCloudClient.updateBugStatusCache(b, googleCodeIssue.getStatus().getValue());
 
-        appEngineCloudClient.getNetworkClient().setBugLinkOnCloudAndStoreIssueDetails(
-                b, viewUrl, "GOOGLE_CODE");
+        appEngineCloudClient.getNetworkClient().setBugLinkOnCloudAndStoreIssueDetails(b, viewUrl, "GOOGLE_CODE");
 
         return new URL(viewUrl);
     }
@@ -295,11 +298,8 @@ public class GoogleCodeBugFiler implements BugFiler {
         Preferences prefs = Preferences.userNodeForPackage(AppEngineCloudClient.class);
 
         String lastProject = prefs.get("last_google_code_project", "");
-        String projectName = guiCallback.showQuestionDialog(
-                "Issue will be filed at Google Code.\n" +
-                "\n" +
-                "Type your Google Code project name:", "Google Code Issue Tracker",
-                lastProject);
+        String projectName = guiCallback.showQuestionDialog("Issue will be filed at Google Code.\n" + "\n"
+                + "Type your Google Code project name:", "Google Code Issue Tracker", lastProject);
         if (projectName == null || projectName.trim().length() == 0) {
             return null;
         }

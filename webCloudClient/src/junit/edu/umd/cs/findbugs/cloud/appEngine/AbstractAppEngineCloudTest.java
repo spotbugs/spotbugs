@@ -23,13 +23,21 @@ import junit.framework.TestCase;
 import static org.mockito.Mockito.when;
 
 public abstract class AbstractAppEngineCloudTest extends TestCase {
-    protected static final long SAMPLE_DATE = 1200000000L * 1000L; // Thu, 10 Jan 2008 21:20:00 GMT
+    protected static final long SAMPLE_DATE = 1200000000L * 1000L; // Thu, 10
+                                                                   // Jan 2008
+                                                                   // 21:20:00
+                                                                   // GMT
 
     protected BugInstance missingIssue;
+
     protected BugInstance foundIssue;
+
     protected boolean addMissingIssue;
+
     protected SortedBugCollection bugCollection;
+
     private CloudPlugin plugin;
+
     private ConsoleHandler logHandler;
 
     @Override
@@ -40,17 +48,20 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
         foundIssue.setInstanceHash("fad2");
         addMissingIssue = false;
         bugCollection = new SortedBugCollection();
-        plugin = new CloudPluginBuilder().setCloudid("AbstractAppEngineCloudTest").setClassLoader(AppEngineCloudClient.class.getClassLoader()).setCloudClass(AppEngineCloudClient.class).setUsernameClass(AppEngineNameLookup.class).setProperties(new PropertyBundle()).setDescription("none").setDetails("none").createCloudPlugin();
-//        Logger logger = Logger.getLogger("edu.umd.cs.findbugs.cloud");
-//        logger.setLevel(Level.FINEST);
-//        logHandler = new ConsoleHandler();
-//        logHandler.setLevel(Level.FINER);
-//        logHandler.setFilter(new Filter() {
-//            public boolean isLoggable(LogRecord record) {
-//                return record.getLevel().intValue() < Level.INFO.intValue();
-//            }
-//        });
-//        logger.addHandler(logHandler);
+        plugin = new CloudPluginBuilder().setCloudid("AbstractAppEngineCloudTest")
+                .setClassLoader(AppEngineCloudClient.class.getClassLoader()).setCloudClass(AppEngineCloudClient.class)
+                .setUsernameClass(AppEngineNameLookup.class).setProperties(new PropertyBundle()).setDescription("none")
+                .setDetails("none").createCloudPlugin();
+        // Logger logger = Logger.getLogger("edu.umd.cs.findbugs.cloud");
+        // logger.setLevel(Level.FINEST);
+        // logHandler = new ConsoleHandler();
+        // logHandler.setLevel(Level.FINER);
+        // logHandler.setFilter(new Filter() {
+        // public boolean isLoggable(LogRecord record) {
+        // return record.getLevel().intValue() < Level.INFO.intValue();
+        // }
+        // });
+        // logger.addHandler(logHandler);
     }
 
     @Override
@@ -61,32 +72,22 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
     }
 
     protected ProtoClasses.Issue createFoundIssueProto() {
-        return ProtoClasses.Issue.newBuilder()
-                .setFirstSeen(SAMPLE_DATE+100)
-                .setLastSeen(SAMPLE_DATE+200)
-                .addEvaluations(ProtoClasses.Evaluation.newBuilder()
-                        .setWho("commenter")
-                        .setWhen(SAMPLE_DATE+300)
-                        .setComment("my comment")
-                        .setDesignation("NEEDS_STUDY")
-                        .build())
-                .addEvaluations(ProtoClasses.Evaluation.newBuilder()
-                        .setWho("test@example.com")
-                        .setWhen(SAMPLE_DATE+400)
-                        .setComment("later comment")
-                        .setDesignation("NOT_A_BUG")
-                        .build())
-                .addEvaluations(ProtoClasses.Evaluation.newBuilder()
-                        .setWho("test@example.com")
-                        .setWhen(SAMPLE_DATE+500)
-                        .setComment("latest comment")
-                        .setDesignation("MUST_FIX")
-                        .build())
-                .build();
+        return ProtoClasses.Issue
+                .newBuilder()
+                .setFirstSeen(SAMPLE_DATE + 100)
+                .setLastSeen(SAMPLE_DATE + 200)
+                .addEvaluations(
+                        ProtoClasses.Evaluation.newBuilder().setWho("commenter").setWhen(SAMPLE_DATE + 300)
+                                .setComment("my comment").setDesignation("NEEDS_STUDY").build())
+                .addEvaluations(
+                        ProtoClasses.Evaluation.newBuilder().setWho("test@example.com").setWhen(SAMPLE_DATE + 400)
+                                .setComment("later comment").setDesignation("NOT_A_BUG").build())
+                .addEvaluations(
+                        ProtoClasses.Evaluation.newBuilder().setWho("test@example.com").setWhen(SAMPLE_DATE + 500)
+                                .setComment("latest comment").setDesignation("MUST_FIX").build()).build();
     }
 
-    protected static ByteArrayOutputStream setupResponseCodeAndOutputStream(HttpURLConnection connection)
-            throws IOException {
+    protected static ByteArrayOutputStream setupResponseCodeAndOutputStream(HttpURLConnection connection) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         when(connection.getResponseCode()).thenReturn(200);
         when(connection.getOutputStream()).thenReturn(outputStream);
@@ -104,8 +105,7 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
         return new ByteArrayInputStream(createFindIssuesResponseObj(foundIssue, addMissingIssue).toByteArray());
     }
 
-    protected ProtoClasses.FindIssuesResponse createFindIssuesResponseObj(ProtoClasses.Issue foundIssue,
-                                                                          boolean addMissingIssue) {
+    protected ProtoClasses.FindIssuesResponse createFindIssuesResponseObj(ProtoClasses.Issue foundIssue, boolean addMissingIssue) {
         ProtoClasses.FindIssuesResponse.Builder issueList = ProtoClasses.FindIssuesResponse.newBuilder();
         if (addMissingIssue)
             issueList.addFoundIssues(ProtoClasses.Issue.newBuilder().build());

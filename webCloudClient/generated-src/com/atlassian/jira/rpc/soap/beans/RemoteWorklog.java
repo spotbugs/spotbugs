@@ -7,7 +7,7 @@
 
 package com.atlassian.jira.rpc.soap.beans;
 
-public class RemoteWorklog  implements java.io.Serializable {
+public class RemoteWorklog implements java.io.Serializable {
     private java.lang.String author;
 
     private java.lang.String comment;
@@ -33,31 +33,21 @@ public class RemoteWorklog  implements java.io.Serializable {
     public RemoteWorklog() {
     }
 
-    public RemoteWorklog(
-           java.lang.String author,
-           java.lang.String comment,
-           java.util.Calendar created,
-           java.lang.String groupLevel,
-           java.lang.String id,
-           java.lang.String roleLevelId,
-           java.util.Calendar startDate,
-           java.lang.String timeSpent,
-           long timeSpentInSeconds,
-           java.lang.String updateAuthor,
-           java.util.Calendar updated) {
-           this.author = author;
-           this.comment = comment;
-           this.created = created;
-           this.groupLevel = groupLevel;
-           this.id = id;
-           this.roleLevelId = roleLevelId;
-           this.startDate = startDate;
-           this.timeSpent = timeSpent;
-           this.timeSpentInSeconds = timeSpentInSeconds;
-           this.updateAuthor = updateAuthor;
-           this.updated = updated;
+    public RemoteWorklog(java.lang.String author, java.lang.String comment, java.util.Calendar created,
+            java.lang.String groupLevel, java.lang.String id, java.lang.String roleLevelId, java.util.Calendar startDate,
+            java.lang.String timeSpent, long timeSpentInSeconds, java.lang.String updateAuthor, java.util.Calendar updated) {
+        this.author = author;
+        this.comment = comment;
+        this.created = created;
+        this.groupLevel = groupLevel;
+        this.id = id;
+        this.roleLevelId = roleLevelId;
+        this.startDate = startDate;
+        this.timeSpent = timeSpent;
+        this.timeSpentInSeconds = timeSpentInSeconds;
+        this.updateAuthor = updateAuthor;
+        this.updated = updated;
     }
-
 
     /**
      * Gets the author value for this RemoteWorklog.
@@ -68,7 +58,6 @@ public class RemoteWorklog  implements java.io.Serializable {
         return author;
     }
 
-
     /**
      * Sets the author value for this RemoteWorklog.
      * 
@@ -77,7 +66,6 @@ public class RemoteWorklog  implements java.io.Serializable {
     public void setAuthor(java.lang.String author) {
         this.author = author;
     }
-
 
     /**
      * Gets the comment value for this RemoteWorklog.
@@ -88,7 +76,6 @@ public class RemoteWorklog  implements java.io.Serializable {
         return comment;
     }
 
-
     /**
      * Sets the comment value for this RemoteWorklog.
      * 
@@ -97,7 +84,6 @@ public class RemoteWorklog  implements java.io.Serializable {
     public void setComment(java.lang.String comment) {
         this.comment = comment;
     }
-
 
     /**
      * Gets the created value for this RemoteWorklog.
@@ -108,7 +94,6 @@ public class RemoteWorklog  implements java.io.Serializable {
         return created;
     }
 
-
     /**
      * Sets the created value for this RemoteWorklog.
      * 
@@ -117,7 +102,6 @@ public class RemoteWorklog  implements java.io.Serializable {
     public void setCreated(java.util.Calendar created) {
         this.created = created;
     }
-
 
     /**
      * Gets the groupLevel value for this RemoteWorklog.
@@ -128,7 +112,6 @@ public class RemoteWorklog  implements java.io.Serializable {
         return groupLevel;
     }
 
-
     /**
      * Sets the groupLevel value for this RemoteWorklog.
      * 
@@ -137,7 +120,6 @@ public class RemoteWorklog  implements java.io.Serializable {
     public void setGroupLevel(java.lang.String groupLevel) {
         this.groupLevel = groupLevel;
     }
-
 
     /**
      * Gets the id value for this RemoteWorklog.
@@ -148,7 +130,6 @@ public class RemoteWorklog  implements java.io.Serializable {
         return id;
     }
 
-
     /**
      * Sets the id value for this RemoteWorklog.
      * 
@@ -157,7 +138,6 @@ public class RemoteWorklog  implements java.io.Serializable {
     public void setId(java.lang.String id) {
         this.id = id;
     }
-
 
     /**
      * Gets the roleLevelId value for this RemoteWorklog.
@@ -168,7 +148,6 @@ public class RemoteWorklog  implements java.io.Serializable {
         return roleLevelId;
     }
 
-
     /**
      * Sets the roleLevelId value for this RemoteWorklog.
      * 
@@ -177,7 +156,6 @@ public class RemoteWorklog  implements java.io.Serializable {
     public void setRoleLevelId(java.lang.String roleLevelId) {
         this.roleLevelId = roleLevelId;
     }
-
 
     /**
      * Gets the startDate value for this RemoteWorklog.
@@ -188,7 +166,6 @@ public class RemoteWorklog  implements java.io.Serializable {
         return startDate;
     }
 
-
     /**
      * Sets the startDate value for this RemoteWorklog.
      * 
@@ -197,7 +174,6 @@ public class RemoteWorklog  implements java.io.Serializable {
     public void setStartDate(java.util.Calendar startDate) {
         this.startDate = startDate;
     }
-
 
     /**
      * Gets the timeSpent value for this RemoteWorklog.
@@ -208,7 +184,6 @@ public class RemoteWorklog  implements java.io.Serializable {
         return timeSpent;
     }
 
-
     /**
      * Sets the timeSpent value for this RemoteWorklog.
      * 
@@ -217,7 +192,6 @@ public class RemoteWorklog  implements java.io.Serializable {
     public void setTimeSpent(java.lang.String timeSpent) {
         this.timeSpent = timeSpent;
     }
-
 
     /**
      * Gets the timeSpentInSeconds value for this RemoteWorklog.
@@ -228,7 +202,6 @@ public class RemoteWorklog  implements java.io.Serializable {
         return timeSpentInSeconds;
     }
 
-
     /**
      * Sets the timeSpentInSeconds value for this RemoteWorklog.
      * 
@@ -237,7 +210,6 @@ public class RemoteWorklog  implements java.io.Serializable {
     public void setTimeSpentInSeconds(long timeSpentInSeconds) {
         this.timeSpentInSeconds = timeSpentInSeconds;
     }
-
 
     /**
      * Gets the updateAuthor value for this RemoteWorklog.
@@ -248,7 +220,6 @@ public class RemoteWorklog  implements java.io.Serializable {
         return updateAuthor;
     }
 
-
     /**
      * Sets the updateAuthor value for this RemoteWorklog.
      * 
@@ -258,7 +229,6 @@ public class RemoteWorklog  implements java.io.Serializable {
         this.updateAuthor = updateAuthor;
     }
 
-
     /**
      * Gets the updated value for this RemoteWorklog.
      * 
@@ -267,7 +237,6 @@ public class RemoteWorklog  implements java.io.Serializable {
     public java.util.Calendar getUpdated() {
         return updated;
     }
-
 
     /**
      * Sets the updated value for this RemoteWorklog.
@@ -279,53 +248,47 @@ public class RemoteWorklog  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof RemoteWorklog)) return false;
+        if (!(obj instanceof RemoteWorklog))
+            return false;
         RemoteWorklog other = (RemoteWorklog) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.author==null && other.getAuthor()==null) || 
-             (this.author!=null &&
-              this.author.equals(other.getAuthor()))) &&
-            ((this.comment==null && other.getComment()==null) || 
-             (this.comment!=null &&
-              this.comment.equals(other.getComment()))) &&
-            ((this.created==null && other.getCreated()==null) || 
-             (this.created!=null &&
-              this.created.equals(other.getCreated()))) &&
-            ((this.groupLevel==null && other.getGroupLevel()==null) || 
-             (this.groupLevel!=null &&
-              this.groupLevel.equals(other.getGroupLevel()))) &&
-            ((this.id==null && other.getId()==null) || 
-             (this.id!=null &&
-              this.id.equals(other.getId()))) &&
-            ((this.roleLevelId==null && other.getRoleLevelId()==null) || 
-             (this.roleLevelId!=null &&
-              this.roleLevelId.equals(other.getRoleLevelId()))) &&
-            ((this.startDate==null && other.getStartDate()==null) || 
-             (this.startDate!=null &&
-              this.startDate.equals(other.getStartDate()))) &&
-            ((this.timeSpent==null && other.getTimeSpent()==null) || 
-             (this.timeSpent!=null &&
-              this.timeSpent.equals(other.getTimeSpent()))) &&
-            this.timeSpentInSeconds == other.getTimeSpentInSeconds() &&
-            ((this.updateAuthor==null && other.getUpdateAuthor()==null) || 
-             (this.updateAuthor!=null &&
-              this.updateAuthor.equals(other.getUpdateAuthor()))) &&
-            ((this.updated==null && other.getUpdated()==null) || 
-             (this.updated!=null &&
-              this.updated.equals(other.getUpdated())));
+        _equals = true
+                && ((this.author == null && other.getAuthor() == null) || (this.author != null && this.author.equals(other
+                        .getAuthor())))
+                && ((this.comment == null && other.getComment() == null) || (this.comment != null && this.comment.equals(other
+                        .getComment())))
+                && ((this.created == null && other.getCreated() == null) || (this.created != null && this.created.equals(other
+                        .getCreated())))
+                && ((this.groupLevel == null && other.getGroupLevel() == null) || (this.groupLevel != null && this.groupLevel
+                        .equals(other.getGroupLevel())))
+                && ((this.id == null && other.getId() == null) || (this.id != null && this.id.equals(other.getId())))
+                && ((this.roleLevelId == null && other.getRoleLevelId() == null) || (this.roleLevelId != null && this.roleLevelId
+                        .equals(other.getRoleLevelId())))
+                && ((this.startDate == null && other.getStartDate() == null) || (this.startDate != null && this.startDate
+                        .equals(other.getStartDate())))
+                && ((this.timeSpent == null && other.getTimeSpent() == null) || (this.timeSpent != null && this.timeSpent
+                        .equals(other.getTimeSpent())))
+                && this.timeSpentInSeconds == other.getTimeSpentInSeconds()
+                && ((this.updateAuthor == null && other.getUpdateAuthor() == null) || (this.updateAuthor != null && this.updateAuthor
+                        .equals(other.getUpdateAuthor())))
+                && ((this.updated == null && other.getUpdated() == null) || (this.updated != null && this.updated.equals(other
+                        .getUpdated())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -368,8 +331,8 @@ public class RemoteWorklog  implements java.io.Serializable {
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RemoteWorklog.class, true);
+    private static org.apache.axis.description.TypeDesc typeDesc = new org.apache.axis.description.TypeDesc(RemoteWorklog.class,
+            true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://beans.soap.rpc.jira.atlassian.com", "RemoteWorklog"));
@@ -451,25 +414,17 @@ public class RemoteWorklog  implements java.io.Serializable {
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
     }
 
 }

@@ -7,7 +7,7 @@
 
 package com.atlassian.jira.rpc.soap.beans;
 
-public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNamedRemoteEntity  implements java.io.Serializable {
+public class RemoteProject extends com.atlassian.jira.rpc.soap.beans.AbstractNamedRemoteEntity implements java.io.Serializable {
     private java.lang.String description;
 
     private com.atlassian.jira.rpc.soap.beans.RemoteScheme issueSecurityScheme;
@@ -27,20 +27,12 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     public RemoteProject() {
     }
 
-    public RemoteProject(
-           java.lang.String id,
-           java.lang.String name,
-           java.lang.String description,
-           com.atlassian.jira.rpc.soap.beans.RemoteScheme issueSecurityScheme,
-           java.lang.String key,
-           java.lang.String lead,
-           com.atlassian.jira.rpc.soap.beans.RemoteScheme notificationScheme,
-           com.atlassian.jira.rpc.soap.beans.RemotePermissionScheme permissionScheme,
-           java.lang.String projectUrl,
-           java.lang.String url) {
-        super(
-            id,
-            name);
+    public RemoteProject(java.lang.String id, java.lang.String name, java.lang.String description,
+            com.atlassian.jira.rpc.soap.beans.RemoteScheme issueSecurityScheme, java.lang.String key, java.lang.String lead,
+            com.atlassian.jira.rpc.soap.beans.RemoteScheme notificationScheme,
+            com.atlassian.jira.rpc.soap.beans.RemotePermissionScheme permissionScheme, java.lang.String projectUrl,
+            java.lang.String url) {
+        super(id, name);
         this.description = description;
         this.issueSecurityScheme = issueSecurityScheme;
         this.key = key;
@@ -51,7 +43,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
         this.url = url;
     }
 
-
     /**
      * Gets the description value for this RemoteProject.
      * 
@@ -60,7 +51,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     public java.lang.String getDescription() {
         return description;
     }
-
 
     /**
      * Sets the description value for this RemoteProject.
@@ -71,7 +61,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
         this.description = description;
     }
 
-
     /**
      * Gets the issueSecurityScheme value for this RemoteProject.
      * 
@@ -80,7 +69,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     public com.atlassian.jira.rpc.soap.beans.RemoteScheme getIssueSecurityScheme() {
         return issueSecurityScheme;
     }
-
 
     /**
      * Sets the issueSecurityScheme value for this RemoteProject.
@@ -91,7 +79,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
         this.issueSecurityScheme = issueSecurityScheme;
     }
 
-
     /**
      * Gets the key value for this RemoteProject.
      * 
@@ -100,7 +87,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     public java.lang.String getKey() {
         return key;
     }
-
 
     /**
      * Sets the key value for this RemoteProject.
@@ -111,7 +97,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
         this.key = key;
     }
 
-
     /**
      * Gets the lead value for this RemoteProject.
      * 
@@ -120,7 +105,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     public java.lang.String getLead() {
         return lead;
     }
-
 
     /**
      * Sets the lead value for this RemoteProject.
@@ -131,7 +115,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
         this.lead = lead;
     }
 
-
     /**
      * Gets the notificationScheme value for this RemoteProject.
      * 
@@ -140,7 +123,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     public com.atlassian.jira.rpc.soap.beans.RemoteScheme getNotificationScheme() {
         return notificationScheme;
     }
-
 
     /**
      * Sets the notificationScheme value for this RemoteProject.
@@ -151,7 +133,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
         this.notificationScheme = notificationScheme;
     }
 
-
     /**
      * Gets the permissionScheme value for this RemoteProject.
      * 
@@ -160,7 +141,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     public com.atlassian.jira.rpc.soap.beans.RemotePermissionScheme getPermissionScheme() {
         return permissionScheme;
     }
-
 
     /**
      * Sets the permissionScheme value for this RemoteProject.
@@ -171,7 +151,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
         this.permissionScheme = permissionScheme;
     }
 
-
     /**
      * Gets the projectUrl value for this RemoteProject.
      * 
@@ -180,7 +159,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     public java.lang.String getProjectUrl() {
         return projectUrl;
     }
-
 
     /**
      * Sets the projectUrl value for this RemoteProject.
@@ -191,7 +169,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
         this.projectUrl = projectUrl;
     }
 
-
     /**
      * Gets the url value for this RemoteProject.
      * 
@@ -200,7 +177,6 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     public java.lang.String getUrl() {
         return url;
     }
-
 
     /**
      * Sets the url value for this RemoteProject.
@@ -212,46 +188,40 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof RemoteProject)) return false;
+        if (!(obj instanceof RemoteProject))
+            return false;
         RemoteProject other = (RemoteProject) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = super.equals(obj) && 
-            ((this.description==null && other.getDescription()==null) || 
-             (this.description!=null &&
-              this.description.equals(other.getDescription()))) &&
-            ((this.issueSecurityScheme==null && other.getIssueSecurityScheme()==null) || 
-             (this.issueSecurityScheme!=null &&
-              this.issueSecurityScheme.equals(other.getIssueSecurityScheme()))) &&
-            ((this.key==null && other.getKey()==null) || 
-             (this.key!=null &&
-              this.key.equals(other.getKey()))) &&
-            ((this.lead==null && other.getLead()==null) || 
-             (this.lead!=null &&
-              this.lead.equals(other.getLead()))) &&
-            ((this.notificationScheme==null && other.getNotificationScheme()==null) || 
-             (this.notificationScheme!=null &&
-              this.notificationScheme.equals(other.getNotificationScheme()))) &&
-            ((this.permissionScheme==null && other.getPermissionScheme()==null) || 
-             (this.permissionScheme!=null &&
-              this.permissionScheme.equals(other.getPermissionScheme()))) &&
-            ((this.projectUrl==null && other.getProjectUrl()==null) || 
-             (this.projectUrl!=null &&
-              this.projectUrl.equals(other.getProjectUrl()))) &&
-            ((this.url==null && other.getUrl()==null) || 
-             (this.url!=null &&
-              this.url.equals(other.getUrl())));
+        _equals = super.equals(obj)
+                && ((this.description == null && other.getDescription() == null) || (this.description != null && this.description
+                        .equals(other.getDescription())))
+                && ((this.issueSecurityScheme == null && other.getIssueSecurityScheme() == null) || (this.issueSecurityScheme != null && this.issueSecurityScheme
+                        .equals(other.getIssueSecurityScheme())))
+                && ((this.key == null && other.getKey() == null) || (this.key != null && this.key.equals(other.getKey())))
+                && ((this.lead == null && other.getLead() == null) || (this.lead != null && this.lead.equals(other.getLead())))
+                && ((this.notificationScheme == null && other.getNotificationScheme() == null) || (this.notificationScheme != null && this.notificationScheme
+                        .equals(other.getNotificationScheme())))
+                && ((this.permissionScheme == null && other.getPermissionScheme() == null) || (this.permissionScheme != null && this.permissionScheme
+                        .equals(other.getPermissionScheme())))
+                && ((this.projectUrl == null && other.getProjectUrl() == null) || (this.projectUrl != null && this.projectUrl
+                        .equals(other.getProjectUrl())))
+                && ((this.url == null && other.getUrl() == null) || (this.url != null && this.url.equals(other.getUrl())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -287,8 +257,8 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RemoteProject.class, true);
+    private static org.apache.axis.description.TypeDesc typeDesc = new org.apache.axis.description.TypeDesc(RemoteProject.class,
+            true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://beans.soap.rpc.jira.atlassian.com", "RemoteProject"));
@@ -352,25 +322,17 @@ public class RemoteProject  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
     }
 
 }

@@ -13,55 +13,86 @@ import java.util.Set;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class AppEngineDbIssue implements DbIssue {
-    @Persistent @PrimaryKey
+    @Persistent
+    @PrimaryKey
     private String hash;
 
-    @Persistent private String bugPattern;
-    @Persistent private int priority;
-    @Persistent private String primaryClass;
-    @Persistent private long firstSeen;
-    @Persistent private long lastSeen;
-    @Persistent private boolean hasEvaluations = false;
-    @Persistent private String bugLink;
-    @Persistent private String bugLinkType;
-    @Persistent(mappedBy = "issue") @Element(dependent="true") private Set<AppEngineDbEvaluation> evaluations;
+    @Persistent
+    private String bugPattern;
+
+    @Persistent
+    private int priority;
+
+    @Persistent
+    private String primaryClass;
+
+    @Persistent
+    private long firstSeen;
+
+    @Persistent
+    private long lastSeen;
+
+    @Persistent
+    private boolean hasEvaluations = false;
+
+    @Persistent
+    private String bugLink;
+
+    @Persistent
+    private String bugLinkType;
+
+    @Persistent(mappedBy = "issue")
+    @Element(dependent = "true")
+    private Set<AppEngineDbEvaluation> evaluations;
 
     public String getHash() {
         return hash;
     }
-	public void setHash(String hash) {
+
+    public void setHash(String hash) {
         this.hash = hash;
     }
+
     public String getBugPattern() {
-		return bugPattern;
+        return bugPattern;
     }
+
     public void setBugPattern(String bugPattern) {
         this.bugPattern = bugPattern;
-	}
+    }
+
     public int getPriority() {
         return priority;
     }
-	public void setPriority(int priority) {
+
+    public void setPriority(int priority) {
         this.priority = priority;
     }
+
     public String getPrimaryClass() {
-		return primaryClass;
+        return primaryClass;
     }
+
     public void setPrimaryClass(String primaryClass) {
         this.primaryClass = primaryClass;
-	}
+    }
+
     public long getFirstSeen() {
         return firstSeen;
     }
-	public void setFirstSeen(long firstSeen) {
+
+    public void setFirstSeen(long firstSeen) {
         this.firstSeen = firstSeen;
     }
+
     public long getLastSeen() {
-		return lastSeen;
+        return lastSeen;
     }
+
     public void setLastSeen(long lastSeen) {
         this.lastSeen = lastSeen;
-	}
+    }
+
     public Set<AppEngineDbEvaluation> getEvaluations() {
         return evaluations;
     }
@@ -70,12 +101,13 @@ public class AppEngineDbIssue implements DbIssue {
         if (evaluations == null) {
             evaluations = new HashSet<AppEngineDbEvaluation>();
         }
-		evaluations.add((AppEngineDbEvaluation) eval);
+        evaluations.add((AppEngineDbEvaluation) eval);
         updateHasEvaluations();
     }
+
     public void addEvaluations(DbEvaluation... evals) {
         for (DbEvaluation eval : evals) {
-			addEvaluation(eval);
+            addEvaluation(eval);
         }
     }
 
@@ -91,8 +123,11 @@ public class AppEngineDbIssue implements DbIssue {
         this.hasEvaluations = hasEvaluations;
     }
 
-    /** Does not access the given list, only stores it. Good for lazy loaded evaluations. */
-    @SuppressWarnings({"unchecked"})
+    /**
+     * Does not access the given list, only stores it. Good for lazy loaded
+     * evaluations.
+     */
+    @SuppressWarnings({ "unchecked" })
     public void setEvaluationsDontLook(Set<? extends DbEvaluation> evaluations) {
         this.evaluations = (Set<AppEngineDbEvaluation>) evaluations;
     }
@@ -115,11 +150,7 @@ public class AppEngineDbIssue implements DbIssue {
 
     @Override
     public String toString() {
-        return "DbIssue{" +
-               "hash='" + hash + '\'' +
-               ", bugPattern='" + bugPattern + '\'' +
-               ", evaluations=" + evaluations +
-               '}';
+        return "DbIssue{" + "hash='" + hash + '\'' + ", bugPattern='" + bugPattern + '\'' + ", evaluations=" + evaluations + '}';
     }
 
 }

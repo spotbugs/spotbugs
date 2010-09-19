@@ -43,6 +43,6 @@ class TestEnvironment implements ApiProxy.Environment {
     public Map<String, Object> getAttributes() {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("com.google.appengine.server_url_key", "http://localhost:8080");
-		return map;
+        return map;
     }
 }

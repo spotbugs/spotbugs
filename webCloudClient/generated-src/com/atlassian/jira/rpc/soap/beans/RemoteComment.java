@@ -7,7 +7,7 @@
 
 package com.atlassian.jira.rpc.soap.beans;
 
-public class RemoteComment  implements java.io.Serializable {
+public class RemoteComment implements java.io.Serializable {
     private java.lang.String author;
 
     private java.lang.String body;
@@ -27,25 +27,17 @@ public class RemoteComment  implements java.io.Serializable {
     public RemoteComment() {
     }
 
-    public RemoteComment(
-           java.lang.String author,
-           java.lang.String body,
-           java.util.Calendar created,
-           java.lang.String groupLevel,
-           java.lang.String id,
-           java.lang.String roleLevel,
-           java.lang.String updateAuthor,
-           java.util.Calendar updated) {
-           this.author = author;
-           this.body = body;
-           this.created = created;
-           this.groupLevel = groupLevel;
-           this.id = id;
-           this.roleLevel = roleLevel;
-           this.updateAuthor = updateAuthor;
-           this.updated = updated;
+    public RemoteComment(java.lang.String author, java.lang.String body, java.util.Calendar created, java.lang.String groupLevel,
+            java.lang.String id, java.lang.String roleLevel, java.lang.String updateAuthor, java.util.Calendar updated) {
+        this.author = author;
+        this.body = body;
+        this.created = created;
+        this.groupLevel = groupLevel;
+        this.id = id;
+        this.roleLevel = roleLevel;
+        this.updateAuthor = updateAuthor;
+        this.updated = updated;
     }
-
 
     /**
      * Gets the author value for this RemoteComment.
@@ -56,7 +48,6 @@ public class RemoteComment  implements java.io.Serializable {
         return author;
     }
 
-
     /**
      * Sets the author value for this RemoteComment.
      * 
@@ -65,7 +56,6 @@ public class RemoteComment  implements java.io.Serializable {
     public void setAuthor(java.lang.String author) {
         this.author = author;
     }
-
 
     /**
      * Gets the body value for this RemoteComment.
@@ -76,7 +66,6 @@ public class RemoteComment  implements java.io.Serializable {
         return body;
     }
 
-
     /**
      * Sets the body value for this RemoteComment.
      * 
@@ -85,7 +74,6 @@ public class RemoteComment  implements java.io.Serializable {
     public void setBody(java.lang.String body) {
         this.body = body;
     }
-
 
     /**
      * Gets the created value for this RemoteComment.
@@ -96,7 +84,6 @@ public class RemoteComment  implements java.io.Serializable {
         return created;
     }
 
-
     /**
      * Sets the created value for this RemoteComment.
      * 
@@ -105,7 +92,6 @@ public class RemoteComment  implements java.io.Serializable {
     public void setCreated(java.util.Calendar created) {
         this.created = created;
     }
-
 
     /**
      * Gets the groupLevel value for this RemoteComment.
@@ -116,7 +102,6 @@ public class RemoteComment  implements java.io.Serializable {
         return groupLevel;
     }
 
-
     /**
      * Sets the groupLevel value for this RemoteComment.
      * 
@@ -125,7 +110,6 @@ public class RemoteComment  implements java.io.Serializable {
     public void setGroupLevel(java.lang.String groupLevel) {
         this.groupLevel = groupLevel;
     }
-
 
     /**
      * Gets the id value for this RemoteComment.
@@ -136,7 +120,6 @@ public class RemoteComment  implements java.io.Serializable {
         return id;
     }
 
-
     /**
      * Sets the id value for this RemoteComment.
      * 
@@ -145,7 +128,6 @@ public class RemoteComment  implements java.io.Serializable {
     public void setId(java.lang.String id) {
         this.id = id;
     }
-
 
     /**
      * Gets the roleLevel value for this RemoteComment.
@@ -156,7 +138,6 @@ public class RemoteComment  implements java.io.Serializable {
         return roleLevel;
     }
 
-
     /**
      * Sets the roleLevel value for this RemoteComment.
      * 
@@ -165,7 +146,6 @@ public class RemoteComment  implements java.io.Serializable {
     public void setRoleLevel(java.lang.String roleLevel) {
         this.roleLevel = roleLevel;
     }
-
 
     /**
      * Gets the updateAuthor value for this RemoteComment.
@@ -176,7 +156,6 @@ public class RemoteComment  implements java.io.Serializable {
         return updateAuthor;
     }
 
-
     /**
      * Sets the updateAuthor value for this RemoteComment.
      * 
@@ -186,7 +165,6 @@ public class RemoteComment  implements java.io.Serializable {
         this.updateAuthor = updateAuthor;
     }
 
-
     /**
      * Gets the updated value for this RemoteComment.
      * 
@@ -195,7 +173,6 @@ public class RemoteComment  implements java.io.Serializable {
     public java.util.Calendar getUpdated() {
         return updated;
     }
-
 
     /**
      * Sets the updated value for this RemoteComment.
@@ -207,46 +184,41 @@ public class RemoteComment  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof RemoteComment)) return false;
+        if (!(obj instanceof RemoteComment))
+            return false;
         RemoteComment other = (RemoteComment) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.author==null && other.getAuthor()==null) || 
-             (this.author!=null &&
-              this.author.equals(other.getAuthor()))) &&
-            ((this.body==null && other.getBody()==null) || 
-             (this.body!=null &&
-              this.body.equals(other.getBody()))) &&
-            ((this.created==null && other.getCreated()==null) || 
-             (this.created!=null &&
-              this.created.equals(other.getCreated()))) &&
-            ((this.groupLevel==null && other.getGroupLevel()==null) || 
-             (this.groupLevel!=null &&
-              this.groupLevel.equals(other.getGroupLevel()))) &&
-            ((this.id==null && other.getId()==null) || 
-             (this.id!=null &&
-              this.id.equals(other.getId()))) &&
-            ((this.roleLevel==null && other.getRoleLevel()==null) || 
-             (this.roleLevel!=null &&
-              this.roleLevel.equals(other.getRoleLevel()))) &&
-            ((this.updateAuthor==null && other.getUpdateAuthor()==null) || 
-             (this.updateAuthor!=null &&
-              this.updateAuthor.equals(other.getUpdateAuthor()))) &&
-            ((this.updated==null && other.getUpdated()==null) || 
-             (this.updated!=null &&
-              this.updated.equals(other.getUpdated())));
+        _equals = true
+                && ((this.author == null && other.getAuthor() == null) || (this.author != null && this.author.equals(other
+                        .getAuthor())))
+                && ((this.body == null && other.getBody() == null) || (this.body != null && this.body.equals(other.getBody())))
+                && ((this.created == null && other.getCreated() == null) || (this.created != null && this.created.equals(other
+                        .getCreated())))
+                && ((this.groupLevel == null && other.getGroupLevel() == null) || (this.groupLevel != null && this.groupLevel
+                        .equals(other.getGroupLevel())))
+                && ((this.id == null && other.getId() == null) || (this.id != null && this.id.equals(other.getId())))
+                && ((this.roleLevel == null && other.getRoleLevel() == null) || (this.roleLevel != null && this.roleLevel
+                        .equals(other.getRoleLevel())))
+                && ((this.updateAuthor == null && other.getUpdateAuthor() == null) || (this.updateAuthor != null && this.updateAuthor
+                        .equals(other.getUpdateAuthor())))
+                && ((this.updated == null && other.getUpdated() == null) || (this.updated != null && this.updated.equals(other
+                        .getUpdated())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -282,8 +254,8 @@ public class RemoteComment  implements java.io.Serializable {
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RemoteComment.class, true);
+    private static org.apache.axis.description.TypeDesc typeDesc = new org.apache.axis.description.TypeDesc(RemoteComment.class,
+            true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://beans.soap.rpc.jira.atlassian.com", "RemoteComment"));
@@ -347,25 +319,17 @@ public class RemoteComment  implements java.io.Serializable {
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
     }
 
 }

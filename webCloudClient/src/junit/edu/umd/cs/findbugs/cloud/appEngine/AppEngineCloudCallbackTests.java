@@ -112,7 +112,8 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 
         // set up mocks
         final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
+        when(findIssuesConnection.getInputStream())
+                .thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConnection);
 
         final HttpURLConnection logInConnection = mock(HttpURLConnection.class);

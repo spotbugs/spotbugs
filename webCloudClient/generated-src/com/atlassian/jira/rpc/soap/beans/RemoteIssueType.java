@@ -7,26 +7,17 @@
 
 package com.atlassian.jira.rpc.soap.beans;
 
-public class RemoteIssueType  extends com.atlassian.jira.rpc.soap.beans.AbstractRemoteConstant  implements java.io.Serializable {
+public class RemoteIssueType extends com.atlassian.jira.rpc.soap.beans.AbstractRemoteConstant implements java.io.Serializable {
     private boolean subTask;
 
     public RemoteIssueType() {
     }
 
-    public RemoteIssueType(
-           java.lang.String id,
-           java.lang.String name,
-           java.lang.String description,
-           java.lang.String icon,
-           boolean subTask) {
-        super(
-            id,
-            name,
-            description,
-            icon);
+    public RemoteIssueType(java.lang.String id, java.lang.String name, java.lang.String description, java.lang.String icon,
+            boolean subTask) {
+        super(id, name, description, icon);
         this.subTask = subTask;
     }
-
 
     /**
      * Gets the subTask value for this RemoteIssueType.
@@ -36,7 +27,6 @@ public class RemoteIssueType  extends com.atlassian.jira.rpc.soap.beans.Abstract
     public boolean isSubTask() {
         return subTask;
     }
-
 
     /**
      * Sets the subTask value for this RemoteIssueType.
@@ -48,23 +38,27 @@ public class RemoteIssueType  extends com.atlassian.jira.rpc.soap.beans.Abstract
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof RemoteIssueType)) return false;
+        if (!(obj instanceof RemoteIssueType))
+            return false;
         RemoteIssueType other = (RemoteIssueType) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = super.equals(obj) && 
-            this.subTask == other.isSubTask();
+        _equals = super.equals(obj) && this.subTask == other.isSubTask();
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -77,8 +71,8 @@ public class RemoteIssueType  extends com.atlassian.jira.rpc.soap.beans.Abstract
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RemoteIssueType.class, true);
+    private static org.apache.axis.description.TypeDesc typeDesc = new org.apache.axis.description.TypeDesc(
+            RemoteIssueType.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://beans.soap.rpc.jira.atlassian.com", "RemoteIssueType"));
@@ -100,25 +94,17 @@ public class RemoteIssueType  extends com.atlassian.jira.rpc.soap.beans.Abstract
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
     }
 
 }

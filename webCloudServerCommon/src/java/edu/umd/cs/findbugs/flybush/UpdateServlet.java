@@ -32,8 +32,9 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 
 @SuppressWarnings("serial")
 public class UpdateServlet extends AbstractFlybushServlet {
-    static final int ONE_DAY_IN_MILLIS = 1000*60*60*24;
-    @SuppressWarnings({"deprecation"})
+    static final int ONE_DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
+
+    @SuppressWarnings({ "deprecation" })
     private static final long FINDBUGS_FIRST_RELEASE = new Date("Jan 23, 1996").getTime();
 
     /** package-private for testing */
@@ -91,7 +92,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         }
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({ "unchecked" })
     private void updateDatabaseJun29(HttpServletResponse resp, PersistenceManager pm) throws IOException {
         Map<String, String> primaryClasses = buildPrimaryClassMap(pm);
 
@@ -121,7 +122,8 @@ public class UpdateServlet extends AbstractFlybushServlet {
                         tx.commit();
                         count++;
                     } finally {
-                        if (tx.isActive()) tx.rollback();
+                        if (tx.isActive())
+                            tx.rollback();
                     }
                 } else {
                     skipped++;
@@ -141,12 +143,11 @@ public class UpdateServlet extends AbstractFlybushServlet {
         resp.getOutputStream().println(msg);
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({ "unchecked" })
     private Map<String, String> buildPrimaryClassMap(PersistenceManager pm) {
-        Query iq = pm.newQuery("select from " + persistenceHelper.getDbIssueClass().getName()
-                                   + " where hasEvaluations");
+        Query iq = pm.newQuery("select from " + persistenceHelper.getDbIssueClass().getName() + " where hasEvaluations");
         List<DbIssue> issues = (List<DbIssue>) iq.execute();
-        Map<String,String> primaryClasses = Maps.newHashMap();
+        Map<String, String> primaryClasses = Maps.newHashMap();
         for (DbIssue issue : issues) {
             primaryClasses.put(issue.getHash(), issue.getPrimaryClass());
         }
@@ -154,7 +155,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         return primaryClasses;
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({ "unchecked" })
     private void updateEvaluationEmails(HttpServletResponse resp, PersistenceManager pm) {
         int skipped = 0;
         int updated = 0;
@@ -180,13 +181,12 @@ public class UpdateServlet extends AbstractFlybushServlet {
             }
             finished = true;
         } finally {
-            LOGGER.info((finished ? "" : "(PARTIAL UPDATE) ")
-                        + "Updated " + updated + ", skipped " + skipped);
+            LOGGER.info((finished ? "" : "(PARTIAL UPDATE) ") + "Updated " + updated + ", skipped " + skipped);
             resp.setStatus(200);
         }
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({ "unchecked" })
     private void expireSqlSessions(HttpServletResponse resp, PersistenceManager pm) {
         Query query = pm.newQuery("select from " + persistenceHelper.getSqlCloudSessionClass().getName() + " where date < :when");
         Date oneWeekAgo = new Date(System.currentTimeMillis() - 7 * ONE_DAY_IN_MILLIS);
@@ -204,7 +204,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         resp.setStatus(200);
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({ "unchecked" })
     private void updateIssueTimestamps(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm)
             throws IOException {
         UpdateIssueTimestamps issues = UpdateIssueTimestamps.parseFrom(req.getInputStream());
@@ -221,12 +221,14 @@ public class UpdateServlet extends AbstractFlybushServlet {
                 long newFirstSeen = issueGroup.getTimestamp();
                 if (newFirstSeen < FINDBUGS_FIRST_RELEASE) {
                     DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-                    LOGGER.warning("Skipping update of " + issueGroup.getIssueHashesCount() + " issue timestamps " +
-                                   "- date too early - " + dateFormat.format(new Date(newFirstSeen)));
+                    LOGGER.warning("Skipping update of " + issueGroup.getIssueHashesCount() + " issue timestamps "
+                            + "- date too early - " + dateFormat.format(new Date(newFirstSeen)));
                     continue;
                 }
-                Query query = pm.newQuery("select from " + persistenceHelper.getDbIssueClass().getName() + " where :hashes.contains(hash)");
-                for (DbIssue issue : (List<? extends DbIssue>) query.execute(AppEngineProtoUtil.decodeHashes(issueGroup.getIssueHashesList()))) {
+                Query query = pm.newQuery("select from " + persistenceHelper.getDbIssueClass().getName()
+                        + " where :hashes.contains(hash)");
+                for (DbIssue issue : (List<? extends DbIssue>) query.execute(AppEngineProtoUtil.decodeHashes(issueGroup
+                        .getIssueHashesList()))) {
                     long storedFirstSeen = issue.getFirstSeen();
                     long firstSeen = storedFirstSeen == 0 ? newFirstSeen : Math.min(newFirstSeen, storedFirstSeen);
                     if (storedFirstSeen != firstSeen) {
@@ -238,7 +240,8 @@ public class UpdateServlet extends AbstractFlybushServlet {
                             tx.commit();
                             updated++;
                         } finally {
-                            if (tx.isActive()) tx.rollback();
+                            if (tx.isActive())
+                                tx.rollback();
                         }
                     }
                 }
@@ -247,8 +250,8 @@ public class UpdateServlet extends AbstractFlybushServlet {
             setResponse(resp, 200, null);
             completed = true;
         } finally {
-            LOGGER.log(completed ? Level.INFO : Level.WARNING, "Updated " + updated + " issue timestamps from "
-                                                               + user.getEmail() + "(" + user.getOpenid() + ")");
+            LOGGER.log(completed ? Level.INFO : Level.WARNING, "Updated " + updated + " issue timestamps from " + user.getEmail()
+                    + "(" + user.getOpenid() + ")");
         }
     }
 
@@ -262,8 +265,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         setResponse(resp, 200, "Deleted " + deleted + " entities");
     }
 
-    private void uploadIssues(HttpServletRequest req, HttpServletResponse resp,
-                              PersistenceManager pm) throws IOException {
+    private void uploadIssues(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
         UploadIssues issues = UploadIssues.parseFrom(req.getInputStream());
         SqlCloudSession session = lookupCloudSessionById(issues.getSessionId(), pm);
         if (session == null) {
@@ -290,8 +292,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         setResponse(resp, 200, "");
     }
 
-    private void uploadEvaluation(HttpServletRequest req,
-                                  HttpServletResponse resp, PersistenceManager pm) throws IOException {
+    private void uploadEvaluation(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
         UploadEvaluation uploadEvalMsg = UploadEvaluation.parseFrom(req.getInputStream());
         SqlCloudSession session = lookupCloudSessionById(uploadEvalMsg.getSessionId(), pm);
         if (session == null) {
@@ -299,9 +300,8 @@ public class UpdateServlet extends AbstractFlybushServlet {
             return;
         }
 
-        LOGGER.info("Evaluation from " + session.getEmail() + ": "
-                + uploadEvalMsg.getEvaluation().getDesignation()
-                + " - " + uploadEvalMsg.getEvaluation().getComment());
+        LOGGER.info("Evaluation from " + session.getEmail() + ": " + uploadEvalMsg.getEvaluation().getDesignation() + " - "
+                + uploadEvalMsg.getEvaluation().getComment());
 
         DbEvaluation dbEvaluation = createDbEvaluation(uploadEvalMsg.getEvaluation());
         dbEvaluation.setWho(session.getUser());
@@ -333,8 +333,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         resp.setStatus(200);
     }
 
-    private void setBugLink(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm)
-            throws IOException {
+    private void setBugLink(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
         SetBugLink setBugLinkMsg = SetBugLink.parseFrom(req.getInputStream());
         SqlCloudSession session = lookupCloudSessionById(setBugLinkMsg.getSessionId(), pm);
         if (session == null) {
@@ -356,9 +355,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
                 bugLink = null;
             issue.setBugLink(bugLink);
 
-            issue.setBugLinkType(setBugLinkMsg.hasBugLinkType()
-                    ? setBugLinkMsg.getBugLinkType()
-                    : null);
+            issue.setBugLinkType(setBugLinkMsg.hasBugLinkType() ? setBugLinkMsg.getBugLinkType() : null);
             pm.makePersistent(issue);
 
             tx.commit();
@@ -371,7 +368,8 @@ public class UpdateServlet extends AbstractFlybushServlet {
         resp.setStatus(200);
     }
 
-    // ========================= end of request handling ================================
+    // ========================= end of request handling
+    // ================================
 
     private List<String> decodeHashesForIssues(UploadIssues issues) {
         List<String> hashes = new ArrayList<String>();
@@ -388,7 +386,8 @@ public class UpdateServlet extends AbstractFlybushServlet {
             pm.makePersistent(dbIssue);
             tx.commit();
         } finally {
-            if (tx.isActive()) tx.rollback();
+            if (tx.isActive())
+                tx.rollback();
         }
     }
 
@@ -408,9 +407,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         if (invocationKey != null) {
             DbInvocation invocation;
             try {
-                invocation = persistenceHelper.getObjectById(pm,
-                                                             persistenceHelper.getDbInvocationClass(),
-                                                             invocationKey);
+                invocation = persistenceHelper.getObjectById(pm, persistenceHelper.getDbInvocationClass(), invocationKey);
                 if (invocation != null) {
                     dbEvaluation.setInvocation(invocation);
                 }
@@ -441,7 +438,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
     @SuppressWarnings("unchecked")
     private Set<String> lookupHashes(Iterable<String> hashes, PersistenceManager pm) {
         Query query = pm.newQuery("select from " + persistenceHelper.getDbIssueClass().getName()
-                                  + " where :hashes.contains(hash)");
+                + " where :hashes.contains(hash)");
         query.setResult("hash");
         Set<String> result = new HashSet<String>((List<String>) query.execute(hashes));
         query.closeAll();

@@ -7,7 +7,7 @@
 
 package com.atlassian.jira.rpc.soap.beans;
 
-public class RemoteAttachment  extends com.atlassian.jira.rpc.soap.beans.AbstractRemoteEntity  implements java.io.Serializable {
+public class RemoteAttachment extends com.atlassian.jira.rpc.soap.beans.AbstractRemoteEntity implements java.io.Serializable {
     private java.lang.String author;
 
     private java.util.Calendar created;
@@ -21,22 +21,15 @@ public class RemoteAttachment  extends com.atlassian.jira.rpc.soap.beans.Abstrac
     public RemoteAttachment() {
     }
 
-    public RemoteAttachment(
-           java.lang.String id,
-           java.lang.String author,
-           java.util.Calendar created,
-           java.lang.String filename,
-           java.lang.Long filesize,
-           java.lang.String mimetype) {
-        super(
-            id);
+    public RemoteAttachment(java.lang.String id, java.lang.String author, java.util.Calendar created, java.lang.String filename,
+            java.lang.Long filesize, java.lang.String mimetype) {
+        super(id);
         this.author = author;
         this.created = created;
         this.filename = filename;
         this.filesize = filesize;
         this.mimetype = mimetype;
     }
-
 
     /**
      * Gets the author value for this RemoteAttachment.
@@ -47,7 +40,6 @@ public class RemoteAttachment  extends com.atlassian.jira.rpc.soap.beans.Abstrac
         return author;
     }
 
-
     /**
      * Sets the author value for this RemoteAttachment.
      * 
@@ -56,7 +48,6 @@ public class RemoteAttachment  extends com.atlassian.jira.rpc.soap.beans.Abstrac
     public void setAuthor(java.lang.String author) {
         this.author = author;
     }
-
 
     /**
      * Gets the created value for this RemoteAttachment.
@@ -67,7 +58,6 @@ public class RemoteAttachment  extends com.atlassian.jira.rpc.soap.beans.Abstrac
         return created;
     }
 
-
     /**
      * Sets the created value for this RemoteAttachment.
      * 
@@ -76,7 +66,6 @@ public class RemoteAttachment  extends com.atlassian.jira.rpc.soap.beans.Abstrac
     public void setCreated(java.util.Calendar created) {
         this.created = created;
     }
-
 
     /**
      * Gets the filename value for this RemoteAttachment.
@@ -87,7 +76,6 @@ public class RemoteAttachment  extends com.atlassian.jira.rpc.soap.beans.Abstrac
         return filename;
     }
 
-
     /**
      * Sets the filename value for this RemoteAttachment.
      * 
@@ -96,7 +84,6 @@ public class RemoteAttachment  extends com.atlassian.jira.rpc.soap.beans.Abstrac
     public void setFilename(java.lang.String filename) {
         this.filename = filename;
     }
-
 
     /**
      * Gets the filesize value for this RemoteAttachment.
@@ -107,7 +94,6 @@ public class RemoteAttachment  extends com.atlassian.jira.rpc.soap.beans.Abstrac
         return filesize;
     }
 
-
     /**
      * Sets the filesize value for this RemoteAttachment.
      * 
@@ -117,7 +103,6 @@ public class RemoteAttachment  extends com.atlassian.jira.rpc.soap.beans.Abstrac
         this.filesize = filesize;
     }
 
-
     /**
      * Gets the mimetype value for this RemoteAttachment.
      * 
@@ -126,7 +111,6 @@ public class RemoteAttachment  extends com.atlassian.jira.rpc.soap.beans.Abstrac
     public java.lang.String getMimetype() {
         return mimetype;
     }
-
 
     /**
      * Sets the mimetype value for this RemoteAttachment.
@@ -138,37 +122,37 @@ public class RemoteAttachment  extends com.atlassian.jira.rpc.soap.beans.Abstrac
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof RemoteAttachment)) return false;
+        if (!(obj instanceof RemoteAttachment))
+            return false;
         RemoteAttachment other = (RemoteAttachment) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = super.equals(obj) && 
-            ((this.author==null && other.getAuthor()==null) || 
-             (this.author!=null &&
-              this.author.equals(other.getAuthor()))) &&
-            ((this.created==null && other.getCreated()==null) || 
-             (this.created!=null &&
-              this.created.equals(other.getCreated()))) &&
-            ((this.filename==null && other.getFilename()==null) || 
-             (this.filename!=null &&
-              this.filename.equals(other.getFilename()))) &&
-            ((this.filesize==null && other.getFilesize()==null) || 
-             (this.filesize!=null &&
-              this.filesize.equals(other.getFilesize()))) &&
-            ((this.mimetype==null && other.getMimetype()==null) || 
-             (this.mimetype!=null &&
-              this.mimetype.equals(other.getMimetype())));
+        _equals = super.equals(obj)
+                && ((this.author == null && other.getAuthor() == null) || (this.author != null && this.author.equals(other
+                        .getAuthor())))
+                && ((this.created == null && other.getCreated() == null) || (this.created != null && this.created.equals(other
+                        .getCreated())))
+                && ((this.filename == null && other.getFilename() == null) || (this.filename != null && this.filename
+                        .equals(other.getFilename())))
+                && ((this.filesize == null && other.getFilesize() == null) || (this.filesize != null && this.filesize
+                        .equals(other.getFilesize())))
+                && ((this.mimetype == null && other.getMimetype() == null) || (this.mimetype != null && this.mimetype
+                        .equals(other.getMimetype())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -195,8 +179,8 @@ public class RemoteAttachment  extends com.atlassian.jira.rpc.soap.beans.Abstrac
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RemoteAttachment.class, true);
+    private static org.apache.axis.description.TypeDesc typeDesc = new org.apache.axis.description.TypeDesc(
+            RemoteAttachment.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://beans.soap.rpc.jira.atlassian.com", "RemoteAttachment"));
@@ -242,25 +226,17 @@ public class RemoteAttachment  extends com.atlassian.jira.rpc.soap.beans.Abstrac
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
     }
 
 }

@@ -17,10 +17,17 @@ public class AppEngineSqlCloudSession implements SqlCloudSession {
     @PrimaryKey
     private String randomID;
 
-    @Persistent private Key user;
-    @Persistent private String email;
-    @Persistent private Date date;
-    @Persistent private Key invocation;
+    @Persistent
+    private Key user;
+
+    @Persistent
+    private String email;
+
+    @Persistent
+    private Date date;
+
+    @Persistent
+    private Key invocation;
 
     public AppEngineSqlCloudSession(Key author, String randomID, String email, Date date) {
         this.user = author;
@@ -46,7 +53,7 @@ public class AppEngineSqlCloudSession implements SqlCloudSession {
     }
 
     public void setInvocation(DbInvocation invocation) {
-        this.invocation = ((AppEngineDbInvocation)invocation).getKey();
+        this.invocation = ((AppEngineDbInvocation) invocation).getKey();
     }
 
     public String getRandomID() {
@@ -55,8 +62,6 @@ public class AppEngineSqlCloudSession implements SqlCloudSession {
 
     @Override
     public String toString() {
-        return "SqlCloudSession [date=" + date + ", invocation=" + invocation
-                + ", randomID=" + randomID + ", user=" + user
-				+ "]";
+        return "SqlCloudSession [date=" + date + ", invocation=" + invocation + ", randomID=" + randomID + ", user=" + user + "]";
     }
 }

@@ -7,24 +7,25 @@
 
 package com.atlassian.jira.rpc.soap.beans;
 
-public class RemoteNamedObject  extends com.atlassian.jira.rpc.soap.beans.AbstractNamedRemoteEntity  implements java.io.Serializable {
+public class RemoteNamedObject extends com.atlassian.jira.rpc.soap.beans.AbstractNamedRemoteEntity implements
+        java.io.Serializable {
     public RemoteNamedObject() {
     }
 
-    public RemoteNamedObject(
-           java.lang.String id,
-           java.lang.String name) {
-        super(
-            id,
-            name);
+    public RemoteNamedObject(java.lang.String id, java.lang.String name) {
+        super(id, name);
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof RemoteNamedObject)) return false;
+        if (!(obj instanceof RemoteNamedObject))
+            return false;
         RemoteNamedObject other = (RemoteNamedObject) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
@@ -36,6 +37,7 @@ public class RemoteNamedObject  extends com.atlassian.jira.rpc.soap.beans.Abstra
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -47,8 +49,8 @@ public class RemoteNamedObject  extends com.atlassian.jira.rpc.soap.beans.Abstra
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RemoteNamedObject.class, true);
+    private static org.apache.axis.description.TypeDesc typeDesc = new org.apache.axis.description.TypeDesc(
+            RemoteNamedObject.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://beans.soap.rpc.jira.atlassian.com", "RemoteNamedObject"));
@@ -64,25 +66,17 @@ public class RemoteNamedObject  extends com.atlassian.jira.rpc.soap.beans.Abstra
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
     }
 
 }

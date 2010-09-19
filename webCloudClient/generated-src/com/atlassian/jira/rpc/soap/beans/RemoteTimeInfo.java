@@ -7,7 +7,7 @@
 
 package com.atlassian.jira.rpc.soap.beans;
 
-public class RemoteTimeInfo  implements java.io.Serializable {
+public class RemoteTimeInfo implements java.io.Serializable {
     private java.lang.String serverTime;
 
     private java.lang.String timeZoneId;
@@ -15,13 +15,10 @@ public class RemoteTimeInfo  implements java.io.Serializable {
     public RemoteTimeInfo() {
     }
 
-    public RemoteTimeInfo(
-           java.lang.String serverTime,
-           java.lang.String timeZoneId) {
-           this.serverTime = serverTime;
-           this.timeZoneId = timeZoneId;
+    public RemoteTimeInfo(java.lang.String serverTime, java.lang.String timeZoneId) {
+        this.serverTime = serverTime;
+        this.timeZoneId = timeZoneId;
     }
-
 
     /**
      * Gets the serverTime value for this RemoteTimeInfo.
@@ -32,7 +29,6 @@ public class RemoteTimeInfo  implements java.io.Serializable {
         return serverTime;
     }
 
-
     /**
      * Sets the serverTime value for this RemoteTimeInfo.
      * 
@@ -42,7 +38,6 @@ public class RemoteTimeInfo  implements java.io.Serializable {
         this.serverTime = serverTime;
     }
 
-
     /**
      * Gets the timeZoneId value for this RemoteTimeInfo.
      * 
@@ -51,7 +46,6 @@ public class RemoteTimeInfo  implements java.io.Serializable {
     public java.lang.String getTimeZoneId() {
         return timeZoneId;
     }
-
 
     /**
      * Sets the timeZoneId value for this RemoteTimeInfo.
@@ -63,28 +57,31 @@ public class RemoteTimeInfo  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof RemoteTimeInfo)) return false;
+        if (!(obj instanceof RemoteTimeInfo))
+            return false;
         RemoteTimeInfo other = (RemoteTimeInfo) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.serverTime==null && other.getServerTime()==null) || 
-             (this.serverTime!=null &&
-              this.serverTime.equals(other.getServerTime()))) &&
-            ((this.timeZoneId==null && other.getTimeZoneId()==null) || 
-             (this.timeZoneId!=null &&
-              this.timeZoneId.equals(other.getTimeZoneId())));
+        _equals = true
+                && ((this.serverTime == null && other.getServerTime() == null) || (this.serverTime != null && this.serverTime
+                        .equals(other.getServerTime())))
+                && ((this.timeZoneId == null && other.getTimeZoneId() == null) || (this.timeZoneId != null && this.timeZoneId
+                        .equals(other.getTimeZoneId())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -102,8 +99,8 @@ public class RemoteTimeInfo  implements java.io.Serializable {
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RemoteTimeInfo.class, true);
+    private static org.apache.axis.description.TypeDesc typeDesc = new org.apache.axis.description.TypeDesc(RemoteTimeInfo.class,
+            true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://beans.soap.rpc.jira.atlassian.com", "RemoteTimeInfo"));
@@ -131,25 +128,17 @@ public class RemoteTimeInfo  implements java.io.Serializable {
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
     }
 
 }

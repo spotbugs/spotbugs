@@ -21,7 +21,10 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
 
     // ===================== soft signin ==========================
 
-    /** soft sign-in should try to sign in with an existing session ID, then fail silently */
+    /**
+     * soft sign-in should try to sign in with an existing session ID, then fail
+     * silently
+     */
     public void testSoftSignInFailSilently() throws Exception {
         final HttpURLConnection logInConn = mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
@@ -36,7 +39,7 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
         assertEquals(0, cloud.urlsRequested.size());
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public void testSoftSignInSkipWhenHeadless() throws Exception {
         final HttpURLConnection logInConn = mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
@@ -64,7 +67,7 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
         verify(networkClient, never()).logIntoCloudForce();
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public void testSoftSignInFailLoudly() throws Exception {
         final HttpURLConnection logInConn = mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
@@ -93,6 +96,7 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
         cloud.addStatusListener(new Cloud.CloudStatusListener() {
             public void handleIssueDataDownloadedEvent() {
             }
+
             public void handleStateChange(Cloud.SigninState oldState, Cloud.SigninState state) {
                 states.add(oldState.name());
                 states.add(state.name());
@@ -101,17 +105,15 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
         cloud.initialize();
         cloud.signIn();
         cloud.signOut();
-        assertEquals(Arrays.asList(
-                "UNAUTHENTICATED", "SIGNING_IN",
-                "SIGNING_IN",        "SIGNED_IN",
-                "SIGNED_IN",         "SIGNED_OUT"), states);
+        assertEquals(Arrays.asList("UNAUTHENTICATED", "SIGNING_IN", "SIGNING_IN", "SIGNED_IN", "SIGNED_IN", "SIGNED_OUT"), states);
 
         // verify
         assertEquals("/log-in", cloud.urlsRequested.get(0));
         assertEquals("/log-out/555", cloud.urlsRequested.get(1));
     }
 
-    // ================================ authentication =================================
+    // ================================ authentication
+    // =================================
 
     public void testSignInManually() throws IOException {
         // set up mocks
@@ -132,7 +134,7 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
         assertEquals(555, logIn.getSessionId());
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public void testSignInManuallyFails() throws IOException {
         // set up mocks
         final HttpURLConnection signInConn = mock(HttpURLConnection.class);
@@ -149,7 +151,6 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
         } catch (IOException e) {
         }
         assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSigninState());
-
 
         cloud.initialize();
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());

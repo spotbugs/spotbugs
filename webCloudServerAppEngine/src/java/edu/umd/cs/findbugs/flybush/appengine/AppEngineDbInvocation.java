@@ -11,14 +11,19 @@ import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class AppEngineDbInvocation implements DbInvocation {
-    @SuppressWarnings({"UnusedDeclaration"})
+    @SuppressWarnings({ "UnusedDeclaration" })
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
 
-    @Persistent private Key who;
-    @Persistent protected long startTime;
-    @Persistent protected long endTime;
+    @Persistent
+    private Key who;
+
+    @Persistent
+    protected long startTime;
+
+    @Persistent
+    protected long endTime;
 
     public Key getKey() {
         return key;
@@ -46,7 +51,6 @@ public class AppEngineDbInvocation implements DbInvocation {
 
     @Override
     public String toString() {
-        return "DbInvocation [endTime=" + endTime + ", key=" + key
-                + ", startTime=" + startTime + ", who=" + who + "]";
-	}
+        return "DbInvocation [endTime=" + endTime + ", key=" + key + ", startTime=" + startTime + ", who=" + who + "]";
+    }
 }

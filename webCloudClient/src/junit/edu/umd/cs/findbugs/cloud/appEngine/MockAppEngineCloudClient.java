@@ -36,14 +36,19 @@ import static org.mockito.Mockito.when;
 
 class MockAppEngineCloudClient extends AppEngineCloudClient {
     private List<ExpectedConnection> expectedConnections = new ArrayList<ExpectedConnection>();
+
     private int nextConnection = 0;
 
     private AppEngineNameLookup mockNameLookup;
+
     private Long mockSessionId = null;
 
     public List<String> urlsRequested;
+
     public IGuiCallback mockGuiCallback;
+
     public List<String> statusMsgHistory = new CopyOnWriteArrayList<String>();
+
     private final Object statusMsgLock = new Object();
 
     public MockAppEngineCloudClient(CloudPlugin plugin, SortedBugCollection bugs, List<HttpURLConnection> mockConnections)
@@ -62,10 +67,10 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
             public Void answer(InvocationOnMock invocation) {
                 Object[] args = invocation.getArguments();
                 Runnable r = (Runnable) args[0];
-        		r.run();
+                r.run();
                 return null;
-            }})
-            .when(mockGuiCallback).invokeInGUIThread(Mockito.isA(Runnable.class));
+            }
+        }).when(mockGuiCallback).invokeInGUIThread(Mockito.isA(Runnable.class));
 
         initStatusBarHistory();
     }
@@ -80,7 +85,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         return mockGuiCallback;
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public AppEngineCloudNetworkClient createSpyNetworkClient() throws IOException {
         AppEngineCloudNetworkClient spyNetworkClient = Mockito.spy(getNetworkClient());
         Mockito.doThrow(new IOException()).when(spyNetworkClient).signIn(true);
@@ -100,8 +105,9 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
     }
 
     /**
-     * Returns POST data submitted for the given URL. If the URL was expected & requested more than once, this will
-     * return only the data from the LATEST one.
+     * Returns POST data submitted for the given URL. If the URL was expected &
+     * requested more than once, this will return only the data from the LATEST
+     * one.
      */
     public byte[] postedData(String url) {
         return getLatestExpectedConnection(url).getPostData();
@@ -109,9 +115,8 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
 
     public void verifyConnections() {
         if (expectedConnections.size() != nextConnection) {
-            Assert.fail("some connections were not opened\n" +
-                        "opened: " + expectedConnections.subList(0, nextConnection) + "\n" +
-                        "missed: " + expectedConnections.subList(nextConnection, expectedConnections.size()));
+            Assert.fail("some connections were not opened\n" + "opened: " + expectedConnections.subList(0, nextConnection) + "\n"
+                    + "missed: " + expectedConnections.subList(nextConnection, expectedConnections.size()));
         }
     }
 
@@ -122,18 +127,18 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
     }
 
     /**
-     * Returns a {@link CountDownLatch} that waits for a IGuiCallback showMessageDialog call
-     * with a message matching the given regex.
+     * Returns a {@link CountDownLatch} that waits for a IGuiCallback
+     * showMessageDialog call with a message matching the given regex.
      */
     public CountDownLatch getDialogLatch(final String dialogRegex) {
         final CountDownLatch latch = new CountDownLatch(1);
         Mockito.doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
                 String message = (String) invocationOnMock.getArguments()[0];
-                 boolean match = Pattern.compile(dialogRegex).matcher(message).find();
-                 System.out.println("QQQ: " +  " " + match + "\n\"" + dialogRegex +"\"\n\"" + message + "\"");
-             	if (match)
-                  latch.countDown();
+                boolean match = Pattern.compile(dialogRegex).matcher(message).find();
+                System.out.println("QQQ: " + " " + match + "\n\"" + dialogRegex + "\"\n\"" + message + "\"");
+                if (match)
+                    latch.countDown();
                 return null;
             }
         }).when(mockGuiCallback).showMessageDialog(Mockito.anyString());
@@ -141,11 +146,12 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
     }
 
     public void clickYes(String regex) {
-        when(mockGuiCallback.showConfirmDialog(matches(regex), anyString(), anyString(), anyString()))
-                .thenReturn(IGuiCallback.YES_OPTION);
+        when(mockGuiCallback.showConfirmDialog(matches(regex), anyString(), anyString(), anyString())).thenReturn(
+                IGuiCallback.YES_OPTION);
     }
 
-    // ========================== end of public methods =========================
+    // ========================== end of public methods
+    // =========================
 
     private void initStatusBarHistory() {
         addListener(new CloudListener() {
@@ -156,7 +162,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
                 String statusMsg = getStatusMsg();
 
                 if (!statusMsgHistory.isEmpty()) {
-            		String last = statusMsgHistory.get(statusMsgHistory.size()-1);
+                    String last = statusMsgHistory.get(statusMsgHistory.size() - 1);
                     if (statusMsg.equals(last))
                         return;
                 }
@@ -180,18 +186,17 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
                 return mockSessionId;
             }
         });
-        when(mockNameLookup.signIn(Mockito.<CloudPlugin>any(), Mockito.<BugCollection>any()))
-                .thenAnswer(new Answer<Boolean>() {
-                    public Boolean answer(InvocationOnMock invocationOnMock) throws Throwable {
-                        mockSessionId = 555L;
-                        return true;
-                    }
-                });
+        when(mockNameLookup.signIn(Mockito.<CloudPlugin> any(), Mockito.<BugCollection> any())).thenAnswer(new Answer<Boolean>() {
+            public Boolean answer(InvocationOnMock invocationOnMock) throws Throwable {
+                mockSessionId = 555L;
+                return true;
+            }
+        });
         return mockNameLookup;
     }
 
     private ExpectedConnection getLatestExpectedConnection(String url) {
-        for (int i = expectedConnections.size()-1; i >= 0; i--) {
+        for (int i = expectedConnections.size() - 1; i >= 0; i--) {
             ExpectedConnection expectedConnection = expectedConnections.get(i);
             if (url.equals(expectedConnection.url()))
                 return expectedConnection;
@@ -200,15 +205,14 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
     }
 
     public void checkStatusBarHistory(String... expectedStatusLines) {
-        Assert.assertEquals(Arrays.asList(expectedStatusLines),
-                            statusMsgHistory);
+        Assert.assertEquals(Arrays.asList(expectedStatusLines), statusMsgHistory);
     }
 
     public void waitForStatusMsg(String regex) throws InterruptedException {
         Pattern pattern = Pattern.compile(regex);
         long start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 15*1000) {
-            synchronized(statusMsgLock) {
+        while (System.currentTimeMillis() - start < 15 * 1000) {
+            synchronized (statusMsgLock) {
                 statusMsgLock.wait(1000);
                 for (String status : statusMsgHistory) {
                     if (pattern.matcher(status).matches())
@@ -223,8 +227,8 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         @Override
         HttpURLConnection openConnection(String url) {
             if (nextConnection >= expectedConnections.size()) {
-                Assert.fail("Cannot open " + url + " - already requested all "
-                            + expectedConnections.size() + " url's: " + expectedConnections);
+                Assert.fail("Cannot open " + url + " - already requested all " + expectedConnections.size() + " url's: "
+                        + expectedConnections);
             }
             urlsRequested.add(url);
             ExpectedConnection connection = expectedConnections.get(nextConnection);
@@ -248,11 +252,17 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
 
     public class ExpectedConnection {
         private HttpURLConnection mockConnection;
+
         private String url = null;
+
         private int responseCode = 200;
+
         private InputStream responseStream;
+
         private IOException networkError = null;
+
         private ByteArrayOutputStream postDataStream;
+
         private CountDownLatch latch = new CountDownLatch(1);
 
         public ExpectedConnection() {
@@ -288,7 +298,8 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
             return this;
         }
 
-        public @CheckForNull String url() {
+        public @CheckForNull
+        String url() {
             return url;
         }
 

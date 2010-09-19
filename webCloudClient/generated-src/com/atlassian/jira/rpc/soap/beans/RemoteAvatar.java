@@ -7,7 +7,7 @@
 
 package com.atlassian.jira.rpc.soap.beans;
 
-public class RemoteAvatar  implements java.io.Serializable {
+public class RemoteAvatar implements java.io.Serializable {
     private java.lang.String base64Data;
 
     private java.lang.String contentType;
@@ -23,21 +23,15 @@ public class RemoteAvatar  implements java.io.Serializable {
     public RemoteAvatar() {
     }
 
-    public RemoteAvatar(
-           java.lang.String base64Data,
-           java.lang.String contentType,
-           long id,
-           java.lang.String owner,
-           boolean system,
-           java.lang.String type) {
-           this.base64Data = base64Data;
-           this.contentType = contentType;
-           this.id = id;
-           this.owner = owner;
-           this.system = system;
-           this.type = type;
+    public RemoteAvatar(java.lang.String base64Data, java.lang.String contentType, long id, java.lang.String owner,
+            boolean system, java.lang.String type) {
+        this.base64Data = base64Data;
+        this.contentType = contentType;
+        this.id = id;
+        this.owner = owner;
+        this.system = system;
+        this.type = type;
     }
-
 
     /**
      * Gets the base64Data value for this RemoteAvatar.
@@ -48,7 +42,6 @@ public class RemoteAvatar  implements java.io.Serializable {
         return base64Data;
     }
 
-
     /**
      * Sets the base64Data value for this RemoteAvatar.
      * 
@@ -57,7 +50,6 @@ public class RemoteAvatar  implements java.io.Serializable {
     public void setBase64Data(java.lang.String base64Data) {
         this.base64Data = base64Data;
     }
-
 
     /**
      * Gets the contentType value for this RemoteAvatar.
@@ -68,7 +60,6 @@ public class RemoteAvatar  implements java.io.Serializable {
         return contentType;
     }
 
-
     /**
      * Sets the contentType value for this RemoteAvatar.
      * 
@@ -77,7 +68,6 @@ public class RemoteAvatar  implements java.io.Serializable {
     public void setContentType(java.lang.String contentType) {
         this.contentType = contentType;
     }
-
 
     /**
      * Gets the id value for this RemoteAvatar.
@@ -88,7 +78,6 @@ public class RemoteAvatar  implements java.io.Serializable {
         return id;
     }
 
-
     /**
      * Sets the id value for this RemoteAvatar.
      * 
@@ -97,7 +86,6 @@ public class RemoteAvatar  implements java.io.Serializable {
     public void setId(long id) {
         this.id = id;
     }
-
 
     /**
      * Gets the owner value for this RemoteAvatar.
@@ -108,7 +96,6 @@ public class RemoteAvatar  implements java.io.Serializable {
         return owner;
     }
 
-
     /**
      * Sets the owner value for this RemoteAvatar.
      * 
@@ -117,7 +104,6 @@ public class RemoteAvatar  implements java.io.Serializable {
     public void setOwner(java.lang.String owner) {
         this.owner = owner;
     }
-
 
     /**
      * Gets the system value for this RemoteAvatar.
@@ -128,7 +114,6 @@ public class RemoteAvatar  implements java.io.Serializable {
         return system;
     }
 
-
     /**
      * Sets the system value for this RemoteAvatar.
      * 
@@ -138,7 +123,6 @@ public class RemoteAvatar  implements java.io.Serializable {
         this.system = system;
     }
 
-
     /**
      * Gets the type value for this RemoteAvatar.
      * 
@@ -147,7 +131,6 @@ public class RemoteAvatar  implements java.io.Serializable {
     public java.lang.String getType() {
         return type;
     }
-
 
     /**
      * Sets the type value for this RemoteAvatar.
@@ -159,36 +142,35 @@ public class RemoteAvatar  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof RemoteAvatar)) return false;
+        if (!(obj instanceof RemoteAvatar))
+            return false;
         RemoteAvatar other = (RemoteAvatar) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.base64Data==null && other.getBase64Data()==null) || 
-             (this.base64Data!=null &&
-              this.base64Data.equals(other.getBase64Data()))) &&
-            ((this.contentType==null && other.getContentType()==null) || 
-             (this.contentType!=null &&
-              this.contentType.equals(other.getContentType()))) &&
-            this.id == other.getId() &&
-            ((this.owner==null && other.getOwner()==null) || 
-             (this.owner!=null &&
-              this.owner.equals(other.getOwner()))) &&
-            this.system == other.isSystem() &&
-            ((this.type==null && other.getType()==null) || 
-             (this.type!=null &&
-              this.type.equals(other.getType())));
+        _equals = true
+                && ((this.base64Data == null && other.getBase64Data() == null) || (this.base64Data != null && this.base64Data
+                        .equals(other.getBase64Data())))
+                && ((this.contentType == null && other.getContentType() == null) || (this.contentType != null && this.contentType
+                        .equals(other.getContentType())))
+                && this.id == other.getId()
+                && ((this.owner == null && other.getOwner() == null) || (this.owner != null && this.owner
+                        .equals(other.getOwner()))) && this.system == other.isSystem()
+                && ((this.type == null && other.getType() == null) || (this.type != null && this.type.equals(other.getType())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -214,8 +196,8 @@ public class RemoteAvatar  implements java.io.Serializable {
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RemoteAvatar.class, true);
+    private static org.apache.axis.description.TypeDesc typeDesc = new org.apache.axis.description.TypeDesc(RemoteAvatar.class,
+            true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://beans.soap.rpc.jira.atlassian.com", "RemoteAvatar"));
@@ -267,25 +249,17 @@ public class RemoteAvatar  implements java.io.Serializable {
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
     }
 
 }

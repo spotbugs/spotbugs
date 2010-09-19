@@ -7,16 +7,21 @@
 
 package com.atlassian.jira.rpc.exception;
 
-public class RemoteAuthenticationException  extends com.atlassian.jira.rpc.exception.RemoteException  implements java.io.Serializable {
+public class RemoteAuthenticationException extends com.atlassian.jira.rpc.exception.RemoteException implements
+        java.io.Serializable {
     public RemoteAuthenticationException() {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof RemoteAuthenticationException)) return false;
+        if (!(obj instanceof RemoteAuthenticationException))
+            return false;
         RemoteAuthenticationException other = (RemoteAuthenticationException) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
@@ -28,6 +33,7 @@ public class RemoteAuthenticationException  extends com.atlassian.jira.rpc.excep
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -39,11 +45,12 @@ public class RemoteAuthenticationException  extends com.atlassian.jira.rpc.excep
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RemoteAuthenticationException.class, true);
+    private static org.apache.axis.description.TypeDesc typeDesc = new org.apache.axis.description.TypeDesc(
+            RemoteAuthenticationException.class, true);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://exception.rpc.jira.atlassian.com", "RemoteAuthenticationException"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://exception.rpc.jira.atlassian.com",
+                "RemoteAuthenticationException"));
     }
 
     /**
@@ -56,32 +63,24 @@ public class RemoteAuthenticationException  extends com.atlassian.jira.rpc.excep
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
     }
-
 
     /**
      * Writes the exception data to the faultDetails
      */
-    public void writeDetails(javax.xml.namespace.QName qname, org.apache.axis.encoding.SerializationContext context) throws java.io.IOException {
+    public void writeDetails(javax.xml.namespace.QName qname, org.apache.axis.encoding.SerializationContext context)
+            throws java.io.IOException {
         context.serialize(qname, null, this);
     }
 }

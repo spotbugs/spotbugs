@@ -15,22 +15,41 @@ import java.util.Set;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class AppEngineDbEvaluation implements DbEvaluation {
-    @SuppressWarnings({"UnusedDeclaration"})
+    @SuppressWarnings({ "UnusedDeclaration" })
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
 
-    @Persistent private Key who;
-    @Persistent private String email;
-    @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"})
-    @Persistent private Key invocation;
-    @Persistent private String designation;
-    @Persistent private String comment;
-    @Persistent private Text commentLong;
-    @Persistent private AppEngineDbIssue issue;
-    @Persistent private long when;
-    @Persistent private String primaryClass;
-    @Persistent private Set<String> packages;
+    @Persistent
+    private Key who;
+
+    @Persistent
+    private String email;
+
+    @SuppressWarnings({ "FieldCanBeLocal", "UnusedDeclaration" })
+    @Persistent
+    private Key invocation;
+
+    @Persistent
+    private String designation;
+
+    @Persistent
+    private String comment;
+
+    @Persistent
+    private Text commentLong;
+
+    @Persistent
+    private AppEngineDbIssue issue;
+
+    @Persistent
+    private long when;
+
+    @Persistent
+    private String primaryClass;
+
+    @Persistent
+    private Set<String> packages;
 
     public Comparable<?> getWho() {
         return who;
@@ -73,7 +92,7 @@ public class AppEngineDbEvaluation implements DbEvaluation {
     }
 
     public void setInvocation(DbInvocation invocation) {
-        this.invocation = ((AppEngineDbInvocation)invocation).getKey();
+        this.invocation = ((AppEngineDbInvocation) invocation).getKey();
     }
 
     public Object getInvocationKey() {
@@ -117,12 +136,13 @@ public class AppEngineDbEvaluation implements DbEvaluation {
     }
 
     public int compareTo(DbEvaluation o) {
-        if (getWhen() < o.getWhen()) return -1;
-        if (getWhen() > o.getWhen()) return 1;
+        if (getWhen() < o.getWhen())
+            return -1;
+        if (getWhen() > o.getWhen())
+            return 1;
 
-        @SuppressWarnings({"RedundantCast"})
-        int whoCompare = comparePossiblyNull((Comparable) getWho(),
-                                             (Comparable) o.getWho());
+        @SuppressWarnings({ "RedundantCast" })
+        int whoCompare = comparePossiblyNull((Comparable) getWho(), (Comparable) o.getWho());
         if (whoCompare != 0)
             return whoCompare;
 

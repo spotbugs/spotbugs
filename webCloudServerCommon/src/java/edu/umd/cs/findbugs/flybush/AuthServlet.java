@@ -18,14 +18,12 @@ import java.util.Map;
 public class AuthServlet extends AbstractFlybushServlet {
 
     static {
-        // run on startup to configure DyuProject to request e-mail addresses from OpenID providers
-        RelyingParty.getInstance().addListener(new AxSchemaExtension()
-            .addExchange("email")
-        );
+        // run on startup to configure DyuProject to request e-mail addresses
+        // from OpenID providers
+        RelyingParty.getInstance().addListener(new AxSchemaExtension().addExchange("email"));
     }
 
-    public void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         String uri = req.getRequestURI();
         PersistenceManager pm = getPersistenceManager();
@@ -55,21 +53,20 @@ public class AuthServlet extends AbstractFlybushServlet {
         }
     }
 
-    private void browserAuth(HttpServletRequest req, HttpServletResponse resp,
-            PersistenceManager pm) throws IOException {
-        OpenIdUser openIdUser = (OpenIdUser)req.getAttribute(OpenIdUser.ATTR_NAME);
+    private void browserAuth(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
+        OpenIdUser openIdUser = (OpenIdUser) req.getAttribute(OpenIdUser.ATTR_NAME);
 
         if (openIdUser == null) {
             setResponse(resp, 403, "OpenID authorization required");
             return;
         }
-        Map<String,String> axschema = AxSchemaExtension.get(openIdUser);
+        Map<String, String> axschema = AxSchemaExtension.get(openIdUser);
         String email = axschema == null ? null : axschema.get("email");
 
         String openidUrl = openIdUser.getIdentity();
         if (openidUrl == null || email == null || !email.matches(".*@([^.]+\\.)+[^.]{2,}")) {
-            setResponse(resp, 403, "Your OpenID provider for " + openidUrl + " did not provide an e-mail " +
-                                   "address. You need an e-mail address to use this service.");
+            setResponse(resp, 403, "Your OpenID provider for " + openidUrl + " did not provide an e-mail "
+                    + "address. You need an e-mail address to use this service.");
             return;
         }
 
@@ -84,7 +81,8 @@ public class AuthServlet extends AbstractFlybushServlet {
             pm.makePersistent(dbUser);
             tx.commit();
         } finally {
-            if (tx.isActive()) tx.rollback();
+            if (tx.isActive())
+                tx.rollback();
         }
         tx = pm.currentTransaction();
         tx.begin();
@@ -92,7 +90,8 @@ public class AuthServlet extends AbstractFlybushServlet {
             pm.makePersistent(session);
             tx.commit();
         } finally {
-            if (tx.isActive()) tx.rollback();
+            if (tx.isActive())
+                tx.rollback();
         }
         resp.setStatus(200);
         resp.setContentType("text/html");
@@ -101,23 +100,19 @@ public class AuthServlet extends AbstractFlybushServlet {
         writer.println("<h1>You are now signed in</h1>");
         writer.println("<p style='font-size: large; font-weight: bold'>"
                 + "Please return to the FindBugs application window to continue.</p>");
-        writer.println("<p style='font-style: italic'>Signed in as <strong>" + email + "</strong> ("
-                       + openIdUser.getIdentity() + ")</p>");
+        writer.println("<p style='font-style: italic'>Signed in as <strong>" + email + "</strong> (" + openIdUser.getIdentity()
+                + ")</p>");
     }
 
-    private void checkAuth(HttpServletRequest req, HttpServletResponse resp,
-            PersistenceManager pm) throws IOException {
+    private void checkAuth(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
         long id = Long.parseLong(req.getRequestURI().substring("/check-auth/".length()));
         SqlCloudSession sqlCloudSession = lookupCloudSessionById(id, pm);
-		if (sqlCloudSession == null) {
+        if (sqlCloudSession == null) {
             setResponse(resp, 418, "FAIL");
         } else {
             DbUser user = persistenceHelper.getObjectById(pm, persistenceHelper.getDbUserClass(), sqlCloudSession.getUser());
-            setResponse(resp, 200,
-                    "OK\n"
-                    + sqlCloudSession.getRandomID() + "\n"
-                    + user.getEmail());
-		}
+            setResponse(resp, 200, "OK\n" + sqlCloudSession.getRandomID() + "\n" + user.getEmail());
+        }
         resp.flushBuffer();
     }
 
@@ -125,7 +120,7 @@ public class AuthServlet extends AbstractFlybushServlet {
         LogIn loginMsg = LogIn.parseFrom(req.getInputStream());
         SqlCloudSession session = lookupCloudSessionById(loginMsg.getSessionId(), pm);
         if (session == null) {
-			setResponse(resp, 403, "not authenticated");
+            setResponse(resp, 403, "not authenticated");
             return;
         }
 
@@ -136,11 +131,11 @@ public class AuthServlet extends AbstractFlybushServlet {
         Transaction tx = pm.currentTransaction();
         tx.begin();
         try {
-			invocation = pm.makePersistent(invocation);
+            invocation = pm.makePersistent(invocation);
             tx.commit();
         } finally {
             if (tx.isActive()) {
-				tx.rollback();
+                tx.rollback();
             }
         }
         session.setInvocation(invocation);
@@ -148,18 +143,17 @@ public class AuthServlet extends AbstractFlybushServlet {
         tx.begin();
         try {
             pm.makePersistent(session);
-			tx.commit();
+            tx.commit();
         } finally {
             if (tx.isActive()) {
                 tx.rollback();
-			}
+            }
         }
         resp.setStatus(200);
     }
 
-    @SuppressWarnings({"unchecked"})
-    private void logOut(HttpServletRequest req, HttpServletResponse resp,
-            PersistenceManager pm) throws IOException {
+    @SuppressWarnings({ "unchecked" })
+    private void logOut(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
         long id = Long.parseLong(req.getRequestURI().substring("/log-out/".length()));
         SqlCloudSession session = lookupCloudSessionById(id, pm);
         long deleted = 0;
@@ -176,7 +170,7 @@ public class AuthServlet extends AbstractFlybushServlet {
         if (deleted >= 1) {
             resp.setStatus(200);
         } else {
-			setResponse(resp, 404, "no such session");
+            setResponse(resp, 404, "no such session");
         }
     }
 }

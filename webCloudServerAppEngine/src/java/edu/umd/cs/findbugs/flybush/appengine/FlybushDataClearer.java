@@ -29,7 +29,8 @@ public class FlybushDataClearer {
         BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         while (true) {
             String line = br.readLine();
-            if (line == null) break;
+            if (line == null)
+                break;
             System.out.println(line);
             if (line.equals("Deleted 0 entities"))
                 return false;

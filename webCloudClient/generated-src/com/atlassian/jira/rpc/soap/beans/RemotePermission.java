@@ -7,7 +7,7 @@
 
 package com.atlassian.jira.rpc.soap.beans;
 
-public class RemotePermission  implements java.io.Serializable {
+public class RemotePermission implements java.io.Serializable {
     private java.lang.String name;
 
     private java.lang.Long permission;
@@ -15,13 +15,10 @@ public class RemotePermission  implements java.io.Serializable {
     public RemotePermission() {
     }
 
-    public RemotePermission(
-           java.lang.String name,
-           java.lang.Long permission) {
-           this.name = name;
-           this.permission = permission;
+    public RemotePermission(java.lang.String name, java.lang.Long permission) {
+        this.name = name;
+        this.permission = permission;
     }
-
 
     /**
      * Gets the name value for this RemotePermission.
@@ -32,7 +29,6 @@ public class RemotePermission  implements java.io.Serializable {
         return name;
     }
 
-
     /**
      * Sets the name value for this RemotePermission.
      * 
@@ -42,7 +38,6 @@ public class RemotePermission  implements java.io.Serializable {
         this.name = name;
     }
 
-
     /**
      * Gets the permission value for this RemotePermission.
      * 
@@ -51,7 +46,6 @@ public class RemotePermission  implements java.io.Serializable {
     public java.lang.Long getPermission() {
         return permission;
     }
-
 
     /**
      * Sets the permission value for this RemotePermission.
@@ -63,28 +57,30 @@ public class RemotePermission  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof RemotePermission)) return false;
+        if (!(obj instanceof RemotePermission))
+            return false;
         RemotePermission other = (RemotePermission) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.name==null && other.getName()==null) || 
-             (this.name!=null &&
-              this.name.equals(other.getName()))) &&
-            ((this.permission==null && other.getPermission()==null) || 
-             (this.permission!=null &&
-              this.permission.equals(other.getPermission())));
+        _equals = true
+                && ((this.name == null && other.getName() == null) || (this.name != null && this.name.equals(other.getName())))
+                && ((this.permission == null && other.getPermission() == null) || (this.permission != null && this.permission
+                        .equals(other.getPermission())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -102,8 +98,8 @@ public class RemotePermission  implements java.io.Serializable {
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RemotePermission.class, true);
+    private static org.apache.axis.description.TypeDesc typeDesc = new org.apache.axis.description.TypeDesc(
+            RemotePermission.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://beans.soap.rpc.jira.atlassian.com", "RemotePermission"));
@@ -131,25 +127,17 @@ public class RemotePermission  implements java.io.Serializable {
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
     }
 
 }

@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHashes;
 
-@SuppressWarnings({"UnusedDeclaration"})
+@SuppressWarnings({ "UnusedDeclaration" })
 public abstract class QueryServletTest extends AbstractFlybushServletTest {
 
     @Override
@@ -66,7 +66,7 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
         DbIssue foundIssue = createDbIssue("fad1");
         createEvaluation(foundIssue, "first", 100);
         DbEvaluation eval2 = createEvaluation(foundIssue, "second", 200);
-		DbEvaluation eval3 = createEvaluation(foundIssue, "first", 300);
+        DbEvaluation eval3 = createEvaluation(foundIssue, "first", 300);
 
         // apparently the evaluation is automatically persisted. throws
         // exception when attempting to persist the eval with the issue.
@@ -79,11 +79,11 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
         checkTerseIssue(result.getFoundIssues(1), eval2, eval3);
     }
 
-    //TODO: updated bug links should be included in this list!
+    // TODO: updated bug links should be included in this list!
     public void testGetRecentEvaluations() throws Exception {
         DbIssue issue = createDbIssue("fad");
         createEvaluation(issue, "someone1", 100);
-		DbEvaluation eval2 = createEvaluation(issue, "someone2", 200);
+        DbEvaluation eval2 = createEvaluation(issue, "someone2", 200);
         DbEvaluation eval3 = createEvaluation(issue, "someone3", 300);
 
         getPersistenceManager().makePersistent(issue);
@@ -91,7 +91,7 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
         executePost("/get-recent-evaluations", createRecentEvalsRequest(150).toByteArray());
         checkResponse(200);
         RecentEvaluations result = RecentEvaluations.parseFrom(outputCollector.toByteArray());
-		assertEquals(1, result.getIssuesCount());
+        assertEquals(1, result.getIssuesCount());
 
         // check issues
         Issue foundissueProto = result.getIssues(0);
@@ -100,23 +100,23 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
         // check evaluations
         assertEquals(2, foundissueProto.getEvaluationsCount());
         checkEvaluationsEqual(eval2, foundissueProto.getEvaluations(0));
-		checkEvaluationsEqual(eval3, foundissueProto.getEvaluations(1));
+        checkEvaluationsEqual(eval3, foundissueProto.getEvaluations(1));
     }
 
     public void testGetRecentEvaluationsOnlyShowsLatestFromEachPerson() throws Exception {
         DbIssue issue = createDbIssue("fad");
-        createEvaluation(issue, "first",  100);
-		createEvaluation(issue, "second", 200);
-        createEvaluation(issue, "first",  300);
+        createEvaluation(issue, "first", 100);
+        createEvaluation(issue, "second", 200);
+        createEvaluation(issue, "first", 300);
         DbEvaluation eval4 = createEvaluation(issue, "second", 400);
-        DbEvaluation eval5 = createEvaluation(issue, "first",  500);
+        DbEvaluation eval5 = createEvaluation(issue, "first", 500);
 
         getPersistenceManager().makePersistent(issue);
 
         executePost("/get-recent-evaluations", createRecentEvalsRequest(150).toByteArray());
         checkResponse(200);
         RecentEvaluations result = RecentEvaluations.parseFrom(outputCollector.toByteArray());
-		assertEquals(1, result.getIssuesCount());
+        assertEquals(1, result.getIssuesCount());
 
         // check issues
         Issue foundissueProto = result.getIssues(0);
@@ -125,13 +125,13 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
         // check evaluations
         assertEquals(2, foundissueProto.getEvaluationsCount());
         checkEvaluationsEqual(eval4, foundissueProto.getEvaluations(0));
-		checkEvaluationsEqual(eval5, foundissueProto.getEvaluations(1));
+        checkEvaluationsEqual(eval5, foundissueProto.getEvaluations(1));
     }
 
     public void testGetRecentEvaluationsNoneFound() throws Exception {
         DbIssue issue = createDbIssue("fad");
         createEvaluation(issue, "someone", 100);
-		createEvaluation(issue, "someone", 200);
+        createEvaluation(issue, "someone", 200);
         createEvaluation(issue, "someone", 300);
 
         getPersistenceManager().makePersistent(issue);
@@ -139,7 +139,7 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
         executePost("/get-recent-evaluations", createRecentEvalsRequest(300).toByteArray());
         checkResponse(200);
         RecentEvaluations result = RecentEvaluations.parseFrom(outputCollector.toByteArray());
-		assertEquals(0, result.getIssuesCount());
+        assertEquals(0, result.getIssuesCount());
     }
 
     // ========================= end of tests ================================
@@ -151,8 +151,8 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
     }
 
     private void checkTerseIssue(Issue issue, DbEvaluation... evals) {
-        assertEquals(SAMPLE_TIMESTAMP +100, issue.getFirstSeen());
-        assertEquals(SAMPLE_TIMESTAMP +200, issue.getLastSeen());
+        assertEquals(SAMPLE_TIMESTAMP + 100, issue.getFirstSeen());
+        assertEquals(SAMPLE_TIMESTAMP + 200, issue.getLastSeen());
         assertEquals("http://bug.link", issue.getBugLink());
         assertEquals("JIRA", issue.getBugLinkTypeStr());
         assertFalse(issue.hasBugPattern());
@@ -181,15 +181,13 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
     }
 
     private GetRecentEvaluations createRecentEvalsRequest(int timestamp) {
-        return GetRecentEvaluations.newBuilder()
-                .setTimestamp(timestamp)
-                .build();
-	}
+        return GetRecentEvaluations.newBuilder().setTimestamp(timestamp).build();
+    }
 
     private void checkEvaluationsEqual(DbEvaluation dbEval, Evaluation protoEval) {
         assertEquals(dbEval.getComment(), protoEval.getComment());
         assertEquals(dbEval.getDesignation(), protoEval.getDesignation());
-		assertEquals(dbEval.getWhen(), protoEval.getWhen());
+        assertEquals(dbEval.getWhen(), protoEval.getWhen());
         assertEquals(getDbUser(dbEval.getWho()).getEmail(), protoEval.getWho());
     }
 

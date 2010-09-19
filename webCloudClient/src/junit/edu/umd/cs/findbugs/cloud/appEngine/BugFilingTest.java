@@ -37,13 +37,21 @@ import static org.mockito.Mockito.when;
 
 public class BugFilingTest extends TestCase {
     private AppEngineCloudClient mockCloudClient;
+
     private AppEngineCloudNetworkClient mockNetworkClient;
+
     private GoogleCodeBugFiler filer;
+
     private ProjectHostingService projectHostingService;
+
     private boolean triedAgain;
+
     private GoogleOAuthHelper mockOAuthHelper;
+
     private IGuiCallback mockGuiCallback;
+
     private Preferences mockPrefs;
+
     private Properties props;
 
     @Override
@@ -51,7 +59,9 @@ public class BugFilingTest extends TestCase {
         super.setUp();
         mockCloudClient = mock(AppEngineCloudClient.class);
         when(mockCloudClient.getPlugin()).thenReturn(
-                new CloudPluginBuilder().setCloudid("BugFilingTest").setClassLoader(null).setCloudClass(null).setUsernameClass(null).setProperties(new PropertyBundle()).setDescription(null).setDetails(null).createCloudPlugin());
+                new CloudPluginBuilder().setCloudid("BugFilingTest").setClassLoader(null).setCloudClass(null)
+                        .setUsernameClass(null).setProperties(new PropertyBundle()).setDescription(null).setDetails(null)
+                        .createCloudPlugin());
         mockNetworkClient = mock(AppEngineCloudNetworkClient.class);
         when(mockCloudClient.getNetworkClient()).thenReturn(mockNetworkClient);
         projectHostingService = mock(ProjectHostingService.class);
@@ -65,8 +75,8 @@ public class BugFilingTest extends TestCase {
         triedAgain = false;
         filer = new GoogleCodeBugFiler(mockCloudClient, "http://code.google.com/p/test/") {
             @Override
-            <E> E tryAgain(Callable<E> callable, Exception e) throws OAuthException, MalformedURLException,
-                                                                     InterruptedException, AuthenticationException {
+            <E> E tryAgain(Callable<E> callable, Exception e) throws OAuthException, MalformedURLException, InterruptedException,
+                    AuthenticationException {
                 triedAgain = true;
                 try {
                     return callable.call();
@@ -86,7 +96,8 @@ public class BugFilingTest extends TestCase {
             }
 
             @Override
-            ProjectHostingService createProjectHostingService(OAuthHmacSha1Signer oauthSigner, GoogleOAuthParameters oauthParameters) throws OAuthException {
+            ProjectHostingService createProjectHostingService(OAuthHmacSha1Signer oauthSigner,
+                    GoogleOAuthParameters oauthParameters) throws OAuthException {
                 return projectHostingService;
             }
         };
@@ -102,15 +113,17 @@ public class BugFilingTest extends TestCase {
         assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure"));
         assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/"));
         assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa"));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa;sessionId=blah"));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa?blah"));
+        assertEquals("http://jira.atlassian.com",
+                processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa;sessionId=blah"));
+        assertEquals("http://jira.atlassian.com",
+                processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa?blah"));
     }
 
     public void testGoogleCodeFileSuccess() throws Exception {
         // setup
-        when(projectHostingService.insert(
-                Mockito.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
-                Mockito.<IEntry>any())).thenAnswer(createIssueEntryAnswer());
+        when(
+                projectHostingService.insert(Mockito.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
+                        Mockito.<IEntry> any())).thenAnswer(createIssueEntryAnswer());
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
@@ -124,9 +137,9 @@ public class BugFilingTest extends TestCase {
 
     public void testGoogleCodeFileSuccessWithFullUrlForProjectName() throws Exception {
         // setup
-        when(projectHostingService.insert(
-                Mockito.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
-                Mockito.<IEntry>any())).thenAnswer(createIssueEntryAnswer());
+        when(
+                projectHostingService.insert(Mockito.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
+                        Mockito.<IEntry> any())).thenAnswer(createIssueEntryAnswer());
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
@@ -140,9 +153,9 @@ public class BugFilingTest extends TestCase {
 
     public void testGoogleCodeFileSuccessWithLongUrlForProjectName() throws Exception {
         // setup
-        when(projectHostingService.insert(
-                Mockito.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
-                Mockito.<IEntry>any())).thenAnswer(createIssueEntryAnswer());
+        when(
+                projectHostingService.insert(Mockito.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
+                        Mockito.<IEntry> any())).thenAnswer(createIssueEntryAnswer());
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
@@ -154,11 +167,11 @@ public class BugFilingTest extends TestCase {
         verify(mockNetworkClient).setBugLinkOnCloudAndStoreIssueDetails(bug, "http://test.url", "GOOGLE_CODE");
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public void testGoogleCodeFileServiceAuthenticationExceptionOnFirstTry() throws Exception {
         // setup
-        when(projectHostingService.insert(Mockito.<URL>any(), Mockito.<IEntry>any()))
-                .thenThrow(new AuthenticationException("Not logged in")).thenAnswer(createIssueEntryAnswer());
+        when(projectHostingService.insert(Mockito.<URL> any(), Mockito.<IEntry> any())).thenThrow(
+                new AuthenticationException("Not logged in")).thenAnswer(createIssueEntryAnswer());
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
@@ -171,11 +184,11 @@ public class BugFilingTest extends TestCase {
         verify(mockNetworkClient).setBugLinkOnCloudAndStoreIssueDetails(bug, "http://test.url", "GOOGLE_CODE");
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public void testGoogleCodeFileServiceDoubleException() throws Exception {
         // setup
-        when(projectHostingService.insert(Mockito.<URL>any(), Mockito.<IEntry>any()))
-                .thenThrow(new ServiceException("Invalid request URI"));
+        when(projectHostingService.insert(Mockito.<URL> any(), Mockito.<IEntry> any())).thenThrow(
+                new ServiceException("Invalid request URI"));
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
@@ -190,19 +203,19 @@ public class BugFilingTest extends TestCase {
         assertTrue(triedAgain);
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public void testGoogleCodeAuthentication() throws Exception {
         // setup
         filer.setProjectHostingService(null);
         final AtomicReference<OAuthParameters> oauthParams = new AtomicReference<OAuthParameters>();
-        when(mockOAuthHelper.createUserAuthorizationUrl(Mockito.<OAuthParameters>any())).thenAnswer(new Answer<String>() {
+        when(mockOAuthHelper.createUserAuthorizationUrl(Mockito.<OAuthParameters> any())).thenAnswer(new Answer<String>() {
             public String answer(InvocationOnMock invocationOnMock) throws Throwable {
                 oauthParams.set((OAuthParameters) invocationOnMock.getArguments()[0]);
                 return "http://auth.url";
             }
         });
         when(mockGuiCallback.showDocument(new URL("http://auth.url"))).thenReturn(true);
-        when(mockOAuthHelper.getAccessToken(Mockito.<OAuthParameters>any())).thenAnswer(new Answer<String>() {
+        when(mockOAuthHelper.getAccessToken(Mockito.<OAuthParameters> any())).thenAnswer(new Answer<String>() {
             public String answer(InvocationOnMock invocationOnMock) throws Throwable {
                 oauthParams.get().setOAuthTokenSecret("SECRET");
                 return "TOKEN";
@@ -210,10 +223,9 @@ public class BugFilingTest extends TestCase {
         });
 
         // after authenticating..
-        when(projectHostingService.insert(
-                Mockito.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
-                Mockito.<IEntry>any())).thenAnswer(createIssueEntryAnswer());
-
+        when(
+                projectHostingService.insert(Mockito.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
+                        Mockito.<IEntry> any())).thenAnswer(createIssueEntryAnswer());
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
@@ -229,7 +241,7 @@ public class BugFilingTest extends TestCase {
         verify(mockNetworkClient).setBugLinkOnCloudAndStoreIssueDetails(bug, "http://test.url", "GOOGLE_CODE");
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public void testGoogleCodeAuthenticationAlreadyStored() throws Exception {
         // setup
         filer.setProjectHostingService(null);
@@ -237,18 +249,17 @@ public class BugFilingTest extends TestCase {
         props.setProperty(GoogleCodeBugFiler.KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET, "SECRET");
 
         // after authenticating..
-        when(projectHostingService.insert(
-                Mockito.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
-                Mockito.<IEntry>any())).thenAnswer(createIssueEntryAnswer());
-
+        when(
+                projectHostingService.insert(Mockito.eq(new URL("http://code.google.com/feeds/issues/p/test/issues/full")),
+                        Mockito.<IEntry> any())).thenAnswer(createIssueEntryAnswer());
 
         // execute
         BugInstance bug = new BugInstance("Blah", 2);
         URL url = filer.file(bug);
 
         // verify
-        verify(mockOAuthHelper, Mockito.never()).createUserAuthorizationUrl(Mockito.<OAuthParameters>any());
-        verify(mockOAuthHelper, Mockito.never()).getUnauthorizedRequestToken(Mockito.<OAuthParameters>any());
+        verify(mockOAuthHelper, Mockito.never()).createUserAuthorizationUrl(Mockito.<OAuthParameters> any());
+        verify(mockOAuthHelper, Mockito.never()).getUnauthorizedRequestToken(Mockito.<OAuthParameters> any());
         verify(mockGuiCallback, Mockito.never()).showMessageDialogAndWait(Mockito.anyString());
 
         assertEquals("TOKEN", props.getProperty(GoogleCodeBugFiler.KEY_PROJECTHOSTING_OAUTH_TOKEN));

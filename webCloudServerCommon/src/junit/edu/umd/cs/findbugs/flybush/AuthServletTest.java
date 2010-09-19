@@ -11,14 +11,14 @@ import java.util.List;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 
-@SuppressWarnings({"UnusedDeclaration"})
+@SuppressWarnings({ "UnusedDeclaration" })
 public abstract class AuthServletTest extends AbstractFlybushServletTest {
     @Override
     protected AbstractFlybushServlet createServlet() {
         return new AuthServlet();
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
+    @SuppressWarnings({ "UnusedDeclaration" })
     public void DISABLED_testBrowserAuthLoginRedirect() throws Exception {
         executeGet("/browser-auth/100");
         verify(mockResponse).sendRedirect(anyString());
@@ -30,20 +30,17 @@ public abstract class AuthServletTest extends AbstractFlybushServletTest {
         executeGet("/browser-auth/100");
 
         verify(mockResponse).setStatus(200);
-    	verify(mockResponse).setContentType("text/html");
+        verify(mockResponse).setContentType("text/html");
         String outputString = new String(outputCollector.toByteArray(), "UTF-8");
-        assertTrue("Should contain 'now signed in': " + outputString,
-                   outputString.contains("now signed in"));
-		assertTrue("Should contain email address: " + outputString,
-                   outputString.contains("my@email.com"));
-        assertTrue("Should contain OpenID URL: " + outputString,
-                   outputString.contains("http://some.website"));
+        assertTrue("Should contain 'now signed in': " + outputString, outputString.contains("now signed in"));
+        assertTrue("Should contain email address: " + outputString, outputString.contains("my@email.com"));
+        assertTrue("Should contain OpenID URL: " + outputString, outputString.contains("http://some.website"));
     }
 
     public void testCheckAuthForValidId() throws Exception {
         DbUser user = persistenceHelper.createDbUser("http://some.website", "my@email.com");
-        SqlCloudSession session = persistenceHelper.createSqlCloudSession(100, new Date(200),
-                                                                          user.createKeyObject(), "my@email.com");
+        SqlCloudSession session = persistenceHelper.createSqlCloudSession(100, new Date(200), user.createKeyObject(),
+                "my@email.com");
         getPersistenceManager().makePersistentAll(user, session);
 
         executeGet("/check-auth/100");
@@ -79,7 +76,6 @@ public abstract class AuthServletTest extends AbstractFlybushServletTest {
         checkResponse(403, "not authenticated");
     }
 
-
     public void testLogInUnauthenticated() throws Exception {
         executeLogIn();
         checkResponse(403, "not authenticated");
@@ -100,20 +96,16 @@ public abstract class AuthServletTest extends AbstractFlybushServletTest {
         checkResponse(200);
         FindIssuesResponse result = FindIssuesResponse.parseFrom(outputCollector.toByteArray());
         assertEquals(0, result.getFoundIssuesCount());
-        Query query = getPersistenceManager().newQuery(
-                "select from " + persistenceHelper.getDbInvocationClass().getName());
+        Query query = getPersistenceManager().newQuery("select from " + persistenceHelper.getDbInvocationClass().getName());
         List<DbInvocation> invocations = (List<DbInvocation>) query.execute();
         assertEquals(1, invocations.size());
         assertEquals("my@email.com", getDbUser(invocations.get(0).getWho()).getEmail());
-		query.closeAll();
+        query.closeAll();
     }
 
     // ========================= end of tests ================================
 
     private void executeLogIn() throws IOException {
-        executePost("/log-in",
-                    LogIn.newBuilder()
-                            .setSessionId(555).setAnalysisTimestamp(100)
-                            .build().toByteArray());
+        executePost("/log-in", LogIn.newBuilder().setSessionId(555).setAnalysisTimestamp(100).build().toByteArray());
     }
 }

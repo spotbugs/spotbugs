@@ -7,7 +7,7 @@
 
 package com.atlassian.jira.rpc.soap.beans;
 
-public class RemoteVersion  extends com.atlassian.jira.rpc.soap.beans.AbstractNamedRemoteEntity  implements java.io.Serializable {
+public class RemoteVersion extends com.atlassian.jira.rpc.soap.beans.AbstractNamedRemoteEntity implements java.io.Serializable {
     private boolean archived;
 
     private java.util.Calendar releaseDate;
@@ -19,22 +19,14 @@ public class RemoteVersion  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     public RemoteVersion() {
     }
 
-    public RemoteVersion(
-           java.lang.String id,
-           java.lang.String name,
-           boolean archived,
-           java.util.Calendar releaseDate,
-           boolean released,
-           java.lang.Long sequence) {
-        super(
-            id,
-            name);
+    public RemoteVersion(java.lang.String id, java.lang.String name, boolean archived, java.util.Calendar releaseDate,
+            boolean released, java.lang.Long sequence) {
+        super(id, name);
         this.archived = archived;
         this.releaseDate = releaseDate;
         this.released = released;
         this.sequence = sequence;
     }
-
 
     /**
      * Gets the archived value for this RemoteVersion.
@@ -45,7 +37,6 @@ public class RemoteVersion  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
         return archived;
     }
 
-
     /**
      * Sets the archived value for this RemoteVersion.
      * 
@@ -54,7 +45,6 @@ public class RemoteVersion  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     public void setArchived(boolean archived) {
         this.archived = archived;
     }
-
 
     /**
      * Gets the releaseDate value for this RemoteVersion.
@@ -65,7 +55,6 @@ public class RemoteVersion  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
         return releaseDate;
     }
 
-
     /**
      * Sets the releaseDate value for this RemoteVersion.
      * 
@@ -74,7 +63,6 @@ public class RemoteVersion  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     public void setReleaseDate(java.util.Calendar releaseDate) {
         this.releaseDate = releaseDate;
     }
-
 
     /**
      * Gets the released value for this RemoteVersion.
@@ -85,7 +73,6 @@ public class RemoteVersion  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
         return released;
     }
 
-
     /**
      * Sets the released value for this RemoteVersion.
      * 
@@ -95,7 +82,6 @@ public class RemoteVersion  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
         this.released = released;
     }
 
-
     /**
      * Gets the sequence value for this RemoteVersion.
      * 
@@ -104,7 +90,6 @@ public class RemoteVersion  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     public java.lang.Long getSequence() {
         return sequence;
     }
-
 
     /**
      * Sets the sequence value for this RemoteVersion.
@@ -116,30 +101,33 @@ public class RemoteVersion  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof RemoteVersion)) return false;
+        if (!(obj instanceof RemoteVersion))
+            return false;
         RemoteVersion other = (RemoteVersion) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = super.equals(obj) && 
-            this.archived == other.isArchived() &&
-            ((this.releaseDate==null && other.getReleaseDate()==null) || 
-             (this.releaseDate!=null &&
-              this.releaseDate.equals(other.getReleaseDate()))) &&
-            this.released == other.isReleased() &&
-            ((this.sequence==null && other.getSequence()==null) || 
-             (this.sequence!=null &&
-              this.sequence.equals(other.getSequence())));
+        _equals = super.equals(obj)
+                && this.archived == other.isArchived()
+                && ((this.releaseDate == null && other.getReleaseDate() == null) || (this.releaseDate != null && this.releaseDate
+                        .equals(other.getReleaseDate())))
+                && this.released == other.isReleased()
+                && ((this.sequence == null && other.getSequence() == null) || (this.sequence != null && this.sequence
+                        .equals(other.getSequence())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -159,8 +147,8 @@ public class RemoteVersion  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RemoteVersion.class, true);
+    private static org.apache.axis.description.TypeDesc typeDesc = new org.apache.axis.description.TypeDesc(RemoteVersion.class,
+            true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://beans.soap.rpc.jira.atlassian.com", "RemoteVersion"));
@@ -200,25 +188,17 @@ public class RemoteVersion  extends com.atlassian.jira.rpc.soap.beans.AbstractNa
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
     }
 
 }

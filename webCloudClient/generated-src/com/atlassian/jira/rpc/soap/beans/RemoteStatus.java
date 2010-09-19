@@ -7,28 +7,24 @@
 
 package com.atlassian.jira.rpc.soap.beans;
 
-public class RemoteStatus  extends com.atlassian.jira.rpc.soap.beans.AbstractRemoteConstant  implements java.io.Serializable {
+public class RemoteStatus extends com.atlassian.jira.rpc.soap.beans.AbstractRemoteConstant implements java.io.Serializable {
     public RemoteStatus() {
     }
 
-    public RemoteStatus(
-           java.lang.String id,
-           java.lang.String name,
-           java.lang.String description,
-           java.lang.String icon) {
-        super(
-            id,
-            name,
-            description,
-            icon);
+    public RemoteStatus(java.lang.String id, java.lang.String name, java.lang.String description, java.lang.String icon) {
+        super(id, name, description, icon);
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof RemoteStatus)) return false;
+        if (!(obj instanceof RemoteStatus))
+            return false;
         RemoteStatus other = (RemoteStatus) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
@@ -40,6 +36,7 @@ public class RemoteStatus  extends com.atlassian.jira.rpc.soap.beans.AbstractRem
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -51,8 +48,8 @@ public class RemoteStatus  extends com.atlassian.jira.rpc.soap.beans.AbstractRem
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RemoteStatus.class, true);
+    private static org.apache.axis.description.TypeDesc typeDesc = new org.apache.axis.description.TypeDesc(RemoteStatus.class,
+            true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://beans.soap.rpc.jira.atlassian.com", "RemoteStatus"));
@@ -68,25 +65,17 @@ public class RemoteStatus  extends com.atlassian.jira.rpc.soap.beans.AbstractRem
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
     }
 
 }

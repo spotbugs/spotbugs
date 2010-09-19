@@ -15,7 +15,9 @@ import static org.mockito.Mockito.spy;
 
 public class AppEngineTestHelper implements FlybushServletTestHelper {
     private PersistenceManager persistenceManager;
+
     private PersistenceManager actualPersistenceManager;
+
     private LocalServiceTestHelper helper;
 
     public void setUp() throws Exception {
@@ -31,13 +33,13 @@ public class AppEngineTestHelper implements FlybushServletTestHelper {
     }
 
     /**
-     * Creates a PersistenceManagerFactory on the fly, with the exact same information
-     * stored in the /WEB-INF/META-INF/jdoconfig.xml file.
+     * Creates a PersistenceManagerFactory on the fly, with the exact same
+     * information stored in the /WEB-INF/META-INF/jdoconfig.xml file.
      */
     public void initPersistenceManager() {
         Properties newProperties = new Properties();
         newProperties.put("javax.jdo.PersistenceManagerFactoryClass",
-                          "org.datanucleus.store.appengine.jdo.DatastoreJDOPersistenceManagerFactory");
+                "org.datanucleus.store.appengine.jdo.DatastoreJDOPersistenceManagerFactory");
         newProperties.put("javax.jdo.option.ConnectionURL", "appengine");
         newProperties.put("javax.jdo.option.NontransactionalRead", "true");
         newProperties.put("javax.jdo.option.NontransactionalWrite", "true");

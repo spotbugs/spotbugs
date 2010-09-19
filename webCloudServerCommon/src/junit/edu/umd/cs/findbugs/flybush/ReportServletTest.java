@@ -14,11 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.common.collect.Lists;
 import org.mockito.Mockito;
 
-@SuppressWarnings({"unused"})
+@SuppressWarnings({ "unused" })
 public abstract class ReportServletTest extends AbstractFlybushServletTest {
     private List<String> generatedCharts;
 
-    @Override protected void setUp() throws Exception {
+    @Override
+    protected void setUp() throws Exception {
         super.setUp();
         generatedCharts = new ArrayList<String>();
     }
@@ -154,8 +155,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
 
         createEvaluation(foundIssue5, "j", 100);
 
-        getPersistenceManager().makePersistentAll(foundIssue1, foundIssue2, foundIssue3,
-                                                  foundIssue4, foundIssue5, foundIssue6);
+        getPersistenceManager().makePersistentAll(foundIssue1, foundIssue2, foundIssue3, foundIssue4, foundIssue5, foundIssue6);
 
         executeGet("/stats");
 
@@ -239,8 +239,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         String page = outputCollector.toString();
         for (String email : Arrays.asList("someone", "someone-else", "someone3")) {
             last = page.indexOf("<option value=\"" + email + "\">" + email + "</option>", last);
-            assertTrue("could not find combo box item for " + email + ": " + page,
-                       last != -1);
+            assertTrue("could not find combo box item for " + email + ": " + page, last != -1);
         }
     }
 
@@ -331,10 +330,10 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         checkParam(url, "chd", "t:0.0,100.0,66.7,0.0,66.7|0.0,33.3,33.3,0.0,0.0");
     }
 
-    // =============================== end of tests ==================================
+    // =============================== end of tests
+    // ==================================
 
-    private void checkParam(String url, String pname, String expectedValue)
-            throws UnsupportedEncodingException {
+    private void checkParam(String url, String pname, String expectedValue) throws UnsupportedEncodingException {
         Map<String, List<String>> params = getParams(url);
         List<String> pvalue = params.get(pname);
         assertNotNull("Expected value for " + pname, pvalue);
@@ -364,6 +363,6 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
 
     /** starts at march 20, 2010 */
     private long days(int days) {
-        return (1269043200L + (days*86400L))*1000;
+        return (1269043200L + (days * 86400L)) * 1000;
     }
 }

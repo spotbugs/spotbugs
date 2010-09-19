@@ -50,23 +50,20 @@ public abstract class AbstractFlybushServlet extends HttpServlet {
         }
     }
 
-    protected abstract void handlePost(PersistenceManager pm,
-                                       HttpServletRequest req, HttpServletResponse resp,
-                                       String uri) throws IOException;
+    protected abstract void handlePost(PersistenceManager pm, HttpServletRequest req, HttpServletResponse resp, String uri)
+            throws IOException;
 
     protected void show404(HttpServletResponse resp) throws IOException {
         setResponse(resp, 404, "Not Found");
     }
 
-    protected void setResponse(HttpServletResponse resp, int statusCode, String textResponse)
-            throws IOException {
+    protected void setResponse(HttpServletResponse resp, int statusCode, String textResponse) throws IOException {
         resp.setStatus(statusCode);
         resp.setContentType("text/plain");
         resp.getWriter().println(textResponse);
     }
 
-    protected boolean isAuthenticated(HttpServletResponse resp, PersistenceManager pm, long sessionId)
-            throws IOException {
+    protected boolean isAuthenticated(HttpServletResponse resp, PersistenceManager pm, long sessionId) throws IOException {
         SqlCloudSession session = lookupCloudSessionById(sessionId, pm);
         if (session == null) {
             setResponse(resp, 403, "not authenticated");
@@ -77,9 +74,8 @@ public abstract class AbstractFlybushServlet extends HttpServlet {
 
     @SuppressWarnings("unchecked")
     protected SqlCloudSession lookupCloudSessionById(long id, PersistenceManager pm) {
-        Query query = pm.newQuery(
-                "select from " + persistenceHelper.getSqlCloudSessionClass().getName() +
-                " where randomID == :randomIDquery");
+        Query query = pm.newQuery("select from " + persistenceHelper.getSqlCloudSessionClass().getName()
+                + " where randomID == :randomIDquery");
         List<SqlCloudSession> sessions = (List<SqlCloudSession>) query.execute(Long.toString(id));
         return sessions.isEmpty() ? null : sessions.get(0);
     }

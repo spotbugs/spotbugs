@@ -11,6 +11,5 @@ import java.net.URL;
 public interface BugFiler {
     String getBugStatus(String bugUrl) throws Exception;
 
-    URL file(BugInstance b)
-            throws IOException, SignInCancelledException;
+    URL file(BugInstance b) throws IOException, SignInCancelledException;
 }

@@ -9,18 +9,27 @@ import java.util.Map;
 public interface PersistenceHelper {
 
     PersistenceManagerFactory getPersistenceManagerFactory() throws IOException;
+
     PersistenceManager getPersistenceManager() throws IOException;
 
     DbUser createDbUser(String openidUrl, String email);
+
     SqlCloudSession createSqlCloudSession(long id, Date date, Object userKey, String email);
+
     DbInvocation createDbInvocation();
+
     DbIssue createDbIssue();
+
     DbEvaluation createDbEvaluation();
 
     Class<? extends DbUser> getDbUserClass();
+
     Class<? extends SqlCloudSession> getSqlCloudSessionClass();
+
     Class<? extends DbInvocation> getDbInvocationClass();
+
     Class<? extends DbIssue> getDbIssueClass();
+
     Class<? extends DbEvaluation> getDbEvaluationClass();
 
     int clearAllData();
@@ -32,6 +41,8 @@ public interface PersistenceHelper {
     String getEmail(PersistenceManager pm, Comparable<?> who);
 
     boolean isOldCommentStyle(DbEvaluation eval);
+
     void convertToOldCommentStyleForTesting(DbEvaluation eval);
+
     boolean convertToNewCommentStyle(DbEvaluation eval);
 }

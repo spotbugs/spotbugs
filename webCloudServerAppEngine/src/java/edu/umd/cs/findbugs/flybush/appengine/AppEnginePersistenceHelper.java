@@ -88,12 +88,13 @@ public class AppEnginePersistenceHelper implements PersistenceHelper {
         return pm.getObjectById(cls, key);
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({ "unchecked" })
     public Map<String, DbIssue> findIssues(PersistenceManager pm, Iterable<String> hashes) {
-        javax.jdo.Query query = pm.newQuery("select hash, firstSeen, lastSeen, bugLink, bugLinkType, hasEvaluations, evaluations from "
-                                  + getDbIssueClass().getName() + " where :hashes.contains(hash)");
+        javax.jdo.Query query = pm
+                .newQuery("select hash, firstSeen, lastSeen, bugLink, bugLinkType, hasEvaluations, evaluations from "
+                        + getDbIssueClass().getName() + " where :hashes.contains(hash)");
         List<Object[]> results = (List<Object[]>) query.execute(hashes);
-        Map<String,DbIssue> map = new HashMap<String, DbIssue>();
+        Map<String, DbIssue> map = new HashMap<String, DbIssue>();
         for (Object[] result : results) {
             DbIssue issue = createDbIssue();
             issue.setHash((String) result[0]);
@@ -123,11 +124,11 @@ public class AppEnginePersistenceHelper implements PersistenceHelper {
 
     @Override
     public boolean convertToNewCommentStyle(DbEvaluation eval) {
-        return ((AppEngineDbEvaluation)eval).convertToNewCommentStyle();
+        return ((AppEngineDbEvaluation) eval).convertToNewCommentStyle();
     }
 
     public String getEmail(PersistenceManager pm, Comparable<?> who) {
-        //noinspection RedundantCast
+        // noinspection RedundantCast
         return pm.getObjectById(getDbUserClass(), (Key) who).getEmail();
     }
 

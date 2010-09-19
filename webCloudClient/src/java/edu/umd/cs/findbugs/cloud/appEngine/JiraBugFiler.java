@@ -31,9 +31,11 @@ public class JiraBugFiler implements BugFiler {
     private static final Pattern BUG_LINK_PATTERN = Pattern.compile("(.*?)/browse/(.*-\\d+).*");
 
     private final AppEngineCloudClient appEngineCloudClient;
-    private final Map<String,JiraSession> sessionsByBaseUrl = new ConcurrentHashMap<String, JiraSession>();
+
+    private final Map<String, JiraSession> sessionsByBaseUrl = new ConcurrentHashMap<String, JiraSession>();
 
     private final String url;
+
     public JiraBugFiler(AppEngineCloudClient appEngineCloudClient, String url) {
         this.appEngineCloudClient = appEngineCloudClient;
         this.url = url;
@@ -53,8 +55,7 @@ public class JiraBugFiler implements BugFiler {
         }
     }
 
-    public String getBugStatus(String bugUrl)
-            throws ServiceException, MalformedURLException, java.rmi.RemoteException {
+    public String getBugStatus(String bugUrl) throws ServiceException, MalformedURLException, java.rmi.RemoteException {
 
         Matcher m = BUG_LINK_PATTERN.matcher(bugUrl);
         if (!m.matches())
@@ -72,10 +73,10 @@ public class JiraBugFiler implements BugFiler {
         return null;
     }
 
-    // ============================== end of public methods ==============================
+    // ============================== end of public methods
+    // ==============================
 
-    private List<String> getProjectKeys(String baseUrl)
-            throws java.rmi.RemoteException, MalformedURLException, ServiceException {
+    private List<String> getProjectKeys(String baseUrl) throws java.rmi.RemoteException, MalformedURLException, ServiceException {
         JiraSession session = getJiraSession(baseUrl);
         if (session == null)
             return null;
@@ -86,9 +87,9 @@ public class JiraBugFiler implements BugFiler {
         return projectKeys;
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
-    private List<String> getComponentNames(String baseUrl, String key)
-            throws java.rmi.RemoteException, MalformedURLException, ServiceException {
+    @SuppressWarnings({ "UnusedDeclaration" })
+    private List<String> getComponentNames(String baseUrl, String key) throws java.rmi.RemoteException, MalformedURLException,
+            ServiceException {
         JiraSession session = getJiraSession(baseUrl);
         RemoteComponent[] components = session.service.getComponents(session.token, key);
         List<String> componentNames = new ArrayList<String>();
@@ -98,8 +99,7 @@ public class JiraBugFiler implements BugFiler {
         return componentNames;
     }
 
-    private RemoteIssue fileBug(String baseUrl, BugInstance b, String projectKey,
-                               String componentName, String issueTypeName)
+    private RemoteIssue fileBug(String baseUrl, BugInstance b, String projectKey, String componentName, String issueTypeName)
             throws MalformedURLException, ServiceException, java.rmi.RemoteException {
         JiraBugFiler.JiraSession session = getJiraSession(baseUrl);
         RemoteComponent actualComponent = findComponent(projectKey, componentName, session);
@@ -131,8 +131,7 @@ public class JiraBugFiler implements BugFiler {
         return typeNames;
     }
 
-    private String getIssueType(JiraSession session, String issueTypeName, RemoteProject project)
-            throws java.rmi.RemoteException {
+    private String getIssueType(JiraSession session, String issueTypeName, RemoteProject project) throws java.rmi.RemoteException {
         String projectId = project.getId();
         String issueTypeId = null;
         for (RemoteIssueType issueType : session.service.getIssueTypesForProject(session.token, projectId)) {
@@ -146,15 +145,15 @@ public class JiraBugFiler implements BugFiler {
         return issueTypeId;
     }
 
-    private @CheckForNull JiraSession getJiraSession(String baseUrl)
-            throws ServiceException, MalformedURLException, java.rmi.RemoteException {
+    private @CheckForNull
+    JiraSession getJiraSession(String baseUrl) throws ServiceException, MalformedURLException, java.rmi.RemoteException {
 
         JiraBugFiler.JiraSession session = sessionsByBaseUrl.get(baseUrl);
         if (session != null)
             return session;
         session = new JiraSession();
-        session.service = new JiraSoapServiceServiceLocator()
-                .getJirasoapserviceV2(new URL(baseUrl + "/rpc/soap/jirasoapservice-v2"));
+        session.service = new JiraSoapServiceServiceLocator().getJirasoapserviceV2(new URL(baseUrl
+                + "/rpc/soap/jirasoapservice-v2"));
         session.token = getToken(baseUrl, session);
         if (session.token == null)
             return null; // user cancelled login
@@ -164,13 +163,18 @@ public class JiraBugFiler implements BugFiler {
 
     private String getToken(String baseUrl, JiraSession session) throws java.rmi.RemoteException {
         IGuiCallback callback = appEngineCloudClient.getBugCollection().getProject().getGuiCallback();
-        String usernameKey = getPreferenceskeyForJiraBaseUrl(baseUrl); // alphanumeric plus dots and dashes
+        String usernameKey = getPreferenceskeyForJiraBaseUrl(baseUrl); // alphanumeric
+                                                                       // plus
+                                                                       // dots
+                                                                       // and
+                                                                       // dashes
         Preferences prefs = Preferences.userNodeForPackage(JiraBugFiler.class);
         String lastUsername = prefs.get(usernameKey, "");
-        List<String> results = callback.showForm("Enter JIRA username and password for\n" + baseUrl,
-                                                 "JIRA",
-                                                 Arrays.asList(new IGuiCallback.FormItem("Username", lastUsername),
-                                                               new IGuiCallback.FormItem("Password").password()));
+        List<String> results = callback.showForm(
+                "Enter JIRA username and password for\n" + baseUrl,
+                "JIRA",
+                Arrays.asList(new IGuiCallback.FormItem("Username", lastUsername),
+                        new IGuiCallback.FormItem("Password").password()));
         if (results == null)
             return null;
         String username = results.get(0);
@@ -205,10 +209,9 @@ public class JiraBugFiler implements BugFiler {
         List<String> issueTypes = getIssueTypes(trackerUrl);
         if (issueTypes == null)
             return null;
-        List<String> result = callback.showForm("", "File a bug on JIRA", Arrays.asList(
-                new IGuiCallback.FormItem("Project", null, getProjectKeys(trackerUrl)),
-                new IGuiCallback.FormItem("Component"),
-                new IGuiCallback.FormItem("Type", null, issueTypes)));
+        List<String> result = callback.showForm("", "File a bug on JIRA", Arrays.asList(new IGuiCallback.FormItem("Project",
+                null, getProjectKeys(trackerUrl)), new IGuiCallback.FormItem("Component"), new IGuiCallback.FormItem("Type",
+                null, issueTypes)));
         if (result == null)
             return null; // user cancelled
         RemoteIssue issue = fileBug(trackerUrl, b, result.get(0), result.get(1), result.get(2));
@@ -222,12 +225,9 @@ public class JiraBugFiler implements BugFiler {
         Preferences prefs = Preferences.userNodeForPackage(AppEngineCloudClient.class);
 
         String lastProject = prefs.get("last_jira_url", "");
-        String dashboardUrl = guiCallback.showQuestionDialog(
-                "Issue will be filed in JIRA.\n" +
-                "\n" +
-                "Type your project's JIRA dashboard URL below.\n" +
-                "(ex. http://jira.atlassian.com/secure/Dashboard.jspa)", "JIRA",
-                lastProject);
+        String dashboardUrl = guiCallback.showQuestionDialog("Issue will be filed in JIRA.\n" + "\n"
+                + "Type your project's JIRA dashboard URL below.\n" + "(ex. http://jira.atlassian.com/secure/Dashboard.jspa)",
+                "JIRA", lastProject);
         if (dashboardUrl == null || dashboardUrl.trim().length() == 0) {
             return null;
         }
@@ -250,7 +250,9 @@ public class JiraBugFiler implements BugFiler {
 
     private class JiraSession {
         public JiraSoapService service;
+
         public String token;
+
         public String username;
 
         private JiraSession() {

@@ -7,42 +7,27 @@
 
 package com.atlassian.jira.rpc.soap.service;
 
-public class RemoteWorklogImpl  extends com.atlassian.jira.rpc.soap.beans.RemoteWorklog  implements java.io.Serializable {
+public class RemoteWorklogImpl extends com.atlassian.jira.rpc.soap.beans.RemoteWorklog implements java.io.Serializable {
     public RemoteWorklogImpl() {
     }
 
-    public RemoteWorklogImpl(
-           java.lang.String author,
-           java.lang.String comment,
-           java.util.Calendar created,
-           java.lang.String groupLevel,
-           java.lang.String id,
-           java.lang.String roleLevelId,
-           java.util.Calendar startDate,
-           java.lang.String timeSpent,
-           long timeSpentInSeconds,
-           java.lang.String updateAuthor,
-           java.util.Calendar updated) {
-        super(
-            author,
-            comment,
-            created,
-            groupLevel,
-            id,
-            roleLevelId,
-            startDate,
-            timeSpent,
-            timeSpentInSeconds,
-            updateAuthor,
-            updated);
+    public RemoteWorklogImpl(java.lang.String author, java.lang.String comment, java.util.Calendar created,
+            java.lang.String groupLevel, java.lang.String id, java.lang.String roleLevelId, java.util.Calendar startDate,
+            java.lang.String timeSpent, long timeSpentInSeconds, java.lang.String updateAuthor, java.util.Calendar updated) {
+        super(author, comment, created, groupLevel, id, roleLevelId, startDate, timeSpent, timeSpentInSeconds, updateAuthor,
+                updated);
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof RemoteWorklogImpl)) return false;
+        if (!(obj instanceof RemoteWorklogImpl))
+            return false;
         RemoteWorklogImpl other = (RemoteWorklogImpl) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
@@ -54,6 +39,7 @@ public class RemoteWorklogImpl  extends com.atlassian.jira.rpc.soap.beans.Remote
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -65,8 +51,8 @@ public class RemoteWorklogImpl  extends com.atlassian.jira.rpc.soap.beans.Remote
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RemoteWorklogImpl.class, true);
+    private static org.apache.axis.description.TypeDesc typeDesc = new org.apache.axis.description.TypeDesc(
+            RemoteWorklogImpl.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://service.soap.rpc.jira.atlassian.com", "RemoteWorklogImpl"));
@@ -82,25 +68,17 @@ public class RemoteWorklogImpl  extends com.atlassian.jira.rpc.soap.beans.Remote
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
     }
 
 }

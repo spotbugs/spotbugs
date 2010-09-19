@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 import com.google.gdata.client.authn.oauth.OAuthException;
 import com.google.gdata.util.ServiceException;
 
@@ -18,6 +17,7 @@ public class BugFilingHelper {
     private static final Logger LOGGER = Logger.getLogger(BugFilingHelper.class.getName());
 
     private final AppEngineCloudClient appEngineCloudClient;
+
     private final String trackerUrl;
 
     private final BugFiler bugFiler;
@@ -63,9 +63,8 @@ public class BugFilingHelper {
         return status;
     }
 
-    public URL fileBug(BugInstance b)
-            throws javax.xml.rpc.ServiceException, IOException, SignInCancelledException, OAuthException,
-                   InterruptedException, ServiceException {
+    public URL fileBug(BugInstance b) throws javax.xml.rpc.ServiceException, IOException, SignInCancelledException,
+            OAuthException, InterruptedException, ServiceException {
 
         return bugFiler.file(b);
 
@@ -75,6 +74,7 @@ public class BugFilingHelper {
         return bugFiler != null && trackerUrl != null;
     }
 
-    // ============================== end of public methods ==============================
+    // ============================== end of public methods
+    // ==============================
 
 }

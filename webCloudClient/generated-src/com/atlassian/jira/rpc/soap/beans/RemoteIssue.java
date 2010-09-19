@@ -7,7 +7,7 @@
 
 package com.atlassian.jira.rpc.soap.beans;
 
-public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemoteEntity  implements java.io.Serializable {
+public class RemoteIssue extends com.atlassian.jira.rpc.soap.beans.AbstractRemoteEntity implements java.io.Serializable {
     private com.atlassian.jira.rpc.soap.beans.RemoteVersion[] affectsVersions;
 
     private java.lang.String assignee;
@@ -51,30 +51,15 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public RemoteIssue() {
     }
 
-    public RemoteIssue(
-           java.lang.String id,
-           com.atlassian.jira.rpc.soap.beans.RemoteVersion[] affectsVersions,
-           java.lang.String assignee,
-           java.lang.String[] attachmentNames,
-           com.atlassian.jira.rpc.soap.beans.RemoteComponent[] components,
-           java.util.Calendar created,
-           com.atlassian.jira.rpc.soap.beans.RemoteCustomFieldValue[] customFieldValues,
-           java.lang.String description,
-           java.util.Calendar duedate,
-           java.lang.String environment,
-           com.atlassian.jira.rpc.soap.beans.RemoteVersion[] fixVersions,
-           java.lang.String key,
-           java.lang.String priority,
-           java.lang.String project,
-           java.lang.String reporter,
-           java.lang.String resolution,
-           java.lang.String status,
-           java.lang.String summary,
-           java.lang.String type,
-           java.util.Calendar updated,
-           java.lang.Long votes) {
-        super(
-            id);
+    public RemoteIssue(java.lang.String id, com.atlassian.jira.rpc.soap.beans.RemoteVersion[] affectsVersions,
+            java.lang.String assignee, java.lang.String[] attachmentNames,
+            com.atlassian.jira.rpc.soap.beans.RemoteComponent[] components, java.util.Calendar created,
+            com.atlassian.jira.rpc.soap.beans.RemoteCustomFieldValue[] customFieldValues, java.lang.String description,
+            java.util.Calendar duedate, java.lang.String environment,
+            com.atlassian.jira.rpc.soap.beans.RemoteVersion[] fixVersions, java.lang.String key, java.lang.String priority,
+            java.lang.String project, java.lang.String reporter, java.lang.String resolution, java.lang.String status,
+            java.lang.String summary, java.lang.String type, java.util.Calendar updated, java.lang.Long votes) {
+        super(id);
         this.affectsVersions = affectsVersions;
         this.assignee = assignee;
         this.attachmentNames = attachmentNames;
@@ -97,7 +82,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.votes = votes;
     }
 
-
     /**
      * Gets the affectsVersions value for this RemoteIssue.
      * 
@@ -106,7 +90,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public com.atlassian.jira.rpc.soap.beans.RemoteVersion[] getAffectsVersions() {
         return affectsVersions;
     }
-
 
     /**
      * Sets the affectsVersions value for this RemoteIssue.
@@ -117,7 +100,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.affectsVersions = affectsVersions;
     }
 
-
     /**
      * Gets the assignee value for this RemoteIssue.
      * 
@@ -126,7 +108,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.lang.String getAssignee() {
         return assignee;
     }
-
 
     /**
      * Sets the assignee value for this RemoteIssue.
@@ -137,7 +118,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.assignee = assignee;
     }
 
-
     /**
      * Gets the attachmentNames value for this RemoteIssue.
      * 
@@ -146,7 +126,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.lang.String[] getAttachmentNames() {
         return attachmentNames;
     }
-
 
     /**
      * Sets the attachmentNames value for this RemoteIssue.
@@ -157,7 +136,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.attachmentNames = attachmentNames;
     }
 
-
     /**
      * Gets the components value for this RemoteIssue.
      * 
@@ -166,7 +144,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public com.atlassian.jira.rpc.soap.beans.RemoteComponent[] getComponents() {
         return components;
     }
-
 
     /**
      * Sets the components value for this RemoteIssue.
@@ -177,7 +154,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.components = components;
     }
 
-
     /**
      * Gets the created value for this RemoteIssue.
      * 
@@ -186,7 +162,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.util.Calendar getCreated() {
         return created;
     }
-
 
     /**
      * Sets the created value for this RemoteIssue.
@@ -197,7 +172,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.created = created;
     }
 
-
     /**
      * Gets the customFieldValues value for this RemoteIssue.
      * 
@@ -206,7 +180,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public com.atlassian.jira.rpc.soap.beans.RemoteCustomFieldValue[] getCustomFieldValues() {
         return customFieldValues;
     }
-
 
     /**
      * Sets the customFieldValues value for this RemoteIssue.
@@ -217,7 +190,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.customFieldValues = customFieldValues;
     }
 
-
     /**
      * Gets the description value for this RemoteIssue.
      * 
@@ -226,7 +198,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.lang.String getDescription() {
         return description;
     }
-
 
     /**
      * Sets the description value for this RemoteIssue.
@@ -237,7 +208,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.description = description;
     }
 
-
     /**
      * Gets the duedate value for this RemoteIssue.
      * 
@@ -246,7 +216,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.util.Calendar getDuedate() {
         return duedate;
     }
-
 
     /**
      * Sets the duedate value for this RemoteIssue.
@@ -257,7 +226,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.duedate = duedate;
     }
 
-
     /**
      * Gets the environment value for this RemoteIssue.
      * 
@@ -266,7 +234,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.lang.String getEnvironment() {
         return environment;
     }
-
 
     /**
      * Sets the environment value for this RemoteIssue.
@@ -277,7 +244,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.environment = environment;
     }
 
-
     /**
      * Gets the fixVersions value for this RemoteIssue.
      * 
@@ -286,7 +252,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public com.atlassian.jira.rpc.soap.beans.RemoteVersion[] getFixVersions() {
         return fixVersions;
     }
-
 
     /**
      * Sets the fixVersions value for this RemoteIssue.
@@ -297,7 +262,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.fixVersions = fixVersions;
     }
 
-
     /**
      * Gets the key value for this RemoteIssue.
      * 
@@ -306,7 +270,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.lang.String getKey() {
         return key;
     }
-
 
     /**
      * Sets the key value for this RemoteIssue.
@@ -317,7 +280,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.key = key;
     }
 
-
     /**
      * Gets the priority value for this RemoteIssue.
      * 
@@ -326,7 +288,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.lang.String getPriority() {
         return priority;
     }
-
 
     /**
      * Sets the priority value for this RemoteIssue.
@@ -337,7 +298,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.priority = priority;
     }
 
-
     /**
      * Gets the project value for this RemoteIssue.
      * 
@@ -346,7 +306,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.lang.String getProject() {
         return project;
     }
-
 
     /**
      * Sets the project value for this RemoteIssue.
@@ -357,7 +316,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.project = project;
     }
 
-
     /**
      * Gets the reporter value for this RemoteIssue.
      * 
@@ -366,7 +324,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.lang.String getReporter() {
         return reporter;
     }
-
 
     /**
      * Sets the reporter value for this RemoteIssue.
@@ -377,7 +334,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.reporter = reporter;
     }
 
-
     /**
      * Gets the resolution value for this RemoteIssue.
      * 
@@ -386,7 +342,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.lang.String getResolution() {
         return resolution;
     }
-
 
     /**
      * Sets the resolution value for this RemoteIssue.
@@ -397,7 +352,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.resolution = resolution;
     }
 
-
     /**
      * Gets the status value for this RemoteIssue.
      * 
@@ -406,7 +360,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.lang.String getStatus() {
         return status;
     }
-
 
     /**
      * Sets the status value for this RemoteIssue.
@@ -417,7 +370,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.status = status;
     }
 
-
     /**
      * Gets the summary value for this RemoteIssue.
      * 
@@ -426,7 +378,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.lang.String getSummary() {
         return summary;
     }
-
 
     /**
      * Sets the summary value for this RemoteIssue.
@@ -437,7 +388,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.summary = summary;
     }
 
-
     /**
      * Gets the type value for this RemoteIssue.
      * 
@@ -446,7 +396,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.lang.String getType() {
         return type;
     }
-
 
     /**
      * Sets the type value for this RemoteIssue.
@@ -457,7 +406,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.type = type;
     }
 
-
     /**
      * Gets the updated value for this RemoteIssue.
      * 
@@ -466,7 +414,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.util.Calendar getUpdated() {
         return updated;
     }
-
 
     /**
      * Sets the updated value for this RemoteIssue.
@@ -477,7 +424,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         this.updated = updated;
     }
 
-
     /**
      * Gets the votes value for this RemoteIssue.
      * 
@@ -486,7 +432,6 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     public java.lang.Long getVotes() {
         return votes;
     }
-
 
     /**
      * Sets the votes value for this RemoteIssue.
@@ -498,82 +443,65 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof RemoteIssue)) return false;
+        if (!(obj instanceof RemoteIssue))
+            return false;
         RemoteIssue other = (RemoteIssue) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = super.equals(obj) && 
-            ((this.affectsVersions==null && other.getAffectsVersions()==null) || 
-             (this.affectsVersions!=null &&
-              java.util.Arrays.equals(this.affectsVersions, other.getAffectsVersions()))) &&
-            ((this.assignee==null && other.getAssignee()==null) || 
-             (this.assignee!=null &&
-              this.assignee.equals(other.getAssignee()))) &&
-            ((this.attachmentNames==null && other.getAttachmentNames()==null) || 
-             (this.attachmentNames!=null &&
-              java.util.Arrays.equals(this.attachmentNames, other.getAttachmentNames()))) &&
-            ((this.components==null && other.getComponents()==null) || 
-             (this.components!=null &&
-              java.util.Arrays.equals(this.components, other.getComponents()))) &&
-            ((this.created==null && other.getCreated()==null) || 
-             (this.created!=null &&
-              this.created.equals(other.getCreated()))) &&
-            ((this.customFieldValues==null && other.getCustomFieldValues()==null) || 
-             (this.customFieldValues!=null &&
-              java.util.Arrays.equals(this.customFieldValues, other.getCustomFieldValues()))) &&
-            ((this.description==null && other.getDescription()==null) || 
-             (this.description!=null &&
-              this.description.equals(other.getDescription()))) &&
-            ((this.duedate==null && other.getDuedate()==null) || 
-             (this.duedate!=null &&
-              this.duedate.equals(other.getDuedate()))) &&
-            ((this.environment==null && other.getEnvironment()==null) || 
-             (this.environment!=null &&
-              this.environment.equals(other.getEnvironment()))) &&
-            ((this.fixVersions==null && other.getFixVersions()==null) || 
-             (this.fixVersions!=null &&
-              java.util.Arrays.equals(this.fixVersions, other.getFixVersions()))) &&
-            ((this.key==null && other.getKey()==null) || 
-             (this.key!=null &&
-              this.key.equals(other.getKey()))) &&
-            ((this.priority==null && other.getPriority()==null) || 
-             (this.priority!=null &&
-              this.priority.equals(other.getPriority()))) &&
-            ((this.project==null && other.getProject()==null) || 
-             (this.project!=null &&
-              this.project.equals(other.getProject()))) &&
-            ((this.reporter==null && other.getReporter()==null) || 
-             (this.reporter!=null &&
-              this.reporter.equals(other.getReporter()))) &&
-            ((this.resolution==null && other.getResolution()==null) || 
-             (this.resolution!=null &&
-              this.resolution.equals(other.getResolution()))) &&
-            ((this.status==null && other.getStatus()==null) || 
-             (this.status!=null &&
-              this.status.equals(other.getStatus()))) &&
-            ((this.summary==null && other.getSummary()==null) || 
-             (this.summary!=null &&
-              this.summary.equals(other.getSummary()))) &&
-            ((this.type==null && other.getType()==null) || 
-             (this.type!=null &&
-              this.type.equals(other.getType()))) &&
-            ((this.updated==null && other.getUpdated()==null) || 
-             (this.updated!=null &&
-              this.updated.equals(other.getUpdated()))) &&
-            ((this.votes==null && other.getVotes()==null) || 
-             (this.votes!=null &&
-              this.votes.equals(other.getVotes())));
+        _equals = super.equals(obj)
+                && ((this.affectsVersions == null && other.getAffectsVersions() == null) || (this.affectsVersions != null && java.util.Arrays
+                        .equals(this.affectsVersions, other.getAffectsVersions())))
+                && ((this.assignee == null && other.getAssignee() == null) || (this.assignee != null && this.assignee
+                        .equals(other.getAssignee())))
+                && ((this.attachmentNames == null && other.getAttachmentNames() == null) || (this.attachmentNames != null && java.util.Arrays
+                        .equals(this.attachmentNames, other.getAttachmentNames())))
+                && ((this.components == null && other.getComponents() == null) || (this.components != null && java.util.Arrays
+                        .equals(this.components, other.getComponents())))
+                && ((this.created == null && other.getCreated() == null) || (this.created != null && this.created.equals(other
+                        .getCreated())))
+                && ((this.customFieldValues == null && other.getCustomFieldValues() == null) || (this.customFieldValues != null && java.util.Arrays
+                        .equals(this.customFieldValues, other.getCustomFieldValues())))
+                && ((this.description == null && other.getDescription() == null) || (this.description != null && this.description
+                        .equals(other.getDescription())))
+                && ((this.duedate == null && other.getDuedate() == null) || (this.duedate != null && this.duedate.equals(other
+                        .getDuedate())))
+                && ((this.environment == null && other.getEnvironment() == null) || (this.environment != null && this.environment
+                        .equals(other.getEnvironment())))
+                && ((this.fixVersions == null && other.getFixVersions() == null) || (this.fixVersions != null && java.util.Arrays
+                        .equals(this.fixVersions, other.getFixVersions())))
+                && ((this.key == null && other.getKey() == null) || (this.key != null && this.key.equals(other.getKey())))
+                && ((this.priority == null && other.getPriority() == null) || (this.priority != null && this.priority
+                        .equals(other.getPriority())))
+                && ((this.project == null && other.getProject() == null) || (this.project != null && this.project.equals(other
+                        .getProject())))
+                && ((this.reporter == null && other.getReporter() == null) || (this.reporter != null && this.reporter
+                        .equals(other.getReporter())))
+                && ((this.resolution == null && other.getResolution() == null) || (this.resolution != null && this.resolution
+                        .equals(other.getResolution())))
+                && ((this.status == null && other.getStatus() == null) || (this.status != null && this.status.equals(other
+                        .getStatus())))
+                && ((this.summary == null && other.getSummary() == null) || (this.summary != null && this.summary.equals(other
+                        .getSummary())))
+                && ((this.type == null && other.getType() == null) || (this.type != null && this.type.equals(other.getType())))
+                && ((this.updated == null && other.getUpdated() == null) || (this.updated != null && this.updated.equals(other
+                        .getUpdated())))
+                && ((this.votes == null && other.getVotes() == null) || (this.votes != null && this.votes
+                        .equals(other.getVotes())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -581,12 +509,9 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
         __hashCodeCalc = true;
         int _hashCode = super.hashCode();
         if (getAffectsVersions() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getAffectsVersions());
-                 i++) {
+            for (int i = 0; i < java.lang.reflect.Array.getLength(getAffectsVersions()); i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getAffectsVersions(), i);
-                if (obj != null &&
-                    !obj.getClass().isArray()) {
+                if (obj != null && !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -595,23 +520,17 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
             _hashCode += getAssignee().hashCode();
         }
         if (getAttachmentNames() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getAttachmentNames());
-                 i++) {
+            for (int i = 0; i < java.lang.reflect.Array.getLength(getAttachmentNames()); i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getAttachmentNames(), i);
-                if (obj != null &&
-                    !obj.getClass().isArray()) {
+                if (obj != null && !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
         }
         if (getComponents() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getComponents());
-                 i++) {
+            for (int i = 0; i < java.lang.reflect.Array.getLength(getComponents()); i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getComponents(), i);
-                if (obj != null &&
-                    !obj.getClass().isArray()) {
+                if (obj != null && !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -620,12 +539,9 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
             _hashCode += getCreated().hashCode();
         }
         if (getCustomFieldValues() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getCustomFieldValues());
-                 i++) {
+            for (int i = 0; i < java.lang.reflect.Array.getLength(getCustomFieldValues()); i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getCustomFieldValues(), i);
-                if (obj != null &&
-                    !obj.getClass().isArray()) {
+                if (obj != null && !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -640,12 +556,9 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
             _hashCode += getEnvironment().hashCode();
         }
         if (getFixVersions() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getFixVersions());
-                 i++) {
+            for (int i = 0; i < java.lang.reflect.Array.getLength(getFixVersions()); i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getFixVersions(), i);
-                if (obj != null &&
-                    !obj.getClass().isArray()) {
+                if (obj != null && !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -685,8 +598,8 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RemoteIssue.class, true);
+    private static org.apache.axis.description.TypeDesc typeDesc = new org.apache.axis.description.TypeDesc(RemoteIssue.class,
+            true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://beans.soap.rpc.jira.atlassian.com", "RemoteIssue"));
@@ -822,25 +735,17 @@ public class RemoteIssue  extends com.atlassian.jira.rpc.soap.beans.AbstractRemo
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
     }
 
 }

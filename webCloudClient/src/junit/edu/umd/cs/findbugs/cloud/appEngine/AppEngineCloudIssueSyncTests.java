@@ -29,7 +29,8 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
     public void testFindIssuesAllFound() throws IOException, InterruptedException {
         // set up mocks
         final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
+        when(findIssuesConnection.getInputStream())
+                .thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         ByteArrayOutputStream findIssuesOutput = setupResponseCodeAndOutputStream(findIssuesConnection);
 
         // execution
@@ -46,19 +47,19 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         verify(findIssuesConnection).connect();
         FindIssues hashes = FindIssues.parseFrom(findIssuesOutput.toByteArray());
         assertEquals(1, hashes.getMyIssueHashesCount());
-		List<String> hashesFromFindIssues = AppEngineProtoUtil.decodeHashes(hashes.getMyIssueHashesList());
+        List<String> hashesFromFindIssues = AppEngineProtoUtil.decodeHashes(hashes.getMyIssueHashesList());
         assertTrue(hashesFromFindIssues.contains(foundIssue.getInstanceHash()));
 
         // verify processing of found issues
-        assertEquals(SAMPLE_DATE+100, cloud.getFirstSeen(foundIssue));
-        assertEquals(SAMPLE_DATE+500, cloud.getUserTimestamp(foundIssue));
-		assertEquals("latest comment", cloud.getUserEvaluation(foundIssue));
+        assertEquals(SAMPLE_DATE + 100, cloud.getFirstSeen(foundIssue));
+        assertEquals(SAMPLE_DATE + 500, cloud.getUserTimestamp(foundIssue));
+        assertEquals("latest comment", cloud.getUserEvaluation(foundIssue));
         assertEquals(UserDesignation.MUST_FIX, cloud.getUserDesignation(foundIssue));
 
         BugDesignation primaryDesignation = cloud.getPrimaryDesignation(foundIssue);
         assertNotNull(primaryDesignation);
         assertEquals("latest comment", primaryDesignation.getAnnotationText());
-		assertEquals(SAMPLE_DATE+500, primaryDesignation.getTimestamp());
+        assertEquals(SAMPLE_DATE + 500, primaryDesignation.getTimestamp());
         assertEquals("MUST_FIX", primaryDesignation.getDesignationKey());
         assertEquals("test@example.com", primaryDesignation.getUser());
     }
@@ -89,7 +90,8 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
 
         // set up mocks
         final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
+        when(findIssuesConnection.getInputStream())
+                .thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         ByteArrayOutputStream findIssuesOutput = setupResponseCodeAndOutputStream(findIssuesConnection);
 
         final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
@@ -114,7 +116,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         verify(findIssuesConnection).connect();
         FindIssues hashes = FindIssues.parseFrom(findIssuesOutput.toByteArray());
         assertEquals(2, hashes.getMyIssueHashesCount());
-		List<String> hashesFromFindIssues = AppEngineProtoUtil.decodeHashes(hashes.getMyIssueHashesList());
+        List<String> hashesFromFindIssues = AppEngineProtoUtil.decodeHashes(hashes.getMyIssueHashesList());
         assertTrue(hashesFromFindIssues.contains(foundIssue.getInstanceHash()));
         assertTrue(hashesFromFindIssues.contains(missingIssue.getInstanceHash()));
 
@@ -125,15 +127,15 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         assertEquals(cloud.getBugCollection().getAnalysisTimestamp(), logIn.getAnalysisTimestamp());
 
         // verify processing of found issues
-        assertEquals(SAMPLE_DATE+100, cloud.getFirstSeen(foundIssue));
-        assertEquals(SAMPLE_DATE+500, cloud.getUserTimestamp(foundIssue));
-		assertEquals("latest comment", cloud.getUserEvaluation(foundIssue));
+        assertEquals(SAMPLE_DATE + 100, cloud.getFirstSeen(foundIssue));
+        assertEquals(SAMPLE_DATE + 500, cloud.getUserTimestamp(foundIssue));
+        assertEquals("latest comment", cloud.getUserEvaluation(foundIssue));
         assertEquals(UserDesignation.MUST_FIX, cloud.getUserDesignation(foundIssue));
 
         BugDesignation primaryDesignation = cloud.getPrimaryDesignation(foundIssue);
         assertNotNull(primaryDesignation);
         assertEquals("latest comment", primaryDesignation.getAnnotationText());
-		assertEquals(SAMPLE_DATE+500, primaryDesignation.getTimestamp());
+        assertEquals(SAMPLE_DATE + 500, primaryDesignation.getTimestamp());
         assertEquals("MUST_FIX", primaryDesignation.getDesignationKey());
         assertEquals("test@example.com", primaryDesignation.getUser());
 
@@ -150,13 +152,13 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
 
         // set up mocks
         final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
+        when(findIssuesConnection.getInputStream())
+                .thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConnection);
 
         // execution
         MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
-        when(cloud.mockGuiCallback.showConfirmDialog(anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(-1);
+        when(cloud.mockGuiCallback.showConfirmDialog(anyString(), anyString(), anyString(), anyString())).thenReturn(-1);
         cloud.initialize();
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.bugsPopulated();
@@ -174,7 +176,8 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
 
         // set up mocks
         final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
+        when(findIssuesConnection.getInputStream())
+                .thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConnection);
 
         // execution
@@ -192,13 +195,14 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public void testLogInAndUploadIssuesFailsDuringSignIn() throws IOException, InterruptedException {
         addMissingIssue = true;
 
         // set up mocks
         final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
+        when(findIssuesConnection.getInputStream())
+                .thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConnection);
 
         // execution
@@ -217,12 +221,13 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
     }
 
-    // =================================== end of tests ===========================================
+    // =================================== end of tests
+    // ===========================================
 
     private void checkIssuesEqual(BugInstance issue, Issue uploadedIssue) {
         assertEquals(issue.getInstanceHash(), AppEngineProtoUtil.decodeHash(uploadedIssue.getHash()));
         assertEquals(issue.getType(), uploadedIssue.getBugPattern());
-		assertEquals(issue.getPriority(), uploadedIssue.getPriority());
+        assertEquals(issue.getPriority(), uploadedIssue.getPriority());
         assertEquals(0, uploadedIssue.getLastSeen());
         assertEquals(issue.getPrimaryClass().getClassName(), uploadedIssue.getPrimaryClass());
     }

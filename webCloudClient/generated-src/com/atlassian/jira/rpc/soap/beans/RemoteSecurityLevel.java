@@ -7,22 +7,17 @@
 
 package com.atlassian.jira.rpc.soap.beans;
 
-public class RemoteSecurityLevel  extends com.atlassian.jira.rpc.soap.beans.AbstractNamedRemoteEntity  implements java.io.Serializable {
+public class RemoteSecurityLevel extends com.atlassian.jira.rpc.soap.beans.AbstractNamedRemoteEntity implements
+        java.io.Serializable {
     private java.lang.String description;
 
     public RemoteSecurityLevel() {
     }
 
-    public RemoteSecurityLevel(
-           java.lang.String id,
-           java.lang.String name,
-           java.lang.String description) {
-        super(
-            id,
-            name);
+    public RemoteSecurityLevel(java.lang.String id, java.lang.String name, java.lang.String description) {
+        super(id, name);
         this.description = description;
     }
-
 
     /**
      * Gets the description value for this RemoteSecurityLevel.
@@ -32,7 +27,6 @@ public class RemoteSecurityLevel  extends com.atlassian.jira.rpc.soap.beans.Abst
     public java.lang.String getDescription() {
         return description;
     }
-
 
     /**
      * Sets the description value for this RemoteSecurityLevel.
@@ -44,25 +38,29 @@ public class RemoteSecurityLevel  extends com.atlassian.jira.rpc.soap.beans.Abst
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof RemoteSecurityLevel)) return false;
+        if (!(obj instanceof RemoteSecurityLevel))
+            return false;
         RemoteSecurityLevel other = (RemoteSecurityLevel) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = super.equals(obj) && 
-            ((this.description==null && other.getDescription()==null) || 
-             (this.description!=null &&
-              this.description.equals(other.getDescription())));
+        _equals = super.equals(obj)
+                && ((this.description == null && other.getDescription() == null) || (this.description != null && this.description
+                        .equals(other.getDescription())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -77,8 +75,8 @@ public class RemoteSecurityLevel  extends com.atlassian.jira.rpc.soap.beans.Abst
     }
 
     // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RemoteSecurityLevel.class, true);
+    private static org.apache.axis.description.TypeDesc typeDesc = new org.apache.axis.description.TypeDesc(
+            RemoteSecurityLevel.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://beans.soap.rpc.jira.atlassian.com", "RemoteSecurityLevel"));
@@ -100,25 +98,17 @@ public class RemoteSecurityLevel  extends com.atlassian.jira.rpc.soap.beans.Abst
     /**
      * Get Custom Serializer
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Serializer getSerializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public static org.apache.axis.encoding.Deserializer getDeserializer(java.lang.String mechType, java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
     }
 
 }
