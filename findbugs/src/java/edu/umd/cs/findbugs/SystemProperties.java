@@ -149,6 +149,7 @@ public class SystemProperties {
      * @return the int value (or arg1 if the property does not exist)
      * @deprecated Use {@link #getInt(String,int)} instead
      */
+    @Deprecated
     public static Integer getInteger(String arg0, int arg1) {
         return getInt(arg0, arg1);
     }

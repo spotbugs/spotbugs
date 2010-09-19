@@ -88,16 +88,16 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
             outputStream.printf("%2d ", rank);
         }
         switch (bugInstance.getPriority()) {
-        case Detector.EXP_PRIORITY:
+        case Priorities.EXP_PRIORITY:
             outputStream.print("E ");
             break;
-        case Detector.LOW_PRIORITY:
+        case Priorities.LOW_PRIORITY:
             outputStream.print("L ");
             break;
-        case Detector.NORMAL_PRIORITY:
+        case Priorities.NORMAL_PRIORITY:
             outputStream.print("M ");
             break;
-        case Detector.HIGH_PRIORITY:
+        case Priorities.HIGH_PRIORITY:
             outputStream.print("H ");
             break;
         }

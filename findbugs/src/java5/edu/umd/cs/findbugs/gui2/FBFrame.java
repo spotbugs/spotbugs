@@ -46,6 +46,7 @@ public class FBFrame extends JFrame {
     /**
      * @deprecated Use {@link #setFontSizeHelper(float,Component[])} instead
      */
+    @Deprecated
     protected void setFontSizeHelper(Component[] comps, float size) {
         setFontSizeHelper(size, comps);
     }

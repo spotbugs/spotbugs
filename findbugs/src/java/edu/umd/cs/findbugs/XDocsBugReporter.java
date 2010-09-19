@@ -185,16 +185,16 @@ public class XDocsBugReporter extends TextUIBugReporter {
         element.addAttribute("type", bugInstance.getType());
 
         switch (bugInstance.getPriority()) {
-        case Detector.EXP_PRIORITY:
+        case Priorities.EXP_PRIORITY:
             element.addAttribute("priority", "Experimental");
             break;
-        case Detector.LOW_PRIORITY:
+        case Priorities.LOW_PRIORITY:
             element.addAttribute("priority", "Low");
             break;
-        case Detector.NORMAL_PRIORITY:
+        case Priorities.NORMAL_PRIORITY:
             element.addAttribute("priority", "Normal");
             break;
-        case Detector.HIGH_PRIORITY:
+        case Priorities.HIGH_PRIORITY:
             element.addAttribute("priority", "High");
             break;
         }

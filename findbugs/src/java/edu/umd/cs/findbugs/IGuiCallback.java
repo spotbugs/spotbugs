@@ -23,7 +23,6 @@ import javax.swing.*;
 import edu.umd.cs.findbugs.cloud.Cloud;
 
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ExecutorService;

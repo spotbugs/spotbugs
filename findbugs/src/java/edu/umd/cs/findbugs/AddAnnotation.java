@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;

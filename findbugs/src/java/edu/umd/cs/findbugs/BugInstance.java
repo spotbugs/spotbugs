@@ -189,7 +189,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         } else
             this.priority += p.getPriorityAdjustment();
         if (adjustExperimental && isExperimental())
-            this.priority = Detector.EXP_PRIORITY;
+            this.priority = Priorities.EXP_PRIORITY;
         boundPriority();
     }
 
@@ -354,13 +354,13 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         // first, get the priority
         int value = this.getPriority();
         String priorityString;
-        if (value == Detector.HIGH_PRIORITY)
+        if (value == Priorities.HIGH_PRIORITY)
             priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_high", "High");
-        else if (value == Detector.NORMAL_PRIORITY)
+        else if (value == Priorities.NORMAL_PRIORITY)
             priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_normal", "Medium");
-        else if (value == Detector.LOW_PRIORITY)
+        else if (value == Priorities.LOW_PRIORITY)
             priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_low", "Low");
-        else if (value == Detector.EXP_PRIORITY)
+        else if (value == Priorities.EXP_PRIORITY)
             priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_experimental", "Experimental");
         else
             priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_ignore", "Ignore"); // This
@@ -390,7 +390,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     }
 
     private int boundedPriority(int p) {
-        return Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, p));
+        return Math.max(Priorities.HIGH_PRIORITY, Math.min(Priorities.IGNORE_PRIORITY, p));
     }
 
     public void raisePriority() {

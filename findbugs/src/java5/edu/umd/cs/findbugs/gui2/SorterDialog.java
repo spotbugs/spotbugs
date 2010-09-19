@@ -35,8 +35,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
-import org.junit.runner.manipulation.Sortable;
-
 /**
  * This is the window that pops up when the user double clicks on the sorting
  * table Its also available from the menu if they remove all Sortables.

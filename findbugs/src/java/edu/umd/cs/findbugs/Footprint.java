@@ -24,8 +24,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.util.List;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-
 /**
  * Class to maintain a snapshot of a processes's time and memory usage.
  * 

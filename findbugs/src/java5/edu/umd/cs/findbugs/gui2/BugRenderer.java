@@ -26,6 +26,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.Priorities;
 
 @SuppressWarnings("serial")
 /**
@@ -44,23 +45,23 @@ public class BugRenderer extends DefaultTreeCellRenderer {
             BugInstance bug = ((BugLeafNode) node).getBug();
             final Color c;
             switch (bug.getPriority()) {
-            case Detector.LOW_PRIORITY:
+            case Priorities.LOW_PRIORITY:
                 c = new Color(0.4f, 0.4f, 0.6f);
                 break;
-            case Detector.NORMAL_PRIORITY:
+            case Priorities.NORMAL_PRIORITY:
                 if (bug.isDead())
                     c = new Color(0.2f, 0.2f, 0.2f);
                 else
                     c = new Color(255, 204, 0);
                 break;
-            case Detector.HIGH_PRIORITY:
+            case Priorities.HIGH_PRIORITY:
                 if (bug.isDead())
                     c = new Color(.65f, 0.2f, 0.2f);
                 else
                     c = new Color(.85f, 0, 0);
                 break;
-            case Detector.EXP_PRIORITY:
-            case Detector.IGNORE_PRIORITY:
+            case Priorities.EXP_PRIORITY:
+            case Priorities.IGNORE_PRIORITY:
             default:
                 c = Color.blue;
                 break;

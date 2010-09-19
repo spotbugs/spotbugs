@@ -21,9 +21,6 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 
 import org.apache.bcel.generic.Type;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
@@ -116,9 +113,9 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
     public String format(String key, ClassAnnotation primaryClass) {
         String name = new SignatureConverter(descriptor).parseNext().replace("java.lang.", "");
         if (key.equals("givenClass"))
-            name = ClassAnnotation.shorten(primaryClass.getPackageName(), name);
+            name = PackageMemberAnnotation.shorten(primaryClass.getPackageName(), name);
         else if (key.equals("excludingPackage"))
-            name = ClassAnnotation.removePackage(name);
+            name = PackageMemberAnnotation.removePackage(name);
 
         if (typeParameters != null && !key.equals("hash"))
             name = name + typeParameters;

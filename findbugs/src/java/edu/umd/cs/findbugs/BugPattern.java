@@ -19,10 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.IOException;
-
-import javax.swing.text.BadLocationException;
-
 import edu.umd.cs.findbugs.util.HTML;
 
 /**

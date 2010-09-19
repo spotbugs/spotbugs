@@ -26,7 +26,6 @@ import javax.swing.text.JTextComponent;
 
 import edu.umd.cs.findbugs.AWTEventQueueExecutor;
 import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.IGuiCallback.FormItem;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 public abstract class AbstractSwingGuiCallback implements IGuiCallback {

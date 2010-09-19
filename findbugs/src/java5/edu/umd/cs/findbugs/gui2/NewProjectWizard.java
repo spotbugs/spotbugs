@@ -116,6 +116,7 @@ public class NewProjectWizard extends FBDialog {
     private int currentPanel;
 
     static class CloudComboBoxRenderer extends BasicComboBoxRenderer {
+        @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
                 boolean cellHasFocus) {
             CloudPlugin plugin = (CloudPlugin) value;

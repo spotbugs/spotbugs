@@ -21,8 +21,6 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.util.Comparator;
 
-import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
-
 /**
  * @author Alex Mont
  */

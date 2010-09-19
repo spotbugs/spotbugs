@@ -77,6 +77,7 @@ public class ProgramPoint {
         return SourceLineAnnotation.fromVisitedInstruction(method.getMethodDescriptor(), pc);
     }
 
+    @Override
     public String toString() {
         return method.toString() + ":" + pc;
     }

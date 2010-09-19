@@ -33,11 +33,11 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
 import edu.umd.cs.findbugs.cloud.Cloud.Mode;
-import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
@@ -192,13 +192,13 @@ public enum Sortables implements Comparator<String> {
 
         @Override
         public String formatValue(String value) {
-            if (value.equals(String.valueOf(Detector.HIGH_PRIORITY)))
+            if (value.equals(String.valueOf(Priorities.HIGH_PRIORITY)))
                 return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_high", "High");
-            if (value.equals(String.valueOf(Detector.NORMAL_PRIORITY)))
+            if (value.equals(String.valueOf(Priorities.NORMAL_PRIORITY)))
                 return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_normal", "Normal");
-            if (value.equals(String.valueOf(Detector.LOW_PRIORITY)))
+            if (value.equals(String.valueOf(Priorities.LOW_PRIORITY)))
                 return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_low", "Low");
-            if (value.equals(String.valueOf(Detector.EXP_PRIORITY)))
+            if (value.equals(String.valueOf(Priorities.EXP_PRIORITY)))
                 return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_experimental", "Experimental");
             return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_ignore", "Ignore"); // This
                                                                                               // probably

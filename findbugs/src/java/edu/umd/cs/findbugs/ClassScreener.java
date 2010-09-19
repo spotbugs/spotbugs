@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import static edu.umd.cs.findbugs.util.Strings.replace;
-
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -61,7 +61,6 @@ import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
-import org.apache.commons.lang.SystemUtils;
 import org.dom4j.DocumentException;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

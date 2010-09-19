@@ -141,7 +141,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         String methodName = visitor.getNameConstantOperand();
         String methodSig = visitor.getSigConstantOperand();
 
-        if (visitor instanceof OpcodeStackDetector && visitor.getOpcode() != OpcodeStackDetector.INVOKESTATIC) {
+        if (visitor instanceof OpcodeStackDetector && visitor.getOpcode() != Constants.INVOKESTATIC) {
             int params = PreorderVisitor.getNumberArguments(methodSig);
             OpcodeStackDetector oVisitor = (OpcodeStackDetector) visitor;
             if (!oVisitor.getStack().isTop() && oVisitor.getStack().getStackDepth() > params) {

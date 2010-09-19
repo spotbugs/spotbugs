@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.anttask;
 
-import java.io.File;
-
 import org.apache.tools.ant.BuildException;
 
 /**

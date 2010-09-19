@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
-
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.MethodGen;
 
@@ -32,7 +30,6 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.util.MultiMap;
 
 /**
  * Accumulate warnings that may occur at multiple source locations,

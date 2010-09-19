@@ -20,10 +20,8 @@
 package edu.umd.cs.findbugs;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 import java.util.regex.Matcher;

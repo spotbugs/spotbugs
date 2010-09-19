@@ -128,7 +128,7 @@ public class ViewFilter {
 
         public boolean show(MainFrame mf, BugInstance b) {
             Cloud c = mf.getBugCollection().getCloud();
-            return show((Cloud) c, b);
+            return show(c, b);
 
         }
 
@@ -396,6 +396,7 @@ public class ViewFilter {
      * @deprecated Use {@link ClassName#matchedPrefixes(String[],String)}
      *             instead
      */
+    @Deprecated
     public static boolean matchedPrefixes(String[] classSearchStrings, @DottedClassName String className) {
         return ClassName.matchedPrefixes(classSearchStrings, className);
     }

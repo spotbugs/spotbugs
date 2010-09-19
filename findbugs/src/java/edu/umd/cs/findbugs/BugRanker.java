@@ -32,8 +32,6 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.util.Util;
 
 /**

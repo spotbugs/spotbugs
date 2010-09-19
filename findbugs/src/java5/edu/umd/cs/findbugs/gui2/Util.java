@@ -19,19 +19,10 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.awt.GraphicsEnvironment;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.ProgressMonitor;
-import javax.swing.ProgressMonitorInputStream;
 
 /**
  * @author pugh

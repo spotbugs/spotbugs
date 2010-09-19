@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.CardLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,9 +29,6 @@ import java.io.IOException;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
-import javax.swing.ListModel;
-import javax.swing.filechooser.FileFilter;
-
 import edu.umd.cs.findbugs.DiscoverSourceDirectories;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
