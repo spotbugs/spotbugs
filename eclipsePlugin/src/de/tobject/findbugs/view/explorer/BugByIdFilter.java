@@ -35,34 +35,34 @@ import de.tobject.findbugs.reporter.MarkerUtil;
  */
 public class BugByIdFilter extends ViewerFilter {
 
-	private static Set<String> lastUsedFilter;
+    private static Set<String> lastUsedFilter;
 
-	static {
-		final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-		lastUsedFilter = FindbugsPlugin.getFilteredIds();
+    static {
+        final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
+        lastUsedFilter = FindbugsPlugin.getFilteredIds();
 		store.addPropertyChangeListener(new IPropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent event) {
-				lastUsedFilter = FindbugsPlugin.getFilteredIds();
-			}
+            public void propertyChange(PropertyChangeEvent event) {
+                lastUsedFilter = FindbugsPlugin.getFilteredIds();
+            }
 		});
-	}
+    }
 
-	public BugByIdFilter() {
-		super();
-	}
+    public BugByIdFilter() {
+        super();
+    }
 
-	@Override
-	public boolean select(Viewer viewer, Object parentElement, Object element) {
-		if(lastUsedFilter.size() == 0){
+    @Override
+    public boolean select(Viewer viewer, Object parentElement, Object element) {
+        if(lastUsedFilter.size() == 0){
 			return true;
-		}
-		if(element instanceof IMarker){
-			IMarker marker = (IMarker) element;
+        }
+        if(element instanceof IMarker){
+            IMarker marker = (IMarker) element;
 			if(MarkerUtil.isFiltered(marker, lastUsedFilter)){
-				return false;
-			}
-		}
+                return false;
+            }
+        }
 		return true;
-	}
+    }
 
 }

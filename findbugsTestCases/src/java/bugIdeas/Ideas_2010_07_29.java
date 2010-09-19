@@ -6,28 +6,28 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2010_07_29 {
-	
-	@ExpectWarning("INT_BAD_COMPARISON_WITH_SIGNED_BYTE")
-	public static void test(byte a[]) {
+
+    @ExpectWarning("INT_BAD_COMPARISON_WITH_SIGNED_BYTE")
+    public static void test(byte a[]) {
 		byte b = a[0];
-		Byte bb = b;
-		int b2 = bb;
-		if (b2 == 255)
+        Byte bb = b;
+        int b2 = bb;
+        if (b2 == 255)
 			System.out.println("huh");
-	}
-	
-	@ExpectWarning("INT_BAD_COMPARISON_WITH_SIGNED_BYTE")
+    }
+
+    @ExpectWarning("INT_BAD_COMPARISON_WITH_SIGNED_BYTE")
 	public static void test(Byte bb) {
-		int b = bb;
-		if (b == 255)
-			System.out.println("huh");
+        int b = bb;
+        if (b == 255)
+            System.out.println("huh");
 	}
-	
-	@ExpectWarning("EC_UNRELATED_TYPES_USING_POINTER_EQUALITY")
-	@NoWarning("RC")
+
+    @ExpectWarning("EC_UNRELATED_TYPES_USING_POINTER_EQUALITY")
+    @NoWarning("RC")
 	public static void test(List<?> lst) {
-		if (lst == (Object)(Integer) lst.size())
-			System.out.println("huh");
-	}
+        if (lst == (Object)(Integer) lst.size())
+            System.out.println("huh");
+    }
 
 }

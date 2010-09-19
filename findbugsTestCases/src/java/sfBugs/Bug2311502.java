@@ -13,59 +13,59 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug2311502 {
 
-	@Documented
-	@Nonnull
-	@TypeQualifierDefault(ElementType.METHOD)
+    @Documented
+    @Nonnull
+    @TypeQualifierDefault(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface ReturnValuesAreNonnullByDefault {
-	}
-	
+    public @interface ReturnValuesAreNonnullByDefault {
+    }
+
 	/**
-	 * Should flag code as unsafe. 
-	 */
-	static public class NonNullFalseNegative {
+     * Should flag code as unsafe.
+     */
+    static public class NonNullFalseNegative {
 	    
-	    @CheckForNull
-	    private Object junkField;
-	    
+        @CheckForNull
+        private Object junkField;
+
 	    public void setJunk(Object junk) {
-	        this.junkField = junk;
-	    }
-	    
+            this.junkField = junk;
+        }
+
 	    public final class BadInnerClass {
-	    	@ExpectWarning("NP")
-	        public void badMethod() {
-	            System.out.println(junkField.hashCode()); // should be caught as a bug 
+            @ExpectWarning("NP")
+            public void badMethod() {
+                System.out.println(junkField.hashCode()); // should be caught as a bug
 	        }
-	    }
-	    
-	}
+        }
+
+    }
 	
-	
-	static public @ReturnValuesAreNonnullByDefault 
-	class NPNonNullReturnViolationBug {
+
+    static public @ReturnValuesAreNonnullByDefault
+    class NPNonNullReturnViolationBug {
 	    
-	    @CheckForNull
-	    private Object junkField;
-	    
+        @CheckForNull
+        private Object junkField;
+
 	    public void setJunk(Object junk) {
-	        this.junkField = junk;
-	    }
+            this.junkField = junk;
+        }
 
-	    public final class InnerClass {
-	        /**
-	         * Prints out {@link NPNonNullReturnViolationBug#junkField}, 
+        public final class InnerClass {
+            /**
+             * Prints out {@link NPNonNullReturnViolationBug#junkField},
 	         * if it's currently not <code>null</code>.
-	         */
-	        public void printJunk() {
-	            Object temp = junkField;
+             */
+            public void printJunk() {
+                Object temp = junkField;
 	            if (temp != null) { // should be perfectly safe
-	                System.out.println(temp.hashCode());
-	            }
-	        }
+                    System.out.println(temp.hashCode());
+                }
+            }
 	    }
 
-	}
+    }
 
 
 }

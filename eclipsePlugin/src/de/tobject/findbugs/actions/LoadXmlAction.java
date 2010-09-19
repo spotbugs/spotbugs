@@ -36,90 +36,90 @@ import de.tobject.findbugs.builder.FindBugsWorker;
 
 public class LoadXmlAction extends FindBugsAction {
 
-	private static final String DIALOG_SETTINGS_SECTION = "LoadXMLDialogSettings"; //$NON-NLS-1$
+    private static final String DIALOG_SETTINGS_SECTION = "LoadXMLDialogSettings"; //$NON-NLS-1$
 
-	private static final String LOAD_XML_PATH_KEY = "LoadXMLPathSetting"; //$NON-NLS-1$
+    private static final String LOAD_XML_PATH_KEY = "LoadXMLPathSetting"; //$NON-NLS-1$
 
-	@Override
-	public void run(final IAction action) {
-		if (!(selection instanceof IStructuredSelection) || selection.isEmpty()) {
+    @Override
+    public void run(final IAction action) {
+        if (!(selection instanceof IStructuredSelection) || selection.isEmpty()) {
 			return;
-		}
-		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+        }
+        IStructuredSelection structuredSelection = (IStructuredSelection) selection;
 
-		IProject project = getProject(structuredSelection);
-		if (project == null) {
-			return;
+        IProject project = getProject(structuredSelection);
+        if (project == null) {
+            return;
 		}
 
-		// Get the file name from a file dialog
-		FileDialog dialog = createFileDialog(project);
-		boolean validFileName = false;
+        // Get the file name from a file dialog
+        FileDialog dialog = createFileDialog(project);
+        boolean validFileName = false;
 		do {
-			String fileName = openFileDialog(dialog);
-			if (fileName == null) {
-				// user cancel
+            String fileName = openFileDialog(dialog);
+            if (fileName == null) {
+                // user cancel
 				return;
-			}
-			validFileName = validateSelectedFileName(fileName);
-			if (!validFileName) {
+            }
+            validFileName = validateSelectedFileName(fileName);
+            if (!validFileName) {
 				MessageDialog.openWarning(Display.getDefault().getActiveShell(),
-						"Warning", fileName + " is not a file or is not readable!");
-				continue;
-			}
+                        "Warning", fileName + " is not a file or is not readable!");
+                continue;
+            }
 			getDialogSettings().put(LOAD_XML_PATH_KEY, fileName);
-			work(project, fileName);
-		} while (!validFileName);
-	}
+            work(project, fileName);
+        } while (!validFileName);
+    }
 
-	protected String openFileDialog(FileDialog dialog) {
-		return dialog.open();
-	}
+    protected String openFileDialog(FileDialog dialog) {
+        return dialog.open();
+    }
 
-	private boolean validateSelectedFileName(String fileName) {
-		if (fileName == null) {
-			return false;
+    private boolean validateSelectedFileName(String fileName) {
+        if (fileName == null) {
+            return false;
 		}
-		File file = new File(fileName);
-		return file.isFile() && file.canRead();
-	}
+        File file = new File(fileName);
+        return file.isFile() && file.canRead();
+    }
 
-	private FileDialog createFileDialog(IProject project) {
-		FileDialog fileDialog = new FileDialog(FindbugsPlugin.getShell(),
-				SWT.APPLICATION_MODAL | SWT.OPEN);
+    private FileDialog createFileDialog(IProject project) {
+        FileDialog fileDialog = new FileDialog(FindbugsPlugin.getShell(),
+                SWT.APPLICATION_MODAL | SWT.OPEN);
 		fileDialog.setText("Select bug result xml for project: " + project.getName());
-		String initialFileName = getDialogSettings().get(LOAD_XML_PATH_KEY);
-		if (initialFileName != null && initialFileName.length() > 0) {
-			File initialFile = new File(initialFileName);
+        String initialFileName = getDialogSettings().get(LOAD_XML_PATH_KEY);
+        if (initialFileName != null && initialFileName.length() > 0) {
+            File initialFile = new File(initialFileName);
 			// have to check if exists, otherwise crazy GTK will ignore preset filter
-			if (initialFile.exists()) {
-				fileDialog.setFileName(initialFile.getName());
-			}
+            if (initialFile.exists()) {
+                fileDialog.setFileName(initialFile.getName());
+            }
 			fileDialog.setFilterPath(initialFile.getParent());
-		}
-		return fileDialog;
+        }
+        return fileDialog;
+    }
+
+    @Override
+    protected String getDialogSettingsId() {
+        return DIALOG_SETTINGS_SECTION;
 	}
 
-	@Override
-	protected String getDialogSettingsId() {
-		return DIALOG_SETTINGS_SECTION;
-	}
-
-	/**
-	 * Run a FindBugs import on the given project, displaying a progress monitor.
-	 *
+    /**
+     * Run a FindBugs import on the given project, displaying a progress monitor.
+     *
 	 * @param project
-	 *            The resource to load XMl to.
-	 */
-	private void work(final IProject project, final String fileName) {
+     *            The resource to load XMl to.
+     */
+    private void work(final IProject project, final String fileName) {
 		FindBugsJob runFindBugs = new FindBugsJob("Loading XML data from " + fileName + "...", project) {
-			@Override
-			protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
-				FindBugsWorker worker = new FindBugsWorker(project, monitor);
+            @Override
+            protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
+                FindBugsWorker worker = new FindBugsWorker(project, monitor);
 				worker.loadXml(fileName);
-			}
-		};
-		runFindBugs.scheduleInteractive();
+            }
+        };
+        runFindBugs.scheduleInteractive();
 	}
 
 }

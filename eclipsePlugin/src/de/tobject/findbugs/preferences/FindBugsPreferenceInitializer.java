@@ -42,13 +42,13 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 
 public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer {
 
-	public FindBugsPreferenceInitializer() {
-		super();
-	}
+    public FindBugsPreferenceInitializer() {
+        super();
+    }
 
-	@Override
-	public void initializeDefaultPreferences() {
-		IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
+    @Override
+    public void initializeDefaultPreferences() {
+        IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
         store.setDefault(EXPORT_SORT_ORDER, ORDER_BY_NAME);
         store.setDefault(DONT_REMIND_ABOUT_FULL_BUILD, false);
 
@@ -62,39 +62,39 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
         store.setDefault(PRIO_HIGH_MARKER_SEVERITY, MarkerSeverity.Warning.name());
         // disabled to be able to distinguish between default and current value
         // store.setDefault(PROJECT_PROPS_DISABLED, true);
-	}
+    }
 
-	public static UserPreferences createDefaultUserPreferences() {
-		UserPreferences prefs = UserPreferences.createDefaultUserPreferences();
-		IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
+    public static UserPreferences createDefaultUserPreferences() {
+        UserPreferences prefs = UserPreferences.createDefaultUserPreferences();
+        IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
 		String categoriesStr = store.getString(DISABLED_CATEGORIES);
-		Set<String> ids = decodeIds(categoriesStr);
-		for (String categoryId : ids) {
-			prefs.getFilterSettings().removeCategory(categoryId);
+        Set<String> ids = decodeIds(categoriesStr);
+        for (String categoryId : ids) {
+            prefs.getFilterSettings().removeCategory(categoryId);
 		}
-		prefs.setRunAtFullBuild(false);
+        prefs.setRunAtFullBuild(false);
 
-		// Do not need, as per default the factory default is used if key is missing
-		// TODO later we can use custom workspace settings to disable detectors here
+        // Do not need, as per default the factory default is used if key is missing
+        // TODO later we can use custom workspace settings to disable detectors here
 //		Iterator<DetectorFactory> iterator = DetectorFactoryCollection.instance().factoryIterator();
 //		while (iterator.hasNext()) {
 //			DetectorFactory factory = iterator.next();
 //			prefs.enableDetector(factory, factory.isDefaultEnabled());
 //		}
-		return prefs;
-	}
+        return prefs;
+    }
 
-	public static void restoreDefaults(IPreferenceStore store){
-		store.setToDefault(EXPORT_SORT_ORDER);
-		store.setToDefault(DONT_REMIND_ABOUT_FULL_BUILD);
+    public static void restoreDefaults(IPreferenceStore store){
+        store.setToDefault(EXPORT_SORT_ORDER);
+        store.setToDefault(DONT_REMIND_ABOUT_FULL_BUILD);
 		store.setToDefault(DISABLED_CATEGORIES);
-		store.setToDefault(RUN_ANALYSIS_AUTOMATICALLY);
-		store.setToDefault(RUN_ANALYSIS_ON_FULL_BUILD);
-		store.setToDefault(ASK_ABOUT_PERSPECTIVE_SWITCH);
+        store.setToDefault(RUN_ANALYSIS_AUTOMATICALLY);
+        store.setToDefault(RUN_ANALYSIS_ON_FULL_BUILD);
+        store.setToDefault(ASK_ABOUT_PERSPECTIVE_SWITCH);
 		store.setToDefault(SWITCH_PERSPECTIVE_AFTER_ANALYSIS);
-		store.setToDefault(PRIO_LOW_MARKER_SEVERITY);
-		store.setToDefault(PRIO_NORMAL_MARKER_SEVERITY);
-		store.setToDefault(PRIO_HIGH_MARKER_SEVERITY);
+        store.setToDefault(PRIO_LOW_MARKER_SEVERITY);
+        store.setToDefault(PRIO_NORMAL_MARKER_SEVERITY);
+        store.setToDefault(PRIO_HIGH_MARKER_SEVERITY);
 	}
 
 }

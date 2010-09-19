@@ -23,40 +23,40 @@ import org.eclipse.core.runtime.IStatus;
 
 public final class PathElement {
 
-	private final IPath path;
-	private IStatus status;
+    private final IPath path;
+    private IStatus status;
 
-	public PathElement(IPath path, IStatus status) {
-		this.path = path;
-		this.status = status;
+    public PathElement(IPath path, IStatus status) {
+        this.path = path;
+        this.status = status;
 	}
 
-	public void setStatus(IStatus status) {
-		this.status = status;
+    public void setStatus(IStatus status) {
+        this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return path.toString() + (status.isOK()? "" : " (" + status.getMessage() + ")");
 	}
 
-	@Override
-	public String toString() {
-		return path.toString() + (status.isOK()? "" : " (" + status.getMessage() + ")");
-	}
+    public String getPath() {
+        return path.toOSString();
+    }
 
-	public String getPath() {
-		return path.toOSString();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == this) {
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
 			return true;
+        }
+        if (obj instanceof PathElement) {
+            return path.equals(((PathElement) obj).path);
 		}
-		if (obj instanceof PathElement) {
-			return path.equals(((PathElement) obj).path);
-		}
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	public int hashCode() {
-		return path.hashCode();
+    @Override
+    public int hashCode() {
+        return path.hashCode();
 	}
 }

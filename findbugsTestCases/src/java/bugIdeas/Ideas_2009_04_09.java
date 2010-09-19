@@ -3,20 +3,20 @@ package bugIdeas;
 import junit.framework.TestCase;
 
 public class Ideas_2009_04_09 extends TestCase {
-	
-	
-	public void testBad() {
+
+
+    public void testBad() {
 		 
-		try {
-			
-			shouldThrowAssertion();
+        try {
+
+            shouldThrowAssertion();
 			fail();
-		} catch (AssertionError e) {
-			
-		}
+        } catch (AssertionError e) {
+
+        }
 	}
-	public void shouldThrowAssertion() {
-		
-	}
+    public void shouldThrowAssertion() {
+
+    }
 
 }

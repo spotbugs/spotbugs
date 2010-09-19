@@ -1,41 +1,41 @@
 
 public class UselessControlFlow {
 
-	void harmless1(Object x, Object y) {
-		if (!x.equals(y)) {
+    void harmless1(Object x, Object y) {
+        if (!x.equals(y)) {
 
-		} else {
+        } else {
 
-		}
-		System.out.println(x);
-		System.out.println(y);
+        }
+        System.out.println(x);
+        System.out.println(y);
 	}
-	void report0(Object x, Object y) {
-		if (!x.equals(y)); System.out.println(x);
-		System.out.println(y);
+    void report0(Object x, Object y) {
+        if (!x.equals(y)); System.out.println(x);
+        System.out.println(y);
 	}
-	void report1(Object x, Object y) {
-		if (!x.equals(y));
-		  System.out.println(x);
+    void report1(Object x, Object y) {
+        if (!x.equals(y));
+          System.out.println(x);
 		System.out.println(y);
-	}
-	void report2(Object x, Object y) {
-		if (!x.equals(y));
+    }
+    void report2(Object x, Object y) {
+        if (!x.equals(y));
 
-		  System.out.println(x);
-		System.out.println(y);
-	}
+          System.out.println(x);
+        System.out.println(y);
+    }
 	void report3(Object x, Object y) {
-		if (!x.equals(y));
+        if (!x.equals(y));
 
 
-		  System.out.println(x);
-		System.out.println(y);
-	}
+          System.out.println(x);
+        System.out.println(y);
+    }
 	void report4(Object [] x, Object y) {
-		for(Object o : x) {
-			if (o.equals(y)) {
-			}
+        for(Object o : x) {
+            if (o.equals(y)) {
+            }
 		}
-	}
+    }
 }

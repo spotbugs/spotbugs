@@ -40,153 +40,153 @@ import de.tobject.findbugs.FindbugsPlugin;
  */
 class RefreshJob extends Job implements IViewerRefreshJob {
 
-	private final RemovedFirstComparator deltaComparator;
-	private final List<DeltaInfo> deltaToRefresh;
-	private volatile CommonViewer viewer;
+    private final RemovedFirstComparator deltaComparator;
+    private final List<DeltaInfo> deltaToRefresh;
+    private volatile CommonViewer viewer;
 	private final BugContentProvider contentProvider;
-	private final ResourceChangeListener resourceListener;
+    private final ResourceChangeListener resourceListener;
 
-	public RefreshJob(String name, BugContentProvider provider) {
-		super(name);
-		setSystem(true);
+    public RefreshJob(String name, BugContentProvider provider) {
+        super(name);
+        setSystem(true);
 		setPriority(Job.DECORATE);
-		contentProvider = provider;
-		deltaComparator = new RemovedFirstComparator();
-		deltaToRefresh = new ArrayList<DeltaInfo>();
+        contentProvider = provider;
+        deltaComparator = new RemovedFirstComparator();
+        deltaToRefresh = new ArrayList<DeltaInfo>();
 		resourceListener = new ResourceChangeListener(this);
+    }
+
+    @Override
+    public boolean belongsTo(Object family) {
+        return FindbugsPlugin.class == family;
 	}
 
-	@Override
-	public boolean belongsTo(Object family) {
-		return FindbugsPlugin.class == family;
+    private void startListening(){
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener);
+    }
+
+    private void stopListening(){
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
+    }
+
+    public void dispose(){
+        cancel();
+        setViewer(null);
 	}
 
-	private void startListening(){
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener);
-	}
-
-	private void stopListening(){
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
-	}
-
-	public void dispose(){
-		cancel();
-		setViewer(null);
-	}
-
-	@Override
-	protected IStatus run(final IProgressMonitor monitor) {
-		List<DeltaInfo> deltas = fetchDeltas();
+    @Override
+    protected IStatus run(final IProgressMonitor monitor) {
+        List<DeltaInfo> deltas = fetchDeltas();
 		int totalWork = deltas.size();
-		monitor.beginTask("Updating bug markers", totalWork);
+        monitor.beginTask("Updating bug markers", totalWork);
 
-		if (viewer != null && !monitor.isCanceled()	&& !deltas.isEmpty()) {
+        if (viewer != null && !monitor.isCanceled()	&& !deltas.isEmpty()) {
 
-			final Set<BugGroup> changedParents = contentProvider.updateContent(deltas);
-			final boolean fullRefreshNeeded = changedParents.isEmpty();
+            final Set<BugGroup> changedParents = contentProvider.updateContent(deltas);
+            final boolean fullRefreshNeeded = changedParents.isEmpty();
 
-			Display.getDefault().syncExec(new Runnable() {
-				public void run() {
-					if (viewer == null || monitor.isCanceled()
+            Display.getDefault().syncExec(new Runnable() {
+                public void run() {
+                    if (viewer == null || monitor.isCanceled()
 							|| viewer.getControl().isDisposed()) {
-						return;
-					}
-					viewer.getControl().setRedraw(false);
+                        return;
+                    }
+                    viewer.getControl().setRedraw(false);
 					try {
-						if (fullRefreshNeeded) {
-							viewer.refresh();
-							if(BugContentProvider.DEBUG){
+                        if (fullRefreshNeeded) {
+                            viewer.refresh();
+                            if(BugContentProvider.DEBUG){
 								System.out.println("Refreshing ROOT!!!");
-							}
-						} else {
-							// update the viewer based on the marker changes.
+                            }
+                        } else {
+                            // update the viewer based on the marker changes.
 							for (BugGroup parent : changedParents) {
-								boolean isRoot = parent.getParent() == null;
-								if(BugContentProvider.DEBUG){
-									if(isRoot){
+                                boolean isRoot = parent.getParent() == null;
+                                if(BugContentProvider.DEBUG){
+                                    if(isRoot){
 										System.out.println("Refreshing ROOT: " + parent);
-									} else {
-										System.out.println("Refreshing: " + parent);
-									}
+                                    } else {
+                                        System.out.println("Refreshing: " + parent);
+                                    }
 								}
-								if(isRoot) {
-									viewer.refresh();
-								} else {
+                                if(isRoot) {
+                                    viewer.refresh();
+                                } else {
 									viewer.refresh(parent, true);
+                                }
+                                if(monitor.isCanceled()){
+                                    break;
 								}
-								if(monitor.isCanceled()){
-									break;
-								}
-							}
-						}
-					} finally {
+                            }
+                        }
+                    } finally {
 						viewer.getControl().setRedraw(true);
-					}
-				}
-			});
+                    }
+                }
+            });
 		}
-		monitor.worked(totalWork);
+        monitor.worked(totalWork);
 
-		monitor.done();
-		return monitor.isCanceled() ? Status.CANCEL_STATUS : Status.OK_STATUS;
-	}
+        monitor.done();
+        return monitor.isCanceled() ? Status.CANCEL_STATUS : Status.OK_STATUS;
+    }
 
-	private List<DeltaInfo> fetchDeltas() {
-		final List<DeltaInfo> deltas = new ArrayList<DeltaInfo>();
-		synchronized (deltaToRefresh) {
+    private List<DeltaInfo> fetchDeltas() {
+        final List<DeltaInfo> deltas = new ArrayList<DeltaInfo>();
+        synchronized (deltaToRefresh) {
 			if (deltaToRefresh.isEmpty()) {
-				return deltas;
-			}
-			deltas.addAll(deltaToRefresh);
+                return deltas;
+            }
+            deltas.addAll(deltaToRefresh);
 			deltaToRefresh.clear();
-		}
-		Collections.sort(deltas, deltaComparator);
-		if(BugContentProvider.DEBUG){
+        }
+        Collections.sort(deltas, deltaComparator);
+        if(BugContentProvider.DEBUG){
 			System.out.println("Job: going to update markers:\n" + deltas);
-		}
-		return deltas;
-	}
+        }
+        return deltas;
+    }
 
-	public boolean addToQueue(DeltaInfo res) {
-		switch (res.changeKind) {
-		case IResourceDelta.CHANGED:
+    public boolean addToQueue(DeltaInfo res) {
+        switch (res.changeKind) {
+        case IResourceDelta.CHANGED:
 			return false;
-		}
-		synchronized (deltaToRefresh) {
-			if (!deltaToRefresh.contains(res)) {
+        }
+        synchronized (deltaToRefresh) {
+            if (!deltaToRefresh.contains(res)) {
 				deltaToRefresh.add(res);
-				return true;
-			}
-		}
+                return true;
+            }
+        }
 		return false;
-	}
+    }
 
-	public void setViewer(CommonViewer newViewer) {
-		if(newViewer != null){
-			this.viewer = newViewer;
+    public void setViewer(CommonViewer newViewer) {
+        if(newViewer != null){
+            this.viewer = newViewer;
 			startListening();
-		}  else {
-			stopListening();
-			this.viewer = null;
+        }  else {
+            stopListening();
+            this.viewer = null;
 		}
-	}
+    }
 
-	CommonViewer getViewer() {
-		return viewer;
-	}
+    CommonViewer getViewer() {
+        return viewer;
+    }
 
-	/**
-	 * Sorts the removed delta's first. This allows more optimized refresh
-	 */
+    /**
+     * Sorts the removed delta's first. This allows more optimized refresh
+     */
 	private final static class RemovedFirstComparator implements Comparator<DeltaInfo> {
-		public int compare(DeltaInfo o1, DeltaInfo o2) {
-			if(o1.changeKind == o2.changeKind){
-				return 0;
+        public int compare(DeltaInfo o1, DeltaInfo o2) {
+            if(o1.changeKind == o2.changeKind){
+                return 0;
 			}
-			if(o1.changeKind == IResourceDelta.REMOVED){
-				return -1;
-			}
+            if(o1.changeKind == IResourceDelta.REMOVED){
+                return -1;
+            }
 			return 1;
-		}
-	}
+        }
+    }
 }

@@ -29,66 +29,66 @@ import de.tobject.findbugs.marker.FindBugsMarker;
  */
 abstract class MarkerMapper<Identifier> {
 
-	/**
-	 * there is no mapping possible for current mapping type
-	 */
+    /**
+     * there is no mapping possible for current mapping type
+     */
 	public static final MarkerMapper<Void> NO_MAPPING = new MarkerMapper<Void>(){
 
-		@Override
-		void setType(GroupType type) {
-			throw new IllegalStateException("Setting the type not allowed");
+        @Override
+        void setType(GroupType type) {
+            throw new IllegalStateException("Setting the type not allowed");
 		}
 
-		@Override
-		Void getIdentifier(IMarker marker) {
-			return null;
+        @Override
+        Void getIdentifier(IMarker marker) {
+            return null;
 		}
 
-		@Override
-		GroupType getType() {
-			return GroupType.Undefined;
+        @Override
+        GroupType getType() {
+            return GroupType.Undefined;
 		}
 
-		@Override
-		String getShortDescription(Object id) {
-			return "Undefined";
+        @Override
+        String getShortDescription(Object id) {
+            return "Undefined";
 		}
 
-	};
+    };
 
-	private GroupType type;
+    private GroupType type;
 
-	MarkerMapper() {
-		super();
-	}
+    MarkerMapper() {
+        super();
+    }
 
-	void setType(GroupType type) {
-		if(this.type != null){
-			throw new IllegalStateException("Re-setting the type not allowed");
+    void setType(GroupType type) {
+        if(this.type != null){
+            throw new IllegalStateException("Re-setting the type not allowed");
 		}
-		if(type == null){
-			throw new IllegalStateException("Null type not allowed");
-		}
+        if(type == null){
+            throw new IllegalStateException("Null type not allowed");
+        }
 		this.type = type;
-	}
+    }
 
-	/**
-	 * @param marker
-	 *            non null marker
+    /**
+     * @param marker
+     *            non null marker
 	 * @return the specific identifier for given marker for the current mapping type, or
-	 *         null if the mapping cannot be created
-	 */
-	abstract Identifier getIdentifier(IMarker marker);
+     *         null if the mapping cannot be created
+     */
+    abstract Identifier getIdentifier(IMarker marker);
 	abstract String getShortDescription(Object id);
 
-	FindBugsMarker.Priority getPrio(Identifier data) {
-		if (getType() == GroupType.Priority) {
-			return FindBugsMarker.Priority.label(((Integer) data).intValue());
+    FindBugsMarker.Priority getPrio(Identifier data) {
+        if (getType() == GroupType.Priority) {
+            return FindBugsMarker.Priority.label(((Integer) data).intValue());
 		}
-		return FindBugsMarker.Priority.Unknown;
-	}
+        return FindBugsMarker.Priority.Unknown;
+    }
 
-	GroupType getType() {
-		return type;
-	}
+    GroupType getType() {
+        return type;
+    }
 }

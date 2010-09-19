@@ -10,14 +10,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class TaintedCookies extends HttpServlet {
-	public void doGet(HttpServletRequest request, HttpServletResponse response) 
-		throws ServletException, IOException {
-		response.setContentType("text/html");
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+        response.setContentType("text/html");
 
-		Cookie cookie = new Cookie("foo", request.getParameter("foo"));
-		PrintWriter out = response.getWriter();
-		response.addCookie(cookie);
+        Cookie cookie = new Cookie("foo", request.getParameter("foo"));
+        PrintWriter out = response.getWriter();
+        response.addCookie(cookie);
 		
-		out.println("<html><body><p>Hello</p></body></html>");
-	}
+        out.println("<html><body><p>Hello</p></body></html>");
+    }
 }

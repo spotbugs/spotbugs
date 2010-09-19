@@ -33,31 +33,31 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
  */
 public class MethodDeclarationNotFoundException extends BodyDeclarationNotFoundException {
 
-	private static final long serialVersionUID = 7856022756808853146L;
+    private static final long serialVersionUID = 7856022756808853146L;
 
-	private final TypeDeclaration typeDeclaration;
+    private final TypeDeclaration typeDeclaration;
 
-	private final String methodName;
+    private final String methodName;
 
-	private final String methodSignature;
+    private final String methodSignature;
 
-	public MethodDeclarationNotFoundException(TypeDeclaration typeDeclaration, String methodName, String methodSignature) {
-		super("Method declaration '" + methodName + methodSignature + "' not found in type declaration '" + typeDeclaration.getName() + "'.");
-		this.typeDeclaration = typeDeclaration;
+    public MethodDeclarationNotFoundException(TypeDeclaration typeDeclaration, String methodName, String methodSignature) {
+        super("Method declaration '" + methodName + methodSignature + "' not found in type declaration '" + typeDeclaration.getName() + "'.");
+        this.typeDeclaration = typeDeclaration;
         this.methodName = methodName;
-		this.methodSignature = methodSignature;
-	}
+        this.methodSignature = methodSignature;
+    }
 
-	public TypeDeclaration getTypeDeclaration() {
-		return typeDeclaration;
-	}
+    public TypeDeclaration getTypeDeclaration() {
+        return typeDeclaration;
+    }
 
-	public String getMethodName() {
-		return methodName;
-	}
+    public String getMethodName() {
+        return methodName;
+    }
 
-	public String getMethodSignature() {
-		return methodSignature;
-	}
+    public String getMethodSignature() {
+        return methodSignature;
+    }
 
 }

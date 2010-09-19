@@ -6,21 +6,21 @@ import java.util.List;
 import java.util.Set;
 
 public class TestContainsAllAndRemoveAll {
-	
-	public static void main(String args[]) {
-		Set<Integer> i = new HashSet<Integer>();
+
+    public static void main(String args[]) {
+        Set<Integer> i = new HashSet<Integer>();
 		Set<String> s = new HashSet<String>();
-		i.removeAll(s);
-		i.containsAll(s);
-		
+        i.removeAll(s);
+        i.containsAll(s);
+
 		falsePositive();
-	}
-	
-	public static void falsePositive() {
+    }
+
+    public static void falsePositive() {
 		Set<Integer> i = new HashSet<Integer>();
-		List<Integer> s = new LinkedList<Integer>();
-		i.removeAll(s);
-		i.containsAll(s);
+        List<Integer> s = new LinkedList<Integer>();
+        i.removeAll(s);
+        i.containsAll(s);
 	}
 
 }

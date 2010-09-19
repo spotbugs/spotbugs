@@ -64,684 +64,684 @@ import de.tobject.findbugs.reporter.MarkerUtil;
  */
 public class BugContentProvider implements ICommonContentProvider {
 
-	public static boolean DEBUG;
+    public static boolean DEBUG;
 
-	private final static IMarker[] EMPTY = new IMarker[0];
+    private final static IMarker[] EMPTY = new IMarker[0];
 
-	private final RefreshJob refreshJob;
-	private Grouping grouping;
+    private final RefreshJob refreshJob;
+    private Grouping grouping;
 
-	private Object input;
+    private Object input;
 
-	/**
-	 * Root group, either empty OR contains BugGroups OR contains Markers (last one only
-	 * if the hierarchy is plain list)
+    /**
+     * Root group, either empty OR contains BugGroups OR contains Markers (last one only
+     * if the hierarchy is plain list)
 	 */
-	private BugGroup rootElement;
+    private BugGroup rootElement;
 
-	private final WorkingSetsFilter resourceFilter;
+    private final WorkingSetsFilter resourceFilter;
 
-	private CommonViewer viewer;
+    private CommonViewer viewer;
 
-	private ICommonContentExtensionSite site;
+    private ICommonContentExtensionSite site;
 
-	private final Map<BugGroup, Integer> filteredMarkersMap;
+    private final Map<BugGroup, Integer> filteredMarkersMap;
 
-	private final HashSet<IMarker> filteredMarkers;
+    private final HashSet<IMarker> filteredMarkers;
 
-	private boolean bugFilterActive;
+    private boolean bugFilterActive;
 
-	public BugContentProvider() {
-		super();
-		filteredMarkersMap = new HashMap<BugGroup, Integer>();
+    public BugContentProvider() {
+        super();
+        filteredMarkersMap = new HashMap<BugGroup, Integer>();
 		filteredMarkers = new HashSet<IMarker>();
-		resourceFilter = new WorkingSetsFilter();
-		rootElement = new BugGroup(null, null, GroupType.Undefined, null);
-		refreshJob = new RefreshJob("Updating bugs in bug explorer", this);
+        resourceFilter = new WorkingSetsFilter();
+        rootElement = new BugGroup(null, null, GroupType.Undefined, null);
+        refreshJob = new RefreshJob("Updating bugs in bug explorer", this);
 		IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-		String saved = store.getString(FindBugsConstants.LAST_USED_GROUPING);
-		setGrouping(Grouping.restoreFrom(saved));
-		saved = store.getString(FindBugsConstants.LAST_USED_WORKING_SET);
+        String saved = store.getString(FindBugsConstants.LAST_USED_GROUPING);
+        setGrouping(Grouping.restoreFrom(saved));
+        saved = store.getString(FindBugsConstants.LAST_USED_WORKING_SET);
 		initWorkingSet(saved);
-		// make sure it's initialized
-		FindbugsPlugin.applyCustomDetectors(false);
-	}
+        // make sure it's initialized
+        FindbugsPlugin.applyCustomDetectors(false);
+    }
 
-	public Object[] getChildren(Object parent) {
-		if (grouping == null) {
-			// on initialization
+    public Object[] getChildren(Object parent) {
+        if (grouping == null) {
+            // on initialization
 			return EMPTY;
-		}
-		Object[] children = EMPTY;
-		if (parent instanceof BugGroup) {
+        }
+        Object[] children = EMPTY;
+        if (parent instanceof BugGroup) {
 			BugGroup group = (BugGroup) parent;
-			children = group.getChildren();
-			if(rootElement == parent && rootElement.size() == 0){
-				if(DEBUG){
+            children = group.getChildren();
+            if(rootElement == parent && rootElement.size() == 0){
+                if(DEBUG){
 					System.out.println("Root is empty...");
-				}
-			}
-		} else {
+                }
+            }
+        } else {
 			if (parent instanceof IWorkspaceRoot || parent instanceof IWorkingSet) {
-				if(input == parent){
-					Object[] objects = rootElement.getChildren();
-					if(objects.length > 0) {
+                if(input == parent){
+                    Object[] objects = rootElement.getChildren();
+                    if(objects.length > 0) {
 						if(bugFilterActive != isBugFilterActive()){
-							refreshFilters();
-						}
-						return objects;
+                            refreshFilters();
+                        }
+                        return objects;
 					}
-				}
-				BugGroup root = new BugGroup(null, parent, GroupType.getType(parent), null);
-				clearFilters();
+                }
+                BugGroup root = new BugGroup(null, parent, GroupType.getType(parent), null);
+                clearFilters();
 				children = createChildren(grouping.getFirstType(), getResources(parent),
-						root);
-				if (input == parent) {
-					// remember the root
+                        root);
+                if (input == parent) {
+                    // remember the root
 					rootElement = root;
-				}
-			}
-		}
+                }
+            }
+        }
 		return children;
-	}
+    }
 
-	private Set<IResource> getResources(Object parent) {
-		Set<IResource> resources = new HashSet<IResource>();
-		if (parent instanceof IWorkingSet) {
+    private Set<IResource> getResources(Object parent) {
+        Set<IResource> resources = new HashSet<IResource>();
+        if (parent instanceof IWorkingSet) {
 			IWorkingSet workingSet = (IWorkingSet) parent;
-			IAdaptable[] elements = workingSet.getElements();
-			// elements may contain NON-resource elements, which we have to convert to
-			// resources
+            IAdaptable[] elements = workingSet.getElements();
+            // elements may contain NON-resource elements, which we have to convert to
+            // resources
 			for (IAdaptable adaptable : elements) {
-				IResource resource = (IResource) adaptable.getAdapter(IResource.class);
-				// TODO get only java projects or children of them
-				if (resource != null) {
+                IResource resource = (IResource) adaptable.getAdapter(IResource.class);
+                // TODO get only java projects or children of them
+                if (resource != null) {
 					resources.add(resource);
-				}
-			}
-		} else if (parent instanceof IWorkspaceRoot) {
+                }
+            }
+        } else if (parent instanceof IWorkspaceRoot) {
 			IWorkspaceRoot workspaceRoot = (IWorkspaceRoot) parent;
-			// TODO get only java projects
-			IProject[] projects = workspaceRoot.getProjects();
-			for (IProject project : projects) {
+            // TODO get only java projects
+            IProject[] projects = workspaceRoot.getProjects();
+            for (IProject project : projects) {
 				resources.add(project);
-			}
-		}
-		return resources;
+            }
+        }
+        return resources;
 	}
 
-	public Object getParent(Object element) {
-		if (element instanceof BugGroup) {
-			BugGroup groupElement = (BugGroup) element;
+    public Object getParent(Object element) {
+        if (element instanceof BugGroup) {
+            BugGroup groupElement = (BugGroup) element;
 			return groupElement.getParent();
+        }
+        if (element instanceof IMarker) {
+            return findParent((IMarker) element);
 		}
-		if (element instanceof IMarker) {
-			return findParent((IMarker) element);
-		}
-		return null;
-	}
+        return null;
+    }
 
-	public boolean hasChildren(Object element) {
+    public boolean hasChildren(Object element) {
 //		if(element instanceof BugGroup){
 //			BugGroup group = (BugGroup) element;
 //			return group.size() > 0 || group.getMarkersCount() != getFilteredMarkersCount(group);
 //		}
-		return element instanceof BugGroup || element instanceof IWorkingSet || element instanceof IWorkspaceRoot;
-	}
+        return element instanceof BugGroup || element instanceof IWorkingSet || element instanceof IWorkspaceRoot;
+    }
 
-	public Object[] getElements(Object inputElement) {
-		return getChildren(inputElement);
-	}
+    public Object[] getElements(Object inputElement) {
+        return getChildren(inputElement);
+    }
 
-	public void dispose() {
-		if(DEBUG){
-			System.out.println("Disposing content provider!");
+    public void dispose() {
+        if(DEBUG){
+            System.out.println("Disposing content provider!");
 		}
-		refreshJob.dispose();
-		rootElement.dispose();
-		clearFilters();
+        refreshJob.dispose();
+        rootElement.dispose();
+        clearFilters();
 
-		IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-		store.setValue(FindBugsConstants.LAST_USED_GROUPING, getGrouping().toString());
-		IWorkingSet workingSet = getCurrentWorkingSet();
+        IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
+        store.setValue(FindBugsConstants.LAST_USED_GROUPING, getGrouping().toString());
+        IWorkingSet workingSet = getCurrentWorkingSet();
 		String name = workingSet != null ? workingSet.getName() : "";
-		store.setValue(FindBugsConstants.LAST_USED_WORKING_SET, name);
-	}
+        store.setValue(FindBugsConstants.LAST_USED_WORKING_SET, name);
+    }
 
-	public void inputChanged(Viewer newViewer, Object oldInput, Object newInput) {
-		viewer = (CommonViewer) newViewer;
-		if (newInput == null || newInput instanceof IWorkingSet
+    public void inputChanged(Viewer newViewer, Object oldInput, Object newInput) {
+        viewer = (CommonViewer) newViewer;
+        if (newInput == null || newInput instanceof IWorkingSet
 				|| newInput instanceof IWorkspaceRoot) {
-			rootElement.dispose();
-		}
-		input = newInput;
+            rootElement.dispose();
+        }
+        input = newInput;
 		if(newInput == null){
-			refreshJob.setViewer(null);
-		} else {
-			refreshJob.setViewer((CommonViewer) newViewer);
+            refreshJob.setViewer(null);
+        } else {
+            refreshJob.setViewer((CommonViewer) newViewer);
 			bugFilterActive = isBugFilterActive();
-		}
-		clearFilters();
-	}
+        }
+        clearFilters();
+    }
 
-	public void reSetInput() {
-		clearFilters();
-		Object oldInput = getInput();
+    public void reSetInput() {
+        clearFilters();
+        Object oldInput = getInput();
 		viewer.setInput(null);
-		rootElement.dispose();
-		rootElement = new BugGroup(null, null, GroupType.Undefined, null);
-		if(oldInput instanceof IWorkingSet || oldInput instanceof IWorkspaceRoot){
+        rootElement.dispose();
+        rootElement = new BugGroup(null, null, GroupType.Undefined, null);
+        if(oldInput instanceof IWorkingSet || oldInput instanceof IWorkspaceRoot){
 			viewer.setInput(oldInput);
-		} else {
-			IWorkingSet workingSet = getCurrentWorkingSet();
-			if(workingSet != null) {
+        } else {
+            IWorkingSet workingSet = getCurrentWorkingSet();
+            if(workingSet != null) {
 				viewer.setInput(workingSet);
-			} else {
-				viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
-			}
+            } else {
+                viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
+            }
 		}
-	}
+    }
 
-	public void clearFilters() {
-		if(DEBUG){
-			System.out.println("Clear filters!");
+    public void clearFilters() {
+        if(DEBUG){
+            System.out.println("Clear filters!");
 		}
-		filteredMarkers.clear();
-		filteredMarkersMap.clear();
-	}
+        filteredMarkers.clear();
+        filteredMarkersMap.clear();
+    }
 
-	public void refreshFilters() {
-		clearFilters();
-		bugFilterActive = isBugFilterActive();
+    public void refreshFilters() {
+        clearFilters();
+        bugFilterActive = isBugFilterActive();
 		if(!bugFilterActive){
-			return;
-		}
-		if(DEBUG){
+            return;
+        }
+        if(DEBUG){
 			System.out.println("Refreshing filters!");
-		}
-		Set<String> patternFilter = getPatternFilter();
-		for (IMarker marker : rootElement.getAllMarkers()) {
+        }
+        Set<String> patternFilter = getPatternFilter();
+        for (IMarker marker : rootElement.getAllMarkers()) {
 			if(MarkerUtil.isFiltered(marker, patternFilter)) {
-				filteredMarkers.add(marker);
-			}
-		}
+                filteredMarkers.add(marker);
+            }
+        }
 	}
 
-	public synchronized int getFilteredMarkersCount(BugGroup bugGroup){
-		if(!isBugFilterActive()){
-			return 0;
+    public synchronized int getFilteredMarkersCount(BugGroup bugGroup){
+        if(!isBugFilterActive()){
+            return 0;
 		}
-		Integer bugCount;
-		bugCount = filteredMarkersMap.get(bugGroup);
-		if(bugCount == null){
+        Integer bugCount;
+        bugCount = filteredMarkersMap.get(bugGroup);
+        if(bugCount == null){
 			int count = 0;
-			for (IMarker marker : bugGroup.getAllMarkers()){
-				if(isFiltered(marker)){
-					count ++;
+            for (IMarker marker : bugGroup.getAllMarkers()){
+                if(isFiltered(marker)){
+                    count ++;
 				}
-			}
-			bugCount = Integer.valueOf(count);
-			filteredMarkersMap.put(bugGroup, bugCount);
+            }
+            bugCount = Integer.valueOf(count);
+            filteredMarkersMap.put(bugGroup, bugCount);
 		}
-		return bugCount.intValue();
-	}
+        return bugCount.intValue();
+    }
 
 
-	private Set<String> getPatternFilter() {
-		return FindbugsPlugin.getFilteredIds();
-	}
+    private Set<String> getPatternFilter() {
+        return FindbugsPlugin.getFilteredIds();
+    }
 
-	public boolean isFiltered(IMarker marker){
-		return filteredMarkers.contains(marker);
-	}
+    public boolean isFiltered(IMarker marker){
+        return filteredMarkers.contains(marker);
+    }
 
-	public Object getInput() {
-		return input;
-	}
+    public Object getInput() {
+        return input;
+    }
 
-	IWorkingSet getCurrentWorkingSet(){
-		return resourceFilter.getWorkingSet();
-	}
+    IWorkingSet getCurrentWorkingSet(){
+        return resourceFilter.getWorkingSet();
+    }
 
-	void setCurrentWorkingSet(IWorkingSet workingSet){
-		resourceFilter.setWorkingSet(workingSet);
-	}
+    void setCurrentWorkingSet(IWorkingSet workingSet){
+        resourceFilter.setWorkingSet(workingSet);
+    }
 
-	/**
-	 * @param desiredType
-	 *            type of the child groups
+    /**
+     * @param desiredType
+     *            type of the child groups
 	 * @param parents
-	 *            all the common parents
-	 * @param parent
-	 *            "empty" root node, which must be filled in with markers from set of
+     *            all the common parents
+     * @param parent
+     *            "empty" root node, which must be filled in with markers from set of
 	 *            given parents
-	 * @return
-	 */
-	private synchronized Object[] createChildren(GroupType desiredType, Set<IResource> parents,
+     * @return
+     */
+    private synchronized Object[] createChildren(GroupType desiredType, Set<IResource> parents,
 			BugGroup parent) {
-		Set<IMarker> markerSet = new HashSet<IMarker>();
-		boolean filterActive = isBugFilterActive();
-		Set<String> patternFilter = getPatternFilter();
+        Set<IMarker> markerSet = new HashSet<IMarker>();
+        boolean filterActive = isBugFilterActive();
+        Set<String> patternFilter = getPatternFilter();
 		for (IResource resource : parents) {
-			IMarker[] markers = getMarkers(resource);
-			for (IMarker marker : markers) {
-				boolean added = markerSet.add(marker);
+            IMarker[] markers = getMarkers(resource);
+            for (IMarker marker : markers) {
+                boolean added = markerSet.add(marker);
 				if(filterActive && added && MarkerUtil.isFiltered(marker, patternFilter)) {
-					filteredMarkers.add(marker);
-				}
-			}
+                    filteredMarkers.add(marker);
+                }
+            }
 		}
-		parent.setMarkers(markerSet);
-		return createGroups(parent, desiredType.getMapper());
-	}
+        parent.setMarkers(markerSet);
+        return createGroups(parent, desiredType.getMapper());
+    }
 
-	/**
-	 * @param <Identifier>
-	 *            object type, like String or Integer
+    /**
+     * @param <Identifier>
+     *            object type, like String or Integer
 	 * @param mapper
-	 *            maps between BugInstance and group
-	 */
-	private synchronized <Identifier> Object[] createGroups(BugGroup parent,
+     *            maps between BugInstance and group
+     */
+    private synchronized <Identifier> Object[] createGroups(BugGroup parent,
 			MarkerMapper<Identifier> mapper) {
-		if (mapper == MarkerMapper.NO_MAPPING) {
-			return parent.getAllMarkers().toArray(new IMarker[0]);
-		}
+        if (mapper == MarkerMapper.NO_MAPPING) {
+            return parent.getAllMarkers().toArray(new IMarker[0]);
+        }
 		Set<IMarker> allMarkers = parent.getAllMarkers();
-		GroupType childType = grouping.getChildType(mapper.getType());
-		Map<Identifier, Set<IMarker>> groupIds = new HashMap<Identifier, Set<IMarker>>();
+        GroupType childType = grouping.getChildType(mapper.getType());
+        Map<Identifier, Set<IMarker>> groupIds = new HashMap<Identifier, Set<IMarker>>();
 
-		// first, sort all bugs to the sets with same identifier type
-		for (IMarker marker : allMarkers) {
-			Identifier id = mapper.getIdentifier(marker);
+        // first, sort all bugs to the sets with same identifier type
+        for (IMarker marker : allMarkers) {
+            Identifier id = mapper.getIdentifier(marker);
 			if (id == null) {
-				FindbugsPlugin.getDefault().logWarning(
-						"BugContentProvider.createPatternGroups: "
-								+ "Failed to find bug id of type " + mapper.getType()
+                FindbugsPlugin.getDefault().logWarning(
+                        "BugContentProvider.createPatternGroups: "
+                                + "Failed to find bug id of type " + mapper.getType()
 								+ " for marker on file " + marker.getResource());
-				continue;
-			}
-			if (!groupIds.containsKey(id)) {
+                continue;
+            }
+            if (!groupIds.containsKey(id)) {
 				groupIds.put(id, new HashSet<IMarker>());
-			}
-			groupIds.get(id).add(marker);
-		}
+            }
+            groupIds.get(id).add(marker);
+        }
 
-		// now create groups from the sorted bug sets
-		Set<Entry<Identifier, Set<IMarker>>> typesSet = groupIds.entrySet();
-		BugGroup[] children = new BugGroup[typesSet.size()];
+        // now create groups from the sorted bug sets
+        Set<Entry<Identifier, Set<IMarker>>> typesSet = groupIds.entrySet();
+        BugGroup[] children = new BugGroup[typesSet.size()];
 		boolean lastlevel = grouping.getChildType(mapper.getType()) == GroupType.Marker;
-		int i = 0;
-		for (Entry<Identifier, Set<IMarker>> entry : typesSet) {
-			Identifier groupId = entry.getKey();
+        int i = 0;
+        for (Entry<Identifier, Set<IMarker>> entry : typesSet) {
+            Identifier groupId = entry.getKey();
 			children[i] = new BugGroup(parent, groupId, mapper.getType(), mapper
-					.getPrio(groupId));
-			children[i].setMarkers(entry.getValue());
-			i++;
+                    .getPrio(groupId));
+            children[i].setMarkers(entry.getValue());
+            i++;
 		}
-		if (!lastlevel) {
-			for (BugGroup bugGroup : children) {
-				// recursive call
+        if (!lastlevel) {
+            for (BugGroup bugGroup : children) {
+                // recursive call
 				createGroups(bugGroup, childType.getMapper());
-			}
-		}
-		return children;
+            }
+        }
+        return children;
 	}
 
-	private IMarker[] getMarkers(IResource resource) {
-		if (resource instanceof IProject) {
-			if (!((IProject) resource).isAccessible()) {
+    private IMarker[] getMarkers(IResource resource) {
+        if (resource instanceof IProject) {
+            if (!((IProject) resource).isAccessible()) {
 				return EMPTY;
-			}
-		}
-		if(!resourceFilter.contains(resource)){
+            }
+        }
+        if(!resourceFilter.contains(resource)){
 			return EMPTY;
-		}
-		return MarkerUtil.getAllMarkers(resource);
-	}
+        }
+        return MarkerUtil.getAllMarkers(resource);
+    }
 
-	public void setGrouping(Grouping grouping) {
-		this.grouping = grouping;
-		if(viewer != null){
+    public void setGrouping(Grouping grouping) {
+        this.grouping = grouping;
+        if(viewer != null){
 			// will start listening on resource changes, if not yet started
-			refreshJob.setViewer(viewer);
+            refreshJob.setViewer(viewer);
+        }
+    }
+
+    public Grouping getGrouping() {
+        return grouping;
+    }
+
+    public void saveState(IMemento memento) {
+        if(DEBUG){
+            System.out.println("Save state!");
 		}
-	}
+    }
 
-	public Grouping getGrouping() {
-		return grouping;
-	}
+    public void init(ICommonContentExtensionSite config) {
+        this.site = config;
+    }
 
-	public void saveState(IMemento memento) {
-		if(DEBUG){
-			System.out.println("Save state!");
+    public void restoreState(IMemento memento) {
+        if(DEBUG){
+            System.out.println("Restore state!");
 		}
-	}
-
-	public void init(ICommonContentExtensionSite config) {
-		this.site = config;
-	}
-
-	public void restoreState(IMemento memento) {
-		if(DEBUG){
-			System.out.println("Restore state!");
-		}
-	}
+    }
 
     protected void initWorkingSet(String workingSetName) {
         IWorkingSet workingSet = null;
 
         if (workingSetName != null && workingSetName.length() > 0) {
-			IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
-			workingSet = workingSetManager.getWorkingSet(workingSetName);
-		} /*else if (PlatformUI.getPreferenceStore().getBoolean(
+            IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
+            workingSet = workingSetManager.getWorkingSet(workingSetName);
+        } /*else if (PlatformUI.getPreferenceStore().getBoolean(
 						IWorkbenchPreferenceConstants.USE_WINDOW_WORKING_SET_BY_DEFAULT)) {
-			// use the window set by default if the global preference is set
-			workingSet = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getAggregateWorkingSet();
-		} */
+            // use the window set by default if the global preference is set
+            workingSet = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getAggregateWorkingSet();
+        } */
 		if (workingSet != null) {
-			setCurrentWorkingSet(workingSet);
-		}
+            setCurrentWorkingSet(workingSet);
+        }
     }
 
-	/**
-	 * @return list of the *visible* parents with changed children to refresh the viewer.
-	 * Returns empty list if the full refresh is needed
+    /**
+     * @return list of the *visible* parents with changed children to refresh the viewer.
+     * Returns empty list if the full refresh is needed
 	 */
-	public synchronized Set<BugGroup> updateContent(List<DeltaInfo> deltas) {
-		int oldRootSize = rootElement.getChildren().length;
-		Set<BugGroup> changedParents = new HashSet<BugGroup>();
+    public synchronized Set<BugGroup> updateContent(List<DeltaInfo> deltas) {
+        int oldRootSize = rootElement.getChildren().length;
+        Set<BugGroup> changedParents = new HashSet<BugGroup>();
 		bugFilterActive = isBugFilterActive();
-		Set<String> patternFilter = getPatternFilter();
-		for (DeltaInfo delta : deltas) {
-			if (DEBUG) {
+        Set<String> patternFilter = getPatternFilter();
+        for (DeltaInfo delta : deltas) {
+            if (DEBUG) {
 				System.out.println(delta + " (contentProvider.updateContent)");
-			}
-			IMarker changedMarker = delta.marker;
-			switch (delta.changeKind) {
+            }
+            IMarker changedMarker = delta.marker;
+            switch (delta.changeKind) {
 			case IResourceDelta.REMOVED:
-				BugGroup parent = findParent(changedMarker);
-				if (parent == null) {
-					if (DEBUG) {
+                BugGroup parent = findParent(changedMarker);
+                if (parent == null) {
+                    if (DEBUG) {
 						System.out.println(delta
-								+ " IGNORED because marker does not have parent!");
-					}
-					continue;
+                                + " IGNORED because marker does not have parent!");
+                    }
+                    continue;
 				}
-				removeMarker(parent, changedMarker, changedParents);
-				break;
-			case IResourceDelta.ADDED:
+                removeMarker(parent, changedMarker, changedParents);
+                break;
+            case IResourceDelta.ADDED:
 				if (!changedMarker.exists()) {
-					if (DEBUG) {
-						System.out.println(delta
-								+ " IGNORED because marker does not exists anymore!");
+                    if (DEBUG) {
+                        System.out.println(delta
+                                + " IGNORED because marker does not exists anymore!");
 					}
-					continue;
-				}
-				addMarker(changedMarker, changedParents, patternFilter);
+                    continue;
+                }
+                addMarker(changedMarker, changedParents, patternFilter);
 				break;
-			}
-		}
-		if (rootElement.getMarkersCount() == 0 || rootElement.getChildren().length != oldRootSize) {
+            }
+        }
+        if (rootElement.getMarkersCount() == 0 || rootElement.getChildren().length != oldRootSize) {
 			if(oldRootSize == 0 || rootElement.getChildren().length == 0){
-				changedParents.clear();
-			} else {
-				changedParents.add(rootElement);
+                changedParents.clear();
+            } else {
+                changedParents.add(rootElement);
 			}
-			return changedParents;
-		}
-		// XXX this is a fix for not updating of children on incremental build and
+            return changedParents;
+        }
+        // XXX this is a fix for not updating of children on incremental build and
 		// for "empty" groups which can never be empty... I don't know where the bug is...
-		changedParents.add(rootElement);
-		return changedParents;
-	}
+        changedParents.add(rootElement);
+        return changedParents;
+    }
 
-	private void removeMarker(BugGroup parent, IMarker marker, Set<BugGroup> changedParents) {
-		BugGroup accessibleParent = getFirstAccessibleParent(parent);
-		changedParents.add(accessibleParent);
+    private void removeMarker(BugGroup parent, IMarker marker, Set<BugGroup> changedParents) {
+        BugGroup accessibleParent = getFirstAccessibleParent(parent);
+        changedParents.add(accessibleParent);
 		removeMarker(parent, marker);
-	}
+    }
 
-	private void addMarker(IMarker toAdd, Set<BugGroup> changedParents, Set<String> patternFilter) {
-		MarkerMapper<?> mapper = grouping.getFirstType().getMapper();
-		// filter through working set
+    private void addMarker(IMarker toAdd, Set<BugGroup> changedParents, Set<String> patternFilter) {
+        MarkerMapper<?> mapper = grouping.getFirstType().getMapper();
+        // filter through working set
 		IMarker marker = toAdd;
-		if (!resourceFilter.contains(marker.getResource())) {
-			return;
-		}
+        if (!resourceFilter.contains(marker.getResource())) {
+            return;
+        }
 		rootElement.addMarker(marker);
-		addMarker(marker, mapper, rootElement, changedParents, patternFilter);
-	}
+        addMarker(marker, mapper, rootElement, changedParents, patternFilter);
+    }
 
-	private <Identifier> void addMarker(IMarker marker, MarkerMapper<Identifier> mapper,
-			BugGroup parent, Set<BugGroup> changedParents, Set<String> patternFilter) {
+    private <Identifier> void addMarker(IMarker marker, MarkerMapper<Identifier> mapper,
+            BugGroup parent, Set<BugGroup> changedParents, Set<String> patternFilter) {
 
-		if (mapper == MarkerMapper.NO_MAPPING){
-			return;
-		}
+        if (mapper == MarkerMapper.NO_MAPPING){
+            return;
+        }
 
-		Identifier id = mapper.getIdentifier(marker);
-		if (id == null) {
-			FindbugsPlugin.getDefault().logWarning(
+        Identifier id = mapper.getIdentifier(marker);
+        if (id == null) {
+            FindbugsPlugin.getDefault().logWarning(
 					"BugContentProvider.createPatternGroups: "
-							+ "Failed to find bug id of type " + mapper.getType()
-							+ " for marker on file " + marker.getResource());
-			return;
+                            + "Failed to find bug id of type " + mapper.getType()
+                            + " for marker on file " + marker.getResource());
+            return;
 		}
 
-		// search for the right node to insert. there cannot be more then one
-		BugGroup matchingChild = null;
-		for (Object object : parent.getChildren()) {
+        // search for the right node to insert. there cannot be more then one
+        BugGroup matchingChild = null;
+        for (Object object : parent.getChildren()) {
 			if (!(object instanceof BugGroup)) {
-				break;
-			}
-			BugGroup group = (BugGroup) object;
+                break;
+            }
+            BugGroup group = (BugGroup) object;
 			if (id.equals(group.getData())) {
-				matchingChild = group;
-				break;
-			}
+                matchingChild = group;
+                break;
+            }
 		}
 
-		GroupType childType = grouping.getChildType(mapper.getType());
-		boolean filtered = bugFilterActive && MarkerUtil.isFiltered(marker, patternFilter);
-		if(filtered) {
+        GroupType childType = grouping.getChildType(mapper.getType());
+        boolean filtered = bugFilterActive && MarkerUtil.isFiltered(marker, patternFilter);
+        if(filtered) {
 			filteredMarkers.add(marker);
-		}
+        }
 
-		if (matchingChild != null) {
-			// node exists? fine, add marker and update children
-			matchingChild.addMarker(marker);
+        if (matchingChild != null) {
+            // node exists? fine, add marker and update children
+            matchingChild.addMarker(marker);
 			if(filtered){
-				Integer count = filteredMarkersMap.get(matchingChild);
-				if(count == null) {
-					count = Integer.valueOf(0);
+                Integer count = filteredMarkersMap.get(matchingChild);
+                if(count == null) {
+                    count = Integer.valueOf(0);
 				}
-				filteredMarkersMap.put(matchingChild, Integer.valueOf(count.intValue() + 1));
-			}
+                filteredMarkersMap.put(matchingChild, Integer.valueOf(count.intValue() + 1));
+            }
 
-			if(isAccessible(matchingChild)) {
-				// update only first visible parent element to avoid multiple refreshes
-				changedParents.add(getFirstAccessibleParent(matchingChild));
+            if(isAccessible(matchingChild)) {
+                // update only first visible parent element to avoid multiple refreshes
+                changedParents.add(getFirstAccessibleParent(matchingChild));
 			}
-			boolean lastlevel = childType == GroupType.Marker;
-			if (!lastlevel) {
-				addMarker(marker, childType.getMapper(), matchingChild, changedParents, patternFilter);
+            boolean lastlevel = childType == GroupType.Marker;
+            if (!lastlevel) {
+                addMarker(marker, childType.getMapper(), matchingChild, changedParents, patternFilter);
 			}
-		} else {
-			// if there is no node, create one and recursvely all children to the last
-			// level
+        } else {
+            // if there is no node, create one and recursvely all children to the last
+            // level
 			BugGroup group = new BugGroup(parent, id, mapper.getType(), mapper.getPrio(id));
-			group.addMarker(marker);
-			if(filtered){
-				filteredMarkersMap.put(group, Integer.valueOf(1));
+            group.addMarker(marker);
+            if(filtered){
+                filteredMarkersMap.put(group, Integer.valueOf(1));
 			}
-			createGroups(group, childType.getMapper());
-		}
-	}
+            createGroups(group, childType.getMapper());
+        }
+    }
 
 
 
-	/**
-	 * @return true if the element is accessible from the content viewer point of view.
-	 * After "go into" action parent elements can became inaccessible to the viewer
+    /**
+     * @return true if the element is accessible from the content viewer point of view.
+     * After "go into" action parent elements can became inaccessible to the viewer
 	 */
-	public boolean isAccessible(BugGroup group){
-		BugGroup rootGroup;
-		if(!(input instanceof BugGroup)) {
+    public boolean isAccessible(BugGroup group){
+        BugGroup rootGroup;
+        if(!(input instanceof BugGroup)) {
 			rootGroup = rootElement;
-		} else {
-			rootGroup = (BugGroup) input;
-		}
+        } else {
+            rootGroup = (BugGroup) input;
+        }
 
-		if(grouping.compare(rootGroup.getType(), group.getType()) < 0){
-			return true;
-		}
+        if(grouping.compare(rootGroup.getType(), group.getType()) < 0){
+            return true;
+        }
 		return false;
-	}
+    }
 
-	private void removeMarker(BugGroup parent, IMarker marker) {
-		parent.removeMarker(marker);
-		List<BugGroup> parents = getSelfAndParents(parent);
+    private void removeMarker(BugGroup parent, IMarker marker) {
+        parent.removeMarker(marker);
+        List<BugGroup> parents = getSelfAndParents(parent);
 		boolean filtered = isFiltered(marker);
-		for (BugGroup group : parents) {
-			if(group.getMarkersCount() == 0 && group.getParent() instanceof BugGroup){
-				removeGroup((BugGroup) group.getParent(), group);
+        for (BugGroup group : parents) {
+            if(group.getMarkersCount() == 0 && group.getParent() instanceof BugGroup){
+                removeGroup((BugGroup) group.getParent(), group);
 			}
-			if(filtered){
-				Integer count = filteredMarkersMap.get(group);
-				if(count != null && count.intValue() > 0) {
+            if(filtered){
+                Integer count = filteredMarkersMap.get(group);
+                if(count != null && count.intValue() > 0) {
 					filteredMarkersMap.put(group, Integer.valueOf(count.intValue() - 1));
-				}
-			}
-		}
+                }
+            }
+        }
 		filteredMarkers.remove(marker);
-	}
+    }
 
-	private void removeGroup(BugGroup parent, BugGroup child) {
-		if (parent.removeChild(child)) {
-			filteredMarkersMap.remove(child);
+    private void removeGroup(BugGroup parent, BugGroup child) {
+        if (parent.removeChild(child)) {
+            filteredMarkersMap.remove(child);
 			if (parent.getMarkersCount() == 0 && parent.getParent() instanceof BugGroup) {
-				removeGroup((BugGroup) parent.getParent(), parent);
-			}
-		}
+                removeGroup((BugGroup) parent.getParent(), parent);
+            }
+        }
 	}
 
-	private List<BugGroup> getSelfAndParents(BugGroup child){
-		List<BugGroup> parents = new ArrayList<BugGroup>();
-		parents.add(child);
+    private List<BugGroup> getSelfAndParents(BugGroup child){
+        List<BugGroup> parents = new ArrayList<BugGroup>();
+        parents.add(child);
 		while(child.getParent() instanceof BugGroup){
-			child = (BugGroup) child.getParent();
-			parents.add(child);
-		}
+            child = (BugGroup) child.getParent();
+            parents.add(child);
+        }
 		return parents;
-	}
+    }
 
-	private BugGroup getFirstAccessibleParent(BugGroup element){
-		if(element.getParent() instanceof BugGroup){
-			BugGroup parent = (BugGroup) element.getParent();
+    private BugGroup getFirstAccessibleParent(BugGroup element){
+        if(element.getParent() instanceof BugGroup){
+            BugGroup parent = (BugGroup) element.getParent();
 			if(!isAccessible(parent)){
-				return element;
-			}
-			return getFirstAccessibleParent(parent);
+                return element;
+            }
+            return getFirstAccessibleParent(parent);
 		}
-		return element;
-	}
+        return element;
+    }
 
-	private BugGroup findParent(IMarker marker) {
+    private BugGroup findParent(IMarker marker) {
 
-		Object[] rootObjects = rootElement.getChildren();
+        Object[] rootObjects = rootElement.getChildren();
 
-		GroupType parentType = grouping.getParentType(GroupType.Marker);
-		if (parentType == GroupType.Undefined) {
-			return null;
+        GroupType parentType = grouping.getParentType(GroupType.Marker);
+        if (parentType == GroupType.Undefined) {
+            return null;
 		}
-		// traverse through all groups looking for one with marker
-		for (int i = 0; i < rootObjects.length; i++) {
-			Object object = rootObjects[i];
+        // traverse through all groups looking for one with marker
+        for (int i = 0; i < rootObjects.length; i++) {
+            Object object = rootObjects[i];
 			if (!(object instanceof BugGroup)) {
-				break;
-			}
-			BugGroup group = (BugGroup) object;
+                break;
+            }
+            BugGroup group = (BugGroup) object;
 			if (group.contains(marker)) {
-				if (group.getType() == parentType) {
-					return group;
-				}
+                if (group.getType() == parentType) {
+                    return group;
+                }
 				rootObjects = group.getChildren();
-				i = -1;
-			}
-		}
+                i = -1;
+            }
+        }
 		return null;
-	}
+    }
 
-	public static BugContentProvider getProvider(INavigatorContentService service) {
-		INavigatorContentExtension extensionById = service
-				.getContentExtensionById(FindbugsPlugin.BUG_CONTENT_PROVIDER_ID);
+    public static BugContentProvider getProvider(INavigatorContentService service) {
+        INavigatorContentExtension extensionById = service
+                .getContentExtensionById(FindbugsPlugin.BUG_CONTENT_PROVIDER_ID);
 		IContentProvider provider = extensionById.getContentProvider();
-		if (provider instanceof BugContentProvider) {
-			return (BugContentProvider) provider;
-		}
+        if (provider instanceof BugContentProvider) {
+            return (BugContentProvider) provider;
+        }
 		return null;
-	}
+    }
 
-	public boolean isBugFilterActive(){
-		return isBugFilterActive(site);
-	}
+    public boolean isBugFilterActive(){
+        return isBugFilterActive(site);
+    }
 
-	public static boolean isBugFilterActive(ICommonContentExtensionSite site){
-		ViewerFilter[] visibleFilters = site.getService().getFilterService().getVisibleFilters(true);
-		for (ViewerFilter filter : visibleFilters) {
+    public static boolean isBugFilterActive(ICommonContentExtensionSite site){
+        ViewerFilter[] visibleFilters = site.getService().getFilterService().getVisibleFilters(true);
+        for (ViewerFilter filter : visibleFilters) {
 			if(filter instanceof BugByIdFilter){
-				return true;
-			}
-		}
+                return true;
+            }
+        }
 		return false;
-	}
+    }
 
-	public Set<Object> getShowInTargets(Object obj){
-		Set<Object> supported = new HashSet<Object>();
-		if (obj instanceof BugGroup) {
+    public Set<Object> getShowInTargets(Object obj){
+        Set<Object> supported = new HashSet<Object>();
+        if (obj instanceof BugGroup) {
 			supported.add(obj);
-		} else if (obj instanceof IMarker) {
-			supported.add(obj);
-		} else if (obj instanceof IJavaProject) {
+        } else if (obj instanceof IMarker) {
+            supported.add(obj);
+        } else if (obj instanceof IJavaProject) {
 			return getShowInTargets(((IJavaProject)obj).getProject());
-		} else if (obj instanceof IClassFile) {
-			return getShowInTargets(((IClassFile)obj).getType());
-		} else if (obj instanceof IFile) {
+        } else if (obj instanceof IClassFile) {
+            return getShowInTargets(((IClassFile)obj).getType());
+        } else if (obj instanceof IFile) {
 			IJavaElement javaElement = JavaCore.create((IFile)obj);
+            return getShowInTargets(javaElement);
+        } else if (obj instanceof IFolder) {
+            IJavaElement javaElement = JavaCore.create((IFolder)obj);
 			return getShowInTargets(javaElement);
-		} else if (obj instanceof IFolder) {
-			IJavaElement javaElement = JavaCore.create((IFolder)obj);
-			return getShowInTargets(javaElement);
-		} else if(obj instanceof IStructuredSelection){
-			IStructuredSelection selection = (IStructuredSelection) obj;
-			Iterator<?> iter = selection.iterator();
+        } else if(obj instanceof IStructuredSelection){
+            IStructuredSelection selection = (IStructuredSelection) obj;
+            Iterator<?> iter = selection.iterator();
 			while (iter.hasNext()) {
-				Object object = iter.next();
-				supported.add(getShowInTargets(object));
-			}
+                Object object = iter.next();
+                supported.add(getShowInTargets(object));
+            }
 		} else {
-			// TODO think how improve performance for project/package objects?
-			Set<IMarker> markers = MarkerUtil.getMarkers(obj);
-			boolean found = false;
+            // TODO think how improve performance for project/package objects?
+            Set<IMarker> markers = MarkerUtil.getMarkers(obj);
+            boolean found = false;
 			main: for (IMarker marker : markers) {
-				BugGroup group = findParent(marker);
-				if(group == null){
-					continue;
+                BugGroup group = findParent(marker);
+                if(group == null){
+                    continue;
 				}
-				List<BugGroup> selfAndParents = getSelfAndParents(group);
-				for (BugGroup bugGroup : selfAndParents) {
-					if(obj.equals(bugGroup.getData())){
+                List<BugGroup> selfAndParents = getSelfAndParents(group);
+                for (BugGroup bugGroup : selfAndParents) {
+                    if(obj.equals(bugGroup.getData())){
 						supported.add(bugGroup);
-						found = true;
-						break main;
-					}
+                        found = true;
+                        break main;
+                    }
 				}
+            }
+            if(!found){
+                supported.addAll(markers);
 			}
-			if(!found){
-				supported.addAll(markers);
-			}
-		}
-		return supported;
-	}
+        }
+        return supported;
+    }
 
 }

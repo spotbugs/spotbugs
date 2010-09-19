@@ -30,13 +30,13 @@ package org.eclipse.ui;
  */
 public interface IAggregateWorkingSet extends IWorkingSet {
 
-	/**
-	 * Returns the working sets contained in this aggregate working set.
-	 *
+    /**
+     * Returns the working sets contained in this aggregate working set.
+     *
 	 * Clients can do what they wish with the returned array, as it
-	 * will have no effect on the state of the this object.
-	 *
-	 * @return the working sets contained in this aggregate working set.
+     * will have no effect on the state of the this object.
+     *
+     * @return the working sets contained in this aggregate working set.
 	 */
-	public IWorkingSet[] getComponents();
+    public IWorkingSet[] getComponents();
 }

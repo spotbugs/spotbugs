@@ -79,606 +79,606 @@ import edu.umd.cs.findbugs.Plugin;
  */
 public class FilterBugsDialog extends SelectionDialog {
 
-	private final class TreeSelectionChangedListener implements
-			ISelectionChangedListener {
-		public void selectionChanged(SelectionChangedEvent event) {
+    private final class TreeSelectionChangedListener implements
+            ISelectionChangedListener {
+        public void selectionChanged(SelectionChangedEvent event) {
 			IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 
-			updateDescription(selection);
-		}
-	}
+            updateDescription(selection);
+        }
+    }
 
-	private final class TreeCheckStateListener implements ICheckStateListener {
-		public void checkStateChanged(CheckStateChangedEvent event) {
-			Object element = event.getElement();
+    private final class TreeCheckStateListener implements ICheckStateListener {
+        public void checkStateChanged(CheckStateChangedEvent event) {
+            Object element = event.getElement();
 			boolean checked = event.getChecked();
 
-			elementChecked(element, checked);
-			updateTextIds();
-		}
+            elementChecked(element, checked);
+            updateTextIds();
+        }
 	}
 
-	private final class TreeContentProvider implements ITreeContentProvider {
-		public Object[] getElements(Object inputElement) {
-			return ((Collection<?>) inputElement).toArray();
+    private final class TreeContentProvider implements ITreeContentProvider {
+        public Object[] getElements(Object inputElement) {
+            return ((Collection<?>) inputElement).toArray();
 		}
 
-		public Object[] getChildren(Object element) {
-			if(element instanceof BugCode){
-				Set<BugPattern> children = getPatterns((BugCode) element);
+        public Object[] getChildren(Object element) {
+            if(element instanceof BugCode){
+                Set<BugPattern> children = getPatterns((BugCode) element);
 				Object[] array = children.toArray();
-				Arrays.sort(array);
-				return array;
-			}
+                Arrays.sort(array);
+                return array;
+            }
 			return new Object[0];
-		}
+        }
 
-		public Object getParent(Object element) {
-			if(element instanceof BugPattern){
-				BugPattern pattern = (BugPattern) element;
+        public Object getParent(Object element) {
+            if(element instanceof BugPattern){
+                BugPattern pattern = (BugPattern) element;
 				return I18N.instance().getBugCode(pattern.getAbbrev());
-			}
-			return null;
-		}
+            }
+            return null;
+        }
 
-		public boolean hasChildren(Object element) {
-			return element instanceof BugCode;
-		}
+        public boolean hasChildren(Object element) {
+            return element instanceof BugCode;
+        }
 
-		public void inputChanged(Viewer viewer1, Object oldInput, Object newInput) {
-			// noop
-		}
+        public void inputChanged(Viewer viewer1, Object oldInput, Object newInput) {
+            // noop
+        }
 
-		public void dispose() {
-			// noop
-		}
+        public void dispose() {
+            // noop
+        }
 	}
 
-	private final static class TreeLabelProvider implements ILabelProvider {
-		public Image getImage(Object element) {
-			return null;
+    private final static class TreeLabelProvider implements ILabelProvider {
+        public Image getImage(Object element) {
+            return null;
 		}
 
-		public String getText(Object element) {
-			if (element instanceof BugPattern) {
-				BugPattern pattern = (BugPattern) element;
+        public String getText(Object element) {
+            if (element instanceof BugPattern) {
+                BugPattern pattern = (BugPattern) element;
 				return pattern.getType() + " (" +  pattern.getCategory().toLowerCase() + ")";
-			}
-			if (element instanceof BugCode) {
-				BugCode code = (BugCode) element;
+            }
+            if (element instanceof BugCode) {
+                BugCode code = (BugCode) element;
 				return code.getAbbrev();// + " (" + code.getDescription() + ")";
-			}
-			return null;
+            }
+            return null;
 
-		}
+        }
 
-		public void addListener(ILabelProviderListener listener) {
-			// noop
-		}
+        public void addListener(ILabelProviderListener listener) {
+            // noop
+        }
 
-		public void dispose() {
-			// noop
-		}
+        public void dispose() {
+            // noop
+        }
 
-		public boolean isLabelProperty(Object element, String property) {
-			return false;
-		}
+        public boolean isLabelProperty(Object element, String property) {
+            return false;
+        }
 
-		public void removeListener(ILabelProviderListener listener) {
-			// noop
-		}
+        public void removeListener(ILabelProviderListener listener) {
+            // noop
+        }
 	}
 
-	class PatternFilteredTree extends FilteredTree {
-		PatternFilteredTree(Composite parent, int treeStyle, PatternFilter filter){
-			super(parent, treeStyle, filter);
+    class PatternFilteredTree extends FilteredTree {
+        PatternFilteredTree(Composite parent, int treeStyle, PatternFilter filter){
+            super(parent, treeStyle, filter);
 		}
 
-		@Override
-		protected TreeViewer doCreateTreeViewer(Composite parent1, int style) {
-			checkList = createTree(parent1, style);
+        @Override
+        protected TreeViewer doCreateTreeViewer(Composite parent1, int style) {
+            checkList = createTree(parent1, style);
 			return checkList;
-		}
+        }
 
-		@Override
-		protected void clearText() {
-			checkList.setCheckedElements(checkedElements);
+        @Override
+        protected void clearText() {
+            checkList.setCheckedElements(checkedElements);
 			checkList.collapseAll();
-			super.clearText();
-		}
+            super.clearText();
+        }
 
-		public boolean isFiltering(){
-			String filterString = getFilterString();
-			boolean yes = filterString != null && filterString.length() > 0
+        public boolean isFiltering(){
+            String filterString = getFilterString();
+            boolean yes = filterString != null && filterString.length() > 0
 				&& !filterString.equals(getInitialText());
-			return yes;
-		}
-	}
+            return yes;
+        }
+    }
 
-	private final Set<BugPattern> allowedPatterns;
-	private final Set<BugPattern> preSelectedPatterns;
-	private final Set<BugCode> preSelectedTypes;
+    private final Set<BugPattern> allowedPatterns;
+    private final Set<BugPattern> preSelectedPatterns;
+    private final Set<BugCode> preSelectedTypes;
 	private final Set<BugCode> allowedTypes;
-	private final Map<BugCode, Set<BugPattern>> codeToPattern;
-	private final Map<BugPattern, Set<DetectorFactory>> patternToFactory;
-	private final Map<BugPattern, Set<Plugin>> patternToPlugin;
+    private final Map<BugCode, Set<BugPattern>> codeToPattern;
+    private final Map<BugPattern, Set<DetectorFactory>> patternToFactory;
+    private final Map<BugPattern, Set<Plugin>> patternToPlugin;
 
-	private ContainerCheckedTreeViewer checkList;
-	private TextPresentation presentation;
-	private StyledText htmlControl;
+    private ContainerCheckedTreeViewer checkList;
+    private TextPresentation presentation;
+    private StyledText htmlControl;
 	private IInformationPresenterExtension presenter;
-	private Text selectedIds;
+    private Text selectedIds;
 
-	/**
-	 * Contains logically consistent set of filtered elements. This set is NOT the same as
-	 * shown in the tree. The difference is: if parent is checked in the tree, all the children are
+    /**
+     * Contains logically consistent set of filtered elements. This set is NOT the same as
+     * shown in the tree. The difference is: if parent is checked in the tree, all the children are
 	 * checked too. If child is checked in the tree, the parent is checked too (grayed).
-	 * However, we don't want to have each child pattern if it's parent type is checked,
-	 * and we don't want to have parent type if only a subset of children is checked.
-	 */
+     * However, we don't want to have each child pattern if it's parent type is checked,
+     * and we don't want to have parent type if only a subset of children is checked.
+     */
 	private Object[] checkedElements;
-	private final TreeContentProvider contentProvider;
-	private final TreeLabelProvider labelProvider;
+    private final TreeContentProvider contentProvider;
+    private final TreeLabelProvider labelProvider;
 
-	/**
-	 * Final result stored after dialog is closed
-	 */
+    /**
+     * Final result stored after dialog is closed
+     */
 	private String selectedAsText;
 
-	public FilterBugsDialog(Shell parentShell, Set<BugPattern> filteredPatterns,
-			Set<BugCode> filteredTypes) {
-		super(parentShell);
+    public FilterBugsDialog(Shell parentShell, Set<BugPattern> filteredPatterns,
+            Set<BugCode> filteredTypes) {
+        super(parentShell);
 		codeToPattern = new HashMap<BugCode, Set<BugPattern>>();
-		patternToFactory = new HashMap<BugPattern, Set<DetectorFactory>>();
-		patternToPlugin = new HashMap<BugPattern, Set<Plugin>>();
-		allowedPatterns = FindbugsPlugin.getKnownPatterns();
+        patternToFactory = new HashMap<BugPattern, Set<DetectorFactory>>();
+        patternToPlugin = new HashMap<BugPattern, Set<Plugin>>();
+        allowedPatterns = FindbugsPlugin.getKnownPatterns();
 		allowedTypes = FindbugsPlugin.getKnownPatternTypes();
-		preSelectedPatterns = filteredPatterns;
-		preSelectedTypes = filteredTypes;
-		contentProvider = new TreeContentProvider();
+        preSelectedPatterns = filteredPatterns;
+        preSelectedTypes = filteredTypes;
+        contentProvider = new TreeContentProvider();
 		labelProvider = new TreeLabelProvider();
-		initMaps();
+        initMaps();
 
-		setShellStyle(getShellStyle() | SWT.RESIZE);
-	}
+        setShellStyle(getShellStyle() | SWT.RESIZE);
+    }
 
 
 
-	private void initMaps() {
-		for (BugPattern pattern : allowedPatterns) {
-			BugCode bugCode = I18N.instance().getBugCode(pattern.getAbbrev());
+    private void initMaps() {
+        for (BugPattern pattern : allowedPatterns) {
+            BugCode bugCode = I18N.instance().getBugCode(pattern.getAbbrev());
 			getPatterns(bugCode).add(pattern);
-		}
-		// Filter out patterns if their types in the list
-		// If at least one child is there, discard it from checked elements list,
+        }
+        // Filter out patterns if their types in the list
+        // If at least one child is there, discard it from checked elements list,
 		// as it is already disabled by disabling parent
-		Iterator<BugPattern> patterns = preSelectedPatterns.iterator();
-		while(patterns.hasNext()){
-			BugPattern pattern = patterns.next();
+        Iterator<BugPattern> patterns = preSelectedPatterns.iterator();
+        while(patterns.hasNext()){
+            BugPattern pattern = patterns.next();
 			BugCode bugCode = I18N.instance().getBugCode(pattern.getAbbrev());
-			if(preSelectedTypes.contains(bugCode)){
-				patterns.remove();
-			}
+            if(preSelectedTypes.contains(bugCode)){
+                patterns.remove();
+            }
 		}
 
-		// merge types and the rest of patterns (without parent type)
-		List<Object> merged = new ArrayList<Object>();
-		merged.addAll(preSelectedTypes);
+        // merge types and the rest of patterns (without parent type)
+        List<Object> merged = new ArrayList<Object>();
+        merged.addAll(preSelectedTypes);
 		merged.addAll(preSelectedPatterns);
 
-		// for each type, ALL children should be preselected.
-		for (BugCode bugCode : preSelectedTypes) {
-			preSelectedPatterns.addAll(getPatterns(bugCode));
+        // for each type, ALL children should be preselected.
+        for (BugCode bugCode : preSelectedTypes) {
+            preSelectedPatterns.addAll(getPatterns(bugCode));
 		}
-		checkedElements = merged.toArray();
-		sortCheckedElements();
+        checkedElements = merged.toArray();
+        sortCheckedElements();
 
-		initDetectorMaps();
-	}
+        initDetectorMaps();
+    }
 
-	private void initDetectorMaps() {
+    private void initDetectorMaps() {
 
-		Iterator<DetectorFactory> iterator =
-			DetectorFactoryCollection.instance().factoryIterator();
-		while (iterator.hasNext()) {
+        Iterator<DetectorFactory> iterator =
+            DetectorFactoryCollection.instance().factoryIterator();
+        while (iterator.hasNext()) {
 			DetectorFactory factory = iterator.next();
-			Set<BugPattern> patterns = factory.getReportedBugPatterns();
-			for (BugPattern pattern : patterns) {
-				Set<DetectorFactory> set = patternToFactory.get(pattern);
+            Set<BugPattern> patterns = factory.getReportedBugPatterns();
+            for (BugPattern pattern : patterns) {
+                Set<DetectorFactory> set = patternToFactory.get(pattern);
 				if(set == null){
-					set = new TreeSet<DetectorFactory>(new Comparator<DetectorFactory>(){
-						public int compare(DetectorFactory f1, DetectorFactory f2) {
-							return f1.getFullName().compareTo(f2.getFullName());
+                    set = new TreeSet<DetectorFactory>(new Comparator<DetectorFactory>(){
+                        public int compare(DetectorFactory f1, DetectorFactory f2) {
+                            return f1.getFullName().compareTo(f2.getFullName());
 						}
-					});
-					patternToFactory.put(pattern, set);
-				}
+                    });
+                    patternToFactory.put(pattern, set);
+                }
 				set.add(factory);
 
-				Set<Plugin> pset = patternToPlugin.get(pattern);
-				if(pset == null){
-					pset = new TreeSet<Plugin>(new Comparator<Plugin>(){
+                Set<Plugin> pset = patternToPlugin.get(pattern);
+                if(pset == null){
+                    pset = new TreeSet<Plugin>(new Comparator<Plugin>(){
 						public int compare(Plugin f1, Plugin f2) {
-							return f1.getPluginId().compareTo(f2.getPluginId());
-						}
-					});
+                            return f1.getPluginId().compareTo(f2.getPluginId());
+                        }
+                    });
 					patternToPlugin.put(pattern, pset);
-				}
-				pset.add(factory.getPlugin());
-			}
+                }
+                pset.add(factory.getPlugin());
+            }
 		}
-	}
+    }
 
 
 
-	@Override
-	public boolean close() {
-		String text = selectedIds.getText();
+    @Override
+    public boolean close() {
+        String text = selectedIds.getText();
 		String computed = getSelectedIds();
-		if(text.length() > 0 && !computed.equals(text)){
-			// allow to specify filters using text area (no validation checks yet)
-			// TODO validate text entered by user and throw away invalide/duplicated entries
+        if(text.length() > 0 && !computed.equals(text)){
+            // allow to specify filters using text area (no validation checks yet)
+            // TODO validate text entered by user and throw away invalide/duplicated entries
 			selectedAsText = text;
-		} else {
-			selectedAsText = computed;
-		}
+        } else {
+            selectedAsText = computed;
+        }
 		return super.close();
-	}
+    }
 
-	public String getSelectedIds(){
-		// in case dialog was closed, use well known result
-		if(selectedAsText != null){
+    public String getSelectedIds(){
+        // in case dialog was closed, use well known result
+        if(selectedAsText != null){
 			return selectedAsText;
-		}
-		StringBuilder sb = new StringBuilder();
-		for (Object object : checkedElements) {
+        }
+        StringBuilder sb = new StringBuilder();
+        for (Object object : checkedElements) {
 			if(checkList.getGrayed(object)){
-				continue;
-			}
-			if(object instanceof BugCode){
+                continue;
+            }
+            if(object instanceof BugCode){
 				BugCode bugCode = (BugCode) object;
-				sb.append(bugCode.getAbbrev()).append(", ");
-			} else if(object instanceof BugPattern){
-				BugPattern pattern = (BugPattern) object;
+                sb.append(bugCode.getAbbrev()).append(", ");
+            } else if(object instanceof BugPattern){
+                BugPattern pattern = (BugPattern) object;
 				sb.append(pattern.getType()).append(", ");
-			}
-		}
-		if(sb.length() > 2 && sb.indexOf(", ", sb.length() - 2) > 0){
+            }
+        }
+        if(sb.length() > 2 && sb.indexOf(", ", sb.length() - 2) > 0){
 			sb.setLength(sb.length() - 2);
-		}
-		return sb.toString();
-	}
+        }
+        return sb.toString();
+    }
 
-	@Override
-	protected Control createDialogArea(Composite parent) {
+    @Override
+    protected Control createDialogArea(Composite parent) {
 
-		final SashForm sash = new SashForm(parent, SWT.HORIZONTAL);
-		GridData layoutData = new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
-				| GridData.GRAB_HORIZONTAL);
+        final SashForm sash = new SashForm(parent, SWT.HORIZONTAL);
+        GridData layoutData = new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
+                | GridData.GRAB_HORIZONTAL);
 		layoutData.minimumHeight = 200;
-		layoutData.minimumWidth = 200;
-		layoutData.heightHint = 400;
-		layoutData.widthHint = 500;
+        layoutData.minimumWidth = 200;
+        layoutData.heightHint = 400;
+        layoutData.widthHint = 500;
 		layoutData.verticalIndent = 3;
-		layoutData.horizontalIndent = 3;
+        layoutData.horizontalIndent = 3;
 
-		sash.setLayoutData(layoutData);
+        sash.setLayoutData(layoutData);
 
-		Group treeAndButtons = createGroup(sash, "Available pattern types and patterns");
-		treeAndButtons.setLayout(new GridLayout());
-		treeAndButtons.setLayoutData(new GridData(GridData.FILL_BOTH));
+        Group treeAndButtons = createGroup(sash, "Available pattern types and patterns");
+        treeAndButtons.setLayout(new GridLayout());
+        treeAndButtons.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		final PatternFilteredTree tree = new PatternFilteredTree(treeAndButtons, SWT.SINGLE | SWT.BORDER
-				| SWT.V_SCROLL | SWT.H_SCROLL | SWT.RESIZE, new PatternFilter());
-		tree.setLayoutData(new GridData(GridData.FILL_BOTH));
+        final PatternFilteredTree tree = new PatternFilteredTree(treeAndButtons, SWT.SINGLE | SWT.BORDER
+                | SWT.V_SCROLL | SWT.H_SCROLL | SWT.RESIZE, new PatternFilter());
+        tree.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		Composite buttons = new Composite(treeAndButtons, SWT.NONE);
-		buttons.setLayout(new GridLayout(3, true));
-		buttons.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        Composite buttons = new Composite(treeAndButtons, SWT.NONE);
+        buttons.setLayout(new GridLayout(3, true));
+        buttons.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		final Button button1 = new Button(buttons, SWT.PUSH);
-		button1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		button1.setText("Select All");
+        final Button button1 = new Button(buttons, SWT.PUSH);
+        button1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        button1.setText("Select All");
 		button1.addSelectionListener(new SelectionAdapter(){
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if(false && tree.isFiltering()) {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if(false && tree.isFiltering()) {
 					toggleCheckedGroup(true);
-				} else {
-					checkList.setAllChecked(true);
-					checkedElements = allowedTypes.toArray();
+                } else {
+                    checkList.setAllChecked(true);
+                    checkedElements = allowedTypes.toArray();
 				}
-				updateTextIds();
-			}
-		});
+                updateTextIds();
+            }
+        });
 
-		final Button button2 = new Button(buttons, SWT.PUSH);
-		button2.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		button2.setText("Deselect All");
+        final Button button2 = new Button(buttons, SWT.PUSH);
+        button2.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        button2.setText("Deselect All");
 		button2.addSelectionListener(new SelectionAdapter(){
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if(false && tree.isFiltering()) {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if(false && tree.isFiltering()) {
 					toggleCheckedGroup(false);
-				} else {
-					checkList.setAllChecked(false);
-					checkedElements = new Object[0];
+                } else {
+                    checkList.setAllChecked(false);
+                    checkedElements = new Object[0];
 				}
-				updateTextIds();
-			}
-		});
+                updateTextIds();
+            }
+        });
 
-		SashForm rightPane = new SashForm(sash, SWT.VERTICAL);
-		rightPane.setLayoutData(new GridData(GridData.FILL_BOTH));
+        SashForm rightPane = new SashForm(sash, SWT.VERTICAL);
+        rightPane.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		Group group1 = createGroup(rightPane, "Description");
-		htmlControl = new StyledText(group1, SWT.READ_ONLY | SWT.H_SCROLL
-				| SWT.V_SCROLL | SWT.BORDER | SWT.WRAP);
+        Group group1 = createGroup(rightPane, "Description");
+        htmlControl = new StyledText(group1, SWT.READ_ONLY | SWT.H_SCROLL
+                | SWT.V_SCROLL | SWT.BORDER | SWT.WRAP);
 		presentation = new TextPresentation();
-		htmlControl.setLayoutData(new GridData(GridData.FILL_BOTH));
-		presenter = new HTMLTextPresenter(false);
+        htmlControl.setLayoutData(new GridData(GridData.FILL_BOTH));
+        presenter = new HTMLTextPresenter(false);
 
-		Group group2 = createGroup(rightPane, "Filtered pattern types and patterns");
-		selectedIds = new Text(group2, SWT.H_SCROLL
-				| SWT.V_SCROLL | SWT.BORDER | SWT.WRAP);
+        Group group2 = createGroup(rightPane, "Filtered pattern types and patterns");
+        selectedIds = new Text(group2, SWT.H_SCROLL
+                | SWT.V_SCROLL | SWT.BORDER | SWT.WRAP);
 
-		selectedIds.setLayoutData(new GridData(GridData.FILL_BOTH));
+        selectedIds.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		updateTextIds();
+        updateTextIds();
 
-		return sash;
-	}
+        return sash;
+    }
 
-	private void toggleCheckedGroup(boolean on){
+    private void toggleCheckedGroup(boolean on){
 
-		if(on){
-			// TODO currently it checks for all existing, but it should check only visible
-			Object[] elements = checkList.getVisibleExpandedElements();
+        if(on){
+            // TODO currently it checks for all existing, but it should check only visible
+            Object[] elements = checkList.getVisibleExpandedElements();
 			List<Object> list = Arrays.asList(checkedElements);
-			for (Object object : elements) {
-				if(!list.contains(object)) {
-					elementChecked(object, on);
+            for (Object object : elements) {
+                if(!list.contains(object)) {
+                    elementChecked(object, on);
 				}
-			}
-		} else {
-			// TODO currently it checks for all existing, but it should check only visible
+            }
+        } else {
+            // TODO currently it checks for all existing, but it should check only visible
 			Object[] elements = checkList.getVisibleExpandedElements();
-			List<Object> list = Arrays.asList(checkedElements);
-			for (Object object : elements) {
-				Object parent = contentProvider.getParent(object);
+            List<Object> list = Arrays.asList(checkedElements);
+            for (Object object : elements) {
+                Object parent = contentProvider.getParent(object);
 				if(list.contains(object) || list.contains(parent)) {
-					elementChecked(object, on);
-				}
-			}
+                    elementChecked(object, on);
+                }
+            }
 		}
-		sortCheckedElements();
-		checkList.setCheckedElements(checkedElements);
-	}
+        sortCheckedElements();
+        checkList.setCheckedElements(checkedElements);
+    }
 
-	private Group createGroup(Composite composite, String name) {
-		Group group = new Group(composite, SWT.NONE);
-		group.setLayout(new GridLayout());
+    private Group createGroup(Composite composite, String name) {
+        Group group = new Group(composite, SWT.NONE);
+        group.setLayout(new GridLayout());
 		GridData data = new GridData(GridData.FILL_BOTH);
 //		data.verticalIndent = -20;
 //		data.horizontalIndent = -20;
-		group.setLayoutData(data);
-		group.setText(name);
-		return group;
+        group.setLayoutData(data);
+        group.setText(name);
+        return group;
 	}
 
 
 
-	private ContainerCheckedTreeViewer createTree(Composite parent, int style) {
-		final ContainerCheckedTreeViewer viewer = new ContainerCheckedTreeViewer(parent, style
-				| SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.RESIZE){
+    private ContainerCheckedTreeViewer createTree(Composite parent, int style) {
+        final ContainerCheckedTreeViewer viewer = new ContainerCheckedTreeViewer(parent, style
+                | SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.RESIZE){
 			/**
-			 * Overriden to re-set checked state of elements after filter change
-			 */
-			@Override
+             * Overriden to re-set checked state of elements after filter change
+             */
+            @Override
 			public void refresh(boolean updateLabels) {
-				super.refresh(updateLabels);
-				setCheckedElements(checkedElements);
-			}
+                super.refresh(updateLabels);
+                setCheckedElements(checkedElements);
+            }
 		};
 
-		viewer.setContentProvider(contentProvider);
-		viewer.setLabelProvider(labelProvider);
-		viewer.setInput(allowedTypes);
+        viewer.setContentProvider(contentProvider);
+        viewer.setLabelProvider(labelProvider);
+        viewer.setInput(allowedTypes);
 		Object[] preselected = getPreselected();
-		viewer.setCheckedElements(preselected);
-		viewer.addPostSelectionChangedListener(new TreeSelectionChangedListener());
-		viewer.getTree().addControlListener(new ControlAdapter(){
+        viewer.setCheckedElements(preselected);
+        viewer.addPostSelectionChangedListener(new TreeSelectionChangedListener());
+        viewer.getTree().addControlListener(new ControlAdapter(){
 			@Override
-			public void controlResized(ControlEvent e) {
-				updateDescription((IStructuredSelection)viewer.getSelection());
-			}
+            public void controlResized(ControlEvent e) {
+                updateDescription((IStructuredSelection)viewer.getSelection());
+            }
 		});
-		viewer.addCheckStateListener(new TreeCheckStateListener());
-		return viewer;
-	}
+        viewer.addCheckStateListener(new TreeCheckStateListener());
+        return viewer;
+    }
 
-	private Object[] getPreselected() {
-		List<Object> all = new ArrayList<Object>(preSelectedPatterns);
-		all.addAll(preSelectedTypes);
+    private Object[] getPreselected() {
+        List<Object> all = new ArrayList<Object>(preSelectedPatterns);
+        all.addAll(preSelectedTypes);
 		return all.toArray();
-	}
+    }
 
-	@Override
-	protected IDialogSettings getDialogBoundsSettings() {
-		IDialogSettings dialogSettings = FindbugsPlugin.getDefault().getDialogSettings();
+    @Override
+    protected IDialogSettings getDialogBoundsSettings() {
+        IDialogSettings dialogSettings = FindbugsPlugin.getDefault().getDialogSettings();
 		IDialogSettings section = dialogSettings.getSection("FilterBugDialog");
-		if(section == null){
-			dialogSettings.addNewSection("FilterBugDialog");
-		}
+        if(section == null){
+            dialogSettings.addNewSection("FilterBugDialog");
+        }
 		return section;
-	}
+    }
 
-	private Set<BugPattern> getPatterns(BugCode bugCode) {
-		Set<BugPattern> set = codeToPattern.get(bugCode);
-		if(set != null){
+    private Set<BugPattern> getPatterns(BugCode bugCode) {
+        Set<BugPattern> set = codeToPattern.get(bugCode);
+        if(set != null){
 			return set;
-		}
-		set = new HashSet<BugPattern>();
-		codeToPattern.put(bugCode, set);
+        }
+        set = new HashSet<BugPattern>();
+        codeToPattern.put(bugCode, set);
 		return set;
-	}
+    }
 
-	private void updateTextIds() {
-		selectedIds.setText(getSelectedIds());
+    private void updateTextIds() {
+        selectedIds.setText(getSelectedIds());
 
-		int selTypes = checkedElements.length;
-		for (Object object : checkedElements) {
-			if(object instanceof BugPattern){
+        int selTypes = checkedElements.length;
+        for (Object object : checkedElements) {
+            if(object instanceof BugPattern){
 				selTypes --;
-			}
-		}
-		selectedIds.setToolTipText("Available types: " + allowedTypes.size()
+            }
+        }
+        selectedIds.setToolTipText("Available types: " + allowedTypes.size()
 				+ ", available patterns: " + allowedPatterns.size()
-				+ ", selected types: " + selTypes + ", patterns: "
-				+ (checkedElements.length - selTypes));
-	}
+                + ", selected types: " + selTypes + ", patterns: "
+                + (checkedElements.length - selTypes));
+    }
 
-	private void toggleElement(boolean on, Object element, Set<Object> set) {
-		if(on){
-			set.add(element);
+    private void toggleElement(boolean on, Object element, Set<Object> set) {
+        if(on){
+            set.add(element);
 		} else {
-			set.remove(element);
-		}
-	}
+            set.remove(element);
+        }
+    }
 
-	protected void elementChecked(Object element, boolean checked) {
-		Set<Object> selected = new HashSet<Object>();
-		selected.addAll(Arrays.asList(checkedElements));
+    protected void elementChecked(Object element, boolean checked) {
+        Set<Object> selected = new HashSet<Object>();
+        selected.addAll(Arrays.asList(checkedElements));
 		toggleElement(checked, element, selected);
-		if(element instanceof BugCode){
-			Set<BugPattern> children = getPatterns((BugCode) element);
-			// just remove children, because we have parent
+        if(element instanceof BugCode){
+            Set<BugPattern> children = getPatterns((BugCode) element);
+            // just remove children, because we have parent
 			selected.removeAll(children);
-		} else {
+        } else {
 
-		Object parentEl = contentProvider.getParent(element);
-		if(parentEl  instanceof BugCode) {
-			Set<BugPattern> children = getPatterns((BugCode) parentEl);
+        Object parentEl = contentProvider.getParent(element);
+        if(parentEl  instanceof BugCode) {
+            Set<BugPattern> children = getPatterns((BugCode) parentEl);
 			boolean all = true;
-			for (Object object : children) {
-				if(object == element){
-					continue;
+            for (Object object : children) {
+                if(object == element){
+                    continue;
 				}
-				if(checked != checkList.getChecked(object)){
-					all = false;
-					break;
+                if(checked != checkList.getChecked(object)){
+                    all = false;
+                    break;
 				}
-			}
-			if(all){
-				toggleElement(checked, parentEl, selected);
+            }
+            if(all){
+                toggleElement(checked, parentEl, selected);
 				selected.removeAll(children);
-			} else if(checkList.getChecked(parentEl)){
-				toggleElement(false, parentEl, selected);
-				for (Object object : children) {
+            } else if(checkList.getChecked(parentEl)){
+                toggleElement(false, parentEl, selected);
+                for (Object object : children) {
 					toggleElement(checkList.getChecked(object), object, selected);
-				}
-			}
+                }
+            }
+        }
 		}
-		}
 
-		checkedElements = selected.toArray();
-		sortCheckedElements();
-	}
-
+        checkedElements = selected.toArray();
+        sortCheckedElements();
+    }
 
 
-	private void sortCheckedElements() {
-		Arrays.sort(checkedElements, new Comparator<Object>(){
-			public int compare(Object o1, Object o2) {
+
+    private void sortCheckedElements() {
+        Arrays.sort(checkedElements, new Comparator<Object>(){
+            public int compare(Object o1, Object o2) {
 				return labelProvider.getText(o1).compareTo(labelProvider.getText(o2));
-			}
-		});
-	}
+            }
+        });
+    }
 
 
 
-	private void updateDescription(IStructuredSelection selection) {
-		Object element = selection.getFirstElement();
-		String txt = "";
+    private void updateDescription(IStructuredSelection selection) {
+        Object element = selection.getFirstElement();
+        String txt = "";
 		if(element instanceof BugPattern){
-			BugPattern pattern = (BugPattern) element;
-			txt = getPatternDescription(pattern);
-		} else if(element instanceof BugCode) {
+            BugPattern pattern = (BugPattern) element;
+            txt = getPatternDescription(pattern);
+        } else if(element instanceof BugCode) {
 			BugCode code = (BugCode) element;
-			txt = getPatternTypeDescription(code);
-		}
-		Rectangle size = htmlControl.getClientArea();
+            txt = getPatternTypeDescription(code);
+        }
+        Rectangle size = htmlControl.getClientArea();
 		txt = presenter.updatePresentation(getShell()
-				.getDisplay(), txt, presentation, size.width,
-				size.height);
-		htmlControl.setText(txt);
+                .getDisplay(), txt, presentation, size.width,
+                size.height);
+        htmlControl.setText(txt);
 	}
 
 
 
-	private String getPatternDescription(BugPattern pattern) {
-		StringBuilder sb = new StringBuilder(pattern.getDetailText());
-		Set<Plugin> plugins = patternToPlugin.get(pattern);
+    private String getPatternDescription(BugPattern pattern) {
+        StringBuilder sb = new StringBuilder(pattern.getDetailText());
+        Set<Plugin> plugins = patternToPlugin.get(pattern);
 		for (Plugin plugin : plugins) {
-			sb.append("<p>");
-			appendPluginDescription(sb, plugin);
-		}
+            sb.append("<p>");
+            appendPluginDescription(sb, plugin);
+        }
 		return sb.toString();
-	}
+    }
 
-	private void appendPluginDescription(StringBuilder sb, Plugin plugin) {
-		sb.append("<p>Contributed by plugin: ").append(plugin.getPluginId());
-		sb.append("<p>Provider: ").append(plugin.getProvider());
+    private void appendPluginDescription(StringBuilder sb, Plugin plugin) {
+        sb.append("<p>Contributed by plugin: ").append(plugin.getPluginId());
+        sb.append("<p>Provider: ").append(plugin.getProvider());
 		if(plugin.getWebsite() != null && plugin.getWebsite().length() > 0) {
-			sb.append(" (").append(plugin.getWebsite()).append(")");
-		}
-	}
+            sb.append(" (").append(plugin.getWebsite()).append(")");
+        }
+    }
 
-	private String getPatternTypeDescription(BugCode code) {
-		StringBuilder sb = new StringBuilder(code.getDescription());
-		sb.append("<p><br>Patterns:<br>");
+    private String getPatternTypeDescription(BugCode code) {
+        StringBuilder sb = new StringBuilder(code.getDescription());
+        sb.append("<p><br>Patterns:<br>");
 		Set<BugPattern> patterns = getPatterns(code);
-		for (BugPattern bugPattern : patterns) {
-			sb.append(bugPattern.getType()).append("<br>");
-		}
+        for (BugPattern bugPattern : patterns) {
+            sb.append(bugPattern.getType()).append("<br>");
+        }
 		// add reported by...
-		Set<DetectorFactory> allFactories = new TreeSet<DetectorFactory>(
-				new Comparator<DetectorFactory>() {
-					public int compare(DetectorFactory f1, DetectorFactory f2) {
+        Set<DetectorFactory> allFactories = new TreeSet<DetectorFactory>(
+                new Comparator<DetectorFactory>() {
+                    public int compare(DetectorFactory f1, DetectorFactory f2) {
 						return f1.getFullName().compareTo(f2.getFullName());
-					}
-				});
-		for (BugPattern bugPattern : patterns) {
+                    }
+                });
+        for (BugPattern bugPattern : patterns) {
 			Set<DetectorFactory> set = patternToFactory.get(bugPattern);
-			if(set != null) {
-				allFactories.addAll(set);
-			} else {
+            if(set != null) {
+                allFactories.addAll(set);
+            } else {
 				if(shouldReportMissing(bugPattern)){
-					FindbugsPlugin.getDefault().logError(
-							"Pattern not reported by any detector, but defined in findbugs.xml: "
-									+ bugPattern);
+                    FindbugsPlugin.getDefault().logError(
+                            "Pattern not reported by any detector, but defined in findbugs.xml: "
+                                    + bugPattern);
 				}
-			}
-		}
-		sb.append("<p>Reported by:<br>");
+            }
+        }
+        sb.append("<p>Reported by:<br>");
 		for (DetectorFactory factory : allFactories) {
-			sb.append(factory.getFullName());
-			appendPluginDescription(sb, factory.getPlugin());
-			sb.append("<p><p>");
+            sb.append(factory.getFullName());
+            appendPluginDescription(sb, factory.getPlugin());
+            sb.append("<p><p>");
 		}
-		return sb.toString();
-	}
+        return sb.toString();
+    }
 
 
 
-	private boolean shouldReportMissing(BugPattern bugPattern) {
-		return !bugPattern.isDeprecated()
-			// reported many times by some test code
+    private boolean shouldReportMissing(BugPattern bugPattern) {
+        return !bugPattern.isDeprecated()
+            // reported many times by some test code
 			&& !"UNKNOWN".equals(bugPattern.getType())
-			// reported many times by some test code
-			&& !"EXPERIMENTAL".equals(bugPattern.getCategory())
-			// reported by FindBugs2 itself (no one detector factory exists):
+            // reported many times by some test code
+            && !"EXPERIMENTAL".equals(bugPattern.getCategory())
+            // reported by FindBugs2 itself (no one detector factory exists):
 			&& !"SKIPPED_CLASS_TOO_BIG".equals(bugPattern.getType()
-					);
-	}
+                    );
+    }
 }

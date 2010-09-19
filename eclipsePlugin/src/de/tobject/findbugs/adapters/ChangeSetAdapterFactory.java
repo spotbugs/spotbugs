@@ -30,23 +30,23 @@ import org.eclipse.team.internal.ui.synchronize.ChangeSetDiffNode;
  */
 public class ChangeSetAdapterFactory implements IAdapterFactory {
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		if (adaptableObject instanceof ChangeSetDiffNode
-				&& adapterType == ChangeSet.class) {
-			ChangeSetDiffNode node = (ChangeSetDiffNode) adaptableObject;
+        if (adaptableObject instanceof ChangeSetDiffNode
+                && adapterType == ChangeSet.class) {
+            ChangeSetDiffNode node = (ChangeSetDiffNode) adaptableObject;
 			return node.getSet();
-		}
-		return null;
-	}
+        }
+        return null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
 	public Class[] getAdapterList() {
-		return new Class[] { ChangeSet.class };
-	}
+        return new Class[] { ChangeSet.class };
+    }
 
 }

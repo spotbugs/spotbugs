@@ -64,236 +64,236 @@ import edu.umd.cs.findbugs.log.Profiler;
  */
 public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 
-	/** Controls debugging for the reporter */
-	public static boolean DEBUG;
+    /** Controls debugging for the reporter */
+    public static boolean DEBUG;
 
-	private final IJavaProject project;
+    private final IJavaProject project;
 
-	private final IProgressMonitor monitor;
+    private final IProgressMonitor monitor;
 
-	/** Persistent store of reported warnings. */
-	private final SortedBugCollection bugCollection;
+    /** Persistent store of reported warnings. */
+    private final SortedBugCollection bugCollection;
 
-	private int pass = -1;
+    private int pass = -1;
 
-	private int bugCount;
+    private int bugCount;
 
-	private IOConsoleOutputStream stream;
+    private IOConsoleOutputStream stream;
 
-	/**
-	 * Constructor.
-	 *
+    /**
+     * Constructor.
+     *
 	 * @param project         the project whose classes are being analyzed for bugs
-	 * @param findBugsProject TODO
-	 * @param monitor         progress monitor
-	 */
+     * @param findBugsProject TODO
+     * @param monitor         progress monitor
+     */
 	public Reporter(IJavaProject project, Project findBugsProject, IProgressMonitor monitor) {
-		super();
-		this.monitor = monitor;
-		this.project = project;
+        super();
+        this.monitor = monitor;
+        this.project = project;
 		// TODO we do not need to sort bugs, so we can optimize performance and use just a list here
-		this.bugCollection = new SortedBugCollection(getProjectStats(), findBugsProject);
-	}
+        this.bugCollection = new SortedBugCollection(getProjectStats(), findBugsProject);
+    }
 
-	public void setReportingStream(IOConsoleOutputStream stream){
-		this.stream = stream;
-	}
+    public void setReportingStream(IOConsoleOutputStream stream){
+        this.stream = stream;
+    }
 
-	boolean isStreamReportingEnabled(){
-		return stream != null && !stream.isClosed();
-	}
+    boolean isStreamReportingEnabled(){
+        return stream != null && !stream.isClosed();
+    }
 
-	void printToStream(String message){
-		if(isStreamReportingEnabled()){
-			try {
+    void printToStream(String message){
+        if(isStreamReportingEnabled()){
+            try {
 				stream.write(message);
-				stream.write("\n");
-			} catch (IOException e) {
-				FindbugsPlugin.getDefault().logException(e, "Print to console failed");
+                stream.write("\n");
+            } catch (IOException e) {
+                FindbugsPlugin.getDefault().logException(e, "Print to console failed");
 			}
-		}
-	}
+        }
+    }
 
-	@Override
-	protected void doReportBug(BugInstance bug) {
-		synchronized (bugCollection) {
+    @Override
+    protected void doReportBug(BugInstance bug) {
+        synchronized (bugCollection) {
 			if (bugCollection.add(bug)) {
-				notifyObservers(bug);
-				bugCount++;
-			} else if (DEBUG) {
+                notifyObservers(bug);
+                bugCount++;
+            } else if (DEBUG) {
 				System.out.println("Duplicated bug added: " + bug);
-			}
-		}
+            }
+        }
 
-	}
+    }
 
-	@Override
-	public void reportQueuedErrors() {
-		// Report unique errors in order of their sequence
+    @Override
+    public void reportQueuedErrors() {
+        // Report unique errors in order of their sequence
 		List<Error> errorList = new ArrayList<Error>(getQueuedErrors());
-		if(errorList.size() > 0) {
-			Collections.sort(errorList, new Comparator<Error>() {
-				public int compare(Error o1, Error o2) {
+        if(errorList.size() > 0) {
+            Collections.sort(errorList, new Comparator<Error>() {
+                public int compare(Error o1, Error o2) {
 					return o1.getSequence() - o2.getSequence();
-				}
-			});
+                }
+            });
 
-			MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID, IStatus.ERROR,
-					"The following errors occurred during FindBugs analysis:", null);
+            MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID, IStatus.ERROR,
+                    "The following errors occurred during FindBugs analysis:", null);
 
-			for (Error error : errorList) {
-				status.add(FindbugsPlugin.createErrorStatus(error.getMessage(), error.getCause()));
-			}
+            for (Error error : errorList) {
+                status.add(FindbugsPlugin.createErrorStatus(error.getMessage(), error.getCause()));
+            }
 			FindbugsPlugin.getDefault().getLog().log(status);
-		}
+        }
 
-		Set<String> missingClasses = getMissingClasses();
-		if(missingClasses.size() > 0) {
-			MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID,
+        Set<String> missingClasses = getMissingClasses();
+        if(missingClasses.size() > 0) {
+            MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID,
 					IStatus.WARNING,
-					"The following classes needed for FindBugs analysis on project "
-							+ project.getElementName() + " were missing:", null);
-			for (String missingClass : missingClasses) {
+                    "The following classes needed for FindBugs analysis on project "
+                            + project.getElementName() + " were missing:", null);
+            for (String missingClass : missingClasses) {
 				status.add(new Status(IStatus.WARNING, FindbugsPlugin.PLUGIN_ID, missingClass));
-			}
-			FindbugsPlugin.getDefault().getLog().log(status);
-		}
+            }
+            FindbugsPlugin.getDefault().getLog().log(status);
+        }
 	}
 
-	public void finish() {
-		if (DEBUG) {
-			System.out.println("Finish: Found " + bugCount + " bugs."); //$NON-NLS-1$//$NON-NLS-2$
+    public void finish() {
+        if (DEBUG) {
+            System.out.println("Finish: Found " + bugCount + " bugs."); //$NON-NLS-1$//$NON-NLS-2$
 		}
-		Cloud cloud = bugCollection.getCloud();
-		if (cloud != null) {
-			cloud.bugsPopulated();
+        Cloud cloud = bugCollection.getCloud();
+        if (cloud != null) {
+            cloud.bugsPopulated();
 		}
-		reportResultsToConsole();
-	}
+        reportResultsToConsole();
+    }
 
-	/**
-	 * If there is a FB console opened, report results and statistics to it.
-	 */
+    /**
+     * If there is a FB console opened, report results and statistics to it.
+     */
 	private void reportResultsToConsole() {
-		if(!isStreamReportingEnabled()){
-			return;
-		}
+        if(!isStreamReportingEnabled()){
+            return;
+        }
 		printToStream("finished, found: " + bugCount + " bugs");
-		ConfigurableXmlOutputStream xmlStream = new ConfigurableXmlOutputStream(stream, true);
-		ProjectStats stats = bugCollection.getProjectStats();
+        ConfigurableXmlOutputStream xmlStream = new ConfigurableXmlOutputStream(stream, true);
+        ProjectStats stats = bugCollection.getProjectStats();
 
-		printToStream(new Footprint(stats.getBaseFootprint()).toString());
+        printToStream(new Footprint(stats.getBaseFootprint()).toString());
 
-		Profiler profiler = stats.getProfiler();
-		PrintStream printStream;
-		try {
+        Profiler profiler = stats.getProfiler();
+        PrintStream printStream;
+        try {
 			printStream = new PrintStream(stream, false, "UTF-8");
-		} catch (UnsupportedEncodingException e1) {
-			// can never happen with UTF-8
-			return;
+        } catch (UnsupportedEncodingException e1) {
+            // can never happen with UTF-8
+            return;
 		}
 
-		printToStream("Total time:");
-		profiler.report(new Profiler.TotalTimeComparator(profiler),
-				new Profiler.FilterByTime(10000000), printStream);
+        printToStream("Total time:");
+        profiler.report(new Profiler.TotalTimeComparator(profiler),
+                new Profiler.FilterByTime(10000000), printStream);
 
-		printToStream("Total calls:");
-		profiler.report(new Profiler.TotalCallsComparator(profiler),
-				new Profiler.FilterByCalls(stats.getNumClasses()), printStream);
+        printToStream("Total calls:");
+        profiler.report(new Profiler.TotalCallsComparator(profiler),
+                new Profiler.FilterByCalls(stats.getNumClasses()), printStream);
 
-		printToStream("Time per call:");
-		profiler.report(new Profiler.TimePerCallComparator(profiler),
-				new Profiler.FilterByTimePerCall(10000000 / stats.getNumClasses()),
+        printToStream("Time per call:");
+        profiler.report(new Profiler.TimePerCallComparator(profiler),
+                new Profiler.FilterByTimePerCall(10000000 / stats.getNumClasses()),
 				printStream);
-		try {
-			xmlStream.finish();
-		} catch (IOException e) {
+        try {
+            xmlStream.finish();
+        } catch (IOException e) {
 			FindbugsPlugin.getDefault().logException(e, "Print to console failed");
-		}
-	}
+        }
+    }
 
-	/**
-	 * Returns the list of bugs found in this project. If the list has not been
-	 * initialized yet, this will be done before returning.
+    /**
+     * Returns the list of bugs found in this project. If the list has not been
+     * initialized yet, this will be done before returning.
 	 *
-	 * @return The collection that hold the bugs found in this project.
-	 */
-	public SortedBugCollection getBugCollection() {
+     * @return The collection that hold the bugs found in this project.
+     */
+    public SortedBugCollection getBugCollection() {
 		return bugCollection;
-	}
+    }
 
-	public void observeClass(ClassDescriptor classDescriptor) {
-		if (monitor.isCanceled()) {
-			// causes break in FindBugs main loop
+    public void observeClass(ClassDescriptor classDescriptor) {
+        if (monitor.isCanceled()) {
+            // causes break in FindBugs main loop
 			Thread.currentThread().interrupt();
-		}
+        }
 
-		int work = pass == 0 ? 1 : 2;
-		String className = classDescriptor.getDottedClassName();
+        int work = pass == 0 ? 1 : 2;
+        String className = classDescriptor.getDottedClassName();
 
-		if (DEBUG) {
-			System.out.println("Observing class: " + className); //$NON-NLS-1$
-		}
+        if (DEBUG) {
+            System.out.println("Observing class: " + className); //$NON-NLS-1$
+        }
 
-		// Update progress monitor
-		if (pass <= 0) {
-			monitor.setTaskName("Prescanning... (found " + bugCount
+        // Update progress monitor
+        if (pass <= 0) {
+            monitor.setTaskName("Prescanning... (found " + bugCount
 					+ ", checking " + className + ")");
-		} else {
-			monitor.setTaskName("Checking... (pass #" + pass + ") (found "
-					+ bugCount + ", checking " + className + ")");
+        } else {
+            monitor.setTaskName("Checking... (pass #" + pass + ") (found "
+                    + bugCount + ", checking " + className + ")");
 		}
-		monitor.worked(work);
+        monitor.worked(work);
 //		printToStream("observeClass: " + className);
+    }
+
+    @Override
+    public void reportAnalysisError(AnalysisError error) {
+        // nothing to do, see reportQueuedErrors()
 	}
 
-	@Override
-	public void reportAnalysisError(AnalysisError error) {
-		// nothing to do, see reportQueuedErrors()
+    @Override
+    public void reportMissingClass(String missingClass) {
+        // nothing to do, see reportQueuedErrors()
 	}
 
-	@Override
-	public void reportMissingClass(String missingClass) {
-		// nothing to do, see reportQueuedErrors()
-	}
+    public BugReporter getRealBugReporter() {
+        return this;
+    }
 
-	public BugReporter getRealBugReporter() {
-		return this;
-	}
+    public void finishArchive() {
+        // printToStream("archive finished");
+    }
 
-	public void finishArchive() {
-		// printToStream("archive finished");
-	}
+    public void finishClass() {
+        // noop
+    }
 
-	public void finishClass() {
-		// noop
-	}
-
-	public void finishPerClassAnalysis() {
+    public void finishPerClassAnalysis() {
 //		printToStream("finish per class analysis");
+    }
+
+    public void reportNumberOfArchives(int numArchives) {
+        printToStream("archives to analyze: " + numArchives);
+    }
+
+    public void startAnalysis(int numClasses) {
+        pass++;
+        printToStream("start pass: " + pass + " on " + numClasses + " classes");
 	}
 
-	public void reportNumberOfArchives(int numArchives) {
-		printToStream("archives to analyze: " + numArchives);
-	}
-
-	public void startAnalysis(int numClasses) {
-		pass++;
-		printToStream("start pass: " + pass + " on " + numClasses + " classes");
-	}
-
-	public void predictPassCount(int[] classesPerPass) {
-		int expectedWork = 0;
-		for(int count : classesPerPass) {
+    public void predictPassCount(int[] classesPerPass) {
+        int expectedWork = 0;
+        for(int count : classesPerPass) {
 			expectedWork += 2*count;
-		}
-		expectedWork -= classesPerPass[0];
-		if (!(monitor instanceof SubProgressMonitor)) {
+        }
+        expectedWork -= classesPerPass[0];
+        if (!(monitor instanceof SubProgressMonitor)) {
 			monitor.beginTask("Performing bug checking...", expectedWork);
-		}
-	}
+        }
+    }
 
-	public void startArchive(String name) {
+    public void startArchive(String name) {
 //		printToStream("start archive: " + name);
-	}
+    }
 }

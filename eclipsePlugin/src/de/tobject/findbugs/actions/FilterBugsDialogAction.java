@@ -37,49 +37,49 @@ import edu.umd.cs.findbugs.BugPattern;
 
 public class FilterBugsDialogAction implements IViewActionDelegate {
 
-	private CommonNavigator navigator;
+    private CommonNavigator navigator;
 
-	public void init(IViewPart view) {
-		if (view instanceof CommonNavigator) {
-			navigator = (CommonNavigator) view;
+    public void init(IViewPart view) {
+        if (view instanceof CommonNavigator) {
+            navigator = (CommonNavigator) view;
 		}
-	}
+    }
 
-	public void run(IAction action) {
-		if (navigator == null) {
-			return;
+    public void run(IAction action) {
+        if (navigator == null) {
+            return;
 		}
-		Set<BugPattern> filtered = FindbugsPlugin.getFilteredPatterns();
-		Set<BugCode> filteredTypes = FindbugsPlugin.getFilteredPatternTypes();
-		FilterBugsDialog dialog = new FilterBugsDialog(navigator.getSite().getShell(),
+        Set<BugPattern> filtered = FindbugsPlugin.getFilteredPatterns();
+        Set<BugCode> filteredTypes = FindbugsPlugin.getFilteredPatternTypes();
+        FilterBugsDialog dialog = new FilterBugsDialog(navigator.getSite().getShell(),
 				filtered, filteredTypes);
-		dialog.setTitle("Bug Filter Configuration");
-		int result = dialog.open();
-		if (result != Window.OK) {
+        dialog.setTitle("Bug Filter Configuration");
+        int result = dialog.open();
+        if (result != Window.OK) {
 			return;
-		}
-		String selectedIds = dialog.getSelectedIds();
+        }
+        String selectedIds = dialog.getSelectedIds();
 
-		FindbugsPlugin.getDefault().getPreferenceStore().setValue(
-				FindBugsConstants.LAST_USED_EXPORT_FILTER, selectedIds);
+        FindbugsPlugin.getDefault().getPreferenceStore().setValue(
+                FindBugsConstants.LAST_USED_EXPORT_FILTER, selectedIds);
 
-		BugContentProvider provider = BugContentProvider.getProvider(navigator
-				.getNavigatorContentService());
-		provider.refreshFilters();
+        BugContentProvider provider = BugContentProvider.getProvider(navigator
+                .getNavigatorContentService());
+        provider.refreshFilters();
 		CommonViewer viewer = navigator.getCommonViewer();
-		Object[] expandedElements = viewer.getExpandedElements();
-		viewer.refresh(true);
-		viewer.setExpandedElements(expandedElements);
+        Object[] expandedElements = viewer.getExpandedElements();
+        viewer.refresh(true);
+        viewer.setExpandedElements(expandedElements);
 	}
 
-	public void selectionChanged(IAction action, ISelection selection) {
-		if (navigator == null) {
-			action.setEnabled(false);
+    public void selectionChanged(IAction action, ISelection selection) {
+        if (navigator == null) {
+            action.setEnabled(false);
 			return;
-		}
-		BugContentProvider provider = BugContentProvider.getProvider(navigator
-				.getNavigatorContentService());
+        }
+        BugContentProvider provider = BugContentProvider.getProvider(navigator
+                .getNavigatorContentService());
 		action.setEnabled(provider.getGrouping() != null);
-	}
+    }
 
 }

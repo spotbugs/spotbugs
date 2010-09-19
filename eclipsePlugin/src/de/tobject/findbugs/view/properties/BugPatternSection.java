@@ -56,133 +56,133 @@ import edu.umd.cs.findbugs.Plugin;
  */
 public class BugPatternSection extends AbstractPropertySection {
 
-	private Browser browser;
-	private StyledText htmlControl;
-	private IInformationPresenterExtension presenter;
+    private Browser browser;
+    private StyledText htmlControl;
+    private IInformationPresenterExtension presenter;
 	private Composite rootComposite;
-	private BugPattern pattern;
-	private TextPresentation presentation;
-	private ScrolledComposite scrolledComposite;
+    private BugPattern pattern;
+    private TextPresentation presentation;
+    private ScrolledComposite scrolledComposite;
 	private ControlAdapter listener;
-	private String oldText;
-	private final PropPageTitleProvider titleProvider;
-	private BugInstance bug;
+    private String oldText;
+    private final PropPageTitleProvider titleProvider;
+    private BugInstance bug;
 	private Point scrollSize;
-	private boolean inResize;
-	private ITabSelectionListener tabSelectionListener;
-	private TabbedPropertySheetPage page;
+    private boolean inResize;
+    private ITabSelectionListener tabSelectionListener;
+    private TabbedPropertySheetPage page;
 	protected String browserId;
-	private volatile boolean allowUrlChange;
+    private volatile boolean allowUrlChange;
 
-	/**
-	 *
-	 */
+    /**
+     *
+     */
 	public BugPatternSection() {
-		super();
-		titleProvider = new PropPageTitleProvider();
-	}
+        super();
+        titleProvider = new PropPageTitleProvider();
+    }
 
-	@Override
-	public void createControls(Composite parent,
-			final TabbedPropertySheetPage page1) {
+    @Override
+    public void createControls(Composite parent,
+            final TabbedPropertySheetPage page1) {
 		super.createControls(parent, page1);
-		page = page1;
+        page = page1;
 
-		createRootComposite(parent);
+        createRootComposite(parent);
 
-		initScrolledComposite(parent);
+        initScrolledComposite(parent);
 
-		createBrowser(rootComposite);
-	}
+        createBrowser(rootComposite);
+    }
 
-	private void createRootComposite(Composite parent) {
-		rootComposite = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout(1, true);
+    private void createRootComposite(Composite parent) {
+        rootComposite = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout(1, true);
 		layout.marginLeft = -5;
-		layout.marginTop = -5;
-		layout.marginBottom = -5;
-		layout.marginRight = -5;
+        layout.marginTop = -5;
+        layout.marginBottom = -5;
+        layout.marginRight = -5;
 		rootComposite.setLayout(layout);
-		rootComposite.setSize(SWT.DEFAULT, SWT.DEFAULT);
+        rootComposite.setSize(SWT.DEFAULT, SWT.DEFAULT);
 
-		tabSelectionListener = new ITabSelectionListener(){
-			/*
-			 * interface defined in Eclipse 3.3
+        tabSelectionListener = new ITabSelectionListener(){
+            /*
+             * interface defined in Eclipse 3.3
 			 * remove this crap as soon as we stop supporting Eclipse 3.3
-			 */
-			@SuppressWarnings({ "restriction" })
-			public void tabSelected(TabDescriptor tabDescriptor) {
+             */
+            @SuppressWarnings({ "restriction" })
+            public void tabSelected(TabDescriptor tabDescriptor) {
 				if(!rootComposite.isDisposed() && rootComposite.isVisible()
-						&& !tabDescriptor.isSelected()) {
-					updateBrowserSize();
-				}
+                        && !tabDescriptor.isSelected()) {
+                    updateBrowserSize();
+                }
 			}
 
-			/*
-			 * interface defined in Eclipse 3.4
-			 */
+            /*
+             * interface defined in Eclipse 3.4
+             */
 			public void tabSelected(ITabDescriptor tabDescriptor) {
-				if(!rootComposite.isDisposed() && rootComposite.isVisible()
-						&& !tabDescriptor.isSelected()) {
-					updateBrowserSize();
+                if(!rootComposite.isDisposed() && rootComposite.isVisible()
+                        && !tabDescriptor.isSelected()) {
+                    updateBrowserSize();
 				}
-			}
-		};
-		page.addTabSelectionListener(tabSelectionListener);
+            }
+        };
+        page.addTabSelectionListener(tabSelectionListener);
 	}
 
-	private void createBrowser(Composite parent) {
-		Color background = page.getWidgetFactory().getColors().getBackground();
-		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+    private void createBrowser(Composite parent) {
+        Color background = page.getWidgetFactory().getColors().getBackground();
+        GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
 		data.horizontalIndent = 0;
-		data.verticalIndent = 0;
-		try {
-			browser = new Browser(parent, SWT.NO_BACKGROUND);
+        data.verticalIndent = 0;
+        try {
+            browser = new Browser(parent, SWT.NO_BACKGROUND);
 			browser.setLayoutData(data);
-			browser.setBackground(background);
-			browser.addOpenWindowListener(new OpenWindowListener() {
-				public void open(WindowEvent event) {
+            browser.setBackground(background);
+            browser.addOpenWindowListener(new OpenWindowListener() {
+                public void open(WindowEvent event) {
 					event.required = true; // Cancel opening of new windows
-				}
-			});
-			browser.addLocationListener(new LocationListener(){
+                }
+            });
+            browser.addLocationListener(new LocationListener(){
 				public void changed(LocationEvent event) {
-					// ignore
-				}
-				public void changing(LocationEvent event) {
+                    // ignore
+                }
+                public void changing(LocationEvent event) {
 					// fix for SWT code on Won32 platform: it uses "about:blank" before
-					// set any non-null url. We ignore this url
-					if(allowUrlChange || "about:blank".equals(event.location)){
-						return;
+                    // set any non-null url. We ignore this url
+                    if(allowUrlChange || "about:blank".equals(event.location)){
+                        return;
 					}
-					// disallow changing of property view content
-					event.doit = false;
-					// for any external url clicked by user we should leave property view
+                    // disallow changing of property view content
+                    event.doit = false;
+                    // for any external url clicked by user we should leave property view
 					openBrowserInEditor(event);
-				}
-			});
-		} catch (SWTError e) {
+                }
+            });
+        } catch (SWTError e) {
 			presentation = new TextPresentation();
-			htmlControl = new StyledText(parent, SWT.READ_ONLY);
-			getWidgetFactory().adapt(htmlControl);
-			htmlControl.setLayoutData(data);
+            htmlControl = new StyledText(parent, SWT.READ_ONLY);
+            getWidgetFactory().adapt(htmlControl);
+            htmlControl.setLayoutData(data);
 			htmlControl.setBackground(background);
-			try {
-				presenter = new HTMLTextPresenter(false);
-			} catch (Exception e2) {
+            try {
+                presenter = new HTMLTextPresenter(false);
+            } catch (Exception e2) {
 				FindbugsPlugin plugin = FindbugsPlugin.getDefault();
-				plugin.logException(new RuntimeException(e.getMessage(), e),
-						"Could not create org.eclipse.swt.widgets.Composite.Browser");
-				plugin
+                plugin.logException(new RuntimeException(e.getMessage(), e),
+                        "Could not create org.eclipse.swt.widgets.Composite.Browser");
+                plugin
 						.logException(new RuntimeException(e2.getMessage(), e2),
-								"Could not create org.eclipse.jface.internal.text.html.HTMLTextPresenter");
-			}
-		}
+                                "Could not create org.eclipse.jface.internal.text.html.HTMLTextPresenter");
+            }
+        }
 	}
 
-	private void initScrolledComposite(Composite parent) {
-		scrolledComposite = ((TabbedPropertyComposite)page.getControl()).getScrolledComposite();
-		// same as above but without warning:
+    private void initScrolledComposite(Composite parent) {
+        scrolledComposite = ((TabbedPropertyComposite)page.getControl()).getScrolledComposite();
+        // same as above but without warning:
 
 //		Composite p = parent.getParent();
 //		while(p != null){
@@ -193,190 +193,190 @@ public class BugPatternSection extends AbstractPropertySection {
 //			p = p.getParent();
 //		}
 
-		if(scrolledComposite != null){
-			listener = new ControlAdapter() {
-				@Override
+        if(scrolledComposite != null){
+            listener = new ControlAdapter() {
+                @Override
 				public void controlResized(ControlEvent e) {
-					if(!rootComposite.isDisposed() && rootComposite.isVisible()) {
-						updateBrowserSize();
-					}
+                    if(!rootComposite.isDisposed() && rootComposite.isVisible()) {
+                        updateBrowserSize();
+                    }
 				}
-			};
-			scrolledComposite.addControlListener(listener);
-		}
+            };
+            scrolledComposite.addControlListener(listener);
+        }
 	}
 
-	protected void updateDisplay() {
-		String html = null;
-		if (browser != null && !browser.isDisposed()) {
+    protected void updateDisplay() {
+        String html = null;
+        if (browser != null && !browser.isDisposed()) {
 			html = getHtml();
-			// required even if html is the same: our client area might be changed
-			updateBrowserSize();
-			// avoid flickering if same input
+            // required even if html is the same: our client area might be changed
+            updateBrowserSize();
+            // avoid flickering if same input
 			if(!html.equals(oldText)) {
-				allowUrlChange = true;
-				browser.setText(html);
-				allowUrlChange = false;
+                allowUrlChange = true;
+                browser.setText(html);
+                allowUrlChange = false;
 			}
-		} else {
-			if (htmlControl != null && !htmlControl.isDisposed() && presenter != null) {
-				Rectangle clientArea = updateBrowserSize();
+        } else {
+            if (htmlControl != null && !htmlControl.isDisposed() && presenter != null) {
+                Rectangle clientArea = updateBrowserSize();
 				htmlControl.setSize(clientArea.width - 5, clientArea.height - 5);
-				html = getHtml();
-				try {
-					html = presenter.updatePresentation(rootComposite.getShell()
+                html = getHtml();
+                try {
+                    html = presenter.updatePresentation(rootComposite.getShell()
 						.getDisplay(), html, presentation, clientArea.width, clientArea.height);
-				} catch (StringIndexOutOfBoundsException e) {
-					// I can't understand why it happens, but it happens...
-				}
+                } catch (StringIndexOutOfBoundsException e) {
+                    // I can't understand why it happens, but it happens...
+                }
 				htmlControl.setText(html);
-			}
-		}
-		oldText = html;
+            }
+        }
+        oldText = html;
 	}
 
-	/**
-	 * Updates the browser/scrolledComposite size to avoid second pair of scrollbars
-	 */
+    /**
+     * Updates the browser/scrolledComposite size to avoid second pair of scrollbars
+     */
 	private Rectangle updateBrowserSize() {
-		Point newScrollSize = scrolledComposite.getSize();
-		Rectangle clientArea = scrolledComposite.getClientArea();
-		Point rootSize = rootComposite.getSize();
+        Point newScrollSize = scrolledComposite.getSize();
+        Rectangle clientArea = scrolledComposite.getClientArea();
+        Point rootSize = rootComposite.getSize();
 		if (!inResize && clientArea.width > 0 && clientArea.height > 0
-				&& (!newScrollSize.equals(scrollSize)
-						|| clientArea.width != rootSize.x || clientArea.height != rootSize.y)) {
+                && (!newScrollSize.equals(scrollSize)
+                        || clientArea.width != rootSize.x || clientArea.height != rootSize.y)) {
 
-			scrollSize = newScrollSize;
-			inResize = true;
-			rootComposite.setSize(clientArea.width, clientArea.height);
+            scrollSize = newScrollSize;
+            inResize = true;
+            rootComposite.setSize(clientArea.width, clientArea.height);
 			scrolledComposite.setMinSize(clientArea.width, clientArea.height);
-			scrolledComposite.layout();
-			inResize = false;
-		}
+            scrolledComposite.layout();
+            inResize = false;
+        }
 		return clientArea;
-	}
+    }
 
-	private String getHtml() {
-		if(pattern == null){
-			return "";
+    private String getHtml() {
+        if(pattern == null){
+            return "";
 		}
-		boolean hasBug = bug != null;
-		StringBuilder text = new StringBuilder();
-		if(!hasBug){
+        boolean hasBug = bug != null;
+        StringBuilder text = new StringBuilder();
+        if(!hasBug){
 			text.append("<b>Pattern:</b> ");
-			text.append(pattern.getShortDescription());
-			text.append("<br>");
-		} else {
+            text.append(pattern.getShortDescription());
+            text.append("<br>");
+        } else {
 			text.append("<b>Pattern</b> ");
-		}
-		text.append(titleProvider.getDetails(pattern));
-		text.append("<br><br>");
+        }
+        text.append(titleProvider.getDetails(pattern));
+        text.append("<br><br>");
 		text.append(pattern.getDetailText());
-		if (!hasBug) {
-			return text.toString();
-		}
+        if (!hasBug) {
+            return text.toString();
+        }
 		DetectorFactory factory = bug.getDetectorFactory();
-		if(factory != null) {
-			Plugin plugin = factory.getPlugin();
-			text.append("<p><small><i>Reported by: ").append(factory.getFullName());
+        if(factory != null) {
+            Plugin plugin = factory.getPlugin();
+            text.append("<p><small><i>Reported by: ").append(factory.getFullName());
 			text.append("<br>Contributed by plugin: ").append(plugin.getPluginId());
-			text.append("<br>Provider: ").append(plugin.getProvider());
-			String website = plugin.getWebsite();
-			if(website != null && website.length() > 0) {
+            text.append("<br>Provider: ").append(plugin.getProvider());
+            String website = plugin.getWebsite();
+            if(website != null && website.length() > 0) {
 				text.append(" (<a href=\"").append(website).append("\">");
-				text.append(website).append("</a>)");
-			}
-			text.append("</i></small>");
+                text.append(website).append("</a>)");
+            }
+            text.append("</i></small>");
 		}
-		String html = text.toString();
-		html = "<b>Bug:</b> " + toSafeHtml(bug.getAbridgedMessage()) + "<br>\n" + html;
-		return html;
+        String html = text.toString();
+        html = "<b>Bug:</b> " + toSafeHtml(bug.getAbridgedMessage()) + "<br>\n" + html;
+        return html;
 	}
 
-	private String toSafeHtml(String s) {
-		if(s.indexOf(">") >= 0){
-			s = s.replace(">", "&gt;");
+    private String toSafeHtml(String s) {
+        if(s.indexOf(">") >= 0){
+            s = s.replace(">", "&gt;");
 		}
-		if(s.indexOf("<") >= 0){
-			s = s.replace("<", "&lt;");
-		}
+        if(s.indexOf("<") >= 0){
+            s = s.replace("<", "&lt;");
+        }
 		return s;
-	}
+    }
 
-	@Override
-	public void setInput(IWorkbenchPart part, ISelection selection) {
-		super.setInput(part, selection);
+    @Override
+    public void setInput(IWorkbenchPart part, ISelection selection) {
+        super.setInput(part, selection);
 		boolean contentChanged = contentChanged(selection);
-		if(contentChanged) {
-			updateDisplay();
-		}
+        if(contentChanged) {
+            updateDisplay();
+        }
 	}
 
-	/**
-	 * Updates pattern and bug from selection
-	 * @return true if the content is changed
+    /**
+     * Updates pattern and bug from selection
+     * @return true if the content is changed
 	 */
-	private boolean contentChanged(ISelection selection) {
-		boolean existsBefore = pattern != null;
-		if(!(selection instanceof IStructuredSelection)){
+    private boolean contentChanged(ISelection selection) {
+        boolean existsBefore = pattern != null;
+        if(!(selection instanceof IStructuredSelection)){
 			bug = null;
-			pattern = null;
-			return existsBefore;
-		}
+            pattern = null;
+            return existsBefore;
+        }
 		IStructuredSelection selection2 = (IStructuredSelection) selection;
-		Object object = selection2.getFirstElement();
-		if(object instanceof BugGroup){
-			BugGroup group = (BugGroup) object;
+        Object object = selection2.getFirstElement();
+        if(object instanceof BugGroup){
+            BugGroup group = (BugGroup) object;
 			if(group.getType() == GroupType.Pattern){
-				bug = null;
-				BugPattern data = (BugPattern) group.getData();
-				BugPattern old = pattern;
+                bug = null;
+                BugPattern data = (BugPattern) group.getData();
+                BugPattern old = pattern;
 				pattern = data;
-				return old != data;
-			}
-		} else if(object instanceof IMarker){
+                return old != data;
+            }
+        } else if(object instanceof IMarker){
 			IMarker marker = (IMarker) object;
-			if(MarkerUtil.isFindBugsMarker(marker)) {
-				BugInstance bugInstance = MarkerUtil.findBugInstanceForMarker(marker);
-				BugInstance old = bug;
+            if(MarkerUtil.isFindBugsMarker(marker)) {
+                BugInstance bugInstance = MarkerUtil.findBugInstanceForMarker(marker);
+                BugInstance old = bug;
 				bug = bugInstance;
-				pattern = bug != null ? bug.getBugPattern() : null;
-				return  old != bugInstance;
-			}
+                pattern = bug != null ? bug.getBugPattern() : null;
+                return  old != bugInstance;
+            }
 		}
-		return existsBefore;
-	}
+        return existsBefore;
+    }
 
-	@Override
-	public void dispose() {
-		if(rootComposite != null && !rootComposite.isDisposed()) {
+    @Override
+    public void dispose() {
+        if(rootComposite != null && !rootComposite.isDisposed()) {
 			page.removeTabSelectionListener(tabSelectionListener);
-			scrolledComposite.removeControlListener(listener);
-			rootComposite.dispose();
-		}
+            scrolledComposite.removeControlListener(listener);
+            rootComposite.dispose();
+        }
 		super.dispose();
+    }
+
+    @Override
+    public boolean shouldUseExtraSpace() {
+        return true;
 	}
 
-	@Override
-	public boolean shouldUseExtraSpace() {
-		return true;
-	}
-
-	private void openBrowserInEditor(LocationEvent event) {
-		URL url;
-		try {
+    private void openBrowserInEditor(LocationEvent event) {
+        URL url;
+        try {
 			url = new URL(event.location);
-		} catch (MalformedURLException e) {
-			return;
-		}
+        } catch (MalformedURLException e) {
+            return;
+        }
 		IWorkbenchBrowserSupport support= PlatformUI.getWorkbench().getBrowserSupport();
-		try {
-			IWebBrowser newBrowser= support.createBrowser(browserId);
-			browserId = newBrowser.getId();
+        try {
+            IWebBrowser newBrowser= support.createBrowser(browserId);
+            browserId = newBrowser.getId();
 			newBrowser.openURL(url);
-			return;
-		} catch (PartInitException e) {
-			FindbugsPlugin.getDefault().logException(e, "Can't open external browser");
+            return;
+        } catch (PartInitException e) {
+            FindbugsPlugin.getDefault().logException(e, "Can't open external browser");
 		}
-	}
+    }
 }

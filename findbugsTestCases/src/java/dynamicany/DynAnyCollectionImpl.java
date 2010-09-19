@@ -2,7 +2,7 @@ package dynamicany;
 
 
 public class DynAnyCollectionImpl extends DynAnyConstructedImpl {
-	public DynAnyCollectionImpl() {
+    public DynAnyCollectionImpl() {
         this(null, null, false);
     }
 

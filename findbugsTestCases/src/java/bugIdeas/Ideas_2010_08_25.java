@@ -8,14 +8,14 @@ import javax.servlet.http.HttpServletResponse;
 
 
 public class Ideas_2010_08_25 extends HttpServlet {
-	
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.io.IOException {
 
-		String id = request.getParameter("id");
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.io.IOException {
 
-		PrintWriter out = response.getWriter();
-		response.setContentType("text/plain");
-		out.println("Id is " + id);
+        String id = request.getParameter("id");
+
+        PrintWriter out = response.getWriter();
+        response.setContentType("text/plain");
+        out.println("Id is " + id);
 	}
 
 }

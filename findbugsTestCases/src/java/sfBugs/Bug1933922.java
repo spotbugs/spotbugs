@@ -28,52 +28,52 @@ public class Bug1933922 {
             }
         }
     }
-    
-	public String getProgram(String file, boolean load) {
-		try {
+
+    public String getProgram(String file, boolean load) {
+        try {
 			synchronized (compiling) {
-				for (;;) {
-					//Thread other = compiling.get(file);
-					Thread other = Thread.currentThread();
+                for (;;) {
+                    //Thread other = compiling.get(file);
+                    Thread other = Thread.currentThread();
 					if (other == null)
-						break;
-					if (other == Thread.currentThread())
-						throw new IllegalArgumentException("Recursive compilation in " + file);
+                        break;
+                    if (other == Thread.currentThread())
+                        throw new IllegalArgumentException("Recursive compilation in " + file);
 					/* XXX This can deadlock. */
-					compiling.wait();
-				}
-				String program = programs.get(file);
+                    compiling.wait();
+                }
+                String program = programs.get(file);
 				if (program != null)
-					return program;
-				if (!load)
-					return null;
+                    return program;
+                if (!load)
+                    return null;
 				compiling.put(file, Thread.currentThread());
-			}
-			try {
-				//Compiler compiler = new Compiler(this, file);
+            }
+            try {
+                //Compiler compiler = new Compiler(this, file);
 				//LpcProgram prog = compiler.compile();
-				String compiler = "Hello";
-				String prog = "world";
-				programs.put(file, prog);
+                String compiler = "Hello";
+                String prog = "world";
+                programs.put(file, prog);
 				return prog;
-			} finally {
-				synchronized (compiling) {
-					compiling.remove(file);
+            } finally {
+                synchronized (compiling) {
+                    compiling.remove(file);
 					compiling.notifyAll(); // The submitter's app yields a warning here;
-					                       // I haven't been able to get this example
-					                       // to trigger the same warning.
-				}
+                                           // I haven't been able to get this example
+                                           // to trigger the same warning.
+                }
 			}
-		}
-		//catch (IOException e) {
-		//	throw new IllegalArgumentException(e);
+        }
+        //catch (IOException e) {
+        //	throw new IllegalArgumentException(e);
 		//}
-		catch (InterruptedException e) {
-			throw new IllegalArgumentException(e);
-		}
+        catch (InterruptedException e) {
+            throw new IllegalArgumentException(e);
+        }
 		//catch (CompilerException e) {
-		//	throw new IllegalArgumentException(e);
-		//}
-	}
+        //	throw new IllegalArgumentException(e);
+        //}
+    }
 
 }

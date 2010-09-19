@@ -25,18 +25,18 @@ import org.eclipse.core.expressions.PropertyTester;
  */
 public class GroupPropertyTester extends PropertyTester {
 
-	public GroupPropertyTester() {
-		super();
-	}
+    public GroupPropertyTester() {
+        super();
+    }
 
-	public boolean test(Object receiver, String property, Object[] args,
-			Object expectedValue) {
-		if ("type".equals(property) && receiver instanceof BugGroup
+    public boolean test(Object receiver, String property, Object[] args,
+            Object expectedValue) {
+        if ("type".equals(property) && receiver instanceof BugGroup
 				&& expectedValue instanceof String) {
-			BugGroup group = (BugGroup) receiver;
-			return group.testAttribute(group, property, (String) expectedValue);
-		}
+            BugGroup group = (BugGroup) receiver;
+            return group.testAttribute(group, property, (String) expectedValue);
+        }
 		return false;
-	}
+    }
 
 }

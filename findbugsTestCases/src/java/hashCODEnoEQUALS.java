@@ -2,20 +2,20 @@
 
 public class hashCODEnoEQUALS {
 
-	/**
-	 * @param args
-	 */
+    /**
+     * @param args
+     */
 
-	int ReuVeN;
-	int MOJOJOJO;//FIXME!! Amazing, this isn't bad naming procedure
+    int ReuVeN;
+    int MOJOJOJO;//FIXME!! Amazing, this isn't bad naming procedure
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-	}
+    }
 
-	@Override
-	public int hashCode()
-	{
+    @Override
+    public int hashCode()
+    {
 		return 189234712;
-	}
+    }
 }

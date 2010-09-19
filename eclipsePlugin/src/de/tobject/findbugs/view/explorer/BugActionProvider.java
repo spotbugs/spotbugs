@@ -57,184 +57,184 @@ import de.tobject.findbugs.util.EditorUtil;
 
 public class BugActionProvider extends CommonActionProvider {
 
-	private WorkingSetFilterActionGroup workingSetActionGroup;
-	private IPropertyChangeListener filterChangeListener;
-	boolean hasContributedToViewMenu;
+    private WorkingSetFilterActionGroup workingSetActionGroup;
+    private IPropertyChangeListener filterChangeListener;
+    boolean hasContributedToViewMenu;
 	private MyAction doubleClickAction;
-	private ICommonActionExtensionSite site;
-	private boolean initDone;
+    private ICommonActionExtensionSite site;
+    private boolean initDone;
 
-	public BugActionProvider() {
-		super();
-	}
+    public BugActionProvider() {
+        super();
+    }
 
-	static class MyAction extends Action implements ISelectionChangedListener {
-		private IMarker marker;
-		private IFile file;
+    static class MyAction extends Action implements ISelectionChangedListener {
+        private IMarker marker;
+        private IFile file;
 		private IJavaElement javaElement;
 
-		@Override
-		public void run() {
-			if(marker == null && file == null && javaElement == null){
+        @Override
+        public void run() {
+            if(marker == null && file == null && javaElement == null){
 				return;
-			}
-			try {
-				if(javaElement != null){
+            }
+            try {
+                if(javaElement != null){
 					IEditorPart editor = JavaUI.openInEditor(javaElement, true, true);
 
-					// if we have both java element AND line info, go to the line
-					if(editor instanceof ITextEditor && marker != null){
-						EditorUtil.goToLine(editor, marker.getAttribute(
+                    // if we have both java element AND line info, go to the line
+                    if(editor instanceof ITextEditor && marker != null){
+                        EditorUtil.goToLine(editor, marker.getAttribute(
 								IMarker.LINE_NUMBER, EditorUtil.DEFAULT_LINE_IN_EDITOR));
-					}
-				} else if(marker != null) {
-					IDE.openEditor(FindbugsPlugin.getActiveWorkbenchWindow().getActivePage(),
+                    }
+                } else if(marker != null) {
+                    IDE.openEditor(FindbugsPlugin.getActiveWorkbenchWindow().getActivePage(),
 							marker, true);
-				} else {
-					IDE.openEditor(FindbugsPlugin.getActiveWorkbenchWindow().getActivePage(),
-							file, true);
+                } else {
+                    IDE.openEditor(FindbugsPlugin.getActiveWorkbenchWindow().getActivePage(),
+                            file, true);
 				}
-			} catch (PartInitException e) {
-				FindbugsPlugin.getDefault().logException(e,
-						"Cannot open editor for marker: " + marker);
+            } catch (PartInitException e) {
+                FindbugsPlugin.getDefault().logException(e,
+                        "Cannot open editor for marker: " + marker);
 			} catch (JavaModelException e) {
-				FindbugsPlugin.getDefault().logException(e,
-						"Cannot open editor for java element: " + javaElement);
-			}
+                FindbugsPlugin.getDefault().logException(e,
+                        "Cannot open editor for java element: " + javaElement);
+            }
 		}
 
-		void setSelection(IMarker sel) {
-			marker = sel;
-			javaElement = MarkerUtil.findJavaElementForMarker(marker);
+        void setSelection(IMarker sel) {
+            marker = sel;
+            javaElement = MarkerUtil.findJavaElementForMarker(marker);
 		}
 
-		public void selectionChanged(SelectionChangedEvent event) {
-			resetSelection();
-			ISelection selection = event.getSelection();
+        public void selectionChanged(SelectionChangedEvent event) {
+            resetSelection();
+            ISelection selection = event.getSelection();
 			if (selection instanceof IStructuredSelection) {
-				IStructuredSelection ss = (IStructuredSelection) selection;
-				if (ss.size() == 1) {
-					Object firstElement = ss.getFirstElement();
+                IStructuredSelection ss = (IStructuredSelection) selection;
+                if (ss.size() == 1) {
+                    Object firstElement = ss.getFirstElement();
 					if(firstElement instanceof IMarker) {
-						// forward doubleClick to doubleClickAction
-						setSelection((IMarker) firstElement);
-					} else if (firstElement instanceof BugGroup){
+                        // forward doubleClick to doubleClickAction
+                        setSelection((IMarker) firstElement);
+                    } else if (firstElement instanceof BugGroup){
 						BugGroup group = (BugGroup) firstElement;
-						Object data = group.getData();
-						if(data instanceof IJavaElement){
-							javaElement = (IJavaElement) data;
+                        Object data = group.getData();
+                        if(data instanceof IJavaElement){
+                            javaElement = (IJavaElement) data;
 						}
-						if(data instanceof IAdaptable){
-							IAdaptable adaptable = (IAdaptable) data;
-							Object adapter = adaptable.getAdapter(IResource.class);
+                        if(data instanceof IAdaptable){
+                            IAdaptable adaptable = (IAdaptable) data;
+                            Object adapter = adaptable.getAdapter(IResource.class);
 							if(adapter instanceof IFile){
-								file = (IFile) adapter;
-							}
-						}
+                                file = (IFile) adapter;
+                            }
+                        }
 					}
-				}
-			}
-		}
+                }
+            }
+        }
 
-		private void resetSelection() {
-			marker = null;
-			file = null;
+        private void resetSelection() {
+            marker = null;
+            file = null;
 			javaElement = null;
-		}
+        }
 
-	}
+    }
 
-	@Override
-	public void init(ICommonActionExtensionSite aSite) {
-		site = aSite;
+    @Override
+    public void init(ICommonActionExtensionSite aSite) {
+        site = aSite;
 		super.init(aSite);
-		final StructuredViewer viewer = aSite.getStructuredViewer();
-		final BugContentProvider provider = BugContentProvider.getProvider(site
-				.getContentService());
+        final StructuredViewer viewer = aSite.getStructuredViewer();
+        final BugContentProvider provider = BugContentProvider.getProvider(site
+                .getContentService());
 
-		filterChangeListener = new IPropertyChangeListener() {
+        filterChangeListener = new IPropertyChangeListener() {
 
-			public void propertyChange(PropertyChangeEvent event) {
-				if(!initDone){
-					return;
+            public void propertyChange(PropertyChangeEvent event) {
+                if(!initDone){
+                    return;
 				}
-				IWorkingSet oldWorkingSet = provider.getCurrentWorkingSet();
-				IWorkingSet oldWorkingSet1 = (IWorkingSet) event.getOldValue();
-				IWorkingSet newWorkingSet = (IWorkingSet) event.getNewValue();
+                IWorkingSet oldWorkingSet = provider.getCurrentWorkingSet();
+                IWorkingSet oldWorkingSet1 = (IWorkingSet) event.getOldValue();
+                IWorkingSet newWorkingSet = (IWorkingSet) event.getNewValue();
 				if (newWorkingSet != null
-						&& (oldWorkingSet == newWorkingSet || oldWorkingSet1 == newWorkingSet)) {
-					return;
-				}
+                        && (oldWorkingSet == newWorkingSet || oldWorkingSet1 == newWorkingSet)) {
+                    return;
+                }
 				if (viewer != null) {
-					provider.setCurrentWorkingSet(newWorkingSet);
-					if (newWorkingSet == null) {
-						viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
+                    provider.setCurrentWorkingSet(newWorkingSet);
+                    if (newWorkingSet == null) {
+                        viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
 					} else if(oldWorkingSet != newWorkingSet) {
-						viewer.setInput(newWorkingSet);
-					}
-				}
+                        viewer.setInput(newWorkingSet);
+                    }
+                }
 			}
-		};
+        };
 
-		workingSetActionGroup = new WorkingSetFilterActionGroup(aSite.getViewSite()
-				.getShell(), filterChangeListener);
-		workingSetActionGroup.setWorkingSet(provider.getCurrentWorkingSet());
+        workingSetActionGroup = new WorkingSetFilterActionGroup(aSite.getViewSite()
+                .getShell(), filterChangeListener);
+        workingSetActionGroup.setWorkingSet(provider.getCurrentWorkingSet());
 		doubleClickAction = new MyAction();
-		// only if doubleClickAction must know tree selection:
-		viewer.addSelectionChangedListener(doubleClickAction);
-		initDone = true;
+        // only if doubleClickAction must know tree selection:
+        viewer.addSelectionChangedListener(doubleClickAction);
+        initDone = true;
 	}
 
-	@Override
-	public void dispose() {
-		site.getStructuredViewer().removeSelectionChangedListener(doubleClickAction);
+    @Override
+    public void dispose() {
+        site.getStructuredViewer().removeSelectionChangedListener(doubleClickAction);
 		super.dispose();
-	}
+    }
 
-	@Override
-	public void fillActionBars(IActionBars actionBars) {
-		super.fillActionBars(actionBars);
+    @Override
+    public void fillActionBars(IActionBars actionBars) {
+        super.fillActionBars(actionBars);
 
-		if (!hasContributedToViewMenu) {
-			IMenuManager menuManager = actionBars.getMenuManager();
+        if (!hasContributedToViewMenu) {
+            IMenuManager menuManager = actionBars.getMenuManager();
 
-			// XXX dirty hack to rename silly "Customize View..." menu
-			IContributionItem[] items = menuManager.getItems();
-			for (IContributionItem item : items) {
+            // XXX dirty hack to rename silly "Customize View..." menu
+            IContributionItem[] items = menuManager.getItems();
+            for (IContributionItem item : items) {
 				if (item instanceof ActionContributionItem) {
-					ActionContributionItem item2 = (ActionContributionItem) item;
-					String text = item2.getAction().getText();
-					if ("Customize View...".equals(text)
+                    ActionContributionItem item2 = (ActionContributionItem) item;
+                    String text = item2.getAction().getText();
+                    if ("Customize View...".equals(text)
 							|| "&Customize View...".equals(text)) {
-						item2.getAction().setText("Toggle Filters...");
-						break;
-					}
+                        item2.getAction().setText("Toggle Filters...");
+                        break;
+                    }
 				}
-			}
-			IContributionItem item = menuManager.find("findBugsEclipsePlugin.toggleGrouping.groupDialog");
-			if(item != null){
+            }
+            IContributionItem item = menuManager.find("findBugsEclipsePlugin.toggleGrouping.groupDialog");
+            if(item != null){
 				menuManager.remove(item);
-				menuManager.insertBefore(IWorkbenchActionConstants.MB_ADDITIONS, item);
-			}
-			IMenuManager mm = menuManager.findMenuUsingPath("bugExplorer.menu.group");
+                menuManager.insertBefore(IWorkbenchActionConstants.MB_ADDITIONS, item);
+            }
+            IMenuManager mm = menuManager.findMenuUsingPath("bugExplorer.menu.group");
 			if (mm != null) {
-				menuManager.remove(mm);
-				menuManager.insertBefore(IWorkbenchActionConstants.MB_ADDITIONS, mm);
-			}
+                menuManager.remove(mm);
+                menuManager.insertBefore(IWorkbenchActionConstants.MB_ADDITIONS, mm);
+            }
 			workingSetActionGroup.fillActionBars(actionBars);
-			hasContributedToViewMenu = true;
-		}
-		actionBars.setGlobalActionHandler(ICommonActionConstants.OPEN, doubleClickAction);
+            hasContributedToViewMenu = true;
+        }
+        actionBars.setGlobalActionHandler(ICommonActionConstants.OPEN, doubleClickAction);
 
-	}
+    }
 
-	@Override
-	public void fillContextMenu(IMenuManager menu) {
-		super.fillContextMenu(menu);
+    @Override
+    public void fillContextMenu(IMenuManager menu) {
+        super.fillContextMenu(menu);
 
-		menu.insertBefore(ICommonMenuConstants.GROUP_PORT, new Separator("fb"));
-		menu.insertBefore(ICommonMenuConstants.GROUP_PORT, new Separator("fb.project"));
-		menu.insertBefore(ICommonMenuConstants.GROUP_PORT, new Separator("fb.filter"));
+        menu.insertBefore(ICommonMenuConstants.GROUP_PORT, new Separator("fb"));
+        menu.insertBefore(ICommonMenuConstants.GROUP_PORT, new Separator("fb.project"));
+        menu.insertBefore(ICommonMenuConstants.GROUP_PORT, new Separator("fb.filter"));
 	}
 
 

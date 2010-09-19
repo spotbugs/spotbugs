@@ -35,47 +35,47 @@ import de.tobject.findbugs.view.explorer.Grouping;
 
 public class OpenGroupDialogAction implements IViewActionDelegate {
 
-	private CommonNavigator navigator;
+    private CommonNavigator navigator;
 
-	public void init(IViewPart view) {
-		if (view instanceof CommonNavigator) {
-			navigator = (CommonNavigator) view;
+    public void init(IViewPart view) {
+        if (view instanceof CommonNavigator) {
+            navigator = (CommonNavigator) view;
 		}
-	}
+    }
 
-	public void run(IAction action) {
-		if (navigator == null) {
-			return;
+    public void run(IAction action) {
+        if (navigator == null) {
+            return;
 		}
-		BugContentProvider provider = BugContentProvider.getProvider(navigator
-				.getNavigatorContentService());
-		List<GroupType> list = provider.getGrouping().asList();
+        BugContentProvider provider = BugContentProvider.getProvider(navigator
+                .getNavigatorContentService());
+        List<GroupType> list = provider.getGrouping().asList();
 		GroupSelectionDialog dialog = new GroupSelectionDialog(navigator.getSite()
-				.getShell(), list);
-		dialog.setTitle("Bug Group Configuration");
-		int result = dialog.open();
+                .getShell(), list);
+        dialog.setTitle("Bug Group Configuration");
+        int result = dialog.open();
 		if (result != Window.OK) {
-			return;
-		}
-		Grouping grouping = Grouping.createFrom(dialog.getGroups());
+            return;
+        }
+        Grouping grouping = Grouping.createFrom(dialog.getGroups());
 		if (grouping == null) {
-			return;
-		}
-		provider.setGrouping(grouping);
+            return;
+        }
+        provider.setGrouping(grouping);
 		CommonViewer viewer = navigator.getCommonViewer();
-		Object[] expandedElements = viewer.getExpandedElements();
-		provider.reSetInput();
-		viewer.setExpandedElements(expandedElements);
+        Object[] expandedElements = viewer.getExpandedElements();
+        provider.reSetInput();
+        viewer.setExpandedElements(expandedElements);
 	}
 
-	public void selectionChanged(IAction action, ISelection selection) {
-		if(navigator == null){
-			action.setEnabled(false);
+    public void selectionChanged(IAction action, ISelection selection) {
+        if(navigator == null){
+            action.setEnabled(false);
 			return;
-		}
-		BugContentProvider provider = BugContentProvider.getProvider(navigator
-				.getNavigatorContentService());
+        }
+        BugContentProvider provider = BugContentProvider.getProvider(navigator
+                .getNavigatorContentService());
 		action.setEnabled(provider.getGrouping() != null);
-	}
+    }
 
 }

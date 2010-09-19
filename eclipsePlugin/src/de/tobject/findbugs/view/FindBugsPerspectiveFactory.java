@@ -30,32 +30,32 @@ import de.tobject.findbugs.FindbugsPlugin;
  */
 public class FindBugsPerspectiveFactory implements IPerspectiveFactory {
 
-	/** perspective id, see plugin.xml */
-	public static final String ID = "de.tobject.findbugs.FindBugsPerspective";
+    /** perspective id, see plugin.xml */
+    public static final String ID = "de.tobject.findbugs.FindBugsPerspective";
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IPerspectiveFactory#createInitialLayout(org.eclipse.ui.IPageLayout)
-	 */
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IPerspectiveFactory#createInitialLayout(org.eclipse.ui.IPageLayout)
+     */
 	public void createInitialLayout(IPageLayout layout) {
-		String editorArea = layout.getEditorArea();
-		IFolderLayout topLeft = layout.createFolder(
-				"topLeft", IPageLayout.LEFT, (float) 0.25, editorArea);
+        String editorArea = layout.getEditorArea();
+        IFolderLayout topLeft = layout.createFolder(
+                "topLeft", IPageLayout.LEFT, (float) 0.25, editorArea);
 		topLeft.addView(FindbugsPlugin.TREE_VIEW_ID);
-		topLeft.addPlaceholder(JavaUI.ID_PACKAGES);
+        topLeft.addPlaceholder(JavaUI.ID_PACKAGES);
 
-		// Bottom right.
-		IFolderLayout bottomRightA = layout.createFolder(
-				"bottomRightA", IPageLayout.BOTTOM, (float) 0.55,
+        // Bottom right.
+        IFolderLayout bottomRightA = layout.createFolder(
+                "bottomRightA", IPageLayout.BOTTOM, (float) 0.55,
 				editorArea);
 
-		bottomRightA.addView(FindbugsPlugin.USER_ANNOTATIONS_VIEW_ID);
-		bottomRightA.addView(IPageLayout.ID_PROBLEM_VIEW);
+        bottomRightA.addView(FindbugsPlugin.USER_ANNOTATIONS_VIEW_ID);
+        bottomRightA.addView(IPageLayout.ID_PROBLEM_VIEW);
 
-		IFolderLayout bottomRightB = layout.createFolder(
-				"bottomRightB", IPageLayout.RIGHT, (float) 0.55,
-				"bottomRightA");
+        IFolderLayout bottomRightB = layout.createFolder(
+                "bottomRightB", IPageLayout.RIGHT, (float) 0.55,
+                "bottomRightA");
 
-		bottomRightB.addView(IPageLayout.ID_PROP_SHEET);
-	}
+        bottomRightB.addView(IPageLayout.ID_PROP_SHEET);
+    }
 
 }

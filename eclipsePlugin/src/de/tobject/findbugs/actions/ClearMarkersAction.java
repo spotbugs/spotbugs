@@ -42,37 +42,37 @@ import de.tobject.findbugs.builder.WorkItem;
  */
 public class ClearMarkersAction extends FindBugsAction {
 
-	/**
-	 * Clear the FindBugs markers on each project in the given selection, displaying a progress monitor.
-	 */
+    /**
+     * Clear the FindBugs markers on each project in the given selection, displaying a progress monitor.
+     */
 	@Override
-	protected void work(final IWorkbenchPart part, IProject project, final List<WorkItem> resources) {
-		FindBugsJob clearMarkersJob = new ClearMarkersJob(project, resources);
-		clearMarkersJob.addJobChangeListener(new JobChangeAdapter(){
+    protected void work(final IWorkbenchPart part, IProject project, final List<WorkItem> resources) {
+        FindBugsJob clearMarkersJob = new ClearMarkersJob(project, resources);
+        clearMarkersJob.addJobChangeListener(new JobChangeAdapter(){
 			@Override
-			public void done(IJobChangeEvent event) {
-				refreshViewer(part, resources);
-			}
+            public void done(IJobChangeEvent event) {
+                refreshViewer(part, resources);
+            }
 		});
-		clearMarkersJob.scheduleInteractive();
-	}
+        clearMarkersJob.scheduleInteractive();
+    }
 }
 
 final class ClearMarkersJob extends FindBugsJob {
-	private final List<WorkItem> resources;
+    private final List<WorkItem> resources;
 
-	ClearMarkersJob(IProject project, List<WorkItem> resources) {
-		super("Removing FindBugs markers", project);
-		this.resources = resources;
+    ClearMarkersJob(IProject project, List<WorkItem> resources) {
+        super("Removing FindBugs markers", project);
+        this.resources = resources;
 	}
 
-	@Override
-	protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
-		monitor.beginTask(getName(), resources.size());
+    @Override
+    protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
+        monitor.beginTask(getName(), resources.size());
 		for (WorkItem res : resources) {
-			monitor.subTask(res.getName());
-			res.clearMarkers();
-			monitor.worked(1);
+            monitor.subTask(res.getName());
+            res.clearMarkers();
+            monitor.worked(1);
 		}
-	}
+    }
 }

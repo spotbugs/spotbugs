@@ -1,78 +1,78 @@
 package equals;
 
 public class GetClassAndClassConstant {
-	
-	static class A {
-		int x;
+
+    static class A {
+        int x;
 		public int hashCode() {
-			return x;
-		}
-		public boolean equals(Object o) {
+            return x;
+        }
+        public boolean equals(Object o) {
 			if (o != null && A.class.equals(o.getClass()))
-					return x == ((A)o).x;
-			return false;
-				
+                    return x == ((A)o).x;
+            return false;
+
 		}
+    }
+    static class B extends A {
+
 	}
-	static class B extends A {
-	
-	}
-	static class A2 {
-		int x;
-		public int hashCode() {
+    static class A2 {
+        int x;
+        public int hashCode() {
 			return x;
-		}
-		public boolean equals(Object o) {
-			if (o != null && A2.class.equals(o.getClass()))
+        }
+        public boolean equals(Object o) {
+            if (o != null && A2.class.equals(o.getClass()))
 					return x == ((A2)o).x;
-			return false;
-				
-		}
+            return false;
+
+        }
 	}
-	static class B2 extends A2 {
-		public boolean equals(Object o) {
-			if (o != null && B2.class.equals(o.getClass()))
+    static class B2 extends A2 {
+        public boolean equals(Object o) {
+            if (o != null && B2.class.equals(o.getClass()))
 					return x == ((B2)o).x;
-			return false;
-				
-		}
+            return false;
+
+        }
 	
-	}
-	static class C {
-		int x;
+    }
+    static class C {
+        int x;
 		public int hashCode() {
-			return x;
-		}
-		public boolean equals(Object o) {
+            return x;
+        }
+        public boolean equals(Object o) {
 			if (o != null && C.class.equals(o.getClass()))
-					return x == ((C)o).x;
-			return false;
-				
+                    return x == ((C)o).x;
+            return false;
+
 		}
-	}
-	static final class D {
-		int x;
+    }
+    static final class D {
+        int x;
 		public int hashCode() {
-			return x;
-		}
-		public boolean equals(Object o) {
+            return x;
+        }
+        public boolean equals(Object o) {
 			if (o != null && D.class.equals(o.getClass()))
-					return x == ((D)o).x;
-			return false;
-				
+                    return x == ((D)o).x;
+            return false;
+
 		}
-	}
-	static class E { // OK, this is just stupid, but perhaps we should check for it
-		int x;
+    }
+    static class E { // OK, this is just stupid, but perhaps we should check for it
+        int x;
 		public int hashCode() {
-			return x;
-		}
-		public boolean equals(Object o) {
+            return x;
+        }
+        public boolean equals(Object o) {
 			if (o != null && C.class.equals(o.getClass()))
-					return x == ((C)o).x;
-			return false;
-				
+                    return x == ((C)o).x;
+            return false;
+
 		}
-	}
-	
+    }
+
 }

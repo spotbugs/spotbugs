@@ -18,106 +18,106 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug2539590 {
 
-	@ExpectWarning("SF_SWITCH_NO_DEFAULT")
-	public static void noFallthroughMethodNoDefault(int which) {
-		switch (which) {
+    @ExpectWarning("SF_SWITCH_NO_DEFAULT")
+    public static void noFallthroughMethodNoDefault(int which) {
+        switch (which) {
 		case 0:
-			doSomething();
-			break;
-		}
+            doSomething();
+            break;
+        }
 	}
 
-	@DesireNoWarning("SF_SWITCH_NO_DEFAULT")
-	public static void noFallthroughMethod(int which) {
-		switch (which) {
+    @DesireNoWarning("SF_SWITCH_NO_DEFAULT")
+    public static void noFallthroughMethod(int which) {
+        switch (which) {
 		case 0:
-			doSomething();
-			break;
-		default:
+            doSomething();
+            break;
+        default:
 		}
-	}
-	@NoWarning("SF_SWITCH_NO_DEFAULT")	
-	public static void noFallthroughMethod2(int which) {
+    }
+    @NoWarning("SF_SWITCH_NO_DEFAULT")
+    public static void noFallthroughMethod2(int which) {
 		switch (which) {
-		case 0:
-			doSomething();
-			break;
+        case 0:
+            doSomething();
+            break;
 		default:
-			break;
-		}
-	}
+            break;
+        }
+    }
 
-	/*
-	 * Behavior at filing: warning message thrown for fallthrough in switch
-	 * statement does not mention missing default case
+    /*
+     * Behavior at filing: warning message thrown for fallthrough in switch
+     * statement does not mention missing default case
 	 * 
-	 * warning thrown => M D SF_SWITCH_FALLTHROUGH SF: Switch statement found in
-	 * \ sfBugs.Bug2539590.fallthroughMethod(int) where one case falls \ through
-	 * to the next case At Bug2539590.java:[lines 33-35]
+     * warning thrown => M D SF_SWITCH_FALLTHROUGH SF: Switch statement found in
+     * \ sfBugs.Bug2539590.fallthroughMethod(int) where one case falls \ through
+     * to the next case At Bug2539590.java:[lines 33-35]
 	 */
-	@NoWarning("SF_SWITCH_FALLTHROUGH")
-	@ExpectWarning("SF_SWITCH_NO_DEFAULT")
-	public static void fallthroughMethodNoDefault(int which) {
+    @NoWarning("SF_SWITCH_FALLTHROUGH")
+    @ExpectWarning("SF_SWITCH_NO_DEFAULT")
+    public static void fallthroughMethodNoDefault(int which) {
 		switch (which) {
-		case 0:
-			doSomething();
-		}
+        case 0:
+            doSomething();
+        }
 	}
 
 
-	@DesireNoWarning("SF_SWITCH_NO_DEFAULT")
-	public static void fallthroughMethod(int which) {
-		switch (which) {
+    @DesireNoWarning("SF_SWITCH_NO_DEFAULT")
+    public static void fallthroughMethod(int which) {
+        switch (which) {
 		case 0:
-			doSomething();
+            doSomething();
+        default:
+            break;
+		}
+    }
+
+    @ExpectWarning("SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH,SF_SWITCH_NO_DEFAULT")
+    public static int fallthroughMethodNoDefaultClobber(int which) {
+        int result = 0;
+		switch (which) {
+        case 0:
+            doSomething();
+            result = 1;
+		}
+        result = 2;
+        return result;
+    }
+
+    @ExpectWarning("SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH")
+    public static int fallthroughMethodClobber(int which) {
+        int result = 0;
+		switch (which) {
+        case 0:
+            doSomething();
+            result = 1;
 		default:
+            result = 2;
+        }
+        return result;
+	}
+
+
+    @ExpectWarning("SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW")
+    public static int fallthroughMethodToss(int which) {
+        int result;
+		switch (which) {
+        case 0:
+            doSomething();
+            result = 1;
 			break;
-		}
-	}
-
-	@ExpectWarning("SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH,SF_SWITCH_NO_DEFAULT")
-	public static int fallthroughMethodNoDefaultClobber(int which) {
-		int result = 0;
-		switch (which) {
-		case 0:
-			doSomething();
-			result = 1;
-		}
-		result = 2;
-		return result;
-	}
-
-	@ExpectWarning("SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH")
-	public static int fallthroughMethodClobber(int which) {
-		int result = 0;
-		switch (which) {
-		case 0:
-			doSomething();
-			result = 1;
-		default:
-			result = 2;
-		}
-		return result;
-	}
-
-
-	@ExpectWarning("SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW")
-	public static int fallthroughMethodToss(int which) {
-		int result;
-		switch (which) {
-		case 0:
-			doSomething();
-			result = 1;
-			break;
-		case 1:
-			result = 2;
-		default:
+        case 1:
+            result = 2;
+        default:
 			throw new IllegalArgumentException();
-		}
-		return result;
-	}
+        }
+        return result;
+    }
 	public static void doSomething() {
-		System.out.println("Hello world!");
-		return;
-	}
+        System.out.println("Hello world!");
+        return;
+    }
 }

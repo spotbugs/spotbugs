@@ -7,16 +7,16 @@ import java.util.TreeMap;
 /**
  * Submitted By: Ulrich Radermacher
  * Summary:
- * 
+ *
  * WMI, WrongMapIterator states:
  * It is not efficient to ioterate over the keyset, and use the key than to
  * get the value assigned to this key.
- * 
+ *
  * Here I found 2 kinds of false positives:
- * 
+ *
  * 1) If the Map is a SortedMap, it seems to me perfectly legal to iterate
  * over the keyset to take advantage of the sorting.
- * 
+ *
  * 2) In one case I have to do something with the key (it is passed to another
  * method as parameter) and just in a log statement if have:
  * log("Handled " + key + " desription = " + map.get(key));
@@ -24,13 +24,13 @@ import java.util.TreeMap;
  * even for unsorted maps.
  */
 public class Bug1751003 {
-    
+
     public static void main(String args[]) {
         Bug1751003 b = new Bug1751003();
         b.sortedMapIterate();
         b.useKeyAndValIterate();
     }
-    
+
     //// grep -A 1 WMI_WRONG_MAP_ITERATOR | grep Bug1751003
     public void sortedMapIterate() {
         SortedMap<Integer, Integer> sm = new TreeMap<Integer, Integer>();
@@ -44,7 +44,7 @@ public class Bug1751003 {
             }
         }
     }
-    
+
     //// grep -A 1 WMI_WRONG_MAP_ITERATOR | grep Bug1751003
     public void useKeyAndValIterate() {
         HashMap<Integer, Integer> hm = new HashMap<Integer, Integer>();

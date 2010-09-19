@@ -38,7 +38,7 @@ public class Bug1815013 {
             p.x = get()[0]; // should not generate warning
         }
     }
-    
+
     public void set5(Bug1815013 p) {
         synchronized(p) {
             synchronized(this) {
@@ -46,12 +46,12 @@ public class Bug1815013 {
             }
         }
     }
-    
+
     private void privateUnsynchSetThis(Bug1815013 p) {
         // should be treated as SYNC_ACCESS, and it is
-        this.x = p.get()[0]; 
+        this.x = p.get()[0];
     }
-    
+
     public void publicSyncThis(Bug1815013 p) {
         synchronized(this) {
             privateUnsynchSetThis(p);
@@ -60,9 +60,9 @@ public class Bug1815013 {
 
     private void privateUnsynchSetP(Bug1815013 p) {
         // should be treated as SYNC_ACCESS, but is treated as UNSYNC_ACCESS
-        p.x = get()[0]; 
+        p.x = get()[0];
     }
-    
+
     public void publicSyncP(Bug1815013 p) {
         synchronized(p) {
             privateUnsynchSetP(p);

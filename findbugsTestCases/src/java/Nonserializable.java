@@ -9,25 +9,25 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Nonserializable {
 
-	/**
-	 * @param args
-	 */
+    /**
+     * @param args
+     */
 	@ExpectWarning("DMI")
-	public static void main(String[] args) {
-		FileOutputStream fos = null;
-		try {
+    public static void main(String[] args) {
+        FileOutputStream fos = null;
+        try {
 			fos = new FileOutputStream("t.tmp");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
 		}
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(new Thread());
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(new Thread());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	}
 
 }

@@ -2,95 +2,95 @@ import java.io.FileInputStream;
 
 class RedundantNullCheck3 {
 
-	public void test1() throws Exception {
-		FileInputStream in = new FileInputStream("/dev/null");
-		// generate a warning here
+    public void test1() throws Exception {
+        FileInputStream in = new FileInputStream("/dev/null");
+        // generate a warning here
 		if (in == null)
-			in.close();
-	}
+            in.close();
+    }
 
-	public void test2() throws Exception {
-		FileInputStream in = new FileInputStream("/dev/null");
-		// don't generate a warning here
+    public void test2() throws Exception {
+        FileInputStream in = new FileInputStream("/dev/null");
+        // don't generate a warning here
 		if (in != null)
-			in.close();
-	}
+            in.close();
+    }
 
-	public void test3() throws Exception {
-		FileInputStream in = new FileInputStream("/dev/null");
-		// don't generate a warning here
+    public void test3() throws Exception {
+        FileInputStream in = new FileInputStream("/dev/null");
+        // don't generate a warning here
 		if (in == null)
-			throw new IllegalStateException("in is null");
-	}
+            throw new IllegalStateException("in is null");
+    }
 
-	public void test4() throws Exception {
-		FileInputStream in = new FileInputStream("/dev/null");
-		// generate a warning here
+    public void test4() throws Exception {
+        FileInputStream in = new FileInputStream("/dev/null");
+        // generate a warning here
 		if (in != null)
-			throw new IllegalStateException("in is null");
-	}
+            throw new IllegalStateException("in is null");
+    }
 
-	public void test5() throws Exception {
-		FileInputStream in = null;
-		// generate a NP warning here, but no RCN (maybe)
+    public void test5() throws Exception {
+        FileInputStream in = null;
+        // generate a NP warning here, but no RCN (maybe)
 		if (in == null)
-			in.close();
-	}
+            in.close();
+    }
 
-	public void test6() throws Exception {
-		FileInputStream in = null;
-		// generate a RCN warning here
+    public void test6() throws Exception {
+        FileInputStream in = null;
+        // generate a RCN warning here
 		if (in != null)
-			in.close();
-	}
+            in.close();
+    }
 
-	public void test7() throws Exception {
-		FileInputStream in = null;
-		// don't generate a RCN warning here (maybe)
+    public void test7() throws Exception {
+        FileInputStream in = null;
+        // don't generate a RCN warning here (maybe)
 		if (in == null)
-			throw new IllegalStateException("in is null");
-	}
+            throw new IllegalStateException("in is null");
+    }
 
-	public void test8() throws Exception {
-		FileInputStream in = null;
-		// generate a warning here
+    public void test8() throws Exception {
+        FileInputStream in = null;
+        // generate a warning here
 		if (in != null)
-			throw new IllegalStateException("in is null");
-	}
+            throw new IllegalStateException("in is null");
+    }
 
-	public void test9(boolean b) throws Exception {
-		FileInputStream in = null;
-		if (b)
+    public void test9(boolean b) throws Exception {
+        FileInputStream in = null;
+        if (b)
 			in = new FileInputStream("/dev/null");
-		// generate a warning here
-		if (in == null)
-			in.close();
+        // generate a warning here
+        if (in == null)
+            in.close();
 	}
 
-	public void test10(boolean b) throws Exception {
-		FileInputStream in = null;
-		if (b)
+    public void test10(boolean b) throws Exception {
+        FileInputStream in = null;
+        if (b)
 			in = new FileInputStream("/dev/null");
-		// don't generate a warning here
-		if (in != null)
-			in.close();
+        // don't generate a warning here
+        if (in != null)
+            in.close();
 	}
 
-	public void test11(boolean b) throws Exception {
-		FileInputStream in = null;
-		if (b)
+    public void test11(boolean b) throws Exception {
+        FileInputStream in = null;
+        if (b)
 			in = new FileInputStream("/dev/null");
-		// don't generate a warning here
-		if (in == null)
-			throw new IllegalStateException("in is null");
+        // don't generate a warning here
+        if (in == null)
+            throw new IllegalStateException("in is null");
 	}
 
-	public void test12(boolean b) throws Exception {
-		FileInputStream in = null;
-		if (b)
+    public void test12(boolean b) throws Exception {
+        FileInputStream in = null;
+        if (b)
 			in = new FileInputStream("/dev/null");
-		// generate a warning here
-		if (in != null)
-			throw new IllegalStateException("in is null");
+        // generate a warning here
+        if (in != null)
+            throw new IllegalStateException("in is null");
 	}
 }

@@ -32,69 +32,69 @@ import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the ResourceBugCountDecorator.
- * 
+ *
  * @author Tomás Pollak
  */
 public class LabelDecoratorTest extends AbstractFindBugsTest {
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		setUpTestProject(TestScenario.DEFAULT);
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        setUpTestProject(TestScenario.DEFAULT);
 	}
 
-	@AfterClass
-	public static void tearDownClass() throws CoreException {
-		tearDownTestProject();
+    @AfterClass
+    public static void tearDownClass() throws CoreException {
+        tearDownTestProject();
 	}
 
-	private static final String SOME_LABEL = "label";
+    private static final String SOME_LABEL = "label";
 
-	@Test
-	public void testDecorateResourcesWithBugs() throws CoreException {
-		loadXml(createFindBugsWorker(), getBugsFileLocation());
+    @Test
+    public void testDecorateResourcesWithBugs() throws CoreException {
+        loadXml(createFindBugsWorker(), getBugsFileLocation());
 
-		// Class 'A' has no visible bugs
+        // Class 'A' has no visible bugs
+        doTestDecoratorWithoutBugs(getClassA());
+
+        // Class 'B' has visible bugs
+        doTestDecoratorWithBugs(getClassB(), getClassBExpectedBugCount());
+
+        // Default Java package
+        doTestDecoratorWithBugs(getDefaultPackageInSrc(), getVisibleBugsCount());
+
+        // Project
+        doTestDecoratorWithBugs(getProject(), getClassBExpectedBugCount());
+    }
+
+    @Test
+    public void testDecorateResourcesWithoutBugs() throws JavaModelException {
+        // Class 'A'
 		doTestDecoratorWithoutBugs(getClassA());
 
-		// Class 'B' has visible bugs
-		doTestDecoratorWithBugs(getClassB(), getClassBExpectedBugCount());
+        // Class 'B'
+        doTestDecoratorWithoutBugs(getClassB());
 
-		// Default Java package
-		doTestDecoratorWithBugs(getDefaultPackageInSrc(), getVisibleBugsCount());
+        // Default Java package
+        doTestDecoratorWithoutBugs(getDefaultPackageInSrc());
 
-		// Project
-		doTestDecoratorWithBugs(getProject(), getClassBExpectedBugCount());
-	}
+        // Project
+        doTestDecoratorWithoutBugs(getProject());
+    }
 
-	@Test
-	public void testDecorateResourcesWithoutBugs() throws JavaModelException {
-		// Class 'A'
-		doTestDecoratorWithoutBugs(getClassA());
-
-		// Class 'B'
-		doTestDecoratorWithoutBugs(getClassB());
-
-		// Default Java package
-		doTestDecoratorWithoutBugs(getDefaultPackageInSrc());
-
-		// Project
-		doTestDecoratorWithoutBugs(getProject());
-	}
-
-	private void doTestDecoratorWithBugs(Object resourceAdaptable, int expectedBugsCount) {
-		ResourceBugCountDecorator decorator = new ResourceBugCountDecorator();
-		String decoratedText = decorator.decorateText(SOME_LABEL, resourceAdaptable);
+    private void doTestDecoratorWithBugs(Object resourceAdaptable, int expectedBugsCount) {
+        ResourceBugCountDecorator decorator = new ResourceBugCountDecorator();
+        String decoratedText = decorator.decorateText(SOME_LABEL, resourceAdaptable);
 		assertEquals(SOME_LABEL + " (" + expectedBugsCount + ")", decoratedText);
-	}
+    }
 
-	private void doTestDecoratorWithoutBugs(Object resourceAdaptable) {
-		ResourceBugCountDecorator decorator = new ResourceBugCountDecorator();
-		String decoratedText = decorator.decorateText(SOME_LABEL, resourceAdaptable);
+    private void doTestDecoratorWithoutBugs(Object resourceAdaptable) {
+        ResourceBugCountDecorator decorator = new ResourceBugCountDecorator();
+        String decoratedText = decorator.decorateText(SOME_LABEL, resourceAdaptable);
 		assertEquals(SOME_LABEL, decoratedText);
-	}
+    }
 
-	private int getClassBExpectedBugCount() {
-		// Currently class 'B' has all the reported visible bugs
-		return getVisibleBugsCount();
+    private int getClassBExpectedBugCount() {
+        // Currently class 'B' has all the reported visible bugs
+        return getVisibleBugsCount();
 	}
 
 }

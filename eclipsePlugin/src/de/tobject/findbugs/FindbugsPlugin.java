@@ -1,22 +1,22 @@
 /*
-	* FindBugs Eclipse Plug-in.
-	* Copyright (C) 2003 - 2004, Peter Friese
-	* Copyright (C) 2004-2005, University of Maryland
+    * FindBugs Eclipse Plug-in.
+    * Copyright (C) 2003 - 2004, Peter Friese
+    * Copyright (C) 2004-2005, University of Maryland
 	*
-	* This library is free software; you can redistribute it and/or
-	* modify it under the terms of the GNU Lesser General Public
-	* License as published by the Free Software Foundation; either
+    * This library is free software; you can redistribute it and/or
+    * modify it under the terms of the GNU Lesser General Public
+    * License as published by the Free Software Foundation; either
 	* version 2.1 of the License, or (at your option) any later version.
-	*
-	* This library is distributed in the hope that it will be useful,
-	* but WITHOUT ANY WARRANTY; without even the implied warranty of
+    *
+    * This library is distributed in the hope that it will be useful,
+    * but WITHOUT ANY WARRANTY; without even the implied warranty of
 	* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-	* Lesser General Public License for more details.
-	*
-	* You should have received a copy of the GNU Lesser General Public
+    * Lesser General Public License for more details.
+    *
+    * You should have received a copy of the GNU Lesser General Public
 	* License along with this library; if not, write to the Free Software
-	* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-	*/
+    * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+    */
 
 package de.tobject.findbugs;
 
@@ -99,467 +99,467 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionAssociations;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionLoader;
 
 /**
-	* The main plugin class to be used in the desktop.
-	*/
+    * The main plugin class to be used in the desktop.
+    */
 public class FindbugsPlugin extends AbstractUIPlugin {
-	public static final String ICON_PATH = "icons/";
-	public static final String PREFS_NAME = ".fbprefs";
+    public static final String ICON_PATH = "icons/";
+    public static final String PREFS_NAME = ".fbprefs";
 
-	@java.lang.SuppressWarnings("restriction")
-	public static final IPath DEFAULT_PREFS_PATH = new Path(
-			EclipsePreferences.DEFAULT_PREFERENCES_DIRNAME).append("edu.umd.cs.findbugs.core.prefs");
+    @java.lang.SuppressWarnings("restriction")
+    public static final IPath DEFAULT_PREFS_PATH = new Path(
+            EclipsePreferences.DEFAULT_PREFERENCES_DIRNAME).append("edu.umd.cs.findbugs.core.prefs");
 
-	public static final IPath DEPRECATED_PREFS_PATH = new Path(PREFS_NAME);
+    public static final IPath DEPRECATED_PREFS_PATH = new Path(PREFS_NAME);
 
-	public static final String DETAILS_VIEW_ID = IPageLayout.ID_PROP_SHEET;
-	public static final String USER_ANNOTATIONS_VIEW_ID = "de.tobject.findbugs.view.userannotationsview";
-	public static final String TREE_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
+    public static final String DETAILS_VIEW_ID = IPageLayout.ID_PROP_SHEET;
+    public static final String USER_ANNOTATIONS_VIEW_ID = "de.tobject.findbugs.view.userannotationsview";
+    public static final String TREE_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
 	public static final String BUG_CONTENT_PROVIDER_ID = "de.tobject.findbugs.view.explorer.BugContentProvider";
 
-	/** Map containing preloaded ImageDescriptors */
-	private final Map<String, ImageDescriptor> imageDescriptors = new HashMap<String, ImageDescriptor>(13);
+    /** Map containing preloaded ImageDescriptors */
+    private final Map<String, ImageDescriptor> imageDescriptors = new HashMap<String, ImageDescriptor>(13);
 
-	/** Controls debugging of the plugin */
-	public static boolean DEBUG;
+    /** Controls debugging of the plugin */
+    public static boolean DEBUG;
 
-	/**
-	 * The plug-in identifier of the FindBugs Plug-in
-	 * (value "edu.umd.cs.findbugs.plugin.eclipse", was <code>"de.tobject.findbugs"</code>).
+    /**
+     * The plug-in identifier of the FindBugs Plug-in
+     * (value "edu.umd.cs.findbugs.plugin.eclipse", was <code>"de.tobject.findbugs"</code>).
 	 */
-	public static final String PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse"; //$NON-NLS-1$
+    public static final String PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse"; //$NON-NLS-1$
 
-	/**
-	 * The identifier for the FindBugs builder
-	 * (value <code>"edu.umd.cs.findbugs.plugin.eclipse.findbugsbuilder"</code>).
+    /**
+     * The identifier for the FindBugs builder
+     * (value <code>"edu.umd.cs.findbugs.plugin.eclipse.findbugsbuilder"</code>).
 	 */
-	public static final String BUILDER_ID = PLUGIN_ID + ".findbugsBuilder"; //$NON-NLS-1$
+    public static final String BUILDER_ID = PLUGIN_ID + ".findbugsBuilder"; //$NON-NLS-1$
 
-	/**
-	 * The identifier for the FindBugs nature
-	 * (value <code>"edu.umd.cs.findbugs.plugin.eclipse.findbugsnature"</code>).
+    /**
+     * The identifier for the FindBugs nature
+     * (value <code>"edu.umd.cs.findbugs.plugin.eclipse.findbugsnature"</code>).
 	 *
-	 * @see org.eclipse.core.resources.IProject#hasNature(java.lang.String)
-	 */
-	public static final String NATURE_ID = PLUGIN_ID + ".findbugsNature"; //$NON-NLS-1$
+     * @see org.eclipse.core.resources.IProject#hasNature(java.lang.String)
+     */
+    public static final String NATURE_ID = PLUGIN_ID + ".findbugsNature"; //$NON-NLS-1$
 
-	// Debugging options
-	private static final String PLUGIN_DEBUG = PLUGIN_ID + "/debug/plugin"; //$NON-NLS-1$
-	private static final String BUILDER_DEBUG = PLUGIN_ID + "/debug/builder"; //$NON-NLS-1$
+    // Debugging options
+    private static final String PLUGIN_DEBUG = PLUGIN_ID + "/debug/plugin"; //$NON-NLS-1$
+    private static final String BUILDER_DEBUG = PLUGIN_ID + "/debug/builder"; //$NON-NLS-1$
 	private static final String NATURE_DEBUG = PLUGIN_ID + "/debug/nature"; //$NON-NLS-1$
-	private static final String REPORTER_DEBUG = PLUGIN_ID + "/debug/reporter"; //$NON-NLS-1$
-	private static final String CONTENT_DEBUG = PLUGIN_ID + "/debug/content"; //$NON-NLS-1$
-	private static final String PROFILER_DEBUG = PLUGIN_ID + "/debug/profiler"; //$NON-NLS-1$
+    private static final String REPORTER_DEBUG = PLUGIN_ID + "/debug/reporter"; //$NON-NLS-1$
+    private static final String CONTENT_DEBUG = PLUGIN_ID + "/debug/content"; //$NON-NLS-1$
+    private static final String PROFILER_DEBUG = PLUGIN_ID + "/debug/profiler"; //$NON-NLS-1$
 
-	// Persistent and session property keys
-	public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION =
-		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection");
+    // Persistent and session property keys
+    public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION =
+        new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection");
 
-	public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION_DIRTY =
-		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection.dirty");
+    public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION_DIRTY =
+        new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection.dirty");
 
-	public static final QualifiedName SESSION_PROPERTY_USERPREFS =
-		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "userprefs");
+    public static final QualifiedName SESSION_PROPERTY_USERPREFS =
+        new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "userprefs");
 
-	public static final QualifiedName SESSION_PROPERTY_SETTINGS_ON =
-		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "settingsOn");
+    public static final QualifiedName SESSION_PROPERTY_SETTINGS_ON =
+        new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "settingsOn");
 
-	public static final String LIST_DELIMITER = ";"; //$NON-NLS-1$
+    public static final String LIST_DELIMITER = ";"; //$NON-NLS-1$
 
-	/** The shared instance. */
-	private static FindbugsPlugin plugin;
+    /** The shared instance. */
+    private static FindbugsPlugin plugin;
 
-	/** Resource bundle. */
-	private ResourceBundle resourceBundle;
+    /** Resource bundle. */
+    private ResourceBundle resourceBundle;
 
-	private BugResolutionAssociations bugResolutions;
-	private boolean bugResolutionsLoaded;
+    private BugResolutionAssociations bugResolutions;
+    private boolean bugResolutionsLoaded;
 
-	/**
-	 * Constructor.
-	 */
+    /**
+     * Constructor.
+     */
 	public FindbugsPlugin() {
-		plugin = this;
-	}
+        plugin = this;
+    }
 
-	@Override
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
+    @Override
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
 
-		// configure debugging
-		configurePluginDebugOptions();
+        // configure debugging
+        configurePluginDebugOptions();
 
-		// initialize resource strings
-		try {
-			resourceBundle = ResourceBundle.getBundle("de.tobject.findbugs.messages"); //this is correct //$NON-NLS-1$
+        // initialize resource strings
+        try {
+            resourceBundle = ResourceBundle.getBundle("de.tobject.findbugs.messages"); //this is correct //$NON-NLS-1$
 		}
-		catch (MissingResourceException x) {
-			resourceBundle = null;
-		}
+        catch (MissingResourceException x) {
+            resourceBundle = null;
+        }
 
-		if (System.getProperty("findbugs.home") == null) {
-			// TODO hardcore workaround for findbugs home property
-			// - see de.tobject.findbugs.builder.FindBugsWorker.work() too
+        if (System.getProperty("findbugs.home") == null) {
+            // TODO hardcore workaround for findbugs home property
+            // - see de.tobject.findbugs.builder.FindBugsWorker.work() too
 			String findBugsHome = getFindBugsEnginePluginLocation();
-			if (DEBUG) {
-				logInfo("Looking for FindBugs detectors in: " + findBugsHome);
-			}
+            if (DEBUG) {
+                logInfo("Looking for FindBugs detectors in: " + findBugsHome);
+            }
 			System.setProperty("findbugs.home", findBugsHome);
-		}
-		if (System.getProperty("findbugs.cloud.default") == null) {
-			// TODO hardcore workaround for findbugs default cloud property
+        }
+        if (System.getProperty("findbugs.cloud.default") == null) {
+            // TODO hardcore workaround for findbugs default cloud property
 			// - see edu.umd.cs.findbugs.cloud.CloudFactory
-			String defCloud = "edu.umd.cs.findbugs.cloud.Local";
-			if (DEBUG) {
-				logInfo("Using default local cloud: " + defCloud);
+            String defCloud = "edu.umd.cs.findbugs.cloud.Local";
+            if (DEBUG) {
+                logInfo("Using default local cloud: " + defCloud);
 			}
-			System.setProperty("findbugs.cloud.default", defCloud);
-		}
+            System.setProperty("findbugs.cloud.default", defCloud);
+        }
 
-		// Register our save participant
-		FindbugsSaveParticipant saveParticipant = new FindbugsSaveParticipant();
-		ResourcesPlugin.getWorkspace().addSaveParticipant(this, saveParticipant);
+        // Register our save participant
+        FindbugsSaveParticipant saveParticipant = new FindbugsSaveParticipant();
+        ResourcesPlugin.getWorkspace().addSaveParticipant(this, saveParticipant);
 
-		// we shouldn't do long operations on startup, but reading custom detectors
-		// might take some time => always start this in a job
-		Job job = new Job("Applying custom detectors") {
+        // we shouldn't do long operations on startup, but reading custom detectors
+        // might take some time => always start this in a job
+        Job job = new Job("Applying custom detectors") {
 			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				applyCustomDetectors(false);
-				return Status.OK_STATUS;
+            protected IStatus run(IProgressMonitor monitor) {
+                applyCustomDetectors(false);
+                return Status.OK_STATUS;
 			}
-		};
-		job.schedule();
-	}
+        };
+        job.schedule();
+    }
 
-	/**
-	 * @param detectorPaths list of possible detector plugins
-	 * @param force true if we MUST set plugins even if the given list is empty
+    /**
+     * @param detectorPaths list of possible detector plugins
+     * @param force true if we MUST set plugins even if the given list is empty
 	 */
-	public static synchronized void applyCustomDetectors(boolean force) {
-		List<URL> pluginList = new ArrayList<URL>();
-		DetectorValidator validator = new DetectorValidator();
+    public static synchronized void applyCustomDetectors(boolean force) {
+        List<URL> pluginList = new ArrayList<URL>();
+        DetectorValidator validator = new DetectorValidator();
 		final SortedSet<String> detectorPaths = PrefsUtil.readDetectorPaths(getDefault()
-				.getPreferenceStore());
-		detectorPaths.addAll(DetectorsExtensionHelper.getContributedDetectors());
-		for (String path : detectorPaths) {
+                .getPreferenceStore());
+        detectorPaths.addAll(DetectorsExtensionHelper.getContributedDetectors());
+        for (String path : detectorPaths) {
 			URL url;
-			try {
-				url = new File(path).toURI().toURL();
-			} catch (MalformedURLException e) {
+            try {
+                url = new File(path).toURI().toURL();
+            } catch (MalformedURLException e) {
 				getDefault().logException(e,
-						"Failed to create URL list for custom detector: "	+ path);
-				continue;
-			}
+                        "Failed to create URL list for custom detector: "	+ path);
+                continue;
+            }
 			IStatus status = validator.validate(path);
-			if(status.isOK()) {
-				pluginList.add(url);
-			} else {
+            if(status.isOK()) {
+                pluginList.add(url);
+            } else {
 				getDefault().getLog().log(status);
-			}
-		}
-		if(pluginList.isEmpty() && !force) {
+            }
+        }
+        if(pluginList.isEmpty() && !force) {
 			return;
-		}
-		if(DetectorFactoryCollection.isLoaded()) {
-			DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
+        }
+        if(DetectorFactoryCollection.isLoaded()) {
+            DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
 			URL[] pluginArr = dfc.getPluginList();
-			boolean shouldReplace = pluginArr.length != detectorPaths.size();
-			if(!shouldReplace) {
-				// check if both lists are really identical
+            boolean shouldReplace = pluginArr.length != detectorPaths.size();
+            if(!shouldReplace) {
+                // check if both lists are really identical
 				for (URL url : pluginArr) {
-					String file = url.getFile();
-					IPath filterPath = FindBugsWorker.getFilterPath(file, null);
-					if(!detectorPaths.contains(filterPath.toPortableString())) {
+                    String file = url.getFile();
+                    IPath filterPath = FindBugsWorker.getFilterPath(file, null);
+                    if(!detectorPaths.contains(filterPath.toPortableString())) {
 						shouldReplace = true;
-						break;
-					}
-				}
+                        break;
+                    }
+                }
 			}
-			if(!shouldReplace && !force) {
-				return;
-			}
+            if(!shouldReplace && !force) {
+                return;
+            }
 			DetectorFactoryCollection.resetInstance(null);
-		}
-		DetectorFactoryCollection dfc = DetectorFactoryCollection.rawInstance();
-		dfc.setPluginList(pluginList.toArray(new URL[pluginList.size()]));
+        }
+        DetectorFactoryCollection dfc = DetectorFactoryCollection.rawInstance();
+        dfc.setPluginList(pluginList.toArray(new URL[pluginList.size()]));
 		DetectorFactoryCollection.resetInstance(dfc);
-	}
+    }
 
-	@Override
-	protected void initializeImageRegistry(ImageRegistry reg) {
-		for (FindBugsMarker.Priority prio : FindBugsMarker.Priority.values()) {
+    @Override
+    protected void initializeImageRegistry(ImageRegistry reg) {
+        for (FindBugsMarker.Priority prio : FindBugsMarker.Priority.values()) {
 			ImageDescriptor descriptor = getImageDescriptor(prio.iconName());
-			if(descriptor != null){
-				reg.put(prio.iconName(), descriptor);
-			}
+            if(descriptor != null){
+                reg.put(prio.iconName(), descriptor);
+            }
 		}
-	}
+    }
 
-	/**
-	 * Returns the shared instance.
-	 */
+    /**
+     * Returns the shared instance.
+     */
 	public static FindbugsPlugin getDefault() {
-		return plugin;
-	}
+        return plugin;
+    }
 
-	/**
-	 * @return active window instance, never null
-	 */
+    /**
+     * @return active window instance, never null
+     */
 	public static IWorkbenchWindow getActiveWorkbenchWindow() {
-		if(Display.getCurrent() != null) {
-			return getDefault().getWorkbench().getActiveWorkbenchWindow();
-		}
+        if(Display.getCurrent() != null) {
+            return getDefault().getWorkbench().getActiveWorkbenchWindow();
+        }
 		// need to call from UI thread
-		final IWorkbenchWindow [] window = new IWorkbenchWindow[1];
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
+        final IWorkbenchWindow [] window = new IWorkbenchWindow[1];
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
 				window[0] = getDefault().getWorkbench().getActiveWorkbenchWindow();
-			}
-		});
-		return window [0];
+            }
+        });
+        return window [0];
 	}
 
-	/**
-	 * Returns the SWT Shell of the active workbench window or <code>null</code> if
-	 * no workbench window is active.
+    /**
+     * Returns the SWT Shell of the active workbench window or <code>null</code> if
+     * no workbench window is active.
 	 *
-	 * @return the SWT Shell of the active workbench window, or <code>null</code> if
-	 * 	no workbench window is active
-	 */
+     * @return the SWT Shell of the active workbench window, or <code>null</code> if
+     * 	no workbench window is active
+     */
 	public static Shell getShell() {
-		IWorkbenchWindow window = getActiveWorkbenchWindow();
-		if (window == null) {
-			return null;
+        IWorkbenchWindow window = getActiveWorkbenchWindow();
+        if (window == null) {
+            return null;
 		}
-		return window.getShell();
-	}
+        return window.getShell();
+    }
 
-	/**
-	 * Returns the string from the plugin's resource bundle,
-	 * or 'key' if not found.
+    /**
+     * Returns the string from the plugin's resource bundle,
+     * or 'key' if not found.
 	 */
-	public static String getResourceString(String key) {
-		ResourceBundle bundle = FindbugsPlugin.getDefault().getResourceBundle();
-		try {
+    public static String getResourceString(String key) {
+        ResourceBundle bundle = FindbugsPlugin.getDefault().getResourceBundle();
+        try {
 			return bundle.getString(key);
+        }
+        catch (MissingResourceException e) {
+            return key;
 		}
-		catch (MissingResourceException e) {
-			return key;
-		}
-	}
+    }
 
-	/**
-	 * Returns the plugin's resource bundle,
-	 */
+    /**
+     * Returns the plugin's resource bundle,
+     */
 	public ResourceBundle getResourceBundle() {
-		return resourceBundle;
-	}
+        return resourceBundle;
+    }
 
-	public void configurePluginDebugOptions() {
-		if (isDebugging()) {
-			// debugging for the plugin itself
+    public void configurePluginDebugOptions() {
+        if (isDebugging()) {
+            // debugging for the plugin itself
 			String option = Platform.getDebugOption(PLUGIN_DEBUG);
-			FindbugsPlugin.DEBUG = Boolean.valueOf(option).booleanValue();
+            FindbugsPlugin.DEBUG = Boolean.valueOf(option).booleanValue();
 
-			// debugging for the builder and friends
-			option = Platform.getDebugOption(BUILDER_DEBUG);
-			FindBugsBuilder.DEBUG = Boolean.valueOf(option).booleanValue();
+            // debugging for the builder and friends
+            option = Platform.getDebugOption(BUILDER_DEBUG);
+            FindBugsBuilder.DEBUG = Boolean.valueOf(option).booleanValue();
 			FindBugsWorker.DEBUG = FindBugsBuilder.DEBUG;
 
-			// debugging for the nature
-			option = Platform.getDebugOption(NATURE_DEBUG);
-			FindBugsNature.DEBUG = Boolean.valueOf(option).booleanValue();
+            // debugging for the nature
+            option = Platform.getDebugOption(NATURE_DEBUG);
+            FindBugsNature.DEBUG = Boolean.valueOf(option).booleanValue();
 
-			// debugging for the reporter
-			option = Platform.getDebugOption(REPORTER_DEBUG);
-			Reporter.DEBUG = Boolean.valueOf(option).booleanValue();
+            // debugging for the reporter
+            option = Platform.getDebugOption(REPORTER_DEBUG);
+            Reporter.DEBUG = Boolean.valueOf(option).booleanValue();
 
-			// debugging for the content provider
-			option = Platform.getDebugOption(CONTENT_DEBUG);
-			BugContentProvider.DEBUG = Boolean.valueOf(option).booleanValue();
+            // debugging for the content provider
+            option = Platform.getDebugOption(CONTENT_DEBUG);
+            BugContentProvider.DEBUG = Boolean.valueOf(option).booleanValue();
 
-			option = Platform.getDebugOption(PROFILER_DEBUG);
-			if(Boolean.valueOf(option).booleanValue()){
-				System.setProperty("profiler.report", "true");
+            option = Platform.getDebugOption(PROFILER_DEBUG);
+            if(Boolean.valueOf(option).booleanValue()){
+                System.setProperty("profiler.report", "true");
 			}
-		}
-	}
+        }
+    }
 
-	/**
-	 * Find the filesystem path of the FindBugs plugin directory.
-	 *
+    /**
+     * Find the filesystem path of the FindBugs plugin directory.
+     *
 	 * @return the filesystem path of the FindBugs plugin directory,
-	 *         or null if the FindBugs plugin directory cannot be found
-	 */
-	public static String getFindBugsEnginePluginLocation() {
+     *         or null if the FindBugs plugin directory cannot be found
+     */
+    public static String getFindBugsEnginePluginLocation() {
 		// findbugs.home should be set to the directory the plugin is
-		// installed in.
-		URL u = plugin.getBundle().getEntry("/");
-		try {
+        // installed in.
+        URL u = plugin.getBundle().getEntry("/");
+        try {
 			URL bundleRoot = FileLocator.resolve(u);
-			if (FindBugsBuilder.DEBUG) {
-				System.out.println("Pluginpath: " + bundleRoot.getPath()); //$NON-NLS-1$
-			}
+            if (FindBugsBuilder.DEBUG) {
+                System.out.println("Pluginpath: " + bundleRoot.getPath()); //$NON-NLS-1$
+            }
 			return bundleRoot.getPath();
-		} catch (IOException e) {
-			FindbugsPlugin.getDefault().logException(e, "IO Exception locating engine plugin");
-		}
+        } catch (IOException e) {
+            FindbugsPlugin.getDefault().logException(e, "IO Exception locating engine plugin");
+        }
 		return null;
-	}
+    }
 
-	/**
-	 * @param key
-	 * @return
+    /**
+     * @param key
+     * @return
 	 */
-	public String getMessage(String key) {
-		return getResourceString(key);
-	}
+    public String getMessage(String key) {
+        return getResourceString(key);
+    }
 
-	/**
-	 * Log an exception.
-	 *
+    /**
+     * Log an exception.
+     *
 	 * @param e       the exception
-	 * @param message message describing how/why the exception occurred
-	 */
-	public void logException(Throwable e, String message) {
+     * @param message message describing how/why the exception occurred
+     */
+    public void logException(Throwable e, String message) {
 		logMessage(IStatus.ERROR, message, e);
-	}
+    }
 
-	/**
-	 * Log an error.
-	 *
+    /**
+     * Log an error.
+     *
 	 * @param message error message
-	 */
-	public void logError(String message) {
-		logMessage(IStatus.ERROR, message, null);
+     */
+    public void logError(String message) {
+        logMessage(IStatus.ERROR, message, null);
 	}
 
-	/**
-	 * Log a warning.
-	 *
+    /**
+     * Log a warning.
+     *
 	 * @param message warning message
-	 */
-	public void logWarning(String message) {
-		logMessage(IStatus.WARNING, message, null);
+     */
+    public void logWarning(String message) {
+        logMessage(IStatus.WARNING, message, null);
 	}
 
-	/**
-	 * Log an informational message.
-	 *
+    /**
+     * Log an informational message.
+     *
 	 * @param message the informational message
-	 */
-	public void logInfo(String message) {
-		logMessage(IStatus.INFO, message, null);
+     */
+    public void logInfo(String message) {
+        logMessage(IStatus.INFO, message, null);
 	}
 
-	public void logMessage(int severity, String message, Throwable e) {
-		if (DEBUG) {
-			String what = (severity == IStatus.ERROR)
+    public void logMessage(int severity, String message, Throwable e) {
+        if (DEBUG) {
+            String what = (severity == IStatus.ERROR)
 				? (e != null ? "Exception" : "Error")
-				: "Warning";
-			System.out.println(what + " in FindBugs plugin: " + message);
-			if (e != null) {
+                : "Warning";
+            System.out.println(what + " in FindBugs plugin: " + message);
+            if (e != null) {
 				e.printStackTrace();
-			}
-		}
-		IStatus status = createStatus(severity, message, e);
+            }
+        }
+        IStatus status = createStatus(severity, message, e);
 		getLog().log(status);
-	}
+    }
 
-	public static IStatus createStatus(int severity, String message, Throwable e) {
-		return new Status(severity, FindbugsPlugin.PLUGIN_ID, 0, message, e);
-	}
+    public static IStatus createStatus(int severity, String message, Throwable e) {
+        return new Status(severity, FindbugsPlugin.PLUGIN_ID, 0, message, e);
+    }
 
-	public static IStatus createErrorStatus(String message, Throwable e) {
-		return new Status(IStatus.ERROR, FindbugsPlugin.PLUGIN_ID, 0, message, e);
-	}
+    public static IStatus createErrorStatus(String message, Throwable e) {
+        return new Status(IStatus.ERROR, FindbugsPlugin.PLUGIN_ID, 0, message, e);
+    }
 
 
-	/**
-	 * Get the file resource used to store findbugs warnings for a project.
-	 *
+    /**
+     * Get the file resource used to store findbugs warnings for a project.
+     *
 	 * @param project the project
-	 * @return the IPath to the file (which may not actually exist in the filesystem yet)
-	 */
-	public static IPath getBugCollectionFile(IProject project) {
+     * @return the IPath to the file (which may not actually exist in the filesystem yet)
+     */
+    public static IPath getBugCollectionFile(IProject project) {
 		//IPath path = project.getWorkingLocation(PLUGIN_ID); // project-specific but not user-specific?
-		IPath path = getDefault().getStateLocation(); // user-specific but not project-specific
-		return path.append(project.getName() + ".fbwarnings");
-	}
+        IPath path = getDefault().getStateLocation(); // user-specific but not project-specific
+        return path.append(project.getName() + ".fbwarnings");
+    }
 
-	private static boolean isBugCollectionDirty(IProject project) throws CoreException {
-		Object dirty = project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION_DIRTY);
+    private static boolean isBugCollectionDirty(IProject project) throws CoreException {
+        Object dirty = project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION_DIRTY);
 
-		if (dirty == null) {
-			return false;
-		}
+        if (dirty == null) {
+            return false;
+        }
 		return ((Boolean) dirty).booleanValue();
+    }
+
+    public static void markBugCollectionDirty(IProject project, boolean isDirty) throws CoreException {
+        project.setSessionProperty(
+                SESSION_PROPERTY_BUG_COLLECTION_DIRTY, isDirty ? Boolean.TRUE : Boolean.FALSE);
 	}
 
-	public static void markBugCollectionDirty(IProject project, boolean isDirty) throws CoreException {
-		project.setSessionProperty(
-				SESSION_PROPERTY_BUG_COLLECTION_DIRTY, isDirty ? Boolean.TRUE : Boolean.FALSE);
-	}
-
-	public static SortedBugCollection getBugCollectionIfSet(IProject project) {
-		try {
-			return (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
+    public static SortedBugCollection getBugCollectionIfSet(IProject project) {
+        try {
+            return (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			return null;
-		}
+            // TODO Auto-generated catch block
+            return null;
+        }
 	}
 
-	public static SortedBugCollection getBugCollection(IProject project,
-			IProgressMonitor monitor) throws CoreException {
-		return getBugCollection(project, monitor, true);
+    public static SortedBugCollection getBugCollection(IProject project,
+            IProgressMonitor monitor) throws CoreException {
+        return getBugCollection(project, monitor, true);
 	}
 
-	/**
-	 * Get the stored BugCollection for project.
-	 * If there is no stored bug collection for the project,
+    /**
+     * Get the stored BugCollection for project.
+     * If there is no stored bug collection for the project,
 	 * or if an error occurs reading the stored bug collection,
-	 * a default empty collection is created and returned.
-	 *
-	 * @param project the eclipse project
+     * a default empty collection is created and returned.
+     *
+     * @param project the eclipse project
 	 * @param monitor a progress monitor
-	 * @return the stored BugCollection, never null
-	 * @throws CoreException
-	 */
+     * @return the stored BugCollection, never null
+     * @throws CoreException
+     */
 	public static SortedBugCollection getBugCollection(
-			IProject project, IProgressMonitor monitor, boolean useCloud) throws CoreException {
-		SortedBugCollection bugCollection = (SortedBugCollection) project.getSessionProperty(
-				SESSION_PROPERTY_BUG_COLLECTION);
+            IProject project, IProgressMonitor monitor, boolean useCloud) throws CoreException {
+        SortedBugCollection bugCollection = (SortedBugCollection) project.getSessionProperty(
+                SESSION_PROPERTY_BUG_COLLECTION);
 		if (bugCollection == null) {
-			try {
-				readBugCollectionAndProject(project, monitor, useCloud);
-				bugCollection = (SortedBugCollection) project.getSessionProperty(
+            try {
+                readBugCollectionAndProject(project, monitor, useCloud);
+                bugCollection = (SortedBugCollection) project.getSessionProperty(
 						SESSION_PROPERTY_BUG_COLLECTION);
-			} catch (IOException e) {
-				FindbugsPlugin.getDefault().logException(e, "Could not read bug collection for project");
-				bugCollection = createDefaultEmptyBugCollection(project);
+            } catch (IOException e) {
+                FindbugsPlugin.getDefault().logException(e, "Could not read bug collection for project");
+                bugCollection = createDefaultEmptyBugCollection(project);
 			} catch (DocumentException e) {
-				FindbugsPlugin.getDefault().logException(e, "Could not read bug collection for project");
-				bugCollection = createDefaultEmptyBugCollection(project);
-			}
+                FindbugsPlugin.getDefault().logException(e, "Could not read bug collection for project");
+                bugCollection = createDefaultEmptyBugCollection(project);
+            }
 		}
-		return bugCollection;
+        return bugCollection;
+    }
+
+    private static void cacheBugCollectionAndProject(IProject project, SortedBugCollection bugCollection, Project fbProject) throws CoreException {
+        project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
+        markBugCollectionDirty(project, false);
 	}
 
-	private static void cacheBugCollectionAndProject(IProject project, SortedBugCollection bugCollection, Project fbProject) throws CoreException {
-		project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
-		markBugCollectionDirty(project, false);
-	}
-
-	private static SortedBugCollection createDefaultEmptyBugCollection(IProject project)
-			throws CoreException {
-		SortedBugCollection bugCollection = new SortedBugCollection();
+    private static SortedBugCollection createDefaultEmptyBugCollection(IProject project)
+            throws CoreException {
+        SortedBugCollection bugCollection = new SortedBugCollection();
 		Project fbProject = new Project();
 
-		cacheBugCollectionAndProject(project, bugCollection, fbProject);
+        cacheBugCollectionAndProject(project, bugCollection, fbProject);
 
-		return bugCollection;
-	}
+        return bugCollection;
+    }
 //
 //	/**
 //	 * Read stored findbugs Project for a project.
@@ -585,471 +585,471 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 //		return findbugsProject;
 //	}
 
-	/**
-	 * Read saved bug collection and findbugs project from file.
-	 * Will populate the bug collection and findbugs project session
+    /**
+     * Read saved bug collection and findbugs project from file.
+     * Will populate the bug collection and findbugs project session
 	 * properties if successful.  If there is no saved bug collection and project
-	 * for the eclipse project, then FileNotFoundException will
-	 * be thrown.
-	 *
+     * for the eclipse project, then FileNotFoundException will
+     * be thrown.
+     *
 	 * @param project the eclipse project
-	 * @param monitor a progress monitor
-	 * @throws java.io.FileNotFoundException the saved bug collection doesn't exist
-	 * @throws IOException
+     * @param monitor a progress monitor
+     * @throws java.io.FileNotFoundException the saved bug collection doesn't exist
+     * @throws IOException
 	 * @throws DocumentException
-	 * @throws CoreException
-	 */
-	private static void readBugCollectionAndProject(IProject project, IProgressMonitor monitor, boolean useCloud) throws IOException, DocumentException, CoreException {
+     * @throws CoreException
+     */
+    private static void readBugCollectionAndProject(IProject project, IProgressMonitor monitor, boolean useCloud) throws IOException, DocumentException, CoreException {
 		SortedBugCollection bugCollection;
 
-		IPath bugCollectionPath = getBugCollectionFile(project);
-		// Don't turn the path to an IFile because it isn't local to the project.
-		// see the javadoc for org.eclipse.core.runtime.Plugin
+        IPath bugCollectionPath = getBugCollectionFile(project);
+        // Don't turn the path to an IFile because it isn't local to the project.
+        // see the javadoc for org.eclipse.core.runtime.Plugin
 		File bugCollectionFile = bugCollectionPath.toFile();
-		if (!bugCollectionFile.exists()) {
-			//throw new FileNotFoundException(bugCollectionFile.getLocation().toOSString());
-			getDefault().logInfo("creating new bug collection: "+bugCollectionPath.toOSString());
+        if (!bugCollectionFile.exists()) {
+            //throw new FileNotFoundException(bugCollectionFile.getLocation().toOSString());
+            getDefault().logInfo("creating new bug collection: "+bugCollectionPath.toOSString());
 			createDefaultEmptyBugCollection(project); // since we no longer throw, have to do this here
-			return;
-		}
+            return;
+        }
 
-		bugCollection = new SortedBugCollection();
-		bugCollection.getProject().setGuiCallback(new EclipseGuiCallback());
-		bugCollection.setDoNotUseCloud(!useCloud);
+        bugCollection = new SortedBugCollection();
+        bugCollection.getProject().setGuiCallback(new EclipseGuiCallback());
+        bugCollection.setDoNotUseCloud(!useCloud);
 
-		bugCollection.readXML(bugCollectionFile);
+        bugCollection.readXML(bugCollectionFile);
 
-		cacheBugCollectionAndProject(project, bugCollection, bugCollection.getProject());
-	}
+        cacheBugCollectionAndProject(project, bugCollection, bugCollection.getProject());
+    }
 
-	/**
-	 * Store a new bug collection for a project.
-	 * The collection is stored in the session, and also in
+    /**
+     * Store a new bug collection for a project.
+     * The collection is stored in the session, and also in
 	 * a file in the project.
-	 *
-	 * @param project         the project
-	 * @param bugCollection   the bug collection
+     *
+     * @param project         the project
+     * @param bugCollection   the bug collection
 	 * @param monitor         progress monitor
-	 * @throws IOException
-	 * @throws CoreException
-	 */
+     * @throws IOException
+     * @throws CoreException
+     */
 	public static void storeBugCollection(
-			IProject project,
-			final SortedBugCollection bugCollection,
-			IProgressMonitor monitor) throws IOException, CoreException {
+            IProject project,
+            final SortedBugCollection bugCollection,
+            IProgressMonitor monitor) throws IOException, CoreException {
 
-		// Store the bug collection and findbugs project in the session
-		project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
+        // Store the bug collection and findbugs project in the session
+        project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
 
-		if (bugCollection != null) {
-			writeBugCollection(project, bugCollection, monitor);
-		}
+        if (bugCollection != null) {
+            writeBugCollection(project, bugCollection, monitor);
+        }
 	}
 
-	/**
-	 * If necessary, save current bug collection for project to disk.
-	 *
+    /**
+     * If necessary, save current bug collection for project to disk.
+     *
 	 * @param project the project
-	 * @param monitor a progress monitor
-	 * @throws CoreException
-	 */
+     * @param monitor a progress monitor
+     * @throws CoreException
+     */
 	public static void saveCurrentBugCollection(
-			IProject project, IProgressMonitor monitor)
-			throws CoreException {
-		if (isBugCollectionDirty(project)) {
+            IProject project, IProgressMonitor monitor)
+            throws CoreException {
+        if (isBugCollectionDirty(project)) {
 			SortedBugCollection bugCollection =
-			(SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
+            (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
 
-			if (bugCollection != null) {
-				writeBugCollection(project, bugCollection, monitor);
-			}
+            if (bugCollection != null) {
+                writeBugCollection(project, bugCollection, monitor);
+            }
 		}
-	}
+    }
 
 
-	private static void writeBugCollection(
-			IProject project, final SortedBugCollection bugCollection, IProgressMonitor monitor)
-			throws CoreException {
+    private static void writeBugCollection(
+            IProject project, final SortedBugCollection bugCollection, IProgressMonitor monitor)
+            throws CoreException {
 		// Save to file
-		IPath bugCollectionPath = getBugCollectionFile(project);
-		// Don't turn the path to an IFile because it isn't local to the project.
-		// see the javadoc for org.eclipse.core.runtime.Plugin
+        IPath bugCollectionPath = getBugCollectionFile(project);
+        // Don't turn the path to an IFile because it isn't local to the project.
+        // see the javadoc for org.eclipse.core.runtime.Plugin
 		File bugCollectionFile = bugCollectionPath.toFile();
-		FileOutput fileOutput = new FileOutput() {
-			public void writeFile(OutputStream os) throws IOException {
-				bugCollection.writeXML(os);
+        FileOutput fileOutput = new FileOutput() {
+            public void writeFile(OutputStream os) throws IOException {
+                bugCollection.writeXML(os);
 			}
 
-			public String getTaskDescription() {
-				return "creating XML FindBugs data file";
-			}
+            public String getTaskDescription() {
+                return "creating XML FindBugs data file";
+            }
 		};
-		IO.writeFile(bugCollectionFile, fileOutput, monitor);
-		markBugCollectionDirty(project, false);
-	}
+        IO.writeFile(bugCollectionFile, fileOutput, monitor);
+        markBugCollectionDirty(project, false);
+    }
 
-	/**
-	 * Get the FindBugs preferences file for a project (which may not exist yet)
-	 *
+    /**
+     * Get the FindBugs preferences file for a project (which may not exist yet)
+     *
 	 * @param project the project
-	 * @return the IFile for the FindBugs preferences file, if any. Can be "empty" handle
-	 * if the real file does not exist yet
-	 */
+     * @return the IFile for the FindBugs preferences file, if any. Can be "empty" handle
+     * if the real file does not exist yet
+     */
 	private static IFile getUserPreferencesFile(IProject project) {
-		IFile defaultFile = project.getFile(DEFAULT_PREFS_PATH);
-		IFile oldFile = project.getFile(DEPRECATED_PREFS_PATH);
-		if(defaultFile.isAccessible() || !oldFile.isAccessible()) {
+        IFile defaultFile = project.getFile(DEFAULT_PREFS_PATH);
+        IFile oldFile = project.getFile(DEPRECATED_PREFS_PATH);
+        if(defaultFile.isAccessible() || !oldFile.isAccessible()) {
 		    return defaultFile;
-		}
-		return oldFile;
-	}
+        }
+        return oldFile;
+    }
 
-	public static boolean isProjectSettingsEnabled(IProject project){
-		// fast path: read from session, if available
-		Boolean enabled;
+    public static boolean isProjectSettingsEnabled(IProject project){
+        // fast path: read from session, if available
+        Boolean enabled;
 		try {
-			enabled = (Boolean) project.getSessionProperty(SESSION_PROPERTY_SETTINGS_ON);
-		} catch (CoreException e) {
-			enabled = null;
+            enabled = (Boolean) project.getSessionProperty(SESSION_PROPERTY_SETTINGS_ON);
+        } catch (CoreException e) {
+            enabled = null;
 		}
-		if(enabled != null){
-			return enabled.booleanValue();
-		}
+        if(enabled != null){
+            return enabled.booleanValue();
+        }
 
-    	// legacy support: before 1.3.8, there was ONLY project preferences in .fbprefs
-    	// so check if the file is there...
-    	IFile file = getUserPreferencesFile(project);
+        // legacy support: before 1.3.8, there was ONLY project preferences in .fbprefs
+        // so check if the file is there...
+        IFile file = getUserPreferencesFile(project);
     	boolean projectPropsEnabled = file.isAccessible();
-		if(projectPropsEnabled){
-			ScopedPreferenceStore store = new ScopedPreferenceStore(new ProjectScope(project), PLUGIN_ID);
-			// so if the file is there, we can check if after 1.3.8 the flag is set
+        if(projectPropsEnabled){
+            ScopedPreferenceStore store = new ScopedPreferenceStore(new ProjectScope(project), PLUGIN_ID);
+            // so if the file is there, we can check if after 1.3.8 the flag is set
 			// to use workspace properties instead
-			projectPropsEnabled = !store
-					.contains(FindBugsConstants.PROJECT_PROPS_DISABLED)
-					|| !store.getBoolean(FindBugsConstants.PROJECT_PROPS_DISABLED);
+            projectPropsEnabled = !store
+                    .contains(FindBugsConstants.PROJECT_PROPS_DISABLED)
+                    || !store.getBoolean(FindBugsConstants.PROJECT_PROPS_DISABLED);
 		}
-		// remember in the session to speedup access, don't touch the store
-		setProjectSettingsEnabled(project, null, projectPropsEnabled);
-		return projectPropsEnabled;
+        // remember in the session to speedup access, don't touch the store
+        setProjectSettingsEnabled(project, null, projectPropsEnabled);
+        return projectPropsEnabled;
 	}
 
-	public static void setProjectSettingsEnabled(IProject project, IPreferenceStore store, boolean enabled){
-		try {
-			project.setSessionProperty(SESSION_PROPERTY_SETTINGS_ON, Boolean.valueOf(enabled));
+    public static void setProjectSettingsEnabled(IProject project, IPreferenceStore store, boolean enabled){
+        try {
+            project.setSessionProperty(SESSION_PROPERTY_SETTINGS_ON, Boolean.valueOf(enabled));
 		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e,
-			"Error setting FindBugs session property for project");
-		}
+            FindbugsPlugin.getDefault().logException(e,
+            "Error setting FindBugs session property for project");
+        }
 		if(store != null) {
-			store.setValue(FindBugsConstants.PROJECT_PROPS_DISABLED, !enabled);
-		}
-	}
+            store.setValue(FindBugsConstants.PROJECT_PROPS_DISABLED, !enabled);
+        }
+    }
 
-	/**
-	 * Get the FindBugs core preferences for given project. This method can return workspace preferences
-	 * if project preferences are not created yet or they are disabled.
+    /**
+     * Get the FindBugs core preferences for given project. This method can return workspace preferences
+     * if project preferences are not created yet or they are disabled.
 	 *
-	 * @param project
-	 *            the project (if null, workspace settings are used)
-	 * @param forceRead
+     * @param project
+     *            the project (if null, workspace settings are used)
+     * @param forceRead
 	 *            true to enforce reading properties from disk
-	 *
-	 * @return the preferences for the project or prefs from workspace
-	 */
+     *
+     * @return the preferences for the project or prefs from workspace
+     */
 	public static UserPreferences getCorePreferences(IProject project, boolean forceRead) {
-		if(project == null || !isProjectSettingsEnabled(project)){
-			// read workspace (user) settings from instance area
-			return getWorkspacePreferences();
+        if(project == null || !isProjectSettingsEnabled(project)){
+            // read workspace (user) settings from instance area
+            return getWorkspacePreferences();
 		}
 
-		// use project settings
-		return getProjectPreferences(project, forceRead);
-	}
+        // use project settings
+        return getProjectPreferences(project, forceRead);
+    }
 
-	/**
-	 * Get the Eclipse plugin preferences for given project. This method can return
-	 * workspace preferences if project preferences are not created yet or they are
+    /**
+     * Get the Eclipse plugin preferences for given project. This method can return
+     * workspace preferences if project preferences are not created yet or they are
 	 * disabled.
+     *
+     * @param project
+     *            the project (if null, workspace settings are used)
 	 *
-	 * @param project
-	 *            the project (if null, workspace settings are used)
-	 *
-	 * @return the preferences for the project or prefs from workspace
-	 */
-	public static IPreferenceStore getPluginPreferences(IProject project) {
+     * @return the preferences for the project or prefs from workspace
+     */
+    public static IPreferenceStore getPluginPreferences(IProject project) {
 		if(project == null || !isProjectSettingsEnabled(project)){
-			// read workspace (user) settings from instance area
-			return new ScopedPreferenceStore(new InstanceScope(),
-					FindbugsPlugin.PLUGIN_ID);
+            // read workspace (user) settings from instance area
+            return new ScopedPreferenceStore(new InstanceScope(),
+                    FindbugsPlugin.PLUGIN_ID);
 		}
 
-		// use project settings
-		return  new ScopedPreferenceStore(new ProjectScope(project),
-				FindbugsPlugin.PLUGIN_ID);
+        // use project settings
+        return  new ScopedPreferenceStore(new ProjectScope(project),
+                FindbugsPlugin.PLUGIN_ID);
 	}
 
-	/**
-	 * Get project own preferences set.
-	 * @param project must be non null, exist and be opened
+    /**
+     * Get project own preferences set.
+     * @param project must be non null, exist and be opened
 	 * @param forceRead
-	 * @return current project preferences, independently if project prefrences are
-	 *         enabled or disabled for given project.
-	 */
+     * @return current project preferences, independently if project prefrences are
+     *         enabled or disabled for given project.
+     */
 	public static UserPreferences getProjectPreferences(IProject project,
-			boolean forceRead) {
-		try {
-			UserPreferences prefs = (UserPreferences) project
+            boolean forceRead) {
+        try {
+            UserPreferences prefs = (UserPreferences) project
 					.getSessionProperty(SESSION_PROPERTY_USERPREFS);
-			if (prefs == null || forceRead) {
-				prefs = readUserPreferences(project);
-				if (prefs == null) {
+            if (prefs == null || forceRead) {
+                prefs = readUserPreferences(project);
+                if (prefs == null) {
 					prefs = (UserPreferences) getWorkspacePreferences().clone();
-				}
-				project.setSessionProperty(SESSION_PROPERTY_USERPREFS, prefs);
-			}
+                }
+                project.setSessionProperty(SESSION_PROPERTY_USERPREFS, prefs);
+            }
 			return prefs;
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e,
-					"Error getting FindBugs preferences for project");
+        } catch (CoreException e) {
+            FindbugsPlugin.getDefault().logException(e,
+                    "Error getting FindBugs preferences for project");
 			return (UserPreferences) getWorkspacePreferences().clone();
-		}
-	}
+        }
+    }
 
-	private static UserPreferences getWorkspacePreferences() {
-		IPath path = getDefault().getStateLocation().append(PREFS_NAME);
-		// create initially default settings
+    private static UserPreferences getWorkspacePreferences() {
+        IPath path = getDefault().getStateLocation().append(PREFS_NAME);
+        // create initially default settings
 		UserPreferences userPrefs = FindBugsPreferenceInitializer.createDefaultUserPreferences();
-		File prefsFile = path.toFile();
-		if(!prefsFile.isFile()){
-			return userPrefs;
+        File prefsFile = path.toFile();
+        if(!prefsFile.isFile()){
+            return userPrefs;
 		}
-		// load custom settings over defaults
-		FileInputStream in;
-		try {
+        // load custom settings over defaults
+        FileInputStream in;
+        try {
 			in = new FileInputStream(prefsFile);
-			userPrefs.read(in);
-		} catch (IOException e) {
-			FindbugsPlugin.getDefault().logException(e,
+            userPrefs.read(in);
+        } catch (IOException e) {
+            FindbugsPlugin.getDefault().logException(e,
 				"Error reading custom FindBugs preferences for workspace");
-		}
-		return userPrefs;
-	}
+        }
+        return userPrefs;
+    }
 
-	/**
-	 * Get the UserPreferences for given project.
-	 *
+    /**
+     * Get the UserPreferences for given project.
+     *
 	 * @param project the project
-	 * @return the UserPreferences for the project
-	 */
-	public static UserPreferences getUserPreferences(IProject project) {
+     * @return the UserPreferences for the project
+     */
+    public static UserPreferences getUserPreferences(IProject project) {
 		return getCorePreferences(project, false);
-	}
+    }
 
 
-	/**
-	 * Save current UserPreferences for given project or workspace.
-	 *
+    /**
+     * Save current UserPreferences for given project or workspace.
+     *
 	 * @param project the project or null for workspace
-	 * @throws CoreException
-	 */
-	public static void saveUserPreferences(IProject project, final UserPreferences userPrefs)
+     * @throws CoreException
+     */
+    public static void saveUserPreferences(IProject project, final UserPreferences userPrefs)
 			throws CoreException {
 
-		FileOutput userPrefsOutput = new FileOutput() {
-			public void writeFile(OutputStream os) throws IOException {
-				userPrefs.write(os);
+        FileOutput userPrefsOutput = new FileOutput() {
+            public void writeFile(OutputStream os) throws IOException {
+                userPrefs.write(os);
 			}
-			public String getTaskDescription() {
-				return "writing user preferences";
-			}
+            public String getTaskDescription() {
+                return "writing user preferences";
+            }
 		};
 
-		if(project != null) {
-			// Make the new user preferences current for the project
-			project.setSessionProperty(SESSION_PROPERTY_USERPREFS, userPrefs);
+        if(project != null) {
+            // Make the new user preferences current for the project
+            project.setSessionProperty(SESSION_PROPERTY_USERPREFS, userPrefs);
 			IFile userPrefsFile = getUserPreferencesFile(project);
-			ensureReadWrite(userPrefsFile);
-			IO.writeFile(userPrefsFile, userPrefsOutput, null);
-			if(project.getFile(DEPRECATED_PREFS_PATH).equals(userPrefsFile)) {
+            ensureReadWrite(userPrefsFile);
+            IO.writeFile(userPrefsFile, userPrefsOutput, null);
+            if(project.getFile(DEPRECATED_PREFS_PATH).equals(userPrefsFile)) {
 				String message = "Found old style FindBugs preferences for project '"
-						+ project.getName()
-						+ "'. This preferences are not at the default location: '"
-						+ DEFAULT_PREFS_PATH + "'." + " Please move '"
+                        + project.getName()
+                        + "'. This preferences are not at the default location: '"
+                        + DEFAULT_PREFS_PATH + "'." + " Please move '"
 						+ DEPRECATED_PREFS_PATH + "' to '" + DEFAULT_PREFS_PATH + "'.";
-				getDefault().logWarning(message);
-			}
-		} else {
+                getDefault().logWarning(message);
+            }
+        } else {
 			// write file to the workspace area
-			IPath path = getDefault().getStateLocation();
-			path = path.append(PREFS_NAME);
-			IO.writeFile(path.toFile(), userPrefsOutput, null);
+            IPath path = getDefault().getStateLocation();
+            path = path.append(PREFS_NAME);
+            IO.writeFile(path.toFile(), userPrefsOutput, null);
 		}
-	}
+    }
 
-	/**
-	 * Ensure that a file is writable. If not currently writable,
-	 * check it as so that we can edit it.
+    /**
+     * Ensure that a file is writable. If not currently writable,
+     * check it as so that we can edit it.
 	 *
-	 * @param file - file that should be made writable
-	 * @throws CoreException
-	 */
+     * @param file - file that should be made writable
+     * @throws CoreException
+     */
 	private static void ensureReadWrite(IFile file) throws CoreException {
-		/*
-		 * fix for bug 1683264: we should checkout file before writing to it
-		 */
+        /*
+         * fix for bug 1683264: we should checkout file before writing to it
+         */
 		if(file.isReadOnly()){
-			IStatus checkOutStatus =
-				ResourcesPlugin.getWorkspace().validateEdit(new IFile[]{file}, null);
-			if(! checkOutStatus.isOK()){
+            IStatus checkOutStatus =
+                ResourcesPlugin.getWorkspace().validateEdit(new IFile[]{file}, null);
+            if(! checkOutStatus.isOK()){
 				throw new CoreException(checkOutStatus);
-			}
-		}
-	}
+            }
+        }
+    }
 
 
 
-	/**
-	 * Read UserPreferences for project from the file in the project directory.
-	 * Returns null if the preferences have not been saved to a file,
+    /**
+     * Read UserPreferences for project from the file in the project directory.
+     * Returns null if the preferences have not been saved to a file,
 	 * or if there is an error reading the preferences file.
-	 *
-	 * @param project the project to get the UserPreferences for
-	 * @return the UserPreferences, or null if the UserPreferences file could not be read
+     *
+     * @param project the project to get the UserPreferences for
+     * @return the UserPreferences, or null if the UserPreferences file could not be read
 	 * @throws CoreException
-	 */
-	private static UserPreferences readUserPreferences(IProject project) throws CoreException {
-		IFile userPrefsFile = getUserPreferencesFile(project);
+     */
+    private static UserPreferences readUserPreferences(IProject project) throws CoreException {
+        IFile userPrefsFile = getUserPreferencesFile(project);
 		if (!userPrefsFile.exists()) {
-			return null;
-		}
-		try {
+            return null;
+        }
+        try {
 			// force is preventing us for out-of-sync exception if file was changed externally
-			InputStream in = userPrefsFile.getContents(true);
-			UserPreferences userPrefs = FindBugsPreferenceInitializer.createDefaultUserPreferences();
-			userPrefs.read(in);
+            InputStream in = userPrefsFile.getContents(true);
+            UserPreferences userPrefs = FindBugsPreferenceInitializer.createDefaultUserPreferences();
+            userPrefs.read(in);
 			return userPrefs;
-		} catch (IOException e) {
-			FindbugsPlugin.getDefault().logException(
-					e, "Could not read user preferences for project");
+        } catch (IOException e) {
+            FindbugsPlugin.getDefault().logException(
+                    e, "Could not read user preferences for project");
 			return null;
-		}
-	}
+        }
+    }
 
-	public BugResolutionAssociations getBugResolutions() {
-		if (!bugResolutionsLoaded) {
-			bugResolutionsLoaded = true;
+    public BugResolutionAssociations getBugResolutions() {
+        if (!bugResolutionsLoaded) {
+            bugResolutionsLoaded = true;
 			try {
-				bugResolutions = loadBugResolutions();
-			} catch(Exception e) {
-				FindbugsPlugin.getDefault().logException(
+                bugResolutions = loadBugResolutions();
+            } catch(Exception e) {
+                FindbugsPlugin.getDefault().logException(
 						e, "Could not read load bug resolutions");
-			}
-		}
-		return bugResolutions;
+            }
+        }
+        return bugResolutions;
 	}
 
-	private BugResolutionAssociations loadBugResolutions() {
-		BugResolutionLoader loader = new BugResolutionLoader();
-		return loader.loadBugResolutions();
+    private BugResolutionAssociations loadBugResolutions() {
+        BugResolutionLoader loader = new BugResolutionLoader();
+        return loader.loadBugResolutions();
 	}
 
-	public static void showMarker(IMarker marker, String viewId, IWorkbenchPart source) {
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		IViewPart view = page.findView(viewId);
+    public static void showMarker(IMarker marker, String viewId, IWorkbenchPart source) {
+        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        IViewPart view = page.findView(viewId);
 		if(!page.isPartVisible(view)){
-			try {
-				view = page.showView(viewId);
-			} catch (PartInitException e) {
+            try {
+                view = page.showView(viewId);
+            } catch (PartInitException e) {
 				FindbugsPlugin.getDefault().logException(
-						e, "Could not open view: " + viewId);
-				return;
-			}
+                        e, "Could not open view: " + viewId);
+                return;
+            }
 		}
-		if(view instanceof IMarkerSelectionHandler){
-			IMarkerSelectionHandler handler = (IMarkerSelectionHandler) view;
-			handler.markerSelected(source, marker);
+        if(view instanceof IMarkerSelectionHandler){
+            IMarkerSelectionHandler handler = (IMarkerSelectionHandler) view;
+            handler.markerSelected(source, marker);
 		} else if(DETAILS_VIEW_ID.equals(viewId) && view instanceof ISelectionListener){
-			ISelectionListener listener = (ISelectionListener) view;
-			listener.selectionChanged(source, new StructuredSelection(marker));
-		}
+            ISelectionListener listener = (ISelectionListener) view;
+            listener.selectionChanged(source, new StructuredSelection(marker));
+        }
 	}
 
-	/**
-	 * Call this method to retrieve the (cache) ImageDescriptor for the given id.
-	 * @param id the id of the image descriptor or relative icon path if icon is inside
+    /**
+     * Call this method to retrieve the (cache) ImageDescriptor for the given id.
+     * @param id the id of the image descriptor or relative icon path if icon is inside
 	 * of default icons folder
-	 * @return the ImageDescriptor instance.
-	 */
-	public ImageDescriptor getImageDescriptor(String id) {
+     * @return the ImageDescriptor instance.
+     */
+    public ImageDescriptor getImageDescriptor(String id) {
 		ImageDescriptor imageDescriptor = imageDescriptors.get(id);
-		if (imageDescriptor == null) {
-			String pluginId = getDefault()
-					.getBundle().getSymbolicName();
+        if (imageDescriptor == null) {
+            String pluginId = getDefault()
+                    .getBundle().getSymbolicName();
 			imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(pluginId, ICON_PATH + id);
-			imageDescriptors.put(id, imageDescriptor);
-		}
-		return imageDescriptor;
+            imageDescriptors.put(id, imageDescriptor);
+        }
+        return imageDescriptor;
 	}
 
-	public static Set<BugPattern> getKnownPatterns() {
-		Set<BugPattern> patterns = new TreeSet<BugPattern>();
-		Iterator<BugPattern> patternIterator = I18N.instance().bugPatternIterator();
+    public static Set<BugPattern> getKnownPatterns() {
+        Set<BugPattern> patterns = new TreeSet<BugPattern>();
+        Iterator<BugPattern> patternIterator = I18N.instance().bugPatternIterator();
 		while (patternIterator.hasNext()){
-			patterns.add(patternIterator.next());
-		}
-		return patterns;
+            patterns.add(patternIterator.next());
+        }
+        return patterns;
 	}
 
-	public static Set<BugCode> getKnownPatternTypes() {
-		Set<BugCode> patterns = new TreeSet<BugCode>();
-		Iterator<BugCode> patternIterator = I18N.instance().bugCodeIterator();
+    public static Set<BugCode> getKnownPatternTypes() {
+        Set<BugCode> patterns = new TreeSet<BugCode>();
+        Iterator<BugCode> patternIterator = I18N.instance().bugCodeIterator();
 		while (patternIterator.hasNext()){
-			patterns.add(patternIterator.next());
-		}
-		return patterns;
+            patterns.add(patternIterator.next());
+        }
+        return patterns;
 	}
 
-	public static Set<String> getFilteredIds(){
-		final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-		String lastUsedFilter = store.getString(FindBugsConstants.LAST_USED_EXPORT_FILTER);
+    public static Set<String> getFilteredIds(){
+        final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
+        String lastUsedFilter = store.getString(FindBugsConstants.LAST_USED_EXPORT_FILTER);
 		return FindBugsConstants.decodeIds(lastUsedFilter);
-	}
+    }
 
-	public static Set<BugPattern> getFilteredPatterns(){
-		Iterator<BugPattern> patternIterator = I18N.instance().bugPatternIterator();
-		Set<BugPattern> set = new HashSet<BugPattern>();
+    public static Set<BugPattern> getFilteredPatterns(){
+        Iterator<BugPattern> patternIterator = I18N.instance().bugPatternIterator();
+        Set<BugPattern> set = new HashSet<BugPattern>();
 		Set<String> patternTypes = getFilteredIds();
-		while (patternIterator.hasNext()){
-			BugPattern next = patternIterator.next();
-			String patternId = next.getType();
+        while (patternIterator.hasNext()){
+            BugPattern next = patternIterator.next();
+            String patternId = next.getType();
 			if(!patternTypes.contains(patternId)){
-				continue;
-			}
-			set.add(next);
+                continue;
+            }
+            set.add(next);
 		}
-		return set;
-	}
+        return set;
+    }
 
-	public static Set<BugCode> getFilteredPatternTypes(){
-		Iterator<BugCode> patternIterator = I18N.instance().bugCodeIterator();
-		Set<BugCode> set = new HashSet<BugCode>();
+    public static Set<BugCode> getFilteredPatternTypes(){
+        Iterator<BugCode> patternIterator = I18N.instance().bugCodeIterator();
+        Set<BugCode> set = new HashSet<BugCode>();
 		Set<String> patternTypes = getFilteredIds();
-		while (patternIterator.hasNext()){
-			BugCode next = patternIterator.next();
-			String type = next.getAbbrev();
+        while (patternIterator.hasNext()){
+            BugCode next = patternIterator.next();
+            String type = next.getAbbrev();
 			if(!patternTypes.contains(type)){
-				continue;
-			}
-			set.add(next);
+                continue;
+            }
+            set.add(next);
 		}
-		return set;
-	}
+        return set;
+    }
 
-	public static void clearBugCollection(IProject project) throws CoreException {
-		createDefaultEmptyBugCollection(project);
-		markBugCollectionDirty(project, true);
+    public static void clearBugCollection(IProject project) throws CoreException {
+        createDefaultEmptyBugCollection(project);
+        markBugCollectionDirty(project, true);
 		saveCurrentBugCollection(project, null);
-	}
+    }
 
 
 }

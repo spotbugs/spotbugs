@@ -5,43 +5,43 @@ import java.io.InputStream;
 
 public class Finalizer {
 
-	/**
-	 * @param args
-	 */
+    /**
+     * @param args
+     */
 	public static void main(String[] args) {
 
-	}
-	class Parent
-	{
+    }
+    class Parent
+    {
 		InputStream f;
 
-		@Override
-		protected void finalize()
-		{
+        @Override
+        protected void finalize()
+        {
 			//System.out.println("I'M MEEELLLLTTTTINNNNGGGGG");
-			try {
-				f.close();
-			} catch (IOException e) {
+            try {
+                f.close();
+            } catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+                e.printStackTrace();
+            }
+        }
 	}
 
-	class Child extends Parent
-	{
-		@Override
+    class Child extends Parent
+    {
+        @Override
 		protected void finalize()
-		{
-			System.out.println("nooooooooo");
-		}
+        {
+            System.out.println("nooooooooo");
+        }
 	}
 
-	class Deviant extends Parent
-	{
-		@Override
+    class Deviant extends Parent
+    {
+        @Override
 		protected void finalize()
-		{
-		}
-	}
+        {
+        }
+    }
 }

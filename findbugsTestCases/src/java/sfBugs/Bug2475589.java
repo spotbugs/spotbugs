@@ -112,7 +112,7 @@ public class Bug2475589 {
      * Behavior at filing:
      *   correct SQL warning (warning is thrown only if string concatenated
      *   with userQuery consists exclusively of "'" characters)
-     *   warning thrown => 
+     *   warning thrown =>
      *   H S SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING SQL: \
      *   A prepared statement is generated from a nonconstant String at \
      *   sfBugs.Bug2475589.runUserQuery5(String)   At Bug2475589.java:[line 120]

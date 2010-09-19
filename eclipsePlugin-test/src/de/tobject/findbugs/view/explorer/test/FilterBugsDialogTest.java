@@ -41,150 +41,150 @@ import edu.umd.cs.findbugs.I18N;
 
 /**
  * This class tests the FilterBugsDialog and its related classes.
- * 
+ *
  * @author Tomás Pollak
  */
 public class FilterBugsDialogTest extends AbstractFindBugsTest {
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		setUpTestProject(TestScenario.DEFAULT);
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        setUpTestProject(TestScenario.DEFAULT);
 	}
 
-	@AfterClass
-	public static void tearDownClass() throws CoreException {
-		tearDownTestProject();
+    @AfterClass
+    public static void tearDownClass() throws CoreException {
+        tearDownTestProject();
 	}
 
-	private String originalFilteredIds;
+    private String originalFilteredIds;
 
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
 
-		// Hold the original filter value and restore it after the test
-		originalFilteredIds = getFilteredIds();
-	}
+        // Hold the original filter value and restore it after the test
+        originalFilteredIds = getFilteredIds();
+    }
 
-	@Override
-	public void tearDown() throws CoreException {
-		// Restore the original filter value
+    @Override
+    public void tearDown() throws CoreException {
+        // Restore the original filter value
 		storeFilteredIds(originalFilteredIds);
-		super.tearDown();
-	}
+        super.tearDown();
+    }
 
-	@Test
-	public void testEmptyFilter() {
-		// Open the dialog
+    @Test
+    public void testEmptyFilter() {
+        // Open the dialog
 		FilterBugsDialogTestSubclass dialog = openFilterBugsDialog(Collections
-				.<BugPattern> emptySet(), Collections.<BugCode> emptySet());
+                .<BugPattern> emptySet(), Collections.<BugCode> emptySet());
 
-		// Close the dialog
-		closeDialogAndStoreResult(dialog);
+        // Close the dialog
+        closeDialogAndStoreResult(dialog);
 
-		// Check the results
-		assertTrue(FindbugsPlugin.getFilteredPatterns().isEmpty());
-		assertTrue(FindbugsPlugin.getFilteredPatternTypes().isEmpty());
+        // Check the results
+        assertTrue(FindbugsPlugin.getFilteredPatterns().isEmpty());
+        assertTrue(FindbugsPlugin.getFilteredPatternTypes().isEmpty());
 	}
 
-	@Test
-	public void testFullFilter() {
-		// Open the dialog
+    @Test
+    public void testFullFilter() {
+        // Open the dialog
 		FilterBugsDialogTestSubclass dialog = openFilterBugsDialog(FindbugsPlugin
-				.getKnownPatterns(), FindbugsPlugin.getKnownPatternTypes());
+                .getKnownPatterns(), FindbugsPlugin.getKnownPatternTypes());
 
-		// Close the dialog
-		closeDialogAndStoreResult(dialog);
+        // Close the dialog
+        closeDialogAndStoreResult(dialog);
 
-		// We expect all the pattern types and no patterns (they are included)
-		assertEquals(FindbugsPlugin.getKnownPatternTypes(), FindbugsPlugin
-				.getFilteredPatternTypes());
+        // We expect all the pattern types and no patterns (they are included)
+        assertEquals(FindbugsPlugin.getKnownPatternTypes(), FindbugsPlugin
+                .getFilteredPatternTypes());
 		assertTrue(FindbugsPlugin.getFilteredPatterns().isEmpty());
-	}
+    }
 
-	@Test
-	public void testOnePatternSelectsPattern() {
-		// Open the dialog
+    @Test
+    public void testOnePatternSelectsPattern() {
+        // Open the dialog
 		FilterBugsDialogTestSubclass dialog = openFilterBugsDialog(Collections
-				.<BugPattern> emptySet(), Collections.<BugCode> emptySet());
+                .<BugPattern> emptySet(), Collections.<BugCode> emptySet());
 
-		// Add one BugPattern
-		BugPattern pattern = I18N.instance().lookupBugPattern("HE_EQUALS_NO_HASHCODE");
-		dialog.addBugPatternToFilter(pattern);
+        // Add one BugPattern
+        BugPattern pattern = I18N.instance().lookupBugPattern("HE_EQUALS_NO_HASHCODE");
+        dialog.addBugPatternToFilter(pattern);
 
-		// Close the dialog
-		closeDialogAndStoreResult(dialog);
+        // Close the dialog
+        closeDialogAndStoreResult(dialog);
 
-		// We expect 'HE_EQUALS_NO_HASHCODE' to be selected and no bug code,
-		// since there are more patterns for the 'HE' bug code.
-		assertEquals(Collections.singleton(pattern), FindbugsPlugin.getFilteredPatterns());
+        // We expect 'HE_EQUALS_NO_HASHCODE' to be selected and no bug code,
+        // since there are more patterns for the 'HE' bug code.
+        assertEquals(Collections.singleton(pattern), FindbugsPlugin.getFilteredPatterns());
 		assertTrue(FindbugsPlugin.getFilteredPatternTypes().isEmpty());
-	}
+    }
 
-	@Test
-	public void testOnePatternSelectsType() {
-		// Open the dialog
+    @Test
+    public void testOnePatternSelectsType() {
+        // Open the dialog
 		FilterBugsDialogTestSubclass dialog = openFilterBugsDialog(Collections
-				.<BugPattern> emptySet(), Collections.<BugCode> emptySet());
+                .<BugPattern> emptySet(), Collections.<BugCode> emptySet());
 
-		// Add one BugPattern
-		BugPattern pattern = I18N.instance().lookupBugPattern("EI_EXPOSE_REP");
-		dialog.addBugPatternToFilter(pattern);
+        // Add one BugPattern
+        BugPattern pattern = I18N.instance().lookupBugPattern("EI_EXPOSE_REP");
+        dialog.addBugPatternToFilter(pattern);
 
-		// Close the dialog
-		closeDialogAndStoreResult(dialog);
+        // Close the dialog
+        closeDialogAndStoreResult(dialog);
 
-		// We expect the 'EI' bug code to be selected, since 'EI_EXPOSE_REP'
-		// is the only pattern for that code.
-		assertTrue(FindbugsPlugin.getFilteredPatterns().isEmpty());
+        // We expect the 'EI' bug code to be selected, since 'EI_EXPOSE_REP'
+        // is the only pattern for that code.
+        assertTrue(FindbugsPlugin.getFilteredPatterns().isEmpty());
 		BugCode expectedBugCode = I18N.instance().getBugCode("EI");
-		assertEquals(Collections.singleton(expectedBugCode), FindbugsPlugin
-				.getFilteredPatternTypes());
-	}
+        assertEquals(Collections.singleton(expectedBugCode), FindbugsPlugin
+                .getFilteredPatternTypes());
+    }
 
-	@Test
-	public void testOneType() {
-		// Open the dialog
+    @Test
+    public void testOneType() {
+        // Open the dialog
 		FilterBugsDialogTestSubclass dialog = openFilterBugsDialog(Collections
-				.<BugPattern> emptySet(), Collections.<BugCode> emptySet());
+                .<BugPattern> emptySet(), Collections.<BugCode> emptySet());
 
-		// Add one BugCode
-		BugCode bugCode = I18N.instance().getBugCode("EI");
-		dialog.addBugCodeToFilter(bugCode);
+        // Add one BugCode
+        BugCode bugCode = I18N.instance().getBugCode("EI");
+        dialog.addBugCodeToFilter(bugCode);
 
-		// Close the dialog
-		closeDialogAndStoreResult(dialog);
+        // Close the dialog
+        closeDialogAndStoreResult(dialog);
 
-		// We expect the 'EI' bug code to be selected
-		assertTrue(FindbugsPlugin.getFilteredPatterns().isEmpty());
-		assertEquals(Collections.singleton(bugCode), FindbugsPlugin
+        // We expect the 'EI' bug code to be selected
+        assertTrue(FindbugsPlugin.getFilteredPatterns().isEmpty());
+        assertEquals(Collections.singleton(bugCode), FindbugsPlugin
 				.getFilteredPatternTypes());
-	}
+    }
 
-	private void closeDialogAndStoreResult(FilterBugsDialog dialog) {
-		dialog.close();
-		String selectedIds = dialog.getSelectedIds();
+    private void closeDialogAndStoreResult(FilterBugsDialog dialog) {
+        dialog.close();
+        String selectedIds = dialog.getSelectedIds();
 		storeFilteredIds(selectedIds);
+    }
+
+    private String getFilteredIds() {
+        return getPreferenceStore().getString(FindBugsConstants.LAST_USED_EXPORT_FILTER);
+    }
+
+    private Shell getParentShell() {
+        Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+        return shell;
 	}
 
-	private String getFilteredIds() {
-		return getPreferenceStore().getString(FindBugsConstants.LAST_USED_EXPORT_FILTER);
-	}
-
-	private Shell getParentShell() {
-		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-		return shell;
-	}
-
-	private FilterBugsDialogTestSubclass openFilterBugsDialog(
-			Set<BugPattern> filteredPatterns, Set<BugCode> filteredTypes) {
-		FilterBugsDialogTestSubclass dialog = new FilterBugsDialogTestSubclass(
+    private FilterBugsDialogTestSubclass openFilterBugsDialog(
+            Set<BugPattern> filteredPatterns, Set<BugCode> filteredTypes) {
+        FilterBugsDialogTestSubclass dialog = new FilterBugsDialogTestSubclass(
 				getParentShell(), filteredPatterns, filteredTypes);
-		dialog.open();
-		return dialog;
-	}
+        dialog.open();
+        return dialog;
+    }
 
-	private void storeFilteredIds(String selectedIds) {
-		getPreferenceStore().setValue(FindBugsConstants.LAST_USED_EXPORT_FILTER,
-				selectedIds);
+    private void storeFilteredIds(String selectedIds) {
+        getPreferenceStore().setValue(FindBugsConstants.LAST_USED_EXPORT_FILTER,
+                selectedIds);
 	}
 }

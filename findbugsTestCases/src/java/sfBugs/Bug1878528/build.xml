@@ -13,7 +13,7 @@
             classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
       <classpath refid="findbugs.lib" />
    </taskdef>
-	
+
    <taskdef name="computeBugHistory"
             classname="edu.umd.cs.findbugs.anttask.ComputeBugHistoryTask">
       <classpath refid="findbugs.lib" />
@@ -24,17 +24,17 @@
       Shield these files from being compiled by the toplevel build.xml,
       which will get confused about the overlapping classes.
       -->
-   	  <move file="p1/Foo.j" tofile="p1/Foo.java"/>
- 	  <move file="p2/Foo.j" tofile="p2/Foo.java"/>
- 	  <move file="p3/Foo.j" tofile="p3/Foo.java"/>
+         <move file="p1/Foo.j" tofile="p1/Foo.java"/>
+       <move file="p2/Foo.j" tofile="p2/Foo.java"/>
+       <move file="p3/Foo.j" tofile="p3/Foo.java"/>
    	
       <javac srcdir="p1"/>
       <javac srcdir="p2"/>
       <javac srcdir="p3"/>
 
- 	  <move file="p1/Foo.java" tofile="p1/Foo.j"/>
-	  <move file="p2/Foo.java" tofile="p2/Foo.j"/>
-	  <move file="p3/Foo.java" tofile="p3/Foo.j"/>
+       <move file="p1/Foo.java" tofile="p1/Foo.j"/>
+      <move file="p2/Foo.java" tofile="p2/Foo.j"/>
+      <move file="p3/Foo.java" tofile="p3/Foo.j"/>
 
       <findbugs home="${findbugs.home}"
                 output="xml:withMessages"
@@ -66,23 +66,23 @@
          <class location="p3/Foo.class" />
       </findbugs>
 
-   	  <computeBugHistory home="${findbugs.home}"
-    	                 withMessages="true"
-    	                 output="out.hist.xml">
+         <computeBugHistory home="${findbugs.home}"
+                         withMessages="true"
+                         output="out.hist.xml">
          <dataFile name="out1.xml"/>
          <dataFile name="out2.xml"/>
          <dataFile name="out3.xml"/>
       </computeBugHistory>
 
-   	  <xslt in="out.hist.xml" out="out.hist.default.html"
-   	        style="${findbugs.home}/src/xsl/default.xsl"/>
- 	  <xslt in="out.hist.xml" out="out.hist.plain.html"
+         <xslt in="out.hist.xml" out="out.hist.default.html"
+               style="${findbugs.home}/src/xsl/default.xsl"/>
+       <xslt in="out.hist.xml" out="out.hist.plain.html"
             style="${findbugs.home}/src/xsl/plain.xsl"/>
- 	  <xslt in="out.hist.xml" out="out.hist.fancy.html"
+       <xslt in="out.hist.xml" out="out.hist.fancy.html"
             style="${findbugs.home}/src/xsl/fancy.xsl"/>
- 	  <xslt in="out.hist.xml" out="out.hist.fancy-hist.html"
+       <xslt in="out.hist.xml" out="out.hist.fancy-hist.html"
             style="${findbugs.home}/src/xsl/fancy-hist.xsl"/>
-	  <xslt in="out.hist.xml" out="out.hist.summary.html"
+      <xslt in="out.hist.xml" out="out.hist.summary.html"
             style="${findbugs.home}/src/xsl/summary.xsl"/>
    </target>
 </project>

@@ -42,87 +42,87 @@ import de.tobject.findbugs.test.TestScenario;
  * @author Tom�s Pollak
  */
 public class FindBugsWorkerTest extends AbstractFindBugsTest {
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		setUpTestProject(TestScenario.DEFAULT);
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        setUpTestProject(TestScenario.DEFAULT);
 	}
 
-	@AfterClass
-	public static void tearDownClass() throws CoreException {
-		tearDownTestProject();
+    @AfterClass
+    public static void tearDownClass() throws CoreException {
+        tearDownTestProject();
 	}
 
-	private static final String CLASS_A_PROJECT_RELATIVE = SRC + "/A.java";
-	private static final String CLASS_A_WORKSPACE_RELATIVE = TEST_PROJECT + "/"
-			+ CLASS_A_PROJECT_RELATIVE;
+    private static final String CLASS_A_PROJECT_RELATIVE = SRC + "/A.java";
+    private static final String CLASS_A_WORKSPACE_RELATIVE = TEST_PROJECT + "/"
+            + CLASS_A_PROJECT_RELATIVE;
 
-	@Test
-	public void testBaselineBugs() throws CoreException, IOException {
-		assertNoBugs();
+    @Test
+    public void testBaselineBugs() throws CoreException, IOException {
+        assertNoBugs();
 
-		setBaselineBugsFile(true);
-		work(createFindBugsWorker());
-		setBaselineBugsFile(false);
+        setBaselineBugsFile(true);
+        work(createFindBugsWorker());
+        setBaselineBugsFile(false);
 
-		assertExpectedBugsWithBaseline();
-	}
+        assertExpectedBugsWithBaseline();
+    }
 
-	@Test
-	public void testFilter() throws CoreException, IOException {
-		assertNoBugs();
+    @Test
+    public void testFilter() throws CoreException, IOException {
+        assertNoBugs();
 
-		setFilterFile(true);
-		work(createFindBugsWorker());
-		setFilterFile(false);
+        setFilterFile(true);
+        work(createFindBugsWorker());
+        setFilterFile(false);
 
-		assertExpectedBugsWithFilter();
-	}
+        assertExpectedBugsWithFilter();
+    }
 
-	@Test
-	public void testGetFilterPath() throws JavaModelException {
-		IPath classALocation = getClassA().getResource().getLocation();
+    @Test
+    public void testGetFilterPath() throws JavaModelException {
+        IPath classALocation = getClassA().getResource().getLocation();
 		assertEquals(classALocation, FindBugsWorker.getFilterPath(classALocation
-				.toOSString(), getProject()));
+                .toOSString(), getProject()));
+        assertEquals(classALocation, FindBugsWorker.getFilterPath(
+                CLASS_A_PROJECT_RELATIVE, getProject()));
 		assertEquals(classALocation, FindBugsWorker.getFilterPath(
-				CLASS_A_PROJECT_RELATIVE, getProject()));
-		assertEquals(classALocation, FindBugsWorker.getFilterPath(
-				CLASS_A_WORKSPACE_RELATIVE, getProject()));
-		assertEquals(classALocation, FindBugsWorker.getFilterPath(
-				CLASS_A_WORKSPACE_RELATIVE, null));
+                CLASS_A_WORKSPACE_RELATIVE, getProject()));
+        assertEquals(classALocation, FindBugsWorker.getFilterPath(
+                CLASS_A_WORKSPACE_RELATIVE, null));
 	}
 
-	@Test
-	public void testLoadXML() throws CoreException {
-		assertNoBugs();
+    @Test
+    public void testLoadXML() throws CoreException {
+        assertNoBugs();
 
-		loadXml(createFindBugsWorker(), getBugsFileLocation());
+        loadXml(createFindBugsWorker(), getBugsFileLocation());
 
-		assertExpectedBugs();
-	}
+        assertExpectedBugs();
+    }
 
-	@Test
-	public void testRunFindBugs() throws CoreException {
-		assertNoBugs();
+    @Test
+    public void testRunFindBugs() throws CoreException {
+        assertNoBugs();
 
-		work(createFindBugsWorker());
+        work(createFindBugsWorker());
 
-		assertExpectedBugs();
-	}
+        assertExpectedBugs();
+    }
 
-	@Test
-	public void testToFilterPath() throws JavaModelException {
-		String classALocation = getClassA().getResource().getLocation().toOSString();
+    @Test
+    public void testToFilterPath() throws JavaModelException {
+        String classALocation = getClassA().getResource().getLocation().toOSString();
 		assertEquals(new Path(CLASS_A_PROJECT_RELATIVE), FindBugsWorker.toFilterPath(
-				classALocation, getProject()));
-		assertEquals(new Path(CLASS_A_WORKSPACE_RELATIVE), FindBugsWorker.toFilterPath(
-				classALocation, null));
+                classALocation, getProject()));
+        assertEquals(new Path(CLASS_A_WORKSPACE_RELATIVE), FindBugsWorker.toFilterPath(
+                classALocation, null));
 	}
 
-	private void assertExpectedBugsWithBaseline() throws CoreException {
-		assertNoBugs();
-	}
+    private void assertExpectedBugsWithBaseline() throws CoreException {
+        assertNoBugs();
+    }
 
-	private void assertExpectedBugsWithFilter() throws CoreException {
-		assertNoBugs();
-	}
+    private void assertExpectedBugsWithFilter() throws CoreException {
+        assertNoBugs();
+    }
 }

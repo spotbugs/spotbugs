@@ -45,70 +45,70 @@ import de.tobject.findbugs.view.explorer.Grouping;
  */
 public abstract class AbstractBugExplorerViewTest extends AbstractFindBugsTest {
 
-	protected static <T> Set<T> setOf(T... a) {
-	    return new HashSet<T>(Arrays.asList(a));
-	}
+    protected static <T> Set<T> setOf(T... a) {
+        return new HashSet<T>(Arrays.asList(a));
+    }
 
-	@Override
-	@Before
-	public void setUp() throws Exception {
+    @Override
+    @Before
+    public void setUp() throws Exception {
 	    resetBugContentProviderInput();
-	    super.setUp();
-	}
+        super.setUp();
+    }
 
-	@Override
-	@After
-	public void tearDown() throws CoreException {
+    @Override
+    @After
+    public void tearDown() throws CoreException {
 	    super.tearDown();
-	    resetBugContentProviderInput();
-	}
+        resetBugContentProviderInput();
+    }
 
-	protected Grouping getDefaultGrouping() {
-		List<GroupType> types = new ArrayList<GroupType>();
-		types.add(GroupType.Project);
+    protected Grouping getDefaultGrouping() {
+        List<GroupType> types = new ArrayList<GroupType>();
+        types.add(GroupType.Project);
 		types.add(GroupType.Pattern);
-		types.add(GroupType.Marker);
-		Grouping grouping = Grouping.createFrom(types);
-		return grouping;
+        types.add(GroupType.Marker);
+        Grouping grouping = Grouping.createFrom(types);
+        return grouping;
 	}
 
-	protected ITreeContentProvider getNavigatorContentProvider() throws PartInitException {
-	    BugExplorerView view = (BugExplorerView) showBugExplorerView();
-	    assertNotNull(view);
+    protected ITreeContentProvider getNavigatorContentProvider() throws PartInitException {
+        BugExplorerView view = (BugExplorerView) showBugExplorerView();
+        assertNotNull(view);
 	
-	    ITreeContentProvider contentProvider = (ITreeContentProvider) view
-	            .getCommonViewer().getContentProvider();
-	    return contentProvider;
+        ITreeContentProvider contentProvider = (ITreeContentProvider) view
+                .getCommonViewer().getContentProvider();
+        return contentProvider;
 	}
 
-	protected Grouping getProjectPatternPackageMarkerGrouping() {
-	    List<GroupType> types = new ArrayList<GroupType>();
-	    types.add(GroupType.Project);
+    protected Grouping getProjectPatternPackageMarkerGrouping() {
+        List<GroupType> types = new ArrayList<GroupType>();
+        types.add(GroupType.Project);
 	    types.add(GroupType.Pattern);
-	    types.add(GroupType.Package);
-	    types.add(GroupType.Marker);
-		Grouping grouping = Grouping.createFrom(types);
+        types.add(GroupType.Package);
+        types.add(GroupType.Marker);
+        Grouping grouping = Grouping.createFrom(types);
 		return grouping;
-	}
+    }
 
-	protected Object getSingleElement(ITreeContentProvider contentProvider) {
-	    Object[] elements = contentProvider.getElements(getWorkspaceRoot());
-	    assertNotNull(elements);
+    protected Object getSingleElement(ITreeContentProvider contentProvider) {
+        Object[] elements = contentProvider.getElements(getWorkspaceRoot());
+        assertNotNull(elements);
 	    assertEquals(1, elements.length);
-	    return elements[0];
+        return elements[0];
+    }
+
+    protected void resetBugContentProviderInput() throws PartInitException {
+        BugContentProvider bugContentProvider = getBugContentProvider();
+        bugContentProvider.reSetInput();
 	}
 
-	protected void resetBugContentProviderInput() throws PartInitException {
-	    BugContentProvider bugContentProvider = getBugContentProvider();
-	    bugContentProvider.reSetInput();
-	}
-
-	protected void setGroupingInBugContentProvider(Grouping grouping)
-			throws PartInitException {
-			    BugContentProvider bugContentProvider = getBugContentProvider();
+    protected void setGroupingInBugContentProvider(Grouping grouping)
+            throws PartInitException {
+                BugContentProvider bugContentProvider = getBugContentProvider();
 			    assertNotNull(bugContentProvider);
-				bugContentProvider.setGrouping(grouping);
-				bugContentProvider.reSetInput();
-			}
+                bugContentProvider.setGrouping(grouping);
+                bugContentProvider.reSetInput();
+            }
 
 }

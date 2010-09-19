@@ -22,8 +22,8 @@ package de.tobject.findbugs.view.explorer;
 
 interface IViewerRefreshJob {
 
-	boolean addToQueue(DeltaInfo resource);
-	boolean cancel();
-	void schedule(long delay);
+    boolean addToQueue(DeltaInfo resource);
+    boolean cancel();
+    void schedule(long delay);
 
 }

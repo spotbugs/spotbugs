@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 
 public class Bug1917352 implements Serializable {
     private static final long serialVersionUID = 1L;
-	private Class javaClass;
+    private Class javaClass;
     private Constructor[] constructors = new Constructor[10];
     private Method[] methods = new Method[10];
     public static final boolean useContextClassLoader = false;

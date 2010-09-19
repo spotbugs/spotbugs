@@ -35,53 +35,53 @@ import de.tobject.findbugs.view.explorer.Grouping;
 public class GroupByAction implements IViewActionDelegate {
 
 
-	private static final String ACTION_ID_PREFIX = "findBugsEclipsePlugin.toggleGrouping.";
-	private CommonNavigator navigator;
+    private static final String ACTION_ID_PREFIX = "findBugsEclipsePlugin.toggleGrouping.";
+    private CommonNavigator navigator;
 
-	public void init(IViewPart view) {
-		if(view instanceof CommonNavigator) {
-			navigator = (CommonNavigator) view;
+    public void init(IViewPart view) {
+        if(view instanceof CommonNavigator) {
+            navigator = (CommonNavigator) view;
 		}
-	}
+    }
 
-	public void run(IAction action) {
-		if(navigator == null) {
-			return;
+    public void run(IAction action) {
+        if(navigator == null) {
+            return;
 		}
-		Grouping grouping = getGrouping(action.getId());
-		if(grouping == null){
-			return;
+        Grouping grouping = getGrouping(action.getId());
+        if(grouping == null){
+            return;
 		}
-		BugContentProvider provider = BugContentProvider.getProvider(navigator
-				.getNavigatorContentService());
-		provider.setGrouping(grouping);
+        BugContentProvider provider = BugContentProvider.getProvider(navigator
+                .getNavigatorContentService());
+        provider.setGrouping(grouping);
 		CommonViewer viewer = navigator.getCommonViewer();
-		Object[] expandedElements = viewer.getExpandedElements();
-		provider.reSetInput();
-		viewer.setExpandedElements(expandedElements);
+        Object[] expandedElements = viewer.getExpandedElements();
+        provider.reSetInput();
+        viewer.setExpandedElements(expandedElements);
 	}
 
 
 
-	private Grouping getGrouping(String id) {
-		if(id == null){
-			return null;
+    private Grouping getGrouping(String id) {
+        if(id == null){
+            return null;
 		}
-		if(!id.startsWith(ACTION_ID_PREFIX)){
-			return null;
-		}
+        if(!id.startsWith(ACTION_ID_PREFIX)){
+            return null;
+        }
 		id = id.substring(ACTION_ID_PREFIX.length());
-		String[] typesArr = id.split("\\.");
-		List<GroupType> types = new ArrayList<GroupType>();
-		for (String string : typesArr) {
+        String[] typesArr = id.split("\\.");
+        List<GroupType> types = new ArrayList<GroupType>();
+        for (String string : typesArr) {
 			GroupType type = GroupType.valueOf(string);
-			types.add(type);
-		}
-		return Grouping.createFrom(types);
+            types.add(type);
+        }
+        return Grouping.createFrom(types);
 	}
 
-	public void selectionChanged(IAction action, ISelection selection) {
-		// noop
-	}
+    public void selectionChanged(IAction action, ISelection selection) {
+        // noop
+    }
 
 }

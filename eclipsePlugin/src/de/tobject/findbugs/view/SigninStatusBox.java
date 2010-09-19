@@ -28,141 +28,141 @@ import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
 public class SigninStatusBox extends Composite {
-	private final CloudStatusListener cloudStatusListener;
-	private Cloud cloud;
-	private Label statusLine;
+    private final CloudStatusListener cloudStatusListener;
+    private Cloud cloud;
+    private Label statusLine;
 
-	public SigninStatusBox(Composite parent, int style) {
-		super(parent, style);
+    public SigninStatusBox(Composite parent, int style) {
+        super(parent, style);
 
-		cloudStatusListener = new CloudStatusListener() {
-			public void handleStateChange(SigninState oldState, SigninState state) {
-				updateLabel();
+        cloudStatusListener = new CloudStatusListener() {
+            public void handleStateChange(SigninState oldState, SigninState state) {
+                updateLabel();
 			}
 
-			public void handleIssueDataDownloadedEvent() { // ok
-			}
-		};
+            public void handleIssueDataDownloadedEvent() { // ok
+            }
+        };
 		createControls();
-		parent.addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(DisposeEvent e) {
-				dispose();
+        parent.addDisposeListener(new DisposeListener() {
+            public void widgetDisposed(DisposeEvent e) {
+                dispose();
 			}
+        });
+        addControlListener(new ControlListener() {
+
+            public void controlResized(ControlEvent e) {
+                statusLine.pack(true);
+                SigninStatusBox.this.pack(true);
+			}
+
+            public void controlMoved(ControlEvent e) {
+                // noop
+            }
 		});
-		addControlListener(new ControlListener() {
+    }
 
-			public void controlResized(ControlEvent e) {
-				statusLine.pack(true);
-				SigninStatusBox.this.pack(true);
-			}
-
-			public void controlMoved(ControlEvent e) {
-				// noop
-			}
-		});
-	}
-
-	@Override
-	public void dispose() {
-		if(statusLine.isDisposed()){
+    @Override
+    public void dispose() {
+        if(statusLine.isDisposed()){
 			return;
-		}
-		statusLine.getCursor().dispose();
-		super.dispose();
+        }
+        statusLine.getCursor().dispose();
+        super.dispose();
 		if (this.cloud != null) {
-			this.cloud.removeStatusListener(cloudStatusListener);
-		}
-	}
+            this.cloud.removeStatusListener(cloudStatusListener);
+        }
+    }
 
-	public void setCloud(Cloud cloud) {
-		if (this.cloud != null) {
-			this.cloud.removeStatusListener(cloudStatusListener);
+    public void setCloud(Cloud cloud) {
+        if (this.cloud != null) {
+            this.cloud.removeStatusListener(cloudStatusListener);
 		}
-		this.cloud = cloud;
-		if (cloud != null) {
-			cloud.addStatusListener(cloudStatusListener);
+        this.cloud = cloud;
+        if (cloud != null) {
+            cloud.addStatusListener(cloudStatusListener);
 		}
-		updateLabel();
-	}
+        updateLabel();
+    }
 
-	private void createControls() {
-		this.setLayout(new GridLayout(1, true));
-		statusLine = new Label(this, SWT.NONE);
+    private void createControls() {
+        this.setLayout(new GridLayout(1, true));
+        statusLine = new Label(this, SWT.NONE);
 		statusLine.setLayoutData(new GridData(SWT.RIGHT, GridData.CENTER,
-				true, false));
-		statusLine.setAlignment(SWT.CENTER);
-		statusLine.setCursor(new Cursor(null, SWT.CURSOR_HAND));
+                true, false));
+        statusLine.setAlignment(SWT.CENTER);
+        statusLine.setCursor(new Cursor(null, SWT.CURSOR_HAND));
 		statusLine.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDown(MouseEvent e) {
-			    showSigninPopupMenu(statusLine.toDisplay(e.x, e.y));
+            @Override
+            public void mouseDown(MouseEvent e) {
+                showSigninPopupMenu(statusLine.toDisplay(e.x, e.y));
 			}
-		});
-		updateLabel();
-	}
+        });
+        updateLabel();
+    }
 
-	private void showSigninPopupMenu(Point p) {
-		Menu popupMenu = new Menu(this);
-	    MenuItem automaticCheckbox = new MenuItem(popupMenu, SWT.CHECK);
+    private void showSigninPopupMenu(Point p) {
+        Menu popupMenu = new Menu(this);
+        MenuItem automaticCheckbox = new MenuItem(popupMenu, SWT.CHECK);
 	    automaticCheckbox.setText("Sign in automatically");
-	    SigninState state = cloud.getSigninState();
-		automaticCheckbox.setEnabled(state != SigninState.NO_SIGNIN_REQUIRED);
-	    final boolean origSelection = AppEngineNameLookup.isSavingSessionInfoEnabled();
+        SigninState state = cloud.getSigninState();
+        automaticCheckbox.setEnabled(state != SigninState.NO_SIGNIN_REQUIRED);
+        final boolean origSelection = AppEngineNameLookup.isSavingSessionInfoEnabled();
 		automaticCheckbox.setSelection(origSelection);
-	    automaticCheckbox.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
+        automaticCheckbox.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
 				AppEngineNameLookup.setSaveSessionInformation(!origSelection);
-			}
-		});
+            }
+        });
 
-	    if (state == SigninState.UNAUTHENTICATED || state == SigninState.SIGNED_OUT
-	    		|| state == SigninState.SIGNIN_FAILED) {
-		    MenuItem signInItem = new MenuItem(popupMenu, SWT.NONE);
+        if (state == SigninState.UNAUTHENTICATED || state == SigninState.SIGNED_OUT
+                || state == SigninState.SIGNIN_FAILED) {
+            MenuItem signInItem = new MenuItem(popupMenu, SWT.NONE);
 		    signInItem.setText("Sign in");
-		    signInItem.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
+            signInItem.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
 					try {
-						cloud.signIn();
-					} catch (IOException e1) {
-						MessageDialog.openError(FindbugsPlugin.getShell(), "Error", e1.toString());
+                        cloud.signIn();
+                    } catch (IOException e1) {
+                        MessageDialog.openError(FindbugsPlugin.getShell(), "Error", e1.toString());
 					}
-				}
-			});
+                }
+            });
 
-	    } else if (state == SigninState.SIGNING_IN || state == SigninState.SIGNED_IN) {
-	    	MenuItem signOutItem = new MenuItem(popupMenu, SWT.NONE);
-		    signOutItem.setText("Sign out");
+        } else if (state == SigninState.SIGNING_IN || state == SigninState.SIGNED_IN) {
+            MenuItem signOutItem = new MenuItem(popupMenu, SWT.NONE);
+            signOutItem.setText("Sign out");
 		    signOutItem.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					cloud.signOut();
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    cloud.signOut();
 				}
-			});
-	    }
-	    popupMenu.setLocation(p);
+            });
+        }
+        popupMenu.setLocation(p);
 	    popupMenu.setVisible(true);
-	}
+    }
 
-	private void updateLabel() {
-		FindbugsPlugin.getShell().getDisplay().asyncExec(new Runnable() {
-			public void run() {
+    private void updateLabel() {
+        FindbugsPlugin.getShell().getDisplay().asyncExec(new Runnable() {
+            public void run() {
 				if (statusLine != null && !statusLine.isDisposed()) {
-					if (cloud != null) {
-						String text = cloud.getPlugin().getDescription()
-														+ "\n" + cloud.getSigninState();
+                    if (cloud != null) {
+                        String text = cloud.getPlugin().getDescription()
+                                                        + "\n" + cloud.getSigninState();
 						if (cloud.getUser() != null) {
-							text += ": " + cloud.getUser();
-						}
-						statusLine.setText(text);
+                            text += ": " + cloud.getUser();
+                        }
+                        statusLine.setText(text);
 						statusLine.pack(true);
-						SigninStatusBox.this.pack(true);
-					} else {
-						statusLine.setText("");
+                        SigninStatusBox.this.pack(true);
+                    } else {
+                        statusLine.setText("");
 					}
-				}
-			}
-		});
+                }
+            }
+        });
 	}
 }

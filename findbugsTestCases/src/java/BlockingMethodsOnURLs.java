@@ -11,28 +11,28 @@ import java.util.Set;
  *
  */
 public class BlockingMethodsOnURLs {
-	static int f(URL u) {
-		return u.hashCode();
-	}
+    static int f(URL u) {
+        return u.hashCode();
+    }
 	static boolean g(URL u1, URL u2) {
-		return u1.equals(u2);
-	}
-	static Set<URL> foo() {
+        return u1.equals(u2);
+    }
+    static Set<URL> foo() {
 		return new HashSet<URL>();
+    }
+    static Map<URL,String> foo2() {
+        return new HashMap<URL,String>();
 	}
-	static Map<URL,String> foo2() {
-		return new HashMap<URL,String>();
-	}
-	static Map<String, URL> falsePositive() {
-		return new HashMap<String, URL>();
-	}
+    static Map<String, URL> falsePositive() {
+        return new HashMap<String, URL>();
+    }
 	public static Map<URL, String> map;
-	public static Map<String, URL> falsePositiveMap;
-	public static Set<URL> set;
-	static boolean contains(Set<?> m, URL u) {
+    public static Map<String, URL> falsePositiveMap;
+    public static Set<URL> set;
+    static boolean contains(Set<?> m, URL u) {
 		return m.contains(u);
-	}
-	static Object get(Map<?, ?> m, URL u) {
-		return m.get(u);
+    }
+    static Object get(Map<?, ?> m, URL u) {
+        return m.get(u);
 	}
 }

@@ -1,93 +1,93 @@
 public class Doublecheck {
-	static private Object o;
+    static private Object o;
 
-	static private volatile Object v;
+    static private volatile Object v;
 
-	static private String s;
+    static private String s;
 
-	static private int i;
+    static private int i;
 
-	static private long j;
+    static private long j;
 
-	static private Object lock = new Object();
+    static private Object lock = new Object();
 
-	static public Object standardDoubleCheck() {
-		if (o == null) {
-			synchronized (lock) {
+    static public Object standardDoubleCheck() {
+        if (o == null) {
+            synchronized (lock) {
 				if (o == null)
-					o = new Object();
-			}
-		}
+                    o = new Object();
+            }
+        }
 		return o;
-	}
+    }
 
-	static public Object volatileDoubleCheck() {
-		if (v == null) {
-			synchronized (lock) {
+    static public Object volatileDoubleCheck() {
+        if (v == null) {
+            synchronized (lock) {
 				if (v == null)
-					v = new Object();
-			}
-		}
+                    v = new Object();
+            }
+        }
 		return o;
-	}
+    }
 
-	static public String stringDoubleCheck() {
-		if (s == null) {
-			synchronized (lock) {
+    static public String stringDoubleCheck() {
+        if (s == null) {
+            synchronized (lock) {
 				if (s == null)
-					s = Thread.currentThread().toString();
-			}
-		}
+                    s = Thread.currentThread().toString();
+            }
+        }
 		return s;
-	}
+    }
 
-	static public int intDoubleCheck() {
-		if (i == 0) {
-			synchronized (lock) {
+    static public int intDoubleCheck() {
+        if (i == 0) {
+            synchronized (lock) {
 				if (i == 0)
-					i = Thread.currentThread().hashCode();
-			}
-		}
+                    i = Thread.currentThread().hashCode();
+            }
+        }
 		return i;
-	}
+    }
 
-	static public long longDoubleCheck() {
-		if (j == 0) {
-			synchronized (lock) {
+    static public long longDoubleCheck() {
+        if (j == 0) {
+            synchronized (lock) {
 				if (j == 0)
-					j = System.currentTimeMillis();
-			}
-		}
+                    j = System.currentTimeMillis();
+            }
+        }
 		return j;
-	}
+    }
 
-	boolean ready;
+    boolean ready;
 
-	int[] data;
+    int[] data;
 
-	boolean setReady() {
-		if (!ready) {
-			synchronized (this) {
+    boolean setReady() {
+        if (!ready) {
+            synchronized (this) {
 				if (!ready) {
-					ready = true;
-					return true;
-				}
+                    ready = true;
+                    return true;
+                }
 			}
-		}
-		return false;
-	}
+        }
+        return false;
+    }
 
-	int[] getData() {
-		if (!ready)
-			synchronized (this) {
+    int[] getData() {
+        if (!ready)
+            synchronized (this) {
 				if (!ready) {
-					ready = true;
-					data = new int[10];
-					for (int i = 0; i < 10; i++)
+                    ready = true;
+                    data = new int[10];
+                    for (int i = 0; i < 10; i++)
 						data[i] = i * i;
-				}
-			}
-		return data;
+                }
+            }
+        return data;
 	}
 
 }

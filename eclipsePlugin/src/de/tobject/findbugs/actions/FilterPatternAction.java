@@ -42,102 +42,102 @@ import edu.umd.cs.findbugs.BugPattern;
 
 public class FilterPatternAction implements IObjectActionDelegate {
 
-	private CommonNavigator navigator;
-	private Object data;
-	private boolean useSpecificPattern;
+    private CommonNavigator navigator;
+    private Object data;
+    private boolean useSpecificPattern;
 
-	public FilterPatternAction() {
-		super();
-	}
+    public FilterPatternAction() {
+        super();
+    }
 
-	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-		if (targetPart instanceof CommonNavigator) {
-			navigator = (CommonNavigator) targetPart;
+    public void setActivePart(IAction action, IWorkbenchPart targetPart) {
+        if (targetPart instanceof CommonNavigator) {
+            navigator = (CommonNavigator) targetPart;
 			useSpecificPattern = action.getId().startsWith("de.tobject.findbugs.filterSpecificPattern");
-		}
-	}
+        }
+    }
 
-	public void run(IAction action) {
-		Set<String> sortedIds = FindbugsPlugin.getFilteredIds();
-		String patternType = getPatternOrPatternType();
+    public void run(IAction action) {
+        Set<String> sortedIds = FindbugsPlugin.getFilteredIds();
+        String patternType = getPatternOrPatternType();
 		if(patternType != null) {
-			if(!sortedIds.contains(patternType)) {
-				sortedIds.add(patternType);
-			} else {
+            if(!sortedIds.contains(patternType)) {
+                sortedIds.add(patternType);
+            } else {
 				sortedIds.remove(patternType);
-			}
-		}
-		String ids = FindBugsConstants.encodeIds(sortedIds);
+            }
+        }
+        String ids = FindBugsConstants.encodeIds(sortedIds);
 		final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-		store.setValue(FindBugsConstants.LAST_USED_EXPORT_FILTER, ids);
-		BugContentProvider provider = BugContentProvider.getProvider(navigator
-				.getNavigatorContentService());
+        store.setValue(FindBugsConstants.LAST_USED_EXPORT_FILTER, ids);
+        BugContentProvider provider = BugContentProvider.getProvider(navigator
+                .getNavigatorContentService());
 		if(!provider.isBugFilterActive()){
-			MessageDialog.openWarning(null, "Toggle Filter",
-					"Filtering by pattern or type id is currently not enabled!\n"+
-					"To enable it, please select \"Toggle Filters...->Bugs by Id\" filter!");
+            MessageDialog.openWarning(null, "Toggle Filter",
+                    "Filtering by pattern or type id is currently not enabled!\n"+
+                    "To enable it, please select \"Toggle Filters...->Bugs by Id\" filter!");
 
-		}
-		provider.refreshFilters();
-		CommonViewer viewer = navigator.getCommonViewer();
+        }
+        provider.refreshFilters();
+        CommonViewer viewer = navigator.getCommonViewer();
 		Object[] expandedElements = viewer.getExpandedElements();
-		viewer.refresh(true);
-		viewer.setExpandedElements(expandedElements);
-		data = null;
+        viewer.refresh(true);
+        viewer.setExpandedElements(expandedElements);
+        data = null;
 	}
 
-	private String getPatternOrPatternType() {
-		if(data instanceof IMarker){
-			BugInstance bug = MarkerUtil.findBugInstanceForMarker((IMarker) data);
+    private String getPatternOrPatternType() {
+        if(data instanceof IMarker){
+            BugInstance bug = MarkerUtil.findBugInstanceForMarker((IMarker) data);
 			if(bug == null){
-				return null;
-			}
-			if(useSpecificPattern){
+                return null;
+            }
+            if(useSpecificPattern){
 				// uses specific pattern kind, the naming "Type" is misleading
-				return bug.getType();
-			}
-			// uses pattern type, the naming "Abbrev" is misleading
+                return bug.getType();
+            }
+            // uses pattern type, the naming "Abbrev" is misleading
 			return bug.getAbbrev();
-		} else if(data instanceof BugPattern){
-			BugPattern pattern = (BugPattern) data;
-			if(useSpecificPattern){
+        } else if(data instanceof BugPattern){
+            BugPattern pattern = (BugPattern) data;
+            if(useSpecificPattern){
 				// uses specific pattern kind, the naming "Type" is misleading
-				return pattern.getType();
-			}
-			// uses pattern type, the naming "Abbrev" is misleading
+                return pattern.getType();
+            }
+            // uses pattern type, the naming "Abbrev" is misleading
 			return pattern.getAbbrev();
-		} else if(data instanceof BugCode){
-			// same as pattern.getAbbrev(): it's pattern type
-			return ((BugCode) data).getAbbrev();
+        } else if(data instanceof BugCode){
+            // same as pattern.getAbbrev(): it's pattern type
+            return ((BugCode) data).getAbbrev();
 		}
-		return null;
-	}
+        return null;
+    }
 
-	public void selectionChanged(IAction action, ISelection selection) {
-		if (!(selection instanceof IStructuredSelection)) {
-			data = null;
+    public void selectionChanged(IAction action, ISelection selection) {
+        if (!(selection instanceof IStructuredSelection)) {
+            data = null;
 			action.setEnabled(false);
-			return;
-		}
-		IStructuredSelection ss = (IStructuredSelection) selection;
+            return;
+        }
+        IStructuredSelection ss = (IStructuredSelection) selection;
 		if (ss.size() != 1) {
-			data = null;
-			action.setEnabled(false);
-			return;
+            data = null;
+            action.setEnabled(false);
+            return;
 		}
-		Object firstElement = ss.getFirstElement();
-		if(firstElement instanceof IMarker){
-			data = firstElement;
+        Object firstElement = ss.getFirstElement();
+        if(firstElement instanceof IMarker){
+            data = firstElement;
 			action.setEnabled(true);
-			return;
-		}
-		if (!(firstElement instanceof BugGroup)) {
+            return;
+        }
+        if (!(firstElement instanceof BugGroup)) {
 			data = null;
-			action.setEnabled(false);
-			return;
-		}
+            action.setEnabled(false);
+            return;
+        }
 		data = ((BugGroup) firstElement).getData();
-		action.setEnabled(data != null);
-	}
+        action.setEnabled(data != null);
+    }
 
 }

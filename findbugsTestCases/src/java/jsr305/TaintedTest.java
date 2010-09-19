@@ -8,21 +8,21 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public abstract class TaintedTest {
-	@Untainted Object sanitize(@Untainted(when=When.UNKNOWN) Object o) {
-		return o;
-	}
+    @Untainted Object sanitize(@Untainted(when=When.UNKNOWN) Object o) {
+        return o;
+    }
 	
-	@NoWarning("TQ")
-	void correctDoNotReport(@Tainted Object b) {
-		Object x = sanitize(b);
+    @NoWarning("TQ")
+    void correctDoNotReport(@Tainted Object b) {
+        Object x = sanitize(b);
 		requiresUntainted(x);
-	}
-	
-	@ExpectWarning("TQ")
+    }
+
+    @ExpectWarning("TQ")
 	void violationReport(@Tainted Object a) {
-		Object y = a;
-		requiresUntainted(y);
-	}
+        Object y = a;
+        requiresUntainted(y);
+    }
 	
-	protected abstract void requiresUntainted(@Untainted Object o);
+    protected abstract void requiresUntainted(@Untainted Object o);
 }

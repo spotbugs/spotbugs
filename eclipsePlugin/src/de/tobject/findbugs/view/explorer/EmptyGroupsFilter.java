@@ -27,22 +27,22 @@ import org.eclipse.ui.navigator.CommonViewer;
  */
 public class EmptyGroupsFilter extends ViewerFilter {
 
-	public EmptyGroupsFilter() {
-		super();
-	}
+    public EmptyGroupsFilter() {
+        super();
+    }
 
-	@Override
-	public boolean select(Viewer viewer, Object parentElement, Object element) {
-		CommonViewer v2 = (CommonViewer) viewer;
+    @Override
+    public boolean select(Viewer viewer, Object parentElement, Object element) {
+        CommonViewer v2 = (CommonViewer) viewer;
 		BugContentProvider provider = BugContentProvider.getProvider(v2
-				.getNavigatorContentService());
-		if(element instanceof BugGroup){
-			BugGroup group = (BugGroup) element;
+                .getNavigatorContentService());
+        if(element instanceof BugGroup){
+            BugGroup group = (BugGroup) element;
 			if(provider.getFilteredMarkersCount(group) == group.getMarkersCount()){
-				return false;
-			}
-		}
+                return false;
+            }
+        }
 		return true;
-	}
+    }
 
 }

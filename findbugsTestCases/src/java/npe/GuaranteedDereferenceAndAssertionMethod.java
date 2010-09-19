@@ -2,15 +2,15 @@ package npe;
 
 public class GuaranteedDereferenceAndAssertionMethod {
 
-	void jsrError() {
+    void jsrError() {
 
-	}
-	int falsePositive(Object x) {
-		if (x == null) 
+    }
+    int falsePositive(Object x) {
+        if (x == null)
 			jsrError();
-		return x.hashCode();
+        return x.hashCode();
 
 
-	}
+    }
 
 }

@@ -10,24 +10,24 @@ import sun.util.calendar.ZoneInfo;
 
 public class Ideas_2010_02_17 implements Serializable {
 
-	ZoneInfo zone;
+    ZoneInfo zone;
 
-	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
-		final ObjectInputStream input = stream;
-		input.defaultReadObject();
+    private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+        final ObjectInputStream input = stream;
+        input.defaultReadObject();
 
-		// If there's a ZoneInfo object, use it for zone.
-		try {
-			ZoneInfo zi = (ZoneInfo) AccessController.doPrivileged(new PrivilegedExceptionAction<ZoneInfo>() {
+        // If there's a ZoneInfo object, use it for zone.
+        try {
+            ZoneInfo zi = (ZoneInfo) AccessController.doPrivileged(new PrivilegedExceptionAction<ZoneInfo>() {
 				public ZoneInfo run() throws Exception {
-					return (ZoneInfo) input.readObject();
-				}
-			});
+                    return (ZoneInfo) input.readObject();
+                }
+            });
 			if (zi != null) {
-				zone = zi;
-			}
-		} catch (Exception e) {
+                zone = zi;
+            }
+        } catch (Exception e) {
 		}
 
-	}
+    }
 }

@@ -32,26 +32,26 @@ import edu.umd.cs.findbugs.DetectorFactory;
  */
 public class DetectorConfigurationTabTestSubclass extends DetectorConfigurationTab {
 
-	public DetectorConfigurationTabTestSubclass(TabFolder tabFolder,
-			FindbugsPropertyPage page, int style) {
-		super(tabFolder, page, style);
+    public DetectorConfigurationTabTestSubclass(TabFolder tabFolder,
+            FindbugsPropertyPage page, int style) {
+        super(tabFolder, page, style);
 	}
 
-	public void disableAllDetectors() {
-		TableItem[] items = availableFactoriesTableViewer.getTable().getItems();
-		for (int i = 0; i < items.length; i++) {
+    public void disableAllDetectors() {
+        TableItem[] items = availableFactoriesTableViewer.getTable().getItems();
+        for (int i = 0; i < items.length; i++) {
 			items[i].setChecked(false);
-		}
-		syncUserPreferencesWithTable();
-	}
+        }
+        syncUserPreferencesWithTable();
+    }
 
-	public void enableDetector(String detectorShortName) {
-		TableItem[] items = availableFactoriesTableViewer.getTable().getItems();
-		for (int i = 0; i < items.length; i++) {
+    public void enableDetector(String detectorShortName) {
+        TableItem[] items = availableFactoriesTableViewer.getTable().getItems();
+        for (int i = 0; i < items.length; i++) {
 			DetectorFactory detectorFactory = (DetectorFactory) items[i].getData();
-			boolean enable = detectorFactory.getShortName().equals(detectorShortName);
-			items[i].setChecked(enable);
-		}
+            boolean enable = detectorFactory.getShortName().equals(detectorShortName);
+            items[i].setChecked(enable);
+        }
 		syncUserPreferencesWithTable();
-	}
+    }
 }

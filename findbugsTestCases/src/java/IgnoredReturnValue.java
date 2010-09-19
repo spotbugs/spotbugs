@@ -12,50 +12,50 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class IgnoredReturnValue {
-	@ExpectWarning("RV")
-	public static void main(String args[]) throws Exception {
-		String str = " ttesting ";
+    @ExpectWarning("RV")
+    public static void main(String args[]) throws Exception {
+        String str = " ttesting ";
 		str.trim();
-		str.toLowerCase();
-		str.toUpperCase();
-		str.replace(" ", "");
+        str.toLowerCase();
+        str.toUpperCase();
+        str.replace(" ", "");
 		str.replace(' ', '.');
-		str.substring(0,10);
-		str.equals("testing");
-		Semaphore s = new Semaphore(17, true);
+        str.substring(0,10);
+        str.equals("testing");
+        Semaphore s = new Semaphore(17, true);
 		s.tryAcquire();
-		s.tryAcquire(12, TimeUnit.MILLISECONDS);
-		BlockingQueue<Object> q = new LinkedBlockingQueue<Object>();
-		q.offer(new Object());
+        s.tryAcquire(12, TimeUnit.MILLISECONDS);
+        BlockingQueue<Object> q = new LinkedBlockingQueue<Object>();
+        q.offer(new Object());
 		q.offer(new Object(), 12, TimeUnit.MILLISECONDS);
-		q.poll(12, TimeUnit.MILLISECONDS);
-		q.poll();
-		Lock l = new ReentrantLock();
+        q.poll(12, TimeUnit.MILLISECONDS);
+        q.poll();
+        Lock l = new ReentrantLock();
 		Condition c = l.newCondition();
-		l.lock();
-		try {
-			c.awaitNanos(12);
+        l.lock();
+        try {
+            c.awaitNanos(12);
 			c.awaitUntil(new Date());
-			c.await(12, TimeUnit.NANOSECONDS);
-		} finally {
-			l.unlock();
+            c.await(12, TimeUnit.NANOSECONDS);
+        } finally {
+            l.unlock();
 		}
 
-		q.poll();
-	}
+        q.poll();
+    }
 
-	// This method shows one way to check to see if a string encoding name is legal.
-	// Under earlier versions of the JVM, this may have been the best way to do this.
-	// So we shouldn't signal a RV warning here
+    // This method shows one way to check to see if a string encoding name is legal.
+    // Under earlier versions of the JVM, this may have been the best way to do this.
+    // So we shouldn't signal a RV warning here
 	@NoWarning("RV")
-	public static boolean falsePositive(String enc) {
-		try {
-			new String(new byte[0], enc);
+    public static boolean falsePositive(String enc) {
+        try {
+            new String(new byte[0], enc);
 			return true;
-		} catch (UnsupportedEncodingException e) {
-			return false;
-		}
+        } catch (UnsupportedEncodingException e) {
+            return false;
+        }
 
-	}
+    }
 
 }

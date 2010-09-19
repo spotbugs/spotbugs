@@ -59,347 +59,347 @@ import edu.umd.cs.findbugs.util.Archive;
  */
 public class WorkItem {
 
-	private final IJavaElement javaElt;
-	private final IResource resource;
-	private final IProject project;
+    private final IJavaElement javaElt;
+    private final IResource resource;
+    private final IProject project;
 
-	public WorkItem(IJavaElement javaElt) {
-		this(null, javaElt, javaElt.getJavaProject().getProject());
-	}
+    public WorkItem(IJavaElement javaElt) {
+        this(null, javaElt, javaElt.getJavaProject().getProject());
+    }
 
-	public WorkItem(IResource resource) {
-		this(resource, null, resource.getProject());
-	}
+    public WorkItem(IResource resource) {
+        this(resource, null, resource.getProject());
+    }
 
-	private WorkItem(IResource resource, IJavaElement javaElt, IProject project) {
-		this.resource = resource;
-		this.javaElt = javaElt;
+    private WorkItem(IResource resource, IJavaElement javaElt, IProject project) {
+        this.resource = resource;
+        this.javaElt = javaElt;
 		this.project = project;
-		Assert.isLegal(resource != null || javaElt != null);
-	}
+        Assert.isLegal(resource != null || javaElt != null);
+    }
 
-	public void addFilesToProject(Project fbProject, Map<IPath, IPath> outputLocations){
-		IResource res = getCorespondingResource();
-		if(res instanceof IProject){
+    public void addFilesToProject(Project fbProject, Map<IPath, IPath> outputLocations){
+        IResource res = getCorespondingResource();
+        if(res instanceof IProject){
 			for (IPath outDir : outputLocations.values()) {
-				fbProject.addFile(outDir.toOSString());
-			}
-		} else if(res instanceof IFolder){
+                fbProject.addFile(outDir.toOSString());
+            }
+        } else if(res instanceof IFolder){
 			// assumption: this is a source folder.
-			boolean added = addClassesForFolder((IFolder) res, outputLocations, fbProject);
-			if(! added){
-				// What if this is a class folder???
+            boolean added = addClassesForFolder((IFolder) res, outputLocations, fbProject);
+            if(! added){
+                // What if this is a class folder???
 				addJavaElementPath(fbProject);
-			}
-		} else if(res instanceof IFile){
-			// ID: 2734173: allow to analyse classes inside archives
+            }
+        } else if(res instanceof IFile){
+            // ID: 2734173: allow to analyse classes inside archives
 			if(Util.isClassFile(res) || Util.isJavaArchive(res)){
-				fbProject.addFile(res.getLocation().toOSString());
-			} else if(Util.isJavaFile(res)) {
-				addClassesForFile((IFile) res, outputLocations, fbProject);
+                fbProject.addFile(res.getLocation().toOSString());
+            } else if(Util.isJavaFile(res)) {
+                addClassesForFile((IFile) res, outputLocations, fbProject);
 			}
-		} else {
-			addJavaElementPath(fbProject);
-		}
+        } else {
+            addJavaElementPath(fbProject);
+        }
 	}
 
-	private void addJavaElementPath(Project fbProject) {
-		if(javaElt != null){
-			IPath path = getPath();
+    private void addJavaElementPath(Project fbProject) {
+        if(javaElt != null){
+            IPath path = getPath();
 			if(path != null){
-				fbProject.addFile(path.toOSString());
-			}
-		}
+                fbProject.addFile(path.toOSString());
+            }
+        }
 	}
 
-	public void clearMarkers() throws CoreException {
-		IResource res = getMarkerTarget();
-		if(res == null){
+    public void clearMarkers() throws CoreException {
+        IResource res = getMarkerTarget();
+        if(res == null){
 			return;
-		}
-		if(javaElt == null || !(res instanceof IProject)) {
-			MarkerUtil.removeMarkers(res);
+        }
+        if(javaElt == null || !(res instanceof IProject)) {
+            MarkerUtil.removeMarkers(res);
 		} else {
-			// this is the case of external class folders/libraries: if we would
-			// cleanup ALL project markers, it would also remove markers from ALL
-			// source/class files, not only for the selected one.
+            // this is the case of external class folders/libraries: if we would
+            // cleanup ALL project markers, it would also remove markers from ALL
+            // source/class files, not only for the selected one.
 			IMarker[] allMarkers = MarkerUtil.getAllMarkers(res);
-			Set<IMarker> set = MarkerUtil.findMarkerForJavaElement(javaElt, allMarkers, true);
-			// TODO can be very slow. May think about batch operation w/o resource notifications
-			// P.S. if executing "clean+build", package explorer first doesn't notice
+            Set<IMarker> set = MarkerUtil.findMarkerForJavaElement(javaElt, allMarkers, true);
+            // TODO can be very slow. May think about batch operation w/o resource notifications
+            // P.S. if executing "clean+build", package explorer first doesn't notice
 			// any change because the external class file labels are not refreshed after clean,
-			// but after build we trigger an explicit view refresh, see FindBugsAction
-			for (IMarker marker : set) {
-				marker.delete();
+            // but after build we trigger an explicit view refresh, see FindBugsAction
+            for (IMarker marker : set) {
+                marker.delete();
 			}
-		}
-	}
+        }
+    }
 
-	public IProject getProject(){
-		return project;
-	}
+    public IProject getProject(){
+        return project;
+    }
 
-	public IJavaProject getJavaProject(){
-		return JavaCore.create(project);
-	}
+    public IJavaProject getJavaProject(){
+        return JavaCore.create(project);
+    }
 
-	/**
-	 * @return false if no classes was added
-	 */
+    /**
+     * @return false if no classes was added
+     */
 	private boolean addClassesForFolder(IFolder folder,
-			Map<IPath, IPath> outLocations, Project fbProject) {
-		IPath path = folder.getLocation();
-		IPath srcRoot = getMatchingSourceRoot(path, outLocations);
+            Map<IPath, IPath> outLocations, Project fbProject) {
+        IPath path = folder.getLocation();
+        IPath srcRoot = getMatchingSourceRoot(path, outLocations);
 		if(srcRoot == null){
-			return false;
-		}
-		IPath outputRoot = outLocations.get(srcRoot);
+            return false;
+        }
+        IPath outputRoot = outLocations.get(srcRoot);
 		int firstSegments = path.matchingFirstSegments(srcRoot);
-		// add relative path to the output path
-		IPath out = outputRoot.append(path.removeFirstSegments(firstSegments));
-		File directory = out.toFile();
+        // add relative path to the output path
+        IPath out = outputRoot.append(path.removeFirstSegments(firstSegments));
+        File directory = out.toFile();
 		return fbProject.addFile(directory.getAbsolutePath());
-		// TODO child directories too. Should add preference???
-	}
+        // TODO child directories too. Should add preference???
+    }
 
-	private void addClassesForFile(IFile file,
-			Map<IPath, IPath> outLocations, Project fbProject) {
-		IPath path = file.getLocation();
+    private void addClassesForFile(IFile file,
+            Map<IPath, IPath> outLocations, Project fbProject) {
+        IPath path = file.getLocation();
 		IPath srcRoot = getMatchingSourceRoot(path, outLocations);
-		if(srcRoot == null){
-			return;
-		}
+        if(srcRoot == null){
+            return;
+        }
 		IPath outputRoot = outLocations.get(srcRoot);
-		int firstSegments = path.matchingFirstSegments(srcRoot);
-		// add relative path to the output path
-		IPath out = outputRoot.append(path.removeFirstSegments(firstSegments));
+        int firstSegments = path.matchingFirstSegments(srcRoot);
+        // add relative path to the output path
+        IPath out = outputRoot.append(path.removeFirstSegments(firstSegments));
 		String fileName = path.removeFileExtension().lastSegment();
-		String namePattern = fileName + "\\.class|" + fileName + "\\$.*\\.class";
-		namePattern = addSecondaryTypesToPattern(file, fileName, namePattern);
-		File directory = out.removeLastSegments(1).toFile();
+        String namePattern = fileName + "\\.class|" + fileName + "\\$.*\\.class";
+        namePattern = addSecondaryTypesToPattern(file, fileName, namePattern);
+        File directory = out.removeLastSegments(1).toFile();
 
-		// add parent folder and regexp for file names
-		Pattern classNamesPattern = Pattern.compile(namePattern);
-		ResourceUtils.addFiles(fbProject, directory, classNamesPattern);
+        // add parent folder and regexp for file names
+        Pattern classNamesPattern = Pattern.compile(namePattern);
+        ResourceUtils.addFiles(fbProject, directory, classNamesPattern);
 	}
 
-	/**
-	 * Add secondary types patterns (not nested in the type itself but contained in the
-	 * java file)
+    /**
+     * Add secondary types patterns (not nested in the type itself but contained in the
+     * java file)
 	 *
-	 * @param fileName java file name (not path!) without .java suffix
-	 * @param classNamePattern non null pattern for all matching .class file names
-	 * @return modified classNamePattern, if there are more then one type defined in the
+     * @param fileName java file name (not path!) without .java suffix
+     * @param classNamePattern non null pattern for all matching .class file names
+     * @return modified classNamePattern, if there are more then one type defined in the
 	 * java file
-	 */
-	private String addSecondaryTypesToPattern(IFile file, String fileName,
-			String classNamePattern) {
+     */
+    private String addSecondaryTypesToPattern(IFile file, String fileName,
+            String classNamePattern) {
 		ICompilationUnit cu = JavaCore.createCompilationUnitFrom(file);
-		if (cu == null) {
-			FindbugsPlugin.getDefault().logError(
-					"NULL compilation unit for " + file
+        if (cu == null) {
+            FindbugsPlugin.getDefault().logError(
+                    "NULL compilation unit for " + file
 							+ ", FB analysis might  be incomplete for included types");
-			return classNamePattern;
-		}
-		try {
+            return classNamePattern;
+        }
+        try {
 			IType[] types = cu.getTypes();
-			if (types.length > 1) {
-				for (IType type : types) {
-					if (fileName.equals(type.getElementName())) {
+            if (types.length > 1) {
+                for (IType type : types) {
+                    if (fileName.equals(type.getElementName())) {
 						// "usual" type with the same name: we have it already
-						continue;
-					}
-					classNamePattern = classNamePattern + "|" + type.getElementName()
+                        continue;
+                    }
+                    classNamePattern = classNamePattern + "|" + type.getElementName()
 							+ "\\.class|" + type.getElementName() + "\\$.*\\.class";
-				}
-			}
-		} catch (JavaModelException e) {
+                }
+            }
+        } catch (JavaModelException e) {
 			FindbugsPlugin.getDefault().logException(e,
-					"Cannot get types from compilation unit: " + cu);
-		}
-		return classNamePattern;
+                    "Cannot get types from compilation unit: " + cu);
+        }
+        return classNamePattern;
 	}
 
-	public @CheckForNull IResource getCorespondingResource(){
-		if(resource != null){
-			return resource;
+    public @CheckForNull IResource getCorespondingResource(){
+        if(resource != null){
+            return resource;
 		}
-		try {
-			return javaElt.getCorrespondingResource();
-		} catch (JavaModelException e) {
+        try {
+            return javaElt.getCorrespondingResource();
+        } catch (JavaModelException e) {
 			// ignore, just return nothing
-		}
-		return null;
-	}
+        }
+        return null;
+    }
 
-	public @CheckForNull IJavaElement getCorespondingJavaElement(){
-		if(javaElt != null){
-			return javaElt;
+    public @CheckForNull IJavaElement getCorespondingJavaElement(){
+        if(javaElt != null){
+            return javaElt;
 		}
-		return JavaCore.create(resource);
-	}
+        return JavaCore.create(resource);
+    }
 
-	/**
-	 * @return the resource which can be used to attach markers found for this item. This
-	 *         resource must exist, and the return value can not be null. The return value
+    /**
+     * @return the resource which can be used to attach markers found for this item. This
+     *         resource must exist, and the return value can not be null. The return value
 	 *         can be absolutely unrelated to the {@link #getCorespondingResource()}.
-	 */
-	public @Nonnull IResource getMarkerTarget(){
-		IResource res = getCorespondingResource();
+     */
+    public @Nonnull IResource getMarkerTarget(){
+        IResource res = getCorespondingResource();
 		if(res != null){
-			return res;
-		}
-		if(javaElt != null){
+            return res;
+        }
+        if(javaElt != null){
 			IResource resource2 = javaElt.getResource();
-			if(resource2 != null){
-				return resource2;
-			}
+            if(resource2 != null){
+                return resource2;
+            }
 		}
-		// probably not the best solution, but this should always work
-		return project;
-	}
+        // probably not the best solution, but this should always work
+        return project;
+    }
 
-	/**
-	 * @return number of markers which are <b>already</b> reported for given work item.
-	 */
+    /**
+     * @return number of markers which are <b>already</b> reported for given work item.
+     */
 	public int getMarkerCount(boolean recursive){
-		return getMarkers(recursive).size();
-	}
+        return getMarkers(recursive).size();
+    }
 
-	/**
-	 * @return markers which are <b>already</b> reported for given work item
-	 */
+    /**
+     * @return markers which are <b>already</b> reported for given work item
+     */
 	public Set<IMarker> getMarkers(boolean recursive){
-		IResource res = getCorespondingResource();
-		if(res != null){
-			if(res.getType() == IResource.PROJECT || javaElt instanceof IPackageFragmentRoot){
+        IResource res = getCorespondingResource();
+        if(res != null){
+            if(res.getType() == IResource.PROJECT || javaElt instanceof IPackageFragmentRoot){
 				// for project, depth_one does not make any sense here
-				recursive = true;
-			}
-			IMarker[] markers = MarkerUtil.getMarkers(res,
+                recursive = true;
+            }
+            IMarker[] markers = MarkerUtil.getMarkers(res,
 					recursive ? IResource.DEPTH_INFINITE : IResource.DEPTH_ONE);
-			return new HashSet<IMarker>(Arrays.asList(markers));
-		}
-		IResource markerTarget = getMarkerTarget();
+            return new HashSet<IMarker>(Arrays.asList(markers));
+        }
+        IResource markerTarget = getMarkerTarget();
 		if (!recursive
-				&& ((markerTarget.getType() == IResource.PROJECT
-						&& (javaElt instanceof IPackageFragmentRoot) || Util
-						.isClassFile(javaElt)) || (Util.isJavaArchive(markerTarget) && Util
+                && ((markerTarget.getType() == IResource.PROJECT
+                        && (javaElt instanceof IPackageFragmentRoot) || Util
+                        .isClassFile(javaElt)) || (Util.isJavaArchive(markerTarget) && Util
 						.isClassFile(javaElt)))) {
-			recursive = true;
-		}
-		IMarker[] markers = MarkerUtil.getMarkers(markerTarget,
+            recursive = true;
+        }
+        IMarker[] markers = MarkerUtil.getMarkers(markerTarget,
 				recursive ? IResource.DEPTH_INFINITE : IResource.DEPTH_ONE);
-		Set<IMarker> forJavaElement = MarkerUtil.findMarkerForJavaElement(javaElt, markers, recursive);
-		return forJavaElement;
-	}
+        Set<IMarker> forJavaElement = MarkerUtil.findMarkerForJavaElement(javaElt, markers, recursive);
+        return forJavaElement;
+    }
 
-	/**
-	 * @param srcPath
-	 * @param outLocations key is the source root, value is output folder
+    /**
+     * @param srcPath
+     * @param outLocations key is the source root, value is output folder
 	 * @return source root folder matching (parent of) given path
-	 */
-	private IPath getMatchingSourceRoot(IPath srcPath, Map<IPath, IPath> outLocations) {
-		Set<Entry<IPath, IPath>> outEntries = outLocations.entrySet();
+     */
+    private IPath getMatchingSourceRoot(IPath srcPath, Map<IPath, IPath> outLocations) {
+        Set<Entry<IPath, IPath>> outEntries = outLocations.entrySet();
 		IPath result = null;
-		int maxSegments = 0;
-		for (Entry<IPath, IPath> entry : outEntries) {
-			IPath srcRoot = entry.getKey();
+        int maxSegments = 0;
+        for (Entry<IPath, IPath> entry : outEntries) {
+            IPath srcRoot = entry.getKey();
 			int firstSegments = srcPath.matchingFirstSegments(srcRoot);
-			if(firstSegments > maxSegments && firstSegments == srcRoot.segmentCount()) {
-				maxSegments = firstSegments;
-				result = srcRoot;
+            if(firstSegments > maxSegments && firstSegments == srcRoot.segmentCount()) {
+                maxSegments = firstSegments;
+                result = srcRoot;
 			}
-		}
-		return result;
-	}
+        }
+        return result;
+    }
 
-	public String getName() {
-		return resource != null ? resource.getName() : javaElt.getElementName();
-	}
+    public String getName() {
+        return resource != null ? resource.getName() : javaElt.getElementName();
+    }
 
-	/**
-	 *
-	 * @return full absolute path corresponding to the work item (file or directory).
+    /**
+     *
+     * @return full absolute path corresponding to the work item (file or directory).
 	 * If the work item is a part of an achive, it's the path to the archive file.
-	 * If the work item is a project, it's the path to the project root.
-	 * TODO If the work item is an internal java element (method, inner class etc), results are undefined yet.
-	 */
+     * If the work item is a project, it's the path to the project root.
+     * TODO If the work item is an internal java element (method, inner class etc), results are undefined yet.
+     */
 	public @CheckForNull IPath getPath(){
-		IResource corespondingResource = getCorespondingResource();
-		if(corespondingResource != null){
-			return corespondingResource.getLocation();
+        IResource corespondingResource = getCorespondingResource();
+        if(corespondingResource != null){
+            return corespondingResource.getLocation();
 		}
-		if(javaElt != null){
-			return javaElt.getPath();
-		}
+        if(javaElt != null){
+            return javaElt.getPath();
+        }
 		return null;
-	}
+    }
 
-	public boolean isDirectory() {
-		IResource corespondingResource = getCorespondingResource();
-		if (corespondingResource != null) {
+    public boolean isDirectory() {
+        IResource corespondingResource = getCorespondingResource();
+        if (corespondingResource != null) {
 			return corespondingResource.getType() == IResource.FOLDER
-					|| corespondingResource.getType() == IResource.PROJECT;
-		}
-		return false;
+                    || corespondingResource.getType() == IResource.PROJECT;
+        }
+        return false;
 	}
 
-	/**
-	 *
-	 * @return true if the given element is contained inside archive
+    /**
+     *
+     * @return true if the given element is contained inside archive
 	 */
-	public boolean isFromArchive(){
-		IPath path = getPath();
-		if(path == null){
+    public boolean isFromArchive(){
+        IPath path = getPath();
+        if(path == null){
 			return false;
-		}
-		File file = path.toFile();
-		if(file.isDirectory()){
+        }
+        File file = path.toFile();
+        if(file.isDirectory()){
 			return false;
-		}
-		return Archive.isArchiveFileName(file.getName());
+        }
+        return Archive.isArchiveFileName(file.getName());
+    }
+
+    @Override
+    public String toString() {
+        return getName();
 	}
 
-	@Override
-	public String toString() {
-		return getName();
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
 		int result = 1;
-		result = prime * result + ((javaElt == null) ? 0 : javaElt.hashCode());
-		result = prime * result + ((resource == null) ? 0 : resource.hashCode());
-		return result;
+        result = prime * result + ((javaElt == null) ? 0 : javaElt.hashCode());
+        result = prime * result + ((resource == null) ? 0 : resource.hashCode());
+        return result;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
 			return true;
+        }
+        if (!(obj instanceof WorkItem)) {
+            return false;
 		}
-		if (!(obj instanceof WorkItem)) {
-			return false;
-		}
-		WorkItem other = (WorkItem) obj;
-		if (javaElt == null) {
-			if (other.javaElt != null) {
+        WorkItem other = (WorkItem) obj;
+        if (javaElt == null) {
+            if (other.javaElt != null) {
 				return false;
-			}
-		} else if (!javaElt.equals(other.javaElt)) {
-			return false;
+            }
+        } else if (!javaElt.equals(other.javaElt)) {
+            return false;
 		}
-		if (resource == null) {
-			if (other.resource != null) {
-				return false;
+        if (resource == null) {
+            if (other.resource != null) {
+                return false;
 			}
-		} else if (!resource.equals(other.resource)) {
-			return false;
-		}
+        } else if (!resource.equals(other.resource)) {
+            return false;
+        }
 		return true;
-	}
+    }
 
 
 }

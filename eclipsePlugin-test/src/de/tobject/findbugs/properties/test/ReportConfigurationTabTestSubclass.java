@@ -26,28 +26,28 @@ import de.tobject.findbugs.properties.ReportConfigurationTab;
 
 /**
  * Test subclass of ReportConfigurationTab that provides methods for testing purposes.
- * 
+ *
  * @author Tomás Pollak
  */
 public class ReportConfigurationTabTestSubclass extends ReportConfigurationTab {
 
-	public ReportConfigurationTabTestSubclass(TabFolder tabFolder,
-			FindbugsPropertyPage page, int style) {
-		super(tabFolder, page, style);
+    public ReportConfigurationTabTestSubclass(TabFolder tabFolder,
+            FindbugsPropertyPage page, int style) {
+        super(tabFolder, page, style);
 	}
 
-	public void deselectAllBugCategories() {
-		for (Button button : getChkEnableBugCategoryList()) {
-			button.setSelection(false);
+    public void deselectAllBugCategories() {
+        for (Button button : getChkEnableBugCategoryList()) {
+            button.setSelection(false);
 		}
-		syncSelectedCategories();
-	}
+        syncSelectedCategories();
+    }
 
-	public void selectBugCategory(String category) {
-		for (Button button : getChkEnableBugCategoryList()) {
-			button.setSelection(button.getData().equals(category));
+    public void selectBugCategory(String category) {
+        for (Button button : getChkEnableBugCategoryList()) {
+            button.setSelection(button.getData().equals(category));
 		}
-		syncSelectedCategories();
-	}
+        syncSelectedCategories();
+    }
 
 }

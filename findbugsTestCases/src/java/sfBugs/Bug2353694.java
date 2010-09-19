@@ -26,7 +26,7 @@ public class Bug2353694 {
      * Behavior at filing:
      *   OBL false positive already resolved
      *   correct OS warning thrown for in2
-	 * warning thrown =>
+     * warning thrown =>
      *   M B OS_OPEN_STREAM OS: Bug2353694.fp_warning_OS() may fail to close \
      *   stream At Bug2353694.java:[line 26]
      *
@@ -52,7 +52,7 @@ public class Bug2353694 {
     /* ********************
      * Behavior at filing:
      *   correct OS warning thrown for in3
-	 * warning thrown =>
+     * warning thrown =>
      *   oM B OS_OPEN_STREAM OS: Bug2353694.correct_warning_OS() may fail to \
      *   close stream At Bug2353694.java:[line 50]
      * ******************** */

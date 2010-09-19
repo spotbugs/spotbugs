@@ -31,39 +31,39 @@ import org.eclipse.ui.texteditor.ITextEditor;
  */
 public class EditorUtil {
 
-	/**
-	 * Default line which can be used to create a marker or annotation in the editor
-	 */
+    /**
+     * Default line which can be used to create a marker or annotation in the editor
+     */
 	public static final int DEFAULT_LINE_IN_EDITOR = 1;
 
-	/**
-	 * Selects and reveals the given line in given editor.
-	 * <p>
+    /**
+     * Selects and reveals the given line in given editor.
+     * <p>
 	 * Must be executed from UI thread.
-	 * @param editorPart
-	 * @param lineNumber
-	 */
+     * @param editorPart
+     * @param lineNumber
+     */
 	public static void goToLine(IEditorPart editorPart, int lineNumber) {
-		if (!(editorPart instanceof ITextEditor) || lineNumber < DEFAULT_LINE_IN_EDITOR) {
-			return;
-		}
+        if (!(editorPart instanceof ITextEditor) || lineNumber < DEFAULT_LINE_IN_EDITOR) {
+            return;
+        }
 		ITextEditor editor = (ITextEditor) editorPart;
-		IDocument document = editor.getDocumentProvider().getDocument(
-				editor.getEditorInput());
-		if (document != null) {
+        IDocument document = editor.getDocumentProvider().getDocument(
+                editor.getEditorInput());
+        if (document != null) {
 			IRegion lineInfo = null;
-			try {
-				// line count internaly starts with 0, and not with 1 like in
-				// GUI
+            try {
+                // line count internaly starts with 0, and not with 1 like in
+                // GUI
 				lineInfo = document.getLineInformation(lineNumber - 1);
-			} catch (BadLocationException e) {
-				// ignored because line number may not really exist in document,
-				// we guess this...
+            } catch (BadLocationException e) {
+                // ignored because line number may not really exist in document,
+                // we guess this...
 			}
-			if (lineInfo != null) {
-				editor.selectAndReveal(lineInfo.getOffset(), lineInfo
-						.getLength());
+            if (lineInfo != null) {
+                editor.selectAndReveal(lineInfo.getOffset(), lineInfo
+                        .getLength());
 			}
-		}
-	}
+        }
+    }
 }

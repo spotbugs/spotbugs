@@ -42,75 +42,75 @@ import de.tobject.findbugs.view.explorer.GroupType;
  */
 public class OpenPropertiesAction implements IObjectActionDelegate {
 
-	/** The current selection. */
-	private ISelection selection;
-	private IWorkbenchPart targetPart;
+    /** The current selection. */
+    private ISelection selection;
+    private IWorkbenchPart targetPart;
 
-	public OpenPropertiesAction() {
-		super();
-	}
+    public OpenPropertiesAction() {
+        super();
+    }
 	public OpenPropertiesAction(IWorkbenchPart targetPart) {
-		super();
-		this.targetPart = targetPart;
-	}
+        super();
+        this.targetPart = targetPart;
+    }
 
-	public final void setActivePart(final IAction action, final IWorkbenchPart targetPart) {
-		this.targetPart = targetPart;
-	}
+    public final void setActivePart(final IAction action, final IWorkbenchPart targetPart) {
+        this.targetPart = targetPart;
+    }
 
-	public final void selectionChanged(final IAction action, final ISelection newSelection) {
-		this.selection = newSelection;
-	}
+    public final void selectionChanged(final IAction action, final ISelection newSelection) {
+        this.selection = newSelection;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 *
+    /*
+     * (non-Javadoc)
+     *
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
-	 */
-	public final void run(final IAction action) {
-		if(targetPart == null){
+     */
+    public final void run(final IAction action) {
+        if(targetPart == null){
 			return;
-		}
-		try {
-			if (!selection.isEmpty() && (selection instanceof IStructuredSelection)) {
+        }
+        try {
+            if (!selection.isEmpty() && (selection instanceof IStructuredSelection)) {
 				IStructuredSelection ssel = (IStructuredSelection) selection;
-				Object element = ssel.getFirstElement();
-				if(element instanceof BugGroup){
-					final BugGroup group = (BugGroup) element;
+                Object element = ssel.getFirstElement();
+                if(element instanceof BugGroup){
+                    final BugGroup group = (BugGroup) element;
 					if(group.getType() == GroupType.Project){
-						PropertyDialogAction paction = new PropertyDialogAction(new IShellProvider(){
-							public Shell getShell() {
-								return null;
+                        PropertyDialogAction paction = new PropertyDialogAction(new IShellProvider(){
+                            public Shell getShell() {
+                                return null;
 							}
-						}, new ISelectionProvider(){
-							public void addSelectionChangedListener(
-									ISelectionChangedListener listener) {
+                        }, new ISelectionProvider(){
+                            public void addSelectionChangedListener(
+                                    ISelectionChangedListener listener) {
 								// noop
+                            }
+                            public ISelection getSelection() {
+                                return new StructuredSelection(group.getData());
 							}
-							public ISelection getSelection() {
-								return new StructuredSelection(group.getData());
+                            public void removeSelectionChangedListener(
+                                    ISelectionChangedListener listener) {
+                                // noop
 							}
-							public void removeSelectionChangedListener(
-									ISelectionChangedListener listener) {
-								// noop
-							}
-							public void setSelection(ISelection selection) {
-								// noop
-							}
+                            public void setSelection(ISelection selection) {
+                                // noop
+                            }
 						});
-						paction.run();
-						return;
-					}
+                        paction.run();
+                        return;
+                    }
 				}
-				targetPart.getSite().getPage().showView(IPageLayout.ID_PROP_SHEET);
-			}
-		} catch (CoreException e) {
+                targetPart.getSite().getPage().showView(IPageLayout.ID_PROP_SHEET);
+            }
+        } catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e,
-					"Exception while parsing content of FindBugs markers.");
-		} finally {
-			targetPart = null;
+                    "Exception while parsing content of FindBugs markers.");
+        } finally {
+            targetPart = null;
 		}
-	}
+    }
 
 
 

@@ -2,10 +2,10 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class BadStatic {
 
-	static String name;
+    static String name;
 
-	@ExpectWarning("ST")
-	public BadStatic(String n) {
-		name = n;
+    @ExpectWarning("ST")
+    public BadStatic(String n) {
+        name = n;
 	}
 }

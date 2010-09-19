@@ -9,15 +9,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class StringBufferCrossSiteScripting extends HttpServlet {
-	public void doGet(HttpServletRequest request, HttpServletResponse response) 
-		throws ServletException, IOException {
-		response.setContentType("text/html");
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+        response.setContentType("text/html");
 		String name = request.getParameter("firstName");
-		
-		PrintWriter out = response.getWriter();
-		
+
+        PrintWriter out = response.getWriter();
+
 		out.println("<p>Hi" + name);
-		out.println("<p>Please come back" + name);
-		out.close();
-	}
+        out.println("<p>Please come back" + name);
+        out.close();
+    }
 }

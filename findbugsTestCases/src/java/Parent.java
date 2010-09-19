@@ -2,14 +2,14 @@
 
 public class Parent
 {
-	@Override
-	public boolean equals(Object o)
-	{
+    @Override
+    public boolean equals(Object o)
+    {
 		return false;
-	}
+    }
 
-	public void blargh()
-	{
+    public void blargh()
+    {
 
-	}
+    }
 }

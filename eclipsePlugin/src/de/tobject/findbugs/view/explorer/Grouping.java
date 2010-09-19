@@ -30,105 +30,105 @@ import org.eclipse.ui.IPersistable;
 
 public class Grouping implements IPersistable {
 
-	private final LinkedList<GroupType> groupOrder;
+    private final LinkedList<GroupType> groupOrder;
 
-	private Grouping(List<GroupType> types){
-		groupOrder = new LinkedList<GroupType>(types);
-		// at least marker should be shown
+    private Grouping(List<GroupType> types){
+        groupOrder = new LinkedList<GroupType>(types);
+        // at least marker should be shown
 		if(!groupOrder.contains(GroupType.Marker)){
-			groupOrder.add(GroupType.Marker);
-		}
-	}
+            groupOrder.add(GroupType.Marker);
+        }
+    }
 
-	private static Grouping createDefault(){
-		List<GroupType> order = new ArrayList<GroupType>();
-		order.add(GroupType.Project);
+    private static Grouping createDefault(){
+        List<GroupType> order = new ArrayList<GroupType>();
+        order.add(GroupType.Project);
 		order.add(GroupType.Pattern);
-		order.add(GroupType.Marker);
-		return createFrom(order);
-	}
+        order.add(GroupType.Marker);
+        return createFrom(order);
+    }
 
-	public static Grouping createFrom(List<GroupType> types){
-		return new Grouping(types);
-	}
+    public static Grouping createFrom(List<GroupType> types){
+        return new Grouping(types);
+    }
 
-	public List<GroupType> asList(){
-		return new LinkedList<GroupType>(groupOrder);
-	}
+    public List<GroupType> asList(){
+        return new LinkedList<GroupType>(groupOrder);
+    }
 
-	public GroupType getFirstType(){
-		return groupOrder.size() > 0? groupOrder.getFirst() : GroupType.Undefined;
-	}
+    public GroupType getFirstType(){
+        return groupOrder.size() > 0? groupOrder.getFirst() : GroupType.Undefined;
+    }
 
-	public GroupType getLastType() {
-		return groupOrder.size() > 0 ? groupOrder.getLast() : GroupType.Undefined;
-	}
+    public GroupType getLastType() {
+        return groupOrder.size() > 0 ? groupOrder.getLast() : GroupType.Undefined;
+    }
 
-	public GroupType getChildType(GroupType parent) {
-		if (parent == GroupType.Marker) {
-			return parent;
+    public GroupType getChildType(GroupType parent) {
+        if (parent == GroupType.Marker) {
+            return parent;
 		}
-		for (int i = 0; i < groupOrder.size(); i++) {
-			if (groupOrder.get(i) == parent) {
-				return i + 1 < groupOrder.size() ? groupOrder.get(i + 1)
+        for (int i = 0; i < groupOrder.size(); i++) {
+            if (groupOrder.get(i) == parent) {
+                return i + 1 < groupOrder.size() ? groupOrder.get(i + 1)
 						: GroupType.Marker;
-			}
-		}
-		return GroupType.Marker;
+            }
+        }
+        return GroupType.Marker;
 	}
 
-	Iterator<GroupType> iterator(){
-		return groupOrder.iterator();
-	}
+    Iterator<GroupType> iterator(){
+        return groupOrder.iterator();
+    }
 
-	public GroupType getParentType(GroupType child) {
-		for (int i = 0; i < groupOrder.size(); i++) {
-			if (groupOrder.get(i) == child) {
+    public GroupType getParentType(GroupType child) {
+        for (int i = 0; i < groupOrder.size(); i++) {
+            if (groupOrder.get(i) == child) {
 				return i - 1 >= 0 ? groupOrder.get(i - 1) : GroupType.Undefined;
-			}
-		}
-		return GroupType.Undefined;
+            }
+        }
+        return GroupType.Undefined;
 	}
 
-	public void saveState(IMemento memento) {
-		memento.putString("Grouping", groupOrder.toString());
-	}
+    public void saveState(IMemento memento) {
+        memento.putString("Grouping", groupOrder.toString());
+    }
 
-	static Grouping restoreFrom(IMemento memento) {
-		if(memento == null){
-			return createDefault();
+    static Grouping restoreFrom(IMemento memento) {
+        if(memento == null){
+            return createDefault();
 		}
-		String string = memento.getString("Grouping");
-		return restoreFrom(string);
-	}
+        String string = memento.getString("Grouping");
+        return restoreFrom(string);
+    }
 
-	static Grouping restoreFrom(String saved) {
-		if(saved == null || saved.length() == 0){
-			return createDefault();
+    static Grouping restoreFrom(String saved) {
+        if(saved == null || saved.length() == 0){
+            return createDefault();
 		}
-		StringTokenizer st = new StringTokenizer(saved, "[] ,", false);
-		List<GroupType> types = new ArrayList<GroupType>();
-		while(st.hasMoreTokens()){
+        StringTokenizer st = new StringTokenizer(saved, "[] ,", false);
+        List<GroupType> types = new ArrayList<GroupType>();
+        while(st.hasMoreTokens()){
 			GroupType type = GroupType.valueOf(st.nextToken());
-			types.add(type);
-		}
-		if(types.isEmpty()){
+            types.add(type);
+        }
+        if(types.isEmpty()){
 			return createDefault();
-		}
-		return createFrom(types);
-	}
+        }
+        return createFrom(types);
+    }
 
-	public boolean contains(GroupType type) {
-		return groupOrder.contains(type);
-	}
+    public boolean contains(GroupType type) {
+        return groupOrder.contains(type);
+    }
 
-	int compare(GroupType g1, GroupType g2){
-		return groupOrder.indexOf(g1) - groupOrder.indexOf(g2);
-	}
+    int compare(GroupType g1, GroupType g2){
+        return groupOrder.indexOf(g1) - groupOrder.indexOf(g2);
+    }
 
-	@Override
-	public String toString() {
-		return groupOrder.toString();
+    @Override
+    public String toString() {
+        return groupOrder.toString();
 	}
 
 }

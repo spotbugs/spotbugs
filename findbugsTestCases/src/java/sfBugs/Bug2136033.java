@@ -16,7 +16,7 @@ import org.junit.Test;
 
  * FindBugs OBL false positive.
 
- * 
+ *
 
  * The difference is the argument to safeClose(). If it is a Closeable, FindBugs OBL generates a
 
@@ -26,86 +26,86 @@ import org.junit.Test;
 
 public class Bug2136033 {
 
-	@Test
+    @Test
 
-	public void testCloseStream() throws Exception {
+    public void testCloseStream() throws Exception {
 
-		// ok: this line is not flagged with OBL
+        // ok: this line is not flagged with OBL
 
-		FileOutputStream fos = new FileOutputStream(File.createTempFile("prefix", "temp"));
+        FileOutputStream fos = new FileOutputStream(File.createTempFile("prefix", "temp"));
 
-		try {
+        try {
 
-			fos.write("abc".getBytes());
+            fos.write("abc".getBytes());
 
-		} finally {
+        } finally {
 
-			safeCloseStream(fos);
+            safeCloseStream(fos);
 
-		}
+        }
 
-	}
-
-
-
-	private void safeCloseStream(OutputStream object) {
-
-		try {
-
-			if (object != null && object != System.out && object != System.err) {
-
-				object.close();
-
-			}
-
-		} catch (IOException e) {
-
-			System.out.println("failed to close stream: " + e.getMessage());
-
-		}
-
-	}
+    }
 
 
 
-	@Test
+    private void safeCloseStream(OutputStream object) {
 
-	public void testCloseCloseableFalsePositive() throws Exception {
+        try {
 
-		// FALSE POSITIVE: this line is flagged with OBL
+            if (object != null && object != System.out && object != System.err) {
 
-		FileOutputStream fos = new FileOutputStream(File.createTempFile("prefix", "temp"));
+                object.close();
 
-		try {
+            }
 
-			fos.write("abc".getBytes());
+        } catch (IOException e) {
 
-		} finally {
+            System.out.println("failed to close stream: " + e.getMessage());
 
-			safeCloseCloseable(fos);
+        }
 
-		}
-
-	}
+    }
 
 
 
-	private void safeCloseCloseable(Closeable object) {
+    @Test
 
-		try {
+    public void testCloseCloseableFalsePositive() throws Exception {
 
-			if (object != null && object != System.out && object != System.err) {
+        // FALSE POSITIVE: this line is flagged with OBL
 
-				object.close();
+        FileOutputStream fos = new FileOutputStream(File.createTempFile("prefix", "temp"));
 
-			}
+        try {
 
-		} catch (IOException e) {
+            fos.write("abc".getBytes());
 
-			System.out.println("failed to close stream: " + e.getMessage());
+        } finally {
 
-		}
+            safeCloseCloseable(fos);
 
-	}
+        }
+
+    }
+
+
+
+    private void safeCloseCloseable(Closeable object) {
+
+        try {
+
+            if (object != null && object != System.out && object != System.err) {
+
+                object.close();
+
+            }
+
+        } catch (IOException e) {
+
+            System.out.println("failed to close stream: " + e.getMessage());
+
+        }
+
+    }
 
 }

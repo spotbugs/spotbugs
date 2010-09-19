@@ -37,27 +37,27 @@ import de.tobject.findbugs.view.explorer.GroupType;
 
 public class ShowInPackageExplorerAction implements IObjectActionDelegate {
 
-	private IWorkbenchPartSite site;
-	private Object data;
+    private IWorkbenchPartSite site;
+    private Object data;
 
-	public ShowInPackageExplorerAction() {
-		super();
-	}
+    public ShowInPackageExplorerAction() {
+        super();
+    }
 
-	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-		site = targetPart.getSite();
-	}
+    public void setActivePart(IAction action, IWorkbenchPart targetPart) {
+        site = targetPart.getSite();
+    }
 
-	public void run(IAction action) {
-		if(data == null){
-			return;
+    public void run(IAction action) {
+        if(data == null){
+            return;
 		}
         IViewPart part = getView(JavaUI.ID_PACKAGES);
         if(part instanceof ISetSelectionTarget){
             ISetSelectionTarget target = (ISetSelectionTarget) part;
             target.selectReveal(new StructuredSelection(data));
         }
-	}
+    }
 
     private IViewPart getView(String id){
         IViewPart part;
@@ -70,39 +70,39 @@ public class ShowInPackageExplorerAction implements IObjectActionDelegate {
         }
     }
 
-	public void selectionChanged(IAction action, ISelection selection) {
-		if (!(selection instanceof IStructuredSelection)) {
-			data = null;
+    public void selectionChanged(IAction action, ISelection selection) {
+        if (!(selection instanceof IStructuredSelection)) {
+            data = null;
 			action.setEnabled(false);
-			return;
-		}
-		IStructuredSelection ss = (IStructuredSelection) selection;
+            return;
+        }
+        IStructuredSelection ss = (IStructuredSelection) selection;
 		if (ss.size() != 1) {
-			data = null;
-			action.setEnabled(false);
-			return;
+            data = null;
+            action.setEnabled(false);
+            return;
 		}
-		Object firstElement = ss.getFirstElement();
-		if(firstElement instanceof IMarker){
-			IMarker marker = (IMarker) firstElement;
+        Object firstElement = ss.getFirstElement();
+        if(firstElement instanceof IMarker){
+            IMarker marker = (IMarker) firstElement;
 			data = marker.getResource();
-			action.setEnabled(data != null);
-			return;
-		}
+            action.setEnabled(data != null);
+            return;
+        }
 		if (!(firstElement instanceof BugGroup)) {
-			data = null;
-			action.setEnabled(false);
-			return;
+            data = null;
+            action.setEnabled(false);
+            return;
 		}
-		BugGroup group = (BugGroup) firstElement;
-		if (group.getType() == GroupType.Class || group.getType() == GroupType.Package
-				|| group.getType() == GroupType.Project) {
+        BugGroup group = (BugGroup) firstElement;
+        if (group.getType() == GroupType.Class || group.getType() == GroupType.Package
+                || group.getType() == GroupType.Project) {
 			data = group.getData();
-			action.setEnabled(data != null);
-		} else {
-			data = null;
+            action.setEnabled(data != null);
+        } else {
+            data = null;
 			action.setEnabled(false);
-		}
-	}
+        }
+    }
 
 }

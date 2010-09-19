@@ -6,19 +6,19 @@ import java.io.IOException;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug1992566 {
-	@NoWarning("RV")
-	public void rvFalsePos(File directory) {
-		boolean created = directory.mkdirs();
+    @NoWarning("RV")
+    public void rvFalsePos(File directory) {
+        boolean created = directory.mkdirs();
 		if (!created) {
-			throw new IllegalStateException("directory = " + directory.getPath() +
-				" failed to exist and could not be created");
-		}
+            throw new IllegalStateException("directory = " + directory.getPath() +
+                " failed to exist and could not be created");
+        }
 	}
-	
-	@NoWarning("RV")
-	public void rvFalsePos2(File file) throws IOException {
+
+    @NoWarning("RV")
+    public void rvFalsePos2(File file) throws IOException {
 		if ( !file.createNewFile() ) {
-			throw new IOException("failed to create " + file.getPath());
-		}
-	}
+            throw new IOException("failed to create " + file.getPath());
+        }
+    }
 }

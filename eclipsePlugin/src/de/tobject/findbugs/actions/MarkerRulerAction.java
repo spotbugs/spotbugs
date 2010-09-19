@@ -58,187 +58,187 @@ import de.tobject.findbugs.reporter.MarkerUtil;
  * @since 20.4.2004
  */
 public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseListener,
-		IMenuListener {
+        IMenuListener {
 
-	private IVerticalRulerInfo ruler;
-	private ITextEditor editor;
+    private IVerticalRulerInfo ruler;
+    private ITextEditor editor;
 
-	/** Contains the markers of the currently selected line in the ruler margin. */
-	private final ArrayList<IMarker> markers;
+    /** Contains the markers of the currently selected line in the ruler margin. */
+    private final ArrayList<IMarker> markers;
 
-	/**
-	 * The action sent to this delegate. Enable and disable it based upon whether there
-	 * are FindBugs markers on the current line
+    /**
+     * The action sent to this delegate. Enable and disable it based upon whether there
+     * are FindBugs markers on the current line
 	 */
-	private IAction action;
+    private IAction action;
 
-	public MarkerRulerAction() {
-		super();
-		markers = new ArrayList<IMarker>();
+    public MarkerRulerAction() {
+        super();
+        markers = new ArrayList<IMarker>();
 	}
 
-	public void setActiveEditor(IAction callerAction, IEditorPart targetEditor) {
-		Control control;
-		// See if we're already listenting to an editor; if so, stop listening
+    public void setActiveEditor(IAction callerAction, IEditorPart targetEditor) {
+        Control control;
+        // See if we're already listenting to an editor; if so, stop listening
 		if (editor != null) {
-			if (ruler != null) {
-				control = ruler.getControl();
-				if (control != null && !control.isDisposed()) {
+            if (ruler != null) {
+                control = ruler.getControl();
+                if (control != null && !control.isDisposed()) {
 					control.removeMouseListener(this);
-				}
-			}
-			if (editor instanceof ITextEditorExtension) {
+                }
+            }
+            if (editor instanceof ITextEditorExtension) {
 				((ITextEditorExtension) editor).removeRulerContextMenuListener(this);
-			}
-		}
+            }
+        }
 
-		// Start listening to the current editor
-		if (targetEditor instanceof ITextEditor) {
-			editor = (ITextEditor) targetEditor;
+        // Start listening to the current editor
+        if (targetEditor instanceof ITextEditor) {
+            editor = (ITextEditor) targetEditor;
 			// Check for editor's ruler context listener capability
-			if (editor instanceof ITextEditorExtension) {
-				((ITextEditorExtension) editor).addRulerContextMenuListener(this);
-			}
+            if (editor instanceof ITextEditorExtension) {
+                ((ITextEditorExtension) editor).addRulerContextMenuListener(this);
+            }
 			ruler = (IVerticalRulerInfo) editor.getAdapter(IVerticalRulerInfo.class);
-			if (ruler != null) {
-				control = ruler.getControl();
-				if (control != null && !control.isDisposed()) {
+            if (ruler != null) {
+                control = ruler.getControl();
+                if (control != null && !control.isDisposed()) {
 					control.addMouseListener(this);
-				}
-			}
-		} else {
+                }
+            }
+        } else {
 			ruler = null;
-			editor = null;
-		}
-	}
+            editor = null;
+        }
+    }
 
-	public void run(IAction action1) {
-		this.action = action1;
-		obtainFindBugsMarkers();
+    public void run(IAction action1) {
+        this.action = action1;
+        obtainFindBugsMarkers();
 		if (markers.size() <= 0) {
-			MessageDialog.openError(editor.getSite().getShell(),
-					"Error Showing Bug Details",
-					"You must first select a FindBugs marker to view bug details.");
+            MessageDialog.openError(editor.getSite().getShell(),
+                    "Error Showing Bug Details",
+                    "You must first select a FindBugs marker to view bug details.");
 		} else {
-			update();
-		}
-	}
+            update();
+        }
+    }
 
-	public void selectionChanged(IAction action1, ISelection selection) {
-		this.action = action1;
-	}
+    public void selectionChanged(IAction action1, ISelection selection) {
+        this.action = action1;
+    }
 
-	/**
-	 * Fills markers field with all of the FindBugs markers associated with the current
-	 * line in the text editor's ruler marign.
+    /**
+     * Fills markers field with all of the FindBugs markers associated with the current
+     * line in the text editor's ruler marign.
 	 */
-	protected void obtainFindBugsMarkers() {
-		// Delete old markers
-		markers.clear();
+    protected void obtainFindBugsMarkers() {
+        // Delete old markers
+        markers.clear();
 		if (editor == null || ruler == null) {
-			return;
-		}
+            return;
+        }
 
-		// Obtain all markers in the editor
-		IResource resource = (IResource) editor.getEditorInput().getAdapter(IFile.class);
-		IMarker[] allMarkers = MarkerUtil.getMarkers(resource, IResource.DEPTH_ZERO);
+        // Obtain all markers in the editor
+        IResource resource = (IResource) editor.getEditorInput().getAdapter(IFile.class);
+        IMarker[] allMarkers = MarkerUtil.getMarkers(resource, IResource.DEPTH_ZERO);
 		// Discover relevant markers, i.e. FindBugsMarkers
-		AbstractMarkerAnnotationModel model = getModel();
-		IDocument document = getDocument();
-		for (int i = 0; i < allMarkers.length; i++) {
+        AbstractMarkerAnnotationModel model = getModel();
+        IDocument document = getDocument();
+        for (int i = 0; i < allMarkers.length; i++) {
 			if (includesRulerLine(model.getMarkerPosition(allMarkers[i]), document)) {
-				if (MarkerUtil.isFindBugsMarker(allMarkers[i])) {
-					markers.add(allMarkers[i]);
-				}
+                if (MarkerUtil.isFindBugsMarker(allMarkers[i])) {
+                    markers.add(allMarkers[i]);
+                }
 			}
-		}
-	}
+        }
+    }
 
-	public void update() {
-		if (markers.size() > 0) {
-			IMarker marker = markers.get(0);
+    public void update() {
+        if (markers.size() > 0) {
+            IMarker marker = markers.get(0);
 			if(action.getId().endsWith("Properties")){
-				FindbugsPlugin.showMarker(marker, FindbugsPlugin.DETAILS_VIEW_ID, editor);
-			} else {
-				// TODO show all
+                FindbugsPlugin.showMarker(marker, FindbugsPlugin.DETAILS_VIEW_ID, editor);
+            } else {
+                // TODO show all
 				FindbugsPlugin.showMarker(marker, FindbugsPlugin.TREE_VIEW_ID, editor);
-			}
-			markers.clear();
-		}
+            }
+            markers.clear();
+        }
 	}
 
-	/**
-	 * Checks a Position in a document to see whether the line of last mouse activity
-	 * falls within this region.
+    /**
+     * Checks a Position in a document to see whether the line of last mouse activity
+     * falls within this region.
 	 *
-	 * @param position
-	 *            Position of the marker
-	 * @param document
+     * @param position
+     *            Position of the marker
+     * @param document
 	 *            the Document the marker resides in
-	 * @return true if the last mouse click falls on the same line as the marker
-	 */
-	protected boolean includesRulerLine(Position position, IDocument document) {
+     * @return true if the last mouse click falls on the same line as the marker
+     */
+    protected boolean includesRulerLine(Position position, IDocument document) {
 		if (position != null) {
-			try {
-				int markerLine = document.getLineOfOffset(position.getOffset());
-				int line = ruler.getLineOfLastMouseButtonActivity();
+            try {
+                int markerLine = document.getLineOfOffset(position.getOffset());
+                int line = ruler.getLineOfLastMouseButtonActivity();
 				if (line == markerLine) {
-					return true;
-				}
-			} catch (BadLocationException x) {
+                    return true;
+                }
+            } catch (BadLocationException x) {
 				FindbugsPlugin.getDefault().logException(x, "Error getting marker line");
-			}
-		}
-		return false;
+            }
+        }
+        return false;
 	}
 
-	/**
-	 * Retrieves the AbstractMarkerAnnontationsModel from the editor.
-	 *
+    /**
+     * Retrieves the AbstractMarkerAnnontationsModel from the editor.
+     *
 	 * @return AbstractMarkerAnnotatiosnModel from the editor
-	 */
-	protected AbstractMarkerAnnotationModel getModel() {
-		IDocumentProvider provider = editor.getDocumentProvider();
+     */
+    protected AbstractMarkerAnnotationModel getModel() {
+        IDocumentProvider provider = editor.getDocumentProvider();
 		IAnnotationModel model = provider.getAnnotationModel(editor.getEditorInput());
-		if (model instanceof AbstractMarkerAnnotationModel) {
-			return (AbstractMarkerAnnotationModel) model;
-		}
+        if (model instanceof AbstractMarkerAnnotationModel) {
+            return (AbstractMarkerAnnotationModel) model;
+        }
 		return null;
-	}
+    }
 
-	/**
-	 * Retrieves the document from the editor.
-	 *
+    /**
+     * Retrieves the document from the editor.
+     *
 	 * @return the document from the editor
-	 */
-	protected IDocument getDocument() {
-		IDocumentProvider provider = editor.getDocumentProvider();
+     */
+    protected IDocument getDocument() {
+        IDocumentProvider provider = editor.getDocumentProvider();
 		return provider.getDocument(editor.getEditorInput());
-	}
+    }
 
-	public void menuAboutToShow(IMenuManager manager) {
-		if (action != null) {
-			obtainFindBugsMarkers();
+    public void menuAboutToShow(IMenuManager manager) {
+        if (action != null) {
+            obtainFindBugsMarkers();
 			action.setEnabled(markers.size() > 0);
-		}
-	}
+        }
+    }
 
-	public void mouseDoubleClick(MouseEvent e) {
-		//
-	}
+    public void mouseDoubleClick(MouseEvent e) {
+        //
+    }
 
-	public void mouseDown(MouseEvent e) {
-		// Only capture left clicks.
-		if (e.button == 1) {
+    public void mouseDown(MouseEvent e) {
+        // Only capture left clicks.
+        if (e.button == 1) {
 			obtainFindBugsMarkers();
-			if (markers.size() > 0) {
-				update();
-			}
+            if (markers.size() > 0) {
+                update();
+            }
 		}
-	}
+    }
 
-	public void mouseUp(MouseEvent e) {
-		//
-	}
+    public void mouseUp(MouseEvent e) {
+        //
+    }
 
 }

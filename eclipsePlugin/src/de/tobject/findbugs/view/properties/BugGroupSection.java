@@ -45,122 +45,122 @@ import de.tobject.findbugs.view.explorer.BugGroup;
  */
 public class BugGroupSection extends AbstractPropertySection {
 
-	private Composite rootComposite;
-	private Text text;
-	private final PropPageTitleProvider provider;
+    private Composite rootComposite;
+    private Text text;
+    private final PropPageTitleProvider provider;
 
-	public BugGroupSection() {
-		super();
-		provider = new PropPageTitleProvider();
+    public BugGroupSection() {
+        super();
+        provider = new PropPageTitleProvider();
 	}
 
-	@Override
-	public void createControls(Composite parent,
-			final TabbedPropertySheetPage tabbedPropertySheetPage) {
+    @Override
+    public void createControls(Composite parent,
+            final TabbedPropertySheetPage tabbedPropertySheetPage) {
 		super.createControls(parent, tabbedPropertySheetPage);
-		Color background = tabbedPropertySheetPage.getWidgetFactory().getColors()
-				.getBackground();
+        Color background = tabbedPropertySheetPage.getWidgetFactory().getColors()
+                .getBackground();
 
-		rootComposite = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout(1, true);
-		layout.marginLeft = 5;
+        rootComposite = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout(1, true);
+        layout.marginLeft = 5;
 		layout.marginTop = 5;
-		rootComposite.setLayout(layout);
-		rootComposite.setSize(SWT.DEFAULT, SWT.DEFAULT);
+        rootComposite.setLayout(layout);
+        rootComposite.setSize(SWT.DEFAULT, SWT.DEFAULT);
 
-		rootComposite.setBackground(background);
+        rootComposite.setBackground(background);
 
-		text = new Text(rootComposite, SWT.READ_ONLY | SWT.WRAP);
-		GridData data = new GridData(GridData.FILL_BOTH);
-		data.horizontalIndent = 0;
+        text = new Text(rootComposite, SWT.READ_ONLY | SWT.WRAP);
+        GridData data = new GridData(GridData.FILL_BOTH);
+        data.horizontalIndent = 0;
 		data.verticalIndent = 0;
-		text.setLayoutData(data);
-		text.setBackground(background);
-		text.setFont(JFaceResources.getTextFont());
+        text.setLayoutData(data);
+        text.setBackground(background);
+        text.setFont(JFaceResources.getTextFont());
 	}
 
-	@Override
-	public void setInput(IWorkbenchPart part, ISelection selection) {
-		super.setInput(part, selection);
+    @Override
+    public void setInput(IWorkbenchPart part, ISelection selection) {
+        super.setInput(part, selection);
 		refreshText(selection);
+    }
+
+    @Override
+    public void refresh() {
+        super.refresh();
 	}
 
-	@Override
-	public void refresh() {
-		super.refresh();
-	}
-
-	@Override
-	public void dispose() {
-		if(rootComposite != null) {
+    @Override
+    public void dispose() {
+        if(rootComposite != null) {
 			rootComposite.dispose();
-		}
-		super.dispose();
+        }
+        super.dispose();
+    }
+
+    @Override
+    public boolean shouldUseExtraSpace() {
+        return true;
 	}
 
-	@Override
-	public boolean shouldUseExtraSpace() {
-		return true;
-	}
-
-	private void refreshText(ISelection selection) {
-		text.setText("");
-		if(selection.isEmpty() || !(selection instanceof IStructuredSelection)){
+    private void refreshText(ISelection selection) {
+        text.setText("");
+        if(selection.isEmpty() || !(selection instanceof IStructuredSelection)){
 			return;
-		}
+        }
 
-		IStructuredSelection selection2 = (IStructuredSelection) selection;
-		if(selection2.size() > 1){
-			String description = getSummary(selection2);
+        IStructuredSelection selection2 = (IStructuredSelection) selection;
+        if(selection2.size() > 1){
+            String description = getSummary(selection2);
 			text.setText(description);
-		} else {
-			Object element = selection2.getFirstElement();
-			if(!(element instanceof BugGroup)){
+        } else {
+            Object element = selection2.getFirstElement();
+            if(!(element instanceof BugGroup)){
 				return;
-			}
-			BugGroup bugGroup = (BugGroup) element;
-			String title = provider.getTitle(bugGroup);
+            }
+            BugGroup bugGroup = (BugGroup) element;
+            String title = provider.getTitle(bugGroup);
 			char[] separator = new char[title.length() + 1];
-			Arrays.fill(separator, '=');
-			separator[0] = '\n';
-			text.setText(title + String.valueOf(separator) + "\nBugs count: "
+            Arrays.fill(separator, '=');
+            separator[0] = '\n';
+            text.setText(title + String.valueOf(separator) + "\nBugs count: "
 					+ bugGroup.getMarkersCount());
-		}
-	}
+        }
+    }
 
-	private String getSummary(IStructuredSelection selection) {
-		Iterator<?> iter = selection.iterator();
-		Set<BugGroup> groups = new HashSet<BugGroup>();
+    private String getSummary(IStructuredSelection selection) {
+        Iterator<?> iter = selection.iterator();
+        Set<BugGroup> groups = new HashSet<BugGroup>();
 		Set<IMarker> markers = new HashSet<IMarker>();
-		while (iter.hasNext()) {
-			Object object = iter.next();
-			if(!(object instanceof BugGroup)){
+        while (iter.hasNext()) {
+            Object object = iter.next();
+            if(!(object instanceof BugGroup)){
 				continue;
-			}
-			BugGroup group = (BugGroup) object;
-			if(!groups.contains(group)){
+            }
+            BugGroup group = (BugGroup) object;
+            if(!groups.contains(group)){
 				markers.addAll(group.getAllMarkers());
-				groups.add(group);
-			}
-		}
+                groups.add(group);
+            }
+        }
 		Set<String> names = new TreeSet<String>();
-		for (BugGroup bugGroup : groups) {
-			String description = bugGroup.getShortDescription() + " (" + bugGroup.getMarkersCount() + ")";
-			names.add(description);
+        for (BugGroup bugGroup : groups) {
+            String description = bugGroup.getShortDescription() + " (" + bugGroup.getMarkersCount() + ")";
+            names.add(description);
 		}
-		StringBuilder sb = new StringBuilder();
-		int maxLength = 0;
-		for (String name : names) {
+        StringBuilder sb = new StringBuilder();
+        int maxLength = 0;
+        for (String name : names) {
 			sb.append(name).append("\n");
-			if(name.length() > maxLength){
-				maxLength = name.length();
-			}
+            if(name.length() > maxLength){
+                maxLength = name.length();
+            }
 		}
-		char[] separator = new char[maxLength];
-		Arrays.fill(separator, '=');
-		sb.append(separator);
+        char[] separator = new char[maxLength];
+        Arrays.fill(separator, '=');
+        sb.append(separator);
 		String description = sb.toString() + "\nOverall bugs count: " + markers.size();
-		return description;
-	}
+        return description;
+    }
 
 }

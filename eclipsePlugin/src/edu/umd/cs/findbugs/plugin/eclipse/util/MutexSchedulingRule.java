@@ -29,57 +29,57 @@ import de.tobject.findbugs.FindbugsPlugin;
  */
 public class MutexSchedulingRule implements ISchedulingRule {
 
-	// enable multicore
-	private static final boolean MULTICORE = Runtime.getRuntime().availableProcessors() > 1;
+    // enable multicore
+    private static final boolean MULTICORE = Runtime.getRuntime().availableProcessors() > 1;
 
-	private static final int MAX_JOBS = Runtime.getRuntime().availableProcessors();
+    private static final int MAX_JOBS = Runtime.getRuntime().availableProcessors();
 
-	private final IProject project;
+    private final IProject project;
 
-	public MutexSchedulingRule(IProject project) {
-		super();
-		this.project = project;
+    public MutexSchedulingRule(IProject project) {
+        super();
+        this.project = project;
 	}
 
-	public boolean isConflicting(ISchedulingRule rule) {
-		if(rule instanceof MutexSchedulingRule) {
-			if(project == null){
+    public boolean isConflicting(ISchedulingRule rule) {
+        if(rule instanceof MutexSchedulingRule) {
+            if(project == null){
 				// we don't know the project, so better to say we have conflict
-				return true;
-			}
-			MutexSchedulingRule mRule = (MutexSchedulingRule) rule;
+                return true;
+            }
+            MutexSchedulingRule mRule = (MutexSchedulingRule) rule;
 			if(MULTICORE) {
-				return mRule.project.equals(project) || tooManyJobsThere();
-			}
-			return true;
+                return mRule.project.equals(project) || tooManyJobsThere();
+            }
+            return true;
 		}
-		return false;
-	}
+        return false;
+    }
 
-	private static boolean tooManyJobsThere() {
-		Job[] fbJobs = Job.getJobManager().find(FindbugsPlugin.class);
-		int runningCount = 0;
+    private static boolean tooManyJobsThere() {
+        Job[] fbJobs = Job.getJobManager().find(FindbugsPlugin.class);
+        int runningCount = 0;
 		for (Job job : fbJobs) {
-			if(job.getState() == Job.RUNNING){
-				runningCount ++;
-			}
+            if(job.getState() == Job.RUNNING){
+                runningCount ++;
+            }
 		}
-		// TODO made this condition configurable
-		return runningCount > MAX_JOBS;
+        // TODO made this condition configurable
+        return runningCount > MAX_JOBS;
+    }
+
+    public boolean contains(ISchedulingRule rule) {
+        if(rule instanceof IProject && project != null){
+            return project.equals(rule);
+		}
+        return isConflicting(rule);
+        /* from the URL above: "If you do not need to create hierarchies of locks,
+           you can implement the contains method to simply call isConflicting." */
 	}
 
-	public boolean contains(ISchedulingRule rule) {
-		if(rule instanceof IProject && project != null){
-			return project.equals(rule);
-		}
-		return isConflicting(rule);
-		/* from the URL above: "If you do not need to create hierarchies of locks,
-		   you can implement the contains method to simply call isConflicting." */
-	}
-
-	@Override
-	public String toString() {
-		return "MutexSchedulingRule, project: " + project;
+    @Override
+    public String toString() {
+        return "MutexSchedulingRule, project: " + project;
 	}
 
 }

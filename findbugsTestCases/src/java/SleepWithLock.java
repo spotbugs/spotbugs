@@ -1,12 +1,12 @@
 public class SleepWithLock {
-	boolean ready;
+    boolean ready;
 
-	void sleepWithLock() throws InterruptedException {
+    void sleepWithLock() throws InterruptedException {
 
-		synchronized (this) {
-			while (!ready) {
-				Thread.sleep(1000L);
+        synchronized (this) {
+            while (!ready) {
+                Thread.sleep(1000L);
 			}
-		}
-	}
+        }
+    }
 }

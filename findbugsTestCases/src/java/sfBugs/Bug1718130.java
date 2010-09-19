@@ -12,15 +12,15 @@ import com.google.inject.Inject;
  */
 
 public class Bug1718130 {
-	@Inject Object x;
-	@SpringBean Object y;
-	Object z;
+    @Inject Object x;
+    @SpringBean Object y;
+    Object z;
 	Bug1718130() {
-		z = y;
-	}
-	
+        z = y;
+    }
+
 	public int hashCode() {
-		return x.hashCode() + y.hashCode() + z.hashCode();
-	}
+        return x.hashCode() + y.hashCode() + z.hashCode();
+    }
 
 }

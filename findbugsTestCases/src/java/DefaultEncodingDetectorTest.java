@@ -29,114 +29,114 @@ import java.util.Scanner;
  */
 public class DefaultEncodingDetectorTest {
 
-	/**
-	 * Does not override the parent class's problematic method. Invocations of
-	 * that method on instances of this class should be flagged.
+    /**
+     * Does not override the parent class's problematic method. Invocations of
+     * that method on instances of this class should be flagged.
 	 */
-	public class MyBAOS extends ByteArrayOutputStream {
-		//@ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=1)
-		public void bar() {
+    public class MyBAOS extends ByteArrayOutputStream {
+        //@ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=1)
+        public void bar() {
 			// Problem - should be flagged
-			this.toString();
-		}
-	}
+            this.toString();
+        }
+    }
 
-	/**
-	 * Overrides the parent class's problematic method. Invocations of the
-	 * overriding method should NOT be flagged. However, direct calls to the superclass's
+    /**
+     * Overrides the parent class's problematic method. Invocations of the
+     * overriding method should NOT be flagged. However, direct calls to the superclass's
 	 * problematic method via super should be flagged.
-	 */
-	public class MyOtherBAOS extends ByteArrayOutputStream {
+     */
+    public class MyOtherBAOS extends ByteArrayOutputStream {
 
-		@Override
-		public String toString() {
-			try {
+        @Override
+        public String toString() {
+            try {
 				// not a problem
-				return super.toString("UTF-8");
-			} catch (UnsupportedEncodingException e) {
-			}
+                return super.toString("UTF-8");
+            } catch (UnsupportedEncodingException e) {
+            }
 			return "";
+        }
+
+        public void bar() {
+            // not a problem
+            this.toString();
 		}
 
-		public void bar() {
-			// not a problem
-			this.toString();
-		}
-
-		//@ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=1)
-		public void foo() {
-			// Problem - should be flagged
+        //@ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=1)
+        public void foo() {
+            // Problem - should be flagged
 			super.toString();
-		}
+        }
 
-	}
+    }
 
-	//@ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=3)
-	public void string() {
-		new String(new byte[]{});
+    //@ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=3)
+    public void string() {
+        new String(new byte[]{});
 		new String(new byte[]{}, 0, 0);
-		"".getBytes();
-	}
+        "".getBytes();
+    }
 
-	//@ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=6)
-	public void fileReaderWriter() throws IOException {
-		new FileReader("");
+    //@ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=6)
+    public void fileReaderWriter() throws IOException {
+        new FileReader("");
 		new FileReader(new File(""));
-		new FileReader(new FileDescriptor());
-		new FileWriter("");
-		new FileWriter(new File(""));
+        new FileReader(new FileDescriptor());
+        new FileWriter("");
+        new FileWriter(new File(""));
 		new FileWriter(new FileDescriptor());
-	}
+    }
 
-	//@ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=8)
-	public void printStreamWriter() throws IOException {
-		new PrintStream(new File(""));
+    //@ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=8)
+    public void printStreamWriter() throws IOException {
+        new PrintStream(new File(""));
 		new PrintStream(new FileOutputStream(""));
-		new PrintStream(new FileOutputStream(""), true);
-		new PrintStream("");
-		new PrintWriter(new File(""));
+        new PrintStream(new FileOutputStream(""), true);
+        new PrintStream("");
+        new PrintWriter(new File(""));
 		new PrintWriter(new FileOutputStream(""));
-		new PrintWriter(new FileOutputStream(""), true);
-		new PrintWriter("");
-	}
+        new PrintWriter(new FileOutputStream(""), true);
+        new PrintWriter("");
+    }
 
-	//@ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=7)
-	public void misc() throws IOException {
-		new ByteArrayOutputStream().toString();
+    //@ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=7)
+    public void misc() throws IOException {
+        new ByteArrayOutputStream().toString();
 		new InputStreamReader(new FileInputStream(""));
-		new OutputStreamWriter(new FileOutputStream(""));
-		new Scanner(new FileInputStream(""));
-		new Formatter("");
+        new OutputStreamWriter(new FileOutputStream(""));
+        new Scanner(new FileInputStream(""));
+        new Formatter("");
 		new Formatter(new File(""));
-		new Formatter(new FileOutputStream(""));
-	}
+        new Formatter(new FileOutputStream(""));
+    }
 
-	/**
-	 * These are all fine and should not be flagged.
-	 */
+    /**
+     * These are all fine and should not be flagged.
+     */
 	public void notBugs() throws IOException {
-		String a = "foobar";
-		a.getBytes(Charset.forName("UTF-8"));
-		a.getBytes("UTF-8");
+        String a = "foobar";
+        a.getBytes(Charset.forName("UTF-8"));
+        a.getBytes("UTF-8");
 		new String(new byte[]{}, "UTF-8");
-		new String(new byte[]{}, 0, 0, "UTF-8");
-		(new ByteArrayOutputStream()).toString("UTF-8");
-		new InputStreamReader(new FileInputStream(""), "UTF-8");
+        new String(new byte[]{}, 0, 0, "UTF-8");
+        (new ByteArrayOutputStream()).toString("UTF-8");
+        new InputStreamReader(new FileInputStream(""), "UTF-8");
 		new OutputStreamWriter(new FileOutputStream(""), "UTF-8");
-		new PrintStream(new File(""), "UTF-8");
-		new PrintStream(new FileOutputStream(""), true, "UTF-8");
-		new PrintStream("", "UTF-8");
+        new PrintStream(new File(""), "UTF-8");
+        new PrintStream(new FileOutputStream(""), true, "UTF-8");
+        new PrintStream("", "UTF-8");
 		new PrintWriter(new File(""), "UTF-8");
-		new PrintWriter("", "UTF-8");
-		new Scanner(new FileInputStream(""), "UTF-8");
-		new Formatter("", "UTF-8");
+        new PrintWriter("", "UTF-8");
+        new Scanner(new FileInputStream(""), "UTF-8");
+        new Formatter("", "UTF-8");
 		new Formatter(new File(""), "UTF-8");
-		new Formatter(new FileOutputStream(""), "UTF-8");
-		new StringBuilder().toString();
-		new ArrayList<Object>().toString();
+        new Formatter(new FileOutputStream(""), "UTF-8");
+        new StringBuilder().toString();
+        new ArrayList<Object>().toString();
 		List<String> failures = new ArrayList<String>();
-		failures.toString();
-	}
+        failures.toString();
+    }
 
 
 }

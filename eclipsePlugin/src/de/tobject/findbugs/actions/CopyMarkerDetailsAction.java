@@ -36,61 +36,61 @@ import de.tobject.findbugs.util.Util;
 
 public class CopyMarkerDetailsAction implements IObjectActionDelegate {
 
-	private ISelection selection;
+    private ISelection selection;
 
-	public CopyMarkerDetailsAction() {
-		super();
-	}
+    public CopyMarkerDetailsAction() {
+        super();
+    }
 
-	public void selectionChanged(IAction action, ISelection newSelection) {
-		this.selection = newSelection;
-	}
+    public void selectionChanged(IAction action, ISelection newSelection) {
+        this.selection = newSelection;
+    }
 
-	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-		// noop
-	}
+    public void setActivePart(IAction action, IWorkbenchPart targetPart) {
+        // noop
+    }
 
-	public void run(IAction action) {
-		if (selection.isEmpty() || !(selection instanceof IStructuredSelection)) {
-			return;
+    public void run(IAction action) {
+        if (selection.isEmpty() || !(selection instanceof IStructuredSelection)) {
+            return;
 		}
-		Set<IMarker> markers = getMarkers();
-		String content = getContent(markers);
-		Util.copyToClipboard(content);
+        Set<IMarker> markers = getMarkers();
+        String content = getContent(markers);
+        Util.copyToClipboard(content);
 	}
 
-	private String getContent(Set<IMarker> markers) {
-		StringBuilder fullText = new StringBuilder();
-		for (IMarker marker : markers) {
+    private String getContent(Set<IMarker> markers) {
+        StringBuilder fullText = new StringBuilder();
+        for (IMarker marker : markers) {
 			try {
-				StringBuilder line = new StringBuilder();
+                StringBuilder line = new StringBuilder();
 
-				IResource resource = marker.getResource();
-				if (resource != null) {
-					IPath location = resource.getLocation();
+                IResource resource = marker.getResource();
+                if (resource != null) {
+                    IPath location = resource.getLocation();
 					if(location != null){
-						line.append(location.toPortableString());
-					} else {
-						line.append(resource.getFullPath());
+                        line.append(location.toPortableString());
+                    } else {
+                        line.append(resource.getFullPath());
 					}
-				}
-				Integer lineNumber = (Integer) marker.getAttribute(IMarker.LINE_NUMBER);
-				line.append(":").append(lineNumber);
+                }
+                Integer lineNumber = (Integer) marker.getAttribute(IMarker.LINE_NUMBER);
+                line.append(":").append(lineNumber);
 				String message = (String) marker.getAttribute(IMarker.MESSAGE);
-				line.append(" ").append(message);
+                line.append(" ").append(message);
 
-				line.append(System.getProperty("line.separator", "\n"));
-				fullText.append(line.toString());
-			} catch (CoreException e) {
+                line.append(System.getProperty("line.separator", "\n"));
+                fullText.append(line.toString());
+            } catch (CoreException e) {
 				FindbugsPlugin.getDefault().logException(e,
-					"Exception while parsing content of FindBugs markers.");
-			}
-		}
+                    "Exception while parsing content of FindBugs markers.");
+            }
+        }
 		return fullText.toString();
-	}
+    }
 
-	private Set<IMarker> getMarkers() {
-		return MarkerUtil.getMarkerFromSelection(selection);
-	}
+    private Set<IMarker> getMarkers() {
+        return MarkerUtil.getMarkerFromSelection(selection);
+    }
 
 }

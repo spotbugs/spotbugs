@@ -38,88 +38,88 @@ import de.tobject.findbugs.FindbugsPlugin;
  */
 public class ProjectUtilities {
 
-	private static boolean DEBUG;
+    private static boolean DEBUG;
 
-	/**
-	 * Adds a FindBugs nature to a project.
-	 *
+    /**
+     * Adds a FindBugs nature to a project.
+     *
 	 * @param project The project the nature will be applied to.
-	 * @param monitor A progress monitor. Must not be null.
-	 * @throws CoreException
-	 */
+     * @param monitor A progress monitor. Must not be null.
+     * @throws CoreException
+     */
 	public static void addFindBugsNature(IProject project, IProgressMonitor monitor) throws CoreException {
-		if (hasFindBugsNature(project)) {
-			return;
-		}
+        if (hasFindBugsNature(project)) {
+            return;
+        }
 		IProjectDescription description = project.getDescription();
-		String[] prevNatures = description.getNatureIds();
-		for (int i = 0; i < prevNatures.length; i++) {
-			if (prevNatures[i].equals(FindbugsPlugin.NATURE_ID)) {
+        String[] prevNatures = description.getNatureIds();
+        for (int i = 0; i < prevNatures.length; i++) {
+            if (prevNatures[i].equals(FindbugsPlugin.NATURE_ID)) {
 				// nothing to do
-				return;
-			}
-		}
+                return;
+            }
+        }
 
-		String[] newNatures = new String[prevNatures.length + 1];
-		System.arraycopy(prevNatures, 0, newNatures, 0, prevNatures.length);
-		newNatures[prevNatures.length] = FindbugsPlugin.NATURE_ID;
+        String[] newNatures = new String[prevNatures.length + 1];
+        System.arraycopy(prevNatures, 0, newNatures, 0, prevNatures.length);
+        newNatures[prevNatures.length] = FindbugsPlugin.NATURE_ID;
 		if(DEBUG) {
-			for (int i = 0; i < newNatures.length; i++) {
-				System.out.println(newNatures[i]);
-			}
+            for (int i = 0; i < newNatures.length; i++) {
+                System.out.println(newNatures[i]);
+            }
 		}
-		description.setNatureIds(newNatures);
-		project.setDescription(description, monitor);
-	}
+        description.setNatureIds(newNatures);
+        project.setDescription(description, monitor);
+    }
 
-	/**
-	 * Using the natures name, check whether the current project has FindBugs nature.
-	 *
+    /**
+     * Using the natures name, check whether the current project has FindBugs nature.
+     *
 	 * @return boolean <code>true</code>, if the FindBugs nature is
-	 *   assigned to the project, <code>false</code> otherwise.
-	 */
-	public static boolean hasFindBugsNature(IProject project) {
+     *   assigned to the project, <code>false</code> otherwise.
+     */
+    public static boolean hasFindBugsNature(IProject project) {
 		try {
-			return ProjectUtilities.isJavaProject(project) && project.hasNature(FindbugsPlugin.NATURE_ID);
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e,
+            return ProjectUtilities.isJavaProject(project) && project.hasNature(FindbugsPlugin.NATURE_ID);
+        } catch (CoreException e) {
+            FindbugsPlugin.getDefault().logException(e,
 			"Error while testing FindBugs nature for project " + project);
-		}
-		return false;
-	}
+        }
+        return false;
+    }
 
-	/**
-	 * Removes the FindBugs nature from a project.
-	 *
+    /**
+     * Removes the FindBugs nature from a project.
+     *
 	 * @param project The project the nature will be removed from.
-	 * @param monitor A progress monitor. Must not be null.
-	 * @throws CoreException
-	 */
+     * @param monitor A progress monitor. Must not be null.
+     * @throws CoreException
+     */
 	public static void removeFindBugsNature(IProject project, IProgressMonitor monitor) throws CoreException {
-		if (!hasFindBugsNature(project)) {
-			return;
-		}
+        if (!hasFindBugsNature(project)) {
+            return;
+        }
 		IProjectDescription description = project.getDescription();
-		String[] prevNatures = description.getNatureIds();
-		ArrayList<String> newNaturesList = new ArrayList<String>();
-		for (int i = 0; i < prevNatures.length; i++) {
+        String[] prevNatures = description.getNatureIds();
+        ArrayList<String> newNaturesList = new ArrayList<String>();
+        for (int i = 0; i < prevNatures.length; i++) {
 			if (!prevNatures[i].equals(FindbugsPlugin.NATURE_ID)) {
-				newNaturesList.add(prevNatures[i]);
-			}
-		}
+                newNaturesList.add(prevNatures[i]);
+            }
+        }
 		String[] newNatures = newNaturesList.toArray(new String[newNaturesList.size()]);
-		description.setNatureIds(newNatures);
-		project.setDescription(description, monitor);
-	}
+        description.setNatureIds(newNatures);
+        project.setDescription(description, monitor);
+    }
 
-	public static boolean isJavaProject(IProject project) {
-		try {
-			return project != null && project.isAccessible()
+    public static boolean isJavaProject(IProject project) {
+        try {
+            return project != null && project.isAccessible()
 					&& project.hasNature(JavaCore.NATURE_ID);
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "couldn't determine project nature");
-			return false;
+        } catch (CoreException e) {
+            FindbugsPlugin.getDefault().logException(e, "couldn't determine project nature");
+            return false;
 		}
-	}
+    }
 
 }

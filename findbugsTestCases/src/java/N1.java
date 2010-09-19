@@ -1,4 +1,4 @@
 public class N1 {
-	public void mincemeat() {
-	}
+    public void mincemeat() {
+    }
 }

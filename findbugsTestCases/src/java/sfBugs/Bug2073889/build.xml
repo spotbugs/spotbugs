@@ -33,9 +33,9 @@
    <echo>Specify $${findbugs.home} property on command line:  use -Dfindbugs.home=[PATH]</echo>
 
    <path id="findbugs.lib">
-	 <fileset dir="${findbugs.home}/lib">
-	   <include name="findbugs-ant.jar"/>
-	 </fileset>
+     <fileset dir="${findbugs.home}/lib">
+       <include name="findbugs-ant.jar"/>
+     </fileset>
    </path>
 
    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
@@ -44,7 +44,7 @@
 
    <!-- findbugs task definition -->
    <target name="findbugs">
-	 <antcall target="analyze" />
+     <antcall target="analyze" />
    </target>
 
    <!-- analyze task -->
@@ -58,9 +58,9 @@
                 outputFile="Bug2073889.xml"
                 projectName="Bug2073889"
                 debug="false">
-		 <!--
-			 Uses findbugsTestCases as example test classes,
-			 assumes test cases appear in parent directory of findbugs src
+         <!--
+             Uses findbugsTestCases as example test classes,
+             assumes test cases appear in parent directory of findbugs src
 		 -->
          <class location="${findbugs.home}/../findbugsTestCases/build/classes/sfBugs/*" />
       </findbugs>

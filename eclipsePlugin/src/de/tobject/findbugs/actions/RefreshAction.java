@@ -32,39 +32,39 @@ import de.tobject.findbugs.view.explorer.BugContentProvider;
 
 public class RefreshAction implements IViewActionDelegate {
 
-	private CommonNavigator navigator;
+    private CommonNavigator navigator;
 
-	public void init(IViewPart view) {
-		if(view instanceof CommonNavigator) {
-			navigator = (CommonNavigator) view;
+    public void init(IViewPart view) {
+        if(view instanceof CommonNavigator) {
+            navigator = (CommonNavigator) view;
 		}
-	}
+    }
 
-	public void run(IAction action) {
-		if(navigator != null) {
-			CommonViewer viewer = navigator.getCommonViewer();
+    public void run(IAction action) {
+        if(navigator != null) {
+            CommonViewer viewer = navigator.getCommonViewer();
 			BugContentProvider provider = BugContentProvider.getProvider(navigator
-					.getNavigatorContentService());
+                    .getNavigatorContentService());
 //			provider.setRefreshRequested(true);
 
-			Object[] expandedElements = viewer.getExpandedElements();
-			Object input = viewer.getInput();
-			if (provider.getChildren(input).length == 0) {
+            Object[] expandedElements = viewer.getExpandedElements();
+            Object input = viewer.getInput();
+            if (provider.getChildren(input).length == 0) {
 				viewer.setInput(null);
-				if(input instanceof IWorkingSet || input instanceof IWorkspaceRoot){
-					viewer.setInput(input);
-				} else {
+                if(input instanceof IWorkingSet || input instanceof IWorkspaceRoot){
+                    viewer.setInput(input);
+                } else {
 					viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
-				}
-				viewer.refresh(true);
-			} else {
+                }
+                viewer.refresh(true);
+            } else {
 				provider.reSetInput();
-			}
-			viewer.setExpandedElements(expandedElements);
-		}
+            }
+            viewer.setExpandedElements(expandedElements);
+        }
 	}
 
-	public void selectionChanged(IAction action, ISelection selection) {
-		// noop
-	}
+    public void selectionChanged(IAction action, ISelection selection) {
+        // noop
+    }
 }

@@ -49,128 +49,128 @@ import de.tobject.findbugs.FindbugsPlugin;
 public class PDEClassPathGenerator {
 
 
-	public static String[] computeClassPath(IJavaProject javaProject){
-		String[] classPath = new String[0];
-		try {
+    public static String[] computeClassPath(IJavaProject javaProject){
+        String[] classPath = new String[0];
+        try {
 			// first try to check and resolve plugin project. It can fail if there is no
-			// PDE plugins installed in the current Eclipse instance (PDE is optional)
-			classPath = createPluginClassPath(javaProject);
-		} catch (NoClassDefFoundError ce){
+            // PDE plugins installed in the current Eclipse instance (PDE is optional)
+            classPath = createPluginClassPath(javaProject);
+        } catch (NoClassDefFoundError ce){
 			// ok, we do not have PDE installed, now try to get default java classpath
-			classPath = createJavaClasspath(javaProject);
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e,
+            classPath = createJavaClasspath(javaProject);
+        } catch (CoreException e) {
+            FindbugsPlugin.getDefault().logException(e,
 					"Could not compute aux. classpath for project " + javaProject);
-			return classPath;
-		}
+            return classPath;
+        }
 
-		if(false){
-			System.out.println("aux classpath: " + classPath.length);
-			for (String string : classPath) {
+        if(false){
+            System.out.println("aux classpath: " + classPath.length);
+            for (String string : classPath) {
 				System.out.println(string);
-			}
-		}
-		return classPath;
+            }
+        }
+        return classPath;
 	}
 
-	private static String[] createJavaClasspath(IJavaProject javaProject) {
-		LinkedHashSet<String> classPath = new LinkedHashSet<String>();
-		try {
+    private static String[] createJavaClasspath(IJavaProject javaProject) {
+        LinkedHashSet<String> classPath = new LinkedHashSet<String>();
+        try {
 			// doesn't return jre libraries
-			String[] defaultClassPath = JavaRuntime
-					.computeDefaultRuntimeClassPath(javaProject);
-			classPath.addAll(Arrays.asList(defaultClassPath));
+            String[] defaultClassPath = JavaRuntime
+                    .computeDefaultRuntimeClassPath(javaProject);
+            classPath.addAll(Arrays.asList(defaultClassPath));
 
-			// add CPE_CONTAINER classpathes
-			IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
-			for (IClasspathEntry entry : rawClasspath) {
+            // add CPE_CONTAINER classpathes
+            IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
+            for (IClasspathEntry entry : rawClasspath) {
 				if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
-					IClasspathContainer classpathContainer = JavaCore
-							.getClasspathContainer(entry.getPath(), javaProject);
-					if (classpathContainer != null && !(classpathContainer instanceof JREContainer)) {
+                    IClasspathContainer classpathContainer = JavaCore
+                            .getClasspathContainer(entry.getPath(), javaProject);
+                    if (classpathContainer != null && !(classpathContainer instanceof JREContainer)) {
 						IClasspathEntry[] classpathEntries = classpathContainer
-								.getClasspathEntries();
-						for (IClasspathEntry iClasspathEntry : classpathEntries) {
-							IPath path = iClasspathEntry.getPath();
+                                .getClasspathEntries();
+                        for (IClasspathEntry iClasspathEntry : classpathEntries) {
+                            IPath path = iClasspathEntry.getPath();
 							if(path != null && path.toFile().exists()) {
-								classPath.add(path.toOSString());
-							}
-						}
+                                classPath.add(path.toOSString());
+                            }
+                        }
 					}
-				}
-			}
-		} catch (CoreException e) {
+                }
+            }
+        } catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e,
-					"Could not compute aux. classpath for project " + javaProject);
-		}
-		return classPath.toArray(new String[classPath.size()]);
+                    "Could not compute aux. classpath for project " + javaProject);
+        }
+        return classPath.toArray(new String[classPath.size()]);
 	}
 
 
-	private static String[] createPluginClassPath(IJavaProject javaProject) throws CoreException {
-		String[] javaClassPath = createJavaClasspath(javaProject);
-		IPluginModelBase model = PluginRegistry.findModel(javaProject.getProject());
+    private static String[] createPluginClassPath(IJavaProject javaProject) throws CoreException {
+        String[] javaClassPath = createJavaClasspath(javaProject);
+        IPluginModelBase model = PluginRegistry.findModel(javaProject.getProject());
 		if (model == null || model.getPluginBase().getId() == null){
-			return javaClassPath;
-		}
-		List<String> pdeClassPath = new ArrayList<String>();
+            return javaClassPath;
+        }
+        List<String> pdeClassPath = new ArrayList<String>();
 		pdeClassPath.addAll(Arrays.asList(javaClassPath));
 
-		BundleDescription target = model.getBundleDescription();
+        BundleDescription target = model.getBundleDescription();
 
-		Set<BundleDescription> bundles = new HashSet<BundleDescription>();
-		// target is null if plugin uses non OSGI format
-		if(target != null){
+        Set<BundleDescription> bundles = new HashSet<BundleDescription>();
+        // target is null if plugin uses non OSGI format
+        if(target != null){
 			addDependentBundles(target, bundles);
-		}
+        }
 
-		// get the default location => relative to wsp
-		IPath defaultOutputLocation = ResourceUtils.relativeToAbsolute(javaProject
-				.getOutputLocation());
+        // get the default location => relative to wsp
+        IPath defaultOutputLocation = ResourceUtils.relativeToAbsolute(javaProject
+                .getOutputLocation());
 
-		for (BundleDescription bd : bundles){
-			IPluginModelBase model2 = PluginRegistry.findModel(bd);
-			ArrayList<IClasspathEntry> classpathEntries = new ArrayList<IClasspathEntry>();
+        for (BundleDescription bd : bundles){
+            IPluginModelBase model2 = PluginRegistry.findModel(bd);
+            ArrayList<IClasspathEntry> classpathEntries = new ArrayList<IClasspathEntry>();
 			ClasspathUtilCore.addLibraries(model2, classpathEntries);
 
-			for (IClasspathEntry cpe : classpathEntries) {
-				IPath location;
-				if (cpe.getEntryKind() == IClasspathEntry.CPE_SOURCE){
+            for (IClasspathEntry cpe : classpathEntries) {
+                IPath location;
+                if (cpe.getEntryKind() == IClasspathEntry.CPE_SOURCE){
 					location = ResourceUtils.getOutputLocation(cpe, defaultOutputLocation);
-				} else {
-					location = cpe.getPath();
-				}
+                } else {
+                    location = cpe.getPath();
+                }
 				if(location == null){
-					continue;
-				}
-				String locationStr = location.toOSString();
+                    continue;
+                }
+                String locationStr = location.toOSString();
 				if (!pdeClassPath.contains(locationStr)) {
-					if(location.toFile().exists()){
-						pdeClassPath.add(locationStr);
-					} else {
+                    if(location.toFile().exists()){
+                        pdeClassPath.add(locationStr);
+                    } else {
 						location = ResourceUtils.relativeToAbsolute(location);
-						if(location.toFile().exists()){
-							pdeClassPath.add(location.toOSString());
-						}
+                        if(location.toFile().exists()){
+                            pdeClassPath.add(location.toOSString());
+                        }
 					}
-				}
-			}
-		}
+                }
+            }
+        }
 
-		return pdeClassPath.toArray(new String[pdeClassPath.size()]);
-	}
+        return pdeClassPath.toArray(new String[pdeClassPath.size()]);
+    }
 
-	private static void addDependentBundles(BundleDescription bd, Set<BundleDescription> bundles){
-		// TODO for some reasons, this does not add "native" fragments for the platform
-		// see also: ContributedClasspathEntriesEntry, RequiredPluginsClasspathContainer
+    private static void addDependentBundles(BundleDescription bd, Set<BundleDescription> bundles){
+        // TODO for some reasons, this does not add "native" fragments for the platform
+        // see also: ContributedClasspathEntriesEntry, RequiredPluginsClasspathContainer
 		// BundleDescription[] requires = PDEState.getDependentBundles(target);
-		BundleDescription[] bundles2 = PDEState.getDependentBundlesWithFragments(bd);
-		for (BundleDescription bundleDescription : bundles2) {
-			if(!bundles.contains(bundleDescription)){
+        BundleDescription[] bundles2 = PDEState.getDependentBundlesWithFragments(bd);
+        for (BundleDescription bundleDescription : bundles2) {
+            if(!bundles.contains(bundleDescription)){
 				bundles.add(bundleDescription);
-				addDependentBundles(bundleDescription, bundles);
-			}
-		}
+                addDependentBundles(bundleDescription, bundles);
+            }
+        }
 	}
 
 }

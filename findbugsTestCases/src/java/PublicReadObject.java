@@ -3,12 +3,12 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 class PublicReadObject implements Serializable {
-	transient int x;
+    transient int x;
 
-	int y;
+    int y;
 
-	public void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		ois.defaultReadObject();
-		x = ois.readInt();
+    public void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        x = ois.readInt();
 	}
 }

@@ -38,84 +38,84 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  */
 public abstract class AbstractFindBugsTest extends AbstractPluginTest {
 
-	protected static final String BUGS_XML_FILE = "/src/bugs.xml";
-	protected static final String FILTER_FILE = "/src/filter.xml";
+    protected static final String BUGS_XML_FILE = "/src/bugs.xml";
+    protected static final String FILTER_FILE = "/src/filter.xml";
 
-	/**
-	 * Returns the bug file path of the test project.
-	 *
+    /**
+     * Returns the bug file path of the test project.
+     *
 	 * @return The absolute filesystem path of the bugs file.
-	 */
-	protected String getBugsFileLocation() {
-		IResource bugsFile = getProject().findMember(BUGS_XML_FILE);
+     */
+    protected String getBugsFileLocation() {
+        IResource bugsFile = getProject().findMember(BUGS_XML_FILE);
 		return bugsFile.getLocation().toOSString();
-	}
+    }
 
-	protected ICompilationUnit getClassA() throws JavaModelException {
-		ICompilationUnit compilationUnit = (ICompilationUnit) getJavaProject()
-				.findElement(new Path("A.java"));
+    protected ICompilationUnit getClassA() throws JavaModelException {
+        ICompilationUnit compilationUnit = (ICompilationUnit) getJavaProject()
+                .findElement(new Path("A.java"));
 		return compilationUnit;
-	}
+    }
 
-	protected ICompilationUnit getClassB() throws JavaModelException {
-		ICompilationUnit compilationUnit = (ICompilationUnit) getJavaProject()
-				.findElement(new Path("B.java"));
+    protected ICompilationUnit getClassB() throws JavaModelException {
+        ICompilationUnit compilationUnit = (ICompilationUnit) getJavaProject()
+                .findElement(new Path("B.java"));
 		return compilationUnit;
-	}
+    }
 
-	protected IPackageFragment getDefaultPackageInSrc() throws JavaModelException {
-		IPackageFragment fragment = getJavaProject().findPackageFragment(
-				new Path("/" + AbstractPluginTest.TEST_PROJECT + "/"
+    protected IPackageFragment getDefaultPackageInSrc() throws JavaModelException {
+        IPackageFragment fragment = getJavaProject().findPackageFragment(
+                new Path("/" + AbstractPluginTest.TEST_PROJECT + "/"
 						+ AbstractPluginTest.SRC));
-		return fragment;
-	}
+        return fragment;
+    }
 
-	/**
-	 * Returns the filter file path of the test project.
-	 *
+    /**
+     * Returns the filter file path of the test project.
+     *
 	 * @return The absolute path of the filter file.
-	 */
-	protected String getFilterFileLocation() {
-		IResource filterFile = getProject().findMember(FILTER_FILE);
+     */
+    protected String getFilterFileLocation() {
+        IResource filterFile = getProject().findMember(FILTER_FILE);
 		return filterFile.getLocation().toOSString();
+    }
+
+    @Override
+    protected TestScenario getTestScenario() {
+        return TestScenario.DEFAULT;
 	}
 
-	@Override
-	protected TestScenario getTestScenario() {
-		return TestScenario.DEFAULT;
-	}
-
-	/**
-	 * Configures the test project to use the baseline bugs file.
-	 * @param b
+    /**
+     * Configures the test project to use the baseline bugs file.
+     * @param b
 	 */
-	protected void setBaselineBugsFile(boolean on) throws CoreException {
-		// per default, workspace settings are used. We enable project settings here
-		FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
+    protected void setBaselineBugsFile(boolean on) throws CoreException {
+        // per default, workspace settings are used. We enable project settings here
+        FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
 		UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
-		if(on) {
-			preferences.setExcludeBugsFiles(Collections.singletonList(getBugsFileLocation()));
-		} else {
+        if(on) {
+            preferences.setExcludeBugsFiles(Collections.singletonList(getBugsFileLocation()));
+        } else {
 			preferences.setExcludeBugsFiles(new ArrayList<String>());
-		}
-		FindbugsPlugin.saveUserPreferences(getProject(), preferences);
-	}
+        }
+        FindbugsPlugin.saveUserPreferences(getProject(), preferences);
+    }
 
-	/**
-	 * Configures the test project to use the filter file.
-	 */
+    /**
+     * Configures the test project to use the filter file.
+     */
 	protected void setFilterFile(boolean on) throws CoreException {
-		// per default, workspace settings are used. We enable project settings here
-		FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
-		UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
+        // per default, workspace settings are used. We enable project settings here
+        FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
+        UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
 		if(on) {
-			preferences.setExcludeFilterFiles(Collections
-					.singletonList(getFilterFileLocation()));
-		} else {
+            preferences.setExcludeFilterFiles(Collections
+                    .singletonList(getFilterFileLocation()));
+        } else {
 			preferences.setExcludeFilterFiles(new ArrayList<String>());
-		}
-		FindbugsPlugin.saveUserPreferences(getProject(), preferences);
-	}
+        }
+        FindbugsPlugin.saveUserPreferences(getProject(), preferences);
+    }
 
 
 }

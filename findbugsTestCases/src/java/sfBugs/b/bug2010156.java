@@ -74,7 +74,7 @@ public class bug2010156 extends sfBugs.a.bug2010156 {
          * lack of void constructor throws
          * SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION
          * warning with line numbers, but no lines are reported/highlighted
-         * 
+         *
          * based on findbugsTestCases/src/java/ExternalizableTest.java
          * ******************** */
         extern(int i) {
@@ -104,7 +104,7 @@ public class bug2010156 extends sfBugs.a.bug2010156 {
         }
     }
 
-    static class compare implements Comparator {       
+    static class compare implements Comparator {
         /* ********************
          * lack of Serializable implementation throws
          * SE_COMPARATOR_SHOULD_BE_SERIALIZABLE warning with line numbers,

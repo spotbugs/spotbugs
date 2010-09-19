@@ -1,3 +1,3 @@
 public class FalseException {
-	// This class is not an exception
+    // This class is not an exception
 }

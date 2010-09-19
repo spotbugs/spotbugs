@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * Submitted By: Alfred Nathaniel
  * Summary:
- * 
+ *
  * The STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE detector is too simple minded
  * checking only the field existance but not its usage.
  */

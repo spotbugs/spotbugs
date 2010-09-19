@@ -7,6 +7,6 @@ package org.eclipse.ui.views.properties.tabbed;
 
 public interface ITabDescriptor {
 
-	boolean isSelected();
+    boolean isSelected();
 
 }

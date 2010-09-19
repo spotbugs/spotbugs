@@ -41,70 +41,70 @@ import de.tobject.findbugs.FindbugsPlugin;
  */
 public class ManagePathsWidget extends Composite {
 
-	private ListViewer viewer;
+    private ListViewer viewer;
 
-	public ManagePathsWidget(Composite parent) {
-		super(parent, SWT.NONE);
-	}
+    public ManagePathsWidget(Composite parent) {
+        super(parent, SWT.NONE);
+    }
 
-	public ListViewer createViewer(String title, String linkText) {
-		GridLayout layout = new GridLayout(2, false);
-		layout.marginHeight = 0;
+    public ListViewer createViewer(String title, String linkText) {
+        GridLayout layout = new GridLayout(2, false);
+        layout.marginHeight = 0;
 		layout.marginWidth = 0;
-		this.setLayout(layout);
-		this.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		Label titleLabel = new Label(this, SWT.NULL);
+        this.setLayout(layout);
+        this.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        Label titleLabel = new Label(this, SWT.NULL);
 
-		titleLabel.setText(title);
-		titleLabel.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true, false, 2, 1));
+        titleLabel.setText(title);
+        titleLabel.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true, false, 2, 1));
 
-		if (linkText != null) {
-			Link details = new Link(this, SWT.NULL);
-			details.setText(linkText);
+        if (linkText != null) {
+            Link details = new Link(this, SWT.NULL);
+            details.setText(linkText);
 			details.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true, false, 2, 1));
-			details.addSelectionListener(new SelectionListener() {
-				public void widgetSelected(SelectionEvent e) {
-					Program.launch(e.text);
+            details.addSelectionListener(new SelectionListener() {
+                public void widgetSelected(SelectionEvent e) {
+                    Program.launch(e.text);
 				}
-				public void widgetDefaultSelected(SelectionEvent e) {
-					// noop
-				}
+                public void widgetDefaultSelected(SelectionEvent e) {
+                    // noop
+                }
 			});
-		}
+        }
 
-		viewer = new ListViewer(this, SWT.MULTI | SWT.BORDER
-				| SWT.H_SCROLL | SWT.V_SCROLL);
-		viewer.getControl().setLayoutData(
+        viewer = new ListViewer(this, SWT.MULTI | SWT.BORDER
+                | SWT.H_SCROLL | SWT.V_SCROLL);
+        viewer.getControl().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
-		return viewer;
-	}
+        return viewer;
+    }
 
-	public void createButtonsArea(PathsProvider contentProvider) {
-		final Button addButton = new Button(this, SWT.PUSH);
-		String addButtonLabel = getMessage("property.addbutton");
+    public void createButtonsArea(PathsProvider contentProvider) {
+        final Button addButton = new Button(this, SWT.PUSH);
+        String addButtonLabel = getMessage("property.addbutton");
 
-		addButton.setText(addButtonLabel);
-		addButton.setData("add");
-		addButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
+        addButton.setText(addButtonLabel);
+        addButton.setData("add");
+        addButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
 
-		addButton.addSelectionListener(contentProvider);
-		final Button removeButton = new Button(this, SWT.PUSH);
-		removeButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, true));
+        addButton.addSelectionListener(contentProvider);
+        final Button removeButton = new Button(this, SWT.PUSH);
+        removeButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, true));
 		String removeButtonLabel = getMessage("property.removebutton");
 
-		removeButton.setText(removeButtonLabel);
-		removeButton.setData("remove");
-		removeButton.setEnabled(false);
+        removeButton.setText(removeButtonLabel);
+        removeButton.setData("remove");
+        removeButton.setEnabled(false);
 		removeButton.addSelectionListener(contentProvider);
 
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				removeButton.setEnabled(!event.getSelection().isEmpty());
+        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+                removeButton.setEnabled(!event.getSelection().isEmpty());
 			}
-		});
-	}
+        });
+    }
 
-	protected static String getMessage(String key) {
-		return FindbugsPlugin.getDefault().getMessage(key);
-	}
+    protected static String getMessage(String key) {
+        return FindbugsPlugin.getDefault().getMessage(key);
+    }
 }

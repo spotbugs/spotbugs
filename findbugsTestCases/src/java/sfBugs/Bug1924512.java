@@ -15,9 +15,9 @@ public class Bug1924512 {
     @NonNull
     public static String nonNullIf(String[] args) {
         String ret = null;
-    	if(args.length > 0) {
-    		ret = args[0];
-    	}
+        if(args.length > 0) {
+            ret = args[0];
+        }
     	return ret; // warning correctly reported here
     }
 }

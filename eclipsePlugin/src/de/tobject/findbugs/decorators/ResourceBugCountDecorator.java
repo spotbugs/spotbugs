@@ -38,52 +38,52 @@ import de.tobject.findbugs.util.Util;
  */
 public class ResourceBugCountDecorator implements ILabelDecorator {
 
-	public Image decorateImage(Image image, Object element) {
-		return null;
-	}
+    public Image decorateImage(Image image, Object element) {
+        return null;
+    }
 
-	public String decorateText(String text, Object element) {
-		WorkItem item = ResourceUtils.getWorkItem(element);
-		if(item == null) {
+    public String decorateText(String text, Object element) {
+        WorkItem item = ResourceUtils.getWorkItem(element);
+        if(item == null) {
 			IWorkingSet workingSet = Util.getAdapter(IWorkingSet.class, element);
-			if(workingSet != null) {
-				return decorateText(text, workingSet);
-			}
+            if(workingSet != null) {
+                return decorateText(text, workingSet);
+            }
 			return text;
-		}
-		return decorateText(text, item.getMarkerCount(false));
-	}
+        }
+        return decorateText(text, item.getMarkerCount(false));
+    }
 
-	private static String decorateText(String text, int markerCount) {
-		if(markerCount == 0){
-			return text;
+    private static String decorateText(String text, int markerCount) {
+        if(markerCount == 0){
+            return text;
 		}
-		return text + " (" + markerCount + ")";
-	}
+        return text + " (" + markerCount + ")";
+    }
 
-	private static String decorateText(String text, IWorkingSet workingSet) {
-		Set<WorkItem> resources = ResourceUtils.getResources(workingSet);
-		int markerCount = 0;
+    private static String decorateText(String text, IWorkingSet workingSet) {
+        Set<WorkItem> resources = ResourceUtils.getResources(workingSet);
+        int markerCount = 0;
 		for (WorkItem workItem : resources) {
-			markerCount += workItem.getMarkerCount(true);
-		}
-		return decorateText(text, markerCount);
+            markerCount += workItem.getMarkerCount(true);
+        }
+        return decorateText(text, markerCount);
 	}
 
-	public void addListener(ILabelProviderListener listener) {
-		// noop
-	}
+    public void addListener(ILabelProviderListener listener) {
+        // noop
+    }
 
-	public void dispose() {
-		// noop
-	}
+    public void dispose() {
+        // noop
+    }
 
-	public boolean isLabelProperty(Object element, String property) {
-		return true;
-	}
+    public boolean isLabelProperty(Object element, String property) {
+        return true;
+    }
 
-	public void removeListener(ILabelProviderListener listener) {
-		// noop
-	}
+    public void removeListener(ILabelProviderListener listener) {
+        // noop
+    }
 
 }

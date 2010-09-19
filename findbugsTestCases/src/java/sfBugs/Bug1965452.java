@@ -13,20 +13,20 @@ import edu.umd.cs.findbugs.annotations.Nullable;
  */
 public class Bug1965452 {
 
-	/**
-	 * @author Carsten Heyl
-	 * @version $Id: ClientFileImportObject.java,v 1.3 2008/05/16 15:24:25 cal Exp $
+    /**
+     * @author Carsten Heyl
+     * @version $Id: ClientFileImportObject.java,v 1.3 2008/05/16 15:24:25 cal Exp $
 	 */
-	@DefaultAnnotation(NonNull.class)
-	public static class ClientFileImportObject {
-	    @CheckForNull
+    @DefaultAnnotation(NonNull.class)
+    public static class ClientFileImportObject {
+        @CheckForNull
 	    private final String attributes;
 
-	    public ClientFileImportObject(File existingFile, @Nullable String mimeType, String attributes2) {
-	        this.attributes = attributes2;
-	    }
+        public ClientFileImportObject(File existingFile, @Nullable String mimeType, String attributes2) {
+            this.attributes = attributes2;
+        }
 	}
-	
+
     public static class ImportData {
         final ClientFileImportObject importObject;
         final File existingFile;

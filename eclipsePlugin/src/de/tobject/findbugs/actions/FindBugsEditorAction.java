@@ -41,22 +41,22 @@ import de.tobject.findbugs.builder.WorkItem;
  */
 public class FindBugsEditorAction extends FindBugsAction implements IEditorActionDelegate {
 
-	/** The current selection. */
-	private IEditorPart currentEditor;
+    /** The current selection. */
+    private IEditorPart currentEditor;
 
-	public final void setActiveEditor(final IAction action,
-			final IEditorPart targetPart) {
-		currentEditor = targetPart;
+    public final void setActiveEditor(final IAction action,
+            final IEditorPart targetPart) {
+        currentEditor = targetPart;
 	}
 
-	@Override
-	public final void run(final IAction action) {
-		if(currentEditor != null) {
+    @Override
+    public final void run(final IAction action) {
+        if(currentEditor != null) {
 			IFile file = ((FileEditorInput)(currentEditor.getEditorInput())).getFile();
-			List<WorkItem> list = new ArrayList<WorkItem>();
-			list.add(new WorkItem(file));
-			work(currentEditor, file.getProject(), list);
+            List<WorkItem> list = new ArrayList<WorkItem>();
+            list.add(new WorkItem(file));
+            work(currentEditor, file.getProject(), list);
 		}
-	}
+    }
 
 }

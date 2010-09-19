@@ -33,77 +33,77 @@ import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the JdtUtil class.
- * 
+ *
  * @author Tomás Pollak
  */
 public class JdtUtilTest extends AbstractPluginTest {
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		setUpTestProject(TestScenario.JDT);
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        setUpTestProject(TestScenario.JDT);
 	}
 
-	@AfterClass
-	public static void tearDownClass() throws CoreException {
-		tearDownTestProject();
+    @AfterClass
+    public static void tearDownClass() throws CoreException {
+        tearDownTestProject();
 	}
 
-	@Test
-	public void testFindAnonymous() throws JavaModelException {
-		IType typeC = getTypeC();
+    @Test
+    public void testFindAnonymous() throws JavaModelException {
+        IType typeC = getTypeC();
 		IType typeE = getTypeE();
 
-		// Positive case: Runnable in C
-		doPositiveTest(typeC, "1");
+        // Positive case: Runnable in C
+        doPositiveTest(typeC, "1");
 
-		// Positive case: Cloneable in C
-		doPositiveTest(typeC, "2");
+        // Positive case: Cloneable in C
+        doPositiveTest(typeC, "2");
 
-		// Positive case: Comparator in E
-		doPositiveTest(typeE, "1");
+        // Positive case: Comparator in E
+        doPositiveTest(typeE, "1");
 
-		// Negative case: Low boundary
-		doNullTest(typeC, "0");
+        // Negative case: Low boundary
+        doNullTest(typeC, "0");
 
-		// Negative case: High boundary
-		doNullTest(typeC, "3");
+        // Negative case: High boundary
+        doNullTest(typeC, "3");
 
-		// Negative case: Null argument
-		try {
-			JdtUtils.findAnonymous(typeC, null);
+        // Negative case: Null argument
+        try {
+            JdtUtils.findAnonymous(typeC, null);
 			fail("Expected NullPointerException");
-		} catch (NullPointerException e) {
-			// Expected
-		}
+        } catch (NullPointerException e) {
+            // Expected
+        }
 
-		// Negative case: Not integer
-		doNullTest(typeC, "bla");
+        // Negative case: Not integer
+        doNullTest(typeC, "bla");
+    }
+
+    @Override
+    protected TestScenario getTestScenario() {
+        return TestScenario.JDT;
 	}
 
-	@Override
-	protected TestScenario getTestScenario() {
-		return TestScenario.JDT;
+    protected IType getTypeC() throws JavaModelException {
+        IType type = getJavaProject().findType("C");
+        return type;
 	}
 
-	protected IType getTypeC() throws JavaModelException {
-		IType type = getJavaProject().findType("C");
-		return type;
+    protected IType getTypeE() throws JavaModelException {
+        IType type = getJavaProject().findType("C.E");
+        return type;
 	}
 
-	protected IType getTypeE() throws JavaModelException {
-		IType type = getJavaProject().findType("C.E");
-		return type;
+    private void doNullTest(IType parentType, String anonymousClassNumber) {
+        IType typeZero = JdtUtils.findAnonymous(parentType, anonymousClassNumber);
+        assertNull(typeZero);
 	}
 
-	private void doNullTest(IType parentType, String anonymousClassNumber) {
-		IType typeZero = JdtUtils.findAnonymous(parentType, anonymousClassNumber);
-		assertNull(typeZero);
-	}
-
-	private void doPositiveTest(IType parentType, String anonymousClassNumber) {
-		IType childType = JdtUtils.findAnonymous(parentType, anonymousClassNumber);
-		assertNotNull(childType);
+    private void doPositiveTest(IType parentType, String anonymousClassNumber) {
+        IType childType = JdtUtils.findAnonymous(parentType, anonymousClassNumber);
+        assertNotNull(childType);
 		assertTrue(childType.exists());
-		assertEquals("", childType.getElementName());
-	}
+        assertEquals("", childType.getElementName());
+    }
 
 }

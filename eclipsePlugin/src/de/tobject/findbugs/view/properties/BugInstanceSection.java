@@ -70,238 +70,238 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
  */
 public class BugInstanceSection extends AbstractPropertySection {
 
-	private Composite rootComposite;
-	private List annotationList;
-	private BugInstance bug;
+    private Composite rootComposite;
+    private List annotationList;
+    private BugInstance bug;
 	private IMarker marker;
-	private IFile file;
-	private String title;
-	private IJavaElement javaElt;
+    private IFile file;
+    private String title;
+    private IJavaElement javaElt;
 
-	public BugInstanceSection() {
-		super();
-	}
+    public BugInstanceSection() {
+        super();
+    }
 
-	@Override
-	public void createControls(Composite parent,
-			final TabbedPropertySheetPage tabbedPropertySheetPage) {
+    @Override
+    public void createControls(Composite parent,
+            final TabbedPropertySheetPage tabbedPropertySheetPage) {
 		super.createControls(parent, tabbedPropertySheetPage);
-		Color background = tabbedPropertySheetPage.getWidgetFactory().getColors()
-				.getBackground();
+        Color background = tabbedPropertySheetPage.getWidgetFactory().getColors()
+                .getBackground();
 
-		rootComposite = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout(1, true);
-		layout.marginLeft = 5;
+        rootComposite = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout(1, true);
+        layout.marginLeft = 5;
 		layout.marginTop = 5;
-		rootComposite.setLayout(layout);
-		rootComposite.setSize(SWT.DEFAULT, SWT.DEFAULT);
+        rootComposite.setLayout(layout);
+        rootComposite.setSize(SWT.DEFAULT, SWT.DEFAULT);
 
-		Group group = new Group(rootComposite, SWT.NONE);
-		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		group.setLayout(new GridLayout(1, false));
+        Group group = new Group(rootComposite, SWT.NONE);
+        group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        group.setLayout(new GridLayout(1, false));
 		group.setText("Bug annotations:");
 
-		rootComposite.setBackground(background);
-		group.setBackground(background);
+        rootComposite.setBackground(background);
+        group.setBackground(background);
 
-		annotationList = new List(group, SWT.NONE);
-		GridData data = new GridData(GridData.FILL_BOTH);
-		data.horizontalIndent = 0;
+        annotationList = new List(group, SWT.NONE);
+        GridData data = new GridData(GridData.FILL_BOTH);
+        data.horizontalIndent = 0;
 		data.verticalIndent = 0;
-		annotationList.setLayoutData(data);
+        annotationList.setLayoutData(data);
 
-		annotationList.setFont(JFaceResources.getDialogFont());
-		annotationList.addSelectionListener(new SelectionAdapter() {
-			@Override
+        annotationList.setFont(JFaceResources.getDialogFont());
+        annotationList.addSelectionListener(new SelectionAdapter() {
+            @Override
 			public void widgetSelected(SelectionEvent evnt) {
-				selectInEditor(false);
-			}
-		});
+                selectInEditor(false);
+            }
+        });
 		annotationList.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				selectInEditor(true);
+            @Override
+            public void mouseDoubleClick(MouseEvent e) {
+                selectInEditor(true);
 			}
-		});
-		final Menu menu = new Menu (annotationList);
-		final MenuItem item = new MenuItem (menu, SWT.PUSH);
+        });
+        final Menu menu = new Menu (annotationList);
+        final MenuItem item = new MenuItem (menu, SWT.PUSH);
 		item.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(
-				ISharedImages.IMG_TOOL_COPY));
-		item.setText ("Copy To Clipboard");
-		item.addListener (SWT.Selection, new Listener () {
+                ISharedImages.IMG_TOOL_COPY));
+        item.setText ("Copy To Clipboard");
+        item.addListener (SWT.Selection, new Listener () {
 			public void handleEvent (Event e) {
-				copyInfoToClipboard();
-			}
-		});
+                copyInfoToClipboard();
+            }
+        });
 		menu.addListener (SWT.Show, new Listener () {
-			public void handleEvent (Event event) {
-				item.setEnabled(bug != null);
-			}
+            public void handleEvent (Event event) {
+                item.setEnabled(bug != null);
+            }
 		});
-		annotationList.setMenu(menu);
+        annotationList.setMenu(menu);
 
-	}
+    }
 
-	@Override
-	public void setInput(IWorkbenchPart part, ISelection selection) {
-		super.setInput(part, selection);
+    @Override
+    public void setInput(IWorkbenchPart part, ISelection selection) {
+        super.setInput(part, selection);
 		marker = MarkerUtil.getMarkerFromSingleSelection(selection);
-		if(marker == null){
-			bug = null;
-			file = null;
+        if(marker == null){
+            bug = null;
+            file = null;
 			title = null;
-			javaElt = null;
-		} else {
-			bug = MarkerUtil.findBugInstanceForMarker(marker);
+            javaElt = null;
+        } else {
+            bug = MarkerUtil.findBugInstanceForMarker(marker);
 			file = (IFile) (marker.getResource() instanceof IFile ? marker
-					.getResource() : null);
-			javaElt = MarkerUtil.findJavaElementForMarker(marker);
-			if (file == null && javaElt == null) {
+                    .getResource() : null);
+            javaElt = MarkerUtil.findJavaElementForMarker(marker);
+            if (file == null && javaElt == null) {
 				FindbugsPlugin.getDefault().logError(
-						"Could not find file for " + bug.getMessage());
-			}
-			refreshTitle();
+                        "Could not find file for " + bug.getMessage());
+            }
+            refreshTitle();
 		}
-		refreshAnnotations();
-	}
+        refreshAnnotations();
+    }
 
-	@Override
-	public void refresh() {
-		super.refresh();
+    @Override
+    public void refresh() {
+        super.refresh();
 
-	}
+    }
 
-	@Override
-	public void dispose() {
-		if(rootComposite != null) {
+    @Override
+    public void dispose() {
+        if(rootComposite != null) {
 			rootComposite.dispose();
-		}
-		super.dispose();
+        }
+        super.dispose();
+    }
+
+    @Override
+    public boolean shouldUseExtraSpace() {
+        return true;
 	}
 
-	@Override
-	public boolean shouldUseExtraSpace() {
-		return true;
-	}
-
-	private void selectInEditor(boolean openEditor) {
-		if (bug == null || (file == null && javaElt == null)) {
-			return;
+    private void selectInEditor(boolean openEditor) {
+        if (bug == null || (file == null && javaElt == null)) {
+            return;
 		}
-		IWorkbenchPage page = getPart().getSite().getPage();
-		IEditorPart activeEditor = page.getActiveEditor();
-		IEditorInput input = activeEditor != null? activeEditor.getEditorInput() : null;
+        IWorkbenchPage page = getPart().getSite().getPage();
+        IEditorPart activeEditor = page.getActiveEditor();
+        IEditorInput input = activeEditor != null? activeEditor.getEditorInput() : null;
 
-		if (openEditor && !matchInput(input)) {
-			try {
-				if(file != null) {
+        if (openEditor && !matchInput(input)) {
+            try {
+                if(file != null) {
 					activeEditor = IDE.openEditor(page, file);
-				} else if(javaElt != null){
-					activeEditor = JavaUI.openInEditor(javaElt, true, true);
-				}
+                } else if(javaElt != null){
+                    activeEditor = JavaUI.openInEditor(javaElt, true, true);
+                }
 				if(activeEditor != null) {
-					input = activeEditor.getEditorInput();
-				}
-			} catch (PartInitException e) {
+                    input = activeEditor.getEditorInput();
+                }
+            } catch (PartInitException e) {
 				FindbugsPlugin.getDefault().logException(e,
+                        "Could not open editor for " + bug.getMessage());
+            } catch (CoreException e) {
+                FindbugsPlugin.getDefault().logException(e,
 						"Could not open editor for " + bug.getMessage());
-			} catch (CoreException e) {
-				FindbugsPlugin.getDefault().logException(e,
-						"Could not open editor for " + bug.getMessage());
-			}
-		}
-		if(matchInput(input)) {
+            }
+        }
+        if(matchInput(input)) {
 			int startLine = getLineToSelect();
-			EditorUtil.goToLine(activeEditor, startLine);
-		}
-	}
+            EditorUtil.goToLine(activeEditor, startLine);
+        }
+    }
 
-	private boolean matchInput(IEditorInput input) {
-		if(file != null && (input instanceof IFileEditorInput)){
-			return file.equals(((IFileEditorInput) input).getFile());
+    private boolean matchInput(IEditorInput input) {
+        if(file != null && (input instanceof IFileEditorInput)){
+            return file.equals(((IFileEditorInput) input).getFile());
 		}
-		if(javaElt != null && input != null){
-			IJavaElement javaElement = JavaUI.getEditorInputJavaElement(input);
-			if(javaElt.equals(javaElement)){
+        if(javaElt != null && input != null){
+            IJavaElement javaElement = JavaUI.getEditorInputJavaElement(input);
+            if(javaElt.equals(javaElement)){
 				return true;
-			}
-			IJavaElement parent = javaElt.getParent();
-			while(parent != null && !parent.equals(javaElement)){
+            }
+            IJavaElement parent = javaElt.getParent();
+            while(parent != null && !parent.equals(javaElement)){
 				parent = parent.getParent();
+            }
+            if(parent != null && parent.equals(javaElement)){
+                return true;
 			}
-			if(parent != null && parent.equals(javaElement)){
-				return true;
-			}
-		}
-		return false;
-	}
+        }
+        return false;
+    }
 
-	private void refreshTitle() {
-		String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
-		BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
+    private void refreshTitle() {
+        String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
+        BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
 		if (pattern == null || bug == null) {
-			title = "";
-			return;
-		}
+            title = "";
+            return;
+        }
 		String shortDescription = bug.getAbridgedMessage();
-		String abbrev = "["
-			+ bug.getPriorityAbbreviation()
-			+ " " + bug.getCategoryAbbrev()
+        String abbrev = "["
+            + bug.getPriorityAbbreviation()
+            + " " + bug.getCategoryAbbrev()
 			+ " " + pattern.getAbbrev()
-			+ "] ";
-		if (shortDescription == null) {
-			title = abbrev;
+            + "] ";
+        if (shortDescription == null) {
+            title = abbrev;
 		} else {
-			title = abbrev
-					+ shortDescription.trim() + " [" + pattern.getType() + "]";
-		}
+            title = abbrev
+                    + shortDescription.trim() + " [" + pattern.getType() + "]";
+        }
 
-	}
+    }
 
-	private void refreshAnnotations() {
-		annotationList.removeAll();
+    private void refreshAnnotations() {
+        annotationList.removeAll();
 
-		// bug may be null, but if so then the error has already been logged.
-		if (bug != null) {
-			Iterator<BugAnnotation> it = bug.annotationIterator();
+        // bug may be null, but if so then the error has already been logged.
+        if (bug != null) {
+            Iterator<BugAnnotation> it = bug.annotationIterator();
 			while (it.hasNext()) {
-				BugAnnotation ba = it.next();
-				annotationList.add(ba.toString());
-			}
+                BugAnnotation ba = it.next();
+                annotationList.add(ba.toString());
+            }
 		}
-	}
+    }
 
-	private int getLineToSelect() {
-		int index = annotationList.getSelectionIndex();
-		Iterator<BugAnnotation> theIterator = bug.annotationIterator();
+    private int getLineToSelect() {
+        int index = annotationList.getSelectionIndex();
+        Iterator<BugAnnotation> theIterator = bug.annotationIterator();
 		BugAnnotation theAnnotation = theIterator.next();
-		for (int i = 0; i < index; i++) {
-			theAnnotation = theIterator.next();
-		}
+        for (int i = 0; i < index; i++) {
+            theAnnotation = theIterator.next();
+        }
 		if (!(theAnnotation instanceof SourceLineAnnotation)) {
-			// return the line from our initial marker
-			return marker.getAttribute(IMarker.LINE_NUMBER, EditorUtil.DEFAULT_LINE_IN_EDITOR);
-		}
+            // return the line from our initial marker
+            return marker.getAttribute(IMarker.LINE_NUMBER, EditorUtil.DEFAULT_LINE_IN_EDITOR);
+        }
 		SourceLineAnnotation sla = (SourceLineAnnotation) theAnnotation;
-		int startLine = sla.getStartLine();
-		return startLine <= 0? EditorUtil.DEFAULT_LINE_IN_EDITOR : startLine;
-	}
+        int startLine = sla.getStartLine();
+        return startLine <= 0? EditorUtil.DEFAULT_LINE_IN_EDITOR : startLine;
+    }
 
-	private void copyInfoToClipboard() {
-		StringBuffer sb = new StringBuffer();
-		sb.append(title);
+    private void copyInfoToClipboard() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(title);
 		sb.append("\n");
-		sb.append(bug.getPriorityTypeString()).append(" ");
-		sb.append("\n");
-		Iterator<BugAnnotation> iterator = bug.annotationIterator();
+        sb.append(bug.getPriorityTypeString()).append(" ");
+        sb.append("\n");
+        Iterator<BugAnnotation> iterator = bug.annotationIterator();
 		while (iterator.hasNext()) {
-			BugAnnotation bugAnnotation = iterator.next();
-			sb.append(bugAnnotation.toString()).append("\n");
-		}
+            BugAnnotation bugAnnotation = iterator.next();
+            sb.append(bugAnnotation.toString()).append("\n");
+        }
 		if(file != null){
-			sb.append(file.getLocation()).append("\n");
-		}
-		Util.copyToClipboard(sb.toString());
+            sb.append(file.getLocation()).append("\n");
+        }
+        Util.copyToClipboard(sb.toString());
 	}
 
 }

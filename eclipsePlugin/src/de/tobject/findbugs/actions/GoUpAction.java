@@ -31,62 +31,62 @@ import de.tobject.findbugs.view.explorer.BugGroup;
 import de.tobject.findbugs.view.explorer.Grouping;
 
 public class GoUpAction implements IViewActionDelegate {
-	private BugExplorerView navigator;
+    private BugExplorerView navigator;
 
-	public void init(IViewPart view) {
-		if(view instanceof BugExplorerView) {
-			navigator = (BugExplorerView) view;
+    public void init(IViewPart view) {
+        if(view instanceof BugExplorerView) {
+            navigator = (BugExplorerView) view;
 		}
-	}
+    }
 
-	public void run(IAction action) {
-		if(!action.isEnabled()) {
-			return;
+    public void run(IAction action) {
+        if(!action.isEnabled()) {
+            return;
 		}
-		CommonViewer viewer = navigator.getCommonViewer();
-		Object[] expandedElements = viewer.getVisibleExpandedElements();
-		Object input = viewer.getInput();
+        CommonViewer viewer = navigator.getCommonViewer();
+        Object[] expandedElements = viewer.getVisibleExpandedElements();
+        Object input = viewer.getInput();
 		if (input instanceof BugGroup) {
-			BugGroup group = (BugGroup) input;
-			Object data = group.getParent();
-			boolean needRefresh = data == null;
+            BugGroup group = (BugGroup) input;
+            Object data = group.getParent();
+            boolean needRefresh = data == null;
 			if(needRefresh) {
-				BugContentProvider.getProvider(navigator.getNavigatorContentService())
-						.reSetInput();
-			} else {
+                BugContentProvider.getProvider(navigator.getNavigatorContentService())
+                        .reSetInput();
+            } else {
 				viewer.setInput(data);
-			}
+            }
 //			viewer.setSelection(new StructuredSelection(input), true);
 //			viewer.expandToLevel(input, 1);
-			viewer.setExpandedElements(expandedElements);
-		}
-		action.setEnabled(isEnabled());
+            viewer.setExpandedElements(expandedElements);
+        }
+        action.setEnabled(isEnabled());
 	}
 
-	public void selectionChanged(IAction action, ISelection selection) {
-		action.setEnabled(isEnabled());
-	}
+    public void selectionChanged(IAction action, ISelection selection) {
+        action.setEnabled(isEnabled());
+    }
 
-	private boolean isEnabled() {
-		if (navigator == null) {
-			return false;
+    private boolean isEnabled() {
+        if (navigator == null) {
+            return false;
 		}
-		Object input = navigator.getCommonViewer().getInput();
-		if(input  instanceof IMarker){
-			return true;
+        Object input = navigator.getCommonViewer().getInput();
+        if(input  instanceof IMarker){
+            return true;
 		}
-		if(input instanceof BugGroup){
-			BugContentProvider provider = BugContentProvider.getProvider(navigator
-					.getNavigatorContentService());
+        if(input instanceof BugGroup){
+            BugContentProvider provider = BugContentProvider.getProvider(navigator
+                    .getNavigatorContentService());
 			BugGroup bugGroup = (BugGroup) input;
-			Grouping grouping = provider.getGrouping();
-			if(grouping == null){
-				return false;
+            Grouping grouping = provider.getGrouping();
+            if(grouping == null){
+                return false;
 			}
-			// as long as the current input is on the "visible" children list (workspace is invisible)
-			return grouping.contains(bugGroup.getType());
-		}
+            // as long as the current input is on the "visible" children list (workspace is invisible)
+            return grouping.contains(bugGroup.getType());
+        }
 		return false;
-	}
+    }
 
 }

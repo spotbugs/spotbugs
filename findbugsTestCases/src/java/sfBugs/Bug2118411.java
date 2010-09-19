@@ -8,18 +8,18 @@ import java.util.Scanner;
 
 public class Bug2118411 {
 
-	public static String foo(File file) {
+    public static String foo(File file) {
 
-		Scanner s = null;
-		try {
-			s = new Scanner(new BufferedReader(new FileReader(file)));
+        Scanner s = null;
+        try {
+            s = new Scanner(new BufferedReader(new FileReader(file)));
 			return s.next();
-		} catch (IOException e) {
-			return null;
-		} finally {
+        } catch (IOException e) {
+            return null;
+        } finally {
 			if (s != null) {
-				s.close();
-			}
-		}
+                s.close();
+            }
+        }
 	}
 }

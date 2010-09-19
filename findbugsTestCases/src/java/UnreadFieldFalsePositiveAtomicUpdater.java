@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 /*
 From Cliff Click:
 
-I ran findbugs on my NonBlockingHashMap, 
+I ran findbugs on my NonBlockingHashMap,
   https://sourceforge.net/projects/high-scale-lib
 
 
@@ -15,9 +15,9 @@ findbugs apparently does not recognize AtomicReferenceFieldUpdater's as modifyin
     private final AtomicReferenceFieldUpdater<CHM,Object[]> _newkvsUpdater =
       AtomicReferenceFieldUpdater.newUpdater(CHM.class,Object[].class, "_newkvs");
     // Set the _next field if we can.
-    boolean CAS_newkvs( Object[] newkvs ) { 
-      while( _newkvs == null ) 
-        if( _newkvsUpdater.compareAndSet(this,null,newkvs) ) 
+    boolean CAS_newkvs( Object[] newkvs ) {
+      while( _newkvs == null )
+        if( _newkvsUpdater.compareAndSet(this,null,newkvs) )
           return true;
       return false;
     }
@@ -26,17 +26,17 @@ findbugs apparently does not recognize AtomicReferenceFieldUpdater's as modifyin
 
  */
 public class UnreadFieldFalsePositiveAtomicUpdater {
-	volatile Object[] _newkvs;
+    volatile Object[] _newkvs;
 
-	private final AtomicReferenceFieldUpdater<UnreadFieldFalsePositiveAtomicUpdater, Object[]> _newkvsUpdater = AtomicReferenceFieldUpdater
-	        .newUpdater(UnreadFieldFalsePositiveAtomicUpdater.class, Object[].class, "_newkvs");
+    private final AtomicReferenceFieldUpdater<UnreadFieldFalsePositiveAtomicUpdater, Object[]> _newkvsUpdater = AtomicReferenceFieldUpdater
+            .newUpdater(UnreadFieldFalsePositiveAtomicUpdater.class, Object[].class, "_newkvs");
 
-	// Set the _next field if we can.
-	boolean CAS_newkvs(Object[] newkvs) {
-		while (_newkvs == null)
+    // Set the _next field if we can.
+    boolean CAS_newkvs(Object[] newkvs) {
+        while (_newkvs == null)
 			if (_newkvsUpdater.compareAndSet(this, (Object[]) null, newkvs))
-				return true;
-		return false;
-	}
+                return true;
+        return false;
+    }
 
 }

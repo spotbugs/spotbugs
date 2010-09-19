@@ -32,99 +32,99 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateRemainderOddnessCheckRe
 
 /**
  * This class tests the quickfix resolutions.
- * 
+ *
  * @author Tomás Pollak
  */
 public class QuickfixTest extends AbstractQuickfixTest {
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		setUpTestProject(TestScenario.QUICKFIX);
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        setUpTestProject(TestScenario.QUICKFIX);
 	}
 
-	@AfterClass
-	public static void tearDownClass() throws CoreException {
-		tearDownTestProject();
+    @AfterClass
+    public static void tearDownClass() throws CoreException {
+        tearDownTestProject();
 	}
 
-	@Test
-	public void testChangePublicToProtectedResolution() throws CoreException, IOException {
-		enableBugCategory("MALICIOUS_CODE");
+    @Test
+    public void testChangePublicToProtectedResolution() throws CoreException, IOException {
+        enableBugCategory("MALICIOUS_CODE");
 
-		doTestQuickfixResolution("ChangePublicToProtectedResolutionExample.java",
-				"FI_PUBLIC_SHOULD_BE_PROTECTED");
-	}
+        doTestQuickfixResolution("ChangePublicToProtectedResolutionExample.java",
+                "FI_PUBLIC_SHOULD_BE_PROTECTED");
+    }
 
-	@Test
-	public void testCreateAndOddnessCheckResolution() throws CoreException, IOException {
-		doTestQuickfixResolution("CreateAndOddnessCheckResolutionExample.java",
+    @Test
+    public void testCreateAndOddnessCheckResolution() throws CoreException, IOException {
+        doTestQuickfixResolution("CreateAndOddnessCheckResolutionExample.java",
 				CreateAndOddnessCheckResolution.class, "IM_BAD_CHECK_FOR_ODD");
-	}
+    }
 
-	@Test
-	public void testCreateDoPrivilegedBlockResolution() throws CoreException, IOException {
-		doTestQuickfixResolution("CreateDoPrivilegedBlockResolutionExample.java",
+    @Test
+    public void testCreateDoPrivilegedBlockResolution() throws CoreException, IOException {
+        doTestQuickfixResolution("CreateDoPrivilegedBlockResolutionExample.java",
 				"DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED");
-	}
+    }
 
-	@Test
-	public void testCreateMutableCloneResolution() throws CoreException, IOException {
-		enableBugCategory("MALICIOUS_CODE");
+    @Test
+    public void testCreateMutableCloneResolution() throws CoreException, IOException {
+        enableBugCategory("MALICIOUS_CODE");
 
-		doTestQuickfixResolution("CreateMutableCloneResolutionExample.java",
-				"EI_EXPOSE_REP");
-	}
+        doTestQuickfixResolution("CreateMutableCloneResolutionExample.java",
+                "EI_EXPOSE_REP");
+    }
 
-	@Test
-	public void testCreateRemainderOddnessCheckResolution() throws CoreException,
-			IOException {
+    @Test
+    public void testCreateRemainderOddnessCheckResolution() throws CoreException,
+            IOException {
 		doTestQuickfixResolution("CreateRemainderOddnessCheckResolutionExample.java",
-				CreateRemainderOddnessCheckResolution.class, "IM_BAD_CHECK_FOR_ODD");
-	}
+                CreateRemainderOddnessCheckResolution.class, "IM_BAD_CHECK_FOR_ODD");
+    }
 
-	@Test
-	public void testMakeFieldFinalResolution() throws CoreException, IOException {
-		enableBugCategory("MALICIOUS_CODE");
+    @Test
+    public void testMakeFieldFinalResolution() throws CoreException, IOException {
+        enableBugCategory("MALICIOUS_CODE");
 
-		doTestQuickfixResolution("MakeFieldFinalResolutionExample.java",
-				"MS_SHOULD_BE_FINAL");
-	}
+        doTestQuickfixResolution("MakeFieldFinalResolutionExample.java",
+                "MS_SHOULD_BE_FINAL");
+    }
 
-	@Test
-	public void testMakeFieldStaticResolution() throws CoreException, IOException {
-		doTestQuickfixResolution("MakeFieldStaticResolutionExample.java",
+    @Test
+    public void testMakeFieldStaticResolution() throws CoreException, IOException {
+        doTestQuickfixResolution("MakeFieldStaticResolutionExample.java",
 				"SS_SHOULD_BE_STATIC");
-	}
+    }
 
-	@Test
-	public void testMakeInnerTypeStaticResolution() throws CoreException, IOException {
-		doTestQuickfixResolution("MakeInnerTypeStaticResolutionExample.java",
+    @Test
+    public void testMakeInnerTypeStaticResolution() throws CoreException, IOException {
+        doTestQuickfixResolution("MakeInnerTypeStaticResolutionExample.java",
 				"SIC_INNER_SHOULD_BE_STATIC");
-	}
+    }
 
-	@Test
-	public void testRemoveUselessMethodResolution_FI_Empty() throws CoreException,
-			IOException {
+    @Test
+    public void testRemoveUselessMethodResolution_FI_Empty() throws CoreException,
+            IOException {
 		doTestQuickfixResolution("RemoveUselessMethodResolutionFIEmptyExample.java",
-				"FI_EMPTY");
-	}
+                "FI_EMPTY");
+    }
 
-	@Test
-	public void testRemoveUselessMethodResolution_FI_Useless() throws CoreException,
-			IOException {
+    @Test
+    public void testRemoveUselessMethodResolution_FI_Useless() throws CoreException,
+            IOException {
 		doTestQuickfixResolution("RemoveUselessMethodResolutionFIUselessExample.java",
-				"FI_USELESS");
-	}
+                "FI_USELESS");
+    }
 
-	@Test
-	public void testRemoveUselessStatementResolution() throws CoreException, IOException {
-		doTestQuickfixResolution("RemoveUselessStatementResolutionExample.java",
+    @Test
+    public void testRemoveUselessStatementResolution() throws CoreException, IOException {
+        doTestQuickfixResolution("RemoveUselessStatementResolutionExample.java",
 				"ESync_EMPTY_SYNC");
-	}
+    }
 
-	@Test
-	public void testUseValueOfResolution() throws CoreException, IOException {
-		doTestQuickfixResolution("UseValueOfResolutionExample.java", "DM_BOOLEAN_CTOR",
+    @Test
+    public void testUseValueOfResolution() throws CoreException, IOException {
+        doTestQuickfixResolution("UseValueOfResolutionExample.java", "DM_BOOLEAN_CTOR",
 				"DM_NUMBER_CTOR");
-	}
+    }
 
 }

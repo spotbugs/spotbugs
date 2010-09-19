@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 
 public class Ideas_2009_10_29 extends TestCase {
 
-	Random r = new Random();
+    Random r = new Random();
 
 //	Map<String, Integer> m1 = new HashMap<String,Integer>();
 //
@@ -71,7 +71,7 @@ public class Ideas_2009_10_29 extends TestCase {
 //				return false;
 //		return false;
 //	}
-//	
+//
 //	boolean checkKeySet(Map<String,Integer> m, Integer x) {
 //		for(Iterator<String> i = m.keySet().iterator(); i.hasNext(); )
 //			if (x.equals(i.next()))
@@ -88,12 +88,12 @@ public class Ideas_2009_10_29 extends TestCase {
 //		return r.nextInt() % n;
 //	}
 
-	int nextRandom2(int n) {
-		int result = r.nextInt() % n;
-		if (result < 0)
+    int nextRandom2(int n) {
+        int result = r.nextInt() % n;
+        if (result < 0)
 			return -result;
-		return result;
-	}
+        return result;
+    }
 
 //	public void testFail() {
 //		try {

@@ -8,7 +8,7 @@
  *
  * Test case based on example code from bug report
  * **************************************** */
- 
+
 package sfBugs;
 
 import javax.annotation.CheckForSigned;

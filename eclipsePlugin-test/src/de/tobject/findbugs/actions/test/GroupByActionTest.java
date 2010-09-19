@@ -38,112 +38,112 @@ import de.tobject.findbugs.view.explorer.GroupType;
 
 /**
  * This class tests the GroupByAction.
- * 
+ *
  * @author Tomás Pollak
  */
 public class GroupByActionTest extends AbstractFindBugsTest {
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		setUpTestProject(TestScenario.DEFAULT);
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        setUpTestProject(TestScenario.DEFAULT);
 	}
 
-	@AfterClass
-	public static void tearDownClass() throws CoreException {
-		tearDownTestProject();
+    @AfterClass
+    public static void tearDownClass() throws CoreException {
+        tearDownTestProject();
 	}
 
-	private static final String PRIORITY_CATEGORY_PROJECT_PACKAGE_CLASS_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Priority.Category.Project.Package.Class.PatternType.Pattern.Marker";
-	private static final String PRIORITY_CATEGORY_PROJECT_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Priority.Category.Project.PatternType.Pattern.Marker";
-	private static final String PRIORITY_PROJECT_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Priority.Project.Pattern.Marker";
+    private static final String PRIORITY_CATEGORY_PROJECT_PACKAGE_CLASS_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Priority.Category.Project.Package.Class.PatternType.Pattern.Marker";
+    private static final String PRIORITY_CATEGORY_PROJECT_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Priority.Category.Project.PatternType.Pattern.Marker";
+    private static final String PRIORITY_PROJECT_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Priority.Project.Pattern.Marker";
 	private static final String PROJECT_PRIORITY_CATEGORY_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Project.Priority.Category.PatternType.Pattern.Marker";
-	private static final String PROJECT_PRIORITY_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Project.Priority.Pattern.Marker";
-	private static final String PROJECT_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Project.Pattern.Marker";
+    private static final String PROJECT_PRIORITY_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Project.Priority.Pattern.Marker";
+    private static final String PROJECT_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Project.Pattern.Marker";
 
-	private GroupByAction action;
+    private GroupByAction action;
 
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
 
-		action = new GroupByAction();
-		action.init(showBugExplorerView());
-	}
+        action = new GroupByAction();
+        action.init(showBugExplorerView());
+    }
 
-	@Override
-	public void tearDown() throws CoreException {
-		action = null;
+    @Override
+    public void tearDown() throws CoreException {
+        action = null;
 
-		super.tearDown();
-	}
+        super.tearDown();
+    }
 
-	@Test
-	public void testAction_Priority_Category_Project_Package_Class_PatternType_Pattern_Marker()
-			throws PartInitException {
+    @Test
+    public void testAction_Priority_Category_Project_Package_Class_PatternType_Pattern_Marker()
+            throws PartInitException {
 		runAction(PRIORITY_CATEGORY_PROJECT_PACKAGE_CLASS_PATTERN_TYPE_PATTERN_MARKER_ID);
 
-		assertExpectedGroupTypes(GroupType.Priority, GroupType.Category,
-				GroupType.Project, GroupType.Package, GroupType.Class,
-				GroupType.PatternType, GroupType.Pattern, GroupType.Marker);
+        assertExpectedGroupTypes(GroupType.Priority, GroupType.Category,
+                GroupType.Project, GroupType.Package, GroupType.Class,
+                GroupType.PatternType, GroupType.Pattern, GroupType.Marker);
 	}
 
-	@Test
-	public void testAction_Priority_Category_Project_PatternType_Pattern_Marker()
-			throws PartInitException {
+    @Test
+    public void testAction_Priority_Category_Project_PatternType_Pattern_Marker()
+            throws PartInitException {
 		runAction(PRIORITY_CATEGORY_PROJECT_PATTERN_TYPE_PATTERN_MARKER_ID);
 
-		assertExpectedGroupTypes(GroupType.Priority, GroupType.Category,
-				GroupType.Project, GroupType.PatternType, GroupType.Pattern,
-				GroupType.Marker);
+        assertExpectedGroupTypes(GroupType.Priority, GroupType.Category,
+                GroupType.Project, GroupType.PatternType, GroupType.Pattern,
+                GroupType.Marker);
 	}
 
-	@Test
-	public void testAction_Priority_Project_Pattern_Marker() throws PartInitException {
-		runAction(PRIORITY_PROJECT_PATTERN_MARKER_ID);
+    @Test
+    public void testAction_Priority_Project_Pattern_Marker() throws PartInitException {
+        runAction(PRIORITY_PROJECT_PATTERN_MARKER_ID);
 
-		assertExpectedGroupTypes(GroupType.Priority, GroupType.Project,
-				GroupType.Pattern, GroupType.Marker);
-	}
+        assertExpectedGroupTypes(GroupType.Priority, GroupType.Project,
+                GroupType.Pattern, GroupType.Marker);
+    }
 
-	@Test
-	public void testAction_Project_Pattern_Marker() throws PartInitException {
-		runAction(PROJECT_PATTERN_MARKER_ID);
+    @Test
+    public void testAction_Project_Pattern_Marker() throws PartInitException {
+        runAction(PROJECT_PATTERN_MARKER_ID);
 
-		assertExpectedGroupTypes(GroupType.Project, GroupType.Pattern, GroupType.Marker);
-	}
+        assertExpectedGroupTypes(GroupType.Project, GroupType.Pattern, GroupType.Marker);
+    }
 
-	@Test
-	public void testAction_Project_Priority_Category_PatternType_Pattern_Marker()
-			throws PartInitException {
+    @Test
+    public void testAction_Project_Priority_Category_PatternType_Pattern_Marker()
+            throws PartInitException {
 		runAction(PROJECT_PRIORITY_CATEGORY_PATTERN_TYPE_PATTERN_MARKER_ID);
 
-		assertExpectedGroupTypes(GroupType.Project, GroupType.Priority,
-				GroupType.Category, GroupType.PatternType, GroupType.Pattern,
-				GroupType.Marker);
+        assertExpectedGroupTypes(GroupType.Project, GroupType.Priority,
+                GroupType.Category, GroupType.PatternType, GroupType.Pattern,
+                GroupType.Marker);
 	}
 
-	@Test
-	public void testAction_Project_Priority_Pattern_Marker() throws PartInitException {
-		runAction(PROJECT_PRIORITY_PATTERN_MARKER_ID);
+    @Test
+    public void testAction_Project_Priority_Pattern_Marker() throws PartInitException {
+        runAction(PROJECT_PRIORITY_PATTERN_MARKER_ID);
 
-		assertExpectedGroupTypes(GroupType.Project, GroupType.Priority,
-				GroupType.Pattern, GroupType.Marker);
-	}
+        assertExpectedGroupTypes(GroupType.Project, GroupType.Priority,
+                GroupType.Pattern, GroupType.Marker);
+    }
 
-	private void assertExpectedGroupTypes(GroupType... expectedTypes)
-			throws PartInitException {
-		List<GroupType> expectedGroupTypes = Arrays.asList(expectedTypes);
+    private void assertExpectedGroupTypes(GroupType... expectedTypes)
+            throws PartInitException {
+        List<GroupType> expectedGroupTypes = Arrays.asList(expectedTypes);
 		List<GroupType> actualGroupTypes = getBugContentProvider().getGrouping().asList();
-		assertEquals(expectedGroupTypes, actualGroupTypes);
+        assertEquals(expectedGroupTypes, actualGroupTypes);
+    }
+
+    private void runAction(String actionId) {
+        IAction proxyAction = new ProxyAction(actionId);
+        action.run(proxyAction);
 	}
 
-	private void runAction(String actionId) {
-		IAction proxyAction = new ProxyAction(actionId);
-		action.run(proxyAction);
-	}
-
-	private static class ProxyAction extends Action implements IAction {
-		public ProxyAction(String id) {
-			setId(id);
+    private static class ProxyAction extends Action implements IAction {
+        public ProxyAction(String id) {
+            setId(id);
 		}
-	}
+    }
 }

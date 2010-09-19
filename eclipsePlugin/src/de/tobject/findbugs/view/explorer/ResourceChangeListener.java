@@ -32,51 +32,51 @@ import de.tobject.findbugs.marker.FindBugsMarker;
  */
 final class ResourceChangeListener implements IResourceChangeListener {
 
-	static final int SHORT_DELAY = 250;
-	static final int LONG_DELAY = 750;
+    static final int SHORT_DELAY = 250;
+    static final int LONG_DELAY = 750;
 
-	final IViewerRefreshJob refreshJob;
+    final IViewerRefreshJob refreshJob;
 
-	ResourceChangeListener(IViewerRefreshJob refreshJob) {
-		this.refreshJob = refreshJob;
-	}
+    ResourceChangeListener(IViewerRefreshJob refreshJob) {
+        this.refreshJob = refreshJob;
+    }
 
-	public void resourceChanged(IResourceChangeEvent event) {
+    public void resourceChanged(IResourceChangeEvent event) {
 
-		boolean postBuild = event.getType() == IResourceChangeEvent.POST_BUILD;
-		boolean accepted = false;
+        boolean postBuild = event.getType() == IResourceChangeEvent.POST_BUILD;
+        boolean accepted = false;
 
-		/*
-		 * gather all marker changes from the delta. be sure to do this in the calling
-		 * thread, as the delta is destroyed when this method returns
+        /*
+         * gather all marker changes from the delta. be sure to do this in the calling
+         * thread, as the delta is destroyed when this method returns
 		 */
-		IMarkerDelta[] markerDeltas = event.findMarkerDeltas(FindBugsMarker.NAME, true);
-		for (IMarkerDelta mdelta : markerDeltas) {
-			IMarker marker = mdelta.getMarker();
+        IMarkerDelta[] markerDeltas = event.findMarkerDeltas(FindBugsMarker.NAME, true);
+        for (IMarkerDelta mdelta : markerDeltas) {
+            IMarker marker = mdelta.getMarker();
 			if(marker == null){
-				continue;
-			}
-			DeltaInfo deltaInfo = new DeltaInfo(marker, mdelta.getKind());
+                continue;
+            }
+            DeltaInfo deltaInfo = new DeltaInfo(marker, mdelta.getKind());
 			if(BugContentProvider.DEBUG){
-				System.out.println("resource change for: " + deltaInfo);
-			}
+                System.out.println("resource change for: " + deltaInfo);
+            }
 
-			accepted |= refreshJob.addToQueue(deltaInfo);
-		}
+            accepted |= refreshJob.addToQueue(deltaInfo);
+        }
 
-		if (!accepted) {
-			return;
-		}
+        if (!accepted) {
+            return;
+        }
 
-		if (postBuild) {
-			scheduleRefreshJob(SHORT_DELAY);
-		} else {
+        if (postBuild) {
+            scheduleRefreshJob(SHORT_DELAY);
+        } else {
 			// After some time do updates anyways
-			scheduleRefreshJob(LONG_DELAY);
-		}
-	}
+            scheduleRefreshJob(LONG_DELAY);
+        }
+    }
 
-	void scheduleRefreshJob(int delay) {
-		refreshJob.schedule(delay);
-	}
+    void scheduleRefreshJob(int delay) {
+        refreshJob.schedule(delay);
+    }
 }

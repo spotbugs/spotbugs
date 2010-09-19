@@ -11,11 +11,11 @@ import javax.annotation.meta.When;
 @TypeQualifier
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Bar {
-	When when() default When.ALWAYS;
+    When when() default When.ALWAYS;
 
-	int iField() default 1;
-	char cField() default 'Z';
-	String[] strArrField() default { "Blat", "Thud" };
+    int iField() default 1;
+    char cField() default 'Z';
+    String[] strArrField() default { "Blat", "Thud" };
 	
-	When[] eArrField() default { When.ALWAYS, When.MAYBE };
+    When[] eArrField() default { When.ALWAYS, When.MAYBE };
 }

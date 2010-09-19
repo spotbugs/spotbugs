@@ -5,76 +5,76 @@ import java.util.Arrays;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
 public class Bug2922917 {
-	int x, y, z;
+    int x, y, z;
 
-	public int hashCode() {
-		return x + y + z;
-	}
+    public int hashCode() {
+        return x + y + z;
+    }
 
-	static class A extends Bug2922917 {
+    static class A extends Bug2922917 {
 
-		public boolean equals(Object obj) {
-			if (obj == null) {
-				return false;
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
 			}
-			if (obj == this) {
-				return true;
-			}
+            if (obj == this) {
+                return true;
+            }
 			if (obj.getClass() != getClass()) {
-				return false;
-			}
-			A rhs = (A) obj;
+                return false;
+            }
+            A rhs = (A) obj;
 			return new EqualsBuilder().appendSuper(super.equals(obj)).append(x, rhs.x).append(y, rhs.y).append(z, rhs.z)
-			        .isEquals();
-		}
+                    .isEquals();
+        }
 
-	}
+    }
 
-	static class B extends Bug2922917 {
+    static class B extends Bug2922917 {
 
-		public boolean equals(Object obj) {
-			return EqualsBuilder.reflectionEquals(this, obj);
-		}
+        public boolean equals(Object obj) {
+            return EqualsBuilder.reflectionEquals(this, obj);
+        }
 
-	}
+    }
 
-	static class C extends Bug2922917 {
+    static class C extends Bug2922917 {
 
-		public boolean equals(Object obj) {
-			return EqualsBuilder.reflectionEquals(this, obj, new String[] { "x", "y" });
-		}
+        public boolean equals(Object obj) {
+            return EqualsBuilder.reflectionEquals(this, obj, new String[] { "x", "y" });
+        }
 
-	}
+    }
 
-	static class D extends Bug2922917 {
+    static class D extends Bug2922917 {
 
-		public boolean equals(Object obj) {
-			return EqualsBuilder.reflectionEquals(this, obj, Arrays.asList(new String[] { "x", "y" }));
-		}
+        public boolean equals(Object obj) {
+            return EqualsBuilder.reflectionEquals(this, obj, Arrays.asList(new String[] { "x", "y" }));
+        }
 
-	}
+    }
 
-	static class E extends Bug2922917 {
+    static class E extends Bug2922917 {
 
-		public boolean equals(Object obj) {
-			return EqualsBuilder.reflectionEquals(this, obj, false);
-		}
+        public boolean equals(Object obj) {
+            return EqualsBuilder.reflectionEquals(this, obj, false);
+        }
 
-	}
+    }
 
-	static class F extends Bug2922917 {
+    static class F extends Bug2922917 {
 
-		public boolean equals(Object obj) {
-			return EqualsBuilder.reflectionEquals(this, obj, false, Bug2922917.class);
-		}
+        public boolean equals(Object obj) {
+            return EqualsBuilder.reflectionEquals(this, obj, false, Bug2922917.class);
+        }
 
-	}
+    }
 
-	static class G extends Bug2922917 {
+    static class G extends Bug2922917 {
 
-		public boolean equals(Object obj) {
-			return EqualsBuilder.reflectionEquals(this, obj, false, Bug2922917.class, new String[] { "x", "y" });
-		}
+        public boolean equals(Object obj) {
+            return EqualsBuilder.reflectionEquals(this, obj, false, Bug2922917.class, new String[] { "x", "y" });
+        }
 
-	}
+    }
 }

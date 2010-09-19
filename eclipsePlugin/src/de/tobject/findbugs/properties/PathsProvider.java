@@ -46,171 +46,171 @@ import org.eclipse.swt.widgets.Widget;
 import de.tobject.findbugs.builder.FindBugsWorker;
 
 abstract class PathsProvider extends SelectionAdapter implements IStructuredContentProvider {
-	private static IPath lastUsedPath;
-	protected final List<PathElement> paths;
-	private final Control control;
+    private static IPath lastUsedPath;
+    protected final List<PathElement> paths;
+    private final Control control;
 	private final ListViewer viewer;
-	protected final FindbugsPropertyPage propertyPage;
-	private final ListenerList listeners;
+    protected final FindbugsPropertyPage propertyPage;
+    private final ListenerList listeners;
 
-	protected PathsProvider(ListViewer viewer, FindbugsPropertyPage propertyPage) {
-		this.propertyPage = propertyPage;
-		this.paths = new ArrayList<PathElement>();
+    protected PathsProvider(ListViewer viewer, FindbugsPropertyPage propertyPage) {
+        this.propertyPage = propertyPage;
+        this.paths = new ArrayList<PathElement>();
 		this.viewer = viewer;
-		this.control = viewer.getList();
-		listeners = new ListenerList();
-		viewer.setContentProvider(this);
+        this.control = viewer.getList();
+        listeners = new ListenerList();
+        viewer.setContentProvider(this);
 	}
 
-	static void setLastUsedPath(IPath lastUsed) {
-		// TODO write to preferences
-		lastUsedPath = lastUsed;
+    static void setLastUsedPath(IPath lastUsed) {
+        // TODO write to preferences
+        lastUsedPath = lastUsed;
 	}
 
-	static IPath getLastUsedPath() {
-		// TODO read from preferences
-		return lastUsedPath;
+    static IPath getLastUsedPath() {
+        // TODO read from preferences
+        return lastUsedPath;
 	}
 
-	void setFilters(List<PathElement> filterFiles) {
-		paths.clear();
-		paths.addAll(filterFiles);
+    void setFilters(List<PathElement> filterFiles) {
+        paths.clear();
+        paths.addAll(filterFiles);
 	}
 
-	@Override
-	public void widgetSelected(SelectionEvent e) {
-		Widget widget = e.widget;
+    @Override
+    public void widgetSelected(SelectionEvent e) {
+        Widget widget = e.widget;
 		String buttonId = widget.getData() + "";
-		if(buttonId.equals("add")) {
-		addFiles(e.display.getActiveShell());
-		} else {
+        if(buttonId.equals("add")) {
+        addFiles(e.display.getActiveShell());
+        } else {
 			Iterator<?> selectionIter = ((IStructuredSelection) viewer.getSelection())
-			.iterator();
-			while (selectionIter.hasNext()) {
-				remove((PathElement) selectionIter.next());
+            .iterator();
+            while (selectionIter.hasNext()) {
+                remove((PathElement) selectionIter.next());
 			}
-		}
-	}
+        }
+    }
 
-	public void addListener(Listener listener) {
-		listeners.add(listener);
-	}
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
 
-	public void addFiles(Shell parentShell) {
-		FileDialog dialog = createFileDialog(parentShell);
+    public void addFiles(Shell parentShell) {
+        FileDialog dialog = createFileDialog(parentShell);
 
-		// The validator checks to see if the user's selection
-		// is valid given the type of the object selected (e.g.
-		// it can't be a folder) and the objects that have
+        // The validator checks to see if the user's selection
+        // is valid given the type of the object selected (e.g.
+        // it can't be a folder) and the objects that have
 		// already been selected
-		String pathStr = openFileDialog(dialog);
-		if (pathStr == null) {
-			return;
+        String pathStr = openFileDialog(dialog);
+        if (pathStr == null) {
+            return;
 		}
-		addSelectedPaths(dialog);
-		applyToPreferences();
-		for (Object object : listeners.getListeners()) {
+        addSelectedPaths(dialog);
+        applyToPreferences();
+        for (Object object : listeners.getListeners()) {
 			((Listener) object).handleEvent(null);
-		}
-	}
+        }
+    }
 
-	private FileDialog createFileDialog(Shell parentShell) {
-		FileDialog dialog = new FileDialog(parentShell, SWT.OPEN | SWT.MULTI);
-		configureDialog(dialog);
+    private FileDialog createFileDialog(Shell parentShell) {
+        FileDialog dialog = new FileDialog(parentShell, SWT.OPEN | SWT.MULTI);
+        configureDialog(dialog);
 
-		IPath lastUsed = getLastUsedPath();
-		String filterPath = null;
-		if(lastUsed != null && lastUsed.toFile().isDirectory()){
+        IPath lastUsed = getLastUsedPath();
+        String filterPath = null;
+        if(lastUsed != null && lastUsed.toFile().isDirectory()){
 			filterPath = lastUsed.toOSString();
-			dialog.setFilterPath(filterPath);
-		}
-		return dialog;
+            dialog.setFilterPath(filterPath);
+        }
+        return dialog;
 	}
 
-	abstract protected void configureDialog(FileDialog dialog);
+    abstract protected void configureDialog(FileDialog dialog);
 
-	protected String openFileDialog(FileDialog dialog) {
-		return dialog.open();
-	}
+    protected String openFileDialog(FileDialog dialog) {
+        return dialog.open();
+    }
 
-	protected String[] getFileNames(FileDialog dialog) {
-		return dialog.getFileNames();
-	}
+    protected String[] getFileNames(FileDialog dialog) {
+        return dialog.getFileNames();
+    }
 
-	protected String getFilterPath(FileDialog dialog) {
-		return dialog.getFilterPath();
-	}
+    protected String getFilterPath(FileDialog dialog) {
+        return dialog.getFilterPath();
+    }
 
-	private void addSelectedPaths(FileDialog dialog) {
-		String[] names = getFileNames(dialog);
-		String filterPath = getFilterPath(dialog);
+    private void addSelectedPaths(FileDialog dialog) {
+        String[] names = getFileNames(dialog);
+        String filterPath = getFilterPath(dialog);
 		Path baseDir = new Path(filterPath);
-		setLastUsedPath(baseDir);
-		for (String fileName : names) {
-			IPath path = baseDir.append(fileName);
+        setLastUsedPath(baseDir);
+        for (String fileName : names) {
+            IPath path = baseDir.append(fileName);
 			PathElement pathElt = new PathElement(path, Status.OK_STATUS);
-			if(!paths.contains(pathElt)) {
-				paths.add(pathElt);
-			}
+            if(!paths.contains(pathElt)) {
+                paths.add(pathElt);
+            }
 		}
-	}
+    }
 
-	public void dispose() {
-		//
-	}
+    public void dispose() {
+        //
+    }
 
-	public void inputChanged(Viewer viewer1, Object oldInput, Object newInput) {
-		//
-	}
+    public void inputChanged(Viewer viewer1, Object oldInput, Object newInput) {
+        //
+    }
 
-	public Object[] getElements(Object inputElement) {
-		return paths.toArray();
-	}
+    public Object[] getElements(Object inputElement) {
+        return paths.toArray();
+    }
 
-	boolean contains(Object o){
-		return paths.contains(o);
-	}
+    boolean contains(Object o){
+        return paths.contains(o);
+    }
 
-	void setControlEnabled(boolean enabled){
-		control.setEnabled(enabled);
-	}
+    void setControlEnabled(boolean enabled){
+        control.setEnabled(enabled);
+    }
 
-	void refresh(){
-		IStatus status = validate();
-		if(status != null){
+    void refresh(){
+        IStatus status = validate();
+        if(status != null){
 			propertyPage.setErrorMessage(status.getMessage());
-		}
-		viewer.setSelection(null);
-		viewer.setInput(new Object());
+        }
+        viewer.setSelection(null);
+        viewer.setInput(new Object());
 		viewer.refresh(true);
-	}
+    }
 
-	abstract protected IStatus validate();
+    abstract protected IStatus validate();
 
-	public void remove(PathElement holder) {
-		paths.remove(holder);
-		applyToPreferences();
+    public void remove(PathElement holder) {
+        paths.remove(holder);
+        applyToPreferences();
 		for (Object object : listeners.getListeners()) {
-			((Listener) object).handleEvent(null);
-		}
-	}
+            ((Listener) object).handleEvent(null);
+        }
+    }
 
-	protected void applyToPreferences() {
-		IStatus status = validate();
-		if(status != null){
+    protected void applyToPreferences() {
+        IStatus status = validate();
+        if(status != null){
 			propertyPage.setErrorMessage(status.getMessage());
-		}
-	}
+        }
+    }
 
-	protected SortedSet<String> pathsToStrings() {
-		IProject project = propertyPage.getProject();
-		SortedSet<String>result = new TreeSet<String>();
+    protected SortedSet<String> pathsToStrings() {
+        IProject project = propertyPage.getProject();
+        SortedSet<String>result = new TreeSet<String>();
 		for (PathElement path : paths) {
-			IPath filterPath = FindBugsWorker.toFilterPath(path.getPath(), project);
-			result.add(filterPath.toPortableString());
-		}
+            IPath filterPath = FindBugsWorker.toFilterPath(path.getPath(), project);
+            result.add(filterPath.toPortableString());
+        }
 		return result;
-	}
+    }
 
 
 }

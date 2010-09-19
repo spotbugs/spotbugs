@@ -1,19 +1,19 @@
 public class InfiniteRecursiveLoopFalsePositive {
 
-	InfiniteRecursiveLoopFalsePositive x = new Inner();
+    InfiniteRecursiveLoopFalsePositive x = new Inner();
 
-	double z;
+    double z;
 
-	double f(double y) {
-		z = x.f(y);
-		return z;
+    double f(double y) {
+        z = x.f(y);
+        return z;
 	}
 
-	static class Inner extends InfiniteRecursiveLoopFalsePositive {
+    static class Inner extends InfiniteRecursiveLoopFalsePositive {
 
-		@Override
-		double f(double y) {
-			return y * y;
+        @Override
+        double f(double y) {
+            return y * y;
 		}
-	}
+    }
 }

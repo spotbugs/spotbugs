@@ -8,7 +8,7 @@ public class Bug1811106 {
         b.method1(args);
         b.method2(args);
     }
-    
+
     public void method0(String[] args) {
         // not detected
         String foo = "";
@@ -42,7 +42,7 @@ public class Bug1811106 {
             foo = foo + " AND " + args[i];
         }
     }
-    
+
     public void all(String[] args) {
         // not detected
         String foo = "";

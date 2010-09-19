@@ -12,7 +12,7 @@ import javax.annotation.meta.When;
 @TypeQualifier
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Foo {
-	When when() default When.ALWAYS;
-	ElementType[] defaultFor() default {};
+    When when() default When.ALWAYS;
+    ElementType[] defaultFor() default {};
 }
 

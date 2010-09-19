@@ -8,25 +8,25 @@ import java.sql.SQLException;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug1006704 {
-	@NoWarning("OBL")
-	void f(Connection con, Integer key) throws SQLException {
-		StringBuffer sql = new StringBuffer("SELECT * FROM xxx  WHERE xxx_id = ?");
+    @NoWarning("OBL")
+    void f(Connection con, Integer key) throws SQLException {
+        StringBuffer sql = new StringBuffer("SELECT * FROM xxx  WHERE xxx_id = ?");
 		PreparedStatement ps = con.prepareStatement(sql.toString());
         try {
-			ps.setInt(1, key.intValue());
-			ResultSet rs = ps.executeQuery();
-			try {
+            ps.setInt(1, key.intValue());
+            ResultSet rs = ps.executeQuery();
+            try {
                 rs.next();
-				int index = 1;
-				Integer firstQuestionId = new Integer(rs.getInt(index++));
-				String description = rs.getString(index++);
+                int index = 1;
+                Integer firstQuestionId = new Integer(rs.getInt(index++));
+                String description = rs.getString(index++);
                 Float approvalScore = new Float(rs.getFloat(index++));
-			} finally {
-				rs.close();
-			}
+            } finally {
+                rs.close();
+            }
         } finally {
-			ps.close();
-		}
+            ps.close();
+        }
 
-	}
+    }
 }

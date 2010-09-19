@@ -1,46 +1,46 @@
 public class InvokeGC {
-	public static void main(String[] argv) {
-		System.gc();
-		System.currentTimeMillis();
+    public static void main(String[] argv) {
+        System.gc();
+        System.currentTimeMillis();
 	}
 
-	@Override
-	protected void finalize() {
-		System.gc();
+    @Override
+    protected void finalize() {
+        System.gc();
 	}
 
-	public void bad() {
-		System.gc();
-	}
+    public void bad() {
+        System.gc();
+    }
 
-	public void ok() {
-		try {
-			System.out.println("ok()");
+    public void ok() {
+        try {
+            System.out.println("ok()");
 		} catch (OutOfMemoryError e) {
-			System.gc();
-		}
-	}
+            System.gc();
+        }
+    }
 
-	public void tricky() {
-		try {
-			System.out.println("tricky()");
+    public void tricky() {
+        try {
+            System.out.println("tricky()");
 		} catch (OutOfMemoryError e) {
-			e.printStackTrace();
-		}
+            e.printStackTrace();
+        }
 
-		System.gc();
-	}
+        System.gc();
+    }
 
-	public void tricky2() {
-		try {
-			System.out.println("tricky()");
+    public void tricky2() {
+        try {
+            System.out.println("tricky()");
 		} catch (OutOfMemoryError e) {
-			e.printStackTrace();
-		}
+            e.printStackTrace();
+        }
 
-		for(int i = 0; i < 20; i++)
-			System.out.println(i);
-		System.gc();
+        for(int i = 0; i < 20; i++)
+            System.out.println(i);
+        System.gc();
 	}
 
 }

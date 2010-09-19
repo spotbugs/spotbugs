@@ -71,233 +71,233 @@ import de.tobject.findbugs.view.FindBugsPerspectiveFactory;
  */
 public class FindBugsAction implements IObjectActionDelegate {
 
-	/** The current selection. */
-	protected ISelection selection;
+    /** The current selection. */
+    protected ISelection selection;
 
-	/** true if this action is used from editor */
-	protected boolean usedInEditor;
+    /** true if this action is used from editor */
+    protected boolean usedInEditor;
 
-	private IWorkbenchPart targetPart;
+    private IWorkbenchPart targetPart;
 
-	private static boolean dialogAlreadyShown;
+    private static boolean dialogAlreadyShown;
 
-	public final void setActivePart(final IAction action,
-			final IWorkbenchPart targetPart) {
-		this.targetPart = targetPart;
+    public final void setActivePart(final IAction action,
+            final IWorkbenchPart targetPart) {
+        this.targetPart = targetPart;
 	}
 
-	public static boolean isFindBugsPerspectiveActive(IWorkbenchPart part) {
-		IPerspectiveDescriptor perspective = getWindow(part).getActivePage().getPerspective();
-		return perspective != null && FindBugsPerspectiveFactory.ID.equals(perspective.getId());
+    public static boolean isFindBugsPerspectiveActive(IWorkbenchPart part) {
+        IPerspectiveDescriptor perspective = getWindow(part).getActivePage().getPerspective();
+        return perspective != null && FindBugsPerspectiveFactory.ID.equals(perspective.getId());
 	}
 
-	public final void selectionChanged(final IAction action,
-			final ISelection newSelection) {
-		if (!usedInEditor) {
+    public final void selectionChanged(final IAction action,
+            final ISelection newSelection) {
+        if (!usedInEditor) {
 			this.selection = newSelection;
-		}
-	}
+        }
+    }
 
-	public void run(final IAction action) {
-		if (selection == null || selection.isEmpty()) {
-			return;
+    public void run(final IAction action) {
+        if (selection == null || selection.isEmpty()) {
+            return;
 		}
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IWorkspaceDescription description = workspace.getDescription();
-		if (!description.isAutoBuilding() && getClass().equals(FindBugsAction.class)) {
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IWorkspaceDescription description = workspace.getDescription();
+        if (!description.isAutoBuilding() && getClass().equals(FindBugsAction.class)) {
 			boolean confirm = MessageDialog.openConfirm(null,
-				"Project -> 'Build Automatically' disabled",
-				"You are going to run FindBugs analysis on a not compiled or partially compiled project.\n\n" +
-				"To get reliable analysis results, you should make sure that project is compiled first.\n\n" +
+                "Project -> 'Build Automatically' disabled",
+                "You are going to run FindBugs analysis on a not compiled or partially compiled project.\n\n" +
+                "To get reliable analysis results, you should make sure that project is compiled first.\n\n" +
 				"Continue with FindBugs analysis?");
-			if(!confirm) {
-				return;
-			}
+            if(!confirm) {
+                return;
+            }
 		}
 
-		if (selection instanceof IStructuredSelection) {
-			IStructuredSelection sSelection = (IStructuredSelection) selection;
+        if (selection instanceof IStructuredSelection) {
+            IStructuredSelection sSelection = (IStructuredSelection) selection;
 
-			dialogAlreadyShown = false;
+            dialogAlreadyShown = false;
 
-			Map<IProject, List<WorkItem>> projectMap =
-				ResourceUtils.getResourcesPerProject(sSelection);
+            Map<IProject, List<WorkItem>> projectMap =
+                ResourceUtils.getResourcesPerProject(sSelection);
 
-			for(Map.Entry<IProject, List<WorkItem>> e : projectMap.entrySet()) {
-				work(targetPart, e.getKey(), e.getValue());
-			}
+            for(Map.Entry<IProject, List<WorkItem>> e : projectMap.entrySet()) {
+                work(targetPart, e.getKey(), e.getValue());
+            }
 			targetPart = null;
-			selection = null;
-		}
-	}
+            selection = null;
+        }
+    }
 
-	protected IDialogSettings getDialogSettings() {
-		IDialogSettings settings = FindbugsPlugin.getDefault().getDialogSettings();
-		String settingsId = getDialogSettingsId();
+    protected IDialogSettings getDialogSettings() {
+        IDialogSettings settings = FindbugsPlugin.getDefault().getDialogSettings();
+        String settingsId = getDialogSettingsId();
 		IDialogSettings section = settings.getSection(settingsId);
-		if (section == null) {
-			section = settings.addNewSection(settingsId);
-		}
+        if (section == null) {
+            section = settings.addNewSection(settingsId);
+        }
 		return section;
-	}
+    }
 
-	protected final IProject getProject(IStructuredSelection structuredSelection) {
-		Object element = structuredSelection.getFirstElement();
-		IResource resource = ResourceUtils.getResource(element);
+    protected final IProject getProject(IStructuredSelection structuredSelection) {
+        Object element = structuredSelection.getFirstElement();
+        IResource resource = ResourceUtils.getResource(element);
 		if (resource == null) {
-			return null;
-		}
-		IProject project = resource.getProject();
+            return null;
+        }
+        IProject project = resource.getProject();
 		return project;
-	}
+    }
 
-	protected String getDialogSettingsId() {
-		return "findBugsAction";
-	}
+    protected String getDialogSettingsId() {
+        return "findBugsAction";
+    }
 
-	/**
-	 * Run a FindBugs analysis on the given resource, displaying a progress
-	 * monitor.
+    /**
+     * Run a FindBugs analysis on the given resource, displaying a progress
+     * monitor.
 	 * @param part
-	 *
-	 * @param resources The resource to run the analysis on.
-	 */
+     *
+     * @param resources The resource to run the analysis on.
+     */
 	protected void work(IWorkbenchPart part, final IProject project, final List<WorkItem> resources) {
-		FindBugsJob runFindBugs = new StartedFromViewJob("Finding bugs in "
-				+ project.getName() + "...", project, resources, part);
-		runFindBugs.scheduleInteractive();
+        FindBugsJob runFindBugs = new StartedFromViewJob("Finding bugs in "
+                + project.getName() + "...", project, resources, part);
+        runFindBugs.scheduleInteractive();
 	}
 
-	protected static void refreshViewer(IWorkbenchPart targetPart, final List<WorkItem> resources) {
-		if(targetPart == null){
-			return;
+    protected static void refreshViewer(IWorkbenchPart targetPart, final List<WorkItem> resources) {
+        if(targetPart == null){
+            return;
 		}
-		ISelectionProvider selProvider = (ISelectionProvider) targetPart.getAdapter(ISelectionProvider.class);
-		if(!(selProvider instanceof TreeViewer)){
-			return;
+        ISelectionProvider selProvider = (ISelectionProvider) targetPart.getAdapter(ISelectionProvider.class);
+        if(!(selProvider instanceof TreeViewer)){
+            return;
 		}
-		final TreeViewer viewer = (TreeViewer) selProvider;
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
+        final TreeViewer viewer = (TreeViewer) selProvider;
+        Display.getDefault().asyncExec(new Runnable() {
+            public void run() {
 				if(viewer.getControl().isDisposed()) {
-					return;
-				}
-				for (WorkItem workItem : resources) {
+                    return;
+                }
+                for (WorkItem workItem : resources) {
 					if(workItem.getMarkerTarget() instanceof IProject){
-						// this element has to be refreshed manually, because there is no one real
-						// resource associated with it => no resource change notification after
-						// creating a marker...
+                        // this element has to be refreshed manually, because there is no one real
+                        // resource associated with it => no resource change notification after
+                        // creating a marker...
 						viewer.refresh(workItem.getCorespondingJavaElement(), true);
-					}
-				}
-			}
+                    }
+                }
+            }
 		});
-	}
+    }
 
-	protected static void askUserToSwitch(IWorkbenchPart part, int warningsNumber) {
-		final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-		String message = "FindBugs analysis finished, " + warningsNumber
+    protected static void askUserToSwitch(IWorkbenchPart part, int warningsNumber) {
+        final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
+        String message = "FindBugs analysis finished, " + warningsNumber
 				+ " warnings found.\n\nSwitch to the FindBugs perspective?";
 
-		MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoCancelQuestion(
-				null, "FindBugs analysis finished", message,
-				"Remember the choice and do not ask me in the feature", false, store,
+        MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoCancelQuestion(
+                null, "FindBugs analysis finished", message,
+                "Remember the choice and do not ask me in the feature", false, store,
 				FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
 
-		boolean remember = dialog.getToggleState();
-		int returnCode = dialog.getReturnCode();
+        boolean remember = dialog.getToggleState();
+        int returnCode = dialog.getReturnCode();
 
-		if (returnCode == IDialogConstants.YES_ID) {
-			if (remember) {
-				store.setValue(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS, true);
+        if (returnCode == IDialogConstants.YES_ID) {
+            if (remember) {
+                store.setValue(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS, true);
 			}
-			switchPerspective(part);
-		} else if (returnCode == IDialogConstants.NO_ID) {
-			if (remember) {
+            switchPerspective(part);
+        } else if (returnCode == IDialogConstants.NO_ID) {
+            if (remember) {
 				store.setValue(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS,	false);
-			}
-		}
-	}
+            }
+        }
+    }
 
-	protected static IWorkbenchWindow getWindow(IWorkbenchPart part){
-		IWorkbenchWindow window;
-		IWorkbenchPartSite currentSite = part != null? part.getSite() : null;
+    protected static IWorkbenchWindow getWindow(IWorkbenchPart part){
+        IWorkbenchWindow window;
+        IWorkbenchPartSite currentSite = part != null? part.getSite() : null;
 		if(currentSite != null){
-			window = currentSite.getWorkbenchWindow();
-		} else {
-			window = FindbugsPlugin.getActiveWorkbenchWindow();
+            window = currentSite.getWorkbenchWindow();
+        } else {
+            window = FindbugsPlugin.getActiveWorkbenchWindow();
 		}
-		return window;
-	}
+        return window;
+    }
 
-	protected static void switchPerspective(IWorkbenchPart part) {
-		IWorkbenchWindow window = getWindow(part);
-		IWorkbenchPage page = window.getActivePage();
+    protected static void switchPerspective(IWorkbenchPart part) {
+        IWorkbenchWindow window = getWindow(part);
+        IWorkbenchPage page = window.getActivePage();
 		IAdaptable input;
-		if (page != null) {
-			input = page.getInput();
-		} else {
+        if (page != null) {
+            input = page.getInput();
+        } else {
 			input= ResourcesPlugin.getWorkspace().getRoot();
-		}
-		try {
-			 PlatformUI.getWorkbench().showPerspective(FindBugsPerspectiveFactory.ID, window, input);
+        }
+        try {
+             PlatformUI.getWorkbench().showPerspective(FindBugsPerspectiveFactory.ID, window, input);
 		} catch (WorkbenchException e) {
-			FindbugsPlugin.getDefault().logException(e,
-					"Failed to open FindBugs Perspective");
-		}
+            FindbugsPlugin.getDefault().logException(e,
+                    "Failed to open FindBugs Perspective");
+        }
 	}
 
-	private final static class StartedFromViewJob extends FindBugsJob {
-		private final List<WorkItem> resources;
-		private final IProject project;
+    private final static class StartedFromViewJob extends FindBugsJob {
+        private final List<WorkItem> resources;
+        private final IProject project;
 		private final IWorkbenchPart targetPart;
 
-		private StartedFromViewJob(String name, IProject project,
-				List<WorkItem> resources, IWorkbenchPart targetPart) {
-			super(name, project);
+        private StartedFromViewJob(String name, IProject project,
+                List<WorkItem> resources, IWorkbenchPart targetPart) {
+            super(name, project);
 			this.resources = resources;
-			this.project = project;
-			this.targetPart = targetPart;
-		}
+            this.project = project;
+            this.targetPart = targetPart;
+        }
 
-		@Override
-		protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
-			FindBugsWorker worker =	new FindBugsWorker(project, monitor);
+        @Override
+        protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
+            FindBugsWorker worker =	new FindBugsWorker(project, monitor);
 
-			worker.work(resources);
+            worker.work(resources);
 
-			refreshViewer(targetPart, resources);
+            refreshViewer(targetPart, resources);
 
-			checkPerspective();
-		}
+            checkPerspective();
+        }
 
-		private void checkPerspective() {
-			if(isFindBugsPerspectiveActive(targetPart)){
-				return;
+        private void checkPerspective() {
+            if(isFindBugsPerspectiveActive(targetPart)){
+                return;
 			}
-			final IMarker[] allMarkers = MarkerUtil.getAllMarkers(project);
-			if(allMarkers.length == 0){
-				return;
+            final IMarker[] allMarkers = MarkerUtil.getAllMarkers(project);
+            if(allMarkers.length == 0){
+                return;
 			}
 
-			Display.getDefault().asyncExec(new Runnable() {
-				public void run() {
-					if(isFindBugsPerspectiveActive(targetPart)){
+            Display.getDefault().asyncExec(new Runnable() {
+                public void run() {
+                    if(isFindBugsPerspectiveActive(targetPart)){
 						return;
-					}
-					final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-					final boolean ask = store.getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
+                    }
+                    final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
+                    final boolean ask = store.getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
 					if (ask && !dialogAlreadyShown) {
-						dialogAlreadyShown = true;
-						askUserToSwitch(targetPart, allMarkers.length);
-					} else if (store.getBoolean(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS)) {
+                        dialogAlreadyShown = true;
+                        askUserToSwitch(targetPart, allMarkers.length);
+                    } else if (store.getBoolean(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS)) {
 						switchPerspective(targetPart);
-					}
-				}
-			});
+                    }
+                }
+            });
 		}
 
 
-	}
+    }
 
 }

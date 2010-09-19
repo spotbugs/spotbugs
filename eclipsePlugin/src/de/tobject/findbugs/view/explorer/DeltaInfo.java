@@ -24,61 +24,61 @@ import org.eclipse.core.runtime.Assert;
 
 class DeltaInfo{
 
-	final IMarker marker;
+    final IMarker marker;
 
-	/**
-	 * @see IResourceDelta#getKind()
-	 */
+    /**
+     * @see IResourceDelta#getKind()
+     */
 	final int changeKind;
 
-	public DeltaInfo(IMarker marker, int kind) {
-		Assert.isNotNull(marker, "Null marker reported!");
-		this.marker = marker;
+    public DeltaInfo(IMarker marker, int kind) {
+        Assert.isNotNull(marker, "Null marker reported!");
+        this.marker = marker;
 		changeKind = kind;
-	}
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if(obj instanceof DeltaInfo){
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof DeltaInfo){
 			return marker.equals(((DeltaInfo)obj).marker);
-		}
-		return false;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return marker.hashCode();
 	}
 
-	@Override
-	public int hashCode() {
-		return marker.hashCode();
-	}
+    @Override
+    public String toString() {
 
-	@Override
-	public String toString() {
-
-		StringBuffer sb = new StringBuffer();
-		switch (changeKind) {
-		case IResourceDelta.ADDED:
+        StringBuffer sb = new StringBuffer();
+        switch (changeKind) {
+        case IResourceDelta.ADDED:
 			sb.append("ADDED");
+            break;
+        case IResourceDelta.CHANGED:
+            sb.append("CHANGED");
 			break;
-		case IResourceDelta.CHANGED:
-			sb.append("CHANGED");
-			break;
-		case IResourceDelta.REMOVED:
-			sb.append("REMOVED");
-			break;
+        case IResourceDelta.REMOVED:
+            sb.append("REMOVED");
+            break;
 		default:
-			sb.append(" ? ").append(changeKind);
-			break;
-		}
+            sb.append(" ? ").append(changeKind);
+            break;
+        }
 		sb.append(" marker id ").append(marker.getId()).append(
-				marker.toString().replace("org.eclipse.core.internal.resources.Marker@",
-						"/"));
-		return sb.toString();
+                marker.toString().replace("org.eclipse.core.internal.resources.Marker@",
+                        "/"));
+        return sb.toString();
 	}
 
-	public boolean isAdded(){
-		return changeKind == IResourceDelta.ADDED;
-	}
+    public boolean isAdded(){
+        return changeKind == IResourceDelta.ADDED;
+    }
 
-	public boolean isRemoved(){
-		return changeKind == IResourceDelta.REMOVED;
-	}
+    public boolean isRemoved(){
+        return changeKind == IResourceDelta.REMOVED;
+    }
 }

@@ -45,12 +45,12 @@ public class FindBugsConsole extends MessageConsole {
 
     private static class RemoveAction extends Action {
         public RemoveAction() {
-			super("Close FindBugs console", PlatformUI.getWorkbench().getSharedImages()
-					.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
+            super("Close FindBugs console", PlatformUI.getWorkbench().getSharedImages()
+                    .getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
         }
 
         @Override
-		public void run() {
+        public void run() {
             IConsoleManager manager = ConsolePlugin.getDefault().getConsoleManager();
             if (console != null) {
                 manager.removeConsoles(new IConsole[] { console });
@@ -65,7 +65,7 @@ public class FindBugsConsole extends MessageConsole {
     }
 
     @Override
-	protected void dispose() {
+    protected void dispose() {
         if (!disposed) {
             disposed = true;
             super.dispose();
@@ -101,7 +101,7 @@ public class FindBugsConsole extends MessageConsole {
     }
 
     public static MessageConsole getConsole() {
-    	return console;
+        return console;
     }
 
     public static class FindBugsConsolePageParticipant implements IConsolePageParticipant {

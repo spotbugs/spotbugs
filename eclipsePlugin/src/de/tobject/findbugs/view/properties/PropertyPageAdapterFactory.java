@@ -57,268 +57,268 @@ import edu.umd.cs.findbugs.Plugin;
 
 public class PropertyPageAdapterFactory implements IAdapterFactory {
 
-	public static class PropertySource implements IPropertySource {
+    public static class PropertySource implements IPropertySource {
 
-		private final Object object;
-		private final IPropertyDescriptor[] propertyDescriptors;
+        private final Object object;
+        private final IPropertyDescriptor[] propertyDescriptors;
 
-		public PropertySource(Object object) {
-			this.object = object;
-			List<IPropertyDescriptor> props = new ArrayList<IPropertyDescriptor>();
+        public PropertySource(Object object) {
+            this.object = object;
+            List<IPropertyDescriptor> props = new ArrayList<IPropertyDescriptor>();
 			List<Method> getters = getGetters(object);
-			for (Method method : getters) {
-				props.add(new PropertyDescriptor(method, getReadableName(method)));
-			}
+            for (Method method : getters) {
+                props.add(new PropertyDescriptor(method, getReadableName(method)));
+            }
 			propertyDescriptors = props.toArray(new PropertyDescriptor[0]);
-		}
+        }
 
-		public IPropertyDescriptor[] getPropertyDescriptors() {
-			return propertyDescriptors;
-		}
+        public IPropertyDescriptor[] getPropertyDescriptors() {
+            return propertyDescriptors;
+        }
 
-		public Object getPropertyValue(Object propId) {
-			if (propId instanceof Method) {
-				Method method = (Method) propId;
+        public Object getPropertyValue(Object propId) {
+            if (propId instanceof Method) {
+                Method method = (Method) propId;
 				try {
-					Object object2 = method.invoke(object, (Object[]) null);
-					if (object2 != null) {
-						if (object2.getClass().isArray()) {
+                    Object object2 = method.invoke(object, (Object[]) null);
+                    if (object2 != null) {
+                        if (object2.getClass().isArray()) {
 							return new ArrayPropertySource((Object[]) object2);
-						}
-						if (Collection.class.isAssignableFrom(object2.getClass())) {
-							Collection<?> coll = (Collection<?>) object2;
+                        }
+                        if (Collection.class.isAssignableFrom(object2.getClass())) {
+                            Collection<?> coll = (Collection<?>) object2;
 							return new ArrayPropertySource(coll.toArray());
-						}
-					}
-					return object2;
+                        }
+                    }
+                    return object2;
 				} catch (Exception e) {
-					FindbugsPlugin.getDefault().logException(e,
-							"getPropertyValue: method access failed");
-				}
+                    FindbugsPlugin.getDefault().logException(e,
+                            "getPropertyValue: method access failed");
+                }
 			}
-			return null;
-		}
+            return null;
+        }
 
-		public Object getEditableValue() {
-			return null;
-		}
+        public Object getEditableValue() {
+            return null;
+        }
 
-		public boolean isPropertySet(Object id) {
-			return false;
-		}
+        public boolean isPropertySet(Object id) {
+            return false;
+        }
 
-		public void resetPropertyValue(Object id) {
-			//
-		}
+        public void resetPropertyValue(Object id) {
+            //
+        }
 
-		public void setPropertyValue(Object id, Object value) {
-			//
-		}
+        public void setPropertyValue(Object id, Object value) {
+            //
+        }
 	}
 
-	public static class ArrayPropertySource implements IPropertySource {
+    public static class ArrayPropertySource implements IPropertySource {
 
-		private final Object[] array;
-		private final IPropertyDescriptor[] propertyDescriptors;
+        private final Object[] array;
+        private final IPropertyDescriptor[] propertyDescriptors;
 
-		public ArrayPropertySource(Object[] object) {
-			this.array = object;
-			List<IPropertyDescriptor> props = new ArrayList<IPropertyDescriptor>();
+        public ArrayPropertySource(Object[] object) {
+            this.array = object;
+            List<IPropertyDescriptor> props = new ArrayList<IPropertyDescriptor>();
 			for (Object obj : array) {
-				props.add(new PropertyDescriptor(obj, getDisplayName(obj)));
+                props.add(new PropertyDescriptor(obj, getDisplayName(obj)));
+            }
+            propertyDescriptors = props.toArray(new PropertyDescriptor[0]);
+		}
+
+        private String getDisplayName(Object obj) {
+            if (obj instanceof IMarker) {
+                return "Marker " + ((IMarker)obj).getId();
 			}
-			propertyDescriptors = props.toArray(new PropertyDescriptor[0]);
-		}
+            return "" + obj;
+        }
 
-		private String getDisplayName(Object obj) {
-			if (obj instanceof IMarker) {
-				return "Marker " + ((IMarker)obj).getId();
-			}
-			return "" + obj;
-		}
+        public IPropertyDescriptor[] getPropertyDescriptors() {
+            return propertyDescriptors;
+        }
 
-		public IPropertyDescriptor[] getPropertyDescriptors() {
-			return propertyDescriptors;
-		}
+        public Object getPropertyValue(Object propId) {
+            return propId;
+        }
 
-		public Object getPropertyValue(Object propId) {
-			return propId;
-		}
+        public Object getEditableValue() {
+            return null;
+        }
 
-		public Object getEditableValue() {
-			return null;
-		}
+        public boolean isPropertySet(Object id) {
+            return false;
+        }
 
-		public boolean isPropertySet(Object id) {
-			return false;
-		}
+        public void resetPropertyValue(Object id) {
+            //
+        }
 
-		public void resetPropertyValue(Object id) {
-			//
-		}
-
-		public void setPropertyValue(Object id, Object value) {
-			//
-		}
+        public void setPropertyValue(Object id, Object value) {
+            //
+        }
 	}
 
-	static List<Method> getGetters(Object obj) {
-		List<Method> methodList = new ArrayList<Method>();
-		Method[] methods = obj.getClass().getMethods();
+    static List<Method> getGetters(Object obj) {
+        List<Method> methodList = new ArrayList<Method>();
+        Method[] methods = obj.getClass().getMethods();
 		for (Method method : methods) {
-			if (method.getParameterTypes().length == 0) {
-				String name = method.getName();
-				if ((name.startsWith("get") || name.startsWith("is") || name.startsWith("has"))
+            if (method.getParameterTypes().length == 0) {
+                String name = method.getName();
+                if ((name.startsWith("get") || name.startsWith("is") || name.startsWith("has"))
 						&& (!name.equals("getClass") && !name.equals("hashCode"))) {
-					methodList.add(method);
-				}
-			}
+                    methodList.add(method);
+                }
+            }
 		}
-		return methodList;
-	}
+        return methodList;
+    }
 
-	public static String getReadableName(Method method) {
-		String name = method.getName();
-		return (name.startsWith("get") || name.startsWith("has")) ? name.substring(3) : name.startsWith("is") ? name
+    public static String getReadableName(Method method) {
+        String name = method.getName();
+        return (name.startsWith("get") || name.startsWith("has")) ? name.substring(3) : name.startsWith("is") ? name
 				.substring(2) : name;
-	}
+    }
 
-	static enum PropId {
-		Type, Resource, Bug, Id, CreationTime
-	}
+    static enum PropId {
+        Type, Resource, Bug, Id, CreationTime
+    }
 
-	public static class MarkerPropertySource implements IPropertySource {
+    public static class MarkerPropertySource implements IPropertySource {
 
-		private final IMarker marker;
-		private final IPropertyDescriptor[] propertyDescriptors;
+        private final IMarker marker;
+        private final IPropertyDescriptor[] propertyDescriptors;
 
-		public MarkerPropertySource(IMarker marker) {
-			this.marker = marker;
-			List<IPropertyDescriptor> props = new ArrayList<IPropertyDescriptor>();
+        public MarkerPropertySource(IMarker marker) {
+            this.marker = marker;
+            List<IPropertyDescriptor> props = new ArrayList<IPropertyDescriptor>();
 			try {
-				Map<?, ?> attributes = marker.getAttributes();
-				Set<?> keySet = new TreeSet<Object>(attributes.keySet());
-				for (Object object : keySet) {
+                Map<?, ?> attributes = marker.getAttributes();
+                Set<?> keySet = new TreeSet<Object>(attributes.keySet());
+                for (Object object : keySet) {
 					props.add(new PropertyDescriptor(object, "" + object));
-				}
-			} catch (CoreException e) {
-				FindbugsPlugin.getDefault().logException(e,
+                }
+            } catch (CoreException e) {
+                FindbugsPlugin.getDefault().logException(e,
 						"MarkerPropertySource: marker access failed");
-			}
-			props.add(new PropertyDescriptor(PropId.Bug, "Bug"));
-			props.add(new PropertyDescriptor(PropId.Resource, "Resource"));
+            }
+            props.add(new PropertyDescriptor(PropId.Bug, "Bug"));
+            props.add(new PropertyDescriptor(PropId.Resource, "Resource"));
 			props.add(new PropertyDescriptor(PropId.Id, "Marker id"));
-			props.add(new PropertyDescriptor(PropId.Type, "Marker type"));
-			props.add(new PropertyDescriptor(PropId.CreationTime, "Creation time"));
-			propertyDescriptors = props.toArray(new PropertyDescriptor[0]);
+            props.add(new PropertyDescriptor(PropId.Type, "Marker type"));
+            props.add(new PropertyDescriptor(PropId.CreationTime, "Creation time"));
+            propertyDescriptors = props.toArray(new PropertyDescriptor[0]);
 		}
 
-		public IPropertyDescriptor[] getPropertyDescriptors() {
-			return propertyDescriptors;
-		}
+        public IPropertyDescriptor[] getPropertyDescriptors() {
+            return propertyDescriptors;
+        }
 
-		public Object getPropertyValue(Object propId) {
-			try {
-				if (propId instanceof PropId) {
+        public Object getPropertyValue(Object propId) {
+            try {
+                if (propId instanceof PropId) {
 					PropId id = (PropId) propId;
-					switch (id) {
-					case Bug:
-						return MarkerUtil.findBugInstanceForMarker(marker);
+                    switch (id) {
+                    case Bug:
+                        return MarkerUtil.findBugInstanceForMarker(marker);
 					case Resource:
-						return marker.getResource();
-					case Id:
-						return Long.valueOf(marker.getId());
+                        return marker.getResource();
+                    case Id:
+                        return Long.valueOf(marker.getId());
 					case CreationTime:
-						return new Date(marker.getCreationTime());
-					case Type:
-						return marker.getType();
+                        return new Date(marker.getCreationTime());
+                    case Type:
+                        return marker.getType();
 					}
-				} else if (propId instanceof String) {
-					return marker.getAttribute((String) propId);
-				}
+                } else if (propId instanceof String) {
+                    return marker.getAttribute((String) propId);
+                }
 			} catch (CoreException e) {
-				FindbugsPlugin.getDefault().logException(e,
-						"getPropertyValue: marker access failed");
-			}
+                FindbugsPlugin.getDefault().logException(e,
+                        "getPropertyValue: marker access failed");
+            }
 			return null;
-		}
+        }
 
-		public Object getEditableValue() {
-			return null;
-		}
+        public Object getEditableValue() {
+            return null;
+        }
 
-		public boolean isPropertySet(Object id) {
-			return false;
-		}
+        public boolean isPropertySet(Object id) {
+            return false;
+        }
 
-		public void resetPropertyValue(Object id) {
-			//
-		}
+        public void resetPropertyValue(Object id) {
+            //
+        }
 
-		public void setPropertyValue(Object id, Object value) {
-			//
-		}
+        public void setPropertyValue(Object id, Object value) {
+            //
+        }
 	}
 
-	@SuppressWarnings("rawtypes")
-	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		if (adapterType == IPropertySheetPage.class){
+    @SuppressWarnings("rawtypes")
+    public Object getAdapter(Object adaptableObject, Class adapterType) {
+        if (adapterType == IPropertySheetPage.class){
 			if (adaptableObject instanceof BugExplorerView
-					|| adaptableObject instanceof JavaEditor
-					|| adaptableObject instanceof AbstractFindbugsView) {
-				return new BugPropertySheetPage();
+                    || adaptableObject instanceof JavaEditor
+                    || adaptableObject instanceof AbstractFindbugsView) {
+                return new BugPropertySheetPage();
 			}
-		}
-		if (adapterType == IPropertySource.class) {
-			if (adaptableObject instanceof BugPattern
+        }
+        if (adapterType == IPropertySource.class) {
+            if (adaptableObject instanceof BugPattern
 					|| adaptableObject instanceof BugInstance
-					|| adaptableObject instanceof DetectorFactory
-					|| adaptableObject instanceof Plugin
-					|| adaptableObject instanceof BugInstance.XmlProps
+                    || adaptableObject instanceof DetectorFactory
+                    || adaptableObject instanceof Plugin
+                    || adaptableObject instanceof BugInstance.XmlProps
 					|| adaptableObject instanceof BugGroup
-					|| adaptableObject instanceof BugAnnotation) {
-				return new PropertySource(adaptableObject);
-			}
+                    || adaptableObject instanceof BugAnnotation) {
+                return new PropertySource(adaptableObject);
+            }
 			IMarker marker = Util.getAdapter(IMarker.class, adaptableObject);
-			if (!MarkerUtil.isFindBugsMarker(marker)) {
-				return null;
-			}
+            if (!MarkerUtil.isFindBugsMarker(marker)) {
+                return null;
+            }
 			return new MarkerPropertySource(marker);
-		}
-		return null;
+        }
+        return null;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public Class[] getAdapterList() {
+        return new Class[] { IPropertySheetPage.class, IPropertySource.class };
 	}
 
-	@SuppressWarnings("rawtypes")
-	public Class[] getAdapterList() {
-		return new Class[] { IPropertySheetPage.class, IPropertySource.class };
-	}
+    private static class BugPropertySheetPage extends TabbedPropertySheetPage {
 
-	private static class BugPropertySheetPage extends TabbedPropertySheetPage {
-
-		static ITabbedPropertySheetPageContributor contributor = new ITabbedPropertySheetPageContributor() {
-			public String getContributorId() {
-				return FindbugsPlugin.TREE_VIEW_ID;
+        static ITabbedPropertySheetPageContributor contributor = new ITabbedPropertySheetPageContributor() {
+            public String getContributorId() {
+                return FindbugsPlugin.TREE_VIEW_ID;
 			}
-		};
+        };
 
-		public BugPropertySheetPage() {
-			super(contributor);
-		}
+        public BugPropertySheetPage() {
+            super(contributor);
+        }
 
-		@Override
-		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-			// adapt text selection in java editor to FB marker
+        @Override
+        public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+            // adapt text selection in java editor to FB marker
 			if(part instanceof ITextEditor && selection instanceof ITextSelection){
-				IMarker marker = MarkerUtil.getMarkerFromEditor(
-						(ITextSelection) selection, (ITextEditor) part);
-				if(marker != null) {
+                IMarker marker = MarkerUtil.getMarkerFromEditor(
+                        (ITextSelection) selection, (ITextEditor) part);
+                if(marker != null) {
 					selection = new StructuredSelection(marker);
-				} else {
-					selection = new StructuredSelection();
-				}
+                } else {
+                    selection = new StructuredSelection();
+                }
 			}
-			super.selectionChanged(part, selection);
-		}
-	}
+            super.selectionChanged(part, selection);
+        }
+    }
 
 }

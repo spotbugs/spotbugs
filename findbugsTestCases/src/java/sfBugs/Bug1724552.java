@@ -2,15 +2,15 @@ package sfBugs;
 
 public class Bug1724552 {
 
-	private int value;
+    private int value;
 
-	public void doBug() {
+    public void doBug() {
 
-		int value = 5;
+        int value = 5;
 
-		value = 10;
+        value = 10;
 
-		this.value = value;
-	}
+        this.value = value;
+    }
 
 }

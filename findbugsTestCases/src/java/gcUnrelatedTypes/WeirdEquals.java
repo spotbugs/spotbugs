@@ -5,65 +5,65 @@ import java.util.Set;
 
 public class WeirdEquals {
 
-	static class A {
-		int id;
+    static class A {
+        int id;
 
-		public int hashCode() { return id; }
-		
-		public boolean equals(Object o) {
+        public int hashCode() { return id; }
+
+        public boolean equals(Object o) {
 			if (o instanceof A)
-				return id == ((A) o).id;
-			return false;
-		}
+                return id == ((A) o).id;
+            return false;
+        }
 	}
 
-	static class B {
-		int id;
-		public int hashCode() { return id; }
+    static class B {
+        int id;
+        public int hashCode() { return id; }
 		public boolean equals(Object o) {
-			if (o instanceof A)
-				return id == ((A) o).id;
-			if (o instanceof B)
+            if (o instanceof A)
+                return id == ((A) o).id;
+            if (o instanceof B)
 				return id == ((B) o).id;
-			if (o instanceof C)
-				return id == ((C) o).id;
-			return false;
+            if (o instanceof C)
+                return id == ((C) o).id;
+            return false;
 		}
-	}
+    }
 
-	static class C {
-		int id;
-		public int hashCode() { return id; }
+    static class C {
+        int id;
+        public int hashCode() { return id; }
 		public boolean equals(Object o) {
-			if (o instanceof B)
-				return id == ((B) o).id;
-			if (o instanceof C)
+            if (o instanceof B)
+                return id == ((B) o).id;
+            if (o instanceof C)
 				return id == ((C) o).id;
-			return false;
-		}
-	}
+            return false;
+        }
+    }
 
-	
-	Set<A> aSet = new HashSet<A>();
-	Set<B> bSet = new HashSet<B>();
+
+    Set<A> aSet = new HashSet<A>();
+    Set<B> bSet = new HashSet<B>();
 	Set<C> cSet = new HashSet<C>();
-	
-	String checkA(A x){
-		if (aSet.contains(x)) return "A";
+
+    String checkA(A x){
+        if (aSet.contains(x)) return "A";
 		if (bSet.contains(x)) return "B";
-		if (cSet.contains(x)) return "C";
-		return "";
-	}
+        if (cSet.contains(x)) return "C";
+        return "";
+    }
 	String checkB(B x){
-		if (aSet.contains(x)) return "A";
-		if (bSet.contains(x)) return "B";
-		if (cSet.contains(x)) return "C";
+        if (aSet.contains(x)) return "A";
+        if (bSet.contains(x)) return "B";
+        if (cSet.contains(x)) return "C";
 		return "";
-	}
-	String checkB(C x){
-		if (aSet.contains(x)) return "A";
+    }
+    String checkB(C x){
+        if (aSet.contains(x)) return "A";
 		if (bSet.contains(x)) return "B";
-		if (cSet.contains(x)) return "C";
-		return "";
-	}
+        if (cSet.contains(x)) return "C";
+        return "";
+    }
 }

@@ -47,152 +47,152 @@ import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
 
 public class BugExplorerView extends CommonNavigator implements IMarkerSelectionHandler,
-		ISelectionChangedListener {
+        ISelectionChangedListener {
 
-	private MarkerSelectionListener selectionListener;
+    private MarkerSelectionListener selectionListener;
 
-	private static final String TAG_MEMENTO = "memento";
+    private static final String TAG_MEMENTO = "memento";
 
-	private IMemento viewMemento;
+    private IMemento viewMemento;
 
-	protected boolean selectionInProgress;
+    protected boolean selectionInProgress;
 
-	public BugExplorerView() {
-		super();
-	}
+    public BugExplorerView() {
+        super();
+    }
 
-	@Override
-	public void createPartControl(Composite parent) {
-		super.createPartControl(parent);
+    @Override
+    public void createPartControl(Composite parent) {
+        super.createPartControl(parent);
 		// Add selection listener to detect click in problems view or in tree view
-		ISelectionService theService = getSite().getWorkbenchWindow()
-				.getSelectionService();
-		selectionListener = new MarkerSelectionListener(this) {
+        ISelectionService theService = getSite().getWorkbenchWindow()
+                .getSelectionService();
+        selectionListener = new MarkerSelectionListener(this) {
 			@Override
-			public void selectionChanged(IWorkbenchPart thePart, ISelection theSelection) {
-				selectionInProgress = true;
-				super.selectionChanged(thePart, theSelection);
+            public void selectionChanged(IWorkbenchPart thePart, ISelection theSelection) {
+                selectionInProgress = true;
+                super.selectionChanged(thePart, theSelection);
 				selectionInProgress = false;
-			}
-		};
-		theService.addSelectionListener(selectionListener);
+            }
+        };
+        theService.addSelectionListener(selectionListener);
 		getCommonViewer().addSelectionChangedListener(this);
-	}
+    }
 
-	public boolean isVisible() {
-		return getSite().getPage().isPartVisible(this);
-	}
+    public boolean isVisible() {
+        return getSite().getPage().isPartVisible(this);
+    }
 
-	public void markerSelected(IWorkbenchPart part, IMarker marker) {
-		if(selectionInProgress) {
-			return;
+    public void markerSelected(IWorkbenchPart part, IMarker marker) {
+        if(selectionInProgress) {
+            return;
 		}
-		BugContentProvider provider = BugContentProvider.getProvider(getNavigatorContentService());
-		CommonViewer commonViewer = getCommonViewer();
-		if(marker == null) {
+        BugContentProvider provider = BugContentProvider.getProvider(getNavigatorContentService());
+        CommonViewer commonViewer = getCommonViewer();
+        if(marker == null) {
 			commonViewer.setSelection(new StructuredSelection(), false);
-		} else if(provider.isFiltered(marker)){
-			Object parent = provider.getParent(marker);
-			if(parent != null) {
+        } else if(provider.isFiltered(marker)){
+            Object parent = provider.getParent(marker);
+            if(parent != null) {
 				commonViewer.setSelection(new StructuredSelection(parent), true);
-			}
-		} else {
-			commonViewer.setSelection(new StructuredSelection(marker), true);
+            }
+        } else {
+            commonViewer.setSelection(new StructuredSelection(marker), true);
 		}
+    }
+
+    @Override
+    public void updateTitle() {
+        super.updateTitle();
 	}
 
-	@Override
-	public void updateTitle() {
-		super.updateTitle();
-	}
-
-	@Override
-	public void init(IViewSite site, IMemento memento) throws PartInitException {
-		viewMemento = memento;
+    @Override
+    public void init(IViewSite site, IMemento memento) throws PartInitException {
+        viewMemento = memento;
 		if(memento == null){
-			IDialogSettings dialogSettings = FindbugsPlugin.getDefault().getDialogSettings();
-			String persistedMemento = dialogSettings.get(TAG_MEMENTO);
-			if(persistedMemento == null){
+            IDialogSettings dialogSettings = FindbugsPlugin.getDefault().getDialogSettings();
+            String persistedMemento = dialogSettings.get(TAG_MEMENTO);
+            if(persistedMemento == null){
 				// See bug 2504068. First time user opens a view, no settings are defined
-				// but we still need to enforce initialisation of content provider
-				// which can only happen if memento is not null
-				memento = XMLMemento.createWriteRoot("bugExplorer");
+                // but we still need to enforce initialisation of content provider
+                // which can only happen if memento is not null
+                memento = XMLMemento.createWriteRoot("bugExplorer");
 			} else {
-				try {
-					memento= XMLMemento.createReadRoot(new StringReader(persistedMemento));
-				} catch (WorkbenchException e) {
+                try {
+                    memento= XMLMemento.createReadRoot(new StringReader(persistedMemento));
+                } catch (WorkbenchException e) {
 					// don't do anything. Simply don't restore the settings
-				}
-			}
-		}
+                }
+            }
+        }
 		super.init(site, memento);
-	}
+    }
 
-	@Override
-	public Object getAdapter(Class clazz) {
-		Object adapter = super.getAdapter(clazz);
+    @Override
+    public Object getAdapter(Class clazz) {
+        Object adapter = super.getAdapter(clazz);
 		if(adapter == null && clazz == IMemento.class){
-			return viewMemento;
-		}
-		return adapter;
+            return viewMemento;
+        }
+        return adapter;
 	}
 
-	@Override
-	public void saveState(IMemento memento) {
-		super.saveState(memento);
+    @Override
+    public void saveState(IMemento memento) {
+        super.saveState(memento);
 	}
 
-	@Override
-	public void dispose() {
-		// XXX see https://bugs.eclipse.org/bugs/show_bug.cgi?id=223068
+    @Override
+    public void dispose() {
+        // XXX see https://bugs.eclipse.org/bugs/show_bug.cgi?id=223068
 		XMLMemento memento= XMLMemento.createWriteRoot("bugExplorer"); //$NON-NLS-1$
-		saveState(memento);
-		StringWriter writer= new StringWriter();
-		try {
+        saveState(memento);
+        StringWriter writer= new StringWriter();
+        try {
 			memento.save(writer);
-			IDialogSettings dialogSettings = FindbugsPlugin.getDefault().getDialogSettings();
-			dialogSettings.put(TAG_MEMENTO, writer.getBuffer().toString());
-		} catch (IOException e) {
+            IDialogSettings dialogSettings = FindbugsPlugin.getDefault().getDialogSettings();
+            dialogSettings.put(TAG_MEMENTO, writer.getBuffer().toString());
+        } catch (IOException e) {
 			// don't do anything. Simply don't store the settings
-		}
+        }
 
-		if (selectionListener != null) {
-			getSite().getWorkbenchWindow().getSelectionService()
-					.removeSelectionListener(selectionListener);
+        if (selectionListener != null) {
+            getSite().getWorkbenchWindow().getSelectionService()
+                    .removeSelectionListener(selectionListener);
 			selectionListener = null;
-		}
-		super.dispose();
-	}
+        }
+        super.dispose();
+    }
 
-	public void selectionChanged(SelectionChangedEvent event) {
-		IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-		if(selection.isEmpty() || selection.size() == 1) {
+    public void selectionChanged(SelectionChangedEvent event) {
+        IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+        if(selection.isEmpty() || selection.size() == 1) {
 			setContentDescription("");
-		} else {
-			setContentDescription(getFrameToolTipText(selection));
-		}
+        } else {
+            setContentDescription(getFrameToolTipText(selection));
+        }
 	}
 
-	@Override
-	public void selectReveal(ISelection selection) {
-		if(!(selection instanceof IStructuredSelection)){
+    @Override
+    public void selectReveal(ISelection selection) {
+        if(!(selection instanceof IStructuredSelection)){
 			super.selectReveal(selection);
-			return;
-		}
-		selection = adaptSelection((IStructuredSelection) selection);
+            return;
+        }
+        selection = adaptSelection((IStructuredSelection) selection);
 		super.selectReveal(selection);
-	}
+    }
 
-	private ISelection adaptSelection(IStructuredSelection selection) {
-		BugContentProvider provider = BugContentProvider.getProvider(getNavigatorContentService());
-		Set<Object> accepted = new HashSet<Object>();
+    private ISelection adaptSelection(IStructuredSelection selection) {
+        BugContentProvider provider = BugContentProvider.getProvider(getNavigatorContentService());
+        Set<Object> accepted = new HashSet<Object>();
 		Iterator<?> iter = selection.iterator();
-		while (iter.hasNext()) {
-			Object object = iter.next();
-			Set<Object> supported = provider.getShowInTargets(object);
+        while (iter.hasNext()) {
+            Object object = iter.next();
+            Set<Object> supported = provider.getShowInTargets(object);
 			accepted.addAll(supported);
-		}
-		return new StructuredSelection(accepted.toArray());
-	}
+        }
+        return new StructuredSelection(accepted.toArray());
+    }
 
 }

@@ -2,25 +2,25 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 
 class NakedWait {
-	boolean ready;
+    boolean ready;
 
-	@ExpectWarning("NN")
-	public void makeReady() {
-		ready = true;
+    @ExpectWarning("NN")
+    public void makeReady() {
+        ready = true;
 		synchronized (this) {
-			notify();
-		}
-	}
+            notify();
+        }
+    }
 
-	@ExpectWarning("UW")
-	public void waitForReady() {
-		while (!ready) {
+    @ExpectWarning("UW")
+    public void waitForReady() {
+        while (!ready) {
 			synchronized (this) {
-				try {
-					wait();
-				} catch (InterruptedException e) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
 				}
-			}
-		}
-	}
+            }
+        }
+    }
 }

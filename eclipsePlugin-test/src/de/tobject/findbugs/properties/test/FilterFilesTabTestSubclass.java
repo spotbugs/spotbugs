@@ -36,78 +36,78 @@ import de.tobject.findbugs.properties.PathElement;
  */
 public class FilterFilesTabTestSubclass extends FilterFilesTab {
 
-	public FilterFilesTabTestSubclass(TabFolder tabFolder, FindbugsPropertyPage page,
-			int style) {
-		super(tabFolder, page, style);
+    public FilterFilesTabTestSubclass(TabFolder tabFolder, FindbugsPropertyPage page,
+            int style) {
+        super(tabFolder, page, style);
 	}
 
-	public void addFileToExcludeBugsFilter(String file) {
-		((FilterProviderTestSubclass) getFilterExclBugs()).addFile(file);
+    public void addFileToExcludeBugsFilter(String file) {
+        ((FilterProviderTestSubclass) getFilterExclBugs()).addFile(file);
+    }
+
+    public void addFileToExcludeFilter(String file) {
+        ((FilterProviderTestSubclass) getFilterExcl()).addFile(file);
+    }
+
+    public void addFileToIncludeFilter(String file) {
+        ((FilterProviderTestSubclass) getFilterIncl()).addFile(file);
+    }
+
+    public void removeFilesFromExcludeBugsFilter() {
+        ((FilterProviderTestSubclass) getFilterExclBugs()).removeAllFiles();
+    }
+
+    public void removeFilesFromExcludeFilter() {
+        ((FilterProviderTestSubclass) getFilterExcl()).removeAllFiles();
+    }
+
+    public void removeFilesFromIncludeFilter() {
+        ((FilterProviderTestSubclass) getFilterIncl()).removeAllFiles();
+    }
+
+    @Override
+    protected FilterProvider createFilterProvider(ListViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
+        return new FilterProviderTestSubclass(viewer, kind, page);
 	}
 
-	public void addFileToExcludeFilter(String file) {
-		((FilterProviderTestSubclass) getFilterExcl()).addFile(file);
-	}
+    private class FilterProviderTestSubclass extends FilterProvider {
 
-	public void addFileToIncludeFilter(String file) {
-		((FilterProviderTestSubclass) getFilterIncl()).addFile(file);
-	}
+        private String fileLocation;
+        private String parentPath;
+        private String fileName;
 
-	public void removeFilesFromExcludeBugsFilter() {
-		((FilterProviderTestSubclass) getFilterExclBugs()).removeAllFiles();
-	}
+        protected FilterProviderTestSubclass(ListViewer viewer, FilterKind kind, FindbugsPropertyPage propertyPage) {
+            super(viewer, kind, propertyPage);
+        }
 
-	public void removeFilesFromExcludeFilter() {
-		((FilterProviderTestSubclass) getFilterExcl()).removeAllFiles();
-	}
-
-	public void removeFilesFromIncludeFilter() {
-		((FilterProviderTestSubclass) getFilterIncl()).removeAllFiles();
-	}
-
-	@Override
-	protected FilterProvider createFilterProvider(ListViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
-		return new FilterProviderTestSubclass(viewer, kind, page);
-	}
-
-	private class FilterProviderTestSubclass extends FilterProvider {
-
-		private String fileLocation;
-		private String parentPath;
-		private String fileName;
-
-		protected FilterProviderTestSubclass(ListViewer viewer, FilterKind kind, FindbugsPropertyPage propertyPage) {
-			super(viewer, kind, propertyPage);
-		}
-
-		public void addFile(String fileLocation) {
-			File file = new File(fileLocation);
-			this.fileLocation = fileLocation;
+        public void addFile(String fileLocation) {
+            File file = new File(fileLocation);
+            this.fileLocation = fileLocation;
 			this.fileName = file.getName();
-			this.parentPath = file.getParent();
-			addFiles(FilterFilesTabTestSubclass.this.getShell());
-		}
+            this.parentPath = file.getParent();
+            addFiles(FilterFilesTabTestSubclass.this.getShell());
+        }
 
-		public void removeAllFiles() {
-			for (PathElement pathElement : new ArrayList<PathElement>(paths)) {
-				remove(pathElement);
+        public void removeAllFiles() {
+            for (PathElement pathElement : new ArrayList<PathElement>(paths)) {
+                remove(pathElement);
 			}
+        }
+
+        @Override
+        protected String[] getFileNames(FileDialog dialog) {
+            return new String[] { fileName };
 		}
 
-		@Override
-		protected String[] getFileNames(FileDialog dialog) {
-			return new String[] { fileName };
+        @Override
+        protected String getFilterPath(FileDialog dialog) {
+            return parentPath;
 		}
 
-		@Override
-		protected String getFilterPath(FileDialog dialog) {
-			return parentPath;
+        @Override
+        protected String openFileDialog(FileDialog dialog) {
+            return fileLocation;
 		}
 
-		@Override
-		protected String openFileDialog(FileDialog dialog) {
-			return fileLocation;
-		}
-
-	}
+    }
 }

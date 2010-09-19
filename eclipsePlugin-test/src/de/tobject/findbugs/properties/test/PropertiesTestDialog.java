@@ -26,46 +26,46 @@ import org.eclipse.ui.IWorkbenchPropertyPage;
 
 /**
  * Dialog class to open the properties page.
- * 
+ *
  * @author Tomás Pollak
  */
 public class PropertiesTestDialog extends Dialog {
-	private final IWorkbenchPropertyPage page;
+    private final IWorkbenchPropertyPage page;
 
-	protected PropertiesTestDialog(Shell parentShell, IWorkbenchPropertyPage page) {
-		super(parentShell);
-		this.page = page;
+    protected PropertiesTestDialog(Shell parentShell, IWorkbenchPropertyPage page) {
+        super(parentShell);
+        this.page = page;
 	}
 
-	@Override
-	public void cancelPressed() {
-		page.performCancel();
+    @Override
+    public void cancelPressed() {
+        page.performCancel();
 		super.cancelPressed();
-	}
+    }
 
-	@Override
-	public boolean close() {
-		page.dispose();
+    @Override
+    public boolean close() {
+        page.dispose();
 		return super.close();
-	}
+    }
 
-	@Override
-	public void okPressed() {
-		page.performOk();
+    @Override
+    public void okPressed() {
+        page.performOk();
 		super.okPressed();
-	}
+    }
 
-	@Override
-	public int open() {
-		setBlockOnOpen(false);
+    @Override
+    public int open() {
+        setBlockOnOpen(false);
 		return super.open();
-	}
+    }
 
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		Composite composite = (Composite) super.createDialogArea(parent);
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        Composite composite = (Composite) super.createDialogArea(parent);
 		page.createControl(composite);
-		return composite;
-	}
+        return composite;
+    }
 
 }

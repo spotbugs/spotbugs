@@ -1,6 +1,6 @@
 class IgnoredTrim {
 
-	public void f(String s) {
-		s.trim();
-	}
+    public void f(String s) {
+        s.trim();
+    }
 }

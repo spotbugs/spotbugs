@@ -26,26 +26,26 @@ import org.eclipse.ui.IWorkbenchPart;
 import de.tobject.findbugs.reporter.MarkerUtil;
 
 class MarkerSelectionListener implements ISelectionListener {
-	private final IMarkerSelectionHandler handler;
+    private final IMarkerSelectionHandler handler;
 
-	public MarkerSelectionListener(IMarkerSelectionHandler handler) {
-		this.handler = handler;
-	}
+    public MarkerSelectionListener(IMarkerSelectionHandler handler) {
+        this.handler = handler;
+    }
 
-	public void selectionChanged(IWorkbenchPart thePart,
-			ISelection theSelection) {
-		if (thePart == handler || !handler.isVisible()) {
+    public void selectionChanged(IWorkbenchPart thePart,
+            ISelection theSelection) {
+        if (thePart == handler || !handler.isVisible()) {
 			return;
-		}
-		IMarker marker = MarkerUtil.getMarkerFromSingleSelection(theSelection);
-		// only handle a null if it's from the bug explorer. this way if the user
+        }
+        IMarker marker = MarkerUtil.getMarkerFromSingleSelection(theSelection);
+        // only handle a null if it's from the bug explorer. this way if the user
 		// selects a bug pattern or other "folder" in the tree, the annotation view
-		// and the property view are cleared. BUT if the user clicks into 
-		// the editor, or some other view, it stays up. not quite sure what the
-		// best behavior is here but for now this works. -Keiths
+        // and the property view are cleared. BUT if the user clicks into
+        // the editor, or some other view, it stays up. not quite sure what the
+        // best behavior is here but for now this works. -Keiths
 		if (marker == null && !(thePart instanceof BugExplorerView)) {
-			return;
-		}
-		handler.markerSelected(thePart, marker);
+            return;
+        }
+        handler.markerSelected(thePart, marker);
 	}
 }

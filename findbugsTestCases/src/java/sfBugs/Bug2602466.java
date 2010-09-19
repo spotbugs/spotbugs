@@ -35,5 +35,5 @@ public class Bug2602466 {
     @ExpectWarning("Bx")
     public void setLowValueKey() {
         error_lookup.put(new Long(0), "Success.");
-    }    
+    }
 }

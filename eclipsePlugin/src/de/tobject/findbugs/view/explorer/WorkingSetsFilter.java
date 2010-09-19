@@ -26,12 +26,12 @@ import org.eclipse.ui.ResourceWorkingSetFilter;
  */
 public class WorkingSetsFilter extends ResourceWorkingSetFilter {
 
-	public WorkingSetsFilter() {
-		super();
-	}
+    public WorkingSetsFilter() {
+        super();
+    }
 
-	boolean contains(IResource resource){
-		return super.select(null, null, resource);
-	}
+    boolean contains(IResource resource){
+        return super.select(null, null, resource);
+    }
 
 }

@@ -25,68 +25,68 @@ import java.util.Set;
 /**
  * Enum for the different test scenarios in FindBugs. Each test scenario has information
  * of the input files, the expected bugs and markers, and so on.
- * 
+ *
  * @author Tomás Pollak
  */
 public enum TestScenario {
-	DEFAULT(new String[] { "/defaultScenario" }, false, new String[] {
-			"URF_UNREAD_FIELD", "DM_STRING_CTOR" }, 2), QUICKFIX(
-			new String[] { "/quickfixScenario" }, false, new String[] {}, 0), QUICKFIX_WITH_JUNIT(
+    DEFAULT(new String[] { "/defaultScenario" }, false, new String[] {
+            "URF_UNREAD_FIELD", "DM_STRING_CTOR" }, 2), QUICKFIX(
+            new String[] { "/quickfixScenario" }, false, new String[] {}, 0), QUICKFIX_WITH_JUNIT(
 			new String[] { "/quickfixScenario" }, true, new String[] {}, 0), JDT(
-			new String[] { "/jdtScenario" }, false, new String[] {}, 0), TWO_SRC_FOLDERS(
-			new String[] { "/defaultScenario", "secondSrcScenario" }, false,
-			new String[] { "URF_UNREAD_FIELD", "DM_STRING_CTOR", "DM_NUMBER_CTOR" }, 2);
+            new String[] { "/jdtScenario" }, false, new String[] {}, 0), TWO_SRC_FOLDERS(
+            new String[] { "/defaultScenario", "secondSrcScenario" }, false,
+            new String[] { "URF_UNREAD_FIELD", "DM_STRING_CTOR", "DM_NUMBER_CTOR" }, 2);
 
-	private String[] testFilesPaths;
-	private boolean usesJUnit;
-	private final Map<String, Integer> visibleBugsHistogram = new HashMap<String, Integer>();
+    private String[] testFilesPaths;
+    private boolean usesJUnit;
+    private final Map<String, Integer> visibleBugsHistogram = new HashMap<String, Integer>();
 	private int visibleBugsCount;
-	private int filteredBugsCount;
+    private int filteredBugsCount;
 
-	private TestScenario(String[] testFilesPaths, boolean usesJUnit,
-			String[] visibleBugsArray, int filteredBugsCount) {
-		this.testFilesPaths = testFilesPaths;
+    private TestScenario(String[] testFilesPaths, boolean usesJUnit,
+            String[] visibleBugsArray, int filteredBugsCount) {
+        this.testFilesPaths = testFilesPaths;
 		this.usesJUnit = usesJUnit;
-		initializeBugsHistogram(visibleBugsArray);
-		visibleBugsCount = visibleBugsArray.length;
-		this.filteredBugsCount = filteredBugsCount;
+        initializeBugsHistogram(visibleBugsArray);
+        visibleBugsCount = visibleBugsArray.length;
+        this.filteredBugsCount = filteredBugsCount;
 	}
 
-	public int getFilteredBugsCount() {
-		return filteredBugsCount;
-	}
+    public int getFilteredBugsCount() {
+        return filteredBugsCount;
+    }
 
-	public String[] getTestFilesPaths() {
-		return testFilesPaths;
-	}
+    public String[] getTestFilesPaths() {
+        return testFilesPaths;
+    }
 
-	public int getVisibleBugFrequency(String bugPattern) {
-		if (visibleBugsHistogram.containsKey(bugPattern)) {
-			return visibleBugsHistogram.get(bugPattern);
+    public int getVisibleBugFrequency(String bugPattern) {
+        if (visibleBugsHistogram.containsKey(bugPattern)) {
+            return visibleBugsHistogram.get(bugPattern);
 		}
-		return 0;
-	}
+        return 0;
+    }
 
-	public Set<String> getVisibleBugs() {
-		return visibleBugsHistogram.keySet();
-	}
+    public Set<String> getVisibleBugs() {
+        return visibleBugsHistogram.keySet();
+    }
 
-	public int getVisibleBugsCount() {
-		return visibleBugsCount;
-	}
+    public int getVisibleBugsCount() {
+        return visibleBugsCount;
+    }
 
-	public boolean usesJUnit() {
-		return usesJUnit;
-	}
+    public boolean usesJUnit() {
+        return usesJUnit;
+    }
 
-	private void initializeBugsHistogram(String[] visibleBugsArray) {
-		// Assemble the bug cardinality map from the bug array
-		for (int i = 0; i < visibleBugsArray.length; i++) {
+    private void initializeBugsHistogram(String[] visibleBugsArray) {
+        // Assemble the bug cardinality map from the bug array
+        for (int i = 0; i < visibleBugsArray.length; i++) {
 			if (!visibleBugsHistogram.containsKey(visibleBugsArray[i])) {
-				visibleBugsHistogram.put(visibleBugsArray[i], 0);
-			}
-			Integer count = visibleBugsHistogram.get(visibleBugsArray[i]);
+                visibleBugsHistogram.put(visibleBugsArray[i], 0);
+            }
+            Integer count = visibleBugsHistogram.get(visibleBugsArray[i]);
 			visibleBugsHistogram.put(visibleBugsArray[i], count + 1);
-		}
-	}
+        }
+    }
 }

@@ -7,22 +7,22 @@ import java.util.HashMap;
 
 public class DontBeMalicious {
 
-	final static HashMap myMap=new HashMap();
-	/**
-	 * @param args
+    final static HashMap myMap=new HashMap();
+    /**
+     * @param args
 	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-	}
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+    }
 
-	public void lazyMethod()
-	{
-		try 
+    public void lazyMethod()
+    {
+        try
 		{
-			BufferedReader x = new BufferedReader(new FileReader("HelloHello"));
-		} catch (FileNotFoundException e) 
-		{
+            BufferedReader x = new BufferedReader(new FileReader("HelloHello"));
+        } catch (FileNotFoundException e)
+        {
 		}
-	}
+    }
 
 }

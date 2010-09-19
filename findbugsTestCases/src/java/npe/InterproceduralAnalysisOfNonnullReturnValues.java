@@ -2,14 +2,14 @@ package npe;
 
 public class InterproceduralAnalysisOfNonnullReturnValues {
 
-	String f() {
-		return "x";
+    String f() {
+        return "x";
     }
-	int g() {
-		String s = f();
-		if (s == null)
+    int g() {
+        String s = f();
+        if (s == null)
             return s.hashCode();
-		return 0;
-	}
+        return 0;
+    }
 
 }

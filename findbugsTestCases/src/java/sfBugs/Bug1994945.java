@@ -9,44 +9,44 @@ import java.io.Serializable;
 public class Bug1994945  implements Serializable {
 
     private static final long serialVersionUID = 1L;
-	transient Object x;
-	Object y;
-	
+    transient Object x;
+    Object y;
+
 	Bug1994945(Object x, Object y) {
-		this.x = x;
-		this.y = y;
-	}
+        this.x = x;
+        this.y = y;
+    }
 	
-	int f() {
-		return x.hashCode() + y.hashCode();
-	}
+    int f() {
+        return x.hashCode() + y.hashCode();
+    }
 	
-	
-	static class InnerClass extends Bug1994945 implements Externalizable {
-		
+
+    static class InnerClass extends Bug1994945 implements Externalizable {
+
 		public InnerClass() {
-			super(null, null);
-		}
-		
+            super(null, null);
+        }
+
 		InnerClass(Object x, Object y, Object z) {
-	        super(x, y);
-	        this.z = z;
+            super(x, y);
+            this.z = z;
         }
 
-		transient Object z;
-	
+        transient Object z;
 
-		public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-	        x = in.readInt();
-	        y = in.readInt();
+
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            x = in.readInt();
+            y = in.readInt();
 	        z = in.readInt();
-	        
+
         }
 
-		public void writeExternal(ObjectOutput out) throws IOException {
-	        // TODO Auto-generated method stub
-	        
+        public void writeExternal(ObjectOutput out) throws IOException {
+            // TODO Auto-generated method stub
+
         }
-	
-	}
+
+    }
 }

@@ -1,132 +1,132 @@
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 class SwitchFallthrough {
+
+    static class DeadStoreToField {
+    int x;
 	
-	static class DeadStoreToField {
-	int x;
-	
-	@ExpectWarning("SF")
-	void deadStoreToField(int i) {
-		switch(i) {
+    @ExpectWarning("SF")
+    void deadStoreToField(int i) {
+        switch(i) {
 		case 0:
-		case 1:
-			x = 1;
-		case 2:
+        case 1:
+            x = 1;
+        case 2:
 		case 3:
-			x = 2;
-			break;
-		case 4:
+            x = 2;
+            break;
+        case 4:
 		case 5:
-			x = 3;
-			break;
-		default: break;
+            x = 3;
+            break;
+        default: break;
 		}
 
-	}
-	}
-	@ExpectWarning("SF")
+    }
+    }
+    @ExpectWarning("SF")
 	int reallyBad(int i) {
-		int result = 0;
-		switch(i) {
-		case 0:
+        int result = 0;
+        switch(i) {
+        case 0:
 		case 1:
-			result = 1;
-		case 2:
-		case 3:
+            result = 1;
+        case 2:
+        case 3:
 			result = 2;
-			break;
-		case 4:
-		case 5:
+            break;
+        case 4:
+        case 5:
 			result = 3;
-			break;
-		default: break;
-		}
+            break;
+        default: break;
+        }
 		return result;
 
-	}
-	@ExpectWarning("SF")
-	int notSoBad(int i) {
+    }
+    @ExpectWarning("SF")
+    int notSoBad(int i) {
 		int result = 0;
-		int x=0;
-		switch(i) {
-		case 0:
+        int x=0;
+        switch(i) {
+        case 0:
 		case 1:
-			result = 1;
-			break;
-		case 2:
+            result = 1;
+            break;
+        case 2:
 			x = 1;
-		case 3:
-			result = 2;
-			break;
+        case 3:
+            result = 2;
+            break;
 		case 4:
-		case 5:
-			result = 3;
-			break;
+        case 5:
+            result = 3;
+            break;
 		default: break;
-		}
-		return result+x;
-	}
+        }
+        return result+x;
+    }
 	void test1(int i) {
-		switch (i) {
-		case -1:
-		case 0:
+        switch (i) {
+        case -1:
+        case 0:
 			System.out.println("zero");
-		case 1:
-		case 2:
-			System.out.println("one");
+        case 1:
+        case 2:
+            System.out.println("one");
 		case 10:
-			System.out.println("four");
-		case 4:
-		case 5:
+            System.out.println("four");
+        case 4:
+        case 5:
 			System.out.println("two");
-		// fallthrough
-		case 6:
-		case 7:
+        // fallthrough
+        case 6:
+        case 7:
 			System.out.println("three");
-		default:
-			System.out.println("something else");
-		}
+        default:
+            System.out.println("something else");
+        }
 	}
 
-	void test2(int i, int j) {
-		switch (i) {
-		case 0:
+    void test2(int i, int j) {
+        switch (i) {
+        case 0:
 			switch (j) {
-			case 0:
-				System.out.println("zero zero");
-			}
+            case 0:
+                System.out.println("zero zero");
+            }
 
-		case 1:
-			System.out.println("zero");
-		}
+        case 1:
+            System.out.println("zero");
+        }
 	}
 
-	void test3(int i, int j) {
-		switch (i) {
-		case 0:
+    void test3(int i, int j) {
+        switch (i) {
+        case 0:
 			if (j == 0)
-				return;
+                return;
 
-		case 1:
-			j = 1;
-			break;
+        case 1:
+            j = 1;
+            break;
 		}
-	}
+    }
 
-	void test4(int i) {
-		switch (i) {
-			case 0:
+    void test4(int i) {
+        switch (i) {
+            case 0:
 				System.out.println("Leaving ok");
-				System.exit(0);
+                System.exit(0);
 
-			case 1:
-				System.out.println("Leaving with error");
-				System.exit(1);
+            case 1:
+                System.out.println("Leaving with error");
+                System.exit(1);
 
-			default:
-		}
+            default:
+        }
 
-		System.out.println("Things seem ok");
-	}
+        System.out.println("Things seem ok");
+    }
 
 }

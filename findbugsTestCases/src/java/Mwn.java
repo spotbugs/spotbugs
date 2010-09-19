@@ -5,40 +5,40 @@ import java.util.Set;
 
 class Mwn {
 
-	static Object[] done = new Object[1];
+    static Object[] done = new Object[1];
 
-	static Set hung = new HashSet();
+    static Set hung = new HashSet();
 
-	String address = "localhost";
+    String address = "localhost";
 
-	public void run() {
-		Object result = null;
+    public void run() {
+        Object result = null;
 
-		try {
-			final Socket s = new Socket(address, 12345);
-			result = s;
+        try {
+            final Socket s = new Socket(address, 12345);
+            result = s;
 		} catch (final IOException ioe) {
-			result = ioe;
-		} finally {
-			synchronized (hung) {
+            result = ioe;
+        } finally {
+            synchronized (hung) {
 				hung.remove(address);
-				hung.notifyAll();
-			}
-		}
+                hung.notifyAll();
+            }
+        }
 
-		synchronized (done) {
-			done[0] = result;
-			done.notifyAll();
+        synchronized (done) {
+            done[0] = result;
+            done.notifyAll();
 		}
-	}
+    }
 
-	public static final String DOMAINCFG = "Hi";
-	boolean b;
-	public void falsePositive() throws InterruptedException {
+    public static final String DOMAINCFG = "Hi";
+    boolean b;
+    public void falsePositive() throws InterruptedException {
 		synchronized (DOMAINCFG) {
-			while (!b)
-			  DOMAINCFG.wait();
-		}
+            while (!b)
+              DOMAINCFG.wait();
+        }
 	}
 
 }

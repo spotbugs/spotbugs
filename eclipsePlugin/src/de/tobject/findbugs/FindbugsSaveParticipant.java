@@ -33,51 +33,51 @@ import de.tobject.findbugs.util.ProjectUtilities;
  */
 public class FindbugsSaveParticipant implements ISaveParticipant {
 
-	public void doneSaving(ISaveContext context) {
-		// noop
-	}
+    public void doneSaving(ISaveContext context) {
+        // noop
+    }
 
-	public void prepareToSave(ISaveContext context) {
-		// noop
-	}
+    public void prepareToSave(ISaveContext context) {
+        // noop
+    }
 
-	public void rollback(ISaveContext context) {
-		// noop
-	}
+    public void rollback(ISaveContext context) {
+        // noop
+    }
 
-	public void saving(ISaveContext context) {
-		switch (context.getKind()) {
-		case ISaveContext.FULL_SAVE:
+    public void saving(ISaveContext context) {
+        switch (context.getKind()) {
+        case ISaveContext.FULL_SAVE:
 			fullSave();
+            break;
+        case ISaveContext.PROJECT_SAVE:
+            saveBugCollection(context.getProject());
 			break;
-		case ISaveContext.PROJECT_SAVE:
-			saveBugCollection(context.getProject());
-			break;
-		default:
-			break;
-		}
+        default:
+            break;
+        }
 	}
 
-	private void fullSave() {
-		IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		for(IProject project : projectList) {
+    private void fullSave() {
+        IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+        for(IProject project : projectList) {
 			if(project.isAccessible() && ProjectUtilities.isJavaProject(project)) {
-			saveBugCollection(project);
-		}
-		}
+            saveBugCollection(project);
+        }
+        }
 	}
 
-	private void saveBugCollection(IProject project) {
-		if (project.isAccessible()) {
-			try {
+    private void saveBugCollection(IProject project) {
+        if (project.isAccessible()) {
+            try {
 				FindbugsPlugin.saveCurrentBugCollection(project, null);
-			} catch (RuntimeException e) {
-				throw e;
-			} catch (Exception e) {
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
 				FindbugsPlugin.getDefault().logException(
-						e, "Could not save bug collection for project " + project.getName());
-			}
-		}
+                        e, "Could not save bug collection for project " + project.getName());
+            }
+        }
 	}
 
 }

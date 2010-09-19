@@ -13,55 +13,55 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.osgi.framework.Bundle;
 
 public class AnnotationClasspathInitializer extends
-		ClasspathVariableInitializer {
+        ClasspathVariableInitializer {
 
-	private static final String FINDBUGS_ANNOTATIONS = "FINDBUGS_ANNOTATIONS";
-	private static final String JSR305_ANNOTATIONS = "JSR305_ANNOTATIONS";
+    private static final String FINDBUGS_ANNOTATIONS = "FINDBUGS_ANNOTATIONS";
+    private static final String JSR305_ANNOTATIONS = "JSR305_ANNOTATIONS";
 
-	private static final String FINDBUGS_LIBRARY = "/lib/annotations.jar";
-	private static final String JSR305_LIBRARY = "/lib/jsr305.jar";
+    private static final String FINDBUGS_LIBRARY = "/lib/annotations.jar";
+    private static final String JSR305_LIBRARY = "/lib/jsr305.jar";
 
-	@Override
-	public void initialize(String variable) {
-		Bundle bundle = Platform.getBundle(FindbugsPlugin.PLUGIN_ID);
+    @Override
+    public void initialize(String variable) {
+        Bundle bundle = Platform.getBundle(FindbugsPlugin.PLUGIN_ID);
 		if (bundle == null) {
-			return;
-		}
-		String fullPath = getLibraryPath(bundle, FINDBUGS_LIBRARY);
+            return;
+        }
+        String fullPath = getLibraryPath(bundle, FINDBUGS_LIBRARY);
 		setVariable(fullPath, FINDBUGS_ANNOTATIONS);
-		fullPath = getLibraryPath(bundle, JSR305_LIBRARY);
-		setVariable(fullPath, JSR305_ANNOTATIONS);
-	}
+        fullPath = getLibraryPath(bundle, JSR305_LIBRARY);
+        setVariable(fullPath, JSR305_ANNOTATIONS);
+    }
 
-	private void setVariable(String fullPath, String variableName) {
-		if (fullPath == null) {
-			FindbugsPlugin.getDefault().logError(
+    private void setVariable(String fullPath, String variableName) {
+        if (fullPath == null) {
+            FindbugsPlugin.getDefault().logError(
 					"unable to find path for variable: " + variableName);
-			return;
-		}
-		try {
+            return;
+        }
+        try {
 			JavaCore.setClasspathVariable(variableName, new Path(fullPath), null);
-		} catch (JavaModelException e1) {
-			FindbugsPlugin.getDefault().logException(e1,
-					"unable to set annotations classpath");
+        } catch (JavaModelException e1) {
+            FindbugsPlugin.getDefault().logException(e1,
+                    "unable to set annotations classpath");
 		}
-	}
+    }
 
-	private String getLibraryPath(Bundle bundle, String libName) {
-		URL installLocation = bundle.getEntry(libName);
-		if(installLocation == null){
+    private String getLibraryPath(Bundle bundle, String libName) {
+        URL installLocation = bundle.getEntry(libName);
+        if(installLocation == null){
 			FindbugsPlugin.getDefault().logError("Library not found in plugin: " + libName);
-			return null;
-		}
-		String fullPath = null;
+            return null;
+        }
+        String fullPath = null;
 		try {
-			URL local = FileLocator.toFileURL(installLocation);
-			fullPath = new File(local.getPath()).getCanonicalPath();
-		} catch (IOException e) {
+            URL local = FileLocator.toFileURL(installLocation);
+            fullPath = new File(local.getPath()).getCanonicalPath();
+        } catch (IOException e) {
 			FindbugsPlugin.getDefault().logException(e,
-					"unable to set classpath for " + libName);
-		}
-		return fullPath;
+                    "unable to set classpath for " + libName);
+        }
+        return fullPath;
 	}
 
 }

@@ -17,52 +17,52 @@ import java.util.logging.Logger;
  * the old behavior - when changing logger configuration, it simply drops the
  * logger reference. That means that the garbage collector is free to reclaim
  * that memory, which means that the logger configuration is lost.
- * 
+ *
  */
 public class Ideas_2009_05_06 {
-	/**
-	 * The logger reference is lost at the end of the method (it doesn't escape
-	 * the method), so if you have a garbage collection cycle just after the
+    /**
+     * The logger reference is lost at the end of the method (it doesn't escape
+     * the method), so if you have a garbage collection cycle just after the
 	 * call to initLogging, the logger configuration is lost (because Logger
-	 * only keeps weak references).
-	 */
+     * only keeps weak references).
+     */
 
-	public static void initLogging() throws SecurityException, IOException {
-		Logger logger = Logger.getLogger("edu.umd.cs.findbugs");
-		logger.addHandler(new FileHandler()); // call to change logger
+    public static void initLogging() throws SecurityException, IOException {
+        Logger logger = Logger.getLogger("edu.umd.cs.findbugs");
+        logger.addHandler(new FileHandler()); // call to change logger
 											  // configuration
-		logger.setUseParentHandlers(false); // another call to change logger
-											// configuration
-		logger.setLevel(Level.FINER);
+        logger.setUseParentHandlers(false); // another call to change logger
+                                            // configuration
+        logger.setLevel(Level.FINER);
 		logger.setFilter(new Filter() {
 
-			public boolean isLoggable(LogRecord arg0) {
-				return true;
-			}
+            public boolean isLoggable(LogRecord arg0) {
+                return true;
+            }
 		});
-	}
-	
-	static Object foo1;
+    }
+
+    static Object foo1;
 	static List<Logger> foo2 = new ArrayList<Logger>();
 
-	
-	public static void falsePositive1() {
-		Logger logger = Logger.getLogger("edu.umd.cs.findbugs");
+
+    public static void falsePositive1() {
+        Logger logger = Logger.getLogger("edu.umd.cs.findbugs");
 		logger.setLevel(Level.FINER);
-		foo1 = logger;
-	}
-	public static void falsePositive2() {
+        foo1 = logger;
+    }
+    public static void falsePositive2() {
 		Logger logger = Logger.getLogger("edu.umd.cs.findbugs");
-		logger.setLevel(Level.FINER);
-		foo2.add(logger);
-	}
+        logger.setLevel(Level.FINER);
+        foo2.add(logger);
+    }
 	public static void main(String[] args) throws Exception {
-		initLogging(); // adds a file handler to the logger
-		System.gc(); // logger configuration lost
-		Logger.getLogger("com.google.gse").info("Some message"); // this isn't
+        initLogging(); // adds a file handler to the logger
+        System.gc(); // logger configuration lost
+        Logger.getLogger("com.google.gse").info("Some message"); // this isn't
 																 // logged to
-																 // the file as
-																 // expected
-	}
+                                                                 // the file as
+                                                                 // expected
+    }
 
 }

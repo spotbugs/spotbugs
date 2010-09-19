@@ -13,19 +13,19 @@ method called from the static initializer)?
  *
  */
 public class Bug1566396 {
-	private static String[] array;
+    private static String[] array;
 
-	static {
-		reset();
-	}
+    static {
+        reset();
+    }
 
-	private Bug1566396() {
-	}
+    private Bug1566396() {
+    }
 
-	int foo() {
-		return array.length;
-	}
+    int foo() {
+        return array.length;
+    }
 	 static void reset() {
-		array = new String[0];
-	}
+        array = new String[0];
+    }
 }

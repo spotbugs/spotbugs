@@ -61,295 +61,295 @@ import edu.umd.cs.findbugs.cloud.Cloud.CloudTask;
  */
 public class UserAnnotationsView extends AbstractFindbugsView {
 
-	private String userAnnotation;
+    private String userAnnotation;
 
-	private String firstVersionText;
+    private String firstVersionText;
 
-	private String cloudText;
+    private String cloudText;
 
-	private @CheckForNull BugCollectionAndInstance theBug;
+    private @CheckForNull BugCollectionAndInstance theBug;
 
-	private  Text userAnnotationTextField;
+    private  Text userAnnotationTextField;
 
-	private  Text cloudTextField;
+    private  Text cloudTextField;
 
 
 
-	private Label firstVersionLabel;
+    private Label firstVersionLabel;
 
-	private Combo designationComboBox;
+    private Combo designationComboBox;
 
-	private SigninStatusBox signinStatusBox;
+    private SigninStatusBox signinStatusBox;
 
-	private ISelectionListener selectionListener;
+    private ISelectionListener selectionListener;
 
-	private final ExecutorService executor = Executors.newCachedThreadPool();
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
-	private Cloud lastCloud;
+    private Cloud lastCloud;
 
-	private final CloudListener cloudListener = new CloudListener() {
-		public void statusUpdated() {
-			// noop
+    private final CloudListener cloudListener = new CloudListener() {
+        public void statusUpdated() {
+            // noop
 		}
 
-		public void issueUpdated(BugInstance bug) {
-			BugCollectionAndInstance bug2 = theBug;
-			if (bug2 != null && bug.equals(bug2.getBugInstance())) {
+        public void issueUpdated(BugInstance bug) {
+            BugCollectionAndInstance bug2 = theBug;
+            if (bug2 != null && bug.equals(bug2.getBugInstance())) {
 				updateBugInfo();
-			}
-		}
+            }
+        }
 
-		public void taskStarted(CloudTask task) {
-			// noop
-		}
+        public void taskStarted(CloudTask task) {
+            // noop
+        }
 	};
 
-	private IWorkbenchPart contributingPart;
+    private IWorkbenchPart contributingPart;
 
-	public UserAnnotationsView() {
-		super();
-		userAnnotation = "";
+    public UserAnnotationsView() {
+        super();
+        userAnnotation = "";
 		firstVersionText = "";
-		cloudText = "";
-	}
+        cloudText = "";
+    }
 
-	@Override
-	public Composite createRootControl(Composite parent) {
-		Composite main = new Composite(parent, SWT.VERTICAL);
+    @Override
+    public Composite createRootControl(Composite parent) {
+        Composite main = new Composite(parent, SWT.VERTICAL);
 		main.setLayout(new GridLayout(2, false));
 
 //		main.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, true));
-		designationComboBox = new Combo(main, SWT.LEFT | SWT.DROP_DOWN
-				| SWT.READ_ONLY);
-		designationComboBox.setToolTipText("My bug designation");
+        designationComboBox = new Combo(main, SWT.LEFT | SWT.DROP_DOWN
+                | SWT.READ_ONLY);
+        designationComboBox.setToolTipText("My bug designation");
 		designationComboBox.setLayoutData(new GridData());
-		for (String s : I18N.instance().getUserDesignationKeys(true)) {
-			designationComboBox.add(I18N.instance().getUserDesignation(s));
-		}
+        for (String s : I18N.instance().getUserDesignationKeys(true)) {
+            designationComboBox.add(I18N.instance().getUserDesignation(s));
+        }
 		designationComboBox.addSelectionListener(new SelectionListener() {
-			public void widgetSelected(SelectionEvent e) {
-				final BugCollectionAndInstance bug = theBug;
-				if(bug == null) {
+            public void widgetSelected(SelectionEvent e) {
+                final BugCollectionAndInstance bug = theBug;
+                if(bug == null) {
 					return;
-				}
-				final BugInstance bugInstance = bug.getBugInstance();
-				if (bugInstance == null) {
+                }
+                final BugInstance bugInstance = bug.getBugInstance();
+                if (bugInstance == null) {
 					return;
-				}
-				final int selectionIndex = designationComboBox.getSelectionIndex();
-				executor.submit(new Runnable() {
+                }
+                final int selectionIndex = designationComboBox.getSelectionIndex();
+                executor.submit(new Runnable() {
 					public void run() {
-						bugInstance.setUserDesignationKeyIndex(
-								selectionIndex, bug.getBugCollection());
-					}
+                        bugInstance.setUserDesignationKeyIndex(
+                                selectionIndex, bug.getBugCollection());
+                    }
 				});
-			}
+            }
 
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
+            public void widgetDefaultSelected(SelectionEvent e) {
+                widgetSelected(e);
+            }
 		});
-		//designationComboBox.setSize(designationComboBox.computeSize(
-		//		SWT.DEFAULT, SWT.DEFAULT));
-		designationComboBox.setEnabled(false);
+        //designationComboBox.setSize(designationComboBox.computeSize(
+        //		SWT.DEFAULT, SWT.DEFAULT));
+        designationComboBox.setEnabled(false);
 
-		signinStatusBox = new SigninStatusBox(main, SWT.NONE);
-		signinStatusBox.setLayoutData(new GridData(GridData.CENTER, GridData.CENTER, false, false));
+        signinStatusBox = new SigninStatusBox(main, SWT.NONE);
+        signinStatusBox.setLayoutData(new GridData(GridData.CENTER, GridData.CENTER, false, false));
 
-		firstVersionLabel = new Label(main, SWT.LEFT);
-		firstVersionLabel
-				.setToolTipText("The earliest version in which the bug was present");
+        firstVersionLabel = new Label(main, SWT.LEFT);
+        firstVersionLabel
+                .setToolTipText("The earliest version in which the bug was present");
 		firstVersionLabel.setLayoutData(new GridData(GridData.BEGINNING, GridData.CENTER, false, false));
 
-		userAnnotationTextField = new Text(main, SWT.LEFT | SWT.WRAP
-				| SWT.BORDER);
-		userAnnotationTextField.setToolTipText("My bug comments");
+        userAnnotationTextField = new Text(main, SWT.LEFT | SWT.WRAP
+                | SWT.BORDER);
+        userAnnotationTextField.setToolTipText("My bug comments");
 		userAnnotationTextField.setEnabled(false);
-		GridData uatfData = new GridData(GridData.FILL_BOTH);
-		uatfData.horizontalSpan = 2;
-		userAnnotationTextField.setLayoutData(uatfData);
+        GridData uatfData = new GridData(GridData.FILL_BOTH);
+        uatfData.horizontalSpan = 2;
+        userAnnotationTextField.setLayoutData(uatfData);
 		userAnnotationTextField.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				final BugCollectionAndInstance bug = theBug;
+            @Override
+            public void focusLost(FocusEvent e) {
+                final BugCollectionAndInstance bug = theBug;
 				if (bug != null && bug.getBugInstance() != null) {
-					final String txt = userAnnotationTextField.getText();
-					executor.submit(new Runnable() {
-						public void run() {
+                    final String txt = userAnnotationTextField.getText();
+                    executor.submit(new Runnable() {
+                        public void run() {
 							bug.getBugInstance().setAnnotationText(
-									txt, bug.getBugCollection());
-						}
-					});
+                                    txt, bug.getBugCollection());
+                        }
+                    });
 				}
-			}
-		});
-		Label cloudLabel = new Label(main, SWT.LEFT);
+            }
+        });
+        Label cloudLabel = new Label(main, SWT.LEFT);
 		cloudLabel.setText("Comments:");
-		GridData lData = new GridData(SWT.LEFT, SWT.TOP, true, false);
-		lData.horizontalSpan = 2;
-		cloudLabel.setLayoutData(lData);
+        GridData lData = new GridData(SWT.LEFT, SWT.TOP, true, false);
+        lData.horizontalSpan = 2;
+        cloudLabel.setLayoutData(lData);
 
-		cloudTextField = new Text(main, SWT.LEFT | SWT.WRAP
-				| SWT.BORDER | SWT.READ_ONLY);
-		GridData ctfData = new GridData(GridData.FILL_BOTH);
+        cloudTextField = new Text(main, SWT.LEFT | SWT.WRAP
+                | SWT.BORDER | SWT.READ_ONLY);
+        GridData ctfData = new GridData(GridData.FILL_BOTH);
 		ctfData.horizontalSpan = 2;
-		cloudTextField.setLayoutData(ctfData);
+        cloudTextField.setLayoutData(ctfData);
 
-		// Add selection listener to detect click in problems view or bug tree
-		// view
-		ISelectionService theService = getSite().getWorkbenchWindow()
+        // Add selection listener to detect click in problems view or bug tree
+        // view
+        ISelectionService theService = getSite().getWorkbenchWindow()
 				.getSelectionService();
 
-		selectionListener = new MarkerSelectionListener(this);
-		theService.addSelectionListener(selectionListener);
-		return main;
+        selectionListener = new MarkerSelectionListener(this);
+        theService.addSelectionListener(selectionListener);
+        return main;
 	}
 
-	@Override
-	public void dispose() {
-		if (selectionListener != null) {
+    @Override
+    public void dispose() {
+        if (selectionListener != null) {
 			getSite().getWorkbenchWindow().getSelectionService()
-					.removeSelectionListener(selectionListener);
-			selectionListener = null;
-		}
+                    .removeSelectionListener(selectionListener);
+            selectionListener = null;
+        }
 		if (lastCloud != null) {
-			lastCloud.removeListener(cloudListener);
-		}
-		signinStatusBox.dispose();
+            lastCloud.removeListener(cloudListener);
+        }
+        signinStatusBox.dispose();
 		contributingPart = null;
-		super.dispose();
-	}
+        super.dispose();
+    }
 
-	/**
-	 * Updates the control using the current window size and the contents of the
-	 * title and description fields.
+    /**
+     * Updates the control using the current window size and the contents of the
+     * title and description fields.
 	 */
-	private void updateDisplay() {
-		firstVersionLabel.setSize(firstVersionLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-	}
+    private void updateDisplay() {
+        firstVersionLabel.setSize(firstVersionLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+    }
 
-	/**
-	 * Set the content to be displayed
-	 */
+    /**
+     * Set the content to be displayed
+     */
 	public void setContent(BugCollectionAndInstance bci) {
-		this.theBug = bci;
-		updateBugInfo();
-	}
+        this.theBug = bci;
+        updateBugInfo();
+    }
 
-	private void updateBugInfo() {
-		BugCollectionAndInstance theBug2 = theBug;
-		if (theBug2 == null) {
+    private void updateBugInfo() {
+        BugCollectionAndInstance theBug2 = theBug;
+        if (theBug2 == null) {
 			setCloud(null);
-			this.userAnnotationTextField.setEnabled(false);
-			this.designationComboBox.setEnabled(false);
-			this.userAnnotation = "";
+            this.userAnnotationTextField.setEnabled(false);
+            this.designationComboBox.setEnabled(false);
+            this.userAnnotation = "";
 			this.firstVersionText = "";
-			this.cloudText = "";
+            this.cloudText = "";
 
-		} else {
+        } else {
 
-			BugInstance bug = theBug2.getBugInstance();
-			long timestamp = theBug2.getBugCollection().getAppVersionFromSequenceNumber(bug.getFirstVersion()).getTimestamp();
+            BugInstance bug = theBug2.getBugInstance();
+            long timestamp = theBug2.getBugCollection().getAppVersionFromSequenceNumber(bug.getFirstVersion()).getTimestamp();
 
-			String firstVersion = "Bug present since: "	+ convertTimestamp(timestamp);
+            String firstVersion = "Bug present since: "	+ convertTimestamp(timestamp);
 
-			Cloud cloud = theBug2.getBugCollection().getCloud();
-			String userDesignation = cloud.getUserEvaluation(bug);
-			this.userAnnotation = (userDesignation == null) ? "" : userDesignation.trim();
+            Cloud cloud = theBug2.getBugCollection().getCloud();
+            String userDesignation = cloud.getUserEvaluation(bug);
+            this.userAnnotation = (userDesignation == null) ? "" : userDesignation.trim();
 			this.firstVersionText = firstVersion.trim();
-			this.cloudText = cloud.getCloudReport(bug);
-			this.userAnnotationTextField.setEnabled(true);
-			this.designationComboBox.setEnabled(true);
+            this.cloudText = cloud.getCloudReport(bug);
+            this.userAnnotationTextField.setEnabled(true);
+            this.designationComboBox.setEnabled(true);
 			setCloud(cloud);
 
-			int comboIndex = bug.getUserDesignationKeyIndex();
-			if (comboIndex == -1) {
-				FindbugsPlugin.getDefault()
+            int comboIndex = bug.getUserDesignationKeyIndex();
+            if (comboIndex == -1) {
+                FindbugsPlugin.getDefault()
 						.logError("Cannot find user designation");
-			} else {
-				designationComboBox.select(comboIndex);
-			}
+            } else {
+                designationComboBox.select(comboIndex);
+            }
 		}
-		userAnnotationTextField.setText(userAnnotation);
-		firstVersionLabel.setText(firstVersionText);
-		cloudTextField.setText(cloudText);
+        userAnnotationTextField.setText(userAnnotation);
+        firstVersionLabel.setText(firstVersionText);
+        cloudTextField.setText(cloudText);
 		updateDisplay();
-	}
+    }
 
-	private void setCloud(Cloud cloud) {
-		signinStatusBox.setCloud(cloud);
-		if (cloud != lastCloud) {
+    private void setCloud(Cloud cloud) {
+        signinStatusBox.setCloud(cloud);
+        if (cloud != lastCloud) {
 			if (lastCloud != null) {
-				lastCloud.removeListener(cloudListener);
-			}
-			if (cloud != null) {
+                lastCloud.removeListener(cloudListener);
+            }
+            if (cloud != null) {
 				cloud.addListener(cloudListener);
-			}
-			lastCloud = cloud;
-		}
+            }
+            lastCloud = cloud;
+        }
 	}
 
-	/**
-	 * Show the details of a FindBugs marker in the view. Brings the
-	 * view to the foreground.
+    /**
+     * Show the details of a FindBugs marker in the view. Brings the
+     * view to the foreground.
 	 * @param thePart
-	 *
-	 * @param marker
-	 *            may be null, or marker containing the bug pattern to show details
+     *
+     * @param marker
+     *            may be null, or marker containing the bug pattern to show details
 	 *            for
-	 */
-	private void showInView(IMarker marker) {
-		BugCollectionAndInstance bci = marker == null ? null : MarkerUtil.findBugCollectionAndInstanceForMarker(marker);
+     */
+    private void showInView(IMarker marker) {
+        BugCollectionAndInstance bci = marker == null ? null : MarkerUtil.findBugCollectionAndInstanceForMarker(marker);
 		setContent(bci);
-	}
+    }
 
-	public void markerSelected(IWorkbenchPart thePart, IMarker newMarker) {
-		contributingPart = thePart;
-		showInView(newMarker);
+    public void markerSelected(IWorkbenchPart thePart, IMarker newMarker) {
+        contributingPart = thePart;
+        showInView(newMarker);
 		if (!isVisible()) {
-			activate();
-		}
-	}
+            activate();
+        }
+    }
 
-	private static String convertTimestamp(long timestamp) {
-		if (timestamp == -2) {
-			return "ERROR - Timestamp not found";
+    private static String convertTimestamp(long timestamp) {
+        if (timestamp == -2) {
+            return "ERROR - Timestamp not found";
 		}
-		if (timestamp == -1) {
-			return "First version analyzed";
-		}
+        if (timestamp == -1) {
+            return "First version analyzed";
+        }
 		Calendar theCalendar = Calendar.getInstance();
-		theCalendar.setTimeInMillis(System.currentTimeMillis());
-		theCalendar.set(theCalendar.get(Calendar.YEAR), theCalendar
-				.get(Calendar.MONTH), theCalendar.get(Calendar.DATE), 0, 0, 0);
+        theCalendar.setTimeInMillis(System.currentTimeMillis());
+        theCalendar.set(theCalendar.get(Calendar.YEAR), theCalendar
+                .get(Calendar.MONTH), theCalendar.get(Calendar.DATE), 0, 0, 0);
 		long beginningOfToday = theCalendar.getTimeInMillis();
-		long beginningOfYesterday = beginningOfToday - 86400000;
-		theCalendar.setTimeInMillis(timestamp);
-		String timeString = theCalendar.getTime().toString();
+        long beginningOfYesterday = beginningOfToday - 86400000;
+        theCalendar.setTimeInMillis(timestamp);
+        String timeString = theCalendar.getTime().toString();
 		if (timestamp >= beginningOfToday) {
-			return "Today "
-					+ timeString.substring(timeString.indexOf(":") - 2,
-							timeString.indexOf(":") + 3);
+            return "Today "
+                    + timeString.substring(timeString.indexOf(":") - 2,
+                            timeString.indexOf(":") + 3);
 		} else if (timestamp >= beginningOfYesterday) {
-			return "Yesterday "
-					+ timeString.substring(timeString.indexOf(":") - 2,
-							timeString.indexOf(":") + 3);
+            return "Yesterday "
+                    + timeString.substring(timeString.indexOf(":") - 2,
+                            timeString.indexOf(":") + 3);
 		} else {
-			return timeString.substring(0, timeString.indexOf(":") + 3);
-		}
+            return timeString.substring(0, timeString.indexOf(":") + 3);
+        }
+    }
+
+    @Override
+    public void setFocus() {
+        designationComboBox.setFocus();
 	}
 
-	@Override
-	public void setFocus() {
-		designationComboBox.setFocus();
+    @Override
+    protected void fillLocalToolBar(IToolBarManager manager) {
+        // noop
 	}
 
-	@Override
-	protected void fillLocalToolBar(IToolBarManager manager) {
-		// noop
-	}
-
-	public IWorkbenchPart getContributingPart() {
-		return contributingPart;
-	}
+    public IWorkbenchPart getContributingPart() {
+        return contributingPart;
+    }
 }

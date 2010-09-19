@@ -1,25 +1,25 @@
 
 
-	public class Child1 extends Parent implements BC_Unconfirmed_Cast.CastToMe
-	{
-		public boolean equals(Child1 m)
+    public class Child1 extends Parent implements BC_Unconfirmed_Cast.CastToMe
+    {
+        public boolean equals(Child1 m)
 		{
-			return false;
-		}		
+            return false;
+        }
 
-		public static void main(String[] args)
-		{
-			new Child1().blargh();
+        public static void main(String[] args)
+        {
+            new Child1().blargh();
 		}
 
-		@Override
-		public void blargh()
-		{
+        @Override
+        public void blargh()
+        {
 
-		}
+        }
 
-		public void Blargh() {
-			// TODO Auto-generated method stub
+        public void Blargh() {
+            // TODO Auto-generated method stub
 
-		}
-	}
+        }
+    }

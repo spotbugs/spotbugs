@@ -27,36 +27,36 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 
 /**
  * Expected object for a FindBugs marker.
- * 
+ *
  * @author Tomás Pollak
  */
 public class ExpectedViewMarker implements ExpectedViewElement {
 
-	private final String expectedBugType;
+    private final String expectedBugType;
 
-	public ExpectedViewMarker(String expectedBugType) {
-		this.expectedBugType = expectedBugType;
-	}
+    public ExpectedViewMarker(String expectedBugType) {
+        this.expectedBugType = expectedBugType;
+    }
 
-	public void assertEquals(Object actual, ITreeContentProvider contentProvider)
-			throws CoreException {
-		Assert.assertTrue(actual instanceof IMarker);
+    public void assertEquals(Object actual, ITreeContentProvider contentProvider)
+            throws CoreException {
+        Assert.assertTrue(actual instanceof IMarker);
 		IMarker marker = (IMarker) actual;
-		String actualBugType = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
-		Assert.assertEquals(expectedBugType, actualBugType);
-	}
+        String actualBugType = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
+        Assert.assertEquals(expectedBugType, actualBugType);
+    }
 
-	public boolean matches(Object actual) throws CoreException {
-		if (actual instanceof IMarker) {
-			IMarker marker = (IMarker) actual;
+    public boolean matches(Object actual) throws CoreException {
+        if (actual instanceof IMarker) {
+            IMarker marker = (IMarker) actual;
 			String actualBugType = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
-			return expectedBugType.equals(actualBugType);
-		}
-		return false;
+            return expectedBugType.equals(actualBugType);
+        }
+        return false;
 	}
 
-	@Override
-	public String toString() {
-		return "Expected View Marker: " + expectedBugType;
+    @Override
+    public String toString() {
+        return "Expected View Marker: " + expectedBugType;
 	}
 }

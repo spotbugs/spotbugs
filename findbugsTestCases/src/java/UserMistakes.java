@@ -9,41 +9,41 @@ import java.io.LineNumberReader;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class UserMistakes {
-	@ExpectWarning("RE,RV")
-	public static void main(String[] args) throws IOException {
-		String name="Mr. Ed";
+    @ExpectWarning("RE,RV")
+    public static void main(String[] args) throws IOException {
+        String name="Mr. Ed";
 		name=name.replaceAll(".", "s.");
-		System.out.println(name);
+        System.out.println(name);
 
 
-		//FIXME:FindBugs only catches this error with name.indexOf(String)
-		if (name.indexOf("s") > 0)
-			System.out.println("Yay");
+        //FIXME:FindBugs only catches this error with name.indexOf(String)
+        if (name.indexOf("s") > 0)
+            System.out.println("Yay");
 		else
-			System.out.println("Boo");
+            System.out.println("Boo");
 
-		String result;
+        String result;
 
-		try 
-		{
-			BufferedReader findFiles=new BufferedReader(new FileReader("/mainList.txt"));
+        try
+        {
+            BufferedReader findFiles=new BufferedReader(new FileReader("/mainList.txt"));
 			if (findFiles.readLine()!=null)
-				result=findFiles.readLine();
-			findFiles.close();
-		} catch (FileNotFoundException e) {
+                result=findFiles.readLine();
+            findFiles.close();
+        } catch (FileNotFoundException e) {
 			System.exit(7);
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
 		}
 
 
 
-		LineNumberReader tmp=new LineNumberReader(new FileReader("/mainList.txt"));
-		int count = 0;
-		while (tmp.readLine()!=null) count++;
+        LineNumberReader tmp=new LineNumberReader(new FileReader("/mainList.txt"));
+        int count = 0;
+        while (tmp.readLine()!=null) count++;
           
-		tmp.close();
+        tmp.close();
 }
 
 }

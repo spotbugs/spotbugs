@@ -1,13 +1,13 @@
 public class T {
 
-	Object lock = new Object();
+    Object lock = new Object();
 
-	Object value;
+    Object value;
 
-	public synchronized void provideIt(Object v) {
-		synchronized (lock) {
-			value = v;
+    public synchronized void provideIt(Object v) {
+        synchronized (lock) {
+            value = v;
 			lock.notifyAll();
-		}
-	}
+        }
+    }
 }

@@ -2,19 +2,19 @@
  * Contributions to FindBugs
  * Copyright (C) 2006, Institut for Software
  * An Institut of the University of Applied Sciences Rapperswil
- * 
- * Author: Thierry Wyss, Marco Busarello 
+ *
+ * Author: Thierry Wyss, Marco Busarello
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -32,39 +32,39 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 /**
  * The <CODE>BugResolutionGenerator</CODE> searchs for bug-resolutions, that
  * can be used to fix the specific bug-type.
- * 
+ *
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:g1zgragg@hsr.ch">Guido Zgraggen</a>
  */
 public class BugResolutionGenerator implements IMarkerResolutionGenerator2 {
 
-	public IMarkerResolution[] getResolutions(IMarker marker) {
-		try {
-			String type = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
+    public IMarkerResolution[] getResolutions(IMarker marker) {
+        try {
+            String type = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
             BugResolutionAssociations resolutions = FindbugsPlugin.getDefault().getBugResolutions();
             if (resolutions == null) {
-				return new IMarkerResolution[0];
-			}
-			return resolutions.getBugResolutions(type);
+                return new IMarkerResolution[0];
+            }
+            return resolutions.getBugResolutions(type);
 		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "Marker has no FindBugs bug-type.");
+            FindbugsPlugin.getDefault().logException(e, "Marker has no FindBugs bug-type.");
             return null;
-		}
-	}
+        }
+    }
 
-	public boolean hasResolutions(IMarker marker) {
-		try {
-			String type = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
+    public boolean hasResolutions(IMarker marker) {
+        try {
+            String type = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
             BugResolutionAssociations resolutions = FindbugsPlugin.getDefault().getBugResolutions();
             if (resolutions == null) {
-				return false;
-			}
-			return resolutions.containsBugResolution(type);
+                return false;
+            }
+            return resolutions.containsBugResolution(type);
 		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "Marker has no FindBugs bug-type.");
+            FindbugsPlugin.getDefault().logException(e, "Marker has no FindBugs bug-type.");
             return false;
-		}
-	}
+        }
+    }
 
 }

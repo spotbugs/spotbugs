@@ -25,19 +25,19 @@ import de.tobject.findbugs.actions.SaveXmlAction;
 /**
  * Test subclass of SaveXmlAction that overrides the opening of the FileDialog for testing
  * purposes.
- * 
+ *
  * @author Tomás Pollak
  */
 public class SaveXMLActionTestSubclass extends SaveXmlAction {
-	private final String filePath;
+    private final String filePath;
 
-	public SaveXMLActionTestSubclass(String filePath) {
-		this.filePath = filePath;
-	}
+    public SaveXMLActionTestSubclass(String filePath) {
+        this.filePath = filePath;
+    }
 
-	@Override
-	protected String openFileDialog(FileDialog dialog) {
-		return filePath;
+    @Override
+    protected String openFileDialog(FileDialog dialog) {
+        return filePath;
 	}
 
 }

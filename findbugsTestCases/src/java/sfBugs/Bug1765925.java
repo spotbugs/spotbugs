@@ -5,7 +5,7 @@ import java.io.File;
 /*
  * Submitted By: Alfred Nathaniel
  * Summary:
- * 
+ *
  * Findbugs should ignore PZLA_PREFER_ZERO_LENGTH_ARRAYS in all methods named
  * "listFiles" since returning null is the convention established by
  * java.io.File.

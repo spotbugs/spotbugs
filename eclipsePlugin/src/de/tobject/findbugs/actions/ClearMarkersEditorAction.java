@@ -43,27 +43,27 @@ import de.tobject.findbugs.builder.WorkItem;
  */
 public class ClearMarkersEditorAction implements IEditorActionDelegate {
 
-	private IEditorPart currentEditor;
+    private IEditorPart currentEditor;
 
-	public final void setActiveEditor(final IAction action,
-			final IEditorPart targetPart) {
-		currentEditor = targetPart;
+    public final void setActiveEditor(final IAction action,
+            final IEditorPart targetPart) {
+        currentEditor = targetPart;
 	}
 
-	public final void selectionChanged(final IAction action,
-			final ISelection selection) {
-		// noop
+    public final void selectionChanged(final IAction action,
+            final ISelection selection) {
+        // noop
 	}
 
-	public final void run(final IAction action) {
-		if(currentEditor != null) {
-			IFile file = ((FileEditorInput) (currentEditor.getEditorInput())).getFile();
+    public final void run(final IAction action) {
+        if(currentEditor != null) {
+            IFile file = ((FileEditorInput) (currentEditor.getEditorInput())).getFile();
 			Job job = new ClearMarkersJob(file.getProject(), Arrays.asList(new WorkItem[]{new WorkItem(file)}));
-			job.setUser(true);
-			job.setPriority(Job.INTERACTIVE);
-			IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) currentEditor
+            job.setUser(true);
+            job.setPriority(Job.INTERACTIVE);
+            IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) currentEditor
 					.getEditorSite().getService(IWorkbenchSiteProgressService.class);
-			service.schedule(job);
-		}
-	}
+            service.schedule(job);
+        }
+    }
 }

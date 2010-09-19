@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class Bug1830576 {
-    
+
     public Set<String> keySet() {
         return null;
     }
@@ -20,7 +20,7 @@ public class Bug1830576 {
         method1();
         method2();
     }
-    
+
     public static void method0() {
         // No warning
         Bug1830576 fakeMap = new Bug1830576();
@@ -30,7 +30,7 @@ public class Bug1830576 {
             System.out.println(value + realMap.get(key));
         }
     }
-    
+
     public static void method1() {
         Map<String, String> realMap = new HashMap<String, String>();
         for (String key : realMap.keySet()) {
@@ -38,7 +38,7 @@ public class Bug1830576 {
             System.out.println(value + realMap.get(key));
         }
     }
-    
+
     public static void method2() {
         Map<String, String> realMap2 = new Bug1830576_helper<String, String>();
         for (String key : realMap2.keySet()) {
@@ -46,12 +46,12 @@ public class Bug1830576 {
             System.out.println(value + realMap2.get(key));
         }
     }
-    
+
     private static class Bug1830576_helper<K,V> implements Map<K,V> {
 
         public void clear() {
             // TODO Auto-generated method stub
-            
+
         }
 
         public boolean containsKey(Object key) {
@@ -91,7 +91,7 @@ public class Bug1830576 {
 
         public void putAll(Map<? extends K, ? extends V> t) {
             // TODO Auto-generated method stub
-            
+
         }
 
         public V remove(Object key) {
@@ -109,6 +109,6 @@ public class Bug1830576 {
             return null;
         }
 
-        
+
     }
 }

@@ -1,26 +1,26 @@
 package npe;
 
 public class CheckATHROW {
-	public void doNotReport(Throwable obj) throws Throwable {
-		throw obj;
-	}
+    public void doNotReport(Throwable obj) throws Throwable {
+        throw obj;
+    }
 	
-	public void throwNullValueReport(boolean b) throws Throwable {
+    public void throwNullValueReport(boolean b) throws Throwable {
+
+        Throwable t = null;
 		
-		Throwable t = null;
+        if (b) {
+            System.out.println("Yeah");
+        }
 		
-		if (b) {
-			System.out.println("Yeah");
-		}
-		
-		throw t;
-	}
-	
+        throw t;
+    }
+
 	public void throwPossiblyNullReport(Throwable t) throws Throwable {
-		if (t != null) {
-			System.out.println("ok");
-		}
+        if (t != null) {
+            System.out.println("ok");
+        }
 		
-		throw t;
-	}
+        throw t;
+    }
 }

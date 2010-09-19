@@ -35,58 +35,58 @@ import org.osgi.framework.BundleContext;
  */
 public class FindbugsTestPlugin extends AbstractUIPlugin {
 
-	// The plug-in ID
-	public static final String PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse.test";
+    // The plug-in ID
+    public static final String PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse.test";
 
-	// The shared instance
-	private static FindbugsTestPlugin plugin;
+    // The shared instance
+    private static FindbugsTestPlugin plugin;
 
-	/**
-	 * The constructor
-	 */
+    /**
+     * The constructor
+     */
 	public FindbugsTestPlugin() {
-	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
+    /*
+     * (non-Javadoc)
+     *
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
-	 * )
-	 */
-	@Override
+     * )
+     */
+    @Override
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		plugin = this;
-	}
+        super.start(context);
+        plugin = this;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
+    /*
+     * (non-Javadoc)
+     *
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext )
-	 */
-	@Override
-	public void stop(BundleContext context) throws Exception {
+     */
+    @Override
+    public void stop(BundleContext context) throws Exception {
 		plugin = null;
-		super.stop(context);
-	}
+        super.stop(context);
+    }
 
-	/**
-	 * Returns the shared instance
-	 * 
+    /**
+     * Returns the shared instance
+     *
 	 * @return the shared instance
-	 */
-	public static FindbugsTestPlugin getDefault() {
-		return plugin;
+     */
+    public static FindbugsTestPlugin getDefault() {
+        return plugin;
 	}
 
-	public File getFileInPlugin(IPath path) throws CoreException {
-		try {
-			URL installURL = new URL(getBundle().getEntry("/"), path.toString());
+    public File getFileInPlugin(IPath path) throws CoreException {
+        try {
+            URL installURL = new URL(getBundle().getEntry("/"), path.toString());
 			URL localURL = FileLocator.toFileURL(installURL);
-			return new File(localURL.getFile());
-		} catch (IOException e) {
-			throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, e
+            return new File(localURL.getFile());
+        } catch (IOException e) {
+            throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, e
 					.getMessage(), e));
-		}
-	}
+        }
+    }
 }

@@ -55,182 +55,182 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 public class WorkspaceSettingsTab extends Composite {
 
 
-	private final Button confirmSwitch;
-	private final Button switchTo;
-	private final IPreferenceStore store;
+    private final Button confirmSwitch;
+    private final Button switchTo;
+    private final IPreferenceStore store;
 	private final Button confirmBuild;
-	private final FindbugsPropertyPage page;
-	private final DetectorProvider detectorProvider;
-	private boolean pluginsChanged;
+    private final FindbugsPropertyPage page;
+    private final DetectorProvider detectorProvider;
+    private boolean pluginsChanged;
 
-	public WorkspaceSettingsTab(TabFolder tabFolder, final FindbugsPropertyPage page,
-			int style) {
-		super(tabFolder, style);
+    public WorkspaceSettingsTab(TabFolder tabFolder, final FindbugsPropertyPage page,
+            int style) {
+        super(tabFolder, style);
 		this.page = page;
-		setLayout(new GridLayout());
-		store = page.getPreferenceStore();
+        setLayout(new GridLayout());
+        store = page.getPreferenceStore();
 
-		TabItem tabDetector = new TabItem(tabFolder, SWT.NONE);
-		tabDetector.setText("Misc. Settings");
-		tabDetector.setControl(this);
+        TabItem tabDetector = new TabItem(tabFolder, SWT.NONE);
+        tabDetector.setText("Misc. Settings");
+        tabDetector.setControl(this);
 
 
-		ManagePathsWidget pathsWidget = new ManagePathsWidget(this);
-		ListViewer viewer = pathsWidget.createViewer("Custom Detectors",
-				"See: <a href=\"http://www.ibm.com/developerworks/library/j-findbug2/\">'Writing custom detectors'</a>" +
+        ManagePathsWidget pathsWidget = new ManagePathsWidget(this);
+        ListViewer viewer = pathsWidget.createViewer("Custom Detectors",
+                "See: <a href=\"http://www.ibm.com/developerworks/library/j-findbug2/\">'Writing custom detectors'</a>" +
 				" and <a href=\"http://fb-contrib.sourceforge.net/\">fb-contrib</a>: additional bug detectors package");
-		detectorProvider = createDetectorProvider(viewer);
-		pathsWidget.createButtonsArea(detectorProvider);
-		detectorProvider.refresh();
+        detectorProvider = createDetectorProvider(viewer);
+        pathsWidget.createButtonsArea(detectorProvider);
+        detectorProvider.refresh();
 
-		switchTo = new Button(this, SWT.CHECK);
-		switchTo.setText("Switch to the FindBugs perspective after analysis");
-		switchTo.setSelection(store
+        switchTo = new Button(this, SWT.CHECK);
+        switchTo.setText("Switch to the FindBugs perspective after analysis");
+        switchTo.setSelection(store
 				.getBoolean(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS));
-		switchTo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
+        switchTo.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
 				store.setValue(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS,
-						switchTo.getSelection());
-			}
-		});
+                        switchTo.getSelection());
+            }
+        });
 
-		confirmSwitch = new Button(this, SWT.CHECK);
-		confirmSwitch.setText("Ask before switching to the FindBugs perspective");
-		confirmSwitch.setSelection(store
+        confirmSwitch = new Button(this, SWT.CHECK);
+        confirmSwitch.setText("Ask before switching to the FindBugs perspective");
+        confirmSwitch.setSelection(store
 				.getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH));
-		confirmSwitch.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
+        confirmSwitch.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
 				store.setValue(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH,
-						confirmSwitch.getSelection());
-			}
-		});
+                        confirmSwitch.getSelection());
+            }
+        });
 
-		confirmBuild = new Button(this, SWT.CHECK);
-		confirmBuild.setText("Remind to redo analysis after changes of relevant settings");
-		confirmBuild.setSelection(!store
+        confirmBuild = new Button(this, SWT.CHECK);
+        confirmBuild.setText("Remind to redo analysis after changes of relevant settings");
+        confirmBuild.setSelection(!store
 				.getBoolean(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD));
-		confirmBuild.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
+        confirmBuild.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
 				store.setValue(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD,
-						!confirmBuild.getSelection());
-			}
-		});
+                        !confirmBuild.getSelection());
+            }
+        });
 	}
 
-	protected DetectorProvider createDetectorProvider(ListViewer viewer) {
-		final DetectorProvider filterProvider = new DetectorProvider(viewer, page);
-		filterProvider.addListener(new Listener() {
+    protected DetectorProvider createDetectorProvider(ListViewer viewer) {
+        final DetectorProvider filterProvider = new DetectorProvider(viewer, page);
+        filterProvider.addListener(new Listener() {
 			public void handleEvent(Event event) {
-				page.setErrorMessage(null);
-				filterProvider.refresh();
-			}
+                page.setErrorMessage(null);
+                filterProvider.refresh();
+            }
 		});
-		return filterProvider;
-	}
+        return filterProvider;
+    }
 
-	public void refreshUI(UserPreferences prefs) {
-		confirmSwitch.setSelection(store
-				.getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH));
+    public void refreshUI(UserPreferences prefs) {
+        confirmSwitch.setSelection(store
+                .getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH));
 		switchTo.setSelection(store
-				.getBoolean(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS));
-		confirmBuild.setSelection(!store
-				.getBoolean(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD));
+                .getBoolean(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS));
+        confirmBuild.setSelection(!store
+                .getBoolean(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD));
 		detectorProvider.setFilters(store);
-		detectorProvider.refresh();
-	}
+        detectorProvider.refresh();
+    }
 
 
 
-	static class DetectorProvider extends PathsProvider {
+    static class DetectorProvider extends PathsProvider {
 
-		protected DetectorProvider(ListViewer viewer, FindbugsPropertyPage propertyPage) {
-			super(viewer, propertyPage);
-			setFilters(propertyPage.getPreferenceStore());
+        protected DetectorProvider(ListViewer viewer, FindbugsPropertyPage propertyPage) {
+            super(viewer, propertyPage);
+            setFilters(propertyPage.getPreferenceStore());
 		}
 
-		List<PathElement> getFilterFiles(IPreferenceStore prefs) {
-			// TODO project is currently not supported (always null).
-			IProject project = propertyPage.getProject();
+        List<PathElement> getFilterFiles(IPreferenceStore prefs) {
+            // TODO project is currently not supported (always null).
+            IProject project = propertyPage.getProject();
 			final List<PathElement> newPaths = new ArrayList<PathElement>();
-			Collection<String> filterPaths = PrefsUtil.readDetectorPaths(prefs);
-			if (filterPaths != null) {
-				for (String path : filterPaths) {
+            Collection<String> filterPaths = PrefsUtil.readDetectorPaths(prefs);
+            if (filterPaths != null) {
+                for (String path : filterPaths) {
 					IPath filterPath = FindBugsWorker.getFilterPath(path, project);
 //					if(filterPath.toFile().exists()) {
-						newPaths.add(new PathElement(filterPath, Status.OK_STATUS));
+                        newPaths.add(new PathElement(filterPath, Status.OK_STATUS));
 //					}
-				}
-			}
-			return newPaths;
+                }
+            }
+            return newPaths;
 		}
 
-		@Override
-		protected void applyToPreferences() {
-			super.applyToPreferences();
+        @Override
+        protected void applyToPreferences() {
+            super.applyToPreferences();
 			PrefsUtil.writeDetectorPaths(propertyPage.getPreferenceStore(), pathsToStrings());
-		}
+        }
 
-		void setFilters(IPreferenceStore prefs) {
-			setFilters(getFilterFiles(prefs));
-		}
+        void setFilters(IPreferenceStore prefs) {
+            setFilters(getFilterFiles(prefs));
+        }
 
-		@Override
-		protected IStatus validate() {
-			DetectorValidator validator = new DetectorValidator();
+        @Override
+        protected IStatus validate() {
+            DetectorValidator validator = new DetectorValidator();
 			IStatus bad = null;
-			for (PathElement path : paths) {
-				IStatus status = validator.validate(path.getPath());
-				path.setStatus(status);
+            for (PathElement path : paths) {
+                IStatus status = validator.validate(path.getPath());
+                path.setStatus(status);
 				if(!status.isOK()){
-					bad = status;
-					break;
-				}
+                    bad = status;
+                    break;
+                }
 			}
-			return bad;
-		}
+            return bad;
+        }
 
-		@Override
-		protected void configureDialog(FileDialog dialog) {
-			dialog.setFilterExtensions(new String[]{"*.jar"});
+        @Override
+        protected void configureDialog(FileDialog dialog) {
+            dialog.setFilterExtensions(new String[]{"*.jar"});
 			dialog.setText("Select jar file(s) containing custom detectors");
-		}
-	}
+        }
+    }
 
 
 
-	public void performOK() {
-		final SortedSet<String> detectorPaths = PrefsUtil.readDetectorPaths(store);
+    public void performOK() {
+        final SortedSet<String> detectorPaths = PrefsUtil.readDetectorPaths(store);
 
-		if(DetectorFactoryCollection.isLoaded()) {
-			DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
-			URL[] pluginList = dfc.getPluginList();
+        if(DetectorFactoryCollection.isLoaded()) {
+            DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
+            URL[] pluginList = dfc.getPluginList();
 			boolean shouldReplace = pluginList.length != detectorPaths.size();
-			if(!shouldReplace) {
-				// check if both lists are really identical
-				for (URL url : pluginList) {
+            if(!shouldReplace) {
+                // check if both lists are really identical
+                for (URL url : pluginList) {
 					String file = url.getFile();
-					IPath filterPath = FindBugsWorker.getFilterPath(file, null);
-					if(!detectorPaths.contains(filterPath.toPortableString())) {
-						shouldReplace = true;
+                    IPath filterPath = FindBugsWorker.getFilterPath(file, null);
+                    if(!detectorPaths.contains(filterPath.toPortableString())) {
+                        shouldReplace = true;
 						break;
-					}
-				}
-			}
+                    }
+                }
+            }
 			if(!shouldReplace) {
-				return;
-			}
-		} else if(detectorPaths.isEmpty()) {
+                return;
+            }
+        } else if(detectorPaths.isEmpty()) {
 			return;
-		}
-		FindbugsPlugin.applyCustomDetectors(true);
-		pluginsChanged = true;
+        }
+        FindbugsPlugin.applyCustomDetectors(true);
+        pluginsChanged = true;
 	}
 
-	public boolean arePluginsChanged() {
-		return pluginsChanged;
-	}
+    public boolean arePluginsChanged() {
+        return pluginsChanged;
+    }
 
 }

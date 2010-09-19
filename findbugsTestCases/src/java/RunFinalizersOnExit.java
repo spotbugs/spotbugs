@@ -1,8 +1,8 @@
 class RunFinalizersOnExit {
 
-	int f() {
-		System.runFinalizersOnExit(true);
-		return 42;
+    int f() {
+        System.runFinalizersOnExit(true);
+        return 42;
 	}
 
 }

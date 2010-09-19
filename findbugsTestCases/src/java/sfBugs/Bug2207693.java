@@ -28,11 +28,11 @@ public class Bug2207693 {
 
     /* ********************
      * Behavior at filing:
-     *   OBL false positive 
+     *   OBL false positive
      *   According to API documentation, PreparedStatement close()
      *   method should also close current ResultSet object.  See docs:
      *   <http://java.sun.com/javase/6/docs/api/java/sql/PreparedStatement.html>
-	 * warning thrown =>
+     * warning thrown =>
      *   M X OBL_UNSATISFIED_OBLIGATION OBL: Method sfBugs.Bug2207693.execute() \
      *   may fail to clean up stream or resource of type java.sql.ResultSet \
      *   Obligation to clean up resource created at \

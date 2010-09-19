@@ -1,15 +1,15 @@
 package sfBugs;
 
 public class Bug2539601 {
-	int i;
+    int i;
 
-	class Inner1 {
-		{
-			System.out.println(i);
+    class Inner1 {
+        {
+            System.out.println(i);
 		}
 
-		class Inner2 {
+        class Inner2 {
 
-		}
-	}
+        }
+    }
 }

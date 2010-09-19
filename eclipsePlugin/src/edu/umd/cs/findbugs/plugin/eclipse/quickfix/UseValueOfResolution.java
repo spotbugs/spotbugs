@@ -54,102 +54,102 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  */
 public class UseValueOfResolution extends BugResolution {
 
-	private static final String VALUE_OF_METHOD_NAME = "valueOf";
+    private static final String VALUE_OF_METHOD_NAME = "valueOf";
 
-	private boolean staticImport = false;
+    private boolean staticImport = false;
 
-	public UseValueOfResolution() {
-		super();
-	}
-
-	public UseValueOfResolution(boolean staticImport) {
-		this();
-		this.staticImport = staticImport;
+    public UseValueOfResolution() {
+        super();
     }
 
-	public boolean isStaticImport() {
-		return staticImport;
-	}
+    public UseValueOfResolution(boolean staticImport) {
+        this();
+        this.staticImport = staticImport;
+    }
 
-	public void setStaticImport(boolean staticImport) {
-		this.staticImport = staticImport;
-	}
+    public boolean isStaticImport() {
+        return staticImport;
+    }
 
-	@Override
-	protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-		assert rewrite != null;
+    public void setStaticImport(boolean staticImport) {
+        this.staticImport = staticImport;
+    }
+
+    @Override
+    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+        assert rewrite != null;
         assert workingUnit != null;
 
-		ClassInstanceCreation primitiveTypeCreation = findPrimitiveTypeCreation(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
-		if (primitiveTypeCreation == null) {
-			throw new BugResolutionException("Primitive type creation not found.");
+        ClassInstanceCreation primitiveTypeCreation = findPrimitiveTypeCreation(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
+        if (primitiveTypeCreation == null) {
+            throw new BugResolutionException("Primitive type creation not found.");
         }
-		MethodInvocation valueOfInvocation = createValueOfInvocation(rewrite, workingUnit, primitiveTypeCreation);
-		rewrite.replace(primitiveTypeCreation, valueOfInvocation, null);
-	}
-
-	@CheckForNull
-	protected ClassInstanceCreation findPrimitiveTypeCreation(ASTNode node) {
-		PrimitiveTypeCreationFinder visitor = new PrimitiveTypeCreationFinder();
-        node.accept(visitor);
-		return visitor.getPrimitiveTypeCreation();
-	}
-
-	protected MethodInvocation createValueOfInvocation(ASTRewrite rewrite, CompilationUnit compilationUnit, ClassInstanceCreation primitiveTypeCreation) {
-		assert rewrite != null;
-		assert primitiveTypeCreation != null;
-
-		final AST ast = rewrite.getAST();
-		MethodInvocation valueOfInvocation = ast.newMethodInvocation();
-		valueOfInvocation.setName(ast.newSimpleName(VALUE_OF_METHOD_NAME));
-
-		ITypeBinding binding = primitiveTypeCreation.getType().resolveBinding();
-		if (isStaticImport()) {
-			addStaticImports(rewrite, compilationUnit, binding.getQualifiedName() + "." + VALUE_OF_METHOD_NAME);
-        } else {
-			valueOfInvocation.setExpression(ast.newSimpleName(binding.getName()));
-		}
-
-		List<?> arguments = primitiveTypeCreation.arguments();
-		List<Expression> newArguments = valueOfInvocation.arguments();
-		for (Object argument : arguments) {
-            Expression expression = (Expression) rewrite.createCopyTarget((ASTNode) argument);
-			newArguments.add(expression);
-		}
-
-		return valueOfInvocation;
-	}
-
-	@Override
-	protected boolean resolveBindings() {
-		return true;
+        MethodInvocation valueOfInvocation = createValueOfInvocation(rewrite, workingUnit, primitiveTypeCreation);
+        rewrite.replace(primitiveTypeCreation, valueOfInvocation, null);
     }
 
-	protected static class PrimitiveTypeCreationFinder extends ASTVisitor {
+    @CheckForNull
+    protected ClassInstanceCreation findPrimitiveTypeCreation(ASTNode node) {
+        PrimitiveTypeCreationFinder visitor = new PrimitiveTypeCreationFinder();
+        node.accept(visitor);
+        return visitor.getPrimitiveTypeCreation();
+    }
 
-		private ClassInstanceCreation primitiveTypeCreation = null;
+    protected MethodInvocation createValueOfInvocation(ASTRewrite rewrite, CompilationUnit compilationUnit, ClassInstanceCreation primitiveTypeCreation) {
+        assert rewrite != null;
+        assert primitiveTypeCreation != null;
 
-		@Override
-		public boolean visit(ClassInstanceCreation node) {
-			if (primitiveTypeCreation == null) {
+        final AST ast = rewrite.getAST();
+        MethodInvocation valueOfInvocation = ast.newMethodInvocation();
+        valueOfInvocation.setName(ast.newSimpleName(VALUE_OF_METHOD_NAME));
+
+        ITypeBinding binding = primitiveTypeCreation.getType().resolveBinding();
+        if (isStaticImport()) {
+            addStaticImports(rewrite, compilationUnit, binding.getQualifiedName() + "." + VALUE_OF_METHOD_NAME);
+        } else {
+            valueOfInvocation.setExpression(ast.newSimpleName(binding.getName()));
+        }
+
+        List<?> arguments = primitiveTypeCreation.arguments();
+        List<Expression> newArguments = valueOfInvocation.arguments();
+        for (Object argument : arguments) {
+            Expression expression = (Expression) rewrite.createCopyTarget((ASTNode) argument);
+            newArguments.add(expression);
+        }
+
+        return valueOfInvocation;
+    }
+
+    @Override
+    protected boolean resolveBindings() {
+        return true;
+    }
+
+    protected static class PrimitiveTypeCreationFinder extends ASTVisitor {
+
+        private ClassInstanceCreation primitiveTypeCreation = null;
+
+        @Override
+        public boolean visit(ClassInstanceCreation node) {
+            if (primitiveTypeCreation == null) {
                 if (!isPrimitiveTypeCreation(node)) {
-					return true;
-				}
-				this.primitiveTypeCreation = node;
+                    return true;
+                }
+                this.primitiveTypeCreation = node;
             }
-			return false;
-		}
+            return false;
+        }
 
-		public ClassInstanceCreation getPrimitiveTypeCreation() {
-			return primitiveTypeCreation;
-		}
+        public ClassInstanceCreation getPrimitiveTypeCreation() {
+            return primitiveTypeCreation;
+        }
 
-		private boolean isPrimitiveTypeCreation(ClassInstanceCreation primitiveTypeCreation) {
-			// TODO check if the ClassInstanceCreation is a primitive type
-			// creation
+        private boolean isPrimitiveTypeCreation(ClassInstanceCreation primitiveTypeCreation) {
+            // TODO check if the ClassInstanceCreation is a primitive type
+            // creation
             return true;
-		}
+        }
 
-	}
+    }
 
 }

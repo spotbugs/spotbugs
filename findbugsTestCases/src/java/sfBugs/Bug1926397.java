@@ -8,37 +8,37 @@ import java.io.Reader;
 import java.util.HashSet;
 
 public class Bug1926397 {
-	public static HashSet getWordSet(File wordfile) throws IOException {
-		HashSet result = new HashSet();
-		FileReader reader = null;
+    public static HashSet getWordSet(File wordfile) throws IOException {
+        HashSet result = new HashSet();
+        FileReader reader = null;
 		try {
-			reader = new FileReader(wordfile);
-			result = getWordSet(reader);
-		} finally {
+            reader = new FileReader(wordfile);
+            result = getWordSet(reader);
+        } finally {
 			if (reader != null)
-				reader.close();
-		}
-		return result;
+                reader.close();
+        }
+        return result;
 	}
-	
-	  public static HashSet getWordSet(Reader reader) throws IOException {
-		HashSet result = new HashSet();
+
+      public static HashSet getWordSet(Reader reader) throws IOException {
+        HashSet result = new HashSet();
 		BufferedReader br = null;
-		try {
-			if (reader instanceof BufferedReader) {
-				br = (BufferedReader) reader;
+        try {
+            if (reader instanceof BufferedReader) {
+                br = (BufferedReader) reader;
 			} else {
-				br = new BufferedReader(reader);
-			}
-			String word;
+                br = new BufferedReader(reader);
+            }
+            String word;
 			while ((word = br.readLine()) != null) {
-				result.add(word.trim());
-			}
-		} finally {
+                result.add(word.trim());
+            }
+        } finally {
 			if (br != null)
-				br.close();
-		}
-		return result;
+                br.close();
+        }
+        return result;
 	}
 
 }

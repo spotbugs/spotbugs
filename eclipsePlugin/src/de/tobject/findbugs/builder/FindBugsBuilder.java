@@ -44,109 +44,109 @@ import de.tobject.findbugs.FindbugsPlugin;
  */
 public class FindBugsBuilder extends IncrementalProjectBuilder {
 
-	/** Controls debugging. */
-	public static boolean DEBUG;
+    /** Controls debugging. */
+    public static boolean DEBUG;
 
-	/**
-	 * Run the builder.
-	 *
+    /**
+     * Run the builder.
+     *
 	 * @see IncrementalProjectBuilder#build
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
+     */
+    @SuppressWarnings("unchecked")
+    @Override
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
-		monitor.subTask("Running FindBugs...");
-		switch (kind) {
-		case IncrementalProjectBuilder.FULL_BUILD: {
+        monitor.subTask("Running FindBugs...");
+        switch (kind) {
+        case IncrementalProjectBuilder.FULL_BUILD: {
 			if (FindbugsPlugin.getUserPreferences(getProject()).isRunAtFullBuild()){
-				if (DEBUG) {
-					System.out.println("FULL BUILD");
-				}
+                if (DEBUG) {
+                    System.out.println("FULL BUILD");
+                }
 				doBuild(args, monitor, kind);
-			} else {
-				// TODO probably worth to cleanup? MarkerUtil.removeMarkers(getProject());
-			}
+            } else {
+                // TODO probably worth to cleanup? MarkerUtil.removeMarkers(getProject());
+            }
 			break;
-		}
-		case IncrementalProjectBuilder.INCREMENTAL_BUILD: {
-			if (DEBUG) {
+        }
+        case IncrementalProjectBuilder.INCREMENTAL_BUILD: {
+            if (DEBUG) {
 				System.out.println("INCREMENTAL BUILD");
+            }
+            doBuild(args, monitor, kind);
+            break;
+		}
+        case IncrementalProjectBuilder.AUTO_BUILD: {
+            if (DEBUG) {
+                System.out.println("AUTO BUILD");
 			}
-			doBuild(args, monitor, kind);
-			break;
+            doBuild(args, monitor, kind);
+            break;
+        }
 		}
-		case IncrementalProjectBuilder.AUTO_BUILD: {
-			if (DEBUG) {
-				System.out.println("AUTO BUILD");
-			}
-			doBuild(args, monitor, kind);
-			break;
-		}
-		}
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Performs the build process. This method gets all files in the current project and
-	 * has a <code>FindBugsVisitor</code> run on them.
+    /**
+     * Performs the build process. This method gets all files in the current project and
+     * has a <code>FindBugsVisitor</code> run on them.
 	 *
-	 * @param args
-	 *            A <code>Map</code> containing additional build parameters.
-	 * @param monitor
+     * @param args
+     *            A <code>Map</code> containing additional build parameters.
+     * @param monitor
 	 *            The <code>IProgressMonitor</code> displaying the build progress.
-	 * @param kind
-	 *            kind the kind of build being requested, see IncrementalProjectBuilder
-	 * @throws CoreException
+     * @param kind
+     *            kind the kind of build being requested, see IncrementalProjectBuilder
+     * @throws CoreException
 	 */
-	private void doBuild(final Map<?,?> args, final IProgressMonitor monitor, int kind) throws CoreException {
-		boolean incremental = (kind != IncrementalProjectBuilder.FULL_BUILD);
-		IProject project = getProject();
+    private void doBuild(final Map<?,?> args, final IProgressMonitor monitor, int kind) throws CoreException {
+        boolean incremental = (kind != IncrementalProjectBuilder.FULL_BUILD);
+        IProject project = getProject();
 		FindBugsWorker worker = new FindBugsWorker(project, monitor);
-		List<WorkItem> files;
-		if(incremental) {
-			IResourceDelta resourceDelta = getDelta(project);
+        List<WorkItem> files;
+        if(incremental) {
+            IResourceDelta resourceDelta = getDelta(project);
 			boolean configChanged = !isConfigUnchanged(resourceDelta);
-			boolean fullBuildEnabled = FindbugsPlugin.getCorePreferences(getProject(),
-					configChanged).isRunAtFullBuild();
-			if (configChanged && fullBuildEnabled) {
+            boolean fullBuildEnabled = FindbugsPlugin.getCorePreferences(getProject(),
+                    configChanged).isRunAtFullBuild();
+            if (configChanged && fullBuildEnabled) {
 				files = new ArrayList<WorkItem>();
-				files.add(new WorkItem(project));
-			} else {
-				files = ResourceUtils.collectIncremental(resourceDelta);
+                files.add(new WorkItem(project));
+            } else {
+                files = ResourceUtils.collectIncremental(resourceDelta);
 				/*
-				 * Here we expect to have only ONE file as a result of a post-save
-				 * trigger. In this case incremental builder should run and analyse 1 file
-				 * again. For some reason, JDT uses "AUTO" kind for such incremental
+                 * Here we expect to have only ONE file as a result of a post-save
+                 * trigger. In this case incremental builder should run and analyse 1 file
+                 * again. For some reason, JDT uses "AUTO" kind for such incremental
 				 * compile. Unfortunately, Eclipse also triggers "AUTO" build on startup,
-				 * if it detects that some project files are changed (I think also on team
-				 * update operations). This causes sometimes a real startup slowdown for
-				 * workspaces with many projects. Because we cannot distinguish between
+                 * if it detects that some project files are changed (I think also on team
+                 * update operations). This causes sometimes a real startup slowdown for
+                 * workspaces with many projects. Because we cannot distinguish between
 				 * first and second build, and if "fullBuildEnabled" id OFF, we will
-				 * analyse incrementally ONLY ONE SINGLE FILE. This is not nice, but there
-				 * is no other ways today... May be we can use preferences to define
-				 * "how many" is "incremental"...
+                 * analyse incrementally ONLY ONE SINGLE FILE. This is not nice, but there
+                 * is no other ways today... May be we can use preferences to define
+                 * "how many" is "incremental"...
 				 */
-				if(files.size() > 1){
-					if(DEBUG){
-						FindbugsPlugin.getDefault().logInfo(
+                if(files.size() > 1){
+                    if(DEBUG){
+                        FindbugsPlugin.getDefault().logInfo(
 								"Incremental builder: too many resources to analyse for project "
-										+ project + ", files: " + files);
-					}
-					return;
+                                        + project + ", files: " + files);
+                    }
+                    return;
 				}
-			}
-		} else {
-			files = new ArrayList<WorkItem>();
+            }
+        } else {
+            files = new ArrayList<WorkItem>();
 			files.add(new WorkItem(project));
-		}
-		worker.work(files);
-	}
+        }
+        worker.work(files);
+    }
 
-	private boolean isConfigUnchanged(IResourceDelta resourceDelta) {
-		return resourceDelta != null
-				&& resourceDelta.findMember(new Path(".project")) == null
+    private boolean isConfigUnchanged(IResourceDelta resourceDelta) {
+        return resourceDelta != null
+                && resourceDelta.findMember(new Path(".project")) == null
 				&& resourceDelta.findMember(new Path(".classpath")) == null
-				&& resourceDelta.findMember(FindbugsPlugin.DEPRECATED_PREFS_PATH) == null
-				&& resourceDelta.findMember(FindbugsPlugin.DEFAULT_PREFS_PATH) == null;
-	}
+                && resourceDelta.findMember(FindbugsPlugin.DEPRECATED_PREFS_PATH) == null
+                && resourceDelta.findMember(FindbugsPlugin.DEFAULT_PREFS_PATH) == null;
+    }
 }

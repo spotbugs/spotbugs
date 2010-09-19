@@ -38,109 +38,109 @@ import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the FindBugsAction, SaveXMLAction and LoadXMLAction.
- * 
+ *
  * @author Tomás Pollak
  */
 public class ContextMenuActionsTest extends AbstractFindBugsTest {
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		setUpTestProject(TestScenario.DEFAULT);
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        setUpTestProject(TestScenario.DEFAULT);
 	}
 
-	@AfterClass
-	public static void tearDownClass() throws CoreException {
-		tearDownTestProject();
+    @AfterClass
+    public static void tearDownClass() throws CoreException {
+        tearDownTestProject();
 	}
 
-	private File tempFile;
+    private File tempFile;
 
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
 		getPreferenceStore().setValue(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH,
-				false);
-		tempFile = File.createTempFile("bugs", ".xml");
-		assertTrue(tempFile.delete());
+                false);
+        tempFile = File.createTempFile("bugs", ".xml");
+        assertTrue(tempFile.delete());
 	}
 
-	@Override
-	public void tearDown() throws CoreException {
-		tempFile.delete();
+    @Override
+    public void tearDown() throws CoreException {
+        tempFile.delete();
 		getPreferenceStore().setToDefault(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
-		super.tearDown();
-	}
+        super.tearDown();
+    }
 
-	@Test
-	public void testClearFindBugs() throws CoreException {
-		assertNoBugs();
+    @Test
+    public void testClearFindBugs() throws CoreException {
+        assertNoBugs();
 
-		StructuredSelection selection = new StructuredSelection(getProject());
-		FindBugsAction action = new FindBugsAction();
-		action.selectionChanged(null, selection);
+        StructuredSelection selection = new StructuredSelection(getProject());
+        FindBugsAction action = new FindBugsAction();
+        action.selectionChanged(null, selection);
 		action.run(null);
 
-		joinJobFamily(FindbugsPlugin.class);
+        joinJobFamily(FindbugsPlugin.class);
 
-		assertExpectedBugs();
+        assertExpectedBugs();
 
-		ClearMarkersAction clearAction = new ClearMarkersAction();
-		clearAction.selectionChanged(null, selection);
-		clearAction.run(null);
+        ClearMarkersAction clearAction = new ClearMarkersAction();
+        clearAction.selectionChanged(null, selection);
+        clearAction.run(null);
 
-		joinJobFamily(FindbugsPlugin.class);
+        joinJobFamily(FindbugsPlugin.class);
 
-		assertBugsCount(0, getProject());
-	}
+        assertBugsCount(0, getProject());
+    }
 
-	@Test
-	public void testLoadXML() throws CoreException {
-		assertNoBugs();
+    @Test
+    public void testLoadXML() throws CoreException {
+        assertNoBugs();
 
-		StructuredSelection selection = new StructuredSelection(getProject());
-		IActionDelegate action = new LoadXMLActionTestSubclass(getBugsFileLocation());
-		action.selectionChanged(null, selection);
+        StructuredSelection selection = new StructuredSelection(getProject());
+        IActionDelegate action = new LoadXMLActionTestSubclass(getBugsFileLocation());
+        action.selectionChanged(null, selection);
 		action.run(null);
 
-		joinJobFamily(FindbugsPlugin.class);
+        joinJobFamily(FindbugsPlugin.class);
 
-		assertExpectedBugs();
-	}
+        assertExpectedBugs();
+    }
 
-	@Test
-	public void testRunFindBugs() throws CoreException {
-		assertNoBugs();
+    @Test
+    public void testRunFindBugs() throws CoreException {
+        assertNoBugs();
 
-		StructuredSelection selection = new StructuredSelection(getProject());
-		FindBugsAction action = new FindBugsAction();
-		action.selectionChanged(null, selection);
+        StructuredSelection selection = new StructuredSelection(getProject());
+        FindBugsAction action = new FindBugsAction();
+        action.selectionChanged(null, selection);
 		action.run(null);
 
-		joinJobFamily(FindbugsPlugin.class);
+        joinJobFamily(FindbugsPlugin.class);
 
-		assertExpectedBugs();
-	}
+        assertExpectedBugs();
+    }
 
-	@Test
-	public void testSaveXML() throws CoreException {
-		assertNoBugs();
+    @Test
+    public void testSaveXML() throws CoreException {
+        assertNoBugs();
 		work(createFindBugsWorker());
-		assertExpectedBugs();
+        assertExpectedBugs();
 
-		StructuredSelection selection = new StructuredSelection(getProject());
-		IActionDelegate action = new SaveXMLActionTestSubclass(getTempFilePath());
-		action.selectionChanged(null, selection);
+        StructuredSelection selection = new StructuredSelection(getProject());
+        IActionDelegate action = new SaveXMLActionTestSubclass(getTempFilePath());
+        action.selectionChanged(null, selection);
 		action.run(null);
 
-		joinJobFamily(FindbugsPlugin.class);
+        joinJobFamily(FindbugsPlugin.class);
 
-		clearBugsState();
-		assertNoBugs();
+        clearBugsState();
+        assertNoBugs();
 
-		loadXml(createFindBugsWorker(), getTempFilePath());
-		assertExpectedBugs();
-	}
+        loadXml(createFindBugsWorker(), getTempFilePath());
+        assertExpectedBugs();
+    }
 
-	private String getTempFilePath() {
-		return tempFile.getAbsolutePath();
-	}
+    private String getTempFilePath() {
+        return tempFile.getAbsolutePath();
+    }
 }

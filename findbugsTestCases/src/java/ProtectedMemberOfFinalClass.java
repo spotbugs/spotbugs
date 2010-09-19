@@ -1,6 +1,6 @@
 final class ProtectedMemberOfFinalClass {
-	protected int foo;
+    protected int foo;
 
-	protected void bar() {
-	}
+    protected void bar() {
+    }
 }

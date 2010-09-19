@@ -1,15 +1,15 @@
 import java.util.Map;
 
 class IntHolder {
-	int value;
+    int value;
 }
 
 public class Ser implements java.io.Serializable {
-	private IntHolder holder = new IntHolder();
+    private IntHolder holder = new IntHolder();
 
-	private Map m;
+    private Map m;
 
-	public void set(int v) {
-		holder.value = v;
-	}
+    public void set(int v) {
+        holder.value = v;
+    }
 }

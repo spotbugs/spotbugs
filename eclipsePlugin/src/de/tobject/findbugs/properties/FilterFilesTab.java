@@ -53,252 +53,252 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 public class FilterFilesTab extends Composite {
 
 
-	private final FindbugsPropertyPage propertyPage;
-	private final FilterProvider filterIncl;
-	private final FilterProvider filterExcl;
+    private final FindbugsPropertyPage propertyPage;
+    private final FilterProvider filterIncl;
+    private final FilterProvider filterExcl;
 	private final FilterProvider filterExclBugs;
 
-	static final class SelectionValidator {
-		private final UserPreferences prefs;
-		private final Collection<String> exclFiles;
+    static final class SelectionValidator {
+        private final UserPreferences prefs;
+        private final Collection<String> exclFiles;
 
-		public SelectionValidator(FilterKind kind, FindbugsPropertyPage propertyPage) {
-			prefs = propertyPage.getCurrentUserPreferences();
-			exclFiles = kind.excludedPaths(prefs);
+        public SelectionValidator(FilterKind kind, FindbugsPropertyPage propertyPage) {
+            prefs = propertyPage.getCurrentUserPreferences();
+            exclFiles = kind.excludedPaths(prefs);
 		}
 
-		public IStatus validate(String path) {
-			if (exclFiles.contains(path)) {
-				return FindbugsPlugin.createErrorStatus("Filter selected in a conflicting list", null);
+        public IStatus validate(String path) {
+            if (exclFiles.contains(path)) {
+                return FindbugsPlugin.createErrorStatus("Filter selected in a conflicting list", null);
 			}
-			return Status.OK_STATUS;
-		}
-	}
+            return Status.OK_STATUS;
+        }
+    }
 
-	public static class FilterProvider extends PathsProvider {
+    public static class FilterProvider extends PathsProvider {
 
-		private final FilterKind kind;
+        private final FilterKind kind;
 
-		protected FilterProvider(ListViewer viewer, FilterKind kind,
-				FindbugsPropertyPage propertyPage) {
-			super(viewer, propertyPage);
+        protected FilterProvider(ListViewer viewer, FilterKind kind,
+                FindbugsPropertyPage propertyPage) {
+            super(viewer, propertyPage);
 			this.kind = kind;
-			setFilters(propertyPage.getCurrentUserPreferences());
-		}
+            setFilters(propertyPage.getCurrentUserPreferences());
+        }
 
-		List<PathElement> getFilterFiles(UserPreferences prefs) {
-			IProject project = propertyPage.getProject();
-			final List<PathElement> newPaths = new ArrayList<PathElement>();
+        List<PathElement> getFilterFiles(UserPreferences prefs) {
+            IProject project = propertyPage.getProject();
+            final List<PathElement> newPaths = new ArrayList<PathElement>();
 			Collection<String> filterPaths = kind.selectedPaths(prefs);
-			if (filterPaths != null) {
-				for (String path : filterPaths) {
-					IPath filterPath = FindBugsWorker.getFilterPath(path, project);
+            if (filterPaths != null) {
+                for (String path : filterPaths) {
+                    IPath filterPath = FindBugsWorker.getFilterPath(path, project);
 					if(filterPath.toFile().exists()) {
-						newPaths.add(new PathElement(filterPath, Status.OK_STATUS));
-					}
-				}
+                        newPaths.add(new PathElement(filterPath, Status.OK_STATUS));
+                    }
+                }
 			}
-			return newPaths;
-		}
+            return newPaths;
+        }
 
-		@Override
-		protected void applyToPreferences() {
-			super.applyToPreferences();
+        @Override
+        protected void applyToPreferences() {
+            super.applyToPreferences();
 			kind.setPaths(propertyPage.getCurrentUserPreferences(),	pathsToStrings());
-		}
+        }
 
-		void setFilters(UserPreferences prefs) {
-			setFilters(getFilterFiles(prefs));
-		}
+        void setFilters(UserPreferences prefs) {
+            setFilters(getFilterFiles(prefs));
+        }
 
-		@Override
-		protected IStatus validate() {
-			SelectionValidator validator = new SelectionValidator(kind, propertyPage);
+        @Override
+        protected IStatus validate() {
+            SelectionValidator validator = new SelectionValidator(kind, propertyPage);
 			IStatus bad = null;
-			IProject project = propertyPage.getProject();
-			for (PathElement path : paths) {
-				String filterPath = FindBugsWorker.toFilterPath(path.getPath(), project).toOSString();
+            IProject project = propertyPage.getProject();
+            for (PathElement path : paths) {
+                String filterPath = FindBugsWorker.toFilterPath(path.getPath(), project).toOSString();
 				IStatus status = validator.validate(filterPath);
-				path.setStatus(status);
-				if(!status.isOK()){
-					bad = status;
+                path.setStatus(status);
+                if(!status.isOK()){
+                    bad = status;
 				}
-			}
-			return bad;
-		}
+            }
+            return bad;
+        }
 
-		@Override
-		protected void configureDialog(FileDialog dialog) {
-			dialog.setFilterExtensions(new String[]{"*.xml"});
+        @Override
+        protected void configureDialog(FileDialog dialog) {
+            dialog.setFilterExtensions(new String[]{"*.xml"});
 			dialog.setText( FindbugsPlugin.getDefault().getMessage(kind.propertyName) + ": select xml file(s) containing filters");
-		}
-	}
+        }
+    }
 
-	public FilterFilesTab(TabFolder parent, FindbugsPropertyPage page, int style) {
-		super(parent, style);
-		this.propertyPage = page;
+    public FilterFilesTab(TabFolder parent, FindbugsPropertyPage page, int style) {
+        super(parent, style);
+        this.propertyPage = page;
 		setLayout(new GridLayout(2, true));
 
-		Link label = new Link(this, SWT.NONE);
-		label.setText("Filter files may be used to include or exclude bug detection for particular classes and methods.\n" +
-				"<a href=\"http://findbugs.sourceforge.net/manual/filter.html\">Details...</a>\n");
+        Link label = new Link(this, SWT.NONE);
+        label.setText("Filter files may be used to include or exclude bug detection for particular classes and methods.\n" +
+                "<a href=\"http://findbugs.sourceforge.net/manual/filter.html\">Details...</a>\n");
 
-		label.addSelectionListener(new SelectionListener() {
-			public void widgetSelected(SelectionEvent e) {
-				Program.launch(e.text);
+        label.addSelectionListener(new SelectionListener() {
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(e.text);
 			}
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// noop
-			}
+            public void widgetDefaultSelected(SelectionEvent e) {
+                // noop
+            }
 		});
-		label.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, true, false, 2, 1));
+        label.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, true, false, 2, 1));
 
-		TabItem tabDetector = new TabItem(parent, SWT.NONE);
-		tabDetector.setText(getMessage("property.filterFilesTab"));
-		tabDetector.setControl(this);
+        TabItem tabDetector = new TabItem(parent, SWT.NONE);
+        tabDetector.setText(getMessage("property.filterFilesTab"));
+        tabDetector.setControl(this);
 		tabDetector.setToolTipText("Configure external bug reporting filters");
 
-		ManagePathsWidget incl = new ManagePathsWidget(this);
-		ListViewer viewer = incl.createViewer(getMessage(FilterKind.INCLUDE.propertyName), null);
-		filterIncl = createFilterProvider(viewer, FilterKind.INCLUDE, page);
+        ManagePathsWidget incl = new ManagePathsWidget(this);
+        ListViewer viewer = incl.createViewer(getMessage(FilterKind.INCLUDE.propertyName), null);
+        filterIncl = createFilterProvider(viewer, FilterKind.INCLUDE, page);
 		incl.createButtonsArea(filterIncl);
 
-		ManagePathsWidget excl = new ManagePathsWidget(this);
-		viewer = excl.createViewer(getMessage(FilterKind.EXCLUDE.propertyName), null);
-		filterExcl = createFilterProvider(viewer, FilterKind.EXCLUDE, page);
+        ManagePathsWidget excl = new ManagePathsWidget(this);
+        viewer = excl.createViewer(getMessage(FilterKind.EXCLUDE.propertyName), null);
+        filterExcl = createFilterProvider(viewer, FilterKind.EXCLUDE, page);
 		excl.createButtonsArea(filterExcl);
 
-		ManagePathsWidget excl2 = new ManagePathsWidget(this);
-		viewer = excl2.createViewer(getMessage(FilterKind.EXCLUDE_BUGS.propertyName),
-				"You can include past FindBugs result XML files here to exclude those bugs from analysis. " +
+        ManagePathsWidget excl2 = new ManagePathsWidget(this);
+        viewer = excl2.createViewer(getMessage(FilterKind.EXCLUDE_BUGS.propertyName),
+                "You can include past FindBugs result XML files here to exclude those bugs from analysis. " +
 				"<a href=\"http://findbugs.sourceforge.net/manual/filter.html\">Details...</a>");
-		filterExclBugs = createFilterProvider(viewer, FilterKind.EXCLUDE_BUGS, page);
-		excl2.createButtonsArea(filterExclBugs);
+        filterExclBugs = createFilterProvider(viewer, FilterKind.EXCLUDE_BUGS, page);
+        excl2.createButtonsArea(filterExclBugs);
 
-		refreshTables();
-	}
+        refreshTables();
+    }
 
-	public void refreshTables() {
-		propertyPage.setErrorMessage(null);
-		filterIncl.refresh();
+    public void refreshTables() {
+        propertyPage.setErrorMessage(null);
+        filterIncl.refresh();
 		filterExcl.refresh();
-		filterExclBugs.refresh();
-	}
+        filterExclBugs.refresh();
+    }
 
-	/**
-	 * Helper method to shorten message access
-	 * @param key a message key
+    /**
+     * Helper method to shorten message access
+     * @param key a message key
 	 * @return requested message
-	 */
-	protected static String getMessage(String key) {
-		return FindbugsPlugin.getDefault().getMessage(key);
+     */
+    protected static String getMessage(String key) {
+        return FindbugsPlugin.getDefault().getMessage(key);
 	}
 
-	protected FilterProvider createFilterProvider(ListViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
-		FilterProvider filterProvider = new FilterProvider(viewer, kind, propertyPage);
-		filterProvider.addListener(new Listener() {
+    protected FilterProvider createFilterProvider(ListViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
+        FilterProvider filterProvider = new FilterProvider(viewer, kind, propertyPage);
+        filterProvider.addListener(new Listener() {
 			public void handleEvent(Event event) {
-				refreshTables();
-			}
-		});
+                refreshTables();
+            }
+        });
 		return filterProvider;
-	}
+    }
 
-	public static enum FilterKind {
-		INCLUDE("property.includefilter") {
-			@Override
+    public static enum FilterKind {
+        INCLUDE("property.includefilter") {
+            @Override
 			Collection<String> selectedPaths(UserPreferences u) {
-				return u.getIncludeFilterFiles();
-			}
+                return u.getIncludeFilterFiles();
+            }
 
-			@Override
-			Collection<String> excludedPaths(UserPreferences u) {
-				Set<String> excl = new HashSet<String>();
+            @Override
+            Collection<String> excludedPaths(UserPreferences u) {
+                Set<String> excl = new HashSet<String>();
 				excl.addAll(u.getExcludeFilterFiles());
-				excl.addAll(u.getExcludeBugsFiles());
-				return excl;
-			}
+                excl.addAll(u.getExcludeBugsFiles());
+                return excl;
+            }
 
-			@Override
-			void setPaths(UserPreferences u, Collection<String> files) {
-				u.setIncludeFilterFiles(files);
+            @Override
+            void setPaths(UserPreferences u, Collection<String> files) {
+                u.setIncludeFilterFiles(files);
 			}
-		},
-		EXCLUDE("property.excludefilter") {
-			@Override
+        },
+        EXCLUDE("property.excludefilter") {
+            @Override
 			Collection<String> selectedPaths(UserPreferences u) {
-				return u.getExcludeFilterFiles();
-			}
+                return u.getExcludeFilterFiles();
+            }
 
-			@Override
-			Collection<String> excludedPaths(UserPreferences u) {
-				Set<String> excl = new HashSet<String>();
+            @Override
+            Collection<String> excludedPaths(UserPreferences u) {
+                Set<String> excl = new HashSet<String>();
 				excl.addAll(u.getIncludeFilterFiles());
-				excl.addAll(u.getExcludeBugsFiles());
-				return excl;
-			}
+                excl.addAll(u.getExcludeBugsFiles());
+                return excl;
+            }
 
-			@Override
-			void setPaths(UserPreferences u, Collection<String> files) {
-				u.setExcludeFilterFiles(files);
+            @Override
+            void setPaths(UserPreferences u, Collection<String> files) {
+                u.setExcludeFilterFiles(files);
 			}
-		},
-		EXCLUDE_BUGS("property.excludebugs") {
-			@Override
+        },
+        EXCLUDE_BUGS("property.excludebugs") {
+            @Override
 			Collection<String> selectedPaths(UserPreferences u) {
-				return u.getExcludeBugsFiles();
-			}
+                return u.getExcludeBugsFiles();
+            }
 
-			@Override
-			Collection<String> excludedPaths(UserPreferences u) {
-				Set<String> excl = new HashSet<String>();
+            @Override
+            Collection<String> excludedPaths(UserPreferences u) {
+                Set<String> excl = new HashSet<String>();
 				excl.addAll(u.getIncludeFilterFiles());
-				excl.addAll(u.getExcludeFilterFiles());
-				return excl;
+                excl.addAll(u.getExcludeFilterFiles());
+                return excl;
+            }
+
+            @Override
+            void setPaths(UserPreferences u, Collection<String> files) {
+                u.setExcludeBugsFiles(files);
 			}
+        };
+        final String propertyName;
 
-			@Override
-			void setPaths(UserPreferences u, Collection<String> files) {
-				u.setExcludeBugsFiles(files);
-			}
-		};
-		final String propertyName;
+        FilterKind(String propertyName) {
+            this.propertyName = propertyName;
+        }
 
-		FilterKind(String propertyName) {
-			this.propertyName = propertyName;
-		}
+        abstract Collection<String> selectedPaths(UserPreferences u);
 
-		abstract Collection<String> selectedPaths(UserPreferences u);
+        abstract Collection<String> excludedPaths(UserPreferences u);
 
-		abstract Collection<String> excludedPaths(UserPreferences u);
+        abstract void setPaths(UserPreferences u, Collection<String> files);
+    }
 
-		abstract void setPaths(UserPreferences u, Collection<String> files);
-	}
-
-	@Override
-	public void setEnabled(boolean enabled) {
-		filterExcl.setControlEnabled(enabled);
+    @Override
+    public void setEnabled(boolean enabled) {
+        filterExcl.setControlEnabled(enabled);
 		filterIncl.setControlEnabled(enabled);
-		filterExclBugs.setControlEnabled(enabled);
-		super.setEnabled(enabled);
-	}
+        filterExclBugs.setControlEnabled(enabled);
+        super.setEnabled(enabled);
+    }
 
-	void refreshUI(UserPreferences prefs) {
-		filterExcl.setFilters(prefs);
-		filterExclBugs.setFilters(prefs);
+    void refreshUI(UserPreferences prefs) {
+        filterExcl.setFilters(prefs);
+        filterExclBugs.setFilters(prefs);
 		filterIncl.setFilters(prefs);
-		refreshTables();
-	}
+        refreshTables();
+    }
 
-	protected PathsProvider getFilterIncl() {
-		return filterIncl;
-	}
+    protected PathsProvider getFilterIncl() {
+        return filterIncl;
+    }
 
-	protected PathsProvider getFilterExcl() {
-		return filterExcl;
-	}
+    protected PathsProvider getFilterExcl() {
+        return filterExcl;
+    }
 
-	protected PathsProvider getFilterExclBugs() {
-		return filterExclBugs;
-	}
+    protected PathsProvider getFilterExclBugs() {
+        return filterExclBugs;
+    }
 }
