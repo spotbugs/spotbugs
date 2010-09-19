@@ -73,7 +73,7 @@ public class SourceFinder {
      */
     private static class Cache extends LinkedHashMap<String, SourceFile> {
         /**
-		 * 
+         *
          */
         private static final long serialVersionUID = 1L;
 
@@ -168,7 +168,7 @@ public class SourceFinder {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.ba.SourceFinder.SourceRepository#contains(java
          * .lang.String)
@@ -179,7 +179,7 @@ public class SourceFinder {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.ba.SourceFinder.SourceRepository#getDataSource
          * (java.lang.String)
@@ -199,7 +199,7 @@ public class SourceFinder {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.ba.SourceFinder.SourceRepository#isPlatformDependent
          * ()
@@ -401,7 +401,7 @@ public class SourceFinder {
 
     /**
      * Open an input stream on a source file in given package.
-     * 
+     *
      * @param packageName
      *            the name of the package containing the class whose source file
      *            is given
@@ -437,7 +437,7 @@ public class SourceFinder {
 
     /**
      * Open a source file in given package.
-     * 
+     *
      * @param packageName
      *            the name of the package containing the class whose source file
      *            is given

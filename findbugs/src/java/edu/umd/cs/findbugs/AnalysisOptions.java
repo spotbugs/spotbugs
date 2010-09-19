@@ -81,7 +81,7 @@ public class AnalysisOptions {
     String projectName;
 
     /**
-	 * 
+     *
      */
     public AnalysisOptions(boolean mergeSimilarWarnings) {
         this.mergeSimilarWarnings = mergeSimilarWarnings;

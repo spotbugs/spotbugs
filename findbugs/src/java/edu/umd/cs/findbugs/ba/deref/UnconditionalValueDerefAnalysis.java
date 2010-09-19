@@ -77,7 +77,7 @@ import edu.umd.cs.findbugs.visitclass.Util;
 
 /**
  * Dataflow analysis to find values unconditionally dereferenced in the future.
- * 
+ *
  * @author David Hovemeyer
  */
 public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<UnconditionalValueDerefSet> {
@@ -110,7 +110,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     /**
      * Constructor.
-     * 
+     *
      * @param rdfs
      *            the reverse depth-first-search (for the block order)
      * @param dfs
@@ -143,7 +143,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     /**
      * HACK: use the given is-null dataflow to clear deref sets for values that
      * are known to be definitely non-null on a branch.
-     * 
+     *
      * @param invDataflow
      *            the IsNullValueDataflow to use
      */
@@ -154,14 +154,14 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     /**
      *
      *
-	 */
+     */
     public void setTypeDataflow(TypeDataflow typeDataflow) {
         this.typeDataflow = typeDataflow;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#isFactValid(java.lang
      * .Object)
@@ -236,7 +236,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transferInstruction(org
      * .apache.bcel.generic.InstructionHandle,
@@ -315,7 +315,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     /**
      * Check method call at given location to see if it unconditionally
      * dereferences a parameter. Mark any such arguments as derefs.
-     * 
+     *
      * @param location
      *            the Location of the method call
      * @param vnaFrame
@@ -431,7 +431,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     /**
      * If this is a method call instruction, check to see if any of the
      * parameters are @NonNull, and treat them as dereferences.
-     * 
+     *
      * @param thisMethod
      *            TODO
      * @param location
@@ -440,7 +440,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
      *            the ValueNumberFrame at the Location of the instruction
      * @param fact
      *            the dataflow value to modify
-     * 
+     *
      * @throws DataflowAnalysisException
      */
     private void checkNonNullReturnValue(XMethod thisMethod, Location location, ValueNumberFrame vnaFrame,
@@ -460,7 +460,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     /**
      * If this is a putfield or putstatic instruction, check to see if the field
      * is @NonNull, and treat it as dereferences.
-     * 
+     *
      * @param location
      *            the Location of the instruction
      * @param vnaFrame
@@ -498,7 +498,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     /**
      * If this is a method call instruction, check to see if any of the
      * parameters are @NonNull, and treat them as dereferences.
-     * 
+     *
      * @param location
      *            the Location of the instruction
      * @param vnaFrame
@@ -581,7 +581,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     /**
      * Check to see if the instruction has a null check associated with it, and
      * if so, add a dereference.
-     * 
+     *
      * @param location
      *            the Location of the instruction
      * @param vnaFrame
@@ -658,7 +658,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     /**
      * Return whether or not given instruction is an assertion.
-     * 
+     *
      * @param handle
      *            the instruction
      * @return true if instruction is an assertion, false otherwise
@@ -670,7 +670,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#copy(java.lang.Object,
      * java.lang.Object)
      */
@@ -680,7 +680,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#createFact()
      */
     public UnconditionalValueDerefSet createFact() {
@@ -689,7 +689,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(java.lang.Object)
      */
@@ -707,7 +707,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#makeFactTop(java.lang.Object)
      */
@@ -721,7 +721,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(java.lang.Object,
      * edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
      */
@@ -732,7 +732,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(java.lang.Object,
      * edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
      */
@@ -817,7 +817,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
      * dereferenced VNs in the target block. If so, the VN in the source block
      * is also unconditionally dereferenced, and we must propagate the target
      * VN's dereferences.
-     * 
+     *
      * @param fact
      *            a dataflow value
      * @param edge
@@ -888,7 +888,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     /**
      * Return a duplicate of given dataflow fact.
-     * 
+     *
      * @param fact
      *            a dataflow fact
      * @return a duplicate of the input dataflow fact
@@ -903,7 +903,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     /**
      * Clear deref sets of values if this edge is the non-null branch of an if
      * comparison.
-     * 
+     *
      * @param fact
      *            a datflow fact
      * @param edge
@@ -936,7 +936,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     /**
      * Determine whether dataflow should be propagated on given edge.
-     * 
+     *
      * @param edge
      *            the edge
      * @return true if dataflow should be propagated on the edge, false
@@ -961,7 +961,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#same(java.lang.Object,
      * java.lang.Object)
      */

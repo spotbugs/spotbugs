@@ -40,12 +40,12 @@ import edu.umd.cs.findbugs.SystemProperties;
  * Determine which methods are accessors used by inner classes to access fields
  * in their enclosing classes. This has been tested with javac from the Sun JDK
  * 1.4.x, but will probably not work with other source to bytecode compilers.
- * 
+ *
  * <p>
  * The instance of InnerClassAccessMap should be retrieved from the
  * AnalysisContext.
  * </p>
- * 
+ *
  * @author David Hovemeyer
  * @see InnerClassAccess
  */
@@ -72,7 +72,7 @@ public class InnerClassAccessMap {
 
     /**
      * Create an instance.
-     * 
+     *
      * @return a new instance of InnerClassAccessMap
      */
     public static InnerClassAccessMap create() {
@@ -81,7 +81,7 @@ public class InnerClassAccessMap {
 
     /**
      * Get the InnerClassAccess in given class with the given method name.
-     * 
+     *
      * @param className
      *            the name of the class
      * @param methodName
@@ -97,7 +97,7 @@ public class InnerClassAccessMap {
     /**
      * Get the inner class access object for given invokestatic instruction.
      * Returns null if the called method is not an inner class access.
-     * 
+     *
      * @param inv
      *            the invokestatic instruction
      * @param cpg
@@ -155,7 +155,7 @@ public class InnerClassAccessMap {
     private static class LookupFailure extends RuntimeException {
         /**
          *
-		 */
+         */
         private static final long serialVersionUID = 1L;
 
         private final ClassNotFoundException exception;
@@ -188,7 +188,7 @@ public class InnerClassAccessMap {
 
         /**
          * Constructor.
-         * 
+         *
          * @param javaClass
          *            the class containing the access method
          * @param methodName
@@ -222,7 +222,7 @@ public class InnerClassAccessMap {
 
         /**
          * Get the InnerClassAccess object representing the method.
-         * 
+         *
          * @return the InnerClassAccess, or null if the method was not found to
          *         be a simple load or store in the expected form
          */
@@ -232,7 +232,7 @@ public class InnerClassAccessMap {
 
         /**
          * Called to indicate that a field load or store was encountered.
-         * 
+         *
          * @param cpIndex
          *            the constant pool index of the fieldref
          * @param isStatic
@@ -272,7 +272,7 @@ public class InnerClassAccessMap {
          * Determine if the method appears to be an accessor of the expected
          * form. This has only been tested with the Sun JDK 1.4 javac
          * (definitely) and jikes 1.18 (I think).
-         * 
+         *
          * @param methodSig
          *            the method's signature
          * @param field
@@ -330,7 +330,7 @@ public class InnerClassAccessMap {
     /**
      * Return a map of inner-class member access method names to the fields that
      * they access for given class name.
-     * 
+     *
      * @param className
      *            the name of the class
      * @return map of access method names to the fields they access

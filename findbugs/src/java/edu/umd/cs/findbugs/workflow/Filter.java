@@ -59,14 +59,14 @@ import edu.umd.cs.findbugs.filter.Matcher;
 /**
  * Java main application to filter/transform an XML bug collection or bug
  * history collection.
- * 
+ *
  * @author William Pugh
  */
 public class Filter {
     static class FilterCommandLine extends CommandLine {
         /**
          *
-		 */
+         */
         public static final long MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000L;
 
         Pattern className, bugPattern;
@@ -560,7 +560,7 @@ public class Filter {
 
         /**
          * Do any prep work needed to perform bug filtering
-         * 
+         *
          * @param origCollection
          */
         public void getReady(SortedBugCollection origCollection) {
