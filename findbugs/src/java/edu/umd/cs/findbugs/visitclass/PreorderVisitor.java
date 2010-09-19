@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -35,8 +33,6 @@ import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantUtf8;
-import org.apache.bcel.classfile.ElementValue;
-import org.apache.bcel.classfile.ElementValuePair;
 import org.apache.bcel.classfile.EnclosingMethod;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.InnerClass;
@@ -47,7 +43,6 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.ParameterAnnotationEntry;
 import org.apache.bcel.classfile.ParameterAnnotations;
 import org.apache.bcel.classfile.StackMapTable;
 import org.apache.bcel.classfile.StackMapTableEntry;
@@ -76,7 +71,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  * Bokowski</A>.
  * <p/>
  * If don't like it, blame him. If you do like it thank me 8-)
- * 
+ *
  * @author <A HREF="http://www.inf.fu-berlin.de/~dahm">M. Dahm</A>
  * @version 970819
  */
@@ -147,7 +142,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
     /**
      * Return the current Code attribute; assuming one is being visited
-     * 
+     *
      * @return current code attribute
      */
     public Code getCode() {
@@ -186,7 +181,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
     /**
      * Get lines of code in try block that surround pc
-     * 
+     *
      * @param pc
      * @return number of lines of code in try block
      */
@@ -196,7 +191,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
     /**
      * Get lines of code in try block that surround pc
-     * 
+     *
      * @param pc
      * @return number of lines of code in try block
      */
@@ -233,7 +228,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
     /**
      * Called after visiting a code attribute
-     * 
+     *
      * @param obj
      *            Code that was just visited
      */
@@ -497,10 +492,10 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
         return visitingField;
     }
 
-    /** If currently visiting a method, get the method's Method object */
+    /** If currently visiting a field, get the field's Field object */
     public Field getField() {
         if (!visitingField)
-            throw new IllegalStateException("getField called while not visiting method");
+            throw new IllegalStateException("getField called while not visiting field");
         return field;
     }
 
@@ -636,7 +631,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.apache.bcel.classfile.Visitor#visitAnnotation(org.apache.bcel.classfile
      * .Annotations)
@@ -648,7 +643,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.apache.bcel.classfile.Visitor#visitAnnotationDefault(org.apache.bcel
      * .classfile.AnnotationDefault)
@@ -660,7 +655,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.apache.bcel.classfile.Visitor#visitAnnotationEntry(org.apache.bcel
      * .classfile.AnnotationEntry)
@@ -672,7 +667,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.apache.bcel.classfile.Visitor#visitEnclosingMethod(org.apache.bcel
      * .classfile.EnclosingMethod)
@@ -684,7 +679,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.apache.bcel.classfile.Visitor#visitParameterAnnotation(org.apache
      * .bcel.classfile.ParameterAnnotations)
@@ -694,7 +689,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.apache.bcel.classfile.Visitor#visitStackMapTable(org.apache.bcel.
      * classfile.StackMapTable)
@@ -706,7 +701,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.apache.bcel.classfile.Visitor#visitStackMapTableEntry(org.apache.
      * bcel.classfile.StackMapTableEntry)
