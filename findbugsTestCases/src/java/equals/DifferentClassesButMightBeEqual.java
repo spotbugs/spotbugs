@@ -3,10 +3,12 @@ package equals;
 public class DifferentClassesButMightBeEqual {
     int value;
 
+    @Override
     public int hashCode() {
         return value;
     }
 
+    @Override
     public boolean equals(Object x) {
         if (!(x instanceof DifferentClassesButMightBeEqual))
             return false;

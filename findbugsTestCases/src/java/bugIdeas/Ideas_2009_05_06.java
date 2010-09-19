@@ -36,6 +36,7 @@ public class Ideas_2009_05_06 {
         logger.setLevel(Level.FINER);
         logger.setFilter(new Filter() {
 
+            @Override
             public boolean isLoggable(LogRecord arg0) {
                 return true;
             }

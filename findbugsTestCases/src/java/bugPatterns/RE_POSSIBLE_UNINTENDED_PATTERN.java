@@ -1,7 +1,5 @@
 package bugPatterns;
 
-import java.util.regex.Pattern;
-
 public class RE_POSSIBLE_UNINTENDED_PATTERN {
 
     void bug1(String any) {

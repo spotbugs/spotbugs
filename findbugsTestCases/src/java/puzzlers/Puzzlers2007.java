@@ -43,6 +43,7 @@ public class Puzzlers2007 {
         public void test() throws InterruptedException {
             number = 0;
             Thread t = new Thread(new Runnable() {
+                @Override
                 @ExpectWarning("IJU")
                 public void run() {
                     assertEquals(2, number);

@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 public class DefaultEquals {
 
+    @Override
     public boolean equals(Object o) {
         return this == o;
     }

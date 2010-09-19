@@ -26,7 +26,7 @@ public class Ideas_2010_07_29 {
     @ExpectWarning("EC_UNRELATED_TYPES_USING_POINTER_EQUALITY")
     @NoWarning("RC")
     public static void test(List<?> lst) {
-        if (lst == (Object) (Integer) lst.size())
+        if (lst == (Object) lst.size())
             System.out.println("huh");
     }
 

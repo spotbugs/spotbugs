@@ -3009,6 +3009,7 @@ public class EclipseNullReferenceTestCases {
             public void foo(Y y) throws E {
                 try {
                     new Y() {
+                        @Override
                         void bar() {
                             // do nothing
                         }
@@ -4724,7 +4725,7 @@ public class EclipseNullReferenceTestCases {
             void bar() {
                 X itself = this.itself();
                 if (this == itself) {
-                    X other = (X) itself;
+                    X other = itself;
                     if (other != null) {
                     }
                     if (other == null) {

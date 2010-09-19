@@ -6,12 +6,14 @@ public abstract class GuaranteedDerefInterproc {
     }
 
     static class A implements I {
+        @Override
         public int f(Object o) {
             return o.hashCode();
         }
     }
 
     static class B implements I {
+        @Override
         public int f(Object o) {
             return o.hashCode();
         }

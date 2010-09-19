@@ -16,17 +16,20 @@ public class TestViolatedInheritedAnnotations implements I1, I2 {
     @Bar(when = When.MAYBE, strArrField = { "yip", "yip" }, cField = 'Q', eArrField = { When.UNKNOWN })
     Object barField;
 
+    @Override
     @ExpectWarning("TQ")
     public Object alwaysReturnFoo1() {
         return never;
     }
 
+    @Override
     @ExpectWarning("TQ")
     public Object neverReturnFoo1() {
         return always;
     }
 
     // This method inherits parameter and return value annotations from I1
+    @Override
     @ExpectWarning("TQ")
     public Object alwaysReturnFooParams1(Object alwaysParam, Object neverParam) {
         return neverParam;

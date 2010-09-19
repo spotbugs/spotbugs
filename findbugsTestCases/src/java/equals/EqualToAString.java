@@ -8,11 +8,12 @@ public class EqualToAString {
         this.name = name;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o instanceof EqualToAString)
             return name.equals(((EqualToAString) o).name);
         if (o instanceof String) {
-            return name.equals((String) o);
+            return name.equals(o);
         }
         return false;
     }

@@ -20,6 +20,7 @@ public class TrickyInheritedQualifiers {
         // NOTE: @Strict annotation on parameter p should be
         // inherited from overridden superclass method
         //
+        @Override
         public void f(Object p) {
 
         }

@@ -13,10 +13,12 @@ public class TestOverridesSuper {
     }
 
     static class SubClass extends TestOverridesSuper {
+        @Override
         void f() {
             super.f();
         }
 
+        @Override
         void g() {
 
         }

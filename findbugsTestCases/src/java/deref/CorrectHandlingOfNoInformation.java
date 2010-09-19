@@ -7,12 +7,14 @@ class CorrectHandlingOfNoInformation {
     }
 
     static class B implements A {
+        @Override
         public int f(Object x) {
             return 0;
         }
     }
 
     static class C implements A {
+        @Override
         public int f(Object x) {
             return x.hashCode();
         }

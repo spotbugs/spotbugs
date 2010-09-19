@@ -5,10 +5,12 @@ public class GetClassAndClassConstant {
     static class A {
         int x;
 
+        @Override
         public int hashCode() {
             return x;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o != null && A.class.equals(o.getClass()))
                 return x == ((A) o).x;
@@ -24,10 +26,12 @@ public class GetClassAndClassConstant {
     static class A2 {
         int x;
 
+        @Override
         public int hashCode() {
             return x;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o != null && A2.class.equals(o.getClass()))
                 return x == ((A2) o).x;
@@ -37,6 +41,7 @@ public class GetClassAndClassConstant {
     }
 
     static class B2 extends A2 {
+        @Override
         public boolean equals(Object o) {
             if (o != null && B2.class.equals(o.getClass()))
                 return x == ((B2) o).x;
@@ -49,10 +54,12 @@ public class GetClassAndClassConstant {
     static class C {
         int x;
 
+        @Override
         public int hashCode() {
             return x;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o != null && C.class.equals(o.getClass()))
                 return x == ((C) o).x;
@@ -64,10 +71,12 @@ public class GetClassAndClassConstant {
     static final class D {
         int x;
 
+        @Override
         public int hashCode() {
             return x;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o != null && D.class.equals(o.getClass()))
                 return x == ((D) o).x;
@@ -80,10 +89,12 @@ public class GetClassAndClassConstant {
                      // it
         int x;
 
+        @Override
         public int hashCode() {
             return x;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o != null && C.class.equals(o.getClass()))
                 return x == ((C) o).x;

@@ -7,6 +7,7 @@ public class Ideas_2010_05_27 {
     }
 
     static class A extends Ideas_2010_05_27 {
+        @Override
         A foo() {
             return new A();
         }

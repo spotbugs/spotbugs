@@ -21,6 +21,7 @@ public class Ideas_2008_12_02 extends AbstractList<String> {
                 System.out.println("Found intersection");
     }
 
+    @Override
     public int indexOf(Object o) {
         if (map.containsKey(o))
             return 1;

@@ -20,10 +20,12 @@ public class Ideas_2009_04_26 {
 
         abstract T nextElement();
 
+        @Override
         public boolean hasNext() {
             return nextElement != null;
         }
 
+        @Override
         public T next() {
             if (!hasNext())
                 throw new NoSuchElementException();
@@ -32,6 +34,7 @@ public class Ideas_2009_04_26 {
             return result;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }

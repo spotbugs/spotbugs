@@ -27,11 +27,11 @@ public class Ideas_2010_06_01<K, V> extends AbstractMap {
     }
 
     static Object test1(Ideas_2010_06_01<String, String> m) {
-        return m.get((Integer) 1);
+        return m.get(1);
     }
 
     static Object test1a(Map<String, String> m) {
-        return m.get((Integer) 1);
+        return m.get(1);
     }
 
     static Ideas_2010_06_01<String, String> builder() {
@@ -43,11 +43,11 @@ public class Ideas_2010_06_01<K, V> extends AbstractMap {
     }
 
     static Object test2() {
-        return builder().get((Integer) 1);
+        return builder().get(1);
     }
 
     static Object test2a() {
-        return builderA().get((Integer) 1);
+        return builderA().get(1);
     }
 
 }

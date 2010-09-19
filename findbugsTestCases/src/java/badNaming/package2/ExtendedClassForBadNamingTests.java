@@ -7,6 +7,7 @@ public class ExtendedClassForBadNamingTests extends BaseClassForBadNamingTests i
     public void test1(A a) {
     }
 
+    @Override
     public void test2(A a) {
     }
 

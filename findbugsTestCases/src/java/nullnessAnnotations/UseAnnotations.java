@@ -9,7 +9,7 @@ public class UseAnnotations {
     Object f(int x) {
         if (x == 0)
             return null;
-        return (Integer) x;
+        return x;
     }
 
     int g(@Nonnull Object x) {

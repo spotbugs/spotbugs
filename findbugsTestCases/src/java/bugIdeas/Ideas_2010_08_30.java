@@ -14,12 +14,14 @@ public final class Ideas_2010_08_30 implements Runnable {
     public void test() {
         new Thread(this).run();
         new Thread() {
+            @Override
             public void run() {
                 System.out.println("Hello");
             }
         }.start();
     }
 
+    @Override
     public void run() {
         System.out.println("Hello");
     }

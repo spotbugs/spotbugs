@@ -9,6 +9,7 @@ interface A {
 
 interface B extends A {
     // relax constraint on second param
+    @Override
     public void f(@NonNull Object obj, @CheckForNull Object obj2);
 }
 
@@ -36,6 +37,7 @@ public class TestNonNull implements B {
         c.f(new Object(), null);
     }
 
+    @Override
     public void f(Object obj, Object obj2) {
         System.out.println(obj.hashCode()); // ok, declared @NonNull
 

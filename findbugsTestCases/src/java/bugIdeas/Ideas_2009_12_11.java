@@ -9,6 +9,7 @@ public class Ideas_2009_12_11 {
 
     int[][] data = new int[1][1];
 
+    @Override
     @DesireWarning("EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS")
     public boolean equals(Object that) {
         int[][] thatData;
@@ -21,6 +22,7 @@ public class Ideas_2009_12_11 {
         return Arrays.deepEquals(data, thatData);
     }
 
+    @Override
     public int hashCode() {
         return Arrays.deepHashCode(data);
     }

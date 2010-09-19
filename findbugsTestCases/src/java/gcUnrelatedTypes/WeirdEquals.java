@@ -8,10 +8,12 @@ public class WeirdEquals {
     static class A {
         int id;
 
+        @Override
         public int hashCode() {
             return id;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o instanceof A)
                 return id == ((A) o).id;
@@ -22,10 +24,12 @@ public class WeirdEquals {
     static class B {
         int id;
 
+        @Override
         public int hashCode() {
             return id;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o instanceof A)
                 return id == ((A) o).id;
@@ -40,10 +44,12 @@ public class WeirdEquals {
     static class C {
         int id;
 
+        @Override
         public int hashCode() {
             return id;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o instanceof B)
                 return id == ((B) o).id;

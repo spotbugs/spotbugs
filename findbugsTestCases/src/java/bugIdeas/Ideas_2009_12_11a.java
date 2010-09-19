@@ -1,12 +1,12 @@
 package bugIdeas;
 
-import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Ideas_2009_12_11a {
 
     int data;
 
+    @Override
     @ExpectWarning("EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS")
     public boolean equals(Object that) {
         if (that instanceof Ideas_2009_12_11a)
@@ -17,6 +17,7 @@ public class Ideas_2009_12_11a {
             return false;
     }
 
+    @Override
     public int hashCode() {
         return data;
     }

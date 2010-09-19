@@ -26,7 +26,7 @@ public abstract class InfiniteLoop {
 
     @ExpectWarning("IL")
     static void report3(InfiniteLoop obj) {
-        obj.report3(obj);
+        InfiniteLoop.report3(obj);
     }
 
     @NoWarning("IL")

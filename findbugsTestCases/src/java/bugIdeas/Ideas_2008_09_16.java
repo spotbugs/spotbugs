@@ -4,6 +4,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Ideas_2008_09_16 {
 
+    @Override
     @ExpectWarning("Eq")
     public boolean equals(Object o) {
         if (o instanceof Integer) {

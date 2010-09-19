@@ -2,8 +2,6 @@ package bugIdeas;
 
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-
 public class Ideas_2009_08_27 {
 
     // static @CheckForNull

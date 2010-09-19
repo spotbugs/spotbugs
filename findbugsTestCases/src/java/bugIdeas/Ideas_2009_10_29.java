@@ -1,13 +1,6 @@
 package bugIdeas;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
-
 import junit.framework.TestCase;
 
 public class Ideas_2009_10_29 extends TestCase {

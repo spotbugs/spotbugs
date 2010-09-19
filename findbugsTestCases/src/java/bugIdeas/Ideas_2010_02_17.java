@@ -18,7 +18,8 @@ public class Ideas_2010_02_17 implements Serializable {
 
         // If there's a ZoneInfo object, use it for zone.
         try {
-            ZoneInfo zi = (ZoneInfo) AccessController.doPrivileged(new PrivilegedExceptionAction<ZoneInfo>() {
+            ZoneInfo zi = AccessController.doPrivileged(new PrivilegedExceptionAction<ZoneInfo>() {
+                @Override
                 public ZoneInfo run() throws Exception {
                     return (ZoneInfo) input.readObject();
                 }

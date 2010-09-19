@@ -80,6 +80,7 @@ public class Ideas_2010_05_03 {
         }
     }
 
+    @Override
     public String toString() {
         return String.format("%s %s %s %s ", b, x, y, z);
     }
