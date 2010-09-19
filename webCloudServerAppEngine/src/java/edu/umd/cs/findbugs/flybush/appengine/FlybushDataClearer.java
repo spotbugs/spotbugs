@@ -13,7 +13,7 @@ public class FlybushDataClearer {
         if (!typedLine.equals("y"))
             return;
         while (true) {
-            if (!clearAllData()) 
+            if (!clearAllData())
                 break;
         }
     }

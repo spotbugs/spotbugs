@@ -33,8 +33,8 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
     private ConsoleHandler logHandler;
 
     @Override
-	protected void setUp() throws Exception {
-		missingIssue = new BugInstance("MISSING", 2).addClass("MissingClass");
+    protected void setUp() throws Exception {
+        missingIssue = new BugInstance("MISSING", 2).addClass("MissingClass");
         missingIssue.setInstanceHash("fad1");
         foundIssue = new BugInstance("FOUND", 2).addClass("FoundClass");
         foundIssue.setInstanceHash("fad2");
@@ -119,6 +119,6 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
         for (E item : iterable) {
             result.add(item);
         }
-		return result;
-	}
+        return result;
+    }
 }

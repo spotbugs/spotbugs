@@ -15,12 +15,12 @@ import java.util.Set;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class AppEngineDbEvaluation implements DbEvaluation {
-	@SuppressWarnings({"UnusedDeclaration"})
+    @SuppressWarnings({"UnusedDeclaration"})
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
 
-	@Persistent private Key who;
+    @Persistent private Key who;
     @Persistent private String email;
     @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"})
     @Persistent private Key invocation;
@@ -33,8 +33,8 @@ public class AppEngineDbEvaluation implements DbEvaluation {
     @Persistent private Set<String> packages;
 
     public Comparable<?> getWho() {
-		return who;
-	}
+        return who;
+    }
 
     public String getWhoId() {
         return who.getName();
@@ -81,8 +81,8 @@ public class AppEngineDbEvaluation implements DbEvaluation {
     }
 
     public void setWho(Key who) {
-		this.who = who;
-	}
+        this.who = who;
+    }
 
     public String getDesignation() {
         return designation;
@@ -121,7 +121,7 @@ public class AppEngineDbEvaluation implements DbEvaluation {
         if (getWhen() > o.getWhen()) return 1;
 
         @SuppressWarnings({"RedundantCast"})
-        int whoCompare = comparePossiblyNull((Comparable) getWho(), 
+        int whoCompare = comparePossiblyNull((Comparable) getWho(),
                                              (Comparable) o.getWho());
         if (whoCompare != 0)
             return whoCompare;

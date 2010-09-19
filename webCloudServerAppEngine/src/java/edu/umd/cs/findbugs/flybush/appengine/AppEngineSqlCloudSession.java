@@ -34,16 +34,16 @@ public class AppEngineSqlCloudSession implements SqlCloudSession {
     }
 
     public Key getUser() {
-		return user;
-	}
+        return user;
+    }
 
     public String getEmail() {
         return email;
     }
 
     public Key getInvocation() {
-		return invocation;
-	}
+        return invocation;
+    }
 
     public void setInvocation(DbInvocation invocation) {
         this.invocation = ((AppEngineDbInvocation)invocation).getKey();
@@ -54,9 +54,9 @@ public class AppEngineSqlCloudSession implements SqlCloudSession {
     }
 
     @Override
-	public String toString() {
-		return "SqlCloudSession [date=" + date + ", invocation=" + invocation
-				+ ", randomID=" + randomID + ", user=" + user
+    public String toString() {
+        return "SqlCloudSession [date=" + date + ", invocation=" + invocation
+                + ", randomID=" + randomID + ", user=" + user
 				+ "]";
-	}
+    }
 }

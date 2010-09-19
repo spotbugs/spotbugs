@@ -73,7 +73,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         DbIssue issue = createDbIssue("fad2");
         DbEvaluation eval = createEvaluation(issue, "someone", 200);
         eval.setPrimaryClass(null);
-        assertNull(eval.getPrimaryClass());        
+        assertNull(eval.getPrimaryClass());
         getPersistenceManager().makePersistentAll(issue);
 
         executeGet("/update-db-jun29");
@@ -131,7 +131,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         executePost("/update-issue-timestamps", tsCmd.toByteArray());
         checkResponse(403);
     }
-    
+
     public void testUpdateIssueTimestamps() throws Exception {
         createCloudSession(555);
 
@@ -254,122 +254,122 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
     }
 
     public void testUploadIssueWithoutAuthenticating() throws Exception {
-		Issue issue = createProtoIssue("fad");
-		UploadIssues issuesToUpload = UploadIssues.newBuilder().setSessionId(555).addNewIssues(issue).build();
-		executePost("/upload-issues", issuesToUpload.toByteArray());
+        Issue issue = createProtoIssue("fad");
+        UploadIssues issuesToUpload = UploadIssues.newBuilder().setSessionId(555).addNewIssues(issue).build();
+        executePost("/upload-issues", issuesToUpload.toByteArray());
 
         // verify
-		checkResponse(403);
-	}
+        checkResponse(403);
+    }
 
-	@SuppressWarnings("unchecked")
-	public void testUploadIssue() throws Exception {
+    @SuppressWarnings("unchecked")
+    public void testUploadIssue() throws Exception {
         // setup
-    	createCloudSession(555);
-		Issue issue = createProtoIssue("fad");
+        createCloudSession(555);
+        Issue issue = createProtoIssue("fad");
 
         // execute
-		UploadIssues issuesToUpload = UploadIssues.newBuilder().setSessionId(555).addNewIssues(issue).build();
-		executePost("/upload-issues", issuesToUpload.toByteArray());
-		checkResponse(200, "");
+        UploadIssues issuesToUpload = UploadIssues.newBuilder().setSessionId(555).addNewIssues(issue).build();
+        executePost("/upload-issues", issuesToUpload.toByteArray());
+        checkResponse(200, "");
 
         // verify
         List<DbIssue> dbIssues = getAllIssuesFromDb();
-		assertEquals(1, dbIssues.size());
+        assertEquals(1, dbIssues.size());
 
         DbIssue dbIssue = dbIssues.get(0);
         checkIssuesEqualExceptTimestamps(dbIssue, issue);
         assertEquals(issue.getFirstSeen(), dbIssue.getFirstSeen());
         assertEquals(issue.getFirstSeen(), dbIssue.getLastSeen()); // upon initial upload, should be identical
-	}
+    }
 
-	@SuppressWarnings("unchecked")
-	public void testUploadMultipleIssues() throws Exception {
-    	createCloudSession(555);
+    @SuppressWarnings("unchecked")
+    public void testUploadMultipleIssues() throws Exception {
+        createCloudSession(555);
 		Issue issue1 = createProtoIssue("fad1");
-		Issue issue2 = createProtoIssue("fad2");
-		UploadIssues issuesToUpload = UploadIssues.newBuilder()
-				.setSessionId(555).addNewIssues(issue1).addNewIssues(issue2)
+        Issue issue2 = createProtoIssue("fad2");
+        UploadIssues issuesToUpload = UploadIssues.newBuilder()
+                .setSessionId(555).addNewIssues(issue1).addNewIssues(issue2)
 				.build();
-		executePost("/upload-issues", issuesToUpload.toByteArray());
+        executePost("/upload-issues", issuesToUpload.toByteArray());
 
         // verify
-		checkResponse(200, "");
-		List<DbIssue> dbIssues = (List<DbIssue>) getPersistenceManager()
-				.newQuery("select from " + persistenceHelper.getDbIssueClass().getName()).execute();
+        checkResponse(200, "");
+        List<DbIssue> dbIssues = (List<DbIssue>) getPersistenceManager()
+                .newQuery("select from " + persistenceHelper.getDbIssueClass().getName()).execute();
 		assertEquals(2, dbIssues.size());
 
         checkIssuesEqualExceptTimestamps(dbIssues.get(0), issue1);
         checkIssuesEqualExceptTimestamps(dbIssues.get(1), issue2);
     }
 
-	@SuppressWarnings("unchecked")
-	public void testUploadIssuesWhichAlreadyExist() throws Exception {
-    	createCloudSession(555);
+    @SuppressWarnings("unchecked")
+    public void testUploadIssuesWhichAlreadyExist() throws Exception {
+        createCloudSession(555);
         DbIssue oldDbIssue = createDbIssue("fad1");
         getPersistenceManager().makePersistent(oldDbIssue);
-		Issue oldIssue = createProtoIssue("fad1");
-		Issue newIssue = createProtoIssue("fad2");
-		UploadIssues issuesToUpload = UploadIssues.newBuilder()
+        Issue oldIssue = createProtoIssue("fad1");
+        Issue newIssue = createProtoIssue("fad2");
+        UploadIssues issuesToUpload = UploadIssues.newBuilder()
 				.setSessionId(555)
-				.addNewIssues(oldIssue)
-				.addNewIssues(newIssue)
-				.build();
+                .addNewIssues(oldIssue)
+                .addNewIssues(newIssue)
+                .build();
 		executePost("/upload-issues", issuesToUpload.toByteArray());
 
         // verify
-		checkResponse(200, "");
-		List<DbIssue> dbIssues = (List<DbIssue>) getPersistenceManager()
-				.newQuery("select from " + persistenceHelper.getDbIssueClass().getName() + " order by hash ascending").execute();
+        checkResponse(200, "");
+        List<DbIssue> dbIssues = (List<DbIssue>) getPersistenceManager()
+                .newQuery("select from " + persistenceHelper.getDbIssueClass().getName() + " order by hash ascending").execute();
 		assertEquals(2, dbIssues.size());
 
-		assertEquals("fad1", dbIssues.get(0).getHash());
-		assertEquals("fad2", dbIssues.get(1).getHash());
-	}
+        assertEquals("fad1", dbIssues.get(0).getHash());
+        assertEquals("fad2", dbIssues.get(1).getHash());
+    }
 
-	public void testUploadEvaluationNoAuth() throws Exception {
-		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
-				.setSessionId(555)
+    public void testUploadEvaluationNoAuth() throws Exception {
+        executePost("/upload-evaluation", UploadEvaluation.newBuilder()
+                .setSessionId(555)
 				.setHash(encodeHash("fad"))
-				.setEvaluation(createProtoEvaluation())
-				.build().toByteArray());
+                .setEvaluation(createProtoEvaluation())
+                .build().toByteArray());
         // verify
-		checkResponse(403, "not authenticated");
-	}
+        checkResponse(403, "not authenticated");
+    }
 
-	public void testUploadEvaluationWithoutFindIssuesFirst() throws Exception {
-		createCloudSession(555);
+    public void testUploadEvaluationWithoutFindIssuesFirst() throws Exception {
+        createCloudSession(555);
 
         DbIssue dbIssue = createDbIssue("fad");
         dbIssue.setPrimaryClass("a.b.c.D");
         getPersistenceManager().makePersistent(dbIssue);
-		Evaluation protoEval = createProtoEvaluation();
-		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
-				.setSessionId(555)
+        Evaluation protoEval = createProtoEvaluation();
+        executePost("/upload-evaluation", UploadEvaluation.newBuilder()
+                .setSessionId(555)
 				.setHash(encodeHash("fad"))
-				.setEvaluation(protoEval)
-				.build().toByteArray());
+                .setEvaluation(protoEval)
+                .build().toByteArray());
 
         // verify
-		checkResponse(200);
+        checkResponse(200);
         getPersistenceManager().refresh(dbIssue);
-		assertEquals(1, dbIssue.getEvaluations().size());
-		DbEvaluation dbEval = dbIssue.getEvaluations().iterator().next();
-		assertEquals(protoEval.getComment(), dbEval.getComment());
+        assertEquals(1, dbIssue.getEvaluations().size());
+        DbEvaluation dbEval = dbIssue.getEvaluations().iterator().next();
+        assertEquals(protoEval.getComment(), dbEval.getComment());
         assertFalse("should be new comment style", persistenceHelper.isOldCommentStyle(dbEval));
-		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
-		assertEquals(protoEval.getWhen(), dbEval.getWhen());
-		assertEquals("my@email.com", getDbUser(dbEval.getWho()).getEmail());
+        assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
+        assertEquals(protoEval.getWhen(), dbEval.getWhen());
+        assertEquals("my@email.com", getDbUser(dbEval.getWho()).getEmail());
         assertEquals("a.b.c.D", dbEval.getPrimaryClass());
         assertTrue(dbEval.getPackages().contains("a"));
         assertTrue(dbEval.getPackages().contains("a.b"));
         assertTrue(dbEval.getPackages().contains("a.b.c"));
         assertFalse(dbEval.getPackages().contains("a.b.c.D"));
-		assertNull(dbEval.getInvocationKey());
-	}
+        assertNull(dbEval.getInvocationKey());
+    }
 
-	public void testUploadEvaluationMoreThan500chars() throws Exception {
-		createCloudSession(555);
+    public void testUploadEvaluationMoreThan500chars() throws Exception {
+        createCloudSession(555);
 
         DbIssue dbIssue = createDbIssue("fad");
         getPersistenceManager().makePersistent(dbIssue);
@@ -380,88 +380,88 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
                 .setComment(new String(array))
                 .setWhen(100)
                 .build();
-		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
-				.setSessionId(555)
-				.setHash(encodeHash("fad"))
+        executePost("/upload-evaluation", UploadEvaluation.newBuilder()
+                .setSessionId(555)
+                .setHash(encodeHash("fad"))
 				.setEvaluation(protoEval)
-				.build().toByteArray());
-		checkResponse(200);
+                .build().toByteArray());
+        checkResponse(200);
         getPersistenceManager().refresh(dbIssue);
-		assertEquals(1, dbIssue.getEvaluations().size());
-		DbEvaluation dbEval = dbIssue.getEvaluations().iterator().next();
-		assertEquals(protoEval.getComment(), dbEval.getComment());
+        assertEquals(1, dbIssue.getEvaluations().size());
+        DbEvaluation dbEval = dbIssue.getEvaluations().iterator().next();
+        assertEquals(protoEval.getComment(), dbEval.getComment());
 		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
-		assertEquals(protoEval.getWhen(), dbEval.getWhen());
-		assertEquals("my@email.com", getDbUser(dbEval.getWho()).getEmail());
+        assertEquals(protoEval.getWhen(), dbEval.getWhen());
+        assertEquals("my@email.com", getDbUser(dbEval.getWho()).getEmail());
         assertEquals("my.class", dbEval.getPrimaryClass());
-		assertNull(dbEval.getInvocationKey());
-	}
+        assertNull(dbEval.getInvocationKey());
+    }
 
-	public void testUploadEvaluationWithFindIssuesFirst() throws Exception {
+    public void testUploadEvaluationWithFindIssuesFirst() throws Exception {
         // setup
-		createCloudSession(555);
+        createCloudSession(555);
 
         // execute log-in
-		executePost(authServlet, "/log-in", LogIn.newBuilder()
-				.setSessionId(555)
+        executePost(authServlet, "/log-in", LogIn.newBuilder()
+                .setSessionId(555)
                 .setAnalysisTimestamp(100)
-				.build().toByteArray());
-		checkResponse(200);
+                .build().toByteArray());
+        checkResponse(200);
 
         // execute find-issues
-		initServletAndMocks();
+        initServletAndMocks();
         QueryServlet queryServlet = new QueryServlet();
         queryServlet.setPersistenceHelper(testHelper.createPersistenceHelper(getPersistenceManager()));
         initServletAndMocks();
         executePost(queryServlet, "/find-issues", FindIssues.newBuilder()
-				.setSessionId(555)
-				.addMyIssueHashes(encodeHash("abc"))
-				.build().toByteArray());
+                .setSessionId(555)
+                .addMyIssueHashes(encodeHash("abc"))
+                .build().toByteArray());
 		checkResponse(200);
 
         // execute upload-evaluation
-		initServletAndMocks();
+        initServletAndMocks();
         DbIssue dbIssue = createDbIssue("fad");
         getPersistenceManager().makePersistent(dbIssue);
-		Evaluation protoEval = createProtoEvaluation();
-		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
-				.setSessionId(555)
+        Evaluation protoEval = createProtoEvaluation();
+        executePost("/upload-evaluation", UploadEvaluation.newBuilder()
+                .setSessionId(555)
 				.setHash(encodeHash("fad"))
-				.setEvaluation(protoEval)
-				.build().toByteArray());
+                .setEvaluation(protoEval)
+                .build().toByteArray());
 
         // verify
-		checkResponse(200);
+        checkResponse(200);
 
         // evaluations
-		assertEquals(1, dbIssue.getEvaluations().size());
-		DbEvaluation dbEval = dbIssue.getEvaluations().iterator().next();
-		assertEquals(protoEval.getComment(), dbEval.getComment());
+        assertEquals(1, dbIssue.getEvaluations().size());
+        DbEvaluation dbEval = dbIssue.getEvaluations().iterator().next();
+        assertEquals(protoEval.getComment(), dbEval.getComment());
 		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
-		assertEquals(protoEval.getWhen(), dbEval.getWhen());
-		assertEquals("my@email.com", getDbUser(dbEval.getWho()).getEmail());
-		assertEquals("my@email.com", dbEval.getEmail());
+        assertEquals(protoEval.getWhen(), dbEval.getWhen());
+        assertEquals("my@email.com", getDbUser(dbEval.getWho()).getEmail());
+        assertEquals("my@email.com", dbEval.getEmail());
 
         // invocation
-		Object invocationId = dbEval.getInvocationKey();
-		assertNotNull(invocationId);
-		DbInvocation invocation = persistenceHelper.getObjectById(getPersistenceManager(),
+        Object invocationId = dbEval.getInvocationKey();
+        assertNotNull(invocationId);
+        DbInvocation invocation = persistenceHelper.getObjectById(getPersistenceManager(),
                                                                   persistenceHelper.getDbInvocationClass(),
                                                                   invocationId);
-		assertEquals("my@email.com", getDbUser(invocation.getWho()).getEmail());
-		assertEquals(100, invocation.getStartTime());
-	}
+        assertEquals("my@email.com", getDbUser(invocation.getWho()).getEmail());
+        assertEquals(100, invocation.getStartTime());
+    }
 
-	public void testUploadEvaluationNonexistentIssue() throws Exception {
-		createCloudSession(555);
+    public void testUploadEvaluationNonexistentIssue() throws Exception {
+        createCloudSession(555);
 
-		Evaluation protoEval = createProtoEvaluation();
-		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
-				.setSessionId(555)
+        Evaluation protoEval = createProtoEvaluation();
+        executePost("/upload-evaluation", UploadEvaluation.newBuilder()
+                .setSessionId(555)
 				.setHash(encodeHash("faf"))
-				.setEvaluation(protoEval)
-				.build().toByteArray());
-		checkResponse(404, "no such issue faf\n");
+                .setEvaluation(protoEval)
+                .build().toByteArray());
+        checkResponse(404, "no such issue faf\n");
 	}
 
     public void testSetBugLinkNotAuthenticated() throws Exception {
@@ -540,22 +540,22 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
     // TODO: I suspect this doesn't work due to DatastoreService and PersistenceManager sync issues
     @SuppressWarnings({"unchecked", "ConstantConditions", "UnusedDeclaration"})
     public void BROKEN_testClearAllData() throws Exception {
-    	createCloudSession(555);
+        createCloudSession(555);
 
         DbIssue foundIssue = createDbIssue("fad1");
         DbEvaluation eval1 = createEvaluation(foundIssue, "first", 100);
         DbEvaluation eval2 = createEvaluation(foundIssue, "second", 200);
         DbEvaluation eval3 = createEvaluation(foundIssue, "first", 300);
-		foundIssue.addEvaluation(eval1);
-		foundIssue.addEvaluation(eval2);
-		foundIssue.addEvaluation(eval3);
+        foundIssue.addEvaluation(eval1);
+        foundIssue.addEvaluation(eval2);
+        foundIssue.addEvaluation(eval3);
 
-		// apparently the evaluation is automatically persisted. throws
-		// exception when attempting to persist the eval with the issue.
+        // apparently the evaluation is automatically persisted. throws
+        // exception when attempting to persist the eval with the issue.
         getPersistenceManager().makePersistent(foundIssue);
 
-    	executePost("/clear-all-data", new byte[0]);
-		checkResponse(200);
+        executePost("/clear-all-data", new byte[0]);
+        checkResponse(200);
 
 
         getPersistenceManager().close();
@@ -571,9 +571,9 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
             } catch (Exception ignored) {
             }
         }
-	}
+    }
 
-	// ========================= end of tests ================================
+    // ========================= end of tests ================================
 
     @SuppressWarnings({"unchecked"})
     private List<SqlCloudSession> findSqlSession(long sessionId) {
@@ -638,24 +638,24 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         assertNull(dbIssues.get(0).getBugLink());
     }
 
-	private Evaluation createProtoEvaluation() {
+    private Evaluation createProtoEvaluation() {
         return Evaluation.newBuilder()
                 .setDesignation("MUST_FIX")
                 .setComment("my comment")
                 .setWhen(100)
                 .build();
-	}
+    }
 
     private Issue createProtoIssue(String patternAndHash) {
-		patternAndHash = AppEngineProtoUtil.normalizeHash(patternAndHash);
-		Issue.Builder issueBuilder = Issue.newBuilder();
-		issueBuilder.setHash(encodeHash(patternAndHash));
+        patternAndHash = AppEngineProtoUtil.normalizeHash(patternAndHash);
+        Issue.Builder issueBuilder = Issue.newBuilder();
+        issueBuilder.setHash(encodeHash(patternAndHash));
 		issueBuilder.setBugPattern(patternAndHash);
-		issueBuilder.setPriority(2);
-		issueBuilder.setPrimaryClass("my.class");
-		issueBuilder.setFirstSeen(100);
+        issueBuilder.setPriority(2);
+        issueBuilder.setPrimaryClass("my.class");
+        issueBuilder.setFirstSeen(100);
 		issueBuilder.setLastSeen(200);
 
-		return issueBuilder.build();
-	}
+        return issueBuilder.build();
+    }
 }

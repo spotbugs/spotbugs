@@ -59,13 +59,13 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         mockNameLookup = createMockNameLookup();
         mockGuiCallback = mock(IGuiCallback.class);
         Mockito.doAnswer(new Answer<Void>() {
-        	public Void answer(InvocationOnMock invocation) {
-        		Object[] args = invocation.getArguments();
-        		Runnable r = (Runnable) args[0];
+            public Void answer(InvocationOnMock invocation) {
+                Object[] args = invocation.getArguments();
+                Runnable r = (Runnable) args[0];
         		r.run();
-        		return null;
-        	}})
-        	.when(mockGuiCallback).invokeInGUIThread(Mockito.isA(Runnable.class));
+                return null;
+            }})
+            .when(mockGuiCallback).invokeInGUIThread(Mockito.isA(Runnable.class));
 
         initStatusBarHistory();
     }
@@ -129,9 +129,9 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         final CountDownLatch latch = new CountDownLatch(1);
         Mockito.doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
-            	String message = (String) invocationOnMock.getArguments()[0];
-            	 boolean match = Pattern.compile(dialogRegex).matcher(message).find();
-            	 System.out.println("QQQ: " +  " " + match + "\n\"" + dialogRegex +"\"\n\"" + message + "\"");
+                String message = (String) invocationOnMock.getArguments()[0];
+                 boolean match = Pattern.compile(dialogRegex).matcher(message).find();
+                 System.out.println("QQQ: " +  " " + match + "\n\"" + dialogRegex +"\"\n\"" + message + "\"");
              	if (match)
                   latch.countDown();
                 return null;
@@ -153,13 +153,13 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
             }
 
             public void statusUpdated() {
-            	String statusMsg = getStatusMsg();
-				
-            	if (!statusMsgHistory.isEmpty()) {
+                String statusMsg = getStatusMsg();
+
+                if (!statusMsgHistory.isEmpty()) {
             		String last = statusMsgHistory.get(statusMsgHistory.size()-1);
-            		if (statusMsg.equals(last))
-            			return;
-            	}
+                    if (statusMsg.equals(last))
+                        return;
+                }
                 statusMsgHistory.add(statusMsg);
                 synchronized (statusMsgLock) {
                     statusMsgLock.notifyAll();

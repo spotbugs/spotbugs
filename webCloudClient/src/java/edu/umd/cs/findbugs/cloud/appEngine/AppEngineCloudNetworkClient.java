@@ -229,7 +229,7 @@ public class AppEngineCloudNetworkClient {
         Calendar now = Calendar.getInstance();
         TimeZone timeZone = now.getTimeZone();
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT);
-		String timeStr = df.format(now.getTime());
+        String timeStr = df.format(now.getTime());
         boolean daylight = timeZone.inDaylightTime(now.getTime());
         String zoneStr = timeZone.getDisplayName(daylight, TimeZone.LONG)
                          + " (" + timeZone.getDisplayName(daylight, TimeZone.SHORT) + ")";
@@ -309,10 +309,10 @@ public class AppEngineCloudNetworkClient {
 
     public long getFirstSeenFromCloud(BugInstance b) {
         String instanceHash = b.getInstanceHash();
-		Issue issue = issuesByHash.get(instanceHash);
+        Issue issue = issuesByHash.get(instanceHash);
 
         if (issue == null)
-        	  return Long.MAX_VALUE;
+              return Long.MAX_VALUE;
         if (AppEngineCloudClient.DEBUG_FIRST_SEEN)
           System.out.println("First seen is " + issue.getFirstSeen() + " for " + b.getMessage());
         if (issue.getFirstSeen() == 0)
@@ -419,15 +419,15 @@ public class AppEngineCloudNetworkClient {
             final long oldSessionId = sessionId;
             Runnable logoutRequest = new Runnable() {
                 public void run() {
-					try {
-						openPostUrl("/log-out/" + oldSessionId, null);
-					} catch (Exception e) {
+                    try {
+                        openPostUrl("/log-out/" + oldSessionId, null);
+                    } catch (Exception e) {
 						getGuiCallback().showMessageDialog(
-								"A network error occurred while attempting to sign out of the FindBugs Cloud. \n" +
-										"Please check your internet settings and try again.\n\n" + e.getMessage());
-						LOGGER.log(Level.SEVERE, "Could not sign out", e);
+                                "A network error occurred while attempting to sign out of the FindBugs Cloud. \n" +
+                                        "Please check your internet settings and try again.\n\n" + e.getMessage());
+                        LOGGER.log(Level.SEVERE, "Could not sign out", e);
 					}
-				}
+                }
             };
             if (background)
                 cloudClient.getBackgroundExecutor().execute(logoutRequest);

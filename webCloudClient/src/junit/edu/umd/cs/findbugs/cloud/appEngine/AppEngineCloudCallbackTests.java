@@ -19,13 +19,13 @@ import static org.mockito.Mockito.when;
 public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 
     public void testWaitForIssueSyncAllFound() throws Exception {
-		// set up mocks
-		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
+        // set up mocks
+        final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
         when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConn);
 
-		// execution
-		final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        // execution
+        final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
         final CountDownLatch latch = new CountDownLatch(1);
         new Thread(new Runnable() {
             public void run() {
@@ -36,20 +36,20 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         assertEquals(1, latch.getCount());
         cloud.initialize();
         assertEquals(1, latch.getCount());
-		cloud.bugsPopulated();
+        cloud.bugsPopulated();
         assertTrue(latch.await(5, TimeUnit.SECONDS));
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
-	}
+    }
 
-	public void testWaitForIssueSyncReturnsImmediatelyWhenAlreadySynced() throws Exception {
-		// set up mocks
-		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
+    public void testWaitForIssueSyncReturnsImmediatelyWhenAlreadySynced() throws Exception {
+        // set up mocks
+        final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
         when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConn);
 
-		// execution
-		final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        // execution
+        final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
         final AtomicBoolean doneWaiting = new AtomicBoolean(false);
         final CountDownLatch latch = addStatusListenerWaiter(cloud);
         new Thread(new Runnable() {
@@ -61,8 +61,8 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         }).start();
         assertFalse(doneWaiting.get());
         cloud.initialize();
-		cloud.bugsPopulated();
-		cloud.initiateCommunication();
+        cloud.bugsPopulated();
+        cloud.initiateCommunication();
         Thread.sleep(1000);
         assertTrue("expected completion", doneWaiting.get());
 
@@ -71,18 +71,18 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         long elapsed = System.currentTimeMillis() - start;
         if (elapsed > 100) // should return immediately
             fail("was " + elapsed);
-	}
+    }
 
-	public void testWaitForIssueSyncNetworkFailure() throws Exception {
-		// set up mocks
-		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
+    public void testWaitForIssueSyncNetworkFailure() throws Exception {
+        // set up mocks
+        final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
         when(findIssuesConn.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         when(findIssuesConn.getResponseCode()).thenReturn(500);
         when(findIssuesConn.getOutputStream()).thenReturn(outputStream);
 
         // execution
-		final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
         final CountDownLatch latch = addStatusListenerWaiter(cloud);
         final AtomicBoolean doneWaiting = new AtomicBoolean(false);
         new Thread(new Runnable() {
@@ -101,28 +101,28 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         assertTrue("expected communications to be done", doneWaiting.get());
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
-	}
+    }
 
     /**
      * The UI updates when waitUntilIssueDataDownloaded returns, so this test
      * ensures that the caller doesn't wait longer than necessary.
      */
-	public void testWaitForIssueSyncReturnsBeforeUpload() throws Throwable {
+    public void testWaitForIssueSyncReturnsBeforeUpload() throws Throwable {
         addMissingIssue = true;
 
-		// set up mocks
-		final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
+        // set up mocks
+        final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
         when(findIssuesConnection.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConnection);
 
-		final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
-		setupResponseCodeAndOutputStream(logInConnection);
+        final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
+        setupResponseCodeAndOutputStream(logInConnection);
 
-		HttpURLConnection uploadConnection = mock(HttpURLConnection.class);
-		setupResponseCodeAndOutputStream(uploadConnection);
+        HttpURLConnection uploadConnection = mock(HttpURLConnection.class);
+        setupResponseCodeAndOutputStream(uploadConnection);
 
-		// execution
-		final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection, logInConnection, uploadConnection);
+        // execution
+        final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection, logInConnection, uploadConnection);
         final AtomicBoolean doneWaiting = new AtomicBoolean(false);
 
         final CountDownLatch latch = addStatusListenerWaiter(cloud);
@@ -144,8 +144,8 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         assertFalse(doneWaiting.get());
         cloud.initialize();
         assertFalse(doneWaiting.get());
-		cloud.bugsPopulated();
-		cloud.initiateCommunication();
+        cloud.bugsPopulated();
+        cloud.initiateCommunication();
         Thread.sleep(1000);
         assertTrue("expected communcation to be done", doneWaiting.get());
 
@@ -160,13 +160,13 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
     }
 
     public void testIssueDataDownloadedCallback() throws IOException, InterruptedException {
-		// set up mocks
-		final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
+        // set up mocks
+        final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
         when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConn);
 
-		// execution
-		final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        // execution
+        final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
         final CountDownLatch latch = new CountDownLatch(1);
         cloud.addStatusListener(new Cloud.CloudStatusListener() {
             public void handleIssueDataDownloadedEvent() {
@@ -178,12 +178,12 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         });
         cloud.initialize();
         assertEquals(1, latch.getCount());
-		cloud.bugsPopulated();
-		cloud.initiateCommunication();
-		assertTrue(latch.await(5, TimeUnit.SECONDS));
+        cloud.bugsPopulated();
+        cloud.initiateCommunication();
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
 
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
-	}
+    }
 
     private CountDownLatch addStatusListenerWaiter(MockAppEngineCloudClient cloud) {
         final CountDownLatch latch = new CountDownLatch(1);

@@ -111,7 +111,7 @@ public class AppEnginePersistenceHelper implements PersistenceHelper {
             issue.setHasEvaluations((Boolean) result[5]);
             issue.setEvaluationsDontLook((Set<DbEvaluation>) result[6]);
             map.put(issue.getHash(), issue);
-		}
+        }
         return map;
     }
 

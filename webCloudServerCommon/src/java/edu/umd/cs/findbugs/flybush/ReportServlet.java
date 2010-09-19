@@ -56,7 +56,7 @@ public class ReportServlet extends AbstractFlybushServlet {
     private static final SimpleDateFormat DF_M_D = new SimpleDateFormat("M/d");
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
+            throws IOException {
 
         String uri = req.getRequestURI();
         PersistenceManager pm = getPersistenceManager();
@@ -70,7 +70,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         } finally {
             pm.close();
         }
-	}
+    }
 
     private void showStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm)
             throws IOException {
@@ -677,7 +677,7 @@ public class ReportServlet extends AbstractFlybushServlet {
 
         final long first = cal.getTimeInMillis();
         final long last = Collections.max(unixtimes);
-        
+
         return new Iterable<Calendar>() {
             public Iterator<Calendar> iterator() {
                 return new Iterator<Calendar>() {

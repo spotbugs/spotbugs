@@ -51,7 +51,7 @@ public class BugFilingTest extends TestCase {
         super.setUp();
         mockCloudClient = mock(AppEngineCloudClient.class);
         when(mockCloudClient.getPlugin()).thenReturn(
-				new CloudPluginBuilder().setCloudid("BugFilingTest").setClassLoader(null).setCloudClass(null).setUsernameClass(null).setProperties(new PropertyBundle()).setDescription(null).setDetails(null).createCloudPlugin());
+                new CloudPluginBuilder().setCloudid("BugFilingTest").setClassLoader(null).setCloudClass(null).setUsernameClass(null).setProperties(new PropertyBundle()).setDescription(null).setDetails(null).createCloudPlugin());
         mockNetworkClient = mock(AppEngineCloudNetworkClient.class);
         when(mockCloudClient.getNetworkClient()).thenReturn(mockNetworkClient);
         projectHostingService = mock(ProjectHostingService.class);

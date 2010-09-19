@@ -19,22 +19,22 @@ public class BugFilingHelper {
 
     private final AppEngineCloudClient appEngineCloudClient;
     private final String trackerUrl;
-    
+
     private final BugFiler bugFiler;
-    
+
     public BugFilingHelper(AppEngineCloudClient appEngineCloudClient, PropertyBundle properties) {
         this.appEngineCloudClient = appEngineCloudClient;
         this.trackerUrl = properties.getProperty("cloud.bugTrackerUrl");
         String bugTrackerType = properties.getProperty("cloud.bugTrackerType");
         BugFiler filer;
-        if ("GOOGLE_CODE".equals(bugTrackerType)) 
-        	filer = new GoogleCodeBugFiler(appEngineCloudClient, trackerUrl);
+        if ("GOOGLE_CODE".equals(bugTrackerType))
+            filer = new GoogleCodeBugFiler(appEngineCloudClient, trackerUrl);
         else if ("JIRA".equals(bugTrackerType))
             filer = new JiraBugFiler(appEngineCloudClient, trackerUrl);
         else
             filer = null;
         this.bugFiler = filer;
-        
+
     }
 
     public String lookupBugStatus(final BugInstance b) {
@@ -63,17 +63,17 @@ public class BugFilingHelper {
         return status;
     }
 
-	public URL fileBug(BugInstance b)
+    public URL fileBug(BugInstance b)
             throws javax.xml.rpc.ServiceException, IOException, SignInCancelledException, OAuthException,
                    InterruptedException, ServiceException {
-		
-		return bugFiler.file(b);
+
+        return bugFiler.file(b);
 
     }
 
     public boolean bugFilingAvailable() {
-		return bugFiler != null && trackerUrl != null;
-	}
+        return bugFiler != null && trackerUrl != null;
+    }
 
     // ============================== end of public methods ==============================
 

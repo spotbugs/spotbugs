@@ -25,7 +25,7 @@ public class AuthServlet extends AbstractFlybushServlet {
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
+            throws IOException {
 
         String uri = req.getRequestURI();
         PersistenceManager pm = getPersistenceManager();
@@ -42,7 +42,7 @@ public class AuthServlet extends AbstractFlybushServlet {
         } finally {
             pm.close();
         }
-	}
+    }
 
     @Override
     protected void handlePost(PersistenceManager pm, HttpServletRequest req, HttpServletResponse resp, String uri)
@@ -56,7 +56,7 @@ public class AuthServlet extends AbstractFlybushServlet {
     }
 
     private void browserAuth(HttpServletRequest req, HttpServletResponse resp,
-			PersistenceManager pm) throws IOException {
+            PersistenceManager pm) throws IOException {
         OpenIdUser openIdUser = (OpenIdUser)req.getAttribute(OpenIdUser.ATTR_NAME);
 
         if (openIdUser == null) {
@@ -106,61 +106,61 @@ public class AuthServlet extends AbstractFlybushServlet {
     }
 
     private void checkAuth(HttpServletRequest req, HttpServletResponse resp,
-			PersistenceManager pm) throws IOException {
-		long id = Long.parseLong(req.getRequestURI().substring("/check-auth/".length()));
-		SqlCloudSession sqlCloudSession = lookupCloudSessionById(id, pm);
+            PersistenceManager pm) throws IOException {
+        long id = Long.parseLong(req.getRequestURI().substring("/check-auth/".length()));
+        SqlCloudSession sqlCloudSession = lookupCloudSessionById(id, pm);
 		if (sqlCloudSession == null) {
-			setResponse(resp, 418, "FAIL");
-		} else {
+            setResponse(resp, 418, "FAIL");
+        } else {
             DbUser user = persistenceHelper.getObjectById(pm, persistenceHelper.getDbUserClass(), sqlCloudSession.getUser());
             setResponse(resp, 200,
-					"OK\n"
-					+ sqlCloudSession.getRandomID() + "\n"
-					+ user.getEmail());
+                    "OK\n"
+                    + sqlCloudSession.getRandomID() + "\n"
+                    + user.getEmail());
 		}
-		resp.flushBuffer();
-	}
+        resp.flushBuffer();
+    }
 
     private void logIn(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
-		LogIn loginMsg = LogIn.parseFrom(req.getInputStream());
-		SqlCloudSession session = lookupCloudSessionById(loginMsg.getSessionId(), pm);
-		if (session == null) {
+        LogIn loginMsg = LogIn.parseFrom(req.getInputStream());
+        SqlCloudSession session = lookupCloudSessionById(loginMsg.getSessionId(), pm);
+        if (session == null) {
 			setResponse(resp, 403, "not authenticated");
-			return;
-		}
+            return;
+        }
 
-		DbInvocation invocation = persistenceHelper.createDbInvocation();
-		invocation.setWho(session.getUser());
-		invocation.setStartTime(loginMsg.getAnalysisTimestamp());
+        DbInvocation invocation = persistenceHelper.createDbInvocation();
+        invocation.setWho(session.getUser());
+        invocation.setStartTime(loginMsg.getAnalysisTimestamp());
 
-		Transaction tx = pm.currentTransaction();
-		tx.begin();
-		try {
+        Transaction tx = pm.currentTransaction();
+        tx.begin();
+        try {
 			invocation = pm.makePersistent(invocation);
-			tx.commit();
-		} finally {
-			if (tx.isActive()) {
+            tx.commit();
+        } finally {
+            if (tx.isActive()) {
 				tx.rollback();
-			}
-		}
+            }
+        }
         session.setInvocation(invocation);
         tx = pm.currentTransaction();
-		tx.begin();
-		try {
-			pm.makePersistent(session);
+        tx.begin();
+        try {
+            pm.makePersistent(session);
 			tx.commit();
-		} finally {
-			if (tx.isActive()) {
-				tx.rollback();
+        } finally {
+            if (tx.isActive()) {
+                tx.rollback();
 			}
-		}
-		resp.setStatus(200);
-	}
+        }
+        resp.setStatus(200);
+    }
 
     @SuppressWarnings({"unchecked"})
     private void logOut(HttpServletRequest req, HttpServletResponse resp,
-			PersistenceManager pm) throws IOException {
-		long id = Long.parseLong(req.getRequestURI().substring("/log-out/".length()));
+            PersistenceManager pm) throws IOException {
+        long id = Long.parseLong(req.getRequestURI().substring("/log-out/".length()));
         SqlCloudSession session = lookupCloudSessionById(id, pm);
         long deleted = 0;
         Transaction tx = pm.currentTransaction();
@@ -173,10 +173,10 @@ public class AuthServlet extends AbstractFlybushServlet {
             if (tx.isActive())
                 tx.rollback();
         }
-		if (deleted >= 1) {
-			resp.setStatus(200);
-		} else {
+        if (deleted >= 1) {
+            resp.setStatus(200);
+        } else {
 			setResponse(resp, 404, "no such session");
-		}
-	}
+        }
+    }
 }

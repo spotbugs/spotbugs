@@ -332,7 +332,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
     }
 
     // =============================== end of tests ==================================
-    
+
     private void checkParam(String url, String pname, String expectedValue)
             throws UnsupportedEncodingException {
         Map<String, List<String>> params = getParams(url);

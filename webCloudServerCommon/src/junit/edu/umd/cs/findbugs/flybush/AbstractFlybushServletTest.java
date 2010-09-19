@@ -28,19 +28,19 @@ import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.de
 
 public abstract class AbstractFlybushServletTest extends TestCase {
 
-	protected HttpServletResponse mockResponse;
-	protected ByteArrayOutputStream outputCollector;
+    protected HttpServletResponse mockResponse;
+    protected ByteArrayOutputStream outputCollector;
 
     protected AbstractFlybushServlet servlet;
     protected AuthServlet authServlet;
-	protected HttpServletRequest mockRequest;
+    protected HttpServletRequest mockRequest;
     protected PersistenceHelper persistenceHelper;
 
     protected FlybushServletTestHelper testHelper;
     protected static final long SAMPLE_TIMESTAMP = 1270061080000L;
 
     @Override
-	protected void setUp() throws Exception {
+    protected void setUp() throws Exception {
         super.setUp();
         testHelper.setUp();
         persistenceHelper = testHelper.createPersistenceHelper(testHelper.getPersistenceManager());
@@ -58,25 +58,25 @@ public abstract class AbstractFlybushServletTest extends TestCase {
 
     protected abstract AbstractFlybushServlet createServlet();
 
-	// ========================= supporting methods ================================
+    // ========================= supporting methods ================================
 
-	protected void initServletAndMocks() throws IOException, ServletException {
+    protected void initServletAndMocks() throws IOException, ServletException {
         authServlet = new AuthServlet();
         authServlet.setPersistenceHelper(persistenceHelper);
 
-		servlet = createServlet();
+        servlet = createServlet();
         servlet.setPersistenceHelper(persistenceHelper);
-		mockRequest = Mockito.mock(HttpServletRequest.class);
-		mockResponse = Mockito.mock(HttpServletResponse.class);
-		outputCollector = new ByteArrayOutputStream();
+        mockRequest = Mockito.mock(HttpServletRequest.class);
+        mockResponse = Mockito.mock(HttpServletResponse.class);
+        outputCollector = new ByteArrayOutputStream();
 		ServletOutputStream servletOutputStream = new ServletOutputStream() {
-			public void write(int b) throws IOException {
-				outputCollector.write(b);
-			}
+            public void write(int b) throws IOException {
+                outputCollector.write(b);
+            }
 		};
-		Mockito.when(mockResponse.getOutputStream()).thenReturn(servletOutputStream);
-		Mockito.when(mockResponse.getWriter()).thenReturn(new PrintWriter(servletOutputStream, true));
-	}
+        Mockito.when(mockResponse.getOutputStream()).thenReturn(servletOutputStream);
+        Mockito.when(mockResponse.getWriter()).thenReturn(new PrintWriter(servletOutputStream, true));
+    }
 
     protected void initOpenidUserParameter() {
         OpenIdUser user = new OpenIdUser();
@@ -90,16 +90,16 @@ public abstract class AbstractFlybushServletTest extends TestCase {
     }
 
     protected void createCloudSession(long sessionId) throws IOException, ServletException {
-		initOpenidUserParameter();
-    	executeGet(authServlet, "/browser-auth/" + sessionId);
-    	initServletAndMocks();
+        initOpenidUserParameter();
+        executeGet(authServlet, "/browser-auth/" + sessionId);
+        initServletAndMocks();
 	}
 
-	protected void executeGet(String requestUri) throws IOException, ServletException {
+    protected void executeGet(String requestUri) throws IOException, ServletException {
         executeGet(servlet, requestUri);
     }
 
-	protected void executeGet(AbstractFlybushServlet servlet, String requestUri)
+    protected void executeGet(AbstractFlybushServlet servlet, String requestUri)
             throws IOException, ServletException {
         prepareRequestAndResponse(requestUri, null);
 
@@ -112,37 +112,37 @@ public abstract class AbstractFlybushServletTest extends TestCase {
 
     protected void executePost(AbstractFlybushServlet servlet, String requestUri, byte[] input)
             throws IOException {
-		prepareRequestAndResponse(requestUri, input);
+        prepareRequestAndResponse(requestUri, input);
 
-		servlet.doPost(mockRequest, mockResponse);
-	}
+        servlet.doPost(mockRequest, mockResponse);
+    }
 
-	protected void checkResponse(int responseCode, String expectedOutput)
-			throws UnsupportedEncodingException {
-		checkResponse(responseCode);
+    protected void checkResponse(int responseCode, String expectedOutput)
+            throws UnsupportedEncodingException {
+        checkResponse(responseCode);
 		Mockito.verify(mockResponse, Mockito.atLeastOnce()).setContentType("text/plain");
-		String output = new String(outputCollector.toByteArray(), "UTF-8");
-		Assert.assertEquals(expectedOutput.trim(), output.replaceAll("\r", "").trim());
-	}
+        String output = new String(outputCollector.toByteArray(), "UTF-8");
+        Assert.assertEquals(expectedOutput.trim(), output.replaceAll("\r", "").trim());
+    }
 
-	protected void checkResponse(int responseCode) {
-		Mockito.verify(mockResponse).setStatus(responseCode);
-	}
+    protected void checkResponse(int responseCode) {
+        Mockito.verify(mockResponse).setStatus(responseCode);
+    }
 
     // ================================ end of helper methods ===============================
 
 
-	protected void prepareRequestAndResponse(String requestUri, byte[] input)
-			throws IOException {
-		Mockito.when(mockRequest.getRequestURI()).thenReturn(requestUri);
+    protected void prepareRequestAndResponse(String requestUri, byte[] input)
+            throws IOException {
+        Mockito.when(mockRequest.getRequestURI()).thenReturn(requestUri);
 		if (input != null) {
-			final ByteArrayInputStream inputStream = new ByteArrayInputStream(input);
-			Mockito.when(mockRequest.getInputStream()).thenReturn(new ServletInputStream() {
-				public int read() throws IOException {
+            final ByteArrayInputStream inputStream = new ByteArrayInputStream(input);
+            Mockito.when(mockRequest.getInputStream()).thenReturn(new ServletInputStream() {
+                public int read() throws IOException {
 					return inputStream.read();
-				}
-			});
-		}
+                }
+            });
+        }
 	}
 
     @SuppressWarnings({"unchecked"})

@@ -40,25 +40,25 @@ public class GoogleCodeBugFiler implements BugFiler {
 
     private static final String PROJECTION = "/full";
 
-	private static final String DEFAULT_STATUS = "New";
-	private static final String DEFAULT_LABELS = "FindBugsGenerated";
+    private static final String DEFAULT_STATUS = "New";
+    private static final String DEFAULT_LABELS = "FindBugsGenerated";
 
     private static final Pattern PATTERN_GOOGLE_CODE_URL = Pattern.compile(
             "\\s*(?:http://)?code.google.com/p/([^/\\s]*)(?:/.*)?\\s*");
     private static final Pattern URL_REGEX = Pattern.compile("http://code.google.com/p/(.*?)/issues/detail\\?id=(\\d+)");
 
-	private final AppEngineCloudClient appEngineCloudClient;
-	private BugFilingCommentHelper bugFilingCommentHelper;
-	
+    private final AppEngineCloudClient appEngineCloudClient;
+    private BugFilingCommentHelper bugFilingCommentHelper;
+
 	private final String url;
 
     private @CheckForNull ProjectHostingService projectHostingService;
 
     public GoogleCodeBugFiler(AppEngineCloudClient appEngineCloudClient, String url) {
         this.appEngineCloudClient = appEngineCloudClient;
-		bugFilingCommentHelper = new BugFilingCommentHelper(appEngineCloudClient);
-		this.url = url;
-	}
+        bugFilingCommentHelper = new BugFilingCommentHelper(appEngineCloudClient);
+        this.url = url;
+    }
 
     /** for testing */
     void setCommentHelper(BugFilingCommentHelper helper) {
@@ -92,7 +92,7 @@ public class GoogleCodeBugFiler implements BugFiler {
 
     public String getBugStatus(String bugLink)
             throws MalformedURLException, OAuthException, InterruptedException, AuthenticationException {
-        
+
         Matcher m = URL_REGEX.matcher(bugLink);
         if (!m.matches()) {
             return null;
@@ -116,7 +116,7 @@ public class GoogleCodeBugFiler implements BugFiler {
     // ============================= end of public methods =====================================
 
     private IssuesEntry fileWithProject(final BugInstance instance, String project)
-			throws IOException, ServiceException, OAuthException, InterruptedException {
+            throws IOException, ServiceException, OAuthException, InterruptedException {
         final URL issuesFeedUrl = getIssuesFeedUrl(project);
 
         if (projectHostingService == null)
@@ -175,9 +175,9 @@ public class GoogleCodeBugFiler implements BugFiler {
         prefs.remove(KEY_PROJECTHOSTING_OAUTH_TOKEN_SECRET);
     }
 
-	private URL getIssuesFeedUrl(String proj) throws MalformedURLException {
-		return new URL("http://code.google.com/feeds/issues/p/" + proj + "/issues" + PROJECTION);
-	}
+    private URL getIssuesFeedUrl(String proj) throws MalformedURLException {
+        return new URL("http://code.google.com/feeds/issues/p/" + proj + "/issues" + PROJECTION);
+    }
 
     private void initProjectHostingService(boolean forceGetNewToken)
             throws OAuthException, MalformedURLException, InterruptedException {
@@ -237,24 +237,24 @@ public class GoogleCodeBugFiler implements BugFiler {
     }
 
     private IssuesEntry makeNewIssue(BugInstance bug) {
-		Person author = new Person();
-		author.setName(appEngineCloudClient.getUser());
+        Person author = new Person();
+        author.setName(appEngineCloudClient.getUser());
 
-		Owner owner = new Owner();
-		owner.setUsername(new Username(appEngineCloudClient.getUser()));
+        Owner owner = new Owner();
+        owner.setUsername(new Username(appEngineCloudClient.getUser()));
 
-		IssuesEntry entry = new IssuesEntry();
-		entry.getAuthors().add(author);
+        IssuesEntry entry = new IssuesEntry();
+        entry.getAuthors().add(author);
         entry.setTitle(new PlainTextConstruct(bugFilingCommentHelper.getBugReportSummary(bug)));
-		entry.setContent(new HtmlTextConstruct(bugFilingCommentHelper.getBugReportText(bug)));
-		entry.setStatus(new Status(DEFAULT_STATUS));
-		for (String label : DEFAULT_LABELS.split(" ")) {
+        entry.setContent(new HtmlTextConstruct(bugFilingCommentHelper.getBugReportText(bug)));
+        entry.setStatus(new Status(DEFAULT_STATUS));
+        for (String label : DEFAULT_LABELS.split(" ")) {
 			entry.addLabel(new Label(label));
-		}
-		entry.setSendEmail(new SendEmail("True"));
+        }
+        entry.setSendEmail(new SendEmail("True"));
 
-		return entry;
-	}
+        return entry;
+    }
 
     private URL fileGoogleCodeBug(BugInstance b, String projectName)
             throws IOException, ServiceException, OAuthException, InterruptedException, SignInCancelledException {

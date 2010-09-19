@@ -72,7 +72,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
     }
 
     @Override
-    protected void handlePost(PersistenceManager pm, HttpServletRequest req, HttpServletResponse resp, String uri) 
+    protected void handlePost(PersistenceManager pm, HttpServletRequest req, HttpServletResponse resp, String uri)
             throws IOException {
         if (uri.equals("/clear-all-data")) {
             clearAllData(resp);
@@ -85,7 +85,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
 
         } else if (uri.equals("/upload-evaluation")) {
             uploadEvaluation(req, resp, pm);
-            
+
         } else if (uri.equals("/set-bug-link")) {
             setBugLink(req, resp, pm);
         }
@@ -300,7 +300,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         }
 
         LOGGER.info("Evaluation from " + session.getEmail() + ": "
-                + uploadEvalMsg.getEvaluation().getDesignation() 
+                + uploadEvalMsg.getEvaluation().getDesignation()
                 + " - " + uploadEvalMsg.getEvaluation().getComment());
 
         DbEvaluation dbEvaluation = createDbEvaluation(uploadEvalMsg.getEvaluation());
@@ -332,8 +332,8 @@ public class UpdateServlet extends AbstractFlybushServlet {
 
         resp.setStatus(200);
     }
-    
-    private void setBugLink(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) 
+
+    private void setBugLink(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm)
             throws IOException {
         SetBugLink setBugLinkMsg = SetBugLink.parseFrom(req.getInputStream());
         SqlCloudSession session = lookupCloudSessionById(setBugLinkMsg.getSessionId(), pm);
@@ -370,7 +370,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
 
         resp.setStatus(200);
     }
-    
+
     // ========================= end of request handling ================================
 
     private List<String> decodeHashesForIssues(UploadIssues issues) {
@@ -409,7 +409,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
             DbInvocation invocation;
             try {
                 invocation = persistenceHelper.getObjectById(pm,
-                                                             persistenceHelper.getDbInvocationClass(), 
+                                                             persistenceHelper.getDbInvocationClass(),
                                                              invocationKey);
                 if (invocation != null) {
                     dbEvaluation.setInvocation(invocation);
