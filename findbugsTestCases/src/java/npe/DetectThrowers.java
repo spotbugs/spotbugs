@@ -7,8 +7,9 @@ public class DetectThrowers {
     }
 
     public int falsePositive(Object x) {
-        if (x == null) oops("x is null");
+        if (x == null)
+            oops("x is null");
         return x.hashCode();
-	}
+    }
 
 }

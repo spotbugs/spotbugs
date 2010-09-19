@@ -31,9 +31,8 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 @DefaultAnnotationForFields(NonNull.class)
 @DefaultAnnotationForMethods(CheckForNull.class)
 @DefaultAnnotationForParameters(NonNull.class)
-
 class Bug2672946B extends Bug2672946A {
-    public Bug2672946B(Bug2672946B field){
+    public Bug2672946B(Bug2672946B field) {
         super(field);
     }
 

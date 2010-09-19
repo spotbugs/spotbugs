@@ -39,13 +39,16 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 
 /**
- * Some methods should implement a specific <CODE>super</CODE>-call for a
- * clean execution of the code. The <CODE>CreateSuperCallResolution</CODE>
- * creates a new <CODE>super</CODE>-call for these methods.
- *
- * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#FI_MISSING_SUPER_CALL">FI_MISSING_SUPER_CALL</a>
- * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#IJU_SETUP_NO_SUPER">IJU_SETUP_NO_SUPER</a>
- * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#IJU_TEARDOWN_NO_SUPER">IJU_TEARDOWN_NO_SUPER</a>
+ * Some methods should implement a specific <CODE>super</CODE>-call for a clean
+ * execution of the code. The <CODE>CreateSuperCallResolution</CODE> creates a
+ * new <CODE>super</CODE>-call for these methods.
+ * 
+ * @see <a
+ *      href="http://findbugs.sourceforge.net/bugDescriptions.html#FI_MISSING_SUPER_CALL">FI_MISSING_SUPER_CALL</a>
+ * @see <a
+ *      href="http://findbugs.sourceforge.net/bugDescriptions.html#IJU_SETUP_NO_SUPER">IJU_SETUP_NO_SUPER</a>
+ * @see <a
+ *      href="http://findbugs.sourceforge.net/bugDescriptions.html#IJU_TEARDOWN_NO_SUPER">IJU_TEARDOWN_NO_SUPER</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:g1zgragg@hsr.ch">Guido Zgraggen</a>

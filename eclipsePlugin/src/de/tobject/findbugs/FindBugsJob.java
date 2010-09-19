@@ -36,20 +36,20 @@ public abstract class FindBugsJob extends Job {
     public FindBugsJob(String name, IProject project) {
         super(name);
         setRule(new MutexSchedulingRule(project));
-	}
+    }
 
     @Override
     public boolean belongsTo(Object family) {
         return FindbugsPlugin.class == family;
-	}
-
-    public void scheduleInteractive(){
-        setUser(true);
-        setPriority(Job.INTERACTIVE);
-		schedule();
     }
 
-    protected String createErrorMessage(){
+    public void scheduleInteractive() {
+        setUser(true);
+        setPriority(Job.INTERACTIVE);
+        schedule();
+    }
+
+    protected String createErrorMessage() {
         return getName() + " failed";
     }
 
@@ -58,15 +58,15 @@ public abstract class FindBugsJob extends Job {
     @Override
     public IStatus run(IProgressMonitor monitor) {
         try {
-			runWithProgress(monitor);
+            runWithProgress(monitor);
         } catch (OperationCanceledException e) {
             // Do nothing when operation cancelled.
             return Status.CANCEL_STATUS;
-		} catch (CoreException ex) {
+        } catch (CoreException ex) {
             FindbugsPlugin.getDefault().logException(ex, createErrorMessage());
             return ex.getStatus();
         } finally {
-			monitor.done();
+            monitor.done();
         }
         return Status.OK_STATUS;
     }

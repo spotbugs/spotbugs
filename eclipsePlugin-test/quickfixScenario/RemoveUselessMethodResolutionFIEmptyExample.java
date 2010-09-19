@@ -1,5 +1,5 @@
 public class RemoveUselessMethodResolutionFIEmptyExample {
-	@Override
-	protected void finalize() throws Throwable {
-	}
+    @Override
+    protected void finalize() throws Throwable {
+    }
 }

@@ -4,7 +4,7 @@ public class InnerIS {
     class Inner {
         public int f() {
             synchronized (InnerIS.this) {
-				return x;
+                return x;
             }
         }
     }

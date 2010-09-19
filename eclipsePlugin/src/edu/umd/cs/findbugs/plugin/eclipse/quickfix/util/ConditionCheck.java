@@ -24,7 +24,7 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix.util;
 /**
  * <CODE>ConditionCheck</CODE> provides some static methods to check pre- and
  * post-conditions.
- *
+ * 
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @version 1.0
@@ -33,7 +33,7 @@ public class ConditionCheck {
 
     /**
      * Same as <CODE>checkForNull(obj, "object")</CODE>.
-     *
+     * 
      * @see <CODE>ConditionCheck.checkForNull(Object, String)</CODE>
      */
     public static void checkForNull(Object obj) {
@@ -42,7 +42,7 @@ public class ConditionCheck {
 
     /**
      * Checks the specified <CODE>Object</CODE> for <CODE>null</CODE>
-     *
+     * 
      * @param obj
      *            the <CODE>Object</CODE>
      * @param name

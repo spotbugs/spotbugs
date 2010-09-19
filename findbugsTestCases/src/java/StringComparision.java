@@ -6,7 +6,7 @@ class StringComparision {
     @Override
     public String toString() {
         return x + "," + y;
-	}
+    }
 
     public boolean isOrigin() {
         return toString() == "0,0";
@@ -23,15 +23,18 @@ class StringComparision {
     public boolean falsePositiveCompareBooleanToNull(Boolean a) {
         return a == null;
     }
-	public boolean falsePositiveCompareStringToNull(String a) {
+
+    public boolean falsePositiveCompareStringToNull(String a) {
         return a == null;
     }
+
     public boolean falsePositiveCompareIntegerToNull(Integer a) {
-		return a == null;
+        return a == null;
     }
+
     public void compareTwo(String a, String b) {
         if (a == "This")
-			System.out.println("a");
+            System.out.println("a");
         if (b == "That")
             System.out.println("b");
     }
@@ -39,11 +42,11 @@ class StringComparision {
     public Field searchFields(Field[] fields, String name) {
         String internedName = name.intern();
         for (int i = 0; i < fields.length; i++) {
-			if (fields[i].getName() == internedName) {
+            if (fields[i].getName() == internedName) {
                 return fields[i];
             }
         }
-		return null;
+        return null;
     }
 
 }

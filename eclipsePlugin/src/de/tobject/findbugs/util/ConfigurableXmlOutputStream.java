@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.xml.XMLAttributeList.NameValuePair;
 
 /**
  * Write XML or plain text to an output stream.
- *
+ * 
  * @see OutputStreamXMLOutput
  * @author Andrei Loskutov
  */
@@ -42,27 +42,32 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
     private static final String OPENING = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
     private final Writer out;
-    private int nestingLevel;
-    private boolean newLine;
-	private final boolean plainText;
 
+    private int nestingLevel;
+
+    private boolean newLine;
+
+    private final boolean plainText;
 
     /**
      * Constructor.
-     * @param os OutputStream to write XML output to
-	 * @param plainText to use plain text instead of xml
+     * 
+     * @param os
+     *            OutputStream to write XML output to
+     * @param plainText
+     *            to use plain text instead of xml
      */
     public ConfigurableXmlOutputStream(OutputStream os, boolean plainText) {
         this.plainText = plainText;
-		this.out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+        this.out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
         this.nestingLevel = 0;
         this.newLine = true;
     }
 
     public void beginDocument() throws IOException {
-        if(!plainText){
+        if (!plainText) {
             out.write(OPENING);
-		}
+        }
         out.write("\n");
         newLine = true;
     }
@@ -72,21 +77,21 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
     }
 
     public void openTag(String tagName, XMLAttributeList attributeList) throws IOException {
-        if(!plainText){
+        if (!plainText) {
             emitTag(tagName, attributeList.toString(), false);
-		} else {
+        } else {
             StringBuilder sb = new StringBuilder();
             Iterator<NameValuePair> iterator = attributeList.iterator();
             while (iterator.hasNext()) {
-				XMLAttributeList.NameValuePair nameValuePair = iterator.next();
+                XMLAttributeList.NameValuePair nameValuePair = iterator.next();
                 sb.append("\n");
                 for (int i = 0; i < nestingLevel; ++i) {
                     sb.append("  ");
-				}
+                }
                 sb.append(nameValuePair.getName()).append(" = ").append(nameValuePair.getName());
             }
             emitTag(tagName, sb.toString(), false);
-		}
+        }
     }
 
     public void openCloseTag(String tagName) throws IOException {
@@ -94,88 +99,88 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
     }
 
     public void openCloseTag(String tagName, XMLAttributeList attributeList) throws IOException {
-        if(!plainText){
+        if (!plainText) {
             emitTag(tagName, attributeList.toString(), true);
-		} else {
+        } else {
             StringBuilder sb = new StringBuilder();
             Iterator<NameValuePair> iterator = attributeList.iterator();
             while (iterator.hasNext()) {
-				XMLAttributeList.NameValuePair nameValuePair = iterator.next();
+                XMLAttributeList.NameValuePair nameValuePair = iterator.next();
                 sb.append("\n");
                 for (int i = 0; i < nestingLevel; ++i) {
                     sb.append("  ");
-				}
+                }
                 sb.append(nameValuePair.getName()).append(" = ").append(nameValuePair.getName());
             }
             emitTag(tagName, sb.toString(), true);
-		}
+        }
     }
 
     public void startTag(String tagName) throws IOException {
         indent();
         ++nestingLevel;
-		if(!plainText){
+        if (!plainText) {
             out.write("<");
         }
         out.write(tagName);
-	}
+    }
 
     public void addAttribute(String name, String value) throws IOException {
-        if(plainText){
+        if (plainText) {
             out.write("\n");
-			for (int i = 0; i < nestingLevel; ++i) {
+            for (int i = 0; i < nestingLevel; ++i) {
                 out.write("  ");
             }
         }
-		out.write(' ');
+        out.write(' ');
         out.write(name);
         out.write('=');
         out.write('"');
-		out.write(XMLAttributeList.getQuotedAttributeValue(value));
+        out.write(XMLAttributeList.getQuotedAttributeValue(value));
         out.write('"');
     }
 
     public void stopTag(boolean close) throws IOException {
         if (close) {
-            if(!plainText){
-				out.write("/>");
+            if (!plainText) {
+                out.write("/>");
             }
             out.write("\n");
             --nestingLevel;
-			newLine = true;
+            newLine = true;
         } else {
-            if(!plainText){
+            if (!plainText) {
                 out.write(">");
-			} else {
+            } else {
                 out.write("\n");
             }
             newLine = false;
-		}
+        }
     }
 
     private void emitTag(String tagName, boolean close) throws IOException {
         startTag(tagName);
         stopTag(close);
-	}
+    }
 
     private void emitTag(String tagName, String attributes, boolean close) throws IOException {
         startTag(tagName);
         attributes = attributes.trim();
-		if (attributes.length() > 0) {
+        if (attributes.length() > 0) {
             out.write(" ");
             out.write(attributes);
         }
-		stopTag(close);
+        stopTag(close);
     }
 
     public void closeTag(String tagName) throws IOException {
         --nestingLevel;
         if (newLine) {
-			indent();
+            indent();
         }
-        if(!plainText){
+        if (!plainText) {
             out.write("</" + tagName + ">");
-		}
+        }
         out.write("\n");
         newLine = true;
     }
@@ -187,38 +192,38 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
     public void writeCDATA(String cdata) throws IOException {
         // FIXME: We just trust fate that the characters being written
         // don't contain the string "]]>"
-		assert(cdata.indexOf("]]") == -1);
-        if(!plainText){
+        assert (cdata.indexOf("]]") == -1);
+        if (!plainText) {
             out.write("<![CDATA[");
-        } else {
-			out.write("\n");
-        }
-        out.write(cdata);
-        if(!plainText){
-			out.write("]]>");
         } else {
             out.write("\n");
         }
-		newLine = false;
+        out.write(cdata);
+        if (!plainText) {
+            out.write("]]>");
+        } else {
+            out.write("\n");
+        }
+        newLine = false;
     }
 
     @DischargesObligation
     public void finish() throws IOException {
         out.flush();
-		out.close();
+        out.close();
     }
 
     private void indent() throws IOException {
         if (!newLine) {
             out.write("\n");
-		}
-//		if(plainText){
-//			out.write("\n");
-//		}
+        }
+        // if(plainText){
+        // out.write("\n");
+        // }
         for (int i = 0; i < nestingLevel; ++i) {
             out.write("  ");
         }
-	}
+    }
 }
 
 // vim:ts=4

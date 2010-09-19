@@ -14,7 +14,7 @@ public class F {
     public Runnable yarg() {
         return new Runnable() {
             public void run() {
-				System.out.println("oh yeah");
+                System.out.println("oh yeah");
             }
         };
     }

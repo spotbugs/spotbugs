@@ -23,36 +23,37 @@ import org.eclipse.core.resources.IMarker;
 import de.tobject.findbugs.marker.FindBugsMarker;
 
 /**
- *
+ * 
  * @param <Identifier>
- *            the specific identifier of given marker inside the given group type
+ *            the specific identifier of given marker inside the given group
+ *            type
  */
 abstract class MarkerMapper<Identifier> {
 
     /**
      * there is no mapping possible for current mapping type
      */
-	public static final MarkerMapper<Void> NO_MAPPING = new MarkerMapper<Void>(){
+    public static final MarkerMapper<Void> NO_MAPPING = new MarkerMapper<Void>() {
 
         @Override
         void setType(GroupType type) {
             throw new IllegalStateException("Setting the type not allowed");
-		}
+        }
 
         @Override
         Void getIdentifier(IMarker marker) {
             return null;
-		}
+        }
 
         @Override
         GroupType getType() {
             return GroupType.Undefined;
-		}
+        }
 
         @Override
         String getShortDescription(Object id) {
             return "Undefined";
-		}
+        }
 
     };
 
@@ -63,28 +64,29 @@ abstract class MarkerMapper<Identifier> {
     }
 
     void setType(GroupType type) {
-        if(this.type != null){
+        if (this.type != null) {
             throw new IllegalStateException("Re-setting the type not allowed");
-		}
-        if(type == null){
+        }
+        if (type == null) {
             throw new IllegalStateException("Null type not allowed");
         }
-		this.type = type;
+        this.type = type;
     }
 
     /**
      * @param marker
      *            non null marker
-	 * @return the specific identifier for given marker for the current mapping type, or
-     *         null if the mapping cannot be created
+     * @return the specific identifier for given marker for the current mapping
+     *         type, or null if the mapping cannot be created
      */
     abstract Identifier getIdentifier(IMarker marker);
-	abstract String getShortDescription(Object id);
+
+    abstract String getShortDescription(Object id);
 
     FindBugsMarker.Priority getPrio(Identifier data) {
         if (getType() == GroupType.Priority) {
             return FindBugsMarker.Priority.label(((Integer) data).intValue());
-		}
+        }
         return FindBugsMarker.Priority.Unknown;
     }
 

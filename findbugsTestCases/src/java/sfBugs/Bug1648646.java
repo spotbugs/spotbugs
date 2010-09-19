@@ -5,6 +5,7 @@ public class Bug1648646 {
     public static Bug1648646 foo() {
         return buildHierarchy(null);
     }
+
     public static Bug1648646 buildHierarchy(Class clzz) {
 
         Bug1648646 hier = new Bug1648646();

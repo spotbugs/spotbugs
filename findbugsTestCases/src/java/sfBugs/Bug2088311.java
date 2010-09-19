@@ -14,7 +14,7 @@ public class Bug2088311 implements Comparable<Bug2088311> {
     public int compareTo(Bug2088311 other) {
         if (getBegin() == null) {
             return -1;
-		}
+        }
         return getBegin().compareTo(other.getBegin());
     }
 }

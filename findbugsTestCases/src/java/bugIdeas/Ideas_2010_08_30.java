@@ -14,11 +14,11 @@ public final class Ideas_2010_08_30 implements Runnable {
     public void test() {
         new Thread(this).run();
         new Thread() {
-			public void run() {
+            public void run() {
                 System.out.println("Hello");
             }
         }.start();
-	}
+    }
 
     public void run() {
         System.out.println("Hello");
@@ -27,12 +27,12 @@ public final class Ideas_2010_08_30 implements Runnable {
     public @CheckForNull
     String getFoo() {
         return null;
-	}
+    }
 
     public int test(BufferedReader in) throws IOException {
         try {
             return in.readLine().hashCode() + getFoo().hashCode();
-		} catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             return 0;
         }
 
@@ -41,7 +41,7 @@ public final class Ideas_2010_08_30 implements Runnable {
     public int test2() {
         try {
             String x = getFoo();
-			return x.hashCode();
+            return x.hashCode();
         } catch (NullPointerException e) {
             return 0;
         }

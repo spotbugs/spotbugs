@@ -31,15 +31,14 @@ import de.tobject.findbugs.properties.PathElement;
 
 /**
  * Test subclass of FilterFilesTab that provides methods for testing purposes.
- *
+ * 
  * @author Tomás Pollak
  */
 public class FilterFilesTabTestSubclass extends FilterFilesTab {
 
-    public FilterFilesTabTestSubclass(TabFolder tabFolder, FindbugsPropertyPage page,
-            int style) {
+    public FilterFilesTabTestSubclass(TabFolder tabFolder, FindbugsPropertyPage page, int style) {
         super(tabFolder, page, style);
-	}
+    }
 
     public void addFileToExcludeBugsFilter(String file) {
         ((FilterProviderTestSubclass) getFilterExclBugs()).addFile(file);
@@ -68,12 +67,14 @@ public class FilterFilesTabTestSubclass extends FilterFilesTab {
     @Override
     protected FilterProvider createFilterProvider(ListViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
         return new FilterProviderTestSubclass(viewer, kind, page);
-	}
+    }
 
     private class FilterProviderTestSubclass extends FilterProvider {
 
         private String fileLocation;
+
         private String parentPath;
+
         private String fileName;
 
         protected FilterProviderTestSubclass(ListViewer viewer, FilterKind kind, FindbugsPropertyPage propertyPage) {
@@ -83,7 +84,7 @@ public class FilterFilesTabTestSubclass extends FilterFilesTab {
         public void addFile(String fileLocation) {
             File file = new File(fileLocation);
             this.fileLocation = fileLocation;
-			this.fileName = file.getName();
+            this.fileName = file.getName();
             this.parentPath = file.getParent();
             addFiles(FilterFilesTabTestSubclass.this.getShell());
         }
@@ -91,23 +92,23 @@ public class FilterFilesTabTestSubclass extends FilterFilesTab {
         public void removeAllFiles() {
             for (PathElement pathElement : new ArrayList<PathElement>(paths)) {
                 remove(pathElement);
-			}
+            }
         }
 
         @Override
         protected String[] getFileNames(FileDialog dialog) {
             return new String[] { fileName };
-		}
+        }
 
         @Override
         protected String getFilterPath(FileDialog dialog) {
             return parentPath;
-		}
+        }
 
         @Override
         protected String openFileDialog(FileDialog dialog) {
             return fileLocation;
-		}
+        }
 
     }
 }

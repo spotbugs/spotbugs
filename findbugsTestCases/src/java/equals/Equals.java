@@ -32,7 +32,7 @@ public class Equals {
     boolean report(B b, C c) {
         // this is slightly tricky: there is one type (E) which is a subtype of
         // both B and C, but it is an interface, and thus can't be instantiated.
-		return b.equals(c);
+        return b.equals(c);
     }
 
     boolean doNotReport(A a, B b) {
@@ -42,13 +42,13 @@ public class Equals {
     boolean doNotReportTricky(B b, D d) {
         // the interfaces themselves are unrelated, but a class implementing
         // both interfaces exists
-		return b.equals(d);
+        return b.equals(d);
     }
 
     boolean doNotReportTricky2(B b, D d) {
         // the interfaces themselves are unrelated, but a class implementing
         // both interfaces exists
-		return d.equals(b);
+        return d.equals(b);
     }
 
     boolean report2(P p, R r) {

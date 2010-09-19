@@ -13,18 +13,18 @@ public class Bug2689238 {
     public static String method(Object aObject) {
         if (aObject instanceof Alpha && aObject instanceof Betta) {
             // --- detects Bug in next line ---
-			Alpha lAlpha = (Alpha) aObject;
+            Alpha lAlpha = (Alpha) aObject;
             Betta lBetta = (Betta) aObject;
             return (lAlpha.alpha() + " " + lBetta.betta());
         } else {
-			return ("not (alpha and betta)");
+            return ("not (alpha and betta)");
         }
     }
 
     public static class SimplyBetta implements Betta {
         @Override
         public String betta() {
-			return (null);
+            return (null);
         }
     }
 

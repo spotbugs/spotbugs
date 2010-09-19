@@ -27,12 +27,13 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 
 /**
  * Listener which reports changes on projects or on FindBug markers
- *
+ * 
  * @author Andrei
  */
 final class ResourceChangeListener implements IResourceChangeListener {
 
     static final int SHORT_DELAY = 250;
+
     static final int LONG_DELAY = 750;
 
     final IViewerRefreshJob refreshJob;
@@ -47,17 +48,17 @@ final class ResourceChangeListener implements IResourceChangeListener {
         boolean accepted = false;
 
         /*
-         * gather all marker changes from the delta. be sure to do this in the calling
-         * thread, as the delta is destroyed when this method returns
-		 */
+         * gather all marker changes from the delta. be sure to do this in the
+         * calling thread, as the delta is destroyed when this method returns
+         */
         IMarkerDelta[] markerDeltas = event.findMarkerDeltas(FindBugsMarker.NAME, true);
         for (IMarkerDelta mdelta : markerDeltas) {
             IMarker marker = mdelta.getMarker();
-			if(marker == null){
+            if (marker == null) {
                 continue;
             }
             DeltaInfo deltaInfo = new DeltaInfo(marker, mdelta.getKind());
-			if(BugContentProvider.DEBUG){
+            if (BugContentProvider.DEBUG) {
                 System.out.println("resource change for: " + deltaInfo);
             }
 
@@ -71,7 +72,7 @@ final class ResourceChangeListener implements IResourceChangeListener {
         if (postBuild) {
             scheduleRefreshJob(SHORT_DELAY);
         } else {
-			// After some time do updates anyways
+            // After some time do updates anyways
             scheduleRefreshJob(LONG_DELAY);
         }
     }

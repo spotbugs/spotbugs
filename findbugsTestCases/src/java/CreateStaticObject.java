@@ -1,4 +1,3 @@
-
 public class CreateStaticObject {
     public void test() {
         Utils u = new Utils();
@@ -8,7 +7,7 @@ public class CreateStaticObject {
         while (count-- > 0) {
             System.out.println(u.getGreeting());
         }
-	}
+    }
 }
 
 class Utils {

@@ -28,12 +28,12 @@ class SynchronizationTest5 {
     int add(int y) {
         x += y;
         return x;
-	}
+    }
 
     static class Foo {
         public int add(SynchronizationTest5 s, int y) {
             synchronized (s) {
-				return s.add(y);
+                return s.add(y);
             }
         }
     }

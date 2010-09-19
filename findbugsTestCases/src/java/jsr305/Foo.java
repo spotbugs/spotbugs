@@ -13,6 +13,6 @@ import javax.annotation.meta.When;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Foo {
     When when() default When.ALWAYS;
+
     ElementType[] defaultFor() default {};
 }
-

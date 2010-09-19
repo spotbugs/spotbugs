@@ -35,7 +35,7 @@ public final class FindBugsConstants {
     /**
      * Prefix for the (enumerated) custom detector package keys
      */
-	public final static String KEY_CUSTOM_DETECTORS = "customDetectors";
+    public final static String KEY_CUSTOM_DETECTORS = "customDetectors";
 
     /** marker severity to use for bugs with low prio */
     public final static String PRIO_LOW_MARKER_SEVERITY = FindBugsMarker.NAME_LOW;
@@ -46,14 +46,16 @@ public final class FindBugsConstants {
     /** marker severity to use for bugs with high prio */
     public final static String PRIO_HIGH_MARKER_SEVERITY = FindBugsMarker.NAME_HIGH;
 
-    /** comma separated list of bug patterns which should be omitted on export operation */
+    /**
+     * comma separated list of bug patterns which should be omitted on export
+     * operation
+     */
     public final static String LAST_USED_EXPORT_FILTER = "lastUsedExportFilter";
 
     /** "sort by" preference for exporting data */
     public final static String EXPORT_SORT_ORDER = "exportSortOrder";
 
     public final static String ORDER_BY_NAME = "byName";
-
 
     public final static String ORDER_BY_OVERALL_BUGS_COUNT = "byOverallBugsCount";
 
@@ -65,10 +67,13 @@ public final class FindBugsConstants {
 
     public final static String LAST_USED_WORKING_SET = "lastUsedWorkingSet";
 
-    //////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////
     // FB workspace level settings
 
-    /** ask if FB should automatically switch to the FB perspective after analysis is done */
+    /**
+     * ask if FB should automatically switch to the FB perspective after
+     * analysis is done
+     */
     public final static String ASK_ABOUT_PERSPECTIVE_SWITCH = "askAboutPerspectiveSwitch";
 
     /** true to switch to FindBugs perspective after analysis is done */
@@ -91,38 +96,41 @@ public final class FindBugsConstants {
     public final static String ENABLE_CONSOLE_OUTPUT = "enableConsoleOutput";
 
     public final static String PROFILE_OUTPUT_MODE = "profileOutputMode";
+
     public final static String PROFILE_OUTPUT_BY_TIME = "profileOutputByTime";
+
     public final static String PROFILE_OUTPUT_BY_CALL = "profileOutputByCall";
-	public final static String PROFILE_OUTPUT_BY_TIME_PER_CALL = "profileOutputByTimePerCall";
+
+    public final static String PROFILE_OUTPUT_BY_TIME_PER_CALL = "profileOutputByTimePerCall";
 
     public static final String IDS_PATTERN = "\\s*,\\s*";
 
     public static final String IDS_SEPARATOR = ", ";
 
-    public static String encodeIds(Set<String> ids){
+    public static String encodeIds(Set<String> ids) {
         StringBuilder sb = new StringBuilder();
         for (String string : ids) {
-			sb.append(string).append(IDS_SEPARATOR);
+            sb.append(string).append(IDS_SEPARATOR);
         }
-        if(sb.length() > 0) {
+        if (sb.length() > 0) {
             sb.setLength(sb.length() - IDS_SEPARATOR.length());
-		}
+        }
         return sb.toString();
     }
 
     public static Set<String> decodeIds(String text) {
         Set<String> sortedIds = new TreeSet<String>();
-        if(text == null || text.trim().length() == 0) {
-			return sortedIds;
+        if (text == null || text.trim().length() == 0) {
+            return sortedIds;
         }
 
         String[] strings = text.split(IDS_PATTERN);
         for (String string : strings) {
             string = string.trim();
-			if(string.length() > 0){
+            if (string.length() > 0) {
                 sortedIds.add(string);
             }
         }
-		return sortedIds;
+        return sortedIds;
     }
 }

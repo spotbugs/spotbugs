@@ -7,21 +7,17 @@ package sfBugs;
  */
 public class Bug1816258a {
 
-
     public void castTest() {
         Object postObject = new String[] { null };
-		String postValue = postObject instanceof String[] ? ((String[]) postObject)[0]
-                : (String) postObject //line 12
+        String postValue = postObject instanceof String[] ? ((String[]) postObject)[0] : (String) postObject // line
+                                                                                                             // 12
         ;
         System.out.println(postValue);
-	}
+    }
 
-
-
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         Bug1816258a gt = new Bug1816258a();
         gt.castTest();
     }
-	
 
 }

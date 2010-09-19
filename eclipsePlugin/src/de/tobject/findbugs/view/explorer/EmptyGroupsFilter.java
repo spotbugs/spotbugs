@@ -34,15 +34,14 @@ public class EmptyGroupsFilter extends ViewerFilter {
     @Override
     public boolean select(Viewer viewer, Object parentElement, Object element) {
         CommonViewer v2 = (CommonViewer) viewer;
-		BugContentProvider provider = BugContentProvider.getProvider(v2
-                .getNavigatorContentService());
-        if(element instanceof BugGroup){
+        BugContentProvider provider = BugContentProvider.getProvider(v2.getNavigatorContentService());
+        if (element instanceof BugGroup) {
             BugGroup group = (BugGroup) element;
-			if(provider.getFilteredMarkersCount(group) == group.getMarkersCount()){
+            if (provider.getFilteredMarkersCount(group) == group.getMarkersCount()) {
                 return false;
             }
         }
-		return true;
+        return true;
     }
 
 }

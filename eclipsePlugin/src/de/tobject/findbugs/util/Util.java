@@ -36,10 +36,9 @@ import org.eclipse.swt.widgets.Display;
 
 import edu.umd.cs.findbugs.util.Archive;
 
-
 /**
  * Eclipse-specific utilities.
- *
+ * 
  * @author Phil Crosby
  * @author Peter Friese
  * @author Andrei Loskutov
@@ -48,48 +47,48 @@ public class Util {
 
     /**
      * Checks whether the given resource is a Java source file.
-     *
-	 * @param resource The resource to check.
-     * @return
-     *      <code>true</code> if the given resource is a Java source file,
-     *      <code>false</code> otherwise.
-	 */
+     * 
+     * @param resource
+     *            The resource to check.
+     * @return <code>true</code> if the given resource is a Java source file,
+     *         <code>false</code> otherwise.
+     */
     public static boolean isJavaFile(IResource resource) {
         if (resource == null || (resource.getType() != IResource.FILE)) {
             return false;
-		}
+        }
         String ex = resource.getFileExtension();
         return "java".equalsIgnoreCase(ex); //$NON-NLS-1$
     }
 
     /**
      * Checks whether the given resource is a Java source file.
-     *
-	 * @param resource The resource to check.
-     * @return
-     *      <code>true</code> if the given resource is a Java source file,
-     *      <code>false</code> otherwise.
-	 */
+     * 
+     * @param resource
+     *            The resource to check.
+     * @return <code>true</code> if the given resource is a Java source file,
+     *         <code>false</code> otherwise.
+     */
     public static boolean isJavaArchive(IResource resource) {
         if (resource == null || (resource.getType() != IResource.FILE)) {
             return false;
-		}
+        }
         String name = resource.getName();
         return Archive.isArchiveFileName(name);
     }
 
     /**
      * Checks whether the given resource is a Java class file.
-     *
-	 * @param resource The resource to check.
-     * @return
-     * 	<code>true</code> if the given resource is a class file,
-     * 	<code>false</code> otherwise.
-	 */
+     * 
+     * @param resource
+     *            The resource to check.
+     * @return <code>true</code> if the given resource is a class file,
+     *         <code>false</code> otherwise.
+     */
     public static boolean isClassFile(IResource resource) {
         if (resource == null || (resource.getType() != IResource.FILE)) {
             return false;
-		}
+        }
         String ex = resource.getFileExtension();
         return "class".equalsIgnoreCase(ex); //$NON-NLS-1$
 
@@ -97,95 +96,95 @@ public class Util {
 
     /**
      * Checks whether the given java element is a Java class file.
-     *
-	 * @param elt The resource to check.
-     * @return
-     * 	<code>true</code> if the given resource is a class file,
-     * 	<code>false</code> otherwise.
-	 */
+     * 
+     * @param elt
+     *            The resource to check.
+     * @return <code>true</code> if the given resource is a class file,
+     *         <code>false</code> otherwise.
+     */
     public static boolean isClassFile(IJavaElement elt) {
         if (elt == null) {
             return false;
-		}
+        }
         return elt instanceof IClassFile || elt instanceof ICompilationUnit;
 
     }
 
     /**
-     * Checks whether the given resource is a Java artifact (i.e. either a
-     * Java source file or a Java class file).
-	 *
-     * @param resource The resource to check.
-     * @return
-     * 	<code>true</code> if the given resource is a Java artifact.
-	 * 	<code>false</code> otherwise.
+     * Checks whether the given resource is a Java artifact (i.e. either a Java
+     * source file or a Java class file).
+     * 
+     * @param resource
+     *            The resource to check.
+     * @return <code>true</code> if the given resource is a Java artifact.
+     *         <code>false</code> otherwise.
      */
     public static boolean isJavaArtifact(IResource resource) {
         if (resource == null || (resource.getType() != IResource.FILE)) {
-			return false;
+            return false;
         }
         String ex = resource.getFileExtension();
-        if ("java".equalsIgnoreCase(ex)	|| "class".equalsIgnoreCase(ex)){
-			return true;
+        if ("java".equalsIgnoreCase(ex) || "class".equalsIgnoreCase(ex)) {
+            return true;
         }
         String name = resource.getName();
         return Archive.isArchiveFileName(name);
-	}
+    }
 
     /**
-     * A countdown timer which starts to work with the first entry and prints the results
-     * ascending with the overall time.
-	 */
+     * A countdown timer which starts to work with the first entry and prints
+     * the results ascending with the overall time.
+     */
     public static class StopTimer {
         TreeMap<Long, String> stopTimes = new TreeMap<Long, String>();
 
         public synchronized void newPoint(String name) {
             Long time = Long.valueOf(System.currentTimeMillis());
-            if(stopTimes.size() == 0){
-				stopTimes.put(time, name);
+            if (stopTimes.size() == 0) {
+                stopTimes.put(time, name);
                 return;
             }
             Long lastTime = stopTimes.lastKey();
-			if(time.longValue() <= lastTime.longValue()){
+            if (time.longValue() <= lastTime.longValue()) {
                 time = Long.valueOf(lastTime.longValue() + 1);
             }
             stopTimes.put(time, name);
-		}
+        }
 
         public synchronized String getResults() {
             StringBuilder sb = new StringBuilder();
             Iterator<Entry<Long, String>> iterator = stopTimes.entrySet().iterator();
-			Entry<Long, String> firstEntry = iterator.next();
-            while(iterator.hasNext()){
+            Entry<Long, String> firstEntry = iterator.next();
+            while (iterator.hasNext()) {
                 Entry<Long, String> entry = iterator.next();
                 long diff = entry.getKey().longValue() - firstEntry.getKey().longValue();
-				sb.append(firstEntry.getValue()).append(": ").append(diff).append(" ms\n");
+                sb.append(firstEntry.getValue()).append(": ").append(diff).append(" ms\n");
                 firstEntry = entry;
             }
 
-            long overall = stopTimes.lastKey().longValue()
-                    - stopTimes.firstKey().longValue();
+            long overall = stopTimes.lastKey().longValue() - stopTimes.firstKey().longValue();
             sb.append("Overall: ").append(overall).append(" ms");
-			return sb.toString();
+            return sb.toString();
         }
     }
 
     /**
      * Copies given string to the system clipboard
-     * @param content non null String
-	 */
+     * 
+     * @param content
+     *            non null String
+     */
     public static void copyToClipboard(String content) {
-        if(content == null){
+        if (content == null) {
             return;
-		}
+        }
         Clipboard cb = null;
         try {
             cb = new Clipboard(Display.getDefault());
-			cb.setContents(new String[] { content }, new TextTransfer[] { TextTransfer
-                    .getInstance() });
+            cb.setContents(new String[] { content }, new TextTransfer[] { TextTransfer.getInstance() });
         } finally {
             if (cb != null) {
-				cb.dispose();
+                cb.dispose();
             }
         }
     }
@@ -193,15 +192,15 @@ public class Util {
     @SuppressWarnings("unchecked")
     @CheckForNull
     public static <V> V getAdapter(Class<V> adapter, Object obj) {
-		if(obj == null) {
+        if (obj == null) {
             return null;
         }
-        if(adapter.isAssignableFrom(obj.getClass())){
-			return (V) obj;
+        if (adapter.isAssignableFrom(obj.getClass())) {
+            return (V) obj;
         }
-        if(obj instanceof IAdaptable){
+        if (obj instanceof IAdaptable) {
             IAdaptable adaptable = (IAdaptable) obj;
-			return (V) adaptable.getAdapter(adapter);
+            return (V) adaptable.getAdapter(adapter);
         }
         return null;
     }

@@ -27,37 +27,36 @@ import java.util.StringTokenizer;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPersistable;
 
-
 public class Grouping implements IPersistable {
 
     private final LinkedList<GroupType> groupOrder;
 
-    private Grouping(List<GroupType> types){
+    private Grouping(List<GroupType> types) {
         groupOrder = new LinkedList<GroupType>(types);
         // at least marker should be shown
-		if(!groupOrder.contains(GroupType.Marker)){
+        if (!groupOrder.contains(GroupType.Marker)) {
             groupOrder.add(GroupType.Marker);
         }
     }
 
-    private static Grouping createDefault(){
+    private static Grouping createDefault() {
         List<GroupType> order = new ArrayList<GroupType>();
         order.add(GroupType.Project);
-		order.add(GroupType.Pattern);
+        order.add(GroupType.Pattern);
         order.add(GroupType.Marker);
         return createFrom(order);
     }
 
-    public static Grouping createFrom(List<GroupType> types){
+    public static Grouping createFrom(List<GroupType> types) {
         return new Grouping(types);
     }
 
-    public List<GroupType> asList(){
+    public List<GroupType> asList() {
         return new LinkedList<GroupType>(groupOrder);
     }
 
-    public GroupType getFirstType(){
-        return groupOrder.size() > 0? groupOrder.getFirst() : GroupType.Undefined;
+    public GroupType getFirstType() {
+        return groupOrder.size() > 0 ? groupOrder.getFirst() : GroupType.Undefined;
     }
 
     public GroupType getLastType() {
@@ -67,53 +66,52 @@ public class Grouping implements IPersistable {
     public GroupType getChildType(GroupType parent) {
         if (parent == GroupType.Marker) {
             return parent;
-		}
+        }
         for (int i = 0; i < groupOrder.size(); i++) {
             if (groupOrder.get(i) == parent) {
-                return i + 1 < groupOrder.size() ? groupOrder.get(i + 1)
-						: GroupType.Marker;
+                return i + 1 < groupOrder.size() ? groupOrder.get(i + 1) : GroupType.Marker;
             }
         }
         return GroupType.Marker;
-	}
+    }
 
-    Iterator<GroupType> iterator(){
+    Iterator<GroupType> iterator() {
         return groupOrder.iterator();
     }
 
     public GroupType getParentType(GroupType child) {
         for (int i = 0; i < groupOrder.size(); i++) {
             if (groupOrder.get(i) == child) {
-				return i - 1 >= 0 ? groupOrder.get(i - 1) : GroupType.Undefined;
+                return i - 1 >= 0 ? groupOrder.get(i - 1) : GroupType.Undefined;
             }
         }
         return GroupType.Undefined;
-	}
+    }
 
     public void saveState(IMemento memento) {
         memento.putString("Grouping", groupOrder.toString());
     }
 
     static Grouping restoreFrom(IMemento memento) {
-        if(memento == null){
+        if (memento == null) {
             return createDefault();
-		}
+        }
         String string = memento.getString("Grouping");
         return restoreFrom(string);
     }
 
     static Grouping restoreFrom(String saved) {
-        if(saved == null || saved.length() == 0){
+        if (saved == null || saved.length() == 0) {
             return createDefault();
-		}
+        }
         StringTokenizer st = new StringTokenizer(saved, "[] ,", false);
         List<GroupType> types = new ArrayList<GroupType>();
-        while(st.hasMoreTokens()){
-			GroupType type = GroupType.valueOf(st.nextToken());
+        while (st.hasMoreTokens()) {
+            GroupType type = GroupType.valueOf(st.nextToken());
             types.add(type);
         }
-        if(types.isEmpty()){
-			return createDefault();
+        if (types.isEmpty()) {
+            return createDefault();
         }
         return createFrom(types);
     }
@@ -122,13 +120,13 @@ public class Grouping implements IPersistable {
         return groupOrder.contains(type);
     }
 
-    int compare(GroupType g1, GroupType g2){
+    int compare(GroupType g1, GroupType g2) {
         return groupOrder.indexOf(g1) - groupOrder.indexOf(g2);
     }
 
     @Override
     public String toString() {
         return groupOrder.toString();
-	}
+    }
 
 }

@@ -53,18 +53,18 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 /**
  * Loades the <CODE>BugResolution</CODE>s form a xml document. The document
  * specifies the supported <CODE>BugResolution</CODE>s for the bug-types. An
- * entry has the form:<br><br>
+ * entry has the form:<br>
+ * <br>
  * <CODE>
  * &lt;bug type="BUG_TYPE"&gt;<br>
  * &nbsp;&nbsp;&lt;resolution classname="bugResolutionClassName"&gt;<br>
  * &nbsp;&nbsp;&nbsp;&nbsp;&lt;attr name="property"&gt;value&lt;/attr&gt;<br>
  * &nbsp;&nbsp;&lt;/resolution&gt;<br>
  * &lt;/bug&gt;<br><br>
- * </CODE>
- * The attributes specified for a <CODE>BugResolution</CODE> supports all
- * primitive types and strings. If an error occurs while loading a
+ * </CODE> The attributes specified for a <CODE>BugResolution</CODE> supports
+ * all primitive types and strings. If an error occurs while loading a
  * <CODE>BugResolution</CODE>, the error will be reported to the error log.
- *
+ * 
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:g1zgragg@hsr.ch">Guido Zgraggen</a>
@@ -102,19 +102,20 @@ public class BugResolutionLoader {
     public BugResolutionAssociations loadBugResolutions(File xmlFile, BugResolutionAssociations associations) {
         Document doc = parseDocument(xmlFile);
         if (doc == null) {
-			return null;
+            return null;
         }
         return loadBugResolutions(doc, associations);
     }
-	public BugResolutionAssociations loadBugResolutions() {
+
+    public BugResolutionAssociations loadBugResolutions() {
         InputStream is = BugResolutionLoader.class.getResourceAsStream("findbugs-resolutions.xml");
-        if(is == null) {
+        if (is == null) {
             return null;
-		}
+        }
         Document doc = parseDocument(is);
         if (doc == null) {
             return null;
-		}
+        }
         return loadBugResolutions(doc, null);
     }
 
@@ -125,7 +126,7 @@ public class BugResolutionLoader {
     /**
      * Loades the <CODE>BugResolutions</CODE> from the given XML-Document into
      * the specified <CODE>BugResolutionAssociations</CODE>.
-     *
+     * 
      * @param fixesDoc
      *            the XML-Document that contains the quick-fixes.
      * @param associations
@@ -183,14 +184,15 @@ public class BugResolutionLoader {
     }
 
     @CheckForNull
-    private IMarkerResolution instantiateBugResolution(Class<? extends IMarkerResolution> resolutionClass, Map<String, String> attributes) {
+    private IMarkerResolution instantiateBugResolution(Class<? extends IMarkerResolution> resolutionClass,
+            Map<String, String> attributes) {
         try {
             IMarkerResolution resolution = resolutionClass.newInstance();
             loadAttributes(resolution, attributes);
             return resolution;
         } catch (InstantiationException e) {
-            FindbugsPlugin.getDefault().logException(e, "Failed to instaniate BugResolution '" +
-                    resolutionClass.getSimpleName()+ "'.");
+            FindbugsPlugin.getDefault().logException(e,
+                    "Failed to instaniate BugResolution '" + resolutionClass.getSimpleName() + "'.");
             return null;
         } catch (IllegalAccessException e) {
             throw new IllegalStateException(e);
@@ -227,13 +229,14 @@ public class BugResolutionLoader {
     }
 
     private boolean isPropertySetterMethod(Method method, String propertyName) {
-        return method.getParameterTypes().length == 1 && method.getName().startsWith("set") && method.getName().length() > 3 && method.getName().substring(3).equalsIgnoreCase(propertyName);
+        return method.getParameterTypes().length == 1 && method.getName().startsWith("set") && method.getName().length() > 3
+                && method.getName().substring(3).equalsIgnoreCase(propertyName);
     }
 
     /**
      * Parse a given string value into the specified type. Only primitive types
      * are currently supported.
-     *
+     * 
      * @param value
      *            the string value
      * @param type
@@ -311,11 +314,11 @@ public class BugResolutionLoader {
     @CheckForNull
     private Document parseDocument(File xmlFile) {
         if (!xmlFile.exists()) {
-			FindbugsPlugin.getDefault().logError("Need file '" + xmlFile.getPath() + "' but it doesn't exist");
+            FindbugsPlugin.getDefault().logError("Need file '" + xmlFile.getPath() + "' but it doesn't exist");
             return null;
         }
         if (!xmlFile.canRead()) {
-			FindbugsPlugin.getDefault().logError("Need file '" + xmlFile.getPath() + "' but it isn't readable");
+            FindbugsPlugin.getDefault().logError("Need file '" + xmlFile.getPath() + "' but it isn't readable");
             return null;
         }
 
@@ -356,9 +359,9 @@ public class BugResolutionLoader {
         } finally {
             try {
                 is.close();
-			} catch (IOException e) {
+            } catch (IOException e) {
                 assert true;
             }
         }
-	}
+    }
 }

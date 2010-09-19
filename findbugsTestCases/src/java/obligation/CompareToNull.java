@@ -7,27 +7,27 @@ import java.io.InputStream;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 /**
- * Make sure the null-check detection feature of ObligationAnalysis
- * works correctly.
+ * Make sure the null-check detection feature of ObligationAnalysis works
+ * correctly.
  */
 public class CompareToNull {
 
     @NoWarning("OBL")
     public void ok1(String filename) throws IOException {
         InputStream in = null;
-		
+
         try {
             in = new FileInputStream(filename);
             int c = in.read();
-			System.out.println(c);
+            System.out.println(c);
         } finally {
             if (in != null) {
                 in.close();
-			}
+            }
         }
     }
 
-	@NoWarning("OBL")
+    @NoWarning("OBL")
     public void ok2(String filename) throws IOException {
         InputStream nullIS = null;
         InputStream in = null;
@@ -35,11 +35,12 @@ public class CompareToNull {
         try {
             in = new FileInputStream(filename);
             int c = in.read();
-			System.out.println(c);
+            System.out.println(c);
         } finally {
-            if (in != nullIS) { // slightly trickier to analyze this null comparison
+            if (in != nullIS) { // slightly trickier to analyze this null
+                                // comparison
                 in.close();
-			}
+            }
         }
     }
 }

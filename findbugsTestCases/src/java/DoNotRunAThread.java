@@ -1,4 +1,3 @@
-
 public class DoNotRunAThread {
 
     void f(Runnable r) {

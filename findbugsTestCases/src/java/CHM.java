@@ -11,5 +11,5 @@ class CHM {
     void put(String k, String v) {
         if (k == null)
             map.put(k, v); // should warn here about k being null
-	}
+    }
 }

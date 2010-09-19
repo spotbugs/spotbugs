@@ -29,14 +29,12 @@ public class GroupPropertyTester extends PropertyTester {
         super();
     }
 
-    public boolean test(Object receiver, String property, Object[] args,
-            Object expectedValue) {
-        if ("type".equals(property) && receiver instanceof BugGroup
-				&& expectedValue instanceof String) {
+    public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
+        if ("type".equals(property) && receiver instanceof BugGroup && expectedValue instanceof String) {
             BugGroup group = (BugGroup) receiver;
             return group.testAttribute(group, property, (String) expectedValue);
         }
-		return false;
+        return false;
     }
 
 }

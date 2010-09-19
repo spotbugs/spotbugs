@@ -17,25 +17,25 @@ public class DeadStore {
         args = new String[0];
     }
 
-
     public void testDatabaseStore(Connection c) throws SQLException {
         Statement s = c.prepareStatement("select something from other");
-		Map m = Collections.emptyMap();
+        Map m = Collections.emptyMap();
 
     }
+
     public void storeOfNull() {
-		for(int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             HashSet<Integer> set = new HashSet<Integer>();
             set.add(i);
             System.out.println(set.hashCode());
-			set = null;
+            set = null;
         }
     }
 
     public int finalLocalDNR(int a) {
         final int SCAN = 0; // <<---- complains about this line
         final int STAR = 1;
-		final int DONE = 2;
+        final int DONE = 2;
         // int state = SCAN;
 
         a += SCAN;
@@ -48,22 +48,22 @@ public class DeadStore {
     public void duplicateDeadStores() {
         try {
             Object o = new Object();
-		} catch (RuntimeException e) {
+        } catch (RuntimeException e) {
         }
         try {
             Object o = new Object();
-		} catch (RuntimeException e) {
+        } catch (RuntimeException e) {
         }
         try {
             Object o = new Object();
-		} catch (RuntimeException e) {
+        } catch (RuntimeException e) {
         }
     }
 
     public int storeNullDNR(int a) {
         Object foo = null;
         return a;
-	}
+    }
 
     public int storeZeroDNR(int a) {
         int count = 0;
@@ -77,7 +77,7 @@ public class DeadStore {
         if (a > 1) {
             b = 4;
             a += b;
-		}
+        }
 
         return a;
     }
@@ -85,7 +85,7 @@ public class DeadStore {
     public int notReportedin086(Object o) {
         if (o instanceof String) {
             String s = (String) o; // Not reported in 0.8.6 but reported in
-			// 0.8.5 (Bug: 1105217)
+            // 0.8.5 (Bug: 1105217)
         }
         return o.hashCode();
     }
@@ -93,30 +93,32 @@ public class DeadStore {
     public int cachingFields(int a, int b, int c, int d, int e) {
         a = x;
         b = 5;
-		c = x + 1;
+        c = x + 1;
         d = hashCode();
         return e;
     }
 
+    public enum StateEnum {
+        OK, TIMEDOUT, KILLED, FAILED, OTHER
+    }
 
-    public enum StateEnum { OK, TIMEDOUT, KILLED, FAILED, OTHER }
     public StateEnum mutateStatusDoNotReport(StateEnum st) {
         return st;
-	}
+    }
+
     /** possible false+ reported by Kelly O'Hair */
-    void setFailedState(StateEnum orig /*BuildTargetStatus status*/) {
-        StateEnum id = mutateStatusDoNotReport(orig); //status.getState().id();
-		switch ( id ) {
-            case TIMEDOUT:
-            case KILLED:
-            case FAILED:
-					break;
-            default:
-                    System.out.println(orig); //setState(status, new StateID(StateEnum.FAILED));
-                    break;
-			}
+    void setFailedState(StateEnum orig /* BuildTargetStatus status */) {
+        StateEnum id = mutateStatusDoNotReport(orig); // status.getState().id();
+        switch (id) {
+        case TIMEDOUT:
+        case KILLED:
+        case FAILED:
+            break;
+        default:
+            System.out.println(orig); // setState(status, new
+                                      // StateID(StateEnum.FAILED));
+            break;
         }
-
-
+    }
 
 }

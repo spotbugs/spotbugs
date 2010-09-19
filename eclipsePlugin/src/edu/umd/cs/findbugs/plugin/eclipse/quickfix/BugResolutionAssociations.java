@@ -40,7 +40,7 @@ import de.tobject.findbugs.FindbugsPlugin;
  * bug-resolutions. For each registred bug-type, at least one resolution-class
  * has to be specified. Also an instance of a bug-resolution can be associated
  * with a bug-type.
- *
+ * 
  * @see BugResolutionAssociations#getBugResolutions(String)
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
@@ -54,7 +54,8 @@ public class BugResolutionAssociations {
 
     // -------------------------------------------------------------------------
 
-    protected BugResolutionAssociations(Map<String, Set<Class<? extends IMarkerResolution>>> resolutionClasses, Map<String, Set<IMarkerResolution>> resolutions) {
+    protected BugResolutionAssociations(Map<String, Set<Class<? extends IMarkerResolution>>> resolutionClasses,
+            Map<String, Set<IMarkerResolution>> resolutions) {
         super();
         if (resolutionClasses == null) {
             resolutionClasses = new Hashtable<String, Set<Class<? extends IMarkerResolution>>>();
@@ -77,14 +78,14 @@ public class BugResolutionAssociations {
     public boolean registerBugResolution(String bugType, Class<? extends IMarkerResolution> resolutionClass) {
         checkForNull(bugType, "bug type");
         Set<Class<? extends IMarkerResolution>> classes = new HashSet<Class<? extends IMarkerResolution>>();
-		classes.add(resolutionClass);
+        classes.add(resolutionClass);
         return registerBugResolutions(bugType, classes);
     }
 
     public boolean deregisterBugResolution(String bugType, Class<? extends IMarkerResolution> resolutionClass) {
         checkForNull(bugType, "bug type");
         Set<Class<? extends IMarkerResolution>> classes = new HashSet<Class<? extends IMarkerResolution>>();
-		classes.add(resolutionClass);
+        classes.add(resolutionClass);
         return deregisterBugResolutions(bugType, classes);
     }
 
@@ -285,7 +286,8 @@ public class BugResolutionAssociations {
         try {
             return resolutionClass.newInstance();
         } catch (InstantiationException e) {
-            FindbugsPlugin.getDefault().logException(e, "Failed to instantiate bug-resolution '" + resolutionClass.getName() + "'.");
+            FindbugsPlugin.getDefault().logException(e,
+                    "Failed to instantiate bug-resolution '" + resolutionClass.getName() + "'.");
             return null;
         } catch (IllegalAccessException e) {
             FindbugsPlugin.getDefault().logException(e, "Failed to create bug-resolution '" + resolutionClass.getName() + "'.");

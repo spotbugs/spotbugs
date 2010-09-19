@@ -9,12 +9,13 @@ public class CorrectlyLocalizeWarning {
         else if (x == 2)
             throw new IllegalArgumentException();
         else if (x == 3) {
-           System.out.println("Impossible");
-        }else if (x == 4)
+            System.out.println("Impossible");
+        } else if (x == 4)
             s = "4";
         else if (x == 5)
             s = "5";
-        else throw new IllegalArgumentException();
+        else
+            throw new IllegalArgumentException();
 
         return s.hashCode();
 

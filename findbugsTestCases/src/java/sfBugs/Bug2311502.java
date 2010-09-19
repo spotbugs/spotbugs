@@ -16,56 +16,55 @@ public class Bug2311502 {
     @Documented
     @Nonnull
     @TypeQualifierDefault(ElementType.METHOD)
-	@Retention(RetentionPolicy.RUNTIME)
+    @Retention(RetentionPolicy.RUNTIME)
     public @interface ReturnValuesAreNonnullByDefault {
     }
 
-	/**
+    /**
      * Should flag code as unsafe.
      */
     static public class NonNullFalseNegative {
-	    
+
         @CheckForNull
         private Object junkField;
 
-	    public void setJunk(Object junk) {
+        public void setJunk(Object junk) {
             this.junkField = junk;
         }
 
-	    public final class BadInnerClass {
+        public final class BadInnerClass {
             @ExpectWarning("NP")
             public void badMethod() {
-                System.out.println(junkField.hashCode()); // should be caught as a bug
-	        }
+                System.out.println(junkField.hashCode()); // should be caught as
+                                                          // a bug
+            }
         }
 
     }
-	
 
     static public @ReturnValuesAreNonnullByDefault
     class NPNonNullReturnViolationBug {
-	    
+
         @CheckForNull
         private Object junkField;
 
-	    public void setJunk(Object junk) {
+        public void setJunk(Object junk) {
             this.junkField = junk;
         }
 
         public final class InnerClass {
             /**
-             * Prints out {@link NPNonNullReturnViolationBug#junkField},
-	         * if it's currently not <code>null</code>.
+             * Prints out {@link NPNonNullReturnViolationBug#junkField}, if it's
+             * currently not <code>null</code>.
              */
             public void printJunk() {
                 Object temp = junkField;
-	            if (temp != null) { // should be perfectly safe
+                if (temp != null) { // should be perfectly safe
                     System.out.println(temp.hashCode());
                 }
             }
-	    }
+        }
 
     }
-
 
 }

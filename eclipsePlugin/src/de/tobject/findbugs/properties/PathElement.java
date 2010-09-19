@@ -24,12 +24,13 @@ import org.eclipse.core.runtime.IStatus;
 public final class PathElement {
 
     private final IPath path;
+
     private IStatus status;
 
     public PathElement(IPath path, IStatus status) {
         this.path = path;
         this.status = status;
-	}
+    }
 
     public void setStatus(IStatus status) {
         this.status = status;
@@ -37,8 +38,8 @@ public final class PathElement {
 
     @Override
     public String toString() {
-        return path.toString() + (status.isOK()? "" : " (" + status.getMessage() + ")");
-	}
+        return path.toString() + (status.isOK() ? "" : " (" + status.getMessage() + ")");
+    }
 
     public String getPath() {
         return path.toOSString();
@@ -47,16 +48,16 @@ public final class PathElement {
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
-			return true;
+            return true;
         }
         if (obj instanceof PathElement) {
             return path.equals(((PathElement) obj).path);
-		}
+        }
         return false;
     }
 
     @Override
     public int hashCode() {
         return path.hashCode();
-	}
+    }
 }

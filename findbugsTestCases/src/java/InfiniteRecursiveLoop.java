@@ -17,11 +17,11 @@ class InfiniteRecursiveLoop {
     @Override
     public boolean equals(Object o) {
         return equals(o);
-	}
+    }
 
     @Override
     public int hashCode() {
         int i = System.identityHashCode(this);
-		return i + hashCode();
+        return i + hashCode();
     }
 }

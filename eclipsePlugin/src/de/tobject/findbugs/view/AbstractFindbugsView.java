@@ -46,14 +46,21 @@ import de.tobject.findbugs.FindbugsPlugin;
  */
 public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSelectionHandler, IContributedContentsView {
     static final String DETAILS_VIEW_IMG = "detailsView.png";
+
     static final String USER_ANNOTATIONS_VIEW_IMG = "annotationsView.png";
+
     static final String TREE_VIEW_IMG = "treeView.png";
-	static final String PERSPECTIVE_IMG = "buggy-tiny.png";
+
+    static final String PERSPECTIVE_IMG = "buggy-tiny.png";
 
     private Composite root;
+
     private Action actionShowDetailsView;
+
     private Action actionShowBugTreeView;
-	private Action actionShowAnnotationsView;
+
+    private Action actionShowAnnotationsView;
+
     private Action actionShowPerspective;
 
     public AbstractFindbugsView() {
@@ -63,11 +70,11 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
     /**
      * activates view if it is not visible
      */
-	final protected void activate() {
+    final protected void activate() {
         if (!isVisible()) {
             getSite().getPage().activate(this);
         }
-	}
+    }
 
     final public boolean isVisible() {
         return getSite().getPage().isPartVisible(this);
@@ -76,31 +83,33 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
     @Override
     public void setFocus() {
         getRootControl().setFocus();
-	}
+    }
 
     /*
      * (non-Javadoc)
-     *
-	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
+     * 
+     * @see org.eclipse.ui.part.WorkbenchPart#dispose()
      */
     @Override
     public void dispose() {
-		getRootControl().dispose();
+        getRootControl().dispose();
         super.dispose();
     }
 
     /*
      * (non-Javadoc)
-     *
-	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
+     * 
+     * @see
+     * org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets
+     * .Composite)
      */
     @Override
     public final void createPartControl(Composite parent) {
-		root = createRootControl(parent);
+        root = createRootControl(parent);
         makeActions();
         hookContextMenu();
         hookDoubleClickAction();
-		contributeToActionBars();
+        contributeToActionBars();
     }
 
     final public Composite getRootControl() {
@@ -110,97 +119,94 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
     /**
      * @param parent
      * @return
-	 */
+     */
     abstract protected Composite createRootControl(Composite parent);
 
     private void hookContextMenu() {
         MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener() {
+        menuMgr.addMenuListener(new IMenuListener() {
             public void menuAboutToShow(IMenuManager manager) {
                 fillContextMenu(manager);
             }
-		});
+        });
         Menu menu = menuMgr.createContextMenu(getRootControl());
         getRootControl().setMenu(menu);
         // TODO
-		// getSite().registerContextMenu(menuMgr, viewer);
+        // getSite().registerContextMenu(menuMgr, viewer);
     }
 
     private void contributeToActionBars() {
         IActionBars bars = getViewSite().getActionBars();
         fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
+        fillLocalToolBar(bars.getToolBarManager());
     }
 
     protected void makeActions() {
         actionShowAnnotationsView = new Action() {
             @Override
-			public void run() {
+            public void run() {
                 showUserAnnotationView();
             }
         };
-		configureAction(actionShowAnnotationsView, "Show Bug Annotations View",
-                "Show Annotations View", USER_ANNOTATIONS_VIEW_IMG);
+        configureAction(actionShowAnnotationsView, "Show Bug Annotations View", "Show Annotations View",
+                USER_ANNOTATIONS_VIEW_IMG);
 
         actionShowBugTreeView = new Action() {
             @Override
             public void run() {
-				showBugTreeView();
+                showBugTreeView();
             }
         };
-        configureAction(actionShowBugTreeView, "Show Bug Tree View",
-				"Show BugTree View", TREE_VIEW_IMG);
+        configureAction(actionShowBugTreeView, "Show Bug Tree View", "Show BugTree View", TREE_VIEW_IMG);
 
         actionShowDetailsView = new Action() {
             @Override
             public void run() {
-				showDetailsView();
+                showDetailsView();
             }
         };
-        configureAction(actionShowDetailsView, "Show Bug Details View",
-				"Show Bug Details View", DETAILS_VIEW_IMG);
+        configureAction(actionShowDetailsView, "Show Bug Details View", "Show Bug Details View", DETAILS_VIEW_IMG);
 
         actionShowPerspective = new Action() {
             @Override
             public void run() {
-				showPerspective();
+                showPerspective();
             }
         };
-        configureAction(actionShowPerspective, "Switch to FindBugs Perspective",
-				"Switch to FindBugs Perspective", PERSPECTIVE_IMG);
+        configureAction(actionShowPerspective, "Switch to FindBugs Perspective", "Switch to FindBugs Perspective",
+                PERSPECTIVE_IMG);
     }
-
 
     protected void fillLocalPullDown(IMenuManager manager) {
         manager.add(actionShowPerspective);
         manager.add(new Separator());
 
-        if(!(this instanceof UserAnnotationsView)) {
+        if (!(this instanceof UserAnnotationsView)) {
             manager.add(actionShowAnnotationsView);
         }
-		manager.add(actionShowBugTreeView);
+        manager.add(actionShowBugTreeView);
     }
 
     protected void fillContextMenu(IMenuManager manager) {
         // Other plug-ins can contribute there actions here
         manager.add(new Separator("additions")); //$NON-NLS-1$
-	}
+    }
 
     protected void fillLocalToolBar(IToolBarManager manager) {
         manager.add(actionShowPerspective);
         manager.add(new Separator());
 
-        if(!(this instanceof UserAnnotationsView)) {
+        if (!(this instanceof UserAnnotationsView)) {
             manager.add(actionShowAnnotationsView);
         }
-		manager.add(actionShowBugTreeView);
+        manager.add(actionShowBugTreeView);
     }
 
     @Override
     public Object getAdapter(Class adapter) {
-        if(adapter == IContributedContentsView.class) {
-			return this;
+        if (adapter == IContributedContentsView.class) {
+            return this;
         }
         return super.getAdapter(adapter);
     }
@@ -209,82 +215,78 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
         // TODO should refactor dirty code in views to common
     }
 
-    protected final void configureAction(Action action, String textKey,
-            String tooltipKey, String imageKey) {
+    protected final void configureAction(Action action, String textKey, String tooltipKey, String imageKey) {
         action.setText(FindbugsPlugin.getResourceString(textKey));
-		action.setToolTipText(FindbugsPlugin.getResourceString(tooltipKey));
-        action.setImageDescriptor(FindbugsPlugin.getDefault()
-                .getImageDescriptor(imageKey));
+        action.setToolTipText(FindbugsPlugin.getResourceString(tooltipKey));
+        action.setImageDescriptor(FindbugsPlugin.getDefault().getImageDescriptor(imageKey));
     }
 
     /**
      * Get the IWorkbenchSiteProgressService for the receiver.
-     *
-	 * @return IWorkbenchSiteProgressService or <code>null</code>.
+     * 
+     * @return IWorkbenchSiteProgressService or <code>null</code>.
      */
     protected IWorkbenchSiteProgressService getProgressService() {
-        IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) getSite()
-				.getAdapter(IWorkbenchSiteProgressService.class);
+        IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) getSite().getAdapter(
+                IWorkbenchSiteProgressService.class);
         return service;
     }
 
     /**
      * @return instance of annotations view or null if view couldn't be opened
      */
-	static IViewPart showUserAnnotationView() {
+    static IViewPart showUserAnnotationView() {
         IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
         try {
             return page.showView(FindbugsPlugin.USER_ANNOTATIONS_VIEW_ID);
-		} catch (PartInitException e) {
+        } catch (PartInitException e) {
             FindbugsPlugin.getDefault().logException(e, "Could not show bug annotations view");
         }
         return null;
-	}
+    }
 
     /**
      * @return instance of annotations view or null if view couldn't be opened
      */
-	static IViewPart showDetailsView() {
+    static IViewPart showDetailsView() {
         IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
         try {
             return page.showView(FindbugsPlugin.DETAILS_VIEW_ID);
-		} catch (PartInitException e) {
+        } catch (PartInitException e) {
             FindbugsPlugin.getDefault().logException(e, "Could not show bug details view");
         }
         return null;
-	}
+    }
 
     /**
      * @return instance of annotations view or null if view couldn't be opened
      */
-	static IViewPart showBugTreeView() {
+    static IViewPart showBugTreeView() {
         IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
         try {
             return page.showView(FindbugsPlugin.TREE_VIEW_ID);
-		} catch (PartInitException e) {
+        } catch (PartInitException e) {
             FindbugsPlugin.getDefault().logException(e, "Could not show bug tree view");
         }
         return null;
-	}
-
+    }
 
     /**
      *
      */
-	final void showPerspective() {
+    final void showPerspective() {
         IWorkbenchPage page = getSite().getPage();
         IWorkbenchWindow window = getSite().getWorkbenchWindow();
         IAdaptable input;
-		if (page != null) {
+        if (page != null) {
             input = page.getInput();
         } else {
-            input= ResourcesPlugin.getWorkspace().getRoot();
-		}
+            input = ResourcesPlugin.getWorkspace().getRoot();
+        }
         try {
-             PlatformUI.getWorkbench().showPerspective(FindBugsPerspectiveFactory.ID, window, input);
+            PlatformUI.getWorkbench().showPerspective(FindBugsPerspectiveFactory.ID, window, input);
         } catch (WorkbenchException e) {
-			FindbugsPlugin.getDefault().logException(e,
-                    "Failed to open FindBugs Perspective");
+            FindbugsPlugin.getDefault().logException(e, "Failed to open FindBugs Perspective");
         }
     }
 }

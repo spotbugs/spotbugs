@@ -7,7 +7,7 @@ public class Ideas_2009_04_27 {
 
     Lock lock = new ReentrantLock();
 
-	public void getLock() {
+    public void getLock() {
         lock.lock();
     }
 

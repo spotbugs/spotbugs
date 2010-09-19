@@ -17,7 +17,7 @@ public class Bug1765925 {
         this.file = file;
     }
 
-    //// grep -A 1 PZLA_PREFER_ZERO_LENGTH_ARRAYS | grep Bug1765925
+    // // grep -A 1 PZLA_PREFER_ZERO_LENGTH_ARRAYS | grep Bug1765925
     File[] listFiles() {
         File[] files = file.listFiles();
         if (files == null)

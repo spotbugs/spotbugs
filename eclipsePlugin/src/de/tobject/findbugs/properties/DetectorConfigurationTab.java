@@ -75,22 +75,17 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  */
 public class DetectorConfigurationTab extends Composite {
 
-
     private enum COLUMN {
-        BUG_CODES,
-        BUG_CATEGORIES,
-		DETECTOR_NAME,
-        DETECTOR_SPEED,
-        PLUGIN,
-        UNKNOWN
-	}
+        BUG_CODES, BUG_CATEGORIES, DETECTOR_NAME, DETECTOR_SPEED, PLUGIN, UNKNOWN
+    }
 
-    private static final class BugPatternTableSorter
-        extends ViewerSorter
-        implements Comparator<DetectorFactory> {
-		private COLUMN sortColumnId;
+    private static final class BugPatternTableSorter extends ViewerSorter implements Comparator<DetectorFactory> {
+        private COLUMN sortColumnId;
+
         private COLUMN lastSortColumnId;
+
         boolean revertOrder;
+
         private final DetectorConfigurationTab tab;
 
         BugPatternTableSorter(DetectorConfigurationTab tab) {
@@ -99,116 +94,110 @@ public class DetectorConfigurationTab extends Composite {
 
         @Override
         public int compare(Viewer viewer, Object e1, Object e2) {
-            return compare((DetectorFactory)e1, (DetectorFactory)e2);
-		}
+            return compare((DetectorFactory) e1, (DetectorFactory) e2);
+        }
 
         public int compare(DetectorFactory factory1, DetectorFactory factory2) {
             int result = 0;
             String s1, s2;
-			switch (getSortColumnId()) {
-            case BUG_CODES :
+            switch (getSortColumnId()) {
+            case BUG_CODES:
                 s1 = tab.getBugsAbbreviation(factory1);
                 s2 = tab.getBugsAbbreviation(factory2);
-				break;
+                break;
             case DETECTOR_SPEED:
                 s1 = factory1.getSpeed();
                 s2 = factory2.getSpeed();
-				break;
+                break;
             case PLUGIN:
                 s1 = factory1.getPlugin().getPluginId();
                 s2 = factory2.getPlugin().getPluginId();
-				break;
+                break;
             case BUG_CATEGORIES:
                 s1 = tab.getBugsCategories(factory1);
                 s2 = tab.getBugsCategories(factory2);
-				break;
-            case DETECTOR_NAME :
+                break;
+            case DETECTOR_NAME:
             default:
                 s1 = "" + factory1.getShortName(); //$NON-NLS-1$
-				s2 = factory2.getShortName();
+                s2 = factory2.getShortName();
                 break;
             }
-            if(s1 == null) {
-				s1 = "";
+            if (s1 == null) {
+                s1 = "";
             }
-            if(s2 == null) {
+            if (s2 == null) {
                 s2 = "";
-			}
+            }
             result = s1.compareTo(s2);
 
             // second sort if elements are equals - on only 2 criterias
             if (result == 0) {
                 switch (getSortColumnId()) {
-					case DETECTOR_NAME :
-                        s1 = tab.getBugsAbbreviation(factory1);
-                        s2 = tab.getBugsAbbreviation(factory2);
-                        break;
-					case BUG_CODES :
-                    default:
-                        s1 = "" + factory1.getShortName(); //$NON-NLS-1$
-                        s2 = factory2.getShortName();
-						break;
+                case DETECTOR_NAME:
+                    s1 = tab.getBugsAbbreviation(factory1);
+                    s2 = tab.getBugsAbbreviation(factory2);
+                    break;
+                case BUG_CODES:
+                default:
+                    s1 = "" + factory1.getShortName(); //$NON-NLS-1$
+                    s2 = factory2.getShortName();
+                    break;
                 }
                 result = s1.compareTo(s2);
-            }
-			else if (revertOrder) {
+            } else if (revertOrder) {
                 // same column selected twice - revert first order
                 result = -result;
             }
-			return result;
+            return result;
         }
 
         @Override
         public boolean isSorterProperty(Object element, String property) {
-            return property.equals(COLUMN.DETECTOR_NAME.name())
-				|| property.equals(COLUMN.BUG_CODES.name())
-                || property.equals(COLUMN.DETECTOR_SPEED.name())
-                || property.equals(COLUMN.PLUGIN.name());
+            return property.equals(COLUMN.DETECTOR_NAME.name()) || property.equals(COLUMN.BUG_CODES.name())
+                    || property.equals(COLUMN.DETECTOR_SPEED.name()) || property.equals(COLUMN.PLUGIN.name());
         }
 
         /**
-         * @param columnId The sortColumnId to set.
+         * @param columnId
+         *            The sortColumnId to set.
          */
-		public void setSortColumnIndex(COLUMN columnId) {
+        public void setSortColumnIndex(COLUMN columnId) {
             this.lastSortColumnId = this.sortColumnId;
             this.sortColumnId = columnId;
             revertOrder = !revertOrder && lastSortColumnId == columnId;
-		}
+        }
 
         /**
          * @return Returns the sortColumnId.
          */
-		public COLUMN getSortColumnId() {
+        public COLUMN getSortColumnId() {
             return sortColumnId;
         }
     }
 
-    private static final class DetectorFactoriesContentProvider
-        implements IStructuredContentProvider {
+    private static final class DetectorFactoriesContentProvider implements IStructuredContentProvider {
         public void dispose() {
-			// ignored
+            // ignored
         }
 
-        public void inputChanged(
-            Viewer viewer,
-            Object oldInput,
-			Object newInput) {
+        public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
             // ignored
         }
 
         public Object[] getElements(Object inputElement) {
             if (inputElement instanceof List) {
                 List<?> list = (List<?>) inputElement;
-				return list.toArray();
+                return list.toArray();
             }
             return null;
         }
-	}
+    }
 
-    private static final class DetectorFactoryLabelProvider
-        implements ITableLabelProvider, IColorProvider {
+    private static final class DetectorFactoryLabelProvider implements ITableLabelProvider, IColorProvider {
         private final DetectorConfigurationTab tab;
-		DetectorFactoryLabelProvider(DetectorConfigurationTab tab) {
+
+        DetectorFactoryLabelProvider(DetectorConfigurationTab tab) {
             this.tab = tab;
         }
 
@@ -231,257 +220,258 @@ public class DetectorConfigurationTab extends Composite {
         public Image getColumnImage(Object element, int columnIndex) {
             // TODO ignored - but if we have images for different detectors ...
             return null;
-		}
+        }
 
         public String getColumnText(Object element, int columnIndex) {
 
             if (!(element instanceof DetectorFactory)) {
                 return null;
             }
-			DetectorFactory factory = (DetectorFactory) element;
+            DetectorFactory factory = (DetectorFactory) element;
             COLUMN col = tab.getColumn(columnIndex);
 
             switch (col) {
-                case BUG_CODES :
-                    return tab.getBugsAbbreviation(factory);
-				case DETECTOR_SPEED:
-                    return factory.getSpeed();
-                case PLUGIN:
+            case BUG_CODES:
+                return tab.getBugsAbbreviation(factory);
+            case DETECTOR_SPEED:
+                return factory.getSpeed();
+            case PLUGIN:
                 String provider = factory.getPlugin().getProvider();
-				if(provider.endsWith(" project")) {
+                if (provider.endsWith(" project")) {
                     return provider.substring(0, provider.length() - " project".length());
                 }
                 return provider;
-				case BUG_CATEGORIES:
-                    return tab.getBugsCategories(factory);
-                case DETECTOR_NAME :
-                    return factory.getShortName();
-				default :
-                    return null;
+            case BUG_CATEGORIES:
+                return tab.getBugsCategories(factory);
+            case DETECTOR_NAME:
+                return factory.getShortName();
+            default:
+                return null;
             }
         }
 
         public Color getBackground(Object element) {
             if (!(element instanceof DetectorFactory)) {
                 return null;
-			}
-            if(!isFactoryVisible((DetectorFactory) element)) {
+            }
+            if (!isFactoryVisible((DetectorFactory) element)) {
                 return Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
             }
-			return null;
+            return null;
         }
 
         /**
-         * Return whether or not given DetectorFactory reports bug patterns
-         * in one of the currently-enabled set of bug categories.
-		 *
-         * @param factory the DetectorFactory
+         * Return whether or not given DetectorFactory reports bug patterns in
+         * one of the currently-enabled set of bug categories.
+         * 
+         * @param factory
+         *            the DetectorFactory
          * @return true if the factory reports bug patterns in one of the
          *         currently-enabled bug categories, false if not
-		 */
+         */
         private boolean isFactoryVisible(DetectorFactory factory) {
             Map<DetectorFactory, Boolean> enabledDetectors = tab.propertyPage.getVisibleDetectors();
             Boolean enabled = enabledDetectors.get(factory);
 
-            if(enabled != null) {
+            if (enabled != null) {
                 return enabled.booleanValue();
             }
-			ProjectFilterSettings filterSettings = tab.getCurrentProps().getFilterSettings();
-            for (BugPattern pattern: factory.getReportedBugPatterns()) {
+            ProjectFilterSettings filterSettings = tab.getCurrentProps().getFilterSettings();
+            for (BugPattern pattern : factory.getReportedBugPatterns()) {
                 if (filterSettings.containsCategory(pattern.getCategory())) {
                     enabledDetectors.put(factory, Boolean.TRUE);
-					return true;
+                    return true;
                 }
             }
             enabledDetectors.put(factory, Boolean.FALSE);
-			return false;
+            return false;
         }
 
         public Color getForeground(Object element) {
             return null;
         }
-	}
+    }
 
     private Map<DetectorFactory, String> factoriesToBugAbbrev;
+
     private final FindbugsPropertyPage propertyPage;
+
     protected CheckboxTableViewer availableFactoriesTableViewer;
-	private final Map<Integer,COLUMN> columnsMap;
+
+    private final Map<Integer, COLUMN> columnsMap;
+
     private final Button hiddenVisible;
 
     public DetectorConfigurationTab(TabFolder tabFolder, final FindbugsPropertyPage page, int style) {
         super(tabFolder, style);
         columnsMap = new HashMap<Integer, COLUMN>();
-		this.propertyPage = page;
+        this.propertyPage = page;
         setLayout(new GridLayout());
 
         TabItem tabDetector = new TabItem(tabFolder, SWT.NONE);
         tabDetector.setText(getMessage("property.detectorsTab"));
         tabDetector.setControl(this);
-		tabDetector.setToolTipText("Enable / disable available detectors");
+        tabDetector.setToolTipText("Enable / disable available detectors");
 
         Label info = new Label(this, SWT.WRAP);
-        info.setText("Disabled detectors will not participate in FindBugs analysis. \n" +
-                "'Grayed out' detectors will run, however they will not report" +
-		" any results to the UI.");
+        info.setText("Disabled detectors will not participate in FindBugs analysis. \n"
+                + "'Grayed out' detectors will run, however they will not report" + " any results to the UI.");
 
         hiddenVisible = new Button(this, SWT.CHECK);
         hiddenVisible.setText("Show hidden detectors");
-        hiddenVisible.addSelectionListener(new SelectionAdapter(){
-			@Override
+        hiddenVisible.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 populateAvailableRulesTable(propertyPage.getProject());
             }
-		});
+        });
 
         final SashForm sash = new SashForm(this, SWT.VERTICAL);
-        GridData layoutData = new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
-                | GridData.GRAB_HORIZONTAL);
-		layoutData.heightHint = 400;
+        GridData layoutData = new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_HORIZONTAL);
+        layoutData.heightHint = 400;
         layoutData.widthHint = 550;
 
         sash.setLayoutData(layoutData);
 
-        Table availableRulesTable =
-            createDetectorsTableViewer(sash, page.getProject());
-        GridData tableLayoutData = new GridData(GridData.FILL_HORIZONTAL
-				| GridData.FILL_VERTICAL | GridData.GRAB_HORIZONTAL
+        Table availableRulesTable = createDetectorsTableViewer(sash, page.getProject());
+        GridData tableLayoutData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL | GridData.GRAB_HORIZONTAL
                 | GridData.GRAB_VERTICAL);
         tableLayoutData.heightHint = 300;
         tableLayoutData.widthHint = 550;
-		availableRulesTable.setLayoutData(tableLayoutData);
+        availableRulesTable.setLayoutData(tableLayoutData);
 
         Group group = new Group(sash, SWT.NONE);
         group.setLayout(new GridLayout());
         GridData data = new GridData(GridData.FILL_BOTH);
-		group.setLayoutData(data);
+        group.setLayoutData(data);
         group.setText("Detector details");
 
-        final Text text = new Text(group, SWT.READ_ONLY | SWT.H_SCROLL
-                | SWT.V_SCROLL | SWT.WRAP);
+        final Text text = new Text(group, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
         GridData layoutData2 = new GridData(GridData.FILL_BOTH);
-		text.setLayoutData(layoutData2);
-        text.setBackground(getShell().getDisplay().getSystemColor(
-                SWT.COLOR_LIST_BACKGROUND));
-        sash.setWeights(new int []{3,1});
+        text.setLayoutData(layoutData2);
+        text.setBackground(getShell().getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        sash.setWeights(new int[] { 3, 1 });
 
-        availableRulesTable.addSelectionListener(new SelectionListener(){
+        availableRulesTable.addSelectionListener(new SelectionListener() {
             public void widgetDefaultSelected(SelectionEvent e) {
                 widgetSelected(e);
-			}
+            }
 
             public void widgetSelected(SelectionEvent e) {
                 TableItem item = (TableItem) e.item;
                 DetectorFactory factory = (DetectorFactory) item.getData();
-				String description = getDetailedText(factory);
+                String description = getDetailedText(factory);
                 text.setText(description);
             }
         });
-	}
+    }
 
     private static String getDetailedText(DetectorFactory factory) {
-        if(factory == null){
+        if (factory == null) {
             return "";
-		}
+        }
         StringBuffer sb = new StringBuffer(factory.getFullName());
         sb.append("\n");
         sb.append(getDescriptionWithoutHtml(factory));
-		sb.append("\n\nReported patterns:\n");
+        sb.append("\n\nReported patterns:\n");
         Collection<BugPattern> patterns = factory.getReportedBugPatterns();
         for (Iterator<BugPattern> iter = patterns.iterator(); iter.hasNext();) {
             BugPattern pattern = iter.next();
-			sb.append(pattern.getType()).append(" ").append(" (").append(
-                    pattern.getAbbrev()).append(", ").append(pattern.getCategory())
-                    .append("):").append("  ");
+            sb.append(pattern.getType()).append(" ").append(" (").append(pattern.getAbbrev()).append(", ")
+                    .append(pattern.getCategory()).append("):").append("  ");
             sb.append(pattern.getShortDescription());
-			if (iter.hasNext()) {
+            if (iter.hasNext()) {
                 sb.append("\n");
             }
         }
-		if(patterns.isEmpty()){
+        if (patterns.isEmpty()) {
             sb.append("none");
         }
         sb.append(getPluginDescription(factory.getPlugin()));
-		return sb.toString();
+        return sb.toString();
     }
 
     private static String getPluginDescription(Plugin plugin) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n\nPlugin: ").append(plugin.getPluginId());
-		sb.append("\nProvider: ").append(plugin.getProvider());
-        if(plugin.getWebsite() != null && plugin.getWebsite().length() > 0) {
+        sb.append("\nProvider: ").append(plugin.getProvider());
+        if (plugin.getWebsite() != null && plugin.getWebsite().length() > 0) {
             sb.append(" (").append(plugin.getWebsite()).append(")");
         }
-		return sb.toString();
+        return sb.toString();
     }
 
     /**
-     * Tries to trim all the html out of the {@link DetectorFactory#getDetailHTML()}
-     * return value. See also private {@link PluginLoader} .init() method.
-	 */
+     * Tries to trim all the html out of the
+     * {@link DetectorFactory#getDetailHTML()} return value. See also private
+     * {@link PluginLoader} .init() method.
+     */
     private static String getDescriptionWithoutHtml(DetectorFactory factory) {
         String detailHTML = factory.getDetailHTML();
         // cut beginning and the end of the html document
-		detailHTML = trimHtml(detailHTML, "<BODY>", "</BODY>");
-        // replace any amount of white space with newline inbetween through one space
+        detailHTML = trimHtml(detailHTML, "<BODY>", "</BODY>");
+        // replace any amount of white space with newline inbetween through one
+        // space
         detailHTML = detailHTML.replaceAll("\\s*[\\n]+\\s*", " ");
         // remove all valid html tags
-		detailHTML = detailHTML.replaceAll("<[a-zA-Z]+>", "");
+        detailHTML = detailHTML.replaceAll("<[a-zA-Z]+>", "");
         detailHTML = detailHTML.replaceAll("</[a-zA-Z]+>", "");
-        // convert some of the entities which are used in current FB messages.xml
+        // convert some of the entities which are used in current FB
+        // messages.xml
         detailHTML = detailHTML.replaceAll("&nbsp;", "");
-		detailHTML = detailHTML.replaceAll("&lt;", "<");
+        detailHTML = detailHTML.replaceAll("&lt;", "<");
         detailHTML = detailHTML.replaceAll("&gt;", ">");
         detailHTML = detailHTML.replaceAll("&amp;", "&");
         return detailHTML.trim();
-	}
+    }
 
     private static String trimHtml(String detailHTML, String startTag, String endTag) {
-        if(detailHTML.indexOf(startTag) > 0){
+        if (detailHTML.indexOf(startTag) > 0) {
             detailHTML = detailHTML.substring(detailHTML.indexOf(startTag) + startTag.length());
-		}
-        if(detailHTML.indexOf(endTag) > 0){
+        }
+        if (detailHTML.indexOf(endTag) > 0) {
             detailHTML = detailHTML.substring(0, detailHTML.lastIndexOf(endTag));
         }
-		return detailHTML;
+        return detailHTML;
     }
 
     /**
      * @param factory
      * @return
-	 */
+     */
     private String getBugsCategories(DetectorFactory factory) {
         Collection<BugPattern> patterns = factory.getReportedBugPatterns();
         String category = null;
-		Set<String> categories = new TreeSet<String>();
+        Set<String> categories = new TreeSet<String>();
         for (BugPattern bugPattern : patterns) {
             String category2 = bugPattern.getCategory();
-            if(category == null) {
-				category = category2;
-            } else if(!category.equals(category2)){
+            if (category == null) {
+                category = category2;
+            } else if (!category.equals(category2)) {
                 categories.add(category);
                 categories.add(category2);
-			}
+            }
         }
-        if(!categories.isEmpty()) {
+        if (!categories.isEmpty()) {
             StringBuilder sb = new StringBuilder();
-			for (String string : categories) {
+            for (String string : categories) {
                 sb.append(I18N.instance().getBugCategoryDescription(string)).append("|");
             }
             category = sb.toString();
-		} else {
+        } else {
             category = I18N.instance().getBugCategoryDescription(category);
         }
         return category;
-	}
+    }
 
     void refreshUI(UserPreferences preferences) {
         // Enable only those detectors that are enabled by preferences
         TableItem[] itemList = availableFactoriesTableViewer.getTable().getItems();
-		for (int i = 0; i < itemList.length; i++) {
+        for (int i = 0; i < itemList.length; i++) {
             TableItem item = itemList[i];
             DetectorFactory factory = (DetectorFactory) item.getData();
             item.setChecked(preferences.isDetectorEnabled(factory));
-		}
+        }
         refreshTable();
         syncUserPreferencesWithTable();
     }
@@ -491,105 +481,94 @@ public class DetectorConfigurationTab extends Composite {
     }
 
     /**
-     * Disables all unchecked detector factories and enables checked factory detectors, leaving
-     * those not in the table unmodified.
-	 */
-    protected void syncUserPreferencesWithTable(){
+     * Disables all unchecked detector factories and enables checked factory
+     * detectors, leaving those not in the table unmodified.
+     */
+    protected void syncUserPreferencesWithTable() {
         TableItem[] itemList = availableFactoriesTableViewer.getTable().getItems();
         UserPreferences currentProps = getCurrentProps();
-		for (int i = 0; i < itemList.length; i++) {
+        for (int i = 0; i < itemList.length; i++) {
             DetectorFactory factory = (DetectorFactory) itemList[i].getData();
-            //set enabled if defined in configuration
+            // set enabled if defined in configuration
             currentProps.enableDetector(factory, itemList[i].getChecked());
-		}
+        }
     }
 
     /**
      * @return
      */
-	private UserPreferences getCurrentProps() {
+    private UserPreferences getCurrentProps() {
         return propertyPage.getCurrentUserPreferences();
     }
 
     /**
      * @param sorter
      * @param column
-	 */
-    private void addColumnSelectionListener(final BugPatternTableSorter sorter,
-            final TableColumn column, final COLUMN columnId) {
+     */
+    private void addColumnSelectionListener(final BugPatternTableSorter sorter, final TableColumn column, final COLUMN columnId) {
         column.addSelectionListener(new SelectionAdapter() {
-			@Override
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 sorter.setSortColumnIndex(columnId);
                 Table factoriesTable = availableFactoriesTableViewer.getTable();
-				factoriesTable.setSortDirection(sorter.revertOrder? SWT.UP : SWT.DOWN);
+                factoriesTable.setSortDirection(sorter.revertOrder ? SWT.UP : SWT.DOWN);
                 factoriesTable.setSortColumn(column);
                 availableFactoriesTableViewer.refresh();
             }
-		});
+        });
     }
 
     /**
      * Build rule table viewer
      */
-	private Table createDetectorsTableViewer(Composite parent, IProject project) {
+    private Table createDetectorsTableViewer(Composite parent, IProject project) {
         final BugPatternTableSorter sorter = new BugPatternTableSorter(this);
 
-        int tableStyle =
-            SWT.BORDER
-                | SWT.H_SCROLL
-				| SWT.V_SCROLL
-                | SWT.SINGLE
-                | SWT.FULL_SELECTION
-                | SWT.CHECK;
-		availableFactoriesTableViewer =
-            CheckboxTableViewer.newCheckList(parent, tableStyle);
+        int tableStyle = SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION | SWT.CHECK;
+        availableFactoriesTableViewer = CheckboxTableViewer.newCheckList(parent, tableStyle);
         availableFactoriesTableViewer.addCheckStateListener(new ICheckStateListener() {
 
             public void checkStateChanged(CheckStateChangedEvent event) {
                 syncUserPreferencesWithTable();
             }
-		});
+        });
 
         int currentColumnIdx = 0;
         Table factoriesTable = availableFactoriesTableViewer.getTable();
 
-
-        TableColumn factoryNameColumn = createColumn(currentColumnIdx, factoriesTable,
-                getMessage("property.detectorName"), 230, COLUMN.DETECTOR_NAME);
+        TableColumn factoryNameColumn = createColumn(currentColumnIdx, factoriesTable, getMessage("property.detectorName"), 230,
+                COLUMN.DETECTOR_NAME);
         addColumnSelectionListener(sorter, factoryNameColumn, COLUMN.DETECTOR_NAME);
 
         currentColumnIdx++;
-        TableColumn bugsAbbrevColumn = createColumn(currentColumnIdx, factoriesTable,
-                getMessage("property.bugCodes"), 75, COLUMN.BUG_CODES);
-		addColumnSelectionListener(sorter, bugsAbbrevColumn, COLUMN.BUG_CODES);
+        TableColumn bugsAbbrevColumn = createColumn(currentColumnIdx, factoriesTable, getMessage("property.bugCodes"), 75,
+                COLUMN.BUG_CODES);
+        addColumnSelectionListener(sorter, bugsAbbrevColumn, COLUMN.BUG_CODES);
 
         currentColumnIdx++;
-        TableColumn speedColumn = createColumn(currentColumnIdx, factoriesTable,
-                getMessage("property.speed"), 70, COLUMN.DETECTOR_SPEED);
-		addColumnSelectionListener(sorter, speedColumn, COLUMN.DETECTOR_SPEED);
+        TableColumn speedColumn = createColumn(currentColumnIdx, factoriesTable, getMessage("property.speed"), 70,
+                COLUMN.DETECTOR_SPEED);
+        addColumnSelectionListener(sorter, speedColumn, COLUMN.DETECTOR_SPEED);
 
         currentColumnIdx++;
-        TableColumn pluginColumn = createColumn(currentColumnIdx, factoriesTable,
-                getMessage("property.provider"), 100, COLUMN.PLUGIN);
-		addColumnSelectionListener(sorter, pluginColumn, COLUMN.PLUGIN);
+        TableColumn pluginColumn = createColumn(currentColumnIdx, factoriesTable, getMessage("property.provider"), 100,
+                COLUMN.PLUGIN);
+        addColumnSelectionListener(sorter, pluginColumn, COLUMN.PLUGIN);
 
         currentColumnIdx++;
-        TableColumn categoryColumn = createColumn(currentColumnIdx, factoriesTable,
-                getMessage("property.category"), 75, COLUMN.BUG_CATEGORIES);
-		addColumnSelectionListener(sorter, categoryColumn, COLUMN.BUG_CATEGORIES);
+        TableColumn categoryColumn = createColumn(currentColumnIdx, factoriesTable, getMessage("property.category"), 75,
+                COLUMN.BUG_CATEGORIES);
+        addColumnSelectionListener(sorter, categoryColumn, COLUMN.BUG_CATEGORIES);
 
         factoriesTable.setLinesVisible(true);
         factoriesTable.setHeaderVisible(true);
         // initial sort indicator
-		factoriesTable.setSortDirection(sorter.revertOrder? SWT.UP : SWT.DOWN);
+        factoriesTable.setSortDirection(sorter.revertOrder ? SWT.UP : SWT.DOWN);
         factoriesTable.setSortColumn(factoryNameColumn);
         sorter.setSortColumnIndex(COLUMN.DETECTOR_NAME);
 
-        availableFactoriesTableViewer.setContentProvider(
-            new DetectorFactoriesContentProvider());
-        availableFactoriesTableViewer.setLabelProvider(
-			new DetectorFactoryLabelProvider(this));
+        availableFactoriesTableViewer.setContentProvider(new DetectorFactoriesContentProvider());
+        availableFactoriesTableViewer.setLabelProvider(new DetectorFactoryLabelProvider(this));
 
         availableFactoriesTableViewer.setSorter(sorter);
 
@@ -601,8 +580,8 @@ public class DetectorConfigurationTab extends Composite {
 
     private COLUMN getColumn(int index) {
         COLUMN column = columnsMap.get(Integer.valueOf(index));
-        if(column == null) {
-			return COLUMN.UNKNOWN;
+        if (column == null) {
+            return COLUMN.UNKNOWN;
         }
         return column;
     }
@@ -610,59 +589,57 @@ public class DetectorConfigurationTab extends Composite {
     /**
      * @param currentColumnIdx
      * @param factoriesTable
-	 */
-    private TableColumn createColumn(int currentColumnIdx, Table factoriesTable,
-            String text, int width, COLUMN col) {
-        TableColumn column =
-			new TableColumn(factoriesTable, SWT.FILL);
+     */
+    private TableColumn createColumn(int currentColumnIdx, Table factoriesTable, String text, int width, COLUMN col) {
+        TableColumn column = new TableColumn(factoriesTable, SWT.FILL);
         column.setResizable(true);
         column.setText(text);
         column.setWidth(width);
-		columnsMap.put(Integer.valueOf(currentColumnIdx), col);
+        columnsMap.put(Integer.valueOf(currentColumnIdx), col);
         return column;
     }
 
     /**
      * Helper method to shorten message access
-     * @param key a message key
-	 * @return requested message
+     * 
+     * @param key
+     *            a message key
+     * @return requested message
      */
     protected String getMessage(String key) {
         return FindbugsPlugin.getDefault().getMessage(key);
-	}
+    }
 
     /**
      * Populate the rule table
      */
-	private void populateAvailableRulesTable(IProject project) {
+    private void populateAvailableRulesTable(IProject project) {
         List<DetectorFactory> allAvailableList = new ArrayList<DetectorFactory>();
         factoriesToBugAbbrev = new HashMap<DetectorFactory, String>();
-        Iterator<DetectorFactory> iterator =
-			DetectorFactoryCollection.instance().factoryIterator();
+        Iterator<DetectorFactory> iterator = DetectorFactoryCollection.instance().factoryIterator();
         while (iterator.hasNext()) {
             DetectorFactory factory = iterator.next();
 
             // Only configure non-hidden factories
             if (factory.isHidden() && !isHiddenVisible()) {
                 continue;
-			}
+            }
 
             allAvailableList.add(factory);
             addBugsAbbreviation(factory);
         }
 
         availableFactoriesTableViewer.setInput(allAvailableList);
-        TableItem[] itemList =
-            availableFactoriesTableViewer.getTable().getItems();
-		UserPreferences userPreferences = getCurrentProps();
+        TableItem[] itemList = availableFactoriesTableViewer.getTable().getItems();
+        UserPreferences userPreferences = getCurrentProps();
         for (int i = 0; i < itemList.length; i++) {
             DetectorFactory rule = (DetectorFactory) itemList[i].getData();
-            //set enabled if defined in configuration
-			if (userPreferences.isDetectorEnabled(rule)) {
+            // set enabled if defined in configuration
+            if (userPreferences.isDetectorEnabled(rule)) {
                 itemList[i].setChecked(true);
             }
         }
-	}
+    }
 
     boolean isHiddenVisible() {
         return hiddenVisible.getSelection();
@@ -671,44 +648,44 @@ public class DetectorConfigurationTab extends Composite {
     /**
      * @param factory
      */
-	protected void addBugsAbbreviation(DetectorFactory factory) {
+    protected void addBugsAbbreviation(DetectorFactory factory) {
         factoriesToBugAbbrev.put(factory, createBugsAbbreviation(factory));
     }
 
     protected String getBugsAbbreviation(DetectorFactory factory) {
-        String abbr =  factoriesToBugAbbrev.get(factory);
+        String abbr = factoriesToBugAbbrev.get(factory);
         if (abbr == null) {
-			abbr = createBugsAbbreviation(factory);
+            abbr = createBugsAbbreviation(factory);
         }
         if (abbr == null) {
             abbr = ""; //$NON-NLS-1$
-		}
+        }
         return abbr;
     }
 
     protected String createBugsAbbreviation(DetectorFactory factory) {
         StringBuffer sb = new StringBuffer();
         Collection<BugPattern> patterns = factory.getReportedBugPatterns();
-		LinkedHashSet<String> abbrs = new LinkedHashSet<String>();
+        LinkedHashSet<String> abbrs = new LinkedHashSet<String>();
         for (Iterator<BugPattern> iter = patterns.iterator(); iter.hasNext();) {
             BugPattern pattern = iter.next();
             String abbr = pattern.getAbbrev();
-			abbrs.add(abbr);
+            abbrs.add(abbr);
         }
         for (Iterator<String> iter = abbrs.iterator(); iter.hasNext();) {
             String element = iter.next();
-			sb.append(element);
+            sb.append(element);
             if (iter.hasNext()) {
                 sb.append("|"); //$NON-NLS-1$
             }
-		}
+        }
         return sb.toString();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
         availableFactoriesTableViewer.getTable().setEnabled(enabled);
-		hiddenVisible.setEnabled(enabled);
+        hiddenVisible.setEnabled(enabled);
         super.setEnabled(enabled);
     }
 

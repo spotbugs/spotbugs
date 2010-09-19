@@ -8,46 +8,53 @@ import java.util.NoSuchElementException;
 public class Ideas_2009_04_26 {
 
     private List<String> status_ = new ArrayList<String>();
+
     public String getStatus(int i) {
-		assert i >= 0 && i < (status_ == null ? 0 : status_.size());
+        assert i >= 0 && i < (status_ == null ? 0 : status_.size());
         return status_.get(i);
     }
 
-	static abstract class AbstractIterator<T> implements Iterator<T> {
+    static abstract class AbstractIterator<T> implements Iterator<T> {
 
         T nextElement = nextElement();
+
         abstract T nextElement();
-		
+
         public boolean hasNext() {
             return nextElement != null;
         }
-		public T next() {
+
+        public T next() {
             if (!hasNext())
                 throw new NoSuchElementException();
             T result = nextElement;
-			nextElement = nextElement();
+            nextElement = nextElement();
             return result;
         }
+
         public void remove() {
-			throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException();
         }
 
     }
-	static Iterator<Integer> count(final int lastValue) {
-        return new AbstractIterator<Integer>(){
+
+    static Iterator<Integer> count(final int lastValue) {
+        return new AbstractIterator<Integer>() {
             int value = 1;
+
             @Override
             Integer nextElement() {
                 if (value > lastValue)
                     return null;
-               return value++;
-	           
-            }};
-    }
-    public static void main(String arg[]) {
-        for(Iterator i = count(10); i.hasNext(); )
-			System.out.println(i.next());
+                return value++;
+
+            }
+        };
     }
 
+    public static void main(String arg[]) {
+        for (Iterator i = count(10); i.hasNext();)
+            System.out.println(i.next());
+    }
 
 }

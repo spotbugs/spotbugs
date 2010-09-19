@@ -2,11 +2,11 @@ public class DuplicateBranches {
     public int doit(boolean b, int i, int j) {
         int z;
         if (b) {
-			int k = i * j;
+            int k = i * j;
             z = k / 100;
         } else {
             int k = i * j;
-			z = k / 100;
+            z = k / 100;
         }
         return z;
     }
@@ -14,7 +14,7 @@ public class DuplicateBranches {
     public int doit2(int i, int j) {
         switch (i) {
         case 0:
-			j = j + 1;
+            j = j + 1;
             if (i < j)
                 j = i;
             break;
@@ -22,28 +22,28 @@ public class DuplicateBranches {
         case 1:
             j = j + 1;
             if (i < j)
-				j = i;
+                j = i;
             break;
 
         case 2:
             j = j + 1;
             if (i < j)
-				j = i;
+                j = i;
             break;
 
         default:
             j = j + 1;
             if (i < j)
-				j = i;
+                j = i;
             break;
         }
         return j;
-	}
+    }
 
     public int doit3(int i, int j) {
         switch (i) {
         case 1:
-			j = i + 1;
+            j = i + 1;
             break;
 
         case 10:
@@ -57,30 +57,34 @@ public class DuplicateBranches {
         default:
             j = i + 1;
             break;
-		}
+        }
         return j;
     }
 
-    /** false positive??  bug1481642 */
+    /** false positive?? bug1481642 */
     public int g_korland(int a) {
-        //int a = 1;
-		switch(a) {
-          case 1:
+        // int a = 1;
+        switch (a) {
+        case 1:
             return 1;
-          case 2:
-			return 2;
+        case 2:
+            return 2;
         }
         return -1;
     }
 
-    /** false positive??  bug1508906 */
+    /** false positive?? bug1508906 */
     public String peeterswim(int index) {
         switch (index) {
-		case 0 : return "0";
-        case 1 : return "1";
-        case 2 : return "2";
-        default : return null;
-		}
+        case 0:
+            return "0";
+        case 1:
+            return "1";
+        case 2:
+            return "2";
+        default:
+            return null;
+        }
     }
 
 }

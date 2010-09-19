@@ -15,6 +15,6 @@ public class Bug1942828 {
     private final int CONST = 7;
 
     public int getIntCheck(ResultSet rs, int i) throws SQLException {
-		return i > 0 ? rs.getInt(i) : CONST;
+        return i > 0 ? rs.getInt(i) : CONST;
     }
 }

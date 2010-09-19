@@ -21,11 +21,11 @@ public class Bug2912638 {
         if ("FOO" == value)
             System.out.println("a");
         else
-			System.out.println("a3");
+            System.out.println("a3");
         if (value == "FOO")
             System.out.println("a");
         else
-			System.out.println("a3");
+            System.out.println("a3");
     }
 
     @ExpectWarning("ES_COMPARING_STRINGS_WITH_EQ")
@@ -35,7 +35,7 @@ public class Bug2912638 {
         if (value == "FOO")
             System.out.println("a");
         else
-			System.out.println("a3");
+            System.out.println("a3");
     }
 
 }

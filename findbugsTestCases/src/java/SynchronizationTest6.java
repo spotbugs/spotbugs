@@ -6,37 +6,37 @@ class SynchronizationTest6 {
     public void add1() {
         synchronized (lock) {
             x += 1;
-		}
+        }
     }
 
     public void add2() {
         synchronized (lock) {
             x += 2;
-		}
+        }
     }
 
     public void add3() {
         synchronized (lock) {
             x += 3;
-		}
+        }
     }
 
     public void add4() {
         synchronized (lock) {
             x += 4;
-		}
+        }
     }
 
     public void add5() {
         synchronized (lock) {
             x += 5;
-		}
+        }
     }
 
     public void add6() {
         synchronized (lock) {
             x += 6;
-		}
+        }
     }
 
     public int get2X() {

@@ -6,7 +6,7 @@ public class Getter {
     @ExpectWarning("UG")
     public int getX() {
         return x;
-	}
+    }
 
     public synchronized void setX(int x) {
         this.x = x;
@@ -15,7 +15,7 @@ public class Getter {
     public synchronized int calculate() {
         int t = 0;
         t += x;
-		t += x;
+        t += x;
         return t;
     }
 }

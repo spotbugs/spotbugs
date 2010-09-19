@@ -13,7 +13,7 @@ public class Bug2115406 {
     @Nonnull
     public String getName() {
         return name;
-	}
+    }
 
     public static class ChildClass extends Bug2115406 {
 
@@ -31,9 +31,6 @@ public class Bug2115406 {
         public String getChildParameter() {
             return childParameter;
         }
-	}
+    }
 
 }
-
-
-

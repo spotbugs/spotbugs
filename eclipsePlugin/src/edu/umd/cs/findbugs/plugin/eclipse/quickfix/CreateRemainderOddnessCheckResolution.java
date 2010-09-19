@@ -33,8 +33,9 @@ import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
  * The <CODE>CreateAndOddnessCheckResolution</CODE> is a subclass of the
  * abstract class <CODE>CorrectOddnessCheckResolution</CODE> and creates the
  * proper oddness check <CODE>(x % 2) != 0</CODE>.
- *
- * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#IM_BAD_CHECK_FOR_ODD">IM_BAD_CHECK_FOR_ODD</a>
+ * 
+ * @see <a
+ *      href="http://findbugs.sourceforge.net/bugDescriptions.html#IM_BAD_CHECK_FOR_ODD">IM_BAD_CHECK_FOR_ODD</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @version 1.0

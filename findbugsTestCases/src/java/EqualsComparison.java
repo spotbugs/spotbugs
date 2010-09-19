@@ -23,7 +23,7 @@ public class EqualsComparison {
     boolean unrelatedInterfaceComparison(A a, B b) {
         // This should be a medium priority warning
         return a.equals(b);
-	}
+    }
 }
 
 // vim:ts=3

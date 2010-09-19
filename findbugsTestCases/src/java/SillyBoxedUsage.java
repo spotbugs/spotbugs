@@ -1,4 +1,3 @@
-
 public class SillyBoxedUsage {
     public String testBad1(int value) {
         return new Integer(value).toString();

@@ -2,17 +2,17 @@ package sfBugs;
 
 public class Bug1911617 implements Cloneable {
     public Object perhapsClone(Object o) {
-        if(o == null) {
+        if (o == null) {
             return "Hello";
-		}
-        if(o instanceof Bug1911617) {
-            return ((Bug1911617)o).clone();
+        }
+        if (o instanceof Bug1911617) {
+            return ((Bug1911617) o).clone();
         } else {
-			return null;
+            return null;
         }
     }
 
-	public Object clone() {
+    public Object clone() {
         return null;
     }
 }

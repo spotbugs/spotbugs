@@ -10,6 +10,6 @@ public class Bug1968650 {
     @NonNull
     public Object nonNullReturnValue() {
         nonNullArgsMethod(null);
-		return null;
+        return null;
     }
 }

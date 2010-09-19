@@ -5,5 +5,5 @@ class NeedsReturnValueChecked {
     @CheckReturnValue
     int foo() {
         return 42;
-	}
+    }
 }

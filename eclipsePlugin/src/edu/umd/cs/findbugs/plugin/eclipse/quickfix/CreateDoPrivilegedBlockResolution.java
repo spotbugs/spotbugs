@@ -72,12 +72,14 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ImportDeclarationCompara
 /**
  * A <CODE>ClassLoader</CODE>, which requires a security manager, might be
  * invoked by code that does not have security permissions.In this case the
- * <CODE>ClassLoader</CODE> creation needs to occur inside a <CODE>doPrivileged()</CODE>-Block.
- * The class <CODE>CreateDoPrivilegedBlockResolution</CODE> creates a new
+ * <CODE>ClassLoader</CODE> creation needs to occur inside a
+ * <CODE>doPrivileged()</CODE>-Block. The class
+ * <CODE>CreateDoPrivilegedBlockResolution</CODE> creates a new
  * <CODE>doPrivileged()</CODE>-Block around the <CODE>ClassLoader</CODE>
  * creation.
- *
- * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED</a>
+ * 
+ * @see <a
+ *      href="http://findbugs.sourceforge.net/bugDescriptions.html#DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @version 1.0
@@ -107,9 +109,11 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
     }
 
     /**
-     * Returns <CODE>true</CODE> if the imports were updated, otherwise <CODE>false</CODE>.
-     *
-     * @return <CODE>true</CODE> or <CODE>false</CODE>. Default is <CODE>true</CODE>.
+     * Returns <CODE>true</CODE> if the imports were updated, otherwise
+     * <CODE>false</CODE>.
+     * 
+     * @return <CODE>true</CODE> or <CODE>false</CODE>. Default is
+     *         <CODE>true</CODE>.
      */
     public boolean isUpdateImports() {
         return updateImports;
@@ -117,7 +121,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
     /**
      * Enables or disables the update on the imports.
-     *
+     * 
      * @param updateImports
      *            the flag.
      */
@@ -129,17 +133,19 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
      * Returns <CODE>true</CODE> if the <CODE>doPrivileged()</CODE>-invocation
      * is imported statically. This feature should only be used under
      * source-level 1.5 or higher.
-     *
-     * @return <CODE>true</CODE> or </CODE>false</CODE>. Default is <CODE>false</CODE>.
+     * 
+     * @return <CODE>true</CODE> or </CODE>false</CODE>. Default is
+     *         <CODE>false</CODE>.
      */
     public boolean isStaticImport() {
         return staticImport;
     }
 
     /**
-     * Enables or disables static import for the <CODE>doPrivileged()</CODE>-invocation.
-     * This feature should only be used under source-level 1.5 or higher.
-     *
+     * Enables or disables static import for the <CODE>doPrivileged()</CODE>
+     * -invocation. This feature should only be used under source-level 1.5 or
+     * higher.
+     * 
      * @param staticImport
      *            the flag.
      */
@@ -167,7 +173,8 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
         assert workingUnit != null;
         assert bug != null;
 
-        ClassInstanceCreation classLoaderCreation = findClassLoaderCreation(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
+        ClassInstanceCreation classLoaderCreation = findClassLoaderCreation(getASTNode(workingUnit,
+                bug.getPrimarySourceLineAnnotation()));
         if (classLoaderCreation == null) {
             throw new BugResolutionException("No matching class loader creation found at the specified source line.");
         }
@@ -198,7 +205,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
         for (Object paramObj : params) {
             SingleVariableDeclaration param = (SingleVariableDeclaration) paramObj;
             if (variables.contains(param.getName().getFullyQualifiedName())) {
-				ListRewrite listRewrite = rewrite.getListRewrite(param, SingleVariableDeclaration.MODIFIERS2_PROPERTY);
+                ListRewrite listRewrite = rewrite.getListRewrite(param, SingleVariableDeclaration.MODIFIERS2_PROPERTY);
                 listRewrite.insertLast(rewrite.getAST().newModifier(ModifierKeyword.FINAL_KEYWORD), null);
             }
         }
@@ -217,7 +224,8 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
                 if (variables.contains(fragment.getName().getFullyQualifiedName())) {
                     ASTNode parent = fragment.getParent();
                     if (parent instanceof VariableDeclarationStatement) {
-                        ListRewrite listRewrite = rewrite.getListRewrite(parent, VariableDeclarationStatement.MODIFIERS2_PROPERTY);
+                        ListRewrite listRewrite = rewrite
+                                .getListRewrite(parent, VariableDeclarationStatement.MODIFIERS2_PROPERTY);
                         listRewrite.insertLast(ast.newModifier(ModifierKeyword.FINAL_KEYWORD), null);
                     }
                 }
@@ -319,11 +327,12 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
         return privilegedActionType;
     }
 
-    <V> List<V> checkedList(List<?> o){
+    <V> List<V> checkedList(List<?> o) {
         return (List<V>) o;
     }
 
-    private AnonymousClassDeclaration createAnonymousClassDeclaration(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
+    private AnonymousClassDeclaration createAnonymousClassDeclaration(ASTRewrite rewrite,
+            ClassInstanceCreation classLoaderCreation) {
         AST ast = rewrite.getAST();
 
         AnonymousClassDeclaration anonymousClassDeclaration = ast.newAnonymousClassDeclaration();
@@ -383,7 +392,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
     private Set<String> findVariableReferences(List<?> arguments) {
         final Set<String> refs = new HashSet<String>();
         for (Object argumentObj : arguments) {
-			Expression argument = (Expression) argumentObj;
+            Expression argument = (Expression) argumentObj;
             argument.accept(new ASTVisitor() {
 
                 @Override

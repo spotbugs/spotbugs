@@ -44,12 +44,14 @@ public class OpenPropertiesAction implements IObjectActionDelegate {
 
     /** The current selection. */
     private ISelection selection;
+
     private IWorkbenchPart targetPart;
 
     public OpenPropertiesAction() {
         super();
     }
-	public OpenPropertiesAction(IWorkbenchPart targetPart) {
+
+    public OpenPropertiesAction(IWorkbenchPart targetPart) {
         super();
         this.targetPart = targetPart;
     }
@@ -64,54 +66,52 @@ public class OpenPropertiesAction implements IObjectActionDelegate {
 
     /*
      * (non-Javadoc)
-     *
-	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
+     * 
+     * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
     public final void run(final IAction action) {
-        if(targetPart == null){
-			return;
+        if (targetPart == null) {
+            return;
         }
         try {
             if (!selection.isEmpty() && (selection instanceof IStructuredSelection)) {
-				IStructuredSelection ssel = (IStructuredSelection) selection;
+                IStructuredSelection ssel = (IStructuredSelection) selection;
                 Object element = ssel.getFirstElement();
-                if(element instanceof BugGroup){
+                if (element instanceof BugGroup) {
                     final BugGroup group = (BugGroup) element;
-					if(group.getType() == GroupType.Project){
-                        PropertyDialogAction paction = new PropertyDialogAction(new IShellProvider(){
+                    if (group.getType() == GroupType.Project) {
+                        PropertyDialogAction paction = new PropertyDialogAction(new IShellProvider() {
                             public Shell getShell() {
                                 return null;
-							}
-                        }, new ISelectionProvider(){
-                            public void addSelectionChangedListener(
-                                    ISelectionChangedListener listener) {
-								// noop
                             }
+                        }, new ISelectionProvider() {
+                            public void addSelectionChangedListener(ISelectionChangedListener listener) {
+                                // noop
+                            }
+
                             public ISelection getSelection() {
                                 return new StructuredSelection(group.getData());
-							}
-                            public void removeSelectionChangedListener(
-                                    ISelectionChangedListener listener) {
+                            }
+
+                            public void removeSelectionChangedListener(ISelectionChangedListener listener) {
                                 // noop
-							}
+                            }
+
                             public void setSelection(ISelection selection) {
                                 // noop
                             }
-						});
+                        });
                         paction.run();
                         return;
                     }
-				}
+                }
                 targetPart.getSite().getPage().showView(IPageLayout.ID_PROP_SHEET);
             }
         } catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e,
-                    "Exception while parsing content of FindBugs markers.");
+            FindbugsPlugin.getDefault().logException(e, "Exception while parsing content of FindBugs markers.");
         } finally {
             targetPart = null;
-		}
+        }
     }
-
-
 
 }

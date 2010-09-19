@@ -52,218 +52,198 @@ import edu.umd.cs.findbugs.cloud.Cloud;
 /**
  * @author Andrei
  */
-public class BugLabelProvider implements /*IStyledLabelProvider, */ILabelProvider, IDescriptionProvider,
-    ICommonLabelProvider, IColorProvider {
+public class BugLabelProvider implements /* IStyledLabelProvider, */ILabelProvider, IDescriptionProvider, ICommonLabelProvider,
+        IColorProvider {
 
     private final WorkbenchLabelProvider wbProvider;
+
     private BugContentProvider provider;
 
     public BugLabelProvider() {
         super();
         wbProvider = new WorkbenchLabelProvider();
-	}
+    }
 
     public Image getImage(Object element) {
         if (element instanceof BugGroup) {
             BugGroup group = (BugGroup) element;
-			if(group.getType() == GroupType.Class || group.getType() == GroupType.Package
-                    || group.getType() == GroupType.Project || group.getType() == GroupType.Marker){
+            if (group.getType() == GroupType.Class || group.getType() == GroupType.Package
+                    || group.getType() == GroupType.Project || group.getType() == GroupType.Marker) {
                 return wbProvider.getImage(group.getData());
             }
-			FindBugsMarker.Priority prio = group.getPriority();
+            FindBugsMarker.Priority prio = group.getPriority();
             ImageRegistry imageRegistry = FindbugsPlugin.getDefault().getImageRegistry();
             return imageRegistry.get(prio.iconName());
         }
-		if(element instanceof IMarker){
+        if (element instanceof IMarker) {
             IMarker marker = (IMarker) element;
-            if(!marker.exists()){
+            if (!marker.exists()) {
                 return null;
-			}
+            }
         }
         return wbProvider.getImage(element);
     }
 
-    boolean isStandalone(){
+    boolean isStandalone() {
         return provider == null;
     }
-/*
-    public StyledString getStyledText(Object element) {
-        if (element instanceof BugGroup) {
-            BugGroup group = (BugGroup) element;
-			String cloudName = null;
-            if (group.getType() == GroupType.Project) {
-                IProject project = (IProject) group.getData();
-                try {
-					SortedBugCollection bc = FindbugsPlugin.getBugCollection(project, null);
-                    Cloud cloud = bc.getCloud();
-                    if (!(cloud instanceof BugCollectionStorageCloud)) {
-                        cloudName = cloud.getCloudName();
-					}
-                } catch (CoreException e) {
-                    // ignore
-                }
-			}
-            if(isStandalone()){
-                return new StyledString(group.getShortDescription());
-            }
-			int filtered = getFilteredMarkersCount(group);
-            String filterCount = filtered > 0? "/" + filtered + " filtered" : "";
-            String str = group.getShortDescription() + " ("
-                    + (group.getMarkersCount() - filtered) + filterCount + ")";
-			StyledString ss = new StyledString(str);
-            if (cloudName != null) {
-                ss.append(" [" + cloudName + "]", StyledString.DECORATIONS_STYLER);
-            }
-			return ss;
-        }
-        if(element instanceof IMarker){
-            IMarker marker = (IMarker) element;
-			if(!marker.exists()){
-                return null;
-            }
-        }
-		if(element instanceof IStructuredSelection){
-            return new StyledString(getDescriptionAndBugCount(((IStructuredSelection)element).toArray()));
-        }
-        if(element instanceof Object[]){
-			return new StyledString(getDescriptionAndBugCount((Object[]) element));
-        }
-        return new StyledString(wbProvider.getText(element));
-    }
-*/
+
+    /*
+     * public StyledString getStyledText(Object element) { if (element
+     * instanceof BugGroup) { BugGroup group = (BugGroup) element; String
+     * cloudName = null; if (group.getType() == GroupType.Project) { IProject
+     * project = (IProject) group.getData(); try { SortedBugCollection bc =
+     * FindbugsPlugin.getBugCollection(project, null); Cloud cloud =
+     * bc.getCloud(); if (!(cloud instanceof BugCollectionStorageCloud)) {
+     * cloudName = cloud.getCloudName(); } } catch (CoreException e) { // ignore
+     * } } if(isStandalone()){ return new
+     * StyledString(group.getShortDescription()); } int filtered =
+     * getFilteredMarkersCount(group); String filterCount = filtered > 0? "/" +
+     * filtered + " filtered" : ""; String str = group.getShortDescription() +
+     * " (" + (group.getMarkersCount() - filtered) + filterCount + ")";
+     * StyledString ss = new StyledString(str); if (cloudName != null) {
+     * ss.append(" [" + cloudName + "]", StyledString.DECORATIONS_STYLER); }
+     * return ss; } if(element instanceof IMarker){ IMarker marker = (IMarker)
+     * element; if(!marker.exists()){ return null; } } if(element instanceof
+     * IStructuredSelection){ return new
+     * StyledString(getDescriptionAndBugCount((
+     * (IStructuredSelection)element).toArray())); } if(element instanceof
+     * Object[]){ return new StyledString(getDescriptionAndBugCount((Object[])
+     * element)); } return new StyledString(wbProvider.getText(element)); }
+     */
     public String getText(Object element) {
         if (element instanceof BugGroup) {
             BugGroup group = (BugGroup) element;
-			String cloudName = null;
+            String cloudName = null;
             if (group.getType() == GroupType.Project) {
                 IProject project = (IProject) group.getData();
                 try {
-					SortedBugCollection bc = FindbugsPlugin.getBugCollection(project, null);
+                    SortedBugCollection bc = FindbugsPlugin.getBugCollection(project, null);
                     Cloud cloud = bc.getCloud();
                     if (!(cloud instanceof BugCollectionStorageCloud)) {
                         cloudName = cloud.getCloudName();
-					}
+                    }
                 } catch (CoreException e) {
                     // ignore
                 }
-			}
-            if(isStandalone()){
+            }
+            if (isStandalone()) {
                 return group.getShortDescription();
             }
-			int filtered = getFilteredMarkersCount(group);
-            String filterCount = filtered > 0? "/" + filtered + " filtered" : "";
-            String str = group.getShortDescription() + " ("
-                    + (group.getMarkersCount() - filtered) + filterCount + ")";
-			if (cloudName != null) {
+            int filtered = getFilteredMarkersCount(group);
+            String filterCount = filtered > 0 ? "/" + filtered + " filtered" : "";
+            String str = group.getShortDescription() + " (" + (group.getMarkersCount() - filtered) + filterCount + ")";
+            if (cloudName != null) {
                 str += " - " + cloudName;
             }
             return str;
-		}
-        if(element instanceof IMarker){
+        }
+        if (element instanceof IMarker) {
             IMarker marker = (IMarker) element;
-            if(!marker.exists()){
-				return null;
+            if (!marker.exists()) {
+                return null;
             }
         }
-        if(element instanceof IStructuredSelection){
-			return getDescriptionAndBugCount(((IStructuredSelection)element).toArray());
+        if (element instanceof IStructuredSelection) {
+            return getDescriptionAndBugCount(((IStructuredSelection) element).toArray());
         }
-        if(element instanceof Object[]){
+        if (element instanceof Object[]) {
             return getDescriptionAndBugCount((Object[]) element);
-		}
+        }
         return wbProvider.getText(element);
     }
 
     private int getFilteredMarkersCount(BugGroup group) {
-        if(isStandalone() || !provider.isBugFilterActive()){
+        if (isStandalone() || !provider.isBugFilterActive()) {
             return 0;
-		}
+        }
         return provider.getFilteredMarkersCount(group);
     }
 
     private String getDescriptionAndBugCount(Object[] objects) {
-        if(objects.length == 0){
+        if (objects.length == 0) {
             return "Nothing...";
-		}
-        if(objects.length == 1){
+        }
+        if (objects.length == 1) {
             return getText(objects[0]);
         }
-		int count = getBugCountsSum(objects);
+        int count = getBugCountsSum(objects);
         StringBuffer sb = new StringBuffer("Selection contains ");
-        if(count == 1){
+        if (count == 1) {
             sb.append("exactly one single bug");
-		} else if(count == 0){
+        } else if (count == 0) {
             sb.append("zero bugs (change filter settings to see more...)");
         } else {
             sb.append(count).append(" bugs");
-		}
-        if(isStandalone()){
+        }
+        if (isStandalone()) {
             sb.append(" (not filtered)");
         }
-		return sb.toString();
+        return sb.toString();
     }
 
     private int getBugCountsSum(Object[] objects) {
         List<BugGroup> groups = new ArrayList<BugGroup>();
         List<IMarker> markers = new ArrayList<IMarker>();
-		for (Object object : objects) {
-            if(object instanceof BugGroup){
+        for (Object object : objects) {
+            if (object instanceof BugGroup) {
                 groups.add((BugGroup) object);
-            } else if(object instanceof IMarker){
-				markers.add((IMarker) object);
+            } else if (object instanceof IMarker) {
+                markers.add((IMarker) object);
             }
         }
-        if(groups.size() > 1 && !isStandalone()) {
-			Collections.sort(groups, new Comparator<BugGroup>(){
+        if (groups.size() > 1 && !isStandalone()) {
+            Collections.sort(groups, new Comparator<BugGroup>() {
                 Grouping grouping = getGrouping();
+
                 public int compare(BugGroup o1, BugGroup o2) {
                     return grouping.compare(o1.getType(), o2.getType());
-				}
+                }
 
             });
         }
         Set<BugGroup> finalGroups = new HashSet<BugGroup>();
-		int count = 0;
-        while(!groups.isEmpty()){
+        int count = 0;
+        while (!groups.isEmpty()) {
             BugGroup g1 = groups.remove(groups.size() - 1);
             boolean keepIt = true;
-			for (BugGroup g2 : groups) {
+            for (BugGroup g2 : groups) {
                 Object parent = g1.getParent();
-                while(g2 != parent && parent instanceof BugGroup){
+                while (g2 != parent && parent instanceof BugGroup) {
                     parent = ((BugGroup) parent).getParent();
-				}
-                if(g2 == parent){
+                }
+                if (g2 == parent) {
                     keepIt = false;
-                    break;
-				}
-            }
-            if(keepIt){
-                finalGroups.add(g1);
-				count += g1.getMarkersCount() - getFilteredMarkersCount(g1);
-            }
-        }
-        while(!markers.isEmpty()) {
-			IMarker marker = markers.remove(markers.size() - 1);
-            boolean keepIt = true;
-            for (BugGroup group : finalGroups) {
-                if(group.contains(marker)){
-					keepIt = false;
                     break;
                 }
             }
-			if(keepIt){
-                count ++;
+            if (keepIt) {
+                finalGroups.add(g1);
+                count += g1.getMarkersCount() - getFilteredMarkersCount(g1);
             }
         }
-		return count;
+        while (!markers.isEmpty()) {
+            IMarker marker = markers.remove(markers.size() - 1);
+            boolean keepIt = true;
+            for (BugGroup group : finalGroups) {
+                if (group.contains(marker)) {
+                    keepIt = false;
+                    break;
+                }
+            }
+            if (keepIt) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public void init(ICommonContentExtensionSite config) {
         provider = BugContentProvider.getProvider(config.getService());
     }
 
-    Grouping getGrouping(){
-        return provider == null? null : provider.getGrouping();
+    Grouping getGrouping() {
+        return provider == null ? null : provider.getGrouping();
     }
 
     public void addListener(ILabelProviderListener listener) {
@@ -286,7 +266,6 @@ public class BugLabelProvider implements /*IStyledLabelProvider, */ILabelProvide
         return getText(anElement);
     }
 
-
     public void restoreState(IMemento memento) {
         // noop
     }
@@ -300,13 +279,13 @@ public class BugLabelProvider implements /*IStyledLabelProvider, */ILabelProvide
     }
 
     public Color getForeground(Object element) {
-        if (element instanceof BugGroup){
+        if (element instanceof BugGroup) {
             BugGroup group = (BugGroup) element;
-			if(getFilteredMarkersCount(group) == group.getMarkersCount()){
+            if (getFilteredMarkersCount(group) == group.getMarkersCount()) {
                 return Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW);
             }
         }
-		return null;
+        return null;
     }
 
 }

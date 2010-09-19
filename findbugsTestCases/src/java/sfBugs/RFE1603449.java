@@ -7,7 +7,7 @@ public class RFE1603449 {
     int foo(Object a) {
         if (a == null)
             throw new NullPointerException();
-		return a.hashCode();
+        return a.hashCode();
     }
 
     int foo2(Object a) {
@@ -21,35 +21,38 @@ public class RFE1603449 {
     @ExpectWarning("NP")
     int test() {
         Object a = null;
-		return foo(a);
+        return foo(a);
     }
 
     @ExpectWarning("NP")
     int test2() {
         Object a = null;
-		return foo2(a);
+        return foo2(a);
     }
 
     @ExpectWarning("NP")
     int test3() {
         Object a = null;
-		return foo3(a);
+        return foo3(a);
     }
+
     @ExpectWarning("NP")
     int testa(Object a) {
-		if (a == null)
+        if (a == null)
             System.out.println("a is null");
         return foo(a);
     }
-	@ExpectWarning("NP")
+
+    @ExpectWarning("NP")
     int test2a(Object a) {
         if (a == null)
             System.out.println("a is null");
-		return foo2(a);
+        return foo2(a);
     }
+
     @ExpectWarning("NP")
     int test3a(Object a) {
-		if (a == null)
+        if (a == null)
             System.out.println("a is null");
         return foo3(a);
     }

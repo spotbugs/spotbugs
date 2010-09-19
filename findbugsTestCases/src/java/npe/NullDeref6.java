@@ -35,7 +35,7 @@ class NullDeref6 {
         if (o == null)
             return o;
         // Unreachable code
-		return o.getClass();
+        return o.getClass();
     }
 
 }

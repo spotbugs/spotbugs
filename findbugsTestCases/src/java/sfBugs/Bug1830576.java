@@ -47,7 +47,7 @@ public class Bug1830576 {
         }
     }
 
-    private static class Bug1830576_helper<K,V> implements Map<K,V> {
+    private static class Bug1830576_helper<K, V> implements Map<K, V> {
 
         public void clear() {
             // TODO Auto-generated method stub
@@ -108,7 +108,6 @@ public class Bug1830576 {
             // TODO Auto-generated method stub
             return null;
         }
-
 
     }
 }

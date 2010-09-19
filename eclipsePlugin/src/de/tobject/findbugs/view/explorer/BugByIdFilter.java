@@ -40,11 +40,11 @@ public class BugByIdFilter extends ViewerFilter {
     static {
         final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
         lastUsedFilter = FindbugsPlugin.getFilteredIds();
-		store.addPropertyChangeListener(new IPropertyChangeListener() {
+        store.addPropertyChangeListener(new IPropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent event) {
                 lastUsedFilter = FindbugsPlugin.getFilteredIds();
             }
-		});
+        });
     }
 
     public BugByIdFilter() {
@@ -53,16 +53,16 @@ public class BugByIdFilter extends ViewerFilter {
 
     @Override
     public boolean select(Viewer viewer, Object parentElement, Object element) {
-        if(lastUsedFilter.size() == 0){
-			return true;
+        if (lastUsedFilter.size() == 0) {
+            return true;
         }
-        if(element instanceof IMarker){
+        if (element instanceof IMarker) {
             IMarker marker = (IMarker) element;
-			if(MarkerUtil.isFiltered(marker, lastUsedFilter)){
+            if (MarkerUtil.isFiltered(marker, lastUsedFilter)) {
                 return false;
             }
         }
-		return true;
+        return true;
     }
 
 }

@@ -3,35 +3,33 @@ package npe;
 import java.io.IOException;
 
 /**
-False positive on exception path, reported by John Penix.
-
-<pre>
-I'm surprised about this false positive - seems obvious.  Am I missing
-something?
-
-thanks
-
-John
-
----
-
-try {
- r = a.MyClass.getInstance()
-}
-catch (IOException e) {
- log.warn("IO Exeption" + e.getMessage());
- return null;
-}
-catch (MyException e) {
- log.warn("My Exeption" + e.getMessage());
-   return null;
-}
-
-size = r.getSize();  // <--NP_NULL_ON_SOME_PATH_EXCEPTION
-</pre>
-
-
-**/
+ * False positive on exception path, reported by John Penix.
+ * 
+ * <pre>
+ * I'm surprised about this false positive - seems obvious.  Am I missing
+ * something?
+ * 
+ * thanks
+ * 
+ * John
+ * 
+ * ---
+ * 
+ * try {
+ *  r = a.MyClass.getInstance()
+ * }
+ * catch (IOException e) {
+ *  log.warn("IO Exeption" + e.getMessage());
+ *  return null;
+ * }
+ * catch (MyException e) {
+ *  log.warn("My Exeption" + e.getMessage());
+ *    return null;
+ * }
+ * 
+ * size = r.getSize();  // <--NP_NULL_ON_SOME_PATH_EXCEPTION
+ * </pre>
+ **/
 
 public class FalsePositiveOnExceptionPath {
 

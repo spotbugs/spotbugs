@@ -17,11 +17,11 @@ class Mwn {
         try {
             final Socket s = new Socket(address, 12345);
             result = s;
-		} catch (final IOException ioe) {
+        } catch (final IOException ioe) {
             result = ioe;
         } finally {
             synchronized (hung) {
-				hung.remove(address);
+                hung.remove(address);
                 hung.notifyAll();
             }
         }
@@ -29,16 +29,18 @@ class Mwn {
         synchronized (done) {
             done[0] = result;
             done.notifyAll();
-		}
+        }
     }
 
     public static final String DOMAINCFG = "Hi";
+
     boolean b;
+
     public void falsePositive() throws InterruptedException {
-		synchronized (DOMAINCFG) {
+        synchronized (DOMAINCFG) {
             while (!b)
-              DOMAINCFG.wait();
+                DOMAINCFG.wait();
         }
-	}
+    }
 
 }

@@ -11,7 +11,7 @@ public class ExceptionSetMerge {
         try {
             System.out.println(in.read());
         } catch (IOException e) {
-			o = e;
+            o = e;
         }
 
         System.out.println(o.hashCode());

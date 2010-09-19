@@ -34,115 +34,110 @@ import de.tobject.findbugs.view.explorer.GroupType;
 
 /**
  * This class tests the BugExplorerView and its related classes.
- *
+ * 
  * @author Tomás Pollak
  */
 public class BugExplorerViewTest extends AbstractBugExplorerViewTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
-	}
+    }
 
     @AfterClass
     public static void tearDownClass() throws CoreException {
         tearDownTestProject();
-	}
+    }
 
     @Test
     public void testShowView() throws PartInitException {
         // Show the view
-		IViewPart view = showBugExplorerView();
+        IViewPart view = showBugExplorerView();
         assertNotNull(view);
     }
 
     @Test
     public void testViewContents_Empty() throws PartInitException {
         // Get the content provider
-		ITreeContentProvider contentProvider = getNavigatorContentProvider();
+        ITreeContentProvider contentProvider = getNavigatorContentProvider();
         assertNotNull(contentProvider);
 
         // Get the top level elements from the content provider
         Object[] projects = contentProvider.getElements(getWorkspaceRoot());
         assertNotNull(projects);
-		assertEquals(0, projects.length);
+        assertEquals(0, projects.length);
     }
 
     @Test
     public void testViewContents_Project_Pattern_Marker() throws CoreException {
         // Load bugs from a file
-		loadXml(createFindBugsWorker(), getBugsFileLocation());
+        loadXml(createFindBugsWorker(), getBugsFileLocation());
 
         // Get the content provider
         ITreeContentProvider contentProvider = getNavigatorContentProvider();
         assertNotNull(contentProvider);
-		setGroupingInBugContentProvider(getDefaultGrouping());
+        setGroupingInBugContentProvider(getDefaultGrouping());
 
         // Assert expected view contents
         Object projectBugGroup = getSingleElement(contentProvider);
         ExpectedViewElement expectedProject = createProjectPatternMarkerExpectedContents();
-		expectedProject.assertEquals(projectBugGroup, contentProvider);
+        expectedProject.assertEquals(projectBugGroup, contentProvider);
     }
 
     @Test
     public void testViewContents_Project_Pattern_Package_Marker() throws CoreException {
         // Load bugs from a file
-		loadXml(createFindBugsWorker(), getBugsFileLocation());
+        loadXml(createFindBugsWorker(), getBugsFileLocation());
 
         // Get the content provider
         ITreeContentProvider contentProvider = getNavigatorContentProvider();
         assertNotNull(contentProvider);
-		setGroupingInBugContentProvider(getProjectPatternPackageMarkerGrouping());
+        setGroupingInBugContentProvider(getProjectPatternPackageMarkerGrouping());
 
         // Assert expected view contents
         Object projectBugGroup = getSingleElement(contentProvider);
         ExpectedViewElement expectedProject = createProjectPatternPackageMarkerExpectedContents();
-		expectedProject.assertEquals(projectBugGroup, contentProvider);
+        expectedProject.assertEquals(projectBugGroup, contentProvider);
     }
 
     private ExpectedViewElement createProjectPatternMarkerExpectedContents() {
         // Creates the expected elements tree
         // Project
-		// -- Pattern
+        // -- Pattern
         // ---- Marker
         // -- Pattern
         // ---- Marker
-		ExpectedViewElement expectedMarker1 = new ExpectedViewMarker("DM_STRING_CTOR");
+        ExpectedViewElement expectedMarker1 = new ExpectedViewMarker("DM_STRING_CTOR");
         ExpectedViewElement expectedMarker2 = new ExpectedViewMarker("URF_UNREAD_FIELD");
-        ExpectedViewElement expectedPattern1 = new ExpectedViewBugGroup(
-                GroupType.Pattern, null, setOf(expectedMarker1), setOf(expectedMarker1));
-		ExpectedViewElement expectedPattern2 = new ExpectedViewBugGroup(
-                GroupType.Pattern, null, setOf(expectedMarker2), setOf(expectedMarker2));
-        ExpectedViewElement expectedProject = new ExpectedViewBugGroup(GroupType.Project,
-                getProject(), setOf(expectedPattern1, expectedPattern2), setOf(
-						expectedMarker1, expectedMarker2));
+        ExpectedViewElement expectedPattern1 = new ExpectedViewBugGroup(GroupType.Pattern, null, setOf(expectedMarker1),
+                setOf(expectedMarker1));
+        ExpectedViewElement expectedPattern2 = new ExpectedViewBugGroup(GroupType.Pattern, null, setOf(expectedMarker2),
+                setOf(expectedMarker2));
+        ExpectedViewElement expectedProject = new ExpectedViewBugGroup(GroupType.Project, getProject(), setOf(expectedPattern1,
+                expectedPattern2), setOf(expectedMarker1, expectedMarker2));
         return expectedProject;
     }
 
-    private ExpectedViewElement createProjectPatternPackageMarkerExpectedContents()
-            throws JavaModelException {
+    private ExpectedViewElement createProjectPatternPackageMarkerExpectedContents() throws JavaModelException {
         // Creates the expected elements tree
-		// Project
+        // Project
         // -- Pattern
         // ---- Package
         // ------ Marker
-		// -- Pattern
+        // -- Pattern
         // ---- Package
         // ------ Marker
         ExpectedViewElement expectedMarker1 = new ExpectedViewMarker("DM_STRING_CTOR");
-		ExpectedViewElement expectedMarker2 = new ExpectedViewMarker("URF_UNREAD_FIELD");
-        ExpectedViewElement expectedPackage1 = new ExpectedViewBugGroup(
-                GroupType.Package, getDefaultPackageInSrc(), setOf(expectedMarker1),
+        ExpectedViewElement expectedMarker2 = new ExpectedViewMarker("URF_UNREAD_FIELD");
+        ExpectedViewElement expectedPackage1 = new ExpectedViewBugGroup(GroupType.Package, getDefaultPackageInSrc(),
+                setOf(expectedMarker1), setOf(expectedMarker1));
+        ExpectedViewElement expectedPackage2 = new ExpectedViewBugGroup(GroupType.Package, getDefaultPackageInSrc(),
+                setOf(expectedMarker2), setOf(expectedMarker2));
+        ExpectedViewElement expectedPattern1 = new ExpectedViewBugGroup(GroupType.Pattern, null, setOf(expectedPackage1),
                 setOf(expectedMarker1));
-		ExpectedViewElement expectedPackage2 = new ExpectedViewBugGroup(
-                GroupType.Package, getDefaultPackageInSrc(), setOf(expectedMarker2),
+        ExpectedViewElement expectedPattern2 = new ExpectedViewBugGroup(GroupType.Pattern, null, setOf(expectedPackage2),
                 setOf(expectedMarker2));
-        ExpectedViewElement expectedPattern1 = new ExpectedViewBugGroup(
-				GroupType.Pattern, null, setOf(expectedPackage1), setOf(expectedMarker1));
-        ExpectedViewElement expectedPattern2 = new ExpectedViewBugGroup(
-                GroupType.Pattern, null, setOf(expectedPackage2), setOf(expectedMarker2));
-        ExpectedViewElement expectedProject = new ExpectedViewBugGroup(GroupType.Project,
-				getProject(), setOf(expectedPattern1, expectedPattern2), setOf(
-                        expectedMarker1, expectedMarker2));
+        ExpectedViewElement expectedProject = new ExpectedViewBugGroup(GroupType.Project, getProject(), setOf(expectedPattern1,
+                expectedPattern2), setOf(expectedMarker1, expectedMarker2));
         return expectedProject;
     }
 }

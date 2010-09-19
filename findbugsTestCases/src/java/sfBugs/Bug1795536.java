@@ -11,11 +11,9 @@ public class Bug1795536 {
     }
 
     /*
-    static class C2 extends A1 {
-        @Override
-        public void foo(Object arg) {
-            System.out.println(arg.toString());
-        }
-    }
-        */
+     * static class C2 extends A1 {
+     * 
+     * @Override public void foo(Object arg) {
+     * System.out.println(arg.toString()); } }
+     */
 }

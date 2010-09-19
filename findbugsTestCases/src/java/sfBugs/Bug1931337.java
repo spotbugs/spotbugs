@@ -11,11 +11,11 @@ public class Bug1931337 {
     void foo(File file) {
         try {
             System.out.println(file);
-		} finally {
+        } finally {
             synchronized (compiling) {
                 compiling.remove(file);
                 compiling.notifyAll();
-			}
+            }
         }
 
     }

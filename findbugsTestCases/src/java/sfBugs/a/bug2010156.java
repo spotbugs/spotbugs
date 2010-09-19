@@ -18,7 +18,6 @@
 
 package sfBugs.a;
 
-
 /* this class only exists to induce a warning in another class;
  * see sfBugs/b/bug2010156.java */
 public class bug2010156 {

@@ -1,4 +1,3 @@
-
 public class InconsistentSynchronization {
     int x;
 
@@ -9,7 +8,6 @@ public class InconsistentSynchronization {
     public void setX(int x) {
         this.x = x;
     }
-
 
     public synchronized void incrementX() {
         x++;

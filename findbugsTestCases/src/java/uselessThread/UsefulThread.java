@@ -8,5 +8,5 @@ class UsefulThread extends Thread {
     @Override
     public void run() {
         System.out.println("I am a useful thread!");
-	}
+    }
 }

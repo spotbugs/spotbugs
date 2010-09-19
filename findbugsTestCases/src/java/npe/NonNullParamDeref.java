@@ -18,7 +18,7 @@ public class NonNullParamDeref {
         Object x = null;
         if (a) {
             x = new Object();
-		}
+        }
 
         foo(x);
     }

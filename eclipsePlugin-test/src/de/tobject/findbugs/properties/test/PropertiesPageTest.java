@@ -43,21 +43,22 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * This class tests the FindbugsPropertyPage and related classes.
- *
+ * 
  * @author Tom�s Pollak
  */
 public class PropertiesPageTest extends AbstractFindBugsTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
-	}
+    }
 
     @AfterClass
     public static void tearDownClass() throws CoreException {
         tearDownTestProject();
-	}
+    }
 
     private UserPreferences originalProjectPreferences;
+
     private UserPreferences originalWorkspacePreferences;
 
     @Override
@@ -75,7 +76,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     @Override
     public void tearDown() throws CoreException {
         // Restore the preferences to the original state
-		FindbugsPlugin.saveUserPreferences(getProject(), originalProjectPreferences);
+        FindbugsPlugin.saveUserPreferences(getProject(), originalProjectPreferences);
         FindbugsPlugin.saveUserPreferences(null, originalWorkspacePreferences);
 
         super.tearDown();
@@ -84,7 +85,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     @Test
     public void testAddFileToConflictingFilters() throws CoreException {
         // Check that there are no filter files
-		assertNoFilterFiles();
+        assertNoFilterFiles();
 
         // Create the properties page and the dialog
         FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
@@ -104,7 +105,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     @Test
     public void testAddFileToExcludeBugsFilter() throws CoreException {
         // Check that there are no filter files
-		assertNoFilterFiles();
+        assertNoFilterFiles();
 
         // Create the properties page and the dialog
         FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
@@ -119,14 +120,13 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
         // Check that the file was added to the filter
         assertEmptyFilter(getProjectPreferences().getIncludeFilterFiles());
         assertEmptyFilter(getProjectPreferences().getExcludeFilterFiles());
-		assertSelectedFilter(getBugsFileProjectRelativePath(), getProjectPreferences()
-                .getExcludeBugsFiles());
+        assertSelectedFilter(getBugsFileProjectRelativePath(), getProjectPreferences().getExcludeBugsFiles());
     }
 
     @Test
     public void testAddFileToExcludeFilter() throws CoreException {
         // Check that there are no filter files
-		assertNoFilterFiles();
+        assertNoFilterFiles();
 
         // Create the properties page and the dialog
         FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
@@ -140,15 +140,14 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 
         // Check that the file was added to the filter
         assertEmptyFilter(getProjectPreferences().getIncludeFilterFiles());
-        assertSelectedFilter(getFilterFileProjectRelativePath(), getProjectPreferences()
-				.getExcludeFilterFiles());
+        assertSelectedFilter(getFilterFileProjectRelativePath(), getProjectPreferences().getExcludeFilterFiles());
         assertEmptyFilter(getProjectPreferences().getExcludeBugsFiles());
     }
 
     @Test
     public void testAddFileToExcludeFilterTwice() throws CoreException {
         // Check that there are no filter files
-		assertNoFilterFiles();
+        assertNoFilterFiles();
 
         // Create the properties page and the dialog
         FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
@@ -163,15 +162,14 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 
         // Check that the file was added to the filter only once
         assertEmptyFilter(getProjectPreferences().getIncludeFilterFiles());
-        assertSelectedFilter(getFilterFileProjectRelativePath(), getProjectPreferences()
-				.getExcludeFilterFiles());
+        assertSelectedFilter(getFilterFileProjectRelativePath(), getProjectPreferences().getExcludeFilterFiles());
         assertEmptyFilter(getProjectPreferences().getExcludeBugsFiles());
     }
 
     @Test
     public void testAddFileToIncludeFilter() throws CoreException {
         // Check that there are no filter files
-		assertNoFilterFiles();
+        assertNoFilterFiles();
 
         // Create the properties page and the dialog
         FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
@@ -184,16 +182,15 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
         dialog.okPressed();
 
         // Check that the file was added to the filter
-        assertSelectedFilter(getFilterFileProjectRelativePath(), getProjectPreferences()
-                .getIncludeFilterFiles());
-		assertEmptyFilter(getProjectPreferences().getExcludeFilterFiles());
+        assertSelectedFilter(getFilterFileProjectRelativePath(), getProjectPreferences().getIncludeFilterFiles());
+        assertEmptyFilter(getProjectPreferences().getExcludeFilterFiles());
         assertEmptyFilter(getProjectPreferences().getExcludeBugsFiles());
     }
 
     @Test
     public void testDeselectAllCategories() throws CoreException {
         // Add all categories
-		addAllBugCategories();
+        addAllBugCategories();
         assertAllBugCategoriesSelected(true);
 
         // Create the properties page and the dialog
@@ -213,7 +210,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     @Test
     public void testDisableAllDetectors() throws CoreException {
         // Enable all detectors
-		getProjectPreferences().enableAllDetectors(true);
+        getProjectPreferences().enableAllDetectors(true);
         assertAllVisibleDetectorsEnabled(true);
 
         // Create the properties page and the dialog
@@ -233,7 +230,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     @Test
     public void testDisableFindBugs() throws CoreException {
         // Set the nature
-		ProjectUtilities.addFindBugsNature(getProject(), new NullProgressMonitor());
+        ProjectUtilities.addFindBugsNature(getProject(), new NullProgressMonitor());
         assertTrue(ProjectUtilities.hasFindBugsNature(getProject()));
 
         // Create the properties page and the dialog
@@ -254,17 +251,18 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     @Test
     public void testDisableProjectProperties() throws CoreException {
         // Create the properties page and the dialog
-		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
+        FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
         PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
 
-        // Accept the dialog, the plugin should have the project settings enabled
+        // Accept the dialog, the plugin should have the project settings
+        // enabled
         dialog.okPressed();
         assertTrue(FindbugsPlugin.isProjectSettingsEnabled(getProject()));
 
         // Create another properties page and another dialog
         page = createProjectPropertiesPage();
         dialog = createAndOpenProjectPropertiesDialog(page);
-		page.assertProjectSettingsEnabled(true);
+        page.assertProjectSettingsEnabled(true);
 
         // Disable the project settings
         page.enableProjectProperties(false);
@@ -275,10 +273,11 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
         // Check that the project settings are disabled
         assertFalse(FindbugsPlugin.isProjectSettingsEnabled(getProject()));
 
-        // Create the third properties page and dialog, this time the project settings
+        // Create the third properties page and dialog, this time the project
+        // settings
         // should be disabled
         page = createProjectPropertiesPage();
-		dialog = createAndOpenProjectPropertiesDialog(page);
+        dialog = createAndOpenProjectPropertiesDialog(page);
         page.assertProjectSettingsEnabled(false);
 
         // Accept the dialog
@@ -288,7 +287,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     @Test
     public void testEnableFindBugs() throws CoreException {
         // Reset the nature
-		ProjectUtilities.removeFindBugsNature(getProject(), new NullProgressMonitor());
+        ProjectUtilities.removeFindBugsNature(getProject(), new NullProgressMonitor());
         assertFalse(ProjectUtilities.hasFindBugsNature(getProject()));
 
         // Create the properties page and the dialog
@@ -309,7 +308,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     @Test
     public void testEnableOneDetector() throws CoreException {
         // Disable all detectors
-		getProjectPreferences().enableAllDetectors(false);
+        getProjectPreferences().enableAllDetectors(false);
         assertAllVisibleDetectorsEnabled(false);
 
         // Create the properties page and the dialog
@@ -330,7 +329,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     @Test
     public void testOpenProjectPreferencePage() throws CoreException {
         // Create the preferences page and the dialog
-		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
+        FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
         PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
 
         page.assertProjectControlsVisible(true);
@@ -342,7 +341,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     @Test
     public void testOpenWorkspacePreferencePage() throws CoreException {
         // Create the preferences page and the dialog
-		FindbugsPropertyPageTestSubclass page = createWorkspacePropertiesPage();
+        FindbugsPropertyPageTestSubclass page = createWorkspacePropertiesPage();
         PropertiesTestDialog dialog = createAndOpenWorkspacePreferencesDialog(page);
 
         page.assertProjectControlsVisible(false);
@@ -354,12 +353,11 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     @Test
     public void testRemoveFileFromExcludeFilter() throws CoreException {
         // Set the initial preferences with one filter
-		setFilterFile(true);
+        setFilterFile(true);
 
         // Check that the filters are populated
         assertEmptyFilter(getProjectPreferences().getIncludeFilterFiles());
-        assertSelectedFilter(getFilterFileLocation(), getProjectPreferences()
-				.getExcludeFilterFiles());
+        assertSelectedFilter(getFilterFileLocation(), getProjectPreferences().getExcludeFilterFiles());
         assertEmptyFilter(getProjectPreferences().getExcludeBugsFiles());
 
         // Create the properties page and the dialog
@@ -379,7 +377,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     @Test
     public void testSelectOneCategory() throws CoreException {
         // Remove all categories
-		removeAllBugCategories();
+        removeAllBugCategories();
         assertAllBugCategoriesSelected(false);
 
         // Create the properties page and the dialog
@@ -400,7 +398,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     @Test
     public void testSetEffort() throws CoreException {
         // Reset the effort
-		getProjectPreferences().setEffort(UserPreferences.EFFORT_DEFAULT);
+        getProjectPreferences().setEffort(UserPreferences.EFFORT_DEFAULT);
         assertEquals(UserPreferences.EFFORT_DEFAULT, getProjectPreferences().getEffort());
 
         // Create the properties page and the dialog
@@ -423,19 +421,16 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 
     private void assertAllBugCategoriesSelected(boolean enabled) {
         for (String category : I18N.instance().getBugCategories()) {
-            assertEquals(enabled, getProjectPreferences().getFilterSettings()
-					.containsCategory(category));
+            assertEquals(enabled, getProjectPreferences().getFilterSettings().containsCategory(category));
         }
     }
 
     private void assertAllVisibleDetectorsEnabled(boolean enabled) {
-        for (Iterator<DetectorFactory> factories = DetectorFactoryCollection.instance()
-                .factoryIterator(); factories.hasNext();) {
-			DetectorFactory detectorFactory = factories.next();
+        for (Iterator<DetectorFactory> factories = DetectorFactoryCollection.instance().factoryIterator(); factories.hasNext();) {
+            DetectorFactory detectorFactory = factories.next();
             if (!detectorFactory.isHidden()) {
-                assertEquals(enabled, getProjectPreferences().isDetectorEnabled(
-                        detectorFactory));
-			}
+                assertEquals(enabled, getProjectPreferences().isDetectorEnabled(detectorFactory));
+            }
         }
     }
 
@@ -446,49 +441,42 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     private void assertNoFilterFiles() {
         assertEmptyFilter(getProjectPreferences().getIncludeFilterFiles());
         assertEmptyFilter(getProjectPreferences().getExcludeFilterFiles());
-		assertEmptyFilter(getProjectPreferences().getExcludeBugsFiles());
+        assertEmptyFilter(getProjectPreferences().getExcludeBugsFiles());
     }
 
     private void assertOnlySelectedBugCategory(String categoryName) {
         for (String currentCategory : I18N.instance().getBugCategories()) {
             boolean expectedEnablement = currentCategory.equals(categoryName);
-			assertEquals(expectedEnablement, getProjectPreferences().getFilterSettings()
-                    .containsCategory(currentCategory));
+            assertEquals(expectedEnablement, getProjectPreferences().getFilterSettings().containsCategory(currentCategory));
         }
     }
 
     private void assertOnlyVisibleDetectorEnabled(String detectorShortName) {
-        for (Iterator<DetectorFactory> factories = DetectorFactoryCollection.instance()
-                .factoryIterator(); factories.hasNext();) {
-			DetectorFactory detectorFactory = factories.next();
+        for (Iterator<DetectorFactory> factories = DetectorFactoryCollection.instance().factoryIterator(); factories.hasNext();) {
+            DetectorFactory detectorFactory = factories.next();
             if (!detectorFactory.isHidden()) {
-                boolean expectedEnablement = detectorFactory.getShortName().equals(
-                        detectorShortName);
-				assertEquals(expectedEnablement, getProjectPreferences()
-                        .isDetectorEnabled(detectorFactory));
+                boolean expectedEnablement = detectorFactory.getShortName().equals(detectorShortName);
+                assertEquals(expectedEnablement, getProjectPreferences().isDetectorEnabled(detectorFactory));
             }
         }
-	}
-
-    private void assertSelectedFilter(String expectedFilter,
-            Collection<String> actualFilters) {
-        assertEquals(1, actualFilters.size());
-		assertTrue(actualFilters.contains(expectedFilter));
     }
 
-    private PropertiesTestDialog createAndOpenProjectPropertiesDialog(
-            FindbugsPropertyPageTestSubclass page) {
+    private void assertSelectedFilter(String expectedFilter, Collection<String> actualFilters) {
+        assertEquals(1, actualFilters.size());
+        assertTrue(actualFilters.contains(expectedFilter));
+    }
+
+    private PropertiesTestDialog createAndOpenProjectPropertiesDialog(FindbugsPropertyPageTestSubclass page) {
         PropertiesTestDialog dialog = new PropertiesTestDialog(getParentShell(), page);
-		dialog.create();
+        dialog.create();
         page.enableProjectProperties(true);
         dialog.open();
         return dialog;
-	}
+    }
 
-    private PropertiesTestDialog createAndOpenWorkspacePreferencesDialog(
-            FindbugsPropertyPageTestSubclass page) {
+    private PropertiesTestDialog createAndOpenWorkspacePreferencesDialog(FindbugsPropertyPageTestSubclass page) {
         PropertiesTestDialog dialog = new PropertiesTestDialog(getParentShell(), page);
-		dialog.create();
+        dialog.create();
         dialog.open();
         return dialog;
     }
@@ -496,18 +484,17 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     private FindbugsPropertyPageTestSubclass createProjectPropertiesPage() {
         FindbugsPropertyPageTestSubclass page = new FindbugsPropertyPageTestSubclass();
         page.setElement(getProject());
-		return page;
+        return page;
     }
 
     private FindbugsPropertyPageTestSubclass createWorkspacePropertiesPage() {
         FindbugsPropertyPageTestSubclass page = new FindbugsPropertyPageTestSubclass();
         return page;
-	}
+    }
 
     private String getBugsFileProjectRelativePath() {
-        return getProject().findMember(BUGS_XML_FILE).getProjectRelativePath()
-                .toOSString();
-	}
+        return getProject().findMember(BUGS_XML_FILE).getProjectRelativePath().toOSString();
+    }
 
     private String getFilterFileProjectRelativePath() {
         return getProject().findMember(FILTER_FILE).getProjectRelativePath().toOSString();
@@ -516,7 +503,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     private Shell getParentShell() {
         Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
         return shell;
-	}
+    }
 
     private UserPreferences getWorkspacePreferences() {
         return FindbugsPlugin.getUserPreferences(null);
@@ -525,6 +512,6 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     private void removeAllBugCategories() {
         for (String category : I18N.instance().getBugCategories()) {
             getProjectPreferences().getFilterSettings().removeCategory(category);
-		}
+        }
     }
 }

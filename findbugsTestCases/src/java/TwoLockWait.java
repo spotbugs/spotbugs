@@ -7,14 +7,14 @@ public class TwoLockWait {
     public synchronized void provideIt(Object v) {
         synchronized (lock) {
             value = v;
-			lock.notifyAll();
+            lock.notifyAll();
         }
     }
 
     public synchronized Object waitForIt() throws InterruptedException {
         synchronized (lock) {
             while (value == null)
-				lock.wait();
+                lock.wait();
             return value;
         }
     }
@@ -22,11 +22,11 @@ public class TwoLockWait {
     public void myMethod(Object a, Object b) {
         try {
             synchronized (a) {
-				synchronized (b) {
+                synchronized (b) {
                     a.wait();
                 }
             }
-		} catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             System.out.println("Interrupted");
         }
     }

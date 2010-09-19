@@ -7,7 +7,8 @@ public class LoggerFalsePositive {
     public LoggerFalsePositive(String container) {
         this.container = container;
     }
-	private Logger getLogger() {
+
+    private Logger getLogger() {
         return Logger.getAnonymousLogger();
     }
 
@@ -18,15 +19,13 @@ public class LoggerFalsePositive {
         Logger logger = null;
         if (container != null)
             logger = getLogger();
-		if (logger != null)
-            logger.log(Level.SEVERE, "StandardWrapperValve["
-                    + container.toLowerCase() + "]: " + message);
+        if (logger != null)
+            logger.log(Level.SEVERE, "StandardWrapperValve[" + container.toLowerCase() + "]: " + message);
         else {
-			String containerName = null;
+            String containerName = null;
             if (container != null)
                 containerName = container.toLowerCase();
-            System.out.println("StandardWrapperValve[" + containerName + "]: "
-					+ message);
+            System.out.println("StandardWrapperValve[" + containerName + "]: " + message);
         }
 
     }

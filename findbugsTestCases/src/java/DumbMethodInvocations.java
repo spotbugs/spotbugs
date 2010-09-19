@@ -8,19 +8,21 @@ import java.util.Iterator;
 class DumbMethodInvocations implements Iterator {
 
     Connection getConnection1() throws SQLException {
-        return DriverManager.getConnection("jdbc:hsqldb:mem:test","sa","");
+        return DriverManager.getConnection("jdbc:hsqldb:mem:test", "sa", "");
     }
-	Connection getConnection2() throws SQLException {
-        return DriverManager.getConnection("jdbc:hsqldb:mem:test","sa","secret");
+
+    Connection getConnection2() throws SQLException {
+        return DriverManager.getConnection("jdbc:hsqldb:mem:test", "sa", "secret");
     }
+
     String f(String s) {
-		return s.substring(0);
+        return s.substring(0);
     }
 
     String g(String s) {
         for (int i = 0; i < s.length(); i++)
             if (s.substring(i).hashCode() == 42)
-				return s;
+                return s;
         return null;
     }
 
@@ -38,7 +40,7 @@ class DumbMethodInvocations implements Iterator {
     public void falsePositive() {
         Date today = Calendar.getInstance().getTime();
         System.out.println(today);
-		today.setDate(16);
+        today.setDate(16);
         System.out.println(today);
     }
 

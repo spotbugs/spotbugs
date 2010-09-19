@@ -1,4 +1,3 @@
-
 public class CompareArrays {
     public static boolean cmpArrays(int[] a, int[] b) {
         return a.equals(b);
@@ -9,21 +8,21 @@ public class CompareArrays {
     }
 
     public static boolean cmpArraysOK(String[] a, String[] b) {// this one is
-                                                                // ok, but not
-                                                                // optimal
-		if (a.length != b.length)
+                                                               // ok, but not
+                                                               // optimal
+        if (a.length != b.length)
             return false;
 
         for (int i = 0; i < a.length; i++)
             if (!(a[i].equals(b[i])))
                 return false;
-		return true;
+        return true;
     }
 
     public static void main(String[] args) {
         int[] a = { 1, 2, 3 };
         int[] b = { 1, 2, 3 };
-		String[] c = { "hello", "there" };
+        String[] c = { "hello", "there" };
         String[] d = { "hello", "there" };
 
         if (cmpArrays(a, b))

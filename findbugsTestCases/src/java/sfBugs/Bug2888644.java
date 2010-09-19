@@ -9,11 +9,11 @@ public class Bug2888644 {
     public void bug1() {
         assignMe = "OK";
     }
-	
+
     public void bug2() {
         if (assignMe.contains("OK")) {
             System.out.println("OK!");
-		}
+        }
         assignMe = "OK";
     }
 }

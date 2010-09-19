@@ -34,7 +34,7 @@ import de.tobject.findbugs.builder.WorkItem;
 
 /**
  * Remove all bug markers for the currently selected editor.
- *
+ * 
  * @author Peter Friese
  * @author Phil Crosby
  * @author Andrei Loskutov
@@ -45,24 +45,22 @@ public class ClearMarkersEditorAction implements IEditorActionDelegate {
 
     private IEditorPart currentEditor;
 
-    public final void setActiveEditor(final IAction action,
-            final IEditorPart targetPart) {
+    public final void setActiveEditor(final IAction action, final IEditorPart targetPart) {
         currentEditor = targetPart;
-	}
+    }
 
-    public final void selectionChanged(final IAction action,
-            final ISelection selection) {
+    public final void selectionChanged(final IAction action, final ISelection selection) {
         // noop
-	}
+    }
 
     public final void run(final IAction action) {
-        if(currentEditor != null) {
+        if (currentEditor != null) {
             IFile file = ((FileEditorInput) (currentEditor.getEditorInput())).getFile();
-			Job job = new ClearMarkersJob(file.getProject(), Arrays.asList(new WorkItem[]{new WorkItem(file)}));
+            Job job = new ClearMarkersJob(file.getProject(), Arrays.asList(new WorkItem[] { new WorkItem(file) }));
             job.setUser(true);
             job.setPriority(Job.INTERACTIVE);
-            IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) currentEditor
-					.getEditorSite().getService(IWorkbenchSiteProgressService.class);
+            IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) currentEditor.getEditorSite().getService(
+                    IWorkbenchSiteProgressService.class);
             service.schedule(job);
         }
     }

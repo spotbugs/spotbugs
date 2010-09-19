@@ -5,18 +5,17 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-
 public class SetTests {
 
     public void test1NoBugs(Set<String> set) {
         set.contains("Hello");
         set.remove("Hello");
-	}
+    }
 
     public void test1Bugs(Set<String> set) {
         set.contains(new StringBuffer("Key"));
         set.remove(new StringBuffer("Key"));
-	}
+    }
 
     public void test2NoBugs(SortedSet<CharSequence> set) {
         set.contains(new StringBuffer("Key"));

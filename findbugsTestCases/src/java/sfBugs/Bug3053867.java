@@ -12,8 +12,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class Bug3053867 {
 
     static class Foo {
-         int x;
-
+        int x;
 
         public int getX() {
             return x;
@@ -29,23 +28,26 @@ public class Bug3053867 {
     @NoWarning("J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION")
     public void setSession(HttpSession session) {
         this.session = session;
-	}
+    }
 
     @NoWarning("J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION")
     public void storeMap(Map<String, String> map) {
         session.setAttribute("map", map);
-	}
+    }
+
     @NoWarning("J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION")
     public void storeSet(Set<String> set) {
         session.setAttribute("set", set);
-	}
+    }
+
     @ExpectWarning("J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION")
     public void storeFoo(Foo foo) {
         session.setAttribute("foo", foo);
-	}
+    }
+
     @DesireWarning("J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION")
     public void storeFooSet(Set<Foo> fooSet) {
         session.setAttribute("fooSet", fooSet);
-	}
+    }
 
 }

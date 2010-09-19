@@ -9,11 +9,12 @@ public class ShowingEqualsMethodUsed {
 
     HashSet<String> set = new HashSet<String>();
 
-	@ExpectWarning("GC")
+    @ExpectWarning("GC")
     public boolean testByteArray(byte[] b) {
         return set.contains(b);
     }
-	@ExpectWarning("GC")
+
+    @ExpectWarning("GC")
     public boolean testList(List<String> lst) {
         return set.contains(lst);
     }

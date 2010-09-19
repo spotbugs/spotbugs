@@ -17,28 +17,29 @@ package sfBugs;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug1969563 extends Thread {
-    private static long getNextId() { return 1L; }
+    private static long getNextId() {
+        return 1L;
+    }
 
     /* ********************
-     * Behavior at filing:
-     *   warning thrown =>
-	 * L M Dm: Method new Bug1969563() creates a thread using the default empty
-     * run method  At Bug1969563.java:[line 19]
-     * ******************** */
+     * Behavior at filing: warning thrown => L M Dm: Method new Bug1969563()
+     * creates a thread using the default empty run method At
+     * Bug1969563.java:[line 19] ********************
+     */
     @NoWarning("Dm")
-	public Bug1969563() {
+    public Bug1969563() {
         super("TestThread-" + getNextId());
     }
 
-	/* ********************
-     * Behavior at filing:
-     *   no warning thrown
-     * ******************** */
-	public Bug1969563(int id) {
+    /* ********************
+     * Behavior at filing: no warning thrown ********************
+     */
+    public Bug1969563(int id) {
         super("TestThread-" + id);
     }
 
-    @Override public void run() {
+    @Override
+    public void run() {
         System.out.println("Hello World");
     }
 }

@@ -1,7 +1,5 @@
 package sfBugs;
 
-
-
 import java.io.File;
 import java.io.Serializable;
 import java.util.AbstractMap;
@@ -14,29 +12,18 @@ import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
-
-
 @ThreadSafe
-
 public class Bug1871376 implements Serializable {
 
     private static final long serialVersionUID = new Long(1L);
 
-
-
     @GuardedBy("Bug1871376.class")
-
     private static boolean s_builtAMap = false;
-
-
 
     private final Date m_created = new Date();
 
     @GuardedBy("itself")
-
     private NonSerializableMap m_map = null;
-
-
 
     public Bug1871376() {
 
@@ -46,21 +33,15 @@ public class Bug1871376 implements Serializable {
 
             done = true;
 
-
-
         new File("temp.txt").delete();
 
     }
-
-
 
     public Date getCreationDate() {
 
         return m_created;
 
     }
-
-
 
     public String getFirstCharOfKey(@NonNull String key) {
 
@@ -90,19 +71,15 @@ public class Bug1871376 implements Serializable {
 
         }
 
-        return value.substring(0,1);
+        return value.substring(0, 1);
 
     }
-
-
 
     public synchronized static boolean didBuildAMap() {
 
         return s_builtAMap;
 
     }
-
-
 
     public static void main(String[] args) {
 
@@ -120,13 +97,9 @@ public class Bug1871376 implements Serializable {
 
     }
 
+    private class NonSerializableMap extends AbstractMap<String, String> {
 
-
-    private class NonSerializableMap extends AbstractMap<String,String> {
-
-        private final Map<String,String> m_map = new HashMap<String,String>();
-
-
+        private final Map<String, String> m_map = new HashMap<String, String>();
 
         public Set<java.util.Map.Entry<String, String>> entrySet() {
 
@@ -137,4 +110,3 @@ public class Bug1871376 implements Serializable {
     }
 
 }
-

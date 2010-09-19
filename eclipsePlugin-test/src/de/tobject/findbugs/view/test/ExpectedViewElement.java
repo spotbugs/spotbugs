@@ -22,15 +22,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 
 /**
- * Interface for expected view elements. An expected view element is an object created by
- * a test case that sets the expectations and compares itself to an actual element,
- * asserting some desired characteristics.
- *
+ * Interface for expected view elements. An expected view element is an object
+ * created by a test case that sets the expectations and compares itself to an
+ * actual element, asserting some desired characteristics.
+ * 
  * @author Tomás Pollak
  */
 public interface ExpectedViewElement {
-    void assertEquals(Object actual, ITreeContentProvider contentProvider)
-            throws CoreException;
+    void assertEquals(Object actual, ITreeContentProvider contentProvider) throws CoreException;
 
     public boolean matches(Object actual) throws CoreException;
 }

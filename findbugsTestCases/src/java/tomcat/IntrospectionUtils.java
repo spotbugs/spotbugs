@@ -3,22 +3,21 @@ package tomcat;
 import java.lang.reflect.Method;
 
 public class IntrospectionUtils {
-    public static Object callMethod1(Object target, String methodN,
-            Object param1, String typeParam1, ClassLoader cl) throws Exception {
+    public static Object callMethod1(Object target, String methodN, Object param1, String typeParam1, ClassLoader cl)
+            throws Exception {
         if (target == null || param1 == null)
-			d("Assert: Illegal params " + target + " " + param1);
+            d("Assert: Illegal params " + target + " " + param1);
         Class params[] = new Class[1];
         if (typeParam1 == null)
             params[0] = param1.getClass();
-		else
+        else
             params[0] = cl.loadClass(typeParam1);
         // TODO: We should be reporting a NP error with a possible dereference
         // in the following line
-		Method m = findMethod(target.getClass(), methodN, params);
+        Method m = findMethod(target.getClass(), methodN, params);
         if (m == null)
-            throw new NoSuchMethodException(target.getClass().getName() + " "
-                    + methodN);
-		else
+            throw new NoSuchMethodException(target.getClass().getName() + " " + methodN);
+        else
             return m.invoke(target, new Object[] { param1 });
     }
 
@@ -26,11 +25,9 @@ public class IntrospectionUtils {
         System.out.println("IntrospectionUtils: " + s);
     }
 
-    public static Method findMethod(Class c, String name, Class params[])
-            throws SecurityException, NoSuchMethodException {
+    public static Method findMethod(Class c, String name, Class params[]) throws SecurityException, NoSuchMethodException {
         // STUB Method; what happens here isn't relevant
-		return IntrospectionUtils.class.getMethod("d",
-                new Class[] { String.class });
+        return IntrospectionUtils.class.getMethod("d", new Class[] { String.class });
     }
 
 }

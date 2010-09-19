@@ -11,19 +11,19 @@ public class MyMenuBar extends MenuBar {
     @Override
     @ExpectWarning("RCN")
     public void setHelpMenu(Menu m) {
-		synchronized (getTreeLock()) {
+        synchronized (getTreeLock()) {
             if (helpMenu == m) {
                 return;
             }
-			if (helpMenu != null) {
+            if (helpMenu != null) {
                 remove(helpMenu);
             }
             if (m.getParent() != this) {
-				add(m);
+                add(m);
             }
             helpMenu = m;
             if (m != null) {
-				super.setHelpMenu(m);
+                super.setHelpMenu(m);
             }
         }
     }

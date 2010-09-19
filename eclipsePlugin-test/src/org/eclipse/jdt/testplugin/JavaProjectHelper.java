@@ -68,24 +68,23 @@ public class JavaProjectHelper {
 
     /**
      * Creates a IJavaProject.
-     *
-	 * @param projectName
+     * 
+     * @param projectName
      *            The name of the project
      * @param binFolderName
      *            Name of the output folder
-	 * @return Returns the Java project handle
+     * @return Returns the Java project handle
      * @throws CoreException
      *             Project creation failed
      */
-	public static IJavaProject createJavaProject(String projectName, String binFolderName)
-            throws CoreException {
+    public static IJavaProject createJavaProject(String projectName, String binFolderName) throws CoreException {
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
         IProject project = root.getProject(projectName);
-		if (!project.exists()) {
+        if (!project.exists()) {
             project.create(null);
         } else {
             project.refreshLocal(IResource.DEPTH_INFINITE, null);
-		}
+        }
 
         if (!project.isOpen()) {
             project.open(null);
@@ -94,11 +93,11 @@ public class JavaProjectHelper {
         IPath outputLocation;
         if (binFolderName != null && binFolderName.length() > 0) {
             IFolder binFolder = project.getFolder(binFolderName);
-			if (!binFolder.exists()) {
+            if (!binFolder.exists()) {
                 CoreUtility.createFolder(binFolder, false, true, null);
             }
             outputLocation = binFolder.getFullPath();
-		} else {
+        } else {
             outputLocation = project.getFullPath();
         }
 
@@ -116,65 +115,64 @@ public class JavaProjectHelper {
 
     /**
      * Sets the compiler options to 1.5 for the given project.
-     *
-	 * @param project
+     * 
+     * @param project
      *            the java project
      */
     public static void set15CompilerOptions(IJavaProject project) {
-		Map options = project.getOptions(false);
+        Map options = project.getOptions(false);
         JavaProjectHelper.set15CompilerOptions(options);
         project.setOptions(options);
     }
 
     /**
      * Sets the compiler options to 1.5
-     *
-	 * @param options
+     * 
+     * @param options
      *            The compiler options to configure
      */
     public static void set15CompilerOptions(Map options) {
-		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5);
+        options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5);
         options.put(JavaCore.COMPILER_PB_ASSERT_IDENTIFIER, JavaCore.ERROR);
         options.put(JavaCore.COMPILER_PB_ENUM_IDENTIFIER, JavaCore.ERROR);
         options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
-		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_5);
+        options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_5);
     }
 
     /**
      * Removes a IJavaElement
-     *
-	 * @param elem
+     * 
+     * @param elem
      *            The element to remove
      * @throws CoreException
      *             Removing failed
-	 * @see #ASSERT_NO_MIXED_LINE_DELIMIERS
+     * @see #ASSERT_NO_MIXED_LINE_DELIMIERS
      */
     public static void delete(final IResource elem) throws CoreException {
         IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-			public void run(IProgressMonitor monitor) throws CoreException {
+            public void run(IProgressMonitor monitor) throws CoreException {
                 try {
                     elem.delete(true, monitor);
                 } catch (CoreException e) {
-					JavaPlugin.log(e);
+                    JavaPlugin.log(e);
                     throw e;
                 }
             }
-		};
+        };
         ResourcesPlugin.getWorkspace().run(runnable, null);
     }
 
     /**
      * Removes all files in the project and sets the given classpath
-     *
-	 * @param jproject
+     * 
+     * @param jproject
      *            The project to clear
      * @param entries
      *            The default class path to set
-	 * @throws CoreException
+     * @throws CoreException
      *             Clearing the project failed
      */
-    public static void clear(final IJavaProject jproject, final IClasspathEntry[] entries)
-			throws CoreException {
+    public static void clear(final IJavaProject jproject, final IClasspathEntry[] entries) throws CoreException {
         performDummySearch();
 
         IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
@@ -184,526 +182,501 @@ public class JavaProjectHelper {
                 IResource[] resources = jproject.getProject().members();
                 for (int i = 0; i < resources.length; i++) {
                     if (!resources[i].getName().startsWith(".")) {
-						resources[i].delete(true, null);
+                        resources[i].delete(true, null);
                     }
                 }
             }
-		};
+        };
         ResourcesPlugin.getWorkspace().run(runnable, null);
     }
 
     public static void performDummySearch() throws JavaModelException {
         new SearchEngine().searchAllTypeNames(
                 null,
-				SearchPattern.R_EXACT_MATCH,
+                SearchPattern.R_EXACT_MATCH,
                 "XXXXXXXXX".toCharArray(), // make sure we search a concrete
                 // name. This is faster according to
                 // Kent
-				SearchPattern.R_EXACT_MATCH | SearchPattern.R_CASE_SENSITIVE,
-                IJavaSearchConstants.CLASS, SearchEngine
-                        .createJavaSearchScope(new IJavaElement[0]), new Requestor(),
+                SearchPattern.R_EXACT_MATCH | SearchPattern.R_CASE_SENSITIVE, IJavaSearchConstants.CLASS,
+                SearchEngine.createJavaSearchScope(new IJavaElement[0]), new Requestor(),
                 IJavaSearchConstants.WAIT_UNTIL_READY_TO_SEARCH, null);
-	}
+    }
 
     /**
      * Adds a source container to a IJavaProject.
-     *
-	 * @param jproject
+     * 
+     * @param jproject
      *            The parent project
      * @param containerName
      *            The name of the new source container
-	 * @return The handle to the new source container
+     * @return The handle to the new source container
      * @throws CoreException
      *             Creation failed
      */
-	public static IPackageFragmentRoot addSourceContainer(IJavaProject jproject,
-            String containerName) throws CoreException {
+    public static IPackageFragmentRoot addSourceContainer(IJavaProject jproject, String containerName) throws CoreException {
         return addSourceContainer(jproject, containerName, new Path[0]);
     }
 
     /**
      * Adds a source container to a IJavaProject.
-     *
-	 * @param jproject
+     * 
+     * @param jproject
      *            The parent project
      * @param containerName
      *            The name of the new source container
-	 * @param exclusionFilters
+     * @param exclusionFilters
      *            Exclusion filters to set
      * @return The handle to the new source container
      * @throws CoreException
-	 *             Creation failed
+     *             Creation failed
      */
-    public static IPackageFragmentRoot addSourceContainer(IJavaProject jproject,
-            String containerName, IPath[] exclusionFilters) throws CoreException {
-		return addSourceContainer(jproject, containerName, new Path[0], exclusionFilters);
+    public static IPackageFragmentRoot addSourceContainer(IJavaProject jproject, String containerName, IPath[] exclusionFilters)
+            throws CoreException {
+        return addSourceContainer(jproject, containerName, new Path[0], exclusionFilters);
     }
 
     /**
      * Adds a source container to a IJavaProject.
-     *
-	 * @param jproject
+     * 
+     * @param jproject
      *            The parent project
      * @param containerName
      *            The name of the new source container
-	 * @param inclusionFilters
+     * @param inclusionFilters
      *            Inclusion filters to set
      * @param exclusionFilters
      *            Exclusion filters to set
-	 * @return The handle to the new source container
+     * @return The handle to the new source container
      * @throws CoreException
      *             Creation failed
      */
-	public static IPackageFragmentRoot addSourceContainer(IJavaProject jproject,
-            String containerName, IPath[] inclusionFilters, IPath[] exclusionFilters)
-            throws CoreException {
+    public static IPackageFragmentRoot addSourceContainer(IJavaProject jproject, String containerName, IPath[] inclusionFilters,
+            IPath[] exclusionFilters) throws CoreException {
         IProject project = jproject.getProject();
-		IContainer container = null;
+        IContainer container = null;
         if (containerName == null || containerName.length() == 0) {
             container = project;
         } else {
-			IFolder folder = project.getFolder(containerName);
+            IFolder folder = project.getFolder(containerName);
             if (!folder.exists()) {
                 CoreUtility.createFolder(folder, false, true, null);
             }
-			container = folder;
+            container = folder;
         }
         IPackageFragmentRoot root = jproject.getPackageFragmentRoot(container);
 
-        IClasspathEntry cpe = JavaCore.newSourceEntry(root.getPath(), inclusionFilters,
-                exclusionFilters, null);
+        IClasspathEntry cpe = JavaCore.newSourceEntry(root.getPath(), inclusionFilters, exclusionFilters, null);
         addToClasspath(jproject, cpe);
-		return root;
+        return root;
     }
 
     /**
-     * Adds a source container to a IJavaProject and imports all files contained in the
-     * given ZIP file.
-	 *
+     * Adds a source container to a IJavaProject and imports all files contained
+     * in the given ZIP file.
+     * 
      * @param jproject
      *            The parent project
      * @param containerName
-	 *            Name of the source container
+     *            Name of the source container
      * @param zipFile
      *            Archive to import
      * @param containerEncoding
-	 *            encoding for the generated source container
+     *            encoding for the generated source container
      * @return The handle to the new source container
      * @throws InvocationTargetException
      *             Creation failed
-	 * @throws CoreException
+     * @throws CoreException
      *             Creation failed
      * @throws IOException
      *             Creation failed
-	 */
-    public static IPackageFragmentRoot addSourceContainerWithImport(
-            IJavaProject jproject, String containerName, File zipFile,
-            String containerEncoding) throws InvocationTargetException, CoreException,
-			IOException {
-        return addSourceContainerWithImport(jproject, containerName, zipFile,
-                containerEncoding, new Path[0]);
+     */
+    public static IPackageFragmentRoot addSourceContainerWithImport(IJavaProject jproject, String containerName, File zipFile,
+            String containerEncoding) throws InvocationTargetException, CoreException, IOException {
+        return addSourceContainerWithImport(jproject, containerName, zipFile, containerEncoding, new Path[0]);
     }
 
     /**
-     * Adds a source container to a IJavaProject and imports all files contained in the
-     * given ZIP file.
-	 *
+     * Adds a source container to a IJavaProject and imports all files contained
+     * in the given ZIP file.
+     * 
      * @param jproject
      *            The parent project
      * @param containerName
-	 *            Name of the source container
+     *            Name of the source container
      * @param zipFile
      *            Archive to import
      * @param containerEncoding
-	 *            encoding for the generated source container
+     *            encoding for the generated source container
      * @param exclusionFilters
      *            Exclusion filters to set
      * @return The handle to the new source container
-	 * @throws InvocationTargetException
+     * @throws InvocationTargetException
      *             Creation failed
      * @throws CoreException
      *             Creation failed
-	 * @throws IOException
+     * @throws IOException
      *             Creation failed
      */
-    public static IPackageFragmentRoot addSourceContainerWithImport(
-			IJavaProject jproject, String containerName, File zipFile,
-            String containerEncoding, IPath[] exclusionFilters)
-            throws InvocationTargetException, CoreException, IOException {
+    public static IPackageFragmentRoot addSourceContainerWithImport(IJavaProject jproject, String containerName, File zipFile,
+            String containerEncoding, IPath[] exclusionFilters) throws InvocationTargetException, CoreException, IOException {
         ZipFile file = new ZipFile(zipFile);
-		try {
-            IPackageFragmentRoot root = addSourceContainer(jproject, containerName,
-                    exclusionFilters);
-            ((IContainer) root.getCorrespondingResource()).setDefaultCharset(
-					containerEncoding, null);
+        try {
+            IPackageFragmentRoot root = addSourceContainer(jproject, containerName, exclusionFilters);
+            ((IContainer) root.getCorrespondingResource()).setDefaultCharset(containerEncoding, null);
             importFilesFromZip(file, root.getPath(), null);
             return root;
         } finally {
-			if (file != null) {
+            if (file != null) {
                 file.close();
             }
         }
-	}
+    }
 
     /**
      * Adds a library entry to a IJavaProject.
-     *
-	 * @param jproject
+     * 
+     * @param jproject
      *            The parent project
      * @param path
      *            The path of the library to add
-	 * @return The handle of the created root
+     * @return The handle of the created root
      * @throws JavaModelException
      */
-    public static IPackageFragmentRoot addLibrary(IJavaProject jproject, IPath path)
-			throws JavaModelException {
+    public static IPackageFragmentRoot addLibrary(IJavaProject jproject, IPath path) throws JavaModelException {
         return addLibrary(jproject, path, null, null);
     }
 
     /**
      * Adds a library entry with source attachment to a IJavaProject.
-     *
-	 * @param jproject
+     * 
+     * @param jproject
      *            The parent project
      * @param path
      *            The path of the library to add
-	 * @param sourceAttachPath
+     * @param sourceAttachPath
      *            The source attachment path
      * @param sourceAttachRoot
      *            The source attachment root path
-	 * @return The handle of the created root
+     * @return The handle of the created root
      * @throws JavaModelException
      */
-    public static IPackageFragmentRoot addLibrary(IJavaProject jproject, IPath path,
-			IPath sourceAttachPath, IPath sourceAttachRoot) throws JavaModelException {
-        IClasspathEntry cpe = JavaCore.newLibraryEntry(path, sourceAttachPath,
-                sourceAttachRoot);
+    public static IPackageFragmentRoot addLibrary(IJavaProject jproject, IPath path, IPath sourceAttachPath,
+            IPath sourceAttachRoot) throws JavaModelException {
+        IClasspathEntry cpe = JavaCore.newLibraryEntry(path, sourceAttachPath, sourceAttachRoot);
         addToClasspath(jproject, cpe);
-		return jproject.getPackageFragmentRoot(path.toString());
+        return jproject.getPackageFragmentRoot(path.toString());
     }
 
     /**
      * Copies the library into the project and adds it as library entry.
-     *
-	 * @param jproject
+     * 
+     * @param jproject
      *            The parent project
      * @param jarPath
      * @param sourceAttachPath
-	 *            The source attachment path
+     *            The source attachment path
      * @param sourceAttachRoot
      *            The source attachment root path
      * @return The handle of the created root
-	 * @throws IOException
+     * @throws IOException
      * @throws CoreException
      */
-    public static IPackageFragmentRoot addLibraryWithImport(IJavaProject jproject,
-			IPath jarPath, IPath sourceAttachPath, IPath sourceAttachRoot)
-            throws IOException, CoreException {
+    public static IPackageFragmentRoot addLibraryWithImport(IJavaProject jproject, IPath jarPath, IPath sourceAttachPath,
+            IPath sourceAttachRoot) throws IOException, CoreException {
         IProject project = jproject.getProject();
         IFile newFile = project.getFile(jarPath.lastSegment());
-		InputStream inputStream = null;
+        InputStream inputStream = null;
         try {
             inputStream = new FileInputStream(jarPath.toFile());
             newFile.create(inputStream, true, null);
-		} finally {
+        } finally {
             if (inputStream != null) {
                 try {
                     inputStream.close();
-				} catch (IOException e) {
+                } catch (IOException e) {
                 }
             }
         }
-		return addLibrary(jproject, newFile.getFullPath(), sourceAttachPath,
-                sourceAttachRoot);
+        return addLibrary(jproject, newFile.getFullPath(), sourceAttachPath, sourceAttachRoot);
     }
 
     /**
      * Creates and adds a class folder to the class path.
-     *
-	 * @param jproject
-     *            The parent project
-     * @param containerName
-     * @param sourceAttachPath
-	 *            The source attachment path
-     * @param sourceAttachRoot
-     *            The source attachment root path
-     * @return The handle of the created root
-	 * @throws CoreException
-     */
-    public static IPackageFragmentRoot addClassFolder(IJavaProject jproject,
-            String containerName, IPath sourceAttachPath, IPath sourceAttachRoot)
-			throws CoreException {
-        IProject project = jproject.getProject();
-        IContainer container = null;
-        if (containerName == null || containerName.length() == 0) {
-			container = project;
-        } else {
-            IFolder folder = project.getFolder(containerName);
-            if (!folder.exists()) {
-				CoreUtility.createFolder(folder, false, true, null);
-            }
-            container = folder;
-        }
-		IClasspathEntry cpe = JavaCore.newLibraryEntry(container.getFullPath(),
-                sourceAttachPath, sourceAttachRoot);
-        addToClasspath(jproject, cpe);
-        return jproject.getPackageFragmentRoot(container);
-	}
-
-    /**
-     * Creates and adds a class folder to the class path and imports all files contained
-     * in the given ZIP file.
-	 *
+     * 
      * @param jproject
      *            The parent project
      * @param containerName
-	 * @param sourceAttachPath
+     * @param sourceAttachPath
      *            The source attachment path
      * @param sourceAttachRoot
      *            The source attachment root path
-	 * @param zipFile
      * @return The handle of the created root
-     * @throws IOException
      * @throws CoreException
-	 * @throws InvocationTargetException
      */
-    public static IPackageFragmentRoot addClassFolderWithImport(IJavaProject jproject,
-            String containerName, IPath sourceAttachPath, IPath sourceAttachRoot,
-			File zipFile) throws IOException, CoreException, InvocationTargetException {
-        ZipFile file = new ZipFile(zipFile);
-        try {
-            IPackageFragmentRoot root = addClassFolder(jproject, containerName,
-					sourceAttachPath, sourceAttachRoot);
-            importFilesFromZip(file, root.getPath(), null);
-            return root;
-        } finally {
-			if (file != null) {
-                file.close();
+    public static IPackageFragmentRoot addClassFolder(IJavaProject jproject, String containerName, IPath sourceAttachPath,
+            IPath sourceAttachRoot) throws CoreException {
+        IProject project = jproject.getProject();
+        IContainer container = null;
+        if (containerName == null || containerName.length() == 0) {
+            container = project;
+        } else {
+            IFolder folder = project.getFolder(containerName);
+            if (!folder.exists()) {
+                CoreUtility.createFolder(folder, false, true, null);
             }
+            container = folder;
         }
-	}
-
-    /**
-     * Adds a library entry pointing to a JRE (stubs only) and sets the right compiler
-     * options.
-	 * <p>
-     * Currently, the compiler compliance level is 1.5.
-     *
-     * @param jproject
-	 *            target
-     * @return the new package fragment root
-     * @throws CoreException
-     */
-	public static IPackageFragmentRoot addRTJar(IJavaProject jproject)
-            throws CoreException {
-        IPath[] rtJarPath = findRtJar(RT_STUBS_15);
-        set15CompilerOptions(jproject);
-		return addLibrary(jproject, rtJarPath[0], rtJarPath[1], rtJarPath[2]);
+        IClasspathEntry cpe = JavaCore.newLibraryEntry(container.getFullPath(), sourceAttachPath, sourceAttachRoot);
+        addToClasspath(jproject, cpe);
+        return jproject.getPackageFragmentRoot(container);
     }
 
     /**
-     * Adds a variable entry with source attachment to a IJavaProject. Can return null if
-     * variable can not be resolved.
-	 *
+     * Creates and adds a class folder to the class path and imports all files
+     * contained in the given ZIP file.
+     * 
+     * @param jproject
+     *            The parent project
+     * @param containerName
+     * @param sourceAttachPath
+     *            The source attachment path
+     * @param sourceAttachRoot
+     *            The source attachment root path
+     * @param zipFile
+     * @return The handle of the created root
+     * @throws IOException
+     * @throws CoreException
+     * @throws InvocationTargetException
+     */
+    public static IPackageFragmentRoot addClassFolderWithImport(IJavaProject jproject, String containerName,
+            IPath sourceAttachPath, IPath sourceAttachRoot, File zipFile) throws IOException, CoreException,
+            InvocationTargetException {
+        ZipFile file = new ZipFile(zipFile);
+        try {
+            IPackageFragmentRoot root = addClassFolder(jproject, containerName, sourceAttachPath, sourceAttachRoot);
+            importFilesFromZip(file, root.getPath(), null);
+            return root;
+        } finally {
+            if (file != null) {
+                file.close();
+            }
+        }
+    }
+
+    /**
+     * Adds a library entry pointing to a JRE (stubs only) and sets the right
+     * compiler options.
+     * <p>
+     * Currently, the compiler compliance level is 1.5.
+     * 
+     * @param jproject
+     *            target
+     * @return the new package fragment root
+     * @throws CoreException
+     */
+    public static IPackageFragmentRoot addRTJar(IJavaProject jproject) throws CoreException {
+        IPath[] rtJarPath = findRtJar(RT_STUBS_15);
+        set15CompilerOptions(jproject);
+        return addLibrary(jproject, rtJarPath[0], rtJarPath[1], rtJarPath[2]);
+    }
+
+    /**
+     * Adds a variable entry with source attachment to a IJavaProject. Can
+     * return null if variable can not be resolved.
+     * 
      * @param jproject
      *            The parent project
      * @param path
-	 *            The variable path
+     *            The variable path
      * @param sourceAttachPath
      *            The source attachment path (variable path)
      * @param sourceAttachRoot
-	 *            The source attachment root path (variable path)
+     *            The source attachment root path (variable path)
      * @return The added package fragment root
      * @throws JavaModelException
      */
-	public static IPackageFragmentRoot addVariableEntry(IJavaProject jproject,
-            IPath path, IPath sourceAttachPath, IPath sourceAttachRoot)
-            throws JavaModelException {
-        IClasspathEntry cpe = JavaCore.newVariableEntry(path, sourceAttachPath,
-				sourceAttachRoot);
+    public static IPackageFragmentRoot addVariableEntry(IJavaProject jproject, IPath path, IPath sourceAttachPath,
+            IPath sourceAttachRoot) throws JavaModelException {
+        IClasspathEntry cpe = JavaCore.newVariableEntry(path, sourceAttachPath, sourceAttachRoot);
         addToClasspath(jproject, cpe);
         IPath resolvedPath = JavaCore.getResolvedVariablePath(path);
         if (resolvedPath != null) {
-			return jproject.getPackageFragmentRoot(resolvedPath.toString());
+            return jproject.getPackageFragmentRoot(resolvedPath.toString());
         }
         return null;
     }
 
     /**
-     * Adds a variable entry pointing to a current JRE (stubs only) and sets the compiler
-     * compliance level on the project accordingly. The arguments specify the names of the
-	 * variables to be used. Currently, the compiler compliance level is set to 1.5.
-     *
+     * Adds a variable entry pointing to a current JRE (stubs only) and sets the
+     * compiler compliance level on the project accordingly. The arguments
+     * specify the names of the variables to be used. Currently, the compiler
+     * compliance level is set to 1.5.
+     * 
      * @param jproject
      *            the project to add the variable RT JAR
-	 * @param libVarName
+     * @param libVarName
      *            Name of the variable for the library
      * @param srcVarName
-     *            Name of the variable for the source attachment. Can be <code>null</code>
-	 *            .
+     *            Name of the variable for the source attachment. Can be
+     *            <code>null</code> .
      * @param srcrootVarName
      *            name of the variable for the source attachment root. Can be
      *            <code>null</code>.
-	 * @return the new package fragment root
+     * @return the new package fragment root
      * @throws CoreException
      *             Creation failed
      */
-	public static IPackageFragmentRoot addVariableRTJar(IJavaProject jproject,
-            String libVarName, String srcVarName, String srcrootVarName)
-            throws CoreException {
-        return addVariableRTJar(jproject, RT_STUBS_15, libVarName, srcVarName,
-				srcrootVarName);
+    public static IPackageFragmentRoot addVariableRTJar(IJavaProject jproject, String libVarName, String srcVarName,
+            String srcrootVarName) throws CoreException {
+        return addVariableRTJar(jproject, RT_STUBS_15, libVarName, srcVarName, srcrootVarName);
     }
 
     /**
-     * Adds a variable entry pointing to a current JRE (stubs only). The arguments specify
-     * the names of the variables to be used. Clients must not forget to set the right
-	 * compiler compliance level on the project.
-     *
+     * Adds a variable entry pointing to a current JRE (stubs only). The
+     * arguments specify the names of the variables to be used. Clients must not
+     * forget to set the right compiler compliance level on the project.
+     * 
      * @param jproject
      *            the project to add the variable RT JAR
-	 * @param rtStubsPath
+     * @param rtStubsPath
      *            path to an rt.jar
      * @param libVarName
      *            name of the variable for the library
-	 * @param srcVarName
-     *            Name of the variable for the source attachment. Can be <code>null</code>
-     *            .
+     * @param srcVarName
+     *            Name of the variable for the source attachment. Can be
+     *            <code>null</code> .
      * @param srcrootVarName
-	 *            Name of the variable for the source attachment root. Can be
+     *            Name of the variable for the source attachment root. Can be
      *            <code>null</code>.
      * @return the new package fragment root
      * @throws CoreException
-	 *             Creation failed
+     *             Creation failed
      */
-    private static IPackageFragmentRoot addVariableRTJar(IJavaProject jproject,
-            IPath rtStubsPath, String libVarName, String srcVarName, String srcrootVarName)
-			throws CoreException {
+    private static IPackageFragmentRoot addVariableRTJar(IJavaProject jproject, IPath rtStubsPath, String libVarName,
+            String srcVarName, String srcrootVarName) throws CoreException {
         IPath[] rtJarPaths = findRtJar(rtStubsPath);
         IPath libVarPath = new Path(libVarName);
         IPath srcVarPath = null;
-		IPath srcrootVarPath = null;
+        IPath srcrootVarPath = null;
         JavaCore.setClasspathVariable(libVarName, rtJarPaths[0], null);
         if (srcVarName != null) {
             IPath varValue = rtJarPaths[1] != null ? rtJarPaths[1] : Path.EMPTY;
-			JavaCore.setClasspathVariable(srcVarName, varValue, null);
+            JavaCore.setClasspathVariable(srcVarName, varValue, null);
             srcVarPath = new Path(srcVarName);
         }
         if (srcrootVarName != null) {
-			IPath varValue = rtJarPaths[2] != null ? rtJarPaths[2] : Path.EMPTY;
+            IPath varValue = rtJarPaths[2] != null ? rtJarPaths[2] : Path.EMPTY;
             JavaCore.setClasspathVariable(srcrootVarName, varValue, null);
             srcrootVarPath = new Path(srcrootVarName);
         }
-		return addVariableEntry(jproject, libVarPath, srcVarPath, srcrootVarPath);
+        return addVariableEntry(jproject, libVarPath, srcVarPath, srcrootVarPath);
     }
 
     /**
      * Sets auto-building state for the test workspace.
-     *
-	 * @param state
+     * 
+     * @param state
      *            The new auto building state
      * @return The previous state
      * @throws CoreException
-	 *             Change failed
+     *             Change failed
      */
     public static boolean setAutoBuilding(boolean state) throws CoreException {
         // disable auto build
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
         IWorkspaceDescription desc = workspace.getDescription();
         boolean result = desc.isAutoBuilding();
         desc.setAutoBuilding(state);
-		workspace.setDescription(desc);
+        workspace.setDescription(desc);
         return result;
     }
 
-    public static void addToClasspath(IJavaProject jproject, IClasspathEntry cpe)
-            throws JavaModelException {
+    public static void addToClasspath(IJavaProject jproject, IClasspathEntry cpe) throws JavaModelException {
         IClasspathEntry[] oldEntries = jproject.getRawClasspath();
-		for (int i = 0; i < oldEntries.length; i++) {
+        for (int i = 0; i < oldEntries.length; i++) {
             if (oldEntries[i].equals(cpe)) {
                 return;
             }
-		}
+        }
         int nEntries = oldEntries.length;
         IClasspathEntry[] newEntries = new IClasspathEntry[nEntries + 1];
         System.arraycopy(oldEntries, 0, newEntries, 0, nEntries);
-		newEntries[nEntries] = cpe;
+        newEntries[nEntries] = cpe;
         jproject.setRawClasspath(newEntries, null);
     }
 
     /**
      * @param rtStubsPath
      *            the path to the RT stubs
-	 * @return a rt.jar (stubs only)
+     * @return a rt.jar (stubs only)
      * @throws CoreException
      */
     public static IPath[] findRtJar(IPath rtStubsPath) throws CoreException {
-		File rtStubs = FindbugsTestPlugin.getDefault().getFileInPlugin(rtStubsPath);
+        File rtStubs = FindbugsTestPlugin.getDefault().getFileInPlugin(rtStubsPath);
         Assert.assertNotNull(rtStubs);
         Assert.assertTrue(rtStubs.exists());
         return new IPath[] { Path.fromOSString(rtStubs.getPath()), null, null };
-	}
+    }
 
-    private static void addNatureToProject(IProject proj, String natureId,
-            IProgressMonitor monitor) throws CoreException {
+    private static void addNatureToProject(IProject proj, String natureId, IProgressMonitor monitor) throws CoreException {
         IProjectDescription description = proj.getDescription();
-		String[] prevNatures = description.getNatureIds();
+        String[] prevNatures = description.getNatureIds();
         String[] newNatures = new String[prevNatures.length + 1];
         System.arraycopy(prevNatures, 0, newNatures, 0, prevNatures.length);
         newNatures[prevNatures.length] = natureId;
-		description.setNatureIds(newNatures);
+        description.setNatureIds(newNatures);
         proj.setDescription(description, monitor);
     }
 
-    private static void importFilesFromZip(ZipFile srcZipFile, IPath destPath,
-            IProgressMonitor monitor) throws InvocationTargetException {
-        ZipFileStructureProvider structureProvider = new ZipFileStructureProvider(
-				srcZipFile);
+    private static void importFilesFromZip(ZipFile srcZipFile, IPath destPath, IProgressMonitor monitor)
+            throws InvocationTargetException {
+        ZipFileStructureProvider structureProvider = new ZipFileStructureProvider(srcZipFile);
         try {
-            ImportOperation op = new ImportOperation(destPath, structureProvider
-                    .getRoot(), structureProvider, new ImportOverwriteQuery());
-			op.run(monitor);
+            ImportOperation op = new ImportOperation(destPath, structureProvider.getRoot(), structureProvider,
+                    new ImportOverwriteQuery());
+            op.run(monitor);
         } catch (InterruptedException e) {
             // should not happen
         }
-	}
+    }
 
     /**
-     * Imports resources from <code>bundleSourcePath</code> to <code>importTarget</code>.
-     *
-	 * @param importTarget
+     * Imports resources from <code>bundleSourcePath</code> to
+     * <code>importTarget</code>.
+     * 
+     * @param importTarget
      *            the parent container
      * @param bundleSourcePath
      *            the path to a folder containing resources
-	 *
+     * 
      * @throws CoreException
      *             import failed
      * @throws IOException
-	 *             import failed
+     *             import failed
      */
-    public static void importResources(IContainer importTarget, Bundle bundle,
-            String bundleSourcePath) throws CoreException, IOException {
-		Enumeration<?> entryPaths = bundle.getEntryPaths(bundleSourcePath);
+    public static void importResources(IContainer importTarget, Bundle bundle, String bundleSourcePath) throws CoreException,
+            IOException {
+        Enumeration<?> entryPaths = bundle.getEntryPaths(bundleSourcePath);
         while (entryPaths.hasMoreElements()) {
             String path = (String) entryPaths.nextElement();
             IPath name = new Path(path.substring(bundleSourcePath.length()));
-			if (path.endsWith("/.svn/")) {
+            if (path.endsWith("/.svn/")) {
                 continue; // Ignore SVN folders
             } else if (path.endsWith("/")) {
                 IFolder folder = importTarget.getFolder(name);
-				if(folder.exists()) {
+                if (folder.exists()) {
                     folder.delete(true, null);
                 }
                 folder.create(true, true, null);
-				importResources(folder, bundle, path);
+                importResources(folder, bundle, path);
             } else {
                 URL url = bundle.getEntry(path);
                 IFile file = importTarget.getFile(name);
-				if(!file.exists()) {
+                if (!file.exists()) {
                     file.create(url.openStream(), true, null);
                 } else {
                     file.setContents(url.openStream(), true, false, null);
-				}
+                }
             }
         }
     }
@@ -711,7 +684,7 @@ public class JavaProjectHelper {
     private static class ImportOverwriteQuery implements IOverwriteQuery {
         public String queryOverwrite(String file) {
             return ALL;
-		}
+        }
     }
 
     private static class Requestor extends TypeNameRequestor {

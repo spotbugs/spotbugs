@@ -6,5 +6,5 @@ public class BadConstructor {
     @ExpectWarning("Nm")
     public void BadConstructor() {
         x = 17;
-	}
+    }
 }

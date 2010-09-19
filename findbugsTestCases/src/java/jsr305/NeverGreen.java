@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import javax.annotation.meta.TypeQualifierNickname;
 import javax.annotation.meta.When;
 
-@ExhaustiveQualifier(value=ExhaustiveQualifier.Color.GREEN, when=When.NEVER)
+@ExhaustiveQualifier(value = ExhaustiveQualifier.Color.GREEN, when = When.NEVER)
 @TypeQualifierNickname
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NeverGreen {

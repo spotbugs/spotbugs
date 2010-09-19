@@ -9,10 +9,11 @@ public class Bug1563687 {
     public void write(String file, String text) throws IOException {
         BufferedOutputStream out = null;
         try {
-             out = new BufferedOutputStream (new FileOutputStream(file));
-             out.write(42);
+            out = new BufferedOutputStream(new FileOutputStream(file));
+            out.write(42);
         } finally {
-            if (out != null) out.close();
+            if (out != null)
+                out.close();
         }
     }
 

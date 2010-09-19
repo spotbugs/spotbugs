@@ -6,5 +6,5 @@ public class TestSuppressWarnings {
     @Override
     public boolean equals(Object o) {
         return this == o;
-	}
+    }
 }

@@ -47,48 +47,52 @@ import de.tobject.findbugs.builder.FindBugsWorker;
 
 abstract class PathsProvider extends SelectionAdapter implements IStructuredContentProvider {
     private static IPath lastUsedPath;
+
     protected final List<PathElement> paths;
+
     private final Control control;
-	private final ListViewer viewer;
+
+    private final ListViewer viewer;
+
     protected final FindbugsPropertyPage propertyPage;
+
     private final ListenerList listeners;
 
     protected PathsProvider(ListViewer viewer, FindbugsPropertyPage propertyPage) {
         this.propertyPage = propertyPage;
         this.paths = new ArrayList<PathElement>();
-		this.viewer = viewer;
+        this.viewer = viewer;
         this.control = viewer.getList();
         listeners = new ListenerList();
         viewer.setContentProvider(this);
-	}
+    }
 
     static void setLastUsedPath(IPath lastUsed) {
         // TODO write to preferences
         lastUsedPath = lastUsed;
-	}
+    }
 
     static IPath getLastUsedPath() {
         // TODO read from preferences
         return lastUsedPath;
-	}
+    }
 
     void setFilters(List<PathElement> filterFiles) {
         paths.clear();
         paths.addAll(filterFiles);
-	}
+    }
 
     @Override
     public void widgetSelected(SelectionEvent e) {
         Widget widget = e.widget;
-		String buttonId = widget.getData() + "";
-        if(buttonId.equals("add")) {
-        addFiles(e.display.getActiveShell());
+        String buttonId = widget.getData() + "";
+        if (buttonId.equals("add")) {
+            addFiles(e.display.getActiveShell());
         } else {
-			Iterator<?> selectionIter = ((IStructuredSelection) viewer.getSelection())
-            .iterator();
+            Iterator<?> selectionIter = ((IStructuredSelection) viewer.getSelection()).iterator();
             while (selectionIter.hasNext()) {
                 remove((PathElement) selectionIter.next());
-			}
+            }
         }
     }
 
@@ -102,15 +106,15 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         // The validator checks to see if the user's selection
         // is valid given the type of the object selected (e.g.
         // it can't be a folder) and the objects that have
-		// already been selected
+        // already been selected
         String pathStr = openFileDialog(dialog);
         if (pathStr == null) {
             return;
-		}
+        }
         addSelectedPaths(dialog);
         applyToPreferences();
         for (Object object : listeners.getListeners()) {
-			((Listener) object).handleEvent(null);
+            ((Listener) object).handleEvent(null);
         }
     }
 
@@ -120,12 +124,12 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
 
         IPath lastUsed = getLastUsedPath();
         String filterPath = null;
-        if(lastUsed != null && lastUsed.toFile().isDirectory()){
-			filterPath = lastUsed.toOSString();
+        if (lastUsed != null && lastUsed.toFile().isDirectory()) {
+            filterPath = lastUsed.toOSString();
             dialog.setFilterPath(filterPath);
         }
         return dialog;
-	}
+    }
 
     abstract protected void configureDialog(FileDialog dialog);
 
@@ -144,15 +148,15 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
     private void addSelectedPaths(FileDialog dialog) {
         String[] names = getFileNames(dialog);
         String filterPath = getFilterPath(dialog);
-		Path baseDir = new Path(filterPath);
+        Path baseDir = new Path(filterPath);
         setLastUsedPath(baseDir);
         for (String fileName : names) {
             IPath path = baseDir.append(fileName);
-			PathElement pathElt = new PathElement(path, Status.OK_STATUS);
-            if(!paths.contains(pathElt)) {
+            PathElement pathElt = new PathElement(path, Status.OK_STATUS);
+            if (!paths.contains(pathElt)) {
                 paths.add(pathElt);
             }
-		}
+        }
     }
 
     public void dispose() {
@@ -167,22 +171,22 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         return paths.toArray();
     }
 
-    boolean contains(Object o){
+    boolean contains(Object o) {
         return paths.contains(o);
     }
 
-    void setControlEnabled(boolean enabled){
+    void setControlEnabled(boolean enabled) {
         control.setEnabled(enabled);
     }
 
-    void refresh(){
+    void refresh() {
         IStatus status = validate();
-        if(status != null){
-			propertyPage.setErrorMessage(status.getMessage());
+        if (status != null) {
+            propertyPage.setErrorMessage(status.getMessage());
         }
         viewer.setSelection(null);
         viewer.setInput(new Object());
-		viewer.refresh(true);
+        viewer.refresh(true);
     }
 
     abstract protected IStatus validate();
@@ -190,27 +194,26 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
     public void remove(PathElement holder) {
         paths.remove(holder);
         applyToPreferences();
-		for (Object object : listeners.getListeners()) {
+        for (Object object : listeners.getListeners()) {
             ((Listener) object).handleEvent(null);
         }
     }
 
     protected void applyToPreferences() {
         IStatus status = validate();
-        if(status != null){
-			propertyPage.setErrorMessage(status.getMessage());
+        if (status != null) {
+            propertyPage.setErrorMessage(status.getMessage());
         }
     }
 
     protected SortedSet<String> pathsToStrings() {
         IProject project = propertyPage.getProject();
-        SortedSet<String>result = new TreeSet<String>();
-		for (PathElement path : paths) {
+        SortedSet<String> result = new TreeSet<String>();
+        for (PathElement path : paths) {
             IPath filterPath = FindBugsWorker.toFilterPath(path.getPath(), project);
             result.add(filterPath.toPortableString());
         }
-		return result;
+        return result;
     }
-
 
 }

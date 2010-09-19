@@ -20,21 +20,20 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 @DefaultAnnotationForFields(NonNull.class)
 @DefaultAnnotationForMethods(CheckForNull.class)
 @DefaultAnnotationForParameters(NonNull.class)
-
 /* ********************
- * Behavior at filing:  False positive NP, see Bug2672946B.java for details
- * ******************** */
-
+ * Behavior at filing: False positive NP, see Bug2672946B.java for details
+ * ********************
+ */
 class Bug2672946A {
 
     private Bug2672946A field;
 
-    public Bug2672946A(Bug2672946A field){
+    public Bug2672946A(Bug2672946A field) {
         this.field = field;
     }
 
     @NonNull
-    public Bug2672946A getField(){
+    public Bug2672946A getField() {
         return this.field;
     }
 }

@@ -15,15 +15,15 @@ public class RFE1627291 {
         try {
             inputStream = new FileInputStream(new File("x"));
             bufferedInputStream = new BufferedInputStream(inputStream);
-		} catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         } finally {
             if (bufferedInputStream != null) {
-				try {
+                try {
                     bufferedInputStream.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-				}
+                }
             }
         }
     }

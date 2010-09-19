@@ -26,9 +26,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import de.tobject.findbugs.util.ProjectUtilities;
 
 /**
- * Callback object responsible for saving the uncomitted state
- * of any FindBugs-enabled projects.
- *
+ * Callback object responsible for saving the uncomitted state of any
+ * FindBugs-enabled projects.
+ * 
  * @author David Hovemeyer
  */
 public class FindbugsSaveParticipant implements ISaveParticipant {
@@ -48,36 +48,35 @@ public class FindbugsSaveParticipant implements ISaveParticipant {
     public void saving(ISaveContext context) {
         switch (context.getKind()) {
         case ISaveContext.FULL_SAVE:
-			fullSave();
+            fullSave();
             break;
         case ISaveContext.PROJECT_SAVE:
             saveBugCollection(context.getProject());
-			break;
+            break;
         default:
             break;
         }
-	}
+    }
 
     private void fullSave() {
         IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-        for(IProject project : projectList) {
-			if(project.isAccessible() && ProjectUtilities.isJavaProject(project)) {
-            saveBugCollection(project);
+        for (IProject project : projectList) {
+            if (project.isAccessible() && ProjectUtilities.isJavaProject(project)) {
+                saveBugCollection(project);
+            }
         }
-        }
-	}
+    }
 
     private void saveBugCollection(IProject project) {
         if (project.isAccessible()) {
             try {
-				FindbugsPlugin.saveCurrentBugCollection(project, null);
+                FindbugsPlugin.saveCurrentBugCollection(project, null);
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {
-				FindbugsPlugin.getDefault().logException(
-                        e, "Could not save bug collection for project " + project.getName());
+                FindbugsPlugin.getDefault().logException(e, "Could not save bug collection for project " + project.getName());
             }
         }
-	}
+    }
 
 }

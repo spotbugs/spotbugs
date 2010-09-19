@@ -17,7 +17,7 @@ public class Bug2893480 {
     public void test() {
         a.actionPerformed(null);
         b.actionPerformed(null);
-	}
+    }
 
     private final class Actie1 extends AbstractAction {
         private static final long serialVersionUID = 1L;
@@ -31,7 +31,7 @@ public class Bug2893480 {
     private final class Actie2 extends AbstractAction {
         public void actionPerformed(ActionEvent e) {
             System.out.println(message);
-		}
+        }
 
     }
 
@@ -47,7 +47,7 @@ public class Bug2893480 {
     private final class Actie4 extends AbstractAction {
         private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
             in.defaultReadObject();
-		}
+        }
 
         public void actionPerformed(ActionEvent e) {
             System.out.println(message);

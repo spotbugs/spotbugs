@@ -6,7 +6,7 @@ public class SleepWithLock {
         synchronized (this) {
             while (!ready) {
                 Thread.sleep(1000L);
-			}
+            }
         }
     }
 }

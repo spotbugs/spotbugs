@@ -1,7 +1,7 @@
-#Sun Feb 08 14:16:36 ACT 2009
+#Sat Sep 18 21:24:53 EDT 2010
 eclipse.preferences.version=1
 editor_save_participant_org.eclipse.jdt.ui.postsavelistener.cleanup=true
-formatter_profile=_FindBugs Plugin Formatter
+formatter_profile=_FindBugs
 formatter_settings_version=11
 org.eclipse.jdt.ui.ignorelowercasenames=true
 org.eclipse.jdt.ui.importorder=java;javax;org;com;

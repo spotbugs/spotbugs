@@ -17,11 +17,12 @@ public class Bug2263239 {
 
         return "foo";
     }
-    private final AtomicReferenceFieldUpdater<Bug2263239,Object[]> _newUpdater =
-	      AtomicReferenceFieldUpdater.newUpdater(Bug2263239.class,Object[].class, "_vol");
+
+    private final AtomicReferenceFieldUpdater<Bug2263239, Object[]> _newUpdater = AtomicReferenceFieldUpdater.newUpdater(
+            Bug2263239.class, Object[].class, "_vol");
 
     void cas(Object[] expect, Object[] update) {
         _newUpdater.compareAndSet(this, expect, update);
-	}
+    }
 
 }

@@ -5,7 +5,7 @@ public class Bug1570926 {
     public static void doNotReport(Object anItem) {
         if (anItem == null || anItem instanceof String) {
             doIt((String) anItem);
-		} else
+        } else
             throw new IllegalArgumentException();
     }
 

@@ -29,8 +29,7 @@ import de.tobject.findbugs.view.explorer.GroupType;
 public class BugPatternFilter implements IFilter {
 
     public boolean select(Object toTest) {
-        return (toTest instanceof BugGroup)
-                && ((BugGroup) toTest).getType() == GroupType.Pattern;
-	}
+        return (toTest instanceof BugGroup) && ((BugGroup) toTest).getType() == GroupType.Pattern;
+    }
 
 }

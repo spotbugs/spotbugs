@@ -33,7 +33,7 @@ import de.tobject.findbugs.builder.WorkItem;
 
 /**
  * Remove all bug markers for the given selection.
- *
+ * 
  * @author Peter Friese
  * @author Phil Crosby
  * @author Andrei Loskutov
@@ -43,17 +43,18 @@ import de.tobject.findbugs.builder.WorkItem;
 public class ClearMarkersAction extends FindBugsAction {
 
     /**
-     * Clear the FindBugs markers on each project in the given selection, displaying a progress monitor.
+     * Clear the FindBugs markers on each project in the given selection,
+     * displaying a progress monitor.
      */
-	@Override
+    @Override
     protected void work(final IWorkbenchPart part, IProject project, final List<WorkItem> resources) {
         FindBugsJob clearMarkersJob = new ClearMarkersJob(project, resources);
-        clearMarkersJob.addJobChangeListener(new JobChangeAdapter(){
-			@Override
+        clearMarkersJob.addJobChangeListener(new JobChangeAdapter() {
+            @Override
             public void done(IJobChangeEvent event) {
                 refreshViewer(part, resources);
             }
-		});
+        });
         clearMarkersJob.scheduleInteractive();
     }
 }
@@ -64,15 +65,15 @@ final class ClearMarkersJob extends FindBugsJob {
     ClearMarkersJob(IProject project, List<WorkItem> resources) {
         super("Removing FindBugs markers", project);
         this.resources = resources;
-	}
+    }
 
     @Override
     protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
         monitor.beginTask(getName(), resources.size());
-		for (WorkItem res : resources) {
+        for (WorkItem res : resources) {
             monitor.subTask(res.getName());
             res.clearMarkers();
             monitor.worked(1);
-		}
+        }
     }
 }

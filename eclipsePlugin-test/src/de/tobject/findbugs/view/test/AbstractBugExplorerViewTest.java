@@ -40,7 +40,7 @@ import de.tobject.findbugs.view.explorer.Grouping;
 
 /**
  * This is an abstract class for tests that interact with the BugExplorerView.
- *
+ * 
  * @author Tomás Pollak
  */
 public abstract class AbstractBugExplorerViewTest extends AbstractFindBugsTest {
@@ -52,63 +52,61 @@ public abstract class AbstractBugExplorerViewTest extends AbstractFindBugsTest {
     @Override
     @Before
     public void setUp() throws Exception {
-	    resetBugContentProviderInput();
+        resetBugContentProviderInput();
         super.setUp();
     }
 
     @Override
     @After
     public void tearDown() throws CoreException {
-	    super.tearDown();
+        super.tearDown();
         resetBugContentProviderInput();
     }
 
     protected Grouping getDefaultGrouping() {
         List<GroupType> types = new ArrayList<GroupType>();
         types.add(GroupType.Project);
-		types.add(GroupType.Pattern);
+        types.add(GroupType.Pattern);
         types.add(GroupType.Marker);
         Grouping grouping = Grouping.createFrom(types);
         return grouping;
-	}
+    }
 
     protected ITreeContentProvider getNavigatorContentProvider() throws PartInitException {
         BugExplorerView view = (BugExplorerView) showBugExplorerView();
         assertNotNull(view);
-	
-        ITreeContentProvider contentProvider = (ITreeContentProvider) view
-                .getCommonViewer().getContentProvider();
+
+        ITreeContentProvider contentProvider = (ITreeContentProvider) view.getCommonViewer().getContentProvider();
         return contentProvider;
-	}
+    }
 
     protected Grouping getProjectPatternPackageMarkerGrouping() {
         List<GroupType> types = new ArrayList<GroupType>();
         types.add(GroupType.Project);
-	    types.add(GroupType.Pattern);
+        types.add(GroupType.Pattern);
         types.add(GroupType.Package);
         types.add(GroupType.Marker);
         Grouping grouping = Grouping.createFrom(types);
-		return grouping;
+        return grouping;
     }
 
     protected Object getSingleElement(ITreeContentProvider contentProvider) {
         Object[] elements = contentProvider.getElements(getWorkspaceRoot());
         assertNotNull(elements);
-	    assertEquals(1, elements.length);
+        assertEquals(1, elements.length);
         return elements[0];
     }
 
     protected void resetBugContentProviderInput() throws PartInitException {
         BugContentProvider bugContentProvider = getBugContentProvider();
         bugContentProvider.reSetInput();
-	}
+    }
 
-    protected void setGroupingInBugContentProvider(Grouping grouping)
-            throws PartInitException {
-                BugContentProvider bugContentProvider = getBugContentProvider();
-			    assertNotNull(bugContentProvider);
-                bugContentProvider.setGrouping(grouping);
-                bugContentProvider.reSetInput();
-            }
+    protected void setGroupingInBugContentProvider(Grouping grouping) throws PartInitException {
+        BugContentProvider bugContentProvider = getBugContentProvider();
+        assertNotNull(bugContentProvider);
+        bugContentProvider.setGrouping(grouping);
+        bugContentProvider.reSetInput();
+    }
 
 }

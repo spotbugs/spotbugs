@@ -41,90 +41,93 @@ import de.tobject.findbugs.FindbugsPlugin;
 class RefreshJob extends Job implements IViewerRefreshJob {
 
     private final RemovedFirstComparator deltaComparator;
+
     private final List<DeltaInfo> deltaToRefresh;
+
     private volatile CommonViewer viewer;
-	private final BugContentProvider contentProvider;
+
+    private final BugContentProvider contentProvider;
+
     private final ResourceChangeListener resourceListener;
 
     public RefreshJob(String name, BugContentProvider provider) {
         super(name);
         setSystem(true);
-		setPriority(Job.DECORATE);
+        setPriority(Job.DECORATE);
         contentProvider = provider;
         deltaComparator = new RemovedFirstComparator();
         deltaToRefresh = new ArrayList<DeltaInfo>();
-		resourceListener = new ResourceChangeListener(this);
+        resourceListener = new ResourceChangeListener(this);
     }
 
     @Override
     public boolean belongsTo(Object family) {
         return FindbugsPlugin.class == family;
-	}
+    }
 
-    private void startListening(){
+    private void startListening() {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener);
     }
 
-    private void stopListening(){
+    private void stopListening() {
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
     }
 
-    public void dispose(){
+    public void dispose() {
         cancel();
         setViewer(null);
-	}
+    }
 
     @Override
     protected IStatus run(final IProgressMonitor monitor) {
         List<DeltaInfo> deltas = fetchDeltas();
-		int totalWork = deltas.size();
+        int totalWork = deltas.size();
         monitor.beginTask("Updating bug markers", totalWork);
 
-        if (viewer != null && !monitor.isCanceled()	&& !deltas.isEmpty()) {
+        if (viewer != null && !monitor.isCanceled() && !deltas.isEmpty()) {
 
             final Set<BugGroup> changedParents = contentProvider.updateContent(deltas);
             final boolean fullRefreshNeeded = changedParents.isEmpty();
 
             Display.getDefault().syncExec(new Runnable() {
                 public void run() {
-                    if (viewer == null || monitor.isCanceled()
-							|| viewer.getControl().isDisposed()) {
+                    if (viewer == null || monitor.isCanceled() || viewer.getControl().isDisposed()) {
                         return;
                     }
                     viewer.getControl().setRedraw(false);
-					try {
+                    try {
                         if (fullRefreshNeeded) {
                             viewer.refresh();
-                            if(BugContentProvider.DEBUG){
-								System.out.println("Refreshing ROOT!!!");
+                            if (BugContentProvider.DEBUG) {
+                                System.out.println("Refreshing ROOT!!!");
                             }
                         } else {
                             // update the viewer based on the marker changes.
-							for (BugGroup parent : changedParents) {
+                            for (BugGroup parent : changedParents) {
                                 boolean isRoot = parent.getParent() == null;
-                                if(BugContentProvider.DEBUG){
-                                    if(isRoot){
-										System.out.println("Refreshing ROOT: " + parent);
+                                if (BugContentProvider.DEBUG) {
+                                    if (isRoot) {
+                                        System.out.println("Refreshing ROOT: " + parent);
                                     } else {
                                         System.out.println("Refreshing: " + parent);
                                     }
-								}
-                                if(isRoot) {
+                                }
+                                if (isRoot) {
                                     viewer.refresh();
                                 } else {
-									viewer.refresh(parent, true);
+                                    viewer.refresh(parent, true);
                                 }
-                                if(monitor.isCanceled()){
+                                if (monitor.isCanceled()) {
                                     break;
-								}
+                                }
                             }
                         }
                     } finally {
-						viewer.getControl().setRedraw(true);
+                        viewer.getControl().setRedraw(true);
                     }
                 }
             });
-		}
+        }
         monitor.worked(totalWork);
 
         monitor.done();
@@ -134,15 +137,15 @@ class RefreshJob extends Job implements IViewerRefreshJob {
     private List<DeltaInfo> fetchDeltas() {
         final List<DeltaInfo> deltas = new ArrayList<DeltaInfo>();
         synchronized (deltaToRefresh) {
-			if (deltaToRefresh.isEmpty()) {
+            if (deltaToRefresh.isEmpty()) {
                 return deltas;
             }
             deltas.addAll(deltaToRefresh);
-			deltaToRefresh.clear();
+            deltaToRefresh.clear();
         }
         Collections.sort(deltas, deltaComparator);
-        if(BugContentProvider.DEBUG){
-			System.out.println("Job: going to update markers:\n" + deltas);
+        if (BugContentProvider.DEBUG) {
+            System.out.println("Job: going to update markers:\n" + deltas);
         }
         return deltas;
     }
@@ -150,25 +153,25 @@ class RefreshJob extends Job implements IViewerRefreshJob {
     public boolean addToQueue(DeltaInfo res) {
         switch (res.changeKind) {
         case IResourceDelta.CHANGED:
-			return false;
+            return false;
         }
         synchronized (deltaToRefresh) {
             if (!deltaToRefresh.contains(res)) {
-				deltaToRefresh.add(res);
+                deltaToRefresh.add(res);
                 return true;
             }
         }
-		return false;
+        return false;
     }
 
     public void setViewer(CommonViewer newViewer) {
-        if(newViewer != null){
+        if (newViewer != null) {
             this.viewer = newViewer;
-			startListening();
-        }  else {
+            startListening();
+        } else {
             stopListening();
             this.viewer = null;
-		}
+        }
     }
 
     CommonViewer getViewer() {
@@ -178,15 +181,15 @@ class RefreshJob extends Job implements IViewerRefreshJob {
     /**
      * Sorts the removed delta's first. This allows more optimized refresh
      */
-	private final static class RemovedFirstComparator implements Comparator<DeltaInfo> {
+    private final static class RemovedFirstComparator implements Comparator<DeltaInfo> {
         public int compare(DeltaInfo o1, DeltaInfo o2) {
-            if(o1.changeKind == o2.changeKind){
+            if (o1.changeKind == o2.changeKind) {
                 return 0;
-			}
-            if(o1.changeKind == IResourceDelta.REMOVED){
+            }
+            if (o1.changeKind == IResourceDelta.REMOVED) {
                 return -1;
             }
-			return 1;
+            return 1;
         }
     }
 }

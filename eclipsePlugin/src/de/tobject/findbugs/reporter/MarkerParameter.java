@@ -33,58 +33,61 @@ public class MarkerParameter {
     private static final boolean EXPERIMENTAL_BUGS = false;
 
     public final BugInstance bug;
+
     public final WorkItem resource;
+
     public final Integer primaryLine;
-	public final Integer startLine;
+
+    public final Integer startLine;
 
     /**
      * Might be null if marker shouldn't be generated
      */
-	public final String markerType;
+    public final String markerType;
 
     /**
-     * Default value is {@link IMarker#SEVERITY_WARNING}, might be configured by user
+     * Default value is {@link IMarker#SEVERITY_WARNING}, might be configured by
+     * user
      */
-	public Integer markerSeverity;
+    public Integer markerSeverity;
 
     public MarkerParameter(BugInstance bug, WorkItem resource, int startLine, int primaryLine) {
         this.bug = bug;
         this.resource = resource;
-		this.startLine = Integer.valueOf(startLine);
+        this.startLine = Integer.valueOf(startLine);
         this.primaryLine = Integer.valueOf(primaryLine);
         markerType = getMarkerType();
         // default
-		markerSeverity = Integer.valueOf(IMarker.SEVERITY_WARNING);
+        markerSeverity = Integer.valueOf(IMarker.SEVERITY_WARNING);
     }
 
     /**
      * @return null if marker shouldn't be generated
      */
-	private String getMarkerType() {
+    private String getMarkerType() {
         String type;
         switch (bug.getPriority()) {
         case Priorities.HIGH_PRIORITY:
-			type = FindBugsMarker.NAME_HIGH;
+            type = FindBugsMarker.NAME_HIGH;
             break;
         case Priorities.NORMAL_PRIORITY:
             type = FindBugsMarker.NAME_NORMAL;
-			break;
+            break;
         case Priorities.LOW_PRIORITY:
             type = FindBugsMarker.NAME_LOW;
             break;
-		case Priorities.EXP_PRIORITY:
+        case Priorities.EXP_PRIORITY:
             if (!EXPERIMENTAL_BUGS) {
                 return null;
             }
-			type = FindBugsMarker.NAME_EXPERIMENTAL;
+            type = FindBugsMarker.NAME_EXPERIMENTAL;
             break;
         case Priorities.IGNORE_PRIORITY:
             FindbugsPlugin.getDefault().logError("Bug with ignore priority ");
-			return null;
+            return null;
         default:
-            FindbugsPlugin.getDefault().logError(
-                    "Bug with unknown priority " + bug.getPriority());
-			return null;
+            FindbugsPlugin.getDefault().logError("Bug with unknown priority " + bug.getPriority());
+            return null;
         }
         return type;
     }

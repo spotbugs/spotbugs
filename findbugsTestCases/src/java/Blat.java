@@ -14,26 +14,26 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
     private static class Y extends Thread {
         @Override
         public void run() {
-		}
+        }
     }
 
     private static class NotThread {
         public void start() {
             System.out.println("Don't report this");
-		}
+        }
     }
 
     public Blat() {
         yarm = 5;
         System.out.println(lock);
-		new Y().start();
+        new Y().start();
         new NotThread().start();
     }
 
     public void xxx() {
         Y y = new Y();
         y.run();
-	}
+    }
 
     public int greeb() {
         return yarg;
@@ -42,12 +42,12 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
     public class Bleem {
         public void gnasp() {
             System.out.println("oog");
-		}
+        }
 
         @Override
         protected void finalize() {
         }
-	}
+    }
 
     public Bleem makeBleem() {
         return new Bleem();
@@ -56,12 +56,12 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
     @Override
     public void finalize() {
         System.out.println("This is dumb");
-	}
+    }
 
     public void other(Blat b) {
         b.finalize();
         System.out.println(new Boolean(true));
-		b.run();
+        b.run();
     }
 
     public void run() {
@@ -73,7 +73,7 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
         greeb();
         synchronized (lock) {
             makeBleem();
-		}
+        }
 
         System.out.println(new String());
     }
@@ -83,7 +83,7 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
     public int getYoom() throws InterruptedException {
         Object x = lock;
         synchronized (x) {
-			x.notify();
+            x.notify();
         }
 
         synchronized (x) {
@@ -101,16 +101,16 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
     public void gimme(java.io.InputStream in) {
         try {
             byte[] buf = new byte[256];
-			in.read(buf);
+            in.read(buf);
             System.out.println(new String(buf));
         } catch (java.io.IOException e) {
         }
-	}
+    }
 
     public void spin() {
         while (lock == null)
             ;
-	}
+    }
 
     public boolean hasNext() {
         return false;

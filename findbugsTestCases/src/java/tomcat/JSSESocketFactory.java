@@ -8,22 +8,21 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
 public class JSSESocketFactory {
-    private KeyStore initKeyStore(String keystoreFile, String keyPass)
-            throws IOException {
+    private KeyStore initKeyStore(String keystoreFile, String keyPass) throws IOException {
         java.io.InputStream istream = null;
-		KeyStore kstore;
+        KeyStore kstore;
         try {
             kstore = KeyStore.getInstance("JKS");
             istream = new FileInputStream(keystoreFile);
-			kstore.load(istream, keyPass.toCharArray());
+            kstore.load(istream, keyPass.toCharArray());
             return kstore;
         } catch (KeyStoreException e) {
             throw new IOException(e.getMessage());
-		} catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             throw new IOException(e.getMessage());
         } catch (CertificateException e) {
             throw new IOException(e.getMessage());
-		}
+        }
 
     }
 

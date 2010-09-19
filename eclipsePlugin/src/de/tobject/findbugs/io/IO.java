@@ -35,64 +35,60 @@ import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * Input/output helper methods.
- *
+ * 
  * @author David Hovemeyer
  */
 public abstract class IO {
     /**
      * Write the contents of a file in the Eclipse workspace.
-     *
-	 * @param file
+     * 
+     * @param file
      *            the file to write to
      * @param output
      *            the FileOutput object responsible for generating the data
-	 * @param monitor
+     * @param monitor
      *            a progress monitor (or null if none)
      * @throws CoreException
      */
-	public static void writeFile(IFile file, final FileOutput output,
-            IProgressMonitor monitor) throws CoreException {
+    public static void writeFile(IFile file, final FileOutput output, IProgressMonitor monitor) throws CoreException {
 
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             output.writeFile(bos);
-			ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
             if (!file.exists()) {
                 file.create(bis, true, monitor);
             } else {
-				file.setContents(bis, true, false, monitor);
+                file.setContents(bis, true, false, monitor);
             }
         } catch (IOException e) {
-            IStatus status = FindbugsPlugin.createErrorStatus("Exception while "
-					+ output.getTaskDescription(), e);
+            IStatus status = FindbugsPlugin.createErrorStatus("Exception while " + output.getTaskDescription(), e);
             throw new CoreException(status);
         }
     }
 
     /**
      * Write the contents of a java.io.File
-     *
-	 * @param file
+     * 
+     * @param file
      *            the file to write to
      * @param output
      *            the FileOutput object responsible for generating the data
-	 */
-    public static void writeFile(final File file, final FileOutput output,
-            final IProgressMonitor monitor) throws CoreException {
+     */
+    public static void writeFile(final File file, final FileOutput output, final IProgressMonitor monitor) throws CoreException {
         FileOutputStream fout = null;
-		try {
+        try {
             fout = new FileOutputStream(file);
             BufferedOutputStream bout = new BufferedOutputStream(fout);
             if (monitor != null) {
-				monitor.subTask("writing data to " + file.getName());
+                monitor.subTask("writing data to " + file.getName());
             }
             output.writeFile(bout);
             bout.flush();
-		} catch (IOException e) {
-            IStatus status = FindbugsPlugin.createErrorStatus("Exception while "
-                    + output.getTaskDescription(), e);
+        } catch (IOException e) {
+            IStatus status = FindbugsPlugin.createErrorStatus("Exception while " + output.getTaskDescription(), e);
             throw new CoreException(status);
-		} finally {
+        } finally {
             closeQuietly(fout);
         }
     }
@@ -100,10 +96,10 @@ public abstract class IO {
     public static void closeQuietly(Closeable closeable) {
         if (closeable != null) {
             try {
-				closeable.close();
+                closeable.close();
             } catch (IOException e) {
                 // ignore
             }
-		}
+        }
     }
 }

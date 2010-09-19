@@ -1,4 +1,3 @@
-
 public final class ConfusingParenting {
     protected int a;
 

@@ -60,29 +60,42 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 public class ReportConfigurationTab extends Composite {
 
     private final FindbugsPropertyPage propertyPage;
+
     private List<Button> chkEnableBugCategoryList;
+
     private Scale minRankSlider;
-	private Label rankValueLabel;
+
+    private Label rankValueLabel;
+
     private Combo minPriorityCombo;
+
     private Combo cloudCombo;
+
     private Label cloudLabel;
-	private List<CloudPlugin> clouds;
+
+    private List<CloudPlugin> clouds;
+
     private Combo normalPrioCombo;
+
     private MarkerSeverity initialNormalPrio;
+
     private Combo highPrioCombo;
-	private MarkerSeverity initialHighPrio;
+
+    private MarkerSeverity initialHighPrio;
+
     private Combo lowPrioCombo;
+
     private MarkerSeverity initialLowPrio;
 
     public ReportConfigurationTab(TabFolder parent, FindbugsPropertyPage page, int style) {
         super(parent, style);
         this.propertyPage = page;
-		setLayout(new GridLayout());
+        setLayout(new GridLayout());
 
         TabItem tabDetector = new TabItem(parent, SWT.NONE);
         tabDetector.setText(getMessage("property.reportConfigurationTab"));
         tabDetector.setControl(this);
-		tabDetector.setToolTipText("Configure bugs reported to the UI");
+        tabDetector.setToolTipText("Configure bugs reported to the UI");
 
         Composite rankAndPrioGroup = new Composite(this, SWT.NONE);
         rankAndPrioGroup.setLayout(new GridLayout(2, false));
@@ -101,8 +114,7 @@ public class ReportConfigurationTab extends Composite {
         Group prioGroup = new Group(parent, SWT.NONE);
         prioGroup.setLayout(new GridLayout(2, false));
         prioGroup.setText("Mark bugs with ... priority as:");
-		prioGroup.setLayoutData(new GridData(SWT.BEGINNING, SWT.TOP, true, true));
-
+        prioGroup.setLayoutData(new GridData(SWT.BEGINNING, SWT.TOP, true, true));
 
         Label bugSeverityLabel = new Label(prioGroup, SWT.NONE);
         bugSeverityLabel.setText("High Priority:");
@@ -110,9 +122,8 @@ public class ReportConfigurationTab extends Composite {
         highPrioCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
         for (MarkerSeverity markerSeverity : markerSeverities) {
             highPrioCombo.add(markerSeverity.name());
-		}
-        initialHighPrio = MarkerSeverity.get(
-                store.getString(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY));
+        }
+        initialHighPrio = MarkerSeverity.get(store.getString(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY));
         highPrioCombo.setText(initialHighPrio.name());
 
         bugSeverityLabel = new Label(prioGroup, SWT.NONE);
@@ -121,9 +132,8 @@ public class ReportConfigurationTab extends Composite {
         normalPrioCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
         for (MarkerSeverity markerSeverity : markerSeverities) {
             normalPrioCombo.add(markerSeverity.name());
-		}
-        initialNormalPrio = MarkerSeverity.get(
-                store.getString(FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY));
+        }
+        initialNormalPrio = MarkerSeverity.get(store.getString(FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY));
         normalPrioCombo.setText(initialNormalPrio.name());
 
         bugSeverityLabel = new Label(prioGroup, SWT.NONE);
@@ -132,9 +142,8 @@ public class ReportConfigurationTab extends Composite {
         lowPrioCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
         for (MarkerSeverity markerSeverity : markerSeverities) {
             lowPrioCombo.add(markerSeverity.name());
-		}
-        initialLowPrio = MarkerSeverity.get(
-                store.getString(FindBugsConstants.PRIO_LOW_MARKER_SEVERITY));
+        }
+        initialLowPrio = MarkerSeverity.get(store.getString(FindBugsConstants.PRIO_LOW_MARKER_SEVERITY));
         lowPrioCombo.setText(initialLowPrio.name());
 
     }
@@ -150,15 +159,15 @@ public class ReportConfigurationTab extends Composite {
         minPriorityCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
         minPriorityCombo.add(ProjectFilterSettings.HIGH_PRIORITY);
         minPriorityCombo.add(ProjectFilterSettings.MEDIUM_PRIORITY);
-		minPriorityCombo.add(ProjectFilterSettings.LOW_PRIORITY);
+        minPriorityCombo.add(ProjectFilterSettings.LOW_PRIORITY);
         minPriorityCombo.setText(propertyPage.getOriginalUserPreferences().getFilterSettings().getMinPriority());
         minPriorityCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
         minPriorityCombo.addSelectionListener(new SelectionAdapter() {
-			@Override
+            @Override
             public void widgetSelected(SelectionEvent event) {
                 String data = minPriorityCombo.getText();
                 getCurrentProps().getFilterSettings().setMinPriority(data);
-			}
+            }
         });
 
         cloudLabel = new Label(prioGroup, SWT.NONE);
@@ -175,41 +184,41 @@ public class ReportConfigurationTab extends Composite {
     private int populateCloudsCombo(String cloudid) {
         int i = 0;
         boolean cloudSelected = false;
-		int defaultIndex = -1;
+        int defaultIndex = -1;
         for (CloudPlugin cloud : CloudFactory.getRegisteredClouds().values()) {
             if (cloud.isHidden() && !cloud.getId().equals(cloudid)) {
                 continue;
-			}
+            }
             cloudCombo.add(cloud.getDescription());
             clouds.add(cloud);
             if (cloud.getId().equals(cloudid)) {
-				cloudCombo.select(i);
+                cloudCombo.select(i);
                 cloudSelected = true;
             }
             if (cloud.getId().equals(CloudFactory.DEFAULT_CLOUD)) {
-				defaultIndex = i;
+                defaultIndex = i;
             }
             i++;
         }
-		if(!cloudSelected && cloudid != null && cloudid.trim().length() > 0) {
+        if (!cloudSelected && cloudid != null && cloudid.trim().length() > 0) {
             if (defaultIndex != -1) {
                 cloudCombo.select(defaultIndex);
             } else {
-				// should not happen: default local cloud should be available
+                // should not happen: default local cloud should be available
                 FindbugsPlugin.getDefault().logWarning("Failed to find default local cloud (edu.umd.cs.findbugs.cloud.Local)");
             }
         }
-		return defaultIndex;
+        return defaultIndex;
     }
 
     private String getCloudIdFromCollection() {
         final IProject eclipseProj = propertyPage.getProject();
-        String cloudid =  CloudFactory.DEFAULT_CLOUD;
-		if (eclipseProj != null) {
+        String cloudid = CloudFactory.DEFAULT_CLOUD;
+        if (eclipseProj != null) {
             SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
             if (collection != null) {
                 cloudid = collection.getCloud().getPlugin().getId();
-			}
+            }
         }
         return cloudid;
     }
@@ -217,128 +226,128 @@ public class ReportConfigurationTab extends Composite {
     private IProject enableOrDisableCloudControls() {
         IProject eclipseProj = propertyPage.getProject();
         String txt = "Comment storage:";
-		if (eclipseProj == null) {
+        if (eclipseProj == null) {
             cloudLabel.setEnabled(false);
             cloudCombo.setEnabled(false);
             cloudLabel.setText(txt + "\n(only configurable at the project level)");
-		} else {
+        } else {
             cloudLabel.setEnabled(true);
             cloudCombo.setEnabled(true);
             cloudLabel.setText(txt);
-		}
+        }
         return eclipseProj;
     }
-
 
     private void createRankGroup(Composite parent) {
         Composite prioGroup = new Composite(parent, SWT.NONE);
         prioGroup.setLayout(new GridLayout(2, false));
 
         Label minRankLabel = new Label(prioGroup, SWT.NONE);
-        minRankLabel.setText(getMessage("property.minRank")
-                + System.getProperty("line.separator")
-				+ getMessage("property.minRank.line2"));
+        minRankLabel.setText(getMessage("property.minRank") + System.getProperty("line.separator")
+                + getMessage("property.minRank.line2"));
         minRankLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 
         minRankSlider = new Scale(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
         minRankSlider.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, false));
         minRankSlider.addSelectionListener(new SelectionAdapter() {
-			@Override
+            @Override
             public void widgetSelected(SelectionEvent event) {
                 int rank = minRankSlider.getSelection();
                 getCurrentProps().getFilterSettings().setMinRank(rank);
-				updateRankValueLabel();
+                updateRankValueLabel();
             }
         });
         minRankSlider.setMinimum(0);
-		minRankSlider.setMaximum(20);
+        minRankSlider.setMaximum(20);
         minRankSlider.setSelection(getCurrentProps().getFilterSettings().getMinRank());
         minRankSlider.setIncrement(1);
         minRankSlider.setPageIncrement(5);
-		Label dummyLabel = new Label(prioGroup, SWT.NONE);
+        Label dummyLabel = new Label(prioGroup, SWT.NONE);
         dummyLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 
         rankValueLabel = new Label(prioGroup, SWT.NONE);
         rankValueLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
         updateRankValueLabel();
-	}
+    }
 
     private void updateRankValueLabel() {
         String label;
         int rank = minRankSlider.getSelection();
-		if (rank < 5) {
+        if (rank < 5) {
             label = "Scariest";
         } else if (rank < 10) {
             label = "Scary";
-		} else if (rank < 15) {
+        } else if (rank < 15) {
             label = "Troubling";
         } else {
             label = "Possible";
-		}
+        }
         rankValueLabel.setText(rank + " (" + label + ")");
     }
 
     /**
      * Helper method to shorten message access
-     * @param key a message key
-	 * @return requested message
+     * 
+     * @param key
+     *            a message key
+     * @return requested message
      */
     protected String getMessage(String key) {
         return FindbugsPlugin.getDefault().getMessage(key);
-	}
-
+    }
 
     /**
-     * Build list of bug categories to be enabled or disabled.
-     * Populates chkEnableBugCategoryList and bugCategoryList fields.
-	 *
-     * @param parent control checkboxes should be added to
-     * @param project       the project being configured
+     * Build list of bug categories to be enabled or disabled. Populates
+     * chkEnableBugCategoryList and bugCategoryList fields.
+     * 
+     * @param parent
+     *            control checkboxes should be added to
+     * @param project
+     *            the project being configured
      */
-	private void createBugCategoriesGroup(Composite parent, final IProject project) {
+    private void createBugCategoriesGroup(Composite parent, final IProject project) {
         Group checkBoxGroup = new Group(parent, SWT.SHADOW_ETCHED_OUT);
         checkBoxGroup.setText(getMessage("property.categoriesGroup"));
         checkBoxGroup.setLayout(new GridLayout(1, true));
-		checkBoxGroup.setLayoutData(new GridData(SWT.BEGINNING, SWT.TOP, true, true));
+        checkBoxGroup.setLayoutData(new GridData(SWT.BEGINNING, SWT.TOP, true, true));
 
         List<String> bugCategoryList = new LinkedList<String>(I18N.instance().getBugCategories());
         chkEnableBugCategoryList = new LinkedList<Button>();
-        ProjectFilterSettings origFilterSettings = propertyPage
-				.getOriginalUserPreferences().getFilterSettings();
-        for (String category: bugCategoryList) {
+        ProjectFilterSettings origFilterSettings = propertyPage.getOriginalUserPreferences().getFilterSettings();
+        for (String category : bugCategoryList) {
             Button checkBox = new Button(checkBoxGroup, SWT.CHECK);
             checkBox.setText(I18N.instance().getBugCategoryDescription(category));
-			checkBox.setSelection(origFilterSettings.containsCategory(category));
+            checkBox.setSelection(origFilterSettings.containsCategory(category));
             GridData layoutData = new GridData();
             layoutData.horizontalIndent = 10;
             checkBox.setLayoutData(layoutData);
 
-            // Every time a checkbox is clicked, rebuild the detector factory table
+            // Every time a checkbox is clicked, rebuild the detector factory
+            // table
             // to show only relevant entries
-            checkBox.addListener(SWT.Selection,
-				new Listener(){
-                    public void handleEvent(Event e){
-                        syncSelectedCategories();
-                    }
-				}
-            );
+            checkBox.addListener(SWT.Selection, new Listener() {
+                public void handleEvent(Event e) {
+                    syncSelectedCategories();
+                }
+            });
             checkBox.setData(category);
             chkEnableBugCategoryList.add(checkBox);
-		}
+        }
     }
 
     /**
-     * Synchronize selected bug category checkboxes with the current user preferences.
+     * Synchronize selected bug category checkboxes with the current user
+     * preferences.
      */
-	protected void syncSelectedCategories() {
+    protected void syncSelectedCategories() {
         ProjectFilterSettings filterSettings = getCurrentProps().getFilterSettings();
-        for (Button checkBox: chkEnableBugCategoryList) {
+        for (Button checkBox : chkEnableBugCategoryList) {
             String category = (String) checkBox.getData();
-			if (checkBox.getSelection()) {
+            if (checkBox.getSelection()) {
                 filterSettings.addCategory(category);
             } else {
                 filterSettings.removeCategory(category);
-			}
+            }
         }
         propertyPage.getVisibleDetectors().clear();
     }
@@ -350,19 +359,19 @@ public class ReportConfigurationTab extends Composite {
     @Override
     public void setEnabled(boolean enabled) {
         minPriorityCombo.setEnabled(enabled);
-		lowPrioCombo.setEnabled(enabled);
+        lowPrioCombo.setEnabled(enabled);
         normalPrioCombo.setEnabled(enabled);
         highPrioCombo.setEnabled(enabled);
         minRankSlider.setEnabled(enabled);
-		if (enabled) {
+        if (enabled) {
             enableOrDisableCloudControls();
         } else {
             cloudCombo.setEnabled(false);
-		}
+        }
         for (Button checkBox : chkEnableBugCategoryList) {
             checkBox.setEnabled(enabled);
         }
-		super.setEnabled(enabled);
+        super.setEnabled(enabled);
     }
 
     public void setMinRank(int rank) {
@@ -376,34 +385,30 @@ public class ReportConfigurationTab extends Composite {
     public boolean isMarkerSeveritiesChanged() {
         IPreferenceStore store = propertyPage.getPreferenceStore();
         String highPrio = store.getString(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY);
-		String normalPrio = store.getString(FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY);
+        String normalPrio = store.getString(FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY);
         String lowPrio = store.getString(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY);
-        return !initialHighPrio.name().equals(highPrio)
-                || !initialNormalPrio.name().equals(normalPrio)
-				|| !initialLowPrio.name().equals(lowPrio);
+        return !initialHighPrio.name().equals(highPrio) || !initialNormalPrio.name().equals(normalPrio)
+                || !initialLowPrio.name().equals(lowPrio);
     }
 
     void refreshUI(UserPreferences prefs) {
         IPreferenceStore store = propertyPage.getPreferenceStore();
-        highPrioCombo.setText(MarkerSeverity.get(
-				store.getString(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY)).name());
-        normalPrioCombo.setText(MarkerSeverity.get(
-                store.getString(FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY)).name());
-        lowPrioCombo.setText(MarkerSeverity.get(
-				store.getString(FindBugsConstants.PRIO_LOW_MARKER_SEVERITY)).name());
+        highPrioCombo.setText(MarkerSeverity.get(store.getString(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY)).name());
+        normalPrioCombo.setText(MarkerSeverity.get(store.getString(FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY)).name());
+        lowPrioCombo.setText(MarkerSeverity.get(store.getString(FindBugsConstants.PRIO_LOW_MARKER_SEVERITY)).name());
 
         ProjectFilterSettings filterSettings = prefs.getFilterSettings();
         minRankSlider.setSelection(filterSettings.getMinRank());
         updateRankValueLabel();
-		minPriorityCombo.setText(filterSettings.getMinPriority());
-        for (Button checkBox: chkEnableBugCategoryList) {
+        minPriorityCombo.setText(filterSettings.getMinPriority());
+        for (Button checkBox : chkEnableBugCategoryList) {
             checkBox.setSelection(filterSettings.containsCategory((String) checkBox.getData()));
         }
-		syncSelectedCategories();
+        syncSelectedCategories();
         String cloudid = getCloudIdFromCollection();
         cloudCombo.removeAll();
         clouds.clear();
-		populateCloudsCombo(cloudid);
+        populateCloudsCombo(cloudid);
     }
 
     protected List<Button> getChkEnableBugCategoryList() {
@@ -413,7 +418,7 @@ public class ReportConfigurationTab extends Composite {
     public void performOk() {
         IPreferenceStore store = propertyPage.getPreferenceStore();
         String highPrio = highPrioCombo.getText();
-		store.setValue(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY, highPrio);
+        store.setValue(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY, highPrio);
 
         String normalPrio = normalPrioCombo.getText();
         store.setValue(FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY, normalPrio);
@@ -424,28 +429,25 @@ public class ReportConfigurationTab extends Composite {
         IProject eclipseProj = propertyPage.getProject();
         if (eclipseProj == null) {
             return;
-		}
+        }
         SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
-        if(collection == null){
+        if (collection == null) {
             return;
-		}
+        }
         Project project = collection.getProject();
         CloudPlugin item = clouds.get(cloudCombo.getSelectionIndex());
         if (item != null && project != null && !item.getId().equals(project.getCloudId())) {
-			project.setCloudId(item.getId());
+            project.setCloudId(item.getId());
             collection.reinitializeCloud();
             IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
             if (page != null) {
-				IViewPart view = page.findView(FindbugsPlugin.TREE_VIEW_ID);
+                IViewPart view = page.findView(FindbugsPlugin.TREE_VIEW_ID);
                 if (view instanceof CommonNavigator) {
                     CommonNavigator nav = ((CommonNavigator) view);
                     nav.getCommonViewer().refresh(true);
-				}
+                }
             }
         }
     }
 
-
 }
-
-

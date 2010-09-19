@@ -17,10 +17,10 @@ class VolatileUsage {
     VolatileUsage() {
         a = new int[100];
         d = new int[100];
-	}
+    }
 
     void update(int v[]) {
         d = v;
         e = v;
-	}
+    }
 }

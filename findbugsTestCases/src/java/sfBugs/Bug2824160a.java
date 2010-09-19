@@ -15,5 +15,5 @@ public class Bug2824160a implements Comparable<Object> {
     public static int test(Bug2824160a b) {
         return b.compareTo("Hello");
     }
-	
+
 }

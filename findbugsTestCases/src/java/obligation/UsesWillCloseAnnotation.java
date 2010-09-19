@@ -15,21 +15,20 @@ public class UsesWillCloseAnnotation {
     @NoWarning("OBL")
     public void ok(String filename) throws IOException {
         InputStream in = new FileInputStream(filename);
-		try {
+        try {
             int c;
             c = in.read();
             System.out.println(c);
-		} finally {
+        } finally {
             cleanup(in);
         }
     }
-	
 
     public void cleanup(@WillClose InputStream in) {
         try {
-			in.close();
+            in.close();
         } catch (IOException e) {
             // ignore
         }
-	}
+    }
 }

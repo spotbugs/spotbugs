@@ -38,35 +38,34 @@ import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the FindBugsAction, SaveXMLAction and LoadXMLAction.
- *
+ * 
  * @author Tomás Pollak
  */
 public class ContextMenuActionsTest extends AbstractFindBugsTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
-	}
+    }
 
     @AfterClass
     public static void tearDownClass() throws CoreException {
         tearDownTestProject();
-	}
+    }
 
     private File tempFile;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-		getPreferenceStore().setValue(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH,
-                false);
+        getPreferenceStore().setValue(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH, false);
         tempFile = File.createTempFile("bugs", ".xml");
         assertTrue(tempFile.delete());
-	}
+    }
 
     @Override
     public void tearDown() throws CoreException {
         tempFile.delete();
-		getPreferenceStore().setToDefault(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
+        getPreferenceStore().setToDefault(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
         super.tearDown();
     }
 
@@ -77,7 +76,7 @@ public class ContextMenuActionsTest extends AbstractFindBugsTest {
         StructuredSelection selection = new StructuredSelection(getProject());
         FindBugsAction action = new FindBugsAction();
         action.selectionChanged(null, selection);
-		action.run(null);
+        action.run(null);
 
         joinJobFamily(FindbugsPlugin.class);
 
@@ -99,7 +98,7 @@ public class ContextMenuActionsTest extends AbstractFindBugsTest {
         StructuredSelection selection = new StructuredSelection(getProject());
         IActionDelegate action = new LoadXMLActionTestSubclass(getBugsFileLocation());
         action.selectionChanged(null, selection);
-		action.run(null);
+        action.run(null);
 
         joinJobFamily(FindbugsPlugin.class);
 
@@ -113,7 +112,7 @@ public class ContextMenuActionsTest extends AbstractFindBugsTest {
         StructuredSelection selection = new StructuredSelection(getProject());
         FindBugsAction action = new FindBugsAction();
         action.selectionChanged(null, selection);
-		action.run(null);
+        action.run(null);
 
         joinJobFamily(FindbugsPlugin.class);
 
@@ -123,13 +122,13 @@ public class ContextMenuActionsTest extends AbstractFindBugsTest {
     @Test
     public void testSaveXML() throws CoreException {
         assertNoBugs();
-		work(createFindBugsWorker());
+        work(createFindBugsWorker());
         assertExpectedBugs();
 
         StructuredSelection selection = new StructuredSelection(getProject());
         IActionDelegate action = new SaveXMLActionTestSubclass(getTempFilePath());
         action.selectionChanged(null, selection);
-		action.run(null);
+        action.run(null);
 
         joinJobFamily(FindbugsPlugin.class);
 

@@ -12,15 +12,15 @@ public class Bug3047257 {
     @Override
     public int hashCode() {
         return x;
-		
+
     }
 
     @NoWarning("BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS")
-	@Override
+    @Override
     public boolean equals(Object o) {
         if (!getClass().isInstance(o))
             return false;
-		Bug3047257 i = (Bug3047257) o;
+        Bug3047257 i = (Bug3047257) o;
         return this.x == i.x;
     }
 

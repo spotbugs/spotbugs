@@ -1,4 +1,3 @@
-
 import java.text.DateFormat;
 import java.text.FieldPosition;
 import java.text.ParsePosition;
@@ -9,9 +8,9 @@ import java.util.GregorianCalendar;
 
 import sun.util.BuddhistCalendar;
 
-
 /**
  * Sample class for the StaticCalendarDetector
+ * 
  * @author ds
  */
 public class StaticCalender {
@@ -50,25 +49,29 @@ public class StaticCalender {
     public void testDateFormats() {
         // test 1
         DateFormat tFrm1 = frmStatic; // should fire
-        if (tFrm1.equals(frmStatic)) // hide from unused variable detector; should fire
+        if (tFrm1.equals(frmStatic)) // hide from unused variable detector;
+                                     // should fire
             System.out.println("Frm1 equals frmStatic");
 
         // test 2
         DateFormat tFrm2 = getFrm();
-        if (System.currentTimeMillis() < 1L) return; // some other code in between
-        if (tFrm2.equals(frmStatic)) return; // should fire
+        if (System.currentTimeMillis() < 1L)
+            return; // some other code in between
+        if (tFrm2.equals(frmStatic))
+            return; // should fire
 
         // test 3
         DateFormat tCal3 = frmInstance;
         tCal3.setLenient(true); // should not fire
-        
+
         // test 4
         DateFormat tCal4 = frmStatic2; // should fire
 
         int tInt = 1; // some other code in between
         boolean tBoolean = false; // some other code in between
         Object tObj = new Object(); // some other code in between
-        if (tObj.hashCode() > 0) return; // some other code in between
+        if (tObj.hashCode() > 0)
+            return; // some other code in between
 
         tCal4.setLenient(true); // should fire
 
@@ -80,26 +83,30 @@ public class StaticCalender {
     public void testCalendars() {
         // test 1
         Calendar tCal1 = calStatic; // should fire
-        if (tCal1.equals(calStatic)) // hide from unused variable detector; shoud fire
+        if (tCal1.equals(calStatic)) // hide from unused variable detector;
+                                     // shoud fire
             System.out.println("Cal1 equals calStatic");
 
         // test 2
         Calendar tCal2 = getCal();
-        if (System.currentTimeMillis() < 1L) return; // some other code in between
-        if (tCal2.equals(calStatic)) return; // should fire
-        
+        if (System.currentTimeMillis() < 1L)
+            return; // some other code in between
+        if (tCal2.equals(calStatic))
+            return; // should fire
+
         // test 3
         Calendar tCal3 = calInstace;
         tCal3.clear(); // should fire
-        
+
         // test 4
         Calendar tCal4 = calStatic2; // should fire
 
         int tInt = 1; // some other code in between
         boolean tBoolean = false; // some other code in between
         Object tObj = new Object(); // some other code in between
-        if (tObj.hashCode() > 0) return; // some other code in between
-        
+        if (tObj.hashCode() > 0)
+            return; // some other code in between
+
         tCal4.clear(); // should fire
 
         tCal4 = new GregorianCalendar();
@@ -107,9 +114,9 @@ public class StaticCalender {
     }
 }
 
-
 /**
  * Subclass of {@link DateFormat} for the detector to find.
+ * 
  * @author ds
  */
 class CustomDateFormat extends DateFormat {
@@ -118,25 +125,27 @@ class CustomDateFormat extends DateFormat {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see java.text.DateFormat#format(java.util.Date, java.lang.StringBuffer,
-     *      java.text.FieldPosition)
+     * java.text.FieldPosition)
      */
-    //@Override
+    // @Override
     public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition) {
-        if (fieldPosition == null) return null;
+        if (fieldPosition == null)
+            return null;
         return toAppendTo.append(date.toString());
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see java.text.DateFormat#parse(java.lang.String,
-     *      java.text.ParsePosition)
+     * java.text.ParsePosition)
      */
-    //@Override
+    // @Override
     public Date parse(String source, ParsePosition pos) {
-        if (source == null || pos == null) return null;
+        if (source == null || pos == null)
+            return null;
         return new Date(1);
     }
 

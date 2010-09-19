@@ -13,11 +13,11 @@ public class Bug2926557 {
     public static Date changeMonth(Date month, int value) {
         lock.lock();
         try {
-			cal.setTime(month);
+            cal.setTime(month);
             cal.add(Calendar.MONTH, value);
             return cal.getTime();
         } finally {
-			lock.unlock();
+            lock.unlock();
         }
 
     }

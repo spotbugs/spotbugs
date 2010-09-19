@@ -35,41 +35,39 @@ import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the FindBugsPerspectiveFactory.
- *
+ * 
  * @author Tomás Pollak
  */
 public class FindBugsPerspectiveTest extends AbstractFindBugsTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
-	}
+    }
 
     @AfterClass
     public static void tearDownClass() throws CoreException {
         tearDownTestProject();
-	}
+    }
 
     private static final String FINDBUGS_PERSPECTIVE_ID = "de.tobject.findbugs.FindBugsPerspective";
 
     @Test
     public void testShowPerspective() throws WorkbenchException {
         // Show the perspective
-		IWorkbenchPage page = showFindBugsPerspective();
+        IWorkbenchPage page = showFindBugsPerspective();
 
         // Reset the perspective to its default state
         page.resetPerspective();
 
         // Assert the FindBugs explorer view is visible
-        IViewPart bugExplorerView = page
-                .findView(AbstractFindBugsTest.BUG_EXPLORER_VIEW_ID);
-		assertNotNull(bugExplorerView);
+        IViewPart bugExplorerView = page.findView(AbstractFindBugsTest.BUG_EXPLORER_VIEW_ID);
+        assertNotNull(bugExplorerView);
         assertTrue(page.isPartVisible(bugExplorerView));
     }
 
     private IWorkbenchPage showFindBugsPerspective() throws WorkbenchException {
         IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        IWorkbenchPage page = PlatformUI.getWorkbench().showPerspective(
-				FINDBUGS_PERSPECTIVE_ID, window);
+        IWorkbenchPage page = PlatformUI.getWorkbench().showPerspective(FINDBUGS_PERSPECTIVE_ID, window);
         return page;
     }
 }

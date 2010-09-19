@@ -7,7 +7,7 @@ public class BadApplet extends Applet {
     @ExpectWarning("Dm")
     public BadApplet() {
         URL u1 = getDocumentBase();
-		URL u2 = getCodeBase();
+        URL u2 = getCodeBase();
 
         if (u1.equals(u2))
             return;

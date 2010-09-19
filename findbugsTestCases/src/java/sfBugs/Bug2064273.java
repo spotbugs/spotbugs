@@ -11,7 +11,7 @@ public class Bug2064273 {
     static class JunkSubClass extends Bug2064273 {
         @Override
         public void setFoo(boolean foo) {
-			super.setFoo(false);
+            super.setFoo(false);
         }
     }
 }

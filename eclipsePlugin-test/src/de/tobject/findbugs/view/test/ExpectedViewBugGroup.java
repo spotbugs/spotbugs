@@ -32,32 +32,34 @@ import de.tobject.findbugs.view.explorer.GroupType;
 
 /**
  * Expected object for a bug group.
- *
+ * 
  * @author Tomás Pollak
  */
 public class ExpectedViewBugGroup implements ExpectedViewElement {
 
     private final GroupType groupType;
-    private final Object data;
-    private final Set<ExpectedViewElement> children;
-	private final Set<ExpectedViewElement> markers;
 
-    public ExpectedViewBugGroup(GroupType groupType, Object data,
-            Set<ExpectedViewElement> children, Set<ExpectedViewElement> markers) {
+    private final Object data;
+
+    private final Set<ExpectedViewElement> children;
+
+    private final Set<ExpectedViewElement> markers;
+
+    public ExpectedViewBugGroup(GroupType groupType, Object data, Set<ExpectedViewElement> children,
+            Set<ExpectedViewElement> markers) {
         this.groupType = groupType;
-		this.data = data;
+        this.data = data;
         this.children = children;
         this.markers = markers;
     }
 
-    public void assertEquals(Object actual, ITreeContentProvider contentProvider)
-            throws CoreException {
+    public void assertEquals(Object actual, ITreeContentProvider contentProvider) throws CoreException {
         Assert.assertTrue(actual instanceof BugGroup);
-		BugGroup bugGroup = (BugGroup) actual;
+        BugGroup bugGroup = (BugGroup) actual;
         Assert.assertEquals(groupType, bugGroup.getType());
         Assert.assertEquals(markers.size(), bugGroup.getMarkersCount());
         if (data != null) {
-			Assert.assertEquals(data, bugGroup.getData());
+            Assert.assertEquals(data, bugGroup.getData());
         }
 
         // Assert on the children
@@ -67,7 +69,7 @@ public class ExpectedViewBugGroup implements ExpectedViewElement {
     public boolean matches(Object actual) throws CoreException {
         if (actual instanceof BugGroup) {
             BugGroup bugGroup = (BugGroup) actual;
-			return doAllExpectedMarkerMatch(bugGroup.getAllMarkers());
+            return doAllExpectedMarkerMatch(bugGroup.getAllMarkers());
         }
         return false;
     }
@@ -75,52 +77,46 @@ public class ExpectedViewBugGroup implements ExpectedViewElement {
     @Override
     public String toString() {
         return "Expected View Bug Group: " + groupType.toString();
-	}
+    }
 
-    private void assertChildren(ITreeContentProvider contentProvider, BugGroup bugGroup)
-            throws CoreException {
+    private void assertChildren(ITreeContentProvider contentProvider, BugGroup bugGroup) throws CoreException {
         // Get the actual children
-		Object[] bugGroupChildren = contentProvider.getChildren(bugGroup);
+        Object[] bugGroupChildren = contentProvider.getChildren(bugGroup);
         Assert.assertEquals(children.size(), bugGroupChildren.length);
 
         // For each expected child, find a match and assert on it
-        for (Iterator<ExpectedViewElement> iChildren = children.iterator(); iChildren
-                .hasNext();) {
-			ExpectedViewElement expectedChild = iChildren.next();
+        for (Iterator<ExpectedViewElement> iChildren = children.iterator(); iChildren.hasNext();) {
+            ExpectedViewElement expectedChild = iChildren.next();
             Object actualChild = findActualObjectMatch(expectedChild, bugGroupChildren);
             expectedChild.assertEquals(actualChild, contentProvider);
         }
-	}
+    }
 
-    private boolean doAllExpectedMarkerMatch(Set<IMarker> actualMarkers)
-            throws CoreException {
+    private boolean doAllExpectedMarkerMatch(Set<IMarker> actualMarkers) throws CoreException {
         boolean result = true;
-		for (Iterator<IMarker> iMarkers = actualMarkers.iterator(); iMarkers.hasNext();) {
+        for (Iterator<IMarker> iMarkers = actualMarkers.iterator(); iMarkers.hasNext();) {
             IMarker actualMarker = iMarkers.next();
             result &= doesAnyExpectedMarkerMatch(actualMarker);
         }
-		return result;
+        return result;
     }
 
     private boolean doesAnyExpectedMarkerMatch(IMarker actualMarker) throws CoreException {
         boolean result = false;
-        for (Iterator<ExpectedViewElement> iterator = markers.iterator(); iterator
-				.hasNext();) {
+        for (Iterator<ExpectedViewElement> iterator = markers.iterator(); iterator.hasNext();) {
             ExpectedViewElement expectedMarker = iterator.next();
             result |= expectedMarker.matches(actualMarker);
         }
-		return result;
+        return result;
     }
 
-    private Object findActualObjectMatch(ExpectedViewElement child,
-            Object[] bugGroupChildren) throws CoreException {
+    private Object findActualObjectMatch(ExpectedViewElement child, Object[] bugGroupChildren) throws CoreException {
         for (int i = 0; i < bugGroupChildren.length; i++) {
-			if (child.matches(bugGroupChildren[i])) {
+            if (child.matches(bugGroupChildren[i])) {
                 return bugGroupChildren[i];
             }
         }
-		Assert.fail("No match found for: " + child + " in "
-                + Arrays.toString(bugGroupChildren));
+        Assert.fail("No match found for: " + child + " in " + Arrays.toString(bugGroupChildren));
         return null;
     }
 }

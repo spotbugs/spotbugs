@@ -6,7 +6,7 @@ public class Bug2539601 {
     class Inner1 {
         {
             System.out.println(i);
-		}
+        }
 
         class Inner2 {
 

@@ -16,7 +16,7 @@ public class NullDeref {
         if (n == null) {
             System.out.println("Hey yo, it's null");
             System.out.println("Bad idea: " + n.x);
-		} else {
+        } else {
             System.out.println("Safe to deref here: " + n.x);
             s = null;
         }
@@ -28,7 +28,7 @@ public class NullDeref {
         if (argv.length > 1)
             System.out.println("argv.length > 1");
         else
-			System.out.println("argv.length <= 1");
+            System.out.println("argv.length <= 1");
 
         // We should catch this one:
         int j = s.hashCode();
@@ -44,7 +44,7 @@ public class NullDeref {
         if (argv.length > 2)
             System.out.println("argv.length > 2");
         else
-			System.out.println("argv.length <= 2");
+            System.out.println("argv.length <= 2");
 
         // at this point we don't know anything about the
         // state of s

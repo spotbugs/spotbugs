@@ -1,5 +1,5 @@
-#Tue Jul 03 15:13:35 GMT-05:00 2007
+#Sat Sep 18 21:25:03 EDT 2010
 eclipse.preferences.version=1
-formatter_profile=_FindBugs tabs
-formatter_settings_version=10
+formatter_profile=_FindBugs
+formatter_settings_version=11
 internal.default.compliance=default

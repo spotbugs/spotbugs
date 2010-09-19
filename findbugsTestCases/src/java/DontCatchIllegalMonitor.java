@@ -5,7 +5,7 @@ public class DontCatchIllegalMonitor {
     public synchronized void foo() {
         try {
             lock.wait();
-		} catch (InterruptedException e) {
+        } catch (InterruptedException e) {
         } catch (IllegalMonitorStateException e) {
         }
     }

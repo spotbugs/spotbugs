@@ -32,20 +32,21 @@ class MarkerSelectionListener implements ISelectionListener {
         this.handler = handler;
     }
 
-    public void selectionChanged(IWorkbenchPart thePart,
-            ISelection theSelection) {
+    public void selectionChanged(IWorkbenchPart thePart, ISelection theSelection) {
         if (thePart == handler || !handler.isVisible()) {
-			return;
+            return;
         }
         IMarker marker = MarkerUtil.getMarkerFromSingleSelection(theSelection);
-        // only handle a null if it's from the bug explorer. this way if the user
-		// selects a bug pattern or other "folder" in the tree, the annotation view
+        // only handle a null if it's from the bug explorer. this way if the
+        // user
+        // selects a bug pattern or other "folder" in the tree, the annotation
+        // view
         // and the property view are cleared. BUT if the user clicks into
         // the editor, or some other view, it stays up. not quite sure what the
         // best behavior is here but for now this works. -Keiths
-		if (marker == null && !(thePart instanceof BugExplorerView)) {
+        if (marker == null && !(thePart instanceof BugExplorerView)) {
             return;
         }
         handler.markerSelected(thePart, marker);
-	}
+    }
 }

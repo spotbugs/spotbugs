@@ -7,18 +7,18 @@ public class AccidentalNonConstructorInInnerClass {
         class DeeplyNested {
             void DeeplyNested() {
             };
-		}
+        }
     }
 
     static class Report2 {
         void Report2() {
         };
-	}
+    }
 
     class DoNotReport {
         @Deprecated
         void DoNotReport() {
-		}
+        }
 
         DoNotReport() {
         }
@@ -27,7 +27,7 @@ public class AccidentalNonConstructorInInnerClass {
     static class DoNotReport2 {
         void DoNotReport2() {
             throw new UnsupportedOperationException();
-		}
+        }
 
         DoNotReport2() {
         }

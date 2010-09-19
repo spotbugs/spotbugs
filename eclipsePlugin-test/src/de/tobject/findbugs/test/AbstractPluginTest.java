@@ -69,28 +69,29 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * <p>
  * Subclasses must:
  * <li>implement getTestScenario() to return the required TestScenario.</li>
- * <li>call setUpTestProject(TestScenario) and tearDownTestProject() during setUp and
- * tearDown respectively. The argument for the setup must be the same test scenario as
- * returned by getTestScenario(). The fixture may be shared by all tests in the same
- * class, if the tests don't modify the project or are independent from the modifications.
- * </li>
- *
+ * <li>call setUpTestProject(TestScenario) and tearDownTestProject() during
+ * setUp and tearDown respectively. The argument for the setup must be the same
+ * test scenario as returned by getTestScenario(). The fixture may be shared by
+ * all tests in the same class, if the tests don't modify the project or are
+ * independent from the modifications.</li>
+ * 
  * @author Tom�s Pollak
  */
 public abstract class AbstractPluginTest {
 
     protected static final String BUG_EXPLORER_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
+
     protected static final String SRC = "src";
+
     protected static final String TEST_PROJECT = "TestProject";
 
     /**
-     * Hook for subclasses to add extra classpath entries to the test project during the
-     * setup of the test.
-	 */
-    protected static void addExtraClassPathEntries(TestScenario scenario)
-            throws CoreException, IOException {
+     * Hook for subclasses to add extra classpath entries to the test project
+     * during the setup of the test.
+     */
+    protected static void addExtraClassPathEntries(TestScenario scenario) throws CoreException, IOException {
         // Add JUnit if the test scenario requires it
-		if (scenario.usesJUnit()) {
+        if (scenario.usesJUnit()) {
             addJUnitToProjectClasspath();
         }
     }
@@ -98,86 +99,88 @@ public abstract class AbstractPluginTest {
     protected static void addJUnitToProjectClasspath() throws JavaModelException {
         IClasspathEntry cpe = BuildPathSupport.getJUnit3ClasspathEntry();
         JavaProjectHelper.addToClasspath(getJavaProject(), cpe);
-	}
+    }
 
     /**
      * Returns the Java project for this test.
-     *
-	 * @return An IJavaProject.
+     * 
+     * @return An IJavaProject.
      */
     protected static IJavaProject getJavaProject() {
         return JavaCore.create(getWorkspaceRoot()).getJavaProject(TEST_PROJECT);
-	}
+    }
 
     /**
      * Returns the project for this test.
-     *
-	 * @return An IProject.
+     * 
+     * @return An IProject.
      */
     protected static IProject getProject() {
         return getJavaProject().getProject();
-	}
+    }
 
     protected static IWorkspaceRoot getWorkspaceRoot() {
         return ResourcesPlugin.getWorkspace().getRoot();
     }
 
     /**
-     * Create a new Java project with a source folder and copy the test files of the
-     * plugin to the source folder. Compile the project.
-	 */
+     * Create a new Java project with a source folder and copy the test files of
+     * the plugin to the source folder. Compile the project.
+     */
     protected static void setUpTestProject(TestScenario scenario) throws Exception {
         // Create the test project
         createJavaProject(TEST_PROJECT, "bin");
-		addRTJar(getJavaProject());
+        addRTJar(getJavaProject());
         addSourceContainer(getJavaProject(), SRC); // Create default 'src'
         String[] testFilesPaths = scenario.getTestFilesPaths();
         for (int i = 1; i < testFilesPaths.length; i++) { // Create extra 'srcx'
-			addSourceContainer(getJavaProject(), SRC + (i + 1));
+            addSourceContainer(getJavaProject(), SRC + (i + 1));
         }
         addExtraClassPathEntries(scenario);
 
         // Copy test workspace
         Bundle testBundle = FindbugsTestPlugin.getDefault().getBundle();
 
-        importResources(getProject().getFolder(SRC), testBundle, testFilesPaths[0]); // Import default 'src'
+        importResources(getProject().getFolder(SRC), testBundle, testFilesPaths[0]); // Import
+                                                                                     // default
+                                                                                     // 'src'
         for (int i = 1; i < testFilesPaths.length; i++) { // Import extra 'srcx'
             importResources(getProject().getFolder(SRC + (i + 1)), testBundle, testFilesPaths[i]);
-		}
+        }
 
         importResources(getProject(), testBundle, "/testresources");
 
         // Compile project
         getProject().refreshLocal(IResource.DEPTH_INFINITE, null);
         getProject().build(IncrementalProjectBuilder.FULL_BUILD, null);
-		processUiEvents();
+        processUiEvents();
         waitForJobs();
         performDummySearch();
         waitForJobs();
-		processUiEvents();
+        processUiEvents();
     }
 
     /**
      * Delete the Java project used for this test.
-     *
-	 * @throws CoreException
+     * 
+     * @throws CoreException
      */
     protected static void tearDownTestProject() throws CoreException {
         // Delete the test project
-		waitForJobs();
+        waitForJobs();
         delete(getJavaProject().getProject());
         waitForJobs();
         processUiEvents();
-	}
-
-    protected static void waitForJobs(){
-        while(!Job.getJobManager().isIdle()){
-            processUiEvents();
-		}
     }
 
-    protected static void processUiEvents(){
-        while(Display.getDefault().readAndDispatch()){
+    protected static void waitForJobs() {
+        while (!Job.getJobManager().isIdle()) {
+            processUiEvents();
+        }
+    }
+
+    protected static void processUiEvents() {
+        while (Display.getDefault().readAndDispatch()) {
             ;
         }
     }
@@ -189,11 +192,11 @@ public abstract class AbstractPluginTest {
     @Before
     public void setUp() throws Exception {
         // Start with a clean FindBugs state
-		clearBugsState();
+        clearBugsState();
         IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         activePage.closeAllEditors(false);
         IViewPart view = activePage.findView("org.eclipse.ui.internal.introview");
-		if(view != null){
+        if (view != null) {
             activePage.hideView(view);
         }
         processUiEvents();
@@ -203,28 +206,28 @@ public abstract class AbstractPluginTest {
     @After
     public void tearDown() throws CoreException {
         // Clean the FindBugs state
-		clearBugsState();
+        clearBugsState();
         processUiEvents();
     }
 
     /**
      * Assert the total number of bugs in the given resource.
-     *
-	 * @param expected
+     * 
+     * @param expected
      *            The expected number of bugs.
      * @param project
      *            The IProject that contains the bugs.
-	 * @throws CoreException
+     * @throws CoreException
      */
     protected void assertBugsCount(int expected, IProject project) throws CoreException {
         SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null, false);
-		assertEquals(expected, bugs.getCollection().size());
+        assertEquals(expected, bugs.getCollection().size());
     }
 
     protected void assertExpectedBugs() throws CoreException {
         assertBugsCount(getExpectedBugsCount(), getProject());
         for (String bugPattern : getTestScenario().getVisibleBugs()) {
-			int frequency = getTestScenario().getVisibleBugFrequency(bugPattern);
+            int frequency = getTestScenario().getVisibleBugFrequency(bugPattern);
             assertReportedBugs(bugPattern, frequency, getProject());
         }
     }
@@ -232,11 +235,11 @@ public abstract class AbstractPluginTest {
     protected void assertExpectedMarkers(IMarker[] markers) throws CoreException {
         assertEquals(getVisibleBugsCount(), markers.length);
         for (int i = 0; i < markers.length; i++) {
-			assertTrue(markers[i].isSubtypeOf(FindBugsMarker.NAME));
+            assertTrue(markers[i].isSubtypeOf(FindBugsMarker.NAME));
         }
         for (String bugPattern : getTestScenario().getVisibleBugs()) {
             int frequency = getTestScenario().getVisibleBugFrequency(bugPattern);
-			assertMarkers(bugPattern, frequency, markers);
+            assertMarkers(bugPattern, frequency, markers);
         }
     }
 
@@ -245,29 +248,27 @@ public abstract class AbstractPluginTest {
     }
 
     /**
-     * Asserts that the number of present markers of the given type match the given
-     * expected count.
-	 *
+     * Asserts that the number of present markers of the given type match the
+     * given expected count.
+     * 
      * @param expectedBugType
      *            The expected bug type.
      * @param expectedBugCount
-	 *            The expected bug type count.
+     *            The expected bug type count.
      * @param markers
      *            The array of markers to assert on.
      * @throws CoreException
-	 */
-    protected void assertMarkers(String expectedBugType, int expectedBugTypeCount,
-            IMarker[] markers) throws CoreException {
+     */
+    protected void assertMarkers(String expectedBugType, int expectedBugTypeCount, IMarker[] markers) throws CoreException {
         int seenBugTypeCount = 0;
-		for (int i = 0; i < markers.length; i++) {
+        for (int i = 0; i < markers.length; i++) {
             IMarker marker = markers[i];
             if (expectedBugType.equals(marker.getAttribute(FindBugsMarker.BUG_TYPE))) {
                 seenBugTypeCount++;
-			}
+            }
         }
-        assertEquals("Expected " + expectedBugTypeCount + " of markers "
-                + expectedBugType + " but seen " + seenBugTypeCount,
-				expectedBugTypeCount, seenBugTypeCount);
+        assertEquals("Expected " + expectedBugTypeCount + " of markers " + expectedBugType + " but seen " + seenBugTypeCount,
+                expectedBugTypeCount, seenBugTypeCount);
     }
 
     protected void assertNoBugs() throws CoreException {
@@ -279,45 +280,42 @@ public abstract class AbstractPluginTest {
     }
 
     /**
-     * Asserts that the number of detected bugs of the given type match the given expected
-     * count.
-	 *
+     * Asserts that the number of detected bugs of the given type match the
+     * given expected count.
+     * 
      * @param expectedBugType
      *            The expected bug type.
      * @param expectedBugCount
-	 *            The expected bug type count.
+     *            The expected bug type count.
      * @param project
      *            The IProject that contains the bugs.
      * @throws CoreException
-	 */
-    protected void assertReportedBugs(String expectedBugType, int expectedBugCount,
-            IProject project) throws CoreException {
+     */
+    protected void assertReportedBugs(String expectedBugType, int expectedBugCount, IProject project) throws CoreException {
         int seenBugCount = 0;
-		SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null, false);
+        SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null, false);
         for (BugInstance bug : bugs) {
             if (expectedBugType.equals(bug.getType())) {
                 seenBugCount++;
-			}
+            }
         }
-        assertEquals("Expected " + expectedBugCount + " of bugs " + expectedBugType
-                + " but seen " + seenBugCount, expectedBugCount, seenBugCount);
-	}
+        assertEquals("Expected " + expectedBugCount + " of bugs " + expectedBugType + " but seen " + seenBugCount,
+                expectedBugCount, seenBugCount);
+    }
 
     protected void clearBugsState() throws CoreException {
         MarkerUtil.removeMarkers(getProject());
         FindbugsPlugin.getBugCollection(getProject(), null, false).clearBugInstances();
-	}
+    }
 
     protected FindBugsWorker createFindBugsWorker() throws CoreException {
-        FindBugsWorker worker = new FindBugsWorker(getProject(),
-                new NullProgressMonitor());
-		return worker;
+        FindBugsWorker worker = new FindBugsWorker(getProject(), new NullProgressMonitor());
+        return worker;
     }
 
     protected BugContentProvider getBugContentProvider() throws PartInitException {
         BugExplorerView navigator = (BugExplorerView) showBugExplorerView();
-        BugContentProvider bugContentProvider = BugContentProvider.getProvider(navigator
-				.getNavigatorContentService());
+        BugContentProvider bugContentProvider = BugContentProvider.getProvider(navigator.getNavigatorContentService());
         return bugContentProvider;
     }
 
@@ -344,66 +342,64 @@ public abstract class AbstractPluginTest {
     /**
      * Returns the TestScenario for this test.
      */
-	protected abstract TestScenario getTestScenario();
+    protected abstract TestScenario getTestScenario();
 
     protected final int getVisibleBugsCount() {
         return getTestScenario().getVisibleBugsCount();
     }
 
     /**
-     * Suspend the calling thread until all the background jobs belonging to the given
-     * family are done.
-	 *
+     * Suspend the calling thread until all the background jobs belonging to the
+     * given family are done.
+     * 
      * @see org.eclipse.core.runtime.jobs.Job#belongsTo(Object)
-     *
+     * 
      * @param family
-	 *            The family object that groups the jobs.
+     *            The family object that groups the jobs.
      */
     protected void joinJobFamily(Object family) {
         boolean finished = false;
-		while (!finished) {
+        while (!finished) {
             try {
                 getJobManager().join(family, null);
                 finished = true;
-			} catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 // continue waiting
             }
         }
-	}
+    }
 
-    protected void loadXml(FindBugsWorker worker, String bugsFileLocation)
-            throws CoreException {
+    protected void loadXml(FindBugsWorker worker, String bugsFileLocation) throws CoreException {
         worker.loadXml(bugsFileLocation);
-	}
+    }
 
     protected IViewPart showBugExplorerView() throws PartInitException {
-        return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-                .showView(BUG_EXPLORER_VIEW_ID);
-	}
+        return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(BUG_EXPLORER_VIEW_ID);
+    }
 
     /**
      * Runs the FindBugs worker on the test project.
      */
-	protected void work(FindBugsWorker worker) throws CoreException {
+    protected void work(FindBugsWorker worker) throws CoreException {
         work(worker, getJavaProject());
     }
 
     /**
      * Runs the FindBugs worker on the given Java element.
      */
-	protected void work(FindBugsWorker worker, IJavaElement element) throws CoreException {
+    protected void work(FindBugsWorker worker, IJavaElement element) throws CoreException {
         worker.work(Collections.singletonList(new WorkItem(element)));
         joinJobFamily(FindbugsPlugin.class); // wait for RefreshJob
         processUiEvents();
-		waitForJobs();
+        waitForJobs();
     }
 
     /**
      * Runs the FindBugs worker on the given resource.
      */
-	protected void work(FindBugsWorker worker, IResource resource) throws CoreException {
+    protected void work(FindBugsWorker worker, IResource resource) throws CoreException {
         worker.work(Collections.singletonList(new WorkItem(resource)));
         processUiEvents();
         waitForJobs();
-	}
+    }
 }

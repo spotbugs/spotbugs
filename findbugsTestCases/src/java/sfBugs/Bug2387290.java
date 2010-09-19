@@ -11,7 +11,7 @@ public class Bug2387290 {
         if (byte[].class.isInstance(obj)) {
             byte[] value = (byte[]) obj;
         }
-	}
+    }
 
     @NoWarning("BC")
     public static void method2(Object obj) {
@@ -19,5 +19,5 @@ public class Bug2387290 {
         if (byte[].class.isInstance(obj)) {
             byte[] value = (byte[]) obj;
         }
-	}
+    }
 }

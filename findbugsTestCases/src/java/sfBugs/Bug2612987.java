@@ -16,8 +16,7 @@ import javax.annotation.Nonnegative;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 
-public class Bug2612987
-{
+public class Bug2612987 {
     @Nonnegative
     private int nonNegativeValue = 1;
 
@@ -27,12 +26,12 @@ public class Bug2612987
     }
 
     /* ********************
-     * Behavior at filing:
-     *   TQ warning thrown for explicitly checked (and annotated) parameter
-     * ******************** */
+     * Behavior at filing: TQ warning thrown for explicitly checked (and
+     * annotated) parameter ********************
+     */
     @DesireNoWarning("TQ")
     public void set(@CheckForSigned int possibleNegativeValue) {
-        if(possibleNegativeValue >= 0)
+        if (possibleNegativeValue >= 0)
             nonNegativeValue = possibleNegativeValue;
     }
 }

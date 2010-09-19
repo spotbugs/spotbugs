@@ -25,7 +25,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 /**
  * Misc. preferences utility methods
- *
+ * 
  * @author Andrei Loskutov
  */
 public class PrefsUtil {
@@ -33,36 +33,36 @@ public class PrefsUtil {
     public static SortedSet<String> readDetectorPaths(IPreferenceStore prefs) {
         SortedSet<String> set = new TreeSet<String>();
         boolean keyFound = true;
-		String keyPrefix = FindBugsConstants.KEY_CUSTOM_DETECTORS;
+        String keyPrefix = FindBugsConstants.KEY_CUSTOM_DETECTORS;
         int counter = 0;
         while (keyFound) {
             String property = prefs.getString(keyPrefix + counter);
-			if (property != null && property.length() > 0) {
+            if (property != null && property.length() > 0) {
                 set.add(property);
                 counter++;
             } else {
-				keyFound = false;
+                keyFound = false;
             }
         }
         return set;
-	}
+    }
 
     public static void writeDetectorPaths(IPreferenceStore prefs, SortedSet<String> paths) {
         String keyPrefix = FindBugsConstants.KEY_CUSTOM_DETECTORS;
         int counter = 0;
-		for (String s : paths) {
+        for (String s : paths) {
             prefs.setValue(keyPrefix + counter, s);
             counter++;
         }
-		// remove obsolete keys from the properties file
+        // remove obsolete keys from the properties file
         boolean keyFound = true;
         while (keyFound) {
             String key = keyPrefix + counter;
-			String property = prefs.getString(key);
+            String property = prefs.getString(key);
             if (property == null || property.length() > 0) {
                 keyFound = false;
             } else {
-				prefs.setValue(key, "");
+                prefs.setValue(key, "");
             }
         }
     }

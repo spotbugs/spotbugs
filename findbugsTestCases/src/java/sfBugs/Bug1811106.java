@@ -27,8 +27,7 @@ public class Bug1811106 {
         String foo = "";
         int i;
         i = 0;
-        while (i < args.length)
-        {
+        while (i < args.length) {
             foo = foo + " AND " + args[i];
             i++;
         }
@@ -55,8 +54,7 @@ public class Bug1811106 {
             } while (i < args.length);
         }
         i = 0;
-        while (i < args.length)
-        {
+        while (i < args.length) {
             foo = foo + " AND " + args[i];
             i++;
         }

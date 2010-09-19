@@ -18,13 +18,11 @@ public class ExtendedProperties extends Properties {
         this(file, null);
     }
 
-    public ExtendedProperties(String file, String defaultFile)
-            throws IOException {
+    public ExtendedProperties(String file, String defaultFile) throws IOException {
         this.file = file;
 
         basePath = new File(file).getAbsolutePath();
-        basePath = basePath.substring(0,
-                basePath.lastIndexOf(fileSeparator) + 1);
+        basePath = basePath.substring(0, basePath.lastIndexOf(fileSeparator) + 1);
 
         FileInputStream fileInputStream = new FileInputStream(file);
         // this.load(fileInputStream);
@@ -32,6 +30,6 @@ public class ExtendedProperties extends Properties {
         if (defaultFile != null) {
             defaults = new ExtendedProperties(defaultFile);
         }
-	}
+    }
 
 }

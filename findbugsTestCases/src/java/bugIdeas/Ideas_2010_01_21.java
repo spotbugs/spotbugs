@@ -8,23 +8,28 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 public class Ideas_2010_01_21<T extends Map> {
 
     @ExpectWarning("GC")
-    public  boolean test(T t) {
+    public boolean test(T t) {
         Set s = t.entrySet();
-		return s.contains(5);
+        return s.contains(5);
     }
 
     volatile int x;
+
     volatile long y;
+
     public void volatileIncrement() {
-		x++;
+        x++;
     }
+
     public void volatileDecrement() {
         x--;
-	}
+    }
+
     public void volatileIncrementLong() {
         y++;
     }
-	public void volatileDecrementLong() {
+
+    public void volatileDecrementLong() {
         y--;
     }
 

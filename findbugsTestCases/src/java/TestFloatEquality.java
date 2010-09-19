@@ -8,7 +8,7 @@ public class TestFloatEquality {
     public static void main(String[] args) {
         final float fConst = 1.0f;
         final double dConst = 1.0d;
-		final float fEpsilon = .0000001f;
+        final float fEpsilon = .0000001f;
         final double dEpsilon = .000000000000001d;
 
         if (0.0f / 0.0f != Float.NaN) {
@@ -18,23 +18,23 @@ public class TestFloatEquality {
         for (int i = 1; i < 50; ++i) {
             float f = fConst / i * i;
             if (f != fConst) // FE_FLOATING_POINT_EQUALITY
-			{
+            {
                 System.out.println("inexact float: " + i);
             }
             // The following expression should be false.
-			if (Math.abs(f - fConst) >= fEpsilon) {
+            if (Math.abs(f - fConst) >= fEpsilon) {
                 System.out.println("epsilon too large: " + i);
             }
         }
-		for (int i = 50; i < 100; ++i) {
+        for (int i = 50; i < 100; ++i) {
             float f = fConst / i * i;
             if (f == fConst) // FE_FLOATING_POINT_EQUALITY
             {
-			} else {
+            } else {
                 System.out.println("inexact float: " + i);
             }
             // The following expression should be false.
-			if (Math.abs(f - fConst) >= fEpsilon) {
+            if (Math.abs(f - fConst) >= fEpsilon) {
                 System.out.println("epsilon too large: " + i);
             }
         }
@@ -46,31 +46,31 @@ public class TestFloatEquality {
         for (int i = 1; i < 50; ++i) {
             double d = dConst / i * i;
             if (d != dConst) // FE_FLOATING_POINT_EQUALITY
-			{
+            {
                 System.out.println("inexact double: " + i);
             }
             // The following expression should be false.
-			if (Math.abs(d - dConst) >= dEpsilon) {
+            if (Math.abs(d - dConst) >= dEpsilon) {
                 System.out.println("epsilon too large: " + i);
             }
         }
-		for (int i = 50; i < 100; ++i) {
+        for (int i = 50; i < 100; ++i) {
             double d = dConst / i * i;
             if (d == dConst) // FE_FLOATING_POINT_EQUALITY
             {
-			} else {
+            } else {
                 System.out.println("inexact double: " + i);
             }
             // The following expression should be false.
-			if (Math.abs(d - dConst) >= dEpsilon) {
+            if (Math.abs(d - dConst) >= dEpsilon) {
                 System.out.println("epsilon too large: " + i);
             }
         }
-	}
+    }
 
     double sum(double n) {
         double result = 0;
-        for(double count = 0.0; count != n; count += 0.1)
+        for (double count = 0.0; count != n; count += 0.1)
             result += count;
         return result;
     }

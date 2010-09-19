@@ -7,12 +7,11 @@ public class Bug2984602 {
     public int hashCode() {
         return itemID;
     }
-	
 
     public boolean equals(Object object) {
         if (!(Bug2984602.class.isInstance(object))) {
             return false;
-		}
+        }
 
         boolean equals = false;
         Bug2984602 compareTo = (Bug2984602) object;

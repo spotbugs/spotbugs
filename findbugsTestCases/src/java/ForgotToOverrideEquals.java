@@ -1,9 +1,8 @@
-
 public class ForgotToOverrideEquals {
 
-    int x,y;
+    int x, y;
 
-	public ForgotToOverrideEquals(int x, int y) {
+    public ForgotToOverrideEquals(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -13,7 +12,7 @@ public class ForgotToOverrideEquals {
         final int prime = 31;
         int result = 1;
         result = prime * result + x;
-	    result = prime * result + y;
+        result = prime * result + y;
         return result;
     }
 
@@ -22,21 +21,22 @@ public class ForgotToOverrideEquals {
         if (this == obj)
             return true;
         if (!(obj instanceof ForgotToOverrideEquals))
-		    return false;
+            return false;
         final ForgotToOverrideEquals other = (ForgotToOverrideEquals) obj;
         if (x != other.x)
             return false;
-	    if (y != other.y)
+        if (y != other.y)
             return false;
         return true;
     }
 
     static class Oops extends ForgotToOverrideEquals {
         int z;
-		public Oops(int x, int y, int z) {
-            super(x,y);
+
+        public Oops(int x, int y, int z) {
+            super(x, y);
             this.z = z;
         }
-	}
+    }
 
 }

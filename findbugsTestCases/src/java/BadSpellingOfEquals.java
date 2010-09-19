@@ -4,5 +4,5 @@ class BadSpellingOfEquals {
     @ExpectWarning("Nm")
     public boolean equal(Object o) {
         return true;
-	}
+    }
 }

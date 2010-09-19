@@ -43,31 +43,32 @@ import edu.umd.cs.findbugs.cloud.Cloud.CloudTaskListener;
 
 public class EclipseGuiCallback implements IGuiCallback {
     private final AbstractExecutorService guiExecutor = new EclipseDisplayThreadExecutor();
+
     private CloudListener cloudListener;
 
     public void registerCloud(Project project, BugCollection collection, final Cloud cloud) {
         cloudListener = new CloudListener() {
             public void statusUpdated() {
-				final String statusMsg = cloud.getStatusMsg();
+                final String statusMsg = cloud.getStatusMsg();
 
                 final IWorkbenchWindow win = FindbugsPlugin.getActiveWorkbenchWindow();
                 win.getShell().getDisplay().asyncExec(new Runnable() {
                     public void run() {
-						IWorkbenchPage page = win.getActivePage();
+                        IWorkbenchPage page = win.getActivePage();
                         IWorkbenchPart part = page.getActivePart();
 
                         if (part instanceof IEditorPart) {
                             IEditorPart epart = (IEditorPart) part;
                             Image image = FindbugsPlugin.getDefault().getImageRegistry().get("buggy-tiny-gray.png");
-							IStatusLineManager statusLineManager = epart.getEditorSite().getActionBars().getStatusLineManager();
+                            IStatusLineManager statusLineManager = epart.getEditorSite().getActionBars().getStatusLineManager();
                             if (statusMsg.equals("")) {
                                 statusLineManager.setMessage("");
                             } else {
-								statusLineManager.setMessage(image, statusMsg);
+                                statusLineManager.setMessage(image, statusMsg);
                             }
                         }
                     }
-				});
+                });
             }
 
             public void issueUpdated(BugInstance bug) { // ok
@@ -80,12 +81,12 @@ public class EclipseGuiCallback implements IGuiCallback {
                     @Override
                     public boolean belongsTo(Object family) {
                         return FindbugsPlugin.class == family;
-					}
+                    }
 
                     @Override
                     protected IStatus run(final IProgressMonitor monitor) {
                         monitor.beginTask(task.getName(), 1000);
-						monitor.subTask(task.getStatusLine());
+                        monitor.subTask(task.getStatusLine());
                         monitor.worked((int) (task.getPercentCompleted() * 10));
 
                         final CountDownLatch latch = new CountDownLatch(1);
@@ -94,34 +95,38 @@ public class EclipseGuiCallback implements IGuiCallback {
 
                             public void taskStatusUpdated(String statusLine, double percentCompleted) {
                                 monitor.subTask(statusLine);
-                                monitor.worked((int) (percentCompleted * 10)); // out of 1000 work units
-							}
+                                monitor.worked((int) (percentCompleted * 10)); // out
+                                                                               // of
+                                                                               // 1000
+                                                                               // work
+                                                                               // units
+                            }
 
                             public void taskFinished() {
                                 latch.countDown();
                                 success.set(true);
-							}
+                            }
 
                             public void taskFailed(String message) {
                                 latch.countDown();
                                 success.set(false);
-							}
+                            }
                         });
                         try {
                             latch.await();
-						} catch (InterruptedException e) {
+                        } catch (InterruptedException e) {
                             // ok
                         }
                         monitor.subTask("");
-						monitor.done();
+                        monitor.done();
                         return Status.OK_STATUS;
                     }
                 };
-				job.setPriority(Job.SHORT);
+                job.setPriority(Job.SHORT);
                 job.schedule();
             }
         };
-		cloud.addListener(cloudListener);
+        cloud.addListener(cloudListener);
     }
 
     public void unregisterCloud(Project project, BugCollection collection, Cloud cloud) {
@@ -130,15 +135,15 @@ public class EclipseGuiCallback implements IGuiCallback {
 
     public String showQuestionDialog(String message, String title, final String defaultValue) {
         final AtomicReference<Text> textBoxRef = new AtomicReference<Text>();
-        MessageDialog dlg = new MessageDialog(FindbugsPlugin.getShell(), title, null, message,
-				MessageDialog.QUESTION, new String[] {"OK", "Cancel"}, 1) {
-                    @Override
-                    protected Control createCustomArea(Composite parent) {
-                        Text text = new Text(parent, SWT.SINGLE);
-						text.setText(defaultValue);
-                        textBoxRef.set(text);
-                        return text;
-                    }
+        MessageDialog dlg = new MessageDialog(FindbugsPlugin.getShell(), title, null, message, MessageDialog.QUESTION,
+                new String[] { "OK", "Cancel" }, 1) {
+            @Override
+            protected Control createCustomArea(Composite parent) {
+                Text text = new Text(parent, SWT.SINGLE);
+                text.setText(defaultValue);
+                textBoxRef.set(text);
+                return text;
+            }
 
         };
 
@@ -153,7 +158,7 @@ public class EclipseGuiCallback implements IGuiCallback {
     public void showMessageDialog(final String message) {
         FindbugsPlugin.getShell().getDisplay().asyncExec(new Runnable() {
             public void run() {
-				MessageDialog.openInformation(FindbugsPlugin.getShell(), null, message);
+                MessageDialog.openInformation(FindbugsPlugin.getShell(), null, message);
             }
         });
     }
@@ -169,15 +174,17 @@ public class EclipseGuiCallback implements IGuiCallback {
     public int showConfirmDialog(final String message, final String title, final String ok, final String cancel) {
         final AtomicInteger result = new AtomicInteger(-1);
         FindbugsPlugin.getShell().getDisplay().syncExec(new Runnable() {
-			public void run() {
-                MessageDialog dialog = new MessageDialog(FindbugsPlugin.getShell(), title, null, message,
-                        MessageDialog.NONE, new String[] { ok, cancel }, 0) /*{
-                    {	// the code below requires Eclipse 3.5
-						setShellStyle(getShellStyle() | SWT.SHEET);
-                    }
-                }*/;
+            public void run() {
+                MessageDialog dialog = new MessageDialog(FindbugsPlugin.getShell(), title, null, message, MessageDialog.NONE,
+                        new String[] { ok, cancel }, 0) /*
+                                                         * { { // the code below
+                                                         * requires Eclipse 3.5
+                                                         * setShellStyle
+                                                         * (getShellStyle() |
+                                                         * SWT.SHEET); } }
+                                                         */;
                 result.set(dialog.open());
-			}
+            }
         });
         return result.get();
     }
@@ -205,15 +212,14 @@ public class EclipseGuiCallback implements IGuiCallback {
     public void displayNonmodelMessage(final String title, final String message) {
         invokeInGUIThread(new Runnable() {
             public void run() {
-				MessageDialog.openInformation(FindbugsPlugin.getShell(), title, message);
+                MessageDialog.openInformation(FindbugsPlugin.getShell(), title, message);
             }
         });
     }
 
     private final static class EclipseDisplayThreadExecutor extends AbstractExecutorService {
-        public boolean awaitTermination(long timeout, TimeUnit unit)
-                throws InterruptedException {
-			return false;
+        public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+            return false;
         }
 
         public boolean isShutdown() {
@@ -235,6 +241,6 @@ public class EclipseGuiCallback implements IGuiCallback {
         public void execute(Runnable command) {
             Display.getDefault().asyncExec(command);
         }
-	}
+    }
 
 }

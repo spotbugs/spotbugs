@@ -44,49 +44,51 @@ public class FindbugsTestPlugin extends AbstractUIPlugin {
     /**
      * The constructor
      */
-	public FindbugsTestPlugin() {
+    public FindbugsTestPlugin() {
     }
 
     /*
      * (non-Javadoc)
-     *
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
+     * 
+     * @see
+     * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
      * )
      */
     @Override
-	public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
     }
 
     /*
      * (non-Javadoc)
-     *
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext )
+     * 
+     * @see
+     * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
+     * )
      */
     @Override
     public void stop(BundleContext context) throws Exception {
-		plugin = null;
+        plugin = null;
         super.stop(context);
     }
 
     /**
      * Returns the shared instance
-     *
-	 * @return the shared instance
+     * 
+     * @return the shared instance
      */
     public static FindbugsTestPlugin getDefault() {
         return plugin;
-	}
+    }
 
     public File getFileInPlugin(IPath path) throws CoreException {
         try {
             URL installURL = new URL(getBundle().getEntry("/"), path.toString());
-			URL localURL = FileLocator.toFileURL(installURL);
+            URL localURL = FileLocator.toFileURL(installURL);
             return new File(localURL.getFile());
         } catch (IOException e) {
-            throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, e
-					.getMessage(), e));
+            throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
         }
     }
 }

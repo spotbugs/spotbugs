@@ -2,7 +2,7 @@ public class Test {
     public void foo() throws E {
         synchronized (this) {
             fooImpl();
-		}
+        }
     }
 
     public synchronized void syncFoo() throws E {
@@ -16,7 +16,7 @@ public class Test {
     public static void bar() throws E {
         synchronized (Test.class) {
             barImpl();
-		}
+        }
     }
 
     public synchronized static void syncBar() throws E {
@@ -33,25 +33,25 @@ public class Test {
         try {
             t.foo();
         } catch (Exception e) {
-			System.out.println(e);
+            System.out.println(e);
         }
 
         try {
             t.syncFoo();
         } catch (Exception e) {
-			System.out.println(e);
+            System.out.println(e);
         }
 
         try {
             bar();
         } catch (Exception e) {
-			System.out.println(e);
+            System.out.println(e);
         }
 
         try {
             syncBar();
         } catch (Exception e) {
-			System.out.println(e);
+            System.out.println(e);
         }
     }
 }

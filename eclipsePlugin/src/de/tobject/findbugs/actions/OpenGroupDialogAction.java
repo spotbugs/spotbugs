@@ -40,42 +40,39 @@ public class OpenGroupDialogAction implements IViewActionDelegate {
     public void init(IViewPart view) {
         if (view instanceof CommonNavigator) {
             navigator = (CommonNavigator) view;
-		}
+        }
     }
 
     public void run(IAction action) {
         if (navigator == null) {
             return;
-		}
-        BugContentProvider provider = BugContentProvider.getProvider(navigator
-                .getNavigatorContentService());
+        }
+        BugContentProvider provider = BugContentProvider.getProvider(navigator.getNavigatorContentService());
         List<GroupType> list = provider.getGrouping().asList();
-		GroupSelectionDialog dialog = new GroupSelectionDialog(navigator.getSite()
-                .getShell(), list);
+        GroupSelectionDialog dialog = new GroupSelectionDialog(navigator.getSite().getShell(), list);
         dialog.setTitle("Bug Group Configuration");
         int result = dialog.open();
-		if (result != Window.OK) {
+        if (result != Window.OK) {
             return;
         }
         Grouping grouping = Grouping.createFrom(dialog.getGroups());
-		if (grouping == null) {
+        if (grouping == null) {
             return;
         }
         provider.setGrouping(grouping);
-		CommonViewer viewer = navigator.getCommonViewer();
+        CommonViewer viewer = navigator.getCommonViewer();
         Object[] expandedElements = viewer.getExpandedElements();
         provider.reSetInput();
         viewer.setExpandedElements(expandedElements);
-	}
+    }
 
     public void selectionChanged(IAction action, ISelection selection) {
-        if(navigator == null){
+        if (navigator == null) {
             action.setEnabled(false);
-			return;
+            return;
         }
-        BugContentProvider provider = BugContentProvider.getProvider(navigator
-                .getNavigatorContentService());
-		action.setEnabled(provider.getGrouping() != null);
+        BugContentProvider provider = BugContentProvider.getProvider(navigator.getNavigatorContentService());
+        action.setEnabled(provider.getGrouping() != null);
     }
 
 }

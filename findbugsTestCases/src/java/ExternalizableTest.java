@@ -23,14 +23,14 @@ public class ExternalizableTest implements Externalizable {
     static public void main(String args[]) throws Exception {
         ByteArrayOutputStream pout = new ByteArrayOutputStream();
         ObjectOutputStream oout = new ObjectOutputStream(pout);
-		oout.writeObject(new ExternalizableTest(42));
+        oout.writeObject(new ExternalizableTest(42));
         oout.close();
         byte b[] = pout.toByteArray();
         ByteArrayInputStream pin = new ByteArrayInputStream(b);
-		ObjectInputStream oin = new ObjectInputStream(pin);
+        ObjectInputStream oin = new ObjectInputStream(pin);
         Object o = oin.readObject();
         System.out.println("read object");
         System.out.println(o);
-	}
+    }
 
 }

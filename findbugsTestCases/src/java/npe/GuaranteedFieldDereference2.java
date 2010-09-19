@@ -17,11 +17,11 @@ public class GuaranteedFieldDereference2 {
         int result;
         if (x != null)
             x = new Object();
-		if (b > 0)
+        if (b > 0)
             result = b;
         else
             result = -b;
-		result += x.hashCode();
+        result += x.hashCode();
         return result;
     }
 

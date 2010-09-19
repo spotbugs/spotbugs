@@ -9,7 +9,6 @@ public class Bug1584086 {
             case 1:
                 System.out.println("some thing");
                 break loop;
-                
 
             case 2:
                 System.out.println("some thing");
@@ -21,7 +20,6 @@ public class Bug1584086 {
             }
         }
     }
-
 
     public static void falsePositive2(String... args) {
 
@@ -45,6 +43,7 @@ public class Bug1584086 {
         }
 
     }
+
     public static void main(String... args) {
 
         loop: for (int i = 0; i < 5; i++) {

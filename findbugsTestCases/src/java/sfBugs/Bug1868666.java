@@ -6,7 +6,7 @@ public class Bug1868666 {
         if (a.length % 2 == 1)
             return "odd length";
         else
-			return "even length";
+            return "even length";
     }
 
 }

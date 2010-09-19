@@ -32,19 +32,19 @@ import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the ResourceBugCountDecorator.
- *
+ * 
  * @author Tomás Pollak
  */
 public class LabelDecoratorTest extends AbstractFindBugsTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
-	}
+    }
 
     @AfterClass
     public static void tearDownClass() throws CoreException {
         tearDownTestProject();
-	}
+    }
 
     private static final String SOME_LABEL = "label";
 
@@ -68,7 +68,7 @@ public class LabelDecoratorTest extends AbstractFindBugsTest {
     @Test
     public void testDecorateResourcesWithoutBugs() throws JavaModelException {
         // Class 'A'
-		doTestDecoratorWithoutBugs(getClassA());
+        doTestDecoratorWithoutBugs(getClassA());
 
         // Class 'B'
         doTestDecoratorWithoutBugs(getClassB());
@@ -83,18 +83,18 @@ public class LabelDecoratorTest extends AbstractFindBugsTest {
     private void doTestDecoratorWithBugs(Object resourceAdaptable, int expectedBugsCount) {
         ResourceBugCountDecorator decorator = new ResourceBugCountDecorator();
         String decoratedText = decorator.decorateText(SOME_LABEL, resourceAdaptable);
-		assertEquals(SOME_LABEL + " (" + expectedBugsCount + ")", decoratedText);
+        assertEquals(SOME_LABEL + " (" + expectedBugsCount + ")", decoratedText);
     }
 
     private void doTestDecoratorWithoutBugs(Object resourceAdaptable) {
         ResourceBugCountDecorator decorator = new ResourceBugCountDecorator();
         String decoratedText = decorator.decorateText(SOME_LABEL, resourceAdaptable);
-		assertEquals(SOME_LABEL, decoratedText);
+        assertEquals(SOME_LABEL, decoratedText);
     }
 
     private int getClassBExpectedBugCount() {
         // Currently class 'B' has all the reported visible bugs
         return getVisibleBugsCount();
-	}
+    }
 
 }

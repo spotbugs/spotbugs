@@ -67,34 +67,37 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
     public static UserPreferences createDefaultUserPreferences() {
         UserPreferences prefs = UserPreferences.createDefaultUserPreferences();
         IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-		String categoriesStr = store.getString(DISABLED_CATEGORIES);
+        String categoriesStr = store.getString(DISABLED_CATEGORIES);
         Set<String> ids = decodeIds(categoriesStr);
         for (String categoryId : ids) {
             prefs.getFilterSettings().removeCategory(categoryId);
-		}
+        }
         prefs.setRunAtFullBuild(false);
 
-        // Do not need, as per default the factory default is used if key is missing
-        // TODO later we can use custom workspace settings to disable detectors here
-//		Iterator<DetectorFactory> iterator = DetectorFactoryCollection.instance().factoryIterator();
-//		while (iterator.hasNext()) {
-//			DetectorFactory factory = iterator.next();
-//			prefs.enableDetector(factory, factory.isDefaultEnabled());
-//		}
+        // Do not need, as per default the factory default is used if key is
+        // missing
+        // TODO later we can use custom workspace settings to disable detectors
+        // here
+        // Iterator<DetectorFactory> iterator =
+        // DetectorFactoryCollection.instance().factoryIterator();
+        // while (iterator.hasNext()) {
+        // DetectorFactory factory = iterator.next();
+        // prefs.enableDetector(factory, factory.isDefaultEnabled());
+        // }
         return prefs;
     }
 
-    public static void restoreDefaults(IPreferenceStore store){
+    public static void restoreDefaults(IPreferenceStore store) {
         store.setToDefault(EXPORT_SORT_ORDER);
         store.setToDefault(DONT_REMIND_ABOUT_FULL_BUILD);
-		store.setToDefault(DISABLED_CATEGORIES);
+        store.setToDefault(DISABLED_CATEGORIES);
         store.setToDefault(RUN_ANALYSIS_AUTOMATICALLY);
         store.setToDefault(RUN_ANALYSIS_ON_FULL_BUILD);
         store.setToDefault(ASK_ABOUT_PERSPECTIVE_SWITCH);
-		store.setToDefault(SWITCH_PERSPECTIVE_AFTER_ANALYSIS);
+        store.setToDefault(SWITCH_PERSPECTIVE_AFTER_ANALYSIS);
         store.setToDefault(PRIO_LOW_MARKER_SEVERITY);
         store.setToDefault(PRIO_NORMAL_MARKER_SEVERITY);
         store.setToDefault(PRIO_HIGH_MARKER_SEVERITY);
-	}
+    }
 
 }

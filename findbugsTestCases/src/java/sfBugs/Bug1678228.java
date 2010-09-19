@@ -3,7 +3,9 @@ package sfBugs;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class Bug1678228 {
-    @NonNull String str;
+    @NonNull
+    String str;
+
     int val;
 
     public Bug1678228(String str) {

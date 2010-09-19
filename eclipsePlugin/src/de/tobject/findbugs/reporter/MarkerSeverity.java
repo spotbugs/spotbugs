@@ -22,14 +22,12 @@ import org.eclipse.core.resources.IMarker;
 
 /**
  * Used for mapping between bug priorities and {@link IMarker} constants
- *
+ * 
  * @author Andrei Loskutov
  */
 public enum MarkerSeverity {
 
-    Error(IMarker.SEVERITY_ERROR),
-    Warning(IMarker.SEVERITY_WARNING),
-    Info(IMarker.SEVERITY_INFO);
+    Error(IMarker.SEVERITY_ERROR), Warning(IMarker.SEVERITY_WARNING), Info(IMarker.SEVERITY_INFO);
 
     public final Integer value;
 
@@ -39,16 +37,16 @@ public enum MarkerSeverity {
 
     /**
      * @return never return null. In case given argument is unknown or null,
-     * returns {@link #Warning} severity.
-	 */
-    public static MarkerSeverity get(String markerSeverity){
-        if(markerSeverity == null || markerSeverity.length() == 0) {
+     *         returns {@link #Warning} severity.
+     */
+    public static MarkerSeverity get(String markerSeverity) {
+        if (markerSeverity == null || markerSeverity.length() == 0) {
             return Warning;
-		}
+        }
         try {
             return valueOf(markerSeverity);
         } catch (Exception e) {
-			return Warning;
+            return Warning;
         }
     }
 }

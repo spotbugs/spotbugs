@@ -14,13 +14,13 @@ class RedundantNullCheck2 {
         String z = (String) y;
         try {
             if (z.hashCode() == 17)
-				return 42;
+                return 42;
             return z.hashCode();
         } catch (RuntimeException e) {
 
             if (z.hashCode() == 42)
                 System.out.println(42);
             throw e;
-		}
+        }
     }
 }

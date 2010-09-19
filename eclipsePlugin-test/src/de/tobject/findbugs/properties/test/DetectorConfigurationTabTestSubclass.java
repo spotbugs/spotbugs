@@ -26,21 +26,21 @@ import de.tobject.findbugs.properties.FindbugsPropertyPage;
 import edu.umd.cs.findbugs.DetectorFactory;
 
 /**
- * Test subclass of DetectorConfigurationTab that provides methods for testing purposes.
- *
+ * Test subclass of DetectorConfigurationTab that provides methods for testing
+ * purposes.
+ * 
  * @author Tom�s Pollak
  */
 public class DetectorConfigurationTabTestSubclass extends DetectorConfigurationTab {
 
-    public DetectorConfigurationTabTestSubclass(TabFolder tabFolder,
-            FindbugsPropertyPage page, int style) {
+    public DetectorConfigurationTabTestSubclass(TabFolder tabFolder, FindbugsPropertyPage page, int style) {
         super(tabFolder, page, style);
-	}
+    }
 
     public void disableAllDetectors() {
         TableItem[] items = availableFactoriesTableViewer.getTable().getItems();
         for (int i = 0; i < items.length; i++) {
-			items[i].setChecked(false);
+            items[i].setChecked(false);
         }
         syncUserPreferencesWithTable();
     }
@@ -48,10 +48,10 @@ public class DetectorConfigurationTabTestSubclass extends DetectorConfigurationT
     public void enableDetector(String detectorShortName) {
         TableItem[] items = availableFactoriesTableViewer.getTable().getItems();
         for (int i = 0; i < items.length; i++) {
-			DetectorFactory detectorFactory = (DetectorFactory) items[i].getData();
+            DetectorFactory detectorFactory = (DetectorFactory) items[i].getData();
             boolean enable = detectorFactory.getShortName().equals(detectorShortName);
             items[i].setChecked(enable);
         }
-		syncUserPreferencesWithTable();
+        syncUserPreferencesWithTable();
     }
 }

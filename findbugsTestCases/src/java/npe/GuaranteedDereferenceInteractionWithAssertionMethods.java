@@ -1,6 +1,5 @@
 package npe;
 
-
 public class GuaranteedDereferenceInteractionWithAssertionMethods {
 
     public Object x;
@@ -12,7 +11,7 @@ public class GuaranteedDereferenceInteractionWithAssertionMethods {
         if (x == null)
             System.out.println("x is null");
         if (b) {
-			x = bar();
+            x = bar();
             checkForError();
         }
 
@@ -22,19 +21,21 @@ public class GuaranteedDereferenceInteractionWithAssertionMethods {
     int falsePositive2(Object x) {
         if (x == null)
             reportError();
-		return x.hashCode();
-
+        return x.hashCode();
 
     }
+
     public void checkForError() {
 
     }
+
     public void reportError() {
 
     }
+
     public Object bar() {
         return new Object();
-	}
+    }
 
     public int report(Object x, Object y, Object z) {
         if (x == null && y == null)
@@ -43,7 +44,7 @@ public class GuaranteedDereferenceInteractionWithAssertionMethods {
         if (z == null)
             z = new Object();
         return x.hashCode() + z.hashCode();
-	}
+    }
 
     public int report2(Object x, Object y, Object z) {
         if (x == null && y == null)
@@ -52,7 +53,7 @@ public class GuaranteedDereferenceInteractionWithAssertionMethods {
         if (z == null)
             z = new Object();
         int result = x.hashCode() + z.hashCode();
-		checkForError();
+        checkForError();
         return result;
     }
 }

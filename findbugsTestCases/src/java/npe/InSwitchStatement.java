@@ -5,19 +5,19 @@ public class InSwitchStatement {
     int f(int x) {
         String s = null;
         switch (x) {
-		case 0:
+        case 0:
             s = "zero";
             break;
         case 1:
-			s = "one";
+            s = "one";
             break;
         case 2:
             // impossible
-			break;
+            break;
         default:
             s = "unknown";
         }
-		return s.hashCode();
+        return s.hashCode();
     }
 
 }

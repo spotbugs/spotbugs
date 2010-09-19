@@ -29,9 +29,11 @@ import org.eclipse.ui.IWorkbench;
 public class BugCountsExportWizard extends Wizard implements IExportWizard {
 
     private static final String TITLE = "Export bug counts to clipboard";
-    private static final String DESCRIPTION = "All bugs from analyzed Java projects will " +
-            "be exported as CSV table to the clipboard";
-	private ExportWizardPage mainPage;
+
+    private static final String DESCRIPTION = "All bugs from analyzed Java projects will "
+            + "be exported as CSV table to the clipboard";
+
+    private ExportWizardPage mainPage;
 
     public BugCountsExportWizard() {
         super();
@@ -39,32 +41,33 @@ public class BugCountsExportWizard extends Wizard implements IExportWizard {
 
     /*
      * (non-Javadoc)
-     *
-	 * @see org.eclipse.jface.wizard.Wizard#performFinish()
+     * 
+     * @see org.eclipse.jface.wizard.Wizard#performFinish()
      */
     @Override
     public boolean performFinish() {
-		return mainPage.finish();
+        return mainPage.finish();
     }
 
     /*
      * (non-Javadoc)
-     *
-	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench,
-     *      org.eclipse.jface.viewers.IStructuredSelection)
+     * 
+     * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench,
+     * org.eclipse.jface.viewers.IStructuredSelection)
      */
     public void init(IWorkbench workbench, IStructuredSelection selection) {
-		// noop
+        // noop
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.eclipse.jface.wizard.Wizard#addPages()
      */
-	@Override
+    @Override
     public void addPages() {
         super.addPages();
-        mainPage = new ExportWizardPage("Bug Counts Export", TITLE, DESCRIPTION,
-				"icons/export_bugs.png");
+        mainPage = new ExportWizardPage("Bug Counts Export", TITLE, DESCRIPTION, "icons/export_bugs.png");
         addPage(mainPage);
         setWindowTitle(mainPage.getName());
     }

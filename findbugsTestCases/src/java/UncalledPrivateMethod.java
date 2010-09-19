@@ -4,7 +4,7 @@ public class UncalledPrivateMethod {
     // Interesting tidbit:
     // Sun's javac makes class initializer methods "default static",
     // while jikes makes them "private final static", which could
-	// lead to spurious warnings.
+    // lead to spurious warnings.
     private static final Object myObject = new Object();
 
     @ExpectWarning("UrF")

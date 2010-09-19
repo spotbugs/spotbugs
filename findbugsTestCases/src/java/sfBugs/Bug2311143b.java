@@ -16,23 +16,25 @@ public class Bug2311143b {
     @Documented
     @Nonnull
     @TypeQualifierDefault(ElementType.METHOD)
-	@Retention(RetentionPolicy.RUNTIME)
+    @Retention(RetentionPolicy.RUNTIME)
     public @interface ReturnValueIsNonnullByDefault {
     }
 
     @CheckForNull
     private static List<String> getMagic() {
         return Collections.emptyList();
-	}
+    }
+
     public int complain() {
         return getMagic().size();
     }
-	public static final class InnerClass {
+
+    public static final class InnerClass {
 
         public void doMagic() {
             List<String> contextualTabs = getMagic();
             if (contextualTabs != null) {
-				System.out.println("checked for null, but still generated a warning");
+                System.out.println("checked for null, but still generated a warning");
             }
         }
     }

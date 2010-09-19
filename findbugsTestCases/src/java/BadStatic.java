@@ -7,5 +7,5 @@ public class BadStatic {
     @ExpectWarning("ST")
     public BadStatic(String n) {
         name = n;
-	}
+    }
 }

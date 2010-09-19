@@ -15,5 +15,5 @@ public class RI extends SuperRI implements ActionListener {
     public static void main(String[] args) {
         RI ri = new RI();
         ri.actionPerformed(new ActionEvent(ri, 0, "Yo"));
-	}
+    }
 }

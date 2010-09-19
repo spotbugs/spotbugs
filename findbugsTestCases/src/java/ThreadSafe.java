@@ -14,7 +14,7 @@ public class ThreadSafe {
     public synchronized void setXY(int x, int y) {
         this.x = x;
         this.y = y;
-	}
+    }
 
     public synchronized int getY() {
         return y;

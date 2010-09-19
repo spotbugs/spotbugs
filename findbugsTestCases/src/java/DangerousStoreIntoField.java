@@ -25,12 +25,12 @@ public class DangerousStoreIntoField {
     public void i(int a, String b, String[] c) {
         if (c.length == 0)
             throw new IllegalArgumentException();
-		z = c;
+        z = c;
     }
 
     public void j(Date d) {
         if (d.before(new Date()))
             throw new IllegalArgumentException();
-		w = d;
+        w = d;
     }
 }

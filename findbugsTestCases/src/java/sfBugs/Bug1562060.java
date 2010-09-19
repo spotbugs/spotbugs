@@ -11,6 +11,7 @@ public class Bug1562060 {
         PreparedStatement preparedStmt = conn.prepareStatement(query);
         preparedStmt.execute();
     }
+
     void f5(Connection conn, String query) throws SQLException {
         Statement stmt = conn.createStatement();
         stmt.execute(query);
@@ -69,6 +70,5 @@ public class Bug1562060 {
             }
         }
     }
-
 
 }

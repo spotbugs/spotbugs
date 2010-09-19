@@ -2,8 +2,9 @@ package npe;
 
 /**
  * Bug found in analysis of Nutch-0.8.1
+ * 
  * @author pugh
- *
+ * 
  */
 public class NutchBug {
 
@@ -20,7 +21,7 @@ public class NutchBug {
         if (b.x == null) {
             return 1;
         }
-		return 2;
+        return 2;
 
     }
 }

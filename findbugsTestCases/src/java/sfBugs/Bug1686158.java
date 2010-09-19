@@ -1,12 +1,13 @@
 package sfBugs;
+
 /**
  * @author Bogdan Dimitriu
- *
+ * 
  */
 public class Bug1686158 {
     public static void main(String[] args) {
         Integer i = getSomeI();
-        if(i != null && i.intValue() != 0) {
+        if (i != null && i.intValue() != 0) {
             processValueA(i);
         } else {
             processValueB(i);

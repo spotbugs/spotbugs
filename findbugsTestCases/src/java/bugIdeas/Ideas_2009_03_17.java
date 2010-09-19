@@ -4,7 +4,7 @@ public class Ideas_2009_03_17 {
 
     public static final Long SPECIAL = -1L;
 
-	public static boolean isSpecial(Long l) {
+    public static boolean isSpecial(Long l) {
         return l == null || l == SPECIAL;
     }
 

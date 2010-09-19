@@ -53,40 +53,39 @@ public class CopyMarkerDetailsAction implements IObjectActionDelegate {
     public void run(IAction action) {
         if (selection.isEmpty() || !(selection instanceof IStructuredSelection)) {
             return;
-		}
+        }
         Set<IMarker> markers = getMarkers();
         String content = getContent(markers);
         Util.copyToClipboard(content);
-	}
+    }
 
     private String getContent(Set<IMarker> markers) {
         StringBuilder fullText = new StringBuilder();
         for (IMarker marker : markers) {
-			try {
+            try {
                 StringBuilder line = new StringBuilder();
 
                 IResource resource = marker.getResource();
                 if (resource != null) {
                     IPath location = resource.getLocation();
-					if(location != null){
+                    if (location != null) {
                         line.append(location.toPortableString());
                     } else {
                         line.append(resource.getFullPath());
-					}
+                    }
                 }
                 Integer lineNumber = (Integer) marker.getAttribute(IMarker.LINE_NUMBER);
                 line.append(":").append(lineNumber);
-				String message = (String) marker.getAttribute(IMarker.MESSAGE);
+                String message = (String) marker.getAttribute(IMarker.MESSAGE);
                 line.append(" ").append(message);
 
                 line.append(System.getProperty("line.separator", "\n"));
                 fullText.append(line.toString());
             } catch (CoreException e) {
-				FindbugsPlugin.getDefault().logException(e,
-                    "Exception while parsing content of FindBugs markers.");
+                FindbugsPlugin.getDefault().logException(e, "Exception while parsing content of FindBugs markers.");
             }
         }
-		return fullText.toString();
+        return fullText.toString();
     }
 
     private Set<IMarker> getMarkers() {

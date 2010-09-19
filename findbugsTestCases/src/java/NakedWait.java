@@ -1,13 +1,12 @@
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
-
 class NakedWait {
     boolean ready;
 
     @ExpectWarning("NN")
     public void makeReady() {
         ready = true;
-		synchronized (this) {
+        synchronized (this) {
             notify();
         }
     }
@@ -15,11 +14,11 @@ class NakedWait {
     @ExpectWarning("UW")
     public void waitForReady() {
         while (!ready) {
-			synchronized (this) {
+            synchronized (this) {
                 try {
                     wait();
                 } catch (InterruptedException e) {
-				}
+                }
             }
         }
     }

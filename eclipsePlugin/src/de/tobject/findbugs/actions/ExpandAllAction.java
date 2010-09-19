@@ -29,19 +29,19 @@ public class ExpandAllAction implements IViewActionDelegate {
     private CommonNavigator navigator;
 
     public void init(IViewPart view) {
-        if(view instanceof CommonNavigator) {
+        if (view instanceof CommonNavigator) {
             navigator = (CommonNavigator) view;
-		}
+        }
     }
 
     public void run(IAction action) {
-        if(navigator != null) {
-            if(action.getId().endsWith("Expand")) {
-				navigator.getCommonViewer().expandAll();
+        if (navigator != null) {
+            if (action.getId().endsWith("Expand")) {
+                navigator.getCommonViewer().expandAll();
             } else {
                 navigator.getCommonViewer().collapseAll();
             }
-		}
+        }
     }
 
     public void selectionChanged(IAction action, ISelection selection) {

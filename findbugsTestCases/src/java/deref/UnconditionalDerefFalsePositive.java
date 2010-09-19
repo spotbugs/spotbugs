@@ -11,11 +11,11 @@ public class UnconditionalDerefFalsePositive {
     @Override
     public Object clone() {
         UnconditionalDerefFalsePositive e = null;
-		try {
+        try {
             e = (UnconditionalDerefFalsePositive) super.clone();
         } catch (Exception ex) {
             ex.printStackTrace();
-		}
+        }
         e.x = 1;
         return e;
     }

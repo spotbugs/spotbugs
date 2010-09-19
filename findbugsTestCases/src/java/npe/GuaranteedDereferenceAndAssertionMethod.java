@@ -5,11 +5,11 @@ public class GuaranteedDereferenceAndAssertionMethod {
     void jsrError() {
 
     }
+
     int falsePositive(Object x) {
         if (x == null)
-			jsrError();
+            jsrError();
         return x.hashCode();
-
 
     }
 

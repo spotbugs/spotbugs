@@ -11,12 +11,13 @@ public class ParameterizedAgainstPlain {
 
     protected void afterExecute(Runnable r, Throwable t) {
 
-        List<Runnable> hooks = afterHooks.get(r); // should generate a warning here
+        List<Runnable> hooks = afterHooks.get(r); // should generate a warning
+                                                  // here
         if (hooks != null) {
 
             for (Runnable hook : hooks) {
                 hook.run();
             }
-		}
+        }
     }
 }

@@ -13,11 +13,11 @@ public class Bug1714571 {
         if ((docFile != null) && docFile.exists()) {
             attachments.put(doc.hashCode(), doc.toString());
         } else {
-			System.out.println("Can not read uploaded file: " + ((docFile != null) ? docFile.getAbsolutePath() : "") + " : "
+            System.out.println("Can not read uploaded file: " + ((docFile != null) ? docFile.getAbsolutePath() : "") + " : "
                     + doc.toString());
             throw new FileNotFoundException("file not found in disk!" + ((docFile != null) ? docFile.getAbsolutePath() : "")
                     + " : " + doc.toString());
-		}
+        }
     }
 
 }

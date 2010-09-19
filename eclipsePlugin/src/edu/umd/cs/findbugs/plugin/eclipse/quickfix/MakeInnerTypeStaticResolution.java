@@ -14,8 +14,9 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
 /**
  * The <CODE>MakeInnerTypeStaticResolution</CODE> adds a <CODE>static</CODE>
  * modifier to an inner class.
- *
- * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#SIC_INNER_SHOULD_BE_STATIC">SIC_INNER_SHOULD_BE_STATIC</a>
+ * 
+ * @see <a
+ *      href="http://findbugs.sourceforge.net/bugDescriptions.html#SIC_INNER_SHOULD_BE_STATIC">SIC_INNER_SHOULD_BE_STATIC</a>
  */
 public class MakeInnerTypeStaticResolution extends BugResolution {
 

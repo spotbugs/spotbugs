@@ -25,71 +25,82 @@ import edu.umd.cs.findbugs.BugProperty;
 
 /**
  * Pulldown menu action for classifying warning severity.
- *
+ * 
  * @author David Hovemeyer
  */
-public class SeverityClassificationPulldownAction implements
-        IWorkbenchWindowPulldownDelegate2 {
+public class SeverityClassificationPulldownAction implements IWorkbenchWindowPulldownDelegate2 {
 
     private Menu menu;
+
     private MenuItem[] severityItemList;
+
     private BugInstance bugInstance;
 
-    private static final String[] SEVERITY_LABEL_LIST =
-            {"1 (Least Severe)", "2", "3", "4", "5 (Most Severe)"};
+    private static final String[] SEVERITY_LABEL_LIST = { "1 (Least Severe)", "2", "3", "4", "5 (Most Severe)" };
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IWorkbenchWindowPulldownDelegate2#getMenu(org.eclipse.swt.widgets.Menu)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.eclipse.ui.IWorkbenchWindowPulldownDelegate2#getMenu(org.eclipse.
+     * swt.widgets.Menu)
      */
-	public Menu getMenu(Menu parent) {
+    public Menu getMenu(Menu parent) {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IWorkbenchWindowPulldownDelegate#getMenu(org.eclipse.swt.widgets.Control)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.eclipse.ui.IWorkbenchWindowPulldownDelegate#getMenu(org.eclipse.swt
+     * .widgets.Control)
      */
-	public Menu getMenu(Control parent) {
+    public Menu getMenu(Control parent) {
         if (menu == null) {
             menu = new Menu(parent);
             fillMenu();
-		}
+        }
         return menu;
     }
 
     /**
-     * Fill the drop-down menu.
-     * We allow the user to choose a severity from 1 (least severe)
-	 * to 5 (most severe).  Default is 3.
+     * Fill the drop-down menu. We allow the user to choose a severity from 1
+     * (least severe) to 5 (most severe). Default is 3.
      */
     private void fillMenu() {
         // Create a selection listener to handle when the
-		// user selects a warning severity.
+        // user selects a warning severity.
         SelectionListener menuItemSelectionListener = new SelectionAdapter() {
-            /* (non-Javadoc)
-             * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
-			 */
+            /*
+             * (non-Javadoc)
+             * 
+             * @see
+             * org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse
+             * .swt.events.SelectionEvent)
+             */
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Widget w = e.widget;
-				int index;
+                int index;
                 for (index = 0; index < severityItemList.length; ++index) {
                     if (w == severityItemList[index]) {
                         break;
-					}
+                    }
                 }
 
                 if (index < severityItemList.length) {
                     if (bugInstance != null) {
                         bugInstance.setProperty(BugProperty.SEVERITY, String.valueOf(index + 1));
-					}
+                    }
                 }
             }
         };
 
         severityItemList = new MenuItem[SEVERITY_LABEL_LIST.length];
         for (int i = 0; i < SEVERITY_LABEL_LIST.length; ++i) {
-            MenuItem menuItem= new MenuItem(menu, SWT.RADIO);
-			menuItem.setText(SEVERITY_LABEL_LIST[i]);
+            MenuItem menuItem = new MenuItem(menu, SWT.RADIO);
+            menuItem.setText(SEVERITY_LABEL_LIST[i]);
             menuItem.addSelectionListener(menuItemSelectionListener);
 
             severityItemList[i] = menuItem;
@@ -97,12 +108,16 @@ public class SeverityClassificationPulldownAction implements
 
         // Keep menu in sync with current BugInstance.
         menu.addMenuListener(new MenuAdapter() {
-            /* (non-Javadoc)
-			 * @see org.eclipse.swt.events.MenuAdapter#menuShown(org.eclipse.swt.events.MenuEvent)
+            /*
+             * (non-Javadoc)
+             * 
+             * @see
+             * org.eclipse.swt.events.MenuAdapter#menuShown(org.eclipse.swt.
+             * events.MenuEvent)
              */
             @Override
             public void menuShown(MenuEvent e) {
-				syncMenu();
+                syncMenu();
             }
         });
     }
@@ -110,96 +125,109 @@ public class SeverityClassificationPulldownAction implements
     /**
      * Synchronize the menu with the current BugInstance.
      */
-	private void syncMenu() {
+    private void syncMenu() {
         if (bugInstance != null) {
             BugProperty severityProperty = bugInstance.lookupProperty(BugProperty.SEVERITY);
             if (severityProperty != null) {
-				try {
+                try {
                     int severity = severityProperty.getValueAsInt();
                     if (severity > 0 && severity <= severityItemList.length) {
                         selectSeverity(severity);
-						return;
+                        return;
                     }
                 } catch (NumberFormatException e) {
                     // Ignore: we'll allow the user to select a valid severity
-				}
+                }
             }
 
             // We didn't get a valid severity from the BugInstance.
             // So, leave the menu items enabled but cleared, so
             // the user can select a severity.
-			resetMenuItems(true);
+            resetMenuItems(true);
         } else {
             // No BugInstance - disable all menu items.
             resetMenuItems(false);
-		}
+        }
     }
 
     /**
      * Set the menu to given severity level.
-     *
-	 * @param severity the severity level (1..5)
+     * 
+     * @param severity
+     *            the severity level (1..5)
      */
     private void selectSeverity(int severity) {
         // Severity is 1-based, but the menu item list is 0-based
-		int index = severity - 1;
+        int index = severity - 1;
 
         for (int i = 0; i < severityItemList.length; ++i) {
             MenuItem menuItem = severityItemList[i];
             menuItem.setEnabled(true);
-			menuItem.setSelection(i == index);
+            menuItem.setSelection(i == index);
         }
     }
 
     /**
      * Reset menu items so they are unchecked.
-     *
-	 * @param enable true if menu items should be enabled,
-     *               false if they should be disabled
+     * 
+     * @param enable
+     *            true if menu items should be enabled, false if they should be
+     *            disabled
      */
     private void resetMenuItems(boolean enable) {
-		for (int i = 0; i < severityItemList.length; ++i) {
+        for (int i = 0; i < severityItemList.length; ++i) {
             MenuItem menuItem = severityItemList[i];
             menuItem.setEnabled(enable);
             menuItem.setSelection(false);
-		}
+        }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#dispose()
      */
-	public void dispose() {
+    public void dispose() {
         if (menu != null) {
             menu.dispose();
             menu = null;
-		}
+        }
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.IWorkbenchWindow)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.
+     * IWorkbenchWindow)
      */
-	public void init(IWorkbenchWindow window) {
+    public void init(IWorkbenchWindow window) {
         // noop
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
-	public void run(IAction action) {
+    public void run(IAction action) {
         // TODO: open classification dialog
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action
+     * .IAction, org.eclipse.jface.viewers.ISelection)
      */
-	public void selectionChanged(IAction action, ISelection selection) {
+    public void selectionChanged(IAction action, ISelection selection) {
         bugInstance = null;
         // TODO learn to deal with ALL elements
         IMarker marker = MarkerUtil.getMarkerFromSingleSelection(selection);
-		if (marker == null) {
+        if (marker == null) {
             return;
         }
         bugInstance = MarkerUtil.findBugInstanceForMarker(marker);
-	}
+    }
 
 }

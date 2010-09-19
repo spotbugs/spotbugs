@@ -10,7 +10,7 @@ public class Ideas_2008_11_24 {
     public static void main(String args[]) {
         Foo foo = EasyMock.createMock(Foo.class);
         foo.setFoo(5);
-		EasyMock.replay();
+        EasyMock.replay();
         foo.setFoo(4);
         EasyMock.verify();
     }

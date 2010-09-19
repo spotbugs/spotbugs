@@ -13,7 +13,7 @@ public class Bug3061338 {
         for (int i = 0; i < 5; i++) {
             // two is null and should be identified it as an invalid null input.
             getTwo(two);
-		}
+        }
     }
 
     @ExpectWarning("NP_NONNULL_PARAM_VIOLATION")
@@ -23,7 +23,7 @@ public class Bug3061338 {
         for (int i = 0; i < 5; i++) {
             two = null;
             getTwo(two);
-		}
+        }
     }
 
     public void getTwo(@NonNull Object x) {

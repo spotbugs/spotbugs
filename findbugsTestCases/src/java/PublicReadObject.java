@@ -10,5 +10,5 @@ class PublicReadObject implements Serializable {
     public void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         x = ois.readInt();
-	}
+    }
 }

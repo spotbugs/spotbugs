@@ -30,28 +30,28 @@ import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the quickfix resolutions for examples that use JUnit.
- *
+ * 
  * @author Tomás Pollak
  */
 public class QuickfixWithJUnitTest extends AbstractQuickfixTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.QUICKFIX_WITH_JUNIT);
-	}
+    }
 
     @AfterClass
     public static void tearDownClass() throws CoreException {
         tearDownTestProject();
-	}
+    }
 
     @Test
     public void testCreateSuperCallResolution() throws CoreException, IOException {
-        doTestQuickfixResolution("CreateSuperCallResolutionExample.java",
-				"FI_MISSING_SUPER_CALL", "IJU_SETUP_NO_SUPER", "IJU_TEARDOWN_NO_SUPER");
+        doTestQuickfixResolution("CreateSuperCallResolutionExample.java", "FI_MISSING_SUPER_CALL", "IJU_SETUP_NO_SUPER",
+                "IJU_TEARDOWN_NO_SUPER");
     }
 
     @Override
     protected TestScenario getTestScenario() {
         return TestScenario.QUICKFIX_WITH_JUNIT;
-	}
+    }
 }

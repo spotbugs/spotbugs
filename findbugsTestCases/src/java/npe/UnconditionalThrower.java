@@ -7,6 +7,7 @@ public class UnconditionalThrower {
             throw new IllegalArgumentException();
         }
     }
+
     static class B extends A {
         @Override
         void foo() {
@@ -15,7 +16,8 @@ public class UnconditionalThrower {
     }
 
     int falsePositive(Object x, A a) {
-        if (x == null) a.foo();
+        if (x == null)
+            a.foo();
         return x.hashCode();
     }
 }

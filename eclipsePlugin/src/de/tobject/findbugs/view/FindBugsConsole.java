@@ -32,7 +32,6 @@ import org.eclipse.ui.console.IConsolePageParticipant;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.part.IPageBookViewPage;
 
-
 /**
  * @author Andrei
  */
@@ -41,7 +40,6 @@ public class FindBugsConsole extends MessageConsole {
     static FindBugsConsole console;
 
     boolean disposed;
-
 
     private static class RemoveAction extends Action {
         public RemoveAction() {
@@ -59,8 +57,7 @@ public class FindBugsConsole extends MessageConsole {
         }
     }
 
-    private FindBugsConsole(String name, ImageDescriptor imageDescriptor,
-            boolean autoLifecycle) {
+    private FindBugsConsole(String name, ImageDescriptor imageDescriptor, boolean autoLifecycle) {
         super(name, imageDescriptor, autoLifecycle);
     }
 
@@ -119,17 +116,16 @@ public class FindBugsConsole extends MessageConsole {
         public void dispose() {
             removeAction = null;
             // followed causes sometimes problems with console removal
-//            if (console != null) {
-//                console.dispose();
-//                console = null;
-//            }
+            // if (console != null) {
+            // console.dispose();
+            // console = null;
+            // }
         }
 
         public void init(IPageBookViewPage page, IConsole console1) {
             removeAction = new RemoveAction();
             IActionBars bars = page.getSite().getActionBars();
-            bars.getToolBarManager().appendToGroup(IConsoleConstants.LAUNCH_GROUP,
-                    removeAction);
+            bars.getToolBarManager().appendToGroup(IConsoleConstants.LAUNCH_GROUP, removeAction);
         }
 
         public Object getAdapter(Class adapter) {

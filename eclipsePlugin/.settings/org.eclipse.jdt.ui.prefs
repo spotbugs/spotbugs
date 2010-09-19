@@ -1,7 +1,7 @@
-#Sat Nov 01 23:35:09 CET 2008
+#Sat Sep 18 21:24:30 EDT 2010
 eclipse.preferences.version=1
 editor_save_participant_org.eclipse.jdt.ui.postsavelistener.cleanup=true
-formatter_profile=_Eclipse 90 [built-in]
+formatter_profile=_FindBugs
 formatter_settings_version=11
 org.eclipse.jdt.ui.text.custom_code_templates=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><templates/>
 sp_cleanup.add_default_serial_version_id=true

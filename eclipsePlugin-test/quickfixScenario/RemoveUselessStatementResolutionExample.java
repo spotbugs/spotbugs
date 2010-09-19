@@ -1,7 +1,7 @@
 public class RemoveUselessStatementResolutionExample {
 
-	public void doSomething() {
-		synchronized (this) {
-		}
-	}
+    public void doSomething() {
+        synchronized (this) {
+        }
+    }
 }

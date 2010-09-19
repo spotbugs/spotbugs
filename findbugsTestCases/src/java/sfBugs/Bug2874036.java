@@ -5,7 +5,9 @@ import java.util.ResourceBundle;
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 
 public class Bug2874036 {
-    private static ResourceBundle createRb() { return null; }
+    private static ResourceBundle createRb() {
+        return null;
+    }
 
     private final ResourceBundle rb = createRb();
 

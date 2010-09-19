@@ -12,5 +12,5 @@ public class MyTestCase2 extends MyTestCase {
     @Override
     public Test suite() {
         return null;
-	}
+    }
 }

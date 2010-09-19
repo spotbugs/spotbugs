@@ -4,7 +4,7 @@ public class TestFalsePositiveMWN {
     public void set() throws Exception {
         // This is a false positive
         synchronized (arr) {
-			arr[0] = true;
+            arr[0] = true;
             arr.notify();
         }
     }
@@ -12,7 +12,7 @@ public class TestFalsePositiveMWN {
     public void test() throws Exception {
         // This is a false positive
         synchronized (arr) {
-			while (!arr[0])
+            while (!arr[0])
                 arr.wait();
         }
     }
@@ -20,6 +20,6 @@ public class TestFalsePositiveMWN {
     public static void main(String[] args) throws Exception {
         TestFalsePositiveMWN test = new TestFalsePositiveMWN();
         test.set();
-		test.test();
+        test.test();
     }
 }

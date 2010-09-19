@@ -7,10 +7,10 @@ public class Bug2791706 {
     public void clear() {
         Lock l = new ReentrantLock();
         l.lock();
-		try {
+        try {
             // do nothing
         } finally {
             l.unlock();
-		}
+        }
     }
 }

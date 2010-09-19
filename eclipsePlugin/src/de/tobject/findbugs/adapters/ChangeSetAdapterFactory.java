@@ -24,20 +24,19 @@ import org.eclipse.team.internal.ui.synchronize.ChangeSetDiffNode;
 
 /**
  * Adapter factory to allow enablement of findbugs on change sets
- *
+ * 
  * @author Alex
- *
+ * 
  */
 public class ChangeSetAdapterFactory implements IAdapterFactory {
 
     /**
      * {@inheritDoc}
      */
-	public Object getAdapter(Object adaptableObject, Class adapterType) {
-        if (adaptableObject instanceof ChangeSetDiffNode
-                && adapterType == ChangeSet.class) {
+    public Object getAdapter(Object adaptableObject, Class adapterType) {
+        if (adaptableObject instanceof ChangeSetDiffNode && adapterType == ChangeSet.class) {
             ChangeSetDiffNode node = (ChangeSetDiffNode) adaptableObject;
-			return node.getSet();
+            return node.getSet();
         }
         return null;
     }
@@ -45,7 +44,7 @@ public class ChangeSetAdapterFactory implements IAdapterFactory {
     /**
      * {@inheritDoc}
      */
-	public Class[] getAdapterList() {
+    public Class[] getAdapterList() {
         return new Class[] { ChangeSet.class };
     }
 

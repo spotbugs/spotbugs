@@ -13,29 +13,33 @@ public class IO_APPENDING_TO_OBJECT_OUTPUT_STREAM {
 
     @ExpectWarning("IO_APPENDING_TO_OBJECT_OUTPUT_STREAM")
     void bug1(File anyFile) throws Exception {
-		OutputStream out = new FileOutputStream(anyFile, true);
-        new ObjectOutputStream(out);
-    }
-    @ExpectWarning("IO_APPENDING_TO_OBJECT_OUTPUT_STREAM")
-	void bug1(String anyFile) throws Exception {
         OutputStream out = new FileOutputStream(anyFile, true);
         new ObjectOutputStream(out);
     }
-	@ExpectWarning("IO_APPENDING_TO_OBJECT_OUTPUT_STREAM")
+
+    @ExpectWarning("IO_APPENDING_TO_OBJECT_OUTPUT_STREAM")
+    void bug1(String anyFile) throws Exception {
+        OutputStream out = new FileOutputStream(anyFile, true);
+        new ObjectOutputStream(out);
+    }
+
+    @ExpectWarning("IO_APPENDING_TO_OBJECT_OUTPUT_STREAM")
     void bug2(File anyFile) throws Exception {
         OutputStream out = new FileOutputStream(anyFile, true);
         out = new BufferedOutputStream(out);
-		new ObjectOutputStream(out);
+        new ObjectOutputStream(out);
     }
+
     @ExpectWarning("IO_APPENDING_TO_OBJECT_OUTPUT_STREAM")
     void bug2(String anyFile) throws Exception {
-		OutputStream out = new FileOutputStream(anyFile, true);
+        OutputStream out = new FileOutputStream(anyFile, true);
         out = new BufferedOutputStream(out);
         new ObjectOutputStream(out);
     }
-	@NoWarning("IO_APPENDING_TO_OBJECT_OUTPUT_STREAM")
+
+    @NoWarning("IO_APPENDING_TO_OBJECT_OUTPUT_STREAM")
     void notBug1(File anyFile) throws Exception {
         OutputStream out = new FileOutputStream(anyFile, false);
         new ObjectOutputStream(out);
-	}
+    }
 }

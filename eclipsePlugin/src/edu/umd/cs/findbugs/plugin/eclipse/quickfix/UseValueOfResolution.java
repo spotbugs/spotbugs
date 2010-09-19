@@ -42,12 +42,15 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 
 /**
- * The <CODE>UseValueOfResolution</CODE> replace the inefficient creation of
- * an instance, by the static <CODE>valueOf(...)</CODE> method.
- *
- * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_BOOLEAN_CTOR">DM_BOOLEAN_CTOR</a>
- * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_FP_NUMBER_CTOR">DM_FP_NUMBER_CTOR</a>
- * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_NUMBER_CTOR">DM_NUMBER_CTOR</a>
+ * The <CODE>UseValueOfResolution</CODE> replace the inefficient creation of an
+ * instance, by the static <CODE>valueOf(...)</CODE> method.
+ * 
+ * @see <a
+ *      href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_BOOLEAN_CTOR">DM_BOOLEAN_CTOR</a>
+ * @see <a
+ *      href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_FP_NUMBER_CTOR">DM_FP_NUMBER_CTOR</a>
+ * @see <a
+ *      href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_NUMBER_CTOR">DM_NUMBER_CTOR</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @version 1.0
@@ -80,7 +83,8 @@ public class UseValueOfResolution extends BugResolution {
         assert rewrite != null;
         assert workingUnit != null;
 
-        ClassInstanceCreation primitiveTypeCreation = findPrimitiveTypeCreation(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
+        ClassInstanceCreation primitiveTypeCreation = findPrimitiveTypeCreation(getASTNode(workingUnit,
+                bug.getPrimarySourceLineAnnotation()));
         if (primitiveTypeCreation == null) {
             throw new BugResolutionException("Primitive type creation not found.");
         }
@@ -95,7 +99,8 @@ public class UseValueOfResolution extends BugResolution {
         return visitor.getPrimitiveTypeCreation();
     }
 
-    protected MethodInvocation createValueOfInvocation(ASTRewrite rewrite, CompilationUnit compilationUnit, ClassInstanceCreation primitiveTypeCreation) {
+    protected MethodInvocation createValueOfInvocation(ASTRewrite rewrite, CompilationUnit compilationUnit,
+            ClassInstanceCreation primitiveTypeCreation) {
         assert rewrite != null;
         assert primitiveTypeCreation != null;
 

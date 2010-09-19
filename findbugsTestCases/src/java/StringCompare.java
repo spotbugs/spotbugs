@@ -4,7 +4,7 @@ public class StringCompare {
     public static boolean compare(StringCompare a, StringCompare b) {
         if (a == null & b == null)
             return false;
-		if (a == null ^ b == null)
+        if (a == null ^ b == null)
             return true;
         return a.x.equals(b.x) & a.y.equals(b.y) & a.z.equals(b.z);
     }

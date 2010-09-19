@@ -9,6 +9,6 @@ class CloseStream {
         OutputStream out = new FileOutputStream(f);
         int i = o.hashCode();
         out.close();
-	}
+    }
 
 }

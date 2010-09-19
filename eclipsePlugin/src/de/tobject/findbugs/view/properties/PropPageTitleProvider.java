@@ -36,160 +36,161 @@ import edu.umd.cs.findbugs.BugPattern;
 public class PropPageTitleProvider extends BugLabelProvider {
     @Override
     public String getText(Object element) {
-        if(element instanceof IStructuredSelection){
-			IStructuredSelection selection = (IStructuredSelection) element;
-            if(selection.size() > 1){
+        if (element instanceof IStructuredSelection) {
+            IStructuredSelection selection = (IStructuredSelection) element;
+            if (selection.size() > 1) {
                 return super.getText(element);
             }
-			element = selection.getFirstElement();
+            element = selection.getFirstElement();
         }
         String title = getTitle(element);
-        if(title != null){
-			return title;
+        if (title != null) {
+            return title;
         }
         return super.getText(element);
     }
 
-    String getTitle(Object something){
-        if(something instanceof BugGroup){
-            return getTitle((BugGroup)something);
-		}
-        if(something instanceof IMarker){
-            return getTitle((IMarker)something);
+    String getTitle(Object something) {
+        if (something instanceof BugGroup) {
+            return getTitle((BugGroup) something);
         }
-		return null;
+        if (something instanceof IMarker) {
+            return getTitle((IMarker) something);
+        }
+        return null;
     }
 
-    String getTitle(IMarker marker){
+    String getTitle(IMarker marker) {
         return getTitle(MarkerUtil.findBugInstanceForMarker(marker));
     }
 
-    String getTitle(BugGroup group){
+    String getTitle(BugGroup group) {
         switch (group.getType()) {
         case Marker:
-			return getTitle((IMarker)group.getData());
+            return getTitle((IMarker) group.getData());
         case Pattern:
-            return getTitle((BugPattern)group.getData());
+            return getTitle((BugPattern) group.getData());
         case PatternType:
-			return getTitle((BugCode)group.getData());
+            return getTitle((BugCode) group.getData());
         case Category:
-            return getTitle((BugCategory)group.getData());
+            return getTitle((BugCategory) group.getData());
         case Priority:
-			return getTitle((Integer)group.getData());
+            return getTitle((Integer) group.getData());
         case Package:
-            return getTitle((IPackageFragment)group.getData());
+            return getTitle((IPackageFragment) group.getData());
         case Project:
-			return getTitle((IProject)group.getData());
+            return getTitle((IProject) group.getData());
         case Class:
-            return getTitle((IJavaElement)group.getData());
+            return getTitle((IJavaElement) group.getData());
 
         default:
             break;
         }
-		return null;
+        return null;
     }
 
-    String getTitle(IJavaElement elem){
-        if(elem == null){
+    String getTitle(IJavaElement elem) {
+        if (elem == null) {
             return null;
-		}
+        }
         StringBuilder sb = new StringBuilder("Class: ");
         sb.append(elem.getElementName());
         return sb.toString();
-	}
+    }
 
-    String getTitle(IProject pack){
-        if(pack == null){
+    String getTitle(IProject pack) {
+        if (pack == null) {
             return null;
-		}
+        }
         StringBuilder sb = new StringBuilder("Project: ");
         sb.append(pack.getName());
         return sb.toString();
-	}
+    }
 
-    String getTitle(IPackageFragment pack){
-        if(pack == null){
+    String getTitle(IPackageFragment pack) {
+        if (pack == null) {
             return null;
-		}
+        }
         StringBuilder sb = new StringBuilder("Package: ");
         String name = pack.getElementName();
-        if(name == null || name.length() == 0){
-			sb.append("default package");
+        if (name == null || name.length() == 0) {
+            sb.append("default package");
         } else {
             sb.append(name);
         }
-		return sb.toString();
+        return sb.toString();
     }
 
-    String getTitle(Integer priority){
-        if(priority == null){
+    String getTitle(Integer priority) {
+        if (priority == null) {
             return null;
-		}
+        }
         StringBuilder sb = new StringBuilder("Priority: ");
         sb.append(FindBugsMarker.Priority.label(priority.intValue()).name());
         return sb.toString();
-	}
+    }
 
-    String getTitle(BugCategory category){
-        if(category == null){
+    String getTitle(BugCategory category) {
+        if (category == null) {
             return null;
-		}
+        }
         StringBuilder sb = new StringBuilder("Category: ");
         sb.append(category.getShortDescription());
         sb.append(" (").append(category.getAbbrev()).append(", ");
-		sb.append(category.getCategory()).append(")");
+        sb.append(category.getCategory()).append(")");
         return sb.toString();
     }
 
-    String getTitle(BugCode type){
-        if(type == null){
+    String getTitle(BugCode type) {
+        if (type == null) {
             return null;
-		}
+        }
         StringBuilder sb = new StringBuilder("Pattern Type: ");
         sb.append(type.getDescription());
         sb.append(" (").append(type.getAbbrev()).append(")");
-		return sb.toString();
+        return sb.toString();
     }
 
-    String getTitle(BugPattern pattern){
-        if(pattern == null){
+    String getTitle(BugPattern pattern) {
+        if (pattern == null) {
             return null;
-		}
+        }
         StringBuilder sb = new StringBuilder("Pattern: ");
         sb.append(pattern.getShortDescription());
         return sb.toString();
-	}
+    }
 
-    String getTitle(BugInstance bug){
-        if(bug == null){
+    String getTitle(BugInstance bug) {
+        if (bug == null) {
             return null;
-		}
+        }
         StringBuilder sb = new StringBuilder("Bug: ");
         sb.append(bug.getAbridgedMessage());
         return sb.toString();
-	}
-    String getDetails(BugInstance bug){
-        if(bug == null){
+    }
+
+    String getDetails(BugInstance bug) {
+        if (bug == null) {
             return null;
-		}
+        }
         StringBuilder sb = new StringBuilder();
         BugPattern pattern = bug.getBugPattern();
         sb.append(" (").append(pattern.getType());
-		sb.append(", ").append(pattern.getAbbrev()).append(", ");
+        sb.append(", ").append(pattern.getAbbrev()).append(", ");
         sb.append(pattern.getCategory()).append(", ");
         sb.append(bug.getPriorityString());
         sb.append(")");
-		return sb.toString();
+        return sb.toString();
     }
 
-    String getDetails(BugPattern pattern){
-        if(pattern == null){
+    String getDetails(BugPattern pattern) {
+        if (pattern == null) {
             return null;
-		}
+        }
         StringBuilder sb = new StringBuilder("<b>id:</b> ");
         sb.append(pattern.getType());
         sb.append(", <b>type:</b> ").append(pattern.getAbbrev()).append(", <b>category:</b> ");
-		sb.append(pattern.getCategory());
+        sb.append(pattern.getCategory());
         return sb.toString();
     }
 }

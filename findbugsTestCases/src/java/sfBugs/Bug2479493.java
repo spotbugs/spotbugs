@@ -19,22 +19,22 @@ public class Bug2479493 {
             in.transferTo(0, in.size(), out);
         } catch (Exception e) {
             success = false;
-			e.printStackTrace();
+            e.printStackTrace();
         } finally {
             if (in != null) {
                 try {
-					in.close();
+                    in.close();
                 } catch (IOException e) {
                 }
             }
-			if (out != null) {
+            if (out != null) {
                 try {
                     out.close();
                 } catch (IOException e) {
-				}
+                }
             }
         }
         return success;
-	}
+    }
 
 }

@@ -16,8 +16,8 @@ public class FalsePositiveFromEclipseCommentRegion {
         for (int i = 5; i > 0; i--) {
             p = n;
             n = foo();
-		}
-        return  n.hashCode();
+        }
+        return n.hashCode();
     }
 
 }

@@ -7,34 +7,33 @@ public class Bug3000680 {
     /**
      * Case1: FB doesn't report Infinite Loop in 'private' 'static' methods
      */
-	@ExpectWarning("IL")
+    @ExpectWarning("IL")
     private static void case1() {
         case1();
     }
-	/**
+
+    /**
      * Case1: FB doesn't report Infinite Loop in 'private' 'static' methods
      */
     @ExpectWarning("IL")
-	static void case1a() {
+    static void case1a() {
         case1a();
     }
-
 
     /**
      * Case2: 'if' condition causes FB ignores Infinite loop check
      */
-	@ExpectWarning("IL")
-
+    @ExpectWarning("IL")
     public void case2() {
         // this naive condition causes infinite loop doesn't report
-		if (true) {
+        if (true) {
             System.out.println("Hello world!");
         }
 
         String text = null;
         if (text != null) {
             case2();
-		} else {
+        } else {
             case2();
         }
     }
@@ -45,29 +44,29 @@ public class Bug3000680 {
         String text = null;
         if (text != null) {
             case2a();
-		} else {
+        } else {
             case2a();
         }
     }
-	
+
     public void case2b() {
         System.out.println("Hello world!");
-
 
         String text = null;
         if (text != null) {
             case2b();
-		} else {
+        } else {
             case2b();
         }
     }
-	public void case2c(boolean b) {
+
+    public void case2c(boolean b) {
         System.out.println("Hello world!");
 
         if (b) {
             case2c(b);
         } else {
-			case2c(b);
+            case2c(b);
         }
     }
 

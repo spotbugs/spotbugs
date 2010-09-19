@@ -1,6 +1,5 @@
 package dynamicany;
 
-
 public class DynAnyCollectionImpl extends DynAnyConstructedImpl {
     public DynAnyCollectionImpl() {
         this(null, null, false);

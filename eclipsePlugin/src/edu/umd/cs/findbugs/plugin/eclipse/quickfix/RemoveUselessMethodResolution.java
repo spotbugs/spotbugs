@@ -20,6 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
+
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getMethodDeclaration;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getTypeDeclaration;
 
@@ -32,13 +33,15 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 
 /**
- * Empty <CODE>finalize()</CODE> methods are useless, so they should be
- * deleted. The same is valid for <CODE>finalize()</CODE> methods that only
- * call the superclass's <CODE>finalize()</CODE> method.
- * The class <CODE>RemoveUselessMethodResolution</CODE> removes such useless methods.
- *
- * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#FI_EMPTY">FI_EMPTY</a>
- * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#FI_USELESS">FI_USELESS</a>
+ * Empty <CODE>finalize()</CODE> methods are useless, so they should be deleted.
+ * The same is valid for <CODE>finalize()</CODE> methods that only call the
+ * superclass's <CODE>finalize()</CODE> method. The class
+ * <CODE>RemoveUselessMethodResolution</CODE> removes such useless methods.
+ * 
+ * @see <a
+ *      href="http://findbugs.sourceforge.net/bugDescriptions.html#FI_EMPTY">FI_EMPTY</a>
+ * @see <a
+ *      href="http://findbugs.sourceforge.net/bugDescriptions.html#FI_USELESS">FI_USELESS</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @version 1.0

@@ -10,35 +10,36 @@ class BadRandomInt {
     @ExpectWarning("Dm")
     int nextInt(int n) {
         return (int) (r.nextDouble() * n);
-	}
+    }
 
     @ExpectWarning("Dm")
     int nextInt() {
         return (int) (r.nextDouble() * 100);
-	}
+    }
 
     @ExpectWarning("Dm")
     int nextInt2(int n) {
         return (int) (n * r.nextDouble());
-	}
+    }
 
     @ExpectWarning("Dm")
     int nextInt2() {
         return (int) (100 * r.nextDouble());
-	}
+    }
 
     @DesireWarning("DMI")
     static int randomInt(int n) {
         Random ran = new Random();
-		return  ran.nextInt(n);
+        return ran.nextInt(n);
     }
 
     @ExpectWarning("DMI")
     static int randomInt2(int n) {
-        return  new Random().nextInt(n);
-	}
+        return new Random().nextInt(n);
+    }
+
     @ExpectWarning("DMI")
     static int randomInt3() {
-        return  new Random().nextInt();
-	}
+        return new Random().nextInt();
+    }
 }

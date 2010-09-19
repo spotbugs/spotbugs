@@ -20,5 +20,5 @@ public class TestNonNull1 {
     @ExpectWarning("NP")
     public Object bar() {
         return f(null); // warning: f()'s parameter is non-null
-	}
+    }
 }

@@ -12,12 +12,13 @@ public class TestStaticObligationAnnotation {
     public static @CreatesObligation
     TestStaticObligationAnnotation make() {
         return new TestStaticObligationAnnotation();
-	}
+    }
 
     void process() throws IOException {
 
     }
-	public static @DischargesObligation
+
+    public static @DischargesObligation
     void done() {
 
     }
@@ -25,18 +26,18 @@ public class TestStaticObligationAnnotation {
     public static void test1() throws IOException {
         TestStaticObligationAnnotation o = make();
         o.process();
-	}
+    }
 
     public static void test2() throws IOException {
         TestStaticObligationAnnotation o = make();
         o.process();
-		done();
+        done();
     }
 
     public static void test3() {
         TestStaticObligationAnnotation o = make();
         try {
-			o.process();
+            o.process();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

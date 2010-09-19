@@ -1,9 +1,9 @@
 import java.util.Date;
 
 public class CreateMutableCloneResolutionExample {
-	Date myDate = new Date();
+    Date myDate = new Date();
 
-	public Date getMyDate() {
-		return myDate;
-	}
+    public Date getMyDate() {
+        return myDate;
+    }
 }

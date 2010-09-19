@@ -13,32 +13,33 @@ public class Bug2003253 {
     //
     // The InconsistentAnnotations detector should report
     // a warning here.
-	//
+    //
     @ExpectWarning("NP")
     public void report1(@Nullable Object bar) {
         this.foo = bar;
-	}
+    }
 
     //
     // FindNullDeref should report a warning here.
     //
-	@ExpectWarning("NP")
+    @ExpectWarning("NP")
     public void report2(@CheckForNull Object bar) {
         this.foo = bar;
     }
-	
+
     //
-    // FindNullDeref should report a warning here.
-    //
-	@ExpectWarning("NP")
-    public int report3(@CheckForNull Object bar) {
-        return bar.hashCode();
-    }
-	//
     // FindNullDeref should report a warning here.
     //
     @ExpectWarning("NP")
-	public int report4(@CheckForNull Object bar) {
+    public int report3(@CheckForNull Object bar) {
+        return bar.hashCode();
+    }
+
+    //
+    // FindNullDeref should report a warning here.
+    //
+    @ExpectWarning("NP")
+    public int report4(@CheckForNull Object bar) {
         return nonnull(bar);
     }
 

@@ -6,7 +6,7 @@ public class Bug2781807 {
     public void method() {
         if (field instanceof String) {
             String fieldText = (String) field;
-			field = Integer.valueOf(fieldText);
+            field = Integer.valueOf(fieldText);
         }
     }
 }

@@ -31,10 +31,10 @@ import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.Name;
 
 /**
- * A <CODE>Comparator</CODE> used to add imports in a sorted order. The <CODE>ImportDeclaration</CODE>
- * will be sorted according to static or not static import, and then in an
- * alphabetically order.
- *
+ * A <CODE>Comparator</CODE> used to add imports in a sorted order. The
+ * <CODE>ImportDeclaration</CODE> will be sorted according to static or not
+ * static import, and then in an alphabetically order.
+ * 
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @version 1.0

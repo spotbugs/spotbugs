@@ -25,7 +25,7 @@ public class UnconditionalDeref {
     private void report3() {
         // This should only be a medium priority warning,
         // because h may be overridden.
-		h(null);
+        h(null);
     }
 
     Object returnsNull() {
@@ -35,19 +35,19 @@ public class UnconditionalDeref {
     // @Override
     @Override
     public int hashCode() {
-		return 0;
+        return 0;
     }
 
     // We report equals() methods which unconditionally dereference the
     // parameter
     @Override
-	public boolean equals(Object o) {
+    public boolean equals(Object o) {
         return o.hashCode() == this.hashCode() && o == this;
     }
 
     // We don't get this one currently
     void report4() {
         Object o = returnsNull();
-		System.out.println(o.hashCode());
+        System.out.println(o.hashCode());
     }
 }

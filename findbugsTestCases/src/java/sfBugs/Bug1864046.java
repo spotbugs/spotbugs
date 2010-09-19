@@ -8,7 +8,7 @@ public class Bug1864046 {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((m_field1 == null) ? 0 : m_field1.hashCode());
-	    result = prime * result + ((m_field2 == null) ? 0 : m_field2.hashCode());
+        result = prime * result + ((m_field2 == null) ? 0 : m_field2.hashCode());
         result = prime * result + ((m_field3 == null) ? 0 : m_field3.hashCode());
         return result;
     }
@@ -18,23 +18,23 @@ public class Bug1864046 {
         if (this == obj)
             return true;
         if (obj == null)
-		    return false;
+            return false;
         if (getClass() != obj.getClass())
             return false;
         final Bug1864046 other = (Bug1864046) obj;
-	    if (m_field1 == null) {
+        if (m_field1 == null) {
             if (other.m_field1 != null)
                 return false;
         } else if (!m_field1.equals(other.m_field1))
-		    return false;
+            return false;
         if (m_field2 == null) {
             if (other.m_field2 != null)
                 return false;
-	    } else if (!m_field2.equals(other.m_field2))
+        } else if (!m_field2.equals(other.m_field2))
             return false;
         if (m_field3 == null) {
             if (other.m_field3 != null)
-			    return false;
+                return false;
         } else if (!m_field3.equals(other.m_field3))
             return false;
         return true;

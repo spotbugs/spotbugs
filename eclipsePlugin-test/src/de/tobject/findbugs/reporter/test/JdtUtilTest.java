@@ -33,24 +33,24 @@ import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the JdtUtil class.
- *
+ * 
  * @author Tomás Pollak
  */
 public class JdtUtilTest extends AbstractPluginTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.JDT);
-	}
+    }
 
     @AfterClass
     public static void tearDownClass() throws CoreException {
         tearDownTestProject();
-	}
+    }
 
     @Test
     public void testFindAnonymous() throws JavaModelException {
         IType typeC = getTypeC();
-		IType typeE = getTypeE();
+        IType typeE = getTypeE();
 
         // Positive case: Runnable in C
         doPositiveTest(typeC, "1");
@@ -70,7 +70,7 @@ public class JdtUtilTest extends AbstractPluginTest {
         // Negative case: Null argument
         try {
             JdtUtils.findAnonymous(typeC, null);
-			fail("Expected NullPointerException");
+            fail("Expected NullPointerException");
         } catch (NullPointerException e) {
             // Expected
         }
@@ -82,27 +82,27 @@ public class JdtUtilTest extends AbstractPluginTest {
     @Override
     protected TestScenario getTestScenario() {
         return TestScenario.JDT;
-	}
+    }
 
     protected IType getTypeC() throws JavaModelException {
         IType type = getJavaProject().findType("C");
         return type;
-	}
+    }
 
     protected IType getTypeE() throws JavaModelException {
         IType type = getJavaProject().findType("C.E");
         return type;
-	}
+    }
 
     private void doNullTest(IType parentType, String anonymousClassNumber) {
         IType typeZero = JdtUtils.findAnonymous(parentType, anonymousClassNumber);
         assertNull(typeZero);
-	}
+    }
 
     private void doPositiveTest(IType parentType, String anonymousClassNumber) {
         IType childType = JdtUtils.findAnonymous(parentType, anonymousClassNumber);
         assertNotNull(childType);
-		assertTrue(childType.exists());
+        assertTrue(childType.exists());
         assertEquals("", childType.getElementName());
     }
 

@@ -17,18 +17,18 @@ final class NullDeref9 {
     public void foo(Object o) {
         if (o == null)
             error();
-		System.out.println(o.hashCode());
+        System.out.println(o.hashCode());
     }
 
     public void bar(Object o) {
         if (o == null)
             jspError();
-		System.out.println(o.hashCode());
+        System.out.println(o.hashCode());
     }
 
     public void baz(Object o) {
         if (o == null)
             oops();
-		System.out.println(o.hashCode());
+        System.out.println(o.hashCode());
     }
 }

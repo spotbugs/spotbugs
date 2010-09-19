@@ -46,22 +46,24 @@ public class Bug2487936 {
      */
     @NoWarning("GC")
     public void test1() {
-        Map<String,String> map1 = new HashMap<String, String>();
-        Map<String,String> map2 = new HashMap<String, String>();
+        Map<String, String> map1 = new HashMap<String, String>();
+        Map<String, String> map2 = new HashMap<String, String>();
         for (Map.Entry<String, String> entry : map1.entrySet()) {
             String s2 = map2.get(entry.getKey()); // This line causes "L B GC"
             System.out.println(s2);
         }
     }
+
     /**
      * Does not exhibit the false positive.
      */
     @NoWarning("GC")
     public void test2() {
-        Map<String,String> map1 = new HashMap<String, String>();
-        Map<String,String> map2 = new HashMap<String, String>();
+        Map<String, String> map1 = new HashMap<String, String>();
+        Map<String, String> map2 = new HashMap<String, String>();
         for (Map.Entry<String, String> entry : map1.entrySet()) {
-            String s1 = entry.getKey(); // This local var is the only difference from the other method
+            String s1 = entry.getKey(); // This local var is the only difference
+                                        // from the other method
             String s2 = map2.get(s1);
             System.out.println(s2);
         }

@@ -7,19 +7,24 @@ import com.google.inject.Inject;
 /**
  * With annotations and inversion of control being all the rage these days, a
  * new pattern seems to be gaining popularity: annotating class fields with
- * something like '@SpringBean' (wicket/spring) or '@Inject' (Google Guice),
- * and somehow have them instantiated by reflection by the framework.
+ * something like '@SpringBean' (wicket/spring) or '@Inject' (Google Guice), and
+ * somehow have them instantiated by reflection by the framework.
  */
 
 public class Bug1718130 {
-    @Inject Object x;
-    @SpringBean Object y;
+    @Inject
+    Object x;
+
+    @SpringBean
+    Object y;
+
     Object z;
-	Bug1718130() {
+
+    Bug1718130() {
         z = y;
     }
 
-	public int hashCode() {
+    public int hashCode() {
         return x.hashCode() + y.hashCode() + z.hashCode();
     }
 

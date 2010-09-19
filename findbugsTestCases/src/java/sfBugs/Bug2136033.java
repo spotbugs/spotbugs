@@ -1,7 +1,5 @@
 package sfBugs;
 
-
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,24 +8,21 @@ import java.io.OutputStream;
 
 import org.junit.Test;
 
-
-
 /**
-
+ * 
  * FindBugs OBL false positive.
-
- *
-
- * The difference is the argument to safeClose(). If it is a Closeable, FindBugs OBL generates a
-
+ * 
+ * 
+ * 
+ * The difference is the argument to safeClose(). If it is a Closeable, FindBugs
+ * OBL generates a
+ * 
  * false positive.
-
  */
 
 public class Bug2136033 {
 
     @Test
-
     public void testCloseStream() throws Exception {
 
         // ok: this line is not flagged with OBL
@@ -45,8 +40,6 @@ public class Bug2136033 {
         }
 
     }
-
-
 
     private void safeCloseStream(OutputStream object) {
 
@@ -66,10 +59,7 @@ public class Bug2136033 {
 
     }
 
-
-
     @Test
-
     public void testCloseCloseableFalsePositive() throws Exception {
 
         // FALSE POSITIVE: this line is flagged with OBL
@@ -87,8 +77,6 @@ public class Bug2136033 {
         }
 
     }
-
-
 
     private void safeCloseCloseable(Closeable object) {
 

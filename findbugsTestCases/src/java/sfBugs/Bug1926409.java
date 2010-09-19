@@ -8,18 +8,20 @@ public class Bug1926409 {
 
     public static void foo(String filename) throws IOException {
         OutputStream os = null;
-		try {
-        os = new FileOutputStream(filename);
+        try {
+            os = new FileOutputStream(filename);
 
-        os.write(0);
-        OutputStream tmp = os;
-        os = null;
-		tmp.close();
+            os.write(0);
+            OutputStream tmp = os;
+            os = null;
+            tmp.close();
 
         } finally {
-        if (os != null) try { os.close(); } catch (IOException e) { }
+            if (os != null)
+                try {
+                    os.close();
+                } catch (IOException e) {
+                }
         }
-		}
     }
-
-
+}

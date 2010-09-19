@@ -8,13 +8,13 @@ public abstract class GuaranteedDerefInterproc {
     static class A implements I {
         public int f(Object o) {
             return o.hashCode();
-		}
+        }
     }
 
     static class B implements I {
         public int f(Object o) {
             return o.hashCode();
-		}
+        }
     }
 
     int count;
@@ -32,11 +32,10 @@ public abstract class GuaranteedDerefInterproc {
         if (c) {
             count++;
         } else {
-			count--;
+            count--;
         }
 
         x.f(o);
     }
-
 
 }

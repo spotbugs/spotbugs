@@ -51,48 +51,42 @@ public class OpenXMLResultsAction extends FindBugsAction {
     @Override
     public void run(final IAction action) {
         if (!(selection instanceof IStructuredSelection) || selection.isEmpty()) {
-			return;
+            return;
         }
         IStructuredSelection structuredSelection = (IStructuredSelection) selection;
         IProject project = getProject(structuredSelection);
-		if (project == null) {
+        if (project == null) {
             return;
         }
         IPath filePath = FindbugsPlugin.getBugCollectionFile(project);
-		if (!filePath.toFile().exists()) {
-            MessageDialog.openInformation(
-                    null,
-                    "Open XML results",
-					"No FindBugs analysis results available for project '"
-                            + project.getName() + "'!");
+        if (!filePath.toFile().exists()) {
+            MessageDialog.openInformation(null, "Open XML results", "No FindBugs analysis results available for project '"
+                    + project.getName() + "'!");
             return;
         }
-		openEditor(filePath.toFile());
+        openEditor(filePath.toFile());
     }
 
     private IEditorPart openEditor(File file) {
         String editorId = getEditorId(file);
-        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                .getActivePage();
+        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         IFileStore fileStore;
         try {
-            fileStore = EFS.getLocalFileSystem().getStore(
-                    new Path(file.getCanonicalPath()));
+            fileStore = EFS.getLocalFileSystem().getStore(new Path(file.getCanonicalPath()));
             IEditorInput input = new FileStoreEditorInput(fileStore);
             return page.openEditor(input, editorId);
         } catch (IOException e) {
             FindbugsPlugin.getDefault().logException(e, "Could not get canonical file path");
         } catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Could not get canonical file path");
-	    }
+        }
         return null;
     }
 
     private static String getEditorId(File file) {
         IWorkbench workbench = PlatformUI.getWorkbench();
         IEditorRegistry editorRegistry = workbench.getEditorRegistry();
-        IEditorDescriptor descriptor = editorRegistry.getDefaultEditor(file.getName(),
-                getContentType(file));
+        IEditorDescriptor descriptor = editorRegistry.getDefaultEditor(file.getName(), getContentType(file));
         if (descriptor != null) {
             return descriptor.getId();
         }
@@ -107,10 +101,9 @@ public class OpenXMLResultsAction extends FindBugsAction {
         InputStream stream = null;
         try {
             stream = new FileInputStream(file);
-            return Platform.getContentTypeManager().findContentTypeFor(stream,
-                    file.getName());
+            return Platform.getContentTypeManager().findContentTypeFor(stream, file.getName());
         } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e,"'Open xml' operation failed");
+            FindbugsPlugin.getDefault().logException(e, "'Open xml' operation failed");
             return null;
         } finally {
             try {
@@ -118,7 +111,7 @@ public class OpenXMLResultsAction extends FindBugsAction {
                     stream.close();
                 }
             } catch (IOException e) {
-                FindbugsPlugin.getDefault().logException(e,"'Open xml' operation failed");
+                FindbugsPlugin.getDefault().logException(e, "'Open xml' operation failed");
             }
         }
     }

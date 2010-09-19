@@ -27,7 +27,7 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 
 /**
  * Expected object for a FindBugs marker.
- *
+ * 
  * @author Tomás Pollak
  */
 public class ExpectedViewMarker implements ExpectedViewElement {
@@ -38,10 +38,9 @@ public class ExpectedViewMarker implements ExpectedViewElement {
         this.expectedBugType = expectedBugType;
     }
 
-    public void assertEquals(Object actual, ITreeContentProvider contentProvider)
-            throws CoreException {
+    public void assertEquals(Object actual, ITreeContentProvider contentProvider) throws CoreException {
         Assert.assertTrue(actual instanceof IMarker);
-		IMarker marker = (IMarker) actual;
+        IMarker marker = (IMarker) actual;
         String actualBugType = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
         Assert.assertEquals(expectedBugType, actualBugType);
     }
@@ -49,14 +48,14 @@ public class ExpectedViewMarker implements ExpectedViewElement {
     public boolean matches(Object actual) throws CoreException {
         if (actual instanceof IMarker) {
             IMarker marker = (IMarker) actual;
-			String actualBugType = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
+            String actualBugType = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
             return expectedBugType.equals(actualBugType);
         }
         return false;
-	}
+    }
 
     @Override
     public String toString() {
         return "Expected View Marker: " + expectedBugType;
-	}
+    }
 }

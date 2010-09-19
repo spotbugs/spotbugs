@@ -1,21 +1,24 @@
 package sfBugs;
 
 public class Bug2533036 {
-    private static class X {}
-    private static class Y extends X {}
+    private static class X {
+    }
+
+    private static class Y extends X {
+    }
+
     private static class Z extends Y {
-        int f() { return 5; }
+        int f() {
+            return 5;
+        }
     }
 
-    static void m1(Z z)
-    {
+    static void m1(Z z) {
     }
 
-    static void m2(X x)
-    {
+    static void m2(X x) {
         m1((Z) x);
     }
-
 
     X x;
 
@@ -27,19 +30,19 @@ public class Bug2533036 {
         if (x instanceof Z) {
             Z z = (Z) x;
             return z.f();
-    	}
-        return x.hashCode();
         }
-      int foo(X x) {
+        return x.hashCode();
+    }
+
+    int foo(X x) {
         if (x instanceof Z) {
             Z z = (Z) x;
             return z.f();
-    	}
-        return x.hashCode();
         }
+        return x.hashCode();
+    }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         X x = new X();
         m2(x);
     }

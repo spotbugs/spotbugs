@@ -7,7 +7,7 @@ public class CollectionUtils {
     public static List doNotReport(Collection collection) {
         if (collection instanceof List) {
             return (List) collection;
-		} else
+        } else
             return null;
     }
 

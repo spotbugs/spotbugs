@@ -1,4 +1,5 @@
 package unsafeInheritance;
+
 import java.io.InputStream;
 import java.net.URL;
 

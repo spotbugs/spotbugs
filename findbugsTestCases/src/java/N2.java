@@ -12,10 +12,10 @@ public class N2 extends N1 {
     @ExpectWarning("Nm")
     public String tostring() {
         return "mmm";
-	}
+    }
 
     @ExpectWarning("Nm")
     public int hashcode() {
         return 0;
-	}
+    }
 }

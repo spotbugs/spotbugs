@@ -1,4 +1,3 @@
-
 class FinalizerGuardian {
     public void free() {
         // free some JNI native resources

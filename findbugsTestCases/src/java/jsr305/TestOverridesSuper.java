@@ -5,16 +5,19 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 public class TestOverridesSuper {
 
     @OverridingMethodsMustInvokeSuper
-    void f() {}
-	
-    @OverridingMethodsMustInvokeSuper
-    void g() {}
+    void f() {
+    }
 
-	static class SubClass extends TestOverridesSuper {
+    @OverridingMethodsMustInvokeSuper
+    void g() {
+    }
+
+    static class SubClass extends TestOverridesSuper {
         void f() {
             super.f();
         }
-		void g() {
+
+        void g() {
 
         }
     }

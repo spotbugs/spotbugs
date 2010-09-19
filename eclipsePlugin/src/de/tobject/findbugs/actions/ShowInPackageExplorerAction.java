@@ -38,6 +38,7 @@ import de.tobject.findbugs.view.explorer.GroupType;
 public class ShowInPackageExplorerAction implements IObjectActionDelegate {
 
     private IWorkbenchPartSite site;
+
     private Object data;
 
     public ShowInPackageExplorerAction() {
@@ -49,17 +50,17 @@ public class ShowInPackageExplorerAction implements IObjectActionDelegate {
     }
 
     public void run(IAction action) {
-        if(data == null){
+        if (data == null) {
             return;
-		}
+        }
         IViewPart part = getView(JavaUI.ID_PACKAGES);
-        if(part instanceof ISetSelectionTarget){
+        if (part instanceof ISetSelectionTarget) {
             ISetSelectionTarget target = (ISetSelectionTarget) part;
             target.selectReveal(new StructuredSelection(data));
         }
     }
 
-    private IViewPart getView(String id){
+    private IViewPart getView(String id) {
         IViewPart part;
         try {
             part = site.getPage().showView(id);
@@ -73,35 +74,34 @@ public class ShowInPackageExplorerAction implements IObjectActionDelegate {
     public void selectionChanged(IAction action, ISelection selection) {
         if (!(selection instanceof IStructuredSelection)) {
             data = null;
-			action.setEnabled(false);
+            action.setEnabled(false);
             return;
         }
         IStructuredSelection ss = (IStructuredSelection) selection;
-		if (ss.size() != 1) {
+        if (ss.size() != 1) {
             data = null;
             action.setEnabled(false);
             return;
-		}
+        }
         Object firstElement = ss.getFirstElement();
-        if(firstElement instanceof IMarker){
+        if (firstElement instanceof IMarker) {
             IMarker marker = (IMarker) firstElement;
-			data = marker.getResource();
+            data = marker.getResource();
             action.setEnabled(data != null);
             return;
         }
-		if (!(firstElement instanceof BugGroup)) {
+        if (!(firstElement instanceof BugGroup)) {
             data = null;
             action.setEnabled(false);
             return;
-		}
+        }
         BugGroup group = (BugGroup) firstElement;
-        if (group.getType() == GroupType.Class || group.getType() == GroupType.Package
-                || group.getType() == GroupType.Project) {
-			data = group.getData();
+        if (group.getType() == GroupType.Class || group.getType() == GroupType.Package || group.getType() == GroupType.Project) {
+            data = group.getData();
             action.setEnabled(data != null);
         } else {
             data = null;
-			action.setEnabled(false);
+            action.setEnabled(false);
         }
     }
 

@@ -9,24 +9,25 @@ public class TestDefaultAnnotations {
 
     // parameter "o" must carry a @Foo(when=When.ALWAYS) type qualifier,
     // since that is the default for parameters
-	public void requiresFoo(Object o) {
+    public void requiresFoo(Object o) {
 
     }
 
-	// violation: @Foo(when=When.NEVER) value passed to method expecting @Foo(when=When.ALWAYS)
+    // violation: @Foo(when=When.NEVER) value passed to method expecting
+    // @Foo(when=When.ALWAYS)
     @ExpectWarning("TQ")
-    public void violate(@Foo(when=When.NEVER) Object x) {
+    public void violate(@Foo(when = When.NEVER) Object x) {
         requiresFoo(x);
-	}
+    }
 
-//	@NoWarning("TQ")
-//	public void ok(Object x) {
-//		requiresFoo(x);
-//	}
-//
-//	@NoWarning("TQ")
-//	public void ok2(@Foo(when=When.ALWAYS) Object x) {
-//		requiresFoo(x);
-//	}
+    // @NoWarning("TQ")
+    // public void ok(Object x) {
+    // requiresFoo(x);
+    // }
+    //
+    // @NoWarning("TQ")
+    // public void ok2(@Foo(when=When.ALWAYS) Object x) {
+    // requiresFoo(x);
+    // }
 
 }

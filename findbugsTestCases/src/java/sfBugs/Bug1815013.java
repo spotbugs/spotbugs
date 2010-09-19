@@ -22,26 +22,26 @@ public class Bug1815013 {
     }
 
     public void set2(Bug1815013 p) {
-        synchronized(this) {
+        synchronized (this) {
             p.x = y; // should generate warning w/r/t p
         }
     }
 
     public void set3(Bug1815013 p) {
-        synchronized(this) {
+        synchronized (this) {
             p.x = get()[0]; // should generate warning w/r/t p
         }
     }
 
     public void set4(Bug1815013 p) {
-        synchronized(p) {
+        synchronized (p) {
             p.x = get()[0]; // should not generate warning
         }
     }
 
     public void set5(Bug1815013 p) {
-        synchronized(p) {
-            synchronized(this) {
+        synchronized (p) {
+            synchronized (this) {
                 p.x = y; // should not generate warning
             }
         }
@@ -53,7 +53,7 @@ public class Bug1815013 {
     }
 
     public void publicSyncThis(Bug1815013 p) {
-        synchronized(this) {
+        synchronized (this) {
             privateUnsynchSetThis(p);
         }
     }
@@ -64,7 +64,7 @@ public class Bug1815013 {
     }
 
     public void publicSyncP(Bug1815013 p) {
-        synchronized(p) {
+        synchronized (p) {
             privateUnsynchSetP(p);
         }
     }

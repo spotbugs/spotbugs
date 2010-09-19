@@ -10,7 +10,6 @@ public class Ideas_2008_10_15<E> {
 
     }
 
-
     public synchronized void wasModified(Object object) {
         wasModified(listOf(object));
     }
@@ -18,14 +17,17 @@ public class Ideas_2008_10_15<E> {
     public static <T> List<T> listOf(T e) {
         ArrayList<T> a = new ArrayList<T>();
         a.add(e);
-		return a;
+        return a;
     }
 
-    static class A <E>  {
-		void handle(E e) {}
+    static class A<E> {
+        void handle(E e) {
+        }
     }
+
     static class B<E> extends A<E> {
         @Override
-		void handle(Object o) {}
+        void handle(Object o) {
+        }
     }
 }

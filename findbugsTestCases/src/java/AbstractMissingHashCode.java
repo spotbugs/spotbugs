@@ -6,12 +6,12 @@ abstract class AbstractMissingHashCode {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof AbstractMissingHashCode))
-			return false;
+            return false;
         return x == ((AbstractMissingHashCode) o).x;
     }
 
     @ExpectWarning("HE")
     static class StillMissingHashCode extends AbstractMissingHashCode {
         int y;
-	}
+    }
 }

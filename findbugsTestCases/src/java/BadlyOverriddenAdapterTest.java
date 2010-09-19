@@ -13,11 +13,11 @@ public class BadlyOverriddenAdapterTest extends JFrame {
     public BadlyOverriddenAdapterTest() {
         addWindowListener(new WindowAdapter() {
             @SuppressWarnings("DM_EXIT")
-			@ExpectWarning("BOA")
+            @ExpectWarning("BOA")
             public void windowClosing() {
                 dispose();
                 System.exit(0);
-			}
+            }
         });
 
         Container cp = getContentPane();
@@ -29,7 +29,7 @@ class GoodlyOverridenAdapterTest extends JFrame {
     public GoodlyOverridenAdapterTest() {
         addWindowListener(new WindowAdapter() {
             @NoWarning("BOA")
-			public void windowClosing() {
+            public void windowClosing() {
                 dispose();
                 System.exit(0);
             }
@@ -37,7 +37,7 @@ class GoodlyOverridenAdapterTest extends JFrame {
             @Override
             @NoWarning("BOA")
             public void windowClosing(WindowEvent we) {
-				windowClosing();
+                windowClosing();
             }
         });
 

@@ -16,15 +16,15 @@ public class Bug2922917 {
         public boolean equals(Object obj) {
             if (obj == null) {
                 return false;
-			}
+            }
             if (obj == this) {
                 return true;
             }
-			if (obj.getClass() != getClass()) {
+            if (obj.getClass() != getClass()) {
                 return false;
             }
             A rhs = (A) obj;
-			return new EqualsBuilder().appendSuper(super.equals(obj)).append(x, rhs.x).append(y, rhs.y).append(z, rhs.z)
+            return new EqualsBuilder().appendSuper(super.equals(obj)).append(x, rhs.x).append(y, rhs.y).append(z, rhs.z)
                     .isEquals();
         }
 

@@ -10,19 +10,19 @@ public class Bug2990536 {
         while (true) {
             Closeable c = new StringReader("foo");
             try {
-				try {
+                try {
                     bar.bar(c);
                     c = null;
                 } catch (InterruptedException ex) {
-					continue;
+                    continue;
                 }
             } finally {
                 if (c != null) {
-					c.close();
+                    c.close();
                 }
             }
         }
-	}
+    }
 
     interface Bar {
         void bar(Closeable c) throws InterruptedException;

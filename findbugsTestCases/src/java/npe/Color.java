@@ -6,13 +6,14 @@ package npe;
 
 public class Color {
     float[] fvalue;
+
     public Color(float components[]) {
-        int result= 0;
-		if (components == null)
+        int result = 0;
+        if (components == null)
             result = 1;
         Object x = new Object();
         int n = 5;
-		fvalue = new float[n];
+        fvalue = new float[n];
         for (int i = 0; i < n; i++) {
             result++;
             if (components[i] < 0.0) {
@@ -22,7 +23,6 @@ public class Color {
                 fvalue[i] = f;
             }
         }
-
 
     }
 

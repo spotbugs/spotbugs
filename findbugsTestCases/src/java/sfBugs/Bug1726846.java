@@ -13,6 +13,6 @@ public class Bug1726846 {
     public void bug() {
         // Here is a write to a static field from an instance method
         theStatic = 17;
-	}
+    }
 
 }

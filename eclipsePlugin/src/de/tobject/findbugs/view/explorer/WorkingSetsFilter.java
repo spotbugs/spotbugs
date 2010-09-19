@@ -30,7 +30,7 @@ public class WorkingSetsFilter extends ResourceWorkingSetFilter {
         super();
     }
 
-    boolean contains(IResource resource){
+    boolean contains(IResource resource) {
         return super.select(null, null, resource);
     }
 

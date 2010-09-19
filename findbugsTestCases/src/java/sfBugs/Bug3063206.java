@@ -11,5 +11,5 @@ public class Bug3063206 extends StreamHandler {
     @NoWarning("OBL_UNSATISFIED_OBLIGATION")
     public void warnme() throws FileNotFoundException {
         setOutputStream(new FileOutputStream(new File("a", "b"), true));
-	}
+    }
 }

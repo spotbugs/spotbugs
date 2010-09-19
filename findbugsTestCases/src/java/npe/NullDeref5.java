@@ -6,15 +6,15 @@ class NullDeref5 {
     void foo() {
         Object lck = lock;
         synchronized (lck) {
-			try {
+            try {
                 System.out.println("foo");
             } catch (RuntimeException e) {
                 e.printStackTrace();
-			} finally {
+            } finally {
                 if (lock != null) {
                     lock.notify();
                 }
-			}
+            }
         }
     }
 }

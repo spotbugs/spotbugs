@@ -2,7 +2,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class UnreleasedLock3 {
 
-     final ReentrantLock lock = new ReentrantLock();
+    final ReentrantLock lock = new ReentrantLock();
 
     class Inner {
         void doNotReport() {

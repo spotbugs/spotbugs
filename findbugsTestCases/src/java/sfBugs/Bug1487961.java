@@ -15,7 +15,7 @@ public class Bug1487961 {
     void sort(List<DateMgr>[] aDateMgr) {
         Comparator<List<DateMgr>> c = new Comparator<List<DateMgr>>() {
             @NoWarning("UMAC")
-			public int compare(List<DateMgr> o1, List<DateMgr> o2) {
+            public int compare(List<DateMgr> o1, List<DateMgr> o2) {
                 String a = o1.get(0).getName();
                 String b = o2.get(0).getName();
 

@@ -14,5 +14,5 @@ public class NullComplexPath {
         if (argv[0].equals("S")) {
             System.out.println("Hash code is " + o.hashCode());
         }
-	}
+    }
 }

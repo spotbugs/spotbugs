@@ -9,14 +9,14 @@ public class ListTests {
     public void test1NoBugs(List<String> list) {
         list.contains("Hello");
         list.remove("Hello");
-		list.indexOf("Hello");
+        list.indexOf("Hello");
         list.lastIndexOf("Hello");
     }
 
     public void test1Bugs(List<String> list) {
         list.contains(new StringBuffer("Key"));
         list.remove(new StringBuffer("Key"));
-		list.indexOf(new StringBuffer("Key"));
+        list.indexOf(new StringBuffer("Key"));
         list.lastIndexOf(new StringBuffer("Key"));
     }
 

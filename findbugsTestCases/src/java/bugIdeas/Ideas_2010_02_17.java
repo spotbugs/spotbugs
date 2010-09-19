@@ -19,15 +19,15 @@ public class Ideas_2010_02_17 implements Serializable {
         // If there's a ZoneInfo object, use it for zone.
         try {
             ZoneInfo zi = (ZoneInfo) AccessController.doPrivileged(new PrivilegedExceptionAction<ZoneInfo>() {
-				public ZoneInfo run() throws Exception {
+                public ZoneInfo run() throws Exception {
                     return (ZoneInfo) input.readObject();
                 }
             });
-			if (zi != null) {
+            if (zi != null) {
                 zone = zi;
             }
         } catch (Exception e) {
-		}
+        }
 
     }
 }

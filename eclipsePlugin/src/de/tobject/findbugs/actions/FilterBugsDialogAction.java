@@ -42,44 +42,40 @@ public class FilterBugsDialogAction implements IViewActionDelegate {
     public void init(IViewPart view) {
         if (view instanceof CommonNavigator) {
             navigator = (CommonNavigator) view;
-		}
+        }
     }
 
     public void run(IAction action) {
         if (navigator == null) {
             return;
-		}
+        }
         Set<BugPattern> filtered = FindbugsPlugin.getFilteredPatterns();
         Set<BugCode> filteredTypes = FindbugsPlugin.getFilteredPatternTypes();
-        FilterBugsDialog dialog = new FilterBugsDialog(navigator.getSite().getShell(),
-				filtered, filteredTypes);
+        FilterBugsDialog dialog = new FilterBugsDialog(navigator.getSite().getShell(), filtered, filteredTypes);
         dialog.setTitle("Bug Filter Configuration");
         int result = dialog.open();
         if (result != Window.OK) {
-			return;
+            return;
         }
         String selectedIds = dialog.getSelectedIds();
 
-        FindbugsPlugin.getDefault().getPreferenceStore().setValue(
-                FindBugsConstants.LAST_USED_EXPORT_FILTER, selectedIds);
+        FindbugsPlugin.getDefault().getPreferenceStore().setValue(FindBugsConstants.LAST_USED_EXPORT_FILTER, selectedIds);
 
-        BugContentProvider provider = BugContentProvider.getProvider(navigator
-                .getNavigatorContentService());
+        BugContentProvider provider = BugContentProvider.getProvider(navigator.getNavigatorContentService());
         provider.refreshFilters();
-		CommonViewer viewer = navigator.getCommonViewer();
+        CommonViewer viewer = navigator.getCommonViewer();
         Object[] expandedElements = viewer.getExpandedElements();
         viewer.refresh(true);
         viewer.setExpandedElements(expandedElements);
-	}
+    }
 
     public void selectionChanged(IAction action, ISelection selection) {
         if (navigator == null) {
             action.setEnabled(false);
-			return;
+            return;
         }
-        BugContentProvider provider = BugContentProvider.getProvider(navigator
-                .getNavigatorContentService());
-		action.setEnabled(provider.getGrouping() != null);
+        BugContentProvider provider = BugContentProvider.getProvider(navigator.getNavigatorContentService());
+        action.setEnabled(provider.getGrouping() != null);
     }
 
 }

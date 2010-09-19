@@ -13,23 +13,23 @@ public class DatabaseStreams {
         try {
             connection = DriverManager.getConnection("blah");
             statement = connection.createStatement();
-			// do something with statement
+            // do something with statement
         } catch (SQLException e) {
             System.err.println("Error: " + e);
         } finally {
-			if (statement != null) {
+            if (statement != null) {
                 try {
                     statement.close();
                 } catch (SQLException e) {
-					System.err.println("Error closing statement: " + e);
+                    System.err.println("Error closing statement: " + e);
                 }
             }
             if (connection != null) {
-				try {
+                try {
                     connection.close();
                 } catch (SQLException e) {
                     System.err.println("Error closing connection: " + e);
-				}
+                }
             }
         }
     }

@@ -15,40 +15,40 @@ public abstract class InfiniteLoop {
     @ExpectWarning("IL")
     void report() {
         report();
-	}
+    }
 
     @NoWarning("IL")
     void report2(Object a, Object b) {
         if (a.equals(b)) // we miss this one because we assume equals can do
-							// a store
+                         // a store
             report2(a, b);
     }
 
     @ExpectWarning("IL")
     static void report3(InfiniteLoop obj) {
         obj.report3(obj);
-	}
+    }
 
     @NoWarning("IL")
     void doNotReport(Object a, Object b) {
         if (a.equals(b)) {
-			doNotReport(b, a);
+            doNotReport(b, a);
         }
     }
 
     @NoWarning("IL")
     void doNotReport2(Object a, Object b) {
         if (x == 0) {
-			x = 1;
+            x = 1;
             // A field has been checked and modified
             doNotReport2(a, b);
         }
-	}
+    }
 
     @NoWarning("IL")
     void doNotReport3(Object a, Object b) {
         if (opaque()) {
-			// Assume method invocation reads and writes all fields
+            // Assume method invocation reads and writes all fields
             doNotReport3(a, b);
         }
     }
@@ -56,7 +56,7 @@ public abstract class InfiniteLoop {
     void report4(Object a, Object b) {
         if (x == 0) {
             y = 1;
-			// no field has been both read and written!
+            // no field has been both read and written!
             report4(a, b);
         }
     }
@@ -64,7 +64,7 @@ public abstract class InfiniteLoop {
     @ExpectWarning("IL")
     void report5(List<Object> list) {
         list.add(list);
-	}
+    }
 
     protected abstract boolean opaque();
 }

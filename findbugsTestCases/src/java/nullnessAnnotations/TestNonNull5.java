@@ -7,6 +7,6 @@ public class TestNonNull5 {
     @NonNull
     Object f() {
         return null;
-	}
+    }
 
 }

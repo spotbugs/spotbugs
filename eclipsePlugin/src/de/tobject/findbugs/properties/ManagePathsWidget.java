@@ -35,8 +35,9 @@ import org.eclipse.swt.widgets.Link;
 import de.tobject.findbugs.FindbugsPlugin;
 
 /**
- * List box with two buttons on the left side: "add" and "remove".
- * First the viewer must be created, then the buttons.
+ * List box with two buttons on the left side: "add" and "remove". First the
+ * viewer must be created, then the buttons.
+ * 
  * @author andrei
  */
 public class ManagePathsWidget extends Composite {
@@ -50,7 +51,7 @@ public class ManagePathsWidget extends Composite {
     public ListViewer createViewer(String title, String linkText) {
         GridLayout layout = new GridLayout(2, false);
         layout.marginHeight = 0;
-		layout.marginWidth = 0;
+        layout.marginWidth = 0;
         this.setLayout(layout);
         this.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
         Label titleLabel = new Label(this, SWT.NULL);
@@ -61,21 +62,20 @@ public class ManagePathsWidget extends Composite {
         if (linkText != null) {
             Link details = new Link(this, SWT.NULL);
             details.setText(linkText);
-			details.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true, false, 2, 1));
+            details.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true, false, 2, 1));
             details.addSelectionListener(new SelectionListener() {
                 public void widgetSelected(SelectionEvent e) {
                     Program.launch(e.text);
-				}
+                }
+
                 public void widgetDefaultSelected(SelectionEvent e) {
                     // noop
                 }
-			});
+            });
         }
 
-        viewer = new ListViewer(this, SWT.MULTI | SWT.BORDER
-                | SWT.H_SCROLL | SWT.V_SCROLL);
-        viewer.getControl().setLayoutData(
-				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
+        viewer = new ListViewer(this, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        viewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
         return viewer;
     }
 
@@ -90,17 +90,17 @@ public class ManagePathsWidget extends Composite {
         addButton.addSelectionListener(contentProvider);
         final Button removeButton = new Button(this, SWT.PUSH);
         removeButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, true));
-		String removeButtonLabel = getMessage("property.removebutton");
+        String removeButtonLabel = getMessage("property.removebutton");
 
         removeButton.setText(removeButtonLabel);
         removeButton.setData("remove");
         removeButton.setEnabled(false);
-		removeButton.addSelectionListener(contentProvider);
+        removeButton.addSelectionListener(contentProvider);
 
         viewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
                 removeButton.setEnabled(!event.getSelection().isEmpty());
-			}
+            }
         });
     }
 

@@ -6,7 +6,7 @@ public class JunitFailFalsePositive extends Assert {
     int f(Object x) {
         if (x == null)
             fail("x is null");
-		return x.hashCode();
+        return x.hashCode();
     }
 
 }

@@ -1,6 +1,5 @@
 
-
-public class CompareToFailure{
+public class CompareToFailure {
 
     public static void main(String[] args) {
 
@@ -10,13 +9,12 @@ public class CompareToFailure{
         return 0;
     }
 
-//	public int compareTo(Object o) {
-//		return 0;
-//	}
+    // public int compareTo(Object o) {
+    // return 0;
+    // }
 
-    public int recurso()
-    {
+    public int recurso() {
         recurso();
-		return 1;
+        return 1;
     }
 }

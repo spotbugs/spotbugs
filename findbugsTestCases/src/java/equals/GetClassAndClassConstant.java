@@ -4,75 +4,92 @@ public class GetClassAndClassConstant {
 
     static class A {
         int x;
-		public int hashCode() {
+
+        public int hashCode() {
             return x;
         }
+
         public boolean equals(Object o) {
-			if (o != null && A.class.equals(o.getClass()))
-                    return x == ((A)o).x;
+            if (o != null && A.class.equals(o.getClass()))
+                return x == ((A) o).x;
             return false;
 
-		}
+        }
     }
+
     static class B extends A {
 
-	}
+    }
+
     static class A2 {
         int x;
+
         public int hashCode() {
-			return x;
+            return x;
         }
+
         public boolean equals(Object o) {
             if (o != null && A2.class.equals(o.getClass()))
-					return x == ((A2)o).x;
+                return x == ((A2) o).x;
             return false;
 
         }
-	}
+    }
+
     static class B2 extends A2 {
         public boolean equals(Object o) {
             if (o != null && B2.class.equals(o.getClass()))
-					return x == ((B2)o).x;
+                return x == ((B2) o).x;
             return false;
 
         }
-	
+
     }
+
     static class C {
         int x;
-		public int hashCode() {
+
+        public int hashCode() {
             return x;
         }
+
         public boolean equals(Object o) {
-			if (o != null && C.class.equals(o.getClass()))
-                    return x == ((C)o).x;
+            if (o != null && C.class.equals(o.getClass()))
+                return x == ((C) o).x;
             return false;
 
-		}
+        }
     }
+
     static final class D {
         int x;
-		public int hashCode() {
+
+        public int hashCode() {
             return x;
         }
+
         public boolean equals(Object o) {
-			if (o != null && D.class.equals(o.getClass()))
-                    return x == ((D)o).x;
+            if (o != null && D.class.equals(o.getClass()))
+                return x == ((D) o).x;
             return false;
 
-		}
+        }
     }
-    static class E { // OK, this is just stupid, but perhaps we should check for it
+
+    static class E { // OK, this is just stupid, but perhaps we should check for
+                     // it
         int x;
-		public int hashCode() {
+
+        public int hashCode() {
             return x;
         }
+
         public boolean equals(Object o) {
-			if (o != null && C.class.equals(o.getClass()))
-                    return x == ((C)o).x;
+            if (o != null && C.class.equals(o.getClass()))
+                return x == ((C) o).x;
             return false;
 
-		}
+        }
     }
 
 }

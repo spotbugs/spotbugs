@@ -8,7 +8,7 @@ import javax.annotation.meta.TypeQualifierNickname;
 import javax.annotation.meta.When;
 
 @Documented
-@Foo(when=When.NEVER)
+@Foo(when = When.NEVER)
 @TypeQualifierNickname
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NeverFoo {

@@ -26,8 +26,9 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
 /**
  * Returning a reference to a mutable object is not recommended. The class
  * <CODE>CreateMutableCloneResolution</CODE> returns a new copy of the object.
- *
- * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#EI_EXPOSE_REP">EI_EXPOSE_REP</a>
+ * 
+ * @see <a
+ *      href="http://findbugs.sourceforge.net/bugDescriptions.html#EI_EXPOSE_REP">EI_EXPOSE_REP</a>
  */
 public class CreateMutableCloneResolution extends BugResolution {
 

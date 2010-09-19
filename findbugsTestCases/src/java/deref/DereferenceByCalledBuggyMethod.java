@@ -10,11 +10,11 @@ public class DereferenceByCalledBuggyMethod {
     public void closeit(OutputStream out) throws IOException {
         if (out == null)
             out.close();
-	}
+    }
 
     /** Nothing wrong with this method */
     public void falsePositive() throws IOException {
         closeit(null);
-	}
+    }
 
 }

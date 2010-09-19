@@ -126,29 +126,31 @@ public class AllListsCouldBeEqual {
         public <T> T[] toArray(T[] a) {
             // TODO Auto-generated method stub
             return null;
-        }}
+        }
+    }
+
     public static void main(String arg[]) {
         falsePositive();
 
-		List<Integer> lst = new LinkedList<Integer>();
-        List<Integer> lst2 = (ArrayList<Integer>)lst;
+        List<Integer> lst = new LinkedList<Integer>();
+        List<Integer> lst2 = (ArrayList<Integer>) lst;
 
-
-		List<ArrayList<String>> mlist = null;
+        List<ArrayList<String>> mlist = null;
         mlist.contains(new LinkedList<String>());
 
     }
+
     public static void falsePositive() {
         ArrayList<Integer> aLst = new ArrayList<Integer>();
-		LinkedList<Integer> lLst = new LinkedList<Integer>();
+        LinkedList<Integer> lLst = new LinkedList<Integer>();
         MyList<Integer> mLst = new MyList<Integer>();
 
         Set<ArrayList<Integer>> alSet = new HashSet<ArrayList<Integer>>();
-		Set<LinkedList<Integer>> llSet = new HashSet<LinkedList<Integer>>();
+        Set<LinkedList<Integer>> llSet = new HashSet<LinkedList<Integer>>();
 
         System.out.println(aLst.equals(lLst));
         System.out.println(mLst.equals(lLst));
-		
+
         alSet.contains(lLst);
         alSet.contains(mLst);
         alSet.containsAll(llSet);

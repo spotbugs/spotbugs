@@ -28,43 +28,43 @@ import org.eclipse.ui.navigator.CommonViewer;
 import de.tobject.findbugs.view.BugExplorerView;
 import de.tobject.findbugs.view.explorer.BugGroup;
 
-
 public class GoIntoAction implements IViewActionDelegate {
 
     private BugExplorerView navigator;
+
     private Object selectedElement;
 
     public void init(IViewPart view) {
-        if(view instanceof BugExplorerView) {
+        if (view instanceof BugExplorerView) {
             navigator = (BugExplorerView) view;
-		}
+        }
     }
 
     public void run(IAction action) {
-        if(action.isEnabled() && navigator != null && selectedElement != null) {
+        if (action.isEnabled() && navigator != null && selectedElement != null) {
             CommonViewer viewer = navigator.getCommonViewer();
-			Object[] expandedElements = viewer.getVisibleExpandedElements();
+            Object[] expandedElements = viewer.getVisibleExpandedElements();
             viewer.setInput(selectedElement);
             viewer.setExpandedElements(expandedElements);
         }
-	}
+    }
 
     public void selectionChanged(IAction action, ISelection selection) {
-        if(!(selection instanceof IStructuredSelection)){
+        if (!(selection instanceof IStructuredSelection)) {
             action.setEnabled(false);
-			return;
+            return;
         }
         IStructuredSelection ssel = (IStructuredSelection) selection;
-        if(ssel.size() != 1){
-			action.setEnabled(false);
+        if (ssel.size() != 1) {
+            action.setEnabled(false);
             return;
         }
         Object element = ssel.getFirstElement();
-		if(!(element instanceof BugGroup)){
+        if (!(element instanceof BugGroup)) {
             action.setEnabled(false);
             return;
         }
-		action.setEnabled(true);
+        action.setEnabled(true);
         selectedElement = element;
     }
 }

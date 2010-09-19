@@ -32,7 +32,7 @@ import de.tobject.findbugs.builder.WorkItem;
 
 /**
  * Run FindBugs on the currently selected element(s) in the package explorer.
- *
+ * 
  * @author Peter Friese
  * @author Phil Crosby
  * @author Andrei Loskutov
@@ -44,19 +44,18 @@ public class FindBugsEditorAction extends FindBugsAction implements IEditorActio
     /** The current selection. */
     private IEditorPart currentEditor;
 
-    public final void setActiveEditor(final IAction action,
-            final IEditorPart targetPart) {
+    public final void setActiveEditor(final IAction action, final IEditorPart targetPart) {
         currentEditor = targetPart;
-	}
+    }
 
     @Override
     public final void run(final IAction action) {
-        if(currentEditor != null) {
-			IFile file = ((FileEditorInput)(currentEditor.getEditorInput())).getFile();
+        if (currentEditor != null) {
+            IFile file = ((FileEditorInput) (currentEditor.getEditorInput())).getFile();
             List<WorkItem> list = new ArrayList<WorkItem>();
             list.add(new WorkItem(file));
             work(currentEditor, file.getProject(), list);
-		}
+        }
     }
 
 }

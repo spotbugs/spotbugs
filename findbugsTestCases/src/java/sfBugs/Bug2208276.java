@@ -6,7 +6,7 @@ public class Bug2208276 {
     public void falsePositive() {
         char[][] matrix2 = new char[0][];
         if (matrix1 == matrix2) {
-			System.out.println("hoho");
+            System.out.println("hoho");
         }
     }
 }

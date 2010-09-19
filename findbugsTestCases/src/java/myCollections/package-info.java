@@ -1,3 +1,5 @@
-@ParametersAreNonnullByDefault package myCollections;
+@ParametersAreNonnullByDefault
+package myCollections;
+
 import javax.annotation.ParametersAreNonnullByDefault;
 

@@ -18,4 +18,3 @@ public class Bug2845557 {
         return "Test".getBytes("UTF-8");
     }
 }
-

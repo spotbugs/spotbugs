@@ -1,5 +1,4 @@
 
-
 public class hashCODEnoEQUALS {
 
     /**
@@ -7,15 +6,15 @@ public class hashCODEnoEQUALS {
      */
 
     int ReuVeN;
-    int MOJOJOJO;//FIXME!! Amazing, this isn't bad naming procedure
+
+    int MOJOJOJO;// FIXME!! Amazing, this isn't bad naming procedure
 
     public static void main(String[] args) {
 
     }
 
     @Override
-    public int hashCode()
-    {
-		return 189234712;
+    public int hashCode() {
+        return 189234712;
     }
 }

@@ -7,7 +7,7 @@ public class T {
     public synchronized void provideIt(Object v) {
         synchronized (lock) {
             value = v;
-			lock.notifyAll();
+            lock.notifyAll();
         }
     }
 }

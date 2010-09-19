@@ -42,7 +42,7 @@ public class Bug1629176 {
 
     void f4() throws SQLException {
         PreparedStatement insertFieldAudit = getConnection().prepareStatement(INSERT_FIELD_AUDIT);
-       insertFieldAudit.executeUpdate();
+        insertFieldAudit.executeUpdate();
     }
 
     private Connection getConnection() {

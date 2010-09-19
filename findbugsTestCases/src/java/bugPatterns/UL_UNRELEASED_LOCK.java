@@ -6,19 +6,21 @@ public class UL_UNRELEASED_LOCK {
 
     void bug(Lock any) {
         any.lock();
-		// any code
+        // any code
     }
+
     void bug2(Lock any) {
         any.lock();
-		// any code; might throw exception
+        // any code; might throw exception
         any.unlock();
     }
+
     void notBug(Lock any) {
-		any.lock();
+        any.lock();
         try {
             // any code
         } finally {
-			any.unlock();
+            any.unlock();
         }
     }
 

@@ -5,11 +5,11 @@ import java.rmi.RemoteException;
 import javax.ejb.EJBException;
 import javax.ejb.SessionContext;
 
-public class Bug1897323 implements /*java.io.Serializable*/ javax.ejb.SessionBean {
+public class Bug1897323 implements /* java.io.Serializable */javax.ejb.SessionBean {
 
     // Threads are non-serializable
     Thread t = new Thread() {
-		public void run() {
+        public void run() {
             System.out.println("Hello");
         }
     };
@@ -34,5 +34,7 @@ public class Bug1897323 implements /*java.io.Serializable*/ javax.ejb.SessionBea
 
     }
 
-    public Thread getThread() {return t;}
+    public Thread getThread() {
+        return t;
+    }
 }

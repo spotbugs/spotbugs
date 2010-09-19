@@ -13,13 +13,13 @@ public class Bug2118411 {
         Scanner s = null;
         try {
             s = new Scanner(new BufferedReader(new FileReader(file)));
-			return s.next();
+            return s.next();
         } catch (IOException e) {
             return null;
         } finally {
-			if (s != null) {
+            if (s != null) {
                 s.close();
             }
         }
-	}
+    }
 }

@@ -12,39 +12,39 @@ public class TestBooleanReturn {
     public boolean test1(int a, int b) {
         if (a < b)
             return true;
-		else
+        else
             return false;
     }
 
     public boolean test2(int a, int b) {
         // this should not be reported
         while (a < b) {
-			a++;
+            a++;
             if (a == 0)
                 return true;
         }
-		return false;
+        return false;
     }
 
     public boolean test3(int a, int b) {
         // this should not be reported
         switch (a) {
-		case 0:
+        case 0:
             if (b == 0)
                 return true;
         case 1:
-			return false;
+            return false;
 
         case 2:
             switch (b) {
             case 0:
-				if (a == b)
+                if (a == b)
                     return false;
 
             case 1:
                 return true;
             }
-			break;
+            break;
 
         case 3:
             if (b == 1)

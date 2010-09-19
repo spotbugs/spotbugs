@@ -43,10 +43,11 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
 /**
  * The code <CODE>x % 2 == 1</CODE> to check if a value is odd won't work for
  * negative numbers. The <CODE>CorrectOddnessCheckResolution</CODE> provides a
- * resolution to replace this bad check by an <CODE>expression</CODE> that
- * works also for negative numbers.
- *
- * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#IM_BAD_CHECK_FOR_ODD">IM_BAD_CHECK_FOR_ODD</a>
+ * resolution to replace this bad check by an <CODE>expression</CODE> that works
+ * also for negative numbers.
+ * 
+ * @see <a
+ *      href="http://findbugs.sourceforge.net/bugDescriptions.html#IM_BAD_CHECK_FOR_ODD">IM_BAD_CHECK_FOR_ODD</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @version 1.0
@@ -93,10 +94,10 @@ public abstract class CorrectOddnessCheckResolution extends BugResolution {
     /**
      * Creates and returns a correct <CODE>expression</CODE> that checks if a
      * value is odd or not.
-     *
+     * 
      * @param ast
-     *            the <CODE>AST</CODE> instance under which the created <CODE>InfixExpression</CODE>
-     *            will be created.
+     *            the <CODE>AST</CODE> instance under which the created
+     *            <CODE>InfixExpression</CODE> will be created.
      * @param replaceField
      *            the field name of the bad oddness-check which will be used for
      *            the new <CODE>InfixExpression</CODE>.

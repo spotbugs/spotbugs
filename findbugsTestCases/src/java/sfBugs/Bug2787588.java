@@ -10,6 +10,6 @@ public class Bug2787588 {
         Map<String, Long> xMap = new HashMap<String, Long>();
         Long count = Long.valueOf(0);
         xMap.put("Value", ++count);
-		System.out.println("Map:" + xMap.toString());
+        System.out.println("Map:" + xMap.toString());
     }
 }

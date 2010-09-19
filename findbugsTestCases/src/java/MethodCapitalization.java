@@ -11,16 +11,17 @@ class MethodCapitalization {
     @ExpectWarning("Nm")
     public int hashcode() {
         return 42;
-	}
+    }
 
     @ExpectWarning("Nm")
     public String tostring() {
         return "MethodCapitalization";
-	}
+    }
+
     static class Foo extends MethodCapitalization {
         @ExpectWarning("Nm")
         public int getx() {
-			return 42;
+            return 42;
         }
 
     }
@@ -28,10 +29,11 @@ class MethodCapitalization {
     static class Bar {
         public int getx() {
             return 42;
-		}
+        }
+
         @ExpectWarning("Nm")
         public String ToString() {
             return "Bar";
-		}
+        }
     }
 }
