@@ -96,42 +96,34 @@ public class PrintClass {
             code = true;
         if (files == 0 && zip_file == null) {
             System.err.println("list: No input files specified");
-        } else {
+        } else if (zip_file != null) {
+            for (int i = 0; i < files; i++)
+                file_name[i] = file_name[i].replace('.', '/');
+            ZipFile z = new ZipFile(zip_file);
+            TreeSet<ZipEntry> zipEntries = new TreeSet<ZipEntry>(new ZipEntryComparator());
+            for (Enumeration<? extends ZipEntry> e = z.entries(); e.hasMoreElements();)
+                zipEntries.add(e.nextElement());
 
-            if (zip_file != null) {
-                for (int i = 0; i < files; i++)
-                    file_name[i] = file_name[i].replace('.', '/');
-                ZipFile z = new ZipFile(zip_file);
-                TreeSet<ZipEntry> zipEntries = new TreeSet<ZipEntry>(new ZipEntryComparator());
-                for (Enumeration<? extends ZipEntry> e = z.entries(); e.hasMoreElements();)
-                    zipEntries.add(e.nextElement());
-
-                for (ZipEntry ze : zipEntries) {
-                    String name = ze.getName();
-                    if (!name.endsWith(".class"))
-                        continue;
-                    checkMatch: if (files > 0) {
-                        for (int i = 0; i < files; i++)
-                            if (name.indexOf(file_name[i]) >= 0)
-                                break checkMatch;
-                        continue;
-                    }
-                    printClass(new ClassParser(z.getInputStream(ze), name));
-
+            for (ZipEntry ze : zipEntries) {
+                String name = ze.getName();
+                if (!name.endsWith(".class"))
+                    continue;
+                checkMatch: if (files > 0) {
+                    for (int i = 0; i < files; i++)
+                        if (name.indexOf(file_name[i]) >= 0)
+                            break checkMatch;
+                    continue;
                 }
-                z.close();
-            } else
-                for (int i = 0; i < files; i++)
-                    if (file_name[i].endsWith(".class")) {
-                        if (zip_file == null)
-                            printClass(new ClassParser(file_name[i]));
-                        else
-                            printClass(new ClassParser(zip_file, file_name[i]));
+                printClass(new ClassParser(z.getInputStream(ze), name));
 
-                    }
-        }
-
+            }
+            z.close();
+        } else
+            for (int i = 0; i < files; i++)
+                if (file_name[i].endsWith(".class"))
+                    printClass(new ClassParser(file_name[i]));
     }
+
 
     private static void printClass(ClassParser parser) throws IOException {
         JavaClass java_class;
