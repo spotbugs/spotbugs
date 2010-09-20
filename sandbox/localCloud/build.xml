@@ -29,15 +29,30 @@
         <taskdef name="datanucleusenhancer" classpathref="enhancer.classpath"
                  classname="org.datanucleus.enhancer.tools.EnhancerTask"/>
 
-        <datanucleusenhancer failonerror="true" verbose="true" >
+        <datanucleusenhancer failonerror="true" verbose="true">
             <classpath refid="enhancer.classpath"/>
-            <!--<classpath path="classes" />-->
-            <classpath path="classes-ant" />
-            <classpath path="../../webCloudServerCommon/classes"/>
+            <classpath>
+                <path refid="enhancer.classpath"/>
+                <path location="classes-ant"/>
+                <path location="../../webCloudServerCommon/classes-ant"/>
+            </classpath>
+
             <jvmarg line="-Dlog4j.configuration=etc/logging.properties"/>
-            <!--<fileset dir="classes">-->
-                <!--<include name="**/*.class"/>-->
-            <!--</fileset>-->
+
+            <fileset dir="classes-ant">
+                <include name="**/*.class"/>
+            </fileset>
+        </datanucleusenhancer>
+        <datanucleusenhancer failonerror="true" verbose="true" checkonly="true">
+            <classpath refid="enhancer.classpath"/>
+            <classpath>
+                <path refid="enhancer.classpath"/>
+                <path location="classes-ant"/>
+                <path location="../../webCloudServerCommon/classes-ant"/>
+            </classpath>
+
+            <jvmarg line="-Dlog4j.configuration=etc/logging.properties"/>
+
             <fileset dir="classes-ant">
                 <include name="**/*.class"/>
             </fileset>
