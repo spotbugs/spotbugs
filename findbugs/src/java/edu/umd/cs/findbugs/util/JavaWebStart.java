@@ -81,6 +81,8 @@ public class JavaWebStart {
                 URL base = (URL) JavaWebStart.jnlpGetCodeBaseMethod.invoke(JavaWebStart.jnlpBasicService);
                 if (base != null)
                     return new URL(base, s);
+            } catch (RuntimeException e) {
+                assert true;
             } catch (Exception e) {
                 assert true;
             }
