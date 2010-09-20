@@ -2,7 +2,7 @@
 
     <property name="src.dir" value="src/java"/>
     <property name="gsrc.dir" value="generated-src"/>
-    <property name="classes.dir" value="build/classes"/>
+    <property name="classes.dir" value="classes-ant"/>
     <property name="lib.dir" value="lib"/>
     <property name="findbugs.home" value="../findbugs"/>
     <property name="protocol.home" value="../webCloudProtocol"/>
@@ -11,16 +11,19 @@
         <fileset dir="${lib.dir}">
             <include name="**/*.jar"/>
         </fileset>
+
+        <pathelement location="${findbugs.home}/build/classes"/>
+
         <fileset dir="${findbugs.home}/lib">
             <include name="*.jar"/>
         </fileset>
+
         <fileset dir="${protocol.home}/lib">
             <include name="*.jar"/>
         </fileset>
         <pathelement location="${protocol.home}/build/classes"/>
 
     </path>
-
 
     <target name="validate">
         <xmlvalidate lenient="false" failonerror="yes">
@@ -30,7 +33,7 @@
         </xmlvalidate>
     </target>
 
-    <target name="classes">
+    <target name="compile">
         <ant dir="../webCloudProtocol" target="classes"/>
         <mkdir dir="${classes.dir}"/>
         <javac  destdir="${classes.dir}"
@@ -46,8 +49,7 @@
         </javac>
     </target>
 
-
-    <target name="plugin" depends="classes">
+    <target name="plugin" depends="compile">
         <jar destfile="build/webCloudClient.jar">
             <fileset dir="etc">
                 <include name="*.xml"/>
@@ -55,7 +57,7 @@
             <fileset dir="${classes.dir}">
                 <include name="**/*.class"/>
             </fileset>
-            <fileset dir="../webCloudProtocol/build/classes">
+            <fileset dir="../webCloudProtocol/classes-ant">
                 <include name="**/*.class"/>
             </fileset>
         </jar>
@@ -106,8 +108,40 @@
                 <include name="*.jnlp"/>
             </fileset>
         </copy>
-
     </target>
+
+    <target name="compile-tests" depends="compile">
+        <mkdir dir="classes-tests-ant"/>
+
+        <javac srcdir="src/junit" destdir="classes-tests-ant" source="1.5" target="1.5">
+            <classpath>
+                <path refid="client.classpath"/>
+                <path location="classes-ant"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="test" depends="compile-tests">
+        <mkdir dir="build"/>
+        <mkdir dir="build/tests"/>
+        <junit fork="yes" printsummary="true">
+            <jvmarg value="-ea"/>
+            <formatter type="xml"/>   <!-- Hudson reads generated xml -->
+
+            <classpath refid="client.classpath"/>
+            <classpath path="classes-ant"/>
+            <classpath path="classes-tests-ant"/>
+
+            <batchtest todir="build/tests">
+                <fileset dir="src/junit">
+                    <include name="**/*Test.java"/>
+                    <include name="**/Test*.java"/>
+                    <exclude name="**/Abstract*Test.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+    
 </project>
 
       
