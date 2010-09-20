@@ -4,6 +4,12 @@
         <fileset dir="lib" includes="*.jar"/>
     </path>
 
+    <target name="clean">
+        <delete dir="classes-ant"/>
+        <delete dir="classes-tests-ant"/>
+        <delete dir="build"/> 
+    </target>
+
     <target name="compile">
         <ant dir="../webCloudProtocol" target="fulljar" inheritall="false"/>
         <mkdir dir="classes-ant"/>
@@ -20,7 +26,16 @@
         </javac>
     </target>
 
-    <target name="fulljar" depends="compile">
+    <target name="fulljar-check" depends="compile">
+        <uptodate property="fulljar-not-necessary"
+                  targetfile="build/webCloudServerCommon-full.jar">
+            <srcfiles dir="classes-ant" includes="**/*"/>
+            <srcfiles dir="lib" includes="**/*"/>
+            <srcfiles file="../webCloudProtocol/build/webCloudProtocol-full.jar"/>
+        </uptodate>
+    </target>
+
+    <target name="fulljar" depends="fulljar-check" unless="fulljar-not-necessary">
         <mkdir dir="build"/>
         <jar jarfile="build/webCloudServerCommon-full.jar">
             <fileset dir="classes-ant"/>

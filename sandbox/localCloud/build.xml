@@ -15,6 +15,12 @@
         </fileset>
     </path>
 
+    <target name="compile-classes">
+        <ant dir="../../webCloudServerCommon" target="fulljar" inheritall="false" />
+        <mkdir dir="classes-ant"/>
+        <javac srcdir="src/java" destdir="classes-ant" classpathref="localCloud.classpath"/>
+    </target>
+
     <target name="enhance" depends="compile-classes">
         <mkdir dir="classes"/> <!-- so datanucleus enhancer doesn't complain-->
         <ant dir="../../webCloudServerCommon" target="compile" inheritall="false" />
@@ -36,22 +42,16 @@
         </datanucleusenhancer>
     </target>
 
-    <target name="compile-classes">
-        <ant dir="../../webCloudServerCommon" target="fulljar" inheritall="false" />
-        <mkdir dir="classes-ant"/>
-        <javac srcdir="src/java" destdir="classes-ant" classpathref="localCloud.classpath"/>
-    </target>
-
-    <target name="fulljar-uptodate-check" depends="enhance,compile-classes">
-        <uptodate property="localCloud-fulljar-uptodate" targetfile="build/localCloud.jar">
-            <srcfiles dir="classes-ant"/>
-            <!--<srcfiles dir="lib"/>-->
-            <!--<srcfiles file="../../webCloudServerCommon/build/webCloudServerCommon-full.jar"/>-->
+    <target name="fulljar-uptodate-check" depends="enhance">
+        <uptodate property="fulljar-not-required" targetfile="build/localCloud.jar">
+            <srcfiles dir="classes-ant" includes="**/*"/>
+            <srcfiles dir="lib" includes="**/*"/>
+            <srcfiles file="../../webCloudServerCommon/build/webCloudServerCommon-full.jar"/>
         </uptodate>
     </target>
 
-    <target name="fulljar" depends="fulljar-uptodate-check,enhance,compile-classes"
-            unless="localCloud-fulljar-uptodate">
+    <target name="fulljar" depends="fulljar-uptodate-check"
+            unless="fulljar-not-required">
         <mkdir dir="build"/>
         <jar file="build/localCloud.jar" manifest="etc/manifest.txt">
             <fileset dir="classes-ant"/>
