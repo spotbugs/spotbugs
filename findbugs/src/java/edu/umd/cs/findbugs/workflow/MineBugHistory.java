@@ -216,7 +216,7 @@ public class MineBugHistory {
 
     /** This is how dump() was implemented up to and including version 0.9.5. */
     public void dumpOriginal(PrintStream out) {
-        out.println("seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active");
+        out.println("seq\tversion\ttime\tclasses\tNCSS\tadded\tnewCode\tfixed\tremoved\tretained\tdead\tactive");
         for (int i = 0; i < versionList.length; ++i) {
             Version version = versionList[i];
             AppVersion appVersion = sequenceToAppVersionMap.get(version.getSequence());
@@ -282,7 +282,7 @@ public class MineBugHistory {
      * @see #dumpOriginal(PrintStream)
      */
     public void dumpNoTabs(PrintStream out) {
-        // out.println("seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active");
+        // out.println("seq\tversion\ttime\tclasses\tNCSS\tadded\tnewCode\tfixed\tremoved\tretained\tdead\tactive");
         print(3, true, out, "seq");
         out.print(' ');
         print(19, false, out, "version");

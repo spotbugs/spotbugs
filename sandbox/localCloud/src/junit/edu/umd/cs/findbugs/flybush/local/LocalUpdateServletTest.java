@@ -9,19 +9,19 @@ public class LocalUpdateServletTest extends UpdateServletTest {
         super.setUp();
     }
 
-	@Override
-	public void testUpdateDbJune29CommentStyle() throws Exception {
-	}
+    @Override
+    public void testUpdateDbJune29CommentStyle() throws Exception {
+    }
 
-	@Override
-	public void testUpdateDbJune29PrimaryClass() throws Exception {
-	}
+    @Override
+    public void testUpdateDbJune29PrimaryClass() throws Exception {
+    }
 
-	@Override
-	public void testUpdateDbJune29Package() throws Exception {
-	}
+    @Override
+    public void testUpdateDbJune29Package() throws Exception {
+    }
 
-	@Override
-	public void testUpdateEvaluationEmails() throws Exception {
-	}
+    @Override
+    public void testUpdateEvaluationEmails() throws Exception {
+    }
 }

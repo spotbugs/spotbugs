@@ -106,7 +106,7 @@ public class LockedFields extends BytecodeScanningDetector {
                 stats.put(f, theseStats);
             }
             if (DEBUG)
-                System.out.println(names[mode] + "	" + getFullyQualifiedMethodName() + "	" + f.toString());
+                System.out.println(names[mode] + "\t" + getFullyQualifiedMethodName() + "\t" + f.toString());
 
             theseStats[mode]++;
         }
@@ -193,7 +193,7 @@ public class LockedFields extends BytecodeScanningDetector {
             updateStats(fieldsWritten, WRITTEN_LOCKED);
             updateStats(fieldsRead, READ_LOCKED);
             state = 2;
-            // System.out.println("monitorexit	" + thisLocked);
+            // System.out.println("monitorexit\t" + thisLocked);
             fieldsWritten.clear();
             fieldsRead.clear();
             break;
@@ -203,7 +203,7 @@ public class LockedFields extends BytecodeScanningDetector {
                 break;
             updateStats(fieldsWritten, WRITTEN_UNLOCKED);
             updateStats(fieldsRead, READ_UNLOCKED);
-            // System.out.println("monitorenter	" + thisLocked);
+            // System.out.println("monitorenter\t" + thisLocked);
             state = 1;
             fieldsWritten.clear();
             fieldsRead.clear();
@@ -213,7 +213,7 @@ public class LockedFields extends BytecodeScanningDetector {
             writtenOutsideOfConstructor.add(f);
             if (!getClassName().equals(getClassConstantOperand()))
                 break;
-            // System.out.println("putfield	" + f + ", state = " + state);
+            // System.out.println("putfield\t" + f + ", state = " + state);
             fieldsWritten.add(f);
         }
             break;
@@ -223,7 +223,7 @@ public class LockedFields extends BytecodeScanningDetector {
                 break;
             if (next != IFNULL && next != IFNONNULL) {
                 FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
-                // System.out.println("getfield	" + f);
+                // System.out.println("getfield\t" + f);
                 fieldsRead.add(f);
                 /*
                  * System.out.println("After read of " + classConstant + "." +
@@ -274,9 +274,9 @@ public class LockedFields extends BytecodeScanningDetector {
                     System.out.println("Mostly unlocked for " + f + ":");
                 int freq = (100 * locked) / (locked + unlocked);
                 if (DEBUG) {
-                    System.out.print(freq + "	");
+                    System.out.print(freq + "\t");
                     for (int j = 0; j < 4; j++)
-                        System.out.print(theseStats[j] + "	");
+                        System.out.print(theseStats[j] + "\t");
                     System.out.println(f);
                 }
                 mostlyUnlocked++;
@@ -304,9 +304,9 @@ public class LockedFields extends BytecodeScanningDetector {
             bugReporter.reportBug(new BugInstance(this, "IS_INCONSISTENT_SYNC", NORMAL_PRIORITY).addClass(f.getClassName())
                     .addField(f).addInt(freq).describe(IntAnnotation.INT_SYNC_PERCENT));
             if (DEBUG) {
-                System.out.print(freq + "	");
+                System.out.print(freq + "\t");
                 for (int j = 0; j < 4; j++)
-                    System.out.print(theseStats[j] + "	");
+                    System.out.print(theseStats[j] + "\t");
                 System.out.println(f);
             }
         }

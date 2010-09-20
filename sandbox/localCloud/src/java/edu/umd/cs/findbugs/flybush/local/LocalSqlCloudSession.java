@@ -1,13 +1,14 @@
 package edu.umd.cs.findbugs.flybush.local;
 
-import edu.umd.cs.findbugs.flybush.DbInvocation;
-import edu.umd.cs.findbugs.flybush.SqlCloudSession;
+import java.util.Date;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import java.util.Date;
+
+import edu.umd.cs.findbugs.flybush.DbInvocation;
+import edu.umd.cs.findbugs.flybush.SqlCloudSession;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class LocalSqlCloudSession implements SqlCloudSession {
@@ -33,16 +34,16 @@ public class LocalSqlCloudSession implements SqlCloudSession {
     }
 
     public LocalDbUser getUser() {
-		return user;
-	}
+        return user;
+    }
 
     public String getEmail() {
         return email;
     }
 
     public LocalDbInvocation getInvocation() {
-		return invocation;
-	}
+        return invocation;
+    }
 
     public void setInvocation(DbInvocation invocation) {
         this.invocation = (LocalDbInvocation) invocation;
@@ -53,9 +54,9 @@ public class LocalSqlCloudSession implements SqlCloudSession {
     }
 
     @Override
-	public String toString() {
-		return "SqlCloudSession [date=" + date + ", invocation=" + invocation
-				+ ", randomID=" + randomID + ", user=" + user
-				+ "]";
-	}
+    public String toString() {
+        return "SqlCloudSession [date=" + date + ", invocation=" + invocation
+                + ", randomID=" + randomID + ", user=" + user
+                + "]";
+    }
 }

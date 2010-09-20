@@ -1,8 +1,6 @@
 package edu.umd.cs.findbugs.flybush.local;
 
-import edu.umd.cs.findbugs.flybush.DbEvaluation;
-import edu.umd.cs.findbugs.flybush.DbInvocation;
-import edu.umd.cs.findbugs.flybush.DbIssue;
+import java.util.Set;
 
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -10,16 +8,19 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import java.util.Set;
+
+import edu.umd.cs.findbugs.flybush.DbEvaluation;
+import edu.umd.cs.findbugs.flybush.DbInvocation;
+import edu.umd.cs.findbugs.flybush.DbIssue;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class LocalDbEvaluation implements DbEvaluation {
-	@SuppressWarnings({"UnusedDeclaration"})
+    @SuppressWarnings({"UnusedDeclaration"})
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Long key;
 
-	@Persistent private LocalDbUser who;
+    @Persistent private LocalDbUser who;
     @Persistent private String email;
     @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"})
     @Persistent private LocalDbInvocation invocation;
@@ -31,8 +32,8 @@ public class LocalDbEvaluation implements DbEvaluation {
     @Persistent private Set<String> packages;
 
     public Comparable<?> getWho() {
-		return who;
-	}
+        return who;
+    }
 
     public String getWhoId() {
         return who.getOpenid();

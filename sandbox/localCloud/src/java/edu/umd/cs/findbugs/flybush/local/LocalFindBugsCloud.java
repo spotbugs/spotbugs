@@ -21,7 +21,11 @@ public class LocalFindBugsCloud {
 
 //        createSchema();
 
-        Server server = new Server(8080);
+        int port = 8080;
+        String portOption = System.getProperty("fbcloud.port");
+        if (portOption != null)
+            port = Integer.parseInt(portOption);
+        Server server = new Server(port);
 
         server.setHandler(loadWebApp());
         server.start();

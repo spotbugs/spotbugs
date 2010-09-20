@@ -1,16 +1,5 @@
 package edu.umd.cs.findbugs.flybush.local;
 
-import edu.umd.cs.findbugs.flybush.DbEvaluation;
-import edu.umd.cs.findbugs.flybush.DbInvocation;
-import edu.umd.cs.findbugs.flybush.DbIssue;
-import edu.umd.cs.findbugs.flybush.DbUser;
-import edu.umd.cs.findbugs.flybush.PersistenceHelper;
-import edu.umd.cs.findbugs.flybush.SqlCloudSession;
-
-import javax.jdo.JDOHelper;
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
-import javax.jdo.Query;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
@@ -18,6 +7,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
+import javax.jdo.Query;
+
+import edu.umd.cs.findbugs.flybush.DbEvaluation;
+import edu.umd.cs.findbugs.flybush.DbInvocation;
+import edu.umd.cs.findbugs.flybush.DbIssue;
+import edu.umd.cs.findbugs.flybush.DbUser;
+import edu.umd.cs.findbugs.flybush.PersistenceHelper;
+import edu.umd.cs.findbugs.flybush.SqlCloudSession;
 
 public class LocalPersistenceHelper implements PersistenceHelper {
     private static PersistenceManagerFactory pmf;
@@ -103,7 +104,7 @@ public class LocalPersistenceHelper implements PersistenceHelper {
         Map<String,DbIssue> map = new HashMap<String, DbIssue>();
         for (DbIssue issue : results) {
             map.put(issue.getHash(), issue);
-		}
+        }
         return map;
     }
 

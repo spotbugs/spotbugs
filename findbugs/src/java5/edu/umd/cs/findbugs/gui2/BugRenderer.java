@@ -19,19 +19,23 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.Priorities;
 
 @SuppressWarnings("serial")
 /**
  *  Sets colors for JTree nodes
- * 	@author Dan
+ *  @author Dan
  */
 public class BugRenderer extends DefaultTreeCellRenderer {
     @Override

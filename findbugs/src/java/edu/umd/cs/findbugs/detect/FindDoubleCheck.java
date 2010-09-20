@@ -77,14 +77,14 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         if (DEBUG)
-            System.out.println(getPC() + "	" + OPCODE_NAMES[seen] + "	" + stage + "	" + count + "	" + countSinceGetReference);
+            System.out.println(getPC() + "\t" + OPCODE_NAMES[seen] + "\t" + stage + "\t" + count + "\t" + countSinceGetReference);
 
         if (seen == MONITORENTER)
             sawMonitorEnter = true;
         if (seen == GETFIELD || seen == GETSTATIC) {
             pendingFieldLoad = FieldAnnotation.fromReferencedField(this);
             if (DEBUG)
-                System.out.println("	" + pendingFieldLoad);
+                System.out.println("\t" + pendingFieldLoad);
             String sig = getSigConstantOperand();
             if (sig.equals("Z")) {
                 countSinceGetBoolean = 0;
@@ -149,7 +149,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
             if (seen == PUTFIELD || seen == PUTSTATIC) {
                 FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
                 if (DEBUG)
-                    System.out.println("	" + f);
+                    System.out.println("\t" + f);
                 if (twice.contains(f) && !getNameConstantOperand().startsWith("class$")
                         && !getSigConstantOperand().equals("Ljava/lang/String;")) {
                     Field declaration = findField(getClassConstantOperand(), getNameConstantOperand());

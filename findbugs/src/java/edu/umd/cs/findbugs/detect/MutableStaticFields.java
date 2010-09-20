@@ -109,7 +109,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        // System.out.println("saw	" + OPCODE_NAMES[seen] + "	" + zeroOnTOS);
+        // System.out.println("saw\t" + OPCODE_NAMES[seen] + "\t" + zeroOnTOS);
         switch (seen) {
         case GETSTATIC:
         case PUTSTATIC:
@@ -241,7 +241,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
             boolean isArray = fieldSig.charAt(0) == '[' && unsafeValue.contains(f);
             boolean isReadAnywhere = readAnywhere.contains(f);
             if (false) {
-                System.out.println(className + "." + fieldName + " : " + fieldSig + "	" + isHashtable + "	" + isArray);
+                System.out.println(className + "." + fieldName + " : " + fieldSig + "\t" + isHashtable + "\t" + isArray);
             }
 
             String bugType;

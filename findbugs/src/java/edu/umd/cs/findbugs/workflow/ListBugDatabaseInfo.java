@@ -21,18 +21,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 
-import org.dom4j.DocumentException;
-
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.config.CommandLine;
+import org.dom4j.DocumentException;
 
 /**
  * Java main application to compute update a historical bug collection with
@@ -79,7 +77,7 @@ public class ListBugDatabaseInfo {
         if (argCount == args.length)
             listVersion(out, null, commandLine.formatDates);
         else {
-            out.println("version	time	classes	NCSS	total	high	medium	low	file");
+            out.println("version\ttime\tclasses\tNCSS\ttotal\thigh\tmedium\tlow\tfile");
             while (argCount < args.length) {
                 String fileName = args[argCount++];
                 listVersion(out, fileName, commandLine.formatDates);

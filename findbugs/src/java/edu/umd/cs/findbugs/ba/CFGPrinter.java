@@ -19,18 +19,11 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Iterator;
 
-import org.apache.bcel.classfile.ClassParser;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.MethodGen;
-
-import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * Print out a representation of a control-flow graph. For debugging.
@@ -71,7 +64,7 @@ public class CFGPrinter {
             }
             CodeExceptionGen exceptionGen = bb.getExceptionGen();
             if (exceptionGen != null) {
-                out.println("	CATCHES " + exceptionGen.getCatchType());
+                out.println("\tCATCHES " + exceptionGen.getCatchType());
             }
             Iterator<InstructionHandle> j = instructionIterator(bb);
             while (j.hasNext()) {
