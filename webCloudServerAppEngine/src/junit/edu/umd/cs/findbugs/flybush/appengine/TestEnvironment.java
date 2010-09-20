@@ -1,5 +1,8 @@
 package edu.umd.cs.findbugs.flybush.appengine;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.apphosting.api.ApiProxy;
 
 class TestEnvironment implements ApiProxy.Environment {
