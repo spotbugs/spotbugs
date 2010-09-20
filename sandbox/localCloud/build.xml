@@ -1,4 +1,6 @@
 <project name="local-cloud" default="enhance">
+    <echoproperties />
+    <echo message="--------------"/>
     <path id="enhancer.classpath">
         <fileset dir="lib/datanucleus">
             <include name="datanucleus-enhancer-1.1.4.jar"/>
@@ -119,7 +121,7 @@
         <zip file="FindBugsCloudServer.zip" basedir="dist"/>
     </target>
 
-    <target name="compile-tests" depends="enhance,compile-classes">
+    <target name="compile-tests" depends="enhance">
         <mkdir dir="classes-tests-ant"/>
         <ant dir="../../webCloudServerCommon" target="compile-tests" inheritall="false"/>
         <javac srcdir="src/junit" destdir="classes-tests-ant">
