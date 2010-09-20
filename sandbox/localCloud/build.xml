@@ -43,20 +43,6 @@
                 <include name="**/*.class"/>
             </fileset>
         </datanucleusenhancer>
-        <datanucleusenhancer failonerror="true" verbose="true" checkonly="true">
-            <classpath refid="enhancer.classpath"/>
-            <classpath>
-                <path refid="enhancer.classpath"/>
-                <path location="classes-ant"/>
-                <path location="../../webCloudServerCommon/classes-ant"/>
-            </classpath>
-
-            <jvmarg line="-Dlog4j.configuration=etc/logging.properties"/>
-
-            <fileset dir="classes-ant">
-                <include name="**/*.class"/>
-            </fileset>
-        </datanucleusenhancer>
     </target>
 
     <target name="fulljar-uptodate-check" depends="enhance">
