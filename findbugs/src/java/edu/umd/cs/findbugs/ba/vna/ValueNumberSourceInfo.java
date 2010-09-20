@@ -23,11 +23,13 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -55,6 +57,11 @@ public abstract class ValueNumberSourceInfo {
     public static @CheckForNull
     BugAnnotation findAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
             ValueNumberFrame vnaFrame, @CheckForNull String partialRole) {
+        if (location.getHandle().getInstruction() instanceof ACONST_NULL) {
+            StringAnnotation nullConstant = new StringAnnotation("null");
+            nullConstant.setDescription(StringAnnotation.STRING_NONSTRING_CONSTANT_ROLE);
+            return nullConstant;
+        }
         LocalVariableAnnotation ann = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location, valueNumber,
                 vnaFrame);
         if (ann != null && partialRole != null)
