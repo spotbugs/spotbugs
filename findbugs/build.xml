@@ -6,17 +6,17 @@
 
 <project name="findbugs" default="build">
 
-	<!-- 
-	        The local.properties properties file contains the location of eclipsePlugin.dir 
+	<!--
+	        The local.properties properties file contains the location of eclipsePlugin.dir
 
 	        This value is likely to be different for each checkout of the plugin,
 	        so the local.properties file is not managed by cvs
-	        
+
 	-->
 	<property file="local.properties" />
 
 	<property file="build.properties" />
-	
+
 	<property name="jar.dir" value="lib"/>
 	<property name="plugin.dir" value="plugin"/>
 	<property name="build.dir" value="build"/>
@@ -55,7 +55,7 @@
 	<property name="allClassFiles.jar" value="${build.dir}/allClassFiles.jar"/>
 	<property name="doc.props.file" value="${etc.dir}/doc.properties"/>
 	<property name="version.props.file" value="${build.dir}/classes/edu/umd/cs/findbugs/version.properties"/>
-	
+
 	<path id="findbugs.classpath">
 		<pathelement location="${jar.dir}/bcel.jar"/>
 		<pathelement location="${jar.dir}/dom4j-1.6.1.jar"/>
@@ -64,12 +64,12 @@
 		<pathelement location="${jar.dir}/asm-3.3.jar"/>
 		<pathelement location="${jar.dir}/asm-commons-3.3.jar"/>
 		<pathelement location="${jar.dir}/asm-tree-3.3.jar"/>
-		<pathelement location="${jar.dir}/jaxen-1.1.1.jar"/>		
+		<pathelement location="${jar.dir}/jaxen-1.1.1.jar"/>
 		<pathelement location="${jar.dir}/jsr305.jar"/>
 		<pathelement location="${jar.dir}/jFormatString.jar"/>
 		<pathelement location="${jar.dir}/commons-lang-2.4.jar"/>
 	</path>
-	
+
 	<path id="tools.classpath">
 		<pathelement location="${classes.dir}"/>
 		<pathelement location="${jar.dir}/findbugs.jar"/>
@@ -84,21 +84,21 @@
 	    <pathelement location="${svnant.home}/lib/svnant.jar"/>
 	    <pathelement location="${svnant.home}/lib/svnClientAdapter.jar"/>
 	</path>
-	
+
 	<patternset id="codebase.data.pats">
 		<include name="**/*.properties"/>
 		<include name="**/*.png"/>
 		<include name="**/*.html"/>
 		<include name="**/*.db"/>
 	</patternset>
-	
+
 	<patternset id="doc.src.pats">
 		<include name="**/*.html"/>
 		<include name="**/*.txt"/>
 		<include name="**/*.xml"/>
 		<include name="**/*.xsl"/>
 	</patternset>
-	
+
 	<patternset id="doc.img.pats">
 		<include name="**/*.png"/>
 		<include name="**/*.css"/>
@@ -113,7 +113,7 @@
 	<!-- Default target builds scripts and jars, allowing execution using
 		the working directory as FINDBUGS_HOME.  Also build test case jarfile. -->
 	<target name="build" depends="jars,scripts,anttask"/>
-	
+
 	<!-- Rebuild from scratch. -->
 	<target name="rebuild" depends="clean,build"/>
 
@@ -127,7 +127,7 @@
 		<zipfileset src="${jar.dir}/asm-3.3.jar"/>
 		<zipfileset src="${jar.dir}/asm-commons-3.3.jar"/>
 		<zipfileset src="${jar.dir}/asm-tree-3.3.jar"/>
-		<zipfileset src="${jar.dir}/jaxen-1.1.1.jar"/>		
+		<zipfileset src="${jar.dir}/jaxen-1.1.1.jar"/>
 		<zipfileset src="${jar.dir}/jsr305.jar"/>
 		<zipfileset src="${jar.dir}/jFormatString.jar"/>
 		<zipfileset src="${jar.dir}/commons-lang-2.4.jar"/>
@@ -138,10 +138,10 @@
 	<!-- Compile Java source files, and copy other files (properties,
 		images, html, XSL stylesheets) that need to be part of the codebase. -->
 	<target name="classes" depends="init">
-		
+
 		<!-- Compile Java source files. -->
 		<echo level="info" message="compiling findbugs"/>
-		<javac 
+		<javac
 						destdir="${classes.dir}"
 						source="1.5"
 						target="1.5"
@@ -222,7 +222,7 @@
 			<fileset dir="${etc.dir}" includes="*.xml"/>
 		</xmlvalidate>
 	</target>
-	
+
 	<target name="validatesamplexmloutput" depends="runanttask">
 		<schemavalidate failonerror="yes" noNamespaceFile="${etc.dir}/bugcollection.xsd">
 			<attribute name="http://xml.org/sax/features/namespaces" value="true"/>
@@ -239,7 +239,7 @@
 	</target>
 
 	<target name="validatesampleoutput" depends="validatesamplexmloutput"/>
-		
+
 	<!-- Build jar files. -->
 	<target name="allClassFilesJar" depends="classes,validate,version">
 		<jar destfile="${allClassFiles.jar}">
@@ -262,7 +262,7 @@
                         </fileset>
 		     </copy>
 
-		
+
 		<!-- Main engine and command line jar file. -->
 		<jar destfile="${engine.jar}"
 				manifest="etc/MANIFEST-findbugs.MF">
@@ -273,7 +273,7 @@
 				<exclude name="${pkg.base}/antTask/**"/>
 				<!-- Exclude JUnit tests. -->
 <!--
-				<exclude name="**/*Test.class"/> 
+				<exclude name="**/*Test.class"/>
 -->
 				<include name="**/*.class"/>
 				<include name="**/*.properties"/>
@@ -290,7 +290,7 @@
 				<include name="messages*.xml"/>
 			</fileset>
 		</jar>
-		
+
 		<!-- Annotations jar file. -->
 		<jar destfile="${annotations.jar}">
 			<fileset dir="${classes.dir}">
@@ -301,7 +301,7 @@
 			</fileset>
 		</jar>
 	</target>
-	
+
 	<!--
 		Create one giant executable Jar file containing
 		Findbugs, textui and gui, detectors, and all required
@@ -331,14 +331,14 @@
 			</fileset>
 
 			<zipfileset src="${jar.dir}/bcel.jar" excludes="META-INF/**"/>
-			
+
 			<zipfileset src="${jar.dir}/asm-3.3.jar" excludes="META-INF/**"/>
 			<zipfileset src="${jar.dir}/asm-analysis-3.3.jar" excludes="META-INF/**"/>
 			<zipfileset src="${jar.dir}/asm-commons-3.3.jar" excludes="META-INF/**"/>
 			<zipfileset src="${jar.dir}/asm-tree-3.3.jar" excludes="META-INF/**"/>
 			<zipfileset src="${jar.dir}/asm-util-3.3.jar" excludes="META-INF/**"/>
 			<zipfileset src="${jar.dir}/asm-xml-3.3.jar" excludes="META-INF/**"/>
-			
+
 			<zipfileset src="${jar.dir}/dom4j-1.6.1.jar" excludes="META-INF/**"/>
 			<zipfileset src="${jar.dir}/jaxen-1.1.1.jar" excludes="META-INF/**"/>
 			<zipfileset src="${jar.dir}/jsr305.jar" excludes="META-INF/**"/>
@@ -346,7 +346,7 @@
 			<zipfileset src="${jar.dir}/commons-lang-2.4.jar" excludes="META-INF/**"/>
 		</jar>
 	</target>
-	
+
 	<!-- See if front-end scripts need to be regenerated. -->
 	<target name="checkscripts">
 		<condition property="scripts.uptodate">
@@ -365,9 +365,9 @@
 			</and>
 		</condition>
 	</target>
-	
+
 	<!-- Generate front-end scripts. -->
-	<target name="scripts" depends="init,checkscripts" 
+	<target name="scripts" depends="init,checkscripts"
 				unless="scripts.uptodate"
 				>
 		<loadproperties srcFile="${scripts.props}"/>
@@ -384,11 +384,11 @@
 					<fileset dir="${scriptsrc.dir}/standard"/>
 					<filterset refid="script.filters"/>
 				</copy>
-		
+
 		<copy todir="${scripts.dir}" overwrite="true">
 					<fileset dir="${scriptsrc.dir}/windows"/>
 				</copy>
-		
+
 		<copy todir="${scripts.dir}/deprecated" overwrite="true">
 			<fileset dir="${scriptsrc.dir}/deprecated"/>
 			<filterset refid="script.filters"/>
@@ -403,12 +403,12 @@
 		<chmod dir="${scripts.dir}" perm="a+x" includes="**/*" excludes="**/*.bat"/>
 
                 <fixcrlf srcdir="${scripts.dir}" includes="**/*.bat" eol="crlf"/>
-		
+
 		<touch file="${scripts.stamp}"/>
 	</target>
-	
-	
-	
+
+
+
 	<!-- Ant task jar file. -->
 	<target name="anttask" depends="classes">
 		<jar destfile="${anttask.jar}">
@@ -420,7 +420,7 @@
 			</fileset>
 		</jar>
 	</target>
-	
+
 	<!-- JUnit test cases -->
 	<target name="junittests" depends="classes">
 		<jar destfile="${junittests.jar}">
@@ -436,7 +436,7 @@
    <java classname="edu.umd.cs.findbugs.PrintingBugReporter"
            fork="true"
            failonerror="true"
-		   output="${sampleoutput.dir}/fancy.html" 
+		   output="${sampleoutput.dir}/fancy.html"
            maxmemory="400m">
 		<classpath>
            <pathelement location="${jar.dir}/findbugs.jar"/>
@@ -449,7 +449,7 @@
    <java classname="edu.umd.cs.findbugs.PrintingBugReporter"
            fork="true"
            failonerror="true"
-		   output="${sampleoutput.dir}/default.html" 
+		   output="${sampleoutput.dir}/default.html"
            maxmemory="400m">
 		<classpath>
            <pathelement location="${jar.dir}/findbugs.jar"/>
@@ -462,7 +462,7 @@
    <java classname="edu.umd.cs.findbugs.PrintingBugReporter"
            fork="true"
            failonerror="true"
-		   output="${sampleoutput.dir}/plain.html" 
+		   output="${sampleoutput.dir}/plain.html"
            maxmemory="400m">
 		<classpath>
            <pathelement location="${jar.dir}/findbugs.jar"/>
@@ -475,7 +475,7 @@
    <java classname="edu.umd.cs.findbugs.PrintingBugReporter"
            fork="true"
            failonerror="true"
-		   output="${sampleoutput.dir}/summary.html" 
+		   output="${sampleoutput.dir}/summary.html"
            maxmemory="400m">
 		<classpath>
            <pathelement location="${jar.dir}/findbugs.jar"/>
@@ -526,16 +526,16 @@
 <findbugs home="${findbugs.home}"
               output="xml"
               jvmargs="-ea -Xmx640m"
-              outputFile="${sampleoutput.dir}/bcel-3.xml" 
-              projectFile="${sampleoutput.dir}/bcel.fbp" 
+              outputFile="${sampleoutput.dir}/bcel-3.xml"
+              projectFile="${sampleoutput.dir}/bcel.fbp"
 		applySuppression="true"
      />
 
 <convertXmlToText
 	 home="${findbugs.home}"
               jvmargs="-ea -Xmx640m"
-              input="${sampleoutput.dir}/bcel-3.xml" 
-              output="${sampleoutput.dir}/bcel-3.txt" 
+              input="${sampleoutput.dir}/bcel-3.xml"
+              output="${sampleoutput.dir}/bcel-3.txt"
               applySuppression="true"
 		/>
 -->
@@ -613,7 +613,7 @@
 			<param name="plugincheck.jar" value="fb-contrib-3.2.5.jar"/>
 		</antcall>
 	</target>
-	
+
 	<target name="compileFindbugsTestCases">
     		<ant dir="../findbugsTestCases" target="classes" inheritAll="false" />
 	</target>
@@ -641,14 +641,30 @@
 		</junit>
 	</target>
 
-	<target name="smoketest" depends="clean,scripts,findbugscheck,runjunit,validatesampleoutput"/>
+    <target name="checkstyle">
+        <taskdef resource="checkstyletask.properties"
+                 classpath="build-lib/checkstyle-all-5.1.jar"/>
+        <checkstyle config="etc/checkstyle.xml">
+            <fileset dir="src/java"/>
+            <fileset dir="src/java5"/>
+            <fileset dir="src/junit"/>
+            <fileset dir="../sandbox/localCloud/src"/>
+            <fileset dir="../webCloudClient/src"/>
+            <fileset dir="../webCloudProtocol/src"/>
+            <fileset dir="../webCloudServerAppEngine/src"/>
+            <fileset dir="../webCloudServerCommon/src"/>
+            <fileset dir="../findbugsTestCases/src"/> 
+        </checkstyle>
+    </target>
+
+    <target name="smoketest" depends="clean,scripts,findbugscheck,runjunit,validatesampleoutput"/>
 
 
-	<!-- Get version properties.  -->
+    <!-- Get version properties.  -->
 	<target name="version" depends="version0" >
 		<loadproperties srcfile="${version.props.file}"/>
     </target>
-	
+
 	<target name="version0" depends="classes">
 		<java classpathref="tools.classpath"
 			output="${version.props.file}"
@@ -656,7 +672,7 @@
 			failonerror="true">
 			<arg value="-props"/>
 		</java>
-		
+
 		<loadproperties srcfile="${version.props.file}"/>
 		<copy todir="${classes.dir}" file="${version.props.file}"/>
 	</target>
@@ -664,7 +680,7 @@
 	<target name="checkdocs">
 		<!-- FIXME: check whether docs are up to date -->
 	</target>
-	
+
 	<!-- Generate formatted documentation. -->
 	<target name="docs" depends="classes,version,bugdesc,checkdocs" unless="docs.uptodate">
 		<loadproperties srcFile="${doc.props.file}"/>
@@ -675,14 +691,14 @@
 			<param name="googleanalytics.fragment" value=""/>
 		</antcall>
 		<property name="webdocs.uptodate" value="true"/>
-		
+
 		<!-- Generate HTML version of manual. -->
 		<antcall target="generatemanual">
 			<param name="docoutput.dir" value="${doc.dir}"/>
 			<param name="googleanalytics.fragment" value=""/>
 		</antcall>
 		<property name="manual.uptodate" value="true"/>
-		
+
 		<!-- Generate PDF version of manual. -->
 		<antcall target="generatepdfmanual">
 			<param name="docoutput.dir" value="${doc.dir}"/>
@@ -704,13 +720,13 @@
 			<param name="googleanalytics.fragment" value="${doc.html.googleanalytics}"/>
 		</antcall>
 		<property name="webdocs.uptodate" value="true"/>
-		
+
 		<antcall target="generatemanual">
 			<param name="docoutput.dir" value="${web.dir}"/>
 			<param name="googleanalytics.fragment" value="${doc.html.googleanalytics}"/>
 		</antcall>
 		<property name="manual.uptodate" value="true"/>
-		
+
 		<!-- move javadocs from 'apiJavadoc' target (could use <copy/> instead of <move/>, but slower) -->
 		<move todir="${web.dir}/api">
 			<fileset dir="${apiDoc.dir}"/>
@@ -742,7 +758,7 @@
 			<param name="bugdesc.unabridged" value="true"/>
 		</antcall>
 	</target>
-	
+
 	<!--
 		Generate a single bug description HTML file.
 
@@ -802,7 +818,7 @@
 			<filter token="HTML_SIDEBAR" value="${doc.html.sidebar}"/>
 			<filter token="HTML_FOOTER" value="${doc.html.footer}"/>
 			<filter token="GOOGLE_ANALYTICS" value="${googleanalytics.fragment}"/>
-		</filterset>  
+		</filterset>
 
 		<!-- Generate files, substituting token values based on properties -->
 		<copy todir="${docoutput.dir}">
@@ -813,7 +829,7 @@
 				<patternset refid="doc.src.pats"/>
 			</fileset>
 		</copy>
-		
+
 		<!-- overwrite UTF-8 files -->
 		<copy todir="${docoutput.dir}" encoding="UTF-8" overwrite="true">
 			<filterset>
@@ -823,7 +839,7 @@
 				<include name="manual_*.xml"/>
 			</fileset>
 		</copy>
-		
+
 		<copy todir="${docoutput.dir}">
 			<fileset dir="${docsrc.dir}">
 				<patternset refid="doc.img.pats"/>
@@ -835,7 +851,7 @@
 				<patternset refid="doc.img.pats"/>
 			</fileset>
 		</copy>
-		
+
 	</target>
 
 	<!--
@@ -866,7 +882,7 @@
             <arg value="../manual.xsl" />
         </java>
 	</target>
-	
+
 	<!--
 		Format the manual as PDF.
 		Requires dblatex http://sourceforge.net/projects/dblatex,
@@ -915,13 +931,13 @@
 		<antcall target="pdflatex-manual"/>
 		<echo>Done.</echo>
 	</target>
-	
+
 	<target name="pdflatex-manual">
 		<exec dir="${docoutput.dir}" executable="pdflatex">
 			<arg value="manual.tex"/>
 		</exec>
 	</target>
-	
+
 	<!-- Generate jnlp jars -->
 	<target name="jnlp" depends="jars">
 		<copy todir="${jnlp.dir}" file="${engine.jar}"/>
@@ -930,12 +946,12 @@
 		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-3.3.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-commons-3.3.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-tree-3.3.jar"/>
-		<copy todir="${jnlp.dir}" file="${jar.dir}/dom4j-1.6.1.jar"/>		
-		<copy todir="${jnlp.dir}" file="${jar.dir}/jaxen-1.1.1.jar"/>		
-		<copy todir="${jnlp.dir}" file="${jar.dir}/jFormatString.jar"/>		
-		<copy todir="${jnlp.dir}" file="${jar.dir}/commons-lang-2.4.jar"/>		
+		<copy todir="${jnlp.dir}" file="${jar.dir}/dom4j-1.6.1.jar"/>
+		<copy todir="${jnlp.dir}" file="${jar.dir}/jaxen-1.1.1.jar"/>
+		<copy todir="${jnlp.dir}" file="${jar.dir}/jFormatString.jar"/>
+		<copy todir="${jnlp.dir}" file="${jar.dir}/commons-lang-2.4.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/AppleJavaExtensions.jar"/>
-		<copy todir="${jnlp.dir}" file="${docsrc.dir}/buggy-sm.png"/>		
+		<copy todir="${jnlp.dir}" file="${docsrc.dir}/buggy-sm.png"/>
 		<copy todir="${jnlp.dir}">
 			<fileset refid="plugin.jars"/>
 		</copy>
@@ -967,7 +983,7 @@
 			<arg value="jnlp"/>
 		</java>
 	</target>
-	
+
 	<target name="sign" depends="jars">
 		<input message="Enter keystore password:"  addproperty="password"/>
 		<signjar keystore="findbugs.keystore" alias="findbugs" storepass="${password}" keypass="${password}">
@@ -985,7 +1001,7 @@
 
 	<!-- Generate binary and source distributions. -->
 	<target name="dist" depends="clean,bindist,srcdist,web" description="Complete distribution except for jnlp"/>
-	
+
 	<!-- Generate binary distribution (both .zip and .tar.gz) -->
 	<target name="bindist" depends="rebuild,docs" description="Binary distribution">
 		<java classpathref="tools.classpath"
@@ -1001,7 +1017,7 @@
 			<include name="lib/buggy.icns"/>
 			<include name="src/xsl/*.xsl"/> <!-- Bug #1187977 -->
 		</patternset>
-		
+
 		<patternset id="bindist.jar.pats">
 			<include name="lib/*.jar"/>
 			<include name="plugin/*.jar"/>
@@ -1011,7 +1027,7 @@
 			<exclude name="lib/junit.jar"/>
 			<exclude name="lib/plastic.jar"/>
 		</patternset>
-		
+
 		<patternset id="bindist.unixscript.pats">
 			<include name="bin/*"/>
 			<include name="bin/experimental/*"/>
@@ -1077,7 +1093,7 @@
 			</zipfileset>
 		</zip>
 	</target>
-	
+
 	<!-- Delete generated files. -->
 	<target name="clean">
 		<delete dir="${scripts.dir}"/>
@@ -1089,14 +1105,14 @@
         <delete dir="${annotationDoc.dir}"/>
 		<delete file="${anttask.jar}" failonerror="false"/>
 	</target>
-	
+
 	<target name="init" depends="properties">
 		<mkdir dir="${scripts.dir}"/>
 		<mkdir dir="${build.dir}"/>
 		<mkdir dir="${doc.dir}"/>
 		<mkdir dir="${web.dir}"/>
         <mkdir dir="${classes.dir}"/>
-        <mkdir dir="${junitclasses.dir}"/>		
+        <mkdir dir="${junitclasses.dir}"/>
         <mkdir dir="${apiDoc.dir}"/>
         <mkdir dir="${annotationDoc.dir}"/>
 		<mkdir dir="${plugin.dir}"/>
@@ -1118,29 +1134,29 @@
 	      <isset property="docs.uptodate"/>
 	   </condition>
 	</target>
-	
+
     <target name="apiJavadoc" depends="version" unless="apidoc.uptodate">
-      <javadoc access="protected" 
-       author="true" 
+      <javadoc access="protected"
+       author="true"
 	    packagenames="*"
-        destdir="${apiDoc.dir}" 
-        doctitle="FindBugs API Documentation" 
+        destdir="${apiDoc.dir}"
+        doctitle="FindBugs API Documentation"
         Header="&lt;b&gt;FindBugs&amp;trade; ${release.number}&lt;/b&gt;"
         Windowtitle="FindBugs ${release.number} API"
         bottom="&lt;font size='-1'&gt;&lt;a href='http://findbugs.sourceforge.net/' target='_parent'&gt;FindBugs&lt;/a&gt;&amp;trade; is licenced under the LGPL. Copyright &amp;copy; 2006 University of Maryland.&lt;/font&gt;"
-	    nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false" 
+	    nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false"
         sourcepath="src/java:src/java5" splitindex="true" use="true" version="true">
 	<classpath refid="findbugs.classpath"/>
 	</javadoc>
 		</target>
 
     <target name="annotationJavadoc">
-      <javadoc access="public" 
+      <javadoc access="public"
        classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-1.6.1.jar:lib/jsr305.jar:lib/AppleJavaExtensions.jar"
-        destdir="${annotationDoc.dir}" 
+        destdir="${annotationDoc.dir}"
 	    packagenames="edu.umd.cs.findbugs.annotations"
-        doctitle="FindBugs Annotation Documentation" 
-	    nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false" 
+        doctitle="FindBugs Annotation Documentation"
+	    nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false"
         sourcepath="src/java5" splitindex="true" use="true" version="true"/>
 		</target>
 
@@ -1186,7 +1202,7 @@
     </fileset>
   </jar>
 
-</target>	
+</target>
 </project>
 
 <!-- vim:set ts=4: -->
