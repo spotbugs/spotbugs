@@ -21,7 +21,7 @@
         <taskdef name="datanucleusenhancer" classpathref="enhancer.classpath"
                  classname="org.datanucleus.enhancer.tools.EnhancerTask"/>
 
-        <datanucleusenhancer failonerror="true" verbose="true" classpath="classes-ant">
+        <datanucleusenhancer failonerror="true" verbose="true" >
             <classpath refid="enhancer.classpath"/>
             <!--<classpath path="classes" />-->
             <classpath path="classes-ant" />
