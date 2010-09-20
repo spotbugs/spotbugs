@@ -45,6 +45,8 @@
     <target name="fulljar-uptodate-check" depends="enhance,compile-classes">
         <uptodate property="localCloud-fulljar-uptodate" targetfile="build/localCloud.jar">
             <srcfiles dir="classes-ant"/>
+            <!--<srcfiles dir="lib"/>-->
+            <!--<srcfiles file="../../webCloudServerCommon/build/webCloudServerCommon-full.jar"/>-->
         </uptodate>
     </target>
 
@@ -111,6 +113,10 @@
         <copy todir="dist/web-root">
             <fileset dir="war"/>
         </copy>
+    </target>
+
+    <target name="dist-zip" depends="dist">
+        <zip file="FindBugsCloudServer.zip" basedir="dist"/>
     </target>
 
     <target name="compile-tests" depends="enhance,compile-classes">
