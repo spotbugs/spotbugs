@@ -1,0 +1,19 @@
+<!--
+  Custom Cloud plugin configuration file. Replace "XXX" with your own info.
+-->
+<FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
+                pluginid="com.example.cloud"
+                defaultenabled="true"
+                provider="Example Services"
+                website="http://example.com"
+        >
+
+    <Cloud id="com.example.cloud"
+           cloudClass="edu.umd.cs.findbugs.cloud.appEngine.AppEngineCloudClient"
+           usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup"
+           onlineStorage="true">
+        <Property key="appengine.host">http://127.0.0.1:8080</Property>
+    </Cloud>
+
+</FindbugsPlugin>

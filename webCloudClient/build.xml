@@ -49,10 +49,23 @@
         </javac>
     </target>
 
-    <target name="plugin" depends="compile">
-        <jar destfile="build/webCloudClient.jar">
-            <fileset dir="etc">
-                <include name="*.xml"/>
+    <target name="custom-plugin-jar">
+        <property name="pluginjar-path" value="build/webCloudClient-custom.jar"/>
+        <property name="pluginjar-etc" value="etc-custom"/>
+        <antcall target="-plugin-jar" inheritrefs="true"/>
+    </target>
+
+    <target name="plugin-jar">
+        <property name="fulljar-name" value="build/webCloudClient.jar"/>
+        <property name="fulljar-etc" value="etc"/>
+        <antcall target="-plugin-jar" inheritrefs="true"/>
+    </target>
+
+    <target name="-plugin-jar" depends="compile">
+        <jar destfile="${pluginjar-path}">
+            <fileset dir="${pluginjar-etc}">
+                <include name="findbugs.xml"/>
+                <include name="messages.xml"/>
             </fileset>
             <fileset dir="${classes.dir}">
                 <include name="**/*.class"/>
@@ -60,15 +73,8 @@
             <fileset dir="../webCloudProtocol/classes-ant">
                 <include name="**/*.class"/>
             </fileset>
-        </jar>
-    </target>
 
-    <target name="fulljar" depends="plugin">
-        <jar destfile="build/webCloudClient-full.jar">
             <zipfileset src="../webCloudProtocol/lib/protobuf-java-2.3.0.jar"/>
-            <fileset dir="../webCloudProtocol/build/classes"/>
-
-            <zipfileset src="build/webCloudClient.jar"/>
 
             <zipfileset src="lib/gdata-client-1.0.jar"/>
             <zipfileset src="lib/gdata-core-1.0.jar"/>
@@ -86,21 +92,10 @@
         </jar>
     </target>
 
-    <target name="fulljar-with-findbugs" depends="fulljar">
-        <ant dir="../findbugs" antfile="../findbugs/build.xml" target="fulljar">
-            <property name="fullJarName" value="findbugs-fulljar-temp-for-webCloudClient.jar"/>
-        </ant>
-        <jar destfile="build/findbugs-with-webCloudClient-full.jar">
-            <zipfileset src="build/webCloudClient-full.jar"/>
-
-            <zipfileset src="../findbugs/lib/findbugs-fulljar-temp-for-webCloudClient.jar"/>
-        </jar>
-    </target>
-
-    <target name="install" depends="fulljar">
+    <target name="install" depends="plugin-jar">
         <copy todir="${findbugs.home}/plugin" flatten="true">
             <fileset dir="build">
-                <include name="webCloudClient-full.jar"/>
+                <include name="webCloudClient.jar"/>
             </fileset>
         </copy>
         <copy todir="${findbugs.home}/jnlp" flatten="true">
