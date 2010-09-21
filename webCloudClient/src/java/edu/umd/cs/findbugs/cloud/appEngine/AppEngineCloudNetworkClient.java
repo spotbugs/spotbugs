@@ -104,7 +104,7 @@ public class AppEngineCloudNetworkClient {
         if (!force && sessionId != null)
             throw new IllegalStateException("already signed in");
         if (!lookerupper.signIn(cloudClient.getPlugin(), cloudClient.getBugCollection())) {
-            getGuiCallback().setErrorMessage("Signing into FindBugs Cloud failed!");
+            getGuiCallback().setErrorMessage("Signing into " + cloudClient.getCloudName() + " failed!");
             return;
         }
         this.sessionId = lookerupper.getSessionId();
@@ -126,7 +126,7 @@ public class AppEngineCloudNetworkClient {
     }
 
     public void setBugLinkOnCloud(BugInstance b, String type, String bugLink) throws IOException, SignInCancelledException {
-        cloudClient.signInIfNecessary("To store the bug URL on the FindBugs cloud, you must sign in.");
+        cloudClient.signInIfNecessary("To store the bug URL on the " + cloudClient.getCloudName() + ", you must sign in.");
 
         HttpURLConnection conn = openConnection("/set-bug-link");
         conn.setDoOutput(true);
@@ -243,10 +243,11 @@ public class AppEngineCloudNetworkClient {
 
         int result = getGuiCallback().showConfirmDialog(
                 "Your first-seen dates for " + bugCount + " bugs are " + durationStr
-                        + " earlier than those on the FindBugs Cloud.\n" + "The earliest first-seen from the local analysis is "
+                        + " earlier than those on the " + cloudClient.getCloudName() + ".\n" + "The earliest first-seen from the local analysis is "
                         + earliestStr + "\n" + "Would you like to back date the first-seen dates on the Cloud?\n" + "\n"
                         + "Current time: " + timeStr + " " + zoneStr + "\n"
-                        + "(If you're not sure the time and time zone are correct, click Cancel.)", "FindBugs Cloud", "Update",
+                        + "(If you're not sure the time and time zone are correct, click Cancel.)",
+                cloudClient.getCloudName(), "Update",
                 "Cancel");
         if (result != 0)
             return null;
@@ -268,7 +269,7 @@ public class AppEngineCloudNetworkClient {
             }
         });
 
-        final MutableCloudTask task = cloudClient.createTask("Updating FindBugs Cloud");
+        final MutableCloudTask task = cloudClient.createTask("Updating " + cloudClient.getCloudName());
         final AtomicInteger soFar = new AtomicInteger(0);
         for (int i = 0; i < bugCount; i += BUG_UPDATE_PARTITION_SIZE) {
             final List<BugInstance> partition = bugs.subList(i, Math.min(bugCount, i + BUG_UPLOAD_PARTITION_SIZE));
@@ -290,9 +291,9 @@ public class AppEngineCloudNetworkClient {
         final int bugCount = newBugs.size();
         if (bugCount == 0)
             return null;
-        cloudClient.signInIfNecessary("Some bugs were not found on the FindBugs Cloud service.\n"
+        cloudClient.signInIfNecessary("Some bugs were not found on the " + cloudClient.getCloudName() + ".\n"
                 + "Would you like to sign in and upload them to the Cloud?");
-        final MutableCloudTask task = cloudClient.createTask("Uploading to the FindBugs Cloud");
+        final MutableCloudTask task = cloudClient.createTask("Uploading to the " + cloudClient.getCloudName());
         final AtomicInteger bugsUploaded = new AtomicInteger(0);
         for (int i = 0; i < bugCount; i += BUG_UPLOAD_PARTITION_SIZE) {
             final List<BugInstance> partition = newBugs.subList(i, Math.min(bugCount, i + BUG_UPLOAD_PARTITION_SIZE));
@@ -384,7 +385,7 @@ public class AppEngineCloudNetworkClient {
         String designationKey = designation.getDesignationKey();
         String comment = designation.getAnnotationText();
 
-        cloudClient.signInIfNecessary("To store your evaluation on the FindBugs Cloud, you must sign in first.");
+        cloudClient.signInIfNecessary("To store your evaluation on the " + cloudClient.getCloudName() + ", you must sign in first.");
 
         Evaluation.Builder evalBuilder = Evaluation.newBuilder().setWhen(timestamp).setDesignation(designationKey);
         if (comment != null) {
@@ -422,7 +423,8 @@ public class AppEngineCloudNetworkClient {
                         openPostUrl("/log-out/" + oldSessionId, null);
                     } catch (Exception e) {
                         getGuiCallback().showMessageDialog(
-                                "A network error occurred while attempting to sign out of the FindBugs Cloud. \n"
+                                "A network error occurred while attempting to sign out of the "
+                                        + cloudClient.getCloudName() + ". \n"
                                         + "Please check your internet settings and try again.\n\n" + e.getMessage());
                         LOGGER.log(Level.SEVERE, "Could not sign out", e);
                     }

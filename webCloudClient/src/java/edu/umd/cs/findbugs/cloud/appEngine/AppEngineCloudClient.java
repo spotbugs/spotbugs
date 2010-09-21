@@ -99,7 +99,7 @@ public class AppEngineCloudClient extends AbstractCloud {
     // ====================== initialization =====================
 
     public String getCloudName() {
-        return "FindBugs Cloud";
+        return getPlugin().getDescription();
     }
 
     public void waitUntilNewIssuesUploaded() {
@@ -178,14 +178,14 @@ public class AppEngineCloudClient extends AbstractCloud {
 
             if (reason != null) {
                 IGuiCallback callback = getGuiCallback();
-                int result = callback.showConfirmDialog(reason, "FindBugs Cloud", "Sign in", "Cancel");
+                int result = callback.showConfirmDialog(reason, getCloudName(), "Sign in", "Cancel");
                 if (result != 0)
                     throw new SignInCancelledException();
             }
             try {
                 signIn();
             } catch (Exception e) {
-                getGuiCallback().showMessageDialog("Could not sign into FindBugs Cloud: " + e.getMessage());
+                getGuiCallback().showMessageDialog("Could not sign into " + getCloudName() + ": " + e.getMessage());
                 throw new SignInCancelledException(e);
             }
 
@@ -273,7 +273,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             if (getSigninState() == SigninState.SIGNED_IN)
                 return;
             setSigninState(SigninState.SIGNING_IN);
-            MutableCloudTask task = createTask("Signing into FindBugs Cloud");
+            MutableCloudTask task = createTask("Signing into " + getCloudName());
             try {
                 try {
                     networkClient.signIn(true);
@@ -494,7 +494,7 @@ public class AppEngineCloudClient extends AbstractCloud {
     private void signOut(boolean background) {
         networkClient.signOut(background);
         setSigninState(SigninState.SIGNED_OUT);
-        setStatusMsg("Signed out of FindBugs Cloud");
+        setStatusMsg("Signed out of " + getCloudName());
     }
 
     /** for testing */
@@ -559,9 +559,9 @@ public class AppEngineCloudClient extends AbstractCloud {
         }
 
         int numBugs = bugsByHash.size();
-        MutableCloudTask task = createTask("Checking FindBugs Cloud");
+        MutableCloudTask task = createTask("Checking " + getCloudName());
         try {
-            LOGGER.info("Checking " + numBugs + " bugs against the FindBugs Cloud...");
+            LOGGER.info("Checking " + numBugs + " bugs against the " + getCloudName() + "...");
 
             try {
                 List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
@@ -587,7 +587,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             uploadAndUpdateBugsInBackground(new ArrayList<BugInstance>(newBugs));
         } else {
             markNewIssuesUploaded();
-            setStatusMsg("All " + numBugs + " bugs are already stored in the FindBugs Cloud");
+            setStatusMsg("All " + numBugs + " bugs are already stored in the " + getCloudName());
         }
 
     }
@@ -620,7 +620,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     /** package-private for testing */
     void updateEvaluationsFromServer() throws IOException {
-        MutableCloudTask task = createTask("Checking FindBugs Cloud for updates");
+        MutableCloudTask task = createTask("Checking " + getCloudName() + " for updates");
 
         RecentEvaluations evals;
         try {
@@ -632,11 +632,13 @@ public class AppEngineCloudClient extends AbstractCloud {
             if (getSigninState() == SigninState.SIGNED_IN) {
                 signOut(true);
                 getGuiCallback().showMessageDialog(
-                        "A network error occurred while checking the FindBugs Cloud for updates.\n" + "\n"
+                        "A network error occurred while checking the " + getCloudName() + " for updates.\n"
+                                + "\n"
                                 + "You have been automatically signed out of the Cloud. Any comments or \n"
                                 + "evaluations you make will only be stored on your computer if you save the\n"
-                                + "analysis via the File->Save menu.\n" + "\n"
-                                + "To sign back in, click the FindBugs Cloud box in the lower right corner\n"
+                                + "analysis via the File->Save menu.\n"
+                                + "\n"
+                                + "To sign back in, click the " + getCloudName() + " box in the lower right corner\n"
                                 + "of the FindBugs window. Any changes you make while offline will be uploaded\n"
                                 + "to the server upon signin.");
             } else {
@@ -650,7 +652,7 @@ public class AppEngineCloudClient extends AbstractCloud {
             task.finished();
         }
         if (evals.getIssuesCount() > 0)
-            setStatusMsg("FindBugs Cloud: found " + evals.getIssuesCount() + " updated bug evaluations");
+            setStatusMsg(getCloudName() + ": found " + evals.getIssuesCount() + " updated bug evaluations");
         for (Issue updatedIssue : evals.getIssuesList()) {
             String protoHash = decodeHash(updatedIssue.getHash());
             Issue existingIssue = networkClient.getIssueByHash(protoHash);

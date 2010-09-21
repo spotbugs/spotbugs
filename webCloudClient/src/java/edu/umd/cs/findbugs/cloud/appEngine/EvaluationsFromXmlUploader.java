@@ -88,7 +88,8 @@ public class EvaluationsFromXmlUploader {
             return;
         System.out.println(result);
         try {
-            cloud.signInIfNecessary("To store your evaluations on the FindBugs Cloud, you must sign in first.");
+            cloud.signInIfNecessary("To store your evaluations on the " + cloud.getCloudName()
+                    + ", you must sign in first.");
         } catch (SignInCancelledException e) {
             return;
         }

@@ -370,7 +370,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
                 SigninState state = cloud.getSigninState();
                 String userStr = cloud.getUser() != null ? " - " + cloud.getUser() : "";
-                signedInLabel.setText("<html>FindBugs Cloud:<br>" + state.toString() + userStr);
+                signedInLabel.setText("<html>" + cloud.getCloudName() + ":<br>" + state.toString() + userStr);
                 ResourceBundle bundle = ResourceBundle.getBundle(Cloud.class.getName(), Locale.getDefault());
                 String tooltip;
                 try {

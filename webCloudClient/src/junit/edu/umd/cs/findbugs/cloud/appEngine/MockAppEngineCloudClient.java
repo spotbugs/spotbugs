@@ -78,6 +78,11 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
     }
 
     @Override
+    public String getCloudName() {
+        return "FindBugs Cloud";
+    }
+
+    @Override
     protected ExecutorService getBugUpdateExecutor() {
         return backgroundExecutorService;
     }
