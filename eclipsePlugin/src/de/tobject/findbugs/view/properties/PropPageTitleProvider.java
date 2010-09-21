@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.BugCategory;
 import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.Plugin;
 
 public class PropPageTitleProvider extends BugLabelProvider {
     @Override
@@ -82,6 +83,8 @@ public class PropPageTitleProvider extends BugLabelProvider {
             return getTitle((IProject) group.getData());
         case Class:
             return getTitle((IJavaElement) group.getData());
+        case DetectorPlugin:
+            return getTitle((Plugin) group.getData());
 
         default:
             break;
@@ -166,6 +169,17 @@ public class PropPageTitleProvider extends BugLabelProvider {
         }
         StringBuilder sb = new StringBuilder("Bug: ");
         sb.append(bug.getAbridgedMessage());
+        return sb.toString();
+    }
+
+    String getTitle(Plugin plugin) {
+        if (plugin == null) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder("Plugin: ");
+        sb.append(plugin.getPluginId());
+        sb.append(" (provider: ");
+        sb.append(plugin.getProvider()).append(")");
         return sb.toString();
     }
 
