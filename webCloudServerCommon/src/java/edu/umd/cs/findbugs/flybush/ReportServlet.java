@@ -368,7 +368,7 @@ public class ReportServlet extends AbstractFlybushServlet {
 
     @SuppressWarnings({ "unchecked" })
     private void showSummaryStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
-        Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName() + " order by when");
+        Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName() + " order by when ascending");
         List<DbEvaluation> evals = (List<DbEvaluation>) query.execute();
         Map<String, Integer> totalCountByUser = Maps.newHashMap();
         Map<String, Integer> issueCountByUser = Maps.newHashMap();
