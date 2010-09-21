@@ -90,6 +90,7 @@ public class CommentsArea {
     private Executor backgroundExecutor = Executors.newSingleThreadExecutor();
 
     private BugFilingStatus currentBugStatus;
+    private TitledBorder evaluationsTitle;
 
     CommentsArea(MainFrame frame) {
         this.frame = frame;
@@ -227,7 +228,8 @@ public class CommentsArea {
         // comments.add(whoWhen);
 
         JPanel myStuffPanel = new JPanel(new GridBagLayout());
-        myStuffPanel.setBorder(new TitledBorder("FindBugs Cloud Evaluations"));
+        evaluationsTitle = new TitledBorder("Evaluations");
+        myStuffPanel.setBorder(evaluationsTitle);
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 0;
@@ -811,6 +813,8 @@ public class CommentsArea {
         Cloud cloud = getCloud();
         if (fileBug != null)
             fileBug.setEnabled(cloud.supportsBugLinks());
+        if (cloud != null)
+            this.evaluationsTitle.setTitle(cloud.getCloudName() + " Evaluations");
 
         MainFrame.getInstance().getGuiLayout().resetCommentsInputPane();
     }
