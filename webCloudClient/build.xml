@@ -56,8 +56,8 @@
     </target>
 
     <target name="plugin-jar">
-        <property name="fulljar-name" value="build/webCloudClient.jar"/>
-        <property name="fulljar-etc" value="etc"/>
+        <property name="pluginjar-path" value="build/webCloudClient.jar"/>
+        <property name="pluginjar-etc" value="etc"/>
         <antcall target="-plugin-jar" inheritrefs="true"/>
     </target>
 
@@ -108,7 +108,7 @@
     <target name="compile-tests" depends="compile">
         <mkdir dir="classes-tests-ant"/>
 
-        <javac srcdir="src/junit" destdir="classes-tests-ant" source="1.5" target="1.5">
+        <javac srcdir="src/junit" destdir="classes-tests-ant" source="1.5" target="1.5" debug="on">
             <classpath>
                 <path refid="client.classpath"/>
                 <path location="classes-ant"/>

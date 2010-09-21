@@ -20,7 +20,7 @@
     <target name="compile-classes">
         <ant dir="../../webCloudServerCommon" target="fulljar" inheritall="false" />
         <mkdir dir="classes-ant"/>
-        <javac srcdir="src/java" destdir="classes-ant" classpathref="localCloud.classpath"/>
+        <javac srcdir="src/java" destdir="classes-ant" classpathref="localCloud.classpath" debug="on"/>
     </target>
 
     <target name="enhance" depends="compile-classes">
@@ -49,6 +49,7 @@
         <uptodate property="fulljar-not-required" targetfile="build/localCloud.jar">
             <srcfiles dir="classes-ant" includes="**/*"/>
             <srcfiles dir="lib" includes="**/*"/>
+            <srcfiles file="etc/manifest.txt"/>
             <srcfiles file="../../webCloudServerCommon/build/webCloudServerCommon-full.jar"/>
         </uptodate>
     </target>
@@ -125,7 +126,7 @@
     <target name="compile-tests" depends="enhance">
         <mkdir dir="classes-tests-ant"/>
         <ant dir="../../webCloudServerCommon" target="compile-tests" inheritall="false"/>
-        <javac srcdir="src/junit" destdir="classes-tests-ant">
+        <javac srcdir="src/junit" destdir="classes-tests-ant" debug="on">
             <classpath refid="localCloud.classpath"/>
             <classpath path="classes-ant"/>
             <classpath path="classes"/>

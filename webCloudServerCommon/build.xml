@@ -13,12 +13,12 @@
     <target name="compile">
         <ant dir="../webCloudProtocol" target="fulljar" inheritall="false"/>
         <mkdir dir="classes-ant"/>
-        <javac srcdir="src/java" destdir="classes-ant" classpathref="common.classpath" />
+        <javac srcdir="src/java" destdir="classes-ant" classpathref="common.classpath" debug="on" />
     </target>
 
     <target name="compile-tests" depends="compile">
         <mkdir dir="classes-tests-ant"/>
-        <javac srcdir="src/junit" destdir="classes-tests-ant">
+        <javac srcdir="src/junit" destdir="classes-tests-ant" debug="on">
             <classpath>
                 <path refid="common.classpath"/>
                 <path location="classes-ant"/>
