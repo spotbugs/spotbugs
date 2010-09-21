@@ -5,6 +5,8 @@
 		<testFolder url="file://$MODULE_DIR$/src/junit"/>
 		<excludeFolder url="file://$MODULE_DIR$/bin"/>
 		<excludeFolder url="file://$MODULE_DIR$/classes"/>
+		<excludeFolder url="file://$MODULE_DIR$/classes-ant"/>
+		<excludeFolder url="file://$MODULE_DIR$/classes-tests-ant"/>
 		<excludeFolder url="file://$MODULE_DIR$/dist"/>
 		<excludeFolder url="file://$MODULE_DIR$/war_exploded"/>
 		<excludeFolder url="file://$MODULE_DIR$/classes"/>

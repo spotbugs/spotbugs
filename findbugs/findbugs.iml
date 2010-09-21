@@ -12,7 +12,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src/xsl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/junit" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/bin" />
-      <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/build/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/build/junitclasses" />
       <excludeFolder url="file://$MODULE_DIR$/classesEclipse" />
     </content>
     <content url="file://$CODE_DIR$/findbugs/sandbox">
