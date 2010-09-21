@@ -1,5 +1,9 @@
 package edu.umd.cs.findbugs.flybush;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Logger;
+
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.servlet.ServletConfig;
@@ -7,14 +11,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Logger;
 
 public abstract class AbstractFlybushServlet extends HttpServlet {
     protected static final Logger LOGGER = Logger.getLogger(AbstractFlybushServlet.class.getName());
 
     protected PersistenceHelper persistenceHelper;
+    private JspHelper jspHelper = new JspHelper();
 
     /** for testing */
     void setPersistenceHelper(PersistenceHelper persistenceHelper) {
@@ -63,13 +65,8 @@ public abstract class AbstractFlybushServlet extends HttpServlet {
         resp.getWriter().println(textResponse);
     }
 
-    protected boolean isAuthenticated(HttpServletResponse resp, PersistenceManager pm, long sessionId) throws IOException {
-        SqlCloudSession session = lookupCloudSessionById(sessionId, pm);
-        if (session == null) {
-            setResponse(resp, 403, "not authenticated");
-            return true;
-        }
-        return false;
+    protected String getCloudName() {
+        return jspHelper.getCloudName();
     }
 
     @SuppressWarnings("unchecked")

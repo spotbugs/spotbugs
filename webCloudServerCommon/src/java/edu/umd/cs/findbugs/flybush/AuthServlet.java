@@ -1,18 +1,21 @@
 package edu.umd.cs.findbugs.flybush;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.jdo.Transaction;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.dyuproject.openid.OpenIdUser;
 import com.dyuproject.openid.RelyingParty;
 import com.dyuproject.openid.ext.AxSchemaExtension;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.Transaction;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Date;
-import java.util.Map;
 
 @SuppressWarnings("serial")
 public class AuthServlet extends AbstractFlybushServlet {
@@ -54,6 +57,7 @@ public class AuthServlet extends AbstractFlybushServlet {
         }
     }
 
+    @SuppressWarnings({"unchecked"})
     private void browserAuth(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
         OpenIdUser openIdUser = (OpenIdUser) req.getAttribute(OpenIdUser.ATTR_NAME);
 
@@ -73,18 +77,26 @@ public class AuthServlet extends AbstractFlybushServlet {
 
         long id = Long.parseLong(req.getRequestURI().substring("/browser-auth/".length()));
         Date date = new Date();
-        DbUser dbUser = persistenceHelper.createDbUser(openidUrl, email);
-        SqlCloudSession session = persistenceHelper.createSqlCloudSession(id, date, dbUser.createKeyObject(), email);
+        Query q = pm.newQuery("select from " + persistenceHelper.getDbUserClass().getName() + " where openid == :openid && email == :email");
+        List<DbUser> result = (List<DbUser>) q.execute(openidUrl, email);
+        Transaction tx;
+        DbUser dbUser;
+        if (result.isEmpty()) {
+            dbUser = persistenceHelper.createDbUser(openidUrl, email);
 
-        Transaction tx = pm.currentTransaction();
-        tx.begin();
-        try {
-            pm.makePersistent(dbUser);
-            tx.commit();
-        } finally {
-            if (tx.isActive())
-                tx.rollback();
+            tx = pm.currentTransaction();
+            tx.begin();
+            try {
+                pm.makePersistent(dbUser);
+                tx.commit();
+            } finally {
+                if (tx.isActive())
+                    tx.rollback();
+            }
+        } else {
+            dbUser = result.iterator().next();
         }
+        SqlCloudSession session = persistenceHelper.createSqlCloudSession(id, date, dbUser.createKeyObject(), email);
         tx = pm.currentTransaction();
         tx.begin();
         try {
@@ -97,7 +109,7 @@ public class AuthServlet extends AbstractFlybushServlet {
         resp.setStatus(200);
         resp.setContentType("text/html");
         PrintWriter writer = resp.getWriter();
-        writer.println("<title>FindBugs Cloud</title>");
+        writer.println("<title>" + getCloudName() + "</title>");
         writer.println("<h1>You are now signed in</h1>");
         writer.println("<p style='font-size: large; font-weight: bold'>"
                 + "Please return to the FindBugs application window to continue.</p>");

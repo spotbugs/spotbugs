@@ -128,7 +128,7 @@ public class ReportServlet extends AbstractFlybushServlet {
 
         resp.setStatus(200);
         ServletOutputStream page = resp.getOutputStream();
-        page.println("<html>\n" + "<head><title>" + escapeHtml(desiredPackage) + " - FindBugs Cloud Stats</title></head>\n"
+        page.println("<html>\n" + "<head><title>" + escapeHtml(desiredPackage) + " - " + getCloudName() + " Stats</title></head>\n"
                 + "<body>\n" + backButton(req));
 
         printPackageForm(req, resp, desiredPackage);
@@ -258,7 +258,7 @@ public class ReportServlet extends AbstractFlybushServlet {
 
         resp.setStatus(200);
         ServletOutputStream page = resp.getOutputStream();
-        page.println("<html>\n" + "<head><title>" + escapeHtml(email) + " - FindBugs Cloud Stats</title></head>\n" + "<body>\n"
+        page.println("<html>\n" + "<head><title>" + escapeHtml(email) + " - " + getCloudName() + " Stats</title></head>\n" + "<body>\n"
                 + backButton(req));
 
         Set<String> users = getAllUserEmails(pm);
@@ -426,7 +426,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         resp.setStatus(200);
 
         ServletOutputStream page = resp.getOutputStream();
-        page.println("<html>" + "<head><title>FindBugs Cloud Stats</title></head>" + "<body>");
+        page.println("<html>" + "<head><title>" + getCloudName() + " Stats</title></head>" + "<body>");
         showChartImg(resp, evalsOverTimeChart.toURLString());
         page.println("<br><br>");
         showChartImg(resp, cumulativeTimeline.toURLString());

@@ -1,8 +1,9 @@
+<jsp:useBean id="jspHelper" scope="application" class="edu.umd.cs.findbugs.flybush.JspHelper"/>
 <%@ page isELIgnored="false" %>
 
 <html>
 <head>
-    <title>FindBugs Cloud Sign-in</title>
+    <title>${jspHelper.cloudName} Sign-in</title>
     <style type="text/css">
         /* Basic page formatting. */
         body {
@@ -27,7 +28,7 @@
 
 <form method="POST" id="openid_form">
     <fieldset>
-        <legend>Sign into FindBugs Cloud</legend>
+        <legend>Sign into ${jspHelper.cloudName}</legend>
 
         <div id="openid_choice">
             <p>Please click your account provider:</p>
