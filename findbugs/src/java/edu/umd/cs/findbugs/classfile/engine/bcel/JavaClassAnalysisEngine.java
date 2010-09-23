@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 
 /**
  * Analysis engine to produce a BCEL JavaClass object for a named class.
- * 
+ *
  * @author David Hovemeyer
  */
 public class JavaClassAnalysisEngine implements IClassAnalysisEngine<JavaClass> {
@@ -46,7 +46,7 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine<JavaClass> 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -55,13 +55,7 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine<JavaClass> 
         try {
             ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
             JavaClass javaClass = new ClassParser(classData.getInputStream(), descriptor.toResourceName()).parse();
-            if (false) {
-                char jVersion = JVM_VERSION.charAt(2);
-                if (jVersion < '5' && javaClass.getMajor() >= 49 || jVersion < '6' && javaClass.getMajor() >= 50)
-                    throw new CheckedAnalysisException(descriptor.toResourceName() + " is version " + javaClass.getMajor() + "."
-                            + javaClass.getMinor() + " but FindBugs is being run in a " + JVM_VERSION + " JVM");
 
-            }
             // Make sure that the JavaClass object knows the repository
             // it was loaded from.
             javaClass.setRepository(Repository.getRepository());
@@ -71,6 +65,8 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine<JavaClass> 
             }
 
             return javaClass;
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Unable to parse classfile for " + descriptor, e);
         } catch (IOException e) {
             throw new ResourceNotFoundException(descriptor.toResourceName(), e);
         }
@@ -78,7 +74,7 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine<JavaClass> 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)
@@ -89,7 +85,7 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine<JavaClass> 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#canRecompute()
      */
     public boolean canRecompute() {
