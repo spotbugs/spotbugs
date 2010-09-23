@@ -20,6 +20,7 @@ package de.tobject.findbugs.builder;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -54,7 +55,7 @@ import edu.umd.cs.findbugs.util.Archive;
 /**
  * An item to work on for FB analysis - this can be entire project or single
  * file or a java element without corresponding resource (like external library)
- * 
+ *
  * @author Andrei
  */
 public class WorkItem {
@@ -191,7 +192,7 @@ public class WorkItem {
     /**
      * Add secondary types patterns (not nested in the type itself but contained
      * in the java file)
-     * 
+     *
      * @param fileName
      *            java file name (not path!) without .java suffix
      * @param classNamePattern
@@ -289,6 +290,9 @@ public class WorkItem {
             return new HashSet<IMarker>(Arrays.asList(markers));
         }
         IResource markerTarget = getMarkerTarget();
+        if(!markerTarget.isAccessible()) {
+            return Collections.emptySet();
+        }
         if (!recursive
                 && ((markerTarget.getType() == IResource.PROJECT && (javaElt instanceof IPackageFragmentRoot) || Util
                         .isClassFile(javaElt)) || (Util.isJavaArchive(markerTarget) && Util.isClassFile(javaElt)))) {
@@ -325,7 +329,7 @@ public class WorkItem {
     }
 
     /**
-     * 
+     *
      * @return full absolute path corresponding to the work item (file or
      *         directory). If the work item is a part of an achive, it's the
      *         path to the archive file. If the work item is a project, it's the
@@ -354,7 +358,7 @@ public class WorkItem {
     }
 
     /**
-     * 
+     *
      * @return true if the given element is contained inside archive
      */
     public boolean isFromArchive() {
