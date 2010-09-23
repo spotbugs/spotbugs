@@ -648,7 +648,9 @@
             <fileset dir="src/java"/>
             <fileset dir="src/java5"/>
             <fileset dir="src/junit"/>
+	<!--
             <fileset dir="../sandbox/localCloud/src"/>
+	-->
             <fileset dir="../webCloudClient/src"/>
             <fileset dir="../webCloudProtocol/src"/>
             <fileset dir="../webCloudServerAppEngine/src"/>
