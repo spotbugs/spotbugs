@@ -25,7 +25,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 /**
  * Misc. preferences utility methods
- * 
+ *
  * @author Andrei Loskutov
  */
 public class PrefsUtil {
@@ -59,10 +59,11 @@ public class PrefsUtil {
         while (keyFound) {
             String key = keyPrefix + counter;
             String property = prefs.getString(key);
-            if (property == null || property.length() > 0) {
+            if (property == null || property.length() == 0) {
                 keyFound = false;
             } else {
                 prefs.setValue(key, "");
+                counter++;
             }
         }
     }
