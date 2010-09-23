@@ -2,7 +2,7 @@
 
     <property name="src.dir" value="src/java"/>
     <property name="gsrc.dir" value="generated-src"/>
-    <property name="classes.dir" value="classes-ant"/>
+    <property name="classes.dir" value="build/classes-ant"/>
     <property name="lib.dir" value="lib"/>
     <property name="findbugs.home" value="../findbugs"/>
     <property name="protocol.home" value="../webCloudProtocol"/>
@@ -21,7 +21,7 @@
         <fileset dir="${protocol.home}/lib">
             <include name="*.jar"/>
         </fileset>
-        <pathelement location="${protocol.home}/build/classes"/>
+        <pathelement location="${protocol.home}/${classes.dir}"/>
 
     </path>
 
@@ -33,8 +33,14 @@
         </xmlvalidate>
     </target>
 
+    <target name="clean">
+      <delete dir="build"/>
+      <mkdir dir="${classes.dir}"/>
+      <mkdir dir="build/classes"/>
+      <mkdir dir="build/testClasses"/>
+      </target>
     <target name="compile">
-        <ant dir="../webCloudProtocol" target="classes"/>
+        <ant dir="${protocol.home}" target="classes"/>
         <mkdir dir="${classes.dir}"/>
         <javac  destdir="${classes.dir}"
                 source="1.5"
@@ -70,11 +76,11 @@
             <fileset dir="${classes.dir}">
                 <include name="**/*.class"/>
             </fileset>
-            <fileset dir="../webCloudProtocol/classes-ant">
+            <fileset dir="${protocol.home}/${classes.dir}">
                 <include name="**/*.class"/>
             </fileset>
 
-            <zipfileset src="../webCloudProtocol/lib/protobuf-java-2.3.0.jar"/>
+            <zipfileset src="${protocol.home}/lib/protobuf-java-2.3.0.jar"/>
 
             <zipfileset src="lib/gdata-client-1.0.jar"/>
             <zipfileset src="lib/gdata-core-1.0.jar"/>
@@ -111,7 +117,7 @@
         <javac srcdir="src/junit" destdir="classes-tests-ant" source="1.5" target="1.5" debug="on">
             <classpath>
                 <path refid="client.classpath"/>
-                <path location="classes-ant"/>
+                <path location="${classes.dir}"/>
             </classpath>
         </javac>
     </target>
@@ -124,7 +130,7 @@
             <formatter type="xml"/>   <!-- Hudson reads generated xml -->
 
             <classpath refid="client.classpath"/>
-            <classpath path="classes-ant"/>
+            <classpath path="${classes.dir}"/>
             <classpath path="classes-tests-ant"/>
 
             <batchtest todir="build/tests">

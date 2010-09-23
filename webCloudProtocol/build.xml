@@ -1,7 +1,7 @@
 <project name="webCloudProtocol" default="classes">
 
     <property name="src.dir" value="src/java"/>
-    <property name="classes.dir" value="build/classes"/>
+    <property name="classes.dir" value="build/classes-ant"/>
     <property name="lib.dir" value="lib"/>
 
     <path id="client.classpath">
@@ -26,7 +26,7 @@
 
     <target name="fulljar" depends="classes">
         <mkdir dir="build"/>
-        <jar file="build/webCloudProtocol-full.jar">
+        <jar file="build/webCloudProtocol.jar">
             <zipfileset src="lib/protobuf-java-2.3.0.jar"/>
             <fileset dir="${classes.dir}"/>
         </jar>
