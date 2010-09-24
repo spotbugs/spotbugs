@@ -1,7 +1,6 @@
-package edu.umd.cs.findbugs.cloud.appEngine;
+package edu.umd.cs.findbugs.cloud;
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 
 import java.io.IOException;
 import java.net.URL;
