@@ -39,6 +39,7 @@ import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -186,9 +187,15 @@ public class MarkerReporter implements IWorkspaceRunnable {
 
         // Set unique id of the plugin, so we can easily refer back
         // to it later: for example, when the user group markers by plugin.
-        String pluginId = mp.bug.getDetectorFactory().getPlugin().getPluginId();
-        if (pluginId != null) {
-            attributes.put(FindBugsMarker.DETECTOR_PLUGIN_ID, pluginId);
+        DetectorFactory detectorFactory = mp.bug.getDetectorFactory();
+        if(detectorFactory != null) {
+            String pluginId = detectorFactory.getPlugin().getPluginId();
+            if (pluginId != null) {
+                attributes.put(FindBugsMarker.DETECTOR_PLUGIN_ID, pluginId);
+            } else {
+                // XXX to avoid errors. Don't know what to do if the plugin is missing
+                attributes.put(FindBugsMarker.DETECTOR_PLUGIN_ID, "edu.umd.cs.findbugs.plugins.core");
+            }
         } else {
             // XXX to avoid errors. Don't know what to do if the plugin is missing
             attributes.put(FindBugsMarker.DETECTOR_PLUGIN_ID, "edu.umd.cs.findbugs.plugins.core");
