@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -37,14 +36,15 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.engine.SelfMethodCalls;
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.TopologicalSort;
-import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges2;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * ClassInfo represents important metadata about a loaded class, such as its
@@ -298,7 +298,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
      * java.lang.String, boolean)
      */
     public XMethod findMethod(String methodName, String methodSig, boolean isStatic) {
-        int hash = MethodInfo.getNameSigHashCode(methodName, methodSig);
+        int hash = FieldOrMethodDescriptor.getNameSigHashCode(methodName, methodSig);
         for (MethodInfo mInfo : xMethods)
             if (mInfo.getNameSigHashCode() == hash && mInfo.getName().equals(methodName)
                     && mInfo.getSignature().equals(methodSig) && mInfo.isStatic() == isStatic)
@@ -331,7 +331,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
      * java.lang.String, boolean)
      */
     public XField findField(String name, String signature, boolean isStatic) {
-        int hash = FieldInfo.getNameSigHashCode(name, signature);
+        int hash = FieldOrMethodDescriptor.getNameSigHashCode(name, signature);
         for (FieldInfo fInfo : xFields)
             if (fInfo.getNameSigHashCode() == hash && fInfo.getName().equals(name) && fInfo.getSignature().equals(signature)
                     && fInfo.isStatic() == isStatic)

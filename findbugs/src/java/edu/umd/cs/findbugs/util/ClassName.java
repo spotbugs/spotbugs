@@ -21,9 +21,7 @@ package edu.umd.cs.findbugs.util;
 
 import javax.annotation.meta.When;
 
-import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;

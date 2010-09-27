@@ -177,7 +177,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
     @Override
     public void edgeTransfer(Edge edge, StateSet fact) throws DataflowAnalysisException {
         if (edge.isExceptionEdge()) {
-            if (!edge.isFlagSet(Edge.CHECKED_EXCEPTIONS_FLAG)) {
+            if (!edge.isFlagSet(EdgeTypes.CHECKED_EXCEPTIONS_FLAG)) {
                 //
                 // Ignore all exception edges except those on which
                 // checked exceptions are thrown.

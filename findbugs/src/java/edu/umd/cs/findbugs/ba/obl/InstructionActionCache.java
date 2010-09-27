@@ -19,18 +19,20 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
-import edu.umd.cs.findbugs.SystemProperties;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ReferenceType;
+
+import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * A cache for looking up the collection of ObligationPolicyDatabaseActions

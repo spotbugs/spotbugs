@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
-import java.util.Iterator;
-
 import javax.annotation.Nullable;
 
 /**

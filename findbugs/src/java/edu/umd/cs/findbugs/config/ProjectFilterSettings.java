@@ -30,9 +30,9 @@ import java.util.TreeSet;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugProperty;
-import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.Priorities;
 
 /**
  * Settings for user filtering of warnings for a project. This includes
@@ -63,10 +63,10 @@ public class ProjectFilterSettings implements Cloneable {
     /** Map of priority level names to their numeric values. */
     private static Map<String, Integer> priorityNameToValueMap = new HashMap<String, Integer>();
     static {
-        priorityNameToValueMap.put(HIGH_PRIORITY, (Detector.HIGH_PRIORITY));
-        priorityNameToValueMap.put(MEDIUM_PRIORITY, (Detector.NORMAL_PRIORITY));
-        priorityNameToValueMap.put(LOW_PRIORITY, (Detector.LOW_PRIORITY));
-        priorityNameToValueMap.put(EXPERIMENTAL_PRIORITY, (Detector.EXP_PRIORITY));
+        priorityNameToValueMap.put(HIGH_PRIORITY, (Priorities.HIGH_PRIORITY));
+        priorityNameToValueMap.put(MEDIUM_PRIORITY, (Priorities.NORMAL_PRIORITY));
+        priorityNameToValueMap.put(LOW_PRIORITY, (Priorities.LOW_PRIORITY));
+        priorityNameToValueMap.put(EXPERIMENTAL_PRIORITY, (Priorities.EXP_PRIORITY));
     }
 
     /**
@@ -540,16 +540,16 @@ public class ProjectFilterSettings implements Cloneable {
     public static String getIntPriorityAsString(int prio) {
         String minPriority;
         switch (prio) {
-        case Detector.EXP_PRIORITY:
+        case Priorities.EXP_PRIORITY:
             minPriority = ProjectFilterSettings.EXPERIMENTAL_PRIORITY;
             break;
-        case Detector.LOW_PRIORITY:
+        case Priorities.LOW_PRIORITY:
             minPriority = ProjectFilterSettings.LOW_PRIORITY;
             break;
-        case Detector.NORMAL_PRIORITY:
+        case Priorities.NORMAL_PRIORITY:
             minPriority = ProjectFilterSettings.MEDIUM_PRIORITY;
             break;
-        case Detector.HIGH_PRIORITY:
+        case Priorities.HIGH_PRIORITY:
             minPriority = ProjectFilterSettings.HIGH_PRIORITY;
             break;
         default:

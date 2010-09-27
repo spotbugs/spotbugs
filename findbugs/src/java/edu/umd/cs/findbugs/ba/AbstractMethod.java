@@ -18,8 +18,6 @@
  */
 package edu.umd.cs.findbugs.ba;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;

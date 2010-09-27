@@ -19,18 +19,12 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.util.Util;
 
 public class ClassSummary {
     private Map<ClassDescriptor, ClassDescriptor> map = new HashMap<ClassDescriptor, ClassDescriptor>();

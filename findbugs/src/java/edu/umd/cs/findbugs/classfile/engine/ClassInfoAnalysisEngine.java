@@ -19,17 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile.engine;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.asm.FBClassReader;
 import edu.umd.cs.findbugs.ba.XClass;
-import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ClassNameMismatchException;
@@ -37,9 +28,6 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
-import edu.umd.cs.findbugs.util.MultiMap;
-import edu.umd.cs.findbugs.util.TopologicalSort;
-import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
 
 /**
  * Analysis engine to produce the ClassInfo for a loaded class. We parse just

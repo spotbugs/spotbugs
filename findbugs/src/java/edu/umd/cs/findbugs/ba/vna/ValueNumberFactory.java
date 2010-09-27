@@ -19,14 +19,14 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.CheckForNull;
+
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * Factory for ValueNumbers. A single Factory must be used to create all of the

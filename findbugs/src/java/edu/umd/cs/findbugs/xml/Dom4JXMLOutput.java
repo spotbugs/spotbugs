@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.xml;
 
-import edu.umd.cs.findbugs.annotations.CreatesObligation;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;

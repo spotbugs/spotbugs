@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.Iterator;
+
 import org.apache.bcel.generic.InstructionHandle;
 
 /**

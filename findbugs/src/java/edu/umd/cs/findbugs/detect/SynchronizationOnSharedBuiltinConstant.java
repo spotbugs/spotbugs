@@ -37,7 +37,6 @@ import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import edu.umd.cs.findbugs.util.ClassName;
 
 public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector {
 

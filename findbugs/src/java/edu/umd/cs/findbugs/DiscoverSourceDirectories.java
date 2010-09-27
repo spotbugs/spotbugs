@@ -20,6 +20,17 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import org.objectweb.asm.ClassReader;
+
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -33,15 +44,6 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.engine.ClassParserUsingASM;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import org.objectweb.asm.ClassReader;
 
 /**
  * Based on the contents of the application directories/archives in a Project,

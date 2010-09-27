@@ -3,8 +3,8 @@ package edu.umd.cs.findbugs;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 
-import edu.umd.cs.findbugs.cloud.Cloud;
 import junit.framework.TestCase;
+import edu.umd.cs.findbugs.cloud.Cloud;
 
 public class SAXBugCollectionHandlerTest extends TestCase {
     public void testBugInstanceXmlPropsNoReviews() throws Exception {

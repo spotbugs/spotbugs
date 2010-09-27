@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.classfile;
 
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-import edu.umd.cs.findbugs.util.MapCache;
 
 /**
  * Common superclass for FieldDescriptor and MethodDescriptor.

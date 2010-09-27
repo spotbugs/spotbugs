@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.util;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -131,7 +130,7 @@ public class Strings {
 
             for (int i = 0; i < xmlAllowedLowCharacterBound; i++) {
                 if (isInvalidXMLCharacter(i)) {
-                    String escapedString = String.format("\\u%04x", (int) i);
+                    String escapedString = String.format("\\u%04x", i);
                     xmlLowValueEscapeStrings[i] = escapedString;
                 } else {
                     xmlLowValueEscapeStrings[i] = null;
@@ -172,7 +171,7 @@ public class Strings {
                 // append intermediate string to string builder
                 sb.append(sChars, lastReplacement, i - lastReplacement);
                 // substitute control character with escape sequence
-                sb.append(xmlLowValueEscapeStrings[(int) sChars[i]]);
+                sb.append(xmlLowValueEscapeStrings[sChars[i]]);
                 // advance last pointer past this character
                 lastReplacement = i + 1;
             }

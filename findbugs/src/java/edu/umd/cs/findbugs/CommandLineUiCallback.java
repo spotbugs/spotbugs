@@ -18,9 +18,6 @@
  */
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.cloud.Cloud;
-
-import javax.swing.JOptionPane;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +28,10 @@ import java.util.Locale;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import javax.swing.JOptionPane;
+
+import edu.umd.cs.findbugs.cloud.Cloud;
 
 /**
  * Implementation of the UI callback for command line sessions.

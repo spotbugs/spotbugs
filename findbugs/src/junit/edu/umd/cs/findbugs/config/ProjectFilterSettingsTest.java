@@ -21,8 +21,8 @@ package edu.umd.cs.findbugs.config;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.Priorities;
 
 public class ProjectFilterSettingsTest extends TestCase {
     ProjectFilterSettings plain;
@@ -93,13 +93,13 @@ public class ProjectFilterSettingsTest extends TestCase {
     public void testSetMinPriority() {
         plain.setMinPriority("High");
         Assert.assertTrue(plain.getMinPriority().equals("High"));
-        Assert.assertTrue(plain.getMinPriorityAsInt() == Detector.HIGH_PRIORITY);
+        Assert.assertTrue(plain.getMinPriorityAsInt() == Priorities.HIGH_PRIORITY);
         plain.setMinPriority("Medium");
         Assert.assertTrue(plain.getMinPriority().equals("Medium"));
-        Assert.assertTrue(plain.getMinPriorityAsInt() == Detector.NORMAL_PRIORITY);
+        Assert.assertTrue(plain.getMinPriorityAsInt() == Priorities.NORMAL_PRIORITY);
         plain.setMinPriority("Low");
         Assert.assertTrue(plain.getMinPriority().equals("Low"));
-        Assert.assertTrue(plain.getMinPriorityAsInt() == Detector.LOW_PRIORITY);
+        Assert.assertTrue(plain.getMinPriorityAsInt() == Priorities.LOW_PRIORITY);
     }
 
     public void testEquals() {

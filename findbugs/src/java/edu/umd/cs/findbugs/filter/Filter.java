@@ -28,6 +28,8 @@ import java.io.Reader;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 
+import javax.annotation.WillClose;
+
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -41,11 +43,9 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SAXBugCollectionHandler;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.util.Strings;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
-import javax.annotation.WillClose;
 
 /**
  * Filter to match a subset of BugInstances. The filter criteria are read from

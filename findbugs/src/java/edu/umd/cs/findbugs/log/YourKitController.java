@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.log;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**

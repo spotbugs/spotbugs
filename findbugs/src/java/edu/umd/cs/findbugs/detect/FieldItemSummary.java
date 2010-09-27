@@ -134,7 +134,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
                     else if (firstChar == 'I')
                         item = new OpcodeStack.Item("I", (Integer) 0);
                     else if (firstChar == 'J')
-                        item = new OpcodeStack.Item("J", (Long) 0L);
+                        item = new OpcodeStack.Item("J", 0L);
                     else
                         item = new OpcodeStack.Item(f.getSignature());
                     fieldSummary.mergeSummary(f, item);

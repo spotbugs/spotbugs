@@ -33,7 +33,6 @@
 
 package edu.umd.cs.findbugs.io;
 
-import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.IOException;
@@ -43,7 +42,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.URLConnection;
 
 import javax.annotation.WillNotClose;
 

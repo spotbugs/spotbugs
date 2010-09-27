@@ -19,11 +19,8 @@
 
 package edu.umd.cs.findbugs.cloud.username;
 
-import java.util.prefs.Preferences;
-
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.db.DBCloud;
 
 /**
  * @author pugh

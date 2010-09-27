@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 
 import org.apache.bcel.generic.Type;
+
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;

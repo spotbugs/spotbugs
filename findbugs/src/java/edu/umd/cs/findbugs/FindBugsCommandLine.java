@@ -24,9 +24,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import javax.annotation.Nonnull;
+
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;
-import javax.annotation.Nonnull;
 
 /**
  * Base class for FindBugs command line classes. Handles all shared

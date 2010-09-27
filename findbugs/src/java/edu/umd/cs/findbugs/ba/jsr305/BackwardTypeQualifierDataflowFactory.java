@@ -19,9 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
-import edu.umd.cs.findbugs.ba.BasicBlock;
+import javax.annotation.meta.When;
+
 import org.apache.bcel.generic.ConstantPoolGen;
 
+import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
@@ -32,7 +34,6 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import javax.annotation.meta.When;
 
 /**
  * Factory for BackwardTypeQualifierDataflow objects for given type qualifier

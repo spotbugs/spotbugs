@@ -19,21 +19,8 @@
 
 package edu.umd.cs.findbugs.bugReporter;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.net.URL;
-import java.util.HashSet;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.ClassAnnotation;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.PluginLoader;
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * @author pugh

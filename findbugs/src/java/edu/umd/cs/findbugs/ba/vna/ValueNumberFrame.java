@@ -35,7 +35,6 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.util.Strings;
 import edu.umd.cs.findbugs.util.Util;
 
 /**

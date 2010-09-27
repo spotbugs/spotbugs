@@ -19,13 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.classfile.Code;
+
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-
-import org.apache.bcel.classfile.Code;
 
 /**
  * @author alison

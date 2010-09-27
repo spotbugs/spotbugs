@@ -101,7 +101,7 @@ public class GenericUtilities {
         TYPE_VARIABLE {
             @Override
             public ReferenceType produce(GenericObjectType obj) {
-                return ObjectType.OBJECT;
+                return Type.OBJECT;
             }
 
             @Override
@@ -117,7 +117,7 @@ public class GenericUtilities {
         WILDCARD {
             @Override
             public ReferenceType produce(GenericObjectType obj) {
-                return ObjectType.OBJECT;
+                return Type.OBJECT;
             }
 
             @Override
@@ -155,7 +155,7 @@ public class GenericUtilities {
         WILDCARD_SUPER {
             @Override
             public ReferenceType produce(GenericObjectType obj) {
-                return ObjectType.OBJECT;
+                return Type.OBJECT;
             }
 
             @Override

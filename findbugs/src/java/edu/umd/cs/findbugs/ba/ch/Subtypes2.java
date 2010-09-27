@@ -284,9 +284,9 @@ public class Subtypes2 {
         if (type.equals(possibleSupertype)) {
             return true;
         }
-        if (possibleSupertype.equals(ObjectType.OBJECT))
+        if (possibleSupertype.equals(Type.OBJECT))
             return true;
-        if (type.equals(ObjectType.OBJECT))
+        if (type.equals(Type.OBJECT))
             return false;
 
         boolean typeIsObjectType = (type instanceof ObjectType);
@@ -488,7 +488,7 @@ public class Subtypes2 {
         if (aIsArrayType || bIsArrayType) {
             // One of a and b is an array type, but not both.
             // Common supertype is Object.
-            return ObjectType.OBJECT;
+            return Type.OBJECT;
         }
 
         // Neither a nor b is an array type.
@@ -658,13 +658,13 @@ public class Subtypes2 {
             bIndex--;
         }
         if (lastCommonInBackwardsSearch == null)
-            firstCommonSupertype = ObjectType.OBJECT;
+            firstCommonSupertype = Type.OBJECT;
         else
             firstCommonSupertype = ObjectTypeFactory.getInstance(lastCommonInBackwardsSearch.getClassDescriptor()
                     .toDottedClassName());
-        if (firstCommonSupertype.equals(ObjectType.OBJECT)) {
+        if (firstCommonSupertype.equals(Type.OBJECT)) {
             // see if we can't do better
-            ClassDescriptor objDesc = DescriptorFactory.getClassDescriptor(ObjectType.OBJECT);
+            ClassDescriptor objDesc = DescriptorFactory.getClassDescriptor(Type.OBJECT);
             aSuperTypes.retainAll(bSuperTypes);
             aSuperTypes.remove(objDesc);
             for (ClassDescriptor c : aSuperTypes)
@@ -1207,7 +1207,8 @@ public class Subtypes2 {
         missingClassVertex.setFinished(true);
         addVertexToGraph(missingClassDescriptor, missingClassVertex);
 
-        AnalysisContext.currentAnalysisContext().reportMissingClass(missingClassDescriptor);
+        AnalysisContext.currentAnalysisContext();
+        AnalysisContext.reportMissingClass(missingClassDescriptor);
 
         return missingClassVertex;
     }

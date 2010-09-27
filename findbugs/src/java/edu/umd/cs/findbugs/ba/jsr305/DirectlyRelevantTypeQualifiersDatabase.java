@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,9 +26,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 /**
  * Database of type qualfiers applied directly to methods.

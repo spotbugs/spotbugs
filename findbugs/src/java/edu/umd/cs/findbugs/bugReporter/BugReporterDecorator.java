@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.bugReporter;
 
 import java.lang.reflect.Constructor;
 
-import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.DelegatingBugReporter;
 

@@ -168,7 +168,7 @@ public class IncompatibleTypes {
     }
 
     private static IncompatibleTypes getPriorityForAssumingCompatibleWithArray(Type rhsType) {
-        if (rhsType.equals(ObjectType.OBJECT))
+        if (rhsType.equals(Type.OBJECT))
             return ARRAY_AND_OBJECT;
         String sig = rhsType.getSignature();
         if (sig.equals("Ljava/io/Serializable;") || sig.equals("Ljava/lang/Cloneable;"))
@@ -198,7 +198,7 @@ public class IncompatibleTypes {
         if (expectedType.equals(actualType))
             return SEEMS_OK;
 
-        if (actualType.equals(ObjectType.OBJECT))
+        if (actualType.equals(Type.OBJECT))
             return IncompatibleTypes.UNCHECKED;
 
         try {

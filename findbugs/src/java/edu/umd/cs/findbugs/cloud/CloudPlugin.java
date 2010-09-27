@@ -72,6 +72,7 @@ public class CloudPlugin {
         return details;
     }
 
+    @Override
     public String toString() {
         return getDescription();
     }

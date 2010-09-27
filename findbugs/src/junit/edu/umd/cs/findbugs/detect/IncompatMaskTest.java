@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import static org.junit.Assert.assertEquals;
 import junit.framework.TestCase;
 
 /**

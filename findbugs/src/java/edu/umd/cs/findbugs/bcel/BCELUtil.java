@@ -124,6 +124,7 @@ public abstract class BCELUtil {
      * @deprecated Use {@link DescriptorFactory#getClassDescriptor(ObjectType)}
      *             instead
      */
+    @Deprecated
     public static ClassDescriptor getClassDescriptor(ObjectType type) {
         return DescriptorFactory.getClassDescriptor(type);
     }
@@ -141,6 +142,7 @@ public abstract class BCELUtil {
      *             {@link ClassDescriptor#throwClassNotFoundException(ClassDescriptor)}
      *             instead
      */
+    @Deprecated
     public static void throwClassNotFoundException(ClassDescriptor classDescriptor) throws ClassNotFoundException {
         ClassDescriptor.throwClassNotFoundException(classDescriptor);
     }

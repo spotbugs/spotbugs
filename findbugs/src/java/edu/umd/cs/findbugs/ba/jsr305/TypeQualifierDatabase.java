@@ -19,11 +19,12 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Store computed type qualifiers for method parameters and return values. This

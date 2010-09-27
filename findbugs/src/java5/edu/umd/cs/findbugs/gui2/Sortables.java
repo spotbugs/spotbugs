@@ -31,7 +31,6 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
-import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;

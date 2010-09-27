@@ -18,14 +18,14 @@
  */
 package edu.umd.cs.findbugs;
 
-import javax.swing.*;
-
-import edu.umd.cs.findbugs.cloud.Cloud;
-
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+
+import javax.swing.JComponent;
+
+import edu.umd.cs.findbugs.cloud.Cloud;
 
 /**
  * Interface for any kind of GUI attached to the current FindBug analysis

@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.util;
 
-import edu.umd.cs.findbugs.util.Strings;
 import junit.framework.TestCase;
 
 public class StringsTest extends TestCase {

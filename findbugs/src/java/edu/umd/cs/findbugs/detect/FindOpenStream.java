@@ -52,7 +52,6 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.ResourceValueAnalysis;
-//import edu.umd.cs.findbugs.ba.ResourceValueAnalysisTestDriver;
 import edu.umd.cs.findbugs.ba.ResourceValueFrame;
 
 /**

@@ -18,6 +18,8 @@
  */
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
+import org.apache.bcel.generic.ConstantPoolGen;
+
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
@@ -34,7 +36,6 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.log.Profiler;
-import org.apache.bcel.generic.ConstantPoolGen;
 
 /**
  * Analysis factory which creates instances of ObligationDataflow.

@@ -36,6 +36,12 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
+
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.bugReporter.BugReporterDecorator;
 import edu.umd.cs.findbugs.bugReporter.BugReporterPlugin;
@@ -51,11 +57,6 @@ import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
 import edu.umd.cs.findbugs.plan.ReportingDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.SingleDetectorFactorySelector;
 import edu.umd.cs.findbugs.util.JavaWebStart;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.Node;
-import org.dom4j.io.SAXReader;
 
 /**
  * Loader for a FindBugs plugin. A plugin is a jar file containing two metadata

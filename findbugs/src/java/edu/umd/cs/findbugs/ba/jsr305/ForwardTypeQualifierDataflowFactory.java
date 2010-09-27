@@ -19,7 +19,15 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import java.util.Iterator;
+
+import javax.annotation.meta.When;
+
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.RETURN;
+import org.apache.bcel.generic.ReturnInstruction;
 
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -33,12 +41,6 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import java.util.Iterator;
-import javax.annotation.meta.When;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.RETURN;
-import org.apache.bcel.generic.ReturnInstruction;
 
 /**
  * Factory for producing ForwardTypeQualifierDataflow objects for various kinds

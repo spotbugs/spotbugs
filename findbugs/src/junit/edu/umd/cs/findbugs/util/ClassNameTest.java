@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.util;
 
-import edu.umd.cs.findbugs.util.ClassName;
 import junit.framework.TestCase;
 
 /**

@@ -33,7 +33,6 @@ import edu.umd.cs.findbugs.RecursiveFileSearch;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
-import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 
 /**
  * IScannableCodeBase implementation to read resources from a filesystem

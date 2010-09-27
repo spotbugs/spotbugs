@@ -20,10 +20,9 @@ package edu.umd.cs.findbugs.workflow;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.PackageStats;
-import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.PackageStats.ClassStats;
 
 /**
  * Java main application to compute defect density for a bug collection (stored

@@ -19,10 +19,10 @@
 
 package edu.umd.cs.findbugs.cloud.username;
 
+import java.io.IOException;
+
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
-
-import java.io.IOException;
 
 /**
  * @author pugh

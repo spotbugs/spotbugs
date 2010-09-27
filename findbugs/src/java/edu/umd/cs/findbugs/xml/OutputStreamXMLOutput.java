@@ -19,14 +19,16 @@
 
 package edu.umd.cs.findbugs.xml;
 
-import edu.umd.cs.findbugs.annotations.DischargesObligation;
-import edu.umd.cs.findbugs.util.Strings;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+
 import javax.annotation.WillCloseWhenClosed;
+
+import edu.umd.cs.findbugs.annotations.DischargesObligation;
+import edu.umd.cs.findbugs.util.Strings;
 
 /**
  * Write XML to an output stream.

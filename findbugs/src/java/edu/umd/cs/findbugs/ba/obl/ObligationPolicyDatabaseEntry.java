@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.obl;
 
 import java.util.Collection;
+
 import org.apache.bcel.generic.ReferenceType;
 
 /**

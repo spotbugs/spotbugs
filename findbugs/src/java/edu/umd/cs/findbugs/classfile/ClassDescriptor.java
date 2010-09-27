@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;

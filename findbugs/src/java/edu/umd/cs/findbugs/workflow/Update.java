@@ -39,10 +39,10 @@ import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.PackageStats;
+import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.VersionInsensitiveBugComparator;
-import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.model.MovedClassMap;
 

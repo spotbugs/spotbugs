@@ -19,11 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -51,9 +49,9 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
-import org.apache.bcel.generic.LoadInstruction;
 import org.apache.bcel.generic.LRETURN;
 import org.apache.bcel.generic.LSTORE;
+import org.apache.bcel.generic.LoadInstruction;
 import org.apache.bcel.generic.MULTIANEWARRAY;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NEWARRAY;
@@ -79,7 +77,6 @@ import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
-import edu.umd.cs.findbugs.props.PriorityAdjustment;
 import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
@@ -497,7 +494,7 @@ public class FindDeadLocalStores implements Detector {
                 if (parameterThatIsDeadAtEntry) {
                     propertySet.addProperty(DeadLocalStoreProperty.PARAM_DEAD_ON_ENTRY);
                     if (pendingBugReportAboutOverwrittenParameter != null)
-                        pendingBugReportAboutOverwrittenParameter.setPriority(Detector.HIGH_PRIORITY);
+                        pendingBugReportAboutOverwrittenParameter.setPriority(Priorities.HIGH_PRIORITY);
                 }
 
                 if (localStoreCount[local] > 3)

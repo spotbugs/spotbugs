@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 
 import junit.framework.TestCase;

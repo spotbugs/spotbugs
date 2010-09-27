@@ -456,16 +456,19 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
         return Global.getAnalysisCache().getDatabase(DirectlyRelevantTypeQualifiersDatabase.class);
     }
 
+    @Override
     public @CheckForNull
     XMethod getBridgeTo(MethodInfo m) {
         return bridgeTo.get(m);
     }
 
+    @Override
     public @CheckForNull
     XMethod getBridgeFrom(MethodInfo m) {
         return bridgeFrom.get(m);
     }
 
+    @Override
     public void setBridgeMethod(MethodInfo from, MethodInfo to) {
         bridgeTo.put(from, to);
         bridgeFrom.put(to, from);

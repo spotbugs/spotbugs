@@ -23,8 +23,8 @@ import java.io.File;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
-import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.taskdefs.Ant.Reference;
+import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 
 import edu.umd.cs.findbugs.ExitCodes;

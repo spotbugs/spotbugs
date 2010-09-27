@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.generic.Type;
+
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -30,16 +33,9 @@ import edu.umd.cs.findbugs.ba.ClassSummary;
 import edu.umd.cs.findbugs.ba.IncompatibleTypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.util.ClassName;
-
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.generic.Type;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackDetector implements FirstPassDetector {
 

@@ -18,7 +18,6 @@
  */
 package edu.umd.cs.findbugs.visitclass;
 
-import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -38,7 +37,6 @@ import org.apache.bcel.classfile.ElementValuePair;
 import org.apache.bcel.classfile.ParameterAnnotationEntry;
 import org.apache.bcel.classfile.ParameterAnnotations;
 import org.apache.bcel.classfile.SimpleElementValue;
-import org.apache.bcel.classfile.Unknown;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;

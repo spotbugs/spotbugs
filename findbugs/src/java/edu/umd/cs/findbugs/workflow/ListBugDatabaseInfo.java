@@ -21,16 +21,17 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 
+import org.dom4j.DocumentException;
+
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.config.CommandLine;
-import org.dom4j.DocumentException;
 
 /**
  * Java main application to compute update a historical bug collection with
@@ -111,11 +112,11 @@ public class ListBugDatabaseInfo {
         out.print('\t');
         out.print(stats.getTotalBugs());
         out.print('\t');
-        out.print(stats.getBugsOfPriority(Detector.HIGH_PRIORITY));
+        out.print(stats.getBugsOfPriority(Priorities.HIGH_PRIORITY));
         out.print('\t');
-        out.print(stats.getBugsOfPriority(Detector.NORMAL_PRIORITY));
+        out.print(stats.getBugsOfPriority(Priorities.NORMAL_PRIORITY));
         out.print('\t');
-        out.print(stats.getBugsOfPriority(Detector.LOW_PRIORITY));
+        out.print(stats.getBugsOfPriority(Priorities.LOW_PRIORITY));
         if (fileName != null) {
             out.print('\t');
             out.print(fileName);

@@ -19,19 +19,14 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
-import edu.umd.cs.findbugs.PluginLoader;
-import edu.umd.cs.findbugs.SystemProperties;
-
-import java.net.URL;
-import java.util.LinkedList;
-
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.generic.ReferenceType;
+
+import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * Policy database which defines which methods create and remove obligations.

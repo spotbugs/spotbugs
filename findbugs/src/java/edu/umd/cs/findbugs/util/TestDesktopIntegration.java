@@ -40,6 +40,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
 import edu.umd.cs.findbugs.SystemProperties;
@@ -126,8 +127,8 @@ public class TestDesktopIntegration extends JPanel {
         add(top, SHOW_CONSOLE ? BorderLayout.NORTH : BorderLayout.CENTER);
 
         if (SHOW_CONSOLE) {
-            JScrollPane scrollPane = new JScrollPane(console, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                    JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+            JScrollPane scrollPane = new JScrollPane(console, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
             console.setEditable(false);
             console.setLineWrap(true);
             add(scrollPane);

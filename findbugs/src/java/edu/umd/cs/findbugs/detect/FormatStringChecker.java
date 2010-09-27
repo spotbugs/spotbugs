@@ -20,10 +20,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -31,12 +27,11 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StringAnnotation;
-import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import edu.umd.cs.findbugs.formatStringChecker.Formatter;
 import edu.umd.cs.findbugs.formatStringChecker.ExtraFormatArgumentsException;
+import edu.umd.cs.findbugs.formatStringChecker.Formatter;
 import edu.umd.cs.findbugs.formatStringChecker.IllegalFormatConversionException;
 import edu.umd.cs.findbugs.formatStringChecker.MissingFormatArgumentException;
 

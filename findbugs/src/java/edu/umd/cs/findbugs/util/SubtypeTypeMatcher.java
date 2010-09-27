@@ -19,14 +19,14 @@
 
 package edu.umd.cs.findbugs.util;
 
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
+
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.ReferenceType;
-import org.apache.bcel.generic.Type;
 
 /**
  * Type matcher that determines if a candidate Type is a subtype of a given

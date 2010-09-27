@@ -29,6 +29,7 @@ import java.io.IOException;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
+
 import edu.umd.cs.findbugs.DiscoverSourceDirectories;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;

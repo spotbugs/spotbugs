@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import org.apache.bcel.classfile.Method;

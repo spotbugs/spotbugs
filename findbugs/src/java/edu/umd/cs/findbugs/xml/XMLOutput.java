@@ -19,9 +19,10 @@
 
 package edu.umd.cs.findbugs.xml;
 
-import edu.umd.cs.findbugs.annotations.DischargesObligation;
-import edu.umd.cs.findbugs.annotations.CleanupObligation;
 import java.io.IOException;
+
+import edu.umd.cs.findbugs.annotations.CleanupObligation;
+import edu.umd.cs.findbugs.annotations.DischargesObligation;
 
 /**
  * Interface to generate an XML document in some form. E.g., writing it to a

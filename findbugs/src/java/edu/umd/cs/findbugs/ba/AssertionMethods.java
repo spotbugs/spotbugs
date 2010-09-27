@@ -24,8 +24,6 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
-
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.Constant;

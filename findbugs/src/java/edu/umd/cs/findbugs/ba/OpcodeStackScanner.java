@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 

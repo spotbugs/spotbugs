@@ -59,11 +59,11 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.TypeAnnotation;
-import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -200,7 +200,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             super.initEntryFact(result);
             for (int i = 0; i < methodGen.getMaxLocals(); i++) {
                 Type t = result.getValue(i);
-                if (t.equals(ObjectType.STRING)) {
+                if (t.equals(Type.STRING)) {
                     result.setValue(i, parameterStringTypeInstance);
                 }
             }
@@ -872,7 +872,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                         SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
                 return;
             }
-            if (lhsType.equals(ObjectType.OBJECT) && rhsType.equals(ObjectType.OBJECT))
+            if (lhsType.equals(Type.OBJECT) && rhsType.equals(Type.OBJECT))
                 return;
             String lhs = SignatureConverter.convert(lhsType.getSignature());
             String rhs = SignatureConverter.convert(rhsType.getSignature());

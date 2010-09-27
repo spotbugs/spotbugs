@@ -1,8 +1,8 @@
 package edu.umd.cs.findbugs.ba.npe;
 
-import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 
 public class NonNullParamPropertyTest extends TestCase {
 

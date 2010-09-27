@@ -93,7 +93,7 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
 
         for (BasicBlock b : cfg.getBlocksContainingInstructionWithOffset(pc))
             if (b.getFirstInstruction() != null && b.getFirstInstruction().getPosition() == pc) {
-                BasicBlock b2 = cfg.getPredecessorWithEdgeType(b, Edge.FALL_THROUGH_EDGE);
+                BasicBlock b2 = cfg.getPredecessorWithEdgeType(b, EdgeTypes.FALL_THROUGH_EDGE);
                 for (Iterator<Edge> i = cfg.incomingEdgeIterator(b2); i.hasNext();) {
                     Edge e = i.next();
                     FrameType fact = getFactOnEdge(e);

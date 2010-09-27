@@ -28,8 +28,8 @@ import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.asm.AbstractFBMethodVisitor;
 import edu.umd.cs.findbugs.asm.ClassNodeDetector;
 
@@ -81,7 +81,7 @@ public class TestASM extends ClassNodeDetector {
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         if ((access & Opcodes.ACC_STATIC) != 0 && (access & Opcodes.ACC_FINAL) != 0 && (access & Opcodes.ACC_PUBLIC) != 0
                 && !name.equals(name.toUpperCase()))
-            bugReporter.reportBug(new BugInstance(this, "NM_FIELD_NAMING_CONVENTION", Detector2.LOW_PRIORITY).addClass(this)
+            bugReporter.reportBug(new BugInstance(this, "NM_FIELD_NAMING_CONVENTION", Priorities.LOW_PRIORITY).addClass(this)
                     .addField(this.name, name, desc, access));
         return null;
     }

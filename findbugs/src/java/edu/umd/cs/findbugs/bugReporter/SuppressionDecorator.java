@@ -32,7 +32,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**

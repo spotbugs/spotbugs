@@ -19,10 +19,12 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import edu.umd.cs.findbugs.FindBugsCommandLine;
 import java.io.File;
 import java.io.IOException;
+
 import javax.swing.UIManager;
+
+import edu.umd.cs.findbugs.FindBugsCommandLine;
 
 /**
  * Command line switches/options for GUI2.

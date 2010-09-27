@@ -47,7 +47,6 @@ import javax.annotation.WillClose;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.classfile.ReflectionDatabaseFactory;
 import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.Util;
 

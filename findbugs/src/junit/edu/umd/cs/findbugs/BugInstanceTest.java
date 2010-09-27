@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
-import edu.umd.cs.findbugs.xml.XMLOutput;
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class BugInstanceTest extends TestCase {
     static {
@@ -20,7 +20,7 @@ public class BugInstanceTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        b = new BugInstance("NP_NULL_DEREF", Detector.NORMAL_PRIORITY);
+        b = new BugInstance("NP_NULL_DEREF", Priorities.NORMAL_PRIORITY);
         b.setProperty("A", "a");
         b.setProperty("B", "b");
         b.setProperty("C", "c");

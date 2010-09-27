@@ -19,10 +19,11 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import edu.umd.cs.findbugs.classfile.UncheckedAnalysisException;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
+
+import edu.umd.cs.findbugs.classfile.UncheckedAnalysisException;
 
 /**
  * A kind of runtime exception that can be thrown to indicate a fatal error in

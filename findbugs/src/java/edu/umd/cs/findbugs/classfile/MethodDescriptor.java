@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**

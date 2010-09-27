@@ -24,7 +24,6 @@ import java.util.Map;
 import javax.annotation.CheckReturnValue;
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.Priorities;
 
@@ -204,7 +203,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
                     atMostMedium = true;
                 } else if (adj == PriorityAdjustment.RAISE_PRIORITY_TO_HIGH) {
 
-                    return Detector.HIGH_PRIORITY;
+                    return Priorities.HIGH_PRIORITY;
                 } else if (adj == PriorityAdjustment.LOWER_PRIORITY) {
                     ++priority;
                 } else if (adj == PriorityAdjustment.AT_MOST_LOW) {
@@ -224,19 +223,19 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
             else if (aLittleBitLower <= -2)
                 priority--;
             if (atMostMedium)
-                priority = Math.max(Detector.NORMAL_PRIORITY, priority);
+                priority = Math.max(Priorities.NORMAL_PRIORITY, priority);
 
             if (falsePositive && !atLeastMedium)
-                return Detector.EXP_PRIORITY + 1;
+                return Priorities.EXP_PRIORITY + 1;
             else if (atMostLow)
-                return Math.min(Math.max(Detector.LOW_PRIORITY, priority), Detector.EXP_PRIORITY);
-            if (atLeastMedium && priority > Detector.NORMAL_PRIORITY)
-                priority = Detector.NORMAL_PRIORITY;
+                return Math.min(Math.max(Priorities.LOW_PRIORITY, priority), Priorities.EXP_PRIORITY);
+            if (atLeastMedium && priority > Priorities.NORMAL_PRIORITY)
+                priority = Priorities.NORMAL_PRIORITY;
 
-            if (priority < Detector.HIGH_PRIORITY)
-                priority = Detector.HIGH_PRIORITY;
-            else if (priority > Detector.EXP_PRIORITY)
-                priority = Detector.EXP_PRIORITY;
+            if (priority < Priorities.HIGH_PRIORITY)
+                priority = Priorities.HIGH_PRIORITY;
+            else if (priority > Priorities.EXP_PRIORITY)
+                priority = Priorities.EXP_PRIORITY;
         }
 
         return priority;
@@ -252,7 +251,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
      *         not
      */
     public boolean isFalsePositive(int priority) {
-        return priority > Detector.EXP_PRIORITY;
+        return priority > Priorities.EXP_PRIORITY;
     }
 
     /**
