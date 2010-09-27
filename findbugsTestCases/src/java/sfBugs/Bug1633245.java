@@ -8,6 +8,7 @@ public class Bug1633245 {
     }
 
     static class FooImpl implements Foo {
+        @Override
         public int f(Object x) {
             return x.hashCode();
         }

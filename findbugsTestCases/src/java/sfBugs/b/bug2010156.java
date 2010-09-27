@@ -88,10 +88,12 @@ public class bug2010156 extends sfBugs.a.bug2010156 {
             return var;
         }
 
+        @Override
         public void readExternal(ObjectInput in) {
             var = 0;
         }
 
+        @Override
         public void writeExternal(ObjectOutput out) {
             var = 1;
         }
@@ -119,6 +121,7 @@ public class bug2010156 extends sfBugs.a.bug2010156 {
          * based on findbugsTestCases/src/java/Comparador.java
          * ********************
          */
+        @Override
         public int compare(Object arg0, Object arg1) {
             return arg0.hashCode() - arg1.hashCode();
         }

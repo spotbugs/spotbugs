@@ -7,6 +7,7 @@ public class Bug2824160a implements Comparable<Object> {
         str = s;
     }
 
+    @Override
     public int compareTo(Object o) {
         // TODO Auto-generated method stub
         return 0;

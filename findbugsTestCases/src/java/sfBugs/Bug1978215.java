@@ -12,6 +12,7 @@ public class Bug1978215 implements Runnable {
         m_msg = "Hello world!";
     }
 
+    @Override
     public void run() {
         System.out.println(m_msg);
     }

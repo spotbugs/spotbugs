@@ -12,6 +12,7 @@ public class Bug1911617 implements Cloneable {
         }
     }
 
+    @Override
     public Object clone() {
         return null;
     }

@@ -36,6 +36,7 @@ public class Bug1994945 implements Serializable {
 
         transient Object z;
 
+        @Override
         public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
             x = in.readInt();
             y = in.readInt();
@@ -43,6 +44,7 @@ public class Bug1994945 implements Serializable {
 
         }
 
+        @Override
         public void writeExternal(ObjectOutput out) throws IOException {
             // TODO Auto-generated method stub
 

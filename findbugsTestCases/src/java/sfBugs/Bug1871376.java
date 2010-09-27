@@ -101,6 +101,7 @@ public class Bug1871376 implements Serializable {
 
         private final Map<String, String> m_map = new HashMap<String, String>();
 
+        @Override
         public Set<java.util.Map.Entry<String, String>> entrySet() {
 
             return m_map.entrySet();

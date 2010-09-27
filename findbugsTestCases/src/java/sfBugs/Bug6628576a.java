@@ -8,10 +8,12 @@ public class Bug6628576a {
 
     }
 
+    @Override
     public int hashCode() {
         return 42;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Bug6628576a))
             return false;

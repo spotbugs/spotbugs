@@ -1,8 +1,5 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.DesireWarning;
-import edu.umd.cs.findbugs.annotations.NoWarning;
-
 public class Bug2888644 {
     private static String assignMe = null;
 

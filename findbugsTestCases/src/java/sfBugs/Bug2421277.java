@@ -31,21 +31,25 @@ public class Bug2421277 implements javax.ejb.SessionBean, Serializable {
 
     private FakeRemoteReference remoteReference;
 
+    @Override
     public void ejbActivate() throws EJBException, RemoteException {
         // TODO Auto-generated method stub
 
     }
 
+    @Override
     public void ejbPassivate() throws EJBException, RemoteException {
         // TODO Auto-generated method stub
 
     }
 
+    @Override
     public void ejbRemove() throws EJBException, RemoteException {
         // TODO Auto-generated method stub
 
     }
 
+    @Override
     public void setSessionContext(SessionContext arg0) throws EJBException, RemoteException {
         // TODO Auto-generated method stub
 

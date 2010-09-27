@@ -11,6 +11,7 @@ public class Bug2088311 implements Comparable<Bug2088311> {
         return begin;
     }
 
+    @Override
     public int compareTo(Bug2088311 other) {
         if (getBegin() == null) {
             return -1;

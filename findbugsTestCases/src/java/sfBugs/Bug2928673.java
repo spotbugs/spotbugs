@@ -3,7 +3,6 @@ package sfBugs;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Formatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

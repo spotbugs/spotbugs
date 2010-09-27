@@ -22,6 +22,7 @@ public class Bug2893480 {
     private final class Actie1 extends AbstractAction {
         private static final long serialVersionUID = 1L;
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             System.out.println(message);
         }
@@ -29,6 +30,7 @@ public class Bug2893480 {
     }
 
     private final class Actie2 extends AbstractAction {
+        @Override
         public void actionPerformed(ActionEvent e) {
             System.out.println(message);
         }
@@ -38,6 +40,7 @@ public class Bug2893480 {
     private final class Actie3 extends AbstractAction implements Serializable {
         private static final long serialVersionUID = 1L;
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             System.out.println(message);
         }
@@ -49,6 +52,7 @@ public class Bug2893480 {
             in.defaultReadObject();
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             System.out.println(message);
         }

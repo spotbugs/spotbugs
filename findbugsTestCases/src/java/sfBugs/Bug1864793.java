@@ -8,7 +8,7 @@ public class Bug1864793 {
 
         // Example 1 -- issue
 
-        if (data_source_directory == (String) null) {
+        if (data_source_directory == null) {
             // *boum*
         }
         this.data_source_directory = data_source_directory;
@@ -31,7 +31,7 @@ public class Bug1864793 {
 
         String s = "hi !";
 
-        if (s == (String) null) {
+        if (s == null) {
             // *boum*
         }
 

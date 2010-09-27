@@ -9,10 +9,12 @@ public class Bug1983674 {
         this.maskLength = maskLength;
     }
 
+    @Override
     public int hashCode() {
         return 42;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Bug1983674)) {
             return false;

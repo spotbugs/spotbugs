@@ -28,6 +28,7 @@ public class Bug1923609 {
     // serializable) Threads.
 
     static class DummyThread extends Thread {
+        @Override
         public void run() {
             System.out.println("Dummy");
         }
@@ -57,61 +58,73 @@ public class Bug1923609 {
             return dummy;
         }
 
+        @Override
         public void clear() {
             // TODO Auto-generated method stub
 
         }
 
+        @Override
         public boolean containsKey(Object key) {
             // TODO Auto-generated method stub
             return false;
         }
 
+        @Override
         public boolean containsValue(Object value) {
             // TODO Auto-generated method stub
             return false;
         }
 
+        @Override
         public Set<java.util.Map.Entry<T1, T2>> entrySet() {
             // TODO Auto-generated method stub
             return null;
         }
 
+        @Override
         public T2 get(Object key) {
             // TODO Auto-generated method stub
             return null;
         }
 
+        @Override
         public boolean isEmpty() {
             // TODO Auto-generated method stub
             return false;
         }
 
+        @Override
         public Set<T1> keySet() {
             // TODO Auto-generated method stub
             return null;
         }
 
+        @Override
         public T2 put(T1 key, T2 value) {
             // TODO Auto-generated method stub
             return null;
         }
 
+        @Override
         public void putAll(Map<? extends T1, ? extends T2> t) {
             // TODO Auto-generated method stub
 
         }
 
+        @Override
         public T2 remove(Object key) {
             // TODO Auto-generated method stub
             return null;
         }
 
+        @Override
         public int size() {
             // TODO Auto-generated method stub
             return 0;
         }
 
+        @Override
         public Collection<T2> values() {
             // TODO Auto-generated method stub
             return null;

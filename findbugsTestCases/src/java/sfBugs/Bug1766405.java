@@ -26,11 +26,11 @@ public class Bug1766405 {
         String foo = "foo";
         String strHtml = "<TR>" + "<TD CLASS='Cellule'>" + foo + "</TD>";
         for (int j = 0; j < baz.size(); j++) {
-            Vector row = (Vector) baz.get(j);
+            Vector row = baz.get(j);
             if (j > 0) {
                 strHtml = "<TR>" + "<TD CLASS='Cellule'>&nbsp;</TD>";
             }
-            strHtml += "<TD><INPUT TYPE='CHECKBOX'>" + (String) vecRow.get(0) + "</TD>" + "<TD>" + row.get(1) + "</TD>" + "<TD>"
+            strHtml += "<TD><INPUT TYPE='CHECKBOX'>" + vecRow.get(0) + "</TD>" + "<TD>" + row.get(1) + "</TD>" + "<TD>"
                     + row.get(2) + "</TD>" + "<TD>" + row.get(3) + "</TD>" + "<TD>" + row.get(4) + "</TD>" + "<TD>" + row.get(5)
                     + "</TD>" + "<TD ALIGN=RIGHT>" + row.get(6) + "</TD>" + "</TR>";
             bw.write(strHtml);
@@ -46,8 +46,8 @@ public class Bug1766405 {
         String foo = "foo";
         String strHtml = "<TR>" + "<TD CLASS='Cellule'>" + foo + "</TD>";
         for (int j = 0; j < baz.size(); j++) {
-            Vector row = (Vector) baz.get(j);
-            strHtml += "<TD><INPUT TYPE='CHECKBOX'>" + (String) vecRow.get(0) + "</TD>" + "<TD>" + row.get(1) + "</TD>" + "<TD>"
+            Vector row = baz.get(j);
+            strHtml += "<TD><INPUT TYPE='CHECKBOX'>" + vecRow.get(0) + "</TD>" + "<TD>" + row.get(1) + "</TD>" + "<TD>"
                     + row.get(2) + "</TD>" + "<TD>" + row.get(3) + "</TD>" + "<TD>" + row.get(4) + "</TD>" + "<TD>" + row.get(5)
                     + "</TD>" + "<TD ALIGN=RIGHT>" + row.get(6) + "</TD>" + "</TR>";
             bw.write(strHtml);
@@ -63,8 +63,8 @@ public class Bug1766405 {
         String foo = "foo";
         String strHtml = "<TR>" + "<TD CLASS='Cellule'>" + foo + "</TD>";
         for (int j = 0; j < baz.size(); j++) {
-            Vector row = (Vector) baz.get(j);
-            strHtml += "<TD><INPUT TYPE='CHECKBOX'>" + (String) vecRow.get(0) + "</TD>" + "<TD>" + row.get(1) + "</TD>" + "<TD>"
+            Vector row = baz.get(j);
+            strHtml += "<TD><INPUT TYPE='CHECKBOX'>" + vecRow.get(0) + "</TD>" + "<TD>" + row.get(1) + "</TD>" + "<TD>"
                     + row.get(2) + "</TD>" + "<TD>" + row.get(3) + "</TD>" + "<TD>" + row.get(4) + "</TD>" + "<TD>" + row.get(5)
                     + "</TD>" + "<TD ALIGN=RIGHT>" + row.get(6) + "</TD>" + "</TR>";
             strHtml = strHtml + "blah";
@@ -81,8 +81,8 @@ public class Bug1766405 {
         String foo = "foo";
         String strHtml = "<TR>" + "<TD CLASS='Cellule'>" + foo + "</TD>";
         for (int j = 0; j < baz.size(); j++) {
-            Vector row = (Vector) baz.get(j);
-            strHtml += "<TD><INPUT TYPE='CHECKBOX'>" + (String) vecRow.get(0) + "</TD>" + "<TD>" + row.get(1) + "</TD>" + "<TD>"
+            Vector row = baz.get(j);
+            strHtml += "<TD><INPUT TYPE='CHECKBOX'>" + vecRow.get(0) + "</TD>" + "<TD>" + row.get(1) + "</TD>" + "<TD>"
                     + row.get(2) + "</TD>" + "<TD>" + row.get(3) + "</TD>" + "<TD>" + row.get(4) + "</TD>" + "<TD>" + row.get(5)
                     + "</TD>" + "<TD ALIGN=RIGHT>" + row.get(6) + "</TD>" + "</TR>";
             System.out.println(strHtml);

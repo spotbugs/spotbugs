@@ -7,12 +7,14 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 public class Bug2922917 {
     int x, y, z;
 
+    @Override
     public int hashCode() {
         return x + y + z;
     }
 
     static class A extends Bug2922917 {
 
+        @Override
         public boolean equals(Object obj) {
             if (obj == null) {
                 return false;
@@ -32,6 +34,7 @@ public class Bug2922917 {
 
     static class B extends Bug2922917 {
 
+        @Override
         public boolean equals(Object obj) {
             return EqualsBuilder.reflectionEquals(this, obj);
         }
@@ -40,6 +43,7 @@ public class Bug2922917 {
 
     static class C extends Bug2922917 {
 
+        @Override
         public boolean equals(Object obj) {
             return EqualsBuilder.reflectionEquals(this, obj, new String[] { "x", "y" });
         }
@@ -48,6 +52,7 @@ public class Bug2922917 {
 
     static class D extends Bug2922917 {
 
+        @Override
         public boolean equals(Object obj) {
             return EqualsBuilder.reflectionEquals(this, obj, Arrays.asList(new String[] { "x", "y" }));
         }
@@ -56,6 +61,7 @@ public class Bug2922917 {
 
     static class E extends Bug2922917 {
 
+        @Override
         public boolean equals(Object obj) {
             return EqualsBuilder.reflectionEquals(this, obj, false);
         }
@@ -64,6 +70,7 @@ public class Bug2922917 {
 
     static class F extends Bug2922917 {
 
+        @Override
         public boolean equals(Object obj) {
             return EqualsBuilder.reflectionEquals(this, obj, false, Bug2922917.class);
         }
@@ -72,6 +79,7 @@ public class Bug2922917 {
 
     static class G extends Bug2922917 {
 
+        @Override
         public boolean equals(Object obj) {
             return EqualsBuilder.reflectionEquals(this, obj, false, Bug2922917.class, new String[] { "x", "y" });
         }

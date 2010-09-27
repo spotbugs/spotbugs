@@ -24,6 +24,7 @@ public class Bug1718130 {
         z = y;
     }
 
+    @Override
     public int hashCode() {
         return x.hashCode() + y.hashCode() + z.hashCode();
     }
