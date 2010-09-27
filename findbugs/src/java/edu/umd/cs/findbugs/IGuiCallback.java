@@ -92,6 +92,10 @@ public interface IGuiCallback {
         private List<String> possibleValues;
 
         private JComponent field;
+        
+        private String currentValue;
+        
+        private List<FormItem> items;
 
         public FormItem(String label) {
             this(label, null, null);
@@ -134,6 +138,25 @@ public interface IGuiCallback {
 
         public void setField(JComponent field) {
             this.field = field;
+        }
+
+        public void setItems(List<FormItem> items) {
+            this.items = items;
+        }
+
+        public List<FormItem> getItems() {
+            return items;
+        }
+
+        public void setCurrentValue(String currentValue) {
+            this.currentValue = currentValue;
+        }
+
+        public String getCurrentValue() {
+            return currentValue;
+        }
+
+        public void updated() {
         }
     }
 }

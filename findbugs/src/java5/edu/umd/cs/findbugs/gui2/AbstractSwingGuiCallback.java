@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -19,9 +21,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.MutableComboBoxModel;
 import javax.swing.ProgressMonitor;
 import javax.swing.ProgressMonitorInputStream;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
 import edu.umd.cs.findbugs.AWTEventQueueExecutor;
@@ -91,57 +96,13 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
     }
 
     public List<String> showForm(String message, String title, List<FormItem> items) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1;
-        gbc.weighty = 0;
-        gbc.gridwidth = 2;
-        gbc.gridy = 1;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        panel.add(new JLabel(message), gbc);
-        gbc.gridwidth = 1;
-        for (FormItem item : items) {
-            gbc.gridy++;
-            panel.add(new JLabel(item.getLabel()), gbc);
-            String defaultValue = item.getDefaultValue();
-            if (item.getPossibleValues() != null) {
-                DefaultComboBoxModel model = new DefaultComboBoxModel();
-                JComboBox box = new JComboBox(model);
-                item.setField(box);
-                for (String possibleValue : item.getPossibleValues()) {
-                    model.addElement(possibleValue);
-                }
-                if (defaultValue == null)
-                    model.setSelectedItem(model.getElementAt(0));
-                else
-                    model.setSelectedItem(defaultValue);
-                panel.add(box, gbc);
-
-            } else {
-                JTextField field = (item.isPassword() ? new JPasswordField() : new JTextField());
-                if (defaultValue != null) {
-                    field.setText(defaultValue);
-                }
-                item.setField(field);
-                panel.add(field, gbc);
-            }
-        }
-
-        int result = JOptionPane.showConfirmDialog(parent, panel, title, JOptionPane.OK_CANCEL_OPTION);
+        int result = showFormDialog(message, title, items);
         if (result != JOptionPane.OK_OPTION)
             return null;
+        updateFormItemsFromGui(items);
         List<String> results = new ArrayList<String>();
         for (FormItem item : items) {
-            JComponent field = item.getField();
-            if (field instanceof JTextComponent) {
-                JTextComponent textComponent = (JTextComponent) field;
-                results.add(textComponent.getText());
-            } else if (field instanceof JComboBox) {
-                JComboBox box = (JComboBox) field;
-                results.add((String) box.getSelectedItem());
-            }
+            results.add(item.getCurrentValue());
         }
         return results;
     }
@@ -156,5 +117,142 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
 
     public void invokeInGUIThread(Runnable r) {
         SwingUtilities.invokeLater(r);
+    }
+
+
+    private void updateFormItemsFromGui(List<FormItem> items) {
+        for (FormItem item : items) {
+            JComponent field = item.getField();
+            if (field instanceof JTextComponent) {
+                JTextComponent textComponent = (JTextComponent) field;
+                item.setCurrentValue(textComponent.getText());
+
+            } else if (field instanceof JComboBox) {
+                JComboBox box = (JComboBox) field;
+                String value = (String) box.getSelectedItem();
+                item.setCurrentValue(value);
+            }
+            item.updated();
+        }
+        updateComboBoxes(items);
+    }
+
+    private void updateComboBoxes(List<FormItem> items) {
+        for (FormItem item : items) {
+            JComponent field = item.getField();
+            if (field instanceof JComboBox) {
+                JComboBox box = (JComboBox) field;
+                List<String> newPossibleValues = item.getPossibleValues();
+                if (!boxModelIsSame(box, newPossibleValues)) {
+                    MutableComboBoxModel mmodel = (MutableComboBoxModel) box.getModel();
+                    replaceBoxModelValues(mmodel, newPossibleValues);
+                    mmodel.setSelectedItem(item.getCurrentValue());
+                }
+            }
+        }
+    }
+
+    private void replaceBoxModelValues(MutableComboBoxModel mmodel, List<String> newPossibleValues) {
+        try {
+            while (mmodel.getSize() > 0)
+                mmodel.removeElementAt(0);
+        } catch (Exception e) {
+            // ignore weird index out of bounds exceptions
+        }
+        for (String value : newPossibleValues) {
+            mmodel.addElement(value);
+        }
+    }
+
+    private boolean boxModelIsSame(JComboBox box, List<String> newPossibleValues) {
+        boolean same = true;
+        if (box.getModel().getSize() != newPossibleValues.size())
+            same = false;
+        else
+            for (int i = 0; i < box.getModel().getSize(); i++) {
+                if (!box.getModel().getElementAt(i).equals(newPossibleValues.get(i))) {
+                    same = false;
+                    break;
+                }
+            }
+        return same;
+    }
+
+    private int showFormDialog(String message, String title, final List<FormItem> items) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1;
+        gbc.weighty = 0;
+        gbc.gridwidth = 2;
+        gbc.gridy = 1;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        panel.add(new JLabel(message), gbc);
+        gbc.gridwidth = 1;
+
+        for (FormItem item : items) {
+            item.setItems(items);
+            gbc.gridy++;
+            panel.add(new JLabel(item.getLabel()), gbc);
+            String defaultValue = item.getDefaultValue();
+            if (item.getPossibleValues() != null) {
+                JComboBox box = createComboBox(items, item);
+                panel.add(box, gbc);
+
+            } else {
+                JTextField field = createTextField(items, item);
+                panel.add(field, gbc);
+            }
+        }
+
+        return JOptionPane.showConfirmDialog(parent, panel, title, JOptionPane.OK_CANCEL_OPTION);
+    }
+
+    private JTextField createTextField(final List<FormItem> items, FormItem item) {
+        String defaultValue = item.getDefaultValue();
+        JTextField field = (item.isPassword() ? new JPasswordField() : new JTextField());
+        if (defaultValue != null) {
+            field.setText(defaultValue);
+        }
+        item.setField(field);
+        field.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) {
+                changed();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                changed();
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                changed();
+            }
+
+            private void changed() {
+                updateFormItemsFromGui(items);
+            }
+        });
+        return field;
+    }
+
+    private JComboBox createComboBox(final List<FormItem> items, FormItem item) {
+        DefaultComboBoxModel model = new DefaultComboBoxModel();
+        JComboBox box = new JComboBox(model);
+        item.setField(box);
+        for (String possibleValue : item.getPossibleValues()) {
+            model.addElement(possibleValue);
+        }
+        String defaultValue = item.getDefaultValue();
+        if (defaultValue == null)
+            model.setSelectedItem(model.getElementAt(0));
+        else
+            model.setSelectedItem(defaultValue);
+        box.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                updateFormItemsFromGui(items);
+            }
+        });
+        return box;
     }
 }

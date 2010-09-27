@@ -1,20 +1,5 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import com.atlassian.jira.rpc.soap.beans.RemoteComponent;
-import com.atlassian.jira.rpc.soap.beans.RemoteIssue;
-import com.atlassian.jira.rpc.soap.beans.RemoteIssueType;
-import com.atlassian.jira.rpc.soap.beans.RemoteProject;
-import com.atlassian.jira.rpc.soap.beans.RemoteStatus;
-import com.atlassian.jira.rpc.soap.jirasoapservice_v2.JiraSoapService;
-import com.atlassian.jira.rpc.soap.jirasoapservice_v2.JiraSoapServiceServiceLocator;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.BugFiler;
-import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
-import edu.umd.cs.findbugs.cloud.SignInCancelledException;
-
-import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,11 +9,32 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.rpc.ServiceException;
+
+import com.atlassian.jira.rpc.soap.beans.RemoteComponent;
+import com.atlassian.jira.rpc.soap.beans.RemoteIssue;
+import com.atlassian.jira.rpc.soap.beans.RemoteIssueType;
+import com.atlassian.jira.rpc.soap.beans.RemoteProject;
+import com.atlassian.jira.rpc.soap.beans.RemoteStatus;
+import com.atlassian.jira.rpc.soap.jirasoapservice_v2.JiraSoapService;
+import com.atlassian.jira.rpc.soap.jirasoapservice_v2.JiraSoapServiceServiceLocator;
+import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.BugFiler;
+import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
+import edu.umd.cs.findbugs.cloud.SignInCancelledException;
+
 public class JiraBugFiler implements BugFiler {
+    private static final Logger LOGGER = Logger.getLogger(JiraBugFiler.class.getName());
+
     private static final Pattern BUG_LINK_PATTERN = Pattern.compile("(.*?)/browse/(.*-\\d+).*");
 
     private final AppEngineCloudClient appEngineCloudClient;
@@ -74,8 +80,7 @@ public class JiraBugFiler implements BugFiler {
         return null;
     }
 
-    // ============================== end of public methods
-    // ==============================
+    // ============================== end of public methods ==============================
 
     private List<String> getProjectKeys(String baseUrl) throws java.rmi.RemoteException, MalformedURLException, ServiceException {
         JiraSession session = getJiraSession(baseUrl);
@@ -88,7 +93,7 @@ public class JiraBugFiler implements BugFiler {
         return projectKeys;
     }
 
-    @SuppressWarnings({ "UnusedDeclaration" })
+    @SuppressWarnings("UnusedDeclaration")
     private List<String> getComponentNames(String baseUrl, String key) throws java.rmi.RemoteException, MalformedURLException,
             ServiceException {
         JiraSession session = getJiraSession(baseUrl);
@@ -172,7 +177,7 @@ public class JiraBugFiler implements BugFiler {
         Preferences prefs = Preferences.userNodeForPackage(JiraBugFiler.class);
         String lastUsername = prefs.get(usernameKey, "");
         List<String> results = callback.showForm(
-                "Enter JIRA username and password for\n" + baseUrl,
+                "Enter JIRA username and password for \n" + baseUrl,
                 "JIRA",
                 Arrays.asList(new IGuiCallback.FormItem("Username", lastUsername),
                         new IGuiCallback.FormItem("Password").password()));
@@ -205,14 +210,35 @@ public class JiraBugFiler implements BugFiler {
         return actualComponent;
     }
 
-    private URL actuallyFile(BugInstance b, String trackerUrl) throws ServiceException, IOException, SignInCancelledException {
+    private URL actuallyFile(BugInstance b, final String trackerUrl) throws ServiceException, IOException, SignInCancelledException {
         IGuiCallback callback = appEngineCloudClient.getGuiCallback();
         List<String> issueTypes = getIssueTypes(trackerUrl);
         if (issueTypes == null)
             return null;
-        List<String> result = callback.showForm("", "File a bug on JIRA", Arrays.asList(new IGuiCallback.FormItem("Project",
-                null, getProjectKeys(trackerUrl)), new IGuiCallback.FormItem("Component"), new IGuiCallback.FormItem("Type",
-                null, issueTypes)));
+        List<String> result = callback.showForm("", "File a bug on JIRA",
+                Arrays.asList(new IGuiCallback.FormItem("Project", null, getProjectKeys(trackerUrl)),
+                        new IGuiCallback.FormItem("Component") {
+                            private String lastProjectKey = "";
+                            public List<String> componentNames = Lists.newArrayList();
+
+                            @Override
+                            public List<String> getPossibleValues() {
+                                if (getItems() != null) {
+                                    String newProjectKey = getItems().get(0).getCurrentValue();
+                                    if (newProjectKey != null && !lastProjectKey.equals(newProjectKey)) {
+                                        this.lastProjectKey = newProjectKey;
+                                        try {
+                                            componentNames = getComponentNames(trackerUrl, newProjectKey);
+                                        } catch (Exception e) {
+                                            LOGGER.log(Level.SEVERE, "Error connecting to JIRA at " + trackerUrl, e);
+                                            componentNames = new ArrayList<String>();
+                                        }
+                                    }
+                                }
+                                return componentNames;
+                            }
+                        },
+                        new IGuiCallback.FormItem("Type", null, issueTypes)));
         if (result == null)
             return null; // user cancelled
         RemoteIssue issue = fileBug(trackerUrl, b, result.get(0), result.get(1), result.get(2));
