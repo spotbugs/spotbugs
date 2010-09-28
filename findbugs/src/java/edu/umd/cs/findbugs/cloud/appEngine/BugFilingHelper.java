@@ -40,8 +40,11 @@ public class BugFilingHelper {
 
     }
 
-    public String lookupBugStatus(final BugInstance b) {
+    public @CheckForNull String lookupBugStatus(final BugInstance b) {
         if (appEngineCloudClient.getBugLinkStatus(b) == Cloud.BugFilingStatus.FILE_BUG)
+            return null;
+
+        if (bugFiler == null)
             return null;
 
         String status;
@@ -67,6 +70,9 @@ public class BugFilingHelper {
 
     @SuppressWarnings({"DuplicateThrows"})
     public URL fileBug(BugInstance b) throws SignInCancelledException, Exception {
+        if (!bugFilingAvailable())
+            throw new IllegalStateException("Bug filing is not available");
+        
         return bugFiler.file(b);
     }
 
