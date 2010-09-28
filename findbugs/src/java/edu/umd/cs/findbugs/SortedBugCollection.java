@@ -422,6 +422,11 @@ public class SortedBugCollection implements BugCollection {
         if (withMessages) {
             Cloud cloud = getCloud();
             cloud.waitUntilIssueDataDownloaded();
+            String token = SystemProperties.getProperty("findbugs.cloud.token");
+            if (token != null && token.trim().length() > 0) {
+                LOGGER.info("Cloud token specified - uploading new issues, if necessary...");
+                cloud.waitUntilNewIssuesUploaded();
+            }
             xmlOutput = new OutputStreamXMLOutput(out, "http://findbugs.sourceforge.net/xsl/default.xsl");
         } else {
             xmlOutput = new OutputStreamXMLOutput(out);

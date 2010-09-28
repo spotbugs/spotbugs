@@ -289,8 +289,9 @@ public class AppEngineCloudNetworkClient {
         final int bugCount = newBugs.size();
         if (bugCount == 0)
             return null;
-        cloudClient.signInIfNecessary("Some bugs were not found on the " + cloudClient.getCloudName() + ".\n"
-                + "Would you like to sign in and upload them to the Cloud?");
+        if (cloudClient.getCloudTokenProperty() == null)
+            cloudClient.signInIfNecessary("Some bugs were not found on the " + cloudClient.getCloudName() + ".\n"
+                    + "Would you like to sign in and upload them to the Cloud?");
         final MutableCloudTask task = cloudClient.createTask("Uploading to the " + cloudClient.getCloudName());
         final AtomicInteger bugsUploaded = new AtomicInteger(0);
         for (int i = 0; i < bugCount; i += BUG_UPLOAD_PARTITION_SIZE) {
@@ -582,8 +583,8 @@ public class AppEngineCloudNetworkClient {
         conn.disconnect();
         int foundIssues = response.getFoundIssuesCount();
         elapsed = System.currentTimeMillis() - start;
-        LOGGER.fine("Received " + foundIssues + " bugs from server in " + elapsed + "ms (" + (elapsed / (foundIssues + 1))
-                + "ms per bug)");
+        LOGGER.fine("Received " + foundIssues + " bugs from server in " + elapsed + "ms ("
+                + (elapsed / (foundIssues + 1)) + "ms per bug)");
         return response;
     }
 
@@ -621,15 +622,23 @@ public class AppEngineCloudNetworkClient {
 
         Future<UploadIssues> future = updateExecutor.submit(new Callable<UploadIssues>() {
             public UploadIssues call() throws Exception {
-                Builder issueList = UploadIssues.newBuilder();
-                issueList.setSessionId(sessionId);
+                Builder uploadIssuesCmd = UploadIssues.newBuilder();
+                if (cloudClient.getCloudTokenProperty() != null) {
+                    uploadIssuesCmd.setToken(cloudClient.getCloudTokenProperty());
+                    LOGGER.info("Using Cloud Token: " + cloudClient.getCloudTokenProperty());
+                }
+                if (sessionId != null)
+                    uploadIssuesCmd.setSessionId(sessionId);
+
                 for (BugInstance bug : bugsToSend) {
-                    issueList.addNewIssues(Issue.newBuilder().setHash(AppEngineProtoUtil.encodeHash(bug.getInstanceHash()))
+                    uploadIssuesCmd.addNewIssues(Issue.newBuilder()
+                            .setHash(AppEngineProtoUtil.encodeHash(bug.getInstanceHash()))
                             .setBugPattern(bug.getType()).setPriority(bug.getPriority())
-                            .setPrimaryClass(bug.getPrimaryClass().getClassName()).setFirstSeen(cloudClient.getFirstSeen(bug))
+                            .setPrimaryClass(bug.getPrimaryClass().getClassName())
+                            .setFirstSeen(cloudClient.getFirstSeen(bug))
                             .build());
                 }
-                return issueList.build();
+                return uploadIssuesCmd.build();
             }
         });
         try {

@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
@@ -573,13 +574,22 @@ public class AppEngineCloudClient extends AbstractCloud {
         Collection<BugInstance> newBugs = bugsByHash.values();
         boolean hasTimestampsToUpdate = !networkClient.getTimestampsToUpdate().isEmpty();
         boolean hasBugsToUpload = !newBugs.isEmpty();
-        if (!getGuiCallback().isHeadless() && (hasBugsToUpload || hasTimestampsToUpdate)) {
+        if ((hasBugsToUpload || hasTimestampsToUpdate)
+                && (getCloudTokenProperty() != null
+                || !getGuiCallback().isHeadless())) {
             uploadAndUpdateBugsInBackground(new ArrayList<BugInstance>(newBugs));
         } else {
             markNewIssuesUploaded();
             setStatusMsg("All " + numBugs + " bugs are already stored in the " + getCloudName());
         }
 
+    }
+
+    public String getCloudTokenProperty() {
+        String value = SystemProperties.getProperty("findbugs.cloud.token");
+        if (value == null)
+            return null;
+        return value.trim();
     }
 
     private void markNewIssuesUploaded() {
