@@ -51,8 +51,6 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.Builder;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
-
 public class AppEngineCloudNetworkClient {
     private static final Logger LOGGER = Logger.getLogger(AppEngineCloudNetworkClient.class.getPackage().getName());
 
@@ -132,7 +130,7 @@ public class AppEngineCloudNetworkClient {
         conn.setDoOutput(true);
         try {
             OutputStream outputStream = conn.getOutputStream();
-            SetBugLink.newBuilder().setSessionId(sessionId).setHash(encodeHash(b.getInstanceHash())).setBugLinkType(type)
+            SetBugLink.newBuilder().setSessionId(sessionId).setHash(AppEngineProtoUtil.encodeHash(b.getInstanceHash())).setBugLinkType(type)
                     .setUrl(bugLink).build().writeTo(outputStream);
             outputStream.close();
             if (conn.getResponseCode() != 200) {
@@ -393,7 +391,7 @@ public class AppEngineCloudNetworkClient {
         }
         String hash = bugInstance.getInstanceHash();
         Evaluation eval = evalBuilder.build();
-        UploadEvaluation uploadMsg = UploadEvaluation.newBuilder().setSessionId(sessionId).setHash(encodeHash(hash))
+        UploadEvaluation uploadMsg = UploadEvaluation.newBuilder().setSessionId(sessionId).setHash(AppEngineProtoUtil.encodeHash(hash))
                 .setEvaluation(eval).build();
 
         openPostUrl("/upload-evaluation", uploadMsg);
@@ -516,7 +514,7 @@ public class AppEngineCloudNetworkClient {
             for (Map.Entry<Long, Set<BugInstance>> entry : groupBugsByTimestamp(bugs).entrySet()) {
                 UpdateIssueTimestamps.IssueGroup.Builder groupBuilder = IssueGroup.newBuilder().setTimestamp(entry.getKey());
                 for (BugInstance bugInstance : entry.getValue()) {
-                    groupBuilder.addIssueHashes(encodeHash(bugInstance.getInstanceHash()));
+                    groupBuilder.addIssueHashes(AppEngineProtoUtil.encodeHash(bugInstance.getInstanceHash()));
                 }
                 builder.addIssueGroups(groupBuilder.build());
             }
@@ -626,7 +624,7 @@ public class AppEngineCloudNetworkClient {
                 Builder issueList = UploadIssues.newBuilder();
                 issueList.setSessionId(sessionId);
                 for (BugInstance bug : bugsToSend) {
-                    issueList.addNewIssues(Issue.newBuilder().setHash(encodeHash(bug.getInstanceHash()))
+                    issueList.addNewIssues(Issue.newBuilder().setHash(AppEngineProtoUtil.encodeHash(bug.getInstanceHash()))
                             .setBugPattern(bug.getType()).setPriority(bug.getPriority())
                             .setPrimaryClass(bug.getPrimaryClass().getClassName()).setFirstSeen(cloudClient.getFirstSeen(bug))
                             .build());

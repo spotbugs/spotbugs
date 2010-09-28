@@ -19,8 +19,7 @@ import edu.umd.cs.findbugs.cloud.CloudPluginBuilder;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 import junit.framework.TestCase;
-
-import static org.mockito.Mockito.when;
+import org.mockito.Mockito;
 
 public abstract class AbstractAppEngineCloudTest extends TestCase {
     protected static final long SAMPLE_DATE = 1200000000L * 1000L; // Thu, 10
@@ -89,8 +88,8 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
 
     protected static ByteArrayOutputStream setupResponseCodeAndOutputStream(HttpURLConnection connection) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        when(connection.getResponseCode()).thenReturn(200);
-        when(connection.getOutputStream()).thenReturn(outputStream);
+        Mockito.when(connection.getResponseCode()).thenReturn(200);
+        Mockito.when(connection.getOutputStream()).thenReturn(outputStream);
         return outputStream;
     }
 

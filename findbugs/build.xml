@@ -68,12 +68,14 @@
 		<pathelement location="${jar.dir}/jsr305.jar"/>
 		<pathelement location="${jar.dir}/jFormatString.jar"/>
 		<pathelement location="${jar.dir}/commons-lang-2.4.jar"/>
+		<pathelement location="../webCloudProtocol/build/webCloudProtocol.jar"/>
 	</path>
 
 	<path id="tools.classpath">
 		<pathelement location="${classes.dir}"/>
 		<pathelement location="${jar.dir}/findbugs.jar"/>
 		<pathelement location="${jar.dir}/jdepend-2.9.jar"/>
+		<pathelement location="test-lib/mockito-all-1.8.2.jar"/>
 		<path refid="findbugs.classpath"/>
 	</path>
 
@@ -138,6 +140,8 @@
 	<!-- Compile Java source files, and copy other files (properties,
 		images, html, XSL stylesheets) that need to be part of the codebase. -->
 	<target name="classes" depends="init">
+
+        <ant dir="../webCloudProtocol" target="fulljar" inheritall="false"/>
 
 		<!-- Compile Java source files. -->
 		<echo level="info" message="compiling findbugs"/>
@@ -219,7 +223,7 @@
 		<xmlvalidate lenient="false" failonerror="yes">
 			<attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
 			<attribute name="http://xml.org/sax/features/namespaces" value="true"/>
-			<fileset dir="${etc.dir}" includes="*.xml"/>
+			<fileset dir="${etc.dir}" includes="*.xml" excludes="checkstyle.xml"/>
 		</xmlvalidate>
 	</target>
 
@@ -551,7 +555,6 @@
 
   <target name="findbugscheck" depends="anttask,junittests,jars">
     <property name="findbugs.home" value="." />
-    <ant dir="../webCloudClient" target="install" inheritAll="false" />
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
     <findbugs home="."
               output="xml:withMessages"

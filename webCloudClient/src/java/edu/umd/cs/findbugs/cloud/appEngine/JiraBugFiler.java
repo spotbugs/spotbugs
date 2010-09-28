@@ -37,15 +37,15 @@ public class JiraBugFiler implements BugFiler {
 
     private static final Pattern BUG_LINK_PATTERN = Pattern.compile("(.*?)/browse/(.*-\\d+).*");
 
-    private final AppEngineCloudClient appEngineCloudClient;
+    private AppEngineCloudClient appEngineCloudClient;
 
     private final Map<String, JiraSession> sessionsByBaseUrl = new ConcurrentHashMap<String, JiraSession>();
 
-    private final String url;
+    private String url;
 
-    public JiraBugFiler(AppEngineCloudClient appEngineCloudClient, String url) {
+    public void init(AppEngineCloudClient appEngineCloudClient, String trackerUrl) {
         this.appEngineCloudClient = appEngineCloudClient;
-        this.url = url;
+        this.url = trackerUrl;
     }
 
     public URL file(BugInstance b) throws IOException, SignInCancelledException {
@@ -283,11 +283,6 @@ public class JiraBugFiler implements BugFiler {
         public String username;
 
         private JiraSession() {
-        }
-
-        public JiraSession(JiraSoapService service, String token) {
-            this.service = service;
-            this.token = token;
         }
     }
 }

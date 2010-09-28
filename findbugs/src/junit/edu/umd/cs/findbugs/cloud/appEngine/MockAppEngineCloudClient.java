@@ -15,7 +15,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import com.google.common.collect.Lists;
 import com.google.protobuf.GeneratedMessage;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
@@ -25,16 +24,10 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 import junit.framework.Assert;
-
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.matches;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class MockAppEngineCloudClient extends AppEngineCloudClient {
     private List<ExpectedConnection> expectedConnections = new ArrayList<ExpectedConnection>();
@@ -59,12 +52,12 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
 
         setNetworkClient(new MockAppEngineCloudNetworkClient());
 
-        urlsRequested = Lists.newArrayList();
+        urlsRequested = new ArrayList<String>();
         for (HttpURLConnection mockConnection : mockConnections) {
             expectedConnections.add(new ExpectedConnection().withLegacyMock(mockConnection));
         }
         mockNameLookup = createMockNameLookup();
-        mockGuiCallback = mock(IGuiCallback.class);
+        mockGuiCallback = Mockito.mock(IGuiCallback.class);
         Mockito.doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 Object[] args = invocation.getArguments();
@@ -153,7 +146,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
     }
 
     public void clickYes(String regex) {
-        when(mockGuiCallback.showConfirmDialog(matches(regex), anyString(), anyString(), anyString())).thenReturn(
+        Mockito.when(mockGuiCallback.showConfirmDialog(Matchers.matches(regex), Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(
                 IGuiCallback.YES_OPTION);
     }
 
@@ -185,15 +178,15 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
     }
 
     private AppEngineNameLookup createMockNameLookup() throws IOException {
-        AppEngineNameLookup mockNameLookup = mock(AppEngineNameLookup.class);
-        when(mockNameLookup.getHost()).thenReturn("host");
-        when(mockNameLookup.getUsername()).thenReturn("test@example.com");
-        when(mockNameLookup.getSessionId()).thenAnswer(new Answer<Long>() {
+        AppEngineNameLookup mockNameLookup = Mockito.mock(AppEngineNameLookup.class);
+        Mockito.when(mockNameLookup.getHost()).thenReturn("host");
+        Mockito.when(mockNameLookup.getUsername()).thenReturn("test@example.com");
+        Mockito.when(mockNameLookup.getSessionId()).thenAnswer(new Answer<Long>() {
             public Long answer(InvocationOnMock invocationOnMock) throws Throwable {
                 return mockSessionId;
             }
         });
-        when(mockNameLookup.signIn(Matchers.<CloudPlugin> any(), Matchers.<BugCollection> any())).thenAnswer(new Answer<Boolean>() {
+        Mockito.when(mockNameLookup.signIn(Matchers.<CloudPlugin> any(), Matchers.<BugCollection> any())).thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocationOnMock) throws Throwable {
                 mockSessionId = 555L;
                 return true;
@@ -273,10 +266,10 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         private CountDownLatch latch = new CountDownLatch(1);
 
         public ExpectedConnection() {
-            mockConnection = mock(HttpURLConnection.class);
+            mockConnection = Mockito.mock(HttpURLConnection.class);
             postDataStream = new ByteArrayOutputStream();
             try {
-                when(mockConnection.getOutputStream()).thenAnswer(new Answer<Object>() {
+                Mockito.when(mockConnection.getOutputStream()).thenAnswer(new Answer<Object>() {
                     public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
                         latch.countDown();
                         if (networkError != null)
@@ -284,13 +277,13 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
                         return postDataStream;
                     }
                 });
-                when(mockConnection.getInputStream()).thenAnswer(new Answer<InputStream>() {
+                Mockito.when(mockConnection.getInputStream()).thenAnswer(new Answer<InputStream>() {
                     public InputStream answer(InvocationOnMock invocationOnMock) throws Throwable {
                         latch.countDown();
                         return responseStream;
                     }
                 });
-                when(mockConnection.getResponseCode()).thenAnswer(new Answer<Integer>() {
+                Mockito.when(mockConnection.getResponseCode()).thenAnswer(new Answer<Integer>() {
                     public Integer answer(InvocationOnMock invocationOnMock) throws Throwable {
                         latch.countDown();
                         return responseCode;

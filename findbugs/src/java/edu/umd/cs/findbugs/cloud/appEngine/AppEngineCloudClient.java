@@ -29,9 +29,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.rpc.ServiceException;
-
-import com.google.gdata.client.authn.oauth.OAuthException;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
@@ -41,13 +38,12 @@ import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.MutableCloudTask;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 import edu.umd.cs.findbugs.util.Util;
-
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
 
 @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
 public class AppEngineCloudClient extends AbstractCloud {
@@ -237,6 +233,8 @@ public class AppEngineCloudClient extends AbstractCloud {
                     try {
                         actuallyCheckBugsAgainstCloud();
                     } catch (Exception e) {
+                        getGuiCallback().showMessageDialog("Error while checking bugs against " + getCloudName()
+                                + "\n\n" + e.getMessage());
                         LOGGER.log(Level.SEVERE, "Error while checking bugs against cloud in background", e);
                     }
                 }
@@ -395,18 +393,10 @@ public class AppEngineCloudClient extends AbstractCloud {
     public URL fileBug(BugInstance bug) {
         try {
             return bugFilingHelper.fileBug(bug);
-        } catch (ServiceException e) {
-            throw new IllegalStateException(e);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        } catch (OAuthException e) {
-            throw new IllegalStateException(e);
-        } catch (InterruptedException e) {
-            throw new IllegalStateException(e);
-        } catch (com.google.gdata.util.ServiceException e) {
-            throw new IllegalStateException(e);
         } catch (SignInCancelledException e) {
             return null;
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
         }
     }
 
@@ -654,12 +644,12 @@ public class AppEngineCloudClient extends AbstractCloud {
         if (evals.getIssuesCount() > 0)
             setStatusMsg(getCloudName() + ": found " + evals.getIssuesCount() + " updated bug evaluations");
         for (Issue updatedIssue : evals.getIssuesList()) {
-            String protoHash = decodeHash(updatedIssue.getHash());
+            String protoHash = AppEngineProtoUtil.decodeHash(updatedIssue.getHash());
             Issue existingIssue = networkClient.getIssueByHash(protoHash);
             Issue issueToStore;
             if (existingIssue != null) {
                 issueToStore = mergeIssues(existingIssue, updatedIssue);
-                String newHash = decodeHash(issueToStore.getHash());
+                String newHash = AppEngineProtoUtil.decodeHash(issueToStore.getHash());
                 assert newHash.equals(protoHash) : newHash + " vs " + protoHash;
 
             } else {

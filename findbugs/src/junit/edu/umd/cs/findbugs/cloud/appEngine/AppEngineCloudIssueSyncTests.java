@@ -30,8 +30,8 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
 
     public void testFindIssuesAllFound() throws IOException, InterruptedException {
         // set up mocks
-        final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream())
+        final HttpURLConnection findIssuesConnection = Mockito.mock(HttpURLConnection.class);
+        Mockito.when(findIssuesConnection.getInputStream())
                 .thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         ByteArrayOutputStream findIssuesOutput = setupResponseCodeAndOutputStream(findIssuesConnection);
 
@@ -46,7 +46,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
 
         // verify find-issues
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
-        verify(findIssuesConnection).connect();
+        Mockito.verify(findIssuesConnection).connect();
         FindIssues hashes = FindIssues.parseFrom(findIssuesOutput.toByteArray());
         assertEquals(1, hashes.getMyIssueHashesCount());
         List<String> hashesFromFindIssues = AppEngineProtoUtil.decodeHashes(hashes.getMyIssueHashesList());
@@ -67,11 +67,11 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
     }
 
     public void testFindIssuesNetworkFailure() throws IOException, InterruptedException {
-        final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
-        when(findIssuesConn.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
+        final HttpURLConnection findIssuesConn = Mockito.mock(HttpURLConnection.class);
+        Mockito.when(findIssuesConn.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        when(findIssuesConn.getResponseCode()).thenReturn(500);
-        when(findIssuesConn.getOutputStream()).thenReturn(outputStream);
+        Mockito.when(findIssuesConn.getResponseCode()).thenReturn(500);
+        Mockito.when(findIssuesConn.getOutputStream()).thenReturn(outputStream);
 
         // execution
         final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
@@ -91,15 +91,15 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         addMissingIssue = true;
 
         // set up mocks
-        final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream())
+        final HttpURLConnection findIssuesConnection = Mockito.mock(HttpURLConnection.class);
+        Mockito.when(findIssuesConnection.getInputStream())
                 .thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         ByteArrayOutputStream findIssuesOutput = setupResponseCodeAndOutputStream(findIssuesConnection);
 
-        final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
+        final HttpURLConnection logInConnection = Mockito.mock(HttpURLConnection.class);
         ByteArrayOutputStream logInOutput = setupResponseCodeAndOutputStream(logInConnection);
 
-        HttpURLConnection uploadConnection = mock(HttpURLConnection.class);
+        HttpURLConnection uploadConnection = Mockito.mock(HttpURLConnection.class);
         ByteArrayOutputStream uploadIssuesBuffer = setupResponseCodeAndOutputStream(uploadConnection);
 
         // execution
@@ -115,7 +115,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
 
         // verify find-issues
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
-        verify(findIssuesConnection).connect();
+        Mockito.verify(findIssuesConnection).connect();
         FindIssues hashes = FindIssues.parseFrom(findIssuesOutput.toByteArray());
         assertEquals(2, hashes.getMyIssueHashesCount());
         List<String> hashesFromFindIssues = AppEngineProtoUtil.decodeHashes(hashes.getMyIssueHashesList());
@@ -124,7 +124,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
 
         // verify log-in
         assertEquals("/log-in", cloud.urlsRequested.get(1));
-        verify(logInConnection).connect();
+        Mockito.verify(logInConnection).connect();
         LogIn logIn = LogIn.parseFrom(logInOutput.toByteArray());
         assertEquals(cloud.getBugCollection().getAnalysisTimestamp(), logIn.getAnalysisTimestamp());
 
@@ -153,14 +153,14 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         addMissingIssue = true;
 
         // set up mocks
-        final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream())
+        final HttpURLConnection findIssuesConnection = Mockito.mock(HttpURLConnection.class);
+        Mockito.when(findIssuesConnection.getInputStream())
                 .thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConnection);
 
         // execution
         MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
-        when(cloud.mockGuiCallback.showConfirmDialog(anyString(), anyString(), anyString(), anyString())).thenReturn(-1);
+        Mockito.when(cloud.mockGuiCallback.showConfirmDialog(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(-1);
         cloud.initialize();
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.bugsPopulated();
@@ -177,14 +177,14 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         addMissingIssue = true;
 
         // set up mocks
-        final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream())
+        final HttpURLConnection findIssuesConnection = Mockito.mock(HttpURLConnection.class);
+        Mockito.when(findIssuesConnection.getInputStream())
                 .thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConnection);
 
         // execution
         MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
-        when(cloud.mockGuiCallback.isHeadless()).thenReturn(true);
+        Mockito.when(cloud.mockGuiCallback.isHeadless()).thenReturn(true);
         cloud.initialize();
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.bugsPopulated();
@@ -202,8 +202,8 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         addMissingIssue = true;
 
         // set up mocks
-        final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream())
+        final HttpURLConnection findIssuesConnection = Mockito.mock(HttpURLConnection.class);
+        Mockito.when(findIssuesConnection.getInputStream())
                 .thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConnection);
 

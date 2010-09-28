@@ -26,13 +26,13 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
      * silently
      */
     public void testSoftSignInFailSilently() throws Exception {
-        final HttpURLConnection logInConn = mock(HttpURLConnection.class);
+        final HttpURLConnection logInConn = Mockito.mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
         MockAppEngineCloudClient cloud = createAppEngineCloudClient(logInConn);
-        AppEngineCloudNetworkClient networkClient = mock(AppEngineCloudNetworkClient.class);
+        AppEngineCloudNetworkClient networkClient = Mockito.mock(AppEngineCloudNetworkClient.class);
         cloud.setNetworkClient(networkClient);
 
-        when(networkClient.initialize()).thenReturn(false);
+        Mockito.when(networkClient.initialize()).thenReturn(false);
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.initialize();
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
@@ -41,41 +41,41 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
 
     @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public void testSoftSignInSkipWhenHeadless() throws Exception {
-        final HttpURLConnection logInConn = mock(HttpURLConnection.class);
+        final HttpURLConnection logInConn = Mockito.mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
         MockAppEngineCloudClient cloud = createAppEngineCloudClient(logInConn);
         AppEngineCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
 
-        when(cloud.mockGuiCallback.isHeadless()).thenReturn(true);
+        Mockito.when(cloud.mockGuiCallback.isHeadless()).thenReturn(true);
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.initialize();
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
-        verify(spyNetworkClient, never()).logIntoCloudForce();
+        Mockito.verify(spyNetworkClient, Mockito.never()).logIntoCloudForce();
     }
 
     public void testSoftSignInSucceed() throws Exception {
-        final HttpURLConnection logInConn = mock(HttpURLConnection.class);
+        final HttpURLConnection logInConn = Mockito.mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
         MockAppEngineCloudClient cloud = createAppEngineCloudClient(logInConn);
-        AppEngineCloudNetworkClient networkClient = mock(AppEngineCloudNetworkClient.class);
+        AppEngineCloudNetworkClient networkClient = Mockito.mock(AppEngineCloudNetworkClient.class);
         cloud.setNetworkClient(networkClient);
 
-        when(networkClient.initialize()).thenReturn(true);
+        Mockito.when(networkClient.initialize()).thenReturn(true);
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.initialize();
         assertEquals(Cloud.SigninState.SIGNED_IN, cloud.getSigninState());
-        verify(networkClient, never()).logIntoCloudForce();
+        Mockito.verify(networkClient, Mockito.never()).logIntoCloudForce();
     }
 
     @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public void testSoftSignInFailLoudly() throws Exception {
-        final HttpURLConnection logInConn = mock(HttpURLConnection.class);
+        final HttpURLConnection logInConn = Mockito.mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
         MockAppEngineCloudClient cloud = createAppEngineCloudClient(logInConn);
-        AppEngineCloudNetworkClient networkClient = mock(AppEngineCloudNetworkClient.class);
+        AppEngineCloudNetworkClient networkClient = Mockito.mock(AppEngineCloudNetworkClient.class);
         cloud.setNetworkClient(networkClient);
 
-        when(networkClient.initialize()).thenThrow(new IOException());
+        Mockito.when(networkClient.initialize()).thenThrow(new IOException());
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.initialize();
         assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSigninState());
@@ -84,9 +84,9 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
 
     public void testSignInSignOutStateChangeEvents() throws IOException {
         // set up mocks
-        final HttpURLConnection signInConn = mock(HttpURLConnection.class);
+        final HttpURLConnection signInConn = Mockito.mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(signInConn);
-        final HttpURLConnection signOutConn = mock(HttpURLConnection.class);
+        final HttpURLConnection signOutConn = Mockito.mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(signOutConn);
 
         // execution
@@ -117,7 +117,7 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
 
     public void testSignInManually() throws IOException {
         // set up mocks
-        final HttpURLConnection signInConn = mock(HttpURLConnection.class);
+        final HttpURLConnection signInConn = Mockito.mock(HttpURLConnection.class);
         ByteArrayOutputStream findIssuesOutput = setupResponseCodeAndOutputStream(signInConn);
 
         // execution
@@ -129,7 +129,7 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
 
         // verify
         assertEquals("/log-in", cloud.urlsRequested.get(0));
-        verify(signInConn).connect();
+        Mockito.verify(signInConn).connect();
         LogIn logIn = LogIn.parseFrom(findIssuesOutput.toByteArray());
         assertEquals(555, logIn.getSessionId());
     }
@@ -137,7 +137,7 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
     @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public void testSignInManuallyFails() throws IOException {
         // set up mocks
-        final HttpURLConnection signInConn = mock(HttpURLConnection.class);
+        final HttpURLConnection signInConn = Mockito.mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(signInConn);
 
         // execution
@@ -165,9 +165,9 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
 
     public void testSignOut() throws IOException {
         // set up mocks
-        final HttpURLConnection signInConn = mock(HttpURLConnection.class);
+        final HttpURLConnection signInConn = Mockito.mock(HttpURLConnection.class);
         ByteArrayOutputStream signInReq = setupResponseCodeAndOutputStream(signInConn);
-        final HttpURLConnection signOutConn = mock(HttpURLConnection.class);
+        final HttpURLConnection signOutConn = Mockito.mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(signOutConn);
 
         // execution
@@ -181,11 +181,11 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
 
         // verify
         assertEquals("/log-in", cloud.urlsRequested.get(0));
-        verify(signInConn).connect();
+        Mockito.verify(signInConn).connect();
         LogIn logIn = LogIn.parseFrom(signInReq.toByteArray());
         assertEquals(555, logIn.getSessionId());
         // verify
         assertEquals("/log-out/555", cloud.urlsRequested.get(1));
-        verify(signOutConn).connect();
+        Mockito.verify(signOutConn).connect();
     }
 }

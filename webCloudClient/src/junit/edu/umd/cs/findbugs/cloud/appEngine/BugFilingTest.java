@@ -75,7 +75,7 @@ public class BugFilingTest extends TestCase {
         createPreferencesToPropertiesBridge(mockPrefs, props);
 
         triedAgain = false;
-        filer = new GoogleCodeBugFiler(mockCloudClient, "http://code.google.com/p/test/") {
+        filer = new GoogleCodeBugFiler() {
             @Override
             <E> E tryAgain(Callable<E> callable, Exception e) throws OAuthException, MalformedURLException, InterruptedException,
                     AuthenticationException {
@@ -103,6 +103,7 @@ public class BugFilingTest extends TestCase {
                 return projectHostingService;
             }
         };
+        filer.init(mockCloudClient, "http://code.google.com/p/test/");
         filer.setProjectHostingService(projectHostingService);
         filer.setCommentHelper(mock(BugFilingCommentHelper.class));
     }

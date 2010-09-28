@@ -1,12 +1,10 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.google.gdata.client.authn.oauth.OAuthException;
-import com.google.gdata.util.ServiceException;
+import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.PropertyBundle;
@@ -18,28 +16,31 @@ public class BugFilingHelper {
     private static final Logger LOGGER = Logger.getLogger(BugFilingHelper.class.getName());
 
     private final AppEngineCloudClient appEngineCloudClient;
-
     private final String trackerUrl;
-
-    private final BugFiler bugFiler;
+    private final @CheckForNull BugFiler bugFiler;
 
     public BugFilingHelper(AppEngineCloudClient appEngineCloudClient, PropertyBundle properties) {
         this.appEngineCloudClient = appEngineCloudClient;
         this.trackerUrl = properties.getProperty("cloud.bugTrackerUrl");
         String bugTrackerType = properties.getProperty("cloud.bugTrackerType");
-        BugFiler filer;
-        if ("GOOGLE_CODE".equals(bugTrackerType))
-            filer = new GoogleCodeBugFiler(appEngineCloudClient, trackerUrl);
-        else if ("JIRA".equals(bugTrackerType))
-            filer = new JiraBugFiler(appEngineCloudClient, trackerUrl);
-        else
-            filer = null;
+        BugFiler filer = null;
+        try {
+            if ("GOOGLE_CODE".equals(bugTrackerType))
+                filer = (BugFiler) Class.forName("edu.umd.cs.findbugs.cloud.appEngine.GoogleCodeBugFiler").newInstance();
+            else if ("JIRA".equals(bugTrackerType))
+                filer = (BugFiler) Class.forName("edu.umd.cs.findbugs.cloud.appEngine.JiraBugFiler").newInstance();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Could not find bug filer for " + bugTrackerType, e);
+        }
+
+        if (filer != null)
+            filer.init(appEngineCloudClient, trackerUrl);
+
         this.bugFiler = filer;
 
     }
 
     public String lookupBugStatus(final BugInstance b) {
-
         if (appEngineCloudClient.getBugLinkStatus(b) == Cloud.BugFilingStatus.FILE_BUG)
             return null;
 
@@ -64,18 +65,12 @@ public class BugFilingHelper {
         return status;
     }
 
-    public URL fileBug(BugInstance b) throws javax.xml.rpc.ServiceException, IOException, SignInCancelledException,
-            OAuthException, InterruptedException, ServiceException {
-
+    @SuppressWarnings({"DuplicateThrows"})
+    public URL fileBug(BugInstance b) throws SignInCancelledException, Exception {
         return bugFiler.file(b);
-
     }
 
     public boolean bugFilingAvailable() {
         return bugFiler != null && trackerUrl != null;
     }
-
-    // ============================== end of public methods
-    // ==============================
-
 }

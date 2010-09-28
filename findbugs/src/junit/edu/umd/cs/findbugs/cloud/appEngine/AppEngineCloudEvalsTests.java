@@ -14,11 +14,8 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
-
-import static org.mockito.Matchers.matches;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
     protected MockAppEngineCloudClient cloud;
@@ -143,7 +140,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         assertEquals(Cloud.SigninState.SIGNED_OUT, cloud.getSigninState());
 
         // verify
-        verify(cloud.mockGuiCallback).showMessageDialog(matches("(?s).*error.*signed out.*Cloud.*"));
+        Mockito.verify(cloud.mockGuiCallback).showMessageDialog(Matchers.matches("(?s).*error.*signed out.*Cloud.*"));
         cloud.checkStatusBarHistory("Checking FindBugs Cloud for updates", "Signed out of FindBugs Cloud", "");
     }
 
@@ -163,7 +160,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
         }
 
         // verify no dialogs, just status bar changes
-        verify(cloud.mockGuiCallback, never()).showMessageDialog(Mockito.anyString());
+        Mockito.verify(cloud.mockGuiCallback, Mockito.never()).showMessageDialog(Mockito.anyString());
         cloud.checkStatusBarHistory("Checking FindBugs Cloud for updates", "Checking FindBugs Cloud for updates: FAILED - blah");
     }
 

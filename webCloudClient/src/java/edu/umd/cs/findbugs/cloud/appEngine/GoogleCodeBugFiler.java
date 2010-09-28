@@ -1,5 +1,14 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.Callable;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.google.gdata.client.authn.oauth.GoogleOAuthHelper;
 import com.google.gdata.client.authn.oauth.GoogleOAuthParameters;
 import com.google.gdata.client.authn.oauth.OAuthException;
@@ -23,15 +32,6 @@ import edu.umd.cs.findbugs.cloud.BugFiler;
 import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.concurrent.Callable;
-import java.util.logging.Logger;
-import java.util.prefs.Preferences;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class GoogleCodeBugFiler implements BugFiler {
 
     private static final Logger LOGGER = Logger.getLogger(GoogleCodeBugFiler.class.getName());
@@ -51,19 +51,16 @@ public class GoogleCodeBugFiler implements BugFiler {
 
     private static final Pattern URL_REGEX = Pattern.compile("http://code.google.com/p/(.*?)/issues/detail\\?id=(\\d+)");
 
-    private final AppEngineCloudClient appEngineCloudClient;
-
+    private AppEngineCloudClient appEngineCloudClient;
     private BugFilingCommentHelper bugFilingCommentHelper;
+    private String url;
 
-    private final String url;
+    private @CheckForNull ProjectHostingService projectHostingService;
 
-    private @CheckForNull
-    ProjectHostingService projectHostingService;
-
-    public GoogleCodeBugFiler(AppEngineCloudClient appEngineCloudClient, String url) {
+    public void init(AppEngineCloudClient appEngineCloudClient, String trackerUrl) {
         this.appEngineCloudClient = appEngineCloudClient;
+        this.url = trackerUrl;
         bugFilingCommentHelper = new BugFilingCommentHelper(appEngineCloudClient);
-        this.url = url;
     }
 
     /** for testing */

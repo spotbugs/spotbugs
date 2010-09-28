@@ -34,6 +34,17 @@ This plugin contains all of the standard FindBugs detectors.
 	<Details>Comments are stored in an SQL database; user name gotten from system properties</Details>
     </Cloud>
 
+  <Cloud id="edu.umd.cs.findbugs.cloud.appengine.theflybush">
+    <Description>FindBugs Cloud testing server (FB developers only)</Description>
+    <Details>Comments are stored on the FindBugs Cloud at http://theflybush.appspot.com</Details>
+    </Cloud>
+
+  <Cloud id="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud">
+    <Description>FindBugs Cloud</Description>
+    <Details>Comments are stored on the FindBugs Cloud at http://findbugs-cloud.appspot.com</Details>
+    </Cloud>
+
+
   <BugReporterDecorator
     id="edu.umd.cs.findbugs.bugReporter.SuppressMultithreaded">
     <Description>Suppress multithreaded correctness issues</Description>

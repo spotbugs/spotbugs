@@ -142,7 +142,17 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="webCloudClient" />
+    <orderEntry type="module" module-name="webCloudProtocol" />
+    <orderEntry type="module-library" scope="TEST">
+      <library name="test-lib/*.jar">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/test-lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/test-lib" recursive="false" />
+      </library>
+    </orderEntry>
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">

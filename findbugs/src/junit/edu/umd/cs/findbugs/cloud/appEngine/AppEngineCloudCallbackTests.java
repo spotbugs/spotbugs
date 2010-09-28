@@ -1,7 +1,5 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import edu.umd.cs.findbugs.cloud.Cloud;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,15 +11,15 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import org.mockito.Mockito;
 
 public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 
     public void testWaitForIssueSyncAllFound() throws Exception {
         // set up mocks
-        final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
-        when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
+        final HttpURLConnection findIssuesConn = Mockito.mock(HttpURLConnection.class);
+        Mockito.when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConn);
 
         // execution
@@ -44,8 +42,8 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 
     public void testWaitForIssueSyncReturnsImmediatelyWhenAlreadySynced() throws Exception {
         // set up mocks
-        final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
-        when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
+        final HttpURLConnection findIssuesConn = Mockito.mock(HttpURLConnection.class);
+        Mockito.when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConn);
 
         // execution
@@ -75,11 +73,11 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 
     public void testWaitForIssueSyncNetworkFailure() throws Exception {
         // set up mocks
-        final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
-        when(findIssuesConn.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
+        final HttpURLConnection findIssuesConn = Mockito.mock(HttpURLConnection.class);
+        Mockito.when(findIssuesConn.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        when(findIssuesConn.getResponseCode()).thenReturn(500);
-        when(findIssuesConn.getOutputStream()).thenReturn(outputStream);
+        Mockito.when(findIssuesConn.getResponseCode()).thenReturn(500);
+        Mockito.when(findIssuesConn.getOutputStream()).thenReturn(outputStream);
 
         // execution
         final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
@@ -111,15 +109,15 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         addMissingIssue = true;
 
         // set up mocks
-        final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
-        when(findIssuesConnection.getInputStream())
+        final HttpURLConnection findIssuesConnection = Mockito.mock(HttpURLConnection.class);
+        Mockito.when(findIssuesConnection.getInputStream())
                 .thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConnection);
 
-        final HttpURLConnection logInConnection = mock(HttpURLConnection.class);
+        final HttpURLConnection logInConnection = Mockito.mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConnection);
 
-        HttpURLConnection uploadConnection = mock(HttpURLConnection.class);
+        HttpURLConnection uploadConnection = Mockito.mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(uploadConnection);
 
         // execution
@@ -162,8 +160,8 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
 
     public void testIssueDataDownloadedCallback() throws IOException, InterruptedException {
         // set up mocks
-        final HttpURLConnection findIssuesConn = mock(HttpURLConnection.class);
-        when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
+        final HttpURLConnection findIssuesConn = Mockito.mock(HttpURLConnection.class);
+        Mockito.when(findIssuesConn.getInputStream()).thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
         setupResponseCodeAndOutputStream(findIssuesConn);
 
         // execution

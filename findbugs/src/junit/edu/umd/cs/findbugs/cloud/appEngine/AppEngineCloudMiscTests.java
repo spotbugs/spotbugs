@@ -1,15 +1,15 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+import java.util.Arrays;
+import java.util.List;
+
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-
-import java.util.Arrays;
-import java.util.List;
+import org.mockito.Mockito;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.normalizeHash;
-import static org.mockito.Mockito.when;
 
 public class AppEngineCloudMiscTests extends AbstractAppEngineCloudTest {
 
@@ -20,7 +20,7 @@ public class AppEngineCloudMiscTests extends AbstractAppEngineCloudTest {
     public void testGetLatestDesignationFromEachUser() throws Exception {
         MockAppEngineCloudClient cloud = createAppEngineCloudClient();
         AppEngineCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
-        when(spyNetworkClient.getIssueByHash("fad2")).thenReturn(
+        Mockito.when(spyNetworkClient.getIssueByHash("fad2")).thenReturn(
                 Issue.newBuilder()
                         .addAllEvaluations(
                                 Arrays.asList(

@@ -11,10 +11,24 @@
                     usernameClass="edu.umd.cs.findbugs.cloud.username.NoNameLookup"/>
           <Cloud id="edu.umd.cs.findbugs.cloud.db.Default"
                     cloudClass="edu.umd.cs.findbugs.cloud.db.DBCloud"
-                    usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup"/>
+                    usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup"
+                    onlineStorage="true" />
           <Cloud id="edu.umd.cs.findbugs.cloud.db.DB-UserName"
                     cloudClass="edu.umd.cs.findbugs.cloud.db.DBCloud"
-                    usernameClass="edu.umd.cs.findbugs.cloud.username.LocalNameLookup" hidden="true"/>
+                    usernameClass="edu.umd.cs.findbugs.cloud.username.LocalNameLookup"
+                    onlineStorage="true" hidden="true"/>
+          <Cloud id="edu.umd.cs.findbugs.cloud.appengine.theflybush"
+                    cloudClass="edu.umd.cs.findbugs.cloud.appEngine.AppEngineCloudClient"
+                    usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup"
+                    disabled="true" onlineStorage="true">
+                    <Property key="appengine.host">http://theflybush.appspot.com</Property>
+          </Cloud>
+          <Cloud id="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
+                    cloudClass="edu.umd.cs.findbugs.cloud.appEngine.AppEngineCloudClient"
+                    usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup"
+                    onlineStorage="true">
+                    <Property key="appengine.host">http://findbugs-cloud.appspot.com</Property>
+          </Cloud>
           <BugReporterDecorator id="edu.umd.cs.findbugs.bugReporter.SuppressI18N"
                     decoratorClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
                     disabled="true">
