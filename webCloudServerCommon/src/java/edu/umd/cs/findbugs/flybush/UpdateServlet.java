@@ -268,26 +268,28 @@ public class UpdateServlet extends AbstractFlybushServlet {
     @SuppressWarnings({"unchecked"})
     private void uploadIssues(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
         UploadIssues issues = UploadIssues.parseFrom(req.getInputStream());
+        boolean authenticated = false;
         if (issues.hasSessionId()) {
             SqlCloudSession session = lookupCloudSessionById(issues.getSessionId(), pm);
-            if (session == null) {
-                resp.setStatus(403);
-                return;
+            if (session != null) {
+                authenticated = true;
+                LOGGER.info("User: " + session.getEmail());
             }
-            LOGGER.info("User: " + session.getEmail());
 
-        } else if (issues.hasToken()) {
+        }
+        if (!authenticated && issues.hasToken()) {
             String token = issues.getToken();
             Query query = pm.newQuery("select from " + persistenceHelper.getDbUserClass().getName()
                     + " where uploadToken == :token");
             List<DbUser> users = (List<DbUser>) query.execute(issues.getToken());
-            if (users.isEmpty()) {
-                resp.setStatus(403);
-                return;
+            if (!users.isEmpty()) {
+                DbUser user = users.iterator().next();
+                LOGGER.info("Token registered to " + user.getEmail() + " - " + token);
+                authenticated = true;
             }
-            DbUser user = users.iterator().next();
-            LOGGER.info("Token registered to " + user.getEmail() + " - " + token);
-        } else {
+        }
+
+        if (!authenticated) {
             resp.setStatus(403);
             return;
         }
