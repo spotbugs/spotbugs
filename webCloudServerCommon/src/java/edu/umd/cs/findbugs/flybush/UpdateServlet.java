@@ -304,7 +304,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
 
                 start = System.currentTimeMillis();
                 commitInTransaction(pm, dbIssue);
-                LOGGER.info("Committed new issue in " + (System.currentTimeMillis() - start) + "ms");
+                LOGGER.info("Committed new issue in " + (System.currentTimeMillis() - start) + "ms: " + dbIssue.getPrimaryClass());
             } else {
                 LOGGER.warning("User is trying to upload existing issue " + hashStr);
             }
