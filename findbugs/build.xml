@@ -639,6 +639,7 @@
 				<fileset dir="${junitsrc.dir}">
 					<include name="**/*Test.java"/>
 					<include name="**/Test*.java"/>
+                    <exclude name="**/Abstract*Test*.java"/>
 				</fileset>
 			</batchtest>
 		</junit>
