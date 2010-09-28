@@ -1,6 +1,6 @@
 <project name="webCloudServerCommon" default="compile">
     <path id="common.classpath">
-        <path location="../webCloudProtocol/build/webCloudProtocol-full.jar"/>
+        <path location="../webCloudProtocol/build/webCloudProtocol.jar"/>
         <fileset dir="lib" includes="*.jar"/>
     </path>
 
@@ -28,19 +28,19 @@
 
     <target name="fulljar-check" depends="compile">
         <uptodate property="fulljar-not-necessary"
-                  targetfile="build/webCloudServerCommon-full.jar">
+                  targetfile="build/webCloudServerCommon.jar">
             <srcfiles dir="classes-ant" includes="**/*"/>
             <srcfiles dir="lib" includes="**/*"/>
-            <srcfiles file="../webCloudProtocol/build/webCloudProtocol-full.jar"/>
+            <srcfiles file="../webCloudProtocol/build/webCloudProtocol.jar"/>
         </uptodate>
     </target>
 
     <target name="fulljar" depends="fulljar-check" unless="fulljar-not-necessary">
         <mkdir dir="build"/>
-        <jar jarfile="build/webCloudServerCommon-full.jar">
+        <jar jarfile="build/webCloudServerCommon.jar">
             <fileset dir="classes-ant"/>
 
-            <zipfileset src="../webCloudProtocol/build/webCloudProtocol-full.jar"/>
+            <zipfileset src="../webCloudProtocol/build/webCloudProtocol.jar"/>
 
             <zipfileset src="lib/charts4j-1.2.jar"/>
             <zipfileset src="lib/commons-lang-2.5.jar"/>

@@ -1,6 +1,4 @@
 <project name="local-cloud" default="enhance">
-    <echoproperties />
-    <echo message="--------------"/>
     <path id="enhancer.classpath">
         <fileset dir="lib/datanucleus">
             <include name="datanucleus-enhancer-1.1.4.jar"/>
@@ -11,7 +9,7 @@
         </fileset>
     </path>
     <path id="localCloud.classpath">
-        <path location="../../webCloudServerCommon/build/webCloudServerCommon-full.jar"/>
+        <path location="../../webCloudServerCommon/build/webCloudServerCommon.jar"/>
         <fileset dir="lib">
             <include name="**/*.jar"/>
         </fileset>
@@ -50,7 +48,7 @@
             <srcfiles dir="classes-ant" includes="**/*"/>
             <srcfiles dir="lib" includes="**/*"/>
             <srcfiles file="etc/manifest.txt"/>
-            <srcfiles file="../../webCloudServerCommon/build/webCloudServerCommon-full.jar"/>
+            <srcfiles file="../../webCloudServerCommon/build/webCloudServerCommon.jar"/>
         </uptodate>
     </target>
 
@@ -60,7 +58,7 @@
         <jar file="build/localCloud.jar" manifest="etc/manifest.txt">
             <fileset dir="classes-ant"/>
 
-            <zipfileset src="../../webCloudServerCommon/build/webCloudServerCommon-full.jar"/>
+            <zipfileset src="../../webCloudServerCommon/build/webCloudServerCommon.jar"/>
             <zipfileset src="lib/hsqldb.jar"/>
 
             <zipfileset src="lib/hsqldb.jar"/>
