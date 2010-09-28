@@ -2,6 +2,8 @@ package edu.umd.cs.findbugs.flybush;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +11,7 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.jdo.Transaction;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,6 +41,9 @@ public class AuthServlet extends AbstractFlybushServlet {
             } else if (uri.startsWith("/check-auth/")) {
                 checkAuth(req, resp, pm);
 
+            } else if (uri.startsWith("/token")) {
+                showToken(req, resp, pm);
+
             } else {
                 show404(resp);
             }
@@ -58,46 +64,29 @@ public class AuthServlet extends AbstractFlybushServlet {
     }
 
     @SuppressWarnings({"unchecked"})
-    private void browserAuth(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
+    private void browserAuth(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm)
+            throws IOException {
         OpenIdUser openIdUser = (OpenIdUser) req.getAttribute(OpenIdUser.ATTR_NAME);
 
         if (openIdUser == null) {
             setResponse(resp, 403, "OpenID authorization required");
             return;
         }
-        Map<String, String> axschema = AxSchemaExtension.get(openIdUser);
-        String email = axschema == null ? null : axschema.get("email");
+        String email = getEmail(openIdUser);
 
-        String openidUrl = openIdUser.getIdentity();
-        if (openidUrl == null || email == null || !email.matches(".*@([^.]+\\.)+[^.]{2,}")) {
-            setResponse(resp, 403, "Your OpenID provider for " + openidUrl + " did not provide an e-mail "
-                    + "address. You need an e-mail address to use this service.");
+        String openidUrl = getOpenidUrl(resp, openIdUser, email);
+        if (openidUrl == null)
             return;
-        }
 
         long id = Long.parseLong(req.getRequestURI().substring("/browser-auth/".length()));
         Date date = new Date();
-        Query q = pm.newQuery("select from " + persistenceHelper.getDbUserClass().getName() + " where openid == :openid && email == :email");
-        List<DbUser> result = (List<DbUser>) q.execute(openidUrl, email);
-        Transaction tx;
-        DbUser dbUser;
-        if (result.isEmpty()) {
-            dbUser = persistenceHelper.createDbUser(openidUrl, email);
+        DbUser dbUser = findUser(pm, openidUrl, email);
 
-            tx = pm.currentTransaction();
-            tx.begin();
-            try {
-                pm.makePersistent(dbUser);
-                tx.commit();
-            } finally {
-                if (tx.isActive())
-                    tx.rollback();
-            }
-        } else {
-            dbUser = result.iterator().next();
+        if (dbUser == null) {
+            dbUser = createAndStoreUser(pm, openidUrl, email);
         }
         SqlCloudSession session = persistenceHelper.createSqlCloudSession(id, date, dbUser.createKeyObject(), email);
-        tx = pm.currentTransaction();
+        Transaction tx = pm.currentTransaction();
         tx.begin();
         try {
             pm.makePersistent(session);
@@ -113,8 +102,47 @@ public class AuthServlet extends AbstractFlybushServlet {
         writer.println("<h1>You are now signed in</h1>");
         writer.println("<p style='font-size: large; font-weight: bold'>"
                 + "Please return to the FindBugs application window to continue.</p>");
-        writer.println("<p style='font-style: italic'>Signed in as <strong>" + email + "</strong> (" + openIdUser.getIdentity()
-                + ")</p>");
+        writer.println("<p style='font-style: italic'>Signed in as <strong>" + email + "</strong> (" + email + ")</p>");
+    }
+
+    private DbUser createAndStoreUser(PersistenceManager pm, String openidUrl, String email) {
+        DbUser dbUser = persistenceHelper.createDbUser(openidUrl, email);
+
+        Transaction tx = pm.currentTransaction();
+        tx.begin();
+        try {
+            pm.makePersistent(dbUser);
+            tx.commit();
+        } finally {
+            if (tx.isActive())
+                tx.rollback();
+        }
+        return dbUser;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private DbUser findUser(PersistenceManager pm, String openidUrl, String email) {
+        Query q = pm.newQuery("select from " + persistenceHelper.getDbUserClass().getName()
+                + " where openid == :openid && email == :email");
+        List<DbUser> result = (List<DbUser>) q.execute(openidUrl, email);
+        DbUser dbUser = result.isEmpty() ? null : result.iterator().next();
+        q.closeAll();
+        return dbUser;
+    }
+
+    private String getEmail(OpenIdUser openIdUser) {
+        Map<String, String> axschema = AxSchemaExtension.get(openIdUser);
+        return axschema == null ? null : axschema.get("email");
+    }
+
+    private String getOpenidUrl(HttpServletResponse resp, OpenIdUser openIdUser, String email) throws IOException {
+        String openidUrl = openIdUser.getIdentity();
+        if (openidUrl == null || email == null || !email.matches(".*@([^.]+\\.)+[^.]{2,}")) {
+            setResponse(resp, 403, "Your OpenID provider for " + openidUrl + " did not provide an e-mail "
+                    + "address. You need an e-mail address to use this service.");
+            return null;
+        }
+        return openidUrl;
     }
 
     private void checkAuth(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
@@ -163,6 +191,54 @@ public class AuthServlet extends AbstractFlybushServlet {
             }
         }
         resp.setStatus(200);
+    }
+    
+    private void showToken(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm)
+            throws IOException {
+
+        OpenIdUser openIdUser = (OpenIdUser) req.getAttribute(OpenIdUser.ATTR_NAME);
+
+        if (openIdUser == null) {
+            setResponse(resp, 403, "OpenID authorization required");
+            return;
+        }
+        String email = getEmail(openIdUser);
+
+        String openidUrl = getOpenidUrl(resp, openIdUser, email);
+        if (openidUrl == null)
+            return;
+
+        DbUser user = findUser(pm, openidUrl, email);
+        if (user == null) {
+            user = createAndStoreUser(pm, openidUrl, email);
+        }
+
+        if (req.getParameter("generate") != null) {
+            user.setUploadToken(BigInteger.valueOf(Math.abs(new SecureRandom().nextLong())).toString(16));
+            Transaction tx = pm.currentTransaction();
+            try {
+                pm.makePersistent(user);
+            } finally {
+                if (tx.isActive())
+                    tx.rollback();
+            }
+        }
+
+        ServletOutputStream out = resp.getOutputStream();
+        out.println("<title>" + getCloudName() + " - Token</title>");
+        out.println("<body>");
+        if (user.getUploadToken() != null) {
+            out.println("Your token is: " + user.getUploadToken());
+            out.println("<form action=/token>" +
+                    "<input type=submit name=generate value='Regenerate Token'>" +
+                    "</form>");
+        } else {
+            out.println("You have not yet created a command-line upload token. " +
+                    "<form action=/token>" +
+                    "<input type=submit name=generate value='Create Token'>" +
+                    "</form>");
+        }
+        out.println("</body>");
     }
 
     @SuppressWarnings({ "unchecked" })

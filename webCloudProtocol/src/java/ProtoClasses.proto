@@ -24,7 +24,8 @@ message UpdateIssueTimestamps {
 }
 
 message UploadIssues {
-    required int64 sessionId = 1;
+    optional int64 sessionId = 1;
+	optional string token = 3;
 	repeated Issue newIssues = 2;
 }
 

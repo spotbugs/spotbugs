@@ -18,6 +18,7 @@
     <filter-mapping>
         <filter-name>openid-filter</filter-name>
         <url-pattern>/browser-auth/*</url-pattern>
+        <url-pattern>/token</url-pattern>
     </filter-mapping>
 
     <context-param>
@@ -57,6 +58,7 @@
         <url-pattern>/check-auth/*</url-pattern>
         <url-pattern>/log-in</url-pattern>
         <url-pattern>/log-out/*</url-pattern>
+        <url-pattern>/token</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>QueryServlet</servlet-name>

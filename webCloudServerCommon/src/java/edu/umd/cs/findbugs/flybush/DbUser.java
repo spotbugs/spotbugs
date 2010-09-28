@@ -6,5 +6,9 @@ public interface DbUser extends Comparable<DbUser> {
 
     String getEmail();
 
+    String getUploadToken();
+
+    void setUploadToken(String token);
+
     Object createKeyObject();
 }

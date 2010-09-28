@@ -265,10 +265,29 @@ public class UpdateServlet extends AbstractFlybushServlet {
         setResponse(resp, 200, "Deleted " + deleted + " entities");
     }
 
+    @SuppressWarnings({"unchecked"})
     private void uploadIssues(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
         UploadIssues issues = UploadIssues.parseFrom(req.getInputStream());
-        SqlCloudSession session = lookupCloudSessionById(issues.getSessionId(), pm);
-        if (session == null) {
+        if (issues.hasSessionId()) {
+            SqlCloudSession session = lookupCloudSessionById(issues.getSessionId(), pm);
+            if (session == null) {
+                resp.setStatus(403);
+                return;
+            }
+            LOGGER.info("User: " + session.getEmail());
+
+        } else if (issues.hasToken()) {
+            String token = issues.getToken();
+            Query query = pm.newQuery("select from " + persistenceHelper.getDbUserClass().getName()
+                    + " where uploadToken == :token");
+            List<DbUser> users = (List<DbUser>) query.execute(issues.getToken());
+            if (users.isEmpty()) {
+                resp.setStatus(403);
+                return;
+            }
+            DbUser user = users.iterator().next();
+            LOGGER.info("Token registered to " + user.getEmail() + " - " + token);
+        } else {
             resp.setStatus(403);
             return;
         }

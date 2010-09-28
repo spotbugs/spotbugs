@@ -1,5 +1,14 @@
 package edu.umd.cs.findbugs.flybush;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.servlet.ServletException;
+
 import com.google.common.collect.Sets;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
@@ -12,14 +21,6 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTime
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps.IssueGroup;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
 import static edu.umd.cs.findbugs.flybush.UpdateServlet.ONE_DAY_IN_MILLIS;
@@ -251,6 +252,42 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 
         // execute
         UploadIssues issuesToUpload = UploadIssues.newBuilder().setSessionId(555).addNewIssues(issue).build();
+        executePost("/upload-issues", issuesToUpload.toByteArray());
+        checkResponse(200, "");
+
+        // verify
+        List<DbIssue> dbIssues = getAllIssuesFromDb();
+        assertEquals(1, dbIssues.size());
+
+        DbIssue dbIssue = dbIssues.get(0);
+        checkIssuesEqualExceptTimestamps(dbIssue, issue);
+        assertEquals(issue.getFirstSeen(), dbIssue.getFirstSeen());
+        assertEquals(issue.getFirstSeen(), dbIssue.getLastSeen()); // upon
+                                                                   // initial
+                                                                   // upload,
+                                                                   // should be
+                                                                   // identical
+    }
+
+    public void testUploadIssueWithBadToken() throws Exception {
+        Issue issue = createProtoIssue("fad");
+        UploadIssues issuesToUpload = UploadIssues.newBuilder().setToken("xxx").addNewIssues(issue).build();
+        executePost("/upload-issues", issuesToUpload.toByteArray());
+
+        // verify
+        checkResponse(403);
+    }
+
+    public void testUploadIssueWithGoodToken() throws Exception {
+        DbUser user = persistenceHelper.createDbUser("http://example.com", "xyz");
+        user.setUploadToken("abc");
+        persistenceHelper.getPersistenceManager().makePersistent(user);
+
+        // setup
+        Issue issue = createProtoIssue("fad");
+
+        // execute
+        UploadIssues issuesToUpload = UploadIssues.newBuilder().setToken("abc").addNewIssues(issue).build();
         executePost("/upload-issues", issuesToUpload.toByteArray());
         checkResponse(200, "");
 
