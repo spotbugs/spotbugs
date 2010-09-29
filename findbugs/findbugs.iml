@@ -7,10 +7,10 @@
       <sourceFolder url="file://$MODULE_DIR$/src/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/antTask" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/tools" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/java5" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/etc" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/xsl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/junit" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/gui" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/bin" />
       <excludeFolder url="file://$MODULE_DIR$/build/classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/junitclasses" />
@@ -52,7 +52,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library name="junit.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/junit.jar!/" />

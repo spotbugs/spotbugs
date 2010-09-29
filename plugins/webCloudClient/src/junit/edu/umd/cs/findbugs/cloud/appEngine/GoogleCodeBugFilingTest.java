@@ -25,19 +25,17 @@ import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
 import edu.umd.cs.findbugs.cloud.CloudPluginBuilder;
 import junit.framework.TestCase;
-
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.JiraBugFiler.processJiraDashboardUrl;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class BugFilingTest extends TestCase {
+public class GoogleCodeBugFilingTest extends TestCase {
     private AppEngineCloudClient mockCloudClient;
 
     private AppEngineCloudNetworkClient mockNetworkClient;
@@ -61,7 +59,7 @@ public class BugFilingTest extends TestCase {
         super.setUp();
         mockCloudClient = mock(AppEngineCloudClient.class);
         when(mockCloudClient.getPlugin()).thenReturn(
-                new CloudPluginBuilder().setCloudid("BugFilingTest").setClassLoader(null).setCloudClass(null)
+                new CloudPluginBuilder().setCloudid("GoogleCodeBugFilingTest").setClassLoader(null).setCloudClass(null)
                         .setUsernameClass(null).setProperties(new PropertyBundle()).setDescription(null).setDetails(null)
                         .createCloudPlugin());
         mockNetworkClient = mock(AppEngineCloudNetworkClient.class);
@@ -106,20 +104,6 @@ public class BugFilingTest extends TestCase {
         filer.init(mockCloudClient, "http://code.google.com/p/test/");
         filer.setProjectHostingService(projectHostingService);
         filer.setCommentHelper(mock(BugFilingCommentHelper.class));
-    }
-
-    public void testJiraDashboardUrlProcessor() {
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("  jira.atlassian.com    "));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("jira.atlassian.com"));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("http://jira.atlassian.com"));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com"));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure"));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/"));
-        assertEquals("http://jira.atlassian.com", processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa"));
-        assertEquals("http://jira.atlassian.com",
-                processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa;sessionId=blah"));
-        assertEquals("http://jira.atlassian.com",
-                processJiraDashboardUrl("https://jira.atlassian.com/secure/Dashboard.jspa?blah"));
     }
 
     public void testGoogleCodeFileSuccess() throws Exception {
