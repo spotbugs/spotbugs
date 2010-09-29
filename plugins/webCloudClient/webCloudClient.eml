@@ -10,24 +10,7 @@
 		<excludeFolder url="file://$MODULE_DIR$/build/classes"/>
 	</contentEntry>
 	<lib name="junit3" scope="TEST"/>
-	<lib name="mockito-all-1.8.2.jar" scope="TEST">
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/mockito-all-1.8.2.jar!/"/>
-	</lib>
-	<lib name="gdata-client-1.0.jar" scope="COMPILE">
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/gdata-client-1.0.jar!/"/>
-	</lib>
-	<lib name="gdata-client-meta-1.0.jar" scope="COMPILE">
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/gdata-client-meta-1.0.jar!/"/>
-	</lib>
-	<lib name="gdata-core-1.0.jar" scope="COMPILE">
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/gdata-core-1.0.jar!/"/>
-	</lib>
-	<lib name="gdata-projecthosting-2.1.jar" scope="COMPILE">
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/gdata-projecthosting-2.1.jar!/"/>
-	</lib>
-	<lib name="gdata-projecthosting-meta-2.1.jar" scope="COMPILE">
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/gdata-projecthosting-meta-2.1.jar!/"/>
-	</lib>
+	<lib name="mockito-all-1.8.2.jar" scope="TEST"/>
 	<lib name="google-collect-1.0-rc1.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/google-collect-1.0-rc1.jar!/"/>
 	</lib>
