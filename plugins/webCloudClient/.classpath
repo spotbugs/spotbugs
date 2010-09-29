@@ -7,24 +7,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/webCloudProtocol"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
-	<classpathentry kind="lib" path="lib/mockito-all-1.8.2.jar"/>
-	<classpathentry kind="lib" path="lib/gdata-client-1.0.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="http://code.google.com/apis/gdata/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/gdata-client-meta-1.0.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="http://code.google.com/apis/gdata/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/gdata-core-1.0.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="http://code.google.com/apis/gdata/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/gdata-projecthosting-2.1.jar"/>
-	<classpathentry kind="lib" path="lib/gdata-projecthosting-meta-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/google-collect-1.0-rc1.jar"/>
+	<classpathentry kind="lib" path="test-lib/mockito-all-1.8.2.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
