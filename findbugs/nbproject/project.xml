@@ -23,9 +23,9 @@
                     <location>src/antTask</location>
                 </source-folder>
                 <source-folder>
-                    <label>src/java5</label>
+                    <label>src/gui</label>
                     <type>java</type>
-                    <location>src/java5</location>
+                    <location>src/gui</location>
                 </source-folder>
                 <source-folder>
                     <label>src/tools</label>
@@ -58,7 +58,7 @@
                     <target>run-selected-file-in-java5</target>
                     <context>
                         <property>run.class</property>
-                        <folder>src/java5</folder>
+                        <folder>src/gui</folder>
                         <pattern>\.java$</pattern>
                         <format>java-name</format>
                         <arity>
@@ -82,8 +82,8 @@
                         <location>src/antTask</location>
                     </source-folder>
                     <source-folder style="packages">
-                        <label>src/java5</label>
-                        <location>src/java5</location>
+                        <label>src/gui</label>
+                        <location>src/gui</location>
                     </source-folder>
                     <source-folder style="packages">
                         <label>src/tools</label>
@@ -118,7 +118,7 @@
                 <source-level>1.5</source-level>
             </compilation-unit>
             <compilation-unit>
-                <package-root>src/java5</package-root>
+                <package-root>src/gui</package-root>
                 <classpath mode="compile">build/classes:lib/annotations.jar:lib/ant.jar:lib/AppleJavaExtensions.jar:lib/asm-3.0.jar:lib/asm-analysis-3.0.jar:lib/asm-commons-3.0.jar:lib/asm-tree-3.0.jar:lib/asm-util-3.0.jar:lib/asm-xml-3.0.jar:lib/bcel.jar:lib/dom4j-full.jar:lib/jsr305.jar:lib/junit.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
@@ -127,7 +127,7 @@
                 <package-root>src/java</package-root>
                 <package-root>src/junit</package-root>
                 <package-root>src/antTask</package-root>
-                <package-root>src/java5</package-root>
+                <package-root>src/gui</package-root>
                 <package-root>src/tools</package-root>
                 <classpath mode="compile">build/classes:lib/bcel.jar:lib/junit.jar:lib/ant.jar:lib/AppleJavaExtensions.jar:lib/jsr305.jar:lib/dom4j-1.6.1.jar:lib/jaxen-1.1.1.jar:lib/asm-3.3.jar:lib/asm-analysis-3.3.jar:lib/asm-commons-3.3.jar:lib/asm-tree-3.1.jar:lib/asm-util-3.1.jar:lib/asm-xml-3.1.jar</classpath>
                 <source-level>1.5</source-level>
