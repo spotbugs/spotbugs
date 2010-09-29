@@ -23,7 +23,6 @@ import java.util.prefs.Preferences;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.db.DBCloud;
 
 /**
  * @author pugh
@@ -36,11 +35,11 @@ public class PromptForNameLookup implements NameLookup {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.cloud.NameLookup#getUserName()
      */
     public boolean init() {
-        Preferences prefs = Preferences.userNodeForPackage(DBCloud.class);
+        Preferences prefs = Preferences.userNodeForPackage(PromptForNameLookup.class);
         String findbugsUser = prefs.get(USER_NAME, null);
         findbugsUser = bugCollection
                 .getProject()
