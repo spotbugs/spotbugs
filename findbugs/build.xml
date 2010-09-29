@@ -654,8 +654,8 @@
 	-->
             <fileset dir="../plugins/webCloudClient/src"/>
             <fileset dir="../webCloudProtocol/src"/>
-            <fileset dir="../webCloudServerAppEngine/src"/>
-            <fileset dir="../webCloudServerCommon/src"/>
+            <fileset dir="../server/appengine/src"/>
+            <fileset dir="../server/common/src"/>
             <fileset dir="../findbugsTestCases/src"/> 
         </checkstyle>
     </target>

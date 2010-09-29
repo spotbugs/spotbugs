@@ -9,21 +9,21 @@
         </fileset>
     </path>
     <path id="localCloud.classpath">
-        <path location="../../webCloudServerCommon/build/webCloudServerCommon.jar"/>
+        <path location="../../server/common/build/webCloudServerCommon.jar"/>
         <fileset dir="lib">
             <include name="**/*.jar"/>
         </fileset>
     </path>
 
     <target name="compile-classes">
-        <ant dir="../../webCloudServerCommon" target="fulljar" inheritall="false" />
+        <ant dir="../../server/common" target="fulljar" inheritall="false" />
         <mkdir dir="classes-ant"/>
         <javac srcdir="src/java" destdir="classes-ant" classpathref="localCloud.classpath" debug="on"/>
     </target>
 
     <target name="enhance" depends="compile-classes">
         <mkdir dir="classes"/> <!-- so datanucleus enhancer doesn't complain-->
-        <ant dir="../../webCloudServerCommon" target="compile" inheritall="false" />
+        <ant dir="../../server/common" target="compile" inheritall="false" />
         <taskdef name="datanucleusenhancer" classpathref="enhancer.classpath"
                  classname="org.datanucleus.enhancer.tools.EnhancerTask"/>
 
@@ -32,7 +32,7 @@
             <classpath>
                 <path refid="enhancer.classpath"/>
                 <path location="classes-ant"/>
-                <path location="../../webCloudServerCommon/classes-ant"/>
+                <path location="../../server/common/classes-ant"/>
             </classpath>
 
             <jvmarg line="-Dlog4j.configuration=etc/logging.properties"/>
@@ -48,7 +48,7 @@
             <srcfiles dir="classes-ant" includes="**/*"/>
             <srcfiles dir="lib" includes="**/*"/>
             <srcfiles file="etc/manifest.txt"/>
-            <srcfiles file="../../webCloudServerCommon/build/webCloudServerCommon.jar"/>
+            <srcfiles file="../../server/common/build/webCloudServerCommon.jar"/>
         </uptodate>
     </target>
 
@@ -58,7 +58,7 @@
         <jar file="build/localCloud.jar" manifest="etc/manifest.txt">
             <fileset dir="classes-ant"/>
 
-            <zipfileset src="../../webCloudServerCommon/build/webCloudServerCommon.jar"/>
+            <zipfileset src="../../server/common/build/webCloudServerCommon.jar"/>
             <zipfileset src="lib/hsqldb.jar"/>
 
             <zipfileset src="lib/hsqldb.jar"/>
@@ -123,12 +123,12 @@
 
     <target name="compile-tests" depends="enhance">
         <mkdir dir="classes-tests-ant"/>
-        <ant dir="../../webCloudServerCommon" target="compile-tests" inheritall="false"/>
+        <ant dir="../../server/common" target="compile-tests" inheritall="false"/>
         <javac srcdir="src/junit" destdir="classes-tests-ant" debug="on">
             <classpath refid="localCloud.classpath"/>
             <classpath path="classes-ant"/>
             <classpath path="classes"/>
-            <classpath path="../../webCloudServerCommon/classes-tests-ant"/>
+            <classpath path="../../server/common/classes-tests-ant"/>
         </javac>
     </target>
 
@@ -142,7 +142,7 @@
             <classpath refid="localCloud.classpath"/>
             <classpath path="classes-ant"/>
             <classpath path="classes-tests-ant"/>
-            <classpath path="../../webCloudServerCommon/classes-tests-ant"/>
+            <classpath path="../../server/common/classes-tests-ant"/>
 
             <!-- junit needs fileset to point to .java files (not .class) -->
             <batchtest todir="build/tests">

@@ -7,8 +7,8 @@
       <module fileurl="file://$PROJECT_DIR$/sandbox/localCloud/localCloud.iml" filepath="$PROJECT_DIR$/sandbox/localCloud/localCloud.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/webCloudClient/webCloudClient.iml" filepath="$PROJECT_DIR$/plugins/webCloudClient/webCloudClient.iml" />
       <module fileurl="file://$PROJECT_DIR$/webCloudProtocol/webCloudProtocol.iml" filepath="$PROJECT_DIR$/webCloudProtocol/webCloudProtocol.iml" />
-      <module fileurl="file://$PROJECT_DIR$/webCloudServerAppEngine/webCloudServerAppEngine.iml" filepath="$PROJECT_DIR$/webCloudServerAppEngine/webCloudServerAppEngine.iml" />
-      <module fileurl="file://$PROJECT_DIR$/webCloudServerCommon/webCloudServerCommon.iml" filepath="$PROJECT_DIR$/webCloudServerCommon/webCloudServerCommon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/server/appengine/webCloudServerAppEngine.iml" filepath="$PROJECT_DIR$/server/appengine/webCloudServerAppEngine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/server/common/webCloudServerCommon.iml" filepath="$PROJECT_DIR$/server/common/webCloudServerCommon.iml" />
     </modules>
   </component>
 </project>
