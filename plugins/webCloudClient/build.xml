@@ -1,7 +1,6 @@
 <project name="webCloudClient" default="install">
 
     <property name="src.dir" value="src/java"/>
-    <property name="gsrc.dir" value="generated-src"/>
     <property name="classes.dir" value="build/classes-ant"/>
     <property name="lib.dir" value="lib"/>
     <property name="findbugs.home" value="../../findbugs"/>
@@ -48,7 +47,6 @@
                 deprecation="off"
                 debug="on">
             <src path="${src.dir}"/>
-            <src path="${gsrc.dir}"/>
             <classpath refid="client.classpath"/>
         </javac>
     </target>
@@ -80,17 +78,17 @@
 
             <zipfileset src="${protocol.home}/lib/protobuf-java-2.3.0.jar"/>
 
-            <zipfileset src="lib/gdata-client-1.0.jar"/>
-            <zipfileset src="lib/gdata-core-1.0.jar"/>
-            <zipfileset src="lib/gdata-projecthosting-2.1.jar"/>
-            <zipfileset src="lib/gdata-projecthosting-meta-2.1.jar"/>
+            <zipfileset src="../googlecode/lib/gdata-client-1.0.jar"/>
+            <zipfileset src="../googlecode/lib/gdata-core-1.0.jar"/>
+            <zipfileset src="../googlecode/lib/gdata-projecthosting-2.1.jar"/>
+            <zipfileset src="../googlecode/lib/gdata-projecthosting-meta-2.1.jar"/>
             <zipfileset src="lib/google-collect-1.0-rc1.jar"/>
-            <zipfileset src="lib/mockito-all-1.8.2.jar"/>
+            <zipfileset src="../googlecode/test-lib/mockito-all-1.8.2.jar"/>
 
             <zipfileset src="lib/axis/axis.jar"/>
             <zipfileset src="lib/axis/commons-discovery-0.2.jar"/>
             <zipfileset src="lib/axis/commons-logging-1.0.4.jar"/>
-            <zipfileset src="lib/axis/jaxrpc.jar"/>
+               <zipfileset src="lib/axis/jaxrpc.jar"/>
             <zipfileset src="lib/axis/saaj.jar"/>
             <zipfileset src="lib/axis/wsdl4j-1.5.1.jar"/>
         </jar>
