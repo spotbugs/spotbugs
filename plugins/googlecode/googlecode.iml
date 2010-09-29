@@ -23,7 +23,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" scope="TEST">
       <library name="test-lib">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/test-lib/mockito-all-1.8.2.jar!/" />

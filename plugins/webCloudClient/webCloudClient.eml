@@ -14,4 +14,7 @@
 	<lib name="google-collect-1.0-rc1.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/google-collect-1.0-rc1.jar!/"/>
 	</lib>
+	<lib name="C:\Users\Keith\Code\findbugs\plugins\webCloudClient\test-lib\mockito-all-1.8.2.jar" scope="TEST">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/test-lib/mockito-all-1.8.2.jar!/"/>
+	</lib>
 </component>
