@@ -5,7 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/findbugs/findbugs.iml" filepath="$PROJECT_DIR$/findbugs/findbugs.iml" />
       <module fileurl="file://$PROJECT_DIR$/findbugsTestCases/findbugsTestCases.iml" filepath="$PROJECT_DIR$/findbugsTestCases/findbugsTestCases.iml" />
       <module fileurl="file://$PROJECT_DIR$/sandbox/localCloud/localCloud.iml" filepath="$PROJECT_DIR$/sandbox/localCloud/localCloud.iml" />
-      <module fileurl="file://$PROJECT_DIR$/webCloudClient/webCloudClient.iml" filepath="$PROJECT_DIR$/webCloudClient/webCloudClient.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/webCloudClient/webCloudClient.iml" filepath="$PROJECT_DIR$/plugins/webCloudClient/webCloudClient.iml" />
       <module fileurl="file://$PROJECT_DIR$/webCloudProtocol/webCloudProtocol.iml" filepath="$PROJECT_DIR$/webCloudProtocol/webCloudProtocol.iml" />
       <module fileurl="file://$PROJECT_DIR$/webCloudServerAppEngine/webCloudServerAppEngine.iml" filepath="$PROJECT_DIR$/webCloudServerAppEngine/webCloudServerAppEngine.iml" />
       <module fileurl="file://$PROJECT_DIR$/webCloudServerCommon/webCloudServerCommon.iml" filepath="$PROJECT_DIR$/webCloudServerCommon/webCloudServerCommon.iml" />
