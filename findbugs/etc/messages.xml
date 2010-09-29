@@ -25,15 +25,6 @@ This plugin contains all of the standard FindBugs detectors.
 	<Details>Comments are stored in the analysis XML file itself</Details>
     </Cloud>
 
-  <Cloud id="edu.umd.cs.findbugs.cloud.db.Default" >
-	<Description>MySQL - Univ. of Maryland</Description>
-	<Details>Comments are stored in a MySQL database hosted at UMD</Details>
-    </Cloud>
-  <Cloud id="edu.umd.cs.findbugs.cloud.db.DB-UserName" >
-	<Description>MySQL - Univ. of Maryland (uses system user name)</Description>
-	<Details>Comments are stored in an SQL database; user name gotten from system properties</Details>
-    </Cloud>
-
   <BugReporterDecorator
     id="edu.umd.cs.findbugs.bugReporter.SuppressMultithreaded">
     <Description>Suppress multithreaded correctness issues</Description>

@@ -14,7 +14,6 @@ Bundle-ClassPath: findbugs.jar,
  lib/jaxen-1.1.1.jar,
  lib/jFormatString.jar,
  lib/commons-lang-2.4.jar,
- lib/mysql-connector-java-5.1.7-bin.jar,
  lib/jsr305.jar
 Bundle-Localization: plugin
 Export-Package: edu.umd.cs.findbugs,
