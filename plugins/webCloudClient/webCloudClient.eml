@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component>
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$">
+		<testFolder url="file://$MODULE_DIR$/src/junit"/>
+		<excludeFolder url="file://$MODULE_DIR$/build"/>
+		<excludeFolder url="file://$MODULE_DIR$/build/classes"/>
+		<excludeFolder url="file://$MODULE_DIR$/classes-ant"/>
+		<excludeFolder url="file://$MODULE_DIR$/classes-tests-ant"/>
+		<excludeFolder url="file://$MODULE_DIR$/build/classes"/>
+	</contentEntry>
+	<lib name="junit3" scope="TEST"/>
+	<lib name="mockito-all-1.8.2.jar" scope="TEST">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/mockito-all-1.8.2.jar!/"/>
+	</lib>
+	<lib name="gdata-client-1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/gdata-client-1.0.jar!/"/>
+	</lib>
+	<lib name="gdata-client-meta-1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/gdata-client-meta-1.0.jar!/"/>
+	</lib>
+	<lib name="gdata-core-1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/gdata-core-1.0.jar!/"/>
+	</lib>
+	<lib name="gdata-projecthosting-2.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/gdata-projecthosting-2.1.jar!/"/>
+	</lib>
+	<lib name="gdata-projecthosting-meta-2.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/gdata-projecthosting-meta-2.1.jar!/"/>
+	</lib>
+	<lib name="google-collect-1.0-rc1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/google-collect-1.0-rc1.jar!/"/>
+	</lib>
+	<lib name="commons-logging-1.0.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/axis/commons-logging-1.0.4.jar!/"/>
+	</lib>
+	<lib name="saaj.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/axis/saaj.jar!/"/>
+	</lib>
+	<lib name="commons-discovery-0.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/axis/commons-discovery-0.2.jar!/"/>
+	</lib>
+	<lib name="jaxrpc.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/axis/jaxrpc.jar!/"/>
+	</lib>
+	<lib name="wsdl4j-1.5.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/axis/wsdl4j-1.5.1.jar!/"/>
+	</lib>
+	<lib name="axis.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/axis/axis.jar!/"/>
+	</lib>
+</component>
