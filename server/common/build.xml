@@ -1,6 +1,6 @@
 <project name="webCloudServerCommon" default="compile">
     <path id="common.classpath">
-        <path location="../webCloudProtocol/build/webCloudProtocol.jar"/>
+        <path location="../../webCloudProtocol/build/webCloudProtocol.jar"/>
         <fileset dir="lib" includes="*.jar"/>
     </path>
 
@@ -11,7 +11,7 @@
     </target>
 
     <target name="compile">
-        <ant dir="../webCloudProtocol" target="fulljar" inheritall="false"/>
+        <ant dir="../../webCloudProtocol" target="fulljar" inheritall="false"/>
         <mkdir dir="classes-ant"/>
         <javac srcdir="src/java" destdir="classes-ant" classpathref="common.classpath" debug="on" />
     </target>
@@ -31,7 +31,7 @@
                   targetfile="build/webCloudServerCommon.jar">
             <srcfiles dir="classes-ant" includes="**/*"/>
             <srcfiles dir="lib" includes="**/*"/>
-            <srcfiles file="../webCloudProtocol/build/webCloudProtocol.jar"/>
+            <srcfiles file="../../webCloudProtocol/build/webCloudProtocol.jar"/>
         </uptodate>
     </target>
 
@@ -40,7 +40,7 @@
         <jar jarfile="build/webCloudServerCommon.jar">
             <fileset dir="classes-ant"/>
 
-            <zipfileset src="../webCloudProtocol/build/webCloudProtocol.jar"/>
+            <zipfileset src="../../webCloudProtocol/build/webCloudProtocol.jar"/>
 
             <zipfileset src="lib/charts4j-1.2.jar"/>
             <zipfileset src="lib/commons-lang-2.5.jar"/>
