@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/findbugs/findbugs.iml" filepath="$PROJECT_DIR$/findbugs/findbugs.iml" />
       <module fileurl="file://$PROJECT_DIR$/findbugsTestCases/findbugsTestCases.iml" filepath="$PROJECT_DIR$/findbugsTestCases/findbugsTestCases.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/jira/jira.iml" filepath="$PROJECT_DIR$/plugins/jira/jira.iml" />
       <module fileurl="file://$PROJECT_DIR$/sandbox/localCloud/localCloud.iml" filepath="$PROJECT_DIR$/sandbox/localCloud/localCloud.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/webCloudClient/webCloudClient.iml" filepath="$PROJECT_DIR$/plugins/webCloudClient/webCloudClient.iml" />
       <module fileurl="file://$PROJECT_DIR$/webCloudProtocol/webCloudProtocol.iml" filepath="$PROJECT_DIR$/webCloudProtocol/webCloudProtocol.iml" />

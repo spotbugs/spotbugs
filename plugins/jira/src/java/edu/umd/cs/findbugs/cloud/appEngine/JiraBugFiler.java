@@ -24,11 +24,9 @@ import com.atlassian.jira.rpc.soap.beans.RemoteProject;
 import com.atlassian.jira.rpc.soap.beans.RemoteStatus;
 import com.atlassian.jira.rpc.soap.jirasoapservice_v2.JiraSoapService;
 import com.atlassian.jira.rpc.soap.jirasoapservice_v2.JiraSoapServiceServiceLocator;
-import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.BugFiler;
 import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 
@@ -219,7 +217,7 @@ public class JiraBugFiler implements BugFiler {
                 Arrays.asList(new IGuiCallback.FormItem("Project", null, getProjectKeys(trackerUrl)),
                         new IGuiCallback.FormItem("Component") {
                             private String lastProjectKey = "";
-                            public List<String> componentNames = Lists.newArrayList();
+                            public List<String> componentNames = new ArrayList<String>();
 
                             @Override
                             public List<String> getPossibleValues() {
