@@ -31,7 +31,7 @@
             <classpath refid="enhancer.classpath"/>
             <classpath>
                 <path refid="enhancer.classpath"/>
-                <path location="classes-ant"/>
+                <path location="build/classes-ant"/>
                 <path location="../../server/common/build/classes-ant"/>
             </classpath>
 
@@ -126,7 +126,7 @@
         <ant dir="../../server/common" target="compile-tests" inheritall="false"/>
         <javac srcdir="src/junit" destdir="build/classes-tests-ant" debug="on">
             <classpath refid="localCloud.classpath"/>
-            <classpath path="classes-ant"/>
+            <classpath path="build/classes-ant"/>
             <classpath path="classes"/>
             <classpath path="../../server/common/build/classes-tests-ant"/>
         </javac>
