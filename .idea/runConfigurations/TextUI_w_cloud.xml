@@ -8,7 +8,7 @@
     </extension>
     <extension name="snapshooter" />
     <option name="MAIN_CLASS_NAME" value="edu.umd.cs.findbugs.FindBugs2" />
-    <option name="VM_PARAMETERS" value="-Xmx512m -Dfindbugs.plugin.appengine=file:../webCloudClient/etc/ -Dfindbugs.cloud.default=edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud" />
+    <option name="VM_PARAMETERS" value="-Xmx512m -Dfindbugs.cloud.default=edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud -Dfindbugs.cloud.token=238b6fc80cec17ec  " />
     <option name="PROGRAM_PARAMETERS" value="-experimental -output:withMessages msgs.xml -xml:withMessages $PROJECT_DIR$/../../../keith\Code\findbugs\findbugsTestCases\build\classes\sfBugs\" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/findbugs" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -21,6 +21,8 @@
     <RunnerSettings RunnerId="Profile ">
       <option name="myExternalizedOptions" value="&#13;&#10;snapshots-dir=&#13;&#10;additional-options2=onexit\=snapshot&#13;&#10;" />
     </RunnerSettings>
+    <RunnerSettings RunnerId="Run" />
+    <ConfigurationWrapper RunnerId="Run" />
     <method />
   </configuration>
 </component>
