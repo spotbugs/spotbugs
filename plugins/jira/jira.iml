@@ -6,6 +6,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/generated" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/junit" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/build/classes-ant" />
+      <excludeFolder url="file://$MODULE_DIR$/classes-tests-ant" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

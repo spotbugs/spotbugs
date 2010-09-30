@@ -17,8 +17,8 @@
 
     <target name="compile-classes">
         <ant dir="../../server/common" target="fulljar" inheritall="false" />
-        <mkdir dir="classes-ant"/>
-        <javac srcdir="src/java" destdir="classes-ant" classpathref="localCloud.classpath" debug="on"/>
+        <mkdir dir="build/classes-ant"/>
+        <javac srcdir="src/java" destdir="build/classes-ant" classpathref="localCloud.classpath" debug="on"/>
     </target>
 
     <target name="enhance" depends="compile-classes">
@@ -32,12 +32,12 @@
             <classpath>
                 <path refid="enhancer.classpath"/>
                 <path location="classes-ant"/>
-                <path location="../../server/common/classes-ant"/>
+                <path location="../../server/common/build/classes-ant"/>
             </classpath>
 
             <jvmarg line="-Dlog4j.configuration=etc/logging.properties"/>
 
-            <fileset dir="classes-ant">
+            <fileset dir="build/classes-ant">
                 <include name="**/*.class"/>
             </fileset>
         </datanucleusenhancer>
@@ -45,7 +45,7 @@
 
     <target name="fulljar-uptodate-check" depends="enhance">
         <uptodate property="fulljar-not-required" targetfile="build/localCloud.jar">
-            <srcfiles dir="classes-ant" includes="**/*"/>
+            <srcfiles dir="build/classes-ant" includes="**/*"/>
             <srcfiles dir="lib" includes="**/*"/>
             <srcfiles file="etc/manifest.txt"/>
             <srcfiles file="../../server/common/build/webCloudServerCommon.jar"/>
@@ -56,7 +56,7 @@
             unless="fulljar-not-required">
         <mkdir dir="build"/>
         <jar file="build/localCloud.jar" manifest="etc/manifest.txt">
-            <fileset dir="classes-ant"/>
+            <fileset dir="build/classes-ant"/>
 
             <zipfileset src="../../server/common/build/webCloudServerCommon.jar"/>
             <zipfileset src="lib/hsqldb.jar"/>
@@ -122,13 +122,13 @@
     </target>
 
     <target name="compile-tests" depends="enhance">
-        <mkdir dir="classes-tests-ant"/>
+        <mkdir dir="build/classes-tests-ant"/>
         <ant dir="../../server/common" target="compile-tests" inheritall="false"/>
-        <javac srcdir="src/junit" destdir="classes-tests-ant" debug="on">
+        <javac srcdir="src/junit" destdir="build/classes-tests-ant" debug="on">
             <classpath refid="localCloud.classpath"/>
             <classpath path="classes-ant"/>
             <classpath path="classes"/>
-            <classpath path="../../server/common/classes-tests-ant"/>
+            <classpath path="../../server/common/build/classes-tests-ant"/>
         </javac>
     </target>
 
@@ -140,9 +140,9 @@
             <formatter type="xml"/>   <!-- Hudson reads generated xml -->
 
             <classpath refid="localCloud.classpath"/>
-            <classpath path="classes-ant"/>
-            <classpath path="classes-tests-ant"/>
-            <classpath path="../../server/common/classes-tests-ant"/>
+            <classpath path="build/classes-ant"/>
+            <classpath path="build/classes-tests-ant"/>
+            <classpath path="../../server/common/build/classes-tests-ant"/>
 
             <!-- junit needs fileset to point to .java files (not .class) -->
             <batchtest todir="build/tests">
@@ -157,6 +157,5 @@
     <target name="clean">
         <delete dir="dist"/>
         <delete dir="build"/>
-        <delete dir="classes-ant"/>
     </target>
 </project>

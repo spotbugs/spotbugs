@@ -17,21 +17,18 @@
     <property name="protocol.home" value="${findbugsBase.dir}/webCloudProtocol"/>
 
     <path id="client.classpath">
-        <fileset dir="${lib.dir}">
-            <include name="**/*.jar"/>
-        </fileset>
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
 
         <pathelement location="${findbugs.home}/build/classes"/>
 
-        <fileset dir="${findbugs.home}/lib">
-            <include name="*.jar"/>
-        </fileset>
+        <fileset dir="${findbugs.home}/lib" includes="*.jar"/>
 
-        <fileset dir="${protocol.home}/lib">
-            <include name="*.jar"/>
-        </fileset>
+        <fileset dir="${protocol.home}/lib" includes="*.jar"/>
         <pathelement location="${protocol.home}/${classes.dir}"/>
+    </path>
 
+    <path id="tests.classpath">
+        <fileset dir="test-lib" includes="**/*.jar"/>
     </path>
 
     <target name="validate">
@@ -108,12 +105,13 @@
     </target>
 
     <target name="compile-tests" depends="compile">
-        <mkdir dir="classes-tests-ant"/>
+        <mkdir dir="build/classes-tests-ant"/>
 
-        <javac srcdir="src/junit" destdir="classes-tests-ant" source="1.5" target="1.5" debug="on">
+        <javac srcdir="src/junit" destdir="build/classes-tests-ant" source="1.5" target="1.5" debug="on">
             <classpath>
                 <path refid="client.classpath"/>
                 <path location="${classes.dir}"/>
+                <path refid="tests.classpath"/>
             </classpath>
         </javac>
     </target>
@@ -127,8 +125,9 @@
             <!-- Hudson reads generated xml -->
 
             <classpath refid="client.classpath"/>
+            <classpath refid="tests.classpath"/>
             <classpath path="${classes.dir}"/>
-            <classpath path="classes-tests-ant"/>
+            <classpath path="build/classes-tests-ant"/>
 
             <batchtest todir="build/tests">
                 <fileset dir="src/junit">

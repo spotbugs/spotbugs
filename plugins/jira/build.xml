@@ -1,4 +1,4 @@
-<project name="googlecode" default="test">
+<project name="jira" default="test">
 
     <property file="local.properties"/>
 
@@ -11,6 +11,7 @@
     <property file="build.properties"/>
 
     <property name="src.dir" value="src/java"/>
+    <property name="gensrc.dir" value="src/generated"/>
     <property name="classes.dir" value="build/classes-ant"/>
     <property name="lib.dir" value="lib"/>
     <property name="findbugs.home" value="${findbugsBase.dir}/findbugs"/>
@@ -96,7 +97,7 @@
             <classpath>
                 <path refid="client.classpath"/>
                 <path location="${classes.dir}"/>
-                <path refid="test.classpath"/>
+                <path location="test-lib/mockito-all-1.8.2.jar"/>
             </classpath>
         </javac>
     </target>
@@ -112,7 +113,7 @@
             <classpath refid="client.classpath"/>
             <classpath path="${classes.dir}"/>
             <classpath path="build/classes-tests-ant"/>
-            <classpath refid="test.classpath"/>
+            <classpath path="test-lib/mockito-all-1.8.2.jar"/>
 
             <batchtest todir="build/tests">
                 <fileset dir="src/junit">
