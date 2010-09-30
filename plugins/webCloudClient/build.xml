@@ -66,37 +66,16 @@
                 <include name="findbugs.xml"/>
                 <include name="messages.xml"/>
             </fileset>
-            <fileset dir="${classes.dir}">
-                <include name="**/*.class"/>
-            </fileset>
-            <fileset dir="${protocol.home}/${classes.dir}">
-                <include name="**/*.class"/>
-            </fileset>
+            <fileset dir="${classes.dir}" includes="**/*.class"/>
+            <fileset dir="${protocol.home}/${classes.dir}" includes="**/*.class"/>
 
             <zipfileset src="${protocol.home}/lib/protobuf-java-2.3.0.jar"/>
 
-            <zipfileset src="../googlecode/lib/gdata-client-1.0.jar"/>
-            <zipfileset src="../googlecode/lib/gdata-core-1.0.jar"/>
-            <zipfileset src="../googlecode/lib/gdata-projecthosting-2.1.jar"/>
-            <zipfileset src="../googlecode/lib/gdata-projecthosting-meta-2.1.jar"/>
-            <zipfileset src="lib/google-collect-1.0-rc1.jar"/>
-            <zipfileset src="../googlecode/test-lib/mockito-all-1.8.2.jar"/>
-
-            <zipfileset src="lib/axis/axis.jar"/>
-            <zipfileset src="lib/axis/commons-discovery-0.2.jar"/>
-            <zipfileset src="lib/axis/commons-logging-1.0.4.jar"/>
-            <zipfileset src="lib/axis/jaxrpc.jar"/>
-            <zipfileset src="lib/axis/saaj.jar"/>
-            <zipfileset src="lib/axis/wsdl4j-1.5.1.jar"/>
         </jar>
     </target>
 
     <target name="install" depends="plugin-jar">
-        <copy todir="${findbugs.home}/plugin" flatten="true">
-            <fileset dir="build">
-                <include name="webCloudClient.jar"/>
-            </fileset>
-        </copy>
+        <copy todir="${findbugs.home}/plugin" file="build/webCloudClient.jar" flatten="true"/>
         <copy todir="${findbugs.home}/jnlp" flatten="true">
             <fileset dir="etc">
                 <include name="*.jnlp"/>
