@@ -1,14 +1,14 @@
 <project name="webCloudClient" default="install">
 
-        <property file="local.properties" />
+    <property file="local.properties"/>
 
-<!--
-    The build.properties contains global properties, which are common for all developers.
-    Note:
-    Ant properties cannot be overriden, so if local.properties and build.properties
-    contains same keys, ant will use those from local.properties
--->
-        <property file="build.properties" />
+    <!--
+        The build.properties contains global properties, which are common for all developers.
+        Note:
+        Ant properties cannot be overriden, so if local.properties and build.properties
+        contains same keys, ant will use those from local.properties
+    -->
+    <property file="build.properties"/>
 
     <property name="src.dir" value="src/java"/>
     <property name="classes.dir" value="build/classes-ant"/>
@@ -43,41 +43,29 @@
     </target>
 
     <target name="clean">
-      <delete dir="build"/>
-      <mkdir dir="${classes.dir}"/>
-      <mkdir dir="build/classes"/>
-      <mkdir dir="build/testClasses"/>
-      </target>
+        <delete dir="build"/>
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="build/classes"/>
+        <mkdir dir="build/testClasses"/>
+    </target>
     <target name="compile">
-	<echo> Base ${findbugsBase.dir}</echo>
-	<echo> protocol ${protocol.home}</echo>
+        <echo>Base ${findbugsBase.dir}</echo>
+        <echo>protocol ${protocol.home}</echo>
         <ant dir="${protocol.home}" target="classes"/>
         <mkdir dir="${classes.dir}"/>
-        <javac  destdir="${classes.dir}"
-                source="1.5"
-                target="1.5"
-                deprecation="off"
-                debug="on">
+        <javac destdir="${classes.dir}"
+               source="1.5"
+               target="1.5"
+               deprecation="off"
+               debug="on">
             <src path="${src.dir}"/>
             <classpath refid="client.classpath"/>
         </javac>
     </target>
 
-    <target name="custom-plugin-jar">
-        <property name="pluginjar-path" value="build/webCloudClient-custom.jar"/>
-        <property name="pluginjar-etc" value="etc-custom"/>
-        <antcall target="-plugin-jar" inheritrefs="true"/>
-    </target>
-
-    <target name="plugin-jar">
-        <property name="pluginjar-path" value="build/webCloudClient.jar"/>
-        <property name="pluginjar-etc" value="etc"/>
-        <antcall target="-plugin-jar" inheritrefs="true"/>
-    </target>
-
-    <target name="-plugin-jar" depends="compile">
-        <jar destfile="${pluginjar-path}">
-            <fileset dir="${pluginjar-etc}">
+    <target name="plugin-jar" depends="compile">
+        <jar destfile="build/webCloudClient.jar">
+            <fileset dir="etc">
                 <include name="findbugs.xml"/>
                 <include name="messages.xml"/>
             </fileset>
@@ -100,7 +88,7 @@
             <zipfileset src="lib/axis/axis.jar"/>
             <zipfileset src="lib/axis/commons-discovery-0.2.jar"/>
             <zipfileset src="lib/axis/commons-logging-1.0.4.jar"/>
-               <zipfileset src="lib/axis/jaxrpc.jar"/>
+            <zipfileset src="lib/axis/jaxrpc.jar"/>
             <zipfileset src="lib/axis/saaj.jar"/>
             <zipfileset src="lib/axis/wsdl4j-1.5.1.jar"/>
         </jar>
@@ -135,7 +123,8 @@
         <mkdir dir="build/tests"/>
         <junit fork="yes" printsummary="true">
             <jvmarg value="-ea"/>
-            <formatter type="xml"/>   <!-- Hudson reads generated xml -->
+            <formatter type="xml"/>
+            <!-- Hudson reads generated xml -->
 
             <classpath refid="client.classpath"/>
             <classpath path="${classes.dir}"/>
@@ -150,7 +139,7 @@
             </batchtest>
         </junit>
     </target>
-    
+
 </project>
 
       
