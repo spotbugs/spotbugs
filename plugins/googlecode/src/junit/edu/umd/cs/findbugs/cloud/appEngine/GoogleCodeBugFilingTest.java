@@ -196,14 +196,16 @@ public class GoogleCodeBugFilingTest extends TestCase {
         filer.setProjectHostingService(null);
         final AtomicReference<OAuthParameters> oauthParams = new AtomicReference<OAuthParameters>();
         when(mockOAuthHelper.createUserAuthorizationUrl(Matchers.<OAuthParameters> any())).thenAnswer(new Answer<String>() {
-            public String answer(InvocationOnMock invocationOnMock) throws Throwable {
+            @Override
+			public String answer(InvocationOnMock invocationOnMock) throws Throwable {
                 oauthParams.set((OAuthParameters) invocationOnMock.getArguments()[0]);
                 return "http://auth.url";
             }
         });
         when(mockGuiCallback.showDocument(new URL("http://auth.url"))).thenReturn(true);
         when(mockOAuthHelper.getAccessToken(Matchers.<OAuthParameters> any())).thenAnswer(new Answer<String>() {
-            public String answer(InvocationOnMock invocationOnMock) throws Throwable {
+            @Override
+			public String answer(InvocationOnMock invocationOnMock) throws Throwable {
                 oauthParams.get().setOAuthTokenSecret("SECRET");
                 return "TOKEN";
             }
@@ -260,13 +262,15 @@ public class GoogleCodeBugFilingTest extends TestCase {
 
     private static void createPreferencesToPropertiesBridge(Preferences mockPrefs, final Properties props) {
         when(mockPrefs.get(Matchers.anyString(), Matchers.anyString())).thenAnswer(new Answer<String>() {
-            public String answer(InvocationOnMock invocationOnMock) throws Throwable {
+            @Override
+			public String answer(InvocationOnMock invocationOnMock) throws Throwable {
                 Object[] args = invocationOnMock.getArguments();
                 return props.getProperty((String) args[0], (String) args[1]);
             }
         });
         doAnswer(new Answer<Object>() {
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+            @Override
+			public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
                 Object[] args = invocationOnMock.getArguments();
                 props.setProperty((String) args[0], (String) args[1]);
                 return null;
@@ -276,7 +280,8 @@ public class GoogleCodeBugFilingTest extends TestCase {
 
     private Answer<IEntry> createIssueEntryAnswer() {
         return new Answer<IEntry>() {
-            public IEntry answer(InvocationOnMock invocationOnMock) throws Throwable {
+            @Override
+			public IEntry answer(InvocationOnMock invocationOnMock) throws Throwable {
                 IssuesEntry result = new IssuesEntry();
                 result.addHtmlLink("http://test.url", "en", "Test URL");
                 result.setStatus(new Status("OK"));

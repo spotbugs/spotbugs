@@ -56,7 +56,8 @@ public class GoogleCodeBugFiler implements BugFiler {
 
     private @CheckForNull ProjectHostingService projectHostingService;
 
-    public void init(AppEngineCloudClient appEngineCloudClient, String trackerUrl) {
+    @Override
+	public void init(AppEngineCloudClient appEngineCloudClient, String trackerUrl) {
         this.appEngineCloudClient = appEngineCloudClient;
         this.url = trackerUrl;
         bugFilingCommentHelper = new BugFilingCommentHelper(appEngineCloudClient);
@@ -72,7 +73,8 @@ public class GoogleCodeBugFiler implements BugFiler {
         projectHostingService = service;
     }
 
-    public URL file(BugInstance b) throws IOException, SignInCancelledException {
+    @Override
+	public URL file(BugInstance b) throws IOException, SignInCancelledException {
         if (url == null)
             return null;
         Matcher m = PATTERN_GOOGLE_CODE_URL.matcher(url);
@@ -91,7 +93,8 @@ public class GoogleCodeBugFiler implements BugFiler {
         }
     }
 
-    public String getBugStatus(String bugLink) throws MalformedURLException, OAuthException, InterruptedException,
+    @Override
+	public String getBugStatus(String bugLink) throws MalformedURLException, OAuthException, InterruptedException,
             AuthenticationException {
 
         Matcher m = URL_REGEX.matcher(bugLink);
@@ -102,7 +105,8 @@ public class GoogleCodeBugFiler implements BugFiler {
         final long issueID = Long.parseLong(m.group(2));
 
         return initProjectHostingServiceAndExecute(new Callable<String>() {
-            public String call() throws Exception {
+            @Override
+			public String call() throws Exception {
                 IssuesEntry issue = projectHostingService.getEntry(new URL("http://code.google.com/feeds/issues/p/" + project
                         + "/issues/full/" + issueID), IssuesEntry.class);
                 Status status = issue.getStatus();
@@ -124,7 +128,8 @@ public class GoogleCodeBugFiler implements BugFiler {
             initProjectHostingService(false);
 
         Callable<IssuesEntry> callable = new Callable<IssuesEntry>() {
-            public IssuesEntry call() throws Exception {
+            @Override
+			public IssuesEntry call() throws Exception {
                 return projectHostingService.insert(issuesFeedUrl, makeNewIssue(instance));
             }
         };
