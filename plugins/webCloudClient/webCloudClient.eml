@@ -10,9 +10,6 @@
 		<excludeFolder url="file://$MODULE_DIR$/build/classes"/>
 	</contentEntry>
 	<lib name="junit3" scope="TEST"/>
-	<lib name="google-collect-1.0-rc1.jar" scope="COMPILE">
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/lib/google-collect-1.0-rc1.jar!/"/>
-	</lib>
 	<lib name="mockito-all-1.8.2.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/test-lib/mockito-all-1.8.2.jar!/"/>
 	</lib>
