@@ -81,7 +81,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
     }
 
     @Override
-    protected IGuiCallback getGuiCallback() {
+    public IGuiCallback getGuiCallback() {
         return mockGuiCallback;
     }
 

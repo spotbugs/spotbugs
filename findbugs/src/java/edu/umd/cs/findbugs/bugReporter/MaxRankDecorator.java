@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.bugReporter;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ComponentPlugin;
 
 /**
  * @author pugh
@@ -29,7 +30,7 @@ public class MaxRankDecorator extends BugReporterDecorator {
 
     final int maxRank;
 
-    public MaxRankDecorator(BugReporterPlugin plugin, BugReporter delegate) {
+    public MaxRankDecorator(ComponentPlugin<BugReporterDecorator> plugin, BugReporter delegate) {
         super(plugin, delegate);
         maxRank = Integer.parseInt(plugin.getProperties().getProperty("maxRank"));
     }

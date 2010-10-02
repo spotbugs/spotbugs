@@ -10,6 +10,5 @@
 	<classpathentry kind="lib" path="lib/saaj.jar"/>
 	<classpathentry kind="lib" path="lib/wsdl4j-1.5.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/webCloudClient"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

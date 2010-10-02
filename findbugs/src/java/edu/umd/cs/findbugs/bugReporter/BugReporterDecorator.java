@@ -22,21 +22,22 @@ package edu.umd.cs.findbugs.bugReporter;
 import java.lang.reflect.Constructor;
 
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ComponentPlugin;
 import edu.umd.cs.findbugs.DelegatingBugReporter;
 
 /**
  * Abstract base class for bug reporters defined as plugins.
- * 
+ *
  * @author pugh
  */
 public abstract class BugReporterDecorator extends DelegatingBugReporter {
 
-    static public BugReporterDecorator construct(BugReporterPlugin plugin, BugReporter delegate) {
+    static public BugReporterDecorator construct(ComponentPlugin<BugReporterDecorator> plugin, BugReporter delegate) {
 
-        Class<? extends BugReporterDecorator> pluginClass = plugin.getBugReporterClass();
+        Class<? extends BugReporterDecorator> pluginClass = plugin.getComponentClass();
 
         try {
-            Constructor<? extends BugReporterDecorator> constructor = pluginClass.getConstructor(BugReporterPlugin.class,
+            Constructor<? extends BugReporterDecorator> constructor = pluginClass.getConstructor(ComponentPlugin.class,
                     BugReporter.class);
             return constructor.newInstance(plugin, delegate);
         } catch (InstantiationException e) {
@@ -48,9 +49,9 @@ public abstract class BugReporterDecorator extends DelegatingBugReporter {
 
     }
 
-    final BugReporterPlugin plugin;
+    final ComponentPlugin<BugReporterDecorator> plugin;
 
-    public BugReporterDecorator(BugReporterPlugin plugin, BugReporter delegate) {
+    public BugReporterDecorator(ComponentPlugin<BugReporterDecorator> plugin, BugReporter delegate) {
         super(delegate);
         this.plugin = plugin;
 

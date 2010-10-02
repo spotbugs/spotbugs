@@ -49,7 +49,6 @@ import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.bugReporter.BugReporterDecorator;
-import edu.umd.cs.findbugs.bugReporter.BugReporterPlugin;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -79,7 +78,7 @@ import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
 /**
  * FindBugs driver class. Orchestrates the analysis of a project, collection of
  * results, etc.
- * 
+ *
  * @author David Hovemeyer
  */
 public class FindBugs2 implements IFindBugsEngine {
@@ -117,7 +116,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     private ExecutionPlan executionPlan;
 
-    private YourKitController yourkitController = new YourKitController();
+    private final YourKitController yourkitController = new YourKitController();
 
     private String currentClassName;
 
@@ -125,7 +124,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     private IClassScreener classScreener;
 
-    private AnalysisOptions analysisOptions = new AnalysisOptions(true);
+    private final AnalysisOptions analysisOptions = new AnalysisOptions(true);
 
     /**
      * Constructor.
@@ -139,7 +138,7 @@ public class FindBugs2 implements IFindBugsEngine {
         this.classScreener = new IClassScreener() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.IClassScreener#matches(java.lang.String)
              */
             public boolean matches(String fileName) {
@@ -161,7 +160,7 @@ public class FindBugs2 implements IFindBugsEngine {
     /**
      * Set the detector factory collection to be used by this FindBugs2 engine.
      * This method should be called before the execute() method is called.
-     * 
+     *
      * @param detectorFactoryCollection
      *            The detectorFactoryCollection to set.
      */
@@ -173,7 +172,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * Execute the analysis. For obscure reasons, CheckedAnalysisExceptions are
      * re-thrown as IOExceptions. However, these can only happen during the
      * setup phase where we scan codebases for classes.
-     * 
+     *
      * @throws IOException
      * @throws InterruptedException
      */
@@ -226,7 +225,8 @@ public class FindBugs2 implements IFindBugsEngine {
             createExecutionPlan();
 
             for (Plugin p : detectorFactoryCollection.plugins()) {
-                for (BugReporterPlugin brp : p.getBugReporterPlugins()) {
+                for (ComponentPlugin<BugReporterDecorator> brp
+                        : p.getComponentPlugins(BugReporterDecorator.class)) {
                     if (brp.isEnabledByDefault() && !brp.isNamed(explicitlyDisabledBugReporterDecorators)
                             || brp.isNamed(explicitlyEnabledBugReporterDecorators))
                         bugReporter = BugReporterDecorator.construct(brp, bugReporter);
@@ -322,7 +322,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugReporter()
      */
     public BugReporter getBugReporter() {
@@ -331,7 +331,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getProject()
      */
     public Project getProject() {
@@ -340,7 +340,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.IFindBugsEngine#addClassObserver(edu.umd.cs.findbugs
      * .classfile.IClassObserver)
@@ -351,7 +351,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#addFilter(java.lang.String,
      * boolean)
      */
@@ -361,7 +361,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.IFindBugsEngine#addBaselineBugs(java.lang.String)
      */
@@ -371,7 +371,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingInput(java.lang.String)
      */
@@ -381,7 +381,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingOutput(java.lang.String
      * )
@@ -392,7 +392,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugCount()
      */
     public int getBugCount() {
@@ -401,7 +401,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getCurrentClass()
      */
     public String getCurrentClass() {
@@ -410,7 +410,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getErrorCount()
      */
     public int getErrorCount() {
@@ -419,7 +419,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getMissingClassCount()
      */
     public int getMissingClassCount() {
@@ -428,7 +428,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getReleaseName()
      */
 
@@ -446,7 +446,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.IFindBugsEngine#setAnalysisFeatureSettings(edu.umd
      * .cs.findbugs.config.AnalysisFeatureSetting[])
@@ -457,7 +457,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.IFindBugsEngine#setBugReporter(edu.umd.cs.findbugs
      * .BugReporter)
@@ -470,7 +470,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.IFindBugsEngine#setClassScreener(edu.umd.cs.findbugs
      * .ClassScreener)
@@ -481,7 +481,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.IFindBugsEngine#setProgressCallback(edu.umd.cs.findbugs
      * .FindBugsProgress)
@@ -492,7 +492,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.IFindBugsEngine#setProject(edu.umd.cs.findbugs.Project
      * )
@@ -503,7 +503,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#setRelaxedReportingMode(boolean)
      */
     public void setRelaxedReportingMode(boolean relaxedReportingMode) {
@@ -512,7 +512,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#setReleaseName(java.lang.String)
      */
     public void setReleaseName(String releaseName) {
@@ -521,7 +521,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.IFindBugsEngine#setSourceInfoFile(java.lang.String)
      */
@@ -531,7 +531,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.IFindBugsEngine#setUserPreferences(edu.umd.cs.findbugs
      * .config.UserPreferences)
@@ -542,7 +542,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#emitTrainingOutput()
      */
     public boolean emitTrainingOutput() {
@@ -551,7 +551,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getUserPreferences()
      */
     public UserPreferences getUserPreferences() {
@@ -567,7 +567,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getTrainingInputDir()
      */
     public String getTrainingInputDir() {
@@ -576,7 +576,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getTrainingOutputDir()
      */
     public String getTrainingOutputDir() {
@@ -585,7 +585,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#useTrainingInput()
      */
     public boolean useTrainingInput() {
@@ -594,7 +594,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#setScanNestedArchives(boolean)
      */
     public void setScanNestedArchives(boolean scanNestedArchives) {
@@ -603,7 +603,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#setNoClassOk(boolean)
      */
     public void setNoClassOk(boolean noClassOk) {
@@ -612,7 +612,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /**
      * Create the analysis cache object.
-     * 
+     *
      * @throws IOException
      *             if error occurs registering analysis engines in a plugin
      */
@@ -633,7 +633,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /**
      * Register the "built-in" analysis engines with given IAnalysisCache.
-     * 
+     *
      * @param analysisCache
      *            an IAnalysisCache
      */
@@ -646,7 +646,7 @@ public class FindBugs2 implements IFindBugsEngine {
     /**
      * Register all of the analysis engines defined in the plugins contained in
      * a DetectorFactoryCollection with an IAnalysisCache.
-     * 
+     *
      * @param detectorFactoryCollection
      *            a DetectorFactoryCollection
      * @param analysisCache
@@ -680,7 +680,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /**
      * Build the classpath from project codebases and system codebases.
-     * 
+     *
      * @throws InterruptedException
      *             if the analysis thread is interrupted
      * @throws IOException
@@ -867,7 +867,7 @@ public class FindBugs2 implements IFindBugsEngine {
     /**
      * Create the AnalysisContext that will serve as the BCEL-compatibility
      * layer over the AnalysisCache.
-     * 
+     *
      * @param project
      *            The project
      * @param appClassList
@@ -914,7 +914,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /**
      * Create an execution plan.
-     * 
+     *
      * @throws OrderingConstraintException
      *             if the detector ordering constraints are inconsistent
      */
@@ -927,7 +927,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * edu.umd.cs.findbugs.DetectorFactoryChooser#choose(edu.umd.cs.
              * findbugs.DetectorFactory)
@@ -1144,7 +1144,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /**
      * Notify all IClassObservers that we are visiting given class.
-     * 
+     *
      * @param classDescriptor
      *            the class being visited
      */
@@ -1157,7 +1157,7 @@ public class FindBugs2 implements IFindBugsEngine {
     /**
      * Report an exception that occurred while analyzing a class with a
      * detector.
-     * 
+     *
      * @param classDescriptor
      *            class being analyzed
      * @param detector
@@ -1190,7 +1190,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#setAbridgedMessages(boolean)
      */
     public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {
@@ -1199,7 +1199,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#setMergeSimilarWarnings(boolean)
      */
     public void setMergeSimilarWarnings(boolean mergeSimilarWarnings) {
@@ -1208,7 +1208,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#setApplySuppression(boolean)
      */
     public void setApplySuppression(boolean applySuppression) {

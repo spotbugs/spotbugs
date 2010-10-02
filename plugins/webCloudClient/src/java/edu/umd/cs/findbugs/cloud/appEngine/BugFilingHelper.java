@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -7,40 +8,45 @@ import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ComponentPlugin;
 import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.bugReporter.BugReporterDecorator;
+import edu.umd.cs.findbugs.cloud.BugFiler;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 
 public class BugFilingHelper {
     private static final Logger LOGGER = Logger.getLogger(BugFilingHelper.class.getName());
 
-    private final AppEngineCloudClient appEngineCloudClient;
-    private final String trackerUrl;
-    private final @CheckForNull BugFiler bugFiler;
+    private final AppEngineCloudClient cloud;
+    private final BugFiler bugFiler;
 
-    public BugFilingHelper(AppEngineCloudClient appEngineCloudClient, PropertyBundle properties) {
-        this.appEngineCloudClient = appEngineCloudClient;
-        this.trackerUrl = properties.getProperty("cloud.bugTrackerUrl");
-        String bugTrackerType = properties.getProperty("cloud.bugTrackerType");
-        BugFiler filer = null;
+
+    static public BugFiler construct(ComponentPlugin<BugFiler> plugin, Cloud cloud) {
+
+        Class<? extends BugFiler> pluginClass = plugin.getComponentClass();
+
         try {
-            if ("GOOGLE_CODE".equals(bugTrackerType))
-                filer = (BugFiler) Class.forName("edu.umd.cs.findbugs.cloud.appEngine.GoogleCodeBugFiler").newInstance();
-            else if ("JIRA".equals(bugTrackerType))
-                filer = (BugFiler) Class.forName("edu.umd.cs.findbugs.cloud.appEngine.JiraBugFiler").newInstance();
+            Constructor<? extends BugFiler> constructor = pluginClass.getConstructor(
+                    ComponentPlugin.class, Cloud.class);
+            return constructor.newInstance(plugin, cloud);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e.getCause());
+
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Could not find bug filer for " + bugTrackerType, e);
+            throw new IllegalArgumentException("Unable to construct " + plugin.getId(), e);
         }
 
-        if (filer != null)
-            filer.init(appEngineCloudClient, trackerUrl);
-
-        this.bugFiler = filer;
-
+    }
+    public BugFilingHelper(AppEngineCloudClient appEngineCloudClient,
+            ComponentPlugin<BugFiler> componentPlugin) {
+        this.cloud = appEngineCloudClient;
+        this.bugFiler = construct(componentPlugin, cloud);
     }
 
     public @CheckForNull String lookupBugStatus(final BugInstance b) {
-        if (appEngineCloudClient.getBugLinkStatus(b) == Cloud.BugFilingStatus.FILE_BUG)
+        if (cloud.getBugLinkStatus(b) == Cloud.BugFilingStatus.FILE_BUG)
             return null;
 
         if (bugFiler == null)
@@ -48,8 +54,8 @@ public class BugFilingHelper {
 
         String status;
 
-        final String bugLink = appEngineCloudClient.getBugLink(b).toExternalForm();
-        appEngineCloudClient.getBackgroundExecutor().execute(new Runnable() {
+        final String bugLink = cloud.getBugLink(b).toExternalForm();
+        cloud.getBackgroundExecutor().execute(new Runnable() {
             public void run() {
                 String status = null;
                 try {
@@ -59,23 +65,22 @@ public class BugFilingHelper {
                 }
                 if (status == null)
                     status = "<unknown>";
-                appEngineCloudClient.updateBugStatusCache(b, status);
+                cloud.updateBugStatusCache(b, status);
             }
         });
         status = "<loading...>";
-        appEngineCloudClient.updateBugStatusCache(b, status);
+        cloud.updateBugStatusCache(b, status);
         return status;
     }
 
-    @SuppressWarnings({"DuplicateThrows"})
     public URL fileBug(BugInstance b) throws SignInCancelledException, Exception {
         if (!bugFilingAvailable())
             throw new IllegalStateException("Bug filing is not available");
-        
+
         return bugFiler.file(b);
     }
 
     public boolean bugFilingAvailable() {
-        return bugFiler != null && trackerUrl != null;
+        return bugFiler.ready();
     }
 }

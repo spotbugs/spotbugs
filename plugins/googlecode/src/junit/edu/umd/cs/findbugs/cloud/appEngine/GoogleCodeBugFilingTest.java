@@ -1,5 +1,10 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -7,6 +12,13 @@ import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.prefs.Preferences;
+
+import junit.framework.TestCase;
+
+import org.mockito.Matchers;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.google.gdata.client.authn.oauth.GoogleOAuthHelper;
 import com.google.gdata.client.authn.oauth.GoogleOAuthParameters;
@@ -19,24 +31,17 @@ import com.google.gdata.data.projecthosting.IssuesEntry;
 import com.google.gdata.data.projecthosting.Status;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudPluginBuilder;
-import junit.framework.TestCase;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class GoogleCodeBugFilingTest extends TestCase {
-    private AppEngineCloudClient mockCloudClient;
+    private Cloud mockCloudClient;
 
     private AppEngineCloudNetworkClient mockNetworkClient;
 
@@ -57,7 +62,7 @@ public class GoogleCodeBugFilingTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mockCloudClient = mock(AppEngineCloudClient.class);
+        mockCloudClient = mock(AbstractCloud.class);
         when(mockCloudClient.getPlugin()).thenReturn(
                 new CloudPluginBuilder().setCloudid("GoogleCodeBugFilingTest").setClassLoader(null).setCloudClass(null)
                         .setUsernameClass(null).setProperties(new PropertyBundle()).setDescription(null).setDetails(null)
@@ -73,7 +78,9 @@ public class GoogleCodeBugFilingTest extends TestCase {
         createPreferencesToPropertiesBridge(mockPrefs, props);
 
         triedAgain = false;
-        filer = new GoogleCodeBugFiler() {
+        // filer.init(mockCloudClient, "http://code.google.com/p/test/");
+
+        filer = new GoogleCodeBugFiler(null, mockCloudClient) {
             @Override
             <E> E tryAgain(Callable<E> callable, Exception e) throws OAuthException, MalformedURLException, InterruptedException,
                     AuthenticationException {
@@ -101,7 +108,6 @@ public class GoogleCodeBugFilingTest extends TestCase {
                 return projectHostingService;
             }
         };
-        filer.init(mockCloudClient, "http://code.google.com/p/test/");
         filer.setProjectHostingService(projectHostingService);
         filer.setCommentHelper(mock(BugFilingCommentHelper.class));
     }

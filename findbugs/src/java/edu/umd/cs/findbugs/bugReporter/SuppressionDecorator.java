@@ -30,6 +30,7 @@ import java.util.HashSet;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.ComponentPlugin;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -45,7 +46,7 @@ public class SuppressionDecorator extends BugReporterDecorator {
 
     final HashSet<String> dontCheck = new HashSet<String>();
 
-    public SuppressionDecorator(BugReporterPlugin plugin, BugReporter delegate) {
+    public SuppressionDecorator(ComponentPlugin<BugReporterDecorator> plugin, BugReporter delegate) {
         super(plugin, delegate);
         category = plugin.getProperties().getProperty("category");
         if (I18N.instance().getBugCategory(category) == null)

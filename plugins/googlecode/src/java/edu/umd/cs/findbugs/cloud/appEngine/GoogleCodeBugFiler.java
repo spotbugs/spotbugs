@@ -26,9 +26,12 @@ import com.google.gdata.data.projecthosting.Username;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.ComponentPlugin;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.BugFiler;
 import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 
 public class GoogleCodeBugFiler implements BugFiler {
@@ -50,18 +53,19 @@ public class GoogleCodeBugFiler implements BugFiler {
 
     private static final Pattern URL_REGEX = Pattern.compile("http://code.google.com/p/(.*?)/issues/detail\\?id=(\\d+)");
 
-    private AppEngineCloudClient appEngineCloudClient;
+    private Cloud cloud;
     private BugFilingCommentHelper bugFilingCommentHelper;
     private String url;
 
     private @CheckForNull ProjectHostingService projectHostingService;
 
-    @Override
-	public void init(AppEngineCloudClient appEngineCloudClient, String trackerUrl) {
-        this.appEngineCloudClient = appEngineCloudClient;
-        this.url = trackerUrl;
-        bugFilingCommentHelper = new BugFilingCommentHelper(appEngineCloudClient);
+    public GoogleCodeBugFiler(ComponentPlugin<BugFiler> plugin, Cloud cloud) {
+        this.cloud = cloud;
+        this.url = plugin.getProperties().getProperty("trackerURL");
+        this.bugFilingCommentHelper = new BugFilingCommentHelper(cloud);
     }
+
+
 
     /** for testing */
     void setCommentHelper(BugFilingCommentHelper helper) {
@@ -207,7 +211,7 @@ public class GoogleCodeBugFiler implements BugFiler {
 
         oauthHelper.getUnauthorizedRequestToken(oauthParameters);
         String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
-        IGuiCallback callback = appEngineCloudClient.getGuiCallback();
+        IGuiCallback callback = cloud.getGuiCallback();
         boolean openedUrl = callback.showDocument(new URL(requestUrl));
         if (!openedUrl) {
             throw new IllegalStateException("cannot launch browser");
@@ -244,10 +248,10 @@ public class GoogleCodeBugFiler implements BugFiler {
 
     private IssuesEntry makeNewIssue(BugInstance bug) {
         Person author = new Person();
-        author.setName(appEngineCloudClient.getUser());
+        author.setName(cloud.getUser());
 
         Owner owner = new Owner();
-        owner.setUsername(new Username(appEngineCloudClient.getUser()));
+        owner.setUsername(new Username(cloud.getUser()));
 
         IssuesEntry entry = new IssuesEntry();
         entry.getAuthors().add(author);
@@ -288,16 +292,16 @@ public class GoogleCodeBugFiler implements BugFiler {
             return null;
         }
 
-        appEngineCloudClient.updateBugStatusCache(b, googleCodeIssue.getStatus().getValue());
+        cloud.updateBugStatusCache(b, googleCodeIssue.getStatus().getValue());
 
-        appEngineCloudClient.getNetworkClient().setBugLinkOnCloudAndStoreIssueDetails(b, viewUrl, "GOOGLE_CODE");
+        cloud.setBugLinkOnCloudAndStoreIssueDetails(b, viewUrl, "GOOGLE_CODE");
 
         return new URL(viewUrl);
     }
 
     private String askUserForGoogleCodeProjectName() {
-        IGuiCallback guiCallback = appEngineCloudClient.getGuiCallback();
-        Preferences prefs = Preferences.userNodeForPackage(AppEngineCloudClient.class);
+        IGuiCallback guiCallback = cloud.getGuiCallback();
+        Preferences prefs = Preferences.userNodeForPackage(GoogleCodeBugFiler.class);
 
         String lastProject = prefs.get("last_google_code_project", "");
         String projectName = guiCallback.showQuestionDialog("Issue will be filed at Google Code.\n" + "\n"
@@ -314,4 +318,9 @@ public class GoogleCodeBugFiler implements BugFiler {
             super(cause);
         }
     }
+
+	@Override
+	public boolean ready() {
+		return true;
+	}
 }

@@ -22,27 +22,25 @@ package edu.umd.cs.findbugs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
-import edu.umd.cs.findbugs.bugReporter.BugReporterPlugin;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
+import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
 /**
  * A FindBugs plugin. A plugin contains executable Detector classes, as well as
  * meta information decribing those detectors (such as human-readable detector
  * and bug descriptions).
- * 
+ *
  * @see PluginLoader
  * @author David Hovemeyer
  */
 public class Plugin {
-    private String pluginId;
+    private final String pluginId;
 
     private String provider;
 
@@ -50,22 +48,23 @@ public class Plugin {
 
     private String shortDescription;
 
-    private ArrayList<DetectorFactory> detectorFactoryList;
+    private final ArrayList<DetectorFactory> detectorFactoryList;
 
-    private LinkedHashSet<BugPattern> bugPatterns;
+    private final LinkedHashSet<BugPattern> bugPatterns;
 
-    private LinkedHashSet<BugCode> bugCodeList;
+    private final LinkedHashSet<BugCode> bugCodeList;
 
-    private Map<String, BugReporterPlugin> filterPlugins = new LinkedHashMap<String, BugReporterPlugin>();
+    private final DualKeyHashMap<Class, String, ComponentPlugin> componentPlugins
+        = new DualKeyHashMap<Class, String, ComponentPlugin> ();
 
     private boolean enabled;
 
     private BugRanker bugRanker;
 
     // Ordering constraints
-    private ArrayList<DetectorOrderingConstraint> interPassConstraintList;
+    private final ArrayList<DetectorOrderingConstraint> interPassConstraintList;
 
-    private ArrayList<DetectorOrderingConstraint> intraPassConstraintList;
+    private final ArrayList<DetectorOrderingConstraint> intraPassConstraintList;
 
     // Optional: engine registrar class
     private Class<? extends IAnalysisEngineRegistrar> engineRegistrarClass;
@@ -75,7 +74,7 @@ public class Plugin {
 
     /**
      * Constructor. Creates an empty plugin object.
-     * 
+     *
      * @param pluginId
      *            the plugin's unique identifier
      */
@@ -96,7 +95,7 @@ public class Plugin {
 
     /**
      * Set whether or not this Plugin is enabled.
-     * 
+     *
      * @param enabled
      *            true if the Plugin is enabled, false if not
      */
@@ -106,7 +105,7 @@ public class Plugin {
 
     /**
      * Return whether or not the Plugin is enabled.
-     * 
+     *
      * @return true if the Plugin is enabled, false if not
      */
     public boolean isEnabled() {
@@ -115,7 +114,7 @@ public class Plugin {
 
     /**
      * Set plugin provider.
-     * 
+     *
      * @param provider
      *            the plugin provider
      */
@@ -125,7 +124,7 @@ public class Plugin {
 
     /**
      * Get the plugin provider.
-     * 
+     *
      * @return the provider, or null if the provider was not specified
      */
     public String getProvider() {
@@ -134,7 +133,7 @@ public class Plugin {
 
     /**
      * Set plugin website.
-     * 
+     *
      * @param website
      *            the plugin website
      */
@@ -144,7 +143,7 @@ public class Plugin {
 
     /**
      * Get the plugin website.
-     * 
+     *
      * @return the website, or null if the was not specified
      */
     public String getWebsite() {
@@ -153,7 +152,7 @@ public class Plugin {
 
     /**
      * Set plugin short (one-line) text description.
-     * 
+     *
      * @param shortDescription
      *            the plugin short text description
      */
@@ -163,7 +162,7 @@ public class Plugin {
 
     /**
      * Get the plugin short (one-line) description.
-     * 
+     *
      * @return the short description, or null if the short description was not
      *         specified
      */
@@ -173,7 +172,7 @@ public class Plugin {
 
     /**
      * Add a DetectorFactory for a Detector implemented by the Plugin.
-     * 
+     *
      * @param factory
      *            the DetectorFactory
      */
@@ -183,7 +182,7 @@ public class Plugin {
 
     /**
      * Add a BugPattern reported by the Plugin.
-     * 
+     *
      * @param bugPattern
      */
     public void addBugPattern(BugPattern bugPattern) {
@@ -192,7 +191,7 @@ public class Plugin {
 
     /**
      * Add a BugCode reported by the Plugin.
-     * 
+     *
      * @param bugCode
      */
     public void addBugCode(BugCode bugCode) {
@@ -201,7 +200,7 @@ public class Plugin {
 
     /**
      * Add an inter-pass Detector ordering constraint.
-     * 
+     *
      * @param constraint
      *            the inter-pass Detector ordering constraint
      */
@@ -211,7 +210,7 @@ public class Plugin {
 
     /**
      * Add an intra-pass Detector ordering constraint.
-     * 
+     *
      * @param constraint
      *            the intra-pass Detector ordering constraint
      */
@@ -221,7 +220,7 @@ public class Plugin {
 
     /**
      * Look up a DetectorFactory by short name.
-     * 
+     *
      * @param shortName
      *            the short name
      * @return the DetectorFactory
@@ -236,7 +235,7 @@ public class Plugin {
 
     /**
      * Look up a DetectorFactory by full name.
-     * 
+     *
      * @param fullName
      *            the full name
      * @return the DetectorFactory
@@ -251,7 +250,7 @@ public class Plugin {
 
     /**
      * Get Iterator over DetectorFactory objects in the Plugin.
-     * 
+     *
      * @return Iterator over DetectorFactory objects
      */
     public Collection<DetectorFactory> getDetectorFactories() {
@@ -260,7 +259,7 @@ public class Plugin {
 
     /**
      * Get the set of BugPatterns
-     * 
+     *
      */
     public Set<BugPattern> getBugPatterns() {
         return bugPatterns;
@@ -268,7 +267,7 @@ public class Plugin {
 
     /**
      * Get Iterator over BugCode objects in the Plugin.
-     * 
+     *
      * @return Iterator over BugCode objects
      */
     public Set<BugCode> getBugCodes() {
@@ -299,7 +298,7 @@ public class Plugin {
     /**
      * Set the analysis engine registrar class that, when instantiated, can be
      * used to register the plugin's analysis engines with the analysis cache.
-     * 
+     *
      * @param engineRegistrarClass
      *            The engine registrar class to set.
      */
@@ -310,7 +309,7 @@ public class Plugin {
     /**
      * Get the analysis engine registrar class that, when instantiated, can be
      * used to register the plugin's analysis engines with the analysis cache.
-     * 
+     *
      * @return Returns the engine registrar class.
      */
     public Class<? extends IAnalysisEngineRegistrar> getEngineRegistrarClass() {
@@ -348,16 +347,19 @@ public class Plugin {
         return bugRanker;
     }
 
-    void addBugReporterPlugin(BugReporterPlugin filter) {
-        filterPlugins.put(filter.getId(), filter);
+    <T> void addComponentPlugin(Class<T> componentClass, ComponentPlugin<T> filter) {
+        if (!componentClass.isAssignableFrom(filter.getComponentClass()))
+                throw new IllegalArgumentException();
+        componentPlugins.put(componentClass, filter.getId(), filter);
     }
 
-    public Iterable<BugReporterPlugin> getBugReporterPlugins() {
-        return filterPlugins.values();
+    public <T> Iterable<ComponentPlugin<T>> getComponentPlugins(Class<T> componentClass) {
+        Collection values = componentPlugins.get(componentClass).values();
+        return values;
     }
 
-    public BugReporterPlugin getBugReporterPlugin(String name) {
-        return filterPlugins.get(name);
+    public <T>  ComponentPlugin<T> getComponentPlugin(Class<T> componentClass, String name) {
+        return componentPlugins.get(componentClass, name);
     }
 }
 

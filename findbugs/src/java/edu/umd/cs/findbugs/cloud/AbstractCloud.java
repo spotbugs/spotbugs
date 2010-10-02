@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.PropertyBundle;
@@ -103,9 +104,9 @@ public abstract class AbstractCloud implements Cloud {
 
     private String sourceFileLinkToolTip;
 
-    private CopyOnWriteArraySet<CloudListener> listeners = new CopyOnWriteArraySet<CloudListener>();
+    private final CopyOnWriteArraySet<CloudListener> listeners = new CopyOnWriteArraySet<CloudListener>();
 
-    private CopyOnWriteArraySet<CloudStatusListener> statusListeners = new CopyOnWriteArraySet<CloudStatusListener>();
+    private final CopyOnWriteArraySet<CloudStatusListener> statusListeners = new CopyOnWriteArraySet<CloudStatusListener>();
 
     private Mode mode = Mode.COMMUNAL;
 
@@ -174,6 +175,14 @@ public abstract class AbstractCloud implements Cloud {
         return false;
     }
 
+    public void setBugLinkOnCloudAndStoreIssueDetails(BugInstance b, String viewUrl, String linkType)
+    throws IOException, SignInCancelledException  {
+        throw new UnsupportedOperationException();
+    }
+
+    public void updateBugStatusCache(BugInstance b, String status) {
+        throw new UnsupportedOperationException();
+    }
     public boolean supportsClaims() {
         return false;
     }
@@ -748,7 +757,7 @@ public abstract class AbstractCloud implements Cloud {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.cloud.Cloud#getBugIsUnassigned(edu.umd.cs.findbugs
      * .BugInstance)
@@ -759,7 +768,7 @@ public abstract class AbstractCloud implements Cloud {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.cloud.Cloud#getWillNotBeFixed(edu.umd.cs.findbugs
      * .BugInstance)
@@ -773,6 +782,10 @@ public abstract class AbstractCloud implements Cloud {
         for (BugDesignation d : getLatestDesignationFromEachUser(b))
             result.add(d.getUser());
         return result;
+    }
+
+    public IGuiCallback getGuiCallback() {
+        return getBugCollection().getProject().getGuiCallback();
     }
 
 }

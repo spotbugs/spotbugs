@@ -33,12 +33,13 @@ import javax.annotation.CheckForNull;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * An interface for describing how a bug collection interacts with the FindBugs
  * Cloud.
- * 
+ *
  * Each Cloud instance is associated with a BugCollection.
  */
 public interface Cloud {
@@ -48,6 +49,8 @@ public interface Cloud {
     String getCloudName();
 
     BugCollection getBugCollection();
+
+    IGuiCallback getGuiCallback();
 
     /**
      * Get a status message for the cloud; information about any errors, and
@@ -72,14 +75,14 @@ public interface Cloud {
      * Do we have the configuration information needed to try initializing the
      * cloud; calling this method should have no side effects and not display
      * any dialogs or make any network connections.
-     * 
+     *
      * @return true if we have the needed information
      */
     public boolean availableForInitialization();
 
     /**
      * Attempt to initialize the cloud
-     * 
+     *
      * @return true if successful
      */
     public boolean initialize() throws IOException;
@@ -200,9 +203,13 @@ public interface Cloud {
 
     URL fileBug(BugInstance b);
 
+    void setBugLinkOnCloudAndStoreIssueDetails(BugInstance b, String viewUrl, String linkType) throws IOException,
+    SignInCancelledException;
+    void updateBugStatusCache(BugInstance b, String status);
+
     /**
      * Note that we've initiated or completed a request to file a bug;
-     * 
+     *
      * @param b
      *            bug against which bug was filed
      * @param bugLink
@@ -219,7 +226,7 @@ public interface Cloud {
 
     /**
      * Claim the bug
-     * 
+     *
      * @return true if no one else has already done so
      */
     boolean claim(BugInstance b);

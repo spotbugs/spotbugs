@@ -1,163 +1,164 @@
 <?xml version="1.0"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-	
-	<xsd:simpleType name="ClassType">
-		<xsd:restriction base="xsd:string">
-			<xsd:pattern value="[A-Za-z_][A-Za-z0-9_]*(.[A-Za-z_][A-Za-z0-9_]*)*"/> 
-		</xsd:restriction>
-	</xsd:simpleType>
-		
-	<xsd:simpleType name="SpeedType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="fast"/>
-			<xsd:enumeration value="moderate"/>
-			<xsd:enumeration value="slow"/>
-		</xsd:restriction>
-	</xsd:simpleType>
-	
-	<xsd:simpleType name="BugPatternListType">
-		<xsd:restriction base="xsd:string">
-			<xsd:pattern value="[A-Za-z0-9_]*(,[A-Za-z0-9_]*)*"/>
-		</xsd:restriction>
-	</xsd:simpleType>
-	
-	<xsd:simpleType name="IdentifierType">
-		<xsd:restriction base="xsd:string">
-			<xsd:pattern value="[A-Za-z0-9_]*"/>
-		</xsd:restriction>
-	</xsd:simpleType>
-	
-	
-	<xsd:complexType name="CloudType">
-		<xsd:sequence>
-		<xsd:element name="Property" minOccurs="0" maxOccurs="unbounded" >
-			<xsd:complexType>
-				<xsd:simpleContent>
-					<xsd:extension base="xsd:string">
-						<xsd:attribute name="key" type="xsd:string" />
-					</xsd:extension>
-				</xsd:simpleContent>
-			</xsd:complexType>
-		</xsd:element>
-		</xsd:sequence>
-		<xsd:attribute name="id" type="ClassType"/>
-		<xsd:attribute name="cloudClass" type="ClassType"/>
-		<xsd:attribute name="usernameClass" type="ClassType"/>
-		<xsd:attribute name="disabled" type="xsd:boolean" use="optional"/>
-		<xsd:attribute name="onlineStorage" type="xsd:boolean" use="optional"/>
-		<xsd:attribute name="hidden" type="xsd:boolean" use="optional"/>
-	</xsd:complexType>
 
-	<xsd:complexType name="BugReporterDecoratorType">
-		<xsd:sequence>
-			<xsd:element name="Property" minOccurs="0" maxOccurs="unbounded" >
-				<xsd:complexType>
-					<xsd:simpleContent>
-						<xsd:extension base="xsd:string">
-							<xsd:attribute name="key" type="xsd:string" />
-						</xsd:extension>
-					</xsd:simpleContent>
-				</xsd:complexType>
-			</xsd:element>
-		</xsd:sequence>
-		<xsd:attribute name="id" type="ClassType"/>
-		<xsd:attribute name="decoratorClass" type="ClassType"/>
-		<xsd:attribute name="disabled" type="xsd:boolean" use="optional"/>
-	</xsd:complexType>
-	
-	<xsd:complexType name="DetectorType">
-		<xsd:attribute name="class" type="ClassType"/>
-		<xsd:attribute name="speed" type="SpeedType" use="optional"/>
-		<xsd:attribute name="reports" type="BugPatternListType"/>
-		<xsd:attribute name="requirejre" type="xsd:string" use="optional"/>
-		<xsd:attribute name="disabled" type="xsd:boolean" use="optional"/>
-		<xsd:attribute name="hidden" type="xsd:boolean" use="optional"/>
-	</xsd:complexType>
-	
-	<xsd:complexType name="EngineRegistrarType">
-		<xsd:attribute name="class" type="ClassType"/>
-	</xsd:complexType>
-	
-	<xsd:complexType name="BugPatternType">
-		<xsd:attribute name="abbrev" type="IdentifierType"/>
-		<xsd:attribute name="type" type="xsd:ID"/>
-		<xsd:attribute name="category" type="IdentifierType"/>
-		<xsd:attribute name="experimental" type="xsd:boolean" use="optional"/>
-		<xsd:attribute name="cweid" type="xsd:positiveInteger" use="optional"/>
-		<xsd:attribute name="deprecated" type="xsd:boolean" use="optional"/>
-	</xsd:complexType>
-	
-	<xsd:complexType name="BugCodeType">
-		<xsd:attribute name="abbrev" type="IdentifierType"/>
-		<xsd:attribute name="cweid" type="xsd:positiveInteger" use="optional"/>
-	</xsd:complexType>
-	
-	<xsd:simpleType name="DetectorCategoryType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="reporting"/>
-			<xsd:enumeration value="training"/>
-			<xsd:enumeration value="interprocedural"/>
-		</xsd:restriction>
-	</xsd:simpleType>
-	
-	<xsd:complexType name="SingleDetectorSelectorType">
-		<xsd:attribute name="class" type="ClassType" use="required"/>
-	</xsd:complexType>
-	
-	<xsd:complexType name="DetectorCategorySelectorType">
-		<xsd:attribute name="name" type="DetectorCategoryType" use="required"/>
-		<xsd:attribute name="spanplugins" type="xsd:boolean" use="optional" default="false"/>
-	</xsd:complexType>
-	
-	<xsd:complexType name="DetectorSubtypesSelectorType">
-		<xsd:attribute name="super" type="ClassType" use="required"/>
-		<xsd:attribute name="spanplugins" type="xsd:boolean" use="optional" default="false"/>
-	</xsd:complexType>
+    <xsd:simpleType name="ClassType">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[A-Za-z_][A-Za-z0-9_]*(.[A-Za-z_][A-Za-z0-9_]*)*"/>
+        </xsd:restriction>
+    </xsd:simpleType>
 
-	<xsd:complexType name="OrderingConstraintType">
-		<xsd:sequence>
-			<xsd:choice>
-				<xsd:element name="Earlier" type="SingleDetectorSelectorType"></xsd:element>
-				<xsd:element name="EarlierCategory" type="DetectorCategorySelectorType"></xsd:element>
-				<xsd:element name="EarlierSubtypes" type="DetectorSubtypesSelectorType"></xsd:element>
-			</xsd:choice>
-			<xsd:choice>
-				<xsd:element name="Later" type="SingleDetectorSelectorType"></xsd:element>
-				<xsd:element name="LaterCategory" type="DetectorCategorySelectorType"></xsd:element>
-				<xsd:element name="LaterSubtypes" type="DetectorSubtypesSelectorType"></xsd:element>
-			</xsd:choice>
-		</xsd:sequence>
-	</xsd:complexType>
-	
-	<xsd:complexType name="OrderingConstraintListType">
-		<xsd:sequence>
-			<xsd:choice minOccurs="0" maxOccurs="unbounded">
-				<xsd:element name="SplitPass" type="OrderingConstraintType"></xsd:element>
-				<xsd:element name="WithinPass" type="OrderingConstraintType"></xsd:element>
-			</xsd:choice>
-		</xsd:sequence>
-	</xsd:complexType>
-	
-	<xsd:complexType name="FindBugsPluginType" mixed="true">
-		<xsd:sequence>
-			<xsd:element name="Cloud" type="CloudType" minOccurs="0" maxOccurs="unbounded"/>			
-			<xsd:element name="BugReporterDecorator" type="BugReporterDecoratorType" minOccurs="0" maxOccurs="unbounded"/>			
-			<xsd:element
-				name="OrderingConstraints"
-				type="OrderingConstraintListType"
-				minOccurs="0"
-				maxOccurs="1"/>
-			<xsd:element name="Detector" type="DetectorType" minOccurs="0" maxOccurs="unbounded"/>
-			<xsd:element name="EngineRegistrar" type="EngineRegistrarType" minOccurs="0" maxOccurs="1"/>
-			<xsd:element name="BugCode" type="BugCodeType" minOccurs="0" maxOccurs="unbounded"/>
-			<xsd:element name="BugPattern" type="BugPatternType" minOccurs="0" maxOccurs="unbounded"/>
-		</xsd:sequence>
-		<xsd:attribute name="pluginid" type="xsd:string"/>
-		<xsd:attribute name="defaultenabled" type="xsd:boolean" use="optional" />
-		<xsd:attribute name="provider" type="xsd:string"/>
-		<xsd:attribute name="website" type="xsd:anyURI" use="optional"/>
-	</xsd:complexType>
+    <xsd:simpleType name="SpeedType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="fast"/>
+            <xsd:enumeration value="moderate"/>
+            <xsd:enumeration value="slow"/>
+        </xsd:restriction>
+    </xsd:simpleType>
 
-	<xsd:element name="FindbugsPlugin" type="FindBugsPluginType"/>
+    <xsd:simpleType name="BugPatternListType">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[A-Za-z0-9_]*(,[A-Za-z0-9_]*)*"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="IdentifierType">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[A-Za-z0-9_]*"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+
+    <xsd:complexType name="CloudType">
+        <xsd:sequence>
+        <xsd:element name="Property" minOccurs="0" maxOccurs="unbounded" >
+            <xsd:complexType>
+                <xsd:simpleContent>
+                    <xsd:extension base="xsd:string">
+                        <xsd:attribute name="key" type="xsd:string" />
+                    </xsd:extension>
+                </xsd:simpleContent>
+            </xsd:complexType>
+        </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="ClassType"/>
+        <xsd:attribute name="cloudClass" type="ClassType"/>
+        <xsd:attribute name="usernameClass" type="ClassType"/>
+        <xsd:attribute name="disabled" type="xsd:boolean" use="optional"/>
+        <xsd:attribute name="onlineStorage" type="xsd:boolean" use="optional"/>
+        <xsd:attribute name="hidden" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="PluginComponentType">
+        <xsd:sequence>
+            <xsd:element name="Property" minOccurs="0" maxOccurs="unbounded" >
+                <xsd:complexType>
+                    <xsd:simpleContent>
+                        <xsd:extension base="xsd:string">
+                            <xsd:attribute name="key" type="xsd:string" />
+                        </xsd:extension>
+                    </xsd:simpleContent>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="ClassType"/>
+        <xsd:attribute name="componentKind" type="ClassType"/>
+        <xsd:attribute name="componentClass" type="ClassType"/>
+        <xsd:attribute name="disabled" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="DetectorType">
+        <xsd:attribute name="class" type="ClassType"/>
+        <xsd:attribute name="speed" type="SpeedType" use="optional"/>
+        <xsd:attribute name="reports" type="BugPatternListType"/>
+        <xsd:attribute name="requirejre" type="xsd:string" use="optional"/>
+        <xsd:attribute name="disabled" type="xsd:boolean" use="optional"/>
+        <xsd:attribute name="hidden" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="EngineRegistrarType">
+        <xsd:attribute name="class" type="ClassType"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="BugPatternType">
+        <xsd:attribute name="abbrev" type="IdentifierType"/>
+        <xsd:attribute name="type" type="xsd:ID"/>
+        <xsd:attribute name="category" type="IdentifierType"/>
+        <xsd:attribute name="experimental" type="xsd:boolean" use="optional"/>
+        <xsd:attribute name="cweid" type="xsd:positiveInteger" use="optional"/>
+        <xsd:attribute name="deprecated" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="BugCodeType">
+        <xsd:attribute name="abbrev" type="IdentifierType"/>
+        <xsd:attribute name="cweid" type="xsd:positiveInteger" use="optional"/>
+    </xsd:complexType>
+
+    <xsd:simpleType name="DetectorCategoryType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="reporting"/>
+            <xsd:enumeration value="training"/>
+            <xsd:enumeration value="interprocedural"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="SingleDetectorSelectorType">
+        <xsd:attribute name="class" type="ClassType" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="DetectorCategorySelectorType">
+        <xsd:attribute name="name" type="DetectorCategoryType" use="required"/>
+        <xsd:attribute name="spanplugins" type="xsd:boolean" use="optional" default="false"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="DetectorSubtypesSelectorType">
+        <xsd:attribute name="super" type="ClassType" use="required"/>
+        <xsd:attribute name="spanplugins" type="xsd:boolean" use="optional" default="false"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="OrderingConstraintType">
+        <xsd:sequence>
+            <xsd:choice>
+                <xsd:element name="Earlier" type="SingleDetectorSelectorType"></xsd:element>
+                <xsd:element name="EarlierCategory" type="DetectorCategorySelectorType"></xsd:element>
+                <xsd:element name="EarlierSubtypes" type="DetectorSubtypesSelectorType"></xsd:element>
+            </xsd:choice>
+            <xsd:choice>
+                <xsd:element name="Later" type="SingleDetectorSelectorType"></xsd:element>
+                <xsd:element name="LaterCategory" type="DetectorCategorySelectorType"></xsd:element>
+                <xsd:element name="LaterSubtypes" type="DetectorSubtypesSelectorType"></xsd:element>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="OrderingConstraintListType">
+        <xsd:sequence>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="SplitPass" type="OrderingConstraintType"></xsd:element>
+                <xsd:element name="WithinPass" type="OrderingConstraintType"></xsd:element>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="FindBugsPluginType" mixed="true">
+        <xsd:sequence>
+            <xsd:element name="Cloud" type="CloudType" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="PluginComponent" type="PluginComponentType" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element
+                name="OrderingConstraints"
+                type="OrderingConstraintListType"
+                minOccurs="0"
+                maxOccurs="1"/>
+            <xsd:element name="Detector" type="DetectorType" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="EngineRegistrar" type="EngineRegistrarType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="BugCode" type="BugCodeType" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="BugPattern" type="BugPatternType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="pluginid" type="xsd:string"/>
+        <xsd:attribute name="defaultenabled" type="xsd:boolean" use="optional" />
+        <xsd:attribute name="provider" type="xsd:string"/>
+        <xsd:attribute name="website" type="xsd:anyURI" use="optional"/>
+    </xsd:complexType>
+
+    <xsd:element name="FindbugsPlugin" type="FindBugsPluginType"/>
 
 </xsd:schema>

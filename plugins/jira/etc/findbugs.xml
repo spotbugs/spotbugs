@@ -1,14 +1,7 @@
 <FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
-          pluginid="edu.umd.cs.findbugs.plugins.core" defaultenabled="true"
+          pluginid="edu.umd.cs.findbugs.plugins.jira" defaultenabled="true"
           provider="FindBugs project" website="http://findbugs.sourceforge.net">
-          <!--
-  Plugin descriptor for FindBugs "core" plugin.
-  This plugin is enabled by default.
--->
-          <Cloud id="edu.umd.cs.findbugs.cloud.Local"
-                    cloudClass="edu.umd.cs.findbugs.cloud.BugCollectionStorageCloud"
-                    usernameClass="edu.umd.cs.findbugs.cloud.username.NoNameLookup"/>
           <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SuppressI18N"
                     componentKind="edu.umd.cs.findbugs.bugReporter.BugReporterDecorator"
                     componentClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"

@@ -43,8 +43,6 @@ import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.bugReporter.BugReporterDecorator;
-import edu.umd.cs.findbugs.bugReporter.BugReporterPlugin;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
@@ -67,12 +65,12 @@ import edu.umd.cs.findbugs.util.JavaWebStart;
  * instances of those patterns), and
  * <li>the "bug codes" which group together related bug instances
  * </ul>
- * 
+ *
  * <p>
  * The PluginLoader creates a Plugin object to store the Detector factories and
  * metadata.
  * </p>
- * 
+ *
  * @author David Hovemeyer
  * @see Plugin
  * @see PluginException
@@ -82,9 +80,9 @@ public class PluginLoader {
     private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.debug.PluginLoader");
 
     // ClassLoader used to load classes and resources
-    private ClassLoader classLoader;
+    private final ClassLoader classLoader;
 
-    private ClassLoader classLoaderForResources;
+    private final ClassLoader classLoaderForResources;
 
     // Keep a count of how many plugins we've seen without a
     // "pluginid" attribute, so we can assign them all unique ids.
@@ -101,7 +99,7 @@ public class PluginLoader {
 
     /**
      * Constructor.
-     * 
+     *
      * @param url
      *            the URL of the plugin Jar file
      * @throws PluginException
@@ -129,7 +127,7 @@ public class PluginLoader {
 
     /**
      * Constructor.
-     * 
+     *
      * @param url
      *            the URL of the plugin Jar file
      * @param parent
@@ -166,7 +164,7 @@ public class PluginLoader {
 
     /**
      * Get the Plugin.
-     * 
+     *
      * @throws PluginException
      *             if the plugin cannot be fully loaded
      */
@@ -183,7 +181,7 @@ public class PluginLoader {
      * classLoader.getResource() allows the filesystem to override the jarfile,
      * which can mess things up if, for example, there is a findbugs.xml or
      * messages.xml in the current directory.
-     * 
+     *
      * @param name
      *            resource to get
      * @return URL for the resource, or null if it could not be found
@@ -420,22 +418,25 @@ public class PluginLoader {
         // Create a DetectorFactory for all Detector nodes
         try {
 
-            List<Node> filterNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/BugReporterDecorator");
+            List<Node> filterNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/PluginComponent");
             for (Node filterNode : filterNodeList) {
-                String filterClassname = filterNode.valueOf("@decoratorClass");
+                String componentKindname = filterNode.valueOf("@componentKind");
+                String componentClassname = filterNode.valueOf("@componentClass");
                 String filterId = filterNode.valueOf("@id");
                 try {
                     String propertiesLocation = filterNode.valueOf("@properties");
                     boolean disabled = Boolean.valueOf(filterNode.valueOf("@disabled"));
 
-                    Class<? extends BugReporterDecorator> decoratorClass = null;
+                    Class componentKind =  classLoader.loadClass(componentKindname);
+
+                    Class componentClass = null;
                     if (!FindBugs.noAnalysis) {
-                        decoratorClass = getClass(classLoader, filterClassname, BugReporterDecorator.class);
+                        componentClass = getClass(classLoader, componentClassname, componentKind);
                     }
 
                     Node filterMessageNode = findMessageNode(messageCollectionList,
-                            "/MessageCollection/BugReporterDecorator[@id='" + filterId + "']",
-                            "Missing Cloud description for BugReporterDecorator " + filterId);
+                            "/MessageCollection/PluginComponent[@id='" + filterId + "']",
+                            "Missing Cloud description for PluginComponent " + filterId);
                     String description = getChildText(filterMessageNode, "Description").trim();
                     String details = getChildText(filterMessageNode, "Details").trim();
                     PropertyBundle properties = new PropertyBundle();
@@ -452,11 +453,12 @@ public class PluginLoader {
                         properties.setProperty(key, value);
                     }
 
-                    BugReporterPlugin bugReporterPlugin = new BugReporterPlugin(plugin, filterId, classLoader, decoratorClass,
+                    ComponentPlugin componentPlugin = new ComponentPlugin(plugin, filterId, classLoader, componentClass,
                             properties, !disabled, description, details);
-                    plugin.addBugReporterPlugin(bugReporterPlugin);
+                    plugin.addComponentPlugin(componentKind, componentPlugin);
                 } catch (RuntimeException e) {
-                    AnalysisContext.logError("Unable to load BugReporterPlugin " + filterId + " : " + filterClassname, e);
+                    AnalysisContext.logError("Unable to load ComponentPlugin " + filterId +
+                            " : " + componentClassname + " implementing " + componentKindname, e);
                 }
             }
 

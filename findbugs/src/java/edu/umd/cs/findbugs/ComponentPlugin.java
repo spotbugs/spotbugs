@@ -17,32 +17,34 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.bugReporter;
+package edu.umd.cs.findbugs;
 
 import java.util.Set;
 
-import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.PropertyBundle;
 
 /**
  * @author pugh
  */
-public class BugReporterPlugin {
+public class ComponentPlugin<T> {
 
-    public BugReporterPlugin(Plugin plugin, String filterId, ClassLoader classLoader,
-            Class<? extends BugReporterDecorator> filterClass, PropertyBundle properties, boolean enabledByDefault,
+    public ComponentPlugin(Plugin plugin, String id, ClassLoader classLoader,
+            Class<? extends T> componentClass,
+            PropertyBundle properties, boolean enabledByDefault,
             String description, String details) {
         this.plugin = plugin;
-        this.id = filterId;
-        int i = filterId.lastIndexOf('.');
-        this.shortId = filterId.substring(i + 1);
+        this.id = id;
+        int i = id.lastIndexOf('.');
+        this.shortId = id.substring(i + 1);
+
         this.classLoader = classLoader;
-        this.filterClass = filterClass;
+        this.componentClass = componentClass;
         this.properties = properties;
+        this.enabledByDefault = enabledByDefault;
         this.description = description;
         this.details = details;
-        this.enabledByDefault = enabledByDefault;
+
     }
+    protected final Plugin plugin;
 
     public String getId() {
         return id;
@@ -50,10 +52,6 @@ public class BugReporterPlugin {
 
     public ClassLoader getClassLoader() {
         return classLoader;
-    }
-
-    public Class<? extends BugReporterDecorator> getBugReporterClass() {
-        return filterClass;
     }
 
     public boolean isEnabledByDefault() {
@@ -86,22 +84,19 @@ public class BugReporterPlugin {
 
     }
 
-    final Plugin plugin;
+    protected final String id;
+    protected final String shortId;
+    protected final ClassLoader classLoader;
+    protected final PropertyBundle properties;
+    protected final String description;
+    protected final String details;
+    protected final boolean enabledByDefault;
 
-    final String id;
 
-    final String shortId;
 
-    final ClassLoader classLoader;
+    public Class<? extends T> getComponentClass() {
+        return componentClass;
+    }
 
-    final Class<? extends BugReporterDecorator> filterClass;
-
-    final PropertyBundle properties;
-
-    final String description;
-
-    final String details;
-
-    final boolean enabledByDefault;
-
+    final Class<? extends T> componentClass;
 }

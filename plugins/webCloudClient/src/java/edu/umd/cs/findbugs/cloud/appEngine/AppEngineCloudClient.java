@@ -32,10 +32,14 @@ import java.util.logging.Logger;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.ComponentPlugin;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.BugFiler;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.MutableCloudTask;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
@@ -61,7 +65,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     private Map<String, String> bugStatusCache = new ConcurrentHashMap<String, String>();
 
-    private final BugFilingHelper bugFilingHelper = new BugFilingHelper(this, properties);
+    private final BugFilingHelper bugFilingHelper;
 
     private CountDownLatch issueDataDownloaded = new CountDownLatch(1);
 
@@ -71,6 +75,18 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     private final EvaluationsFromXmlUploader evaluationsFromXmlUploader = new EvaluationsFromXmlUploader(this);
 
+    static ComponentPlugin<BugFiler> foo(String name) {
+        if (name == null)
+            return null;
+        Set<String> names = Collections.singleton(name);
+        for (Plugin p : DetectorFactoryCollection.instance().plugins()) {
+            for(ComponentPlugin<BugFiler> bf : p.getComponentPlugins(BugFiler.class)) {
+                if (bf.isNamed(names))
+                    return bf;
+            }
+        }
+        throw new IllegalArgumentException("Unable to construct bug filer " + name);
+    }
     /** invoked via reflection */
     @SuppressWarnings({ "UnusedDeclaration" })
     public AppEngineCloudClient(CloudPlugin plugin, BugCollection bugs, Properties properties) {
@@ -85,6 +101,9 @@ public class AppEngineCloudClient extends AbstractCloud {
         });
         if (backgroundExecutorService.isShutdown())
             LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown at creation");
+
+        String bugFiler = properties.getProperty("bugFiler");
+        this.bugFilingHelper = new BugFilingHelper(this, foo(bugFiler));
     }
 
     /** package-private for testing */
@@ -417,6 +436,11 @@ public class AppEngineCloudClient extends AbstractCloud {
     public void bugFiled(BugInstance b, Object bugLink) {
     }
 
+    public void setBugLinkOnCloudAndStoreIssueDetails(BugInstance b, String viewUrl, String linkType) throws IOException,
+    SignInCancelledException {
+        getNetworkClient().setBugLinkOnCloudAndStoreIssueDetails(b,viewUrl, linkType);
+    }
+
     // ================== mutators ================
 
     @SuppressWarnings("deprecation")
@@ -474,13 +498,6 @@ public class AppEngineCloudClient extends AbstractCloud {
             }
         });
     }
-
-    protected IGuiCallback getGuiCallback() {
-        return getBugCollection().getProject().getGuiCallback();
-    }
-
-    // ========================= private methods
-    // ==================================
 
     private void signOut(boolean background) {
         networkClient.signOut(background);

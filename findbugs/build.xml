@@ -551,7 +551,7 @@
 
   <target name="findbugscheck" depends="anttask,junittests,jars">
     <property name="findbugs.home" value="." />
-    <ant dir="../plugins/webCloudClient" target="install" inheritAll="false" />
+    <ant dir="${pluginsSrc.dir}/webCloudClient" target="install" inheritAll="false" />
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
     <findbugs home="."
               output="xml:withMessages"
@@ -652,10 +652,10 @@
     <!--
             <fileset dir="../sandbox/localCloud/src"/>
     -->
-            <fileset dir="../plugins/webCloudClient/src"/>
+            <fileset dir="${pluginsSrc.dir}/webCloudClient/src"/>
             <fileset dir="../webCloudProtocol/src"/>
-            <fileset dir="../server/appengine/src"/>
-            <fileset dir="../server/common/src"/>
+            <fileset dir="${serverSrc.dir}/appengine/src"/>
+            <fileset dir="${serverSrc.dir}/common/src"/>
             <fileset dir="../findbugsTestCases/src"/>
         </checkstyle>
     </target>

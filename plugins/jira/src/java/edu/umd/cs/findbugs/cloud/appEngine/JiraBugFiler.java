@@ -24,10 +24,14 @@ import com.atlassian.jira.rpc.soap.beans.RemoteProject;
 import com.atlassian.jira.rpc.soap.beans.RemoteStatus;
 import com.atlassian.jira.rpc.soap.jirasoapservice_v2.JiraSoapService;
 import com.atlassian.jira.rpc.soap.jirasoapservice_v2.JiraSoapServiceServiceLocator;
+
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.ComponentPlugin;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.BugFiler;
 import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 
 public class JiraBugFiler implements BugFiler {
@@ -35,15 +39,15 @@ public class JiraBugFiler implements BugFiler {
 
     private static final Pattern BUG_LINK_PATTERN = Pattern.compile("(.*?)/browse/(.*-\\d+).*");
 
-    private AppEngineCloudClient appEngineCloudClient;
+    private Cloud cloud;
 
     private final Map<String, JiraSession> sessionsByBaseUrl = new ConcurrentHashMap<String, JiraSession>();
 
     private String url;
 
-    public void init(AppEngineCloudClient appEngineCloudClient, String trackerUrl) {
-        this.appEngineCloudClient = appEngineCloudClient;
-        this.url = trackerUrl;
+    public JiraBugFiler(ComponentPlugin<BugFiler> plugin, Cloud cloud) {
+        this.cloud = cloud;
+        this.url = plugin.getProperties().getProperty("trackerURL");
     }
 
     public URL file(BugInstance b) throws IOException, SignInCancelledException {
@@ -110,7 +114,7 @@ public class JiraBugFiler implements BugFiler {
         if (actualComponent == null)
             throw new IllegalArgumentException("no component named " + componentName);
         RemoteProject project = session.service.getProjectByKey(session.token, projectKey);
-        BugFilingCommentHelper helper = new BugFilingCommentHelper(appEngineCloudClient);
+        BugFilingCommentHelper helper = new BugFilingCommentHelper(cloud);
 
         RemoteIssue issue = new RemoteIssue();
         issue.setReporter(session.username);
@@ -166,7 +170,7 @@ public class JiraBugFiler implements BugFiler {
     }
 
     private String getToken(String baseUrl, JiraSession session) throws java.rmi.RemoteException {
-        IGuiCallback callback = appEngineCloudClient.getBugCollection().getProject().getGuiCallback();
+        IGuiCallback callback = cloud.getBugCollection().getProject().getGuiCallback();
         String usernameKey = getPreferenceskeyForJiraBaseUrl(baseUrl); // alphanumeric
                                                                        // plus
                                                                        // dots
@@ -209,7 +213,7 @@ public class JiraBugFiler implements BugFiler {
     }
 
     private URL actuallyFile(BugInstance b, final String trackerUrl) throws ServiceException, IOException, SignInCancelledException {
-        IGuiCallback callback = appEngineCloudClient.getGuiCallback();
+        IGuiCallback callback = cloud.getGuiCallback();
         List<String> issueTypes = getIssueTypes(trackerUrl);
         if (issueTypes == null)
             return null;
@@ -241,13 +245,13 @@ public class JiraBugFiler implements BugFiler {
             return null; // user cancelled
         RemoteIssue issue = fileBug(trackerUrl, b, result.get(0), result.get(1), result.get(2));
         String bugUrl = trackerUrl + "/browse/" + issue.getKey();
-        appEngineCloudClient.getNetworkClient().setBugLinkOnCloudAndStoreIssueDetails(b, bugUrl, "JIRA");
+        cloud.setBugLinkOnCloudAndStoreIssueDetails(b, bugUrl, "JIRA");
         return new URL(bugUrl);
     }
 
     private String askUserForJiraUrl() {
-        IGuiCallback guiCallback = appEngineCloudClient.getBugCollection().getProject().getGuiCallback();
-        Preferences prefs = Preferences.userNodeForPackage(AppEngineCloudClient.class);
+        IGuiCallback guiCallback = cloud.getBugCollection().getProject().getGuiCallback();
+        Preferences prefs = Preferences.userNodeForPackage(JiraBugFiler.class);
 
         String lastProject = prefs.get("last_jira_url", "");
         String dashboardUrl = guiCallback.showQuestionDialog("Issue will be filed in JIRA.\n" + "\n"
@@ -283,4 +287,9 @@ public class JiraBugFiler implements BugFiler {
         private JiraSession() {
         }
     }
+
+	@Override
+	public boolean ready() {
+		return url != null;
+	}
 }
