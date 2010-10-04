@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.util.MapCache;
 /**
  * Factory for creating ClassDescriptors, MethodDescriptors, and
  * FieldDescriptors.
- * 
+ *
  * @author David Hovemeyer
  */
 public class DescriptorFactory {
@@ -53,13 +53,13 @@ public class DescriptorFactory {
         }
     };
 
-    private Map<String, ClassDescriptor> classDescriptorMap;
+    private final Map<String, ClassDescriptor> classDescriptorMap;
 
-    private Map<String, ClassDescriptor> dottedClassDescriptorMap;
+    private final Map<String, ClassDescriptor> dottedClassDescriptorMap;
 
-    private Map<MethodDescriptor, MethodDescriptor> methodDescriptorMap;
+    private final Map<MethodDescriptor, MethodDescriptor> methodDescriptorMap;
 
-    private Map<FieldDescriptor, FieldDescriptor> fieldDescriptorMap;
+    private final Map<FieldDescriptor, FieldDescriptor> fieldDescriptorMap;
 
     private DescriptorFactory() {
         this.classDescriptorMap = new HashMap<String, ClassDescriptor>();
@@ -85,7 +85,7 @@ public class DescriptorFactory {
 
     /**
      * Get the singleton instance of the DescriptorFactory.
-     * 
+     *
      * @return the singleton instance of the DescriptorFactory
      */
     public static DescriptorFactory instance() {
@@ -114,7 +114,7 @@ public class DescriptorFactory {
 
     /**
      * Get a ClassDescriptor for a class name in VM (slashed) format.
-     * 
+     *
      * @param className
      *            a class name in VM (slashed) format
      * @return ClassDescriptor for that class
@@ -133,7 +133,7 @@ public class DescriptorFactory {
 
     /**
      * Get a ClassDescriptor for a class name in dotted format.
-     * 
+     *
      * @param dottedClassName
      *            a class name in dotted format
      * @return ClassDescriptor for that class
@@ -155,7 +155,7 @@ public class DescriptorFactory {
 
     /**
      * Get a MethodDescriptor.
-     * 
+     *
      * @param className
      *            name of the class containing the method, in VM format (e.g.,
      *            "java/lang/String")
@@ -219,7 +219,7 @@ public class DescriptorFactory {
 
     /**
      * Get a FieldDescriptor.
-     * 
+     *
      * @param className
      *            the name of the class the field belongs to, in VM format
      *            (e.g., "java/lang/String")
@@ -253,7 +253,7 @@ public class DescriptorFactory {
 
     /**
      * Get a ClassDescriptor for the class described by given ObjectType object.
-     * 
+     *
      * @param type
      *            an ObjectType
      * @return a ClassDescriptor for the class described by the ObjectType
@@ -268,7 +268,7 @@ public class DescriptorFactory {
 
     /**
      * Create a class descriptor from a resource name.
-     * 
+     *
      * @param resourceName
      *            the resource name
      * @return the class descriptor
@@ -282,7 +282,7 @@ public class DescriptorFactory {
 
     /**
      * Create a class descriptor from a field signature
-     * 
+     *
      */
     public static @CheckForNull
     ClassDescriptor createClassDescriptorFromFieldSignature(String signature) {
@@ -299,7 +299,7 @@ public class DescriptorFactory {
 
     /**
      * Determine whether or not the given resource name refers to a class.
-     * 
+     *
      * @param resourceName
      *            the resource name
      * @return true if the resource is a class, false otherwise
@@ -313,14 +313,7 @@ public class DescriptorFactory {
         int length = signature.length();
         if (length == 0)
             throw new IllegalArgumentException("Empty signature");
-        int first = 0;
-        while (signature.charAt(first) == '[') {
-            first++;
-            if (first == length)
-                throw new IllegalArgumentException("Illegal Signature: " + signature);
-        }
-        signature = signature.substring(first);
-        if (signature.endsWith(";"))
+       if (signature.charAt(0) == 'L' && signature.endsWith(";"))
             signature = signature.substring(1, signature.length() - 1);
         return createClassDescriptor(signature);
     }
