@@ -26,7 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
+public class WebCloudIssueSyncTests extends AbstractWebCloudTest {
 
     public void testFindIssuesAllFound() throws IOException, InterruptedException {
         // set up mocks
@@ -36,7 +36,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         ByteArrayOutputStream findIssuesOutput = setupResponseCodeAndOutputStream(findIssuesConnection);
 
         // execution
-        MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
+        MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.initialize();
         cloud.bugsPopulated();
@@ -74,7 +74,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         when(findIssuesConn.getOutputStream()).thenReturn(outputStream);
 
         // execution
-        final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        final MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.initialize();
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
@@ -103,7 +103,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         ByteArrayOutputStream uploadIssuesBuffer = setupResponseCodeAndOutputStream(uploadConnection);
 
         // execution
-        MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection, logInConnection, uploadConnection);
+        MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConnection, logInConnection, uploadConnection);
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.initialize();
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
@@ -159,7 +159,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         setupResponseCodeAndOutputStream(findIssuesConnection);
 
         // execution
-        MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
+        MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
         when(cloud.mockGuiCallback.showConfirmDialog(anyString(), anyString(), anyString(), anyString())).thenReturn(-1);
         cloud.initialize();
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
@@ -183,7 +183,7 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         setupResponseCodeAndOutputStream(findIssuesConnection);
 
         // execution
-        MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
+        MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
         when(cloud.mockGuiCallback.isHeadless()).thenReturn(true);
         cloud.initialize();
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
@@ -208,8 +208,8 @@ public class AppEngineCloudIssueSyncTests extends AbstractAppEngineCloudTest {
         setupResponseCodeAndOutputStream(findIssuesConnection);
 
         // execution
-        MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
-        AppEngineCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
+        MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConnection);
+        WebCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
         Mockito.doThrow(new IOException()).when(spyNetworkClient).signIn(Matchers.anyBoolean());
         cloud.initialize();
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());

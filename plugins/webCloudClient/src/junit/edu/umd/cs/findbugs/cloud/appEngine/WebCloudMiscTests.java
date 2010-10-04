@@ -11,15 +11,15 @@ import org.mockito.Mockito;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.normalizeHash;
 
-public class AppEngineCloudMiscTests extends AbstractAppEngineCloudTest {
+public class WebCloudMiscTests extends AbstractWebCloudTest {
 
-    public AppEngineCloudMiscTests() {
+    public WebCloudMiscTests() {
         super();
     }
 
     public void testGetLatestDesignationFromEachUser() throws Exception {
-        MockAppEngineCloudClient cloud = createAppEngineCloudClient();
-        AppEngineCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
+        MockWebCloudClient cloud = createAppEngineCloudClient();
+        WebCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
         Mockito.when(spyNetworkClient.getIssueByHash("fad2")).thenReturn(
                 Issue.newBuilder()
                         .addAllEvaluations(

@@ -21,7 +21,7 @@ import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 
-public abstract class AbstractAppEngineCloudTest extends TestCase {
+public abstract class AbstractWebCloudTest extends TestCase {
     protected static final long SAMPLE_DATE = 1200000000L * 1000L; // Thu, 10
                                                                    // Jan 2008
                                                                    // 21:20:00
@@ -47,8 +47,8 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
         foundIssue.setInstanceHash("fad2");
         addMissingIssue = false;
         bugCollection = new SortedBugCollection();
-        plugin = new CloudPluginBuilder().setCloudid("AbstractAppEngineCloudTest")
-                .setClassLoader(AppEngineCloudClient.class.getClassLoader()).setCloudClass(AppEngineCloudClient.class)
+        plugin = new CloudPluginBuilder().setCloudid("AbstractWebCloudTest")
+                .setClassLoader(WebCloudClient.class.getClassLoader()).setCloudClass(WebCloudClient.class)
                 .setUsernameClass(AppEngineNameLookup.class).setProperties(new PropertyBundle()).setDescription("none")
                 .setDetails("none").createCloudPlugin();
         // Logger logger = Logger.getLogger("edu.umd.cs.findbugs.cloud");
@@ -93,11 +93,11 @@ public abstract class AbstractAppEngineCloudTest extends TestCase {
         return outputStream;
     }
 
-    protected MockAppEngineCloudClient createAppEngineCloudClient(HttpURLConnection... connections) throws IOException {
+    protected MockWebCloudClient createAppEngineCloudClient(HttpURLConnection... connections) throws IOException {
         if (addMissingIssue)
             bugCollection.add(missingIssue);
         bugCollection.add(foundIssue);
-        return new MockAppEngineCloudClient(plugin, bugCollection, Arrays.asList(connections));
+        return new MockWebCloudClient(plugin, bugCollection, Arrays.asList(connections));
     }
 
     protected InputStream createFindIssuesResponse(ProtoClasses.Issue foundIssue, boolean addMissingIssue) {

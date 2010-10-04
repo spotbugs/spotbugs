@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import org.mockito.Mockito;
 
-public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
+public class WebCloudCallbackTests extends AbstractWebCloudTest {
 
     public void testWaitForIssueSyncAllFound() throws Exception {
         // set up mocks
@@ -23,7 +23,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         setupResponseCodeAndOutputStream(findIssuesConn);
 
         // execution
-        final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        final MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
         final CountDownLatch latch = new CountDownLatch(1);
         new Thread(new Runnable() {
             public void run() {
@@ -47,7 +47,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         setupResponseCodeAndOutputStream(findIssuesConn);
 
         // execution
-        final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        final MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
         final AtomicBoolean doneWaiting = new AtomicBoolean(false);
         final CountDownLatch latch = addStatusListenerWaiter(cloud);
         new Thread(new Runnable() {
@@ -80,7 +80,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         Mockito.when(findIssuesConn.getOutputStream()).thenReturn(outputStream);
 
         // execution
-        final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        final MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
         final CountDownLatch latch = addStatusListenerWaiter(cloud);
         final AtomicBoolean doneWaiting = new AtomicBoolean(false);
         new Thread(new Runnable() {
@@ -121,7 +121,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         setupResponseCodeAndOutputStream(uploadConnection);
 
         // execution
-        final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConnection, logInConnection, uploadConnection);
+        final MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConnection, logInConnection, uploadConnection);
         final AtomicBoolean doneWaiting = new AtomicBoolean(false);
 
         final CountDownLatch latch = addStatusListenerWaiter(cloud);
@@ -165,7 +165,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         setupResponseCodeAndOutputStream(findIssuesConn);
 
         // execution
-        final MockAppEngineCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        final MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
         final CountDownLatch latch = new CountDownLatch(1);
         cloud.addStatusListener(new Cloud.CloudStatusListener() {
             public void handleIssueDataDownloadedEvent() {
@@ -184,7 +184,7 @@ public class AppEngineCloudCallbackTests extends AbstractAppEngineCloudTest {
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
     }
 
-    private CountDownLatch addStatusListenerWaiter(MockAppEngineCloudClient cloud) {
+    private CountDownLatch addStatusListenerWaiter(MockWebCloudClient cloud) {
         final CountDownLatch latch = new CountDownLatch(1);
         cloud.addStatusListener(new Cloud.CloudStatusListener() {
             public void handleIssueDataDownloadedEvent() {

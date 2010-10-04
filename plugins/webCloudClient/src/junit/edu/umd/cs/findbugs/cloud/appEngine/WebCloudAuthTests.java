@@ -17,7 +17,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
+public class WebCloudAuthTests extends AbstractWebCloudTest {
 
     // ===================== soft signin ==========================
 
@@ -28,8 +28,8 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
     public void testSoftSignInFailSilently() throws Exception {
         final HttpURLConnection logInConn = mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
-        MockAppEngineCloudClient cloud = createAppEngineCloudClient(logInConn);
-        AppEngineCloudNetworkClient networkClient = mock(AppEngineCloudNetworkClient.class);
+        MockWebCloudClient cloud = createAppEngineCloudClient(logInConn);
+        WebCloudNetworkClient networkClient = mock(WebCloudNetworkClient.class);
         cloud.setNetworkClient(networkClient);
 
         when(networkClient.initialize()).thenReturn(false);
@@ -43,8 +43,8 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
     public void testSoftSignInSkipWhenHeadless() throws Exception {
         final HttpURLConnection logInConn = mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
-        MockAppEngineCloudClient cloud = createAppEngineCloudClient(logInConn);
-        AppEngineCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
+        MockWebCloudClient cloud = createAppEngineCloudClient(logInConn);
+        WebCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
 
         when(cloud.mockGuiCallback.isHeadless()).thenReturn(true);
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
@@ -56,8 +56,8 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
     public void testSoftSignInSucceed() throws Exception {
         final HttpURLConnection logInConn = mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
-        MockAppEngineCloudClient cloud = createAppEngineCloudClient(logInConn);
-        AppEngineCloudNetworkClient networkClient = mock(AppEngineCloudNetworkClient.class);
+        MockWebCloudClient cloud = createAppEngineCloudClient(logInConn);
+        WebCloudNetworkClient networkClient = mock(WebCloudNetworkClient.class);
         cloud.setNetworkClient(networkClient);
 
         when(networkClient.initialize()).thenReturn(true);
@@ -71,8 +71,8 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
     public void testSoftSignInFailLoudly() throws Exception {
         final HttpURLConnection logInConn = mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
-        MockAppEngineCloudClient cloud = createAppEngineCloudClient(logInConn);
-        AppEngineCloudNetworkClient networkClient = mock(AppEngineCloudNetworkClient.class);
+        MockWebCloudClient cloud = createAppEngineCloudClient(logInConn);
+        WebCloudNetworkClient networkClient = mock(WebCloudNetworkClient.class);
         cloud.setNetworkClient(networkClient);
 
         when(networkClient.initialize()).thenThrow(new IOException());
@@ -90,7 +90,7 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
         setupResponseCodeAndOutputStream(signOutConn);
 
         // execution
-        MockAppEngineCloudClient cloud = createAppEngineCloudClient(signInConn, signOutConn);
+        MockWebCloudClient cloud = createAppEngineCloudClient(signInConn, signOutConn);
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         final List<String> states = new ArrayList<String>();
         cloud.addStatusListener(new Cloud.CloudStatusListener() {
@@ -121,7 +121,7 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
         ByteArrayOutputStream findIssuesOutput = setupResponseCodeAndOutputStream(signInConn);
 
         // execution
-        MockAppEngineCloudClient cloud = createAppEngineCloudClient(signInConn);
+        MockWebCloudClient cloud = createAppEngineCloudClient(signInConn);
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.initialize();
         cloud.signIn();
@@ -141,8 +141,8 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
         setupResponseCodeAndOutputStream(signInConn);
 
         // execution
-        MockAppEngineCloudClient cloud = createAppEngineCloudClient(signInConn);
-        AppEngineCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
+        MockWebCloudClient cloud = createAppEngineCloudClient(signInConn);
+        WebCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.initialize();
         try {
@@ -171,7 +171,7 @@ public class AppEngineCloudAuthTests extends AbstractAppEngineCloudTest {
         setupResponseCodeAndOutputStream(signOutConn);
 
         // execution
-        MockAppEngineCloudClient cloud = createAppEngineCloudClient(signInConn, signOutConn);
+        MockWebCloudClient cloud = createAppEngineCloudClient(signInConn, signOutConn);
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.initialize();
         cloud.signIn();

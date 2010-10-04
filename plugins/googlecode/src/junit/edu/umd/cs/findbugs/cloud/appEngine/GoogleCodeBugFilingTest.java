@@ -38,9 +38,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class GoogleCodeBugFilingTest extends TestCase {
-    private AppEngineCloudClient mockCloudClient;
+    private WebCloudClient mockCloudClient;
 
-    private AppEngineCloudNetworkClient mockNetworkClient;
+    private WebCloudNetworkClient mockNetworkClient;
 
     private GoogleCodeBugFiler filer;
 
@@ -59,12 +59,12 @@ public class GoogleCodeBugFilingTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mockCloudClient = mock(AppEngineCloudClient.class);
+        mockCloudClient = mock(WebCloudClient.class);
         when(mockCloudClient.getPlugin()).thenReturn(
                 new CloudPluginBuilder().setCloudid("GoogleCodeBugFilingTest").setClassLoader(null).setCloudClass(null)
                         .setUsernameClass(null).setProperties(new PropertyBundle()).setDescription(null).setDetails(null)
                         .createCloudPlugin());
-        mockNetworkClient = mock(AppEngineCloudNetworkClient.class);
+        mockNetworkClient = mock(WebCloudNetworkClient.class);
         when(mockCloudClient.getNetworkClient()).thenReturn(mockNetworkClient);
         projectHostingService = mock(ProjectHostingService.class);
         mockOAuthHelper = mock(GoogleOAuthHelper.class);

@@ -8,10 +8,7 @@ import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ComponentPlugin;
-import edu.umd.cs.findbugs.PropertyBundle;
-import edu.umd.cs.findbugs.bugReporter.BugReporterDecorator;
 import edu.umd.cs.findbugs.cloud.BugFiler;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
@@ -19,7 +16,7 @@ import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 public class BugFilingHelper {
     private static final Logger LOGGER = Logger.getLogger(BugFilingHelper.class.getName());
 
-    private final AppEngineCloudClient cloud;
+    private final WebCloudClient cloud;
     private final BugFiler bugFiler;
 
 
@@ -39,9 +36,9 @@ public class BugFilingHelper {
         }
 
     }
-    public BugFilingHelper(AppEngineCloudClient appEngineCloudClient,
+    public BugFilingHelper(WebCloudClient webCloudClient,
             ComponentPlugin<BugFiler> componentPlugin) {
-        this.cloud = appEngineCloudClient;
+        this.cloud = webCloudClient;
         this.bugFiler = construct(componentPlugin, cloud);
     }
 

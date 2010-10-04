@@ -51,9 +51,9 @@ import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 import edu.umd.cs.findbugs.util.Util;
 
 @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
-public class AppEngineCloudClient extends AbstractCloud {
+public class WebCloudClient extends AbstractCloud {
 
-    private static final Logger LOGGER = Logger.getLogger(AppEngineCloudClient.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(WebCloudClient.class.getPackage().getName());
 
     private static final int EVALUATION_CHECK_SECS = 5 * 60;
 
@@ -61,7 +61,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     private Timer timer;
 
-    private AppEngineCloudNetworkClient networkClient;
+    private WebCloudNetworkClient networkClient;
 
     private Map<String, String> bugStatusCache = new ConcurrentHashMap<String, String>();
 
@@ -89,12 +89,12 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
     /** invoked via reflection */
     @SuppressWarnings({ "UnusedDeclaration" })
-    public AppEngineCloudClient(CloudPlugin plugin, BugCollection bugs, Properties properties) {
+    public WebCloudClient(CloudPlugin plugin, BugCollection bugs, Properties properties) {
         super(plugin, bugs, properties);
-        setNetworkClient(new AppEngineCloudNetworkClient());
+        setNetworkClient(new WebCloudNetworkClient());
         backgroundExecutorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
             public Thread newThread(Runnable r) {
-                Thread t = new Thread(r, AppEngineCloudClient.class.getSimpleName() + " bg");
+                Thread t = new Thread(r, WebCloudClient.class.getSimpleName() + " bg");
                 t.setDaemon(true);
                 return t;
             }
@@ -111,7 +111,7 @@ public class AppEngineCloudClient extends AbstractCloud {
     }
 
     /** package-private for testing */
-    void setNetworkClient(AppEngineCloudNetworkClient networkClient) {
+    void setNetworkClient(WebCloudNetworkClient networkClient) {
         this.networkClient = networkClient;
         networkClient.setCloudClient(this);
     }
@@ -269,7 +269,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     // =============== accessors ===================
 
-    protected AppEngineCloudNetworkClient getNetworkClient() {
+    protected WebCloudNetworkClient getNetworkClient() {
         return networkClient;
     }
 

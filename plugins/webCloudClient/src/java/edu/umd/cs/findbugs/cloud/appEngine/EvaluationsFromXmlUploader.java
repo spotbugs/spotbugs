@@ -18,11 +18,11 @@ import edu.umd.cs.findbugs.util.Util;
 public class EvaluationsFromXmlUploader {
     private IdentityHashMap<BugInstance, BugDesignation> localAnnotations;
 
-    private final AppEngineCloudClient cloud;
+    private final WebCloudClient cloud;
 
     private AtomicBoolean checkedForUpload = new AtomicBoolean(false);
 
-    public EvaluationsFromXmlUploader(AppEngineCloudClient cloud) {
+    public EvaluationsFromXmlUploader(WebCloudClient cloud) {
         this.cloud = cloud;
     }
 

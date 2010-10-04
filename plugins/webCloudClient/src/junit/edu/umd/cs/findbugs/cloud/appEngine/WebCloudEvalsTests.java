@@ -17,8 +17,8 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluatio
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
-public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
-    protected MockAppEngineCloudClient cloud;
+public class WebCloudEvalsTests extends AbstractWebCloudTest {
+    protected MockWebCloudClient cloud;
 
     private Issue responseIssue;
 
@@ -343,7 +343,7 @@ public class AppEngineCloudEvalsTests extends AbstractAppEngineCloudTest {
     @SuppressWarnings("deprecation")
     public void testDontUploadEvaluationsFromXMLWhenFirstEvalUploadFails() throws Exception {
         // setup
-        MockAppEngineCloudClient cloud = createAppEngineCloudClient();
+        MockWebCloudClient cloud = createAppEngineCloudClient();
         cloud.expectConnection("find-issues").withResponse(createFindIssuesResponseObj(responseIssue, false));
         cloud.expectConnection("log-in");
         cloud.expectConnection("upload-evaluation").withErrorCode(403);

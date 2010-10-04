@@ -13,14 +13,14 @@
                 >
 
   <Cloud id="edu.umd.cs.findbugs.cloud.appengine.theflybush"				
-	 cloudClass="edu.umd.cs.findbugs.cloud.appEngine.AppEngineCloudClient"
+	 cloudClass="edu.umd.cs.findbugs.cloud.appEngine.WebCloudClient"
 	 usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup"
          disabled="true" onlineStorage="true"
 	>
        <Property key="appengine.host">http://theflybush.appspot.com</Property>
 </Cloud>
   <Cloud id="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"				
-	 cloudClass="edu.umd.cs.findbugs.cloud.appEngine.AppEngineCloudClient"
+	 cloudClass="edu.umd.cs.findbugs.cloud.appEngine.WebCloudClient"
 	 usernameClass="edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup" onlineStorage="true"
 	>
        <Property key="appengine.host">http://findbugs-cloud.appspot.com</Property>

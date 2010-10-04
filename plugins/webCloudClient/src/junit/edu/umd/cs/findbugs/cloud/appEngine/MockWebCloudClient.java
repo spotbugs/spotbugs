@@ -29,7 +29,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-class MockAppEngineCloudClient extends AppEngineCloudClient {
+class MockWebCloudClient extends WebCloudClient {
     private List<ExpectedConnection> expectedConnections = new ArrayList<ExpectedConnection>();
 
     private int nextConnection = 0;
@@ -46,11 +46,11 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
 
     private final Object statusMsgLock = new Object();
 
-    public MockAppEngineCloudClient(CloudPlugin plugin, SortedBugCollection bugs, List<HttpURLConnection> mockConnections)
+    public MockWebCloudClient(CloudPlugin plugin, SortedBugCollection bugs, List<HttpURLConnection> mockConnections)
             throws IOException {
         super(plugin, bugs, new Properties());
 
-        setNetworkClient(new MockAppEngineCloudNetworkClient());
+        setNetworkClient(new MockWebCloudNetworkClient());
 
         urlsRequested = new ArrayList<String>();
         for (HttpURLConnection mockConnection : mockConnections) {
@@ -86,8 +86,8 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
     }
 
     @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
-    public AppEngineCloudNetworkClient createSpyNetworkClient() throws IOException {
-        AppEngineCloudNetworkClient spyNetworkClient = Mockito.spy(getNetworkClient());
+    public WebCloudNetworkClient createSpyNetworkClient() throws IOException {
+        WebCloudNetworkClient spyNetworkClient = Mockito.spy(getNetworkClient());
         Mockito.doThrow(new IOException()).when(spyNetworkClient).signIn(true);
         setNetworkClient(spyNetworkClient);
         return spyNetworkClient;
@@ -223,7 +223,7 @@ class MockAppEngineCloudClient extends AppEngineCloudClient {
         Assert.fail("Did not see status message " + regex + " in:\n" + statusMsgHistory);
     }
 
-    private class MockAppEngineCloudNetworkClient extends AppEngineCloudNetworkClient {
+    private class MockWebCloudNetworkClient extends WebCloudNetworkClient {
         @Override
         HttpURLConnection openConnection(String url) {
             if (nextConnection >= expectedConnections.size()) {

@@ -51,8 +51,8 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.Builder;
 import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
 
-public class AppEngineCloudNetworkClient {
-    private static final Logger LOGGER = Logger.getLogger(AppEngineCloudNetworkClient.class.getPackage().getName());
+public class WebCloudNetworkClient {
+    private static final Logger LOGGER = Logger.getLogger(WebCloudNetworkClient.class.getPackage().getName());
 
     /** For debugging */
     private static final boolean FORCE_UPLOAD_ALL_ISSUES = false;
@@ -68,7 +68,7 @@ public class AppEngineCloudNetworkClient {
      */
     private static final int HASH_CHECK_PARTITION_SIZE = 60;
 
-    private AppEngineCloudClient cloudClient;
+    private WebCloudClient cloudClient;
 
     private AppEngineNameLookup lookerupper;
 
@@ -84,8 +84,8 @@ public class AppEngineCloudNetworkClient {
 
     private CopyOnWriteArrayList<String> timestampsToUpdate = new CopyOnWriteArrayList<String>();
 
-    public void setCloudClient(AppEngineCloudClient appEngineCloudClient) {
-        this.cloudClient = appEngineCloudClient;
+    public void setCloudClient(WebCloudClient webCloudClient) {
+        this.cloudClient = webCloudClient;
     }
 
     /** returns whether soft initialization worked and the user is now signed in */
@@ -315,7 +315,7 @@ public class AppEngineCloudNetworkClient {
 
         if (issue == null)
             return Long.MAX_VALUE;
-        if (AppEngineCloudClient.DEBUG_FIRST_SEEN)
+        if (WebCloudClient.DEBUG_FIRST_SEEN)
             System.out.println("First seen is " + issue.getFirstSeen() + " for " + b.getMessage());
         if (issue.getFirstSeen() == 0)
             return Long.MAX_VALUE;
