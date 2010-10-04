@@ -516,7 +516,7 @@ public class WebCloudClient extends AbstractCloud {
         communicationInitiated = true;
         bugsPopulated.countDown();
         issueDataDownloaded.countDown();
-        markNewIssuesUploaded();
+        fireNewIssuesUploadedEvent();
     }
 
     private List<BugDesignation> sortDesignations(Collection<BugDesignation> bugDesignations) {
@@ -577,17 +577,21 @@ public class WebCloudClient extends AbstractCloud {
         try {
             LOGGER.info("Checking " + numBugs + " bugs against the " + getCloudName() + "...");
 
+            boolean exceptionThrown = true;
             try {
                 List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
                 networkClient.generateHashCheckRunnables(task, new ArrayList<String>(bugsByHash.keySet()), tasks, bugsByHash);
                 executeAndWaitForAll(tasks);
+                exceptionThrown = false;
             } finally {
                 issueDataDownloaded.countDown();
                 fireIssueDataDownloadedEvent();
+                if (exceptionThrown)
+                    fireNewIssuesUploadedEvent();
             }
 
             if (getSigninState() == SigninState.SIGNIN_FAILED) {
-                markNewIssuesUploaded();
+                fireNewIssuesUploadedEvent();
                 return;
             }
         } finally {
@@ -602,7 +606,7 @@ public class WebCloudClient extends AbstractCloud {
                 || !getGuiCallback().isHeadless())) {
             uploadAndUpdateBugsInBackground(new ArrayList<BugInstance>(newBugs));
         } else {
-            markNewIssuesUploaded();
+            fireNewIssuesUploadedEvent();
             setStatusMsg("All " + numBugs + " bugs are already stored in the " + getCloudName());
         }
 
@@ -615,7 +619,7 @@ public class WebCloudClient extends AbstractCloud {
         return value.trim();
     }
 
-    private void markNewIssuesUploaded() {
+    private void fireNewIssuesUploadedEvent() {
         LOGGER.log(Level.FINER, "new issues uploaded", new Throwable());
         newIssuesUploaded.countDown();
     }
@@ -716,7 +720,7 @@ public class WebCloudClient extends AbstractCloud {
                     if (taskB != null)
                         taskB.finished();
                 }
-                markNewIssuesUploaded();
+                fireNewIssuesUploadedEvent();
             }
         });
     }

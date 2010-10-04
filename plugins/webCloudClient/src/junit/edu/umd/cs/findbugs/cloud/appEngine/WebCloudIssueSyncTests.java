@@ -1,24 +1,26 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
-
-import org.mockito.Matchers;
-import org.mockito.Mockito;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
+
+import edu.umd.cs.findbugs.BugDesignation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
+import edu.umd.cs.findbugs.cloud.MutableCloudTask;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 
 import static edu.umd.cs.findbugs.cloud.Cloud.SigninState.UNAUTHENTICATED;
 import static org.mockito.Matchers.anyString;
@@ -221,6 +223,34 @@ public class WebCloudIssueSyncTests extends AbstractWebCloudTest {
 
         // verify
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
+    }
+
+    @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
+    public void testLogInAndUploadIssuesFailsDuringFindIssues() throws Exception {
+        addMissingIssue = true;
+
+        // set up mocks
+        final HttpURLConnection findIssuesConnection = mock(HttpURLConnection.class);
+        when(findIssuesConnection.getInputStream())
+                .thenReturn(createFindIssuesResponse(createFoundIssueProto(), addMissingIssue));
+        setupResponseCodeAndOutputStream(findIssuesConnection);
+
+        // execution
+        MockWebCloudClient cloud = createWebCloudClient(findIssuesConnection);
+        WebCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
+        Mockito.doThrow(new RuntimeException())
+                .when(spyNetworkClient).generateHashCheckRunnables(
+                Matchers.<MutableCloudTask>any(),
+                Matchers.<List<String>>any(),
+                Matchers.<List<Callable<Object>>>any(),
+                Matchers.<ConcurrentMap<String, BugInstance>>any());
+        cloud.initialize();
+        assertEquals(UNAUTHENTICATED, cloud.getSigninState());
+        cloud.bugsPopulated();
+        cloud.initiateCommunication();
+
+        // this call will fail if the issues-uploaded event is not fired within 5 seconds
+        cloud.waitUntilIssuesUploaded(5, TimeUnit.SECONDS);
     }
 
     // =================================== end of tests
