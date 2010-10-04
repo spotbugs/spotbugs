@@ -1107,6 +1107,8 @@
         <delete file="${engine.jar}"/>
         <delete dir="${annotationDoc.dir}"/>
         <delete file="${anttask.jar}" failonerror="false"/>
+        <delete file="plugin/webCloudClient.jar"/>
+        <delete file="plugin/webCloudClient-full.jar"/>
     </target>
 
     <target name="init" depends="properties">
