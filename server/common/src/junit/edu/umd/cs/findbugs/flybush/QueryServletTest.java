@@ -10,7 +10,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluatio
 import java.io.IOException;
 import java.util.Arrays;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHashes;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil.encodeHashes;
 
 @SuppressWarnings({ "UnusedDeclaration" })
 public abstract class QueryServletTest extends AbstractFlybushServletTest {

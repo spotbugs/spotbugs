@@ -4,7 +4,7 @@ import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
@@ -49,7 +49,7 @@ public class WebCloudIssueSyncTests extends AbstractWebCloudTest {
         verify(findIssuesConnection).connect();
         FindIssues hashes = FindIssues.parseFrom(findIssuesOutput.toByteArray());
         assertEquals(1, hashes.getMyIssueHashesCount());
-        List<String> hashesFromFindIssues = AppEngineProtoUtil.decodeHashes(hashes.getMyIssueHashesList());
+        List<String> hashesFromFindIssues = WebCloudProtoUtil.decodeHashes(hashes.getMyIssueHashesList());
         assertTrue(hashesFromFindIssues.contains(foundIssue.getInstanceHash()));
 
         // verify processing of found issues
@@ -118,7 +118,7 @@ public class WebCloudIssueSyncTests extends AbstractWebCloudTest {
         verify(findIssuesConnection).connect();
         FindIssues hashes = FindIssues.parseFrom(findIssuesOutput.toByteArray());
         assertEquals(2, hashes.getMyIssueHashesCount());
-        List<String> hashesFromFindIssues = AppEngineProtoUtil.decodeHashes(hashes.getMyIssueHashesList());
+        List<String> hashesFromFindIssues = WebCloudProtoUtil.decodeHashes(hashes.getMyIssueHashesList());
         assertTrue(hashesFromFindIssues.contains(foundIssue.getInstanceHash()));
         assertTrue(hashesFromFindIssues.contains(missingIssue.getInstanceHash()));
 
@@ -227,7 +227,7 @@ public class WebCloudIssueSyncTests extends AbstractWebCloudTest {
     // ===========================================
 
     private void checkIssuesEqual(BugInstance issue, Issue uploadedIssue) {
-        assertEquals(issue.getInstanceHash(), AppEngineProtoUtil.decodeHash(uploadedIssue.getHash()));
+        assertEquals(issue.getInstanceHash(), WebCloudProtoUtil.decodeHash(uploadedIssue.getHash()));
         assertEquals(issue.getType(), uploadedIssue.getBugPattern());
         assertEquals(issue.getPriority(), uploadedIssue.getPriority());
         assertEquals(0, uploadedIssue.getLastSeen());

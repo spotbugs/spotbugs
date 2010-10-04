@@ -7,8 +7,8 @@ import java.util.List;
 
 import com.google.protobuf.ByteString;
 
-public final class AppEngineProtoUtil {
-    private AppEngineProtoUtil() {
+public final class WebCloudProtoUtil {
+    private WebCloudProtoUtil() {
     }
 
     public static ByteString encodeHash(String hash) {

@@ -1,18 +1,5 @@
 package edu.umd.cs.findbugs.flybush;
 
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.Builder;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +13,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.Builder;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 
 @SuppressWarnings("serial")
 public class QueryServlet extends AbstractFlybushServlet {
@@ -47,7 +48,7 @@ public class QueryServlet extends AbstractFlybushServlet {
         // if (isAuthenticated(resp, pm, sessionId))
         // return;
 
-        List<String> hashes = AppEngineProtoUtil.decodeHashes(loginMsg.getMyIssueHashesList());
+        List<String> hashes = WebCloudProtoUtil.decodeHashes(loginMsg.getMyIssueHashesList());
         Map<String, DbIssue> issues = persistenceHelper.findIssues(pm, hashes);
         FindIssuesResponse.Builder issueProtos = FindIssuesResponse.newBuilder();
         int found = 0;
@@ -107,7 +108,7 @@ public class QueryServlet extends AbstractFlybushServlet {
 
     private Issue buildFullIssueProto(DbIssue dbIssue, Set<? extends DbEvaluation> evaluations, PersistenceManager pm) {
         Issue.Builder issueBuilder = Issue.newBuilder().setBugPattern(dbIssue.getBugPattern()).setPriority(dbIssue.getPriority())
-                .setHash(AppEngineProtoUtil.encodeHash(dbIssue.getHash())).setFirstSeen(dbIssue.getFirstSeen())
+                .setHash(WebCloudProtoUtil.encodeHash(dbIssue.getHash())).setFirstSeen(dbIssue.getFirstSeen())
                 .setLastSeen(dbIssue.getLastSeen()).setPrimaryClass(dbIssue.getPrimaryClass());
         if (dbIssue.getBugLink() != null) {
             issueBuilder.setBugLink(dbIssue.getBugLink());

@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.SetBugLink;
@@ -227,7 +227,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
                 }
                 Query query = pm.newQuery("select from " + persistenceHelper.getDbIssueClass().getName()
                         + " where :hashes.contains(hash)");
-                for (DbIssue issue : (List<? extends DbIssue>) query.execute(AppEngineProtoUtil.decodeHashes(issueGroup
+                for (DbIssue issue : (List<? extends DbIssue>) query.execute(WebCloudProtoUtil.decodeHashes(issueGroup
                         .getIssueHashesList()))) {
                     long storedFirstSeen = issue.getFirstSeen();
                     long firstSeen = storedFirstSeen == 0 ? newFirstSeen : Math.min(newFirstSeen, storedFirstSeen);
@@ -298,7 +298,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         Set<String> existingIssueHashes = lookupHashes(hashes, pm);
         LOGGER.info("Looking up hashes took " + (System.currentTimeMillis() - start) + "ms");
         for (Issue issue : issues.getNewIssuesList()) {
-            String hashStr = AppEngineProtoUtil.decodeHash(issue.getHash());
+            String hashStr = WebCloudProtoUtil.decodeHash(issue.getHash());
             if (!existingIssueHashes.contains(hashStr)) {
                 DbIssue dbIssue = createDbIssue(issue);
 
@@ -332,10 +332,10 @@ public class UpdateServlet extends AbstractFlybushServlet {
         try {
             tx.begin();
 
-            String hash = AppEngineProtoUtil.decodeHash(uploadEvalMsg.getHash());
+            String hash = WebCloudProtoUtil.decodeHash(uploadEvalMsg.getHash());
             DbIssue issue = findIssue(pm, hash);
             if (issue == null) {
-                setResponse(resp, 404, "no such issue " + AppEngineProtoUtil.decodeHash(uploadEvalMsg.getHash()));
+                setResponse(resp, 404, "no such issue " + WebCloudProtoUtil.decodeHash(uploadEvalMsg.getHash()));
                 return;
             }
             dbEvaluation.setIssue(issue);
@@ -365,7 +365,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         Transaction tx = pm.currentTransaction();
         tx.begin();
         try {
-            String decodedHash = AppEngineProtoUtil.decodeHash(setBugLinkMsg.getHash());
+            String decodedHash = WebCloudProtoUtil.decodeHash(setBugLinkMsg.getHash());
             DbIssue issue = findIssue(pm, decodedHash);
             if (issue == null) {
                 setResponse(resp, 404, "no such issue " + decodedHash);
@@ -395,7 +395,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
     private List<String> decodeHashesForIssues(UploadIssues issues) {
         List<String> hashes = new ArrayList<String>();
         for (Issue issue : issues.getNewIssuesList()) {
-            hashes.add(AppEngineProtoUtil.decodeHash(issue.getHash()));
+            hashes.add(WebCloudProtoUtil.decodeHash(issue.getHash()));
         }
         return hashes;
     }
@@ -414,7 +414,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
 
     private DbIssue createDbIssue(Issue issue) {
         DbIssue dbIssue = persistenceHelper.createDbIssue();
-        dbIssue.setHash(AppEngineProtoUtil.decodeHash(issue.getHash()));
+        dbIssue.setHash(WebCloudProtoUtil.decodeHash(issue.getHash()));
         dbIssue.setBugPattern(issue.getBugPattern());
         dbIssue.setPriority(issue.getPriority());
         dbIssue.setPrimaryClass(issue.getPrimaryClass());

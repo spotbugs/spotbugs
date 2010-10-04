@@ -17,7 +17,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.CloudPluginBuilder;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 
@@ -49,7 +49,7 @@ public abstract class AbstractWebCloudTest extends TestCase {
         bugCollection = new SortedBugCollection();
         plugin = new CloudPluginBuilder().setCloudid("AbstractWebCloudTest")
                 .setClassLoader(WebCloudClient.class.getClassLoader()).setCloudClass(WebCloudClient.class)
-                .setUsernameClass(AppEngineNameLookup.class).setProperties(new PropertyBundle()).setDescription("none")
+                .setUsernameClass(WebCloudNameLookup.class).setProperties(new PropertyBundle()).setDescription("none")
                 .setDetails("none").createCloudPlugin();
         // Logger logger = Logger.getLogger("edu.umd.cs.findbugs.cloud");
         // logger.setLevel(Level.FINEST);

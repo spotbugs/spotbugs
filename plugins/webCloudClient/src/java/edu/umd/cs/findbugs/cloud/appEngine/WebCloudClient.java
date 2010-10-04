@@ -43,11 +43,11 @@ import edu.umd.cs.findbugs.cloud.BugFiler;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.MutableCloudTask;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup;
 import edu.umd.cs.findbugs.util.Util;
 
 @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
@@ -274,17 +274,17 @@ public class WebCloudClient extends AbstractCloud {
     }
 
     public void setSaveSignInInformation(boolean save) {
-        AppEngineNameLookup.setSaveSessionInformation(save);
+        WebCloudNameLookup.setSaveSessionInformation(save);
         if (save) {
             Long sessionId = networkClient.getSessionId();
             if (sessionId != null) {
-                AppEngineNameLookup.saveSessionInformation(sessionId);
+                WebCloudNameLookup.saveSessionInformation(sessionId);
             }
         }
     }
 
     public boolean isSavingSignInInformationEnabled() {
-        return AppEngineNameLookup.isSavingSessionInfoEnabled();
+        return WebCloudNameLookup.isSavingSessionInfoEnabled();
     }
 
     private final Object signInLock = new Object();
@@ -677,12 +677,12 @@ public class WebCloudClient extends AbstractCloud {
         if (evals.getIssuesCount() > 0)
             setStatusMsg(getCloudName() + ": found " + evals.getIssuesCount() + " updated bug evaluations");
         for (Issue updatedIssue : evals.getIssuesList()) {
-            String protoHash = AppEngineProtoUtil.decodeHash(updatedIssue.getHash());
+            String protoHash = WebCloudProtoUtil.decodeHash(updatedIssue.getHash());
             Issue existingIssue = networkClient.getIssueByHash(protoHash);
             Issue issueToStore;
             if (existingIssue != null) {
                 issueToStore = mergeIssues(existingIssue, updatedIssue);
-                String newHash = AppEngineProtoUtil.decodeHash(issueToStore.getHash());
+                String newHash = WebCloudProtoUtil.decodeHash(issueToStore.getHash());
                 assert newHash.equals(protoHash) : newHash + " vs " + protoHash;
 
             } else {

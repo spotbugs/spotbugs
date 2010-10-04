@@ -2,7 +2,7 @@ package edu.umd.cs.findbugs.flybush;
 
 import com.dyuproject.openid.OpenIdUser;
 import com.dyuproject.openid.ext.AxSchemaExtension;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import junit.framework.TestCase;
 import org.junit.Assert;
@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.decodeHash;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil.decodeHash;
 
 public abstract class AbstractFlybushServletTest extends TestCase {
 
@@ -186,7 +186,7 @@ public abstract class AbstractFlybushServletTest extends TestCase {
     }
 
     protected DbIssue createDbIssue(String patternAndHash) {
-        patternAndHash = AppEngineProtoUtil.normalizeHash(patternAndHash);
+        patternAndHash = WebCloudProtoUtil.normalizeHash(patternAndHash);
         DbIssue foundIssue = persistenceHelper.createDbIssue();
         foundIssue.setHash(patternAndHash);
         foundIssue.setBugPattern(patternAndHash);

@@ -22,7 +22,7 @@ import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup;
 import junit.framework.Assert;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
@@ -34,7 +34,7 @@ class MockWebCloudClient extends WebCloudClient {
 
     private int nextConnection = 0;
 
-    private AppEngineNameLookup mockNameLookup;
+    private WebCloudNameLookup mockNameLookup;
 
     private Long mockSessionId = null;
 
@@ -177,8 +177,8 @@ class MockWebCloudClient extends WebCloudClient {
         });
     }
 
-    private AppEngineNameLookup createMockNameLookup() throws IOException {
-        AppEngineNameLookup mockNameLookup = Mockito.mock(AppEngineNameLookup.class);
+    private WebCloudNameLookup createMockNameLookup() throws IOException {
+        WebCloudNameLookup mockNameLookup = Mockito.mock(WebCloudNameLookup.class);
         Mockito.when(mockNameLookup.getHost()).thenReturn("host");
         Mockito.when(mockNameLookup.getUsername()).thenReturn("test@example.com");
         Mockito.when(mockNameLookup.getSessionId()).thenAnswer(new Answer<Long>() {
@@ -245,7 +245,7 @@ class MockWebCloudClient extends WebCloudClient {
         }
 
         @Override
-        protected AppEngineNameLookup createNameLookup() {
+        protected WebCloudNameLookup createNameLookup() {
             return mockNameLookup;
         }
     }

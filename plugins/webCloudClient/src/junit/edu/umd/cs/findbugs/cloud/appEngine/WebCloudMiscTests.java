@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import org.mockito.Mockito;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.normalizeHash;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil.normalizeHash;
 
 public class WebCloudMiscTests extends AbstractWebCloudTest {
 
@@ -67,6 +67,6 @@ public class WebCloudMiscTests extends AbstractWebCloudTest {
     // ===========================================
 
     private static void checkHashEncodeRoundtrip(String hash) {
-        assertEquals(hash, AppEngineProtoUtil.decodeHash(AppEngineProtoUtil.encodeHash(hash)));
+        assertEquals(hash, WebCloudProtoUtil.decodeHash(WebCloudProtoUtil.encodeHash(hash)));
     }
 }

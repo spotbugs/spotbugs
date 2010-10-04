@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.util.Util;
 /**
  * @author pugh
  */
-public class AppEngineNameLookup implements NameLookup {
+public class WebCloudNameLookup implements NameLookup {
 
     public static final String LOCAL_APPENGINE = "appengine.local";
 
@@ -48,7 +48,7 @@ public class AppEngineNameLookup implements NameLookup {
 
     public static final String APPENGINE_HOST_PROPERTY_NAME = "appengine.host";
 
-    private static final Logger LOGGER = Logger.getLogger(AppEngineNameLookup.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(WebCloudNameLookup.class.getName());
 
     /** if "true", prevents session info from being saved between launches. */
     private static final String SYSPROP_NEVER_SAVE_SESSION = "appengine.never_save_session";
@@ -138,7 +138,7 @@ public class AppEngineNameLookup implements NameLookup {
     }
 
     public static void setSaveSessionInformation(boolean save) {
-        Preferences prefs = Preferences.userNodeForPackage(AppEngineNameLookup.class);
+        Preferences prefs = Preferences.userNodeForPackage(WebCloudNameLookup.class);
         prefs.putBoolean(KEY_SAVE_SESSION_INFO, save);
         if (!save) {
             clearSavedSessionInformation();
@@ -147,17 +147,17 @@ public class AppEngineNameLookup implements NameLookup {
 
     public static boolean isSavingSessionInfoEnabled() {
         return !Boolean.getBoolean(SYSPROP_NEVER_SAVE_SESSION)
-                && Preferences.userNodeForPackage(AppEngineNameLookup.class).getBoolean(KEY_SAVE_SESSION_INFO, true);
+                && Preferences.userNodeForPackage(WebCloudNameLookup.class).getBoolean(KEY_SAVE_SESSION_INFO, true);
     }
 
     public static void clearSavedSessionInformation() {
-        Preferences prefs = Preferences.userNodeForPackage(AppEngineNameLookup.class);
+        Preferences prefs = Preferences.userNodeForPackage(WebCloudNameLookup.class);
         prefs.remove(KEY_APPENGINECLOUD_SESSION_ID);
     }
 
     public static void saveSessionInformation(long sessionId) {
         assert sessionId != 0;
-        Preferences.userNodeForPackage(AppEngineNameLookup.class).putLong(KEY_APPENGINECLOUD_SESSION_ID, sessionId);
+        Preferences.userNodeForPackage(WebCloudNameLookup.class).putLong(KEY_APPENGINECLOUD_SESSION_ID, sessionId);
     }
 
     public Long getSessionId() {
@@ -196,7 +196,7 @@ public class AppEngineNameLookup implements NameLookup {
      * @return session id if already exists, or 0 if it doesn't
      */
     private long loadSessionId() {
-        Preferences prefs = Preferences.userNodeForPackage(AppEngineNameLookup.class);
+        Preferences prefs = Preferences.userNodeForPackage(WebCloudNameLookup.class);
         long id = prefs.getLong(KEY_APPENGINECLOUD_SESSION_ID, 0);
         return id;
     }

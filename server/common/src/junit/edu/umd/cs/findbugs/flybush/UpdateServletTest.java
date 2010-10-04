@@ -10,7 +10,7 @@ import javax.jdo.Query;
 import javax.servlet.ServletException;
 
 import com.google.common.collect.Sets;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
@@ -22,7 +22,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTime
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil.encodeHash;
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil.encodeHash;
 import static edu.umd.cs.findbugs.flybush.UpdateServlet.ONE_DAY_IN_MILLIS;
 
 @SuppressWarnings({ "UnusedDeclaration" })
@@ -634,7 +634,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
     }
 
     private Issue createProtoIssue(String patternAndHash) {
-        patternAndHash = AppEngineProtoUtil.normalizeHash(patternAndHash);
+        patternAndHash = WebCloudProtoUtil.normalizeHash(patternAndHash);
         Issue.Builder issueBuilder = Issue.newBuilder();
         issueBuilder.setHash(encodeHash(patternAndHash));
         issueBuilder.setBugPattern(patternAndHash);

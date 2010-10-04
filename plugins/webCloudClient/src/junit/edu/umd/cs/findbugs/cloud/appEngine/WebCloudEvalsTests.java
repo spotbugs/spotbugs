@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
@@ -207,7 +207,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
         waitForDialog(latch);
         cloud.verifyConnections();
         UploadEvaluation uploadMsg = UploadEvaluation.parseFrom(cloud.postedData("upload-evaluation"));
-        assertEquals("fad2", AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));
+        assertEquals("fad2", WebCloudProtoUtil.decodeHash(uploadMsg.getHash()));
         assertEquals("my eval", uploadMsg.getEvaluation().getComment());
     }
 
@@ -228,7 +228,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
         cloud.waitForStatusMsg("1 issues from XML uploaded to cloud");
         cloud.verifyConnections();
         UploadEvaluation uploadMsg = UploadEvaluation.parseFrom(cloud.postedData("upload-evaluation"));
-        assertEquals("fad2", AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));
+        assertEquals("fad2", WebCloudProtoUtil.decodeHash(uploadMsg.getHash()));
         assertEquals("my eval", uploadMsg.getEvaluation().getComment());
     }
 
@@ -247,7 +247,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
         // verify
         cloud.waitForStatusMsg("1 issues from XML uploaded to cloud");
         UploadEvaluation uploadMsg = UploadEvaluation.parseFrom(cloud.postedData("upload-evaluation"));
-        assertEquals("fad2", AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));
+        assertEquals("fad2", WebCloudProtoUtil.decodeHash(uploadMsg.getHash()));
         assertEquals("my eval", uploadMsg.getEvaluation().getComment());
         cloud.verifyConnections();
 
@@ -271,7 +271,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
         cloud.waitForStatusMsg("1 issues from XML uploaded to cloud");
         cloud.verifyConnections();
         uploadMsg = UploadEvaluation.parseFrom(cloud.postedData("upload-evaluation"));
-        assertEquals("fad2", AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));
+        assertEquals("fad2", WebCloudProtoUtil.decodeHash(uploadMsg.getHash()));
         assertEquals("I_WILL_FIX", uploadMsg.getEvaluation().getDesignation());
         assertEquals("new", uploadMsg.getEvaluation().getComment());
     }
@@ -314,7 +314,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
         cloud.waitForStatusMsg("1 issues from XML uploaded to cloud");
         cloud.verifyConnections();
         UploadEvaluation uploadMsg = UploadEvaluation.parseFrom(cloud.postedData("upload-evaluation"));
-        assertEquals("fad2", AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));
+        assertEquals("fad2", WebCloudProtoUtil.decodeHash(uploadMsg.getHash()));
         assertEquals("my eval", uploadMsg.getEvaluation().getComment());
     }
 
@@ -379,7 +379,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
     private static Issue fillMissingFields(Issue prototype, BugInstance source, Evaluation... evalsToAdd) {
         return Issue.newBuilder(prototype).setBugPattern(source.getAbbrev())
-                .setHash(AppEngineProtoUtil.encodeHash(source.getInstanceHash()))
+                .setHash(WebCloudProtoUtil.encodeHash(source.getInstanceHash()))
                 .setPrimaryClass(source.getPrimaryClass().getClassName()).setPriority(1)
                 .addAllEvaluations(Arrays.asList(evalsToAdd)).build();
     }
@@ -394,7 +394,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
     private static void checkUploadedEvaluationMatches(BugInstance expectedValues, UploadEvaluation uploadMsg) {
         assertEquals(555, uploadMsg.getSessionId());
-        assertEquals(expectedValues.getInstanceHash(), AppEngineProtoUtil.decodeHash(uploadMsg.getHash()));
+        assertEquals(expectedValues.getInstanceHash(), WebCloudProtoUtil.decodeHash(uploadMsg.getHash()));
         assertEquals(expectedValues.getUserDesignationKey(), uploadMsg.getEvaluation().getDesignation());
         assertEquals(expectedValues.getAnnotationText(), uploadMsg.getEvaluation().getComment());
     }

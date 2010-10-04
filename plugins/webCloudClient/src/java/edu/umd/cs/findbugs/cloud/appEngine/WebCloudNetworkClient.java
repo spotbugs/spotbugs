@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.MutableCloudTask;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.AppEngineProtoUtil;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
@@ -49,7 +49,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTime
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.Builder;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup;
 
 public class WebCloudNetworkClient {
     private static final Logger LOGGER = Logger.getLogger(WebCloudNetworkClient.class.getPackage().getName());
@@ -70,7 +70,7 @@ public class WebCloudNetworkClient {
 
     private WebCloudClient cloudClient;
 
-    private AppEngineNameLookup lookerupper;
+    private WebCloudNameLookup lookerupper;
 
     private ConcurrentMap<String, Issue> issuesByHash = new ConcurrentHashMap<String, Issue>();
 
@@ -130,7 +130,7 @@ public class WebCloudNetworkClient {
         conn.setDoOutput(true);
         try {
             OutputStream outputStream = conn.getOutputStream();
-            SetBugLink.newBuilder().setSessionId(sessionId).setHash(AppEngineProtoUtil.encodeHash(b.getInstanceHash())).setBugLinkType(type)
+            SetBugLink.newBuilder().setSessionId(sessionId).setHash(WebCloudProtoUtil.encodeHash(b.getInstanceHash())).setBugLinkType(type)
                     .setUrl(bugLink).build().writeTo(outputStream);
             outputStream.close();
             if (conn.getResponseCode() != 200) {
@@ -392,7 +392,7 @@ public class WebCloudNetworkClient {
         }
         String hash = bugInstance.getInstanceHash();
         Evaluation eval = evalBuilder.build();
-        UploadEvaluation uploadMsg = UploadEvaluation.newBuilder().setSessionId(sessionId).setHash(AppEngineProtoUtil.encodeHash(hash))
+        UploadEvaluation uploadMsg = UploadEvaluation.newBuilder().setSessionId(sessionId).setHash(WebCloudProtoUtil.encodeHash(hash))
                 .setEvaluation(eval).build();
 
         openPostUrl("/upload-evaluation", uploadMsg);
@@ -434,7 +434,7 @@ public class WebCloudNetworkClient {
             else
                 logoutRequest.run();
             sessionId = null;
-            AppEngineNameLookup.clearSavedSessionInformation();
+            WebCloudNameLookup.clearSavedSessionInformation();
         }
     }
 
@@ -444,8 +444,8 @@ public class WebCloudNetworkClient {
 
     // ========================= private methods ==========================
 
-    protected AppEngineNameLookup createNameLookup() {
-        AppEngineNameLookup nameLookup = new AppEngineNameLookup();
+    protected WebCloudNameLookup createNameLookup() {
+        WebCloudNameLookup nameLookup = new WebCloudNameLookup();
         nameLookup.loadProperties(cloudClient.getPlugin());
         return nameLookup;
     }
@@ -515,7 +515,7 @@ public class WebCloudNetworkClient {
             for (Map.Entry<Long, Set<BugInstance>> entry : groupBugsByTimestamp(bugs).entrySet()) {
                 UpdateIssueTimestamps.IssueGroup.Builder groupBuilder = IssueGroup.newBuilder().setTimestamp(entry.getKey());
                 for (BugInstance bugInstance : entry.getValue()) {
-                    groupBuilder.addIssueHashes(AppEngineProtoUtil.encodeHash(bugInstance.getInstanceHash()));
+                    groupBuilder.addIssueHashes(WebCloudProtoUtil.encodeHash(bugInstance.getInstanceHash()));
                 }
                 builder.addIssueGroups(groupBuilder.build());
             }
@@ -555,7 +555,7 @@ public class WebCloudNetworkClient {
         if (sessionId != null) {
             msgb.setSessionId(sessionId);
         }
-        FindIssues hashList = msgb.addAllMyIssueHashes(AppEngineProtoUtil.encodeHashes(bugsByHash)).build();
+        FindIssues hashList = msgb.addAllMyIssueHashes(WebCloudProtoUtil.encodeHashes(bugsByHash)).build();
 
         long start = System.currentTimeMillis();
         HttpURLConnection conn = openConnection("/find-issues");
@@ -599,7 +599,7 @@ public class WebCloudNetworkClient {
         // if it worked, store the issues locally
         final List<String> hashes = new ArrayList<String>();
         for (final Issue issue : uploadIssues.getNewIssuesList()) {
-            final String hash = AppEngineProtoUtil.decodeHash(issue.getHash());
+            final String hash = WebCloudProtoUtil.decodeHash(issue.getHash());
             storeIssueDetails(hash, issue);
             hashes.add(hash);
         }
@@ -632,7 +632,7 @@ public class WebCloudNetworkClient {
 
                 for (BugInstance bug : bugsToSend) {
                     uploadIssuesCmd.addNewIssues(Issue.newBuilder()
-                            .setHash(AppEngineProtoUtil.encodeHash(bug.getInstanceHash()))
+                            .setHash(WebCloudProtoUtil.encodeHash(bug.getInstanceHash()))
                             .setBugPattern(bug.getType()).setPriority(bug.getPriority())
                             .setPrimaryClass(bug.getPrimaryClass().getClassName())
                             .setFirstSeen(cloudClient.getFirstSeen(bug))
