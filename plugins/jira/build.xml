@@ -52,7 +52,7 @@
     <target name="compile">
         <echo>Base ${findbugsBase.dir}</echo>
         <echo>protocol ${protocol.home}</echo>
-        <ant dir="${webCloud.home}" target="compile"/>
+        <ant dir="${webCloud.home}" target="compile" inheritAll="false"/>
         <mkdir dir="${classes.dir}"/>
         <javac destdir="${classes.dir}"
                source="1.5"
