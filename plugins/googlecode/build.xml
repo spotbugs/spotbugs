@@ -22,7 +22,7 @@
 
         <pathelement location="${findbugs.home}/build/classes"/>
 
-        <fileset dir="${findbugs.home}/lib" includes="*.jar" excludes="findbugs*.jar"/>
+        <fileset dir="${findbugs.home}/lib" includes="*.jar" excludes="findbugs-full*.jar"/>
 
         <pathelement location="${protocol.home}/build/classes-ant"/>
         <fileset dir="${protocol.home}/lib" includes="**/*.jar"/>
@@ -100,8 +100,10 @@
     <target name="test" depends="compile-tests">
         <mkdir dir="build"/>
         <mkdir dir="build/tests"/>
-        <junit fork="yes" printsummary="true">
+        <junit fork="yes" printsummary="true" dir="${findbugs.home}">
             <jvmarg value="-ea"/>
+            <!--<jvmarg value="-Xdebug"/>-->
+            <!--<jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"/>-->
             <formatter type="xml"/>
             <!-- Hudson reads generated xml -->
 
@@ -110,7 +112,7 @@
             <classpath path="build/classes-tests-ant"/>
             <classpath refid="test.classpath"/>
 
-            <batchtest todir="build/tests">
+            <batchtest todir="build/tests" fork="true">
                 <fileset dir="src/junit">
                     <include name="**/*Test.java"/>
                     <include name="**/*Tests.java"/>
