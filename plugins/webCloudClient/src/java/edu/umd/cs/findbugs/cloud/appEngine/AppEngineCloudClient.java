@@ -265,7 +265,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     // =============== accessors ===================
 
-    AppEngineCloudNetworkClient getNetworkClient() {
+    protected AppEngineCloudNetworkClient getNetworkClient() {
         return networkClient;
     }
 

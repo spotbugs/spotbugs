@@ -77,7 +77,6 @@ public class GoogleCodeBugFiler implements BugFiler {
         projectHostingService = service;
     }
 
-    @Override
 	public URL file(BugInstance b) throws IOException, SignInCancelledException {
         if (url == null)
             return null;
@@ -97,7 +96,6 @@ public class GoogleCodeBugFiler implements BugFiler {
         }
     }
 
-    @Override
 	public String getBugStatus(String bugLink) throws MalformedURLException, OAuthException, InterruptedException,
             AuthenticationException {
 
@@ -109,7 +107,6 @@ public class GoogleCodeBugFiler implements BugFiler {
         final long issueID = Long.parseLong(m.group(2));
 
         return initProjectHostingServiceAndExecute(new Callable<String>() {
-            @Override
 			public String call() throws Exception {
                 IssuesEntry issue = projectHostingService.getEntry(new URL("http://code.google.com/feeds/issues/p/" + project
                         + "/issues/full/" + issueID), IssuesEntry.class);
@@ -132,7 +129,6 @@ public class GoogleCodeBugFiler implements BugFiler {
             initProjectHostingService(false);
 
         Callable<IssuesEntry> callable = new Callable<IssuesEntry>() {
-            @Override
 			public IssuesEntry call() throws Exception {
                 return projectHostingService.insert(issuesFeedUrl, makeNewIssue(instance));
             }
@@ -319,7 +315,6 @@ public class GoogleCodeBugFiler implements BugFiler {
         }
     }
 
-	@Override
 	public boolean ready() {
 		return true;
 	}
