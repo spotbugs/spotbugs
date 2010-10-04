@@ -77,7 +77,7 @@ public class GoogleCodeBugFiler implements BugFiler {
         projectHostingService = service;
     }
 
-	public URL file(BugInstance b) throws IOException, SignInCancelledException {
+    public URL file(BugInstance b) throws IOException, SignInCancelledException {
         if (url == null)
             return null;
         Matcher m = PATTERN_GOOGLE_CODE_URL.matcher(url);
@@ -96,7 +96,7 @@ public class GoogleCodeBugFiler implements BugFiler {
         }
     }
 
-	public String getBugStatus(String bugLink) throws MalformedURLException, OAuthException, InterruptedException,
+    public String getBugStatus(String bugLink) throws MalformedURLException, OAuthException, InterruptedException,
             AuthenticationException {
 
         Matcher m = URL_REGEX.matcher(bugLink);
@@ -107,7 +107,7 @@ public class GoogleCodeBugFiler implements BugFiler {
         final long issueID = Long.parseLong(m.group(2));
 
         return initProjectHostingServiceAndExecute(new Callable<String>() {
-			public String call() throws Exception {
+            public String call() throws Exception {
                 IssuesEntry issue = projectHostingService.getEntry(new URL("http://code.google.com/feeds/issues/p/" + project
                         + "/issues/full/" + issueID), IssuesEntry.class);
                 Status status = issue.getStatus();
@@ -129,7 +129,7 @@ public class GoogleCodeBugFiler implements BugFiler {
             initProjectHostingService(false);
 
         Callable<IssuesEntry> callable = new Callable<IssuesEntry>() {
-			public IssuesEntry call() throws Exception {
+            public IssuesEntry call() throws Exception {
                 return projectHostingService.insert(issuesFeedUrl, makeNewIssue(instance));
             }
         };
@@ -315,7 +315,7 @@ public class GoogleCodeBugFiler implements BugFiler {
         }
     }
 
-	public boolean ready() {
-		return true;
-	}
+    public boolean ready() {
+        return true;
+    }
 }

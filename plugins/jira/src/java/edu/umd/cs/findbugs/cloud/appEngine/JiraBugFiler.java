@@ -288,8 +288,7 @@ public class JiraBugFiler implements BugFiler {
         }
     }
 
-	@Override
-	public boolean ready() {
-		return url != null;
-	}
+    public boolean ready() {
+        return url != null;
+    }
 }
