@@ -645,7 +645,7 @@
     <target name="checkstyle">
         <taskdef resource="checkstyletask.properties"
                  classpath="build-lib/checkstyle-all-5.1.jar"/>
-        <checkstyle config="etc/checkstyle.xml">
+        <checkstyle config="etc/checkstyle.xml" failonviolation="false">
             <fileset dir="src/java"/>
             <fileset dir="src/gui"/>
             <fileset dir="src/junit"/>
