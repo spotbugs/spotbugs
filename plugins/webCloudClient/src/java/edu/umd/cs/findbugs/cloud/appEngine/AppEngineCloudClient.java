@@ -65,7 +65,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     private Map<String, String> bugStatusCache = new ConcurrentHashMap<String, String>();
 
-    private final BugFilingHelper bugFilingHelper;
+    private final @CheckForNull BugFilingHelper bugFilingHelper;
 
     private CountDownLatch issueDataDownloaded = new CountDownLatch(1);
 
@@ -103,7 +103,11 @@ public class AppEngineCloudClient extends AbstractCloud {
             LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown at creation");
 
         String bugFiler = properties.getProperty("bugFiler");
-        this.bugFilingHelper = new BugFilingHelper(this, foo(bugFiler));
+        if (bugFiler == null) {
+            this.bugFilingHelper = null;
+        } else {
+            this.bugFilingHelper = new BugFilingHelper(this, foo(bugFiler));
+        }
     }
 
     /** package-private for testing */
@@ -371,6 +375,8 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     @Override
     public String getBugStatus(final BugInstance b) {
+        if (bugFilingHelper == null)
+            return null;
         final String hash = b.getInstanceHash();
         String status = bugStatusCache.get(hash);
         if (status != null) {
@@ -430,7 +436,7 @@ public class AppEngineCloudClient extends AbstractCloud {
 
     @Override
     public boolean supportsBugLinks() {
-        return bugFilingHelper.bugFilingAvailable();
+        return bugFilingHelper != null && bugFilingHelper.bugFilingAvailable();
     }
 
     public void bugFiled(BugInstance b, Object bugLink) {
