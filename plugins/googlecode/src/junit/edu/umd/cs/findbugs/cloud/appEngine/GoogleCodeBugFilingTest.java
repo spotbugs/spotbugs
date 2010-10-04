@@ -23,8 +23,10 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ComponentPlugin;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.BugFiler;
 import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudPluginBuilder;
 import junit.framework.TestCase;
 import org.mockito.Matchers;
@@ -38,9 +40,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class GoogleCodeBugFilingTest extends TestCase {
-    private WebCloudClient mockCloudClient;
-
-    private WebCloudNetworkClient mockNetworkClient;
+    private Cloud mockCloudClient;
 
     private GoogleCodeBugFiler filer;
 
@@ -59,13 +59,11 @@ public class GoogleCodeBugFilingTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mockCloudClient = mock(WebCloudClient.class);
+        mockCloudClient = mock(AbstractCloud.class);
         when(mockCloudClient.getPlugin()).thenReturn(
                 new CloudPluginBuilder().setCloudid("GoogleCodeBugFilingTest").setClassLoader(null).setCloudClass(null)
                         .setUsernameClass(null).setProperties(new PropertyBundle()).setDescription(null).setDetails(null)
                         .createCloudPlugin());
-        mockNetworkClient = mock(WebCloudNetworkClient.class);
-        when(mockCloudClient.getNetworkClient()).thenReturn(mockNetworkClient);
         projectHostingService = mock(ProjectHostingService.class);
         mockOAuthHelper = mock(GoogleOAuthHelper.class);
         mockGuiCallback = mock(IGuiCallback.class);

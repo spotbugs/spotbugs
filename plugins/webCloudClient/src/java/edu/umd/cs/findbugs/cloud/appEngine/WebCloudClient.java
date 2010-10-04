@@ -259,7 +259,7 @@ public class WebCloudClient extends AbstractCloud {
                     } catch (Exception e) {
                         getGuiCallback().showMessageDialog("Error while checking bugs against " + getCloudName()
                                 + "\n\n" + e.getMessage());
-                        LOGGER.log(Level.SEVERE, "Error while checking bugs against cloud in background", e);
+                        LOGGER.log(Level.SEVERE, "Error while checking bugs against cloud in background " , e);
                     }
                 }
             });
