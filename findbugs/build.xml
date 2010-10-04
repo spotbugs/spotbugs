@@ -652,11 +652,17 @@
     <!--
             <fileset dir="../sandbox/localCloud/src"/>
     -->
-            <fileset dir="${pluginsSrc.dir}/webCloudClient/src"/>
+            <fileset dir="../findbugsTestCases/src"/>
             <fileset dir="../webCloudProtocol/src"/>
+
+            <fileset dir="${pluginsSrc.dir}/webCloudClient/src"/>
+            <fileset dir="${pluginsSrc.dir}/jira/src"/>
+            <fileset dir="${pluginsSrc.dir}/googlecode/src"/>
+            <fileset dir="${pluginsSrc.dir}/jdbcCloudClient/src"/>
+
             <fileset dir="${serverSrc.dir}/appengine/src"/>
             <fileset dir="${serverSrc.dir}/common/src"/>
-            <fileset dir="../findbugsTestCases/src"/>
+
         </checkstyle>
     </target>
 
