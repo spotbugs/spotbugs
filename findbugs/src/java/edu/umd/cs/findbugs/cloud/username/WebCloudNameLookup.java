@@ -40,26 +40,26 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class WebCloudNameLookup implements NameLookup {
 
-    public static final String LOCAL_APPENGINE = "appengine.local";
+    public static final String LOCAL_APPENGINE = "webcloud.local";
 
-    public static final String APPENGINE_LOCALHOST_PROPERTY_NAME = "appengine.host.local";
+    public static final String APPENGINE_LOCALHOST_PROPERTY_NAME = "webcloud.host.local";
 
     public static final String APPENGINE_LOCALHOST_DEFAULT = "http://localhost:8080";
 
-    public static final String APPENGINE_HOST_PROPERTY_NAME = "appengine.host";
+    public static final String APPENGINE_HOST_PROPERTY_NAME = "webcloud.host";
 
     private static final Logger LOGGER = Logger.getLogger(WebCloudNameLookup.class.getName());
 
     /** if "true", prevents session info from being saved between launches. */
-    private static final String SYSPROP_NEVER_SAVE_SESSION = "appengine.never_save_session";
+    private static final String SYSPROP_NEVER_SAVE_SESSION = "webcloud.never_save_session";
 
-    private static final String SYSPROP_APPENGINE_LOCAL = "appengine.local";
+    private static final String SYSPROP_APPENGINE_LOCAL = "webcloud.local";
 
     private static final int USER_SIGNIN_TIMEOUT_SECS = 60;
 
     private static final String KEY_SAVE_SESSION_INFO = "save_session_info";
 
-    private static final String KEY_APPENGINECLOUD_SESSION_ID = "appenginecloud_session_id";
+    private static final String KEY_APPENGINECLOUD_SESSION_ID = "webcloud_session_id";
 
     private Long sessionId;
 

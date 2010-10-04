@@ -23,7 +23,7 @@ public class WebCloudCallbackTests extends AbstractWebCloudTest {
         setupResponseCodeAndOutputStream(findIssuesConn);
 
         // execution
-        final MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        final MockWebCloudClient cloud = createWebCloudClient(findIssuesConn);
         final CountDownLatch latch = new CountDownLatch(1);
         new Thread(new Runnable() {
             public void run() {
@@ -47,7 +47,7 @@ public class WebCloudCallbackTests extends AbstractWebCloudTest {
         setupResponseCodeAndOutputStream(findIssuesConn);
 
         // execution
-        final MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        final MockWebCloudClient cloud = createWebCloudClient(findIssuesConn);
         final AtomicBoolean doneWaiting = new AtomicBoolean(false);
         final CountDownLatch latch = addStatusListenerWaiter(cloud);
         new Thread(new Runnable() {
@@ -80,7 +80,7 @@ public class WebCloudCallbackTests extends AbstractWebCloudTest {
         Mockito.when(findIssuesConn.getOutputStream()).thenReturn(outputStream);
 
         // execution
-        final MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        final MockWebCloudClient cloud = createWebCloudClient(findIssuesConn);
         final CountDownLatch latch = addStatusListenerWaiter(cloud);
         final AtomicBoolean doneWaiting = new AtomicBoolean(false);
         new Thread(new Runnable() {
@@ -121,7 +121,7 @@ public class WebCloudCallbackTests extends AbstractWebCloudTest {
         setupResponseCodeAndOutputStream(uploadConnection);
 
         // execution
-        final MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConnection, logInConnection, uploadConnection);
+        final MockWebCloudClient cloud = createWebCloudClient(findIssuesConnection, logInConnection, uploadConnection);
         final AtomicBoolean doneWaiting = new AtomicBoolean(false);
 
         final CountDownLatch latch = addStatusListenerWaiter(cloud);
@@ -165,7 +165,7 @@ public class WebCloudCallbackTests extends AbstractWebCloudTest {
         setupResponseCodeAndOutputStream(findIssuesConn);
 
         // execution
-        final MockWebCloudClient cloud = createAppEngineCloudClient(findIssuesConn);
+        final MockWebCloudClient cloud = createWebCloudClient(findIssuesConn);
         final CountDownLatch latch = new CountDownLatch(1);
         cloud.addStatusListener(new Cloud.CloudStatusListener() {
             public void handleIssueDataDownloadedEvent() {

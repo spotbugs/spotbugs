@@ -18,7 +18,7 @@ public class WebCloudMiscTests extends AbstractWebCloudTest {
     }
 
     public void testGetLatestDesignationFromEachUser() throws Exception {
-        MockWebCloudClient cloud = createAppEngineCloudClient();
+        MockWebCloudClient cloud = createWebCloudClient();
         WebCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
         Mockito.when(spyNetworkClient.getIssueByHash("fad2")).thenReturn(
                 Issue.newBuilder()

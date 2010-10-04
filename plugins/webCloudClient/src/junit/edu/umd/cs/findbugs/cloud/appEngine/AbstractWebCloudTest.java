@@ -93,7 +93,7 @@ public abstract class AbstractWebCloudTest extends TestCase {
         return outputStream;
     }
 
-    protected MockWebCloudClient createAppEngineCloudClient(HttpURLConnection... connections) throws IOException {
+    protected MockWebCloudClient createWebCloudClient(HttpURLConnection... connections) throws IOException {
         if (addMissingIssue)
             bugCollection.add(missingIssue);
         bugCollection.add(foundIssue);

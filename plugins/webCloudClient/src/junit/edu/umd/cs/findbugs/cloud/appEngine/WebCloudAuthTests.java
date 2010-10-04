@@ -28,7 +28,7 @@ public class WebCloudAuthTests extends AbstractWebCloudTest {
     public void testSoftSignInFailSilently() throws Exception {
         final HttpURLConnection logInConn = mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
-        MockWebCloudClient cloud = createAppEngineCloudClient(logInConn);
+        MockWebCloudClient cloud = createWebCloudClient(logInConn);
         WebCloudNetworkClient networkClient = mock(WebCloudNetworkClient.class);
         cloud.setNetworkClient(networkClient);
 
@@ -43,7 +43,7 @@ public class WebCloudAuthTests extends AbstractWebCloudTest {
     public void testSoftSignInSkipWhenHeadless() throws Exception {
         final HttpURLConnection logInConn = mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
-        MockWebCloudClient cloud = createAppEngineCloudClient(logInConn);
+        MockWebCloudClient cloud = createWebCloudClient(logInConn);
         WebCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
 
         when(cloud.mockGuiCallback.isHeadless()).thenReturn(true);
@@ -56,7 +56,7 @@ public class WebCloudAuthTests extends AbstractWebCloudTest {
     public void testSoftSignInSucceed() throws Exception {
         final HttpURLConnection logInConn = mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
-        MockWebCloudClient cloud = createAppEngineCloudClient(logInConn);
+        MockWebCloudClient cloud = createWebCloudClient(logInConn);
         WebCloudNetworkClient networkClient = mock(WebCloudNetworkClient.class);
         cloud.setNetworkClient(networkClient);
 
@@ -71,7 +71,7 @@ public class WebCloudAuthTests extends AbstractWebCloudTest {
     public void testSoftSignInFailLoudly() throws Exception {
         final HttpURLConnection logInConn = mock(HttpURLConnection.class);
         setupResponseCodeAndOutputStream(logInConn);
-        MockWebCloudClient cloud = createAppEngineCloudClient(logInConn);
+        MockWebCloudClient cloud = createWebCloudClient(logInConn);
         WebCloudNetworkClient networkClient = mock(WebCloudNetworkClient.class);
         cloud.setNetworkClient(networkClient);
 
@@ -90,7 +90,7 @@ public class WebCloudAuthTests extends AbstractWebCloudTest {
         setupResponseCodeAndOutputStream(signOutConn);
 
         // execution
-        MockWebCloudClient cloud = createAppEngineCloudClient(signInConn, signOutConn);
+        MockWebCloudClient cloud = createWebCloudClient(signInConn, signOutConn);
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         final List<String> states = new ArrayList<String>();
         cloud.addStatusListener(new Cloud.CloudStatusListener() {
@@ -121,7 +121,7 @@ public class WebCloudAuthTests extends AbstractWebCloudTest {
         ByteArrayOutputStream findIssuesOutput = setupResponseCodeAndOutputStream(signInConn);
 
         // execution
-        MockWebCloudClient cloud = createAppEngineCloudClient(signInConn);
+        MockWebCloudClient cloud = createWebCloudClient(signInConn);
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.initialize();
         cloud.signIn();
@@ -141,7 +141,7 @@ public class WebCloudAuthTests extends AbstractWebCloudTest {
         setupResponseCodeAndOutputStream(signInConn);
 
         // execution
-        MockWebCloudClient cloud = createAppEngineCloudClient(signInConn);
+        MockWebCloudClient cloud = createWebCloudClient(signInConn);
         WebCloudNetworkClient spyNetworkClient = cloud.createSpyNetworkClient();
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.initialize();
@@ -171,7 +171,7 @@ public class WebCloudAuthTests extends AbstractWebCloudTest {
         setupResponseCodeAndOutputStream(signOutConn);
 
         // execution
-        MockWebCloudClient cloud = createAppEngineCloudClient(signInConn, signOutConn);
+        MockWebCloudClient cloud = createWebCloudClient(signInConn, signOutConn);
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.initialize();
         cloud.signIn();
