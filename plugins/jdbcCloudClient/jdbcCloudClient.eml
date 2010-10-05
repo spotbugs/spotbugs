@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component>
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$">
+		<excludeFolder url="file://$MODULE_DIR$/build/classes"/>
+		<excludeFolder url="file://$MODULE_DIR$/build/classes"/>
+	</contentEntry>
+	<lib name="mysql-connector-java-5.1.13-bin.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/jdbcCloudClient/lib/mysql-connector-java-5.1.13-bin.jar!/"/>
+	</lib>
+</component>
