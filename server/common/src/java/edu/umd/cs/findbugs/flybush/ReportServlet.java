@@ -90,7 +90,7 @@ public class ReportServlet extends AbstractFlybushServlet {
             desiredPackage = "";
 
         Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName()
-                + " where packages.contains(:pkg)" + " order by when");
+                + " where packages.contains(:pkg)" + " order by when asc");
         List<DbEvaluation> evals = (List<DbEvaluation>) query.execute(desiredPackage);
 
         Map<Long, Integer> evalsPerWeek = Maps.newHashMap();

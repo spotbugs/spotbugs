@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.Join;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
@@ -29,7 +30,7 @@ public class LocalDbEvaluation implements DbEvaluation {
     @Persistent private LocalDbIssue issue;
     @Persistent private long when;
     @Persistent private String primaryClass;
-    @Persistent(serialized = "false", serializedElement = "false") private Set<String> packages;
+    @Persistent @Join private Set<String> packages;
 
     public Comparable<?> getWho() {
         return who;
