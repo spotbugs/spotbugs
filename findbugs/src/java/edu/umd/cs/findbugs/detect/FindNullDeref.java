@@ -129,7 +129,7 @@ import edu.umd.cs.findbugs.visitclass.Util;
  * A Detector to find instructions where a NullPointerException might be raised.
  * We also look for useless reference comparisons involving null and non-null
  * values.
- * 
+ *
  * @author David Hovemeyer
  * @author William Pugh
  * @see edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis
@@ -275,7 +275,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     /**
      * Find set of blocks which were known to be dead before doing the null
      * pointer analysis.
-     * 
+     *
      * @return set of previously dead blocks, indexed by block id
      * @throws CFGBuilderException
      * @throws DataflowAnalysisException
@@ -309,7 +309,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
     /**
      * See if the currently-visited method declares a
-     * 
+     *
      * @NonNull annotation, or overrides a method which declares a
      * @NonNull annotation.
      */
@@ -769,7 +769,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     /**
      * We have a method invocation in which a possibly or definitely null
      * parameter is passed. Check it against the library of nonnull annotations.
-     * 
+     *
      * @param location
      * @param cpg
      * @param typeDataflow
@@ -844,6 +844,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
      *             {@link #foundNullDeref(Location,ValueNumber,IsNullValue,ValueNumberFrame,boolean)}
      *             instead
      */
+    @Deprecated
     public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame) {
         foundNullDeref(location, valueNumber, refValue, vnaFrame, true);
     }
@@ -1175,7 +1176,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
     /**
      * Determine whether or not given instruction is a goto.
-     * 
+     *
      * @param instruction
      *            the instruction
      * @return true if the instruction is a goto, false otherwise
@@ -1202,7 +1203,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeedu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector#
      * foundGuaranteedNullDeref(java.util.Set, java.util.Set,
      * edu.umd.cs.findbugs.ba.vna.ValueNumber, boolean)
@@ -1425,6 +1426,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             bugInstance.describe("FIELD_CONTAINS_VALUE");
 
         addPropertiesForDereferenceLocations(propertySet, derefLocationSet, false);
+        
+        if (deref.isAlwaysOnExceptionPath())
+            propertySet.addProperty(NullDerefProperty.ALWAYS_ON_EXCEPTION_PATH);
 
         if (!assignedNullLocationSet.isEmpty() && distance > 100)
             propertySet.addProperty(NullDerefProperty.LONG_RANGE_NULL_SOURCE);
@@ -1477,6 +1481,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     private void addPropertiesForDereferenceLocations(WarningPropertySet<WarningProperty> propertySet,
             Collection<Location> derefLocationSet, boolean isConsistent) {
         boolean derefOutsideCatchBlock = false;
+
         boolean derefOutsideCatchNullBlock = false;
         boolean allDerefsAtDoomedLocations = true;
 
