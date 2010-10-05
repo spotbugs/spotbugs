@@ -161,47 +161,54 @@ public class DeepSubtypeAnalysis {
 
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
-        double confidence = 0.6;
         Set<ClassDescriptor> directSubtypes = subtypes2.getDirectSubtypes(classDescriptor);
         directSubtypes.remove(classDescriptor);
 
+
+        double confidence = 0.6;
         if (x.isAbstract() || x.isInterface()) {
             confidence = 0.8;
             result = Math.max(result, 0.4);
         } else if (directSubtypes.isEmpty())
             confidence = 0.2;
 
-        for (ClassDescriptor subtype : directSubtypes) {
-            JavaClass subJavaClass = Repository.lookupClass(subtype.getDottedClassName());
-            result = Math.max(result, confidence * isDeepSerializable(subJavaClass));
-        }
-        if (result >= 0.9) {
-            return result;
-        }
-
-        confidence = (1 + confidence) / 2;
-        result = Math.max(result, confidence * collectionResult);
+        double confidence2 = (1 + confidence) / 2;
+        result = Math.max(result, confidence2 * collectionResult);
         if (result >= 0.9) {
             if (DEBUG) {
                 System.out.println("High collection result: " + result);
             }
             return result;
         }
-        result = Math.max(result, confidence * mapResult);
+        result = Math.max(result, confidence2 * mapResult);
         if (result >= 0.9) {
             if (DEBUG) {
                 System.out.println("High map result: " + result);
             }
             return result;
         }
-        result = Math.max(result, confidence * 0.5 * Analyze.deepInstanceOf(x, comparator));
+        result = Math.max(result, confidence2 * 0.5 * Analyze.deepInstanceOf(x, comparator));
         if (result >= 0.9) {
             if (DEBUG) {
                 System.out.println("High comparator result: " + result);
             }
             return result;
         }
-        if (DEBUG) {
+
+
+
+        for (ClassDescriptor subtype : directSubtypes) {
+            JavaClass subJavaClass = Repository.lookupClass(subtype.getDottedClassName());
+            result = Math.max(result, confidence * Analyze.deepInstanceOf(subJavaClass, serializable));
+
+            // result = Math.max(result, confidence * isDeepSerializable(subJavaClass));
+            if (result >= 0.9) {
+                return result;
+            }
+        }
+
+
+          if (DEBUG) {
             System.out.println("No high results; max: " + result);
         }
         return result;
@@ -211,7 +218,7 @@ public class DeepSubtypeAnalysis {
      * Given two JavaClasses, try to estimate the probability that an reference
      * of type x is also an instance of type y. Will return 0 only if it is
      * impossible and 1 only if it is guaranteed.
-     * 
+     *
      * @param x
      *            Known type of object
      * @param y
@@ -227,7 +234,7 @@ public class DeepSubtypeAnalysis {
      * Given two JavaClasses, try to estimate the probability that an reference
      * of type x is also an instance of type y. Will return 0 only if it is
      * impossible and 1 only if it is guaranteed.
-     * 
+     *
      * @param x
      *            Known type of object
      * @param y
