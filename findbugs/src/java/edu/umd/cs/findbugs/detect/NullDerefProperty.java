@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.props.PriorityAdjustment;
 /**
  * Warning properties for null pointer dereference and redundant null comparison
  * warnings.
- * 
+ *
  * @author David Hovemeyer
  */
 public class NullDerefProperty extends AbstractWarningProperty {
@@ -39,6 +39,10 @@ public class NullDerefProperty extends AbstractWarningProperty {
 
     /** Redundant null comparison is of a checked null value. */
     public static final NullDerefProperty LONG_RANGE_NULL_SOURCE = new NullDerefProperty("LONG_RANGE_NULL_SOURCE",
+            PriorityAdjustment.AT_MOST_MEDIUM);
+
+    /** dereference always on exception path */
+    public static final NullDerefProperty ALWAYS_ON_EXCEPTION_PATH = new NullDerefProperty("ALWAYS_ON_EXCEPTION_PATH",
             PriorityAdjustment.AT_MOST_MEDIUM);
 
     /** Redundant nullcheck of previously dereferenced value. */
