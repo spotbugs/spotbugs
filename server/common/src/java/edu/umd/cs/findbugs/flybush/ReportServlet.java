@@ -234,7 +234,7 @@ public class ReportServlet extends AbstractFlybushServlet {
     private void showUserStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm, String email)
             throws IOException {
         Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName()
-                + " where email == :email order by when");
+                + " where email == :email order by when asc");
         List<DbEvaluation> evals = (List<DbEvaluation>) query.execute(email);
         if (evals.isEmpty()) {
             setResponse(resp, 404, "No such user");

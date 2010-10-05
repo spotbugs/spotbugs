@@ -20,6 +20,8 @@ import com.dyuproject.openid.RelyingParty;
 import com.dyuproject.openid.ext.AxSchemaExtension;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
+
 @SuppressWarnings("serial")
 public class AuthServlet extends AbstractFlybushServlet {
 
@@ -102,7 +104,8 @@ public class AuthServlet extends AbstractFlybushServlet {
         writer.println("<h1>You are now signed in</h1>");
         writer.println("<p style='font-size: large; font-weight: bold'>"
                 + "Please return to the FindBugs application window to continue.</p>");
-        writer.println("<p style='font-style: italic'>Signed in as <strong>" + email + "</strong> (" + openidUrl + ")</p>");
+        writer.println("<p style='font-style: italic'>Signed in as <strong>" + escapeHtml(email) + "</strong> ("
+                + escapeHtml(openidUrl) + ")</p>");
     }
 
     private DbUser createAndStoreUser(PersistenceManager pm, String openidUrl, String email) {

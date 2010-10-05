@@ -1,20 +1,5 @@
 package edu.umd.cs.findbugs.flybush;
 
-import com.dyuproject.openid.OpenIdUser;
-import com.dyuproject.openid.ext.AxSchemaExtension;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import junit.framework.TestCase;
-import org.junit.Assert;
-import org.mockito.Mockito;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,6 +8,26 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.dyuproject.openid.OpenIdUser;
+import com.dyuproject.openid.ext.AxSchemaExtension;
+import com.google.common.collect.Maps;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
+import junit.framework.TestCase;
+import org.junit.Assert;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil.decodeHash;
 
@@ -137,7 +142,23 @@ public abstract class AbstractFlybushServletTest extends TestCase {
     // ===============================
 
     protected void prepareRequestAndResponse(String requestUri, byte[] input) throws IOException {
-        Mockito.when(mockRequest.getRequestURI()).thenReturn(requestUri);
+        int qpos = requestUri.indexOf('?');
+        final Map<String,String> params = Maps.newHashMap();
+        String actualUri;
+        if (qpos == -1) {
+            actualUri = requestUri;
+        } else {
+            actualUri = requestUri.substring(0, qpos);
+            String paramstr = requestUri.substring(qpos+1);
+            parseParams(params, paramstr);
+        }
+        Mockito.when(mockRequest.getRequestURI()).thenReturn(actualUri);
+        Mockito.when(mockRequest.getParameter(Matchers.<String>any())).thenAnswer(new Answer<String>() {
+            public String answer(InvocationOnMock inv) throws Throwable {
+                String key = (String) inv.getArguments()[0];
+                return params.get(key);
+            }
+        });
         if (input != null) {
             final ByteArrayInputStream inputStream = new ByteArrayInputStream(input);
             Mockito.when(mockRequest.getInputStream()).thenReturn(new ServletInputStream() {
@@ -149,8 +170,23 @@ public abstract class AbstractFlybushServletTest extends TestCase {
         }
     }
 
-    @SuppressWarnings({ "unchecked" })
+    private void parseParams(Map<String, String> params, String paramstr) {
+        for (String pair : paramstr.split("&")) {
+            int epos = pair.indexOf("=");
+            if (epos == -1) {
+                params.put(pair, "");
+            } else {
+                params.put(pair.substring(0, epos), pair.substring(epos + 1));
+            }
+        }
+    }
+
     protected DbEvaluation createEvaluation(DbIssue issue, String who, long when) {
+        return createEvaluation(issue, who, when, "MUST_FIX", "my comment");
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    protected DbEvaluation createEvaluation(DbIssue issue, String who, long when, String designation, String comment) {
         DbUser user;
         Query query = getPersistenceManager().newQuery(
                 "select from " + persistenceHelper.getDbUserClass().getName() + " where openid == :myopenid");
@@ -164,8 +200,8 @@ public abstract class AbstractFlybushServletTest extends TestCase {
         }
         query.closeAll();
         DbEvaluation eval = persistenceHelper.createDbEvaluation();
-        eval.setComment("my comment");
-        eval.setDesignation("MUST_FIX");
+        eval.setComment(comment);
+        eval.setDesignation(designation);
         eval.setIssue(issue);
         eval.setWhen(when);
         eval.setWho(user.createKeyObject());

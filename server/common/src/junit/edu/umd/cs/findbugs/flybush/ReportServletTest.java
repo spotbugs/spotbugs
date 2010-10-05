@@ -275,6 +275,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         List<DbIssue> issues = Lists.newArrayList();
         for (int i = 0; i < 30; i++) {
             DbIssue issue = createDbIssue("fad2");
+            issue.setHash("fad" + i);
             issue.setPrimaryClass("edu.umd.cs.findbugs.sub" + i + ".MyClass");
             for (int j = 0; j < i; j++)
                 createEvaluation(issue, "someone", days(j));

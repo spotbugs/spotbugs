@@ -44,6 +44,10 @@
         <servlet-class>edu.umd.cs.findbugs.flybush.UpdateServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>WebPageServlet</servlet-name>
+        <servlet-class>edu.umd.cs.findbugs.flybush.WebPageServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>ReportServlet</servlet-name>
         <servlet-class>edu.umd.cs.findbugs.flybush.ReportServlet</servlet-class>
     </servlet>
@@ -76,6 +80,10 @@
         <url-pattern>/expire-sql-sessions</url-pattern>
         <url-pattern>/update-evaluation-emails</url-pattern>
         <url-pattern>/update-db-jun29</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>WebPageServlet</servlet-name>
+        <url-pattern>/issues/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReportServlet</servlet-name>

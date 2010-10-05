@@ -338,6 +338,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
                 setResponse(resp, 404, "no such issue " + WebCloudProtoUtil.decodeHash(uploadEvalMsg.getHash()));
                 return;
             }
+            LOGGER.info("Bug: " + issue.getHash() + " - " + issue.getPrimaryClass());
             dbEvaluation.setIssue(issue);
             issue.addEvaluation(dbEvaluation);
             dbEvaluation.setPrimaryClass(issue.getPrimaryClass());

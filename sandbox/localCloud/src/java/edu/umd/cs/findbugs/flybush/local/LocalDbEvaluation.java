@@ -29,7 +29,7 @@ public class LocalDbEvaluation implements DbEvaluation {
     @Persistent private LocalDbIssue issue;
     @Persistent private long when;
     @Persistent private String primaryClass;
-    @Persistent private Set<String> packages;
+    @Persistent(serialized = "false", serializedElement = "false") private Set<String> packages;
 
     public Comparable<?> getWho() {
         return who;
