@@ -13,6 +13,33 @@
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
+  <component name="FacetAutodetectingManager">
+    <autodetection-disabled>
+      <facet-type id="web">
+        <modules>
+          <module name="localCloud">
+            <files>
+              <file url="file://$PROJECT_DIR$/sandbox/localCloud/war/WEB-INF/web.xml" />
+            </files>
+          </module>
+          <module name="webCloudServerAppEngine">
+            <files>
+              <file url="file://$PROJECT_DIR$/server/appengine/war/WEB-INF/web.xml" />
+            </files>
+          </module>
+        </modules>
+      </facet-type>
+      <facet-type id="google-app-engine">
+        <modules>
+          <module name="webCloudServerAppEngine">
+            <files>
+              <file url="file://$PROJECT_DIR$/server/appengine/war/WEB-INF/appengine-web.xml" />
+            </files>
+          </module>
+        </modules>
+      </facet-type>
+    </autodetection-disabled>
+  </component>
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
     <option name="OPTION_SCOPE" value="protected" />
