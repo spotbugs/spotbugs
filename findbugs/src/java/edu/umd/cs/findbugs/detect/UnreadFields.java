@@ -183,6 +183,9 @@ public class UnreadFields extends OpcodeStackDetector {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
         AnalysisContext context = AnalysisContext.currentAnalysisContext();
+        reflectiveFields.add( XFactory.createXField("java.lang.System", "in", "Ljava/io/InputStream;", true));
+        reflectiveFields.add( XFactory.createXField("java.lang.System", "out", "Ljava/io/PrintStream;", true));
+        reflectiveFields.add( XFactory.createXField("java.lang.System", "err", "Ljava/io/PrintStream;", true));
         context.setUnreadFields(this);
     }
 

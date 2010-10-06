@@ -44,27 +44,28 @@ import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Interprocedural analysis summary
- * 
+ *
  * @author pugh
  */
 public class FieldSummary {
-    private Set<XField> writtenOutsideOfConstructor = new HashSet<XField>();
+    private final Set<XField> writtenOutsideOfConstructor = new HashSet<XField>();
 
-    private Map<XField, OpcodeStack.Item> summary = new HashMap<XField, OpcodeStack.Item>();
+    private final Map<XField, OpcodeStack.Item> summary = new HashMap<XField, OpcodeStack.Item>();
 
-    private Map<XMethod, Set<XField>> fieldsWritten = new HashMap<XMethod, Set<XField>>();
+    private final Map<XMethod, Set<XField>> fieldsWritten = new HashMap<XMethod, Set<XField>>();
 
-    private Map<XMethod, XMethod> nonVoidSuperConstructorsCalled = new HashMap<XMethod, XMethod>();
+    private final Map<XMethod, XMethod> nonVoidSuperConstructorsCalled = new HashMap<XMethod, XMethod>();
 
-    private Map<XMethod, Set<ProgramPoint>> selfMethodsCalledFromConstructor = new HashMap<XMethod, Set<ProgramPoint>>();
+    private final Map<XMethod, Set<ProgramPoint>> selfMethodsCalledFromConstructor = new HashMap<XMethod, Set<ProgramPoint>>();
 
-    private Set<ClassDescriptor> callsOverriddenMethodsFromConstructor = new HashSet<ClassDescriptor>();
+    private final Set<ClassDescriptor> callsOverriddenMethodsFromConstructor = new HashSet<ClassDescriptor>();
 
     private boolean complete = false;
 
     public OpcodeStack.Item getSummary(XField field) {
         if (field == null)
             return new OpcodeStack.Item();
+
         OpcodeStack.Item result = summary.get(field);
         if (result == null || field.isVolatile()) {
             String signature = field.getSignature();
@@ -200,7 +201,13 @@ public class FieldSummary {
         if (isComplete()) {
             for (Iterator<Map.Entry<XField, OpcodeStack.Item>> i = summary.entrySet().iterator(); i.hasNext();) {
                 Map.Entry<XField, OpcodeStack.Item> entry = i.next();
-                OpcodeStack.Item defaultItem = new OpcodeStack.Item(entry.getKey().getSignature());
+                XField f = entry.getKey();
+                if ( AnalysisContext.currentXFactory().isReflectiveClass(f.getClassDescriptor())) {
+                    i.remove();
+                    removed++;
+                    continue;
+                }
+                OpcodeStack.Item defaultItem = new OpcodeStack.Item(f.getSignature());
                 fields++;
                 Item value = entry.getValue();
                 value.makeCrossMethod();
