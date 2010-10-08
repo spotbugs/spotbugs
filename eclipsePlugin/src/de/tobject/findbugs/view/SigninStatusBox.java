@@ -25,7 +25,7 @@ import de.tobject.findbugs.FindbugsPlugin;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.CloudStatusListener;
 import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
-import edu.umd.cs.findbugs.cloud.username.AppEngineNameLookup;
+import edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup;
 
 public class SigninStatusBox extends Composite {
     private final CloudStatusListener cloudStatusListener;
@@ -108,12 +108,12 @@ public class SigninStatusBox extends Composite {
         automaticCheckbox.setText("Sign in automatically");
         SigninState state = cloud.getSigninState();
         automaticCheckbox.setEnabled(state != SigninState.NO_SIGNIN_REQUIRED);
-        final boolean origSelection = AppEngineNameLookup.isSavingSessionInfoEnabled();
+        final boolean origSelection = WebCloudNameLookup.isSavingSessionInfoEnabled();
         automaticCheckbox.setSelection(origSelection);
         automaticCheckbox.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                AppEngineNameLookup.setSaveSessionInformation(!origSelection);
+                WebCloudNameLookup.setSaveSessionInformation(!origSelection);
             }
         });
 
