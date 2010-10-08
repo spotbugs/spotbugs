@@ -49,7 +49,7 @@ import edu.umd.cs.findbugs.util.MapCache;
 /**
  * Implementation of IAnalysisCache. This object is responsible for registering
  * class and method analysis engines and caching analysis results.
- * 
+ *
  * @author David Hovemeyer
  */
 public class AnalysisCache implements IAnalysisCache {
@@ -130,17 +130,13 @@ public class AnalysisCache implements IAnalysisCache {
 
     static final AbnormalAnalysisResult NULL_ANALYSIS_RESULT = new AbnormalAnalysisResult();
 
-    @SuppressWarnings("unchecked")
     static <E> E checkedCast(Class<E> analysisClass, Object o) {
-        if (ASSERTIONS_ENABLED) {
-            return analysisClass.cast(o);
-        }
-        return (E) o;
+        return analysisClass.cast(o);
     }
 
     /**
      * Constructor.
-     * 
+     *
      * @param classPath
      *            the IClassPath to load resources from
      * @param errorLogger
@@ -158,7 +154,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getClassPath()
      */
     public IClassPath getClassPath() {
@@ -196,7 +192,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisCache#getClassAnalysis(java.lang
      * .Class, edu.umd.cs.findbugs.classfile.ClassDescriptor)
@@ -266,7 +262,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisCache#probeClassAnalysis(java.
      * lang.Class, edu.umd.cs.findbugs.classfile.ClassDescriptor)
@@ -285,7 +281,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisCache#getMethodAnalysis(java.lang
      * .Class, edu.umd.cs.findbugs.classfile.MethodDescriptor)
@@ -325,7 +321,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     /**
      * Analyze a method.
-     * 
+     *
      * @param classContext
      *            ClassContext storing method analysis objects for method's
      *            class
@@ -354,7 +350,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisCache#eagerlyPutMethodAnalysis
      * (java.lang.Class, edu.umd.cs.findbugs.classfile.MethodDescriptor,
@@ -374,7 +370,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisCache#purgeMethodAnalyses(edu.
      * umd.cs.findbugs.classfile.MethodDescriptor)
@@ -393,7 +389,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     /**
      * Find or create a descriptor to analysis object map.
-     * 
+     *
      * @param <DescriptorType>
      *            type of descriptor used as the map's key type (ClassDescriptor
      *            or MethodDescriptor)
@@ -434,7 +430,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisCache#registerClassAnalysisEngine
      * (java.lang.Class, edu.umd.cs.findbugs.classfile.IClassAnalysisEngine)
@@ -445,7 +441,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisCache#registerMethodAnalysisEngine
      * (java.lang.Class, edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine)
@@ -456,7 +452,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisCache#registerDatabaseFactory(
      * java.lang.Class, edu.umd.cs.findbugs.classfile.IDatabaseFactory)
@@ -467,7 +463,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisCache#getDatabase(java.lang.Class)
      */
@@ -503,7 +499,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisCache#eagerlyPutDatabase(java.
      * lang.Class, java.lang.Object)
@@ -514,7 +510,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getErrorLogger()
      */
     public IErrorLogger getErrorLogger() {
@@ -523,7 +519,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getProfiler()
      */
     public Profiler getProfiler() {
