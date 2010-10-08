@@ -6,7 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/webCloudProtocol"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
-	<classpathentry kind="lib" path="lib/google-collect-1.0-rc1.jar"/>
 	<classpathentry kind="lib" path="test-lib/mockito-all-1.8.2.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
