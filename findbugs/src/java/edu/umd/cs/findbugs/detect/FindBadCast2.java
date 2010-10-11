@@ -52,13 +52,13 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 
 public class FindBadCast2 implements Detector {
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
-    private Set<String> concreteCollectionClasses = new HashSet<String>();
+    private final Set<String> concreteCollectionClasses = new HashSet<String>();
 
-    private Set<String> abstractCollectionClasses = new HashSet<String>();
+    private final Set<String> abstractCollectionClasses = new HashSet<String>();
 
-    private Set<String> veryAbstractCollectionClasses = new HashSet<String>();
+    private final Set<String> veryAbstractCollectionClasses = new HashSet<String>();
 
     private static final boolean DEBUG = SystemProperties.getBoolean("bc.debug");
 
@@ -317,6 +317,8 @@ public class FindBadCast2 implements Detector {
             boolean isParameter = paramValueNumberSet.contains(valueNumber);
             BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber, vFrame,
                     "VALUE_OF");
+            BugAnnotation source = BugInstance.getSourceForTopStackValue(classContext, method, location);
+
             try {
                 JavaClass castJavaClass = Repository.lookupClass(castName);
                 JavaClass refJavaClass = Repository.lookupClass(refName);
@@ -366,7 +368,6 @@ public class FindBadCast2 implements Detector {
                             System.out.println("  prev is " + handle.getPrev());
                     }
                     if (!downcast && completeInformation || operandTypeIsExact) {
-                        BugAnnotation source = BugInstance.getSourceForTopStackValue(classContext, method, location);
                         String bugPattern;
                         if (isCast) {
                             if (downcast && operandTypeIsExact) {
@@ -383,7 +384,6 @@ public class FindBadCast2 implements Detector {
 
                         bugReporter.reportBug(new BugInstance(this, bugPattern, isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
                                 .addClassAndMethod(methodGen, sourceFile)
-
                                 .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(variable, source)
                                 .addSourceLine(sourceLineAnnotation));
                     } else if (isCast && rank < 0.9 && variable instanceof LocalVariableAnnotation
@@ -447,6 +447,15 @@ public class FindBadCast2 implements Detector {
 
                 }
             } catch (ClassNotFoundException e) {
+                if (isCast && refSig.equals("[Ljava/lang/Object;") && source instanceof MethodAnnotation
+                        && ((MethodAnnotation) source).getMethodName().equals("toArray")
+                        && ((MethodAnnotation) source).getMethodSignature().equals("()[Ljava/lang/Object;"))
+                    bugReporter.reportBug(new BugInstance(this,  "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY", isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
+                    .addClassAndMethod(methodGen, sourceFile)
+                    .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(variable, source)
+                    .addSourceLine(sourceLineAnnotation));
+
+
             }
         }
         accumulator.reportAccumulatedBugs();

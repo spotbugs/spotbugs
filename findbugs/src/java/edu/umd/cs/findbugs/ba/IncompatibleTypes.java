@@ -282,12 +282,12 @@ public class IncompatibleTypes {
         } else {
 
             // Look up the common subtypes of the two types. If the
-            // intersection does not contain at least one instantiable
+            // intersection does not contain at least one
             // class,
             // then issue a warning of the appropriate type.
             Set<ClassDescriptor> commonSubtypes = subtypes2.getTransitiveCommonSubtypes(lhsDescriptor, rhsDescriptor);
 
-            if (!containsAtLeastOneInstantiableClass(commonSubtypes)) {
+            if (commonSubtypes.isEmpty()) {
                 if (lhs.isFinal() || rhs.isFinal())
                     return UNRELATED_FINAL_CLASS_AND_INTERFACE;
                 if (lhsDescriptor.getClassName().startsWith("java/util/")
