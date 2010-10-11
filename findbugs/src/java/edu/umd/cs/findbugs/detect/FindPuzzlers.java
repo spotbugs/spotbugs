@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
+import java.util.IdentityHashMap;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -132,6 +134,27 @@ public class FindPuzzlers extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
+
+
+        if (seen == INVOKESPECIAL && getNameConstantOperand().equals("<init>") && getSigConstantOperand().equals("(Ljava/util/Collection;)V")
+                   && getClassConstantOperand().contains("Set")
+                   || (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) && getNameConstantOperand().equals("addAll") && getSigConstantOperand().equals("(Ljava/util/Collection;)Z")) {
+            OpcodeStack.Item top = stack.getStackItem(0);
+            XMethod returnValueOf = top.getReturnValueOf();
+            if (returnValueOf != null && returnValueOf.getName().equals("entrySet")) {
+                String name = returnValueOf.getClassName();
+                int priority = Priorities.LOW_PRIORITY;
+                if (name.equals("java.util.Map"))
+                    priority = Priorities.NORMAL_PRIORITY;
+                else if (name.equals(EnumMap.class.getName())
+                        || name.equals(IdentityHashMap.class.getName()))
+                    priority = Priorities.HIGH_PRIORITY;
+                bugReporter.reportBug(new BugInstance(this, "TESTING", priority)
+                .addClassAndMethod(this).addCalledMethod(this).addValueSource(top, this).addSourceLine(this));
+            }
+
+
+        }
 
         if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("hashCode") && getSigConstantOperand().equals("()I")
                 && stack.getStackDepth() > 0) {
