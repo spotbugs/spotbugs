@@ -10,9 +10,9 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Annotation indicating that <em>no</em> FindBugs warning is expected.
- * 
+ *
  * See http://code.google.com/p/findbugs/wiki/FindbugsTestCases
- * 
+ *
  * @author David Hovemeyer
  */
 @Retention(RetentionPolicy.CLASS)
@@ -22,5 +22,8 @@ public @interface NoWarning {
      * IL_INFINITE_LOOP) that should not be reported
      */
     public String value();
+
+    /** Want no warning at this priority or higher */
+    public Priority priority() default Priority.LOW;
 
 }

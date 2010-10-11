@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+import edu.umd.cs.findbugs.annotations.Priority;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -54,13 +55,14 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
+import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 
 /**
  * Check uses of the ExpectWarning and NoWarning annotations. This is for
  * internal testing of FindBugs (against findbugsTestCases).
- * 
+ *
  * @author David Hovemeyer
  */
 public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
@@ -68,7 +70,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 
     private BugReporter reporter;
 
-    private BugCollection bugCollection;
+    private final BugCollection bugCollection;
 
     private Set<String> possibleBugCodes;
 
@@ -178,10 +180,15 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                 System.out.println("*** Found " + annotation + " annotation");
             }
             String expectedBugCodes = (String) expect.getValue("value");
+            EnumValue wantedPriority = (EnumValue) expect.getValue("priority");
+            Priority minPriority = Priority.LOW;
+            if (wantedPriority != null)
+                minPriority = Priority.valueOf(wantedPriority.value);
+
             StringTokenizer tok = new StringTokenizer(expectedBugCodes, ",");
             while (tok.hasMoreTokens()) {
                 String bugCode = tok.nextToken();
-                Collection<SourceLineAnnotation> bugs = countWarnings(xmethod.getMethodDescriptor(), bugCode);
+                Collection<SourceLineAnnotation> bugs = countWarnings(xmethod.getMethodDescriptor(), bugCode, minPriority);
                 if (expectWarnings && bugs.isEmpty() && possibleBugCodes.contains(bugCode)) {
                     reporter.reportBug(new BugInstance(this, "FB_MISSING_EXPECTED_WARNING", priority).addClassAndMethod(
                             xmethod.getMethodDescriptor()).addString(bugCode));
@@ -194,7 +201,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         }
     }
 
-    private Collection<SourceLineAnnotation> countWarnings(MethodDescriptor methodDescriptor, String bugCode) {
+    private Collection<SourceLineAnnotation> countWarnings(MethodDescriptor methodDescriptor, String bugCode, Priority minPriority) {
         Collection<BugInstance> warnings = warningsByMethod.get(methodDescriptor);
         Collection<SourceLineAnnotation> matching = new HashSet<SourceLineAnnotation>();
         I18N i18n = I18N.instance();
@@ -207,6 +214,8 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 
         if (warnings != null) {
             for (BugInstance warning : warnings) {
+                if (warning.getPriority() > minPriority.getPriorityValue())
+                    continue;
                 BugPattern pattern = warning.getBugPattern();
                 String match;
                 if (matchPattern)

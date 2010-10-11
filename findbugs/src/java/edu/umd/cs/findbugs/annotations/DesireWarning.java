@@ -10,9 +10,9 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Annotation indicating that a FindBugs warning is desired.
- * 
+ *
  * See http://code.google.com/p/findbugs/wiki/FindbugsTestCases
- * 
+ *
  * @author David Hovemeyer
  */
 @Retention(RetentionPolicy.CLASS)
@@ -22,4 +22,7 @@ public @interface DesireWarning {
      * IL_INFINITE_LOOP) of the desired warning
      */
     public String value();
+
+    /** Want a warning at this priority or higher */
+    public Priority priority() default Priority.LOW;
 }
