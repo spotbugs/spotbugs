@@ -45,8 +45,10 @@ import edu.umd.cs.findbugs.JavaVersion;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -178,6 +180,13 @@ public class DumbMethods extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
+
+        if (seen == LCMP) {
+            OpcodeStack.Item left = stack.getStackItem(1);
+            OpcodeStack.Item right = stack.getStackItem(0);
+            checkForCompatibleLongComparison(left, right);
+            checkForCompatibleLongComparison(right, left);
+        }
 
         if (stack.getStackDepth() >= 2)
             switch (seen) {
@@ -624,7 +633,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 } else if (seen == DMUL)
                     randomNextIntState = 4;
                 else if (seen == LDC2_W && getConstantRefOperand() instanceof ConstantDouble
-                        && ((ConstantDouble) getConstantRefOperand()).getBytes() == (double) Integer.MIN_VALUE)
+                        && ((ConstantDouble) getConstantRefOperand()).getBytes() == Integer.MIN_VALUE)
                     randomNextIntState = 0;
                 else
                     randomNextIntState = 2;
@@ -882,6 +891,18 @@ public class DumbMethods extends OpcodeStackDetector {
         }
     }
 
+    private void checkForCompatibleLongComparison(OpcodeStack.Item left, OpcodeStack.Item right) {
+        if (left.getSpecialKind() == Item.RESULT_OF_I2L && right.getConstant() != null) {
+            long value = ((Number) right.getConstant()).longValue();
+            if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
+                accumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this)
+                        .addValueSource(left, this)
+                        .addString(Long.toString(value)).describe(StringAnnotation.STRING_NONSTRING_CONSTANT_ROLE)
+                        .addString("Incompatible comparison of result of I2L and long constant"), this);
+            }
+        }
+    }
+
     /**
      * @param seen
      * @param item
@@ -899,9 +920,9 @@ public class DumbMethods extends OpcodeStackDetector {
 
     /**
      * Return index of stack entry that must be nonnegative.
-     * 
+     *
      * Return -1 if no stack entry is required to be nonnegative.
-     * 
+     *
      * @param seen
      * @return
      */
