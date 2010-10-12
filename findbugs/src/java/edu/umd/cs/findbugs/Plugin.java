@@ -226,7 +226,7 @@ public class Plugin {
      * @return the DetectorFactory
      */
     public DetectorFactory getFactoryByShortName(final String shortName) {
-        return chooseFactory(new FactoryChooser() {
+        return findFirstMatchingFactory(new FactoryChooser() {
             public boolean choose(DetectorFactory factory) {
                 return factory.getShortName().equals(shortName);
             }
@@ -241,7 +241,7 @@ public class Plugin {
      * @return the DetectorFactory
      */
     public DetectorFactory getFactoryByFullName(final String fullName) {
-        return chooseFactory(new FactoryChooser() {
+        return findFirstMatchingFactory(new FactoryChooser() {
             public boolean choose(DetectorFactory factory) {
                 return factory.getFullName().equals(fullName);
             }
@@ -328,7 +328,7 @@ public class Plugin {
     }
 
     private @CheckForNull
-    DetectorFactory chooseFactory(FactoryChooser chooser) {
+    DetectorFactory findFirstMatchingFactory(FactoryChooser chooser) {
         for (DetectorFactory factory : getDetectorFactories()) {
             if (chooser.choose(factory))
                 return factory;
