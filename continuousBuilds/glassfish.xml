@@ -1,0 +1,29 @@
+<project name="glassfish">
+    <target name="download-nightly">
+        <mkdir dir="build"/>
+        <mkdir dir="build/glassfish"/>
+
+        <delete dir="build/latest-glassfish"/>
+
+        <get src="http://dlc.sun.com.edgesuite.net/glassfish/v3.1/nightly/latest-glassfish.zip" dest="build/latest-glassfish.zip"/>
+        <unzip src="build/latest-glassfish.zip" dest="build/latest-glassfish"/>
+    </target>
+
+    <target name="findbugs">
+        <property name="findbugs.home" value="../findbugs"/>
+        <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="../findbugs/lib/findbugs-ant.jar"/>
+        <findbugs home="../findbugs"
+                  jvmargs="-Xmx1024m"
+                  output="xml:withMessages"
+                  projectName="GlassFish"
+                  maxRank="18"
+                  timeout="1800000"
+                  outputFile="build/findbugs-result-glassfish.xml">
+            <!--
+                  cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
+                  jvmargs="-ea -Xmx900m -Dfindbugs.failIfCloudNotFound=true -Dfindbugs.cloud.token=238b6fc80cec17ec"
+                  -->
+            <class location="build/latest-glassfish/glassfish3/glassfish/modules/glassfish*.jar"/>
+        </findbugs>
+    </target>
+</project>
