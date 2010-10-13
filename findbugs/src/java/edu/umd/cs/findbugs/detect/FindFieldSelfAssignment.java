@@ -28,12 +28,14 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class FindFieldSelfAssignment extends OpcodeStackDetector implements StatelessDetector {
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     int state;
 
@@ -76,7 +78,13 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
                     String signature = stack.getLVValue(registerNumber).getSignature();
                     for (int i = 0; i < stack.getNumLocalValues(); i++)
                         if (i != register) {
-                            if (stack.getLVValue(i).getSignature().equals(signature)) {
+                            Item lvValue = stack.getLVValue(i);
+                            if (lvValue == null) {
+                                AnalysisContext.logError("Stack getLVValue " + i + " is null at PC " + getPC() + " in " + getFullyQualifiedMethodName(),
+                                        new RuntimeException());
+                                continue;
+                            }
+                            if (lvValue.getSignature().equals(signature)) {
                                 priority--;
                                 break;
                             }
