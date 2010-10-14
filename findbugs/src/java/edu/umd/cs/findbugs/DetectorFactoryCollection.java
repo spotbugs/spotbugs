@@ -58,22 +58,22 @@ import edu.umd.cs.findbugs.util.JavaWebStart;
  * The DetectorFactoryCollection stores all of the DetectorFactory objects used
  * to create the Detectors which implement the various analyses. It is a
  * singleton class.
- * 
+ *
  * @author David Hovemeyer
  * @see DetectorFactory
  */
 public class DetectorFactoryCollection {
-    private HashMap<String, Plugin> pluginByIdMap = new LinkedHashMap<String, Plugin>();
+    private final HashMap<String, Plugin> pluginByIdMap = new LinkedHashMap<String, Plugin>();
 
     private Plugin corePlugin;
 
     private BugRanker adjustmentBugRanker;
 
-    private ArrayList<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();
+    private final ArrayList<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();
 
-    private HashMap<String, DetectorFactory> factoriesByName = new HashMap<String, DetectorFactory>();
+    private final HashMap<String, DetectorFactory> factoriesByName = new HashMap<String, DetectorFactory>();
 
-    private HashMap<String, DetectorFactory> factoriesByDetectorClassName = new HashMap<String, DetectorFactory>();
+    private final HashMap<String, DetectorFactory> factoriesByDetectorClassName = new HashMap<String, DetectorFactory>();
 
     private static DetectorFactoryCollection theInstance;
 
@@ -95,7 +95,7 @@ public class DetectorFactoryCollection {
     /**
      * Set the list of plugins to load explicitly. This must be done before the
      * instance of DetectorFactoryCollection is created.
-     * 
+     *
      * @param pluginList
      *            list of plugin Jar files to load
      */
@@ -122,7 +122,7 @@ public class DetectorFactoryCollection {
 
     /**
      * Set the instance that should be returned as the singleton instance.
-     * 
+     *
      * @param instance
      *            the singleton instance to be set
      */
@@ -141,7 +141,7 @@ public class DetectorFactoryCollection {
      * <b>Implementation note:</b> This method is public only to allow Eclipse
      * plugin install and uninstall additional bug detector packages without
      * restarting the JVM
-     * 
+     *
      * @param instance
      *            can be null
      */
@@ -213,7 +213,7 @@ public class DetectorFactoryCollection {
 
     /**
      * Get a Plugin by its unique id.
-     * 
+     *
      * @param pluginId
      *            the unique id
      * @return the Plugin with that id, or null if no such Plugin is found
@@ -243,7 +243,7 @@ public class DetectorFactoryCollection {
 
     /**
      * Look up a DetectorFactory by its short name.
-     * 
+     *
      * @param name
      *            the short name
      * @return the DetectorFactory, or null if there is no factory with that
@@ -256,7 +256,7 @@ public class DetectorFactoryCollection {
 
     /**
      * Look up a DetectorFactory by its class name.
-     * 
+     *
      * @param className
      *            the class name
      * @return the DetectoryFactory, or null if there is no factory with that
@@ -281,7 +281,7 @@ public class DetectorFactoryCollection {
 
     /**
      * Look for a name in the list of explicitly specified plugin files
-     * 
+     *
      * @param name
      *            must match the suffix of the URL path
      */
@@ -342,7 +342,7 @@ public class DetectorFactoryCollection {
     /**
      * See if the location of ${findbugs.home} can be inferred from the location
      * of findbugs.jar in the classpath.
-     * 
+     *
      * @return inferred ${findbugs.home}, or null if we can't figure it out
      */
     private static String inferFindBugsHome() {
@@ -406,7 +406,7 @@ public class DetectorFactoryCollection {
     /**
      * Directly set the collection of Plugins from which to load
      * DetectorFactories. May be called instead of loadPlugins().
-     * 
+     *
      * @param plugins
      *            array of Plugins to register
      */
