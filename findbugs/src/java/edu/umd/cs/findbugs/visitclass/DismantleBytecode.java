@@ -74,7 +74,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     private int[] switchLabels;
 
-    private int[] prevOpcode = new int[32];
+    private final int[] prevOpcode = new int[32];
 
     private int currentPosInPrevOpcodeBuffer;
 
@@ -328,7 +328,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     public int getIntConstant() {
         return intConstant;
     }
-
+    public long getLongConstant() {
+        return longConstant;
+    }
     public int getBranchOffset() {
         if (branchOffset == INVALID_OFFSET)
             throw new IllegalStateException("getBranchOffset called but value not available");
@@ -363,7 +365,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     /**
      * return previous opcode;
-     * 
+     *
      * @param offset
      *            0 for current opcode, 1 for one before that, etc.
      */
@@ -384,7 +386,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     /**
      * Return whether or not given opcode is a branch instruction.
-     * 
+     *
      * @param opcode
      *            the opcode
      * @return true if instruction is a branch, false if not
@@ -396,7 +398,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     /**
      * Return whether or not given opcode is a switch instruction.
-     * 
+     *
      * @param opcode
      *            the opcode
      * @return true if instruction is a switch, false if not

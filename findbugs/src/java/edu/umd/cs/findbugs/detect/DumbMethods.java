@@ -28,7 +28,10 @@ import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
+import org.apache.bcel.classfile.ConstantLong;
 import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantValue;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Synthetic;
@@ -108,6 +111,9 @@ public class DumbMethods extends OpcodeStackDetector {
 
     private final BugAccumulator accumulator;
 
+    private static final int MICROS_PER_DAY_OVERFLOWED_AS_INT
+            = 24 * 60 * 60 * 1000 * 1000;
+
     public DumbMethods(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         accumulator = new BugAccumulator(bugReporter);
@@ -140,6 +146,20 @@ public class DumbMethods extends OpcodeStackDetector {
         return method.getName().startsWith("test");
     }
 
+    @Override
+    public void visit(Field field) {
+        ConstantValue value = field.getConstantValue();
+        if (value == null) return;
+        Constant c = getConstantPool().getConstant(value.getConstantValueIndex());
+
+        if (c instanceof ConstantLong && ((ConstantLong)c).getBytes()  == MICROS_PER_DAY_OVERFLOWED_AS_INT) {
+            bugReporter.reportBug( new BugInstance(this, "TESTING", HIGH_PRIORITY).addClass(this).addField(this)
+            .addString("Did you mean MICROS_PER_DAY")
+            .addInt(MICROS_PER_DAY_OVERFLOWED_AS_INT)
+            .describe(IntAnnotation.INT_VALUE));
+
+        }
+    }
     @Override
     public void visit(Method method) {
         String cName = getDottedClassName();
@@ -180,6 +200,17 @@ public class DumbMethods extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
+
+
+        if ((seen == LDC || seen == LDC_W) && getIntConstant() == MICROS_PER_DAY_OVERFLOWED_AS_INT
+                || seen == LDC2_W && getLongConstant() == MICROS_PER_DAY_OVERFLOWED_AS_INT) {
+            accumulator.accumulateBug( new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(this)
+            .addString("Did you mean MICROS_PER_DAY")
+            .addInt(MICROS_PER_DAY_OVERFLOWED_AS_INT)
+            .describe(IntAnnotation.INT_VALUE),
+            this);
+        }
+
 
         if (seen == LCMP) {
             OpcodeStack.Item left = stack.getStackItem(1);
