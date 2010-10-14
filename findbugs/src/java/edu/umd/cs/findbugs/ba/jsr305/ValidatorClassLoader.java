@@ -30,15 +30,25 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassData;
  */
 public class ValidatorClassLoader extends ClassLoader {
 
+    ValidatorClassLoader() {
+        super(ClassLoader.getSystemClassLoader().getParent());
+    }
     @Override
     public Class findClass(String name) throws ClassNotFoundException {
+        if (name.startsWith("javax.annotation"))
+                return Class.forName(name);
         byte[] b;
         try {
             b = loadClassData(name);
             return defineClass(name, b, 0, b.length);
         } catch (CheckedAnalysisException e) {
+//            e.printStackTrace();
             return super.findClass(name);
+        } catch (RuntimeException e) {
+//            e.printStackTrace();
+            throw e;
         }
+
 
     }
 

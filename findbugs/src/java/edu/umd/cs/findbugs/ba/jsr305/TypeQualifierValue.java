@@ -19,11 +19,13 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import java.security.Permission;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.meta.TypeQualifierValidator;
 import javax.annotation.meta.When;
@@ -51,7 +53,7 @@ import edu.umd.cs.findbugs.util.Util;
  * example, if Foo is a type qualifier annotation having an int value, then
  * Foo(0), Foo(1), etc. are all different type qualifiers which must be checked
  * separately.
- * 
+ *
  * @author William Pugh
  */
 public class TypeQualifierValue {
@@ -127,6 +129,10 @@ public class TypeQualifierValue {
         try {
             Global.getAnalysisCache().getClassAnalysis(ClassData.class, checkerName);
             // found it.
+//            System.out.println(checkerName);
+            SecurityManager m = System.getSecurityManager();
+            if (m == null)
+                System.setSecurityManager(new ValidationSecurityManager());
             Class c = validatorLoader.loadClass(checkerName.getDottedClassName());
             if (TypeQualifierValidator.class.isAssignableFrom(c)) {
                 Class<? extends TypeQualifierValidator> checkerClass = c.asSubclass(TypeQualifierValidator.class);
@@ -173,18 +179,48 @@ public class TypeQualifierValue {
         return true;
     }
 
+    private static final InheritableThreadLocal<AtomicBoolean> performingValidation
+        = new InheritableThreadLocal<AtomicBoolean>() {
+        @Override protected synchronized AtomicBoolean initialValue() {
+            return new AtomicBoolean();
+        }
+
+    };
+
+    static final class ValidationSecurityManager extends SecurityManager {
+        @Override
+        public void checkPermission(Permission perm) {
+//            System.out.println("Checking " + perm);
+            if (performingValidation.get().get())
+                throw new SecurityException("not permissions granted while performing JSR-305 validation");
+        }
+        @Override
+        public void checkPermission(Permission perm, Object context) {
+            if (performingValidation.get().get())
+                throw new SecurityException("not permissions granted while performing JSR-305 validation");
+        }
+    }
+
+
     public When validate(Object constantValue) {
         if (validator == null)
             throw new IllegalStateException("No validator");
         IAnalysisCache analysisCache = Global.getAnalysisCache();
         Profiler profiler = analysisCache.getProfiler();
         profiler.start(validator.getClass());
+        AtomicBoolean performing = performingValidation.get();
         try {
+            if (!performing.compareAndSet(false, true)) {
+                throw new IllegalStateException("recursive validation");
+            }
             return validator.forConstantValue(null, constantValue);
         } catch (Exception e) {
             AnalysisContext.logError("Error executing custom validator for " + typeQualifier + " " + constantValue, e);
             return When.UNKNOWN;
         } finally {
+            if (!performing.compareAndSet(true, false)) {
+                throw new IllegalStateException("performingValidation not set when validation completes");
+            }
             profiler.end(validator.getClass());
 
         }
@@ -193,7 +229,7 @@ public class TypeQualifierValue {
     /**
      * Given a ClassDescriptor/value pair, return the interned
      * TypeQualifierValue representing that pair.
-     * 
+     *
      * @param desc
      *            a ClassDescriptor denoting a type qualifier annotation
      * @param value
@@ -214,7 +250,7 @@ public class TypeQualifierValue {
 
     /**
      * Get Collection of all known TypeQualifierValues.
-     * 
+     *
      * @return Collection of all known TypeQualifierValues
      */
     public static Collection<TypeQualifierValue> getAllKnownTypeQualifiers() {
@@ -224,7 +260,7 @@ public class TypeQualifierValue {
     /**
      * Get the "complementary" TypeQualifierValues for given exclusive type
      * qualifier.
-     * 
+     *
      * @param tqv
      *            a type qualifier (which must be exclusive)
      * @return Collection of complementary exclusive type qualifiers
@@ -252,7 +288,7 @@ public class TypeQualifierValue {
      * Determine whether or not given TypeQualifierValue has multiple variants.
      * I.e., if Color is a type qualifier having values RED, GREEN, and BLUE,
      * then there are 3 variants, Color(RED), Color(GREEN), and COLOR(BLUE).
-     * 
+     *
      * @param tqv
      *            a TypeQualifierValue
      * @return true if there are multiple variants of this type qualifier, false
@@ -270,7 +306,7 @@ public class TypeQualifierValue {
 
     /**
      * Get the ClassDescriptor which specifies the type qualifier annotation.
-     * 
+     *
      * @return ClassDescriptor which specifies the type qualifier annotation
      */
     public ClassDescriptor getTypeQualifierClassDescriptor() {
@@ -279,7 +315,7 @@ public class TypeQualifierValue {
 
     /**
      * Return whether or not this TypeQualifierValue denotes a strict qualifier.
-     * 
+     *
      * @return true if type qualifier is strict, false otherwise
      */
     public boolean isStrictQualifier() {
@@ -289,7 +325,7 @@ public class TypeQualifierValue {
     /**
      * Return whether or not this TypeQualifierValue denotes an exclusive
      * qualifier.
-     * 
+     *
      * @return true if type qualifier is exclusive, false otherwise
      */
     public boolean isExclusiveQualifier() {
@@ -299,7 +335,7 @@ public class TypeQualifierValue {
     /**
      * Return whether or not this TypeQualifierValue denotes an exhaustive
      * qualifier.
-     * 
+     *
      * @return true if type qualifier is exhaustive, false otherwise
      */
     public boolean isExhaustiveQualifier() {
@@ -324,7 +360,7 @@ public class TypeQualifierValue {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override

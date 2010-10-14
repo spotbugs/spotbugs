@@ -25,6 +25,7 @@ import javax.annotation.meta.When;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.ConstantPushInstruction;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -47,7 +48,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 
 /**
  * Forward type qualifier dataflow analysis.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowAnalysis {
@@ -55,7 +56,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 
     /**
      * Constructor.
-     * 
+     *
      * @param dfs
      *            DepthFirstSearch on the analyzed method
      * @param xmethod
@@ -78,7 +79,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#getBlockOrder(edu.umd.cs.findbugs
      * .ba.CFG)
@@ -89,7 +90,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#isForwards()
      */
     public boolean isForwards() {
@@ -98,7 +99,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowAnalysis#
      * registerSourceSinkLocations()
      */
@@ -121,8 +122,11 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
                 // Model field loads
                 registerFieldLoadSource(location);
             } else if (instruction instanceof LDC) {
-                // Model field loads
+                // Model constant values
                 registerLDCValueSource(location);
+            } else if (instruction instanceof ConstantPushInstruction) {
+                // Model constant values
+                registerConstantPushSource(location);
             }
         }
     }
@@ -138,6 +142,16 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
         registerTopOfStackSource(SourceSinkType.CONSTANT_VALUE, location, w, false, constantValue);
     }
 
+    private void registerConstantPushSource(Location location) throws DataflowAnalysisException {
+
+        ConstantPushInstruction instruction = (ConstantPushInstruction) location.getHandle().getInstruction();
+        Number constantValue = instruction.getValue();
+        if (!typeQualifierValue.canValidate(constantValue))
+            return;
+        When w = typeQualifierValue.validate(constantValue);
+
+        registerTopOfStackSource(SourceSinkType.CONSTANT_VALUE, location, w, false, constantValue);
+    }
     private void registerReturnValueSource(Location location) throws DataflowAnalysisException {
         // Nothing to do if called method does not return a value
         InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
@@ -219,7 +233,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowAnalysis#
      * propagateAcrossPhiNode
      * (edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValueSet,
