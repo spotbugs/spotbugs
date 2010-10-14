@@ -8,6 +8,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 public class MyMenuBar extends MenuBar {
     Menu helpMenu;
 
+    /** Eclipse optimizes away the RCN */
     @Override
     @ExpectWarning("RCN")
     public void setHelpMenu(Menu m) {
