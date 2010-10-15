@@ -48,10 +48,10 @@ import edu.umd.cs.findbugs.JavaVersion;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StringAnnotation;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -200,6 +200,7 @@ public class DumbMethods extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
+        // System.out.printf("%3d %12s %s%n", getPC(), OPCODE_NAMES[seen], stack);
 
 
         if ((seen == LDC || seen == LDC_W) && getIntConstant() == MICROS_PER_DAY_OVERFLOWED_AS_INT
@@ -926,7 +927,10 @@ public class DumbMethods extends OpcodeStackDetector {
         if (left.getSpecialKind() == Item.RESULT_OF_I2L && right.getConstant() != null) {
             long value = ((Number) right.getConstant()).longValue();
             if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
-                accumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this)
+                int priority  = Priorities.HIGH_PRIORITY;
+                if (value == Integer.MAX_VALUE+1 || value == Integer.MIN_VALUE -1)
+                    priority = Priorities.NORMAL_PRIORITY;
+                accumulator.accumulateBug(new BugInstance(this, "TESTING", priority ).addClassAndMethod(this)
                         .addValueSource(left, this)
                         .addString(Long.toString(value)).describe(StringAnnotation.STRING_NONSTRING_CONSTANT_ROLE)
                         .addString("Incompatible comparison of result of I2L and long constant"), this);

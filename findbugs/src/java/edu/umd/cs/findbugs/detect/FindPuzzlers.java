@@ -38,9 +38,10 @@ import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.StringAnnotation;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -150,7 +151,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
                         || name.equals(IdentityHashMap.class.getName()))
                     priority = Priorities.HIGH_PRIORITY;
                 bugReporter.reportBug(new BugInstance(this, "TESTING", priority)
-                .addClassAndMethod(this).addCalledMethod(this).addValueSource(top, this).addSourceLine(this));
+                .addClassAndMethod(this).addCalledMethod(this).addValueSource(top, this).addString("entrySet issue").describe(StringAnnotation.STRING_MESSAGE).addSourceLine(this));
             }
 
 

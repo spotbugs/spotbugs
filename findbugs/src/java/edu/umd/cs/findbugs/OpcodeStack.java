@@ -105,7 +105,7 @@ public class OpcodeStack implements Constants2 {
 
     private List<Item> lvValues;
 
-    private List<Integer> lastUpdate;
+    private final List<Integer> lastUpdate;
 
     private boolean top;
 
@@ -122,7 +122,7 @@ public class OpcodeStack implements Constants2 {
 
     private boolean seenTransferOfControl = false;
 
-    private boolean useIterativeAnalysis = AnalysisContext.currentAnalysisContext().getBoolProperty(
+    private final boolean useIterativeAnalysis = AnalysisContext.currentAnalysisContext().getBoolProperty(
             AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS);
 
     public static class Item {
@@ -485,6 +485,18 @@ public class OpcodeStack implements Constants2 {
         public Item(Item it, String signature) {
             this(it);
             this.signature = DescriptorFactory.canonicalizeString(signature);
+            if (constValue instanceof Number) {
+                Number constantNumericValue = (Number) constValue;
+                if (signature.equals("B"))
+                    this.constValue = constantNumericValue.byteValue();
+                else if (signature.equals("S"))
+                    this.constValue = constantNumericValue.shortValue();
+                else if (signature.equals("C"))
+                    this.constValue = constantNumericValue.intValue() & 0xffffffff;
+                else if (signature.equals("I"))
+                    this.constValue = constantNumericValue.intValue();
+
+            }
             setSpecialKindFromSignature();
         }
 
@@ -557,7 +569,7 @@ public class OpcodeStack implements Constants2 {
         }
 
         private void setSpecialKindFromSignature() {
-            if (specialKind != NOT_SPECIAL)
+            if (false && specialKind != NOT_SPECIAL)
                 return;
             if (signature.equals("B"))
                 specialKind = SIGNED_BYTE;
@@ -689,7 +701,7 @@ public class OpcodeStack implements Constants2 {
 
         /**
          * attaches a detector specified value to this item
-         * 
+         *
          * @param value
          *            the custom value to set
          */
@@ -698,7 +710,7 @@ public class OpcodeStack implements Constants2 {
         }
 
         /**
-         * 
+         *
          * @return if this value is the return value of a method, give the
          *         method invoked
          */
@@ -720,7 +732,7 @@ public class OpcodeStack implements Constants2 {
 
         /**
          * gets the detector specified value for this item
-         * 
+         *
          * @return the custom value
          */
         public Object getUserValue() {
@@ -1623,56 +1635,41 @@ public class OpcodeStack implements Constants2 {
                 pushByDoubleMath(seen, it, it2);
                 break;
 
-            case I2B:
+            case I2B: {
                 it = pop();
-                if (it.getConstant() != null) {
-                    it = new Item("I", (byte) constantToInt(it));
-                } else {
-                    it = new Item("I");
-                }
-                it.setSpecialKind(Item.SIGNED_BYTE);
-                push(it);
+                Item newValue = new Item(it, "B");
+
+                push(newValue);
+            }
                 break;
 
-            case I2C:
+
+
+            case I2C: {
                 it = pop();
-                if (it.getConstant() != null) {
-                    it = new Item("I", (char) constantToInt(it));
-                } else {
-                    it = new Item("I");
-                }
-                it.setSpecialKind(Item.NON_NEGATIVE);
-                push(it);
+                Item newValue = new Item(it, "C");
+
+                push(newValue);
+            }
                 break;
 
             case I2L:
             case D2L:
             case F2L: {
                 it = pop();
-                Item newValue;
-                if (it.getConstant() != null) {
-                    newValue = new Item("J", Long.valueOf(constantToLong(it)));
-                } else {
-                    newValue = new Item("J");
-                }
+                Item newValue = new Item(it, "J");
+
                 int specialKind = it.getSpecialKind();
 
                 if (specialKind != Item.SIGNED_BYTE && seen == I2L)
                     newValue.setSpecialKind(Item.RESULT_OF_I2L);
-                else
-                    newValue.setSpecialKind(specialKind);
 
                 push(newValue);
             }
-                break;
+            break;
 
             case I2S:
-                it = pop();
-                if (it.getConstant() != null) {
-                    push(new Item("I", (short) constantToInt(it)));
-                } else {
-                    push(new Item("I"));
-                }
+                changeSignatureOfTopElement("S");
                 break;
 
             case L2I:
@@ -1680,16 +1677,12 @@ public class OpcodeStack implements Constants2 {
             case F2I:
                 it = pop();
                 int oldSpecialKind = it.getSpecialKind();
-                if (it.getConstant() != null) {
-                    it = new Item("I", constantToInt(it));
-                } else {
-                    it = new Item("I");
-                }
+                it = new Item(it, "I");
+
                 if (oldSpecialKind == Item.NOT_SPECIAL)
                     it.setSpecialKind(Item.RESULT_OF_L2I);
-                else
-                    it.setSpecialKind(oldSpecialKind);
                 push(it);
+
                 break;
 
             case L2F:
@@ -1812,6 +1805,18 @@ public class OpcodeStack implements Constants2 {
         }
     }
 
+    /**
+     *
+     */
+    private void changeSignatureOfTopElement(String newSignature) {
+        {
+            Item item = pop();
+            Item newValue = new Item(item, newSignature);
+
+            push(newValue);
+        }
+    }
+
     public void precomputation(DismantleBytecode dbc) {
         if (registerTestedFoundToBeNonnegative >= 0) {
             for (int i = 0; i < stack.size(); i++) {
@@ -1863,7 +1868,7 @@ public class OpcodeStack implements Constants2 {
 
     /**
      * handle dcmp
-     * 
+     *
      */
     private void handleDcmp(int opcode) {
         Item it = pop();
@@ -1891,7 +1896,7 @@ public class OpcodeStack implements Constants2 {
 
     /**
      * handle fcmp
-     * 
+     *
      */
     private void handleFcmp(int opcode) {
         Item it = pop();
