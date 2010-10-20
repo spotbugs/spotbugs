@@ -90,7 +90,7 @@ import edu.umd.cs.findbugs.util.Util;
  * Find instance fields which are sometimes accessed (read or written) with the
  * receiver lock held and sometimes without. These are candidates to be data
  * races.
- * 
+ *
  * @author David Hovemeyer
  * @author Bill Pugh
  */
@@ -129,11 +129,11 @@ public class FindInconsistentSync2 implements Detector {
      * by. I.e., for factor <i>f</i>, if <i>nUnsync</i> is the biased number of
      * unsynchronized accesses, and <i>nSync</i> is the biased number of
      * synchronized accesses, and
-     * 
+     *
      * <pre>
      *      <i>f</i>(<i>nUnsync</i>) &gt; <i>nSync</i>
      * </pre>
-     * 
+     *
      * then we report a bug. Default value is 2.0, which means that we report a
      * bug if more than 1/3 of accesses are unsynchronized.
      * <p/>
@@ -317,9 +317,9 @@ public class FindInconsistentSync2 implements Detector {
      * ----------------------------------------------------------------------
      */
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
-    private Map<XField, FieldStats> statMap = new HashMap<XField, FieldStats>();
+    private final Map<XField, FieldStats> statMap = new HashMap<XField, FieldStats>();
 
     /*
      * ----------------------------------------------------------------------
@@ -369,8 +369,6 @@ public class FindInconsistentSync2 implements Detector {
         }
 
         for (Method method : allMethods) {
-            if (DEBUG)
-                System.out.println("******** Analyzing method " + method.getName());
             if (classContext.getMethodGen(method) == null)
                 continue;
 
@@ -378,6 +376,19 @@ public class FindInconsistentSync2 implements Detector {
                 // Ignore inner class access methods;
                 // we will treat calls to them as field accesses
                 continue;
+
+            String name = method.getName();
+
+            boolean inConstructor = name.equals("<init>") || name.equals("<clinit>")
+            || name.equals("readObject") || name.equals("clone") || name.equals("close")
+            || name.equals("finalize");
+
+            if (inConstructor)
+                return;
+
+            if (DEBUG)
+                System.out.println("******** Analyzing method " + method.getName());
+
             try {
                 analyzeMethod(classContext, method, lockedMethodSet);
             } catch (CFGBuilderException e) {
@@ -733,7 +744,7 @@ public class FindInconsistentSync2 implements Detector {
     /**
      * Determine whether or not the the given method is a getter method. I.e.,
      * if it just returns the value of an instance field.
-     * 
+     *
      * @param classContext
      *            the ClassContext for the class containing the method
      * @param method
@@ -930,25 +941,25 @@ public class FindInconsistentSync2 implements Detector {
      * private Set<Method> findPublicReachableMethods(ClassContext classContext,
      * SelfCalls selfCalls) throws CFGBuilderException,
      * DataflowAnalysisException {
-     * 
+     *
      * JavaClass javaClass = classContext.getJavaClass(); Method[] methodList =
      * javaClass.getMethods();
-     * 
+     *
      * CallGraph callGraph = selfCalls.getCallGraph();
-     * 
+     *
      * // Initially, assume all methods are locked Set<Method>
      * publicReachableMethodSet = new HashSet<Method>();
-     * 
+     *
      * // Assume all public methods are unlocked for (Method method :
      * methodList) { if (method.isPublic() && !isConstructor(method.getName()))
      * { publicReachableMethodSet.add(method); } }
-     * 
+     *
      * // Explore the self-call graph to find nonpublic methods // that can be
      * called from an unlocked context. boolean change; do { change = false;
-     * 
+     *
      * for (Iterator<CallGraphEdge> i = callGraph.edgeIterator(); i.hasNext();)
      * { CallGraphEdge edge = i.next(); CallSite callSite = edge.getCallSite();
-     * 
+     *
      * // Ignore obviously locked edges // If the calling method is locked,
      * ignore the edge if
      * (publicReachableMethodSet.contains(callSite.getMethod())) { // Calling
@@ -956,12 +967,12 @@ public class FindInconsistentSync2 implements Detector {
      * CallGraphNode target = edge.getTarget(); if
      * (publicReachableMethodSet.add(target.getMethod())) change = true; } } }
      * while (change);
-     * 
+     *
      * if (DEBUG) { System.out.println(
      * "Methods apparently reachable from public non-constructor methods:"); for
      * (Method method : publicReachableMethodSet) { System.out.println("\t" +
      * method.getName()); } }
-     * 
+     *
      * return publicReachableMethodSet; }
      */
 
