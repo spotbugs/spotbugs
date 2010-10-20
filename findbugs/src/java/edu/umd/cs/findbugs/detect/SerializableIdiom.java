@@ -81,19 +81,19 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     boolean writeObjectIsSynchronized;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     boolean isAbstract;
 
-    private List<BugInstance> fieldWarningList = new LinkedList<BugInstance>();
+    private final List<BugInstance> fieldWarningList = new LinkedList<BugInstance>();
 
-    private HashMap<String, XField> fieldsThatMightBeAProblem = new HashMap<String, XField>();
+    private final HashMap<String, XField> fieldsThatMightBeAProblem = new HashMap<String, XField>();
 
-    private HashMap<XField, Integer> transientFieldsUpdates = new HashMap<XField, Integer>();
+    private final HashMap<XField, Integer> transientFieldsUpdates = new HashMap<XField, Integer>();
 
-    private HashSet<XField> transientFieldsSetInConstructor = new HashSet<XField>();
+    private final HashSet<XField> transientFieldsSetInConstructor = new HashSet<XField>();
 
-    private HashSet<XField> transientFieldsSetToDefaultValueInConstructor = new HashSet<XField>();
+    private final HashSet<XField> transientFieldsSetToDefaultValueInConstructor = new HashSet<XField>();
 
     private boolean sawReadExternal;
 
@@ -462,7 +462,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
         if (isSynchronized) {
             if (getMethodName().equals("readObject") && getMethodSig().equals("(Ljava/io/ObjectInputStream;)V") && isSerializable)
-                bugReporter.reportBug(new BugInstance(this, "RS_READOBJECT_SYNC", NORMAL_PRIORITY).addClass(this));
+                bugReporter.reportBug(new BugInstance(this, "RS_READOBJECT_SYNC", NORMAL_PRIORITY).addClassAndMethod(this));
             else if (getMethodName().equals("writeObject") && getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V")
                     && isSerializable)
                 writeObjectIsSynchronized = true;
