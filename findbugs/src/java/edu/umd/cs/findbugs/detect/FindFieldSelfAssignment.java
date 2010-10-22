@@ -30,7 +30,6 @@ import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
@@ -45,6 +44,7 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
 
     @Override
     public void visit(Code obj) {
+//        System.out.println(getFullyQualifiedMethodName());
         state = 0;
         super.visit(obj);
         initializedFields.clear();
@@ -56,7 +56,7 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
 
     @Override
     public void sawOpcode(int seen) {
-
+//        System.out.printf("%5d %12s %s%n", getPC(), OPCODE_NAMES[seen],stack);
         if (seen == PUTFIELD) {
             OpcodeStack.Item top = stack.getStackItem(0);
             OpcodeStack.Item next = stack.getStackItem(1);
@@ -79,12 +79,7 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
                     for (int i = 0; i < stack.getNumLocalValues(); i++)
                         if (i != register) {
                             Item lvValue = stack.getLVValue(i);
-                            if (lvValue == null) {
-                                AnalysisContext.logError("Stack getLVValue " + i + " is null at PC " + getPC() + " in " + getFullyQualifiedMethodName(),
-                                        new RuntimeException());
-                                continue;
-                            }
-                            if (lvValue.getSignature().equals(signature)) {
+                            if (lvValue != null && lvValue.getSignature().equals(signature)) {
                                 priority--;
                                 break;
                             }
