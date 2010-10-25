@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 /**
  * A DetectorFactory is responsible for creating instances of Detector objects
  * and for maintaining meta-information about the detector class.
- * 
+ *
  * @author David Hovemeyer
  * @see Detector
  */
@@ -49,7 +49,7 @@ public class DetectorFactory {
     private static final Class<?>[] constructorArgTypes = new Class<?>[] { BugReporter.class };
 
     static class ReflectionDetectorCreator {
-        private Class<?> detectorClass;
+        private final Class<?> detectorClass;
 
         private Method setAnalysisContext;
 
@@ -107,7 +107,7 @@ public class DetectorFactory {
         }
     }
 
-    private Plugin plugin;
+    private final Plugin plugin;
 
     private final ReflectionDetectorCreator detectorCreator;
 
@@ -116,7 +116,7 @@ public class DetectorFactory {
 
     private int positionSpecifiedInPluginDescriptor;
 
-    private boolean defEnabled;
+    private final boolean defEnabled;
 
     private final String speed;
 
@@ -134,7 +134,7 @@ public class DetectorFactory {
 
     /**
      * Constructor.
-     * 
+     *
      * @param plugin
      *            the Plugin the Detector is part of
      * @param className
@@ -175,7 +175,7 @@ public class DetectorFactory {
     /**
      * Set the overall position in which this detector was specified in the
      * plugin descriptor.
-     * 
+     *
      * @param positionSpecifiedInPluginDescriptor
      *            position in plugin descriptor
      */
@@ -186,7 +186,7 @@ public class DetectorFactory {
     /**
      * Get the overall position in which this detector was specified in the
      * plugin descriptor.
-     * 
+     *
      * @return position in plugin descriptor
      */
     public int getPositionSpecifiedInPluginDescriptor() {
@@ -195,7 +195,7 @@ public class DetectorFactory {
 
     /**
      * Get the Plugin that this Detector is part of.
-     * 
+     *
      * @return the Plugin this Detector is part of
      */
     public Plugin getPlugin() {
@@ -205,7 +205,7 @@ public class DetectorFactory {
     /**
      * Determine whether the detector class is a subtype of the given class (or
      * interface).
-     * 
+     *
      * @param otherClass
      *            a class or interface
      * @return true if the detector class is a subtype of the given class or
@@ -220,7 +220,7 @@ public class DetectorFactory {
     /**
      * Return whether or not this DetectorFactory produces detectors which
      * report warnings.
-     * 
+     *
      * @return true if the created Detectors report warnings, false if not
      */
     public boolean isReportingDetector() {
@@ -231,7 +231,7 @@ public class DetectorFactory {
     /**
      * Check to see if we are running on a recent-enough JRE for this detector
      * to be enabled.
-     * 
+     *
      * @return true if the current JRE is recent enough to run the Detector,
      *         false if it is too old
      */
@@ -265,7 +265,7 @@ public class DetectorFactory {
      * Set visibility of the factory (to GUI dialogs to configure detectors).
      * Invisible detectors are those that are needed behind the scenes, but
      * shouldn't be explicitly enabled or disabled by the user.
-     * 
+     *
      * @param hidden
      *            true if this factory should be hidden, false if not
      */
@@ -289,7 +289,7 @@ public class DetectorFactory {
 
     /**
      * Set the priority adjustment for the detector produced by this factory.
-     * 
+     *
      * @param priorityAdjustment
      *            the priority adjustment
      */
@@ -303,7 +303,7 @@ public class DetectorFactory {
 
     /**
      * Get the priority adjustment for the detector produced by this factory.
-     * 
+     *
      * @return the priority adjustment
      */
     public int getPriorityAdjustment() {
@@ -315,6 +315,7 @@ public class DetectorFactory {
     /**
      * Get the speed of the Detector produced by this factory.
      */
+    @Deprecated
     public String getSpeed() {
         return speed;
     }
@@ -359,7 +360,7 @@ public class DetectorFactory {
     /**
      * Create a Detector instance. This method is only guaranteed to work for
      * old-style detectors using the BCEL bytecode framework.
-     * 
+     *
      * @param bugReporter
      *            the BugReporter to be used to report bugs
      * @return the Detector
@@ -374,7 +375,7 @@ public class DetectorFactory {
 
     /**
      * Create a Detector2 instance.
-     * 
+     *
      * @param bugReporter
      *            the BugReporter to be used to report bugs
      * @return the Detector2
