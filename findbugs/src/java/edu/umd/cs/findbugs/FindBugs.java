@@ -40,10 +40,10 @@ import edu.umd.cs.findbugs.filter.FilterException;
 /**
  * Static methods and fields useful for working with instances of
  * IFindBugsEngine.
- * 
+ *
  * This class was previously the main driver for FindBugs analyses, but has been
  * replaced by {@link FindBugs2 FindBugs2}.
- * 
+ *
  * @author Bill Pugh
  * @author David Hovemeyer
  */
@@ -176,7 +176,7 @@ public abstract class FindBugs {
 
     /**
      * Configure training databases.
-     * 
+     *
      * @param findBugs
      *            the IFindBugsEngine to configure
      * @throws IOException
@@ -206,8 +206,8 @@ public abstract class FindBugs {
     }
 
     /**
-     * Determing whether or not given DetectorFactory should be enabled.
-     * 
+     * Determines whether or not given DetectorFactory should be enabled.
+     *
      * @param findBugs
      *            the IFindBugsEngine
      * @param factory
@@ -265,10 +265,10 @@ public abstract class FindBugs {
 
     /**
      * Process -bugCategories option.
-     * 
+     *
      * @param categories
      *            comma-separated list of bug categories
-     * 
+     *
      * @return Set of categories to be used
      */
     public static Set<String> handleBugCategories(String categories) {
@@ -284,7 +284,7 @@ public abstract class FindBugs {
 
     /**
      * Process the command line.
-     * 
+     *
      * @param commandLine
      *            the TextUICommandLine object which will parse the command line
      * @param argv
@@ -332,7 +332,7 @@ public abstract class FindBugs {
 
     /**
      * Show -help message.
-     * 
+     *
      * @param commandLine
      */
     @SuppressWarnings("DM_EXIT")
@@ -346,7 +346,7 @@ public abstract class FindBugs {
     /**
      * Given a fully-configured IFindBugsEngine and the TextUICommandLine used
      * to configure it, execute the analysis.
-     * 
+     *
      * @param findBugs
      *            a fully-configured IFindBugsEngine
      * @param commandLine
@@ -422,7 +422,7 @@ public abstract class FindBugs {
 
     /**
      * Print command line options synopses to stdout.
-     * 
+     *
      * @param commandLine
      *            the TextUICommandLine whose options should be printed
      */
@@ -440,7 +440,7 @@ public abstract class FindBugs {
 
     /**
      * Configure the (bug instance) Filter for the given DelegatingBugReporter.
-     * 
+     *
      * @param bugReporter
      *            a DelegatingBugReporter
      * @param filterFileName
@@ -460,7 +460,7 @@ public abstract class FindBugs {
 
     /**
      * Configure a baseline bug instance filter.
-     * 
+     *
      * @param bugReporter
      *            a DelegatingBugReporter
      * @param baselineFileName
@@ -476,7 +476,7 @@ public abstract class FindBugs {
     /**
      * Configure the BugCollection (if the BugReporter being used is
      * constructing one).
-     * 
+     *
      * @param findBugs
      *            the IFindBugsEngine
      */

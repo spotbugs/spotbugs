@@ -278,14 +278,15 @@ public class FindBugs2 implements IFindBugsEngine {
             }
             throw e;
         } finally {
-            AnalysisContext.removeCurrentAnalysisContext();
-            Global.removeAnalysisCacheForCurrentThread();
             DescriptorFactory.clearInstance();
             ObjectTypeFactory.clearInstance();
             TypeQualifierApplications.clearInstance();
             TypeQualifierAnnotation.clearInstance();
             TypeQualifierValue.clearInstance();
             // Make sure the codebases on the classpath are closed
+            AnalysisContext.removeCurrentAnalysisContext();
+            Global.removeAnalysisCacheForCurrentThread();
+
             if (classPath != null) {
                 classPath.close();
             }
@@ -1001,6 +1002,7 @@ public class FindBugs2 implements IFindBugsEngine {
             }
 
             referencedClassSet.removeAll(badClasses);
+            long startTime = System.currentTimeMillis();
             bugReporter.getProjectStats().setReferencedClasses(referencedClassSet.size());
             for (Iterator<AnalysisPass> passIterator = executionPlan.passIterator(); passIterator.hasNext();) {
                 AnalysisPass pass = passIterator.next();
@@ -1021,7 +1023,7 @@ public class FindBugs2 implements IFindBugsEngine {
                 Collection<ClassDescriptor> classCollection = (isNonReportingFirstPass) ? referencedClassSet : appClassList;
                 AnalysisContext.currentXFactory().canonicalizeAll();
                 if (PROGRESS || LIST_ORDER) {
-                    System.out.println("Pass " + (passCount) + ": " + classCollection.size() + " classes");
+                    System.out.printf("%6d : Pass %d: %d classes%n", (System.currentTimeMillis() - startTime)/1000, passCount,  classCollection.size());
                     if (DEBUG)
                         XFactory.profile();
                 }
@@ -1061,7 +1063,8 @@ public class FindBugs2 implements IFindBugsEngine {
                 Global.getAnalysisCache().purgeClassAnalysis(FBClassReader.class);
                 for (ClassDescriptor classDescriptor : classCollection) {
                     if (PROGRESS) {
-                        System.out.printf("%d/%d  %d/%d %s%n", passCount, executionPlan.getNumPasses(), count,
+                        System.out.printf("%6d %d/%d  %d/%d %s%n", (System.currentTimeMillis() - startTime)/1000,
+                                passCount, executionPlan.getNumPasses(), count,
                                 classCollection.size(), classDescriptor);
                         count++;
                     }
