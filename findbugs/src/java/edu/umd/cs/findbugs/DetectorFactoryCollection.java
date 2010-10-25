@@ -73,17 +73,13 @@ public class DetectorFactoryCollection {
 
     static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
 
-    private URL[] pluginList;
-
-     Map<String, CloudPlugin> registeredClouds = new LinkedHashMap<String, CloudPlugin>();
+    Map<String, CloudPlugin> registeredClouds = new LinkedHashMap<String, CloudPlugin>();
 
     protected final HashMap<String, BugCategory> categoryDescriptionMap = new HashMap<String, BugCategory>();
 
     protected final HashMap<String, BugPattern> bugPatternMap = new HashMap<String, BugPattern>();
 
     protected final HashMap<String, BugCode> bugCodeMap = new HashMap<String, BugCode>();
-
-
 
     /**
      * Constructor. loadPlugins() method must be called before any detector
@@ -256,22 +252,6 @@ public class DetectorFactoryCollection {
         factoriesByDetectorClassName.put(factory.getFullName(), factory);
     }
 
-    /**
-     * Look for a name in the list of explicitly specified plugin files
-     *
-     * @param name
-     *            must match the suffix of the URL path
-     */
-    public @CheckForNull
-    URL lookForExplicitPluginFile(String name) {
-        if (this.pluginList != null)
-            for (URL u : this.pluginList)
-                if (u.getPath().endsWith(name))
-                    return u;
-        return null;
-
-    }
-
     private static final Pattern[] findbugsJarNames = { Pattern.compile("findbugs\\.jar$"), };
 
     /**
@@ -329,12 +309,6 @@ public class DetectorFactoryCollection {
 
     @CheckForNull
     public static URL getCoreResource(String name) {
-
-        if (isLoaded()) {
-            URL u = instance().lookForExplicitPluginFile(name);
-            if (u != null)
-                return u;
-        }
         URL u = PluginLoader.getCoreResource(name);
         return u;
     }

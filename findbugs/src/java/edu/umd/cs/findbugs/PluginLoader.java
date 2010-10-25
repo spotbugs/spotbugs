@@ -65,6 +65,7 @@ import edu.umd.cs.findbugs.plan.DetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
 import edu.umd.cs.findbugs.plan.ReportingDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.SingleDetectorFactorySelector;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.JavaWebStart;
 
 /**
@@ -162,8 +163,40 @@ public class PluginLoader {
         this.classLoader = this.getClass().getClassLoader();
         this.classLoaderForResources = classLoader;
         corePlugin = true;
-        loadedFrom = null;
-        jarName = null;
+        URL from = null;
+        if (classLoader instanceof URLClassLoader) {
+            String findBugsClassName = ClassName.toSlashedClassName(FindBugs.class) + ".class";
+            URL me = FindBugs.class.getClassLoader().getResource(findBugsClassName);
+            if (DEBUG)
+                System.out.println("FindBugs.class loaded from " + me);
+            if (me != null) {
+                try {
+                    String u = me.toString();
+                    if (u.startsWith("jar:") && u.endsWith("!/" + findBugsClassName)) {
+                        u = u.substring(4, u.indexOf("!/"));
+
+                        from = new URL(u);
+
+                    } else if (u.endsWith(findBugsClassName)) {
+                        u = u.substring(0, u.indexOf(findBugsClassName));
+                        from = new URL(u);
+                    }
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            }
+
+
+        loadedFrom = from;
+        if (from != null) {
+            jarName = getJarName(from);
+        }
+        else
+            jarName = null;
+        return;
     }
 
     /**

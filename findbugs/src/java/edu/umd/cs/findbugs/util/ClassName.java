@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * Utility methods for working with class names.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class ClassName {
@@ -54,7 +54,7 @@ public abstract class ClassName {
     }
 
     /**
-     * 
+     *
      * @param signature
      *            bytecode notated type name
      * @return for reference types: class name without bytecode characters,
@@ -82,7 +82,7 @@ public abstract class ClassName {
     /**
      * Convert class name to slashed format. If the class name is already in
      * slashed format, it is returned unmodified.
-     * 
+     *
      * @param className
      *            a class name
      * @return the same class name in slashed format
@@ -98,7 +98,7 @@ public abstract class ClassName {
     /**
      * Convert class name to dotted format. If the class name is already in
      * dotted format, it is returned unmodified.
-     * 
+     *
      * @param className
      *            a class name
      * @return the same class name in dotted format
@@ -114,7 +114,7 @@ public abstract class ClassName {
     /**
      * extract the package name from a dotted class name. Package names are
      * always in dotted format.
-     * 
+     *
      * @param className
      *            a dotted class name
      * @return the name of the package containing the class
@@ -139,7 +139,7 @@ public abstract class ClassName {
 
     /**
      * Return whether or not the given class name is valid.
-     * 
+     *
      * @param className
      *            a possible class name
      * @return true if it's a valid class name, false otherwise
@@ -156,7 +156,7 @@ public abstract class ClassName {
     /**
      * Does a class name appear to designate an anonymous class? Only the name
      * is analyzed. No classes are loaded or looked up.
-     * 
+     *
      * @param className
      *            class name, slashed or dotted, fully qualified or unqualified
      * @return true if className is the name of an anonymous class
@@ -171,7 +171,7 @@ public abstract class ClassName {
 
     /**
      * Extract a slashed classname from a JVM classname or signature.
-     * 
+     *
      * @param originalName
      *            JVM classname or signature
      * @return a slashed classname
@@ -216,5 +216,10 @@ public abstract class ClassName {
 
         return false;
 
+    }
+
+
+    public static @SlashedClassName String toSlashedClassName(Class<?> class1) {
+        return toSlashedClassName(class1.getName());
     }
 }
