@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -49,12 +48,12 @@ import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.CloudPluginBuilder;
 import edu.umd.cs.findbugs.cloud.username.NameLookup;
+import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.plan.ByInterfaceDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.DetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
 import edu.umd.cs.findbugs.plan.ReportingDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.SingleDetectorFactorySelector;
-import edu.umd.cs.findbugs.util.JavaWebStart;
 
 /**
  * Loader for a FindBugs plugin. A plugin is a jar file containing two metadata
@@ -174,6 +173,18 @@ public class PluginLoader {
         return plugin;
     }
 
+    private static URL resourceFromPlugin(URL u, String args) throws MalformedURLException {
+        String path = u.getPath();
+        if (path.endsWith(".zip") || path.endsWith(".jar")) {
+            return new URL("jar:" + u.toString() + "!/" + args);
+        } else if (path.endsWith("/")) {
+            return new URL(u.toString() + "" + args);
+        } else {
+            return new URL(u.toString() + "/" + args);
+
+        }
+    }
+
     /**
      * Get a resource using the URLClassLoader classLoader. We try findResource
      * first because (based on experiment) we can trust it to prefer resources
@@ -187,38 +198,32 @@ public class PluginLoader {
      * @return URL for the resource, or null if it could not be found
      */
     public URL getResource(String name) {
-        URL url = null;
-
-        if (JavaWebStart.isRunningViaJavaWebstart() && loadedFrom != null && loadedFrom.toString().endsWith(".jar"))
+        if (loadedFrom != null) {
             try {
-                URL u = new URL("jar:" + loadedFrom.toString() + "!/" + name);
-                InputStream i = u.openStream();
-                int firstByte = i.read();
-                i.close();
-                if (firstByte >= 0) {
-                    return u;
-                }
+                URL url = resourceFromPlugin(loadedFrom, name);
+                if (IO.verifyURL(url))
+                    return url;
             } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
                 assert true;
             }
 
+        }
+
         if (classLoaderForResources instanceof URLClassLoader) {
             URLClassLoader urlClassLoader = (URLClassLoader) classLoaderForResources;
-            url = urlClassLoader.findResource(name);
+            URL url = urlClassLoader.findResource(name);
             if (url == null)
                 url = urlClassLoader.findResource("/" + name);
+            if (IO.verifyURL(url))
+                return url;
         }
 
-        if (url == null) {
-            url = classLoaderForResources.getResource(name);
-            if (url == null)
-                url = classLoaderForResources.getResource("/" + name);
-        }
-
-        if (url != null)
+        URL url = classLoaderForResources.getResource(name);
+        if (url == null)
+            url = classLoaderForResources.getResource("/" + name);
+        if (IO.verifyURL(url))
             return url;
+
         return null;
     }
 

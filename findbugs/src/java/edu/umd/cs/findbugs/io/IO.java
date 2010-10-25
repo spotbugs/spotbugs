@@ -42,8 +42,12 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URL;
+import java.net.URLConnection;
 
 import javax.annotation.WillNotClose;
+
+import edu.umd.cs.findbugs.util.Util;
 
 public class IO {
     static ThreadLocal<byte[]> myByteBuf = new ThreadLocal<byte[]>() {
@@ -176,5 +180,27 @@ public class IO {
             remaining -= skipped;
         }
 
+    }
+
+    public static boolean verifyURL(URL u) {
+        if (u == null)
+            return false;
+    
+        InputStream i = null;
+    
+        try {
+            URLConnection uc = u.openConnection();
+            i = uc.getInputStream();
+            int firstByte = i.read();
+            i.close();
+            return firstByte >= 0;
+        }
+    
+        catch (Exception e) {
+            return false;
+        } finally {
+            Util.closeSilently(i);
+        }
+    
     }
 }
