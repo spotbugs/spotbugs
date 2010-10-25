@@ -3,7 +3,7 @@
 <MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="messagecollection.xsd">
 
   <!--
-  **********************************************************************
+  ************************************************f**********************
   Plugin information
   **********************************************************************
   -->
@@ -12,27 +12,57 @@
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒvƒ‰ƒOƒCƒ“‚ÍA‚·‚×‚Ä‚Ì•W€ FindBugs ƒfƒBƒeƒNƒ^‚ðŠÜ‚ñ‚Å‚¢‚Ü‚·B
+‚±‚Ìƒvƒ‰ƒOƒCƒ“‚É‚ÍA‚·‚×‚Ä‚Ì•W€“I‚È FindBugs ƒfƒBƒeƒNƒ^‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
   </Plugin>
 
   <Cloud id="edu.umd.cs.findbugs.cloud.Local">
-    <Description>ƒIƒŠƒWƒiƒ‹‚Ì‰ðÍXMLƒtƒ@ƒCƒ‹</Description>
-    <Details>ƒoƒO—š—ð‚ÉŠÖ‚·‚éî•ñ‚Æ•]‰¿‚ÍA‰ðÍŒ‹‰Ê‚ª‚ ‚é XML ‚ÉŠi”[‚³‚ê‚Ü‚·B </Details>
+    <Description>‰ðÍXMLƒtƒ@ƒCƒ‹</Description>
+    <Details>ƒRƒƒ“ƒg‚ÍA‰ðÍ  XML ‚ÉŠi”[‚³‚ê‚Ü‚·</Details>
   </Cloud>
 
+  <PluginComponent
+    id="edu.umd.cs.findbugs.bugReporter.SuppressMultithreaded">
+    <Description>ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚Ì³Šm«–â‘è‚ð—}Ž~‚·‚é</Description>
+    <Details>‚·‚×‚Ä‚Ìƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚Ì³Šm«–â‘è‚ð—}Ž~‚µ‚Ü‚·</Details>
+    </PluginComponent>
+
+  <PluginComponent
+    id="edu.umd.cs.findbugs.bugReporter.SuppressI18N">
+    <Description>‘Û‰»–â‘è‚ð—}Ž~‚·‚é</Description>
+    <Details>‚·‚×‚Ä‚Ì‘Û‰»–â‘è‚ð—}Ž~‚µ‚Ü‚·</Details>
+    </PluginComponent>
+  
+  <PluginComponent
+    id="edu.umd.cs.findbugs.bugReporter.SelectivelySuppressI18N">
+    <Description>‘I‘ð‚µ‚½ƒpƒbƒP[ƒWˆÈŠO‚Ì‚·‚×‚Ä‚Ì‘Û‰»–â‘è‚ð—}Ž~‚·‚é</Description>
+    <Details>i18n.properties ƒŠƒ\[ƒX‚ÅŽw’è‚³‚ê‚Ä‚¢‚éˆÈŠO‚ÍA‘Û‰»–â‘è‚ð—}Ž~‚µ‚Ü‚·</Details>
+  </PluginComponent>
+
+  <PluginComponent
+    id="edu.umd.cs.findbugs.bugReporter.MaxRank14">
+    <Description>ƒ‰ƒ“ƒN14‚æ‚è‚‚¢‚·‚×‚Ä‚Ì–â‘è‚ð—}Ž~‚·‚é</Description>
+    <Details>ƒ‰ƒ“ƒN14‚æ‚è‚‚¢‚·‚×‚Ä‚Ì–â‘è‚ð—}Ž~‚µ‚Ü‚·</Details>
+  </PluginComponent>
+
+  <PluginComponent
+    id="edu.umd.cs.findbugs.bugReporter.SuppressMalicious">
+    <Description>ˆ«Ž¿‚ÈƒR[ƒh‚ÌÆŽã«‚É‚Â‚¢‚ÄŒx‚ð—}Ž~‚·‚é</Description>
+    <Details>ˆ«Ž¿‚ÈƒR[ƒh‚ÌÆŽã«‚É‚Â‚¢‚ÄŒx‚ð—}Ž~‚µ‚Ü‚·</Details>
+    </PluginComponent>
+    
   <!--
-@@**********************************************************************
-@@Categories (replacing the BugCategoryDescriptions.properties file)
-@@**********************************************************************
-@@-->
+  **********************************************************************
+  Categories (replacing the BugCategoryDescriptions.properties file)
+  **********************************************************************
+  -->
 
   <BugCategory category="CORRECTNESS">
     <Description>³Šm«</Description>
     <Abbreviation>C</Abbreviation>
-    <Details>ƒoƒO‚Ì‰Â”\« - ‚¨‚»‚ç‚­AŠJ”­ŽÒ‚ªˆÓ}‚µ‚Ä‚¢‚È‚¢ƒR[ƒh‚É‚È‚Á‚Ä‚¢‚é–¾‚ç‚©‚ÈƒR[ƒfƒBƒ“ƒOŠÔˆá‚¢B
+    <Details>ƒoƒO‚Ì‰Â”\« - ‚¨‚»‚ç‚­AŠJ”­ŽÒ‚ªˆÓ}‚µ‚Ä‚¢‚È‚©‚Á‚½ƒR[ƒh‚É‚È‚Á‚Ä‚¢‚é–¾‚ç‚©‚ÈƒR[ƒfƒBƒ“ƒOŠÔˆá‚¢B
       ‰äX‚ÍA’á‚¢ŒëŒŸo—¦‚Ì‚½‚ß‚É“w—Í‚µ‚Ü‚·B
     </Details>
   </BugCategory>
@@ -40,49 +70,49 @@
   <BugCategory category="NOISE">
     <Description>‹U‚Ìƒ‰ƒ“ƒ_ƒ€ƒmƒCƒY</Description>
     <Abbreviation>N</Abbreviation>
-    <Details>‹U‚Ìƒ‰ƒ“ƒ_ƒ€ƒmƒCƒY: ƒ\ƒtƒgƒEƒFƒA‚ÅŽÀÛ‚ÌƒoƒO‚ð”­Œ©‚·‚é‚Ì‚Å‚Í‚È‚­Aƒf[ƒ^ƒ}ƒCƒjƒ“ƒOŽÀŒ±‚É‚¨‚¯‚éƒRƒ“ƒgƒ[ƒ‹‚Æ‚µ‚Ä–ð‚É—§‚Â‚±‚Æ‚ð–Ú“I‚Æ‚µ‚Ü‚µ‚½B
+    <Details>‹U‚Ìƒ‰ƒ“ƒ_ƒ€ƒmƒCƒY: ƒ\ƒtƒgƒEƒFƒA‚ÅŽÀÛ‚ÌƒoƒO‚ð”­Œ©‚·‚é‚Ì‚Å‚Í‚È‚­Aƒf[ƒ^ƒ}ƒCƒjƒ“ƒOŽÀŒ±‚ÌƒRƒ“ƒgƒ[ƒ‹‚Æ‚µ‚Ä–ð‚É—§‚Â‚±‚Æ‚ðˆÓ}‚µ‚Ü‚µ‚½B
     </Details>
   </BugCategory>
 
   <BugCategory category="SECURITY">
     <Description>ƒZƒLƒ…ƒŠƒeƒB</Description>
     <Abbreviation>S</Abbreviation>
-    <Details>ƒŠƒ‚[ƒg‚©‚çˆ«—p‚Å‚«‚éƒZƒLƒ…ƒŠƒeƒBÆŽã«‚ðì‚èo‚·‚±‚Æ‚ª‚Å‚«‚é•û–@‚ÅAM—Š‚Å‚«‚È‚¢“ü—Í‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B
+    <Details>ƒŠƒ‚[ƒg‚©‚çˆ«—p‚Å‚«‚éƒZƒLƒ…ƒŠƒeƒBÆŽã«‚ðì¬‚Å‚«‚é•û–@‚ÅAM—Š‚Å‚«‚È‚¢“ü—Í‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B
     </Details>
   </BugCategory>
 
   <BugCategory category="BAD_PRACTICE">
     <Description>ŠÔˆá‚Á‚½ƒvƒ‰ƒNƒeƒBƒX</Description>
     <Abbreviation>B</Abbreviation>
-    <Details>„§‚µ‚Ä‚¢‚éA‚ ‚é‚¢‚Íd—v‚ÈƒR[ƒfƒBƒ“ƒOƒvƒ‰ƒNƒeƒBƒX‚Ìˆá”½B‚½‚Æ‚¦‚ÎAhashCode ‚Æ equals ‚Ì–â‘èAcloneable ƒCƒfƒBƒIƒ€AŽÌ‚Ä‚ç‚ê‚½—áŠOASerializable ‚Ì–â‘èAfinalize ‚ÌŒë—p‚È‚ÇB
-      ‚¢‚­‚Â‚©‚ÌƒOƒ‹[ƒv‚ÍAŠÔˆá‚Á‚½ƒvƒ‰ƒNƒeƒBƒX‚ð‹C‚É‚µ‚È‚¢‚©‚à‚µ‚ê‚È‚¢‚ª‰äX‚Í³Šm‚È‰ðÍ‚ð‚µ‚æ‚¤‚Æ“w—Í‚µ‚Ü‚·B
-             </Details>
+    <Details>„§‚³‚ê‚Ä‚¢‚éA‚ ‚é‚¢‚Í•K{‚ÌƒR[ƒfƒBƒ“ƒOƒvƒ‰ƒNƒeƒBƒX‚Ìˆá”½B‚½‚Æ‚¦‚ÎAhashCode ‚Æ equals ‚Ì–â‘èAcloneable ƒCƒfƒBƒIƒ€AŽÌ‚Ä‚ç‚ê‚½—áŠOASerializable ‚Ì–â‘èAfinalize ‚ÌŒë—p‚È‚ÇB
+      ‚¢‚­‚Â‚©‚ÌƒOƒ‹[ƒv‚ÍAŠÔˆá‚Á‚½ƒvƒ‰ƒNƒeƒBƒX‚ð‹C‚É‚µ‚È‚¢‚©‚à‚µ‚ê‚È‚¢‚ªA‰äX‚Í³Šm‚È‰ðÍ‚ð‚µ‚æ‚¤‚Æ“w—Í‚µ‚Ü‚·B
+    </Details>
   </BugCategory>
 
   <BugCategory category="STYLE">
-    <Description>Šë‚È‚¢</Description>
+    <Description>Šë‚È‚¢ƒR[ƒh</Description>
     <Abbreviation>D</Abbreviation>
-    <Details>•´‚ç‚í‚µ‚¢ƒR[ƒhA•Ï‘¥“I‚ÈƒR[ƒhA‚»‚êŽ©‘Ì‚ªƒGƒ‰[‚ÌŒ´ˆö‚É‚È‚é•û–@‚Å‘‚©‚ê‚½ƒR[ƒhB
+    <Details>•´‚ç‚í‚µ‚¢ƒR[ƒhA•Ï‘¥“I‚ÈƒR[ƒhA‚»‚êŽ©g‚ðŒë‚è‚É“±‚­•û–@‚Å‘‚©‚ê‚½ƒR[ƒhB
       ‚½‚Æ‚¦‚ÎAƒ[ƒJƒ‹•Ï”‚Ö‚Ì–³Œø‚È‘ã“üAswitch •¶‚ÌƒtƒH[ƒ‹ƒXƒ‹[A–¢Šm”F‚ÌƒLƒƒƒXƒgAnull ‚Æ‚í‚©‚Á‚Ä‚¢‚é’l‚Ìç’·‚È null ƒ`ƒFƒbƒN‚È‚ÇB
       ‚æ‚è‘½‚­‚ÌŒëŒŸo‚ðŽó‚¯“ü‚ê‚Ü‚µ‚½B
-      FindBugs ‚ÌˆÈ‘O‚Ìƒo[ƒWƒ‡ƒ“‚Å‚ÍA‚±‚ÌƒJƒeƒSƒŠ‚Í Style ‚Æ‚µ‚Ä’m‚ç‚ê‚Ä‚¢‚Ü‚µ‚½B
-</Details>
+  FindBugs ‚ÌˆÈ‘O‚Ìƒo[ƒWƒ‡ƒ“‚Å‚ÍA‚±‚ÌƒJƒeƒSƒŠ‚Í Style ‚Æ‚µ‚Ä’m‚ç‚ê‚Ä‚¢‚Ü‚µ‚½B
+@@@@</Details>
   </BugCategory>
 
   <BugCategory category="PERFORMANCE">
     <Description>Œø—¦</Description>
     <Abbreviation>P</Abbreviation>
-    <Details>•K‚¸‚µ‚àŠÔˆá‚¢‚Å‚Í‚È‚¢‚ªAŒø—¦‚ªˆ«‚¢‚©‚à‚µ‚ê‚È‚¢ƒR[ƒh</Details>
+    <Details>•K‚¸‚µ‚àŠÔˆá‚Á‚Ä‚¢‚é‚Æ‚¢‚¤‚í‚¯‚Å‚Í‚È‚­‚ÄAŒø—¦‚ªˆ«‚¢‚©‚à‚µ‚ê‚È‚¢ƒR[ƒh</Details>
   </BugCategory>
 
   <BugCategory category="MALICIOUS_CODE">
-    <Description>ÆŽã«‚Ì‚ ‚éƒR[ƒh</Description>
+    <Description>ˆ«Ž¿‚ÈƒR[ƒhÆŽã«</Description>
     <Abbreviation>V</Abbreviation>
-    <Details>M—Š‚Å‚«‚È‚¢ƒR[ƒh‚©‚ç‚ÌUŒ‚‚É‘Î‚µ‚ÄÆŽã‚ÈƒR[ƒh</Details>
+    <Details>M—Š‚Å‚«‚È‚¢ƒR[ƒh‚©‚ç‚ÌUŒ‚‚ÉÆŽã‚Å‚ ‚éƒR[ƒh</Details>
   </BugCategory>
 
   <BugCategory category="MT_CORRECTNESS">
-    <Description>ƒ}ƒ‹ƒ`ƒXƒŒƒbƒhŠÂ‹«‚Å‚Ì³Šm«</Description>
+    <Description>ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚Ì³Šm«</Description>
     <Abbreviation>M</Abbreviation>
     <Details>ƒXƒŒƒbƒhAƒƒbƒNAvolatile ‚ÉŠÖŒW‚ª‚ ‚éƒR[ƒh‚ÌŒ‡Š×</Details>
   </BugCategory>
@@ -90,29 +120,25 @@
   <BugCategory category="I18N">
     <Description>‘Û‰»</Description>
     <Abbreviation>I</Abbreviation>
-    <Details>‘Û‰»AƒƒP[ƒ‹‚ÉŠÖŒW‚ª‚ ‚éƒR[ƒh‚ÌŒ‡Š×</Details>
+    <Details>‘Û‰»‚ÆƒƒP[ƒ‹‚ÉŠÖŒW‚ª‚ ‚éƒR[ƒh‚ÌŒ‡Š×</Details>
     <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
   </BugCategory>
 
   <BugCategory category="EXPERIMENTAL">
     <Description>ŽÀŒ±—p</Description>
     <Abbreviation>X</Abbreviation>
-    <Details>ŽÀŒ±—p‚ÆŠ®‘S‚É‹á–¡‚µ‚Ä‚¢‚È‚¢ƒoƒOƒpƒ^[ƒ“</Details>
+    <Details>ŽÀŒ±—p‚ÅŠ®‘S‚É‹á–¡‚µ‚Ä‚¢‚È‚¢ƒoƒOƒpƒ^[ƒ“</Details>
     <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
   </BugCategory>
 
 
-  <!--
-  **********************************************************************
-  Detectors
-  **********************************************************************
-  -->
+  <!-- ********************************************************************** Detectors ********************************************************************** -->
 
   <Detector class="edu.umd.cs.findbugs.detect.IntCast2LongAsInstant">
     <Details>
 <![CDATA[
 <p>
-‹IŒ³‚©‚çƒ~ƒŠ•b‚ð‹Lq‚·‚é32ƒrƒbƒg’l‚ÌŽg‚¢•û‚ð”­Œ©‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒGƒ|ƒbƒN‚©‚çƒ~ƒŠ•b‚ð‹Lq‚·‚é32ƒrƒbƒg’l‚ÌŽg‚¢•û‚ð”­Œ©‚µ‚Ü‚·B
 </p>
 ]]>
      </Details>
@@ -122,7 +148,7 @@
     <Details>
 <![CDATA[
 <p>
-‹IŒ³‚©‚çƒ~ƒŠ•b‚ð‹Lq‚µ‚Ä‚¢‚é64ƒrƒbƒg’l‚ðŽæ‚éƒpƒ‰ƒ[ƒ^‚Ìƒf[ƒ^ƒx[ƒX‚ð\’z‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒGƒ|ƒbƒN‚©‚çƒ~ƒŠ•b‚ð‹Lq‚µ‚Ä‚¢‚é64ƒrƒbƒg’l‚ðŽæ‚éƒpƒ‰ƒ[ƒ^‚Ìƒf[ƒ^ƒx[ƒX‚ð\’z‚µ‚Ü‚·B
 </p>
 ]]>
      </Details>
@@ -132,7 +158,7 @@
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒƒ\ƒbƒhƒpƒ‰ƒ[ƒ^‚É’¼Ú“K—p‚³‚ê‚éŒ^CüŽq‚Æƒƒ\ƒbƒhƒpƒ‰ƒ[ƒ^‚ÌŽg‚¢•û‚Æ‚ÌŠÔ‚Å–µ‚‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒƒ\ƒbƒhƒpƒ‰ƒ[ƒ^‚Æ‚»‚ê‚ç‚Ìƒƒ\ƒbƒhƒpƒ‰ƒ[ƒ^‚É’¼Ú“K—p‚³‚ê‚½Œ^CüŽq‚Æ‚ÌŠÔ‚Å–µ‚‚ð”­Œ©‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -142,7 +168,7 @@
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAŒ´Žq“I‚ÉŽÀs‚³‚ê‚È‚¢•Às’ŠÛ‰»‚ÉŠÖ‚·‚é‰‰ŽZi‚½‚Æ‚¦‚ÎAget/putj‚ÌƒV[ƒPƒ“ƒX‚ð”­Œ©‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAŒ´Žq“I‚ÉŽÀs‚³‚ê‚È‚¢•Às’ŠÛ‰»‚ÉŠÖ‚µ‚ÄA‰‰ŽZi‚½‚Æ‚¦‚ÎAget/putj‚ÌƒV[ƒPƒ“ƒX‚ð”­Œ©‚µ‚Ü‚·B
 </p>
 ]]>
      </Details>
@@ -152,7 +178,7 @@
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA“¯Šú‰»‚Ì‚½‚ß‚Ì‹¤—L‚³‚ê‚½‘gž‚Ý’è” (‚½‚Æ‚¦‚ÎAString) ‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‹¤—L‚³‚ê‚½‘gž‚Ý’è” (‚½‚Æ‚¦‚ÎAString) ‚Ì“¯Šú‰»‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -266,7 +292,7 @@
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‚Ç‚ÌƒNƒ‰ƒX‚ª .class ƒIƒuƒWƒFƒNƒg‚É’è”ŽQÆ‚ª‚ ‚é‚©”­Œ©‚µ‚æ‚¤‚Æ‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‚Ç‚ÌƒNƒ‰ƒX‚ª .class ƒIƒuƒWƒFƒNƒg‚Ö‚Ì’è”ŽQÆ‚ª‚ ‚é‚©Œˆ’è‚µ‚æ‚¤‚ÆŽŽ‚Ý‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -284,7 +310,7 @@
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAŒp³‚³‚ê‚½ƒƒ\ƒbƒh‚ÆAŠO•”‚Ìƒƒ\ƒbƒh‚Æ‚ÌŠÔ‚ÌöÝ“I‚È¬—‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAŒp³‚³‚ê‚½ƒƒ\ƒbƒh‚ÆAŠO•”‚Ìƒƒ\ƒbƒh‚Æ‚ÌŠÔ‚ÌöÝ“I¬“¯‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -334,7 +360,7 @@
 <![CDATA[
 <p>
 ‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒƒ\ƒbƒhAƒtƒB[ƒ‹ƒhAƒpƒ‰ƒ[ƒ^‚Å @NonNull ƒAƒmƒe[ƒVƒ‡ƒ“‚ð’T‚µ‚Ü‚·B
-null ‚©‚à‚µ‚ê‚È‚¢’l‚ª null ˆÈŠO‚Ì’l‚¾‚¯‚ªŽg‚í‚ê‚é‚×‚«•¶–¬‚ÅŽg‚í‚ê‚½‚Æ‚«‚É FindNullDeref ƒfƒBƒeƒNƒ^‚ªŒx‚ð¶¬‚·‚é‚½‚ß‚ÉŽg‚í‚ê‚Ü‚·B
+null ‚©‚à‚µ‚ê‚È‚¢’l‚ª null ‚Å‚È‚¢’l‚¾‚¯‚ªŽg‚í‚ê‚é‚×‚«•¶–¬‚ÅŽg‚í‚ê‚½‚Æ‚«‚É FindNullDeref ƒfƒBƒeƒNƒ^‚ÅŽg‚í‚ê‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -344,8 +370,8 @@ null ‚©‚à‚µ‚ê‚È‚¢’l‚ª null ˆÈŠO‚Ì’l‚¾‚¯‚ªŽg‚í‚ê‚é‚×‚«•¶–¬‚ÅŽg‚í‚ê‚½‚Æ‚«‚É FindNu
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‚Ç‚Ìƒpƒ‰ƒ[ƒ^‚ª–³ðŒ‚É null ’l‚ð—˜—p‚·‚é‚Ì‚©‚ð”­Œ©‚·‚é‚½‚ß‚ÉAƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ì‚·‚×‚Ä‚Ìƒƒ\ƒbƒh‚ð‰ðÍ‚µ‚Ü‚·B
-‚±‚Ìî•ñ‚ÍAnull ’l‚ªƒƒ\ƒbƒh‚É“n‚³‚ê‚é‚©‚à‚µ‚ê‚È‚¢ŒÄ‚Ño‚µêŠ‚ð”­Œ©‚·‚é‚½‚ß‚ÉAŒã‚Ì‰ðÍƒpƒX‚ÉŽg‚í‚ê‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‚Ç‚Ìƒpƒ‰ƒ[ƒ^‚ª–³ðŒ‚Å  null ’l‚ð—˜—p‚·‚é‚Ì‚©‚ðŒˆ’è‚·‚é‚½‚ß‚ÉAƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ì‚·‚×‚Ä‚Ìƒƒ\ƒbƒh‚ð‰ðÍ‚µ‚Ü‚·B
+‚±‚Ìî•ñ‚ÍAnull ’l‚ªƒƒ\ƒbƒh‚É“n‚³‚ê‚é‚©‚à‚µ‚ê‚È‚¢ŒÄ‚Ño‚µêŠ‚ð”­Œ©‚·‚é‚½‚ß‚ÉAŒã‚Ì‰ðÍƒpƒX‚ÅŽg‚í‚ê‚Ü‚·B
 </p>
 <p>
 ’á‘¬ƒfƒBƒeƒNƒ^‚Å‚·B
@@ -358,7 +384,7 @@ null ‚©‚à‚µ‚ê‚È‚¢’l‚ª null ˆÈŠO‚Ì’l‚¾‚¯‚ªŽg‚í‚ê‚é‚×‚«•¶–¬‚ÅŽg‚í‚ê‚½‚Æ‚«‚É FindNu
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‚Ç‚Ìƒƒ\ƒbƒh‚ªí‚É null ˆÈŠO‚Ì’l‚ð•Ô‚·‚©‚ð”­Œ©‚·‚é‚½‚ß‚ÉAƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ì‚·‚×‚Ä‚Ìƒƒ\ƒbƒh‚ð‰ðÍ‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‚Ç‚Ìƒƒ\ƒbƒh‚ªí‚É null ‚Å‚È‚¢’l‚ð•Ô‚·‚©‚ðŒˆ’è‚·‚éƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÅA‚·‚×‚Ä‚Ìƒƒ\ƒbƒh‚ð‰ðÍ‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -379,7 +405,7 @@ null ‚©‚à‚µ‚ê‚È‚¢’l‚ª null ˆÈŠO‚Ì’l‚¾‚¯‚ªŽg‚í‚ê‚é‚×‚«•¶–¬‚ÅŽg‚í‚ê‚½‚Æ‚«‚É FindNu
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒƒ\ƒbƒh‚Ì–ß‚è’l‚ª null ˆÈŠO‚È‚Ì‚©ƒ`ƒFƒbƒN‚³‚ê‚½Œã‚ÉŽÌ‚Ä‚ç‚ê‚éƒP[ƒX‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒƒ\ƒbƒh‚Ì–ß‚è’l‚ª null ‚Å‚È‚¢‚Ì‚©ƒ`ƒFƒbƒN‚³‚ê‚½Œã‚ÉŽÌ‚Ä‚ç‚ê‚éƒP[ƒX‚ð’T‚µ‚Ü‚·B
 </p>
 
 ]]>
@@ -389,7 +415,7 @@ null ‚©‚à‚µ‚ê‚È‚¢’l‚ª null ˆÈŠO‚Ì’l‚¾‚¯‚ªŽg‚í‚ê‚é‚×‚«•¶–¬‚ÅŽg‚í‚ê‚½‚Æ‚«‚É FindNu
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒNƒ‰ƒX‚ª•Ê‚ÌƒpƒbƒP[ƒW‚ÌƒNƒ‰ƒX‚É‚æ‚Á‚ÄŠg’£‚³‚ê‚é‚È‚ç—\‘zŠO‚ÌŒ‹‰Ê‚ð‚à‚½‚ç‚·‰Â”\«‚ª‚ ‚é <code>this.getClass().getResource(...)</code> ‚ÌŽg‚¢•û‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒNƒ‰ƒX‚ª•Ê‚ÌƒpƒbƒP[ƒW‚ÌƒNƒ‰ƒX‚É‚æ‚Á‚ÄŠg’£‚³‚ê‚é‚È‚çA—\‘zŠO‚ÌŒ‹‰Ê‚ð‚à‚½‚ç‚·‰Â”\«‚ª‚ ‚é <code>this.getClass().getResource(...)</code> ‚ÌŽg‚¢•û‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -474,7 +500,7 @@ null ‚©‚à‚µ‚ê‚È‚¢’l‚ª null ˆÈŠO‚Ì’l‚¾‚¯‚ªŽg‚í‚ê‚é‚×‚«•¶–¬‚ÅŽg‚í‚ê‚½‚Æ‚«‚É FindNu
 <![CDATA[
 <p>
 <code>java.net.URL</code>‚Ì <code>equals</code> ƒƒ\ƒbƒh‚Æ <code>hashCode</code> ƒƒ\ƒbƒh‚ÍƒhƒƒCƒ“–¼‚Ì‰ðŒˆ‚ð‚µ‚Ü‚·B
-‚»‚ÌŒ‹‰ÊA‚±‚ê‚ç‚Ì‰‰ŽZ‚Í‘Š“–‚‚­‚Â‚­‰Â”\«‚ª‚ ‚è‚Ü‚·B‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚é‚©‚à‚µ‚ê‚È‚¢êŠ‚ð’T‚µ‚Ü‚·B
+‚»‚ÌŒ‹‰ÊA‚±‚ê‚ç‚Ì‰‰ŽZ‚Í”ñí‚É‚‚­‚Â‚­‰Â”\«‚ª‚ ‚è‚Ü‚·B‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚é‚©‚à‚µ‚ê‚È‚¢êŠ‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -534,7 +560,7 @@ null ‚©‚à‚µ‚ê‚È‚¢’l‚ª null ˆÈŠO‚Ì’l‚¾‚¯‚ªŽg‚í‚ê‚é‚×‚«•¶–¬‚ÅŽg‚í‚ê‚½‚Æ‚«‚É FindNu
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA<code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚éƒNƒ‰ƒX‚ÆŒÝŠ·«‚ª‚È‚¢ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒIƒyƒ‰ƒ“ƒh‚É‚µ‚Äƒ`ƒFƒbƒN‚·‚é <code>equals</code> ƒƒ\ƒbƒh‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA<code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚éƒNƒ‰ƒX‚ÆŒÝŠ·«‚ª‚È‚¢ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒIƒyƒ‰ƒ“ƒh‚É‚µ‚Äƒ`ƒFƒbƒN‚·‚é <code>equals</code> ƒƒ\ƒbƒh‚ðƒ`ƒFƒbƒN‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -585,7 +611,7 @@ null ‚©‚à‚µ‚ê‚È‚¢’l‚ª null ˆÈŠO‚Ì’l‚¾‚¯‚ªŽg‚í‚ê‚é‚×‚«•¶–¬‚ÅŽg‚í‚ê‚½‚Æ‚«‚É FindNu
 <![CDATA[
 <p>
 ‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒ‰ƒ“ƒ_ƒ€‚ÈM†‚ð¶¬‚µ‚Ü‚·B‚»‚ê‚Íƒƒ\ƒbƒh‚É‚æ‚Á‚ÄŽÀs‚³‚ê‚é‰‰ŽZ‚ÌƒnƒbƒVƒ…’l‚ÉŠî‚Ã‚­Œx‚Å‚·B
-‚±‚ê‚ç‚ÌŒx‚Íƒ\ƒtƒgƒEƒFƒA‚ÅŽÀÛ‚ÌƒoƒO‚ð”­Œ©‚·‚é‚Ì‚Å‚Í‚È‚­Aƒf[ƒ^ƒ}ƒCƒjƒ“ƒOŽÀŒ±‚É‚¨‚¯‚éƒRƒ“ƒgƒ[ƒ‹‚Æ‚µ‚Ä–ð‚É—§‚Â‚±‚Æ‚ð–Ú“I‚Æ‚µ‚½‹U‚Ìƒ‰ƒ“ƒ_ƒ€ƒmƒCƒY‚Å‚·B
+‚±‚ê‚ç‚ÌŒx‚Íƒ\ƒtƒgƒEƒFƒA‚ÅŽÀÛ‚ÌƒoƒO‚ð”­Œ©‚·‚é‚Ì‚Å‚Í‚È‚­Aƒf[ƒ^ƒ}ƒCƒjƒ“ƒOŽÀŒ±‚ÌƒRƒ“ƒgƒ[ƒ‹‚Æ‚µ‚Ä–ð‚É—§‚Â‚±‚Æ‚ð–Ú“I‚Æ‚µ‚½‹U‚Ìƒ‰ƒ“ƒ_ƒ€ƒmƒCƒY‚Å‚·B
 </p>
 <p>
 ‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAV‚µ‚¢ƒfƒBƒeƒNƒ^‚ðƒeƒXƒg‚·‚é‚½‚ß‚ÌƒtƒbƒN‚Å‚·B’ÊíA‚±‚ÌƒfƒBƒeƒNƒ^‚Í‰½‚à‚µ‚Ü‚¹‚ñB
@@ -598,7 +624,7 @@ null ‚©‚à‚µ‚ê‚È‚¢’l‚ª null ˆÈŠO‚Ì’l‚¾‚¯‚ªŽg‚í‚ê‚é‚×‚«•¶–¬‚ÅŽg‚í‚ê‚½‚Æ‚«‚É FindNu
     <Details>
 <![CDATA[
 <p>
-null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚µ‚ÄŽg—p‚·‚é‚Ì‚Å‚Í‚­AŒx‚Ì‘Ã“–«‚Ü‚½‚Í—\‘ª”\—Í‚ÌŽÀŒ±‚ÅƒRƒ“ƒgƒ[ƒ‹‚Æ‚µ‚Ä–ð‚É—§‚Â‚±‚Æ‚ð–Ú“I‚Æ‚µ‚Ü‚µ‚½B
+null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚µ‚ÄŽg—p‚·‚é‚Ì‚Å‚Í‚­AŒx‚Ì‘Ã“–«‚Ü‚½‚Í—\‘ª”\—Í‚ÌŽÀŒ±‚ÅƒRƒ“ƒgƒ[ƒ‹‚Æ‚µ‚Ä–ð‚É—§‚Â‚±‚Æ‚ðˆÓ}‚Æ‚µ‚Ü‚µ‚½B
 </p>
 ]]>
     </Details>
@@ -619,7 +645,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAdoPrivileged ƒuƒƒbƒN‚Ì’†‚ÅŽÀs‚·‚×‚«ƒR[ƒh‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAdoPrivileged ƒuƒƒbƒN‚Ì’†‚ÅŽÀs‚·‚é‚×‚«ƒR[ƒh‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -634,7 +660,6 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
 ]]>
     </Details>
   </Detector>
-
 
   <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough">
     <Details>
@@ -660,7 +685,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒtƒB[ƒ‹ƒh‚ª“¯‚¶ƒtƒB[ƒ‹ƒh‚Ì’l‚ð“Ç‚Ýo‚µ‚Ä‘ã“ü‚³‚ê‚éêŠ‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA’l‚ª‚»‚êŽ©g‚Æ”äŠr‚³‚ê‚éêŠ‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -721,7 +746,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA<code>Comparator</code> ‚ðŽÀ‘•‚·‚éƒNƒ‰ƒX‚ð‘‚­‚½‚ß‚ÌƒCƒfƒBƒIƒ€‚Ìˆá”½‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA<code>Comparator</code> ‚ðŽÀ‘•‚·‚éƒNƒ‰ƒX‚ð‘‚­‚½‚ß‚ÌƒCƒfƒBƒIƒ€‚Ìˆá”½‚ð’T‚µ‚Ü‚·B 
 </p>
 ]]>
     </Details>
@@ -770,7 +795,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
 <![CDATA[
 <p>
 ‚±‚ÌƒfƒBƒeƒNƒ^‚ÍANumber ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÌƒvƒŠƒ~ƒeƒBƒuŒ^‚Ìˆø”‚É‚æ‚éŒÄ‚Ño‚µ‚ð’T‚µ‚Ü‚·B
-</p>
+</p>                      
 ]]>
     </Details>
   </Detector>
@@ -809,7 +834,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA“¯’lŠÖŒW‚ª‘ÎÌ“I‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚È‚¢ƒX[ƒp[ƒNƒ‰ƒX‚Ì <code>equals</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚é <code>equals</code> ƒƒ\ƒbƒh‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA“¯’lŠÖŒW‚ª‘ÎÌ“I‚Å‚È‚¢‚©‚à‚µ‚ê‚È‚¢ƒX[ƒp[ƒNƒ‰ƒX‚Ì <code>equals</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚é <code>equals</code> ƒƒ\ƒbƒh‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -819,7 +844,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‰Â•ÏƒIƒuƒWƒFƒNƒg‚Ìó‘Ô‚ð•ÏX‚·‚é‚æ‚¤‚ÉŒ©‚¦‚È‚¢ <code>notify</code> ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‰Â•ÏƒIƒuƒWƒFƒNƒg‚Ìó‘Ô‚ð•ÏX‚·‚é‚æ‚¤‚ÉŽv‚í‚ê‚È‚¢  <code>notify</code> ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -829,7 +854,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‰Â•Ï static ƒf[ƒ^‚ð•Ô‚·ƒƒ\ƒbƒh‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‰Â•ÏÃ“Iƒf[ƒ^‚ð•Ô‚·ƒƒ\ƒbƒh‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -885,7 +910,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÅA‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ƒtƒB[ƒ‹ƒh‚Ì“Ç‚Ýo‚µ‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Å‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ƒtƒB[ƒ‹ƒh‚Ì“Ç‚Ýo‚µ‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -905,7 +930,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAöÝ“IzŠÂƒNƒ‰ƒX‰Šú‰»ˆË‘¶ŠÔŠÖŒW‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAöÝ“IzŠÂƒNƒ‰ƒX‰Šú‰»ˆË‘¶ŠÖŒW‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -935,7 +960,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA== ‚â != ‰‰ŽZŽq‚ðŽg—p‚µ‚Ä‚¢‚é <code>String</code> ƒIƒuƒWƒFƒNƒg‚Ì”äŠr‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA== ‚â != ‰‰ŽZŽq‚ðŽg—p‚µ‚Ä‚¢‚é String ƒIƒuƒWƒFƒNƒg‚Ì”äŠr‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -1005,7 +1030,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒXƒŒƒbƒh‚ÌŽÀs‚ðŠJŽn‚·‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒXƒŒƒbƒh‚ðŠJŽn‚·‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -1015,7 +1040,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAŠÔˆá‚Á‚½ƒ‹[ƒv‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAŠÔˆá‚Á‚½ for ƒ‹[ƒv‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -1105,7 +1130,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‰e‹¿‚ª‚È‚¢§Œäƒtƒ[•¶‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAŒø‰Ê‚ª‚È‚¢§Œäƒtƒ[•¶‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -1121,7 +1146,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
 ’†‘¬ƒfƒBƒeƒNƒ^‚Å‚·B
 </p>
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ðŽg—p‚·‚é‚½‚ß‚ÉA•â•ƒNƒ‰ƒXƒpƒX‚É <code>java.util.concurrent</code> ƒpƒbƒP[ƒW  (‚Ü‚½‚ÍAƒpƒbƒP[ƒWŽ©‘Ì‚Ì‰ðÍ) ‚ª•K—v‚Å‚ ‚é‚±‚Æ‚É’ˆÓ‚µ‚Ä‰º‚³‚¢B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ðŽg—p‚·‚é‚½‚ß‚ÉA•â•ƒNƒ‰ƒXƒpƒX‚É <code>java.util.concurrent</code> ƒpƒbƒP[ƒW  (‚Ü‚½‚ÍAƒpƒbƒP[ƒWŽ©‘Ì‚Ì‰ðÍ) ‚ª•K—v‚Å‚ ‚é‚±‚Æ‚É’ˆÓ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -1131,8 +1156,8 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA2‚Â‚ÌŽQÆ’l‚ª == ‚â != ‰‰ŽZŽq‚Å”äŠr‚µ‚Ä‚¢‚éêŠ‚ð’T‚µ‚Ü‚·B
-<code>java.lang.String</code> ‚Ì‚æ‚¤‚ÈŒ^‚ÌƒNƒ‰ƒX‚ÅŽQÆ’l‚ð”äŠr‚·‚é‚±‚Æ‚ÍAˆê”Ê“I‚ÉŒë‚è‚Å‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA2‚Â‚ÌŽQÆ’l‚ð == ‚â != ‰‰ŽZŽq‚Å”äŠr‚µ‚Ä‚¢‚éêŠ‚ð’T‚µ‚Ü‚·B
+<code>java.lang.String</code> ‚Ì‚æ‚¤‚ÈŒ^‚ÌƒNƒ‰ƒX‚ÅŽQÆ’l‚ð”äŠr‚·‚é‚±‚Æ‚ÍA’ÊíŒë‚è‚Å‚·B
 </p>
 </p>
 ’á‘¬ƒfƒBƒeƒNƒ^‚Å‚·B
@@ -1203,7 +1228,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒtƒB[ƒ‹ƒh‚ª volatile ‚Å‚Í‚È‚¢‘Ó‘Ä‚ÈƒtƒB[ƒ‹ƒh‚Ì‰Šú‰»‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒtƒB[ƒ‹ƒh‚ª volatile ‚Å‚È‚¢‘Ó‘Ä‚ÈƒtƒB[ƒ‹ƒh‚Ì‰Šú‰»‚ð’T‚µ‚Ü‚·B
 </p>
 <p>
 ’†‘¬ƒfƒBƒeƒNƒ^‚Å‚·B
@@ -1269,7 +1294,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA<code>Adapter</code> ƒNƒ‰ƒX‚ðŠg’£‚µ‚ÄA•s³‚ÈƒVƒOƒlƒ`ƒƒ‚Å <code>Listener</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚éƒR[ƒh‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA<code>Adapter</code> ƒNƒ‰ƒX‚ðŠg’£‚µ‚ÄAŠÔˆá‚Á‚½ƒVƒOƒlƒ`ƒƒ‚Å <code>Listener</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚éƒR[ƒh‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -1300,19 +1325,8 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAeƒAƒvƒŒƒbƒg‚ÅAƒAƒvƒŒƒbƒgƒXƒ^ƒu‚ÉˆË‘¶‚·‚éƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’T‚µ‚Ü‚·B
-‚±‚ÌƒXƒ^ƒu‚Í <code>init</code> ƒƒ\ƒbƒh‚Ì‘O‚Ü‚Å‰Šú‰»‚³‚ê‚È‚¢‚Ì‚ÅA‚±‚ê‚ç‚Ìƒƒ\ƒbƒh‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÅŽ¸”s‚·‚é‚±‚Æ‚É‚È‚è‚Ü‚·B
-</p>
-]]>
-    </Details>
-  </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.UseObjectEquals">
-    <Details>
-<![CDATA[
-<p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA”z—ñ‚Ü‚½‚Í <code>Object</code> ƒNƒ‰ƒX‚Ì <code>equals</code> ƒƒ\ƒbƒh‚ðƒI[ƒoƒ‰ƒCƒh‚µ‚Ä‚¢‚È‚¢ final ƒNƒ‰ƒX‚Å‚Ì <code>equals(java.lang.Object)</code> ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚ð’T‚µ‚Ü‚·B
-‚±‚ê‚Í equals ‚ÌƒZƒ}ƒ“ƒeƒBƒNƒX‚ª == ‚Æ“¯‚¶‚Å‚ ‚é‚±‚Æ‚ðˆÓ–¡‚µ‚Ä‚¢‚ÄA‚¨‚»‚ç‚­ŠÔˆá‚Å‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAApplet ƒXƒ^ƒu‚ÉˆË‘¶‚·‚ée Applet ‚Åƒƒ\ƒbƒh‚ðŒÄ‚Ño‚· Applet ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒXƒ^ƒu‚Í <code>init</code> ƒƒ\ƒbƒh‚Ì‘O‚Ü‚Å‰Šú‰»‚³‚ê‚È‚¢‚Ì‚ÅA‚±‚ê‚ç‚Ìƒƒ\ƒbƒh‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÅŽ¸”s‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -1322,8 +1336,8 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA”ñ static ‚È•¶–¬‚©‚ç <code>Thread.interrupted()</code> ‚Ö‚ÌŒÄ‚Ño‚µ‚ð’T‚µ‚Ü‚·B
-‚»‚ê‚ª <code>Thread.currentThread().interrupted()</code> ‚©‚çŒÄ‚Ño‚³‚ê‚é‚È‚ç–ð‚É—§‚½‚È‚¢sˆ×‚È‚Ì‚Å <code>Thread.interrupted()</code> ‚ðŽg—p‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA”ñƒXƒ^ƒeƒBƒbƒN‚È•¶–¬‚©‚ç <code>Thread.interrupted()</code> ‚ÌŒÄ‚Ño‚µ‚ð’T‚µ‚Ü‚·B
+‚»‚ê‚ª <code>Thread.currentThread().interrupted()</code> ‚©‚çŒÄ‚Ño‚³‚ê‚é‚È‚çA–ð‚É—§‚½‚È‚¢sˆ×‚È‚Ì‚Å <code>Thread.interrupted()</code> ‚ðŽg—p‚µ‚Ü‚·B
 ‚µ‚©‚µ‚È‚ª‚çA<code>interrupted</code> ƒƒ\ƒbƒh‚Íí‚ÉƒJƒŒƒ“ƒgƒXƒŒƒbƒh‚ÅŒÄ‚Ño‚³‚ê‚é‚Ì‚ÅA”CˆÓ‚ÌƒXƒŒƒbƒhƒIƒuƒWƒFƒNƒg‚ÅŒÄ‚Ño‚·‚Ì‚Í‚Ù‚ÚŠÔˆá‚¢‚È‚­Œë‚è‚Å‚·B
 </p>
 ]]>
@@ -1465,8 +1479,8 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA“¯Šú‰»‚µ‚Ä <em>this</em> ‚É‘Î‚µ‚Ä <code>wait</code> ƒƒ\ƒbƒhA<code>notify</code> ƒƒ\ƒbƒhA<code>notifyAll</code> ƒƒ\ƒbƒh‚ðŽg—p‚·‚éŒöŠJƒNƒ‰ƒX‚ð’T‚µ‚Ü‚·B
-‚±‚ê‚ÍŒöŠJƒNƒ‰ƒX‚Ì“¯Šú‰»ŽÀ‘•‚ð–\˜I‚·‚é‚±‚Æ‚É‚È‚è‚Ü‚·BŒöŠJƒNƒ‰ƒX‚Ì—˜—pŽÒ‚ÍA—˜—pŽÒ‚ÌƒNƒ‰ƒX‚ÅŒöŠJƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð“¯Šú‰»ƒIƒuƒWƒFƒNƒg‚Æ‚µ‚ÄŽg‚¤‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA“¯Šú‰»‚µ‚Ä <em>this</em> ‚É‘Î‚µ‚Ä <code>wait</code> ƒƒ\ƒbƒhA<code>notify</code> ƒƒ\ƒbƒhA<code>notifyAll</code> ƒƒ\ƒbƒh‚ðŽg—p‚·‚é public ƒNƒ‰ƒX‚ð’T‚µ‚Ü‚·B
+‚±‚ê‚Í public ƒNƒ‰ƒX‚Ì“¯Šú‰»ŽÀ‘•‚ð–\˜I‚·‚é‚±‚Æ‚É‚È‚è‚Ü‚·Bpublic ƒNƒ‰ƒX‚Ì—˜—pŽÒ‚ÍA—˜—pŽÒ‚ÌƒNƒ‰ƒX‚Å public ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð“¯Šú‰»ƒIƒuƒWƒFƒNƒg‚Æ‚µ‚ÄŽg‚¤‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 ‚±‚ê‚Íƒx[ƒXŽÀ‘•‚É‘åŽSŽ–‚ð‚à‚½‚ç‚µ‚Ü‚·B
 </p>
 ]]>
@@ -1489,15 +1503,6 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
 <p>
 ‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA®”œŽZ‚ÌŒ‹‰Ê‚ª double ‚ÉƒLƒƒƒXƒg‚³‚ê‚éêŠ‚ð’T‚µ‚Ü‚·B
 ‘½‚­‚Ìê‡AˆÓ–¡‚³‚ê‚½‚±‚Æ‚ÍA®”ƒIƒyƒ‰ƒ“ƒh‚ð double ‚ÉƒLƒƒƒXƒg‚µ‚Ä‚©‚çœŽZ‚ðŽÀs‚·‚é‚±‚Æ‚Å‚µ‚½B
-</p>
-]]>
-    </Details>
-  </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.FindBadCast">
-    <Details>
-<![CDATA[
-<p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍƒIƒuƒWƒFƒNƒgŽQÆ‚ÌŠÔˆá‚Á‚½ƒLƒƒƒXƒg‚ð’T‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -1555,7 +1560,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒƒbƒN‚ð•ÛŽ‚µ‚Ä‚¢‚éó‘Ô‚Å‚Ì <code>Thread.sleep()</code> ‚Ö‚ÌŒÄ‚Ño‚µ‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒƒbƒN‚ð•ÛŽ‚µ‚Ä‚¢‚éó‘Ô‚Å‚Ì <code>Thread.sleep()</code> ‚ÌŒÄ‚Ño‚µ‚ð’T‚µ‚Ü‚·B
 </p>
 <p>
 ’á‘¬ƒfƒBƒeƒNƒ^‚Å‚·B
@@ -1568,7 +1573,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA2‚Â‚Ì•ªŠò‚É“¯‚¶ƒR[ƒh‚ª‚ ‚é‚½‚ß‚ÉðŒ•ªŠò‚ª–³Œø‚É‚È‚Á‚Ä‚¢‚é if/else ‚Ü‚½‚Í switch •¶‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA2‚Â‚Ì•ªŠò‚É“¯‚¶ƒR[ƒh‚ª‚ ‚é‚½‚ß‚É•ªŠò‚ª–³Œø‚É‚È‚Á‚Ä‚¢‚é if/else ‚Ü‚½‚Í switch •¶‚ð’T‚µ‚Ü‚·B
 ‚±‚ê‚Í2‚Â‚Ì•ªŠò‚É“¯‚¶ƒR[ƒh‚ðƒRƒs[ &amp; ƒy[ƒXƒg‚µ‚Ä‚¢‚é‚±‚Æ‚ª•Ð•û‚Ì•ªŠò‚ÌŠÔˆá‚Á‚½ƒƒWƒbƒN‚ÌŒ´ˆö‚É‚È‚è‚Ü‚·B
 </p>
 ]]>
@@ -1598,20 +1603,6 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.FindBadEqualsImplementation">
-    <Details>
-<![CDATA[
-<p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAnull ’l‚Ìƒpƒ‰ƒ[ƒ^‚ð–³ðŒ‚Å—˜—p‚·‚é <code>equals(Object)</code> ƒƒ\ƒbƒh‚ÌŽÀ‘•‚ð’T‚µ‚Ü‚·B
-‚±‚ê‚Í <code>java.lang.Object.equals</code> ‚Å’è‹`‚³‚ê‚½uƒpƒ‰ƒ[ƒ^‚ª null ‚Ì‚Æ‚«‚Í false ‚ð•Ô‚·v‚Æ‚¢‚¤‹K–ñ‚Éˆá”½‚µ‚Ü‚·B
-</p>
-<p>
-’á‘¬ƒfƒBƒeƒNƒ^‚Å‚·B
-</p>
-]]>
-    </Details>
-  </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.UselessSubclassMethod">
     <Details>
 <![CDATA[
@@ -1628,8 +1619,8 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
 <![CDATA[
 <p>
 ‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAprotected ƒƒ“ƒo‚ðéŒ¾‚·‚é final ƒNƒ‰ƒX‚ð’T‚µ‚Ü‚·B
-‚±‚ÌƒNƒ‰ƒX‚Í”h¶‚³‚¹‚é‚±‚Æ‚ª‚Å‚«‚È‚¢‚Ì‚ÅAprotected ‚³‚ê‚½ƒƒ“ƒo‚ÌŽg—p‚Í³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
-ƒAƒNƒZƒXŒ ‚ÍAƒƒ“ƒo‚Ì³‚µ‚¢ˆÓ}‚ð•\‚·‚½‚ß‚ÉApublic ‚© private ‚É•ÏX‚·‚×‚«‚Å‚·B
+‚±‚ÌƒNƒ‰ƒX‚Í”h¶‚³‚¹‚é‚±‚Æ‚ª‚Å‚«‚È‚¢‚Ì‚ÅAprotected ƒƒ“ƒo‚ÌŽg—p‚Í³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+ƒAƒNƒZƒXŒ ‚ÍAƒƒ“ƒo‚Ì³‚µ‚¢ˆÓ}‚ð•\‚·‚½‚ß‚ÉApublic ‚© private ‚É•ÏX‚·‚é‚×‚«‚Å‚·B
 </p>
 <p>
 ‚¨‚»‚ç‚­AV‚µ‚¢ƒpƒ‰ƒ_ƒCƒ€‚ÉƒNƒ‰ƒX‚Ì‚·‚×‚Ä‚ðŠ®‘S‚É•ÏX‚·‚é‚±‚Æ‚Å‚Í‚È‚­AƒNƒ‰ƒX‚ÌŽg—p’†‚Ì•Ï‰»‚ªŒ´ˆö‚Æ‚È‚è‚Ü‚µ‚½B
@@ -1651,8 +1642,8 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‚Ç‚Ìƒƒ\ƒbƒh‚ª null ‚ð•Ô‚·‚Ì‚©‚ð”­Œ©‚µ‚Äƒtƒ@ƒCƒ‹‚É•Û‘¶‚µ‚Ü‚·B
-Œ‹‰Êƒtƒ@ƒCƒ‹‚ÍAŒã‘±‚ÌƒpƒX‚Å null ŽQÆ‰ðœƒfƒBƒeƒNƒ^‚Ì¸“x‚ðŒüã‚³‚¹‚é‚½‚ß‚ÉŽg‚í‚ê‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‚Ç‚Ìƒƒ\ƒbƒh‚ª null ‚ð•Ô‚·‚Ì‚©‚ðŒˆ’è‚µ‚Äƒtƒ@ƒCƒ‹‚É•Û‘¶‚µ‚Ü‚·B
+Œ‹‰Êƒtƒ@ƒCƒ‹‚ÍAnull ŽQÆ‰ðœƒfƒBƒeƒNƒ^‚Ì¸“x‚ðŒüã‚³‚¹‚é‚½‚ß‚ÉŒã‘±‚ÌƒpƒX‚ÅŽg‚í‚ê‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 ‚±‚ê‚ÍƒgƒŒ[ƒjƒ“ƒOƒpƒX‚È‚Ì‚ÅŒx‚Í•ñ‚³‚ê‚Ü‚¹‚ñB
 </p>
 <p>
@@ -1666,8 +1657,8 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‚Ç‚Ìƒƒ\ƒbƒh‚ª null ’l‚Ìƒpƒ‰ƒ[ƒ^‚ð–³ðŒ‚Å—˜—p‚·‚é‚Ì‚©‚ð”­Œ©‚µ‚Äƒtƒ@ƒCƒ‹‚É•Û‘¶‚µ‚Ü‚·B
-Œ‹‰Êƒtƒ@ƒCƒ‹‚ÍAŒã‘±‚ÌƒpƒX‚Å null ŽQÆ‰ðœƒfƒBƒeƒNƒ^‚Ì¸“x‚ðŒüã‚³‚¹‚é‚½‚ß‚ÉŽg‚í‚ê‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‚Ç‚Ìƒƒ\ƒbƒh‚ª null ’l‚Ìƒpƒ‰ƒ[ƒ^‚ð–³ðŒ‚Å—˜—p‚·‚é‚Ì‚©‚ðŒˆ’è‚µ‚Äƒtƒ@ƒCƒ‹‚É•Û‘¶‚µ‚Ü‚·B
+Œ‹‰Êƒtƒ@ƒCƒ‹‚ÍA null ŽQÆ‰ðœƒfƒBƒeƒNƒ^‚Ì¸“x‚ðŒüã‚³‚¹‚é‚½‚ß‚ÉŒã‘±‚ÌƒpƒX‚ÅŽg‚í‚ê‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 ‚±‚ê‚ÍƒgƒŒ[ƒjƒ“ƒOƒpƒX‚È‚Ì‚ÅŒx‚Í•ñ‚³‚ê‚Ü‚¹‚ñB
 </p>
 <p>
@@ -1682,7 +1673,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
 <![CDATA[
 <p>
 ‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒtƒB[ƒ‹ƒh‚ÉŠi”[‚³‚ê‚éŒ^‚ð‰ðÍ‚µ‚Äƒf[ƒ^ƒx[ƒX‚É•Û‘¶‚µ‚Ü‚·B
-ƒf[ƒ^ƒx[ƒX‚ÍAŒã‘±‚ÌƒpƒX‚ÅŒ^‰ðÍ‚ð‚æ‚è³Šm‚É‚·‚é‚½‚ß‚ÉŽg‚í‚ê‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+ƒf[ƒ^ƒx[ƒX‚ÍAŒ^‰ðÍ‚ð‚æ‚è³Šm‚É‚·‚é‚½‚ß‚ÉŒã‘±‚ÌƒpƒX‚ÅŽg‚í‚ê‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 <p>
 ’á‘¬ƒfƒBƒeƒNƒ^‚Å‚·B
@@ -1740,7 +1731,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAˆø”‚ÌŒ^‚ªƒRƒŒƒNƒVƒ‡ƒ“‚Ìƒpƒ‰ƒ[ƒ^‚ÉŠÖ˜A‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©Œ©‚é‚½‚ß‚É <code>java.lang.Object</code> ‚ðŽó‚¯Žæ‚é‘ÌŒ^ƒRƒŒƒNƒVƒ‡ƒ“ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚Ìˆø”‚ð’T‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAˆø”‚ÌŒ^‚ªƒRƒŒƒNƒVƒ‡ƒ“‚Ìƒpƒ‰ƒ[ƒ^‚ÉŠÖ˜A‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©Šm‚©‚ß‚é‚½‚ß‚ÉA<code>java.lang.Object</code> ‚ðŽó‚¯Žæ‚é‘ÌŒ^ƒRƒŒƒNƒVƒ‡ƒ“ƒƒ\ƒbƒh‚Ö‚ÌŒÄ‚Ño‚µ‚Ìˆø”‚ðŒ©‚Ü‚·B
 –³ŠÖŒW‚ÈƒNƒ‰ƒXŒ^‚É‚æ‚éˆø”‚ÍŒˆ‚µ‚ÄƒRƒŒƒNƒVƒ‡ƒ“‚Ì’†‚ÉŠi”[‚³‚ê‚é‚±‚Æ‚Í‚ ‚è‚Ü‚¹‚ñB
 ‚½‚Æ‚¦‚ÎA<code>foo</code> ‚ª <code>List&lt;String&gt;</code> ‚ÅA<code>bar</code> ‚ª <code>StringBuffer</code> ‚È‚ç <code>foo.contains(bar)</code> ‚ÌŒÄ‚Ño‚µ‚Íí‚É false ‚ð•Ô‚·‚±‚Æ‚É‚È‚è‚Ü‚·B
 </p>
@@ -1808,7 +1799,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA<code>ConcurrentMap</code> ‚Ì <code>putIfAbsent</code> ƒƒ\ƒbƒh‚ÌŒ‹‰Ê‚ª–³Ž‹‚³‚ê‚é‚È‚ç2”Ô–Ú‚Ìˆø”‚Æ‚µ‚Ä“n‚³‚ê‚½’l‚ªÄ—˜—p‚³‚ê‚Ä‚¢‚È‚¢‚±‚Æ‚ðƒ`ƒFƒbƒN‚µ‚Ü‚·B
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA<code>ConcurrentMap</code> ‚Ì <code>putIfAbsent</code> ƒƒ\ƒbƒh‚ÌŒ‹‰Ê‚ª–³Ž‹‚³‚ê‚é‚È‚çA2”Ô–Ú‚Ìˆø”‚Æ‚µ‚Ä“n‚³‚ê‚½’l‚ªÄ—˜—p‚³‚ê‚Ä‚¢‚È‚¢‚±‚Æ‚ðƒ`ƒFƒbƒN‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -1823,11 +1814,22 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.DefaultEncodingDetector">
+    <Details>
+<![CDATA[
+<p>
+‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒ†[ƒU‚ÌƒfƒtƒHƒ‹ƒgƒvƒ‰ƒbƒgƒz[ƒ€ƒGƒ“ƒR[ƒfƒBƒ“ƒO‚ðŽg—p‚µ‚ÄAƒoƒCƒg‚©‚ç String (‚Ü‚½‚ÍAString ‚©‚çƒoƒCƒg) ‚É•ÏŠ·‚·‚éƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚ðƒ`ƒFƒbƒN‚µ‚Ü‚·B
+‚±‚ê‚ÍAƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌU‚é•‘‚¢‚ªƒvƒ‰ƒbƒgƒz[ƒ€ŠÔ‚ÅˆÙ‚È‚éŒ´ˆö‚Æ‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
+ </p>
+]]>
+    </Details>
+  </Detector>
+  
   <!--
-        **********************************************************************
-        BugPatterns
-        **********************************************************************
-    -->
+  **********************************************************************
+  BugPatterns
+  **********************************************************************
+  -->
 
   <BugPattern type="SKIPPED_CLASS_TOO_BIG">
     <ShortDescription>‰ðÍ‚·‚é‚É‚Í‚ ‚Ü‚è‚É‚à‘å‚«‚¢ƒNƒ‰ƒX</ShortDescription>
@@ -1890,7 +1892,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
   </BugPattern>
 
   <BugPattern type="DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE">
-    <ShortDescription>double ‚©‚ç\’z‚³‚ê‚½ BigDecimal ‚Í³Šm‚É•\‚¹‚È‚¢</ShortDescription>
+    <ShortDescription>³Šm‚É•\‚³‚ê‚È‚¢ double ‚©‚ç\’z‚³‚ê‚½ BigDecimal</ShortDescription>
     <LongDescription>{4} ‚©‚ç BigDecimal ‚ª\’z‚³‚ê‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
@@ -1900,14 +1902,14 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
 ŽÀÛ‚É‚ÍA0.1000000000000000055511151231257827021181583404541015625‚Æ“™‚µ‚­‚È‚è‚Ü‚·B
 </p>
 <p>
-‚¨‚»‚ç‚­BigDecimal.valueOf(double d) ƒƒ\ƒbƒh‚ðŽg‚¢‚½‚©‚Á‚½‚Ì‚Å‚µ‚å‚¤BBigDecimal ‚ðì¬‚·‚é‚½‚ß‚É‚Í double ‚Ì•¶Žš—ñ•\Œ»‚ðŽg—p‚µ‚Ü‚· (‚½‚Æ‚¦‚ÎABigDecimal.valueOf(0.1) ‚Í0.1‚ð—^‚¦‚Ü‚·)B
+‚¨‚»‚ç‚­BigDecimal.valueOf(double d) ƒƒ\ƒbƒh‚ÌŽg—p‚ª–]‚Ü‚µ‚¢‚Å‚·BBigDecimal(‚½‚Æ‚¦‚ÎABigDecimal.valueOf(0.1) ‚Í0.1‚ð—^‚¦‚Ü‚·) ‚ðì¬‚·‚é‚½‚ß‚É‚Í double ‚Ì•¶Žš—ñ•\Œ»‚ðŽg—p‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD">
-    <ShortDescription>EasyMock ƒƒ\ƒbƒh‚Ì–ð‚É—§‚½‚È‚¢/–³ˆÓ–¡‚ÈŒÄ‚Ño‚µ</ShortDescription>
+    <ShortDescription>EasyMock ƒƒ\ƒbƒh‚Ö‚Ì–ð‚É—§‚½‚È‚¢/–³ˆÓ–¡‚ÈŒÄ‚Ño‚µ</ShortDescription>
     <LongDescription>EasyMock ƒƒ\ƒbƒh {2} ‚ÌŒÄ‚Ño‚µ‚Í–ð‚É—§‚½‚È‚¢/–³ˆÓ–¡‚Å‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
@@ -1938,7 +1940,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-<code>ScheduledThreadPoolExecutor</code> ‚Í <code>ThreadPoolExecutor</code> ‚©‚çŒp³‚³‚ê‚Ü‚·‚ªŒp³‚³‚ê‚½ƒ`ƒ…[ƒjƒ“ƒOƒƒ\ƒbƒh‚Ìˆê•”‚Í—L—p‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+<code>ScheduledThreadPoolExecutor</code> ‚Í <code>ThreadPoolExecutor</code> ‚©‚çŒp³‚³‚ê‚Ü‚·‚ªAŒp³‚³‚ê‚½ƒ`ƒ…[ƒjƒ“ƒOƒƒ\ƒbƒh‚Ìˆê•”‚Í—L—p‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
 “Á‚ÉAcorePoolSize ƒXƒŒƒbƒh‚ÆƒAƒ“ƒoƒEƒ“ƒhŒ`Ž®‚ÌƒLƒ…[‚ðŽg—p‚·‚éŒÅ’èƒTƒCƒYƒv[ƒ‹‚Æ‚µ‚Ä“®ì‚·‚é‚Ì‚ÅAmaximumPoolSize ‚Ì’²®‚Í—L—p‚ÈŒø‰Ê‚ª‚ ‚è‚Ü‚¹‚ñB<br>
 (<a href="http://java.sun.com/javase/ja/6/docs/ja/api/java/util/concurrent/ScheduledThreadPoolExecutor.html">Javadoc</a>)
 </p>
@@ -1966,7 +1968,7 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍAƒuƒ‰ƒ“ƒN‚Ü‚½‚Í‹ó‚ÌƒpƒXƒ[ƒh‚ðŽg—p‚µ‚Äƒf[ƒ^ƒx[ƒXÚ‘±‚ðì¬‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍA‹ó”’‚Ü‚½‚Í‹ó‚ÌƒpƒXƒ[ƒh‚ðŽg—p‚µ‚Äƒf[ƒ^ƒx[ƒXÚ‘±‚ðì¬‚µ‚Ä‚¢‚Ü‚·B
 ‚±‚ê‚Íƒf[ƒ^ƒx[ƒX‚ªƒpƒXƒ[ƒh‚É‚æ‚Á‚Ä•ÛŒì‚³‚ê‚Ä‚¢‚È‚¢‚±‚Æ‚ðŽ¦‚µ‚Ä‚¢‚Ü‚·B
 </p>
 
@@ -1993,14 +1995,14 @@ null ‚ÌŽQÆ‰ðœ‚Ì‚½‚ß‚ÌƒmƒCƒY‚ª‘½‚¢ƒfƒBƒeƒNƒ^‚Å‚·BƒR[ƒh‚Ì–â‘è‚ðŒ©‚Â‚¯‚é•û–@‚Æ‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍAM—Š‚Å‚«‚È‚¢ HTTP ƒpƒ‰ƒ[ƒ^‚ð—˜—p‚µ‚Ä HTTP cookie ‚ð\’z‚µ‚Ä‚¢‚Ü‚·B
-‚±‚Ì Cookie ‚ª HTTP ƒŒƒXƒ|ƒ“ƒX‚É’Ç‰Á‚³‚ê‚é‚È‚ç HRS (HTTP ƒŒƒXƒ|ƒ“ƒXƒXƒvƒŠƒbƒeƒBƒ“ƒO) ÆŽã«‚ð‰Â”\‚É‚µ‚Ü‚·B<br>
+‚±‚ÌƒR[ƒh‚ÍAM—Š‚Å‚«‚È‚¢ HTTP ƒpƒ‰ƒ[ƒ^‚ðŽg—p‚µ‚Ä HTTP ƒNƒbƒL[‚ð\’z‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒNƒbƒL[‚ª HTTP ƒŒƒXƒ|ƒ“ƒX‚É’Ç‰Á‚³‚ê‚é‚È‚çAHRS(HTTP ƒŒƒXƒ|ƒ“ƒXƒXƒvƒŠƒbƒeƒBƒ“ƒO) ÆŽã«‚ð‰Â”\‚É‚µ‚Ü‚·B<br>
 Ú×‚ÍA<a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 <p>
 FindBugs ‚ÍAHRS ‚ÌÅ‚à˜Iœ‚ÅŽ©–¾‚ÈƒP[ƒX‚¾‚¯‚ð’T‚µ‚Ü‚·B
-FindBugs ‚ª‰½‚©‚ð”­Œ©‚µ‚½‚È‚ç‚Ù‚ÚŠÔˆá‚¢‚È‚­ FindBugs ‚ª•ñ‚µ‚È‚¢A‚æ‚è‘½‚­‚ÌÆŽã«‚ª‚ ‚è‚Ü‚·B
-HRS ‚ðS”z‚µ‚Ä‚¢‚é‚È‚ç¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚ÉŒŸ“¢‚·‚×‚«‚Å‚·B
+FindBugs ‚ª‰½‚©‚ð”­Œ©‚µ‚½‚È‚ç‚Ù‚ÚŠÔˆá‚¢‚È‚­ FindBugs ‚ª•ñ‚µ‚È‚¢A‚æ‚è‘½‚­‚ÌÆŽã«‚ª‚ ‚é‚Å‚µ‚å‚¤B
+HRS ‚ðS”z‚·‚é‚È‚çA¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚ÉŒŸ“¢‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -2012,13 +2014,13 @@ HRS ‚ðS”z‚µ‚Ä‚¢‚é‚È‚ç¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚ÉŒŸ“¢‚·
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍAHTTP ƒwƒbƒ_‚É HTTP ƒpƒ‰ƒ[ƒ^‚ð‚»‚Ì‚Ü‚Ü‘‚«ž‚ñ‚Å‚¢‚Ü‚·B‚±‚ê‚Í HRS (HTTP ƒŒƒXƒ|ƒ“ƒXƒXƒvƒŠƒbƒeƒBƒ“ƒO) ÆŽã«‚ð‰Â”\‚É‚µ‚Ü‚·B<br>
+‚±‚ÌƒR[ƒh‚ÍAHTTP ƒwƒbƒ_‚É HTTP ƒpƒ‰ƒ[ƒ^‚ð‚»‚Ì‚Ü‚Ü‘‚«ž‚ñ‚Å‚¢‚Ü‚·B‚±‚ê‚Í HRS(HTTP ƒŒƒXƒ|ƒ“ƒXƒXƒvƒŠƒbƒeƒBƒ“ƒO) ÆŽã«‚ð‰Â”\‚É‚µ‚Ü‚·B<br>
 Ú×‚ÍA<a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 <p>
 FindBugs ‚ÍAHRS ‚Ì‚à‚Á‚Æ‚à˜Iœ‚ÅŽ©–¾‚ÈƒP[ƒX‚¾‚¯‚ð’T‚µ‚Ü‚·B
-FindBugs ‚ª‰½‚©‚ð”­Œ©‚µ‚½‚È‚ç‚Ù‚ÚŠÔˆá‚¢‚È‚­ FindBugs ‚ª•ñ‚µ‚È‚¢A‚æ‚è‘½‚­‚ÌÆŽã«‚ª‚ ‚è‚Ü‚·B
-HRS ‚ðS”z‚µ‚Ä‚¢‚é‚È‚ç¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚ÉŒŸ“¢‚·‚·‚×‚«‚Å‚·B
+FindBugs ‚ª‰½‚©‚ð”­Œ©‚µ‚½‚È‚ç‚Ù‚ÚŠÔˆá‚¢‚È‚­ FindBugs ‚ª•ñ‚µ‚È‚¢A‚æ‚è‘½‚­‚ÌÆŽã«‚ª‚ ‚é‚Å‚µ‚å‚¤B
+HRS ‚ðS”z‚·‚é‚È‚çA¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚ÉŒŸ“¢‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -2029,32 +2031,32 @@ HRS ‚ðS”z‚µ‚Ä‚¢‚é‚È‚ç¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚ÉŒŸ“¢‚·
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍAƒT[ƒuƒŒƒbƒg‚Ìo—Í‚É HTTP ƒpƒ‰ƒ[ƒ^‚ð‚»‚Ì‚Ü‚Ü‘‚«ž‚ñ‚Å‚¢‚Ü‚·B‚±‚ê‚Í XSS (ƒNƒƒXƒTƒCƒgƒXƒNƒŠƒvƒeƒBƒ“ƒO) ÆŽã«‚ð‰Â”\‚É‚µ‚Ü‚·B<br>
+‚±‚ÌƒR[ƒh‚ÍAƒT[ƒuƒŒƒbƒg‚Ìo—Í‚É HTTP ƒpƒ‰ƒ[ƒ^‚ð‚»‚Ì‚Ü‚Ü‘‚«ž‚ñ‚Å‚¢‚Ü‚·B‚±‚ê‚Í”½ŽËŒ^ XSS(ƒNƒƒXƒTƒCƒgƒXƒNƒŠƒvƒeƒBƒ“ƒO) ÆŽã«‚ð‰Â”\‚É‚µ‚Ü‚·B<br>
 Ú×‚ÍA<a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 <p>
 FindBugs ‚ÍAXSS ‚Ì‚à‚Á‚Æ‚à˜Iœ‚ÅŽ©–¾‚ÈƒP[ƒX‚¾‚¯‚ð’T‚µ‚Ü‚·B
-FindBugs ‚ª‰½‚©‚ð”­Œ©‚µ‚½‚È‚ç‚Ù‚ÚŠÔˆá‚¢‚È‚­ FindBugs ‚ª•ñ‚µ‚È‚¢A‚æ‚è‘½‚­‚ÌÆŽã«‚ª‚ ‚è‚Ü‚·B
-XSS ‚ðS”z‚µ‚Ä‚¢‚é‚È‚ç¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚ÉŒŸ“¢‚·‚×‚«‚Å‚·B
+FindBugs ‚ª‰½‚©‚ð”­Œ©‚µ‚½‚È‚ç‚Ù‚ÚŠÔˆá‚¢‚È‚­ FindBugs ‚ª•ñ‚µ‚È‚¢A‚æ‚è‘½‚­‚ÌÆŽã«‚ª‚ ‚é‚Å‚µ‚å‚¤B
+XSS ‚ðS”z‚·‚é‚È‚çA¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚ÉŒŸ“¢‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="XSS_REQUEST_PARAMETER_TO_SEND_ERROR">
-    <ShortDescription>”½ŽËŒ^ƒNƒƒXƒTƒCƒgƒXƒNƒŠƒvƒeƒBƒ“ƒOÆŽã«‚ª‚ ‚éƒT[ƒuƒŒƒbƒg</ShortDescription>
+    <ShortDescription>”½ŽËŒ^ƒNƒƒXƒTƒCƒgƒXƒNƒŠƒvƒeƒBƒ“ƒOÆŽã«‚ªƒGƒ‰[ƒy[ƒW‚É‚ ‚éƒT[ƒuƒŒƒbƒg</ShortDescription>
     <LongDescription>ƒT[ƒuƒŒƒbƒg‚ÌƒGƒ‰[ƒy[ƒW‚É HTTP ƒpƒ‰ƒ[ƒ^‚ð‚»‚Ì‚Ü‚Ü‘‚«ž‚ñ‚Å‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚ÌƒR[ƒh‚ÍAƒT[ƒuƒŒƒbƒg‚ÌƒGƒ‰[ƒy[ƒW‚É <code>HttpServletResponse.sendError</code> ‚ðŽg—p‚µ‚Ä HTTP ƒpƒ‰ƒ[ƒ^‚ð‚»‚Ì‚Ü‚Ü‘‚«ž‚ñ‚Å‚¢‚Ü‚·B
-‚±‚ê‚Í XSS (ƒNƒƒXƒTƒCƒgƒXƒNƒŠƒvƒeƒBƒ“ƒO) ÆŽã«‚ð‰Â”\‚É‚µ‚Ü‚·B<br>
+M—Š‚Å‚«‚È‚¢“ü—Í‚ð•Ô‚·‚±‚Æ‚Í”½ŽËŒ^ XSS(ƒNƒƒXƒTƒCƒgƒXƒNƒŠƒvƒeƒBƒ“ƒO) ÆŽã«‚ð‰Â”\‚É‚µ‚Ü‚·B<br>
 Ú×‚ÍA<a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 <p>
 FindBugs ‚ÍAXSS ‚Ì‚à‚Á‚Æ‚à˜Iœ‚ÅŽ©–¾‚ÈƒP[ƒX‚¾‚¯‚ð’T‚µ‚Ü‚·B
-FindBugs ‚ª‰½‚©‚ð”­Œ©‚µ‚½‚È‚ç‚Ù‚ÚŠÔˆá‚¢‚È‚­ FindBugs ‚ª•ñ‚µ‚È‚¢A‚æ‚è‘½‚­‚ÌÆŽã«‚ª‚ ‚è‚Ü‚·B
-XSS ‚ðS”z‚µ‚Ä‚¢‚é‚È‚ç¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚ÉŒŸ“¢‚·‚×‚«‚Å‚·B
+FindBugs ‚ª‰½‚©‚ð”­Œ©‚µ‚½‚È‚ç‚Ù‚ÚŠÔˆá‚¢‚È‚­ FindBugs ‚ª•ñ‚µ‚È‚¢A‚æ‚è‘½‚­‚ÌÆŽã«‚ª‚ ‚é‚Å‚µ‚å‚¤B
+XSS ‚ðS”z‚·‚é‚È‚çA¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚ÉŒŸ“¢‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -2066,13 +2068,13 @@ XSS ‚ðS”z‚µ‚Ä‚¢‚é‚È‚ç¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚ÉŒŸ“¢‚·
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍAJSP ‚Ìo—Í‚É HTTP ƒpƒ‰ƒ[ƒ^‚ð‚»‚Ì‚Ü‚Ü‘‚«ž‚ñ‚Å‚¢‚Ü‚·B‚±‚ê‚Í XSS (ƒNƒƒXƒTƒCƒgƒXƒNƒŠƒvƒeƒBƒ“ƒO) ÆŽã«‚ð‰Â”\‚É‚µ‚Ü‚·B<br>
+‚±‚ÌƒR[ƒh‚ÍAJSP ‚Ìo—Í‚É HTTP ƒpƒ‰ƒ[ƒ^‚ð‚»‚Ì‚Ü‚Ü‘‚«ž‚ñ‚Å‚¢‚Ü‚·B‚±‚ê‚Í XSS(ƒNƒƒXƒTƒCƒgƒXƒNƒŠƒvƒeƒBƒ“ƒO) ÆŽã«‚ð‰Â”\‚É‚µ‚Ü‚·B<br>
 Ú×‚ÍA<a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 <p>
 FindBugs ‚ÍAXSS ‚Ì‚à‚Á‚Æ‚à˜Iœ‚ÅŽ©–¾‚ÈƒP[ƒX‚¾‚¯‚ð’T‚µ‚Ü‚·B
-FindBugs ‚ª‰½‚©‚ð”­Œ©‚µ‚½‚È‚ç‚Ù‚ÚŠÔˆá‚¢‚È‚­ FindBugs ‚ª•ñ‚µ‚È‚¢A‚æ‚è‘½‚­‚ÌÆŽã«‚ª‚ ‚è‚Ü‚·B
-XSS ‚ÉŠÖ‚µ‚ÄS”z‚µ‚Ä‚¢‚é‚È‚ç¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚ÉŒŸ“¢‚·‚×‚«‚Å‚·B
+FindBugs ‚ª‰½‚©‚ð”­Œ©‚µ‚½‚È‚ç‚Ù‚ÚŠÔˆá‚¢‚È‚­ FindBugs ‚ª•ñ‚µ‚È‚¢A‚æ‚è‘½‚­‚ÌÆŽã«‚ª‚ ‚é‚Å‚µ‚å‚¤B
+XSS ‚ÉŠÖ‚µ‚ÄS”z‚µ‚Ä‚¢‚é‚È‚ç¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚ÉŒŸ“¢‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -2085,8 +2087,8 @@ XSS ‚ÉŠÖ‚µ‚ÄS”z‚µ‚Ä‚¢‚é‚È‚ç¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚É
 <![CDATA[
 <p>
 (<a href="http://java.sun.com/developer/JDCTechTips/2003/tt1208.html#1">From JDC Tech Tip</a>):<br>
-‚É‰ðà‚³‚ê‚Ä‚¢‚é‚Æ‚¨‚èASwing ‚Ìƒƒ\ƒbƒhA<code>show</code> ƒƒ\ƒbƒhA<code>setVisible</code> ƒƒ\ƒbƒhA<code>pack</code> ƒƒ\ƒbƒh‚ÍAƒtƒŒ[ƒ€‚Ì‚½‚ß‚ÉŠÖ˜A‚µ‚½ƒsƒA‚ð¶¬‚·‚é‚±‚Æ‚É‚È‚è‚Ü‚·B
-ƒsƒA‚Ì¶¬‚ÅAƒVƒXƒeƒ€‚ÍƒCƒxƒ“ƒgƒfƒBƒXƒpƒbƒ`ƒXƒŒƒbƒh‚ð¶¬‚µ‚Ü‚·B
+‚É‰ðà‚³‚ê‚Ä‚¢‚é‚Æ‚¨‚èASwing ‚Ìƒƒ\ƒbƒhA<code>show</code> ƒƒ\ƒbƒhA<code>setVisible</code> ƒƒ\ƒbƒhA<code>pack</code> ƒƒ\ƒbƒh‚ÍAƒtƒŒ[ƒ€‚Ì‚½‚ß‚ÉŠÖ˜A‚µ‚½ƒsƒA‚ðì¬‚µ‚Ü‚·B
+ƒsƒA‚Ìì¬‚ÅAƒVƒXƒeƒ€‚ÍƒCƒxƒ“ƒgƒfƒBƒXƒpƒbƒ`ƒXƒŒƒbƒh‚ðì¬‚µ‚Ü‚·B
 ‚±‚ê‚ª–â‘è‚É‚È‚é‚±‚Æ‚ª‚ ‚è‚Ü‚·B‚È‚º‚È‚ç <code>pack</code> ƒƒ\ƒbƒh‚Æ <code>validate</code> ƒƒ\ƒbƒh‚ª‚Ü‚¾ˆ—’†‚Å‚àƒCƒxƒ“ƒgƒfƒBƒXƒpƒbƒ`ƒXƒŒƒbƒh‚ªƒŠƒXƒi‚É’Ê’m‚Å‚«‚é‚©‚ç‚Å‚·B
 ‚±‚Ìó‹µ‚ÍA2‚Â‚ÌƒXƒŒƒbƒh‚ª Swing ƒRƒ“ƒ|[ƒlƒ“ƒg‚ÉƒAƒNƒZƒX‚·‚é‰Â”\«‚ª‚ ‚èAƒfƒbƒhƒƒbƒN‚âA‚»‚Ì‘¼‚ÌƒXƒŒƒbƒh‚ÉŠÖ‚·‚é–â‘è‚É‚È‚é‰Â”\«‚ª‚ ‚éd‘å‚ÈŒ‡Š×‚Å‚·B
 <code>pack</code> ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚ÍAƒRƒ“ƒ|[ƒlƒ“ƒg‚ðŽÀ‘Ì‰»‚³‚¹‚Ü‚·BŽÀ‘Ì‰»‚µ‚Ä‚¢‚é‚Æ‚«‚ÉAƒCƒxƒ“ƒgƒfƒBƒXƒpƒbƒ`ƒXƒŒƒbƒh‚ªƒŠƒXƒi‚Ö‚Ì’Ê’m‚ðŠJŽn‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
@@ -2114,7 +2116,7 @@ XSS ‚ÉŠÖ‚µ‚ÄS”z‚µ‚Ä‚¢‚é‚È‚ç¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚É
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚Í–³ðŒ‚Å‚»‚êŽ©g‚ðŒÄ‚Ño‚µ‚Ü‚·B‚±‚ê‚ÍƒXƒ^ƒbƒNƒI[ƒo[ƒtƒ[‚É‚È‚é–³ŒÀÄ‹Aƒ‹[ƒv‚ðŽ¦´‚µ‚Ä‚¢‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍA–³ðŒ‚Å‚»‚êŽ©g‚ðŒÄ‚Ño‚µ‚Ü‚·B‚±‚ê‚ÍAƒXƒ^ƒbƒNƒI[ƒo[ƒtƒ[‚É‚È‚é–³ŒÀÄ‹Aƒ‹[ƒv‚ðŽ¦‚µ‚Ä‚¢‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -2127,7 +2129,7 @@ XSS ‚ÉŠÖ‚µ‚ÄS”z‚µ‚Ä‚¢‚é‚È‚ç¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚É
     <Details>
 <![CDATA[
 <p>
-ƒRƒŒƒNƒVƒ‡ƒ“‚ÍŽ©•ªŽ©g‚ð’Ç‰Á‚µ‚Ä‚¢‚Ü‚·B‚»‚ÌŒ‹‰ÊAhashCode ‚ðŒvŽZ‚·‚é‚Æ <code>StackOverflowException</code> ‚ðƒXƒ[‚·‚é‚±‚Æ‚É‚È‚è‚Ü‚·B
+ƒRƒŒƒNƒVƒ‡ƒ“‚ÍŽ©•ªŽ©g‚ð’Ç‰Á‚µ‚Ä‚¢‚Ü‚·B‚»‚ÌŒ‹‰ÊAhashCode ‚ðŒvŽZ‚·‚é‚Æ <code>StackOverflowException</code> ‚ðƒXƒ[‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -2139,8 +2141,8 @@ XSS ‚ÉŠÖ‚µ‚ÄS”z‚µ‚Ä‚¢‚é‚È‚ç¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚É
     <Details>
 <![CDATA[
 <p>
-‚±‚ê‚Í”z—ñ‚É volatile ŽQÆ‚ðéŒ¾‚µ‚Ü‚·B‚±‚ê‚Í‚ ‚È‚½‚ª–]‚Þ‚à‚Ì‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-”z—ñ‚Ö‚Ì volatile ŽQÆ‚ª‚ ‚éê‡A”z—ñ‚Ö‚Ì“Ç‚Ýo‚µA‘‚«ž‚Ý‚Í volatile ‚Æ‚µ‚Äˆµ‚í‚ê‚Ü‚·‚ªA”z—ñ—v‘f‚Í volatile ‚Æ‚µ‚Äˆµ‚í‚ê‚Ü‚¹‚ñB
+‚±‚ê‚Í”z—ñ‚É volatile ŽQÆ‚ðéŒ¾‚µ‚Ä‚¢‚Ü‚·B‚»‚ê‚Í‚ ‚È‚½‚ª–]‚Þ‚à‚Ì‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+”z—ñ‚Ö‚Ì volatile ŽQÆ‚ÍA”z—ñ‚Ö‚ÌŽQÆ‚Ì“Ç‚Ýo‚µA‘‚«ž‚Ý‚Í volatile ‚Æ‚µ‚Äˆµ‚í‚ê‚Ü‚·‚ªA”z—ñ—v‘f‚Í volatile ‚Æ‚µ‚Äˆµ‚í‚ê‚Ü‚¹‚ñB
 ”z—ñ—v‘f‚ð volatile ‚Æ‚µ‚Äˆµ‚¢‚½‚¢‚Ì‚Å‚ ‚ê‚ÎAJ2SE 5.0‚Å’ñ‹Ÿ‚³‚ê‚½ <code>java.util.concurrent</code> ƒpƒbƒP[ƒW‚ÌƒAƒgƒ~ƒbƒN”z—ñƒNƒ‰ƒX‚ðŽg—p‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
@@ -2155,7 +2157,7 @@ XSS ‚ÉŠÖ‚µ‚ÄS”z‚µ‚Ä‚¢‚é‚È‚ç¤—p‚ÌÃ“I‰ðÍƒc[ƒ‹‚©ƒyƒ“ƒeƒXƒgƒc[ƒ‹‚ÌŽg—p‚ð^Œ•‚É
 <p>
 ‚±‚ÌƒR[ƒh‚ÍAvolatile ƒtƒB[ƒ‹ƒh‚ðƒCƒ“ƒNƒŠƒƒ“ƒg‚µ‚Ä‚¢‚Ü‚·B
 volatile ƒtƒB[ƒ‹ƒh‚ÌƒCƒ“ƒNƒŠƒƒ“ƒg‚ÍAƒAƒgƒ~ƒbƒN‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
-•¡”‚ÌƒXƒŒƒbƒh‚ª“¯Žž‚ÉƒtƒB[ƒ‹ƒh‚ðƒCƒ“ƒNƒŠƒƒ“ƒg‚·‚é‚ÆAƒCƒ“ƒNƒŠƒƒ“ƒg‚ªŽ¸‚í‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
+•¡”‚ÌƒXƒŒƒbƒh‚ª“¯Žž‚ÉƒtƒB[ƒ‹ƒh‚ðƒCƒ“ƒNƒŠƒƒ“ƒg‚·‚é‚ÆAƒCƒ“ƒNƒŠƒƒ“ƒg‚ªŽ¸‚í‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B 
 </p>
 ]]>
     </Details>
@@ -2163,11 +2165,11 @@ volatile ƒtƒB[ƒ‹ƒh‚ÌƒCƒ“ƒNƒŠƒƒ“ƒg‚ÍAƒAƒgƒ~ƒbƒN‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
 
   <BugPattern type="UI_INHERITANCE_UNSAFE_GETRESOURCE">
     <ShortDescription>ƒNƒ‰ƒX‚ªŠg’£‚³‚ê‚é‚È‚ç getResource ‚ÌŽg‚¢•û‚ÍˆÀ‘S‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚È‚¢</ShortDescription>
-    <LongDescription>ƒNƒ‰ƒX‚ªŠg’£‚³‚ê‚é‚È‚ç getResource ‚ÌŽg‚¢•û‚ÍˆÀ‘S‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB{1}</LongDescription>
+    <LongDescription>ƒNƒ‰ƒX‚ªŠg’£‚³‚ê‚é‚È‚çAgetResource ‚ÌŽg‚¢•û‚ÍˆÀ‘S‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ª•Ê‚ÌƒpƒbƒP[ƒW‚É‚æ‚Á‚ÄŠg’£‚³‚ê‚é‚È‚ç <code>this.getClass().getResource(...)</code> ‚ÌŒÄ‚Ño‚µ‚Í—\‘zŠO‚ÌŒ‹‰Ê‚ð‚à‚½‚ç‚·‰Â”\«‚ª‚ ‚è‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚ª•Ê‚ÌƒpƒbƒP[ƒW‚É‚æ‚Á‚ÄŠg’£‚³‚ê‚é‚È‚çA<code>this.getClass().getResource(...)</code> ‚ÌŒÄ‚Ño‚µ‚Í—\‘zŠO‚ÌŒ‹‰Ê‚ð‚à‚½‚ç‚·‰Â”\«‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -2180,8 +2182,8 @@ volatile ƒtƒB[ƒ‹ƒh‚ÌƒCƒ“ƒNƒŠƒƒ“ƒg‚ÍAƒAƒgƒ~ƒbƒN‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
 <![CDATA[
 <p>
 Boolean.TRUEABoolean.FALSEAnull ‚ð•Ô‚·ƒƒ\ƒbƒh‚ÍŽ–ŒÌ‚ª‹N‚±‚é‚Ì‚ð‘Ò‚Á‚Ä‚¢‚é‚æ‚¤‚È‚à‚Ì‚Å‚·B
-‚Ü‚é‚Å˜_—Œ^‚Ì’l‚ð•Ô‚·‚©‚Ì‚æ‚¤‚É‚±‚Ìƒƒ\ƒbƒh‚ÍŒÄ‚Ño‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
-‚»‚µ‚ÄAƒRƒ“ƒpƒCƒ‰‚Í Boolean ’l‚ÌƒI[ƒgƒ{ƒNƒVƒ“ƒO‚ð‘}“ü‚µ‚Ü‚·B
+‚Ü‚é‚Å˜_—Œ^‚Ì’l‚ð•Ô‚·‚©‚Ì‚æ‚¤‚ÉA‚±‚Ìƒƒ\ƒbƒh‚ÍŒÄ‚Ño‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
+‚»‚µ‚ÄAƒRƒ“ƒpƒCƒ‰‚Í Boolean ’l‚ÌƒI[ƒgƒAƒ“ƒ{ƒNƒVƒ“ƒO‚ð‘}“ü‚µ‚Ü‚·B
 null ’l‚ª•Ô‚³‚ê‚é‚È‚ç <code>NullPointerException</code> ‚ª”­¶‚·‚é‚±‚Æ‚É‚È‚è‚Ü‚·B
 </p>
 ]]>
@@ -2190,11 +2192,11 @@ null ’l‚ª•Ô‚³‚ê‚é‚È‚ç <code>NullPointerException</code> ‚ª”­¶‚·‚é‚±‚Æ‚É‚È‚è‚Ü‚·
 
   <BugPattern type="NP_SYNC_AND_NULL_CHECK_FIELD">
     <ShortDescription>“¯‚¶ƒtƒB[ƒ‹ƒh‚Å‚Ì“¯Šú‰»‚Æ null ƒ`ƒFƒbƒN</ShortDescription>
-    <LongDescription>ƒtƒB[ƒ‹ƒh {2.givenClass} ‚ÍA“¯Šú‰»‚µ‚Ä‚¢‚é‚É‚à‚©‚©‚í‚ç‚¸ null ƒ`ƒFƒbƒN‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <LongDescription>ƒtƒB[ƒ‹ƒh {2.givenClass} ‚ÍA“¯Šú‰»‚µ‚ÄA null ƒ`ƒFƒbƒN‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-ƒtƒB[ƒ‹ƒh‚Í“¯Šú‰»‚µ‚Ä‚¢‚é‚Ì‚ÅA‚¨‚»‚ç‚­ null ‚É‚Í‚È‚ç‚È‚¢‚æ‚¤‚ÉŽv‚¦‚Ü‚·BB
+ƒtƒB[ƒ‹ƒh‚Í“¯Šú‰»‚µ‚Ä‚¢‚é‚Ì‚ÅA‚¨‚»‚ç‚­ null ‚Å‚Í‚È‚¢‚ÆŽv‚í‚ê‚Ü‚·B
 null ‚ÌƒtƒB[ƒ‹ƒh‚ð“¯Šú‰»‚·‚é‚Æ <code>NullPointerException</code> ‚ªƒXƒ[‚³‚ê‚é‚Ì‚ÅAnull ƒ`ƒFƒbƒN‚Í–³ˆÓ–¡‚É‚È‚è‚Ü‚·B
 •Ê‚ÌƒtƒB[ƒ‹ƒh‚Å“¯Šú‰»‚µ‚½•û‚ª‚æ‚¢‚Å‚·B
 </p>
@@ -2254,7 +2256,6 @@ null ‚ÌƒtƒB[ƒ‹ƒh‚ð“¯Šú‰»‚·‚é‚Æ <code>NullPointerException</code> ‚ªƒXƒ[‚³‚ê‚é
     </Details>
   </BugPattern>
 
-
   <BugPattern type="TESTING3">
     <ShortDescription>ƒeƒXƒg3</ShortDescription>
     <LongDescription>¶¬‚³‚ê‚½ƒeƒXƒgŒx3‚Å‚·B{1}</LongDescription>
@@ -2273,9 +2274,9 @@ null ‚ÌƒtƒB[ƒ‹ƒh‚ð“¯Šú‰»‚·‚é‚Æ <code>NullPointerException</code> ‚ªƒXƒ[‚³‚ê‚é
     <Details>
 <![CDATA[
 <p>
-Œx‚ª‹L˜^‚³‚ê‚½‚Ì‚É FindBugs ‚ª‚±‚ÌƒoƒOƒpƒ^[ƒ“‚Ìà–¾‚ðŒ©‚Â‚¯‚é‚±‚Æ‚ª‚Å‚«‚È‚©‚Á‚½‚Ì‚ÅŒx‚É‚Â‚¢‚Äà–¾‚Å‚«‚Ü‚¹‚ñB
-‚±‚ê‚Í FindBugs ‚©‚»‚ÌÝ’è‚ÌƒoƒO‚Ìê‡‚¾‚¯‚Å”­¶‚·‚×‚«‚Å‚·B
-‚Ü‚½‚ÍA‰ðÍƒvƒ‰ƒOƒCƒ“‚ðŽg—p‚µ‚Ä¶¬‚³‚ê‚é‚È‚çƒvƒ‰ƒOƒCƒ“‚ÍŒ»Ýƒ[ƒh‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB
+Œx‚ª‹L˜^‚³‚ê‚½‚Ì‚É FindBugs ‚Í‚±‚ÌƒoƒOƒpƒ^[ƒ“‚Ìà–¾‚ðŒ©‚Â‚¯‚é‚±‚Æ‚ª‚Å‚«‚È‚©‚Á‚½‚Ì‚ÅŒx‚É‚Â‚¢‚Äà–¾‚Å‚«‚Ü‚¹‚ñB
+‚±‚ê‚Í FindBugs ‚©‚»‚ÌÝ’è‚ÌƒoƒO‚Ìê‡‚¾‚¯‚Å”­¶‚³‚¹‚é‚×‚«‚Å‚·B
+‚Ü‚½‚ÍA‰ðÍƒvƒ‰ƒOƒCƒ“‚ðŽg—p‚µ‚Ä¶¬‚³‚ê‚é‚È‚çAƒvƒ‰ƒOƒCƒ“‚ÍŒ»Ýƒ[ƒh‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -2287,7 +2288,7 @@ null ‚ÌƒtƒB[ƒ‹ƒh‚ð“¯Šú‰»‚·‚é‚Æ <code>NullPointerException</code> ‚ªƒXƒ[‚³‚ê‚é
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍA<code>putNextEntry</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä <code>closeEntry</code> ƒƒ\ƒbƒh‚ð‚·‚®‚É‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍA<code>putNextEntry</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚ÄA<code>closeEntry</code> ƒƒ\ƒbƒh‚ð‚·‚®‚É‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
 ‚±‚ê‚Í‹ó‚Ì ZIP ƒtƒ@ƒCƒ‹ƒGƒ“ƒgƒŠ‚É‚È‚è‚Ü‚·B
 ƒGƒ“ƒgƒŠƒf[ƒ^‚Í <code>putNextEntry</code> ƒƒ\ƒbƒh‚Æ <code>closeEntry</code> ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚ÌŠÔ‚Å ZIP ƒtƒ@ƒCƒ‹‚É‘‚«ž‚Þ‚×‚«‚Å‚·B
 </p>
@@ -2301,7 +2302,7 @@ null ‚ÌƒtƒB[ƒ‹ƒh‚ð“¯Šú‰»‚·‚é‚Æ <code>NullPointerException</code> ‚ªƒXƒ[‚³‚ê‚é
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍA<code>putNextEntry</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä’¼Œã‚É <code>closeEntry</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍA<code>putNextEntry</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚ÄA <code>closeEntry</code> ƒƒ\ƒbƒh‚ð‚·‚®‚ÉŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
 ‚±‚ê‚Í‹ó‚Ì JAR ƒtƒ@ƒCƒ‹ƒGƒ“ƒgƒŠ‚É‚È‚è‚Ü‚·B
 ƒGƒ“ƒgƒŠƒf[ƒ^‚Í <code>putNextEntry</code> ƒƒ\ƒbƒh‚Æ <code>closeEntry</code> ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚ÌŠÔ‚Å JAR ƒtƒ@ƒCƒ‹‚É‘‚«ž‚Þ‚×‚«‚Å‚·B
 </p>
@@ -2315,7 +2316,7 @@ null ‚ÌƒtƒB[ƒ‹ƒh‚ð“¯Šú‰»‚·‚é‚Æ <code>NullPointerException</code> ‚ªƒXƒ[‚³‚ê‚é
     <Details>
 <![CDATA[
 <p>
-ˆê”Ê“I‚ÉA<code>IllegalMonitorStateException</code> ‚ÍÝŒvã‚ÌŒ‡Š× (ƒƒbƒN‚ð•ÛŽ‚µ‚Ä‚¢‚È‚¢ƒIƒuƒWƒFƒNƒg‚Å <code>wait</code> ƒƒ\ƒbƒh‚Ü‚½‚Í <code>notify</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·) ‚Ìê‡‚É‚¾‚¯ƒXƒ[‚³‚ê‚Ü‚·B
+<code>IllegalMonitorStateException</code> ‚ÍA’ÊíÝŒvã‚ÌŒ‡Š× (ƒƒbƒN‚ð•ÛŽ‚µ‚Ä‚¢‚È‚¢ƒIƒuƒWƒFƒNƒg‚Å <code>wait</code> ƒƒ\ƒbƒh‚Ü‚½‚Í <code>notify</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·) ‚Ìê‡‚É‚¾‚¯ƒXƒ[‚³‚ê‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -2328,7 +2329,8 @@ null ‚ÌƒtƒB[ƒ‹ƒh‚ð“¯Šú‰»‚·‚é‚Æ <code>NullPointerException</code> ‚ªƒXƒ[‚³‚ê‚é
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍA•‚“®¬”“_¸“x‚ðŽg—p‚µ‚ÄŒvŽZ‚ð‚µ‚Ä‚¢‚Ü‚·B•‚“®¬”“_¸“x‚Í”ñí‚É•s³Šm‚Å‚·B‚½‚Æ‚¦‚ÎA<code>16777216.0f + 1.0f = 16777216.0f</code>B
+‚±‚Ìƒƒ\ƒbƒh‚ÍA•‚“®¬”“_¸“x‚ðŽg—p‚µ‚ÄŒvŽZ‚ð‚µ‚Ä‚¢‚Ü‚·B•‚“®¬”“_¸“x‚Í”ñí‚É•s³Šm‚Å‚·B
+‚½‚Æ‚¦‚ÎA<code>16777216.0f + 1.0f = 16777216.0f</code>B
 ‚»‚Ì‘ã‚í‚è‚É double ‚ÌŽg—p‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
@@ -2348,13 +2350,13 @@ null ‚ÌƒtƒB[ƒ‹ƒh‚ð“¯Šú‰»‚·‚é‚Æ <code>NullPointerException</code> ‚ªƒXƒ[‚³‚ê‚é
   </BugPattern>
 
   <BugPattern type="CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE">
-    <ShortDescription>Cloneable ŽÀ‘•‚µ‚Ä‚¢‚È‚¢ƒNƒ‰ƒX‚ª clone ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚é</ShortDescription>
+    <ShortDescription>Cloneable ‚ðŽÀ‘•‚µ‚Ä‚¢‚È‚¢ƒNƒ‰ƒX‚ª clone ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚é</ShortDescription>
     <LongDescription>{0} ‚ÍACloneable ‚ðŽÀ‘•‚µ‚Ä‚¢‚È‚¢‚Ì‚ÉAclone ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚ÌƒNƒ‰ƒX‚ÍA<code>Cloneable</code> ‚ðŽÀ‘•‚µ‚Ä‚¢‚È‚¢‚Ì‚ÉA<code>clone</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ê‚ª OK ‚Å‚ ‚é‚¢‚­‚Â‚©‚Ìó‹µ‚ª‚ ‚é‚ª (‚½‚Æ‚¦‚ÎAƒTƒuƒNƒ‰ƒX‚ÌƒNƒ[ƒ“‚ÌŽÀ‘•‚ð§Œä‚µ‚½‚¢ê‡‚Å‚·)AˆÓ}‚µ‚½‚±‚Æ‚È‚Ì‚©Šm”F‚µ‚Ä‚­‚¾‚³‚¢B
+‚±‚ê‚ª OK ‚Å‚ ‚é‚¢‚­‚Â‚©‚Ìó‹µ‚ª‚ ‚è‚Ü‚·‚ª (‚½‚Æ‚¦‚ÎAƒTƒuƒNƒ‰ƒX‚ÌƒNƒ[ƒ“‚ÌŽÀ‘•‚ðŽ©•ªŽ©g‚Å§Œä‚µ‚½‚¢ê‡‚Å‚·)AˆÓ}‚µ‚½‚±‚Æ‚È‚Ì‚©Šm”F‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -2367,7 +2369,7 @@ null ‚ÌƒtƒB[ƒ‹ƒh‚ð“¯Šú‰»‚·‚é‚Æ <code>NullPointerException</code> ‚ªƒXƒ[‚³‚ê‚é
 <![CDATA[
 <p>
 ‚±‚Ì”ñ final ƒNƒ‰ƒX‚ÍA<code>super.clone()</code> ‚ðŒÄ‚Ño‚³‚È‚¢ <code>clone</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
-ƒNƒ‰ƒX <i>A</i> ‚ªƒTƒuƒNƒ‰ƒX <i>B</i> ‚É‚æ‚Á‚ÄŠg’£‚³‚êAƒTƒuƒNƒ‰ƒX <i>B</i> ‚ª <code>super.clone()</code> ‚ðŒÄ‚Ño‚·‚È‚çƒNƒ‰ƒX <i>B</i> ‚Ì <code>clone</code> ƒƒ\ƒbƒh‚ÍAŒ^ <i>A</i> ‚ÌƒIƒuƒWƒFƒNƒg‚ð•Ô‚·‰Â”\«‚ª‚‚¢‚Å‚·B
+ƒNƒ‰ƒX <i>A</i> ‚ªƒTƒuƒNƒ‰ƒX <i>B</i> ‚É‚æ‚Á‚ÄŠg’£‚³‚êAƒTƒuƒNƒ‰ƒX <i>B</i> ‚ª <code>super.clone()</code> ‚ðŒÄ‚Ño‚·‚È‚çAƒNƒ‰ƒX <i>B</i> ‚Ì <code>clone</code> ƒƒ\ƒbƒh‚ÍAŒ^ <i>A</i> ‚ÌƒIƒuƒWƒFƒNƒg‚ð•Ô‚·‰Â”\«‚ª‚‚¢‚Å‚·B
 ‚±‚ê‚Í <code>clone</code> ‚Ì‚½‚ß‚Ì”Ä—p‹K–ñ‚Éˆá”½‚µ‚Ü‚·B
 </p>
 <p>
@@ -2379,16 +2381,17 @@ null ‚ÌƒtƒB[ƒ‹ƒh‚ð“¯Šú‰»‚·‚é‚Æ <code>NullPointerException</code> ‚ªƒXƒ[‚³‚ê‚é
 
   <BugPattern type="NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER">
     <ShortDescription>Java ‚ÌŒã‚Ìƒo[ƒWƒ‡ƒ“‚ÌƒL[ƒ[ƒh‚Å‚ ‚éŽ¯•ÊŽq‚ðŽg—p‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>{1} ‚ÍA•Ï”–¼‚É {2} ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·‚ª Java ‚ÌŒã‚Ìƒo[ƒWƒ‡ƒ“‚ÌƒL[ƒ[ƒh‚Å‚·B</LongDescription>
+    <LongDescription>{1} ‚ÍA•Ï”–¼‚É {2} ‚ðŽg—p‚µ‚Ä‚¢‚é‚ªAJava ‚ÌŒã‚Ìƒo[ƒWƒ‡ƒ“‚ÌƒL[ƒ[ƒh‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
 Ž¯•ÊŽq‚ÍAJava ‚ÌŒã‚Ìƒo[ƒWƒ‡ƒ“‚ÌƒL[ƒ[ƒh‚Æ‚µ‚Ä—\–ñ‚³‚ê‚Ä‚¢‚é’PŒê‚Å‚·B
-Java ‚ÌŒã‚Ìƒo[ƒWƒ‡ƒ“‚ÅƒRƒ“ƒpƒCƒ‹‚·‚é‚½‚ß‚É•ÏX‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+ƒR[ƒh‚ÍAJava ‚ÌŒã‚Ìƒo[ƒWƒ‡ƒ“‚ÅƒRƒ“ƒpƒCƒ‹‚·‚é‚½‚ß‚É•ÏX‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER">
     <ShortDescription>Java ‚ÌŒã‚Ìƒo[ƒWƒ‡ƒ“‚ÌƒL[ƒ[ƒh‚Å‚ ‚éŽ¯•ÊŽq‚ðŽg—p‚µ‚Ä‚¢‚é</ShortDescription>
     <LongDescription>{1} ‚ÍAJava ‚Ì‚æ‚èÅ‹ß‚Ìƒo[ƒWƒ‡ƒ“‚ÌƒL[ƒ[ƒh‚ÆÕ“Ë‚µ‚Ü‚·B</LongDescription>
@@ -2409,8 +2412,8 @@ Java ‚ÌŒã‚Ìƒo[ƒWƒ‡ƒ“‚ÅƒRƒ“ƒpƒCƒ‹‚·‚é‚½‚ß‚É•ÏX‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍA—áŠO‚ðŽÌ‚Ä‚Ä‚¢‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-ˆê”Ê“I‚ÉAƒLƒƒƒbƒ`‚µ‚½—áŠO‚Í‰½‚ç‚©‚Ì•û–@‚Åˆ—‚³‚ê‚é‚©•ñ‚³‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
-‚Ü‚½‚ÍAƒƒ\ƒbƒh‚©‚çƒXƒ[‚³‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+’ÊíAƒLƒƒƒbƒ`‚µ‚½—áŠO‚Í‰½‚ç‚©‚Ì•û–@‚Åˆ—‚³‚ê‚é‚©•ñ‚³‚ê‚é‚×‚«‚Å‚·B
+‚ ‚é‚¢‚ÍAƒƒ\ƒbƒh‚©‚çƒXƒ[‚³‚ê‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -2423,8 +2426,8 @@ Java ‚ÌŒã‚Ìƒo[ƒWƒ‡ƒ“‚ÅƒRƒ“ƒpƒCƒ‹‚·‚é‚½‚ß‚É•ÏX‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚Í—áŠO‚ð–³Ž‹‚µ‚Ä‚¢‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-ˆê”Ê“I‚ÉA—áŠO‚Í‰½‚ç‚©‚Ì•û–@‚Åˆ—‚³‚ê‚é‚©•ñ‚³‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
-‚Ü‚½‚ÍAƒƒ\ƒbƒh‚©‚çƒXƒ[‚³‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+’ÊíA—áŠO‚Í‰½‚ç‚©‚Ì•û–@‚Åˆ—‚³‚ê‚é‚©•ñ‚³‚ê‚é‚×‚«‚Å‚·B
+‚ ‚é‚¢‚ÍAƒƒ\ƒbƒh‚©‚çƒXƒ[‚³‚ê‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -2456,13 +2459,13 @@ Java ‚ÌŒã‚Ìƒo[ƒWƒ‡ƒ“‚ÅƒRƒ“ƒpƒCƒ‹‚·‚é‚½‚ß‚É•ÏX‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
   </BugPattern>
 
   <BugPattern type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">
-    <ShortDescription>doPrivileged ƒuƒƒbƒN“à‚Åì¬‚·‚×‚«ƒNƒ‰ƒXƒ[ƒ_</ShortDescription>
-    <LongDescription>{1} ‚ÍAƒNƒ‰ƒXƒ[ƒ_ {2} ‚ðì¬‚µ‚Ä‚¢‚Ü‚·‚ª doPrivileged ƒuƒƒbƒN‚Ì’†‚ÅŽÀs‚·‚×‚«‚Å‚·B</LongDescription>
+    <ShortDescription>doPrivileged ƒuƒƒbƒN“à‚Åì¬‚³‚ê‚é‚×‚«ƒNƒ‰ƒXƒ[ƒ_</ShortDescription>
+    <LongDescription>{1} ‚ÍAƒNƒ‰ƒXƒ[ƒ_ {2} ‚ðì¬‚µ‚Ä‚¢‚é‚ªAdoPrivileged ƒuƒƒbƒN‚Ì’†‚ÅŽÀs‚³‚ê‚é‚×‚«‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-ƒNƒ‰ƒXƒ[ƒ_‚ðì¬‚·‚é‚½‚ß‚É‚ÍƒZƒLƒ…ƒŠƒeƒBƒ}ƒl[ƒWƒƒ‚ª•K—v‚Å‚·B
-‚±‚ÌƒR[ƒh‚ÉƒZƒLƒ…ƒŠƒeƒB‹–‰Â‚ª—^‚¦‚ç‚ê‚½‚Æ‚µ‚Ä‚àAƒZƒLƒ…ƒŠƒeƒB‹–‰Â‚ª‚È‚¢ƒR[ƒh‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚é‚È‚çƒNƒ‰ƒXƒ[ƒ_‚Ìì¬‚Í doPrivileged ƒuƒƒbƒN“à‚Ås‚¤•K—v‚ª‚ ‚è‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍƒNƒ‰ƒXƒ[ƒ_‚ðì¬‚µ‚Ä‚¢‚é‚ªA‚»‚Ì‚½‚ß‚É‚ÍƒZƒLƒ…ƒŠƒeƒBƒ}ƒl[ƒWƒƒ‚ª•K—v‚Å‚·B
+‚±‚ÌƒR[ƒh‚ÉƒZƒLƒ…ƒŠƒeƒB‹–‰Â‚ª—^‚¦‚ç‚ê‚½‚Æ‚µ‚Ä‚àAƒZƒLƒ…ƒŠƒeƒB‹–‰Â‚ª‚È‚¢ƒR[ƒh‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚é‚È‚çAƒNƒ‰ƒXƒ[ƒ_‚Ìì¬‚Í doPrivileged ƒuƒƒbƒN“à‚Ås‚¤•K—v‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -2499,22 +2502,22 @@ Immutable ƒAƒmƒe[ƒVƒ‡ƒ“‚Ìƒ‹[ƒ‹‚ÍA‚·‚×‚Ä‚ÌƒtƒB[ƒ‹ƒh‚ð final ‚É‚·‚é‚±‚Æ‚ð‹`–±‚
 <![CDATA[
 <p>
 ThreadƒIƒuƒWƒFƒNƒg‚ª Runnable ‚ªŠú‘Ò‚³‚ê‚Ä‚¢‚éƒƒ\ƒbƒh‚Ö‚Ìƒpƒ‰ƒ[ƒ^‚Æ‚µ‚Ä“n‚³‚ê‚Ä‚¢‚Ü‚·B
-‚±‚ê‚Í‚©‚È‚èˆÙí‚ÅAƒƒWƒbƒN‚ÌŒë‚èA‚Ü‚½‚ÍA—\‘zŠO‚ÌU‚é•‘‚¢‚ÌŒ´ˆö‚É‚È‚é‚±‚Æ‚ðŽ¦‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ê‚Í‚©‚È‚èˆÙí‚ÅA˜_—ƒGƒ‰[A‚Ü‚½‚ÍA—\‘zŠO‚ÌU‚é•‘‚¢‚ÌŒ´ˆö‚É‚È‚é‚±‚Æ‚ðŽ¦‚µ‚Ä‚¢‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DMI_COLLECTION_OF_URLS">
-    <ShortDescription>URL ‚Ì Map ‚â Set ‚ÍƒpƒtƒH[ƒ}ƒ“ƒX‚ðˆ«‰»‚³‚¹‚é‰Â”\«‚ª‚ ‚é</ShortDescription>
-    <LongDescription>{1} ‚ÍAURL ‚Ì Map ‚© Set ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·‚ªƒpƒtƒH[ƒ}ƒ“ƒX‚ðˆ«‰»‚³‚¹‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</LongDescription>
+    <ShortDescription>URL ‚Ì Map ‚â Set ‚Í‚Ð‚Ç‚¢«”\‚É‚È‚é‰Â”\«‚ª‚ ‚é</ShortDescription>
+    <LongDescription>{1} ‚ÍAURL ‚Ì Map ‚© Set ‚ðŽg—p‚µ‚Ä‚¢‚é‚ªA‚Ð‚Ç‚¢«”\‚É‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚Ü‚½‚ÍƒtƒB[ƒ‹ƒh‚ÍAURL ‚Ì <code>Map</code> ‚© <code>Set</code> ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B
-URL ‚Ì <code>equals</code> ‚Æ <code>hashCode</code> ‚ÍAƒhƒƒCƒ“–¼‚Ì‰ðŒˆ‚ðs‚¤‚Ì‚ÅAƒpƒtƒH[ƒ}ƒ“ƒX‚ðˆ«‰»‚³‚¹‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B<br>
+URL ‚Ì <code>equals</code> ‚Æ <code>hashCode</code> ‚ÍAƒhƒƒCƒ“–¼‚Ì‰ðŒˆ‚ðs‚¤‚Ì‚ÅA‚Ð‚Ç‚¢«”\‚É‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B<br>
 Ú×‚ÍA<a href="http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html">http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html</a> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B<br>
-‚»‚Ì‘ã‚í‚è‚É <code>java.net.URI</code> ‚ðŽg‚¤‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
+‚»‚Ì‘ã‚í‚è‚ÉA<code>java.net.URI</code> ‚ðŽg‚¤‚±‚Æ‚ð‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -2526,13 +2529,14 @@ URL ‚Ì <code>equals</code> ‚Æ <code>hashCode</code> ‚ÍAƒhƒƒCƒ“–¼‚Ì‰ðŒˆ‚ðs‚¤‚Ì
     <Details>
 <![CDATA[
 <p>
-URL ‚Ì <code>quals</code> ƒƒ\ƒbƒh‚Æ <code>hashCode</code> ƒƒ\ƒbƒh‚ÍAƒhƒƒCƒ“–¼‚Ì‰ðŒˆ‚ðs‚¤‚Ì‚ÅAƒpƒtƒH[ƒ}ƒ“ƒX‚ðˆ«‰»‚³‚¹‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B<br>
+URL ‚Ì <code>quals</code> ƒƒ\ƒbƒh‚Æ <code>hashCode</code> ƒƒ\ƒbƒh‚ÍAƒhƒƒCƒ“–¼‚Ì‰ðŒˆ‚ðs‚¤‚Ì‚ÅA‚Ð‚Ç‚¢«”\‚É‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B<br>
 Ú×‚ÍA<a href="http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html">http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html</a> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B<br>
-‚»‚Ì‘ã‚í‚è‚É <code>java.net.URI</code> ‚ðŽg‚¤‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
+‚»‚Ì‘ã‚í‚è‚ÉA<code>java.net.URI</code> ‚ðŽg‚¤‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION">
     <ShortDescription>ƒ‰ƒ“ƒ^ƒCƒ€ƒŠƒeƒ“ƒVƒ‡ƒ“‚È‚µ‚ÅAƒAƒmƒe[ƒVƒ‡ƒ“‚Ì‘¶Ý‚ð’²‚×‚é‚½‚ß‚ÉƒŠƒtƒŒƒNƒVƒ‡ƒ“‚ðŽg—p‚·‚é‚±‚Æ‚Í‚Å‚«‚È‚¢</ShortDescription>
     <LongDescription>ƒ‰ƒ“ƒ^ƒCƒ€ƒŠƒeƒ“ƒVƒ‡ƒ“‚ðŽ‚½‚È‚¢ƒAƒmƒe[ƒVƒ‡ƒ“ {3} ‚Ì‘¶Ý‚ð’²‚×‚é‚½‚ß‚ÉƒŠƒtƒŒƒNƒVƒ‡ƒ“‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
@@ -2552,14 +2556,13 @@ URL ‚Ì <code>quals</code> ƒƒ\ƒbƒh‚Æ <code>hashCode</code> ƒƒ\ƒbƒh‚ÍAƒhƒƒCƒ“–
 <![CDATA[
 <p>
 <code>System.exit(...)</code> ‚ðŒÄ‚Ño‚·‚±‚Æ‚ÍAJava ‰¼‘zƒ}ƒVƒ“‘S‘Ì‚ðƒVƒƒƒbƒgƒ_ƒEƒ“‚³‚¹‚Ä‚µ‚Ü‚¢‚Ü‚·B
-‚±‚ê‚ª“KØ‚Èê‡‚É‚¾‚¯Žg—p‚µ‚È‚¯‚Î‚È‚è‚Ü‚¹‚ñB
+‚»‚ê‚ª“KØ‚Èê‡‚É‚¾‚¯AŽg—p‚·‚×‚«‚Å‚·B
 <code>System.exit(...)</code> ‚ÌŒÄ‚Ño‚µ‚ÍAƒR[ƒh‚ª‘¼‚ÌƒR[ƒh‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚é‚±‚Æ‚ð¢“ï‚©•s‰Â”\‚É‚µ‚Ü‚·B
-‚»‚Ì‘ã‚í‚è‚É RuntimeException ‚ðƒXƒ[‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
+‚»‚Ì‘ã‚í‚è‚ÉARuntimeException ‚ðƒXƒ[‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
   </BugPattern>
-
 
   <BugPattern type="DM_RUN_FINALIZERS_ON_EXIT">
     <ShortDescription>ŠëŒ¯‚Èƒƒ\ƒbƒh runFinalizersOnExit ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
@@ -2580,7 +2583,7 @@ Java ƒ‰ƒCƒuƒ‰ƒŠ‚ÅÅ‚àŠëŒ¯‚Èƒƒ\ƒbƒh‚Ì1‚Â‚Å‚·B -- Joshua Bloch
     <Details>
 <![CDATA[
 <p>
-<code>java.lang.String(String)</code> ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÌŽg—p‚Íƒƒ‚ƒŠ‚ð˜Q”ï‚·‚é‚¾‚¯‚Å‚·B
+<code>java.lang.String(String)</code> ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÌŽg—p‚Íƒƒ‚ƒŠ‚ð˜Q”ï‚µ‚Ü‚·B
 ‚»‚Ì‚æ‚¤‚É‚µ‚Ä\’z‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚Æ ƒpƒ‰ƒ[ƒ^‚Æ‚µ‚Ä“n‚³‚ê‚½ <code>String</code> ‚Í‹@”\“I‚É‹æ•Ê‚ª‚Â‚©‚È‚¢‚©‚ç‚Å‚·B
 ˆø”‚Ì <code>String</code> ‚ð‚»‚Ì‚Ü‚ÜŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
@@ -2594,10 +2597,10 @@ Java ƒ‰ƒCƒuƒ‰ƒŠ‚ÅÅ‚àŠëŒ¯‚Èƒƒ\ƒbƒh‚Ì1‚Â‚Å‚·B -- Joshua Bloch
     <Details>
 <![CDATA[
 <p>
-ˆø”‚ª‚È‚¢ <code>java.lang.String()</code> ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÅAV‚µ‚¢ƒIƒuƒWƒFƒNƒg‚ðì¬‚·‚é‚±‚Æ‚Íƒƒ‚ƒŠ‚ð˜Q”ï‚·‚é‚¾‚¯‚Å‚·B
+ˆø”‚ª‚È‚¢ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ðŽg—p‚µ‚ÄAV‚µ‚¢ <code>java.lang.String()</code> ƒIƒuƒWƒFƒNƒg‚ðì¬‚·‚é‚Æƒƒ‚ƒŠ‚ð˜Q”ï‚µ‚Ü‚·B
 ‚»‚Ì‚æ‚¤‚É‚µ‚Äì¬‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚Æ‹ó‚Ì•¶Žš—ñ’è” <code>""</code> ‚Í‹@”\“I‚É‹æ•Ê‚ª‚Â‚©‚È‚¢‚©‚ç‚Å‚·B
 Java‚ÍA“¯ˆê‚Ì•¶Žš—ñ’è”‚ª“¯‚¶ <code>String</code> ƒIƒuƒWƒFƒNƒg‚É‚æ‚Á‚Ä•\‚³‚ê‚é‚±‚Æ‚ð•ÛØ‚µ‚Ü‚·B
-‚µ‚½‚ª‚Á‚ÄA’¼Ú‹ó‚Ì•¶Žš—ñ’è”‚ðŽg—p‚·‚×‚«‚Å‚·B
+‚µ‚½‚ª‚Á‚ÄA’¼Ú‹ó‚Ì•¶Žš—ñ’è”‚ðŽg—p‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -2625,7 +2628,7 @@ Java‚ÍA“¯ˆê‚Ì•¶Žš—ñ’è”‚ª“¯‚¶ <code>String</code> ƒIƒuƒWƒFƒNƒg‚É‚æ‚Á‚Ä•\‚³‚ê‚é‚
 </p>
 <p>
 ‰ß‹Ž‚ÉA<code>close</code> ƒƒ\ƒbƒh‚â <code>finalize</code> ƒƒ\ƒbƒh‚ÅƒKƒx[ƒWƒRƒŒƒNƒ^‚ð–¾Ž¦“I‚ÉŒÄ‚Ño‚µ‚Ä‚¢‚½ó‹µ‚ÍA‹‘å‚ÈƒpƒtƒH[ƒ}ƒ“ƒXƒuƒ‰ƒbƒNƒz[ƒ‹‚ÌŒ´ˆö‚Æ‚È‚è‚Ü‚µ‚½B
-ƒKƒx[ƒWƒRƒŒƒNƒVƒ‡ƒ“‚ÍA‚‚­‚Â‚­‰Â”\«‚ª‚ ‚è‚Ü‚·B‰½•SA‰½ç‚à‚ÌƒKƒx[ƒWƒRƒŒƒNƒVƒ‡ƒ“‚ð‹­§‚³‚¹‚é‚æ‚¤‚Èó‹µ‚ÍƒVƒXƒeƒ€‚Ì’â‘Ø‚ð‚à‚½‚ç‚·‚Å‚µ‚å‚¤B
+ƒKƒx[ƒWƒRƒŒƒNƒVƒ‡ƒ“‚ÍA‚‚­‚Â‚­‰Â”\«‚ª‚ ‚è‚Ü‚·B‰½•SA‰½ç‚à‚ÌƒKƒx[ƒWƒRƒŒƒNƒVƒ‡ƒ“‚ð‹­§‚·‚éó‹µ‚ÍAƒVƒXƒeƒ€‚Ì’â‘Ø‚ð‚à‚½‚ç‚·‚Å‚µ‚å‚¤B
 </p>
 ]]>
     </Details>
@@ -2637,7 +2640,7 @@ Java‚ÍA“¯ˆê‚Ì•¶Žš—ñ’è”‚ª“¯‚¶ <code>String</code> ƒIƒuƒWƒFƒNƒg‚É‚æ‚Á‚Ä•\‚³‚ê‚é‚
     <Details>
 <![CDATA[
 <p>
-<code>java.lang.Boolean</code> ‚ÌV‚µ‚¢ƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚·‚é‚±‚Æ‚Íƒƒ‚ƒŠ‚Ì˜Q”ï‚Å‚·B
+<code>java.lang.Boolean</code> ‚ÌV‚µ‚¢ƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚·‚é‚Æƒƒ‚ƒŠ‚ð˜Q”ï‚µ‚Ü‚·B
 <code>Boolean</code> ƒIƒuƒWƒFƒNƒg‚Í•s•Ï‚ÅA2‚Â‚Ì—L—p‚È’l (<code>Boolean.TRUE</code> ‚Æ <code>Boolean.FALSE</code>) ‚ª‚ ‚è‚Ü‚·B
 ‚»‚Ì‘ã‚í‚è‚ÉA<code>Boolean</code> ƒIƒuƒWƒFƒNƒg‚ðì¬‚·‚é‚½‚ß‚ÉA<code>Boolean.valueOf</code> ƒƒ\ƒbƒhA‚Ü‚½‚ÍAJ2SE 5.0‚ÌƒI[ƒgƒ{ƒNƒVƒ“ƒO‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
@@ -2652,32 +2655,32 @@ Java‚ÍA“¯ˆê‚Ì•¶Žš—ñ’è”‚ª“¯‚¶ <code>String</code> ƒIƒuƒWƒFƒNƒg‚É‚æ‚Á‚Ä•\‚³‚ê‚é‚
 <![CDATA[
 <p>
 <code>new Integer(int)</code> ‚ÌŽg—p‚ÍAí‚ÉV‚µ‚¢ƒuƒWƒFƒNƒg‚É‚È‚é‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚Ü‚·B
-‚±‚ê‚É‘Î‚µ‚ÄA<code>Integer.valueOf(int)</code> ‚ÍAƒRƒ“ƒpƒCƒ‰AƒNƒ‰ƒXƒ‰ƒCƒuƒ‰ƒŠAJava ‰¼‘zƒ}ƒVƒ“‚Ås‚í‚ê‚é‚Ì‚Å’l‚ðƒLƒƒƒbƒVƒ…‚Å‚«‚Ü‚·B
+‚±‚ê‚É‘Î‚µ‚ÄA<code>Integer.valueOf(int)</code> ‚ÍAƒRƒ“ƒpƒCƒ‰AƒNƒ‰ƒXƒ‰ƒCƒuƒ‰ƒŠAJava ‰¼‘zƒ}ƒVƒ“‚Å’l‚ªƒLƒƒƒbƒVƒ…‚³‚ê‚Ü‚·B
 ƒLƒƒƒbƒVƒ…‚ÉŠi”[‚³‚ê‚½’l‚ðŽg‚¤‚±‚Æ‚ÍƒCƒ“ƒXƒ^ƒ“ƒX‚Ìì¬‚ð‰ñ”ð‚µAƒR[ƒh‚Í‚æ‚è‚‘¬‚É‚È‚è‚Ü‚·B
 </p>
 <p>
 -128 ‚©‚ç 127 ‚Ü‚Å‚Ì’l‚ÍA‘Î‰ž‚·‚éƒLƒƒƒbƒVƒ…‚³‚ê‚½ƒCƒ“ƒXƒ^ƒ“ƒX‚ðŽ‚Â‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚Ü‚·B
 ‚»‚µ‚ÄA<code>valueOf</code> ƒƒ\ƒbƒh‚ÌŽg—p‚ÍAƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ðŽg—p‚·‚é‚æ‚è–ñ3.5”{‚‘¬‚Å‚·B
-’è””ÍˆÍŠO‚Ì’l‚Í—¼•û‚ÌƒXƒ^ƒCƒ‹‚ÌƒpƒtƒH[ƒ}ƒ“ƒX‚Í“¯‚¶‚Å‚·B
+’è””ÍˆÍŠO‚Ì’l‚ÍA—¼•û‚ÌƒXƒ^ƒCƒ‹‚Ì«”\‚Í“¯‚¶‚Å‚·B
 </p>
 <p>
-ƒNƒ‰ƒX‚ª J2SE 5.0‚æ‚è‘O‚Ì Java ‰¼‘zƒ}ƒVƒ“‚Æ‚ÌŒÝŠ·«‚ª•s—v‚È‚ç <code>Long</code>A<code>Integer</code>A<code>Short</code>A<code>Character</code>A<code>Byte</code> ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚·‚é‚Æ‚«‚ÍAƒI[ƒgƒ{ƒNƒVƒ“ƒO‚© <code>valueOf</code> ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
+ƒNƒ‰ƒX‚ª J2SE 5.0‚æ‚è‘O‚Ì Java ‰¼‘zƒ}ƒVƒ“‚Æ‚ÌŒÝŠ·«‚ª•s—v‚È‚çA<code>Long</code>A<code>Integer</code>A<code>Short</code>A<code>Character</code>A<code>Byte</code> ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚·‚é‚Æ‚«‚ÍAƒI[ƒgƒ{ƒNƒVƒ“ƒO‚© <code>valueOf</code> ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DM_FP_NUMBER_CTOR">
     <ShortDescription>Œø—¦‚ªˆ«‚¢•‚“®¬”“_ Number ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ðŒÄ‚Ño‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>{1} ‚ÍAŒø—¦‚ªˆ«‚¢ {3} ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B‚»‚Ì‘ã‚í‚è‚ÉA{4} ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B</LongDescription>
+    <LongDescription>{1} ‚ÍAŒø—¦‚ªˆ«‚¢ {2} ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B‚»‚Ì‘ã‚í‚è‚ÉA{3} ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B</LongDescription>
     <Details>
 <![CDATA[
 <p>
 <code>new Double(double)</code> ‚ÌŽg—p‚ÍAí‚ÉV‚µ‚¢ƒuƒWƒFƒNƒg‚É‚È‚é‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚Ü‚·B
-‚±‚ê‚É‘Î‚µ‚ÄA<code>Double.valueOf(double)</code> ‚ÍAƒRƒ“ƒpƒCƒ‰AƒNƒ‰ƒXƒ‰ƒCƒuƒ‰ƒŠAJava ‰¼‘zƒ}ƒVƒ“‚Ås‚í‚ê‚é‚Ì‚Å’l‚ðƒLƒƒƒbƒVƒ…‚Å‚«‚Ü‚·B
+‚±‚ê‚É‘Î‚µ‚ÄA<code>Double.valueOf(double)</code> ‚ÍAƒRƒ“ƒpƒCƒ‰AƒNƒ‰ƒXƒ‰ƒCƒuƒ‰ƒŠAJava ‰¼‘zƒ}ƒVƒ“‚Å’l‚ªƒLƒƒƒbƒVƒ…‚³‚ê‚Ü‚·B
 ƒLƒƒƒbƒVƒ…‚ÉŠi”[‚³‚ê‚½’l‚ðŽg‚¤‚±‚Æ‚ÍƒCƒ“ƒXƒ^ƒ“ƒX¶¬‚ð‰ñ”ð‚µAƒR[ƒh‚Í‚æ‚è‚‘¬‚É‚È‚è‚Ü‚·B
 </p>
 <p>
-ƒNƒ‰ƒX‚ª J2SE 5.0‚æ‚è‘O‚Ì Java ‰¼‘zƒ}ƒVƒ“‚Æ‚ÌŒÝŠ·«‚ª•s—v‚È‚çƒI[ƒgƒ{ƒNƒVƒ“ƒO‚© <code>Double</code>A<code>Float</code> ‚Ì <code>valueOf</code> ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
+ƒNƒ‰ƒX‚ª J2SE 5.0‚æ‚è‘O‚Ì Java ‰¼‘zƒ}ƒVƒ“‚Æ‚ÌŒÝŠ·«‚ª•s—v‚È‚çAƒI[ƒgƒ{ƒNƒVƒ“ƒO‚© <code>Double</code>A<code>Float</code> ‚Ì <code>valueOf</code> ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -2685,7 +2688,7 @@ Java‚ÍA“¯ˆê‚Ì•¶Žš—ñ’è”‚ª“¯‚¶ <code>String</code> ƒIƒuƒWƒFƒNƒg‚É‚æ‚Á‚Ä•\‚³‚ê‚é‚
 
   <BugPattern type="DM_CONVERT_CASE">
     <ShortDescription>ŒÄ‚Ño‚µ‚½ƒƒ\ƒbƒh‚Ì Locale ƒpƒ‰ƒ[ƒ^‚ÌŽg—p‚ðŒŸ“¢‚·‚é</ShortDescription>
-    <LongDescription>ƒ[ƒJƒ‰ƒCƒY‚³‚ê‚Ä‚¢‚È‚¢ String.toUpperCase() ‚Ü‚½‚Í String.toLowerCase() ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <LongDescription>ƒ[ƒJƒ‰ƒCƒY‚³‚ê‚Ä‚¢‚È‚¢ String.toUpperCase() ‚Ü‚½‚Í String.toLowerCase() ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2704,14 +2707,14 @@ Java‚ÍA“¯ˆê‚Ì•¶Žš—ñ’è”‚ª“¯‚¶ <code>String</code> ƒIƒuƒWƒFƒNƒg‚É‚æ‚Á‚Ä•\‚³‚ê‚é‚
 
   <BugPattern type="BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR">
     <ShortDescription>ƒvƒŠƒ~ƒeƒBƒu’l‚ª3€‰‰ŽZŽq‚Ì‚½‚ß‚ÉƒAƒ“ƒ{ƒNƒVƒ“ƒO‚³‚ê‚ÄAŒ^•ÏŠ·‚³‚ê‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>ƒvƒŠƒ~ƒeƒBƒu’l‚ª3€‰‰ŽZŽq‚Ì‚½‚ß‚ÉƒAƒ“ƒ{ƒNƒVƒ“ƒO‚³‚ê‚ÄAŒ^•ÏŠ·‚³‚ê‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <LongDescription>ƒvƒŠƒ~ƒeƒBƒuŒ^‚Ì’l‚ª3€‰‰ŽZŽq‚Ì‚½‚ß‚ÉƒAƒ“ƒ{ƒNƒVƒ“ƒO‚³‚ê‚ÄAŒ^•ÏŠ·‚³‚ê‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-ƒ‰ƒbƒv‚³‚ê‚½ƒvƒŠƒ~ƒeƒBƒu’l‚ÍA3€‰‰ŽZŽq (<code> b ? e1 : e2</code>) ‚Ì•]‰¿‚Ìˆê•”‚Æ‚µ‚Ä•Ê‚ÌƒvƒŠƒ~ƒeƒBƒuŒ^‚ÉƒAƒ“ƒ{ƒNƒVƒ“ƒO‚³‚ê‚ÄA•ÏŠ·‚³‚ê‚Ü‚·B
+ƒ‰ƒbƒv‚³‚ê‚½ƒvƒŠƒ~ƒeƒBƒu’l‚ÍA3€‰‰ŽZŽq (<code> b ? e1 : e2</code>) ‚Ì•]‰¿‚Ìˆê•”‚Æ‚µ‚ÄA•Ê‚ÌƒvƒŠƒ~ƒeƒBƒuŒ^‚ÉƒAƒ“ƒ{ƒNƒVƒ“ƒO‚³‚ê‚ÄA•ÏŠ·‚³‚ê‚Ü‚·B
 Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚ÍƒAƒ“ƒ{ƒNƒVƒ“ƒO‚³‚êA‹¤’Ê‚ÌŒ^‚Ö‚Æ•ÏŠ·/Œ^•ÏŠ·‚³‚ê‚Ü‚·
-(‚½‚Æ‚¦‚ÎA<code>e1</code> ‚ª <code>Integer</code> ‚ÅA<code>e2</code> ‚ª <code>Float</code> ‚È‚ç <code>e1</code> ‚ÍƒAƒ“ƒ{ƒNƒVƒ“ƒO(<code>int</code> ‚É•ÏŠ·) ‚³‚êA<code>float</code> ‚É•ÏŠ·‚³‚êAƒ{ƒNƒVƒ“ƒO (<code>Float</code> ‚É•ÏŠ·) ‚³‚ê‚Ü‚·)B
-Ú×‚Í JLS ƒZƒNƒVƒ‡ƒ“ 15.25 ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
+(‚½‚Æ‚¦‚ÎA<code>e1</code> ‚ª <code>Integer</code> ‚ÅA<code>e2</code> ‚ª <code>Float</code> ‚È‚ç <code>e1</code> ‚ÍƒAƒ“ƒ{ƒNƒVƒ“ƒO (<code>int</code> ‚É•ÏŠ·) ‚³‚êA<code>float</code> ‚É•ÏŠ·‚³‚êAƒ{ƒNƒVƒ“ƒO (<code>Float</code> ‚É•ÏŠ·) ‚³‚ê‚Ü‚·)B
+JLS ƒZƒNƒVƒ‡ƒ“ 15.25 ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -2724,8 +2727,8 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
 <![CDATA[
 <p>
 ƒvƒŠƒ~ƒeƒBƒu’l‚ªƒ{ƒNƒVƒ“ƒO‚³‚ê‚ÄA‚·‚®‚ÉƒAƒ“ƒ{ƒNƒVƒ“ƒO‚³‚ê‚Ä‚¢‚Ü‚·B
-‚¨‚»‚ç‚­AƒAƒ“ƒ{ƒNƒVƒ“ƒO‚³‚ê‚½’l‚ª•K—v‚ÈêŠ‚ÅAŽèì‹Æ‚Åƒ{ƒNƒVƒ“ƒO‚ð‚µ‚Ä‚¢‚é‚½‚ß‚Å‚·B
-‚»‚ÌŒ‹‰ÊAƒRƒ“ƒpƒCƒ‰‚Éƒ{ƒNƒVƒ“ƒO‚Ì“­‚«‚ðŽæ‚èÁ‚·‚±‚Æ‚ð‹­§‚µ‚Ä‚¢‚Ü‚·B
+‚¨‚»‚ç‚­AƒAƒ“ƒ{ƒNƒVƒ“ƒO‚³‚ê‚½’l‚ª•K—v‚ÈêŠ‚ÅAŽè“®‚Åƒ{ƒNƒVƒ“ƒO‚ð‚µ‚Ä‚¢‚é‚½‚ß‚Å‚·B
+‚»‚ÌŒ‹‰ÊAƒRƒ“ƒpƒCƒ‰‚Éƒ{ƒNƒVƒ“ƒO‚Ì‹@”\‚ðŽæ‚èÁ‚·‚±‚Æ‚ð‹­§‚µ‚Ä‚¢‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -2738,18 +2741,18 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
 <![CDATA[
 <p>
 ƒvƒŠƒ~ƒeƒBƒu’l‚ªƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Åƒ{ƒNƒVƒ“ƒO‚³‚ê‚ÄA‚·‚®‚Éˆá‚¤ƒvƒŠƒ~ƒeƒBƒuŒ^‚É•ÏŠ·‚³‚ê‚Ä‚¢‚Ü‚· (‚½‚Æ‚¦‚ÎA<code>new Double(d).intValue()</code>)B
-’¼ÚƒvƒŠƒ~ƒeƒBƒu’l‚ÌŒ^•ÏŠ·‚ðŽÀs‚µ‚Ä‚­‚¾‚³‚¢ (‚½‚Æ‚¦‚ÎA<code>(int) d</code>)B
+’¼ÚƒvƒŠƒ~ƒeƒBƒuŒ^‚ÌŒ^•ÏŠ·‚ðŽÀs‚µ‚Ä‚­‚¾‚³‚¢ (‚½‚Æ‚¦‚ÎA<code>(int) d</code>)B
 </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DM_BOXED_PRIMITIVE_TOSTRING">
-    <ShortDescription>toString ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚½‚ß‚ÉƒvƒŠƒ~ƒeƒBƒuŒ^‚Ìƒ‰ƒbƒpƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð¶¬‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>toString ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚½‚ß‚ÉƒvƒŠƒ~ƒeƒBƒuŒ^‚Ìƒ‰ƒbƒpƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð¶¬‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>toString ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚½‚ß‚ÉƒvƒŠƒ~ƒeƒBƒuŒ^‚Ìƒ‰ƒbƒpƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>toString ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚½‚ß‚ÉƒvƒŠƒ~ƒeƒBƒuŒ^‚Ìƒ‰ƒbƒpƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-<code>toString</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚½‚ß‚ÉAƒvƒŠƒ~ƒeƒBƒuŒ^‚Ìƒ‰ƒbƒpƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ª¶¬‚³‚ê‚Ä‚¢‚Ü‚·B
+<code>toString</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚½‚ß‚ÉAƒvƒŠƒ~ƒeƒBƒuŒ^‚Ìƒ‰ƒbƒpƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚µ‚Ä‚¢‚Ü‚·B
 ‚»‚ê‚æ‚è‚àƒvƒŠƒ~ƒeƒBƒu’l‚ðˆø”‚É‚Æ‚é static ‚È <code>toString</code> ƒƒ\ƒbƒh‚ðŽg—p‚µ‚½•û‚ªŒø—¦“I‚Å‚·B
 </p>
   <table>
@@ -2766,7 +2769,6 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
     </Details>
   </BugPattern>
 
-
   <BugPattern type="DM_NEW_FOR_GETCLASS">
     <ShortDescription>ƒNƒ‰ƒXƒIƒuƒWƒFƒNƒg‚ð“¾‚é‚½‚ß‚¾‚¯‚ÉƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
     <LongDescription>{1} ‚ÍAƒNƒ‰ƒXƒIƒuƒWƒFƒNƒg‚ð“¾‚é‚½‚ß‚¾‚¯‚ÉƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
@@ -2781,13 +2783,13 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
   </BugPattern>
 
   <BugPattern type="DM_MONITOR_WAIT_ON_CONDITION">
-    <ShortDescription>Condition ‚É‘Î‚µ‚Ä wait ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>Condition ‚É‘Î‚µ‚Ä wait ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>Condition ‚Å wait ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>Condition ‚Å wait ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍA<code>java.util.concurrent.locks.Condition</code> ƒIƒuƒWƒFƒNƒg‚É‘Î‚µ‚Ä <code>wait</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-<code>Condition</code> ƒIƒuƒWƒFƒNƒg‚ð‘Ò‹@‚³‚¹‚é‚½‚ß‚É‚ÍA<code>Condition</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚Å’è‹`‚³‚ê‚½ <code>await</code> ƒƒ\ƒbƒh‚ðŽg—p‚·‚×‚«‚Å‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍA<code>java.util.concurrent.locks.Condition</code> ƒIƒuƒWƒFƒNƒg‚Å <code>wait</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
+<code>Condition</code> ƒIƒuƒWƒFƒNƒg‚ð‘Ò‹@‚³‚¹‚é‚½‚ß‚É‚ÍA<code>Condition</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚Å’è‹`‚³‚ê‚½ <code>await</code> ƒƒ\ƒbƒh‚ðŽg—p‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -2795,7 +2797,7 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
 
   <BugPattern type="RV_01_TO_INT">
     <ShortDescription>0‚©‚ç1‚Ì—”’l‚Í®”’l0‚ÉŠÛ‚ß‚ç‚ê‚é</ShortDescription>
-    <LongDescription>{1} ‚ÍA0‚©‚ç1‚Ì—”’l‚ð¶¬‚µ‚Ä‚¢‚Ü‚·‚ª®”’l0‚ÉŠÛ‚ß‚ç‚ê‚Ü‚·B</LongDescription>
+    <LongDescription>{1} ‚ÍA0‚©‚ç1‚Ì—”’l‚ð¶¬‚µ‚Ä‚¢‚é‚ªA®”’l0‚ÉŠÛ‚ß‚ç‚ê‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2816,15 +2818,15 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
 </p>
 <p>
 <code>nextInt</code> ƒƒ\ƒbƒh‚Ö‚Ìˆø”‚Í®”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
-‚½‚Æ‚¦‚ÎA-99‚©‚ç0‚Ü‚Å‚Ì—”‚ð¶¬‚µ‚½‚¢‚È‚ç <code>-r.nextInt(100)</code> ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
+‚½‚Æ‚¦‚ÎA-99‚©‚ç0‚Ü‚Å‚Ì—”‚ð¶¬‚µ‚½‚¢‚È‚çA<code>-r.nextInt(100)</code> ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE">
-    <ShortDescription>SQL ‚Ì Statement ‚Ì execute ƒƒ\ƒbƒh‚É’è”‚Å‚Í‚È‚¢•¶Žš—ñ‚ª“n‚³‚ê‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>{1} ‚ÍASQL ‚Ì Statement ‚Ì execute ƒƒ\ƒbƒh‚ÉA’è”‚Å‚Í‚È‚¢•¶Žš—ñ‚ð“n‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>SQL ‚Ì Statement ‚Ì  execute ƒƒ\ƒbƒh‚É’è”‚Å‚È‚¢•¶Žš—ñ‚ð“n‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>{1} ‚ÍASQL ‚Ì Statement ‚Ì execute ƒƒ\ƒbƒh‚ÉA’è”‚Å‚È‚¢•¶Žš—ñ‚ð“n‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2837,13 +2839,13 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
   </BugPattern>
 
   <BugPattern type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING">
-    <ShortDescription>PreparedStatement ‚ª’è”ˆÈŠO‚Ì•¶Žš—ñ‚©‚ç¶¬‚³‚ê‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>PreparedStatement ‚ª’è”ˆÈŠO‚Ì•¶Žš—ñ‚©‚ç¶¬‚³‚ê‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>PreparedStatement ‚ª’è”‚Å‚È‚¢•¶Žš—ñ‚©‚ç¶¬‚³‚ê‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>PreparedStatement ‚ª’è”‚Å‚È‚¢•¶Žš—ñ‚©‚ç¶¬‚³‚ê‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍA’è”ˆÈŠO‚Ì•¶Žš—ñ‚©‚ç SQL ‚Ì <code>PreparedStatement</code> ‚ðì¬‚µ‚Ä‚¢‚Ü‚·B
-ƒ`ƒFƒbƒN‚³‚ê‚Ä‚¢‚È‚¢ƒ†[ƒU‚©‚ç‚Ì‰˜õ‚³‚ê‚½ƒf[ƒ^‚ª SQL ‚Ì•¶Žš—ñ‚ðì‚éÛ‚ÉŽg‚í‚ê‚é‚È‚ç PreparedStatement ‚Å—\‘zŠO‚Ì–]‚Ü‚µ‚­‚È‚¢‰½‚©‚ð‚·‚é‚½‚ß‚É SQL ƒCƒ“ƒWƒFƒNƒVƒ‡ƒ“‚ªŽg‚í‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍA’è”‚Å‚È‚¢•¶Žš—ñ‚©‚ç SQL ‚Ì <code>PreparedStatement</code> ‚ðì¬‚µ‚Ä‚¢‚Ü‚·B
+ƒ†[ƒU‚©‚ç‚Ìƒ`ƒFƒbƒN‚³‚ê‚Ä‚¢‚È‚¢A‰˜õ‚³‚ê‚½ƒf[ƒ^‚ª‚±‚Ì•¶Žš—ñ‚ðì‚éÛ‚ÉŽg‚í‚ê‚é‚È‚çAPreparedStatement ‚Å—\‘zŠO‚Å–]‚Ü‚µ‚­‚È‚¢‰½‚©‚ð‚·‚é‚½‚ß‚É SQL ƒCƒ“ƒWƒFƒNƒVƒ‡ƒ“‚ªŽg‚í‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -2855,8 +2857,8 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍAƒXƒŒƒbƒh‚ðì¬‚µ‚Ä‚¢‚Ü‚·‚ª <code>Thread</code> ‚ðŒp³‚µ‚ÄƒI[ƒoƒ‰ƒCƒh‚³‚ê‚½ <code>run</code> ƒƒ\ƒbƒhA‚Ü‚½‚ÍA<code>Runnable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚½ <code>run</code> ƒƒ\ƒbƒh‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
-‚±‚ÌƒXƒŒƒbƒh‚ÍAŽžŠÔ‚ð˜Q”ï‚·‚é‚¾‚¯‚Å‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍAƒXƒŒƒbƒh‚ðì¬‚µ‚Ä‚¢‚é‚ªA<code>Thread</code> ƒNƒ‰ƒX‚©‚ç”h¶‚µ‚½ <code>run</code> ƒƒ\ƒbƒh‚àŽw’è‚µ‚Ä‚¢‚È‚¢‚µA<code>Runnable</code> ƒIƒuƒWƒFƒNƒg‚à“n‚µ‚Ä‚¢‚Ü‚¹‚ñB
+‚±‚ÌƒXƒŒƒbƒh‚ÍAŽžŠÔ‚Ì–³‘Ê‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -2878,11 +2880,11 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
 
   <BugPattern type="FI_FINALIZER_NULLS_FIELDS">
     <ShortDescription>ƒtƒ@ƒCƒiƒ‰ƒCƒU‚ÍƒtƒB[ƒ‹ƒh‚ð null ‚É‚·‚é</ShortDescription>
-    <LongDescription>{3} ‚ÍAfinalize ƒƒ\ƒbƒh‚Ì’†‚Å null ‚ðÝ’è‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <LongDescription>{3} ‚ÍAfinalize ƒƒ\ƒbƒh‚Ì’†‚Å null ‚ðÝ’è‚µ‚Ä‚¢‚Ü‚·B{1.class}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒtƒ@ƒCƒiƒ‰ƒCƒU‚ÍAƒtƒB[ƒ‹ƒh‚ð null ‚É‚µ‚Ü‚·B
+‚±‚Ìƒtƒ@ƒCƒiƒ‰ƒCƒU‚ÍAƒtƒB[ƒ‹ƒh‚ð null ‚É‚µ‚Ä‚¢‚Ü‚·B
 ‚±‚ê‚Í’ÊíŒë‚è‚ÅƒKƒx[ƒWƒRƒŒƒNƒ^‚ð•‚¯‚Ü‚¹‚ñBƒIƒuƒWƒFƒNƒg‚Í‚¢‚¸‚ê‚É‚µ‚ëƒKƒx[ƒW‚³‚ê‚Ü‚·B
 ]]>
     </Details>
@@ -2893,9 +2895,9 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒtƒ@ƒCƒiƒ‰ƒCƒU‚ÍAƒtƒB[ƒ‹ƒh‚ð null ‚·‚éˆÈŠO‚Í‰½‚à‚µ‚Ä‚¢‚Ü‚¹‚ñB
+‚±‚Ìƒtƒ@ƒCƒiƒ‰ƒCƒU‚ÍAƒtƒB[ƒ‹ƒh‚ð null ‚É‚·‚é‚±‚ÆˆÈŠO‚Í‰½‚à‚µ‚Ü‚¹‚ñB
 ‚±‚ê‚Í‚Ü‚Á‚½‚­–³ˆÓ–¡‚Å‚ ‚èAƒIƒuƒWƒFƒNƒg‚ªƒKƒx[ƒW‚³‚êAƒtƒ@ƒCƒiƒ‰ƒCƒY‚³‚êAÄ‚ÑƒKƒx[ƒW‚³‚ê‚é‚±‚Æ‚ð—v‹‚µ‚Ä‚¢‚Ü‚·B
-<code>finalize</code> ƒƒ\ƒbƒh‚ðíœ‚·‚×‚«‚Å‚·B
+<code>finalize</code> ƒƒ\ƒbƒh‚ðíœ‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -2903,7 +2905,7 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
 
   <BugPattern type="FI_PUBLIC_SHOULD_BE_PROTECTED">
     <ShortDescription>ƒtƒ@ƒCƒiƒ‰ƒCƒU‚Í public ‚Å‚Í‚È‚­ protected ‚É‚·‚×‚«</ShortDescription>
-    <LongDescription>{1} ‚Í public ‚Å‚·‚ª‚±‚ê‚Í protected ‚É‚·‚×‚«‚Å‚·B</LongDescription>
+    <LongDescription>{1} ‚Í public ‚Å‚·Bprotected ‚É‚·‚×‚«‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2914,12 +2916,12 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
   </BugPattern>
 
   <BugPattern type="FI_EMPTY">
-    <ShortDescription>‹ó‚Ìƒtƒ@ƒCƒiƒ‰ƒCƒU‚Ííœ‚·‚×‚«</ShortDescription>
-    <LongDescription>{1} ‚ÍA‹ó‚È‚Ì‚Åíœ‚·‚×‚«‚Å‚·B</LongDescription>
+    <ShortDescription>‹ó‚Ìƒtƒ@ƒCƒiƒ‰ƒCƒU‚Ííœ‚·‚é‚×‚«</ShortDescription>
+    <LongDescription>{1} ‚ÍA‹ó‚È‚Ì‚Åíœ‚·‚é‚×‚«‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‹ó‚Ì <code>finalize</code> ƒƒ\ƒbƒh‚Í–ð‚É—§‚½‚È‚¢‚Ì‚ÅAíœ‚·‚×‚«‚Å‚·B
+‹ó‚Ì <code>finalize</code> ƒƒ\ƒbƒh‚Í–ð‚É—§‚½‚È‚¢‚Ì‚ÅAíœ‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -2927,12 +2929,12 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
 
   <BugPattern type="FI_NULLIFY_SUPER">
     <ShortDescription>ƒtƒ@ƒCƒiƒ‰ƒCƒU‚ÍƒX[ƒp[ƒNƒ‰ƒX‚Ìƒtƒ@ƒCƒiƒ‰ƒCƒU‚ð–³Œø‚É‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>{1} ‚ÍA{2}.finalize() ‚ð–³Œø‚É‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚Í‚ ‚È‚½‚ªˆÓ}‚µ‚½‚±‚Æ‚Å‚·‚©H</LongDescription>
+    <LongDescription>{1} ‚ÍA{2}.finalize() ‚ð–³Œø‚É‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚ÍAˆÓ}‚µ‚½‚±‚Æ‚Å‚·‚©H</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì‹ó‚Ì <code>finalize</code> ƒƒ\ƒbƒh‚ÍAƒX[ƒp[ƒNƒ‰ƒX‚É‚æ‚Á‚Ä’è‹`‚³‚ê‚½‚Ç‚ñ‚Èƒtƒ@ƒCƒiƒ‰ƒCƒU‚ÌŒø‰Ê‚à–³Œø‚É‚µ‚Ü‚·B
-ƒX[ƒp[ƒNƒ‰ƒX‚Ì‚½‚ß‚É’è‹`‚³‚ê‚é‚Ç‚ñ‚Èƒtƒ@ƒCƒiƒ‰ƒCƒUƒAƒNƒVƒ‡ƒ“‚àŽÀs‚³‚ê‚Ü‚¹‚ñB
+‚±‚Ì‹ó‚Ì <code>finalize</code> ƒƒ\ƒbƒh‚ÍA–¾Ž¦“I‚ÉƒX[ƒp[ƒNƒ‰ƒX‚É‚æ‚Á‚Ä’è‹`‚³‚ê‚½‚Ç‚ñ‚Èƒtƒ@ƒCƒiƒ‰ƒCƒU‚ÌŒø‰Ê‚à–³Œø‚É‚µ‚Ü‚·B
+ƒX[ƒp[ƒNƒ‰ƒX‚Ì‚½‚ß‚É’è‹`‚³‚ê‚½‚Ç‚ñ‚Èƒtƒ@ƒCƒiƒ‰ƒCƒUƒAƒNƒVƒ‡ƒ“‚àŽÀs‚³‚ê‚Ü‚¹‚ñB
 ‚±‚ê‚ªˆÓ}‚µ‚½‚±‚Æ‚Å‚Í‚È‚¢ê‡A‚±‚Ìƒƒ\ƒbƒh‚ðíœ‚µ‚Ä‚­‚¾‚³‚¢B
   </p>
 ]]>
@@ -2959,7 +2961,7 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
 <![CDATA[
 <p>
 ‚±‚Ì <code>finalize</code> ƒƒ\ƒbƒh‚ÍAƒX[ƒp[ƒNƒ‰ƒX‚Ì <code>finalize</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚¹‚ñB
-‚±‚Ì‚½‚ßAƒX[ƒp[ƒNƒ‰ƒX‚Ì‚½‚ß‚É’è‹`‚³‚ê‚é‚Ç‚ñ‚Èƒtƒ@ƒCƒiƒ‰ƒCƒUƒAƒNƒVƒ‡ƒ“‚àŽÀs‚³‚ê‚Ü‚¹‚ñB
+‚±‚Ì‚½‚ßAƒX[ƒp[ƒNƒ‰ƒX‚Ì‚½‚ß‚É’è‹`‚³‚ê‚½‚Ç‚ñ‚Èƒtƒ@ƒCƒiƒ‰ƒCƒUƒAƒNƒVƒ‡ƒ“‚àŽÀs‚³‚ê‚Ü‚¹‚ñB
 <code>super.finalize()</code> ‚ÌŒÄ‚Ño‚µ‚ð’Ç‰Á‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
@@ -2968,18 +2970,18 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
 
   <BugPattern type="FI_EXPLICIT_INVOCATION">
     <ShortDescription>ƒtƒ@ƒCƒiƒ‰ƒCƒU‚Ì–¾Ž¦“I‚ÈŒÄ‚Ño‚µ</ShortDescription>
-    <LongDescription>–¾Ž¦“I‚É {2} ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <LongDescription>{1} ‚ÍA–¾Ž¦“I‚É {2} ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚É‚ÍAƒIƒuƒWƒFƒNƒg‚Å <code>finalize</code> ƒƒ\ƒbƒh‚Ì–¾Ž¦“I‚ÈŒÄ‚Ño‚µ‚ª‚ ‚è‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚É‚ÍA–¾Ž¦“I‚ÉƒIƒuƒWƒFƒNƒg‚Å <code>finalize</code> ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚ª‚ ‚è‚Ü‚·B
 ƒtƒ@ƒCƒiƒ‰ƒCƒU‚Í Java ‰¼‘zƒ}ƒVƒ“‚É‚æ‚Á‚Ä1“x‚¾‚¯ŽÀs‚³‚ê‚é‚±‚Æ‚É‚È‚Á‚Ä‚¢‚é‚Ì‚ÅA‚±‚ê‚ÍŠÔˆá‚Á‚½l‚¦‚Å‚·B
 </p>
 <p>
 ŽQÆ‚É‚æ‚Á‚Ä‚Â‚È‚ª‚Á‚½•¡”‚ÌƒIƒuƒWƒFƒNƒg‚ªƒtƒ@ƒCƒiƒ‰ƒCƒY‰Â”\‚É‚È‚é‚ÆAJava ‰¼‘zƒ}ƒVƒ“‚Í‚·‚×‚Ä‚ÌƒIƒuƒWƒFƒNƒg‚Ì <code>finalize</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ü‚·B
 ‚¨‚»‚ç‚­AˆÙ‚È‚éƒXƒŒƒbƒh‚Å“¯Žž‚É‚Å‚·B
 ‚µ‚½‚ª‚Á‚ÄAƒNƒ‰ƒX <i>X</i> ‚Ì <code>finalize</code> ƒƒ\ƒbƒh‚Ì’†‚©‚ç <i>X</i> ‚É‚æ‚Á‚ÄŽQÆ‚³‚ê‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚Ì <code>finalize</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚Ì‚ÍA‚Æ‚è‚í‚¯ŠÔˆá‚Á‚½l‚¦‚Å‚·B
-‚È‚º‚È‚çAƒIƒuƒWƒFƒNƒg‚ª‚·‚Å‚É•ÊX‚ÌƒXƒŒƒbƒh‚É‚æ‚Á‚Äƒtƒ@ƒCƒiƒ‰ƒCƒY‚³‚ê‚Ä‚¢‚é‚©‚à‚µ‚ê‚È‚¢‚©‚ç‚Å‚·B
+‚È‚º‚È‚çAƒIƒuƒWƒFƒNƒg‚ª‚·‚Å‚É•ÊX‚ÌƒXƒŒƒbƒh‚É‚æ‚Á‚Äƒtƒ@ƒCƒiƒ‰ƒCƒY‚³‚ê‚Ä‚¢‚é‚©‚à‚µ‚ê‚È‚¢‚©‚ç‚Å‚·B 
 </p>
 ]]>
     </Details>
@@ -2991,7 +2993,7 @@ Java Œ¾ŒêŽd—l‚Å‚ÍA<code>e1</code> ‚Æ <code>e2</code> ‚ªƒ‰ƒbƒv‚³‚ê‚½”’l‚È‚ç’l‚Í
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì <code>equals</code> ƒƒ\ƒbƒh‚ÍAˆø”‚ª‰½‚ç‚©‚ÌŒÝŠ·«‚Ì‚È‚¢Œ^ (‚·‚È‚í‚¿AƒX[ƒpƒ^ƒCƒv‚Å‚à‚È‚­A<code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚éƒNƒ‰ƒX‚ÌƒX[ƒp[ƒ^ƒCƒv‚Å‚àƒTƒuƒ^ƒCƒv‚Å‚à‚È‚¢ƒNƒ‰ƒX) ‚È‚Ì‚©Šm‚©‚ß‚Ä‚¢‚Ü‚·B
+‚±‚Ì <code>equals</code> ƒƒ\ƒbƒh‚ÍAˆø”‚ªŒÝŠ·«‚Ì‚È‚¢Œ^ (‚·‚È‚í‚¿AƒX[ƒpƒ^ƒCƒv‚Å‚à‚È‚­A<code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚éƒNƒ‰ƒX‚ÌƒX[ƒp[ƒ^ƒCƒv‚Å‚àƒTƒuƒ^ƒCƒv‚Å‚à‚È‚¢ƒNƒ‰ƒX) ‚Å‚ ‚é‚©ƒ`ƒFƒbƒN‚µ‚Ä‚¢‚Ü‚·B
 ‚½‚Æ‚¦‚ÎA<code>Foo</code> ƒNƒ‰ƒX‚Ì <code>equals</code> ƒƒ\ƒbƒh‚Í‚»‚Ì‚æ‚¤‚ÉŒ©‚¦‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 <blockquote><pre>
@@ -3027,13 +3029,13 @@ public boolean equals(Object o) {
   </BugPattern>
 
   <BugPattern type="EQ_SELF_USE_OBJECT">
-    <ShortDescription>‹¤•Ï‚È equals ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚é‚ª Object.equals(Object) ‚ÍŒp³‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>{0} ‚ÍAequals({0.givenClass}) ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·‚ª Object.equals(Object) ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>‹¤•Ï‚È equals ƒƒ\ƒbƒh‚ð’è‹`‚µ‚ÄAObject.equals(Object) ‚ðŒp³‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>{0} ‚ÍAequals({0.givenClass}) ƒƒ\ƒbƒh‚ð’è‹`‚µ‚ÄAObject.equals(Object) ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍA‹¤•Ï‚È <code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·‚ª <code>java.lang.Object</code> ƒNƒ‰ƒX‚Ì <code>equals(Object)</code> ƒƒ\ƒbƒh‚ðŒp³‚µ‚Ä‚¢‚Ü‚·B
-ƒNƒ‰ƒX‚ÍA<code>boolean equals(Object)</code> ƒƒ\ƒbƒh‚ð’è‹`‚·‚×‚«‚Å‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍA‹¤•Ï‚È <code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚é‚ªA<code>java.lang.Object</code> ƒNƒ‰ƒX‚Ì <code>equals(Object)</code> ƒƒ\ƒbƒh‚ðŒp³‚µ‚Ä‚¢‚Ü‚·B
+ƒNƒ‰ƒX‚ÍA<code>boolean equals(Object)</code> ƒƒ\ƒbƒh‚ð’è‹`‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -3041,12 +3043,12 @@ public boolean equals(Object o) {
 
   <BugPattern type="EQ_OTHER_USE_OBJECT">
     <ShortDescription>Object.equals(Object) ‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚È‚¢ equals ƒƒ\ƒbƒh‚Ì’è‹`</ShortDescription>
-    <LongDescription>{0}‚ÍA{1.givenClass} ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·‚ª Object.equals(Object) ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <LongDescription>{0}‚ÍA{1.givenClass} ƒƒ\ƒbƒh‚ð’è‹`‚µ‚ÄAObject.equals(Object) ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍA<code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·‚ª <code>java.lang.Object</code> ƒNƒ‰ƒX‚Å’è‹`‚³‚ê‚½ <code>equals(Object)</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚Ü‚¹‚ñB
-ƒNƒ‰ƒX‚ÍA<code>boolean equals(Object)</code> ƒƒ\ƒbƒh‚ð’è‹`‚·‚×‚«‚Å‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍA<code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚é‚ªA<code>java.lang.Object</code> ƒNƒ‰ƒX‚Å’è‹`‚³‚ê‚½ <code>equals(Object)</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚Ü‚¹‚ñB
+ƒNƒ‰ƒX‚ÍA<code>boolean equals(Object)</code> ƒƒ\ƒbƒh‚ð’è‹`‚·‚é‚×‚«‚Å‚·B
   </p>
 ]]>
     </Details>
@@ -3057,8 +3059,8 @@ public boolean equals(Object o) {
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍA<code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·‚ª <code>java.lang.Object</code> ƒNƒ‰ƒX‚Å’è‹`‚³‚ê‚½ <code>equals(Object)</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚Ü‚¹‚ñB
-‚»‚Ì‘ã‚í‚è‚ÉAƒX[ƒp[ƒNƒ‰ƒX‚©‚ç <code>equals(Object)</code> ƒƒ\ƒbƒh‚ðŒp³‚µ‚Ä <code>boolean equals(Object)</code> ƒƒ\ƒbƒh‚ð’è‹`‚·‚×‚«‚Å‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍA<code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚é‚ªA<code>java.lang.Object</code> ƒNƒ‰ƒX‚Å’è‹`‚³‚ê‚½ <code>equals(Object)</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚Ü‚¹‚ñB
+‚»‚Ì‘ã‚í‚è‚ÉAƒX[ƒp[ƒNƒ‰ƒX‚©‚ç <code>equals(Object)</code> ƒƒ\ƒbƒh‚ðŒp³‚µ‚ÄA<code>boolean equals(Object)</code> ƒƒ\ƒbƒh‚ð’è‹`‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -3070,10 +3072,10 @@ public boolean equals(Object o) {
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍA<code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚éƒNƒ‰ƒX‚ðŠg’£‚µ‚ÄƒtƒB[ƒ‹ƒh‚ð’Ç‰Á‚µ‚Ä‚¢‚Ü‚·‚ª <code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB
-‚µ‚½‚ª‚Á‚ÄA‚±‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Ì“™‰¿«‚ÍAƒTƒuƒNƒ‰ƒX‚Ì“¯ˆê«‚Æ’Ç‰Á‚³‚ê‚½ƒtƒB[ƒ‹ƒh‚ð–³Ž‹‚µ‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍA<code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚éƒNƒ‰ƒX‚ðŠg’£‚µ‚ÄƒtƒB[ƒ‹ƒh‚ð’Ç‰Á‚µ‚Ä‚¢‚é‚ªA<code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB
+‚µ‚½‚ª‚Á‚ÄA‚±‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Ì“™‰¿«‚ÍAƒTƒuƒNƒ‰ƒX‚Æ’Ç‰Á‚³‚ê‚½ƒtƒB[ƒ‹ƒh‚Ì“¯ˆê«‚ð–³Ž‹‚µ‚Ü‚·B
 ‚±‚ê‚ªˆÓ}‚µ‚½‚±‚Æ‚ÅA‚µ‚©‚àA<code>equals</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚é•K—v‚ª‚È‚¢‚±‚Æ‚ðŠmŽÀ‚É‚µ‚Ä‚­‚¾‚³‚¢B
-‚½‚Æ‚¦ <code>equals</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚é•K—v‚ª‚È‚¢‚Æ‚µ‚Ä‚àAƒTƒuƒNƒ‰ƒX‚Ì‚½‚ß‚Ì <code>equals</code> ƒƒ\ƒbƒh‚ª <code>super.equals(o)</code> ‚ðŒÄ‚Ño‚·Œ‹‰Ê‚ð•Ô‚·‚Æ‚¢‚¤Ž–ŽÀ‚ð•¶‘‰»‚·‚é‚½‚ß‚ÉA‚¢‚¸‚ê‚É‚µ‚ëA<code>equals</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
+‚½‚Æ‚¦ <code>equals</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚é•K—v‚ª‚È‚¢‚Æ‚µ‚Ä‚àAƒTƒuƒNƒ‰ƒX‚Ì‚½‚ß‚Ì <code>equals</code> ƒƒ\ƒbƒh‚ª <code>super.equals(o)</code> ‚ðŒÄ‚Ño‚µ‚ÄŒ‹‰Ê‚ð•Ô‚·‚Æ‚¢‚¤Ž–ŽÀ‚ðŽÀØ‚·‚é‚½‚ß‚ÉA‚¢‚¸‚ê‚É‚µ‚ëA<code>equals</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -3081,7 +3083,7 @@ public boolean equals(Object o) {
 
   <BugPattern type="EQ_SELF_NO_OBJECT">
     <ShortDescription>‹¤•Ï‚È equals ƒƒ\ƒbƒh‚Ì’è‹`</ShortDescription>
-    <LongDescription>{0} ‚ÍAequals({0.givenClass}) ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·‚ª equals(Object) ‚Í’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
+    <LongDescription>{0} ‚ÍAequals({0.givenClass}) ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚é‚ªAequals(Object) ‚Í’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3093,29 +3095,29 @@ public boolean equals(Object o) {
   </BugPattern>
   <BugPattern type="EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC">
     <ShortDescription>equals ƒƒ\ƒbƒh‚ÍƒX[ƒp[ƒNƒ‰ƒX‚Ì equals ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚é‚ªA‘ÎÌ“I‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚È‚¢</ShortDescription>
-    <LongDescription>{1.class} ‚ÍA{2.class.givenClass} ‚Ì equals ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒh‚µ‚Ä‚¢‚Ü‚·‚ªA‘ÎÌ“I‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB</LongDescription>
+    <LongDescription>{1.class} ‚ÍA{2.class.givenClass} ‚Å equals ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒh‚µ‚Ä‚¢‚é‚ªA‘ÎÌ“I‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚ÌƒNƒ‰ƒX‚ÍƒX[ƒp[ƒNƒ‰ƒX‚Ì <code>equals</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚é <code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
 —¼•û‚Ì <code>equals</code> ƒƒ\ƒbƒh‚ÍA2‚Â‚ÌƒIƒuƒWƒFƒNƒg‚ª“™‚µ‚¢‚©‚Ç‚¤‚©‚Ì”»’è‚ÅA<code>instanceof</code> ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B
 <code>equals</code> ƒƒ\ƒbƒh‚Í‘ÎÌ“I (<code>a.equals(b) == b.equals(a)</code>) ‚Å‚ ‚é‚±‚Æ‚ªd—v‚È‚Ì‚Å‚±‚ê‚ÍŠëŒ¯‚ð”º‚Á‚Ä‚¢‚Ü‚·B
-<i>B</i> ‚ª <i>A</i> ‚ÌƒTƒuƒ^ƒCƒv‚È‚ç i>A</i> ‚Ì <code>equals</code> ƒƒ\ƒbƒh‚Íˆø”‚ª <code>instanceof A</code> ‚È‚Ì‚©ƒ`ƒFƒbƒN‚µ‚Ü‚·B
+<i>B</i> ‚ª <i>A</i> ‚ÌƒTƒuƒ^ƒCƒv‚È‚ç <i>A</i> ‚Ì <code>equals</code> ƒƒ\ƒbƒh‚Íˆø”‚ª <code>instanceof A</code> ‚È‚Ì‚©ƒ`ƒFƒbƒN‚µ‚Ü‚·B
 ‚»‚µ‚ÄA<i>B</i> ‚Ì <code>equals</code> ƒƒ\ƒbƒh‚Íˆø”‚ª <code>instanceof B</code> ‚È‚Ì‚©ƒ`ƒFƒbƒN‚µ‚Ü‚·B
-‚±‚ê‚ç‚Ìƒƒ\ƒbƒh‚É‚æ‚Á‚Ä’è‹`‚³‚ê‚½“¯’lŠÖŒW‚ª‘ÎÌ“I‚Å‚Í‚È‚¢‰Â”\«‚ª‚‚¢‚Å‚·B
+‚±‚ê‚ç‚Ìƒƒ\ƒbƒh‚É‚æ‚Á‚Ä’è‹`‚³‚ê‚½“¯’lŠÖŒW‚ª‘ÎÌ“I‚Å‚È‚¢‚Æ‚¢‚¤‚±‚Æ‚Å‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="EQ_GETCLASS_AND_CLASS_CONSTANT">
-    <ShortDescription>equals ƒƒ\ƒbƒh‚ÍƒTƒuƒNƒ‰ƒX‚Ì‚½‚ß‚ÉŽ¸”s‚·‚é</ShortDescription>
-    <LongDescription>{1} ‚ÍAƒTƒuƒNƒ‰ƒX‚Ì‚½‚ß‚ÉŽ¸”s‚µ‚Ü‚·B</LongDescription>
+    <ShortDescription>equals ƒƒ\ƒbƒh‚ÍƒTƒuƒ^ƒCƒv‚Ì‚½‚ß‚ÉŽ¸”s‚·‚é</ShortDescription>
+    <LongDescription>{1} ‚ÍAƒTƒuƒ^ƒCƒv‚Ì‚½‚ß‚ÉŽ¸”s‚µ‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍAƒTƒuƒNƒ‰ƒX‚É‚æ‚Á‚ÄŒp³‚³‚ê‚é‚È‚ç‰ó‚ê‚é‚¾‚ë‚¤ <code>equlas</code> ƒƒ\ƒbƒh‚ª‚ ‚è‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍAƒTƒuƒNƒ‰ƒX‚É‚æ‚Á‚ÄŒp³‚³‚ê‚é‚È‚çA‰ó‚ê‚é‚¾‚ë‚¤ <code>equlas</code> ƒƒ\ƒbƒh‚ª‚ ‚è‚Ü‚·B
 <code>equals</code> ƒƒ\ƒbƒh‚ÍAƒNƒ‰ƒXƒŠƒeƒ‰ƒ‹‚ðˆø”‚ÌƒNƒ‰ƒX‚Æ”äŠr‚µ‚Ä‚¢‚Ü‚· (‚½‚Æ‚¦‚ÎA<code>Foo</code> ƒNƒ‰ƒX‚ÅA<code>Foo.class == o.getClass()</code> ‚Ì‚æ‚¤‚È”»’è‚ðs‚Á‚Ä‚¢‚Ü‚·)B
-‚±‚ê‚Í <code>this.getClass() == o.getClass()</code> ‚Ì•û‚ª‚æ‚¢‚Å‚·B
+‚»‚ê‚ÍA<code>this.getClass() == o.getClass()</code> ‚Ì•û‚ª‚æ‚è—Ç‚¢‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -3127,15 +3129,15 @@ public boolean equals(Object o) {
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚Ì <code>equals</code> ƒƒ\ƒbƒh‚ÍAˆø”‚ÌŒ^‚ª <code>this</code> ƒIƒuƒWƒFƒNƒg‚ÌŒ^‚ÆŒÝŠ·«‚ª‚ ‚é‚Ì‚ðƒ`ƒFƒbƒN‚·‚é‚½‚ß‚ÉA‰äX‚ª”FŽ¯‚µ‚Ä‚¢‚éƒpƒ^[ƒ“‚ð‰½‚à‚µ‚Ä‚¢‚Ü‚¹‚ñB
-‚±‚ÌƒR[ƒh‚Í‰½‚àŠÔˆá‚Á‚Ä‚¢‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ªƒŒƒrƒ…[‚·‚é‰¿’l‚ª‚ ‚è‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚Ì <code>equals</code> ƒƒ\ƒbƒh‚ÍAˆø”‚ÌŒ^‚ª <code>this</code> ƒIƒuƒWƒFƒNƒg‚ÌŒ^‚ÆŒÝŠ·«‚ª‚ ‚é‚±‚ðƒ`ƒFƒbƒN‚·‚é‚½‚ß‚ÉA‰äX‚ª”FŽ¯‚µ‚Ä‚¢‚éƒpƒ^[ƒ“‚ð‰½‚à‚µ‚Ä‚¢‚Ü‚¹‚ñB
+‚±‚ÌƒR[ƒh‚Í‰½‚àŠÔˆá‚Á‚Ä‚¢‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ªAƒŒƒrƒ…[‚·‚é‰¿’l‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="EQ_COMPARING_CLASS_NAMES">
-    <ShortDescription>equals ƒƒ\ƒbƒh‚ÍƒNƒ‰ƒXƒIƒuƒWƒFƒNƒg‚Å‚Í‚È‚­AƒNƒ‰ƒX–¼‚ð”äŠr‚µ‚Ä‚¢‚é</ShortDescription>
+    <ShortDescription>equals ƒƒ\ƒbƒh‚ÍƒNƒ‰ƒXƒIƒuƒWƒFƒNƒg‚Å‚Í‚È‚­ƒNƒ‰ƒX–¼‚ð”äŠr‚µ‚Ä‚¢‚é</ShortDescription>
     <LongDescription>{1} ‚ÍAƒNƒ‰ƒXƒIƒuƒWƒFƒNƒg‚Å‚Í‚È‚­AƒNƒ‰ƒX–¼‚ð”äŠr‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
@@ -3155,7 +3157,7 @@ public boolean equals(Object o) {
 <![CDATA[
 <p>
 ‚±‚ÌƒNƒ‰ƒX‚Å‚ÍAí‚É true ‚ð•Ô‚· <code>equals<code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ê‚Í‘z‘œ—Í‚É•x‚Þ‚ª‚ ‚Ü‚è—Ç‚¢•û–@‚Æ‚Í‚¢‚¦‚Ü‚¹‚ñB‚³‚ç‚ÉA<code>equals</code> ƒƒ\ƒbƒh‚ª‘ÎÌ“I‚Å‚Í‚È‚¢‚±‚Æ‚ðˆÓ–¡‚µ‚Ü‚·B
+‚±‚ê‚Í‘z‘œ—Í‚É•x‚Þ‚ªA‚ ‚Ü‚è—Ç‚¢•û–@‚Æ‚Í‚¢‚¦‚Ü‚¹‚ñB‚³‚ç‚ÉA<code>equals</code> ƒƒ\ƒbƒh‚ª‘ÎÌ“I‚Å‚Í‚È‚¢‚±‚Æ‚ðˆÓ–¡‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -3168,8 +3170,8 @@ public boolean equals(Object o) {
 <![CDATA[
 <p>
 ‚±‚ÌƒNƒ‰ƒX‚Å‚ÍAí‚É false ‚ð•Ô‚· <code>equlas</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ê‚ÍƒIƒuƒWƒFƒNƒg‚ª‚»‚êŽ©g‚Æ“™‰¿‚Å‚Í‚È‚¢‚±‚Æ‚ðˆÓ–¡‚µA‚±‚ÌƒNƒ‰ƒX‚Ì—L—p‚È Map ‚â Set ‚ðì¬‚Å‚«‚Ü‚¹‚ñB
-‚æ‚èª–{“I‚ÉA<code>equals</code> ƒƒ\ƒbƒh‚Ì—vŒ‚Å‚ ‚é”½ŽË«‚ð–ž‚½‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚É‚È‚è‚Ü‚·B
+‚±‚ê‚ÍAƒIƒuƒWƒFƒNƒg‚ª‚»‚êŽ©g‚Æ“™‰¿‚Å‚Í‚È‚¢‚±‚Æ‚ðˆÓ–¡‚µ‚Ä‚¢‚ÄA‚±‚ÌƒNƒ‰ƒX‚Ì—L—p‚È Map ‚â Set ‚ðì¬‚Å‚«‚Ü‚¹‚ñB
+‚æ‚èª–{“I‚ÉA<code>equals</code> ƒƒ\ƒbƒh‚Ì—vŒˆê‚Â‚Å‚ ‚é”½ŽË«‚ð–ž‚½‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚É‚È‚è‚Ü‚·B
 </p>
 <p>
 ‚¨‚»‚ç‚­ˆÓ}‚³‚ê‚½‚±‚Æ‚ÍAƒIƒuƒWƒFƒNƒg‚Í‚»‚êŽ©g‚Æ“™‰¿‚Å‚ ‚é‚Æ‚¢‚¤ƒIƒuƒWƒFƒNƒg“¯ˆê«‚Å‚·B
@@ -3191,7 +3193,8 @@ public boolean equals(Object o) {
     <Details>
 <![CDATA[
 <p>
-‹‘å‚È•¶Žš—ñ’è”‚ª•¡”‚ÌƒNƒ‰ƒXƒtƒ@ƒCƒ‹‚É‚í‚½‚Á‚Ä•¡»‚³‚ê‚Ä‚¢‚Ü‚·Bfinal ƒtƒB[ƒ‹ƒh‚ª•¶Žš—ñ’è”‚Å‰Šú‰»‚³‚êAJavaŒ¾Œê‚É‚æ‚Á‚Ä‘¼‚ÌƒNƒ‰ƒX‚©‚ç‚Ì final ƒtƒB[ƒ‹ƒh‚Ö‚Ì‚·‚×‚Ä‚ÌŽQÆ‚ªƒNƒ‰ƒXƒtƒ@ƒCƒ‹‚ÉƒCƒ“ƒ‰ƒCƒ“‰»‚³‚ê‚é‚©‚ç‚Å‚·B
+‹‘å‚È•¶Žš—ñ’è”‚ª•¡”‚ÌƒNƒ‰ƒXƒtƒ@ƒCƒ‹‚É‚í‚½‚Á‚Ä•¡»‚³‚ê‚Ä‚¢‚Ü‚·B
+final ƒtƒB[ƒ‹ƒh‚ª•¶Žš—ñ’è”‚Å‰Šú‰»‚³‚êAJavaŒ¾Œê‚É‚æ‚Á‚Ä‘¼‚ÌƒNƒ‰ƒX‚©‚ç‚Ì final ƒtƒB[ƒ‹ƒh‚Ö‚Ì‚·‚×‚Ä‚ÌŽQÆ‚ªƒNƒ‰ƒXƒtƒ@ƒCƒ‹‚ÉƒCƒ“ƒ‰ƒCƒ“‰»‚³‚ê‚é‚©‚ç‚Å‚·B
 </p>
 <p>
 JDK ‚Í‚±‚ÌƒoƒO‚ð‰ðŒˆ‚µ‚ÄƒTƒCƒY‚ð1MBŒ¸‚ç‚·‚±‚Æ‚ª‚Å‚«‚Ü‚µ‚½B<br>
@@ -3202,38 +3205,26 @@ JDK ‚Í‚±‚ÌƒoƒO‚ð‰ðŒˆ‚µ‚ÄƒTƒCƒY‚ð1MBŒ¸‚ç‚·‚±‚Æ‚ª‚Å‚«‚Ü‚µ‚½B<br>
   </BugPattern>
 
   <BugPattern type="NP_ARGUMENT_MIGHT_BE_NULL">
-    <ShortDescription>ˆø”‚Ì null ƒ`ƒFƒbƒN‚ð‚µ‚Ä‚¢‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>{1} ‚ÍAˆø”‚Ì null ƒ`ƒFƒbƒN‚ð‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>null ‚Ìˆø”‚ðƒ`ƒFƒbƒN‚µ‚Ä‚¢‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
+    <LongDescription>{1} ‚ÍAnull ‚Ìˆø”‚ðƒ`ƒFƒbƒN‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚Ö‚Ìƒpƒ‰ƒ[ƒ^‚ª null ‚©‚Ç‚¤‚©Šm‚©‚ß‚é‚½‚ß‚Éí‚Éƒ`ƒFƒbƒN‚·‚×‚«’l‚Æ‚µ‚Ä“Á’è‚³‚ê‚½‚ªŽ–‘O‚Ì null ƒ`ƒFƒbƒN‚È‚µ‚Å null ’l‚ª—˜—p‚³‚ê‚Ä‚¢‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚Ö‚Ìƒpƒ‰ƒ[ƒ^‚ª null ‚©‚Ç‚¤‚©Šm‚©‚ß‚é‚½‚ß‚Éí‚Éƒ`ƒFƒbƒN‚³‚ê‚é‚×‚«’l‚Æ‚µ‚Ä“Á’è‚³‚ê‚Ü‚µ‚½B
+‚µ‚©‚µAnull ƒ`ƒFƒbƒN‚ð‚µ‚È‚¢‚ÅAnull ’l‚ª—˜—p‚³‚ê‚Ä‚¢‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT">
-    <ShortDescription>equals ƒƒ\ƒbƒh‚Íˆø”‚Ì null ƒ`ƒFƒbƒN‚ð‚µ‚Ä‚¢‚È‚¢</ShortDescription>
-    <LongDescription>{1} ‚ÍAˆø”‚Ì null ƒ`ƒFƒbƒN‚ð‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>equals ƒƒ\ƒbƒh‚Í null ‚Ìˆø”‚ðƒ`ƒFƒbƒN‚µ‚Ä‚¢‚È‚¢</ShortDescription>
+    <LongDescription>{1} ‚ÍAnull ‚Ìˆø”‚ðƒ`ƒFƒbƒN‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚Ì <code>equals(Object)</code> ƒƒ\ƒbƒh‚ÌŽÀ‘•‚Íˆø”‚Æ‚µ‚Ä“n‚³‚ê‚Ä‚¢‚é null ‚ðƒ`ƒFƒbƒN‚µ‚Ä‚¢‚È‚¢‚Ì‚ÅA<code>java.lang.Object.equals()</code> ‚Å’è‹`‚³‚ê‚½‹K–ñ‚Éˆá”½‚µ‚Ä‚¢‚Ü‚·B
-‚·‚×‚Ä‚Ì <code>equals</code> ƒƒ\ƒbƒh‚Íˆø”‚É null ‚ª“n‚³‚ê‚½‚È‚ç false ‚ð•Ô‚³‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
-</p>
-]]>
-    </Details>
-  </BugPattern>
-
-  <BugPattern type="NP_DOES_NOT_HANDLE_NULL">
-    <ShortDescription>equals ƒƒ\ƒbƒh‚Íƒpƒ‰ƒ[ƒ^‚Ì null ƒ`ƒFƒbƒN‚ð‚µ‚Ä‚¢‚È‚¢</ShortDescription>
-    <LongDescription>{1} ‚ÍAƒpƒ‰ƒ[ƒ^‚Ì null ƒ`ƒFƒbƒN‚ð‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-‚±‚Ì <code>equals(Object)</code> ƒƒ\ƒbƒh‚ÌŽÀ‘•‚Íƒpƒ‰ƒ[ƒ^‚Æ‚µ‚Ä“n‚³‚ê‚Ä‚¢‚é null ‚ðƒ`ƒFƒbƒN‚µ‚Ä‚¢‚È‚¢‚Ì‚Å A<code>java.lang.Object.equals()</code> ‚Å’è‹`‚³‚ê‚½‹K–ñ‚Éˆá”½‚µ‚Ä‚¢‚Ü‚·B
-‚·‚×‚Ä‚Ì <code>equals</code> ƒƒ\ƒbƒh‚Íˆø”‚É null ‚ª“n‚³‚ê‚½‚È‚ç false ‚ð•Ô‚³‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+‚·‚×‚Ä‚Ì <code>equals</code> ƒƒ\ƒbƒh‚Íˆø”‚É null ‚ª“n‚³‚ê‚½‚È‚ç false ‚ð•Ô‚·‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -3253,13 +3244,13 @@ JDK ‚Í‚±‚ÌƒoƒO‚ð‰ðŒˆ‚µ‚ÄƒTƒCƒY‚ð1MBŒ¸‚ç‚·‚±‚Æ‚ª‚Å‚«‚Ü‚µ‚½B<br>
   </BugPattern>
 
   <BugPattern type="HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS">
-    <ShortDescription>ƒnƒbƒVƒ…‰»‚³‚ê‚½•¶–¬‚ÅƒnƒbƒVƒ…‰Â‚Å‚«‚È‚¢ƒNƒ‰ƒX‚ÌŽg—p</ShortDescription>
+    <ShortDescription>ƒnƒbƒVƒ…‰»‚³‚ê‚½•¶–¬‚ÅƒnƒbƒVƒ…‰»‚Å‚«‚È‚¢ƒNƒ‰ƒX‚ÌŽg—p‚ªƒVƒOƒlƒ`ƒƒ‚ÅéŒ¾‚³‚ê‚Ä‚¢‚é</ShortDescription>
     <LongDescription>{2} ‚ÍAhashCode ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚È‚¢‚Ì‚ÉƒnƒbƒVƒ…‰»‚³‚ê‚½•¶–¬‚ÅŽg‚í‚ê‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-ˆê”Ê“I‚ÈƒVƒOƒlƒ`ƒƒ‚ðéŒ¾‚µ‚½ƒnƒbƒVƒ…‰Â‚Å‚«‚È‚¢‚ÈƒNƒ‰ƒX‚ªƒnƒbƒVƒ…‰Â”\ƒNƒ‰ƒX‚ª•K—v‚Æ‚³‚ê‚é•¶–¬‚ÅŽg‚í‚ê‚Ä‚¢‚Ü‚·B
-ƒNƒ‰ƒX‚ÍA<code>equals</code> ƒƒ\ƒbƒh‚ðéŒ¾‚µ‚Ä‚¢‚Ü‚·‚ª <code>hashCode</code> ƒƒ\ƒbƒh‚Í <code>java.lang.Object</code> ‚©‚çŒp³‚µ‚Ä‚¢‚Ü‚·B
+ƒƒ\ƒbƒhAƒtƒB[ƒ‹ƒhAƒNƒ‰ƒX‚ÍAƒnƒbƒVƒ…‰Â”\‚ÈƒNƒ‰ƒX‚ª•K—v‚È•¶–¬‚ÅƒnƒbƒVƒ…‰»‚Å‚«‚È‚¢ƒNƒ‰ƒX‚ªŽg—p‚³‚ê‚é‘Ì“I‚ÈƒVƒOƒlƒ`ƒƒ‚ðéŒ¾‚µ‚Ä‚¢‚Ü‚·B
+ƒNƒ‰ƒX‚ÍA<code>equals</code> ƒƒ\ƒbƒh‚ðéŒ¾‚µ‚Ä‚¢‚é‚ªA<code>hashCode</code> ƒƒ\ƒbƒh‚Í <code>java.lang.Object</code> ‚©‚çŒp³‚µ‚Ä‚¢‚Ü‚·B
 ‚±‚ê‚Íu“™‰¿‚ÈƒIƒuƒWƒFƒNƒg‚Í“™‰¿‚ÈƒnƒbƒVƒ…ƒR[ƒh‚ð•ÛŽ‚·‚é•K—v‚ª‚ ‚év‚Æ‚¢‚¤ <code>hashCode</code> ƒƒ\ƒbƒh‚Ì”Ä—p‹K–ñ‚É]‚Á‚Ä‚¢‚È‚¢‚Ì‚ÅAƒnƒbƒVƒ…‰»‚Å‚«‚Ü‚¹‚ñB
 </p>
 ]]>
@@ -3267,12 +3258,13 @@ JDK ‚Í‚±‚ÌƒoƒO‚ð‰ðŒˆ‚µ‚ÄƒTƒCƒY‚ð1MBŒ¸‚ç‚·‚±‚Æ‚ª‚Å‚«‚Ü‚µ‚½B<br>
   </BugPattern>
   <BugPattern type="HE_USE_OF_UNHASHABLE_CLASS">
     <ShortDescription>ƒnƒbƒVƒ…ƒf[ƒ^\‘¢‚Å hashCode ƒƒ\ƒbƒh‚Ì‚È‚¢ƒNƒ‰ƒX‚ðŽg—p‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>{2} ‚ÍAhashCode ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚È‚¢‚Ì‚ÉƒnƒbƒVƒ…ƒf[ƒ^\‘¢‚ÅŽg‚í‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
+    <LongDescription>{2} ‚ÍAhashCode ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚È‚¢‚Ì‚ÉƒnƒbƒVƒ…ƒf[ƒ^\‘¢‚ÅŽg‚í‚ê‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-    ‚±‚ÌƒNƒ‰ƒX‚ÍA<code>equals(Object)</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·‚ª <code>hashCode</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB
-‚±‚ê‚Íu“™‰¿‚ÈƒIƒuƒWƒFƒNƒg‚Í“™‰¿‚ÈƒnƒbƒVƒ…ƒR[ƒh‚ð•ÛŽ‚·‚é•K—v‚ª‚ ‚év‚Æ‚¢‚¤ <code>hashCode</code> ƒƒ\ƒbƒh‚Ì”Ä—p‹K–ñ‚É]‚Á‚Ä‚¢‚Ü‚¹‚ñB‚µ‚©‚àA‚±‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ÍƒnƒbƒVƒ…ƒf[ƒ^\‘¢‚ÅŽg‚í‚ê‚Ä‚¢‚Ü‚·BÅd—v–â‘è‚ðC³‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍA<code>equals(Object)</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚é‚ªA<code>hashCode</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB
+‚±‚ê‚Íu“™‰¿‚ÈƒIƒuƒWƒFƒNƒg‚Í“™‰¿‚ÈƒnƒbƒVƒ…ƒR[ƒh‚ð•ÛŽ‚·‚é•K—v‚ª‚ ‚év‚Æ‚¢‚¤ <code>hashCode</code> ƒƒ\ƒbƒh‚Ì”Ä—p‹K–ñ‚É]‚Á‚Ä‚¢‚Ü‚¹‚ñB
+‚±‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ÍƒnƒbƒVƒ…ƒf[ƒ^\‘¢‚ÅŽg‚í‚ê‚Ä‚¢‚Ü‚·BÅd—v–â‘è‚ðC³‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -3284,17 +3276,19 @@ JDK ‚Í‚±‚ÌƒoƒO‚ð‰ðŒˆ‚µ‚ÄƒTƒCƒY‚ð1MBŒ¸‚ç‚·‚±‚Æ‚ª‚Å‚«‚Ü‚µ‚½B<br>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚Í <code>hashCode</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·‚ª <code>java.lang.Object</code> ‚Ì <code>equals</code> ƒƒ\ƒbƒh (ƒIƒuƒWƒFƒNƒgŽQÆ‚Ì”äŠr‚Å“™‰¿«‚ð”»’è‚µ‚Ü‚·) ‚ðŒp³‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ê‚Íu“™‰¿‚ÈƒIƒuƒWƒFƒNƒg‚Í“™‰¿‚ÈƒnƒbƒVƒ…ƒR[ƒh‚ð•ÛŽ‚·‚é•K—v‚ª‚ ‚év‚Æ‚¢‚¤ <code>hashCode</code> ƒƒ\ƒbƒh‚Ì”Ä—p‹K–ñ‚É]‚Á‚Ä‚¢‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ª‚¨‚»‚ç‚­A<code>hashCode</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚é‚±‚Æ‚É‚æ‚Á‚ÄˆÓ}‚µ‚½‚±‚Æ‚Å‚Í‚È‚¢‚ÆŽv‚í‚ê‚Ü‚·
+‚±‚ÌƒNƒ‰ƒX‚Í <code>hashCode</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚é‚ªA<code>java.lang.Object</code> ‚Ì <code>equals</code> ƒƒ\ƒbƒh (ƒIƒuƒWƒFƒNƒgŽQÆ‚Ì”äŠr‚Å“™‰¿«‚ð”»’è‚µ‚Ü‚·) ‚ðŒp³‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ê‚Íu“™‰¿‚ÈƒIƒuƒWƒFƒNƒg‚Í“™‰¿‚ÈƒnƒbƒVƒ…ƒR[ƒh‚ð•ÛŽ‚·‚é•K—v‚ª‚ ‚év‚Æ‚¢‚¤ <code>hashCode</code> ƒƒ\ƒbƒh‚Ì”Ä—p‹K–ñ‚É]‚Á‚Ä‚¢‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ªA
+‚¨‚»‚ç‚­A<code>hashCode</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚é‚±‚Æ‚É‚æ‚Á‚ÄˆÓ}‚µ‚½‚±‚Æ‚Å‚Í‚È‚¢‚ÆŽv‚í‚ê‚Ü‚·
 (<code>hashCode</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚é‚±‚Æ‚ÍAƒIƒuƒWƒFƒNƒg‚Ì“¯ˆê«‚ª’Pƒ‚ÈŽQÆ“™‰¿«‚æ‚è‚à•¡ŽG‚È‹K–ñ‚ÉŠî‚Ã‚­‚±‚Æ‚ðˆÓ–¡‚µ‚Ü‚·)B
 </p>
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ª HashMap/HashTable ‚ÉŒˆ‚µ‚Ä‘ã“ü‚³‚ê‚é‚¾‚ë‚¤‚ÆŽv‚í‚È‚¢‚È‚ç„§‚³‚ê‚é <code>hashCode</code> ƒƒ\ƒbƒh‚ÌŽÀ‘•‚ÍˆÈ‰º‚Ì‚æ‚¤‚É‚È‚è‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ª HashMap/HashTable ‚ÉŒˆ‚µ‚Ä‘ã“ü‚³‚ê‚é‚¾‚ë‚¤‚ÆŽv‚í‚È‚¢‚È‚çA
+„§‚³‚ê‚é <code>hashCode</code> ƒƒ\ƒbƒh‚ÌŽÀ‘•‚ÍˆÈ‰º‚Ì‚æ‚¤‚É‚È‚è‚Ü‚·B
 </p>
 <blockquote><pre>
 public int hashCode() {
     assert false : "hashCode‚ªŒÄ‚Ño‚³‚ê‚é‚±‚Æ‚Í‘z’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB";
-    return 42; // “K“–‚È’l
+    return 42; // “K“–‚È’l 
 }
 </pre></blockquote>
 ]]>
@@ -3307,16 +3301,16 @@ public int hashCode() {
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍA<code>compareTo(...)</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·‚ª <code>equals()</code> ‚Í <code>java.lang.Object</code> ‚©‚çŒp³‚µ‚Ä‚¢‚Ü‚·B
-’ÊíA<code>equals</code> ƒƒ\ƒbƒh‚ª true ‚ð•Ô‚·ê‡‚ÉŒÀ‚èA<code>compareTo</code> ƒƒ\ƒbƒh‚Í0‚ð•Ô‚ð•Ô‚³‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+‚±‚ÌƒNƒ‰ƒX‚ÍA<code>compareTo(...)</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚é‚ªA<code>equals()</code> ‚Í <code>java.lang.Object</code> ‚©‚çŒp³‚µ‚Ä‚¢‚Ü‚·B
+’ÊíA<code>equals</code> ƒƒ\ƒbƒh‚ª true ‚ð•Ô‚·ê‡‚ÉŒÀ‚èA<code>compareTo</code> ƒƒ\ƒbƒh‚Í0‚ð•Ô‚·‚×‚«‚Å‚·B
 ‚±‚ê‚ªˆá”½‚³‚ê‚é‚È‚çŠï–­‚Å—\‘ª‚Å‚«‚È‚¢Ž¸”s‚ª PriorityQueue ‚È‚Ç‚ÌƒNƒ‰ƒX‚Å”­¶‚µ‚Ü‚·B
-J2SE 5.0‚Å‚ÍA<code>PriorityQueue.remove()</code> ‚Í <code>compareTo</code> ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ü‚·‚ª Java SE 6‚Å‚ÍA<code>equals</code> ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ü‚·B
+J2SE 5.0‚Å‚ÍA<code>PriorityQueue.remove()</code> ‚Í <code>compareTo</code> ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ü‚·‚ªAJava SE 6‚Å‚ÍA<code>equals</code> ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ü‚·B
 <p>
-ComparableƒCƒ“ƒ^ƒtƒF[ƒX‚ÌcompareToƒƒ\ƒbƒh‚ÌJavaDoc‚ðˆÈ‰º‚Éˆø—p‚µ‚Ü‚·B
+Comparable ƒCƒ“ƒ^ƒtƒF[ƒX‚Ì compareTo ƒƒ\ƒbƒh‚Ì JavaDoc ‚ðˆÈ‰º‚Éˆø—p‚µ‚Ü‚·B
 </p>
 <blockquote><p>
 •K{‚Æ‚¢‚¤‚í‚¯‚Å‚Í‚ ‚è‚Ü‚¹‚ñ‚ª <code>(x.compareTo(y)==0) == (x.equals(y))</code> ‚Å‚ ‚é‚±‚Æ‚ª‹­‚­„§‚³‚ê‚Ü‚·B
-ˆê”Ê“I‚ÉA<code>Comparable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚éƒNƒ‰ƒX‚ÅA‚±‚ÌðŒ‚Éˆá”½‚·‚éƒNƒ‰ƒX‚Í‚·‚×‚ÄA–¾Šm‚É‚±‚ÌŽ–ŽÀ‚ðŽ¦‚·•K—v‚ª‚ ‚è‚Ü‚·B
+’ÊíA<code>Comparable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚éƒNƒ‰ƒX‚ÅA‚±‚ÌðŒ‚Éˆá”½‚·‚éƒNƒ‰ƒX‚Í‚·‚×‚ÄA–¾Šm‚É‚±‚ÌŽ–ŽÀ‚ðŽ¦‚·•K—v‚ª‚ ‚è‚Ü‚·B
 u’:‚±‚ÌƒNƒ‰ƒX‚Í <code>equals</code> ‚ÆˆêŠÑ«‚Ì‚È‚¢Ž©‘R‡˜•t‚¯‚ðŽ‚¿‚Ü‚·v‚È‚Ç‚Æ–¾Ž¦‚·‚é‚±‚Æ‚ð‚¨Š©‚ß‚µ‚Ü‚·B
 </p></blockquote>
 ]]>
@@ -3325,11 +3319,11 @@ ComparableƒCƒ“ƒ^ƒtƒF[ƒX‚ÌcompareToƒƒ\ƒbƒh‚ÌJavaDoc‚ðˆÈ‰º‚Éˆø—p‚µ‚Ü‚·B
 
   <BugPattern type="HE_HASHCODE_NO_EQUALS">
     <ShortDescription>hashCode ƒƒ\ƒbƒh‚Í’è‹`‚µ‚Ä‚¢‚é‚ª equals ƒƒ\ƒbƒh‚Í’è‹`‚µ‚Ä‚¢‚È‚¢ƒNƒ‰ƒX</ShortDescription>
-    <LongDescription>{0} ‚ÍAhashCode ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·‚ª equals ƒƒ\ƒbƒh‚Í’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
+    <LongDescription>{0} ‚ÍAhashCode ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚é‚ªAequals ƒƒ\ƒbƒh‚Í’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍA<code>hashCode</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·‚ª <code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB
+‚±‚ÌƒNƒ‰ƒX‚ÍA<code>hashCode</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚é‚ªA <code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB
 ‚±‚ê‚Íu“™‰¿‚ÈƒIƒuƒWƒFƒNƒg‚Í“™‰¿‚ÈƒnƒbƒVƒ…ƒR[ƒh‚ð•ÛŽ‚·‚é•K—v‚ª‚ ‚év‚Æ‚¢‚¤ <code>hashCode</code> ƒƒ\ƒbƒh‚Ì”Ä—p‹K–ñ‚Éˆá”½‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
@@ -3342,16 +3336,16 @@ ComparableƒCƒ“ƒ^ƒtƒF[ƒX‚ÌcompareToƒƒ\ƒbƒh‚ÌJavaDoc‚ðˆÈ‰º‚Éˆø—p‚µ‚Ü‚·B
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍA<code>equals(Object)</code> ‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚Ü‚·‚ª <code>hashCode</code> ƒƒ\ƒbƒh‚ÍƒI[ƒo[ƒ‰ƒCƒh‚µ‚È‚¢‚ÅA<code>java.lang.Object</code> ‚©‚ç <code>hashCode</code> ƒƒ\ƒbƒh‚ðŒp³‚µ‚Ä‚¢‚Ü‚· (“¯ˆê«ƒnƒbƒVƒ…ƒR[ƒh (Java ‰¼‘zƒ}ƒVƒ“‚É‚æ‚Á‚ÄƒIƒuƒWƒFƒNƒg‚É‘ã“ü‚³‚ê‚½”CˆÓ‚Ì’l) ‚ð•Ô‚µ‚Ü‚·)B
+‚±‚ÌƒNƒ‰ƒX‚ÍA<code>equals(Object)</code> ‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚é‚ªA<code>hashCode</code> ƒƒ\ƒbƒh‚ÍƒI[ƒo[ƒ‰ƒCƒh‚µ‚È‚¢‚ÅA<code>java.lang.Object</code> ‚©‚ç <code>hashCode</code> ƒƒ\ƒbƒh‚ðŒp³‚µ‚Ä‚¢‚Ü‚· (“¯ˆê«ƒnƒbƒVƒ…ƒR[ƒh (Java ‰¼‘zƒ}ƒVƒ“‚É‚æ‚Á‚ÄƒIƒuƒWƒFƒNƒg‚É‘ã“ü‚³‚ê‚½”CˆÓ‚Ì’l) ‚ð•Ô‚µ‚Ü‚·)B
 ‚µ‚½‚ª‚Á‚ÄAu“™‰¿‚ÈƒIƒuƒWƒFƒNƒg‚Í“™‰¿‚ÈƒnƒbƒVƒ…ƒR[ƒh‚ð•ÛŽ‚·‚é•K—v‚ª‚ ‚év‚Æ‚¢‚¤ <code>hashCode</code> ƒƒ\ƒbƒh‚Ì”Ä—p‹K–ñ‚Éˆá”½‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ª HashMap/HashTable ‚ÉŒˆ‚µ‚Ä‘ã“ü‚³‚ê‚é‚¾‚ë‚¤‚ÆŽv‚í‚È‚¢‚È‚ç„§‚³‚ê‚é <code>hashCode</code> ƒƒ\ƒbƒh‚ÌŽÀ‘•‚ÍˆÈ‰º‚Ì‚æ‚¤‚É‚È‚è‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ª HashMap/HashTable ‚ÉŒˆ‚µ‚Ä‘ã“ü‚³‚ê‚é‚¾‚ë‚¤‚ÆŽv‚í‚È‚¢‚È‚çA„§‚³‚ê‚é <code>hashCode</code> ƒƒ\ƒbƒh‚ÌŽÀ‘•‚ÍˆÈ‰º‚Ì‚æ‚¤‚É‚È‚è‚Ü‚·B
 </p>
 <blockquote><pre>
 public int hashCode() {
     assert false : "hashCode‚ªŒÄ‚Ño‚³‚ê‚é‚±‚Æ‚Í‘z’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB";
-    return 42; // “K“–‚È’l
+    return 42; // “K“–‚È’l 
 }
 </pre></blockquote>
 ]]>
@@ -3375,11 +3369,11 @@ public int hashCode() {
   </BugPattern>
   <BugPattern type="HE_EQUALS_NO_HASHCODE">
     <ShortDescription>equals ƒƒ\ƒbƒh‚Í’è‹`‚µ‚Ä‚¢‚é‚ª hashCode ƒƒ\ƒbƒh‚Í’è‹`‚µ‚Ä‚¢‚È‚¢ƒNƒ‰ƒX</ShortDescription>
-    <LongDescription>{0} ‚ÍAequals ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·‚ª hashCode ƒƒ\ƒbƒh‚Í’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
+    <LongDescription>{0} ‚ÍAequals ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚é‚ªAhashCode ƒƒ\ƒbƒh‚Í’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍA<code>equals(Object)</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚Ü‚·‚ª <code>hashCode</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚Ü‚¹‚ñB
+‚±‚ÌƒNƒ‰ƒX‚ÍA<code>equals(Object)</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚é‚ªA<code>hashCode</code> ƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚Ü‚¹‚ñB
 ‚µ‚½‚ª‚Á‚ÄAu“™‰¿‚ÈƒIƒuƒWƒFƒNƒg‚Í“™‰¿‚ÈƒnƒbƒVƒ…ƒR[ƒh‚ð•ÛŽ‚·‚é•K—v‚ª‚ ‚év‚Æ‚¢‚¤ <code>hashCode</code> ƒƒ\ƒbƒh‚Ì”Ä—p‹K–ñ‚Éˆá”½‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
@@ -3387,7 +3381,7 @@ public int hashCode() {
   </BugPattern>
   <BugPattern type="EQ_ABSTRACT_SELF">
     <ShortDescription>’ŠÛƒNƒ‰ƒX‚Í‹¤•Ï‚È equals ƒƒ\ƒbƒh‚ðéŒ¾‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>’ŠÛƒNƒ‰ƒX {0} ‚Å ‹¤•Ï‚È equals({0.givenClass}) ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <LongDescription>’ŠÛƒNƒ‰ƒX {0} ‚ÍA‹¤•Ï‚È equals({0.givenClass}) ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3405,7 +3399,7 @@ public int hashCode() {
 <![CDATA[
 <p>
 ‚±‚ÌƒR[ƒh‚ÍAŽQÆ“™‰¿«‚Ì‚½‚ß‚É == ‚â != ‚ðŽg—p‚µ‚Ä <code>java.lang.String</code> ƒIƒuƒWƒFƒNƒg‚ð”äŠr‚µ‚Ä‚¢‚Ü‚·B
-—¼•û‚Ì•¶Žš—ñ‚ªƒ\[ƒXƒtƒ@ƒCƒ‹‚Ì’è”‚©A‚Ü‚½‚Í <code>String.intern()</code> ‚ðŽg—p‚µ‚Ä³€‰»‚³‚ê‚Ä‚¢‚È‚¢ŒÀ‚èA“¯‚¶•¶Žš—ñ‚Í2‚Â‚ÌˆÙ‚È‚é String ƒIƒuƒWƒFƒNƒg‚É‚æ‚Á‚Ä•\‚³‚ê‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+—¼•û‚Ì•¶Žš—ñ‚ªƒ\[ƒXƒtƒ@ƒCƒ‹‚Ì’è”‚©A<code>String.intern()</code> ‚ðŽg—p‚µ‚Ä³€‰»‚³‚ê‚Ä‚¢‚È‚¢ŒÀ‚èA“¯‚¶•¶Žš—ñ‚Í2‚Â‚ÌˆÙ‚È‚é String ƒIƒuƒWƒFƒNƒg‚É‚æ‚Á‚Ä•\‚³‚ê‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 ‚»‚Ì‘ã‚í‚è‚ÉA<code>equals(Object)</code> ƒƒ\ƒbƒh‚ðŽg‚¤‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
@@ -3418,8 +3412,9 @@ public int hashCode() {
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍAŽQÆ“™‰¿«‚Ì‚½‚ß‚É == ‚â != ‚ðŽg—p‚µ‚Ä <code>java.lang.String</code> ƒIƒuƒWƒFƒNƒg‚ð”äŠr‚µ‚Ä‚¢‚Ü‚·B
-•¶Žš—ñ’è”‚Ü‚½‚Í³€‰»‚³‚ê‚½•¶Žš—ñ‚¾‚¯‚ðƒƒ\ƒbƒh‚É“n‚·‚±‚Æ‚ðŒÄ‚Ño‚µŒ³‚É—v‹‚·‚é‚±‚Æ‚ÍA•K—vˆÈã‚É‰ó‚ê‚â‚·‚­‚ÄA‘ª’è‰Â”\‚ÈƒpƒtƒH[ƒ}ƒ“ƒX‚ÌŒüã‚ð‚à‚½‚ç‚µ‚Ü‚¹‚ñB
+‚±‚ÌƒR[ƒh‚ÍAŽQÆ“™‰¿«‚Ì‚½‚ß‚É == ‚â != ‚ðŽg—p‚µ‚Ä <code>java.lang.String</code> ƒpƒ‰ƒ[ƒ^‚ð”äŠr‚µ‚Ä‚¢‚Ü‚·B
+•¶Žš—ñ’è”‚Ü‚½‚Í³€‰»‚³‚ê‚½•¶Žš—ñ‚¾‚¯‚ðƒƒ\ƒbƒh‚É“n‚·‚±‚Æ‚ðŒÄ‚Ño‚µŒ³‚É—v‹‚·‚é‚±‚Æ‚ÍA•K—vˆÈã‚ÉÆŽã‚ÅA‘ª’è‰Â”\‚È«”\‚ÌŒüã‚ð‚à‚½‚ç‚µ‚Ü‚¹‚ñB
+‚»‚Ì‘ã‚í‚è‚ÉA<code>equals(Object)</code> ƒƒ\ƒbƒh‚ðŽg‚¤‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -3427,7 +3422,7 @@ public int hashCode() {
 
   <BugPattern type="CO_ABSTRACT_SELF">
     <ShortDescription>’ŠÛƒNƒ‰ƒX‚Í‹¤•Ï‚È compareTo ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>’ŠÛƒNƒ‰ƒX {0} ‚Å compareTo({0.givenClass}) ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <LongDescription>’ŠÛƒNƒ‰ƒX {0} ‚ÍAcompareTo({0.givenClass}) ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3458,9 +3453,9 @@ public int hashCode() {
     <Details>
 <![CDATA[
 <p>
-Web ƒT[ƒo‚Íˆê”Ê“I‚ÉƒT[ƒuƒŒƒbƒg‚â JSP ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð1‚Â‚¾‚¯ì¬‚µ‚Ü‚· (‚·‚È‚í‚¿AƒVƒ“ƒOƒ‹ƒgƒ“‚Æ‚µ‚Äˆµ‚¢‚Ü‚·)B
+Web ƒT[ƒo‚ÍA’ÊíƒT[ƒuƒŒƒbƒg‚â JSP ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð1‚Â‚¾‚¯ì¬‚µ‚Ü‚· (‚·‚È‚í‚¿AƒVƒ“ƒOƒ‹ƒgƒ“‚Æ‚µ‚Äˆµ‚¢‚Ü‚·)B
 •¡”‚ÌƒXƒŒƒbƒh‚ª•¡”“¯Žž‚É”­¶‚·‚éƒŠƒNƒGƒXƒg‚ðˆ—‚·‚é‚½‚ß‚ÉƒCƒ“ƒXƒ^ƒ“ƒX‚Ìƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ü‚·B
-‚µ‚½‚ª‚Á‚ÄA‰Â•ÏƒCƒ“ƒXƒ^ƒ“ƒXƒtƒB[ƒ‹ƒh‚Íˆê”Ê“I‚É‹£‡ó‘Ô‚ðì¬‚µ‚Ü‚·B
+‚µ‚½‚ª‚Á‚ÄA‰Â•ÏƒCƒ“ƒXƒ^ƒ“ƒXƒtƒB[ƒ‹ƒh‚Í’Êí‹£‡ó‘Ô‚ðì¬‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -3481,7 +3476,7 @@ Web ƒT[ƒo‚Íˆê”Ê“I‚ÉƒT[ƒuƒŒƒbƒg‚â JSP ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð1‚Â‚¾‚¯ì¬‚µ‚Ü‚· (
   <li>“Ç‚Ýo‚µ‚Ì2”{‚Ìd‚Ý•t‚¯‚ð‚µ‚½‘‚«ž‚Ý‚ÅA”ñ“¯ŠúƒtƒB[ƒ‹ƒh‚ÌƒAƒNƒZƒX (“Ç‚Ýo‚µ‚Æ‘‚«ž‚Ý) ”‚ª‚·‚×‚Ä‚ÌƒAƒNƒZƒX‚Ì‚í‚¸‚©1/3</li>
 </ul>
 <p>
-‚±‚Ìƒpƒ^[ƒ“‚É“–‚Ä‚Í‚Ü‚é“TŒ^“I‚È—á‚ÍAƒXƒŒƒbƒhƒZ[ƒt‚ðˆÓ}‚µ‚½ƒNƒ‰ƒX‚Åƒƒ\ƒbƒh‚ð“¯Šú‰»‚·‚é‚Ì‚ð–Y‚ê‚Ä‚¢‚éƒP[ƒX‚Å‚·B
+‚±‚ÌƒoƒOƒpƒ^[ƒ“‚É‡’v‚·‚é“TŒ^“I‚ÈƒoƒO‚ÍAƒXƒŒƒbƒhƒZ[ƒt‚ðˆÓ}‚µ‚½ƒNƒ‰ƒX‚Åƒƒ\ƒbƒh‚ð“¯Šú‰»‚·‚é‚Ì‚ð–Y‚ê‚Ä‚¢‚é‚±‚Æ‚Å‚·B
 </p>
 <p>
 ƒfƒBƒeƒNƒ^‚ª‚Ç‚±‚ÅƒtƒB[ƒ‹ƒh‚ª“¯Šú‰»‚È‚µ‚ÅƒAƒNƒZƒX‚³‚ê‚é‚ÆM‚¶‚Ä‚¢‚½‚©‚ðŽ¦‚·ƒR[ƒh‚ÌêŠ‚Éu”ñ“¯ŠúƒAƒNƒZƒXv‚Æ‚¢‚¤ƒ‰ƒxƒ‹‚ð•t‚¯‚ç‚ê‚Ü‚·B
@@ -3501,12 +3496,12 @@ Web ƒT[ƒo‚Íˆê”Ê“I‚ÉƒT[ƒuƒŒƒbƒg‚â JSP ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð1‚Â‚¾‚¯ì¬‚µ‚Ü‚· (
     <Details>
 <![CDATA[
 <p>
-‰Â•ÏƒIƒuƒWƒFƒNƒgó‘Ô‚Ö‚Ì‚Ç‚ñ‚È (–¾‚ç‚©‚È) •t“I‚È•ÏX‚È‚µ‚ÅA<code>notify</code> ƒƒ\ƒbƒh‚Ü‚½‚Í <code>notifyAll</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-ˆê”Ê“I‚ÉA•Ê‚ÌƒXƒŒƒbƒh‚ªŠú‘Ò‚µ‚Ä‚¢‚é‚¢‚­‚Â‚©ðŒ‚ª^‚É‚È‚Á‚½‚Ì‚ÅAƒ‚ƒjƒ^‚Å <code>notify</code> ƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚Ü‚·B
+<code>notify</code> ƒƒ\ƒbƒh‚Ü‚½‚Í <code>notifyAll</code> ƒƒ\ƒbƒh‚Ö‚ÌŒÄ‚Ño‚µ‚ÍA‰Â•ÏƒIƒuƒWƒFƒNƒgó‘Ô‚É‚Ç‚ñ‚È (–¾‚ç‚©‚È) •t“I‚È•ÏX‚à‚à‚½‚ç‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½B
+’ÊíA•Ê‚ÌƒXƒŒƒbƒh‚ªŠú‘Ò‚µ‚Ä‚¢‚é‚¢‚­‚Â‚©ðŒ‚ª^‚É‚È‚Á‚½‚Ì‚ÅAƒ‚ƒjƒ^‚Å <code>notify</code> ƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚Ü‚·B
 ‚µ‚©‚µ‚È‚ª‚çAˆÓ–¡‚ª‚ ‚éðŒ‚Ì‚½‚ß‚ÉA—¼•û‚ÌƒXƒŒƒbƒh‚ÉŒ©‚¦‚éƒq[ƒvƒIƒuƒWƒFƒNƒg‚ðŠÜ‚Ü‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
 </p>
 <p>
-‰Â•ÏƒIƒuƒWƒFƒNƒg‚Ìó‘Ô•ÏX‚ª’Ê’mƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚½ƒƒ\ƒbƒh‚Å‹N‚±‚Á‚½‚©‚à‚µ‚ê‚È‚¢‚Ì‚ÅA‚±‚ÌƒoƒO‚ª•K‚¸‚µ‚àƒGƒ‰[‚ðŽ¦‚·‚Æ‚¢‚¤‚í‚¯‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+‰Â•ÏƒIƒuƒWƒFƒNƒg‚Ìó‘Ô•ÏX‚ª’Ê’m‚ª‚ ‚éƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚½ƒƒ\ƒbƒh‚Å‹N‚±‚Á‚½‚©‚à‚µ‚ê‚È‚¢‚Ì‚ÅA‚±‚ÌƒoƒO‚ª•K‚¸‚µ‚àƒGƒ‰[‚ðŽ¦‚·‚Æ‚¢‚¤‚í‚¯‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -3520,38 +3515,38 @@ Web ƒT[ƒo‚Íˆê”Ê“I‚ÉƒT[ƒuƒŒƒbƒg‚â JSP ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð1‚Â‚¾‚¯ì¬‚µ‚Ü‚· (
 <p>
 public static ƒƒ\ƒbƒh‚ÍAƒNƒ‰ƒX‚Ì Ã“I‚Èó‘Ô‚Ìˆê•”‚Å‚ ‚é”z—ñ‚ÌŽQÆ‚ð•Ô‚µ‚Ü‚·B
 ‚±‚Ìƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚Ç‚ñ‚ÈƒR[ƒh‚àAª’ê‚É‚ ‚é”z—ñ‚ðŽ©—R‚É•ÏX‚Å‚«‚Ü‚·B
-‰ðŒˆô‚Ì1‚Â‚ÍA”z—ñ‚ÌƒRƒs[‚ð•Ô‚·‚±‚Æ‚Å‚·B
+‰ðŒˆô‚ÍA”z—ñ‚ÌƒRƒs[‚ð•Ô‚·‚±‚Æ‚Å‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="EI_EXPOSE_REP">
-    <ShortDescription>‰Â•ÏƒIƒuƒWƒFƒNƒg‚ÌŽQÆ‚ð•Ô‚·‚±‚Æ‚É‚æ‚Á‚Ä“à•”•\Œ»‚ð–\˜I‚·‚é‚©‚à‚µ‚ê‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
+    <ShortDescription>‰Â•ÏƒIƒuƒWƒFƒNƒg‚Ö‚ÌŽQÆ‚ð•Ô‚·‚±‚Æ‚É‚æ‚Á‚Ä“à•”•\Œ»‚ð–\˜I‚·‚é‚©‚à‚µ‚ê‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
     <LongDescription>{1} ‚ÍA{2.givenClass} ‚ð•Ô‚·‚±‚Æ‚É‚æ‚Á‚Ä“à•”•\Œ»‚ð–\˜I‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-ƒIƒuƒWƒFƒNƒg‚ÌƒtƒB[ƒ‹ƒh‚Ì1‚Â‚ÉŠi”[‚³‚ê‚½‰Â•ÏƒIƒuƒWƒFƒNƒg‚ÌŽQÆ‚ð•Ô‚·‚ÆAƒIƒuƒWƒFƒNƒg‚Ì“à•”•\Œ»‚ð–\˜I‚µ‚Ü‚·B
-ƒCƒ“ƒXƒ^ƒ“ƒX‚ªM—Š‚Å‚«‚È‚¢ƒR[ƒh‚É‚æ‚Á‚ÄƒAƒNƒZƒX‚³‚ê‚é‚È‚ç‰Â•ÏƒIƒuƒWƒFƒNƒg‚Ìƒ`ƒFƒbƒN‚³‚ê‚Ä‚¢‚È‚¢•ÏX‚ªƒZƒLƒ…ƒŠƒeƒB‚â‘¼‚Ìd—v‚ÈƒvƒƒpƒeƒB‚ðŠë‚¤‚­‚·‚é‚Å‚µ‚å‚¤B
+ƒIƒuƒWƒFƒNƒg‚ÌƒtƒB[ƒ‹ƒh‚Ì‚¤‚¿‚Ì1‚Â‚ÉŠi”[‚³‚ê‚½‰Â•ÏƒIƒuƒWƒFƒNƒg‚ÌŽQÆ‚ð•Ô‚·‚ÆAƒIƒuƒWƒFƒNƒg‚Ì“à•”•\Œ»‚ð–\˜I‚µ‚Ü‚·B
+ƒCƒ“ƒXƒ^ƒ“ƒX‚ªM—Š‚Å‚«‚È‚¢ƒR[ƒh‚É‚æ‚Á‚ÄƒAƒNƒZƒX‚³‚ê‚é‚È‚çA‰Â•ÏƒIƒuƒWƒFƒNƒg‚Ìƒ`ƒFƒbƒN‚³‚ê‚Ä‚¢‚È‚¢•ÏX‚ªƒZƒLƒ…ƒŠƒeƒB‚â‘¼‚Ìd—v‚ÈƒvƒƒpƒeƒB‚ðŠë‚¤‚­‚·‚é‚Å‚µ‚å‚¤B
 ‰½‚©ˆá‚¤‚±‚Æ‚ð‚·‚é•K—v‚ª‚ ‚è‚Ü‚·BƒIƒuƒWƒFƒNƒg‚ÌV‚µ‚¢ƒRƒs[‚ð•Ô‚·‚±‚Æ‚ÍA‘½‚­‚Ìó‹µ‚Å‚æ‚è—Ç‚¢ƒAƒvƒ[ƒ`‚Å‚·B
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="EI_EXPOSE_REP2">
-    <ShortDescription>‰Â•ÏƒIƒuƒWƒFƒNƒg‚ÌŽQÆ‚ðŠi”[‚·‚é‚±‚Æ‚É‚æ‚Á‚Ä“à•”•\Œ»‚ð–\˜I‚·‚é‚©‚à‚µ‚ê‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
+    <ShortDescription>‰Â•ÏƒIƒuƒWƒFƒNƒg‚Ö‚ÌŽQÆ‚ðŽæ‚èž‚Þ‚±‚Æ‚É‚æ‚Á‚Ä“à•”•\Œ»‚ð–\˜I‚·‚é‚©‚à‚µ‚ê‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
     <LongDescription>{1} ‚ÍA{2.givenClass} ‚Ì’†‚ÉŠO•”‚Ì‰Â•ÏƒIƒuƒWƒFƒNƒg‚ðŠi”[‚·‚é‚±‚Æ‚É‚æ‚Á‚Ä“à•”•\Œ»‚ð–\˜I‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍAƒIƒuƒWƒFƒNƒg‚Ì“à•”•\Œ»‚Ì’†‚ÉŠO•”‚Ì‰Â•ÏƒIƒuƒWƒFƒNƒg‚ÌŽQÆ‚ðŠi”[‚µ‚Ä‚¢‚Ü‚·B
-ƒCƒ“ƒXƒ^ƒ“ƒX‚ªM—Š‚Å‚«‚È‚¢ƒR[ƒh‚É‚æ‚Á‚ÄƒAƒNƒZƒX‚³‚ê‚é‚È‚ç‰Â•ÏƒIƒuƒWƒFƒNƒg‚Ìƒ`ƒFƒbƒN‚³‚ê‚Ä‚¢‚È‚¢•ÏX‚ªƒZƒLƒ…ƒŠƒeƒB‚â‘¼‚Ìd—v‚ÈƒvƒƒpƒeƒB‚ðŠë‚¤‚­‚·‚é‚Å‚µ‚å‚¤B
+‚±‚ÌƒR[ƒh‚ÍAƒIƒuƒWƒFƒNƒg‚Ì“à•”•\Œ»‚ÉŠO•”‚Ì‰Â•ÏƒIƒuƒWƒFƒNƒg‚ÌŽQÆ‚ðŠi”[‚µ‚Ä‚¢‚Ü‚·B
+ƒCƒ“ƒXƒ^ƒ“ƒX‚ªM—Š‚Å‚«‚È‚¢ƒR[ƒh‚É‚æ‚Á‚ÄƒAƒNƒZƒX‚³‚ê‚é‚È‚çA‰Â•ÏƒIƒuƒWƒFƒNƒg‚Ìƒ`ƒFƒbƒN‚³‚ê‚Ä‚¢‚È‚¢•ÏX‚ªƒZƒLƒ…ƒŠƒeƒB‚â‘¼‚Ìd—v‚ÈƒvƒƒpƒeƒB‚ðŠë‚¤‚­‚·‚é‚Å‚µ‚å‚¤B
 ‰½‚©ˆá‚¤‚±‚Æ‚ð‚·‚é•K—v‚ª‚ ‚è‚Ü‚·BƒIƒuƒWƒFƒNƒg‚ÌV‚µ‚¢ƒRƒs[‚ð•Ô‚·‚±‚Æ‚ÍA‘½‚­‚Ìó‹µ‚Å‚æ‚è—Ç‚¢ƒAƒvƒ[ƒ`‚Å‚·B
   </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="EI_EXPOSE_STATIC_REP2">
-    <ShortDescription>static ƒtƒB[ƒ‹ƒh‚É‰Â•ÏƒIƒuƒWƒFƒNƒg‚ðŠi”[‚·‚é‚±‚Æ‚É‚æ‚Á‚ÄA“à•”‚ÌÃ“Ió‘Ô‚ð–\˜I‚·‚©‚à‚µ‚ê‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
+    <ShortDescription>static ƒtƒB[ƒ‹ƒh‚É‰Â•ÏƒIƒuƒWƒFƒNƒg‚ðŠi”[‚·‚é‚±‚Æ‚É‚æ‚Á‚ÄA“à•”‚ÌÃ“Ió‘Ô‚ð–\˜I‚·‚é‚©‚à‚µ‚ê‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
     <LongDescription>{1} ‚ÍAstaticƒtƒB[ƒ‹ƒh {2} ‚É‰Â•ÏƒIƒuƒWƒFƒNƒg‚ðŠi”[‚·‚é‚±‚Æ‚É‚æ‚Á‚ÄA“à•”‚ÌÃ“Ió‘Ô‚ð–\˜I‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
@@ -3571,8 +3566,8 @@ public static ƒƒ\ƒbƒh‚ÍAƒNƒ‰ƒX‚Ì Ã“I‚Èó‘Ô‚Ìˆê•”‚Å‚ ‚é”z—ñ‚ÌŽQÆ‚ð•Ô‚µ‚Ü‚·B
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍAƒXƒŒƒbƒh‚Å –¾Ž¦“I‚É <code>run</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-ˆê”Ê“I‚ÉAƒNƒ‰ƒX‚ÍV‚µ‚¢ƒXƒŒƒbƒh‚ÅŽ©ŒÈ‚Ì <code>run</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚à‚ç‚¤‚½‚ß‚É <code>Runnable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ü‚·B
-‚»‚Ìê‡‚ÍA<code>Thread.start()</code> ‚ðŒÄ‚Ño‚·‚Ì‚ª³‚µ‚¢•û–@‚Å‚·B
+’ÊíAƒNƒ‰ƒX‚ÍV‚µ‚¢ƒXƒŒƒbƒh‚ÅŽ©ŒÈ‚Ì <code>run</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚à‚ç‚¤‚½‚ß‚É <code>Runnable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ü‚·B
+‚»‚Ìê‡‚ÍA<code>Thread.start()</code> ‚ðŒÄ‚Ño‚·‚Ì‚ª³‚µ‚¢‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -3584,20 +3579,20 @@ public static ƒƒ\ƒbƒh‚ÍAƒNƒ‰ƒX‚Ì Ã“I‚Èó‘Ô‚Ìˆê•”‚Å‚ ‚é”z—ñ‚ÌŽQÆ‚ð•Ô‚µ‚Ü‚·B
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍAƒtƒB[ƒ‹ƒh‚ð“Ç‚Ýo‚·ƒ‹[ƒv‚Å‰ñ‚è‘±‚¯‚Ü‚·B
-ƒRƒ“ƒpƒCƒ‰‚ªƒtƒB[ƒ‹ƒh‚Ì“Ç‚Ýo‚µ‚ðƒ‹[ƒv‚ÌŠO‚Éo‚·‚©‚à‚µ‚ê‚Ü‚¹‚ñBƒR[ƒh‚ª–³ŒÀƒ‹[ƒv‚É•Ï‚í‚è‚Ü‚·B
-³‚µ‚¢“¯Šú‰»‚ð‚·‚é‚æ‚¤‚É wait/notify ‚ðŽg—p‚µ‚ÄƒNƒ‰ƒX‚ð•ÏX‚·‚×‚«‚Å‚·B
+ƒRƒ“ƒpƒCƒ‰‚ªƒtƒB[ƒ‹ƒh‚Ì“Ç‚Ýo‚µ‚ðƒ‹[ƒv‚ÌŠO‚Éo‚·‚©‚à‚µ‚ê‚Ü‚¹‚ñBƒR[ƒh‚ð–³ŒÀƒ‹[ƒv‚É•Ï‚¦‚Ü‚·B
+³‚µ‚¢“¯Šú‰» (wait/notify ‚ðŒÄ‚Ño‚·‚æ‚¤‚ÉŠÜ‚Þ) ‚ðŽg‚¤‚æ‚¤‚ÉƒNƒ‰ƒX‚ð•ÏX‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NS_DANGEROUS_NON_SHORT_CIRCUIT">
-    <ShortDescription>”ñ’Z—˜_—‚ÌöÝ“I‚ÅŠëŒ¯‚ÈŽg‚¢•û</ShortDescription>
-    <LongDescription>”ñ’Z—˜_—‚ÌöÝ“I‚ÅŠëŒ¯‚ÈŽg‚¢•û‚ð‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>öÝ“I‚È”ñ’Z—˜_—‚ÌŠëŒ¯‚ÈŽg‚¢•û</ShortDescription>
+    <LongDescription>öÝ“I‚È”ñ’Z—˜_—‚ÌŠëŒ¯‚ÈŽg‚¢•û‚ð‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍA’Z—˜_— (&amp;&amp; ‚â ||)‚Å‚Í‚È‚­”ñ’Z—˜_—(&amp; ‚â |) ‚ðŽg—p‚µ‚Ä‚¢‚é‚ÆŽv‚í‚ê‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍA’Z—˜_— (&amp;&amp; ‚â ||) ‚Å‚Í‚È‚­”ñ’Z—˜_— (&amp; ‚â |) ‚ðŽg—p‚µ‚Ä‚¢‚é‚ÆŽv‚í‚ê‚Ü‚·B
 ‚³‚ç‚ÉA¶•Ó’l‚É‚æ‚Á‚Ä‰E•Ó‚ð•]‰¿‚µ‚½‚­‚È‚¢ (—áŠO‚ÌƒXƒ[‚â‰‰ŽZ‚ª‚‚­‚Â‚­•›ì—p‚ª‚ ‚é‚½‚ß) ‚ÆŽv‚Á‚Ä‚¢‚é‚Ì‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 ”ñ’Z—˜_—‚ÍA¶•Ó‚ÌŒ‹‰Ê‚ª‚í‚©‚Á‚Ä‚¢‚Ä„˜_‚Å‚«‚é‚Æ‚«‚Å‚àA—¼‘¤‚ÌŽ®‚ª•]‰¿‚³‚ê‚Ü‚·B
 ¶•Ó‚ª‰E•Ó‚Ì•]‰¿‚ÅƒGƒ‰[‚ð”­¶‚³‚¹‚éƒP[ƒX‚ðƒK[ƒh‚·‚é‚È‚çŒø—¦‚ªˆ«‚­AƒGƒ‰[‚É‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
@@ -3614,8 +3609,7 @@ public static ƒƒ\ƒbƒh‚ÍAƒNƒ‰ƒX‚Ì Ã“I‚Èó‘Ô‚Ìˆê•”‚Å‚ ‚é”z—ñ‚ÌŽQÆ‚ð•Ô‚µ‚Ü‚·B
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍA’Z—˜_— (&amp;&amp; ‚â ||)‚Å‚Í‚È‚­”ñ’Z—˜_—(&amp; ‚â |) ‚ðŽg—p‚µ‚Ä‚¢‚é‚ÆŽv‚í‚ê‚Ü‚·B
-‚³‚ç‚ÉA¶•Ó’l‚É‚æ‚Á‚Ä‰E•Ó‚ð•]‰¿‚µ‚½‚­‚È‚¢ (—áŠO‚ÌƒXƒ[‚â‰‰ŽZ‚ª‚‚­‚Â‚­•›ì—p‚ðŽ‚Â‚½‚ß) ‚ÆŽv‚Á‚Ä‚¢‚é‚Ì‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚±‚ÌƒR[ƒh‚ÍA’Z—˜_— (&amp;&amp; ‚â ||) ‚Å‚Í‚È‚­”ñ’Z—˜_— (&amp; ‚â |) ‚ðŽg—p‚µ‚Ä‚¢‚é‚ÆŽv‚í‚ê‚Ü‚·B
 ”ñ’Z—˜_—‚ÍA¶•Ó‚ÌŒ‹‰Ê‚ª‚í‚©‚Á‚Ä‚¢‚Ä„˜_‚Å‚«‚é‚Æ‚«‚Å‚àA—¼‘¤‚ÌŽ®‚ª•]‰¿‚³‚ê‚Ü‚·B
 ¶•Ó‚ª‰E•Ó‚Ì•]‰¿‚ÅƒGƒ‰[‚É‚È‚éƒP[ƒX‚ðƒK[ƒh‚·‚é‚È‚çŒø—¦‚ªˆ«‚­ƒGƒ‰[‚É‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
 </p>
@@ -3626,13 +3620,13 @@ public static ƒƒ\ƒbƒh‚ÍAƒNƒ‰ƒX‚Ì Ã“I‚Èó‘Ô‚Ìˆê•”‚Å‚ ‚é”z—ñ‚ÌŽQÆ‚ð•Ô‚µ‚Ü‚·B
   </BugPattern>
 
   <BugPattern type="TLW_TWO_LOCK_WAIT">
-    <ShortDescription>2‚ÂˆÈã‚ÌƒƒbƒN‚ð•ÛŽ‚µ‚½ó‘Ô‚Å wait ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>2‚ÂˆÈã‚ÌƒƒbƒN‚ð•ÛŽ‚µ‚½ó‘Ô‚Å wait ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>2‚ÂˆÈã‚ÌƒƒbƒN‚ð•ÛŽ‚µ‚Ä wait ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>2‚ÂˆÈã‚ÌƒƒbƒN‚ð•ÛŽ‚µ‚Ä wait ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-2‚ÂˆÈã‚ÌƒƒbƒN‚ð•ÛŽ‚µ‚½ó‘Ô‚Åƒ‚ƒjƒ^‚ð‘Ò‹@‚³‚¹‚é‚ÆƒfƒbƒhƒƒbƒN‚ÌŒ´ˆö‚É‚È‚éê‡‚ª‚ ‚è‚Ü‚·B
-<code>wait</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚ÆA‘Ò‹@‚³‚¹‚æ‚¤‚Æ‚µ‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚ÌƒƒbƒN‚ð‰ðœ‚·‚é‚¾‚¯‚ÅA‚»‚Ì‘¼‚ÌƒƒbƒN‚Í‰ðœ‚µ‚Ü‚¹‚ñB
+2‚ÂˆÈã‚ÌƒƒbƒN‚ð•ÛŽ‚µ‚ÄAƒ‚ƒjƒ^‚Å‘Ò‹@‚³‚¹‚é‚ÆƒfƒbƒhƒƒbƒN‚ÌŒ´ˆö‚É‚È‚éê‡‚ª‚ ‚è‚Ü‚·B
+<code>wait</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚ÆA‘Ò‹@‚µ‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚ÌƒƒbƒN‚ð‰ðœ‚·‚é‚¾‚¯‚ÅA‚»‚Ì‘¼‚ÌƒƒbƒN‚Í‰ðœ‚µ‚Ü‚¹‚ñB
 ‚±‚ê‚Í•K‚¸‚µ‚àƒoƒO‚Å‚Í‚ ‚è‚Ü‚¹‚ñ‚ªŒµ–§‚É’²‚×‚é‰¿’l‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
@@ -3662,33 +3656,33 @@ public static ƒƒ\ƒbƒh‚ÍAƒNƒ‰ƒX‚Ì Ã“I‚Èó‘Ô‚Ìˆê•”‚Å‚ ‚é”z—ñ‚ÌŽQÆ‚ð•Ô‚µ‚Ü‚·B
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚É‚ÍA§Œäƒtƒ[‚É‚æ‚Á‚ÄƒK[ƒh‚³‚ê‚È‚¢ <code>java.lang.Object.wait()</code> ‚Ö‚ÌŒÄ‚Ño‚µ‚ª‚ ‚è‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚É‚ÍAðŒ§Œäƒtƒ[‚É‚æ‚Á‚ÄƒK[ƒh‚³‚ê‚È‚¢ <code>java.lang.Object.wait()</code> ‚ÌŒÄ‚Ño‚µ‚ª‚ ‚è‚Ü‚·B
 ‚±‚ÌƒR[ƒh‚ÍA<code>wait</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‘O‚ÉA‘Ò‹@‚·‚é‚Â‚à‚è‚¾‚Á‚½ðŒ‚ª‚·‚Å‚É–ž‚½‚³‚ê‚Ä‚¢‚È‚¢‚±‚Æ‚ðŠm‚©‚ß‚é‚×‚«‚Å‚·B
-<code>wait</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‘O‚Ì’Ê’m‚Í–³Ž‹‚³‚ê‚Ü‚·B
+‚Ç‚ñ‚È‘O‚Ì’Ê’m‚à–³Ž‹‚³‚ê‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="UR_UNINIT_READ">
-    <ShortDescription>ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Å–¢‰Šú‰»ƒtƒB[ƒ‹ƒh‚ð“Ç‚Ýo‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>–¢‰Šú‰»ƒtƒB[ƒ‹ƒh {2.name} ‚ð“Ç‚Ýo‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Å‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ƒtƒB[ƒ‹ƒh‚ð“Ç‚Ýo‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ƒtƒB[ƒ‹ƒh {2.name} ‚ð“Ç‚Ýo‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÍA‚Ü‚¾’l‚ª‘ã“ü‚³‚ê‚Ä‚¢‚È‚¢ƒtƒB[ƒ‹ƒh‚ð“Ç‚Ýo‚µ‚Ä‚¢‚Ü‚·B
-ƒvƒƒOƒ‰ƒ}‚ªƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ìƒpƒ‰ƒ[ƒ^‚Ì‘ã‚í‚è‚ÉAŒë‚Á‚ÄƒtƒB[ƒ‹ƒh‚ðŽg‚¤‚±‚Æ‚ªŒ´ˆö‚É‚È‚è‚Ü‚·B
+‘½‚­‚Ìê‡AƒvƒƒOƒ‰ƒ}‚ªƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ìƒpƒ‰ƒ[ƒ^‚Ì‘ã‚í‚è‚ÉŒë‚Á‚ÄƒtƒB[ƒ‹ƒh‚ðŽg—p‚·‚é‚Æ‚«‚É‹N‚«‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR">
-    <ShortDescription>ƒX[ƒp[ƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Å–¢‰Šú‰»ƒtƒB[ƒ‹ƒh‚ð“Ç‚Ýo‚·ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>ƒƒ\ƒbƒh‚ªƒX[ƒp[ƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚©‚çŒÄ‚Ño‚³‚ê‚éê‡AƒtƒB[ƒ‹ƒh {2.name} ‚Í‰Šú‰»‚³‚ê‚Ü‚¹‚ñB{1}</LongDescription>
+    <ShortDescription>ƒX[ƒp[ƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚©‚çŒÄ‚Ño‚³‚ê‚éƒƒ\ƒbƒh‚Å‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ƒtƒB[ƒ‹ƒh‚ð“Ç‚Ýo‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>ƒX[ƒp[ƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚©‚çŒÄ‚Ño‚³‚ê‚é‚Æ‚«A{2.name} ‚Í {1} ‚Å‰Šú‰»‚³‚ê‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍƒX[ƒp[ƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÅŒÄ‚Ñ‚³‚ê‚Ä‚¢‚Ü‚·B‚±‚ÌŽž“_‚Å‚ÍAƒNƒ‰ƒX‚ÌƒtƒB[ƒ‹ƒh‚Í‚Ü‚¾‰Šú‰»‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB
+‚±‚Ìƒƒ\ƒbƒh‚ÍAƒX[ƒp[ƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÅŒÄ‚Ñ‚³‚ê‚Ä‚¢‚Ü‚·B‚±‚ÌŽž“_‚Å‚ÍAƒNƒ‰ƒX‚ÌƒtƒB[ƒ‹ƒh‚Í‚Ü‚¾‰Šú‰»‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB
 </p>
 <p>
 ‚±‚ê‚Í‚½‚­‚³‚ñ‚Ì‹ïÛƒNƒ‰ƒX‚ðì‚é‚½‚ß‚Å‚·BˆÈ‰º‚ÌƒNƒ‰ƒX‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
@@ -3697,7 +3691,7 @@ public static ƒƒ\ƒbƒh‚ÍAƒNƒ‰ƒX‚Ì Ã“I‚Èó‘Ô‚Ìˆê•”‚Å‚ ‚é”z—ñ‚ÌŽQÆ‚ð•Ô‚µ‚Ü‚·B
 abstract class A {
     int hashCode;
     abstract Object getValue();
-
+    
     A() {
         hashCode = getValue().hashCode();
     }
@@ -3726,13 +3720,13 @@ class B extends A {
 
   <BugPattern type="UG_SYNC_SET_UNSYNC_GET">
     <ShortDescription>“¯Šú‰»‚µ‚Ä‚¢‚È‚¢ get ƒƒ\ƒbƒhA“¯Šú‰»‚µ‚Ä‚¢‚é set ƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>{1} ‚Í“¯Šú‰»‚µ‚Ä‚¢‚È‚¢‚Ì‚É {2} ‚Í“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <LongDescription>{1} ‚Í“¯Šú‰»‚µ‚Ä‚¢‚Ü‚¹‚ñA{2} ‚Í“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚É‚ÍA—ÞŽ—‚µ‚½–¼‘O‚Ì get ƒƒ\ƒbƒh‚Æ set ƒƒ\ƒbƒh‚ª‚ ‚èAset ƒƒ\ƒbƒh‚Í“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·‚ª get ƒƒ\ƒbƒh‚Í“¯Šú‰»‚µ‚Ä‚¢‚Ü‚¹‚ñB
+‚±‚ÌƒNƒ‰ƒX‚É‚ÍA—ÞŽ—‚µ‚½–¼‘O‚Ì get ƒƒ\ƒbƒh‚Æ set ƒƒ\ƒbƒh‚ª‚ ‚èAset ƒƒ\ƒbƒh‚Í“¯Šú‰»‚µ‚Ä‚¢‚ÄAget ƒƒ\ƒbƒh‚Í“¯Šú‰»‚µ‚Ä‚¢‚Ü‚¹‚ñB
 get ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µŒ³‚ªƒIƒuƒWƒFƒNƒg‚Ì‚½‚ß‚ÌˆêŠÑ‚µ‚½ó‘Ô‚ð•K‚¸‚µ‚àŒ©‚é‚Æ‚¢‚¤‚í‚¯‚Å‚Í‚È‚¢‚Ì‚ÅAŽÀsŽž‚ÉŠÔˆá‚Á‚½U‚é•‘‚¢‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-get ƒƒ\ƒbƒh‚Í“¯Šú‰»‚·‚×‚«‚Å‚·B
+get ƒƒ\ƒbƒh‚Í“¯Šú‰»‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -3757,7 +3751,7 @@ get ƒƒ\ƒbƒh‚Í“¯Šú‰»‚·‚×‚«‚Å‚·B
     <Details>
 <![CDATA[
 <p>
-ƒNƒ‰ƒX‚ÍA‰Šú‰»’†‚ÉƒTƒuƒNƒ‰ƒX‚ðÏ‹É“I‚ÉŽg—p‚µ‚Ä‚¢‚Ü‚·‚ªƒTƒuƒNƒ‰ƒX‚Í‚±‚ÌŽž“_‚Å‚Í‚Ü‚¾‰Šú‰»‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB<br>
+ƒNƒ‰ƒX‚ÍA‰Šú‰»’†‚ÉƒTƒuƒNƒ‰ƒX‚ðÏ‹É“I‚ÉŽg—p‚µ‚Ä‚¢‚Ü‚·BƒTƒuƒNƒ‰ƒX‚Í‚±‚ÌŽž“_‚Å‚Í‚Ü‚¾‰Šú‰»‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB<br>
 ‚½‚Æ‚¦‚ÎAˆÈ‰º‚ÌƒR[ƒh‚É‚¨‚¢‚ÄA<code>foo</code> ‚Í null ‚Å‚·B
 </p>
 <blockquote><pre>
@@ -3765,7 +3759,7 @@ public class CircularClassInitialization {
     static class InnerClassSingleton extends CircularClassInitialization {
         static InnerClassSingleton singleton = new InnerClassSingleton();
     }
-
+    
     static CircularClassInitialization foo = InnerClassSingleton.singleton;
 }
 </pre></blockquote>
@@ -3782,19 +3776,19 @@ public class CircularClassInitialization {
 <p>
 ‚±‚ÌƒNƒ‰ƒX‚ÍA<code>java.util.Iterator</code> ‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·B
 ‚µ‚©‚µ‚È‚ª‚çA<code>next</code> ƒƒ\ƒbƒh‚Í <code>java.util.NoSuchElementException</code> ‚ðƒXƒ[‚Å‚«‚Ü‚¹‚ñB
-<code>next</code> ƒƒ\ƒbƒh‚ÍA‚»‚êˆÈã—v‘f‚ð•Ô‚·‚±‚Æ‚ª‚Å‚«‚È‚¢‚Æ‚«‚Í <code>NoSuchElementException</code> ‚ðƒXƒ[‚·‚é‚æ‚¤‚É•ÏX‚·‚×‚«‚Å‚·B
+<code>next</code> ƒƒ\ƒbƒh‚ÍA‚»‚êˆÈã—v‘f‚ð•Ô‚·‚±‚Æ‚ª‚Å‚«‚È‚¢‚Æ‚«‚Í <code>NoSuchElementException</code> ‚ðƒXƒ[‚·‚é‚æ‚¤‚É•ÏX‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT">
-    <ShortDescription>ƒfƒbƒhƒƒbƒN‚ÌŒ´ˆö‚É‚È‚é‰Â”\«‚ª‚ ‚é³€‰»‚³‚ê‚½•¶Žš—ñ‚Å‚Ì“¯Šú‰»</ShortDescription>
-    <LongDescription>³€‰»‚³‚ê‚½•¶Žš—ñ‚Å‚Ì“¯Šú‰»‚ÍAƒfƒbƒhƒƒbƒN‚ÌŒ´ˆö‚É‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>³€‰»‚µ‚½•¶Žš—ñ‚Ì“¯Šú‰»</ShortDescription>
+    <LongDescription>³€‰»‚µ‚½•¶Žš—ñ‚ð“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍA³€‰»‚³‚ê‚½•¶Žš—ñ‚Å“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍA³€‰»‚µ‚½•¶Žš—ñ‚Å“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B
 </p>
 <blockquote><pre>
 private static String LOCK = "LOCK";
@@ -3805,7 +3799,7 @@ synchronized(LOCK) {
 </pre></blockquote>
 <p>
 •¶Žš—ñ’è”‚Í³€‰»‚³‚êAJava ‰¼‘zƒ}ƒVƒ“‚É‚æ‚Á‚Äƒ[ƒh‚³‚ê‚½‚·‚×‚Ä‚ÌƒNƒ‰ƒX‘S‘Ì‚Å‹¤—L‚³‚ê‚Ü‚·B
-‚µ‚½‚ª‚Á‚ÄA‘¼‚ÌƒR[ƒh‚ªƒƒbƒN‚µ‚Ä‚¢‚é‚©‚à‚µ‚ê‚È‚¢•¶Žš—ñ’è”‚ðƒƒbƒN‚Å‚«‚Ä‚µ‚Ü‚¢‚Ü‚·B
+‚µ‚½‚ª‚Á‚ÄA‚±‚ê‚Í‘¼‚ÌƒR[ƒh‚ªƒƒbƒN‚µ‚Ä‚¢‚é‚©‚à‚µ‚ê‚È‚¢‰½‚©‚ðƒƒbƒN‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
 ‚±‚ê‚ÍƒuƒƒbƒLƒ“ƒO‚ÆƒfƒbƒhƒƒbƒN‚ÌU‚é•‘‚¢‚Ìf’f‚ð“ï‚µ‚­‚µ‚ÄA‚Æ‚Ä‚àŠï–­‚ÈŒ‹‰Ê‚É‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B <br>
 Ú×‚ÍA<a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> ‚Æ <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
@@ -3819,12 +3813,12 @@ synchronized(LOCK) {
     <Details>
 <![CDATA[
 <p>
-<code>Boolean</code> ‚Ì‚æ‚¤‚Èƒ{ƒNƒVƒ“ƒO‚³‚ê‚½ƒvƒŠƒ~ƒeƒBƒu’è”‚Å“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B
+<code>Boolean</code> ‚Ì‚æ‚¤‚Èƒ{ƒNƒVƒ“ƒO‚³‚ê‚½ƒvƒŠƒ~ƒeƒBƒuŒ^‚Ì’è”‚Å“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B
 </p>
 <blockquote><pre>
 private static Boolean inited = Boolean.FALSE;
 
-synchronized(inited) {
+synchronized(inited) { 
     if (!inited) {
         init();
         inited = Boolean.TRUE;
@@ -3845,47 +3839,50 @@ synchronized(inited) {
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍA–¾‚ç‚©‚É‹¤—L‚³‚ê‚Ä‚¢‚È‚¢ <code>Integer</code> ‚Ì‚æ‚¤‚Èƒ{ƒNƒVƒ“ƒO‚³‚ê‚½ƒvƒŠƒ~ƒeƒBƒu’l‚Å“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍA–¾‚ç‚©‚É‹¤—L‚³‚ê‚Ä‚¢‚È‚¢ <code>Integer</code> ‚Ì‚æ‚¤‚Èƒ{ƒNƒVƒ“ƒO‚³‚ê‚½ƒvƒŠƒ~ƒeƒBƒuŒ^‚Å“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B
 </p>
 <blockquote><pre>
 private static final Integer fileLock = new Integer(1);
 
-synchronized(fileLock) {
+synchronized(fileLock) { 
     .. do something ..
 }
 </pre></blockquote>
 <p>
-‚±‚ÌƒR[ƒh‚ÍA fileLock ‚ðˆÈ‰º‚Ì‚æ‚¤‚ÉéŒ¾‚·‚é‚Æ‚©‚È‚è—Ç‚­‚È‚è‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍA fileLock ‚ðˆÈ‰º‚Ì‚æ‚¤‚ÉéŒ¾‚·‚é‚Æ‚æ‚è—Ç‚­‚È‚è‚Ü‚·B
 </p>
 <blockquote><pre>
 private static final Object fileLock = new Object();
 </pre></blockquote>
 <p>
-Šù‘¶‚ÌƒR[ƒh‚Æ‚µ‚Ä‚ÍŠÔˆá‚Á‚Ä‚¢‚È‚¢‚Ì‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ª•´‚ç‚í‚µ‚¢‚Ì‚Å«—ˆƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚·‚×‚«‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-‚½‚Æ‚¦‚ÎAIntelliJ ‚Ì "Remove Boxing" ‚Ì‚æ‚¤‚ÈƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚Í Java ‰¼‘zƒ}ƒVƒ“‚ð’Ê‚µ‚Ä‹¤—L‚³‚ê‚é³‹K‰»‚³‚ê‚½ <code>Integer</code> ƒIƒuƒWƒFƒNƒg‚ðŽg—p‚·‚é‚æ‚¤‚É’u‚«Š·‚¦‚Ä‚µ‚Ü‚¢A”ñí‚É•´‚ç‚í‚µ‚¢U‚é•‘‚¢‚ÆöÝ“IƒfƒbƒhƒƒbƒN‚ÌŒ´ˆö‚É‚È‚è‚Ü‚·B
+Šù‘¶‚ÌƒR[ƒh‚Æ‚µ‚Ä‚ÍŠÔˆá‚Á‚Ä‚¢‚È‚¢‚Ì‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ªA•´‚ç‚í‚µ‚¢‚Ì‚Å«—ˆƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚·‚é‚×‚«‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚½‚Æ‚¦‚ÎAIntelliJ ‚Ì "Remove Boxing" ‚Ì‚æ‚¤‚ÈƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚Í Java ‰¼‘zƒ}ƒVƒ“‚ð’Ê‚µ‚Ä‹¤—L‚³‚ê‚é³€‰»‚³‚ê‚½ <code>Integer</code> ƒIƒuƒWƒFƒNƒg‚ðŽg—p‚·‚é‚æ‚¤‚É’u‚«Š·‚¦‚Ä‚µ‚Ü‚¢A”ñí‚É•´‚ç‚í‚µ‚¢U‚é•‘‚¢‚ÆöÝ“IƒfƒbƒhƒƒbƒN‚ÌŒ´ˆö‚É‚È‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE">
-    <ShortDescription>ƒfƒbƒhƒƒbƒN‚ÌŒ´ˆö‚É‚È‚é‰Â”\«‚ª‚ ‚éƒ{ƒNƒVƒ“ƒO‚³‚ê‚½ƒvƒŠƒ~ƒeƒBƒu’l‚Ì“¯Šú‰»</ShortDescription>
+    <ShortDescription>ƒfƒbƒhƒƒbƒN‚ÌŒ´ˆö‚É‚È‚é‰Â”\«‚ª‚ ‚éƒ{ƒNƒVƒ“ƒO‚³‚ê‚½ƒvƒŠƒ~ƒeƒBƒuŒ^‚Ì“¯Šú‰»</ShortDescription>
     <LongDescription>{2} ‚Ì“¯Šú‰»‚ÍƒfƒbƒhƒƒbƒN‚ÌŒ´ˆö‚É‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-<code>Integer</code> ƒNƒ‰ƒX‚Ì‚æ‚¤‚Èƒ{ƒNƒVƒ“ƒO‚³‚ê‚½ƒvƒŠƒ~ƒeƒBƒu’l‚Å“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍAInteger ‚Ì‚æ‚¤‚Èƒ{ƒNƒVƒ“ƒO‚³‚ê‚½ƒvƒŠƒ~ƒeƒBƒuŒ^‚Ì’è”‚Å“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B
 </p>
 <blockquote><pre>
 private static Integer count = 0;
 
-synchronized(count) {
+synchronized(count) { 
     count++;
 }
 </pre></blockquote>
 <p>
 <code>Integer</code> ƒIƒuƒWƒFƒNƒg‚ÍƒLƒƒƒbƒVƒ…‚µ‚Ä‹¤—L‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
 ‘¼‚Ì–³ŠÖŒW‚ÈƒR[ƒh‚Æ“¯‚¶ƒIƒuƒWƒFƒNƒg‚Å“¯Šú‰»‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚é‚Ì‚ÅA–³‰ž“š‚âƒfƒbƒhƒƒbƒN‚ÌŒ´ˆö‚É‚È‚è‚Ü‚·B
+</p>
+<p>
+CERT ‚Ì <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -3897,7 +3894,7 @@ synchronized(count) {
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚É‚ÍA‹ó‚Ì synchronized ƒuƒƒbƒN‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒR[ƒh‚É‚ÍA‹ó‚Ì synchronized ƒuƒƒbƒN‚ª‚ ‚è‚Ü‚·B
 </p>
 <blockquote><pre>
 synchronized() {
@@ -3918,7 +3915,7 @@ synchronized() {
 <![CDATA[
 <p>
 ‚±‚ÌƒNƒ‰ƒX‚ÌƒtƒB[ƒ‹ƒh‚ÍA“¯Šú‰»‚ÉŠÖ‚µ‚ÄˆêŠÑ«‚Ì‚È‚¢ƒAƒNƒZƒX‚ð‚µ‚Ä‚¢‚é‚æ‚¤‚ÉŒ©‚¦‚Ü‚·B
-‚±‚ÌƒoƒOƒŒƒ|[ƒg‚ÍAƒoƒOƒpƒ^[ƒ“ƒfƒBƒeƒNƒ^‚ªˆÈ‰º‚Ì‚æ‚¤‚É”»’f‚µ‚½‚±‚Æ‚ð‚ðŽ¦‚µ‚Ü‚·B
+‚±‚ÌƒoƒOƒŒƒ|[ƒg‚ÍAƒoƒOƒpƒ^[ƒ“ƒfƒBƒeƒNƒ^‚ªˆÈ‰º‚Ì‚æ‚¤‚É”»’f‚µ‚½‚±‚Æ‚ð‚ðŽ¦‚µ‚Ü‚·B 
 </p>
 <ul>
   <li>ƒNƒ‰ƒX‚É‚ÍAƒƒbƒN‚³‚ê‚½ƒAƒNƒZƒX‚ÆƒAƒ“ƒƒbƒN‚³‚ê‚½ƒAƒNƒZƒX‚ª¬Ý‚µ‚Ä‚¢‚ÄA</li>
@@ -3926,12 +3923,12 @@ synchronized() {
   <li>“Ç‚Ýo‚µ‚Ì2”{‚Ìd‚Ý•t‚¯‚ð‚µ‚½‘‚«ž‚Ý‚ÅA”ñ“¯ŠúƒtƒB[ƒ‹ƒh‚ÌƒAƒNƒZƒX (“Ç‚Ýo‚µ‚Æ‘‚«ž‚Ý) ”‚ª‚·‚×‚Ä‚ÌƒAƒNƒZƒX‚Ì‚í‚¸‚©1/3</li>
 </ul>
 <p>
-‚±‚Ìƒpƒ^[ƒ“‚É“–‚Ä‚Í‚Ü‚é“TŒ^“I‚È—á‚ÍAƒXƒŒƒbƒhƒZ[ƒt‚ðˆÓ}‚µ‚½ƒNƒ‰ƒX‚Åƒƒ\ƒbƒh‚ð“¯Šú‰»‚·‚é‚Ì‚ð–Y‚ê‚Ä‚¢‚éƒP[ƒX‚Å‚·B
+‚±‚ÌƒoƒOƒpƒ^[ƒ“‚É‡’v‚·‚é“TŒ^“I‚ÈƒoƒO‚ÍAƒXƒŒƒbƒhƒZ[ƒt‚ðˆÓ}‚µ‚½ƒNƒ‰ƒX‚Åƒƒ\ƒbƒh‚ð“¯Šú‰»‚·‚é‚Ì‚ð–Y‚ê‚Ä‚¢‚é‚±‚Æ‚Å‚·B
 </p>
 <p>
 •s³Šm‚Ì‚¢‚ë‚¢‚ë‚Èƒ\[ƒX‚ª‚±‚ÌƒfƒBƒeƒNƒ^‚É‚ ‚é‚±‚Æ‚É’ˆÓ‚µ‚Ä‚­‚¾‚³‚¢B
 ‚½‚Æ‚¦‚ÎAƒfƒBƒeƒNƒ^‚ÍƒƒbƒN‚ð•ÛŽ‚³‚ê‚é‚·‚×‚Ä‚Ìó‹µ‚ðÃ“I‚ÉŒŸo‚Å‚«‚é‚Æ‚¢‚¤–ó‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
-‚Ü‚½AƒfƒBƒeƒNƒ^‚ªƒƒbƒN‚³‚ê‚½ƒAƒNƒZƒX‚ÆƒAƒ“ƒƒbƒN‚³‚ê‚½ƒAƒNƒZƒX‚ð‹æ•Ê‚ª³Šm‚È‚Æ‚«‚Å‚àA–â‘è‚ÌƒR[ƒh‚ÍˆË‘R‚Æ‚µ‚Ä³‚µ‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚Ü‚½AƒfƒBƒeƒNƒ^‚ªƒƒbƒN‚³‚ê‚½ƒAƒNƒZƒX‚ÆƒAƒ“ƒƒbƒN‚³‚ê‚½ƒAƒNƒZƒX‚Ì‹æ•Ê‚ª³Šm‚È‚Æ‚«‚Å‚àA–â‘è‚ÌƒR[ƒh‚ÍˆË‘R‚Æ‚µ‚Ä³‚µ‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -3943,8 +3940,8 @@ synchronized() {
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍAƒtƒB[ƒ‹ƒh‚Ì“¯ŽžXV‚É‘Î‚µ‚Ä“¯Šú‰»‚ÅƒK[ƒh‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·‚ªA
-ƒtƒB[ƒ‹ƒh‚ðƒK[ƒh‚·‚é‚ÆƒtƒB[ƒ‹ƒh‚Å‚Í‚È‚­ŽQÆ‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ÌƒƒbƒN‚ðŠl“¾‚µ‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍAƒtƒB[ƒ‹ƒh‚Ì“¯ŽžXV‚É‘Î‚µ‚Ä“¯Šú‰»‚ÅƒK[ƒh‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚é‚ªA
+ƒtƒB[ƒ‹ƒh‚ðƒK[ƒh‚·‚é‚ÆƒtƒB[ƒ‹ƒh‚Å‚Í‚È‚­AŽQÆ‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ÌƒƒbƒN‚ðŠl“¾‚µ‚Ü‚·B
 ‚±‚ê‚Í‚ ‚È‚½‚ª•K—v‚Æ‚·‚é‘ŠŒÝ”rœ‚ð’ñ‹Ÿ‚µ‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 ‚»‚µ‚ÄA‘¼‚ÌƒXƒŒƒbƒh‚Í (‘¼‚Ì–Ú“I‚Ì‚½‚ß‚Ì) ŽQÆ‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ÌƒƒbƒN‚ðŠl“¾‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB<br>
 ‚±‚Ìƒpƒ^[ƒ“‚Ì—á‚ÍˆÈ‰º‚Ì‚æ‚¤‚É‚È‚è‚Ü‚·B
@@ -3971,7 +3968,7 @@ private Long getNotificationSequenceNumber() {
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍA‰Â•ÏƒtƒB[ƒ‹ƒh‚©‚çŽQÆ‚³‚ê‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚Å“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B
-ˆÙ‚È‚éƒXƒŒƒbƒh‚ªˆá‚¤ƒIƒuƒWƒFƒNƒg‚Å“¯Šú‰»‚µ‚Ä‚¢‚é‚©‚à‚µ‚ê‚È‚¢‚Ì‚ÅA‚±‚ê‚Í—L—p‚ÈˆÓ–¡‚ª‚ ‚é‰Â”\«‚ª’á‚¢‚Å‚·B
+ˆÙ‚È‚éƒXƒŒƒbƒh‚ªˆÙ‚È‚éƒIƒuƒWƒFƒNƒg‚Å“¯Šú‰»‚µ‚Ä‚¢‚é‚©‚à‚µ‚ê‚È‚¢‚Ì‚ÅA‚±‚ê‚Í—L—p‚ÈˆÓ–¡‚ª‚ ‚é‰Â”\«‚ª’á‚¢‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -3984,8 +3981,8 @@ private Long getNotificationSequenceNumber() {
 <![CDATA[
 <p>
 ƒCƒ“ƒ^ƒtƒF[ƒX‚É’è‹`‚³‚ê‚½ final static ƒtƒB[ƒ‹ƒh‚ÍA”z—ñ‚â Hashtable ‚È‚Ç‚Ì‰Â•ÏƒIƒuƒWƒFƒNƒg‚ðŽQÆ‚µ‚Ä‚¢‚Ü‚·B
-‚±‚Ì‰Â•ÏƒIƒuƒWƒFƒNƒg‚ÍAˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚âŒë‚Á‚Ä•Ê‚ÌƒpƒbƒP[ƒW‚©‚ç•ÏX‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
-‚±‚ê‚ð‰ðŒˆ‚·‚é‚½‚ß‚ÉAƒtƒB[ƒ‹ƒh‚Í•K‚¸ƒNƒ‰ƒX‚ÖˆÚ“®‚µ‚ÄƒpƒbƒP[ƒWƒvƒƒeƒNƒeƒbƒh‚É‚µ‚ÄÆŽã«‚ð‰ñ”ð‚µ‚Ü‚·B
+‚±‚Ì‰Â•ÏƒIƒuƒWƒFƒNƒg‚ÍAˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚â•Ê‚ÌƒpƒbƒP[ƒW‚©‚ç‚ÌŽ–ŒÌ‚É‚æ‚Á‚Ä•ÏX‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
+‚±‚ê‚ð‰ðŒˆ‚·‚é‚½‚ß‚ÉAƒtƒB[ƒ‹ƒh‚ÍƒNƒ‰ƒX‚ÖˆÚ“®‚·‚é•K—v‚ª‚ ‚èAÆŽã«‚ð‰ñ”ð‚·‚é‚½‚ß‚ÉƒpƒbƒP[ƒWƒvƒƒeƒNƒeƒbƒh‚É‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -3997,8 +3994,8 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì‰Â•ÏƒtƒB[ƒ‹ƒh‚ÍAˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚âŒë‚Á‚Ä•Ê‚ÌƒpƒbƒP[ƒW‚©‚ç•ÏX‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
-ƒtƒB[ƒ‹ƒh‚ÍAÆŽã«‚ð‰ñ”ð‚·‚é‚½‚ß‚ÉAfinal ‚©‚ÂƒpƒbƒP[ƒWƒvƒƒeƒNƒeƒbƒh‚É‚·‚×‚«‚Å‚·B
+‚±‚Ì‰Â•Ï static ƒtƒB[ƒ‹ƒh‚ÍAˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚â•Ê‚ÌƒpƒbƒP[ƒW‚©‚ç‚ÌŽ–ŒÌ‚É‚æ‚Á‚Ä•ÏX‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
+ƒtƒB[ƒ‹ƒh‚ÍAÆŽã«‚ð‰ñ”ð‚·‚é‚½‚ß‚É final ‚Ü‚½‚ÍƒpƒbƒP[ƒWƒvƒƒeƒNƒeƒbƒh‚É‚·‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -4010,8 +4007,8 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì‰Â•Ï static ƒtƒB[ƒ‹ƒh‚ÍAˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚âŒë‚Á‚Ä•Ê‚ÌƒpƒbƒP[ƒW‚©‚ç•ÏX‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
-ƒtƒB[ƒ‹ƒh‚ÍAÆŽã«‚ð‰ñ”ð‚·‚é‚½‚ß‚ÉAfinal ‚É‚·‚×‚«‚Å‚·B
+‚±‚Ì‰Â•Ï static ƒtƒB[ƒ‹ƒh‚ÍAˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚â•Ê‚ÌƒpƒbƒP[ƒW‚©‚ç‚ÌŽ–ŒÌ‚É‚æ‚Á‚Ä•ÏX‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
+ƒtƒB[ƒ‹ƒh‚ÍAÆŽã«‚ð‰ñ”ð‚·‚é‚½‚ß‚É final ‚É‚·‚×‚«‚Å‚·B
  </p>
 ]]>
     </Details>
@@ -4023,8 +4020,8 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì‰Â•Ï static ƒtƒB[ƒ‹ƒh‚ÍAˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚âŒë‚Á‚Ä•Ê‚ÌƒpƒbƒP[ƒW‚©‚ç•ÏX‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
-ƒtƒB[ƒ‹ƒh‚ÍAÆŽã«‚ð‰ñ”ð‚·‚é‚½‚ß‚ÉAƒpƒbƒP[ƒWƒvƒƒeƒNƒeƒbƒh‚É‚·‚×‚«‚Å‚·B
+‚±‚Ì‰Â•Ï static ƒtƒB[ƒ‹ƒh‚ÍAˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚â•Ê‚ÌƒpƒbƒP[ƒW‚©‚ç‚ÌŽ–ŒÌ‚É‚æ‚Á‚Ä•ÏX‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
+ƒtƒB[ƒ‹ƒh‚ÍAÆŽã«‚ð‰ñ”ð‚·‚é‚½‚ß‚ÉƒpƒbƒP[ƒWƒvƒƒeƒNƒeƒbƒh‚É‚·‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -4036,7 +4033,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì final static ƒtƒB[ƒ‹ƒh‚ÍAHashtable ‚ðŽQÆ‚µ‚Ä‚¢‚é‚Ì‚ÅAˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚âŒë‚Á‚Ä•Ê‚ÌƒpƒbƒP[ƒW‚©‚çƒAƒNƒZƒX‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
+‚±‚Ì final static ƒtƒB[ƒ‹ƒh‚ÍAHashtable ‚ðŽQÆ‚µ‚Ä‚¢‚é‚Ì‚ÅAˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚â•Ê‚ÌƒpƒbƒP[ƒW‚©‚ç‚ÌŽ–ŒÌ‚É‚æ‚Á‚ÄƒAƒNƒZƒX‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
 ‚±‚ÌƒR[ƒh‚ÍAHashtable ‚ÌƒRƒ“ƒeƒ“ƒc‚ðŽ©—R‚É•ÏX‚Å‚«‚Ü‚·B
 </p>
 ]]>
@@ -4057,12 +4054,12 @@ private Long getNotificationSequenceNumber() {
   </BugPattern>
 
   <BugPattern type="MS_CANNOT_BE_FINAL">
-    <ShortDescription>final ‚Å‚Í‚È‚¢ƒtƒB[ƒ‹ƒh‚ÍAˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚©‚ç•ÛŒì‚Å‚«‚È‚¢</ShortDescription>
-    <LongDescription>{1} ‚ÍAfinal ‚Å‚Í‚È‚¢‚Ì‚ÅAˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚©‚ç•ÛŒì‚Å‚«‚Ü‚¹‚ñB </LongDescription>
+    <ShortDescription>final ‚Å‚È‚¢ƒtƒB[ƒ‹ƒh‚Íˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚©‚ç•ÛŒì‚Å‚«‚È‚¢</ShortDescription>
+    <LongDescription>{1} ‚ÍAfinal ‚Å‚È‚¢‚Ì‚ÅAˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚©‚ç•ÛŒì‚Å‚«‚Ü‚¹‚ñB </LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì‰Â•Ï static ƒtƒB[ƒ‹ƒh‚ÍAˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚âŒë‚Á‚Ä•Ê‚ÌƒpƒbƒP[ƒW‚©‚ç•ÏX‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
+‚±‚Ì‰Â•Ï static ƒtƒB[ƒ‹ƒh‚ÍAˆ«ˆÓ‚Ì‚ ‚éƒR[ƒh‚â•Ê‚ÌƒpƒbƒP[ƒW‚©‚ç‚ÌŽ–ŒÌ‚É‚æ‚Á‚Ä•ÏX‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
 Žc”O‚È‚ª‚ç‚±‚Ì‚æ‚¤‚ÈŽg‚¢•û‚ÍŠÈ’P‚É‰ðŒˆ‚Å‚«‚Ü‚¹‚ñB
 </p>
 ]]>
@@ -4076,7 +4073,7 @@ private Long getNotificationSequenceNumber() {
 <![CDATA[
 <p>
 “à•”ƒNƒ‰ƒX‚ÍAŒp³‚³‚ê‚½ƒƒ\ƒbƒh‚©ŠO•”ƒNƒ‰ƒX‚Å’è‹`‚³‚ê‚½ƒƒ\ƒbƒh‚È‚Ì‚©‚Ç‚¿‚ç‚Æ‚à‰ðŽß‚Å‚«‚éƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-Java ‚ÌŽd—lã‚ÍŒp³‚µ‚½ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ü‚·‚ª‚±‚ê‚Í‚ ‚È‚½‚ªˆÓ}‚µ‚½‚±‚Æ‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+Java ‚ÌŽd—lã‚ÍŒp³‚µ‚½ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ü‚·‚ªA‚±‚ê‚ÍˆÓ}‚µ‚½‚±‚Æ‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 –{“–‚ÉŒp³‚³‚ê‚½ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚Â‚à‚è‚È‚ç super ‚ð•t‚¯‚Ä (—áFsuper.foo(17)) ŒÄ‚Ño‚µ‚Ä‚­‚¾‚³‚¢B
 ‚»‚¤‚·‚ê‚ÎAŠO•”ƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚Å‚Í‚È‚­Œp³‚³‚ê‚½ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚½‚¢‚±‚Æ‚ª‚±‚ÌƒR[ƒh‚ð“Ç‚Þl‚Æ FindBugs ‚É–¾Šm‚É‚È‚è‚Ü‚·B
 </p>
@@ -4085,49 +4082,48 @@ Java ‚ÌŽd—lã‚ÍŒp³‚µ‚½ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ü‚·‚ª‚±‚ê‚Í‚ ‚È‚½‚ªˆÓ}‚µ‚½‚±‚Æ‚Å‚Í‚È‚
   </BugPattern>
 
   <BugPattern type="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS">
-    <ShortDescription>ƒNƒ‰ƒX–¼‚ÍƒX[ƒp[ƒNƒ‰ƒX‚Ì’Pƒ–¼‚Æ“¯‚¶‚É‚·‚×‚«‚Å‚Í‚È‚¢</ShortDescription>
-    <LongDescription>ƒNƒ‰ƒX–¼ {0} ‚ÍAƒX[ƒp[ƒNƒ‰ƒX {1} ‚Ì’Pƒ–¼‚Æ“¯‚¶‚É‚·‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX–¼‚ÍƒX[ƒp[ƒNƒ‰ƒX‚Ì’Pƒ–¼‚ðŽÕ‚é‚×‚«‚Å‚Í‚È‚¢</ShortDescription>
+    <LongDescription>ƒNƒ‰ƒX–¼ {0} ‚ÍAƒX[ƒp[ƒNƒ‰ƒX {1} ‚Ì’Pƒ–¼‚ðŽÕ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍAƒX[ƒp[ƒNƒ‰ƒX‚Æ’Pƒ–¼‚ª“¯‚¶‚Å‚·‚ªAƒpƒbƒP[ƒW–¼‚Íˆá‚¢‚Ü‚· (‚½‚Æ‚¦‚ÎA<code>alpha.Foo</code> ‚ª <code>beta.Foo</code> ‚ðŠg’£‚µ‚Ü‚·)B
-‚±‚ê‚ÍŽQÆŠÖŒW‚ð’m‚é‚½‚ß‚É import •¶‚ðŒ©‚È‚¯‚ê‚Î‚È‚ç‚È‚©‚Á‚½‚èAƒX[ƒp[ƒNƒ‰ƒX‚É‘¶Ý‚·‚éƒƒ\ƒbƒh‚ðŒë‚Á‚ÄƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚µ‚Ü‚Á‚½‚è‚ÆA”ñí‚É•´‚ç‚í‚µ‚¢‰Â”\«‚ª‚ ‚è‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚É‚ÍA‚»‚ÌƒX[ƒp[ƒNƒ‰ƒX‚Æ“¯ˆê‚Ì’Pƒ–¼‚ª‚ ‚è‚Ü‚·‚ªAƒX[ƒp[ƒNƒ‰ƒX‚ÍˆÙ‚È‚éƒpƒbƒP[ƒW‚Å‚· (‚½‚Æ‚¦‚ÎA<code>alpha.Foo</code> ‚ª <code>beta.Foo</code> ‚ðŠg’£‚µ‚Ü‚·)B
+‚±‚ê‚Í”ñí‚É•´‚ç‚í‚µ‚­AŽQÆŠÖŒW‚ð‰ðŒˆ‚·‚é‚½‚ß‚É import •¶‚ðŒ©‚È‚¯‚ê‚Î‚È‚ç‚È‚©‚Á‚½‚èAƒX[ƒp[ƒNƒ‰ƒX‚É‘¶Ý‚·‚éƒƒ\ƒbƒh‚ðŒë‚Á‚ÄƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚µ‚Ü‚Á‚½‚è‚·‚éó‹µ‚ðì‚èo‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NM_SAME_SIMPLE_NAME_AS_INTERFACE">
-    <ShortDescription>ƒNƒ‰ƒX–¼‚ÍŽÀ‘•‚·‚éƒCƒ“ƒ^ƒtƒF[ƒX‚Ì’Pƒ–¼‚Æ“¯‚¶‚É‚·‚×‚«‚Å‚Í‚È‚¢</ShortDescription>
-    <LongDescription>ƒNƒ‰ƒX–¼ {0} ‚ÍAŽÀ‘•‚·‚éƒCƒ“ƒ^ƒtƒF[ƒX {1} ‚Ì’Pƒ–¼‚Æ“¯‚¶‚É‚·‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX–¼‚ÍŽÀ‘•‚³‚ê‚½ƒCƒ“ƒ^ƒtƒF[ƒX‚Ì’Pƒ–¼‚ðŽÕ‚é‚×‚«‚Å‚Í‚È‚¢</ShortDescription>
+    <LongDescription>ƒNƒ‰ƒX–¼ {0} ‚ÍAŽÀ‘•‚³‚ê‚½ƒCƒ“ƒ^ƒtƒF[ƒX {1} ‚Ì’Pƒ–¼‚ðŽÕ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
-  <p>
-‚±‚ÌƒNƒ‰ƒX‚Ü‚½‚ÍƒCƒ“ƒ^ƒtƒF[ƒX‚ÍAŒp³‚Ü‚½‚ÍŽÀ‘•‚³‚ê‚½ƒCƒ“ƒ^ƒtƒF[ƒX‚Ì–¼‘O‚Æ“¯‚¶‚Å‚·‚ªAƒpƒbƒP[ƒW–¼‚Íˆá‚¢‚Ü‚· (‚½‚Æ‚¦‚ÎA<code>alpha.Foo</code> ‚ª <code>beta.Foo</code> ‚ðŒp³‚µ‚Ä‚¢‚é‚æ‚¤‚Èó‹µ‚Å‚·)B
-‚±‚ê‚Í”ñí‚É•´‚ç‚í‚µ‚¢‰Â”\«‚ª‚ ‚è‚Ü‚·B
-ŽQÆŠÖŒW‚ð’m‚é‚½‚ß‚ÉƒCƒ“ƒ|[ƒg•¶‚ðŒ©‚È‚¯‚ê‚Î‚È‚ç‚È‚©‚Á‚½‚èAƒX[ƒp[ƒNƒ‰ƒX‚É‚Ìƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚È‚©‚Á‚½‚è‚Æ‚½‚­‚³‚ñ‚Ìó‹µ‚ðì‚èo‚µ‚Ü‚·B
+<p>
+‚±‚ÌƒNƒ‰ƒX‚Ü‚½‚ÍƒCƒ“ƒ^ƒtƒF[ƒX‚É‚ÍAŽÀ‘•‚³‚ê‚½/Šg’£‚³‚ê‚½ƒCƒ“ƒ^ƒtƒF[ƒX‚Æ“¯ˆê‚Ì’Pƒ–¼‚ª‚ ‚è‚Ü‚·‚ªAƒCƒ“ƒ^ƒtƒF[ƒX‚ÍˆÙ‚È‚éƒpƒbƒP[ƒW‚Å‚· (‚½‚Æ‚¦‚ÎA<code>alpha.Foo</code> ‚ª <code>beta.Foo</code> ‚ðŒp³‚µ‚Ä‚¢‚é‚æ‚¤‚Èó‹µ‚Å‚·)B
+‚±‚ê‚Í”ñí‚É•´‚ç‚í‚µ‚­AŽQÆŠÖŒW‚ð‰ðŒˆ‚·‚é‚½‚ß‚É import •¶‚ðŒ©‚È‚¯‚ê‚Î‚È‚ç‚È‚©‚Á‚½‚èAƒX[ƒp[ƒNƒ‰ƒX‚É‘¶Ý‚·‚éƒƒ\ƒbƒh‚ðŒë‚Á‚ÄƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚µ‚Ü‚Á‚½‚è‚·‚éó‹µ‚ðì‚èo‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NM_CLASS_NAMING_CONVENTION">
-    <ShortDescription>ƒNƒ‰ƒX–¼‚Í‘å•¶Žš‚ÅŽn‚ß‚é‚×‚«</ShortDescription>
-    <LongDescription>ƒNƒ‰ƒX–¼ {0} ‚ÍA‘å•¶Žš‚©‚çŽn‚ß‚é‚×‚«‚Å‚·B</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX–¼‚Í‘å•¶Žš‚©‚çŽn‚ß‚é‚×‚«</ShortDescription>
+    <LongDescription>ƒNƒ‰ƒX–¼ {0} ‚ÍA‘å•¶Žš‚©‚çŽn‚Ü‚Á‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ƒNƒ‰ƒX–¼‚ÍAÅ‰‚Ì•¶Žš‚Æ‚»‚ê‚É‘±‚­Še’PŒê‚ÌÅ‰‚Ì•¶Žš‚ð‘å•¶Žš‚É‚µ‚½–¼ŽŒ‚É‚·‚×‚«‚Å‚·B
 ƒNƒ‰ƒX–¼‚Í’Pƒ‚Å‚í‚©‚è‚â‚·‚¢‚æ‚¤‚É‚µ‚Ä‚­‚¾‚³‚¢B
-“ª•¶Žš‚â—ªŒê‚ÌŽg—p‚Í”ð‚¯‚Ä‚­‚¾‚³‚¢ (URL‚âHTML‚È‚Ç‚Ì‚æ‚¤‚É—ªŒê‚ªƒƒ“ƒOŒ`Ž®‚æ‚è‚à‚Í‚é‚©‚ÉL‚­Žg‚í‚ê‚Ä‚¢‚éê‡‚ðœ‚­)B
+“ª•¶Žš‚â—ªŒê (URL‚âHTML‚È‚Ç‚Ì‚æ‚¤‚É—ªŒê‚ªƒƒ“ƒOŒ`Ž®‚æ‚è‚à‚Í‚é‚©‚ÉL‚­Žg‚í‚ê‚Ä‚¢‚éê‡‚ðœ‚­) ‚ÌŽg—p‚Í”ð‚¯‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NM_METHOD_NAMING_CONVENTION">
-    <ShortDescription>ƒƒ\ƒbƒh–¼‚Í¬•¶Žš‚ÅŽn‚ß‚é‚×‚«‚Å‚·</ShortDescription>
-    <LongDescription>ƒƒ\ƒbƒh–¼ {1} ‚ÍA¬•¶Žš‚ÅŽn‚Ü‚Á‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh–¼‚Í¬•¶Žš‚©‚çŽn‚ß‚é‚×‚«‚Å‚·</ShortDescription>
+    <LongDescription>ƒƒ\ƒbƒh–¼ {1} ‚ÍA¬•¶Žš‚©‚çŽn‚Ü‚Á‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4138,12 +4134,12 @@ Java ‚ÌŽd—lã‚ÍŒp³‚µ‚½ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ü‚·‚ª‚±‚ê‚Í‚ ‚È‚½‚ªˆÓ}‚µ‚½‚±‚Æ‚Å‚Í‚È‚
   </BugPattern>
 
   <BugPattern type="NM_FIELD_NAMING_CONVENTION">
-    <ShortDescription>ƒtƒB[ƒ‹ƒh–¼‚Í¬•¶Žš‚ÅŽn‚ß‚é‚×‚«</ShortDescription>
-    <LongDescription>ƒtƒB[ƒ‹ƒh–¼ {1} ‚ÍA¬•¶Žš‚ÅŽn‚Ü‚Á‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>ƒtƒB[ƒ‹ƒh–¼‚Í¬•¶Žš‚©‚çŽn‚ß‚é‚×‚«</ShortDescription>
+    <LongDescription>ƒtƒB[ƒ‹ƒh–¼ {1} ‚ÍA¬•¶Žš‚©‚çŽn‚Ü‚Á‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-final ‚Å‚Í‚È‚¢ƒtƒB[ƒ‹ƒh‚Ì–¼‘O‚ÍAÅ‰‚Ì•¶Žš‚Í¬•¶Žš‚É‚µA‚»‚ê‚É‘±‚­Še’PŒê‚ÌÅ‰‚Ì•¶Žš‚ð‘å•¶Žš‚É‚·‚×‚«‚Å‚·B
+final ‚Å‚È‚¢ƒtƒB[ƒ‹ƒh‚Ì–¼‘O‚ÍAÅ‰‚Ì•¶Žš‚Í¬•¶Žš‚É‚µA‚»‚ê‚É‘±‚­Še’PŒê‚ÌÅ‰‚Ì•¶Žš‚ð‘å•¶Žš‚É‚·‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -4170,15 +4166,15 @@ final ‚Å‚Í‚È‚¢ƒtƒB[ƒ‹ƒh‚Ì–¼‘O‚ÍAÅ‰‚Ì•¶Žš‚Í¬•¶Žš‚É‚µA‚»‚ê‚É‘±‚­Še’PŒê‚ÌÅ‰
 <p>
 ŽQÆ‚³‚ê‚½ƒƒ\ƒbƒh‚ÍA‘å•¶Žš‚ÌŽg‚¢•û‚¾‚¯‚É‚æ‚Á‚ÄˆÙ‚È‚é–¼‘O‚ª‚ ‚è‚Ü‚·B
 ‘å•¶Žš‚ÌŽg‚¢•û‚ª“¯ˆê‚È‚çƒƒ\ƒbƒh‚Ì1‚Â‚ª‘¼‚Ìƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚é‚Ì‚ÅA”ñí‚É•´‚ç‚í‚µ‚¢‚Å‚·B
-‘¼‚Ìƒƒ\ƒbƒh‚Ì‘¶Ý‚©‚çA‚±‚ê‚ç‚Ìƒƒ\ƒbƒh‚Ì‘¶Ý‚ªˆÓ}“I‚Å‚·‚ªŠmŽÀ‚É¬—‚³‚¹‚Ä‚¢‚é‚ÆŽv‚í‚ê‚Ü‚·B
-API‚Ì“€Œ‹‚É‚æ‚Á‚Ä—¼•û‚Æ‚àŽ‚½‚´‚é‚ð“¾‚È‚¢ê‡‚ðœ‚«A‚»‚ê‚ç‚Ì‚¤‚¿‚Ì1‚Â‚ðíœ‚µ‚æ‚¤‚Æ“w—Í‚·‚×‚«‚Å‚·B
+‘¼‚Ìƒƒ\ƒbƒh‚Ì‘¶Ý‚©‚çA‚±‚ê‚ç‚Ìƒƒ\ƒbƒh‚Ì—¼•û‚Ì‘¶Ý‚ªˆÓ}“I‚Å‚ ‚é‚ªAŠmŽÀ‚É¬—‚³‚¹‚Ä‚¢‚é‚ÆŽv‚í‚ê‚Ü‚·B
+API‚Ì“€Œ‹‚É‚æ‚Á‚Ä—¼•û‚Æ‚àŽ‚½‚´‚é‚ð“¾‚È‚¢ê‡‚ðœ‚«A‚»‚ê‚ç‚Ì‚¤‚¿‚Ì1‚Â‚ðíœ‚µ‚æ‚¤‚Æ“w—Í‚·‚é‚×‚«‚Å‚·B 
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NM_WRONG_PACKAGE">
-    <ShortDescription>ƒpƒ‰ƒ[ƒ^‚ÌŠÔˆá‚Á‚½ƒpƒbƒP[ƒW‚Ì‚½‚ß‚ÉAƒX[ƒp[ƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚È‚¢</ShortDescription>
+    <ShortDescription>ƒpƒ‰ƒ[ƒ^‚ÌŠÔˆá‚Á‚½ƒpƒbƒP[ƒW‚Ì‚½‚ß‚ÉAƒX[ƒp[ƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
     <LongDescription>ƒpƒ‰ƒ[ƒ^‚ÌŒ^ {4} ‚ªƒX[ƒp[ƒNƒ‰ƒX‚Ìƒpƒ‰ƒ[ƒ^‚ÌŒ^ {5} ‚Æ‡’v‚µ‚Ä‚¢‚È‚¢‚Ì‚ÅA{1} ‚ÍƒX[ƒp[ƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
@@ -4207,7 +4203,7 @@ public class B extends A {
     </Details>
   </BugPattern>
   <BugPattern type="NM_WRONG_PACKAGE_INTENTIONAL">
-    <ShortDescription>ƒpƒ‰ƒ[ƒ^‚ÌŠÔˆá‚Á‚½ƒpƒbƒP[ƒW‚Ì‚½‚ß‚ÉƒX[ƒp[ƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚È‚¢</ShortDescription>
+    <ShortDescription>ƒpƒ‰ƒ[ƒ^‚ÌŠÔˆá‚Á‚½ƒpƒbƒP[ƒW‚Ì‚½‚ß‚ÉƒX[ƒp[ƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
     <LongDescription>ƒpƒ‰ƒ[ƒ^‚ÌŒ^ {4} ‚ªƒX[ƒp[ƒNƒ‰ƒX‚Ìƒpƒ‰ƒ[ƒ^‚ÌŒ^ {5} ‚Æ‡’v‚µ‚È‚¢‚Ì‚ÅA{1} ‚ÍƒX[ƒp[ƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
@@ -4235,7 +4231,7 @@ public class B extends A {
 <p>
 ‚±‚Ìê‡AƒTƒuƒNƒ‰ƒX‚ªƒX[ƒp[ƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚Æ“¯ˆê‚ÌƒVƒOƒlƒ`ƒƒ‚Åƒƒ\ƒbƒh‚ð’è‹`‚·‚é‚Ì‚ÅA‚¨‚»‚ç‚­—‰ð‚³‚ê‚Ü‚·B
 ‚µ‚©‚µ‚È‚ª‚çA‚»‚Ì‚æ‚¤‚Èƒƒ\ƒbƒh‚Í”ñí‚É•´‚ç‚í‚µ‚¢‚Å‚·B
-—ÞŽ—‚µ‚Ä‚¢‚é‚ª“¯ˆê‚Å‚Í‚È‚¢ƒVƒOƒlƒ`ƒƒ‚Ìƒƒ\ƒbƒh‚ðíœ‚·‚é‚©A”ñ„§‚É‚·‚é‚±‚Æ‚ð‹­‚­ŒŸ“¢‚·‚×‚«‚Å‚·B
+—ÞŽ—‚µ‚Ä‚¢‚é‚ª“¯ˆê‚Å‚Í‚È‚¢ƒVƒOƒlƒ`ƒƒ‚Ìƒƒ\ƒbƒh‚ðœ‹Ž‚·‚é‚©A”ñ„§‚É‚·‚é‚±‚Æ‚ð‹­‚­ŒŸ“¢‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -4258,16 +4254,17 @@ public class B extends A {
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì’Êí‚Ìƒƒ\ƒbƒh‚ÍA’è‹`‚³‚ê‚Ä‚¢‚éƒNƒ‰ƒX‚Æ“¯‚¶–¼‘O‚Å‚·B
+‚±‚Ì³‹K‚Ìƒƒ\ƒbƒh‚ÍA’è‹`‚µ‚Ä‚¢‚éƒNƒ‰ƒX‚Æ“¯‚¶–¼‘O‚Å‚·B
 ‚±‚ê‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ðˆÓ}‚µ‚Ä‚¢‚½‰Â”\«‚ª‚‚¢‚Å‚·B‚à‚µ‚»‚¤‚È‚ç void –ß‚è’l‚ÌéŒ¾‚ðœ‹Ž‚µ‚Ä‚­‚¾‚³‚¢B
-‚±‚Ìƒƒ\ƒbƒh‚ð’è‹`‚µ‚½‚±‚Æ‚ª‹ô‘RŠÔˆá‚Á‚Ä‚¢‚é‚Æ‚í‚©‚è³‚µ‚¢ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’è‹`‚µ‚½‚ª‰ºˆÊŒÝŠ·«‚Ì‚½‚ß‚É‚±‚Ìƒƒ\ƒbƒh‚ðŽæ‚èœ‚­‚±‚Æ‚ª‚Å‚«‚È‚¢‚È‚çƒƒ\ƒbƒh‚ð”ñ„§‚É‚µ‚Ä‚­‚¾‚³‚¢B
+‚±‚Ìƒƒ\ƒbƒh‚ð’è‹`‚µ‚½‚±‚Æ‚ª‹ô‘RŠÔˆá‚Á‚Ä‚¢‚é‚Æ‚í‚©‚èA³‚µ‚¢ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’è‹`‚µ‚½‚ªA‰ºˆÊŒÝŠ·«‚Ì‚½‚ß‚É‚±‚Ìƒƒ\ƒbƒh‚ðŽæ‚èœ‚­‚±‚Æ‚ª‚Å‚«‚È‚¢‚È‚çAƒƒ\ƒbƒh‚ð”ñ„§‚É‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
   </BugPattern>
+  
   <BugPattern type="NM_LCASE_HASHCODE">
-    <ShortDescription>ƒNƒ‰ƒX‚Í hashcode() ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·BhashCode() ‚ÌŠÔˆá‚¢‚Å‚Í‚È‚¢‚Å‚·‚©?</ShortDescription>
-    <LongDescription>ƒNƒ‰ƒX {0} ‚ÍAhashcode() ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·BhashCode() ‚ÌŠÔˆá‚¢‚Å‚Í‚È‚¢‚Å‚·‚©?</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Í hashcode() ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·BhashCode() ‚É‚·‚×‚«‚Å‚·‚©?</ShortDescription>
+    <LongDescription>ƒNƒ‰ƒX {0} ‚ÍAhashcode() ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·BhashCode() ‚É‚·‚×‚«‚Å‚·‚©?</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4277,9 +4274,10 @@ public class B extends A {
 ]]>
     </Details>
   </BugPattern>
+  
   <BugPattern type="NM_LCASE_TOSTRING">
-    <ShortDescription>ƒNƒ‰ƒX‚Í tostring() ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·BtoString() ‚ÌŠÔˆá‚¢‚Å‚Í‚È‚¢‚Å‚·‚©?</ShortDescription>
-    <LongDescription>ƒNƒ‰ƒX {0} ‚ÍAtostring() ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·BtoString() ‚ÌŠÔˆá‚¢‚Å‚Í‚È‚¢‚Å‚·‚©?</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Í tostring() ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·BtoString() ‚É‚·‚×‚«‚Å‚·‚©?</ShortDescription>
+    <LongDescription>ƒNƒ‰ƒX {0} ‚ÍAtostring() ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·BtoString() ‚É‚·‚×‚«‚Å‚·‚©?</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4291,8 +4289,8 @@ public class B extends A {
   </BugPattern>
 
   <BugPattern type="NM_BAD_EQUAL">
-    <ShortDescription>ƒNƒ‰ƒX‚Í equal(Object) ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·Bequals(Object) ‚ÌŠÔˆá‚¢‚Å‚Í‚È‚¢‚Å‚·‚©?</ShortDescription>
-    <LongDescription>ƒNƒ‰ƒX {0} ‚Í equal(Object) ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·Bequals(Object) ‚ÌŠÔˆá‚¢‚Å‚Í‚È‚¢‚Å‚·‚©?</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Í equal(Object) ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·Bequals(Object) ‚É‚·‚×‚«‚Å‚·‚©?</ShortDescription>
+    <LongDescription>ƒNƒ‰ƒX {0} ‚Í equal(Object) ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·Bequals(Object) ‚É‚·‚×‚«‚Å‚·‚©?</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4304,13 +4302,13 @@ public class B extends A {
   </BugPattern>
 
   <BugPattern type="NM_CLASS_NOT_EXCEPTION">
-    <ShortDescription>ƒNƒ‰ƒX‚Í Exception ‚©‚ç”h¶‚³‚ê‚Ä‚¢‚È‚¢‚Ì‚ÉŽÀÛ‚É‚Í‚»‚Ì‚æ‚¤‚É–½–¼‚³‚ê‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>ƒNƒ‰ƒX {0} ‚ÍAException ‚©‚ç”h¶‚³‚ê‚Ä‚¢‚È‚¢‚Ì‚ÉŽÀÛ‚É‚Í‚»‚Ì‚æ‚¤‚É–½–¼‚³‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>‚»‚Ì‚æ‚¤‚É–½–¼‚³‚ê‚Ä‚¢‚é‚Æ‚µ‚Ä‚àAƒNƒ‰ƒX‚Í Exception ‚©‚ç”h¶‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ</ShortDescription>
+    <LongDescription>‚»‚Ì‚æ‚¤‚É–½–¼‚³‚ê‚Ä‚¢‚é‚Æ‚µ‚Ä‚àAƒNƒ‰ƒX {0} ‚ÍAException ‚©‚ç”h¶‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍAException ‚©‚ç”h¶‚³‚ê‚Ä‚¢‚È‚¢‚Ì‚ÉƒNƒ‰ƒX–¼‚ªuExceptionv‚ÅI—¹‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ê‚Í‚±‚ÌƒNƒ‰ƒX‚Ìƒ†[ƒU‚É‘Î‚µ‚Ä•´‚ç‚í‚µ‚¢‚Å‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍAException ‚©‚ç”h¶‚³‚ê‚Ä‚¢‚È‚¢‚Ì‚ÉAƒNƒ‰ƒX–¼‚ªuExceptionv‚ÅI‚í‚Á‚Ä‚¢‚Ü‚·B
+‚±‚ê‚ÍA‚±‚ÌƒNƒ‰ƒX‚Ìƒ†[ƒU‚É•´‚ç‚í‚µ‚¢‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -4322,10 +4320,10 @@ public class B extends A {
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍA<code>java.io.InputStream.read()</code> (‚ ‚é‚¢‚Í‚»‚ÌƒoƒŠƒG[ƒVƒ‡ƒ“) ‚Ì–ß‚è’l‚ð–³Ž‹‚µ‚Ä‚¢‚Ü‚·B
-–ß‚è’l‚ðƒ`ƒFƒbƒN‚µ‚È‚¢‚ÆŒÄ‚Ño‚µŒ³‚ÍŽÀÛ‚æ‚è‚à­‚È‚¢ƒoƒCƒg”‚ð“Ç‚Ýo‚µ‚½ê‡A³‚µ‚­ˆ—‚Å‚«‚Ü‚¹‚ñB
+‚±‚Ìƒƒ\ƒbƒh‚ÍA•¡”ƒoƒCƒg‚ð•Ô‚·‰Â”\«‚ª‚ ‚é <code>java.io.InputStream.read()</code> (‚ ‚é‚¢‚Í‚»‚ÌƒoƒŠƒG[ƒVƒ‡ƒ“) ‚Ì–ß‚è’l‚ð–³Ž‹‚µ‚Ä‚¢‚Ü‚·B
+–ß‚è’l‚ªƒ`ƒFƒbƒN‚³‚ê‚È‚¢‚ÆŒÄ‚Ño‚µŒ³‚Í—v‹‚µ‚½ƒoƒCƒg”‚æ‚è‚à­‚È‚¢ƒoƒCƒg”‚ð“Ç‚Ýo‚µ‚½ê‡A³‚µ‚­ˆ—‚Å‚«‚Ü‚¹‚ñB
 ‚±‚ê‚ÍöÝ“I‚ÈƒoƒO‚Å‚·B
-‘½‚­‚ÌƒvƒƒOƒ‰ƒ€‚ÍA—v‹‚³‚ê‚éƒf[ƒ^—Ê‚ð‘S•”“Ç‚Ýo‚µ‚Ü‚·‚ª‚½‚Ü‚ÉŽ¸”s‚·‚é‚±‚Æ‚ª‚ ‚è‚Ü‚·B
+‘½‚­‚ÌƒvƒƒOƒ‰ƒ€‚ÅA“ü—ÍƒXƒgƒŠ[ƒ€‚©‚ç‚Ì“Ç‚Ýo‚µ‚ÍA—v‹‚µ‚½Š®‘S‚Èƒf[ƒ^—Ê‚ð“Ç‚Ýo‚µ‚Ü‚·‚ªAŽU”­“I‚ÉŽ¸”s‚·‚é‚±‚Æ‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -4337,11 +4335,11 @@ public class B extends A {
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍA<code>java.io.InputStream.skip()</code> ‚Ì–ß‚è’l‚ð–³Ž‹‚µ‚Ä‚¢‚Ü‚·B
-–ß‚è’l‚ðƒ`ƒFƒbƒN‚µ‚È‚¢‚ÆŒÄ‚Ño‚µŒ³‚ª—v‹‚µ‚½ƒoƒCƒg”‚æ‚è‚à­‚È‚¢ƒoƒCƒg”‚µ‚©ƒXƒLƒbƒv‚µ‚È‚©‚Á‚½ê‡A³‚µ‚­ˆ—‚Å‚«‚Ü‚¹‚ñB
+‚±‚Ìƒƒ\ƒbƒh‚ÍA•¡”ƒoƒCƒg‚ðƒXƒLƒbƒv‚·‚é‰Â”\«‚ª‚ ‚é <code>java.io.InputStream.skip()</code> ‚Ì–ß‚è’l‚ð–³Ž‹‚µ‚Ä‚¢‚Ü‚·B
+–ß‚è’l‚ªƒ`ƒFƒbƒN‚³‚ê‚È‚¢‚ÆŒÄ‚Ño‚µŒ³‚Í—v‹‚µ‚½ƒoƒCƒg”‚æ‚è‚à­‚È‚¢ƒoƒCƒg”‚µ‚©ƒXƒLƒbƒv‚µ‚È‚©‚Á‚½ê‡A³‚µ‚­ˆ—‚Å‚«‚Ü‚¹‚ñB 
 ‚±‚ê‚ÍöÝ“I‚ÈƒoƒO‚Å‚·B
-‘½‚­‚Ìƒvƒ‰ƒOƒ‰ƒ€‚ÍA—v‹’Ê‚è‚ÌƒXƒLƒbƒv‚ð‚µ‚Ü‚·‚ª‚½‚Ü‚ÉŽ¸”s‚·‚é‚±‚Æ‚ª‚ ‚è‚Ü‚·B
-‚µ‚©‚µ‚È‚ª‚çAƒoƒbƒtƒ@[ƒhƒXƒgƒŠ[ƒ€ ‚Ì <code>skip</code> ƒƒ\ƒbƒh‚Íƒoƒbƒtƒ@‚Ìƒf[ƒ^‚ðƒXƒLƒbƒv‚·‚é‚¾‚¯‚È‚Ì‚Åí‚ÉŽ¸”s‚µ‚Ü‚·B
+‘½‚­‚ÌƒvƒƒOƒ‰ƒ€‚ÅA“ü—ÍƒXƒgƒŠ[ƒ€‚©‚ç‚ÌƒXƒLƒbƒv‚ÍA—v‹‚µ‚½Š®‘S‚Èƒf[ƒ^—Ê‚ðƒXƒLƒbƒv‚ð‚µ‚Ü‚·‚ªAŽU”­“I‚ÉŽ¸”s‚·‚é‚±‚Æ‚ª‚ ‚è‚Ü‚·B 
+‚µ‚©‚µ‚È‚ª‚çAƒoƒbƒtƒ@[ƒhƒXƒgƒŠ[ƒ€ ‚Å‚Ì <code>skip</code> ƒƒ\ƒbƒh‚Íƒoƒbƒtƒ@‚Ìƒf[ƒ^‚ðƒXƒLƒbƒv‚·‚é‚Ì‚ÅA—v‹‚³‚ê‚½ƒoƒCƒg”‚ÌƒXƒLƒbƒv‚Íí‚ÉŽ¸”s‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -4349,24 +4347,24 @@ public class B extends A {
 
   <BugPattern type="SE_READ_RESOLVE_IS_STATIC">
     <ShortDescription>readResolve ƒƒ\ƒbƒh‚ª static ƒƒ\ƒbƒh‚Æ‚µ‚ÄéŒ¾‚³‚ê‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>{1} ‚ÍAstatic ƒƒ\ƒbƒh‚Å‚Í‚È‚­ ƒCƒ“ƒXƒ^ƒ“ƒXƒƒ\ƒbƒh‚Æ‚µ‚ÄéŒ¾‚·‚×‚«‚Å‚·B</LongDescription>
+    <LongDescription>{1} ‚ÍAstatic ƒƒ\ƒbƒh‚Å‚Í‚È‚­ ƒCƒ“ƒXƒ^ƒ“ƒXƒƒ\ƒbƒh‚Æ‚µ‚ÄéŒ¾‚·‚é‚×‚«‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-<code>readResolve</code> ƒƒ\ƒbƒh‚ª’¼—ñ‰»‹@\‚Å”FŽ¯‚³‚ê‚é‚½‚ß‚É‚ÍAstatic ƒƒ\ƒbƒh‚Æ‚µ‚ÄéŒ¾‚³‚ê‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+<code>readResolve</code> ƒƒ\ƒbƒh‚ª’¼—ñ‰»‹@\‚Å”FŽ¯‚³‚ê‚é‚½‚ß‚É‚ÍAstatic ƒƒ\ƒbƒh‚Æ‚µ‚ÄéŒ¾‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="SE_PRIVATE_READ_RESOLVE_NOT_INHERITED">
     <ShortDescription>ƒTƒuƒNƒ‰ƒX‚ÅŒp³‚Å‚«‚È‚¢ private ‚È readResolve ƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>ƒTƒuƒNƒ‰ƒX‚É‚æ‚Á‚ÄŒp³‚Å‚«‚È‚¢ {0} ‚Ì private ‚È readResolve ƒƒ\ƒbƒh‚Å‚·B</LongDescription>
+    <LongDescription>ƒTƒuƒNƒ‰ƒX‚ÅŒp³‚Å‚«‚È‚¢ {0} ‚Ì private ‚È readResolve ƒƒ\ƒbƒh‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚Í private ‚È <code>readResolve</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍAprivate ‚È <code>readResolve</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
 ‚»‚Ì‚½‚ßA‚±‚Ìƒƒ\ƒbƒh‚ÍƒTƒuƒNƒ‰ƒX‚ÅŒp³‚Å‚«‚Ü‚¹‚ñB
-‚±‚ê‚ªˆÓ}‚µ‚½‚±‚Æ‚È‚çŠÔˆá‚Á‚Ä‚¢‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ªŠm”F‚·‚é‚½‚ß‚ÉƒŒƒrƒ…[‚·‚×‚«‚Å‚·B
+‚±‚ê‚ªˆÓ}‚µ‚½‚±‚Æ‚È‚çŠÔˆá‚Á‚Ä‚¢‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ªAŠm”F‚·‚é‚½‚ß‚ÉƒŒƒrƒ…[‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -4374,92 +4372,92 @@ public class B extends A {
 
   <BugPattern type="SE_READ_RESOLVE_MUST_RETURN_OBJECT">
     <ShortDescription>readResolve ƒƒ\ƒbƒh‚Ì–ß‚è’l‚ÌŒ^‚ª Object ‚ÅéŒ¾‚³‚ê‚Ä‚¢‚È‚¢</ShortDescription>
-    <LongDescription>{1} ‚Ì–ß‚è’l‚ÌŒ^‚Í {1.returnType} ‚Å‚Í‚È‚­ Object ‚ÅéŒ¾‚³‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB</LongDescription>
+    <LongDescription>ƒƒ\ƒbƒh {1} ‚Ì–ß‚è’l‚ÌŒ^‚Í {1.returnType} ‚Å‚Í‚È‚­ Object ‚ÅéŒ¾‚³‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-<code>readResolve</code> ƒƒ\ƒbƒh‚ª’¼—ñ‰»‹@\‚Å”FŽ¯‚³‚ê‚é‚½‚ß‚É‚ÍA–ß‚è’l‚ÌŒ^‚ª <code>Object</code> ‚ÅéŒ¾‚³‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+<code>readResolve</code> ƒƒ\ƒbƒh‚ª’¼—ñ‰»‹@\‚Å”FŽ¯‚³‚ê‚é‚½‚ß‚É‚ÍA–ß‚è’l‚ÌŒ^‚ª <code>Object</code> ‚ÅéŒ¾‚³‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB 
 </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS">
-    <ShortDescription>’¼—ñ‰»‰Â”\‚Å‚Í‚È‚¢ƒNƒ‰ƒX‚Ì transient ƒtƒB[ƒ‹ƒh</ShortDescription>
-    <LongDescription>{1.givenClass} ‚Í transient ‚Å‚·‚ª {0} ‚Í ’¼—ñ‰»‰Â”\‚Å‚Í‚ ‚è‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>Serializable ‚Å‚È‚¢ƒNƒ‰ƒX‚Ì transient ƒtƒB[ƒ‹ƒh</ShortDescription>
+    <LongDescription>{1.givenClass} ‚Í transient ‚Å‚ ‚é‚ªA{0} ‚Í Serializable ‚Å‚Í‚ ‚è‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-ƒtƒB[ƒ‹ƒh‚ð transient ‚Æ‚µ‚ÄéŒ¾‚µ‚Ä‚¢‚Ü‚·‚ªƒNƒ‰ƒX‚Í’¼—ñ‰»‰Â”\‚É‚È‚Á‚Ä‚¢‚È‚¢‚Ì‚ÅA‘S‘RŒø‰Ê‚ª‚ ‚è‚Ü‚¹‚ñB
-‚±‚ê‚ÍƒNƒ‰ƒX‚ª transient ‚¾‚Á‚½Žž‚Ì–¼Žc‚©A‚Ü‚½‚Í’¼—ñ‰»‹@\‚ðŒë‰ð‚µ‚Ä‚¢‚é‚Ì‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+ƒtƒB[ƒ‹ƒh‚Í transient ‚Æ‚µ‚ÄéŒ¾‚µ‚Ä‚¢‚é‚ªAƒNƒ‰ƒX‚Í’¼—ñ‰»‰Â”\‚Å‚Í‚È‚¢‚Ì‚ÅA‚Ü‚Á‚½‚­Œø‰Ê‚ª‚ ‚è‚Ü‚¹‚ñB
+‚±‚ê‚ÍƒNƒ‰ƒX‚ª transient ‚¾‚Á‚½‚Æ‚«‚Ì–¼Žc‚©A‚ ‚é‚¢‚ÍA’¼—ñ‰»‹@\‚ðŒë‰ð‚µ‚Ä‚¢‚é‚Ì‚©‚à‚µ‚ê‚Ü‚¹‚ñB 
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SE_TRANSIENT_FIELD_NOT_RESTORED">
-    <ShortDescription>’¼—ñ‰»•œŒ³‚É‚æ‚Á‚ÄÝ’è‚³‚ê‚È‚¢ transientƒtƒB[ƒ‹ƒh </ShortDescription>
-    <LongDescription>{1} ‚ÍAtransient ‚Å‚·‚ª’¼—ñ‰»•œŒ³‚É‚æ‚Á‚ÄÝ’è‚³‚ê‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>’¼—ñ‰»•œŒ³‚É‚æ‚Á‚ÄÝ’è‚³‚ê‚È‚¢ transient ƒtƒB[ƒ‹ƒh </ShortDescription>
+    <LongDescription>ƒtƒB[ƒ‹ƒh {1} ‚ÍAtransient ‚Å‚ ‚é‚ªA’¼—ñ‰»•œŒ³‚É‚æ‚Á‚ÄÝ’è‚³‚ê‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚ÌƒNƒ‰ƒX‚É‚ÍA•¡”‚ÌêŠ‚ÅXV‚³‚ê‚éƒtƒB[ƒ‹ƒh‚ª‚ ‚è‚Ü‚·B‚µ‚½‚ª‚Á‚ÄA‚±‚ÌƒNƒ‰ƒX‚Ìó‘Ô‚Ìˆê•”‚Å‚ ‚é‚ÆŽv‚í‚ê‚Ü‚·B
-‚µ‚©‚µ‚È‚ª‚çAƒtƒB[ƒ‹ƒh‚ª transient ‚ÆéŒ¾‚³‚ê‚Ä‚¢‚é‚Ì‚ÅA readObject/readResolve ƒƒ\ƒbƒh‚Å’l‚ªÝ’è‚³‚ê‚Ü‚¹‚ñB
-transient ‚Ü‚½‚Í static ‚©‚Ç‚¤‚©‚É‚ÍŠÖŒW‚È‚­AƒIƒuƒWƒFƒNƒg‚Ì‚·‚×‚Ä‚ÌƒtƒB[ƒ‹ƒh‚Ì’l‚ÉƒtƒB[ƒ‹ƒhƒ^ƒCƒv‚ÌƒfƒtƒHƒ‹ƒg’l‚ªÝ’è‚³‚ê‚Ü‚·B
+‚µ‚©‚µ‚È‚ª‚çAƒtƒB[ƒ‹ƒh‚ª transient ‚ÆéŒ¾‚³‚ê‚Ä‚¢‚é‚Ì‚ÉA readObject/readResolve ‚ÅÝ’è‚³‚ê‚È‚¢‚Ì‚ÅA
+ƒNƒ‰ƒX‚Ì’¼—ñ‰»•œŒ³‚³‚ê‚½ƒCƒ“ƒXƒ^ƒ“ƒX‚É‚ÍƒfƒtƒHƒ‹ƒg’l‚ªÝ’è‚³‚ê‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SE_METHOD_MUST_BE_PRIVATE">
-    <ShortDescription>’¼—ñ‰»‚ª“­‚­‚½‚ß‚É private ‚É‚µ‚È‚¯‚ê‚Î‚È‚ç‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>{1.givenClass} ‚ÍA{0} ‚Ì’¼—ñ‰»/’¼—ñ‰»•œŒ³‚ÅŒÄ‚Ño‚³‚ê‚é‚½‚ß‚É‚Í private ‚É‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>’¼—ñ‰»‹@\‚Ì‚½‚ß‚É private ‚É‚µ‚È‚¯‚ê‚Î‚È‚ç‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
+    <LongDescription>ƒƒ\ƒbƒh {1.givenClass} ‚ÍA{0} ‚Ì’¼—ñ‰»/’¼—ñ‰»•œŒ³‚ÅŒÄ‚Ño‚³‚ê‚é‚½‚ß‚É private ‚É‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍA<code>Serializable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚ÄAƒJƒXƒ^ƒ€’¼—ñ‰»/’¼—ñ‰»•œŒ³‚Ì‚½‚ß‚Ìƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·‚ªA
-ƒƒ\ƒbƒh‚ª private ‚Æ‚µ‚ÄéŒ¾‚³‚ê‚Ä‚¢‚È‚¢‚Ì‚ÅA’¼—ñ‰»/’¼—ñ‰»•œŒ³ API ‚É‚æ‚Á‚Ä–³Ž‹‚³‚ê‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍA<code>Serializable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚ÄAƒJƒXƒ^ƒ€’¼—ñ‰»/’¼—ñ‰»•œŒ³‚Ì‚½‚ß‚Ìƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
+‚µ‚©‚µA‚»‚Ìƒƒ\ƒbƒh‚ª private ‚Æ‚µ‚ÄéŒ¾‚³‚ê‚Ä‚¢‚È‚¢‚Ì‚ÅA’¼—ñ‰»/’¼—ñ‰»•œŒ³ API ‚É‚æ‚Á‚Ä–³Ž‹‚³‚ê‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION">
-    <ShortDescription>ƒNƒ‰ƒX‚Í Externalizable ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚é‚ªˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’è‹`‚µ‚Ä‚¢‚È‚¢</ShortDescription>
-    <LongDescription>{0} ‚ÍAExternalizable ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·‚ªAˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Í Externalizable ‚Å‚ ‚é‚ªˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’è‹`‚µ‚Ä‚¢‚È‚¢</ShortDescription>
+    <LongDescription>{0} ‚ÍAExternalizable ‚Å‚ ‚é‚ªAˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍA<code>Externalizable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·‚ªAˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB
-ŠO•”‰»‰Â”\ƒIƒuƒWƒFƒNƒg‚ª”ñ’¼—ñ‰»‚³‚ê‚é‚Æ‚«‚ÍAÅ‰‚Éˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ðŒÄ‚Ño‚µ‚Ä\’z‚³‚ê‚é•K—v‚ª‚ ‚è‚Ü‚·B
-‚±‚ÌƒNƒ‰ƒX‚É‚ÍAˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ª‚È‚¢‚Ì‚ÅA’¼—ñ‰»A”ñ’¼—ñ‰»‚ÍŽÀsŽž‚ÉŽ¸”s‚µ‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍA<code>Externalizable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚é‚ªAˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB
+Externalizable ƒIƒuƒWƒFƒNƒg‚ª’¼—ñ‰»•œŒ³‚³‚ê‚é‚Æ‚«‚ÍAÅ‰‚Éˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ðŒÄ‚Ño‚·‚±‚Æ‚É‚æ‚Á‚Ä\’z‚³‚ê‚é•K—v‚ª‚ ‚è‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚É‚Íˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ª‚È‚¢‚Ì‚ÅA’¼—ñ‰»‚Æ’¼—ñ‰»•œŒ³‚ÍŽÀsŽž‚ÉŽ¸”s‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR">
-    <ShortDescription>ƒNƒ‰ƒX‚Í Serializable ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚é‚ªA‚»‚ÌƒX[ƒp[ƒNƒ‰ƒX‚ªˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’è‹`‚µ‚Ä‚¢‚È‚¢</ShortDescription>
-    <LongDescription>{0} ‚ÍASerializable ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·‚ªA‚»‚ÌƒX[ƒp[ƒNƒ‰ƒX‚ÍƒAƒNƒZƒX‰Â”\‚Èˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Í Serializable ‚Å‚ ‚é‚ªA‚»‚ÌƒX[ƒp[ƒNƒ‰ƒX‚Íˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’è‹`‚µ‚Ä‚¢‚È‚¢</ShortDescription>
+    <LongDescription>{0} ‚ÍASerializable ‚Å‚ ‚é‚ªA‚»‚ÌƒX[ƒp[ƒNƒ‰ƒX‚ÍƒAƒNƒZƒX‰Â”\‚Èˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚Í <code>Serializable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·‚ªA‚»‚ÌƒX[ƒp[ƒNƒ‰ƒX‚Í <code>Serializable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚¹‚ñB
-‚»‚Ì‚æ‚¤‚ÈƒIƒuƒWƒFƒNƒg‚ª”ñ’¼—ñ‰»‚³‚ê‚é‚Æ‚«AƒX[ƒp[ƒNƒ‰ƒX‚ÌƒtƒB[ƒ‹ƒh‚ÍƒX[ƒp[ƒNƒ‰ƒX‚Ìˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ðŒÄ‚Ño‚·‚±‚Æ‚É‚æ‚Á‚Ä‰Šú‰»‚³‚ê‚é•K—v‚ª‚ ‚è‚Ü‚·B
-‚Æ‚±‚ë‚ªAƒX[ƒp[ƒNƒ‰ƒX‚É‚Íˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ª‚È‚¢‚Ì‚ÅA’¼—ñ‰»A”ñ’¼—ñ‰»‚ÍŽÀsŽž‚ÉŽ¸”s‚µ‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚Í <code>Serializable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚é‚ªA‚»‚ÌƒX[ƒp[ƒNƒ‰ƒX‚Í ‚»‚¤‚µ‚Ä‚¢‚Ü‚¹‚ñB
+‚»‚Ì‚æ‚¤‚ÈƒIƒuƒWƒFƒNƒg‚ª’¼—ñ‰»•œŒ³‚³‚ê‚é‚Æ‚«AƒX[ƒp[ƒNƒ‰ƒX‚ÌƒtƒB[ƒ‹ƒh‚ÍƒX[ƒp[ƒNƒ‰ƒX‚Ìˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ðŒÄ‚Ño‚·‚±‚Æ‚É‚æ‚Á‚Ä‰Šú‰»‚³‚ê‚é•K—v‚ª‚ ‚è‚Ü‚·B
+ƒX[ƒp[ƒNƒ‰ƒX‚É‚Íˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ª‚È‚¢‚Ì‚ÅA’¼—ñ‰»‚Æ’¼—ñ‰»•œŒ³‚ÍŽÀsŽž‚ÉŽ¸”s‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SE_NO_SERIALVERSIONID">
-    <ShortDescription>ƒNƒ‰ƒX‚Í Serializable ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚é‚ª serialVersionUID ‚ð’è‹`‚µ‚Ä‚¢‚È‚¢</ShortDescription>
-    <LongDescription>{0} ‚ÍASerializable ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·‚ª serialVersionUID ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Í Serializable ‚Å‚ ‚é‚ª serialVersionUID ‚ð’è‹`‚µ‚Ä‚¢‚È‚¢</ShortDescription>
+    <LongDescription>{0} ‚ÍASerializable ‚Å‚ ‚é‚ªAserialVersionUID ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚Í <code>Serializable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·‚ª <code>serialVersionUID</code> ƒtƒB[ƒ‹ƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB
+‚±‚ÌƒNƒ‰ƒX‚Í <code>Serializable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚é‚ªA<code>serialVersionUID</code> ƒtƒB[ƒ‹ƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB
 .class ƒIƒuƒWƒFƒNƒg‚Ö‚ÌŽQÆ‚ð’Ç‰Á‚·‚é‚Ì‚Æ“¯‚¶‚­‚ç‚¢ŠÈ’P‚È•ÏX‚ÅƒNƒ‰ƒX‚É‡¬ƒtƒB[ƒ‹ƒh‚ð’Ç‰Á‚µ‚Ü‚·B
-‚»‚ê‚ÍŽc”O‚È‚ª‚çAˆÃ–Ù‚Ì serialVersionUID ‚ð•Ï‚¦‚Ü‚· (‚½‚Æ‚¦‚ÎA<code>String.class</code> ‚Ö‚ÌŽQÆ‚ð’Ç‰Á‚·‚é‚ÆA<code>class$java$lang$String</code> ‚Æ‚¢‚¤ static ƒtƒB[ƒ‹ƒh‚ð¶¬‚µ‚Ü‚·)B
+‚»‚ê‚ÍAŽc”O‚È‚ª‚çˆÃ–Ù‚Ì serialVersionUID ‚ð•Ï‚¦‚Ü‚· (‚½‚Æ‚¦‚ÎA<code>String.class</code> ‚Ö‚ÌŽQÆ‚ð’Ç‰Á‚·‚é‚ÆA<code>class$java$lang$String</code> ‚Æ‚¢‚¤ static ƒtƒB[ƒ‹ƒh‚ð¶¬‚µ‚Ü‚·)B
 ‚Ü‚½AƒoƒCƒgƒR[ƒhƒRƒ“ƒpƒCƒ‰‚Ö‚ÌˆÙ‚È‚éƒ\[ƒXƒR[ƒh‚ÍAƒNƒ‰ƒXƒIƒuƒWƒFƒNƒg‚Ü‚½‚Í“à•”ƒNƒ‰ƒX‚ÉŽQÆ‚Ì‚½‚ß‚É¶¬‚³‚ê‚é‡¬•Ï”‚Ì‚½‚ß‚ÉAˆÙ‚È‚é–½–¼‹K‘¥‚ðŽg—p‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 ƒo[ƒWƒ‡ƒ“‚ð‰¡’f‚·‚é Serializable ‚Ì‘ŠŒÝ‰^—p«‚ð•ÛØ‚·‚é‚½‚ß‚ÉA–¾Ž¦“I‚ÉAserialVersionUID ‚ð’Ç‰Á‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
@@ -4468,13 +4466,14 @@ transient ‚Ü‚½‚Í static ‚©‚Ç‚¤‚©‚É‚ÍŠÖŒW‚È‚­AƒIƒuƒWƒFƒNƒg‚Ì‚·‚×‚Ä‚ÌƒtƒB[ƒ‹ƒh‚Ì
   </BugPattern>
 
   <BugPattern type="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE">
-    <ShortDescription>Comparator ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚é‚ª Serializable ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚È‚¢</ShortDescription>
-    <LongDescription>{0} ‚ÍAComparator ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·‚ª Serializable ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>Comparator ‚Í Serializable ‚ðŽÀ‘•‚µ‚Ä‚¢‚È‚¢</ShortDescription>
+    <LongDescription>{0} ‚ÍAComparator ‚ðŽÀ‘•‚µ‚Ä‚¢‚é‚ªASerializable ‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚Í <code>Comparator</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚é‚Ì‚ÅA<code>Serializable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚àŽÀ‘•‚·‚×‚«‚©ŒŸ“¢‚·‚×‚«‚Å‚·B
-ƒRƒ“ƒpƒŒ[ƒ^‚ª <code>TreeMap</code> ‚Ì‚æ‚¤‚È‡˜•t‚«ƒRƒŒƒNƒVƒ‡ƒ“‚ð\’z‚·‚é‚½‚ß‚ÉŽg‚í‚ê‚é‚È‚çƒRƒ“ƒpƒŒ[ƒ^‚ª’¼—ñ‰»‰Â”\‚Èê‡‚¾‚¯A<code>TreeMap</code> ‚ð’¼—ñ‰»‚Å‚«‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚Í <code>Comparator</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·B
+<code>Serializable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚àŽÀ‘•‚·‚é‚×‚«‚©‚Ç‚¤‚©ŒŸ“¢‚·‚é‚×‚«‚Å‚·B
+ƒRƒ“ƒpƒŒ[ƒ^‚ª <code>TreeMap</code> ‚Ì‚æ‚¤‚È‡˜•t‚«ƒRƒŒƒNƒVƒ‡ƒ“‚ð\’z‚·‚é‚½‚ß‚ÉŽg‚í‚ê‚é‚È‚çAƒRƒ“ƒpƒŒ[ƒ^‚ª’¼—ñ‰»‰Â”\‚Èê‡‚¾‚¯A<code>TreeMap</code> ‚Í’¼—ñ‰»‰Â”\‚Å‚·B
 ‘å•”•ª‚ÌƒRƒ“ƒpƒŒ[ƒ^‚ª‚Ù‚Æ‚ñ‚Çó‘Ô‚ðŽ‚½‚È‚¢‚Æ‚µ‚Ä‚àA’¼—ñ‰»‰Â”\‚É‚·‚é‚±‚Æ‚ÍŠÈ’P‚Å—Ç‚¢–h‰q“I‚ÈƒvƒƒOƒ‰ƒ~ƒ“ƒO‚Å‚·B
 </p>
 ]]>
@@ -4483,7 +4482,7 @@ transient ‚Ü‚½‚Í static ‚©‚Ç‚¤‚©‚É‚ÍŠÖŒW‚È‚­AƒIƒuƒWƒFƒNƒg‚Ì‚·‚×‚Ä‚ÌƒtƒB[ƒ‹ƒh‚Ì
 
 
   <BugPattern type="SF_SWITCH_FALLTHROUGH">
-    <ShortDescription>1‚Â‚Ì case ‚ªŽŸ‚Ì case ‚Ö‚Æ’Ê‚è”²‚¯‚é switch •¶</ShortDescription>
+    <ShortDescription>1‚Â‚Ì case ‚ªŽŸ‚Ì case ‚Ö‚Æ’Ê‚è”²‚¯‚é switch •¶‚ð”­Œ©‚µ‚½</ShortDescription>
     <LongDescription>1‚Â‚Ì case ‚ªŽŸ‚Ì case ‚Ö‚Æ’Ê‚è”²‚¯‚é switch •¶‚ð”­Œ©‚µ‚Ü‚µ‚½B{1}</LongDescription>
     <Details>
 <![CDATA[
@@ -4495,7 +4494,7 @@ transient ‚Ü‚½‚Í static ‚©‚Ç‚¤‚©‚É‚ÍŠÖŒW‚È‚­AƒIƒuƒWƒFƒNƒg‚Ì‚·‚×‚Ä‚ÌƒtƒB[ƒ‹ƒh‚Ì
     </Details>
   </BugPattern>
   <BugPattern type="SF_SWITCH_NO_DEFAULT">
-    <ShortDescription>switch •¶‚É default ‚ª‚È‚¢</ShortDescription>
+    <ShortDescription>default ‚ª‚È‚¢ switch •¶‚ð”­Œ©‚µ‚½</ShortDescription>
     <LongDescription>default ‚ª‚È‚¢ switch •¶‚ð”­Œ©‚µ‚Ü‚µ‚½B{1}</LongDescription>
     <Details>
 <![CDATA[
@@ -4507,26 +4506,26 @@ transient ‚Ü‚½‚Í static ‚©‚Ç‚¤‚©‚É‚ÍŠÖŒW‚È‚­AƒIƒuƒWƒFƒNƒg‚Ì‚·‚×‚Ä‚ÌƒtƒB[ƒ‹ƒh‚Ì
     </Details>
   </BugPattern>
   <BugPattern type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH">
-    <ShortDescription>switch •¶‚ÌƒtƒH[ƒ‹ƒXƒ‹[‚Ì‚½‚ß‚É‘ã“ü‚ª–³Œø‚É‚È‚Á‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>’¼‘O‚Ì case ‚©‚ç‚Ì’l {2} ‚ª switch •¶‚ÌƒtƒH[ƒ‹ƒXƒ‹[‚Ì‚½‚ß‚É‚±‚±‚Åã‘‚«‚³‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>switch •¶‚ÌƒtƒH[ƒ‹ƒXƒ‹[‚Ì‚½‚ß‚ÉŠi”[‚ª–³Œø‚É‚È‚Á‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>‘O‚Ì case ‚©‚ç‚Ì’l {2.givenClass} ‚ª switch •¶‚ÌƒtƒH[ƒ‹ƒXƒ‹[‚Ì‚½‚ß‚É‚±‚±‚Åã‘‚«‚³‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-’¼‘O‚Ì case‚Å‘ã“ü‚³‚ê‚½’l‚ª switch •¶‚ÌƒtƒH[ƒ‹ƒXƒ‹[‚Ì‚½‚ß‚É‚±‚±‚Åã‘‚«‚³‚ê‚Ä‚¢‚Ü‚·B
-‚¨‚»‚ç‚­A’¼‘O‚Ì case ‚ÌI‚í‚è‚É break ‚Ü‚½‚Í return ‚ð’u‚­‚Ì‚ð–Y‚ê‚½‚æ‚¤‚Å‚·B
+‘O‚Ì case ‚ÅŠi”[‚³‚ê‚½’l‚ª switch •¶‚ÌƒtƒH[ƒ‹ƒXƒ‹[‚Ì‚½‚ß‚É‚±‚±‚Åã‘‚«‚³‚ê‚Ä‚¢‚Ü‚·B
+‘O‚Ì case ‚ÌI‚í‚è‚É break ‚Ü‚½‚Í return ‚ð’u‚­‚Ì‚ð–Y‚ê‚½‰Â”\«‚ª‚ ‚è‚Ü‚·B 
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW">
-    <ShortDescription>ƒXƒ[‚·‚é switch •¶‚ÌƒtƒH[ƒ‹ƒXƒ‹[‚Ì‚½‚ß‚É‘ã“ü‚ª–³Œø‚É‚È‚Á‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>’¼‘O‚Ì case ‚©‚ç‚Ì’l {2} ‚ªƒXƒ[‚·‚é switch •¶‚ÌƒtƒH[ƒ‹ƒXƒ‹[‚Ì‚½‚ß‚É‚±‚±‚ÅŽ¸‚í‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>ƒXƒ[‚·‚é switch •¶‚ÌƒtƒH[ƒ‹ƒXƒ‹[‚Ì‚½‚ß‚ÉŠi”[‚ª–³Œø‚É‚È‚Á‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>‘O‚Ì case ‚©‚ç‚Ì’l {2.givenClass} ‚ªƒXƒ[‚·‚é switch •¶‚ÌƒtƒH[ƒ‹ƒXƒ‹[‚Ì‚½‚ß‚É‚±‚±‚ÅŽ¸‚í‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-’¼‘O‚Ì case ‚Å‘ã“ü‚³‚ê‚½’l‚ª—áŠO‚ªƒXƒ[‚³‚ê‚éêŠ‚Å switch •¶‚ÌƒtƒH[ƒ‹ƒXƒ‹[‚Ì‚½‚ß‚É‚±‚±‚ÅŽ¸‚í‚ê‚Ä‚¢‚Ü‚·B
-‚¨‚»‚ç‚­A’¼‘O‚Ì case ‚ÌI‚í‚è‚É break ‚Ü‚½‚Í return ‚ð’u‚­‚Ì‚ð–Y‚ê‚½‚æ‚¤‚Å‚·B
+‘O‚Ì case ‚ÅŠi”[‚³‚ê‚½’l‚ª—áŠO‚ªƒXƒ[‚³‚ê‚éêŠ‚Å switch •¶‚ÌƒtƒH[ƒ‹ƒXƒ‹[‚Ì‚½‚ß‚É‚±‚±‚ÅŽ¸‚í‚ê‚Ä‚¢‚Ü‚·B
+‘O‚Ì case ‚ÌI‚í‚è‚É break ‚Ü‚½‚Í return ‚ð’u‚­‚Ì‚ð–Y‚ê‚½‰Â”\«‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -4534,7 +4533,7 @@ transient ‚Ü‚½‚Í static ‚©‚Ç‚¤‚©‚É‚ÍŠÖŒW‚È‚­AƒIƒuƒWƒFƒNƒg‚Ì‚·‚×‚Ä‚ÌƒtƒB[ƒ‹ƒh‚Ì
 
   <BugPattern type="WS_WRITEOBJECT_SYNC">
     <ShortDescription>writeObject ƒƒ\ƒbƒh‚Í“¯Šú‰»‚µ‚Ä‚¢‚é‚ªA‚»‚Ì‘¼‚Ìƒƒ\ƒbƒh‚Í“¯Šú‰»‚µ‚Ä‚¢‚È‚¢ƒNƒ‰ƒX</ShortDescription>
-    <LongDescription>{0} ‚Ì writeObject ƒƒ\ƒbƒh‚Í“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·‚ªA‚»‚Ì‘¼‚Ìƒƒ\ƒbƒh‚Í“¯Šú‰»‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
+    <LongDescription>{0} ‚Ì writeObject ƒƒ\ƒbƒh‚Í“¯Šú‰»‚µ‚Ä‚¢‚é‚ªA‚»‚Ì‘¼‚Ìƒƒ\ƒbƒh‚Í“¯Šú‰»‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4566,7 +4565,7 @@ transient ‚Ü‚½‚Í static ‚©‚Ç‚¤‚©‚É‚ÍŠÖŒW‚È‚­AƒIƒuƒWƒFƒNƒg‚Ì‚·‚×‚Ä‚ÌƒtƒB[ƒ‹ƒh‚Ì
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍAstatic ‚Å‚Í‚È‚¢ <code>serialVersionUID</code> ƒtƒB[ƒ‹ƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍAstatic ‚Å‚È‚¢ <code>serialVersionUID</code> ƒtƒB[ƒ‹ƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
 ’¼—ñ‰»‚ð–Ú“I‚Æ‚µ‚Äƒo[ƒWƒ‡ƒ“ UID ‚ðŽw’è‚·‚é‚±‚Æ‚ðˆÓ}‚µ‚Ä‚¢‚é‚È‚çƒtƒB[ƒ‹ƒh‚Í static ‚Æ‚·‚×‚«‚Å‚·B
 </p>
 ]]>
@@ -4579,7 +4578,7 @@ transient ‚Ü‚½‚Í static ‚©‚Ç‚¤‚©‚É‚ÍŠÖŒW‚È‚­AƒIƒuƒWƒFƒNƒg‚Ì‚·‚×‚Ä‚ÌƒtƒB[ƒ‹ƒh‚Ì
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍAfinal ‚Å‚Í‚È‚¢ <code>serialVersionUID</code> ƒtƒB[ƒ‹ƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍAfinal ‚Å‚È‚¢ <code>serialVersionUID</code> ƒtƒB[ƒ‹ƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
 ’¼—ñ‰»‚ð–Ú“I‚Æ‚µ‚Äƒo[ƒWƒ‡ƒ“ UID ‚ðŽw’è‚·‚é‚±‚Æ‚ðˆÓ}‚µ‚Ä‚¢‚é‚È‚çƒtƒB[ƒ‹ƒh‚Í final ‚Æ‚·‚×‚«‚Å‚·B
 </p>
 ]]>
@@ -4593,7 +4592,7 @@ transient ‚Ü‚½‚Í static ‚©‚Ç‚¤‚©‚É‚ÍŠÖŒW‚È‚­AƒIƒuƒWƒFƒNƒg‚Ì‚·‚×‚Ä‚ÌƒtƒB[ƒ‹ƒh‚Ì
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍAlong ‚Å‚Í‚È‚¢ <code>serialVersionUID</code> ƒtƒB[ƒ‹ƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍAlong ‚Å‚È‚¢ <code>serialVersionUID</code> ƒtƒB[ƒ‹ƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
 ’¼—ñ‰»‚ð–Ú“I‚Æ‚µ‚Äƒo[ƒWƒ‡ƒ“ UID ‚ðŽw’è‚·‚é‚±‚Æ‚ðˆÓ}‚µ‚Ä‚¢‚é‚È‚çƒtƒB[ƒ‹ƒh‚Í long ‚Æ‚·‚×‚«‚Å‚·B
 </p>
 ]]>
@@ -4606,7 +4605,7 @@ transient ‚Ü‚½‚Í static ‚©‚Ç‚¤‚©‚É‚ÍŠÖŒW‚È‚­AƒIƒuƒWƒFƒNƒg‚Ì‚·‚×‚Ä‚ÌƒtƒB[ƒ‹ƒh‚Ì
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì’¼—ñ‰»‰Â”\ƒNƒ‰ƒX‚ÍAtransient ‚Å‚à‚È‚¢”ñƒvƒŠƒ~ƒeƒBƒuŒ^‚ÌƒCƒ“ƒXƒ^ƒ“ƒXƒtƒB[ƒ‹ƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
+‚±‚Ì’¼—ñ‰»‰Â”\ƒNƒ‰ƒX‚ÍAtransientASerializableA<code>java.lang.Object</code> ‚Å‚à‚È‚¢”ñƒvƒŠƒ~ƒeƒBƒuŒ^‚ÌƒCƒ“ƒXƒ^ƒ“ƒXƒtƒB[ƒ‹ƒh‚ð’è‹`‚µ‚ÄA
 <code>Externalizable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚Ü‚½‚Í <code>readObject</code> ƒƒ\ƒbƒh‚Æ <code>writeObject</code> ƒƒ\ƒbƒh‚ðŽÀ‘•‚·‚é‚æ‚¤‚ÉŒ©‚¦‚Ü‚¹‚ñB
 ‚Ü‚½A<code>Externalizable</code> ƒCƒ“ƒ^ƒtƒF[ƒX‚àŽÀ‘•‚µ‚Ä‚¢‚È‚¢‚µA<code>readObject</code> ƒƒ\ƒbƒh‚à <code>writeObject</code> ƒƒ\ƒbƒh‚à’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB
 ”ñ’¼—ñ‰»‰Â”\ƒIƒuƒWƒFƒNƒg‚ª‚±‚ÌƒtƒB[ƒ‹ƒh‚ÉŠi”[‚³‚ê‚é‚È‚ç‚±‚ÌƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚Í³‚µ‚­’¼—ñ‰»•œŒ³‚³‚ê‚Ü‚¹‚ñB
@@ -4621,27 +4620,28 @@ transient ‚Ü‚½‚Í static ‚©‚Ç‚¤‚©‚É‚ÍŠÖŒW‚È‚­AƒIƒuƒWƒFƒNƒg‚Ì‚·‚×‚Ä‚ÌƒtƒB[ƒ‹ƒh‚Ì
     <Details>
 <![CDATA[
 <p>
-”ñ’¼—ñ‰»‰Â”\ƒNƒ‰ƒX‚Ì“à•”ƒNƒ‰ƒX‚ª’¼—ñ‰»‰Â”\‚É‚È‚Á‚Ä‚¢‚Ü‚·B
+‚±‚Ì’¼—ñ‰»‰Â”\ƒNƒ‰ƒX‚ÍA”ñ’¼—ñ‰»‰Â”\ƒNƒ‰ƒX‚Ì“à•”ƒNƒ‰ƒX‚Å‚·B
 “à•”ƒNƒ‰ƒX‚ð’¼—ñ‰»‚µ‚æ‚¤‚Æ‚·‚é‚ÆŠÖ˜A‚·‚éŠO•”ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðŒ‹‚Ñ‚Â‚¯‚æ‚¤‚Æ‚·‚é‚Ì‚ÅAŽÀsŽžƒGƒ‰[‚ÌŒ´ˆö‚É‚È‚è‚Ü‚·B
 </p>
 <p>
-‰Â”\‚È‚ç“à•”ƒNƒ‰ƒX‚ð static ‚É‚µ‚Ä–â‘è‚ð‰ðŒˆ‚·‚×‚«‚Å‚·B
-ŠO•”ƒNƒ‰ƒX‚ð’¼—ñ‰»‰Â”\‚Æ‚·‚é‚±‚Æ‚Å‚à–â‘è‚ð‰ðŒˆ‚Å‚«‚Ü‚·‚ª“à•”ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð’¼—ñ‰»‚·‚é‚±‚Æ‚ªŠO•”ƒNƒ‰ƒX‚àí‚É’¼—ñ‰»‚³‚ê‚é‚±‚Æ‚ðˆÓ–¡‚µ‚Ü‚·B
+‚Å‚«‚ê‚ÎA“à•”ƒNƒ‰ƒX‚ð static ‚É‚µ‚Ä–â‘è‚ð‰ðŒˆ‚·‚é‚×‚«‚Å‚·B
+ŠO•”ƒNƒ‰ƒX‚ð’¼—ñ‰»‰Â”\‚É‚·‚é‚±‚Æ‚Å“®ì‚·‚é‚©‚à‚µ‚ê‚È‚¢‚ªA“à•”ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð’¼—ñ‰»‚·‚é‚±‚Æ‚ÍŠO•”ƒNƒ‰ƒX‚àí‚É’¼—ñ‰»‚·‚é‚±‚Æ‚ðˆÓ–¡‚µ‚Ü‚·B
 –{“–‚É–]‚Þ‚±‚Æ‚Å‚·‚©B
 </p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="SE_INNER_CLASS">
     <ShortDescription>’¼—ñ‰»‰Â”\‚È“à•”ƒNƒ‰ƒX</ShortDescription>
     <LongDescription>{0} ‚Í’¼—ñ‰»‰Â”\‚È“à•”ƒNƒ‰ƒX‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-’¼—ñ‰»‰Â”\‚È“à•”ƒNƒ‰ƒX‚Å‚·B
-’¼—ñ‰»‚µ‚æ‚¤‚Æ‚·‚é‚ÆŠÖ˜A‚µ‚½ŠO•”ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚à’¼—ñ‰»‚µ‚Ü‚·B
-ŠO•”ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Í’¼—ñ‰»‰Â”\‚È‚Ì‚ÅŽ¸”s‚µ‚È‚¢‚ªˆÓ}‚µ‚½‚±‚Æ‚æ‚è‚à‚Á‚Æ‚¸‚Á‚Æ‘½‚­‚Ìƒf[ƒ^‚ð’¼—ñ‰»‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-‰Â”\‚È‚ç“à•”ƒNƒ‰ƒX‚ð static ‚É‚µ‚Ä–â‘è‚ð‰ðŒˆ‚·‚×‚«‚Å‚·B
+‚±‚Ì’¼—ñ‰»‰Â”\‚ÈƒNƒ‰ƒX‚ÍA“à•”ƒNƒ‰ƒX‚Å‚·B
+“à•”ƒNƒ‰ƒX‚ð’¼—ñ‰»‚µ‚æ‚¤‚Æ‚·‚é‚ÆŠÖ˜A‚µ‚½ŠO•”ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚à’¼—ñ‰»‚µ‚Ü‚·B
+ŠO•”ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Í’¼—ñ‰»‰Â”\‚È‚Ì‚ÅŽ¸”s‚µ‚Ü‚¹‚ñ‚ªAˆÓ}‚µ‚½‚±‚Æ‚æ‚è‚à‚Á‚Æ‚¸‚Á‚Æ‘½‚­‚Ìƒf[ƒ^‚ð’¼—ñ‰»‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚Å‚«‚ê‚ÎA“à•”ƒNƒ‰ƒX‚ð static ‚É‚µ‚Ä–â‘è‚ð‰ðŒˆ‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -4653,7 +4653,7 @@ transient ‚Ü‚½‚Í static ‚©‚Ç‚¤‚©‚É‚ÍŠÖŒW‚È‚­AƒIƒuƒWƒFƒNƒg‚Ì‚·‚×‚Ä‚ÌƒtƒB[ƒ‹ƒh‚Ì
     <Details>
 <![CDATA[
 <p>
-”ñ’¼—ñ‰»‰Â”\‚È’l‚ª’¼—ñ‰»‰Â”\ƒNƒ‰ƒX‚Ì ”ñ transient ƒtƒB[ƒ‹ƒh‚ÉŠi”[‚³‚ê‚Ä‚¢‚Ü‚·B
+”ñ’¼—ñ‰»‰Â”\‚È’l‚ð’¼—ñ‰»‰Â”\ƒNƒ‰ƒX‚Ì ”ñ transient ƒtƒB[ƒ‹ƒh‚ÉŠi”[‚µ‚Ä‚¢‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -4678,7 +4678,7 @@ transient ‚Ü‚½‚Í static ‚©‚Ç‚¤‚©‚É‚ÍŠÖŒW‚È‚­AƒIƒuƒWƒFƒNƒg‚Ì‚·‚×‚Ä‚ÌƒtƒB[ƒ‹ƒh‚Ì
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚É‚ÍAƒRƒ“ƒpƒCƒ‹Žž‚ÉÃ“I‚È’l‚É‰Šú‰»‚³‚ê‚é final ƒtƒB[ƒ‹ƒh‚ª‚ ‚è‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚É‚ÍAƒRƒ“ƒpƒCƒ‹Žž‚ÉÃ“I‚È’l‚É‰Šú‰»‚³‚ê‚éƒCƒ“ƒXƒ^ƒ“ƒX final ƒtƒB[ƒ‹ƒh‚ª‚ ‚è‚Ü‚·B
 static ƒtƒB[ƒ‹ƒh‚É‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
@@ -4738,13 +4738,13 @@ static ƒtƒB[ƒ‹ƒh‚É‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
   </BugPattern>
 
   <BugPattern type="QF_QUESTIONABLE_FOR_LOOP">
-    <ShortDescription>•¡ŽG‚ÅI–­‚ÅŠÔˆá‚Á‚½ƒCƒ“ƒNƒŠƒƒ“ƒg‚Ì for ƒ‹[ƒv</ShortDescription>
-    <LongDescription>•¡ŽG‚ÅI–­‚ÅŠÔˆá‚Á‚½ƒCƒ“ƒNƒŠƒƒ“ƒg‚Ì for ƒ‹[ƒv‚Å‚·B{1} </LongDescription>
+    <ShortDescription>•¡ŽG‚©I–­‚©ŠÔˆá‚Á‚½ƒCƒ“ƒNƒŠƒƒ“ƒg‚Ì for ƒ‹[ƒv</ShortDescription>
+    <LongDescription>•¡ŽG‚©I–­‚©ŠÔˆá‚Á‚½ƒCƒ“ƒNƒŠƒƒ“ƒg‚Ì for ƒ‹[ƒv‚Å‚·B{1} </LongDescription>
     <Details>
 <![CDATA[
 <p>
 –{“–‚É‚±‚Ì for ƒ‹[ƒv‚ª³‚µ‚¢•Ï”‚ðƒCƒ“ƒNƒŠƒƒ“ƒg‚µ‚Ä‚¢‚Ü‚·‚©H
-•Ê‚Ì•Ï”‚ª for ƒ‹[ƒv‚É‚æ‚Á‚Ä‰Šú‰»‚³‚ê‚ÄAƒ`ƒFƒbƒN‚³‚ê‚Ä‚¢‚é‚æ‚¤‚ÉŒ©‚¦‚Ü‚·B
+•Ê‚Ì•Ï”‚ª for ƒ‹[ƒv‚É‚æ‚Á‚Ä‰Šú‰»‚³‚ê‚ÄAƒ`ƒFƒbƒN‚³‚ê‚Ä‚¢‚é‚æ‚¤‚ÉŒ©‚¦‚Ü‚·B 
 </p>
 ]]>
     </Details>
@@ -4752,12 +4752,12 @@ static ƒtƒB[ƒ‹ƒh‚É‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 
   <BugPattern type="UWF_NULL_FIELD">
     <ShortDescription>null ‚ÉÝ’è‚³‚ê‚é‚¾‚¯‚ÌƒtƒB[ƒ‹ƒh</ShortDescription>
-    <LongDescription>null ‚ÉÝ’è‚³‚ê‚é‚¾‚¯‚ÌƒtƒB[ƒ‹ƒh: {1}</LongDescription>
+    <LongDescription>null ‚ÉÝ’è‚³‚ê‚é‚¾‚¯‚ÌƒtƒB[ƒ‹ƒh:{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒtƒB[ƒ‹ƒh‚Ö‚Ì‚·‚×‚Ä‚Ì‘‚«ž‚Ý‚Í’è”’l‚Ì null ‚Å‚ ‚èA‚±‚ÌƒtƒB[ƒ‹ƒh‚©‚ç‚Ì‚·‚×‚Ä‚Ì“Ç‚Ýo‚µ‚Í null ‚É‚È‚è‚Ü‚·B
-ŠÔˆá‚Á‚Ä‚¢‚È‚¢‚©ƒ`ƒFƒbƒN‚µ‚Ä‚­‚¾‚³‚¢BŽg‚í‚È‚¢‚È‚çœ‹Ž‚µ‚Ä‚­‚¾‚³‚¢B
+‚±‚ÌƒtƒB[ƒ‹ƒh‚É’è”’l null ‚ð‘‚«ž‚Ý‚Ü‚·B‚µ‚½‚ª‚Á‚ÄAƒtƒB[ƒ‹ƒh‚Ì“Ç‚Ýo‚µ‚Í null ‚ð•Ô‚µ‚Ü‚·B
+Œë‚è‚ðƒ`ƒFƒbƒN‚µ‚Ä‚­‚¾‚³‚¢BŽg‚í‚È‚¢‚È‚çœ‹Ž‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -4769,8 +4769,8 @@ static ƒtƒB[ƒ‹ƒh‚É‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì public ‚Ü‚½‚Í protected ƒtƒB[ƒ‹ƒh‚Í‘‚«ž‚Ü‚ê‚Ä‚¢‚Ü‚¹‚ñB‚±‚ÌƒtƒB[ƒ‹ƒh‚©‚ç‚Ì‚·‚×‚Ä‚Ì“Ç‚Ýo‚µ‚ÍƒfƒtƒHƒ‹ƒg’l‚ð•Ô‚µ‚Ü‚·B
-ŠÔˆá‚Á‚Ä‚¢‚È‚¢‚©ƒ`ƒFƒbƒN‚µ‚Ä‚­‚¾‚³‚¢ (ƒtƒB[ƒ‹ƒh‚Í‰Šú‰»‚·‚×‚«‚Å‚µ‚½‚©H)BŽg‚í‚È‚¢‚È‚çœ‹Ž‚µ‚Ä‚­‚¾‚³‚¢B
+‚±‚Ì public ‚Ü‚½‚Í protected ƒtƒB[ƒ‹ƒh‚Í‘‚«ž‚Ü‚ê‚Ä‚¢‚Ü‚¹‚ñB‚±‚ÌƒtƒB[ƒ‹ƒh‚©‚ç‚Ì“Ç‚Ýo‚µ‚ÍƒfƒtƒHƒ‹ƒg’l‚ð•Ô‚µ‚Ü‚·B
+Œë‚è‚ðƒ`ƒFƒbƒN‚µ‚Ä‚­‚¾‚³‚¢ (ƒtƒB[ƒ‹ƒh‚Í‰Šú‰»‚·‚é‚×‚«‚Å‚µ‚½‚©H)BŽg‚í‚È‚¢‚È‚çœ‹Ž‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -4782,8 +4782,8 @@ static ƒtƒB[ƒ‹ƒh‚É‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒtƒB[ƒ‹ƒh‚ÍŒˆ‚µ‚Ä‘‚«ž‚Ü‚ê‚Ü‚¹‚ñB‚±‚ÌƒtƒB[ƒ‹ƒh‚©‚ç‚Ì‚·‚×‚Ä‚Ì“Ç‚Ýo‚µ‚ÍƒfƒtƒHƒ‹ƒg’l‚ð•Ô‚µ‚Ü‚·B
-ŠÔˆá‚Á‚Ä‚¢‚È‚¢‚©ƒ`ƒFƒbƒN‚µ‚Ä‚­‚¾‚³‚¢ (ƒtƒB[ƒ‹ƒh‚Í‰Šú‰»‚·‚×‚«‚Å‚µ‚½‚©H)BŽg‚í‚È‚¢‚È‚çœ‹Ž‚µ‚Ä‚­‚¾‚³‚¢B
+‚±‚ÌƒtƒB[ƒ‹ƒh‚ÍŒˆ‚µ‚Ä‘‚«ž‚Ü‚ê‚Ü‚¹‚ñB‚±‚ÌƒtƒB[ƒ‹ƒh‚©‚ç‚Ì“Ç‚Ýo‚µ‚ÍƒfƒtƒHƒ‹ƒg’l‚ð•Ô‚µ‚Ü‚·B
+Œë‚è‚ðƒ`ƒFƒbƒN‚µ‚Ä‚­‚¾‚³‚¢ (ƒtƒB[ƒ‹ƒh‚Í‰Šú‰»‚·‚é‚×‚«‚Å‚µ‚½‚©H)BŽg‚í‚È‚¢‚È‚çœ‹Ž‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -4796,7 +4796,7 @@ static ƒtƒB[ƒ‹ƒh‚É‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 <![CDATA[
 <p>
 ‚±‚ÌƒCƒ“ƒXƒ^ƒ“ƒXƒƒ\ƒbƒh‚ÍAstatic ƒtƒB[ƒ‹ƒh‚É‘‚«ž‚Ý‚ð‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ê‚Í•¡”‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ª‘€ì‚³‚ê‚Ä‚¢‚é‚È‚ç³‚µ‚­‚³‚¹‚é‚Ì‚Í“ï‚µ‚¢‚Å‚·Bˆê”Ê“I‚ÉŠÔˆá‚Á‚½ƒvƒ‰ƒNƒeƒBƒX‚Å‚·B
+•¡”‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ª‘€ì‚³‚ê‚Ä‚¢‚é‚È‚çA³‚µ‚­‚³‚¹‚é‚Ì‚Í“ï‚µ‚¢‚Å‚·B’ÊíAŠÔˆá‚Á‚½ƒvƒ‰ƒNƒeƒBƒX‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -4808,8 +4808,8 @@ static ƒtƒB[ƒ‹ƒh‚É‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
     <Details>
 <![CDATA[
 <p>
-ŽQÆ‚³‚ê‚Ä‚¢‚é•Ï”‚ÍA‘O‚É null ‚È‚Ì‚©ƒ`ƒFƒbƒN‚µ‚Ä‚¢‚é‚½‚ßA‚±‚ÌŽž“_‚Å null ‚Æ‚í‚©‚Á‚Ä‚¢‚Ü‚·B
-‚±‚ê‚Í—LŒø‚©‚à‚µ‚ê‚È‚¢‚µAŠÔˆá‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñ (‚½‚Ô‚ñAˆÙ‚È‚é•Ï”‚ðŽQÆ‚·‚é‚Â‚à‚è‚©A‚Ü‚½‚ÍA‘O‚Ìƒ`ƒFƒbƒN‚Å•Ï”‚Ì’l‚ª null ˆÈŠO‚È‚Ì‚©Šm‚©‚ß‚é‚×‚«‚Å‚µ‚½)B
+‚±‚±‚ÅŽQÆ‚³‚ê‚Ä‚¢‚é•Ï”‚ÍAˆÈ‘O‚É null ‚È‚Ì‚©ƒ`ƒFƒbƒN‚µ‚Ä‚¢‚é‚½‚ß  null ‚Å‚ ‚é‚±‚Æ‚ª‚í‚©‚Á‚Ä‚¢‚Ü‚·B
+‚±‚ê‚Í—LŒø‚©‚à‚µ‚ê‚È‚¢‚µAŠÔˆá‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñ (‚½‚Ô‚ñAˆÙ‚È‚é•Ï”‚ðŽQÆ‚·‚é‚±‚Æ‚ðˆÓ}‚µ‚Ä‚¢‚½‚©A‚ ‚é‚¢‚ÍAˆÈ‘O‚Ì null ƒ`ƒFƒbƒN‚ÅA null ‚Å‚È‚¢‚Ì‚©Šm‚©‚ß‚é‚×‚«‚Å‚µ‚½)B
 </p>
 ]]>
     </Details>
@@ -4822,7 +4822,7 @@ static ƒtƒB[ƒ‹ƒh‚É‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 <![CDATA[
 <p>
 <code>readLine</code> ƒƒ\ƒbƒh‚ÌŒ‹‰Ê‚ª null ‚È‚Ì‚©Šm‚©‚ß‚È‚¢‚Å’l‚ð—˜—p‚µ‚Ä‚¢‚Ü‚·B
-<code>readLine</code> ƒƒ\ƒbƒh‚ÍA‚»‚êˆÈã“Ç‚Ýo‚·ƒeƒLƒXƒgs‚ª‚È‚¯‚ê‚Î null ‚ð•Ô‚·‚Ì‚ÅANullPointerException ‚ª”­¶‚µ‚Ü‚·B
+<code>readLine</code> ƒƒ\ƒbƒh‚ÍA‚»‚êˆÈã“Ç‚Ýo‚·ƒeƒLƒXƒgs‚ª‚È‚¯‚ê‚Î null ‚ð•Ô‚·‚Ì‚ÅA<code>NullPointerException</code> ‚ª”­¶‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -4835,7 +4835,7 @@ static ƒtƒB[ƒ‹ƒh‚É‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 <![CDATA[
 <p>
 <code>readLine</code> ƒƒ\ƒbƒh‚ÌŒ‹‰Ê‚ð‚·‚®‚É—˜—p‚µ‚Ä‚¢‚Ü‚·B
-<code>readLine</code> ƒƒ\ƒbƒh‚ÍA‚»‚êˆÈã“Ç‚Ýo‚·ƒeƒLƒXƒgs‚ª‚È‚¯‚ê‚Î null ‚ð•Ô‚·‚Ì‚ÅANullPointerException ‚ª”­¶‚µ‚Ü‚·B
+<code>readLine</code> ƒƒ\ƒbƒh‚ÍA‚»‚êˆÈã“Ç‚Ýo‚·ƒeƒLƒXƒgs‚ª‚È‚¯‚ê‚Î null ‚ð•Ô‚·‚Ì‚ÅA<code>NullPointerException</code> ‚ª”­¶‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -4847,8 +4847,8 @@ static ƒtƒB[ƒ‹ƒh‚É‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒvƒƒOƒ‰ƒ€‚ÍAnull ˆÈŠO‚Ì’l‚ð‘‚«ž‚Þ‚Æ‚ÍŽv‚í‚ê‚È‚¢ƒtƒB[ƒ‹ƒh‚Ì’l‚ð—˜—p‚µ‚Ä‚¢‚Ü‚·B
-‚±‚Ì’l‚ð—˜—p‚·‚é‚Æ NullPointerException ‚ª”­¶‚µ‚Ü‚·B
+ƒvƒƒOƒ‰ƒ€‚ÍAŒˆ‚µ‚Ä null ‚Å‚È‚¢’l‚ð‘‚«ž‚Þ‚Æ‚ÍŽv‚í‚ê‚È‚¢ƒtƒB[ƒ‹ƒh‚Ì’l‚ð—˜—p‚µ‚Ä‚¢‚Ü‚·B
+‚±‚Ì’l‚ð—˜—p‚·‚é‚Æ <code>NullPointerException</code> ‚ª”­¶‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -4860,8 +4860,8 @@ static ƒtƒB[ƒ‹ƒh‚É‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
     <Details>
 <![CDATA[
 <p>
-ƒvƒƒOƒ‰ƒ€‚ÍAŒˆ‚µ‚Ä null ’l‚Å‚Í‚È‚¢’l‚ð‘‚«ž‚Þ‚ÆŽv‚í‚ê‚È‚¢ public ‚Ü‚½‚Í protected ƒtƒB[ƒ‹ƒh‚Ì null ’l‚ð—˜—p‚µ‚Ä‚¢‚Ü‚·B
-ƒtƒB[ƒ‹ƒh‚ª‰ðÍ‚É‚æ‚Á‚ÄŒ©‚ç‚ê‚È‚¢‹@\‚ð’Ê‚µ‚Ä‰Šú‰»‚³‚ê‚È‚¢ŒÀ‚èA‚±‚Ì’l‚ð—˜—p‚·‚é‚±‚Æ‚Í NullPointerException ‚ð¶¬‚µ‚Ü‚·B
+ƒvƒƒOƒ‰ƒ€‚ÍAŒˆ‚µ‚Ä null ’l‚Å‚È‚¢’l‚ð‘‚«ž‚Þ‚ÆŽv‚í‚ê‚È‚¢ public ‚Ü‚½‚Í protected ƒtƒB[ƒ‹ƒh‚Ì null ’l‚ð—˜—p‚µ‚Ä‚¢‚Ü‚·B
+ƒtƒB[ƒ‹ƒh‚ª‰ðÍ‚É‚æ‚Á‚ÄŒ©‚ç‚ê‚È‚¢‹@\‚ð’Ê‚µ‚Ä‰Šú‰»‚³‚ê‚È‚¢ŒÀ‚èA‚±‚Ì’l‚ð—˜—p‚·‚é‚Æ <code>NullPointerException</code> ‚ª”­¶‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -4869,14 +4869,14 @@ static ƒtƒB[ƒ‹ƒh‚É‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 
   <BugPattern type="SIC_THREADLOCAL_DEADLY_EMBRACE">
     <ShortDescription>”ñ static “à•”ƒNƒ‰ƒX‚ÆƒXƒŒƒbƒhƒ[ƒJƒ‹‚ÌƒfƒbƒhƒƒbƒN</ShortDescription>
-    <LongDescription>{0} ‚ÍA{1} ‚Æ‚ÌƒfƒbƒhƒƒbƒN‚ð”ð‚¯‚é‚½‚ß‚É static ‚É‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B</LongDescription>
+    <LongDescription>{0} ‚ÍA{1} ‚Æ‚ÌƒfƒbƒhƒƒbƒN‚ð‰ñ”ð‚·‚é‚½‚ß‚É static ‚É‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚Í“à•”ƒNƒ‰ƒX‚Å‚·‚ª‚¨‚»‚ç‚­ static “à•”ƒNƒ‰ƒX‚É‚·‚×‚«‚Å‚·B
-ŽÀÛ‚ÍA“à•”ƒNƒ‰ƒX‚ÆŠO•”ƒNƒ‰ƒX‚ÌƒXƒŒƒbƒhƒ[ƒJƒ‹‚ÌŠÔ‚ÉƒfƒbƒhƒƒbƒN‚Ì[‚ÈŠëŒ¯«‚ª‚ ‚è‚Ü‚·B
-“à•”ƒNƒ‰ƒX‚ª static ‚Å‚Í‚È‚¢‚Ì‚ÅAŠO•”ƒNƒ‰ƒX‚ÌŽQÆ‚ð•ÛŽ‚µ‚Ü‚·B
-ƒXƒŒƒbƒhƒ[ƒJƒ‹‚É“à•”ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ÌŽQÆ‚ª‚ ‚é‚È‚ç“à•”‚ÆŠO•”‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Ì—¼•û‚ª“ž’B‰Â”\‚É‚È‚èAƒKƒx[ƒW‚³‚ê‚Ü‚¹‚ñB
+‚±‚ÌƒNƒ‰ƒX‚Í“à•”ƒNƒ‰ƒX‚Å‚·‚ªA‚¨‚»‚ç‚­ static “à•”ƒNƒ‰ƒX‚É‚·‚×‚«‚Å‚·B
+ŽÀÛ‚É‚ÍA“à•”ƒNƒ‰ƒX‚ÆŠO•”ƒNƒ‰ƒX‚ÌƒXƒŒƒbƒhƒ[ƒJƒ‹‚Æ‚ÌŠÔ‚ÉƒfƒbƒhƒƒbƒN‚Ì[‚ÈŠëŒ¯«‚ª‚ ‚è‚Ü‚·B
+“à•”ƒNƒ‰ƒX‚ª static ‚Å‚È‚¢‚Ì‚ÅAŠO•”ƒNƒ‰ƒX‚Ö‚ÌŽQÆ‚ð•ÛŽ‚µ‚Ü‚·B
+ƒXƒŒƒbƒhƒ[ƒJƒ‹‚É“à•”ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ÌŽQÆ‚ª‚ ‚é‚È‚çA“à•”‚ÆŠO•”‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Ì—¼•û‚ª“ž’B‰Â”\‚É‚È‚èAƒKƒx[ƒW‚³‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -4888,52 +4888,38 @@ static ƒtƒB[ƒ‹ƒh‚É‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚Í“à•”ƒNƒ‰ƒX‚È‚Ì‚Éì¬‚µ‚½ƒIƒuƒWƒFƒNƒg‚Ö‚Ì–„‚ßž‚Ü‚ê‚½ŽQÆ‚ðŽg—p‚µ‚Ä‚Ü‚¹‚ñB
-‚±‚ÌŽQÆ‚ªƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð‚æ‚è‘å‚«‚­‚µ‚ÄA•K—vˆÈã‚É’·‚¢ŠÔì¬ƒIƒuƒWƒFƒNƒg‚Ö‚ÌŽQÆ‚ð‘¶‘±‚µ‚Ä‚¨‚­‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-‰Â”\‚È‚çƒNƒ‰ƒX‚Í static ‚É‚·‚×‚«‚Å‚·B
-</p>
-]]>
-    </Details>
-  </BugPattern>
-
-  <BugPattern type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" deprecated="true">  <!-- deprecated in favor of UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR -->
-    <ShortDescription>Read of field not initialized in constructor</ShortDescription>
-    <LongDescription>Read of field not initialized in constructor at {1}</LongDescription>
-    <Details>
-<![CDATA[
-  <p> This is a read of a field is never initialized within any constructor, and is therefore could be null after
-the object is initialized. This might be a coding error, or else the class containing the field
-is written in a way that depends upon methods being called in some specific order (a little bit dodgy,
-but not necessarily wrong).
+‚±‚ÌƒNƒ‰ƒX‚Í“à•”ƒNƒ‰ƒX‚Å‚ ‚é‚ªA‚»‚ê‚ðì¬‚µ‚½ƒIƒuƒWƒFƒNƒg‚Ö‚Ì–„‚ßž‚Ü‚ê‚½ŽQÆ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚¹‚ñB
+‚±‚ÌŽQÆ‚Í‚æ‚è‘å‚«‚ÈƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚µ‚ÄA•K—vˆÈã‚É’·‚¢ŠÔì¬ƒIƒuƒWƒFƒNƒg‚Ö‚ÌŽQÆ‚ð‘¶‘±‚µ‚Ä‚¨‚­‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚Å‚«‚ê‚ÎAƒNƒ‰ƒX‚Í static ‚É‚·‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
-    <ShortDescription>ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Å‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ƒtƒB[ƒ‹ƒh</ShortDescription>
-    <LongDescription>{1.givenClass} ‚ÍAƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Å‰Šú‰»‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Å‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ƒtƒB[ƒ‹ƒh‚ð null ƒ`ƒFƒbƒN‚È‚µ‚Å null ’l‚ð—˜—p‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>{1.givenClass} ‚ÍAƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Å‰Šú‰»‚³‚ê‚Ü‚¹‚ñB{2} ‚Å null ’l‚ð—˜—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒtƒB[ƒ‹ƒh‚ÍA‚Ç‚ñ‚ÈƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì’†‚Å‚àŒˆ‚µ‚Ä‰Šú‰»‚³‚ê‚Ü‚¹‚ñB
-‚µ‚½‚ª‚Á‚ÄAƒIƒuƒWƒFƒNƒg‚ª\’z‚³‚ê‚½ŒãAnull ‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-ƒtƒB[ƒ‹ƒh‚ª‰Šú‰»‚³‚ê‚é‘O‚É—˜—p‚³‚ê‚é‚Æ NullPointerException ‚ª”­¶‚·‚é‚Ì‚ÅAŒë‚è‚©‹^‚í‚µ‚¢ÝŒv‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚±‚ÌƒtƒB[ƒ‹ƒh‚ÍA‚Ç‚ñ‚ÈƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì’†‚Å‚àŒˆ‚µ‚Ä‰Šú‰»‚³‚ê‚Ü‚¹‚ñB‚µ‚½‚ª‚Á‚ÄAƒIƒuƒWƒFƒNƒg‚ª\’z‚³‚ê‚½ŒãAnull ‚Å‚ ‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
+‚Ç‚±‚©‚Ù‚©‚ÅA’l‚ªƒ[ƒh‚³‚ê‚ÄAnull ƒ`ƒFƒbƒN‚È‚µ‚Å null ’l‚ª—˜—p‚³‚ê‚Ü‚·B
+ƒtƒB[ƒ‹ƒh‚ª‰Šú‰»‚³‚ê‚é‘O‚É—˜—p‚³‚ê‚é‚Æ <code>NullPointerException</code> ‚ª”­¶‚·‚é‚Ì‚ÅAŒë‚è‚©‹^‚í‚µ‚¢ÝŒv‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SIC_INNER_SHOULD_BE_STATIC_ANON">
-    <ShortDescription>–¼‘O•t‚« static “à•”ƒNƒ‰ƒX‚ÉƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚·‚é‚±‚Æ‚ª‚Å‚«‚é‚©‚à‚µ‚ê‚È‚¢</ShortDescription>
-    <LongDescription>ƒNƒ‰ƒX {0} ‚ÍA–¼‘O•t‚« static “à•”ƒNƒ‰ƒX‚ÉƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚·‚é‚±‚Æ‚ª‚Å‚«‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>–¼‘O•t‚« static “à•”ƒNƒ‰ƒX‚ÉƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚Å‚«‚é‚©‚à‚µ‚ê‚È‚¢</ShortDescription>
+    <LongDescription>ƒNƒ‰ƒX {0} ‚ÍA–¼‘O•t‚« static “à•”ƒNƒ‰ƒX‚ÉƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚Å‚«‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚Í“à•”ƒNƒ‰ƒX‚Å‚·‚ªAì¬‚µ‚½ƒIƒuƒWƒFƒNƒg‚Ö‚Ì–„‚ßž‚Ü‚ê‚½ŽQÆ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚¹‚ñB
-‚±‚ÌŽQÆ‚Í‚æ‚è‘å‚«‚ÈƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚µ‚ÄA•K—vˆÈã‚É’·‚­ì¬ƒIƒuƒWƒFƒNƒg‚Ö‚ÌŽQÆ‚ð¶‚©‚µ‚Ä‚¨‚­‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-‰Â”\‚È‚çƒNƒ‰ƒX‚Í static ‚É‚·‚×‚«‚Å‚·B
-–³–¼“à•”ƒNƒ‰ƒX‚Í static ‚É‚Å‚«‚È‚¢‚Ì‚ÅA–¼‘O•t‚«“à•”ƒNƒ‰ƒX‚É‚Å‚«‚é‚æ‚¤‚ÉƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚Í“à•”ƒNƒ‰ƒX‚Å‚ ‚é‚ªA‚»‚ê‚ðì¬‚µ‚½ƒIƒuƒWƒFƒNƒg‚Ö‚Ì–„‚ßž‚Ü‚ê‚½ŽQÆ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚¹‚ñB
+‚±‚ÌŽQÆ‚Í‚æ‚è‘å‚«‚ÈƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚µ‚ÄA•K—vˆÈã‚É’·‚­ì¬ƒIƒuƒWƒFƒNƒg‚Ö‚ÌŽQÆ‚ð‘¶‘±‚µ‚Ä‚¨‚­‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚Å‚«‚ê‚ÎAƒNƒ‰ƒX‚Í static “à•”ƒNƒ‰ƒX‚É‚·‚×‚«‚Å‚·B
+–³–¼“à•”ƒNƒ‰ƒX‚Í static ‚É‚Å‚«‚È‚¢‚Ì‚ÅA–¼‘O•t‚«“à•”ƒNƒ‰ƒX‚ÉƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -4945,10 +4931,10 @@ but not necessarily wrong).
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚Í“à•”ƒNƒ‰ƒX‚Å‚·‚ªAì¬‚µ‚½ƒIƒuƒWƒFƒNƒg‚Ö‚Ì–„‚ßž‚Ü‚ê‚½ŽQÆ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚¹‚ñB
-‚±‚ÌŽQÆ‚Í‚æ‚è‘å‚«‚ÈƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚µ‚ÄA•K—vˆÈã‚É’·‚­ì¬ƒIƒuƒWƒFƒNƒg‚Ö‚ÌŽQÆ‚ð¶‚©‚µ‚Ä‚¨‚­‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-‰Â”\‚È‚çƒNƒ‰ƒX‚Í static ‚É‚·‚×‚«‚Å‚·B
-ŠO•”ƒIƒuƒWƒFƒNƒg‚Ö‚ÌŽQÆ‚ÍA“à•”ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð\’z‚·‚éŠÔ•K—v‚È‚Ì‚ÅA“à•”ƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÉŠO•”ƒIƒuƒWƒFƒNƒg‚ÌŽQÆ‚ð“n‚·‚æ‚¤‚ÉƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚Í“à•”ƒNƒ‰ƒX‚Å‚ ‚é‚ªA‚»‚ê‚ðì¬‚µ‚½ƒIƒuƒWƒFƒNƒg‚Ö‚Ì–„‚ßž‚Ü‚ê‚½ŽQÆ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚¹‚ñB
+‚±‚ÌŽQÆ‚Í‚æ‚è‘å‚«‚ÈƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚µ‚ÄA•K—vˆÈã‚É’·‚­ì¬ƒIƒuƒWƒFƒNƒg‚Ö‚ÌŽQÆ‚ð‘¶‘±‚µ‚Ä‚¨‚­‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚Å‚«‚ê‚ÎAƒNƒ‰ƒX‚Í static “à•”ƒNƒ‰ƒX‚É‚·‚×‚«‚Å‚·B
+ŠO•”ƒIƒuƒWƒFƒNƒg‚Ö‚ÌŽQÆ‚ª“à•”ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð\’z‚·‚éŠÔ•K—v‚È‚Ì‚ÅA“à•”ƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÉŠO•”ƒCƒ“ƒXƒ^ƒ“ƒX‚Ö‚ÌŽQÆ‚ð“n‚·‚æ‚¤‚ÉƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -4961,7 +4947,7 @@ but not necessarily wrong).
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍAƒ‹[ƒv‚Ì’†‚É‚È‚¢ <code>java.lang.Object.wait()</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-ƒ‚ƒjƒ^‚ª•¡”‚ÌðŒ‚Ì‚½‚ß‚ÉŽg‚í‚ê‚é‚È‚çŒÄ‚Ño‚µŒ³‚ª‘Ò‹@‚·‚é‚Â‚à‚è‚¾‚Á‚½ðŒ‚ÍŽÀÛ‚É‚Í”­¶‚µ‚Ä‚¢‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+ƒ‚ƒjƒ^‚ª•¡”‚ÌðŒ‚Ì‚½‚ß‚ÉŽg‚í‚ê‚é‚È‚çAŒÄ‚Ño‚µŒ³‚ª‘Ò‹@‚·‚é‚Â‚à‚è‚¾‚Á‚½ðŒ‚ÍŽÀÛ‚É‚Í”­¶‚µ‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -4974,7 +4960,7 @@ but not necessarily wrong).
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍAƒ‹[ƒv‚Ì’†‚É‚È‚¢ <code>java.util.concurrent.await()</code> (‚ ‚é‚¢‚Í‚»‚ÌƒoƒŠƒG[ƒVƒ‡ƒ“) ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-ƒIƒuƒWƒFƒNƒg‚ª•¡”‚ÌðŒ‚Ì‚½‚ß‚ÉŽg‚í‚ê‚é‚È‚çŒÄ‚Ño‚µŒ³‚ª‘Ò‹@‚·‚é‚Â‚à‚è‚¾‚Á‚½ðŒ‚ÍŽÀÛ‚É‚Í”­¶‚µ‚Ä‚¢‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+ƒIƒuƒWƒFƒNƒg‚ª•¡”‚ÌðŒ‚Ì‚½‚ß‚ÉŽg‚í‚ê‚é‚È‚çAŒÄ‚Ño‚µŒ³‚ª‘Ò‹@‚·‚é‚Â‚à‚è‚¾‚Á‚½ðŒ‚ÍŽÀÛ‚É‚Í”­¶‚µ‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -4987,7 +4973,7 @@ but not necessarily wrong).
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍA<code>notifyAll</code> ƒƒ\ƒbƒh‚Å‚Í‚È‚­ <code>notify</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-Java ‚Ìƒ‚ƒjƒ^‚ÍA•¡”‚ÌðŒ‚Ì‚½‚ß‚É‚µ‚Î‚µ‚ÎŽg‚í‚ê‚Ü‚·B
+ƒ‚ƒjƒ^‚ª•¡”‚ÌðŒ‚Ì‚½‚ß‚É‘½‚­‚Ìê‡Žg‚í‚ê‚Ü‚·B
 <code>notify</code> ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚Í1‚Â‚ÌƒXƒŒƒbƒh‚ð‹N‚±‚·‚¾‚¯‚ÅA‹N‚±‚³‚ê‚½ƒXƒŒƒbƒh‚ÍŒÄ‚Ño‚µŒ³‚ª–ž‚½‚µ‚½‘Ò‹@ðŒ‚Ì1‚Â‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚È‚¢‚±‚Æ‚ðˆÓ–¡‚µ‚Ä‚¢‚Ü‚·B
 </p>
 ]]>
@@ -5015,8 +5001,8 @@ Java ‚Ìƒ‚ƒjƒ^‚ÍA•¡”‚ÌðŒ‚Ì‚½‚ß‚É‚µ‚Î‚µ‚ÎŽg‚í‚ê‚Ü‚·B
 <![CDATA[
 <p>
 <code>readLine</code> ƒƒ\ƒbƒh‚Ì–ß‚è’l‚ð null ‚Å‚È‚¢‚Ì‚©Šm‚©‚ß‚½Œã‚ÅŽÌ‚Ä‚Ä‚¢‚Ü‚·B
-‚Ù‚Æ‚ñ‚Ç‚·‚×‚Ä‚Ìó‹µ‰º‚ÅAŒ‹‰Ê‚ª null ‚Å‚Í‚È‚¢‚È‚ç–ß‚è’l‚ðŽg—p‚µ‚½‚¢‚Å‚µ‚å‚¤B
-Ä‚Ñ <code>readLine</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚Æˆá‚¤s‚ª“¾‚ç‚ê‚Ü‚·B
+‚Ù‚Æ‚ñ‚Ç‚·‚×‚Ä‚Ìó‹µ‚ÅAŒ‹‰Ê‚ª null ‚Å‚È‚¢‚È‚ç–ß‚è’l‚ðŽg—p‚µ‚½‚¢‚Å‚µ‚å‚¤B
+Ä‚Ñ <code>readLine</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚ÆˆÙ‚È‚és‚ª“¾‚ç‚ê‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -5024,12 +5010,12 @@ Java ‚Ìƒ‚ƒjƒ^‚ÍA•¡”‚ÌðŒ‚Ì‚½‚ß‚É‚µ‚Î‚µ‚ÎŽg‚í‚ê‚Ü‚·B
 
   <BugPattern type="RV_RETURN_VALUE_IGNORED">
     <ShortDescription>–ß‚è’l‚ð–³Ž‹‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>{2} ‚Ì–ß‚è’l‚ð–³Ž‹‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <LongDescription>{2.givenClass} ‚Ì–ß‚è’l‚ð–³Ž‹‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚Ì–ß‚è’l‚Íƒ`ƒFƒbƒN‚·‚×‚«‚Å‚·B
-‚±‚ÌŒx‚Ì‹¤’Ê‚ÌŒ´ˆö‚ÍƒIƒuƒWƒFƒNƒg‚ªXV‚³‚ê‚é‚ÆŽv‚Á‚Ä•s•ÏƒIƒuƒWƒFƒNƒg‚Åƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚±‚Æ‚Å‚·B<br>
+‚±‚Ìƒƒ\ƒbƒh‚Ì–ß‚è’l‚Íƒ`ƒFƒbƒN‚·‚é‚×‚«‚Å‚·B
+‚±‚ÌŒx‚Ì‹¤’Ê‚ÌŒ´ˆö‚ÍAƒIƒuƒWƒFƒNƒg‚ªXV‚³‚ê‚é‚ÆŽv‚Á‚Ä•s•ÏƒIƒuƒWƒFƒNƒg‚Ìƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚±‚Æ‚Å‚·B<br>
 ‚½‚Æ‚¦‚ÎAˆÈ‰º‚Ì‚æ‚¤‚ÈƒR[ƒh‚Å‚·B
 </p>
 <blockquote><pre>
@@ -5039,7 +5025,7 @@ dateString.trim();
 <p>
 ƒvƒƒOƒ‰ƒ}‚Í <code>trim</code> ƒƒ\ƒbƒh‚ª <code>dateString</code> ‚É‚æ‚Á‚ÄŽQÆ‚³‚ê‚é String ƒIƒuƒWƒFƒNƒg‚ªXV‚³‚ê‚é‚ÆŽv‚Á‚Ä‚¢‚Ü‚·B
 ‚µ‚©‚µAString ƒIƒuƒWƒFƒNƒg‚Í•s•Ï‚ÅA<code>trim</code> ƒƒ\ƒbƒh‚ªV‚µ‚¢ String ƒIƒuƒWƒFƒNƒg‚ð•Ô‚·‚Ì‚É–³Ž‹‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ÌƒR[ƒh‚ÍAˆÈ‰º‚Ì‚æ‚¤‚ÉC³‚·‚×‚«‚Å‚·B
+‚±‚ÌƒR[ƒh‚ÍAˆÈ‰º‚Ì‚æ‚¤‚ÉC³‚·‚é‚×‚«‚Å‚·B
 </p>
 <blockquote><pre>
 String dateString = getHeaderField(name);
@@ -5056,8 +5042,8 @@ dateString = dateString.trim();
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚Íƒ`ƒFƒbƒN‚³‚ê‚Ä‚¢‚È‚¢’l‚ð•Ô‚µ‚Ä‚¢‚Ü‚·B
-–ß‚è’l‚ÍˆÙí‚©—\‘zŠO‚ÌŽÀsŒ‹‰Ê‚ðŽ¦‚·‰Â”\«‚ª‚ ‚é‚Ì‚Åƒ`ƒFƒbƒN‚·‚×‚«‚Å‚·B
-‚½‚Æ‚¦‚ÎA<code>File.delete()</code> ‚Íƒtƒ@ƒCƒ‹‚ð‚¤‚Ü‚­íœ‚Å‚«‚È‚©‚Á‚½‚È‚ç—áŠO‚ðƒXƒ[‚·‚é‚Ì‚Å‚Í‚È‚­ false ‚ð•Ô‚µ‚Ü‚·B
+–ß‚è’l‚ÍˆÙí‚©—\‘zŠO‚ÌŽÀsŒ‹‰Ê‚ðŽ¦‚·‰Â”\«‚ª‚ ‚é‚Ì‚Åƒ`ƒFƒbƒN‚·‚é‚×‚«‚Å‚·B
+‚½‚Æ‚¦‚ÎA<code>File.delete()</code> ‚Íƒtƒ@ƒCƒ‹‚ð‚¤‚Ü‚­íœ‚Å‚«‚È‚©‚Á‚½‚È‚çA—áŠO‚ðƒXƒ[‚·‚é‚Ì‚Å‚Í‚È‚­ false ‚ð•Ô‚µ‚Ü‚·B
 Œ‹‰Ê‚ðƒ`ƒFƒbƒN‚µ‚È‚¢‚È‚ç—áŠO“I–ß‚è’l‚ð•Ô‚·ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚Å—\‘zŠO‚ÌU‚é•‘‚¢‚Ì‡}‚É‹C‚Ã‚«‚Ü‚¹‚ñB
 </p>
 ]]>
@@ -5070,7 +5056,7 @@ dateString = dateString.trim();
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚Å‚ÍA—áŠO (‚Ü‚½‚ÍƒGƒ‰[) ƒIƒuƒWƒFƒNƒg‚ðì¬‚µ‚Ä‚¢‚Ü‚·‚ª‰½‚à‚µ‚Ä‚¢‚Ü‚¹‚ñB<br>
+‚±‚ÌƒR[ƒh‚Å‚ÍA—áŠO (‚Ü‚½‚ÍƒGƒ‰[) ƒIƒuƒWƒFƒNƒg‚ðì¬‚µ‚Ä‚¢‚é‚ªA‰½‚à‚µ‚Ä‚¢‚Ü‚¹‚ñB<br>
 ‚½‚Æ‚¦‚ÎAˆÈ‰º‚Ì‚æ‚¤‚ÈƒR[ƒh‚Å‚·B
 </p>
 <blockquote><pre>
@@ -5079,7 +5065,7 @@ if (x &lt; 0) {
 }
 </pre></blockquote>
 <p>
-‚¨‚»‚ç‚­ƒvƒƒOƒ‰ƒ}‚ÌˆÓ}‚ÍAì¬‚µ‚½—áŠO‚ðƒXƒ[‚·‚é‚±‚Æ‚Å‚µ‚½B
+‚¨‚»‚ç‚­ƒvƒƒOƒ‰ƒ}‚ÌˆÓ}‚ÍAì¬‚µ‚½—áŠO‚ðƒXƒ[‚·‚é‚±‚Æ‚Å‚µ‚½B 
 </p>
 <blockquote><pre>
 if (x &lt; 0) {
@@ -5096,8 +5082,8 @@ if (x &lt; 0) {
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚Ì–ß‚è’l‚Íƒ`ƒFƒbƒN‚·‚×‚«‚Å‚·B
-‚±‚ÌŒx‚Ì‹¤’Ê‚ÌŒ´ˆö‚ÍƒIƒuƒWƒFƒNƒg‚ªXV‚³‚ê‚é‚ÆŽv‚Á‚Ä•s•ÏƒIƒuƒWƒFƒNƒg‚Åƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚±‚Æ‚Å‚·B<br>
+‚±‚Ìƒƒ\ƒbƒh‚Ì–ß‚è’l‚Íƒ`ƒFƒbƒN‚·‚é‚×‚«‚Å‚·B
+‚±‚ÌŒx‚Ì‹¤’Ê‚ÌŒ´ˆö‚ÍAƒIƒuƒWƒFƒNƒg‚ªXV‚³‚ê‚é‚ÆŽv‚Á‚Ä•s•ÏƒIƒuƒWƒFƒNƒg‚Ìƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚±‚Æ‚Å‚·B<br>
 ‚½‚Æ‚¦‚ÎAˆÈ‰º‚Ì‚æ‚¤‚ÈƒR[ƒh‚Å‚·B
 </p>
 <blockquote><pre>
@@ -5106,8 +5092,8 @@ dateString.trim();
 </pre></blockquote>
 <p>
 ƒvƒƒOƒ‰ƒ}‚Í <code>trim</code> ƒƒ\ƒbƒh‚ª <code>dateString</code> ‚É‚æ‚Á‚ÄŽQÆ‚³‚ê‚é String ƒIƒuƒWƒFƒNƒg‚ªXV‚³‚ê‚é‚ÆŽv‚Á‚Ä‚¢‚Ü‚·B
-‚µ‚©‚µAString ƒIƒuƒWƒFƒNƒg‚Í•s•Ï‚È‚Ì‚Å <code>trim</code> ƒƒ\ƒbƒh‚ÍV‚µ‚¢ String ƒIƒuƒWƒFƒNƒg‚ð•Ô‚·‚Ì‚É–³Ž‹‚³‚ê‚Ä‚¢‚Ü‚·B
-‚±‚ÌƒR[ƒh‚ÍAˆÈ‰º‚Ì‚æ‚¤‚ÉC³‚·‚×‚«‚Å‚·B
+‚µ‚©‚µAString ƒIƒuƒWƒFƒNƒg‚Í•s•Ï‚ÅA<code>trim</code> ƒƒ\ƒbƒh‚ªV‚µ‚¢ String ƒIƒuƒWƒFƒNƒg‚ð•Ô‚·‚Ì‚É–³Ž‹‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍAˆÈ‰º‚Ì‚æ‚¤‚ÉC³‚·‚é‚×‚«‚Å‚·B
 </p>
 <blockquote><pre>
 String dateString = getHeaderField(name);
@@ -5132,25 +5118,25 @@ dateString = dateString.trim();
 
   <BugPattern type="NP_CLOSING_NULL">
     <ShortDescription>í‚É null ’l‚ÌƒIƒuƒWƒFƒNƒg‚Å close ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>{2.givenClass} ‚Í null ‚È‚Ì‚ÅƒNƒ[ƒY‚Å‚«‚Ü‚¹‚ñB{1}</LongDescription>
+    <LongDescription>í‚É null ‚È‚Ì‚ÅA{2.givenClass} ‚ðƒNƒ[ƒY‚Å‚«‚Ü‚¹‚ñB{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 <code>close</code> ƒƒ\ƒbƒh‚ÍAí‚É null ’l‚ÌƒIƒuƒWƒFƒNƒg‚ÅŒÄ‚Ño‚³‚ê‚Ä‚¢‚Ü‚·B
 ‚±‚Ì•¶‚ªŽÀs‚³‚ê‚é‚È‚ç <code>NullPointerException</code> ‚ª”­¶‚µ‚Ü‚·B
-‚±‚±‚ÅƒNƒ[ƒY‚·‚×‚«‰½‚©‚ðŒˆ‚µ‚ÄƒNƒ[ƒY‚µ‚È‚¢‚Æ‚¢‚¤‘å‚«‚ÈŠëŒ¯«‚ª‚ ‚è‚Ü‚·B
+‚±‚±‚ÅƒNƒ[ƒY‚·‚é‚×‚«‰½‚©‚ðŒˆ‚µ‚ÄƒNƒ[ƒY‚µ‚È‚¢‚Æ‚¢‚¤‘å‚«‚ÈŠëŒ¯«‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NP_STORE_INTO_NONNULL_FIELD">
-    <ShortDescription>@NonNull ƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚½ƒtƒB[ƒ‹ƒh‚É null ‚ð‘ã“ü‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>{1} ‚Å @NonNull ƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚½ƒtƒB[ƒ‹ƒh {2.givenClass} ‚É null ‚ð‘ã“ü‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>@NonNull ƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚½ƒtƒB[ƒ‹ƒh‚É null ‚ðŠi”[‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>@NonNull ƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚½ƒtƒB[ƒ‹ƒh {2.givenClass} ‚É null ‚ðŠi”[‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
       <![CDATA[
 <p>
-@NonNull ƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚½ƒtƒB[ƒ‹ƒh‚ÉAnull ‚©‚à‚µ‚ê‚È‚¢’l‚ð‘ã“ü‚µ‚Ä‚¢‚Ü‚·B
+@NonNull ƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚½ƒtƒB[ƒ‹ƒh‚É null ‚©‚à‚µ‚ê‚È‚¢’l‚ðŠi”[‚µ‚Ä‚¢‚Ü‚·B 
 </p>
 ]]>
     </Details>
@@ -5162,12 +5148,12 @@ dateString = dateString.trim();
     <Details>
 <![CDATA[
 <p>
-‚±‚±‚Ì—áŠOŒo˜H‚Å null ’l‚ð—˜—p‚µ‚Ä‚¢‚Ü‚·B
+—áŠOŒo˜Hã‚Ì‚±‚±‚Å null ’l‚ð—˜—p‚µ‚Ä‚¢‚Ü‚·B
 ƒR[ƒh‚ªŽÀs‚³‚ê‚é‚Æ <code>NullPointerException</code> ‚ª”­¶‚µ‚Ü‚·B
-Œ»Ý‚Ì FindBugs ‚ÍŽÀs•s‰Â”\‚È—áŠOŒo˜H‚ðŽæ‚èœ‚©‚È‚¢‚Ì‚ÅAŒëŒŸo‚©‚à‚µ‚ê‚È‚¢‚±‚Æ‚É’ˆÓ‚µ‚Ä‚­‚¾‚³‚¢B
+Œ»Ý‚Ì FindBugs ‚ÍŽÀs•s‰Â”\‚È—áŠOŒo˜H‚ðŽæ‚èœ‚¢‚Ä‚¢‚È‚¢‚Ì‚ÅAŒëŒŸo‚©‚à‚µ‚ê‚È‚¢‚±‚Æ‚É’ˆÓ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 <p>
-‚Ü‚½AFindBugs ‚Í switch •¶‚Ì default ‚à—áŠOŒo˜H‚ÆŒ©‚È‚µ‚Ü‚·‚ª default ‚Í‚½‚¢‚Ä‚¢ŽÀs‚³‚ê‚È‚¢‚Ì‚Å’ˆÓ‚µ‚Ä‚­‚¾‚³‚¢B
+switch •¶‚Ì default ‚ª‘½‚­‚Ìê‡ŽÀs•s‰Â”\‚È‚Ì‚ÅAFindBugs ‚ª—áŠOŒo˜H‚Å‚ ‚é default ‚ðŒŸ“¢‚·‚é‚±‚Æ‚É’ˆÓ‚µ‚Ä‰º‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -5179,13 +5165,13 @@ dateString = dateString.trim();
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒpƒ‰ƒ[ƒ^‚ÍAnull ’l‚ð‹–—e‚µ‚È‚¢‚±‚Æ‚ð—v‹‚·‚é•û–@‚Åí‚ÉŽg‚í‚ê‚Ä‚¢‚Ü‚·‚ªA
-ƒpƒ‰ƒ[ƒ^‚É‚Í–¾Ž¦“I‚É null ’l‚ð‹–—e‚·‚éƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚Ä‚¢‚Ü‚·B
+‚±‚Ìƒpƒ‰ƒ[ƒ^‚ÍAnull ’l‚ð‹–—e‚µ‚È‚¢‚±‚Æ‚ð—v‹‚·‚é•û–@‚Åí‚ÉŽg‚í‚ê‚Ä‚¢‚Ü‚·‚ªAƒpƒ‰ƒ[ƒ^‚É‚Í–¾Ž¦“I‚É null ’l‚ð‹–—e‚·‚éƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚Ä‚¢‚Ü‚·B
 ƒpƒ‰ƒ[ƒ^‚©ƒAƒmƒe[ƒVƒ‡ƒ“‚Ì‚Ç‚¿‚ç‚©‚ÌŽg‚¢•û‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
+  
   <BugPattern type="NP_NULL_ON_SOME_PATH">
     <ShortDescription>null ’l‚ð—˜—p‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚é</ShortDescription>
     <LongDescription>{2.givenClass} ‚Ì null ’l‚ð—˜—p‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B{1}</LongDescription>
@@ -5193,7 +5179,7 @@ dateString = dateString.trim();
 <![CDATA[
 <p>
 ‚»‚±‚ÅA•ªŠò‚Ü‚½‚Í•¶‚ªŽÀs‚³‚ê‚é‚È‚ç null ’l‚ª—˜—p‚³‚ê‚Ä <code>NullPointerException</code> ‚ª”­¶‚µ‚Ü‚·B
-‚à‚¿‚ë‚ñA–â‘è‚Í•ªŠò‚Ü‚½‚Í•¶‚ªŽÀs•s‰Â”\‚Å <code>NullPointerException</code> ‚ªŒˆ‚µ‚Ä”­¶‚·‚é‰Â”\«‚ª‚È‚¢‚Æ‚¢‚¤‚±‚Æ‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚à‚¿‚ë‚ñA–â‘è‚Í•ªŠò‚Ü‚½‚Í•¶‚ªŽÀs•s‰Â”\‚ÅA<code>NullPointerException</code> ‚ªŒˆ‚µ‚Ä”­¶‚·‚é‰Â”\«‚ª‚È‚¢‚Æ‚¢‚¤‚±‚Æ‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 ‚»‚ê‚ðŒˆ‚ß‚é‚Ì‚Í FindBugs ‚Ì”\—Í‚ð’´‚¦‚Ä‚¢‚Ü‚·B
 </p>
 ]]>
@@ -5206,8 +5192,8 @@ dateString = dateString.trim();
     <Details>
 <![CDATA[
 <p>
-‚»‚±‚Å•ªŠò‚Ü‚½‚Í•¶‚ªŽÀs‚³‚ê‚é‚È‚ç null ’l‚ª—˜—p‚³‚ê‚Ä <code>NullPointerException</code> ‚ª”­¶‚µ‚Ü‚·B
-‚à‚¿‚ë‚ñA–â‘è‚Í•ªŠò‚Ü‚½‚Í•¶‚ªŽÀs•s‰Â”\‚Å <code>NullPointerException</code> ‚ªŒˆ‚µ‚Ä”­¶‚·‚é‰Â”\«‚ª‚È‚¢‚Æ‚¢‚¤‚±‚Æ‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚»‚±‚ÅA•ªŠò‚Ü‚½‚Í•¶‚ªŽÀs‚³‚ê‚é‚È‚ç null ’l‚ª—˜—p‚³‚ê‚Ä <code>NullPointerException</code> ‚ª”­¶‚µ‚Ü‚·B
+‚à‚¿‚ë‚ñA–â‘è‚Í•ªŠò‚Ü‚½‚Í•¶‚ªŽÀs•s‰Â”\‚ÅA<code>NullPointerException</code> ‚ªŒˆ‚µ‚Ä”­¶‚·‚é‰Â”\«‚ª‚È‚¢‚Æ‚¢‚¤‚±‚Æ‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 ‚»‚ê‚ðŒˆ‚ß‚é‚Ì‚Í FindBugs ‚Ì”\—Í‚ð’´‚¦‚Ä‚¢‚Ü‚·B
 ‚±‚Ì’l‚ª‚·‚Å‚É null ‚Å‚ ‚é‚±‚Æ‚ðŒŸ¸‚³‚ê‚½‚Æ‚¢‚¤Ž–ŽÀ‚©‚ç‚±‚ê‚ÍŠm‚©‚È‰Â”\«‚Å‚·B
 </p>
@@ -5221,12 +5207,12 @@ dateString = dateString.trim();
     <Details>
 <![CDATA[
 <p>
-‚¢‚­‚Â‚©‚Ì—áŠOŒo˜H‚Å null ’l‚ª—˜—p‚³‚ê‚Ä‚¢‚Ü‚·B
-ƒR[ƒh‚ªŽÀs‚³‚ê‚é‚Æ <code>NullPointerException</code> ‚ÌŒ´ˆö‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+—áŠOŒo˜Hã‚Ì‚±‚±‚Å null ’l‚ª—˜—p‚³‚ê‚Ä‚¢‚Ü‚·B
+ƒR[ƒh‚ªŽÀs‚³‚ê‚é‚Æ <code>NullPointerException</code> ‚ª”­¶‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 Œ»Ý‚Ì FindBugs ‚ÍŽÀs•s‰Â”\‚È—áŠOŒo˜H‚ðŽæ‚èœ‚©‚È‚¢‚Ì‚ÅAŒëŒŸo‚©‚à‚µ‚ê‚È‚¢‚±‚Æ‚É’ˆÓ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 <p>
-‚Ü‚½AFindBugs ‚Í switch •¶‚Ì default ‚à—áŠOŒo˜H‚ÆŒ©‚È‚µ‚Ü‚·‚ª default ‚Í‚½‚¢‚Ä‚¢ŽÀs‚³‚ê‚È‚¢‚Ì‚Å’ˆÓ‚µ‚Ä‚­‚¾‚³‚¢B
+switch •¶‚Ì default ‚ª‘½‚­‚Ìê‡ŽÀs•s‰Â”\‚È‚Ì‚ÅAFindBugs ‚ª—áŠOŒo˜H‚Å‚ ‚é default ‚ðŒŸ“¢‚·‚é‚±‚Æ‚É’ˆÓ‚µ‚Ä‰º‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -5236,69 +5222,69 @@ dateString = dateString.trim();
     <ShortDescription>null ‚É‚È‚Á‚Ä‚¢‚é‰Â”\«‚ª‚ ‚éƒƒ\ƒbƒh‚Ì–ß‚è’l‚ð—˜—p‚µ‚Ä‚¢‚é</ShortDescription>
     <LongDescription>null ‚É‚È‚Á‚Ä‚¢‚é‰Â”\«‚ª‚ ‚éƒƒ\ƒbƒh‚Ì–ß‚è’l‚ð—˜—p‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
-      <![CDATA[
+<![CDATA[
 <p>
-ƒƒ\ƒbƒh‚©‚ç‚Ì–ß‚è’l‚ð null ƒ`ƒFƒbƒN‚µ‚È‚¢‚Å—˜—p‚µ‚Ä‚¢‚Ü‚·Bƒƒ\ƒbƒh‚Ì–ß‚è’l‚Í null ‚È‚Ì‚©ƒ`ƒFƒbƒN‚·‚×‚«‚Å‚·B
-ƒR[ƒh‚ªŽÀs‚³‚ê‚é‚Æ <code>NullPointerException</code> ‚ÌŒ´ˆö‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+ƒƒ\ƒbƒh‚©‚ç‚Ì–ß‚è’l‚ð null ƒ`ƒFƒbƒN‚µ‚È‚¢‚Å—˜—p‚µ‚Ä‚¢‚Ü‚·Bƒƒ\ƒbƒh‚Ì–ß‚è’l‚Í null ‚È‚Ì‚©ƒ`ƒFƒbƒN‚·‚é‚×‚«‚Å‚·B
+ƒR[ƒh‚ªŽÀs‚³‚ê‚é‚Æ <code>NullPointerException</code> ‚ª”­¶‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
-      ]]>
+]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NP_NULL_PARAM_DEREF_NONVIRTUAL">
-    <ShortDescription>null ’l‚ð‹–—e‚µ‚È‚¢ƒpƒ‰ƒ[ƒ^‚É null ‚ð“n‚µ‚Ä‚¢‚é virtual ŒÄ‚Ño‚µƒ‚[ƒh‚Å‚Í‚È‚¢ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ</ShortDescription>
-    <LongDescription>virtual ŒÄ‚Ño‚µƒ‚[ƒh‚Å‚Í‚È‚¢ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚ÅA{2.givenClass} ‚Ì null ’l‚ð‹–—e‚µ‚È‚¢ƒpƒ‰ƒ[ƒ^ ‚É null ‚ð“n‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>”ñ‰¼‘zƒƒ\ƒbƒhŒÄ‚Ño‚µ‚Í”ñ null ƒpƒ‰ƒ[ƒ^‚É‘Î‚µ‚Ä null ‚ð“n‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>”ñ‰¼‘zƒƒ\ƒbƒhŒÄ‚Ño‚µ‚ÍA{2.givenClass} ‚Ì ”ñ null ƒpƒ‰ƒ[ƒ^‚É‘Î‚µ‚Ä null ‚ð“n‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
-      <![CDATA[
+<![CDATA[
 <p>
-‚¨‚»‚ç‚­ null ’l‚ª null ’l‚ð‹–—e‚µ‚È‚¢ƒƒ\ƒbƒhƒpƒ‰ƒ[ƒ^‚É“n‚³‚ê‚Ä‚¢‚Ü‚·B
-‚±‚Ìƒpƒ‰ƒ[ƒ^‚Í @Nonnull ‚Æ‚µ‚Ä–¾Ž¦“I‚ÉƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚Ä‚¢‚½‚©A‚Ü‚½‚ÍA‰ðÍ‚ªí‚É null ’l‚ð—˜—p‚·‚é‚ÆŽ¦‚µ‚Ä‚¢‚Ü‚µ‚½B
+‚¨‚»‚ç‚­ null ’l‚ªAnull ’l‚ð‹–—e‚µ‚È‚¢ƒƒ\ƒbƒhƒpƒ‰ƒ[ƒ^‚É“n‚³‚ê‚Ä‚¢‚Ü‚·B
+ƒpƒ‰ƒ[ƒ^‚ÍAí‚É”ñ null ‚Å‚ ‚é‚×‚«ƒpƒ‰ƒ[ƒ^‚Æ‚µ‚ÄƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚Ä‚¢‚½‚©A‚Ü‚½‚ÍA‰ðÍ‚ªí‚É null ’l‚ð—˜—p‚·‚é‚ÆŽ¦‚µ‚Ä‚¢‚Ü‚µ‚½B
 </p>
-      ]]>
+]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS">
-    <ShortDescription>null ’l‚ð‹–—e‚µ‚È‚¢ƒpƒ‰ƒ[ƒ^‚É null ‚ð“n‚µ‚Ä‚¢‚éƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ</ShortDescription>
-    <LongDescription>ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚Å A{2.givenClass} ‚Ì null ’l‚ð‹–—e‚µ‚È‚¢ƒpƒ‰ƒ[ƒ^‚É null ‚ð“n‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒhŒÄ‚Ño‚µ‚Í”ñ null ƒpƒ‰ƒ[ƒ^‚É‘Î‚µ‚Ä null ‚ð“n‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>{2.givenClass} ‚Ì ”ñ null ƒpƒ‰ƒ[ƒ^‚É‘Î‚µ‚Ä null ‚ð“n‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
       <![CDATA[
 <p>
-‚¨‚»‚ç‚­ null ’l‚ª null ’l‚ð‹–—e‚µ‚È‚¢ƒpƒ‰ƒ[ƒ^‚ð—v‹‚·‚é‚Æ‚í‚©‚Á‚Ä‚¢‚éƒƒ\ƒbƒh‚É“n‚³‚ê‚Ä‚¢‚Ü‚·B
-‚±‚Ìƒpƒ‰ƒ[ƒ^‚Í @Nonnull ‚Æ‚µ‚Ä–¾Ž¦“I‚ÉƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚Ä‚¢‚½‚©A‚Ü‚½‚ÍA‰ðÍ‚ªí‚É null ’l‚ð—˜—p‚·‚é‚ÆŽ¦‚µ‚Ä‚¢‚Ü‚µ‚½B
+‚¨‚»‚ç‚­ null ’l‚ªA‚·‚×‚Ä‚Ì’m‚ç‚ê‚Ä‚¢‚éƒ^[ƒQƒbƒgƒƒ\ƒbƒh‚ª”ñ null ‚Å‚ ‚é‚±‚Æ‚ð—v‹‚·‚éŒÄ‚Ño‚µêŠ‚Å“n‚³‚ê‚Ä‚¢‚Ü‚·B
+ƒpƒ‰ƒ[ƒ^‚ÍAí‚É”ñ null ‚Å‚ ‚é‚×‚«ƒpƒ‰ƒ[ƒ^‚Æ‚µ‚ÄƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚Ä‚¢‚½‚©A‚Ü‚½‚ÍA‰ðÍ‚ªí‚É null ’l‚ð—˜—p‚·‚é‚ÆŽ¦‚µ‚Ä‚¢‚Ü‚µ‚½B
 </p>
       ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NP_NULL_PARAM_DEREF">
-    <ShortDescription>null ’l‚ð‹–—e‚µ‚È‚¢ƒpƒ‰ƒ[ƒ^‚É null ‚ð“n‚µ‚Ä‚¢‚éƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ</ShortDescription>
-    <LongDescription>ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚ÅA{2.givenClass} ‚Ì null ’l‚ð‹–—e‚µ‚È‚¢ƒpƒ‰ƒ[ƒ^‚É null ‚ð“n‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒhŒÄ‚Ño‚µ‚Í”ñ null ƒpƒ‰ƒ[ƒ^‚É‘Î‚µ‚Ä null ‚ð“n‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>{2.givenClass} ‚Ì ”ñ null ƒpƒ‰ƒ[ƒ^‚É‘Î‚µ‚Ä null ‚ð“n‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
       <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍA null ’l‚ð‹–—e‚µ‚È‚¢ƒƒ\ƒbƒh‚Ìƒpƒ‰ƒ[ƒ^‚É null ’l‚ð“n‚µ‚ÄŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-‚±‚Ìƒpƒ‰ƒ[ƒ^‚Í @Nonnull ‚Æ‚µ‚Ä–¾Ž¦“I‚ÉƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚Ä‚¢‚½‚©A‚Ü‚½‚ÍA‰ðÍ‚ªí‚É null ’l‚ð—˜—p‚·‚é‚ÆŽ¦‚µ‚Ä‚¢‚Ü‚µ‚½B
+‚±‚Ìƒƒ\ƒbƒhŒÄ‚Ño‚µ‚ÍA”ñ null ƒƒ\ƒbƒhƒpƒ‰ƒ[ƒ^‚É‘Î‚µ‚Ä null ’l‚ð“n‚µ‚Ä‚¢‚Ü‚·B
+ƒpƒ‰ƒ[ƒ^‚ÍAí‚É”ñ null ‚Å‚ ‚é‚×‚«ƒpƒ‰ƒ[ƒ^‚Æ‚µ‚ÄƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚Ä‚¢‚½‚©A‚Ü‚½‚ÍA‰ðÍ‚ªí‚É null ’l‚ð—˜—p‚·‚é‚ÆŽ¦‚µ‚Ä‚¢‚Ü‚µ‚½B
 </p>
       ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NP_NONNULL_PARAM_VIOLATION">
-    <ShortDescription>null ’l‚ð‹–—e‚µ‚È‚¢ƒpƒ‰ƒ[ƒ^‚É null ‚ð“n‚µ‚Ä‚¢‚éƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ</ShortDescription>
-    <LongDescription>ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚ÅA{2.givenClass} ‚Ì null ’l‚ð‹–—e‚µ‚È‚¢ƒpƒ‰ƒ[ƒ^‚É null ‚ð“n‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒhŒÄ‚Ño‚µ‚Í”ñ null ƒpƒ‰ƒ[ƒ^‚É‘Î‚µ‚Ä null ‚ð“n‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>{2.givenClass} ‚Ì ”ñ null ƒpƒ‰ƒ[ƒ^‚É‘Î‚µ‚Ä null ‚ð“n‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
       <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍAnull ’l‚ð‹–—e‚µ‚È‚¢ƒƒ\ƒbƒh‚Ìƒpƒ‰ƒ[ƒ^‚É null ’l‚ð“n‚µ‚Ä‚¢‚Ü‚·B
-‚±‚Ìƒpƒ‰ƒ[ƒ^‚Í @Nonnull ‚Æ‚µ‚Ä–¾Ž¦“I‚ÉƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚Ä‚¢‚½‚©A‚Ü‚½‚ÍA‰ðÍ‚ªí‚É null ’l‚ð—˜—p‚·‚é‚ÆŽ¦‚µ‚Ä‚¢‚Ü‚µ‚½B
+‚±‚Ìƒƒ\ƒbƒh‚ÍA”ñ null ‚Å‚È‚¯‚ê‚Î‚È‚ç‚È‚¢ƒƒ\ƒbƒh‚Ìƒpƒ‰ƒ[ƒ^‚Æ‚µ‚ÄAnull ’l‚ð“n‚µ‚Ä‚¢‚Ü‚·B
+‚±‚Ìƒpƒ‰ƒ[ƒ^‚ÍA@Nonnull ‚Æ‚µ‚Ä–¾Ž¦“I‚ÉƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚Ä‚¢‚½‚©A‚Ü‚½‚ÍA‰ðÍ‚ªí‚É null ’l‚ð—˜—p‚·‚é‚ÆŽ¦‚µ‚Ä‚¢‚Ü‚µ‚½B
 </p>
       ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NP_NONNULL_RETURN_VIOLATION">
-    <ShortDescription>null ‚ð•Ô‚·‚©‚à‚µ‚êƒƒ\ƒbƒh‚ª @NonNull éŒ¾‚³‚ê‚Ä‚¢‚é</ShortDescription>
+    <ShortDescription>null ‚ð•Ô‚·‚©‚à‚µ‚ê‚È‚¢ƒƒ\ƒbƒh‚ª @NonNull éŒ¾‚³‚ê‚Ä‚¢‚é</ShortDescription>
     <LongDescription>{1} ‚ÍAnull ‚ð•Ô‚·‚©‚à‚µ‚ê‚È‚¢‚Ì‚É @NonNull éŒ¾‚³‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
@@ -5317,7 +5303,7 @@ dateString = dateString.trim();
 <p>
 ‚±‚Ì <code>clone</code> ƒƒ\ƒbƒh‚Í‚¢‚­‚Â‚©‚ÌðŒ‚Å null ‚ð•Ô‚·‚ÆŽv‚í‚ê‚Ü‚·B
 ‚µ‚©‚µ <code>clone</code> ƒƒ\ƒbƒh‚ÍŒˆ‚µ‚Ä null ‚ð•Ô‚·‚Ì‚Í‹–‚³‚ê‚Ü‚¹‚ñB
-‚±‚ÌŒo˜H‚É“ž’B‚Å‚«‚È‚¢‚±‚Æ‚ðŠmM‚µ‚Ä‚¢‚é‚È‚ç‚»‚Ì‘ã‚í‚è‚É <code>AssertionError</code> ‚ðƒXƒ[‚µ‚È‚³‚¢B
+‚±‚ÌŒo˜H‚ª“ž’B‚Å‚«‚È‚¢‚±‚Æ‚ðŠmM‚µ‚Ä‚¢‚é‚È‚çA‚»‚Ì‘ã‚í‚è‚É <code>AssertionError</code> ‚ðƒXƒ[‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
       ]]>
     </Details>
@@ -5342,27 +5328,27 @@ null ‚Å‚Í‚È‚­‹ó‚Ì•¶Žš—ñ‚Ü‚½‚Í‚¢‚­‚Â‚©‚Ì‘¼‚Ì“KØ‚È•¶Žš—ñ‚ð•Ô‚µ‚Ä‚­‚¾‚³‚¢B
     <Details>
 <![CDATA[
 <p>
-‚»‚±‚Å•¶‚Ü‚½‚Í•ªŠò‚ªŽÀs‚³‚ê‚é‚È‚ç‚±‚Ì’n“_‚Å’l‚ª null ‚Å‚ ‚èAnull ’l‚ð—˜—p‚·‚é (ƒtƒHƒ[ƒhƒpƒX‚ÅŽÀsŽž—áŠO‚ð”º‚¤‚±‚ÆˆÈŠO‚Í) ‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚Ü‚·B
+‚»‚±‚ÅA•¶‚Ü‚½‚Í•ªŠò‚ªŽÀs‚³‚ê‚é‚È‚çA‚±‚±‚Å’l‚ª null ‚Å‚ ‚èAnull ’l‚ð—˜—p‚·‚é (ƒtƒHƒ[ƒhƒpƒX‚ÅŽÀsŽž—áŠO‚ð”º‚¤‚±‚ÆˆÈŠO‚Í) ‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH">
-    <ShortDescription>null ’l‚ð—áŠOŒo˜H‚Å—˜—p‚µ‚Ä‚¢‚é‚±‚Æ‚ð•ÛØ‚·‚é</ShortDescription>
-    <LongDescription>{2.name} ‚ÍA—áŠOŒo˜H‚Å null ‚©‚à‚µ‚ê‚È‚¢’l‚ª—˜—p‚³‚ê‚é‚±‚Æ‚ð•ÛØ‚µ‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>null ’l‚ð—áŠOŒo˜H‚Å—˜—p‚·‚é‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>{2.name} ‚ÍA—áŠOŒo˜H‚Å null ’l‚ð—˜—p‚·‚é‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì—áŠOŒo˜H‚Ì•¶‚Ü‚½‚Í•ªŠò‚ÍA‚à‚µŽÀs‚³‚ê‚½‚È‚ç‚±‚Ì’n“_‚Å’l‚ª null ‚Å‚ ‚èAnull ’l‚ð—˜—p‚·‚é (ƒtƒHƒ[ƒhƒpƒX‚ÅŽÀsŽž—áŠO‚ð”º‚¤‚±‚ÆˆÈŠO‚Í) ‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚Ü‚·B
+‚»‚±‚ÅA—áŠOŒo˜Hã‚Ì•¶‚Ü‚½‚Í•ªŠò‚ªŽÀs‚³‚ê‚é‚È‚çA‚±‚±‚Å’l‚ª null ‚Å‚ ‚èAnull ’l‚ð—˜—p‚·‚é (ƒtƒHƒ[ƒhƒpƒX‚ÅŽÀsŽž—áŠO‚ð”º‚¤‚±‚ÆˆÈŠO‚Í) ‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED">
-    <ShortDescription>ƒXƒ^ƒeƒBƒbƒNƒCƒjƒVƒƒƒ‰ƒCƒU‚ÍA‚·‚×‚Ä‚Ì static final ƒtƒB[ƒ‹ƒh‚ª‰Šú‰»‚³‚ê‚é‘O‚ÉƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚·‚é</ShortDescription>
-    <LongDescription>{0} ‚Ì‚½‚ß‚ÌƒXƒ^ƒeƒBƒbƒNƒCƒjƒVƒƒƒ‰ƒCƒU {0} ‚ÍA‚·‚×‚Ä‚Ì static final ƒtƒB[ƒ‹ƒh‚ª‰Šú‰»‚³‚ê‚é‘O‚ÉƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚µ‚Ü‚·B</LongDescription>
+    <ShortDescription>ƒXƒ^ƒeƒBƒbƒNƒCƒjƒVƒƒƒ‰ƒCƒU‚ÍA‚·‚×‚Ä‚Ì static final ƒtƒB[ƒ‹ƒh‚ª‘ã“ü‚³‚ê‚é‘O‚ÉƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚·‚é</ShortDescription>
+    <LongDescription>{0} ‚Ì‚½‚ß‚ÌƒXƒ^ƒeƒBƒbƒNƒCƒjƒVƒƒƒ‰ƒCƒU‚ÍA‚·‚×‚Ä‚Ì static final ƒtƒB[ƒ‹ƒh‚ª‘ã“ü‚³‚ê‚é‘O‚ÉƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚µ‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -5378,40 +5364,39 @@ null ‚Å‚Í‚È‚­‹ó‚Ì•¶Žš—ñ‚Ü‚½‚Í‚¢‚­‚Â‚©‚Ì‘¼‚Ì“KØ‚È•¶Žš—ñ‚ð•Ô‚µ‚Ä‚­‚¾‚³‚¢B
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍA“üo—ÍƒXƒgƒŠ[ƒ€ƒIƒuƒWƒFƒNƒg‚ðì¬‚µ‚Ä‚¢‚é‚ª‚Ç‚ñ‚ÈƒtƒB[ƒ‹ƒh‚É‚à‘ã“ü‚µ‚Ä‚¢‚È‚¢‚µAƒNƒ[ƒY‚·‚é‚©‚à‚µ‚ê‚È‚¢•Ê‚Ìƒƒ\ƒbƒh‚É‚à“n‚µ‚Ä‚¢‚È‚¢‚µA–ß‚è’l‚É‚µ‚Ä‚à‚¢‚Ü‚¹‚ñB‚Â‚Ü‚èAƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚ÌŒo˜H‚ÅƒNƒ[ƒY‚·‚é‚æ‚¤‚ÉŒ©‚¦‚Ü‚¹‚ñB
-‚±‚ê‚Íƒtƒ@ƒCƒ‹ƒfƒBƒXƒNƒŠƒvƒ^[ƒŠ[ƒN‚ÌŒ´ˆö‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-ƒXƒgƒŠ[ƒ€‚ªƒNƒ[ƒY‚³‚ê‚é‚±‚Æ‚ðŠmŽÀ‚É‚·‚é‚½‚ß‚ÉA<code>finally</code> ƒuƒƒbƒN‚ðŽg‚¤‚±‚Æ‚Íˆê”Ê“I‚É—Ç‚¢l‚¦‚Å‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍA“üo—ÍƒXƒgƒŠ[ƒ€ƒIƒuƒWƒFƒNƒg‚ðì¬‚µ‚Ä‚¢‚é‚ªA‚Ç‚ñ‚ÈƒtƒB[ƒ‹ƒh‚É‚à‘ã“ü‚µ‚Ä‚¢‚È‚¢‚µAƒNƒ[ƒY‚·‚é‚©‚à‚µ‚ê‚È‚¢•Ê‚Ìƒƒ\ƒbƒh‚É‚à“n‚µ‚Ä‚¢‚È‚¢‚µA–ß‚è’l‚É‚µ‚Ä‚à‚¢‚Ü‚¹‚ñB‚»‚µ‚ÄAƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚ÌŒo˜H‚ÅƒNƒ[ƒY‚·‚é‚æ‚¤‚ÉŒ©‚¦‚Ü‚¹‚ñB
+‚±‚ê‚ÍAƒtƒ@ƒCƒ‹ƒfƒBƒXƒNƒŠƒvƒ^ƒŠ[ƒN‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+ƒXƒgƒŠ[ƒ€‚ªƒNƒ[ƒY‚³‚ê‚é‚±‚Æ‚ðŠmŽÀ‚É‚·‚é‚½‚ß‚É <code>finally</code> ƒuƒƒbƒN‚ðŽg‚¤‚±‚Æ‚ÍA’Êí—Ç‚¢l‚¦‚Å‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="OS_OPEN_STREAM_EXCEPTION_PATH">
-    <ShortDescription>—áŠO‚ÅƒXƒgƒŠ[ƒ€‚ÌƒNƒ[ƒY‚ÉŽ¸”s‚·‚é‚©‚à‚µ‚ê‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>{1} ‚ÍA—áŠO‚ÅƒXƒgƒŠ[ƒ€‚ÌƒNƒ[ƒY‚ÉŽ¸”s‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>—áŠOŒo˜H‚ÅƒXƒgƒŠ[ƒ€‚ÌƒNƒ[ƒY‚ÉŽ¸”s‚·‚é‚©‚à‚µ‚ê‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
+    <LongDescription>{1} ‚ÍA—áŠOŒo˜H‚ÅƒXƒgƒŠ[ƒ€‚ÌƒNƒ[ƒY‚ÉŽ¸”s‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍA“üo—ÍƒXƒgƒŠ[ƒ€ƒIƒuƒWƒFƒNƒg‚ðì¬‚µ‚Ä‚¢‚é‚ª‚Ç‚ñ‚ÈƒtƒB[ƒ‹ƒh‚É‚à‘ã“ü‚µ‚Ä‚¢‚È‚¢‚µAƒNƒ[ƒY‚·‚é‚©‚à‚µ‚ê‚È‚¢•Ê‚Ìƒƒ\ƒbƒh‚É‚à“n‚µ‚Ä‚¢‚È‚¢‚µA–ß‚è’l‚É‚µ‚Ä‚à‚¢‚Ü‚¹‚ñB‚Â‚Ü‚èAƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚Ì‰Â”\«‚ª‚ ‚é—áŠOŒo˜H‚ÅƒNƒ[ƒY‚·‚é‚æ‚¤‚ÉŒ©‚¦‚Ü‚¹‚ñB
-‚±‚ê‚Íƒtƒ@ƒCƒ‹ƒfƒBƒXƒNƒŠƒvƒ^[ƒŠ[ƒN‚ÌŒ´ˆö‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-ƒXƒgƒŠ[ƒ€‚ªƒNƒ[ƒY‚³‚ê‚é‚±‚Æ‚ðŠmŽÀ‚É‚·‚é‚½‚ß‚ÉA<code>finally</code> ƒuƒƒbƒN‚ðŽg‚¤‚±‚Æ‚Íˆê”Ê“I‚É—Ç‚¢l‚¦‚Å‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍA“üo—ÍƒXƒgƒŠ[ƒ€ƒIƒuƒWƒFƒNƒg‚ðì¬‚µ‚Ä‚¢‚é‚ªA‚Ç‚ñ‚ÈƒtƒB[ƒ‹ƒh‚É‚à‘ã“ü‚µ‚Ä‚¢‚È‚¢‚µAƒNƒ[ƒY‚·‚é‚©‚à‚µ‚ê‚È‚¢•Ê‚Ìƒƒ\ƒbƒh‚É‚à“n‚µ‚Ä‚¢‚È‚¢‚µA–ß‚è’l‚É‚µ‚Ä‚à‚¢‚Ü‚¹‚ñB‚»‚µ‚ÄAƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚Ì‰Â”\«‚ª‚ ‚é—áŠOŒo˜H‚ÅƒNƒ[ƒY‚·‚é‚æ‚¤‚ÉŒ©‚¦‚Ü‚¹‚ñB
+‚±‚ê‚Íƒtƒ@ƒCƒ‹ƒfƒBƒXƒNƒŠƒvƒ^[ƒŠ[ƒN‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+ƒXƒgƒŠ[ƒ€‚ªƒNƒ[ƒY‚³‚ê‚é‚±‚Æ‚ðŠmŽÀ‚É‚·‚é‚½‚ß‚É <code>finally</code> ƒuƒƒbƒN‚ðŽg‚¤‚±‚Æ‚ÍA’Êí—Ç‚¢l‚¦‚Å‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="PZLA_PREFER_ZERO_LENGTH_ARRAYS">
-    <ShortDescription>null ‚Å‚Í‚È‚­’·‚³‚ª0‚Ì”z—ñ‚ð•Ô‚·‚±‚Æ‚ðŒŸ“¢‚·‚é</ShortDescription>
-    <LongDescription>{1} ‚ÍAnull ‚Å‚Í‚È‚­’·‚³‚ª0‚Ì”z—ñ‚ð•Ô‚·‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñ‚©H</LongDescription>
+    <ShortDescription>null ‚Å‚Í‚È‚­’·‚³‚ª 0 ‚Ì”z—ñ‚ð•Ô‚·‚±‚Æ‚ðŒŸ“¢‚·‚é</ShortDescription>
+    <LongDescription>{1} ‚ÍAnull ‚Å‚Í‚È‚­’·‚³‚ª 0 ‚Ì”z—ñ‚ð•Ô‚·‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñ‚©H</LongDescription>
     <Details>
 <![CDATA[
 <p>
-Œ‹‰Ê‚ª‚È‚¢‚±‚Æ (‚·‚È‚í‚¿AŒ‹‰Ê‚ª‹ó‚Ì”z—ñ) ‚ðŽ¦‚·‚½‚ß‚É null ŽQÆ‚Å‚Í‚È‚­’·‚³‚ª0‚Ì”z—ñ (‹ó‚Ì”z—ñ) ‚ð•Ô‚·‚±‚Æ‚ÍA‘½‚­‚Ìê‡‚æ‚è—Ç‚¢ÝŒv‚Å‚·B
+Œ‹‰Ê‚ª‚È‚¢‚±‚Æ  (‚·‚È‚í‚¿AŒ‹‰Ê‚Ì‹ó‚ÌƒŠƒXƒg) ‚ðŽ¦‚·‚½‚ß‚É null ŽQÆ‚Å‚Í‚È‚­’·‚³‚ª 0 ‚Ì”z—ñ ‚ð•Ô‚·‚±‚Æ‚ÍA‘½‚­‚Ìê‡‚æ‚è—Ç‚¢ÝŒv‚Å‚·B
 </p>
 <p>
 ‘¼•û‚Å‚ÍAu‚±‚ÌŽ¿–â‚É‘Î‚·‚é“š‚¦‚ª‚È‚¢v‚±‚Æ‚ðŽ¦‚·‚½‚ß‚ÉAnull ‚ðŽg‚¤‚±‚Æ‚Í‚¨‚»‚ç‚­“KØ‚Å‚·B
-‚½‚Æ‚¦‚ÎA<code>File.listFiles()</code> ‚Íƒtƒ@ƒCƒ‹‚ª‚È‚¢ƒfƒBƒŒƒNƒgƒŠ‚ð—^‚¦‚ç‚ê‚½ê‡‹ó‚ÌƒŠƒXƒg‚ð•Ô‚µ‚Ü‚·B
-‚»‚µ‚ÄAƒtƒ@ƒCƒ‹‚ªƒfƒBƒŒƒNƒgƒŠ‚Å‚Í‚È‚¢‚È‚ç null ‚ð•Ô‚µ‚Ü‚·B
+‚½‚Æ‚¦‚ÎA<code>File.listFiles()</code> ‚ÍAƒtƒ@ƒCƒ‹‚ª‚È‚¢ƒfƒBƒŒƒNƒgƒŠ‚ð—^‚¦‚ç‚ê‚½ê‡‚Í‹ó‚ÌƒŠƒXƒg‚ð•Ô‚µAƒtƒ@ƒCƒ‹‚ªƒfƒBƒŒƒNƒgƒŠ‚Å‚È‚¢‚È‚ç null ‚ð•Ô‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -5423,7 +5408,7 @@ null ‚Å‚Í‚È‚­‹ó‚Ì•¶Žš—ñ‚Ü‚½‚Í‚¢‚­‚Â‚©‚Ì‘¼‚Ì“KØ‚È•¶Žš—ñ‚ð•Ô‚µ‚Ä‚­‚¾‚³‚¢B
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚É‚ÍA–ð‚É—§‚½‚È‚¢§Œäƒtƒ[•¶‚ª‚ ‚è‚Ü‚·B‚»‚±‚Å•ªŠò‚·‚é‚Ì‚©‚Ç‚¤‚©‚É‚©‚©‚í‚ç‚¸A§Œäƒtƒ[‚Í“¯‚¶êŠ‚Ö‘±‚«‚Ü‚·B<br>
+‚±‚Ìƒƒ\ƒbƒh‚É‚ÍA•ªŠò‚·‚é‚Ì‚©‚Ç‚¤‚©‚ÉŠÖŒW‚È‚­A§Œäƒtƒ[‚ª“¯‚¶êŠ‚Ö‚Æ‘±‚­A–ð‚É—§‚½‚È‚¢§Œäƒtƒ[•¶‚ª‚ ‚è‚Ü‚·B<br>
 ‚½‚Æ‚¦‚ÎA‚±‚ê‚Í ‹ó‚Ì <code>if</code> •¶‚ªŒ´ˆö‚É‚È‚è‚Ü‚·B
 <blockquote><pre>
 if (argv.length == 0) {
@@ -5440,8 +5425,8 @@ if (argv.length == 0) {
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚É‚ÍA•ªŠò‚·‚é‚Ì‚©‚Ç‚¤‚©‚É‚©‚©‚í‚ç‚¸A§Œäƒtƒ[‚ª“¯‚¶‚©A‚Ü‚½‚ÍŽŸ‚Ìs‚É‘±‚­‚¾‚¯‚Ì§Œäƒtƒ[•¶‚ª‚ ‚è‚Ü‚·B
-‚½‚¢‚Ä‚¢‚ÍA•s’ˆÓ‚É–{‘Ì‚ª‹ó‚Ì <code>if</code> •¶‚ðì¬‚µ‚Ä‚µ‚Ü‚Á‚½‚±‚Æ‚ªŒ´ˆö‚É‚È‚è‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚É‚ÍA•ªŠò‚·‚é‚Ì‚©‚Ç‚¤‚©‚ÉŠÖŒW‚È‚­A§Œäƒtƒ[‚ª“¯‚¶‚©ŽŸ‚Ìs‚Ö‚Æ‘±‚­A–ð‚É—§‚½‚È‚¢§Œäƒtƒ[•¶‚ª‚ ‚è‚Ü‚·B<br>
+‘½‚­‚Ìê‡A•s’ˆÓ‚É <code>if</code> •¶‚Ì–{‘Ì‚ð‹ó•¶‚ðŽg—p‚µ‚½‚±‚Æ‚ªŒ´ˆö‚É‚È‚è‚Ü‚·B
 </p>
 <blockquote><pre>
 if (argv.length == 1);
@@ -5453,14 +5438,14 @@ if (argv.length == 1);
 
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE">
     <ShortDescription>‚·‚Å‚É—˜—p‚³‚ê‚Ä‚¢‚é’l‚Ì null ƒ`ƒFƒbƒN</ShortDescription>
-    <LongDescription>‚·‚Å‚É—˜—p‚³‚ê‚Ä‚¢‚é’l‚ð {4.lineNumber} ‚Ì {2.givenClass} ‚Å null ƒ`ƒFƒbƒN‚ð‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <LongDescription>‚·‚Å‚É—˜—p‚³‚ê‚Ä‚¢‚é’l‚ð {4.lineNumber} ‚Ì {2.givenClass} ‚Å null ƒ`ƒFƒbƒN‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚±‚Å’l‚ª null ‚È‚Ì‚©Šm‚©‚ß‚Ä‚¢‚Ü‚·‚ªA‚·‚Å‚É—˜—p‚³‚ê‚Ä‚¢‚½‚Ì‚Å null ‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+‚±‚±‚Å’l‚ª null ‚È‚Ì‚©ƒ`ƒFƒbƒN‚µ‚Ä‚¢‚Ü‚·‚ªA‚·‚Å‚É—˜—p‚³‚ê‚Ä‚¢‚½‚Ì‚Å null ‚Å‚ ‚é‰Â”\«‚Í‚ ‚è‚Ü‚¹‚ñB
 ‚»‚ê‚ª null ‚È‚çˆÈ‘O‚Ì—˜—p‚Å <code>NullPointerException</code> ‚ª”­¶‚µ‚Ä‚¢‚½‚Å‚µ‚å‚¤B
-Šî–{“I‚ÉA‚±‚ÌƒR[ƒh‚ÆˆÈ‘O‚Ì’l‚Ì—˜—p‚ÍA‚±‚Ì’l‚ª null ‚ª‹–‚³‚ê‚é‚Ì‚©ˆê’v‚µ‚Ä‚¢‚Ü‚¹‚ñB
-ƒ`ƒFƒbƒN‚Íç’·‚©A‚Ü‚½‚ÍˆÈ‘O‚Ì’l‚Ì—˜—p‚ªŒë‚è‚Å‚·B
+Šî–{“I‚ÉA‚±‚Ì’l‚ª null ‚Å‚ ‚é‚±‚Æ‚ð‹–‚³‚ê‚é‚Ì‚©‚Ç‚¤‚©‚ÉŠÖŒW‚È‚­A‚±‚ÌƒR[ƒh‚Æ‘O‚Ì null ’l‚Ì—˜—p‚Íˆê’v‚µ‚Ü‚¹‚ñB
+ƒ`ƒFƒbƒN‚Íç’·‚©A‚Ü‚½‚Í‘O‚Ì null ’l‚Ì—˜—p‚ÍŒë‚è‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -5479,12 +5464,12 @@ if (argv.length == 1);
   </BugPattern>
 
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE">
-    <ShortDescription>null ‚Å‚Í‚È‚¢‚±‚Æ‚ª‚í‚©‚Á‚Ä‚¢‚é’l‚Ìç’·‚È null ƒ`ƒFƒbƒN</ShortDescription>
-    <LongDescription>null ‚Å‚Í‚È‚¢‚±‚Æ‚ª‚í‚©‚Á‚Ä‚¢‚é’l {2} ‚Ìç’·‚È null ƒ`ƒFƒbƒN‚ª‚ ‚è‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>null ‚Å‚È‚¢‚±‚Æ‚ª‚í‚©‚Á‚Ä‚¢‚é’l‚Ìç’·‚È null ƒ`ƒFƒbƒN</ShortDescription>
+    <LongDescription>null ‚Å‚È‚¢‚±‚Æ‚ª‚í‚©‚Á‚Ä‚¢‚é’l {2} ‚Ìç’·‚È null ƒ`ƒFƒbƒN‚ª‚ ‚è‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚É‚Í null ‚Å‚Í‚È‚¢‚±‚Æ‚ª‚í‚©‚Á‚Ä‚¢‚é’l‚Ìç’·‚È null ƒ`ƒFƒbƒN‚ª‚ ‚è‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚É‚Í null ‚Å‚È‚¢‚±‚Æ‚ª‚í‚©‚Á‚Ä‚¢‚é’l‚Ìç’·‚È null ƒ`ƒFƒbƒN‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -5503,12 +5488,12 @@ if (argv.length == 1);
   </BugPattern>
 
   <BugPattern type="RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE">
-    <ShortDescription>null ˆÈŠO‚Ì’l‚Æ null ‚Æ‚Ìç’·‚È”äŠr</ShortDescription>
-    <LongDescription>null ˆÈŠO‚Ì’l‚Æ null ‚Æ‚Ìç’·‚È”äŠr‚ª‚ ‚è‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>null ‚Å‚È‚¢’l‚Æ null ’l‚Æ‚Ìç’·‚È”äŠr</ShortDescription>
+    <LongDescription>null ‚Å‚È‚¢’l‚Æ null ’l‚Æ‚Ìç’·‚È”äŠr‚ª‚ ‚è‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚É‚ÍAnull ‚Å‚Í‚È‚¢‚±‚Æ‚ª‚í‚©‚Á‚Ä‚¢‚éŽQÆ‚Æ null ‚Æ‚í‚©‚Á‚Ä‚¢‚é•Ê‚ÌŽQÆ‚Æ‚Ì”äŠr‚ª‚ ‚è‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚É‚ÍAnull ‚Å‚È‚¢‚±‚Æ‚ª‚í‚©‚Á‚Ä‚¢‚éŽQÆ‚Æ null ‚Æ‚í‚©‚Á‚Ä‚¢‚é•Ê‚ÌŽQÆ‚Æ‚Ì”äŠr‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -5541,8 +5526,8 @@ of defensive programming.</p>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍAJSR-166(<code>java.util.concurrent</code>) ‚ÌƒƒbƒN‚ðŠl“¾‚µ‚Ä‚¢‚Ü‚·‚ªAƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚ÌŒo˜H‚Å‰ðœ‚·‚é‚Æ‚¢‚¤‚í‚¯‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
-ˆê”Ê“I‚ÉAJSR-166‚ÌƒƒbƒN‚ðŽg—p‚·‚é‚½‚ß‚Ì³‚µ‚¢ƒCƒfƒBƒIƒ€‚ÍˆÈ‰º‚Ì‚æ‚¤‚É‚È‚è‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍAJSR-166(<code>java.util.concurrent</code>) ‚ÌƒƒbƒN‚ðŠl“¾‚µ‚Ä‚¢‚é‚ªAƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚ÌŒo˜H‚Å‰ðœ‚·‚é‚Æ‚¢‚¤‚í‚¯‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+’ÊíAJSR-166‚ÌƒƒbƒN‚ðŽg—p‚·‚é‚½‚ß‚Ì³‚µ‚¢ƒCƒfƒBƒIƒ€‚ÍˆÈ‰º‚Ì‚æ‚¤‚É‚È‚è‚Ü‚·B
 </p>
 <blockquote><pre>
 Lock l = ...;
@@ -5563,8 +5548,8 @@ try {
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍAJSR-166(<code>java.util.concurrent</code>) ‚ÌƒƒbƒN‚ðŠl“¾‚µ‚Ä‚¢‚Ü‚·‚ªAƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚Ì—áŠOŒo˜H‚Å‰ðœ‚·‚é‚Æ‚¢‚¤‚í‚¯‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
-ˆê”Ê“I‚ÉAJSR-166‚ÌƒƒbƒN‚ðŽg—p‚·‚é‚½‚ß‚Ì³‚µ‚¢ƒCƒfƒBƒIƒ€‚ÍˆÈ‰º‚Ì‚æ‚¤‚É‚È‚è‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍAJSR-166(<code>java.util.concurrent</code>) ‚ÌƒƒbƒN‚ðŠl“¾‚µ‚Ä‚¢‚é‚ªAƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚Ì—áŠOŒo˜H‚Å‰ðœ‚·‚é‚Æ‚¢‚¤‚í‚¯‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+’ÊíAJSR-166‚ÌƒƒbƒN‚ðŽg—p‚·‚é‚½‚ß‚Ì³‚µ‚¢ƒCƒfƒBƒIƒ€‚ÍˆÈ‰º‚Ì‚æ‚¤‚É‚È‚è‚Ü‚·B
 </p>
 <blockquote><pre>
 Lock l = ...;
@@ -5586,9 +5571,9 @@ try {
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍA == ‚Ü‚½‚Í != ‰‰ŽZŽq‚ðŽg—p‚µ‚Ä2‚Â‚ÌŽQÆ’l‚ð”äŠr‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ÌŒ^‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð”äŠr‚·‚é³‚µ‚¢•û–@‚Íˆê”Ê“I‚É <code>equals</code> ƒƒ\ƒbƒh‚Å‚·B
-“™‰¿‚ÅŽ¯•Ê‰Â”\‚ÈƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚·‚ªˆÙ‚È‚éƒIƒuƒWƒFƒNƒg‚È‚Ì‚Å == ‚Å”äŠr‚µ‚È‚¢‚Å‚­‚¾‚³‚¢B
-ŽQÆ‚É‚æ‚Á‚Äˆê”Ê“I‚É”äŠr‚·‚×‚«‚Å‚Í‚È‚¢ƒNƒ‰ƒX‚Ì—á‚ÍA<code>java.lang.Integer</code> A<code>java.lang.Float</code> ‚È‚Ç‚Å‚·B
+‚±‚ÌŒ^‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð”äŠr‚·‚é³‚µ‚¢•û–@‚ÍA’Êí <code>equals</code> ƒƒ\ƒbƒh‚Å‚·B
+“™‰¿‚ÅŽ¯•Ê‰Â”\‚ÈƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚·‚ªAˆÙ‚È‚éƒIƒuƒWƒFƒNƒg‚È‚Ì‚Å == ‚Å”äŠr‚µ‚È‚¢‚Å‚­‚¾‚³‚¢B
+ŽQÆ‚É‚æ‚Á‚Ä’Êí”äŠr‚³‚ê‚é‚×‚«‚Å‚Í‚È‚¢ƒNƒ‰ƒX‚Ì—á‚ÍA<code>java.lang.Integer</code> A<code>java.lang.Float</code> ‚È‚Ç‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -5601,13 +5586,14 @@ try {
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍA == ‚Ü‚½‚Í != ‰‰ŽZŽq‚ðŽg—p‚µ‚Ä’è”‚Æ”äŠr‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ÌŒ^‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð”äŠr‚·‚é³‚µ‚¢•û–@‚Íˆê”Ê“I‚É <code>equals</code> ƒƒ\ƒbƒh‚Å‚·B
-“™‰¿‚ÅŽ¯•Ê‰Â”\‚ÈƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚·‚ªˆÙ‚È‚éƒIƒuƒWƒFƒNƒg‚È‚Ì‚Å == ‚Å”äŠr‚µ‚È‚¢‚Å‚­‚¾‚³‚¢B
-ŽQÆ‚É‚æ‚Á‚Äˆê”Ê“I‚É”äŠr‚·‚×‚«‚Å‚Í‚È‚¢ƒNƒ‰ƒX‚Ì—á‚ÍA<code>java.lang.Integer</code> A<code>java.lang.Float</code> ‚È‚Ç‚Å‚·B
+‚±‚ÌŒ^‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð”äŠr‚·‚é³‚µ‚¢•û–@‚ÍA’Êí <code>equals</code> ƒƒ\ƒbƒh‚Å‚·B
+“™‰¿‚ÅŽ¯•Ê‰Â”\‚ÈƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚·‚ªAˆÙ‚È‚éƒIƒuƒWƒFƒNƒg‚È‚Ì‚Å == ‚Å”äŠr‚µ‚È‚¢‚Å‚­‚¾‚³‚¢B
+ŽQÆ‚É‚æ‚Á‚Ä’Êí”äŠr‚³‚ê‚é‚×‚«‚Å‚Í‚È‚¢ƒNƒ‰ƒX‚Ì—á‚ÍA<code>java.lang.Integer</code> A<code>java.lang.Float</code> ‚È‚Ç‚Å‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN">
     <ShortDescription>Boolean ’l‚Ì‹^‚í‚µ‚¢ŽQÆ‚Ì”äŠr</ShortDescription>
     <LongDescription>Boolean ’l‚Ì‹^‚í‚µ‚¢ŽQÆ‚Ì”äŠr‚Å‚·B{1}</LongDescription>
@@ -5617,8 +5603,8 @@ try {
 ‚±‚Ìƒƒ\ƒbƒh‚ÍA== ‚Ü‚½‚Í != ‰‰ŽZŽq‚ðŽg—p‚µ‚Ä2‚Â‚Ì Boolean ’l‚ð”äŠr‚µ‚Ä‚¢‚Ü‚·B
 ’Êí‚Í2‚Â‚Ì Boolean ’l (<code>Boolean.TRUE</code> ‚Æ <code>Boolean.FALSE</code>) ‚¾‚¯‚Å‚·‚ªA
 <code>new Boolean(b)</code> ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ðŽg—p‚µ‚Ä‘¼‚Ì Boolean ƒIƒuƒWƒFƒNƒg‚ðì¬‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
-‚»‚Ì‚æ‚¤‚ÈƒIƒuƒWƒFƒNƒg‚ð”ð‚¯‚é‚±‚Æ‚ÍÅ‚‚Å‚·B
-Boolean ƒIƒuƒWƒFƒNƒg‚Ì“™‰¿«‚ðƒ`ƒFƒbƒN‚·‚é‚½‚ß‚É <code>.equals(...)</code> ‚æ‚è == ‚Ü‚½‚Í != ‚ðŽg—p‚µ‚Ä‚¢‚é‚È‚çˆÙ‚È‚éŒ‹‰Ê‚ð‚à‚½‚ç‚µ‚Ü‚·B
+‚»‚Ì‚æ‚¤‚ÈƒIƒuƒWƒFƒNƒg‚ð‰ñ”ð‚·‚é‚±‚Æ‚ÍÅ‚‚Å‚·B
+‚µ‚©‚µA‚»‚ê‚ç‚ª‘¶Ý‚·‚é‚È‚çABoolean ƒIƒuƒWƒFƒNƒg‚Ì“™‰¿«‚ðƒ`ƒFƒbƒN‚·‚é‚½‚ß‚É <code>.equals(...)</code> ‚æ‚è == ‚Ü‚½‚Í != ‚ðŽg—p‚µ‚Ä‚¢‚é‚È‚çˆÙ‚È‚éŒ‹‰Ê‚ð‚à‚½‚ç‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -5630,8 +5616,8 @@ Boolean ƒIƒuƒWƒFƒNƒg‚Ì“™‰¿«‚ðƒ`ƒFƒbƒN‚·‚é‚½‚ß‚É <code>.equals(...)</code> ‚æ‚è 
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍAˆÙ‚È‚éŒ^‚ÆŽv‚í‚ê‚é2‚Â‚ÌŽQÆ‚ð”äŠr‚·‚é‚½‚ß‚ÉŽQÆ“™‰¿« (==) ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B
-‚±‚Ì”äŠr‚ÌŒ‹‰Ê‚Íí‚É false ‚Å‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍAˆÙ‚È‚éŒ^‚ÆŽv‚í‚ê‚é2‚Â‚ÌŽQÆ‚ð”äŠr‚·‚é‚½‚ß‚ÉŽQÆ“™‰¿«‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B
+‚±‚Ì”äŠr‚ÌŒ‹‰Ê‚ÍAí‚É false ‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -5639,13 +5625,13 @@ Boolean ƒIƒuƒWƒFƒNƒg‚Ì“™‰¿«‚ðƒ`ƒFƒbƒN‚·‚é‚½‚ß‚É <code>.equals(...)</code> ‚æ‚è 
 
   <BugPattern type="EC_UNRELATED_TYPES">
     <ShortDescription>ˆÙ‚È‚éŒ^‚ð”äŠr‚µ‚Ä‚¢‚é equals ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ</ShortDescription>
-    <LongDescription>ˆÙ‚È‚éŒ^‚ð”äŠr‚µ‚Ä‚¢‚é equals ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <LongDescription>{3.simpleClass}.equals({2.simpleClass}) ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍA‹¤’Ê‚ÌƒTƒuƒNƒ‰ƒX‚ª‚È‚¢ˆÙ‚È‚éƒNƒ‰ƒXŒ^‚Ì2‚Â‚ÌƒIƒuƒWƒFƒNƒgŽQÆ‚Å <code>equals(Object)</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
 ‚µ‚½‚ª‚Á‚ÄA”äŠr‚³‚ê‚Ä‚¢‚é2‚Â‚ÌƒIƒuƒWƒFƒNƒg‚ÍŽÀsŽž‚É“¯‚¶ƒNƒ‰ƒX‚Ìƒƒ“ƒo‚Å‚ ‚é‰Â”\«‚ª’á‚¢‚Å‚· (‚¢‚­‚Â‚©‚ÌƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒNƒ‰ƒX‚ª‰ðÍ‚Å‚«‚È‚©‚Á‚½‚©A“®“IƒNƒ‰ƒXƒ[ƒfƒBƒ“ƒO‚ªŽÀsŽž‚É‹N‚±‚é‚±‚Æ‚ª‚Å‚«‚½ê‡‚ðœ‚­)B
-<code>equals</code> ƒƒ\ƒbƒh‚Ì‹K–ñ‚É‚æ‚é‚ÆAˆÙ‚È‚éƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ÍA•s“™‚Å‚ ‚é‚Æ‚µ‚Äí‚É”äŠr‚·‚×‚«‚Å‚·B
+<code>equals</code> ƒƒ\ƒbƒh‚Ì‹K–ñ‚É‚æ‚é‚ÆAˆÙ‚È‚éƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ÍA•s“™‚Å‚ ‚é‚Æ‚µ‚Äí‚É”äŠr‚·‚é‚×‚«‚Å‚·B
 ‚µ‚½‚ª‚Á‚ÄA<code>java.lang.Object.equals(Object)</code> ‚É‚æ‚Á‚Ä’è‹`‚³‚ê‚é‹K–ñ‚É‚æ‚ê‚ÎA‚±‚Ì”äŠr‚ÌŒ‹‰Ê‚ÍŽÀsŽž‚Éí‚É false ‚É‚È‚è‚Ü‚·B
 </p>
 ]]>
@@ -5654,14 +5640,14 @@ Boolean ƒIƒuƒWƒFƒNƒg‚Ì“™‰¿«‚ðƒ`ƒFƒbƒN‚·‚é‚½‚ß‚É <code>.equals(...)</code> ‚æ‚è 
 
   <BugPattern type="EC_UNRELATED_INTERFACES">
     <ShortDescription>ˆÙ‚È‚éŒ^‚ÌƒCƒ“ƒ^ƒtƒF[ƒX‚ð”äŠr‚µ‚Ä‚¢‚é equals ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ</ShortDescription>
-    <LongDescription>ˆÙ‚È‚éŒ^‚ÌƒCƒ“ƒ^ƒtƒF[ƒX‚ð”äŠr‚µ‚Ä‚¢‚é equals ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <LongDescription>{3.simpleClass}.equals({2.simpleClass}) ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍA‚Ç‚¿‚ç‚à‘¼•û‚ÌƒTƒuƒ^ƒCƒv‚Å‚Í‚È‚¢–³ŠÖŒW‚ÈƒCƒ“ƒ^ƒtƒF[ƒXŒ^‚Ì2‚Â‚ÌŽQÆ‚Å <code>equals(Object)</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍA‚Ç‚¿‚ç‚à‘¼•û‚ÌƒTƒuƒ^ƒCƒv‚Å‚È‚¢–³ŠÖŒW‚ÈƒCƒ“ƒ^ƒtƒF[ƒXŒ^‚Ì2‚Â‚ÌŽQÆ‚Å <code>equals(Object)</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
 ‚»‚µ‚ÄA—¼•û‚ÌƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚·‚éŠù’m‚Ì”ñ’ŠÛƒNƒ‰ƒX‚ª‚ ‚è‚Ü‚¹‚ñB
 ‚µ‚½‚ª‚Á‚ÄA”äŠr‚³‚ê‚Ä‚¢‚é2‚Â‚ÌƒIƒuƒWƒFƒNƒg‚ÍŽÀsŽž‚É“¯‚¶ƒNƒ‰ƒX‚Ìƒƒ“ƒo‚Å‚ ‚é‰Â”\«‚ª’á‚¢‚Å‚· (‚¢‚­‚Â‚©‚ÌƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒNƒ‰ƒX‚ª‰ðÍ‚Å‚«‚È‚©‚Á‚½‚©A“®“IƒNƒ‰ƒXƒ[ƒfƒBƒ“ƒO‚ªŽÀsŽž‚É‹N‚±‚é‚±‚Æ‚ª‚Å‚«‚½ê‡‚ðœ‚­)B
-<code>equals</code> ƒƒ\ƒbƒh‚Ì‹K–ñ‚É‚æ‚é‚ÆAˆÙ‚È‚éƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ÍA•s“™‚Å‚ ‚é‚Æ‚µ‚Äí‚É”äŠr‚·‚×‚«‚Å‚·B
+<code>equals</code> ƒƒ\ƒbƒh‚Ì‹K–ñ‚É‚æ‚é‚ÆAˆÙ‚È‚éƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ÍA•s“™‚Å‚ ‚é‚Æ‚µ‚Äí‚É”äŠr‚·‚é‚×‚«‚Å‚·B
 ‚µ‚½‚ª‚Á‚ÄA<code>java.lang.Object.equals(Object)</code> ‚É‚æ‚Á‚Ä’è‹`‚³‚ê‚é‹K–ñ‚É‚æ‚ê‚ÎA‚±‚Ì”äŠr‚ÌŒ‹‰Ê‚ÍŽÀsŽž‚Éí‚É false ‚É‚È‚è‚Ü‚·B
 </p>
 ]]>
@@ -5670,14 +5656,14 @@ Boolean ƒIƒuƒWƒFƒNƒg‚Ì“™‰¿«‚ðƒ`ƒFƒbƒN‚·‚é‚½‚ß‚É <code>.equals(...)</code> ‚æ‚è 
 
   <BugPattern type="EC_UNRELATED_CLASS_AND_INTERFACE">
     <ShortDescription>–³ŠÖŒW‚ÌƒNƒ‰ƒX‚ÆƒCƒ“ƒ^ƒtƒF[ƒX‚ð”äŠr‚µ‚Ä‚¢‚é equals ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ</ShortDescription>
-    <LongDescription>–³ŠÖŒW‚ÌƒNƒ‰ƒX‚ÆƒCƒ“ƒ^ƒtƒF[ƒX‚ð”äŠr‚µ‚Ä‚¢‚é equals ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <LongDescription>{3.simpleClass}.equals({2.simpleClass}) ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
       <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍAˆê•û‚ªƒNƒ‰ƒX‚Å‘¼•û‚ªƒCƒ“ƒ^ƒtƒF[ƒX‚Å‚ ‚é2‚Â‚ÌŽQÆ‚Å <code>equals(Object)</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
 ƒNƒ‰ƒX‚ÍA‚»‚ÌƒNƒ‰ƒX‚Ì”ñ’ŠÛƒTƒuƒNƒ‰ƒX‚àŠÜ‚ß‚ÄƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚¹‚ñB
 ‚µ‚½‚ª‚Á‚ÄA”äŠr‚³‚ê‚Ä‚¢‚é2‚Â‚ÌƒIƒuƒWƒFƒNƒg‚ÍŽÀsŽž‚É“¯‚¶ƒNƒ‰ƒX‚Ìƒƒ“ƒo‚Å‚ ‚é‰Â”\«‚ª’á‚¢‚Å‚· (‚¢‚­‚Â‚©‚ÌƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒNƒ‰ƒX‚ª‰ðÍ‚Å‚«‚È‚©‚Á‚½‚©A“®“IƒNƒ‰ƒXƒ[ƒfƒBƒ“ƒO‚ªŽÀsŽž‚É‹N‚±‚é‚±‚Æ‚ª‚Å‚«‚½ê‡‚ðœ‚­)B
-<code>equals</code> ƒƒ\ƒbƒh‚Ì‹K–ñ‚É‚æ‚é‚ÆAˆÙ‚È‚éƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ÍA•s“™‚Å‚ ‚é‚Æ‚µ‚Äí‚É”äŠr‚·‚×‚«‚Å‚·B
+<code>equals</code> ƒƒ\ƒbƒh‚Ì‹K–ñ‚É‚æ‚é‚ÆAˆÙ‚È‚éƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ÍA•s“™‚Å‚ ‚é‚Æ‚µ‚Äí‚É”äŠr‚·‚é‚×‚«‚Å‚·B
 ‚µ‚½‚ª‚Á‚ÄA<code>java.lang.Object.equals(Object)</code> ‚É‚æ‚Á‚Ä’è‹`‚³‚ê‚é‹K–ñ‚É‚æ‚ê‚ÎA‚±‚Ì”äŠr‚ÌŒ‹‰Ê‚ÍŽÀsŽž‚Éí‚É false ‚É‚È‚è‚Ü‚·B
 </p>
       ]]>
@@ -5685,12 +5671,12 @@ Boolean ƒIƒuƒWƒFƒNƒg‚Ì“™‰¿«‚ðƒ`ƒFƒbƒN‚·‚é‚½‚ß‚É <code>.equals(...)</code> ‚æ‚è 
   </BugPattern>
 
   <BugPattern type="EC_NULL_ARG">
-    <ShortDescription>null ˆø”‚É‚æ‚é equals ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ</ShortDescription>
-    <LongDescription>null ˆø”‚Å equals ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>equals(null) ‚ÌŒÄ‚Ño‚µ</ShortDescription>
+    <LongDescription>equals(null) ‚ÌŒÄ‚Ño‚µB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍAˆø”‚Æ‚µ‚Ä null ’l‚ð“n‚µ‚Ä‚¢‚é <code>equals(Object)</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍA null ’l‚Ìˆø”‚ð“n‚µ‚Ä <code>equals(Object)</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
 <code>equals</code> ƒƒ\ƒbƒh‚Ì‹K–ñ‚É‚æ‚é‚ÆA‚±‚ÌŒÄ‚Ño‚µ‚Íí‚É false ‚ð•Ô‚·‚Í‚¸‚Å‚·B
 </p>
 ]]>
@@ -5703,8 +5689,8 @@ Boolean ƒIƒuƒWƒFƒNƒg‚Ì“™‰¿«‚ðƒ`ƒFƒbƒN‚·‚é‚½‚ß‚É <code>.equals(...)</code> ‚æ‚è 
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍAƒIƒuƒWƒFƒNƒg‚Å–¾‚ç‚©‚ÉƒƒbƒN‚ð•ÛŽ‚·‚é‚±‚Æ‚È‚­ <code>Object.wait()</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-•ÛŽ‚³‚ê‚éƒƒbƒN‚ª‚È‚¢ó‘Ô‚ÅA<code>wait</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚±‚Æ‚ÍA<code>IllegalMonitorStateException</code> ‚ðƒXƒ[‚·‚éŒ´ˆö‚É‚È‚è‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍAƒIƒuƒWƒFƒNƒg‚Å–¾‚ç‚©‚ÉƒƒbƒN‚ð•ÛŽ‚·‚é‚±‚Æ‚È‚­A<code>Object.wait()</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
+•ÛŽ‚³‚ê‚éƒƒbƒN‚ª‚È‚¢ó‘Ô‚ÅA<code>wait</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚±‚Æ‚ÍA<code>IllegalMonitorStateException</code> ‚ðƒXƒ[‚·‚é‚±‚Æ‚É‚È‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -5717,7 +5703,29 @@ Boolean ƒIƒuƒWƒFƒNƒg‚Ì“™‰¿«‚ðƒ`ƒFƒbƒN‚·‚é‚½‚ß‚É <code>.equals(...)</code> ‚æ‚è 
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍAƒIƒuƒWƒFƒNƒg‚Å–¾‚ç‚©‚ÉƒƒbƒN‚ð•ÛŽ‚·‚é‚±‚Æ‚È‚­ <code>Object.notify()</code> ‚â <code>Object.notifyAll()</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-•ÛŽ‚³‚ê‚éƒƒbƒN‚ª‚È‚¢ó‘Ô‚ÅA<code>notify</code> ƒƒ\ƒbƒh‚â <code>notifyAll</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚±‚Æ‚ÍA<code>IllegalMonitorStateException</code> ‚ðƒXƒ[‚·‚éŒ´ˆö‚É‚È‚è‚Ü‚·B
+•ÛŽ‚³‚ê‚éƒƒbƒN‚ª‚È‚¢ó‘Ô‚ÅA<code>notify</code> ƒƒ\ƒbƒh‚â <code>notifyAll</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚±‚Æ‚ÍA<code>IllegalMonitorStateException</code> ‚ðƒXƒ[‚·‚é‚±‚Æ‚É‚È‚è‚Ü‚·B
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD">
+    <ShortDescription>ƒtƒB[ƒ‹ƒh‚Ö‚Ì‘ã“ü‚Å‚Í‚È‚­ƒ[ƒJƒ‹•Ï”‚Ö‚ÌŽ©ŒÈ‘ã“ü</ShortDescription>
+    <LongDescription>ƒtƒB[ƒ‹ƒh‚Ö‚Ì‘ã“ü‚Å‚Í‚È‚­ {2} ‚ÌŽ©ŒÈ‘ã“ü‚Å‚·B{1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+‚±‚Ìƒƒ\ƒbƒh‚É‚ÍAƒ[ƒJƒ‹•Ï”‚ÌŽ©ŒÈ‘ã“ü‚ª‚ ‚èAƒ[ƒJƒ‹•Ï”‚ÆƒtƒB[ƒ‹ƒh‚ª“¯‚¶–¼‘O‚Å‚·B<br>
+‚½‚Æ‚¦‚ÎAˆÈ‰º‚Ì‚æ‚¤‚ÈƒR[ƒh‚Å‚·B
+</p>
+<blockquote><pre>
+    int foo;
+    public void setFoo(int foo) {
+        foo = foo;
+    }
+</pre></blockquote>
+<p>
+‚»‚Ì‚æ‚¤‚È‘ã“ü‚Í–ð‚É—§‚¿‚Ü‚¹‚ñB‚»‚¤‚Å‚Í‚È‚­AƒtƒB[ƒ‹ƒh‚É‘ã“ü‚·‚é‚Â‚à‚è‚Å‚µ‚½‚©H
 </p>
 ]]>
     </Details>
@@ -5725,7 +5733,7 @@ Boolean ƒIƒuƒWƒFƒNƒg‚Ì“™‰¿«‚ðƒ`ƒFƒbƒN‚·‚é‚½‚ß‚É <code>.equals(...)</code> ‚æ‚è 
 
   <BugPattern type="SA_LOCAL_SELF_ASSIGNMENT">
     <ShortDescription>ƒ[ƒJƒ‹•Ï”‚ÌŽ©ŒÈ‘ã“ü</ShortDescription>
-    <LongDescription>ƒ[ƒJƒ‹•Ï”‚ÌŽ©ŒÈ‘ã“ü‚Å‚·B{1}</LongDescription>
+    <LongDescription>{2} ‚ÌŽ©ŒÈ‘ã“ü‚Å‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -5739,7 +5747,7 @@ public void foo() {
 }
 </pre></blockquote>
 <p>
-‚»‚Ì‚æ‚¤‚È‘ã“ü‚Í–ð‚É—§‚½‚È‚¢‚Ì‚ÅAƒƒWƒbƒN‚ÌŒë‚è‚©‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚»‚Ì‚æ‚¤‚È‘ã“ü‚Í–ð‚É—§‚½‚È‚¢‚Ì‚ÅA˜_—ƒGƒ‰[‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -5761,7 +5769,7 @@ public void foo() {
 }
 </pre></blockquote>
 <p>
-‚»‚Ì‚æ‚¤‚È‘ã“ü‚Í–ð‚É—§‚½‚È‚¢‚Ì‚ÅAƒƒWƒbƒN‚ÌŒë‚è‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚»‚Ì‚æ‚¤‚È‘ã“ü‚Í–ð‚É—§‚½‚È‚¢‚Ì‚ÅA˜_—ƒGƒ‰[‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -5783,7 +5791,7 @@ public void foo() {
 }
 </pre></blockquote>
 <p>
-‚»‚Ì‚æ‚¤‚È‘ã“ü‚Í–ð‚É—§‚½‚È‚¢‚Ì‚ÅAƒƒWƒbƒN‚ÌŒë‚è‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+ƒtƒB[ƒ‹ƒh‚É2‰ñ‘ã“ü‚·‚é‚±‚Æ‚Í–ð‚É—§‚½‚È‚¢‚Ì‚ÅA˜_—ƒGƒ‰[‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -5795,7 +5803,7 @@ public void foo() {
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh“ñ‚ÍAƒ[ƒJƒ‹•Ï”‚Ì“ñd‘ã“ü‚ª‚ ‚è‚Ü‚·B<br>
+‚±‚Ìƒƒ\ƒbƒh‚É‚ÍAƒ[ƒJƒ‹•Ï”‚Ì“ñd‘ã“ü‚ª‚ ‚è‚Ü‚·B<br>
 ‚½‚Æ‚¦‚ÎAˆÈ‰º‚Ì‚æ‚¤‚ÈƒR[ƒh‚Å‚·B
 </p>
 <blockquote><pre>
@@ -5805,7 +5813,7 @@ public void foo() {
 }
 </pre></blockquote>
 <p>
-•Ï”‚É“¯‚¶’l‚ð“ñ“x‘ã“ü‚·‚é‚±‚Æ‚Í–³ˆÓ–¡‚È‚Ì‚ÅƒƒWƒbƒN‚ÌŒë‚è‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+•Ï”‚É“¯‚¶’l‚ð2‰ñ‘ã“ü‚·‚é‚±‚Æ‚Í–ð‚É—§‚½‚È‚¢‚Ì‚ÅA˜_—ƒGƒ‰[‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -5818,22 +5826,22 @@ public void foo() {
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍAƒtƒB[ƒ‹ƒh‚Æ“¯‚¶ƒtƒB[ƒ‹ƒh‚Ö‚Ì•Ê‚ÌŽQÆ‚Æ‚Ì–³ˆÓ–¡‚ÈŒvŽZ‚ðŽÀs‚µ‚Ä‚¢‚Ü‚· (‚½‚Æ‚¦‚ÎAx &amp; x ‚Ü‚½‚Í x - x)B
-‚±‚ÌŒvŽZ‚Ì«Ž¿‚Ì‚½‚ßA‰‰ŽZ‚ÍˆÓ–¡‚ð‚È‚·‚Æ‚ÍŽv‚í‚ê‚È‚¢‚Ì‚ÅAƒƒWƒbƒN‚ÌŒë‚è‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-ŒvŽZ‚ðÄŠm”F‚µ‚Ä‚­‚¾‚³‚¢B
+‚±‚ÌŒvŽZ‚Ì«Ž¿‚Ì‚½‚ßA‰‰ŽZ‚ÍˆÓ–¡‚ð‚È‚·‚Æ‚ÍŽv‚í‚ê‚È‚¢‚Ì‚ÅA˜_—ƒGƒ‰[‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+ŒvŽZ‚ðƒ`ƒFƒbƒN‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SA_LOCAL_SELF_COMPUTATION">
-    <ShortDescription>•Ï”‚Ì–³ˆÓ–¡‚ÈŽ©ŒÈ‰‰ŽZ</ShortDescription>
+    <ShortDescription>•Ï”‚Ì–³ˆÓ–¡‚ÈŽ©ŒÈ‰‰ŽZ (‚½‚Æ‚¦‚ÎAx &amp; x)</ShortDescription>
     <LongDescription>{2} ‚Æ‚»‚êŽ©g‚Æ‚Ì–³ˆÓ–¡‚ÈŽ©ŒÈ‰‰ŽZ‚Å‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍAƒ[ƒJƒ‹•Ï”‚Æ“¯‚¶•Ï”‚Ö‚Ì•Ê‚ÌŽQÆ‚Æ‚Ì–³ˆÓ–¡‚ÈŒvŽZ‚ðŽÀs‚µ‚Ä‚¢‚Ü‚· (‚½‚Æ‚¦‚ÎAx &amp; x ‚Ü‚½‚Í x - x)B
-‚±‚ÌŒvŽZ‚Ì«Ž¿‚Ì‚½‚ßA‰‰ŽZ‚ÍˆÓ–¡‚ð‚È‚·‚Æ‚ÍŽv‚í‚ê‚È‚¢‚Ì‚ÅAƒƒWƒbƒN‚ÌŒë‚è‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-ŒvŽZ‚ðÄŠm”F‚µ‚Ä‚­‚¾‚³‚¢B
+‚±‚ÌŒvŽZ‚Ì«Ž¿‚Ì‚½‚ßA‰‰ŽZ‚ÍˆÓ–¡‚ð‚È‚·‚Æ‚ÍŽv‚í‚ê‚È‚¢‚Ì‚ÅA˜_—ƒGƒ‰[‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+ŒvŽZ‚ðƒ`ƒFƒbƒN‚µ‚Ä‚­‚¾‚³‚¢B 
 </p>
 ]]>
     </Details>
@@ -5846,7 +5854,7 @@ public void foo() {
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍAƒtƒB[ƒ‹ƒh‚ð‚»‚êŽ©g‚Æ”äŠr‚µ‚Ä‚¢‚Ü‚·B
-ƒƒWƒbƒN‚ÌŒë‚è‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB³‚µ‚¢‚à‚Ì‚Æ”äŠr‚µ‚Ä‚­‚¾‚³‚¢B
+˜_—ƒGƒ‰[‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB³‚µ‚¢‚à‚Ì‚ð”äŠr‚µ‚Ä‚¢‚é‚±‚Æ‚ðŠm”F‚µ‚Ä‚­‚¾‚³‚¢B 
 </p>
 ]]>
     </Details>
@@ -5859,7 +5867,7 @@ public void foo() {
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍAƒ[ƒJƒ‹•Ï”‚ð‚»‚êŽ©g‚Æ”äŠr‚µ‚Ä‚¢‚Ü‚·B
-ƒƒWƒbƒN‚ÌŒë‚è‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB³‚µ‚¢‚à‚Ì‚Æ”äŠr‚µ‚Ä‚­‚¾‚³‚¢B
+˜_—ƒGƒ‰[‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB³‚µ‚¢‚à‚Ì‚ð”äŠr‚µ‚Ä‚¢‚é‚±‚Æ‚ðŠm”F‚µ‚Ä‚­‚¾‚³‚¢B 
 </p>
 ]]>
     </Details>
@@ -5871,27 +5879,27 @@ public void foo() {
     <Details>
 <![CDATA[
 <p>
-<code>Double.longBitsToDouble()</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·‚ª 32ƒrƒbƒg int ’l‚ªˆø”‚Æ‚µ‚Ä“n‚³‚ê‚Ä‚¢‚Ü‚·B
-‚±‚ê‚Í‚Ù‚ÚŠÔˆá‚¢‚È‚­ˆÓ}‚µ‚½‚±‚Æ‚Å‚Í‚È‚­AˆÓ}‚µ‚½Œ‹‰Ê‚ð“¾‚é‰Â”\«‚ª’á‚¢‚Å‚·B
+<code>Double.longBitsToDouble()</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚é‚ªA32ƒrƒbƒg int ’l‚ªˆø”‚Æ‚µ‚Ä“n‚³‚ê‚Ä‚¢‚Ü‚·B
+‚±‚ê‚Í‚Ù‚ÚŠÔˆá‚¢‚È‚­ˆÓ}‚µ‚½‚±‚Æ‚Å‚Í‚È‚­AˆÓ}‚µ‚½Œ‹‰Ê‚ð“¾‚é‰Â”\«‚ª’á‚¢‚Å‚·B 
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DMI_RANDOM_USED_ONLY_ONCE">
-    <ShortDescription>Random ƒIƒuƒWƒFƒNƒg‚ªì¬‚³‚êA1“x‚µ‚©Žg‚í‚ê‚È‚¢</ShortDescription>
+    <ShortDescription>Random ƒIƒuƒWƒFƒNƒg‚ªì¬‚³‚ê1“x‚µ‚©Žg‚í‚ê‚È‚¢</ShortDescription>
     <LongDescription>Random ƒIƒuƒWƒFƒNƒg‚ª¶¬‚³‚êA1“x‚µ‚©Žg‚í‚ê‚Ä‚¢‚Ü‚¹‚ñB{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚ÌƒR[ƒh‚ÍA<code>java.util.Random</code> ƒIƒuƒWƒFƒNƒg‚ðì¬‚µ‚Ä1‚Â‚Ì—”‚ð¶¬‚·‚é‚½‚ß‚ÉŽg—p‚µ‚ÄŽÌ‚Ä‚Ä‚¢‚Ü‚·B
 ‚±‚ê‚Í‚ ‚Ü‚è—Ç‚­‚È‚¢Ž¿‚Ì—”‚ðì‚èo‚µAŒø—¦‚ªˆ«‚¢‚Å‚·B
-‰Â”\‚È‚ç <code>Random</code> ƒIƒuƒWƒFƒNƒg‚ð1‚Â‚¾‚¯ì¬‚µ‚Ä•Û‘¶‚³‚ê‚é‚æ‚¤‚ÉƒR[ƒh‚ð‘‚«’¼‚µ‚Ä‚­‚¾‚³‚¢B
+‚Å‚«‚ê‚ÎA<code>Random</code> ƒIƒuƒWƒFƒNƒg‚ð1‚Â‚¾‚¯ì¬‚µ‚Ä•Û‘¶‚³‚ê‚é‚æ‚¤‚ÉƒR[ƒh‚ð‘‚«’¼‚µ‚Ä‚­‚¾‚³‚¢B
 ‚»‚µ‚ÄAV‚µ‚¢—”‚ª•K—v‚È‚½‚Ñ‚ÉŠù‘¶‚Ì <code>Random</code> ƒIƒuƒWƒFƒNƒg‚Åƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 <p>
-¶¬‚³‚ê‚½—”‚ª„‘ª‰Â”\‚Å‚Í‚È‚¢‚±‚Æ‚ªd—v‚È‚ç—”‚²‚Æ‚ÉV‚µ‚¢ <code>Random</code> ƒIƒuƒWƒFƒNƒg‚ðì¬‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñ (’l‚Í‚ ‚Ü‚è‚ÉŠÈ’P‚É„‘ª‰Â”\‚Å‚·)B
-‚»‚Ì‘ã‚í‚è‚ÉA<code>java.security.SecureRandom</code> ‚ÌŽg—p‚ð‹­‚­ŒŸ“¢‚·‚×‚«‚Å‚· (‚»‚µ‚ÄA•K—v‚Æ‚³‚ê‚é—”‚²‚Æ‚ÉV‚µ‚¢ <code>SecureRandom</code> ‚ÌƒIƒuƒWƒFƒNƒg‚ðì¬‚·‚é‚±‚Æ‚ð‰ñ”ð‚µ‚Ü‚·)B
+¶¬‚³‚ê‚½—”‚ª„‘ª‰Â”\‚Å‚È‚¢‚±‚Æ‚ªd—v‚È‚çA—”‚²‚Æ‚ÉV‚µ‚¢ <code>Random</code> ƒIƒuƒWƒFƒNƒg‚ðì¬‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñ (’l‚Í‚ ‚Ü‚è‚ÉŠÈ’P‚É„‘ª‰Â”\‚Å‚·)B
+‚»‚Ì‘ã‚í‚è‚ÉA<code>java.security.SecureRandom</code> ‚ÌŽg—p‚ð‹­‚­ŒŸ“¢‚·‚é‚×‚«‚Å‚· (‚»‚µ‚ÄA•K—v‚Æ‚³‚ê‚é—”‚²‚Æ‚ÉV‚µ‚¢ <code>SecureRandom</code> ‚ÌƒIƒuƒWƒFƒNƒg‚ðì¬‚·‚é‚±‚Æ‚ð‰ñ”ð‚µ‚Ü‚·)B 
 </p>
 ]]>
     </Details>
@@ -5905,7 +5913,7 @@ public void foo() {
 <![CDATA[
 <p>
 ‚±‚ÌƒR[ƒh‚ÍA•„†•t‚«®”‚Ì—”‚ð¶¬‚µ‚Äâ‘Î’l‚ðŒvŽZ‚µ‚Ä‚¢‚Ü‚·B
-—”ƒWƒFƒlƒŒ[ƒ^‚Å•Ô‚³‚ê‚é”‚ª <code>Integer.MIN_VALUE</code> ‚È‚çŒ‹‰Ê‚Í“¯—l‚É•‰‚Å‚· (<code>Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE</code> ‚È‚Ì‚Å)B
+—”ƒWƒFƒlƒŒ[ƒ^‚Å•Ô‚³‚ê‚é”‚ª <code>Integer.MIN_VALUE</code> ‚È‚çŒ‹‰Ê‚Í“¯—l‚É•‰‚Å‚· (<code>Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE</code> ‚È‚Ì‚Å)B 
 </p>
 ]]>
     </Details>
@@ -5947,31 +5955,30 @@ public void foo() {
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍƒnƒbƒVƒ…ƒR[ƒh‚ðŒvŽZ‚µ‚Ä•Ê‚Ì’l‚ð–@‚Æ‚·‚éè—]‚ðŒvŽZ‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍAƒnƒbƒVƒ…ƒR[ƒh‚ðŒvŽZ‚µ‚Ä•Ê‚Ì’l‚ð–@‚Æ‚·‚éè—]‚ðŒvŽZ‚µ‚Ä‚¢‚Ü‚·B
 ƒnƒbƒVƒ…ƒR[ƒh‚ª•‰‚©‚à‚µ‚ê‚È‚¢‚Ì‚ÅAè—]‰‰ŽZ‚ÌŒ‹‰Ê‚à•‰‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 <p>
-ŒvŽZŒ‹‰Ê‚ª•‰‚Å‚Í‚È‚¢‚±‚Æ‚ðŠm”F‚µ‚½‚¢‚È‚çƒR[ƒh‚ð•ÏX‚·‚é•K—v‚ª‚ ‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-œ”‚ª2‚Ì—Ýæ‚Å‚ ‚é‚±‚Æ‚ª‚í‚©‚Á‚Ä‚¢‚é‚È‚ç‘ã‚í‚è‚Éƒrƒbƒg‰‰ŽZ‚ðŽg—p‚Å‚«‚Ü‚· (‚·‚È‚í‚¿A<code>x.hashCode()%n</code> ‚Ì‘ã‚í‚è‚É <code>x.hashCode()&amp;(n-1)</code> ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢)B
+ŒvŽZŒ‹‰Ê‚ª•‰‚Å‚Í‚È‚¢‚±‚Æ‚ðŠm”F‚µ‚½‚¢‚È‚çAƒR[ƒh‚ð•ÏX‚·‚é•K—v‚ª‚ ‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+œ”‚ª2‚Ì—Ýæ‚Å‚ ‚é‚±‚Æ‚ª‚í‚©‚Á‚Ä‚¢‚é‚È‚çA‘ã‚í‚è‚Éƒrƒbƒg‰‰ŽZ‚ðŽg—p‚Å‚«‚Ü‚· (‚·‚È‚í‚¿A<code>x.hashCode()%n</code> ‚Ì‘ã‚í‚è‚É <code>x.hashCode()&amp;(n-1)</code> ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢)B
 ‚±‚ê‚Í‚¨‚»‚ç‚­Aè—]‚ðŒvŽZ‚·‚é‚æ‚è‚‘¬‚Å‚·B
-‚í‚©‚Á‚Ä‚¢‚È‚¢‚È‚çè—]‰‰ŽZ‚ÌŒ‹‰Ê‚Ìâ‘Î’l‚ðŽæ“¾‚µ‚Ä‚­‚¾‚³‚¢ (‚·‚È‚í‚¿A<code>Math.abs(x.hashCode()%n)</code>)B
+œ”‚ª2‚Ì—Ýæ‚Å‚ ‚é‚Æ‚¢‚¤‚±‚Æ‚ð‚í‚©‚Á‚Ä‚¢‚È‚¢‚È‚çAè—]‰‰ŽZ‚ÌŒ‹‰Ê‚Ìâ‘Î’l‚ðŽæ“¾‚µ‚Ä‚­‚¾‚³‚¢ (‚·‚È‚í‚¿A<code>Math.abs(x.hashCode()%n)</code>)B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE">
-    <ShortDescription>•‰‚Å‚Í‚È‚¢’l‚Æ•‰‚Ì’è”‚Æ‚ÌŠÔˆá‚Á‚½”äŠr</ShortDescription>
-    <LongDescription>•‰‚Å‚Í‚È‚¢’l ‚Æ {2} ‚Æ‚ÌŠÔˆá‚Á‚½”äŠr‚Å‚·B{1}</LongDescription>
+    <ShortDescription>•‰‚Å‚È‚¢’l‚Æ•‰‚Ì’è”‚Æ‚ÌŠÔˆá‚Á‚½”äŠr</ShortDescription>
+    <LongDescription>•‰‚Å‚È‚¢’l ‚Æ {2} ‚Æ‚ÌŠÔˆá‚Á‚½”äŠr‚Å‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍA•‰‚Å‚Í‚È‚¢‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚é’l‚Æ•‰‚Ì’è”‚Æ‚ð”äŠr‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍA•‰‚Å‚È‚¢‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚é’l‚Æ•‰‚Ì’è”‚Æ‚ð”äŠr‚µ‚Ä‚¢‚Ü‚·B 
 </p>
 ]]>
     </Details>
   </BugPattern>
-
 
   <BugPattern type="INT_BAD_COMPARISON_WITH_SIGNED_BYTE">
     <ShortDescription>•„†•t‚«ƒoƒCƒg‚ÌŠÔˆá‚Á‚½”äŠr</ShortDescription>
@@ -5980,7 +5987,7 @@ public void foo() {
 <![CDATA[
 <p>
 •„†•tƒoƒCƒg‚Ì‚Æ‚è‚¤‚é’l‚Ì”ÍˆÍ‚ÍA-128 ` 127‚Å‚·B‚»‚Ì”ÍˆÍŠO‚Å•„†•tƒoƒCƒg‚ð’l‚Æ”äŠr‚·‚é‚±‚Æ‚Í–³ˆÓ–¡‚ÅŠÔˆá‚Á‚Ä‚¢‚»‚¤‚Å‚·B
-•„†•t‚«ƒoƒCƒg <code>b</code> ‚ð”ÍˆÍ‚ª0 ` 255‚Ì•„†‚È‚µƒoƒCƒg‚É•ÏŠ·‚·‚é‚É‚Í <code>0xff &amp; b</code> ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
+•„†•t‚«ƒoƒCƒg <code>b</code> ‚ð”ÍˆÍ‚ª0 ` 255‚Ì•„†‚È‚µƒoƒCƒg‚É•ÏŠ·‚·‚é‚É‚Í <code>0xff &amp; b</code> ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B 
 </p>
 ]]>
     </Details>
@@ -5988,7 +5995,7 @@ public void foo() {
 
   <BugPattern type="INT_VACUOUS_BIT_OPERATION">
     <ShortDescription>®”’l‚Ì–³ˆÓ–¡‚Èƒrƒbƒgƒ}ƒXƒN‰‰ŽZ</ShortDescription>
-    <LongDescription>{3} ‚Å–³ˆÓ–¡‚È {2} ‰‰ŽZ‚Å‚·B{1}</LongDescription>
+    <LongDescription>{3} ‚Ì–³ˆÓ–¡‚È {2} ‰‰ŽZ‚Å‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -5997,39 +6004,42 @@ public void foo() {
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="INT_VACUOUS_COMPARISON">
     <ShortDescription>®”’l‚Ì–³ˆÓ–¡‚È”äŠr</ShortDescription>
     <LongDescription>®”’l‚Ì–³ˆÓ–¡‚È”äŠr‚Å‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-í‚É“¯‚¶’l‚ð•Ô‚·®”‚Ì”äŠr‚ª‚ ‚è‚Ü‚· (‚½‚Æ‚¦‚ÎA<code>x &lt;= Integer.MAX_VALUE</code>)B
+í‚É“¯‚¶’l‚ð•Ô‚·®”‚Ì”äŠr‚ª‚ ‚è‚Ü‚· (‚½‚Æ‚¦‚ÎA<code>x &lt;= Integer.MAX_VALUE</code>)B 
 </p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="INT_BAD_REM_BY_1">
     <ShortDescription>1‚ð–@‚Æ‚·‚é®”‚Ìè—]</ShortDescription>
     <LongDescription>1‚ð–@‚Æ‚·‚é®”‚Ìè—]‚ðŒvŽZ‚µ‚Ä‚¢‚Ü‚·B{1} </LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚Ç‚ñ‚ÈŽ® <code>(exp % 1)</code> ‚àí‚É0‚ð•Ô‚·‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚Ü‚·B
-‚»‚¤‚Å‚Í‚È‚­ <code>(exp &amp; 1)</code> ‚Ü‚½‚Í <code>(exp &amp; 2)</code> ‚ðˆÓ–¡‚µ‚Ä‚¢‚Ü‚µ‚½‚©H
+‚Ç‚ñ‚ÈŽ® <code>(exp % 1)</code> ‚àí‚É 0 ‚ð•Ô‚·‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚Ü‚·B
+‚»‚¤‚Å‚Í‚È‚­A<code>(exp &amp; 1)</code> ‚Ü‚½‚Í <code>(exp &amp; 2)</code> ‚ðˆÓ–¡‚µ‚Ä‚¢‚Ü‚µ‚½‚©H
 </p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="BIT_IOR_OF_SIGNED_BYTE">
     <ShortDescription>•„†•t‚«ƒoƒCƒg’l‚Ìƒrƒbƒg˜_—˜a</ShortDescription>
     <LongDescription>•„†•t‚«ƒoƒCƒg’l‚Ìƒrƒbƒg˜_—˜a‚ðŒvŽZ‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-ƒoƒCƒg”z—ñ‚©‚ç’l‚ðƒ[ƒh‚µ‚Äƒrƒbƒg˜_—˜a‚ðŽÀs‚µ‚Ä‚¢‚Ü‚·B
+ƒoƒCƒg”z—ñ‚©‚ç’l‚ðƒ[ƒh‚µ‚ÄAƒrƒbƒg˜_—˜a‚ðŽÀs‚µ‚Ä‚¢‚Ü‚·B
 ƒrƒbƒg‰‰ŽZ‚ðŽÀs‚·‚é‘O‚ÉƒoƒCƒg”z—ñ‚©‚çƒ[ƒh‚³‚ê‚½’l‚Í32ƒrƒbƒg‚Ü‚Å•„†Šg’£‚³‚ê‚Ü‚·B
 ‚µ‚½‚ª‚Á‚ÄA<code>b[0]</code> ‚Ì’l‚ª <code>0xff</code> ‚ÅA<code>x</code> ‚Ì‰Šú’l‚ª <code>0</code> ‚¾‚Æ‚·‚é‚ÆA
-<code>((x &lt;&lt; 8) | b[0])</code> ‚ÍA<code>0xff</code> ‚ª•„†Šg’£‚Å <code>0xffffffff</code> ‚É‚È‚é‚Ì‚ÅAŒ‹‰Ê‚Æ‚µ‚Ä <code>0xffffffff</code> ‚ª“¾‚ç‚ê‚Ü‚·B
+<code>((x &lt;&lt; 8) | b[0])</code> ‚ÍA<code>0xff</code> ‚ª•„†Šg’£‚Å <code>0xffffffff</code> ‚É‚È‚é‚Ì‚ÅAŒ‹‰Ê‚Æ‚µ‚Ä <code>0xffffffff</code> ‚ª“¾‚ç‚ê‚Ü‚·B 
 </p>
 <p>
 “Á‚ÉAƒoƒCƒg”z—ñ int ‚ÉƒpƒbƒN‚·‚éˆÈ‰º‚Ì‚æ‚¤‚ÈƒR[ƒh‚Í‚Ð‚Ç‚­ŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
@@ -6041,7 +6051,7 @@ for(int i = 0; i &lt; 4; i++) {
 }
 </pre></blockquote>
 <p>
-‚»‚Ì‘ã‚í‚è‚ÉˆÈ‰º‚Ì‚æ‚¤‚ÈƒCƒfƒBƒIƒ€‚Í“®ì‚µ‚Ü‚·B
+‚»‚Ì‘ã‚í‚è‚ÉAˆÈ‰º‚Ì‚æ‚¤‚ÈƒCƒfƒBƒIƒ€‚Í“®ì‚µ‚Ü‚·B
 </p>
 <blockquote><pre>
 int result = 0;
@@ -6062,22 +6072,22 @@ for(int i = 0; i &lt; 4; i++) {
 ƒoƒCƒg’l‚Æ–¾‚ç‚©‚É‰ºˆÊ8ƒrƒbƒg‚ª‚ ‚é‚Æ‚í‚©‚Á‚Ä‚¢‚é’l‚ð‰ÁŽZ‚µ‚Ä‚¢‚Ü‚·B
 ƒrƒbƒg‰‰ŽZ‚ðŽÀs‚·‚é‘O‚ÉƒoƒCƒg”z—ñ‚©‚çƒ[ƒh‚³‚ê‚½’l‚Í32ƒrƒbƒg‚Ü‚Å•„†Šg’£‚³‚ê‚Ü‚·B
 ‚µ‚½‚ª‚Á‚ÄA<code>b[0]</code> ‚Ì’l‚ª <code>0xff</code> ‚ÅA<code>x</code> ‚Ì‰Šú’l‚ª <code>0</code> ‚¾‚Æ‚·‚é‚ÆA
-<code>((x &lt;&lt; 8) + b[0])</code> ‚ÍA<code>0xff</code> ‚ª•„†Šg’£‚Å <code>0xffffffff</code> ‚É‚È‚é‚Ì‚ÅAŒ‹‰Ê‚Æ‚µ‚Ä <code>0xffffffff</code> ‚ª“¾‚ç‚ê‚Ü‚·B
+<code>((x &lt;&lt; 8) + b[0])</code> ‚ÍA<code>0xff</code> ‚ª•„†Šg’£‚Å <code>0xffffffff</code> ‚É‚È‚é‚Ì‚ÅAŒ‹‰Ê‚Æ‚µ‚Ä <code>0xffffffff</code> ‚ª“¾‚ç‚ê‚Ü‚·B 
 </p>
 <p>
-‚Æ‚«‚ÉAƒoƒCƒg”z—ñ int ‚ÉƒpƒbƒN‚·‚éˆÈ‰º‚Ì‚æ‚¤‚ÈƒR[ƒh‚Í‚Ð‚Ç‚­ŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
+“Á‚ÉAƒoƒCƒg”z—ñ int ‚ÉƒpƒbƒN‚·‚éˆÈ‰º‚Ì‚æ‚¤‚ÈƒR[ƒh‚Í‚Ð‚Ç‚­ŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
 </p>
 <blockquote><pre>
 int result = 0;
-for(int i = 0; i &lt; 4; i++)
+for(int i = 0; i &lt; 4; i++) 
   result = ((result &lt;&lt; 8) + b[i]);
 </pre></blockquote>
 <p>
-‚»‚Ì‘ã‚í‚è‚ÉˆÈ‰º‚Ì‚æ‚¤‚ÈƒCƒfƒBƒIƒ€‚Í“®ì‚µ‚Ü‚·B
+‚»‚Ì‘ã‚í‚è‚ÉAˆÈ‰º‚Ì‚æ‚¤‚ÈƒCƒfƒBƒIƒ€‚Í“®ì‚µ‚Ü‚·B
 </p>
 <blockquote><pre>
 int result = 0;
-for(int i = 0; i &lt; 4; i++)
+for(int i = 0; i &lt; 4; i++) 
   result = ((result &lt;&lt; 8) + (b[i] &amp; 0xff));
 </pre></blockquote>
 ]]>
@@ -6086,13 +6096,12 @@ for(int i = 0; i &lt; 4; i++)
 
   <BugPattern type="BIT_AND">
     <ShortDescription>ŒÝŠ·«‚Ì‚È‚¢ƒrƒbƒgƒ}ƒXƒN</ShortDescription>
-    <LongDescription>(e &amp; {2} == {3}) ‚ÅŒÝŠ·«‚Ì‚È‚¢ƒrƒbƒgƒ}ƒXƒN’è”‚ÌŒ‹‰Ê‚ð“¾‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <LongDescription>(e &amp; {2} == {3}) ‚ÌŒÝŠ·«‚Ì‚È‚¢ƒrƒbƒgƒ}ƒXƒN‚ÍA’è”‚ÌŒ‹‰Ê‚ð‚à‚½‚ç‚µ‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍA<code>(e &amp; C)</code> Œ`Ž®‚ÌŽ®‚ð <code>D</code> ‚Æ”äŠr‚µ‚Ä‚¢‚Ü‚·B
-’è” <code>C</code> ‚Æ <code>D </code> ‚Ì“Á’è‚Ì’l‚Ì‚½‚ß‚ÉAí‚É“™‚µ‚­‚È‚¢‚±‚Æ‚ð”äŠr‚µ‚Ü‚·B
-ƒƒWƒbƒN‚ÌŒë‚è‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚±‚Ìƒƒ\ƒbƒh‚ÍA<i>(e &amp; C)</i> Œ`Ž®‚ÌŽ®‚ð <i>D</i> ‚Æ”äŠr‚µ‚Ä‚¢‚Ü‚·B
+’è” <i>C</i> ‚Ì“Á’è‚Ì’l‚Æ <i>D</i> ‚Ì‚½‚ß‚ÉAí‚É•s“™‚Å‚ ‚é‚±‚Æ‚ð”äŠr‚·‚é‚Å‚µ‚å‚¤B˜_—ƒGƒ‰[‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 
 ]]>
@@ -6100,14 +6109,14 @@ for(int i = 0; i &lt; 4; i++)
   </BugPattern>
 
   <BugPattern type="BIT_SIGNED_CHECK">
-    <ShortDescription>ƒrƒbƒg‰‰ŽZ‚Ì•„†‚ðƒ`ƒFƒbƒN‚µ‚Ä‚¢‚È‚¢</ShortDescription>
+    <ShortDescription>ƒrƒbƒg‰‰ŽZ‚Ì•„†‚ðƒ`ƒFƒbƒN‚·‚é</ShortDescription>
     <LongDescription>ƒrƒbƒg‰‰ŽZ‚Ì•„†‚ðƒ`ƒFƒbƒN‚µ‚Ä‚­‚¾‚³‚¢B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍA<code>((event.detail &amp; SWT.SELECTED) &gt; 0)</code> ‚Ì‚æ‚¤‚ÈŽ®‚ð”äŠr‚µ‚Ä‚¢‚Ü‚·B
 ƒrƒbƒg‰‰ŽZ‚ð‚æ‚è‘å‚«‚¢‰‰ŽZŽq‚Å”äŠr‚·‚é‚±‚Æ‚ÍA—\‘zŠO‚ÌŒ‹‰Ê (‚à‚¿‚ë‚ñA<code>SWT.SELECTED</code> ‚Ì’l‚É‚æ‚é) ‚ÌŒ´ˆö‚É‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
-<code>SWT.SELECTED</code> ‚ª•‰”‚Å‚ ‚é‚È‚ç‚±‚ê‚ÍƒoƒO‚ÌŒó•â‚Å‚·B
+<code>SWT.SELECTED</code> ‚ª•‰”‚Å‚ ‚é‚È‚çA‚±‚ê‚ÍƒoƒO‚ÌŒó•â‚Å‚·B
 <code>SWT.SELECTED</code> ‚ª•‰‚Å‚Í‚È‚¢‚Æ‚µ‚Ä‚àA'&gt; 0' ‚Ì‘ã‚í‚è‚É '!= 0' ‚ðŽg‚¤‚±‚Æ‚Í—Ç‚¢ƒvƒ‰ƒNƒeƒBƒX‚ÆŽv‚í‚ê‚Ü‚·B
 </p>
 <p>
@@ -6125,7 +6134,7 @@ Boris Bokowski
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍA<code>((event.detail &amp; SWT.SELECTED) &gt; 0)</code> ‚Ì‚æ‚¤‚ÈŽ®‚ð”äŠr‚µ‚Ä‚¢‚Ü‚·B
 ƒrƒbƒg‰‰ŽZ‚ð‚æ‚è‘å‚«‚¢‰‰ŽZŽq‚Å”äŠr‚·‚é‚±‚Æ‚ÍA—\‘zŠO‚ÌŒ‹‰Ê (‚à‚¿‚ë‚ñA<code>SWT.SELECTED</code> ‚Ì’l‚É‚æ‚é) ‚ÌŒ´ˆö‚É‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
-<code>SWT.SELECTED</code> ‚ª•‰”‚Å‚ ‚é‚È‚ç‚±‚ê‚ÍƒoƒO‚ÌŒó•â‚Å‚·B
+<code>SWT.SELECTED</code> ‚ª•‰”‚Å‚ ‚é‚È‚çA‚±‚ê‚ÍƒoƒO‚ÌŒó•â‚Å‚·B
 <code>SWT.SELECTED</code> ‚ª•‰‚Å‚Í‚È‚¢‚Æ‚µ‚Ä‚àA'&gt; 0' ‚Ì‘ã‚í‚è‚É '!= 0' ‚ðŽg‚¤‚±‚Æ‚Í—Ç‚¢ƒvƒ‰ƒNƒeƒBƒX‚ÆŽv‚í‚ê‚Ü‚·B
 </p>
 <p>
@@ -6141,8 +6150,7 @@ Boris Bokowski
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍA<code>(e &amp; 0)</code> Œ`Ž®‚ÌŽ®‚ð0‚Æ”äŠr‚µ‚Ä‚¢‚Ü‚·B
-‚»‚ê‚ÍAí‚É“™‚µ‚¢‚±‚Æ‚ð”äŠr‚µ‚Ü‚·BƒƒWƒbƒN‚ÌŒë‚è‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚±‚Ìƒƒ\ƒbƒh‚ÍA<i>(e &amp; 0)</i> Œ`Ž®‚ÌŽ®‚ð 0 ‚Æ”äŠr‚µ‚Ä‚¢‚Ü‚·B‚»‚ê‚ÍAí‚É“™‰¿‚Å‚ ‚é‚±‚Æ‚ð”äŠr‚µ‚Ü‚·B˜_—ƒGƒ‰[‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -6150,12 +6158,12 @@ Boris Bokowski
 
   <BugPattern type="BIT_IOR">
     <ShortDescription>ŒÝŠ·«‚Ì‚È‚¢ƒrƒbƒgƒ}ƒXƒN</ShortDescription>
-    <LongDescription>(e | {2} == {3}) ‚ÅŒÝŠ·«‚Ì‚È‚¢ƒrƒbƒgƒ}ƒXƒN’è”‚ÌŒ‹‰Ê‚ð“¾‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <LongDescription>(e | {2} == {3}) ‚ÌŒÝŠ·«‚Ì‚È‚¢ƒrƒbƒgƒ}ƒXƒN‚ÍA’è”‚ÌŒ‹‰Ê‚ð‚à‚½‚ç‚µ‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍA<code>(e | C)</code> Œ`Ž®‚ÌŽ®‚ð <code>D</code> ‚Æ”äŠr‚µ‚Ä‚¢‚Ü‚·B
-’è” <code>C</code> ‚Æ <code>D</code> ‚Ì“Á’è‚Ì’l‚Ì‚½‚ß‚ÉAí‚É“™‚µ‚­‚È‚¢‚±‚Æ‚ð”äŠr‚µ‚Ü‚·BƒƒWƒbƒN‚ÌŒë‚è‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+’è” <i>C</i> ‚Ì“Á’è‚Ì’l‚Æ <i>D</i> ‚Ì‚½‚ß‚ÉAí‚É•s“™‚Å‚ ‚é‚±‚Æ‚ð”äŠr‚·‚é‚Å‚µ‚å‚¤B˜_—ƒGƒ‰[‚©ƒ^ƒCƒvƒ~ƒX‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 <p>
 “TŒ^“I‚ÉA‚±‚ÌƒoƒO‚ÍAƒrƒbƒgƒZƒbƒg‚Å‹A‘®ŠÖŒW‚ÌƒeƒXƒg‚ðŽÀs‚µ‚½‚¢ƒR[ƒh‚Å”­¶‚µ‚Ü‚·B
@@ -6183,15 +6191,16 @@ For more information, see the
   </BugPattern>
 
   <BugPattern type="LI_LAZY_INIT_STATIC">
-    <ShortDescription>static ƒtƒB[ƒ‹ƒh‚É‚æ‚éŒë‚Á‚½’x‰„‰Šú‰»</ShortDescription>
-    <LongDescription>static ƒtƒB[ƒ‹ƒh {2} ‚É‚æ‚éŒë‚Á‚½’x‰„‰Šú‰»B{1}</LongDescription>
+    <ShortDescription>static ƒtƒB[ƒ‹ƒh‚ÌŠÔˆá‚Á‚½’x‰„‰Šú‰»</ShortDescription>
+    <LongDescription>static ƒtƒB[ƒ‹ƒh {2} ‚ÌŠÔˆá‚Á‚½’x‰„‰Šú‰»B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚É‚ÍAvolatile ‚Å‚Í‚È‚¢ static ƒtƒB[ƒ‹ƒh‚ð“¯Šú‰»‚µ‚Ä‚¢‚È‚¢’x‰„‰Šú‰»‚ª‚ ‚è‚Ü‚·B
-ƒRƒ“ƒpƒCƒ‰‚âƒvƒƒZƒbƒT‚ª–½—ß‚ð•À‚×‘Ö‚¦‚é‚©‚à‚µ‚ê‚È‚¢‚Ì‚ÅAƒƒ\ƒbƒh‚ª•¡”‚ÌƒXƒŒƒbƒh‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚é‚©‚à‚µ‚ê‚È‚¢‚È‚çƒXƒŒƒbƒh‚ÍŠ®‘S‚É‰Šú‰»‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ðŒ©‚é‚Æ‚Í•ÛØ‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB
+‚±‚Ìƒƒ\ƒbƒh‚É‚ÍAvolatile ‚Å‚È‚¢ static ƒtƒB[ƒ‹ƒh‚Ì”ñ“¯Šú‚È’x‰„‰Šú‰»‚ª‚ ‚è‚Ü‚·B
+ƒRƒ“ƒpƒCƒ‰‚âƒvƒƒZƒbƒT‚ª–½—ß‚ð•À‚×‘Ö‚¦‚é‚©‚à‚µ‚ê‚È‚¢‚Ì‚ÅAƒƒ\ƒbƒh‚ª•¡”‚ÌƒXƒŒƒbƒh‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚é‚©‚à‚µ‚ê‚È‚¢‚È‚çA
+ƒXƒŒƒbƒh‚ÍŠ®‘S‚É‰Šú‰»‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ðŒ©‚é‚Æ‚Í•ÛØ‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB
 ƒtƒB[ƒ‹ƒh‚ÉƒAƒNƒZƒX‚µ‚½Û‚ÉA’†“r”¼’[‚É‰Šú‰»‚³‚ê‚½ƒCƒ“ƒXƒ^ƒ“ƒX‚ªŒ©‚¦‚Ä‚µ‚Ü‚¤ŠëŒ¯‚ª‚ ‚è‚Ü‚·B
-‚±‚Ì–â‘è‚ðC³‚·‚é‚½‚ß‚ÉƒtƒB[ƒ‹ƒh‚ð volatile ‚É‚Å‚«‚Ü‚·B<br>
+‚±‚Ì–â‘è‚ðC³‚·‚é‚½‚ß‚ÉAƒtƒB[ƒ‹ƒh‚ð volatile ‚É‚Å‚«‚Ü‚·B<br>
 Ú×‚ÍA<a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Java Memory Model web site</a> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
@@ -6199,15 +6208,15 @@ For more information, see the
   </BugPattern>
 
   <BugPattern type="LI_LAZY_INIT_UPDATE_STATIC">
-    <ShortDescription>XV‚³‚ê‚é static ƒtƒB[ƒ‹ƒh‚É‚æ‚éŒë‚Á‚½’x‰„‰Šú‰»</ShortDescription>
-    <LongDescription>XV‚³‚ê‚é static ƒtƒB[ƒ‹ƒh {2} ‚É‚æ‚éŒë‚Á‚½’x‰„‰Šú‰»B{1}</LongDescription>
+    <ShortDescription>XV‚³‚ê‚é static ƒtƒB[ƒ‹ƒh‚ÌŠÔˆá‚Á‚½’x‰„‰Šú‰»</ShortDescription>
+    <LongDescription>XV‚³‚ê‚é static ƒtƒB[ƒ‹ƒh {2} ‚ÌŠÔˆá‚Á‚½’x‰„‰Šú‰»B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚É‚ÍAstatic ƒtƒB[ƒ‹ƒh‚ð“¯Šú‰»‚µ‚Ä‚¢‚È‚¢’x‰„‰Šú‰»‚ª‚ ‚è‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚É‚ÍAstatic ƒtƒB[ƒ‹ƒh‚Ì”ñ“¯Šú‚È’x‰„‰Šú‰»‚ª‚ ‚è‚Ü‚·B
 ƒtƒB[ƒ‹ƒh‚ªÝ’è‚³‚ê‚½‚ ‚ÆA‚»‚ÌêŠ‚ÉŠi”[‚³‚ê‚éƒIƒuƒWƒFƒNƒg‚Í‚³‚ç‚ÉXV‚³‚ê‚é‚©ƒAƒNƒZƒX‚³‚ê‚Ü‚·B
-ƒtƒB[ƒ‹ƒh‚ªÝ’è‚³‚ê‚é‚Æ‚·‚®‚ÉA‚»‚ÌƒtƒB[ƒ‹ƒh‚ÌÝ’è‚Í‘¼‚ÌƒXƒŒƒbƒh‚ÉŒ©‚¦‚Ü‚·B
-ƒtƒB[ƒ‹ƒh‚ðÝ’è‚·‚é‚³‚ç‚È‚éƒAƒNƒZƒX‚ªƒIƒuƒWƒFƒNƒg‚ð‰Šú‰»‚·‚é‚Ì‚É–ð‚É—§‚Â‚È‚ç
+‚»‚ê‚ªÝ’è‚³‚ê‚é‚Æ‚·‚®‚ÉA‚»‚ÌƒtƒB[ƒ‹ƒh‚ÌÝ’è‚Í‘¼‚ÌƒXƒŒƒbƒh‚ÉŒ©‚¦‚Ü‚·B
+ƒtƒB[ƒ‹ƒh‚ðÝ’è‚·‚é‚³‚ç‚È‚éƒAƒNƒZƒX‚ªƒIƒuƒWƒFƒNƒg‚ð‰Šú‰»‚·‚é‚Ì‚É–ð‚É—§‚Â‚È‚çA
 ‚»‚ê‚ªŠ®‘S‚É‰Šú‰»‚³‚ê‚é‚Ü‚Å‚Ç‚ñ‚È‘¼‚ÌƒXƒŒƒbƒh‚àŠi”[‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ÉƒAƒNƒZƒX‚·‚é‚Ì‚ð–h‚ª‚È‚¢ŒÀ‚èA”ñí‚É[‚Èƒ}ƒ‹ƒ`ƒXƒŒƒbƒhƒoƒO‚ª‚ ‚è‚Ü‚·B
 </p>
 <p>
@@ -6231,6 +6240,20 @@ For more information, see the
     </Details>
   </BugPattern>
 
+  <BugPattern type="JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT">
+    <ShortDescription>util.concurrent ’ŠÛ‰»‚Åƒ‚ƒjƒ^ƒXƒ^ƒCƒ‹‚Ì wait ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>{3.name} ‚Å‚Í‚È‚­ {2.name} ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚éB{1}</LongDescription>
+<Details>
+<![CDATA[
+<p>
+‚±‚Ìƒƒ\ƒbƒh‚ÍA<code>await()</code> ƒƒ\ƒbƒhA<code>signal</code> ƒƒ\ƒbƒhA<code>signalAll</code> ƒƒ\ƒbƒh‚ð’ñ‹Ÿ‚·‚éƒIƒuƒWƒFƒNƒg
+(‚½‚Æ‚¦‚ÎAutil.concurrent ‚Ì Condition ƒIƒuƒWƒFƒNƒg) ‚ÅA<code>wait</code> ƒƒ\ƒbƒhA<code>notify</code> ƒƒ\ƒbƒhA<code>notifyAll</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ê‚Í‚¨‚»‚ç‚­‚ ‚È‚½‚ª–]‚Þ‚±‚Æ‚Å‚Í‚ ‚è‚Ü‚¹‚ñB‚½‚Æ‚¦‚»‚ê‚ð–]‚Þ‚Æ‚µ‚Ä‚àA‘¼‚ÌŠJ”­ŽÒ‚ª”ñí‚É•´‚ç‚í‚µ‚¢‚±‚Æ‚ð—‰ð‚µ‚ÄAÝŒv‚ð•ÏX‚·‚é‚±‚Æ‚ðŒŸ“¢‚·‚é‚×‚«‚Å‚·B
+</p>
+]]>
+</Details>
+  </BugPattern>
+
   <BugPattern type="JLM_JSR166_UTILCONCURRENT_MONITORENTER">
     <ShortDescription>java.util.concurrent ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å“¯Šú‰»‚µ‚Ä‚¢‚é</ShortDescription>
     <LongDescription>{2} ‚Å“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
@@ -6238,7 +6261,7 @@ For more information, see the
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍAjava.util.concurrent ƒpƒbƒP[ƒW‚ÌƒNƒ‰ƒX (‚Ü‚½‚ÍAƒTƒuƒNƒ‰ƒX) ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ê‚ç‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ÍƒL[ƒ[ƒh <code>synchronized</code> ‚ÌŽg—p‚Æ‚Íˆá‚¤ŒÝŠ·«‚Ì‚È‚¢Ž©g‚Ì“¯Žž§ŒäƒƒJƒjƒYƒ€‚ðŽ‚Á‚Ä‚¢‚Ü‚·B
+‚±‚ê‚ç‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ÍA<code>synchronized</code> ‚ÌŽg—p‚Æ‚Íˆá‚¤ŒÝŠ·«‚Ì‚È‚¢‚»‚ê‚çŽ©g‚Ì“¯Žž§ŒäƒƒJƒjƒYƒ€‚ðŽ‚Á‚Ä‚¢‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -6251,11 +6274,12 @@ For more information, see the
 <![CDATA[
 <p>
 ‚±‚Ì private ƒƒ\ƒbƒh‚ÍAŒˆ‚µ‚ÄŒÄ‚Ño‚³‚ê‚Ü‚¹‚ñB
-ƒƒ\ƒbƒh‚ªƒŠƒtƒŒƒNƒVƒ‡ƒ“‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚é‚©‚à‚µ‚ê‚È‚¢‚ªŒˆ‚µ‚ÄŽg‚í‚ê‚È‚¢‚È‚çíœ‚·‚×‚«‚Å‚·B
+ƒƒ\ƒbƒh‚ªƒŠƒtƒŒƒNƒVƒ‡ƒ“‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚é‚©‚à‚µ‚ê‚È‚¢‚ªAŒˆ‚µ‚ÄŽg‚í‚ê‚È‚¢‚È‚çœ‹Ž‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS">
     <ShortDescription>ŒÄ‚Ño‚µ•s‰Â”\‚Èƒƒ\ƒbƒh‚ª–³–¼ƒNƒ‰ƒX‚Å’è‹`‚³‚ê‚Ä‚¢‚é</ShortDescription>
     <LongDescription>ŒÄ‚Ño‚µ•s‰Â”\‚Èƒƒ\ƒbƒh {1} ‚ª–³–¼ƒNƒ‰ƒX‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
@@ -6265,7 +6289,7 @@ For more information, see the
 ‚±‚Ì–³–¼ƒNƒ‰ƒX‚ÍA’¼ÚŒÄ‚Ño‚³‚ê‚È‚¢AƒX[ƒp[ƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚È‚¢ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
 ‘¼‚ÌƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚ª–³–¼ƒNƒ‰ƒX‚ÅéŒ¾‚³‚ê‚½ƒƒ\ƒbƒh‚ð’¼ÚŒÄ‚Ño‚¹‚È‚¢‚Ì‚ÅA‚±‚Ìƒƒ\ƒbƒh‚ÍŒÄ‚Ño‚µ•s‰Â”\‚Å‚ ‚é‚ÆŽv‚í‚ê‚Ü‚·B
 ƒƒ\ƒbƒh‚Í’P‚ÉƒfƒbƒhƒR[ƒh‚Å‚ ‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB‚µ‚©‚µAƒƒ\ƒbƒh‚ªƒX[ƒp[ƒNƒ‰ƒX‚ÅéŒ¾‚³‚ê‚éƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚é‚±‚Æ‚ðˆÓ}‚µ‚½‰Â”\«‚à‚ ‚è‚Ü‚·B
-‚»‚µ‚ÄAƒ^ƒCƒvƒ~ƒX‚Ü‚½‚Í‘¼‚ÌŒë‚è‚Ì‚½‚ß‚ÉAƒƒ\ƒbƒh‚ÍAŽÀÛA‚»‚ê‚ªˆÓ–¡‚³‚ê‚éƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ü‚¹‚ñB
+‚»‚µ‚ÄAƒ^ƒCƒvƒ~ƒX‚Ü‚½‚Í‘¼‚ÌŒë‚è‚Ì‚½‚ß‚ÉAƒƒ\ƒbƒh‚ÍAŽÀÛA‚»‚ê‚ªˆÓ}‚³‚ê‚éƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -6277,10 +6301,10 @@ For more information, see the
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍAƒf[ƒ^ƒx[ƒXƒŠƒ\[ƒX (‚½‚Æ‚¦‚ÎAƒf[ƒ^ƒx[ƒXƒRƒlƒNƒVƒ‡ƒ“‚âsƒZƒbƒg) ‚ðì¬‚µ‚Ä‚¢‚Ü‚·‚ªA
+‚±‚Ìƒƒ\ƒbƒh‚ÍAƒf[ƒ^ƒx[ƒXƒŠƒ\[ƒX (‚½‚Æ‚¦‚ÎAƒf[ƒ^ƒx[ƒXƒRƒlƒNƒVƒ‡ƒ“‚âsƒZƒbƒg) ‚ðì¬‚µ‚Ä‚¢‚é‚ªA
 ‚Ç‚ñ‚ÈƒtƒB[ƒ‹ƒh‚É‚à‘ã“ü‚µ‚Ä‚¢‚È‚¢‚µA‘¼‚Ìƒƒ\ƒbƒh‚É‚à“n‚µ‚Ä‚¢‚È‚¢‚µA–ß‚è’l‚É‚à‚µ‚Ä‚¢‚Ü‚¹‚ñB
-‚Â‚Ü‚èAƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚ÌŒo˜H‚ÅƒIƒuƒWƒFƒNƒg‚ðƒNƒ[ƒY‚·‚é‚æ‚¤‚ÉŒ©‚¦‚é‚Æ‚¢‚¤‚í‚¯‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
-ƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚ÌŒo˜H‚Åƒf[ƒ^ƒx[ƒXƒŠƒ\[ƒX‚ÌƒNƒ[ƒYŽ¸”s‚Í—Ç‚­‚È‚¢ƒpƒtƒH[ƒ}ƒ“ƒX‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚»‚µ‚ÄAƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚ÌŒo˜H‚ÅƒIƒuƒWƒFƒNƒg‚ðƒNƒ[ƒY‚·‚é‚æ‚¤‚ÉŒ©‚¦‚Ü‚¹‚ñB
+ƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚ÌŒo˜H‚Åƒf[ƒ^ƒx[ƒXƒŠƒ\[ƒX‚ÌƒNƒ[ƒYŽ¸”s‚Í—Ç‚­‚È‚¢«”\‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 ƒf[ƒ^ƒx[ƒX‚Æ‚Ì’ÊM‚Å–â‘è‚ª‚ ‚éƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌŒ´ˆö‚É‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
@@ -6288,15 +6312,15 @@ For more information, see the
   </BugPattern>
 
   <BugPattern type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH">
-    <ShortDescription>—áŠO‚Åƒf[ƒ^ƒx[ƒXƒŠƒ\[ƒX‚ÌƒNƒ[ƒY‚ÉŽ¸”s‚·‚é‚©‚à‚µ‚ê‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>{1} ‚ÍA—áŠO‚Åƒf[ƒ^ƒx[ƒXƒŠƒ\[ƒX‚ÌƒNƒ[ƒY‚ÉŽ¸”s‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>—áŠOŒo˜H‚Åƒf[ƒ^ƒx[ƒXƒŠƒ\[ƒX‚ÌƒNƒ[ƒY‚ÉŽ¸”s‚·‚é‚©‚à‚µ‚ê‚È‚¢ƒƒ\ƒbƒh</ShortDescription>
+    <LongDescription>{1} ‚ÍA—áŠOŒo˜H‚Åƒf[ƒ^ƒx[ƒXƒŠƒ\[ƒX‚ÌƒNƒ[ƒY‚ÉŽ¸”s‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍAƒf[ƒ^ƒx[ƒXƒŠƒ\[ƒX (‚½‚Æ‚¦‚ÎAƒf[ƒ^ƒx[ƒXƒRƒlƒNƒVƒ‡ƒ“‚âsƒZƒbƒg) ‚ðì¬‚µ‚Ä‚¢‚Ü‚·‚ªA
+‚±‚Ìƒƒ\ƒbƒh‚ÍAƒf[ƒ^ƒx[ƒXƒŠƒ\[ƒX (‚½‚Æ‚¦‚ÎAƒf[ƒ^ƒx[ƒXƒRƒlƒNƒVƒ‡ƒ“‚âsƒZƒbƒg) ‚ðì¬‚µ‚Ä‚¢‚é‚ªA
 ‚Ç‚ñ‚ÈƒtƒB[ƒ‹ƒh‚É‚à‘ã“ü‚µ‚Ä‚¢‚È‚¢‚µA‘¼‚Ìƒƒ\ƒbƒh‚É‚à“n‚µ‚Ä‚¢‚È‚¢‚µA–ß‚è’l‚É‚à‚µ‚Ä‚¢‚Ü‚¹‚ñB
-‚Â‚Ü‚èAƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚Ì—áŠOŒo˜H‚ÅƒIƒuƒWƒFƒNƒg‚ðƒNƒ[ƒY‚·‚é‚æ‚¤‚ÉŒ©‚¦‚é‚Æ‚¢‚¤‚í‚¯‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
-ƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚ÌŒo˜H‚Åƒf[ƒ^ƒx[ƒXƒŠƒ\[ƒX‚ÌƒNƒ[ƒYŽ¸”s‚Í—Ç‚­‚È‚¢ƒpƒtƒH[ƒ}ƒ“ƒX‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚»‚µ‚ÄAƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚Ì—áŠOŒo˜H‚ÅƒIƒuƒWƒFƒNƒg‚ðƒNƒ[ƒY‚·‚é‚æ‚¤‚ÉŒ©‚¦‚Ü‚¹‚ñB
+ƒƒ\ƒbƒh‚©‚ç‚Ì‚·‚×‚Ä‚ÌŒo˜H‚Åƒf[ƒ^ƒx[ƒXƒŠƒ\[ƒX‚ÌƒNƒ[ƒYŽ¸”s‚Í—Ç‚­‚È‚¢«”\‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 ƒf[ƒ^ƒx[ƒX‚Æ‚Ì’ÊM‚Å–â‘è‚ª‚ ‚éƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌŒ´ˆö‚É‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
 </p>
 ]]>
@@ -6310,10 +6334,11 @@ For more information, see the
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍAƒ‹[ƒv‚Ì’†‚Å + ‚ðŽg—p‚µ‚Ä <code>String</code> ‚ð\’z‚µ‚Ä‚¢‚é‚ÆŽv‚í‚ê‚Ü‚·B
-ŠeX‚ÌŒJ‚è•Ô‚µ‚É‚¨‚¢‚ÄA<code>String</code> ‚Í <code>StringBuffer</code>/<code>StringBuilder</code> ‚É•ÏŠ·A’Ç‰ÁA<code>String</code> ‚ÖÄ•ÏŠ·‚³‚ê‚Ü‚·B
+ŠeX‚ÌŒJ‚è•Ô‚µ‚É‚¨‚¢‚ÄA<code>String</code> ‚Í <code>StringBuffer</code>/<code>StringBuilder</code> ‚É•ÏŠ·A’Ç‰Á‚³‚êA<code>String</code> ‚Ö•ÏŠ·‚³‚ê‚Ü‚·B
+ŠeX‚ÌŒJ‚è•Ô‚µ‚Å•¶Žš—ñ‚ªÄƒRƒs[‚³‚ê‘‘å‚·‚é‚ÆAŒJ‚è•Ô‚µ‚Ì”‚Å“ñŽŸƒRƒXƒg‚ÌŒ´ˆö‚É‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
 </p>
 <p>
-–¾Ž¦“I‚ÉA<code>StringBuffer</code> (‚Ü‚½‚Í J2SE 5.0‚Ì <code>StringBuilder</code>) ‚ðŽg‚¤‚±‚Æ‚ÅA‚æ‚è—Ç‚¢ƒpƒtƒH[ƒ}ƒ“ƒX‚ð“¾‚ç‚ê‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+–¾Ž¦“I‚ÉA<code>StringBuffer</code> (‚Ü‚½‚Í J2SE 5.0‚Ì <code>StringBuilder</code>) ‚ðŽg‚¤‚±‚Æ‚ÅA‚æ‚è—Ç‚¢«”\‚ð“¾‚ç‚ê‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 <p>
 ‚½‚Æ‚¦‚ÎA
@@ -6337,34 +6362,34 @@ String s = buf.toString();
   </BugPattern>
 
   <BugPattern type="ITA_INEFFICIENT_TO_ARRAY">
-    <ShortDescription>’·‚³‚ª0‚Ì”z—ñ‚Ìˆø”‚Å toArray ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>{1} ‚ÍA’·‚³‚ª0‚Ì”z—ñ‚Ìˆø”‚Å Collection.toArray() ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>’·‚³‚ª 0 ‚Ì”z—ñ‚Ìˆø”‚Å toArray ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
+    <LongDescription>{1} ‚ÍA’·‚³‚ª 0 ‚Ì”z—ñ‚Ìˆø”‚Å Collection.toArray() ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍACollection ”h¶ƒNƒ‰ƒX‚Ì </code>toArray</code> ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ä’·‚³‚ª0‚Ì”z—ñ‚Ìˆø”‚ð“n‚µ‚Ä‚¢‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍACollection ”h¶ƒNƒ‰ƒX‚Ì </code>toArray</code> ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ä’·‚³‚ª 0 ‚Ì”z—ñ‚Ìˆø”‚ð“n‚µ‚Ä‚¢‚Ü‚·B
 <code>myCollection.toArray(new Foo[myCollection.size()])</code> ‚ðŽg—p‚·‚é•û‚ª‚æ‚èŒø—¦“I‚Å‚·B
-“n‚³‚ê‚é”z—ñ‚ªƒRƒŒƒNƒVƒ‡ƒ“‚Ì—v‘f‚Ì‚·‚×‚Ä‚ðŠi”[‚Å‚«‚é‚­‚ç‚¢‚Ì‘å‚«‚³‚È‚çƒf[ƒ^‚ª“Ç‚Ýž‚Ü‚ê‚ÄA‚»‚Ì‚Ü‚Ü•Ô‚Á‚Ä‚«‚Ü‚·B
-‚±‚ê‚ÍŒ‹‰Ê‚Æ‚µ‚Ä•Ô‚·2”Ô–Ú‚Ì”z—ñ (ƒŠƒtƒŒƒNƒVƒ‡ƒ“‚É‚æ‚Á‚Ä) ‚ðì¬‚·‚é•K—v‚ð‰ñ”ð‚µ‚Ü‚·B
+“n‚³‚ê‚é”z—ñ‚ªƒRƒŒƒNƒVƒ‡ƒ“‚Ì—v‘f‚Ì‚·‚×‚Ä‚ðŠi”[‚Å‚«‚é‚­‚ç‚¢‚Ì‘å‚«‚³‚È‚çAƒf[ƒ^‚ª“Ç‚Ýž‚Ü‚ê‚ÄA‚»‚Ì‚Ü‚Ü•Ô‚³‚ê‚Ü‚·B
+‚±‚ê‚ÍAŒ‹‰Ê‚Æ‚µ‚Ä•Ô‚·2”Ô–Ú‚Ì”z—ñ (ƒŠƒtƒŒƒNƒVƒ‡ƒ“‚É‚æ‚Á‚Ä) ‚ðì¬‚·‚é•K—v‚ð‰ñ”ð‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD">
-    <ShortDescription>run ƒƒ\ƒbƒh‚Å‚Ì JUnit ƒAƒT[ƒVƒ‡ƒ“‚ÍAJUnit ‚É‚æ‚Á‚Ä’Ê’m‚³‚ê‚È‚¢</ShortDescription>
+    <ShortDescription>run ƒƒ\ƒbƒh‚Å‚Ì JUnit ƒAƒT[ƒVƒ‡ƒ“‚Í JUnit ‚É‚æ‚Á‚Ä’Ê’m‚³‚ê‚È‚¢</ShortDescription>
     <LongDescription>{1} ‚Å‚Ì JUnit ƒAƒT[ƒVƒ‡ƒ“‚ÍAJUnit ‚É‚æ‚Á‚Ä’Ê’m‚³‚ê‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
 <code>run</code> ƒƒ\ƒbƒh‚Å JUnit ƒAƒT[ƒVƒ‡ƒ“‚ªŽÀs‚³‚ê‚Ä‚¢‚Ü‚·BŽ¸”s‚µ‚½ JUnit ƒAƒT[ƒVƒ‡ƒ“‚Í—áŠO‚ðƒXƒ[‚µ‚Ü‚·B
-‚µ‚½‚ª‚Á‚ÄA‚±‚Ì—áŠO‚ªƒeƒXƒgƒƒ\ƒbƒh‚ðŽÀs‚µ‚½ƒXƒŒƒbƒhˆÈŠO‚ÌƒXƒŒƒbƒh‚Å”­¶‚·‚é‚È‚ç—áŠO‚ÍƒXƒŒƒbƒh‚ðI—¹‚³‚¹‚Ü‚·‚ªƒeƒXƒg‚ÌŽ¸”s‚É‚È‚è‚Ü‚¹‚ñB
+‚µ‚½‚ª‚Á‚ÄA‚±‚Ì—áŠO‚ªƒeƒXƒgƒƒ\ƒbƒh‚ðŽÀs‚µ‚½ƒXƒŒƒbƒhˆÈŠO‚ÌƒXƒŒƒbƒh‚Å”­¶‚·‚é‚È‚çA—áŠO‚ÍƒXƒŒƒbƒh‚ðI—¹‚³‚¹‚Ü‚·‚ªAƒeƒXƒg‚ÌŽ¸”s‚É‚È‚è‚Ü‚¹‚ñB 
 </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="IJU_SETUP_NO_SUPER">
-    <ShortDescription>super.setup() ‚ðŒÄ‚Ño‚³‚È‚¢ setUp ƒƒ\ƒbƒh‚ðŽÀ‘•‚µ‚Ä‚¢‚é TestCase</ShortDescription>
+    <ShortDescription>TestCase ‚Í super.setup() ‚ðŒÄ‚Ño‚³‚È‚¢ setUp ƒƒ\ƒbƒh‚ðŽÀ‘•‚µ‚Ä‚¢‚é</ShortDescription>
     <LongDescription>TestCase {0} ‚ÍAsuper.setup() ‚ðŒÄ‚Ño‚³‚È‚¢ setUp ƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
@@ -6377,7 +6402,7 @@ JUnit ‚Ì TestCase ƒNƒ‰ƒX‚ÅA<code>setUp</code> ƒƒ\ƒbƒh‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·B
   </BugPattern>
 
   <BugPattern type="IJU_TEARDOWN_NO_SUPER">
-    <ShortDescription>super.tearDown() ‚ðŒÄ‚Ño‚³‚È‚¢ tearDown ƒƒ\ƒbƒh‚ðŽÀ‘•‚µ‚Ä‚¢‚é TestCase</ShortDescription>
+    <ShortDescription>TestCase ‚Í super.tearDown() ‚ðŒÄ‚Ño‚³‚È‚¢ tearDown ƒƒ\ƒbƒh‚ðŽÀ‘•‚µ‚Ä‚¢‚é </ShortDescription>
     <LongDescription>TestCase {0} ‚ÍAsuper.tearDown() ‚ðŒÄ‚Ño‚³‚È‚¢ tearDown ƒƒ\ƒbƒh‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
@@ -6390,20 +6415,20 @@ JUnit ‚Ì TestCase ƒNƒ‰ƒX‚ÅA<code>tearDown</code> ƒƒ\ƒbƒh‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·B
   </BugPattern>
 
   <BugPattern type="IJU_SUITE_NOT_STATIC">
-    <ShortDescription>”ñ static ‚È suite ƒƒ\ƒbƒh‚ðŽÀ‘•‚µ‚Ä‚¢‚é TestCase</ShortDescription>
+    <ShortDescription>TestCase ‚Í ”ñ static ‚È suite ƒƒ\ƒbƒh‚ðŽÀ‘•‚µ‚Ä‚¢‚é</ShortDescription>
     <LongDescription>TestCase {0} ‚ÍA”ñ static ‚È suite ƒƒ\ƒbƒh‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
 JUnit ‚Ì TestCase ƒNƒ‰ƒX‚ÅA<code>suite</code> ƒƒ\ƒbƒh‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·B
-<code>suite</code> ƒƒ\ƒbƒh‚Í static ‚Æ‚µ‚ÄéŒ¾‚·‚×‚«‚È‚Ì‚É‚»‚¤‚µ‚Ä‚¢‚Ü‚¹‚ñB
+<code>suite</code> ƒƒ\ƒbƒh‚Í static ‚Æ‚µ‚ÄéŒ¾‚·‚é‚×‚«‚È‚Ì‚É‚»‚¤‚µ‚Ä‚¢‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="IJU_BAD_SUITE_METHOD">
-    <ShortDescription>suite ƒƒ\ƒbƒh‚ÌŠÔˆá‚Á‚½éŒ¾‚ð‚µ‚Ä‚¢‚é TestCase</ShortDescription>
+    <ShortDescription>TestCase ‚Í suite ƒƒ\ƒbƒh‚ÌŠÔˆá‚Á‚½éŒ¾‚ð‚µ‚Ä‚¢‚é</ShortDescription>
     <LongDescription>TestCase {0} ‚ÍAsuite ƒƒ\ƒbƒh‚ÌŠÔˆá‚Á‚½éŒ¾‚ð‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
@@ -6422,7 +6447,7 @@ JUnit ‚Ì TestCase ƒNƒ‰ƒX‚ÅA<code>suite</code> ƒƒ\ƒbƒh‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·B
   </BugPattern>
 
   <BugPattern type="IJU_NO_TESTS">
-    <ShortDescription>ƒeƒXƒg‚ª‚È‚¢ TestCase</ShortDescription>
+    <ShortDescription>TestCase ‚ÍƒeƒXƒg‚ª‚È‚¢ </ShortDescription>
     <LongDescription>TestCase {0} ‚ÍAƒeƒXƒg‚ª‚ ‚è‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
@@ -6460,26 +6485,26 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
   </BugPattern>
 
   <BugPattern type="SQL_BAD_RESULTSET_ACCESS">
-    <ShortDescription>ƒCƒ“ƒfƒbƒNƒX‚ª0‚Å ResultSet ‚ÉƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍAƒCƒ“ƒfƒbƒNƒX‚ª0‚ÅAResultSet ‚ÉƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>ƒCƒ“ƒfƒbƒNƒX‚ª 0 ‚Å ResultSet ‚ÉƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
+    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍAƒCƒ“ƒfƒbƒNƒX‚ª 0 ‚ÅAResultSet ‚ÉƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-ƒCƒ“ƒfƒbƒNƒX‚ª0‚ÅA<code>ResultSet</code> ‚Ì getXXXAupdateXXX ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-<code>ResultSet</code> ‚ÌƒCƒ“ƒfƒbƒNƒX‚Í1‚©‚çŠJŽn‚·‚é‚Ì‚ÅA‚±‚ê‚Íí‚ÉŠÔˆá‚¢‚Å‚·B
+ƒCƒ“ƒfƒbƒNƒX‚ª 0 ‚ÅA<code>ResultSet</code> ‚Ì getXXXAupdateXXX ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
+<code>ResultSet</code> ‚ÌƒCƒ“ƒfƒbƒNƒX‚Í 1 ‚©‚çŠJŽn‚·‚é‚Ì‚ÅA‚±‚ê‚Íí‚ÉŠÔˆá‚¢‚Å‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SQL_BAD_PREPARED_STATEMENT_ACCESS">
-    <ShortDescription>ƒCƒ“ƒfƒbƒNƒX‚ª0‚Å PreparedStatement ‚ÉƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍAƒCƒ“ƒfƒbƒNƒX‚ª0‚ÅAPreparedStatement ‚ÉƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>ƒCƒ“ƒfƒbƒNƒX‚ª 0 ‚Å PreparedStatement ‚ÉƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
+    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍAƒCƒ“ƒfƒbƒNƒX‚ª 0 ‚ÅAPreparedStatement ‚ÉƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-ƒCƒ“ƒfƒbƒNƒX‚ª0‚ÅA<code>PreparedStatement</code> ‚Ì setXXX ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-ƒCƒ“ƒfƒbƒNƒX‚Í1‚©‚çŠJŽn‚·‚é‚Ì‚ÅA‚±‚ê‚Íí‚ÉŠÔˆá‚¢‚Å‚·B
+ƒCƒ“ƒfƒbƒNƒX‚ª 0 ‚ÅA<code>PreparedStatement</code> ‚Ì setXXX ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
+ƒCƒ“ƒfƒbƒNƒX‚Í 1 ‚©‚çŠJŽn‚·‚é‚Ì‚ÅA‚±‚ê‚Íí‚ÉŠÔˆá‚¢‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -6499,12 +6524,12 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
 
   <BugPattern type="BAC_BAD_APPLET_CONSTRUCTOR">
     <ShortDescription>‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ AppletStub ‚ÉˆË‘¶‚·‚éŠÔˆá‚Á‚½ƒAƒvƒŒƒbƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^</ShortDescription>
-    <LongDescription>‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ AppletStub ‚ÉˆË‘¶‚·‚éŠÔˆá‚Á‚½ƒAƒvƒŒƒbƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^B</LongDescription>
+    <LongDescription>ŠÔˆá‚Á‚½ƒAƒvƒŒƒbƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÍA‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ AppletStub ‚ÉˆË‘¶‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÍAAppletStub ‚ÉˆË‘¶‚·‚éeƒAƒvƒŒƒbƒg‚Åƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ÌƒAƒvƒŒƒbƒg‚Ì <code>init</code> ƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚é‚Ü‚Å AppletStub ‚Í‰Šú‰»‚³‚ê‚È‚¢‚Ì‚ÅA‚±‚ê‚ç‚Ìƒƒ\ƒbƒh‚Í³‚µ‚­‹@”\‚µ‚Ü‚¹‚ñB
+‚±‚ÌƒAƒvƒŒƒbƒg‚Ì <code>init</code> ƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚é‚Ü‚Å AppletStub ‚Í‰Šú‰»‚³‚ê‚È‚¢‚Ì‚ÅA‚±‚ê‚ç‚Ìƒƒ\ƒbƒh‚Í³‚µ‚­‹@”\‚µ‚Ü‚¹‚ñB 
 </p>
 ]]>
     </Details>
@@ -6512,14 +6537,14 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
 
   <BugPattern type="EC_ARRAY_AND_NONARRAY">
     <ShortDescription>”z—ñ‚Æ”ñ”z—ñ‚ð”äŠr‚·‚é‚½‚ß‚É equals ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>{1} ‚ÍA”z—ñ‚Æ”ñ”z—ñ‚ð”äŠr‚·‚é‚½‚ß‚É equals ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <LongDescription>{3.simpleClass}.equals({2.simpleClass}) ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍA”z—ñ‚Æ”z—ñ‚Å‚ ‚é‚ÆŽv‚í‚ê‚È‚¢ŽQÆ‚ð”äŠr‚·‚é‚½‚ß‚É <code>.equals(Object o)</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
 ”äŠr‚³‚ê‚Ä‚¢‚é‚à‚Ì‚ªˆá‚¤Œ^‚È‚ç•s“™‚Å‚ ‚é‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚é‚Ì‚ÅA”äŠr‚Í‚Ù‚ÚŠÔˆá‚¢‚È‚­Œë‚è‚Å‚·B
-‚½‚Æ‚¦‚»‚ê‚ç‚ª—¼•û‚Æ‚à”z—ñ‚Å‚ ‚é‚Æ‚µ‚Ä‚àA”z—ñ‚Ì <code>equals</code> ƒƒ\ƒbƒh‚Í2‚Â‚Ì”z—ñ‚ª“¯‚¶ƒIƒuƒWƒFƒNƒg‚Å‚ ‚é‚Æ”»’è‚·‚é‚¾‚¯‚Å‚·B
-”z—ñ‚ÌƒRƒ“ƒeƒ“ƒc‚ð”äŠr‚·‚é‚½‚ß‚É‚ÍA<code>java.util.Arrays.equals(Object[], Object[])</code> ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
+‚½‚Æ‚¦‚»‚ê‚ç‚ª—¼•û‚Æ‚à”z—ñ‚Å‚ ‚é‚Æ‚µ‚Ä‚àA”z—ñ‚Ì <code>equals</code> ƒƒ\ƒbƒh‚Í2‚Â‚Ì”z—ñ‚ª“¯‚¶ƒIƒuƒWƒFƒNƒg‚Å‚ ‚é‚ÆŒˆ’è‚·‚é‚¾‚¯‚Å‚·B
+”z—ñ‚ÌƒRƒ“ƒeƒ“ƒc‚ð”äŠr‚·‚é‚½‚ß‚É‚ÍA<code>java.util.Arrays.equals(Object[], Object[])</code> ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B 
 </p>
 ]]>
     </Details>
@@ -6527,7 +6552,7 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
 
   <BugPattern type="EC_BAD_ARRAY_COMPARE">
     <ShortDescription>”z—ñ‚Ì equals ƒƒ\ƒbƒhŒÄ‚Ño‚µ‚Í == ‚Æ“™‰¿‚Å‚ ‚é</ShortDescription>
-    <LongDescription>{1} ‚ÍA”z—ñ‚Å equals ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·‚ª == ‚Æ“™‰¿‚Å‚·B</LongDescription>
+    <LongDescription>{2.simpleClass} ‚ð”äŠr‚·‚é‚½‚ß‚É .equals ‚ðŽg—p‚µ‚Ä‚¢‚é‚ªA== ‚Æ“™‰¿‚Å‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6541,69 +6566,82 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
   </BugPattern>
   <BugPattern type="EC_INCOMPATIBLE_ARRAY_COMPARE">
     <ShortDescription>equals(...) ƒƒ\ƒbƒh‚ªŒÝŠ·«‚Ì‚È‚¢”z—ñ‚ð”äŠr‚·‚é‚½‚ß‚ÉŽg‚í‚ê‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>{2} ‚Æ {3} ‚ð”äŠr‚·‚é‚½‚ß‚É equals ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <LongDescription>{2.simpleClass} ‚Æ {3.simpleClass} ‚ð”äŠr‚·‚é‚½‚ß‚É equals ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍA2‚Â‚Ì”z—ñ‚ð”äŠr‚·‚é‚½‚ß‚É <code>.equals(Object o)</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·‚ªA
-ŒÝŠ·«‚Ì‚È‚¢Œ^‚Ì”z—ñ (‚½‚Æ‚¦‚ÎA<code>String[]</code> ‚Æ <code>StringBuffer[]</code>A<code>String[]</code> ‚Æ <code>int[]</code>) ‚Å‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍAŒÝŠ·«‚Ì‚È‚¢Œ^‚Ì”z—ñ‚ð”äŠr‚·‚é‚½‚ß‚É <code>.equals(Object o)</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚· (‚½‚Æ‚¦‚ÎA<code>String[]</code> ‚Æ <code>StringBuffer[]</code>A<code>String[]</code> ‚Æ <code>int[]</code>) B
 ‚»‚ê‚ç‚ÍAŒˆ‚µ‚Ä“™‰¿‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
   </BugPattern>
 
-
   <BugPattern type="STI_INTERRUPTED_ON_CURRENTTHREAD">
-    <ShortDescription>interrupted ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚½‚ß‚Ì•s•K—v‚È currentThread ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ</ShortDescription>
-    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍAinterrupted ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚½‚ß‚É•s•K—v‚È currentThread ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>interrupted ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚½‚ß‚É•s—v‚È currentThread ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍAinterrupted ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚½‚ß‚É•s—v‚È currentThread ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍA<code>interrupted</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚½‚ß‚É <code>Thread.currentThread()</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-<code>interrupted</code> ƒƒ\ƒbƒh‚ÍAstatic ‚È‚Ì‚Å <code>Thread.interrupted()</code> ‚ðŽg—p‚·‚é•û‚ª’Pƒ–¾‰ð‚Å‚·B
+<code>interrupted</code> ƒƒ\ƒbƒh‚ÍAstatic ƒƒ\ƒbƒh‚Å‚·B<code>Thread.interrupted()</code> ‚ðŽg—p‚·‚é•û‚ª’Pƒ–¾‰ð‚Å‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="STI_INTERRUPTED_ON_UNKNOWNTHREAD">
-    <ShortDescription>ƒXƒŒƒbƒhƒCƒ“ƒXƒ^ƒ“ƒX‚Å static ‚È Thread.interrupted() ‚ªŒÄ‚Ño‚³‚ê‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>{1}‚ÍAƒXƒŒƒbƒhƒCƒ“ƒXƒ^ƒ“ƒX‚Å static‚È Thread.interrupted() ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>ƒXƒŒƒbƒhƒCƒ“ƒXƒ^ƒ“ƒX‚Å static Thread.interrupted() ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>{1}‚ÍAƒXƒŒƒbƒhƒCƒ“ƒXƒ^ƒ“ƒX‚Å static Thread.interrupted() ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍAƒJƒŒƒ“ƒgƒXƒŒƒbƒh‚Å‚Í‚È‚¢ Thread ƒIƒuƒWƒFƒNƒg‚Å‚ ‚é‚æ‚¤‚ÉŒ©‚¦‚é Thread ƒIƒuƒWƒFƒNƒg‚Å <code>Thread.interrupted()</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-<code>interrupted</code> ƒƒ\ƒbƒh‚Í static ‚È‚Ì‚Åì¬ŽÒ‚ªˆÓ}‚µ‚½‚±‚Æ‚Æ‚Íˆá‚¤ƒIƒuƒWƒFƒNƒg‚ÅŒÄ‚Ño‚³‚ê‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍAƒJƒŒƒ“ƒgƒXƒŒƒbƒh‚Å‚È‚¢ Thread ƒIƒuƒWƒFƒNƒg‚Å‚ ‚é‚æ‚¤‚ÉŒ©‚¦‚é Thread ƒIƒuƒWƒFƒNƒg‚Å <code>Thread.interrupted()</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
+<code>interrupted</code> ƒƒ\ƒbƒh‚Í static ‚ÅAì¬ŽÒ‚ªˆÓ}‚µ‚½‚±‚Æ‚Æ‚ÍˆÙ‚È‚éƒIƒuƒWƒFƒNƒg‚ÅŒÄ‚Ño‚³‚ê‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN">
-    <ShortDescription>ƒƒ\ƒbƒh‚Å“Ç‚ÝŽæ‚ç‚ê‚¸‚ÉƒI[ƒo[ƒ‰ƒCƒh‚³‚ê‚Ä‚¢‚éƒpƒ‰ƒ[ƒ^</ShortDescription>
-    <LongDescription>{1} ‚Ö‚Ìƒpƒ‰ƒ[ƒ^ {2} ‚ÍA“Ç‚ÝŽæ‚ç‚ê‚¸‚ÉƒI[ƒo[ƒ‰ƒCƒh‚³‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚Å“Ç‚ÝŽæ‚ç‚ê‚¸‚Éã‘‚«‚³‚ê‚Ä‚¢‚éƒpƒ‰ƒ[ƒ^</ShortDescription>
+    <LongDescription>{1} ‚Ö‚Ìƒpƒ‰ƒ[ƒ^ {2} ‚ÍA“Ç‚ÝŽæ‚ç‚ê‚¸‚Éã‘‚«‚³‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì‰Šú’l‚Í–³Ž‹‚³‚êA‚±‚±‚ÅƒI[ƒo[ƒ‰ƒCƒh‚³‚ê‚Ä‚¢‚Ü‚·B
-‚±‚ê‚Íƒpƒ‰ƒ[ƒ^‚Ö‚Ì‘‚«ž‚Ý‚ªŒÄ‚Ño‚µŒ³‚É–ß‚³‚ê‚é‚Æ‚¢‚¤Œë‚Á‚½l‚¦‚ðŽ¦‚µ‚Ä‚¢‚Ü‚·B
+‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì‰Šú’l‚Í–³Ž‹‚³‚êA‚±‚±‚Åã‘‚«‚³‚ê‚Ä‚¢‚Ü‚·B
+‚±‚ê‚Í‘½‚­‚Ìê‡Aƒpƒ‰ƒ[ƒ^‚Ö‚Ì‘‚«ž‚Ý‚ªŒÄ‚Ño‚µŒ³‚É–ß‚³‚ê‚é‚Æ‚¢‚¤Œë‚Á‚½l‚¦‚ðŽ¦‚µ‚Ä‚¢‚Ü‚·B 
 </p>
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD">
+    <ShortDescription>ƒtƒB[ƒ‹ƒh‚ðŽÕ‚éƒ[ƒJƒ‹•Ï”‚Ö‚Ì–³Œø‚È‘ã“ü</ShortDescription>
+    <LongDescription>“¯‚¶–¼‘O‚ÌƒtƒB[ƒ‹‚Å‚Í‚È‚­A{2} ‚Ö‚Ì–³Œø‚È‘ã“ü‚Å‚·B{1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+‚±‚Ì–½—ß‚Íƒ[ƒJƒ‹•Ï”‚É’l‚ð‘ã“ü‚µ‚Ä‚¢‚é‚ªA’l‚Í“Ç‚Ýo‚³‚ê‚È‚¢‚©ˆÈ~‚Ì–½—ß‚Å‚àŽg‚í‚ê‚Ü‚¹‚ñB
+‘½‚­‚Ìê‡AŒvŽZ‚³‚ê‚½’l‚ªŒˆ‚µ‚ÄŽg‚í‚ê‚È‚¢‚Ì‚ÅA‚±‚ê‚ÍŒë‚è‚ðŽ¦‚µ‚Ü‚·B
+ƒtƒB[ƒ‹ƒh‚ªƒ[ƒJƒ‹•Ï”‚Æ“¯‚¶–¼‘O‚Å‚·B‚»‚¤‚Å‚Í‚È‚­AƒtƒB[ƒ‹ƒh‚É‘ã“ü‚·‚é‚Â‚à‚è‚Å‚µ‚½‚©H
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="DLS_DEAD_LOCAL_STORE">
     <ShortDescription>ƒ[ƒJƒ‹•Ï”‚Ö‚Ì–³Œø‚È‘ã“ü</ShortDescription>
     <LongDescription>{2} ‚Ö‚Ì–³Œø‚È‘ã“ü‚Å‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì–½—ß‚Íƒ[ƒJƒ‹•Ï”‚É’l‚ð‘ã“ü‚µ‚Ä‚¢‚Ü‚·‚ªA’l‚Í“Ç‚Ýo‚³‚ê‚È‚¢‚©Œã‘±‚Ì–½—ß‚Å‚àŽg‚í‚ê‚Ü‚¹‚ñB
-ŒvŽZ‚³‚ê‚½’l‚ªŒˆ‚µ‚ÄŽg‚í‚ê‚È‚¢‚Ì‚ÅA‚½‚¢‚Ä‚¢‚±‚ê‚ÍŒë‚è‚ðŽ¦‚µ‚Ü‚·B
+‚±‚Ì–½—ß‚Íƒ[ƒJƒ‹•Ï”‚É’l‚ð‘ã“ü‚µ‚Ä‚¢‚é‚ªA’l‚Í“Ç‚Ýo‚³‚ê‚È‚¢‚©ˆÈ~‚Ì–½—ß‚Å‚àŽg‚í‚ê‚Ü‚¹‚ñB
+‘½‚­‚Ìê‡AŒvŽZ‚³‚ê‚½’l‚ªŒˆ‚µ‚ÄŽg‚í‚ê‚È‚¢‚Ì‚ÅA‚±‚ê‚ÍŒë‚è‚ðŽ¦‚µ‚Ü‚·B
 </p>
 <p>
-Sun ‚Ìjavac ƒRƒ“ƒpƒCƒ‰‚ª final ‚Èƒ[ƒJƒ‹•Ï”‚Ì‚½‚ß‚É‚µ‚Î‚µ‚Î–³Œø‚È‘ã“ü‚ð¶¬‚·‚é‚±‚Æ‚É’ˆÓ‚µ‚Ä‚­‚¾‚³‚¢B
-FindBugs ‚ÍAƒoƒCƒgƒR[ƒhƒx[ƒX‚Ìƒc[ƒ‹‚È‚Ì‚ÅŒëŒŸo‚ð‚È‚­‚·ŠÈ’P‚È•û–@‚ª‚ ‚è‚Ü‚¹‚ñB
+Sun ‚Ìjavac ƒRƒ“ƒpƒCƒ‰‚ª final ‚Èƒ[ƒJƒ‹•Ï”‚Ì‚½‚ß‚É‚µ‚Î‚µ‚Î–³Œø‚ÈŠi”[‚ð¶¬‚·‚é‚±‚Æ‚É’ˆÓ‚µ‚Ä‚­‚¾‚³‚¢B
+FindBugs ‚ÍAƒoƒCƒgƒR[ƒhƒx[ƒX‚Ìƒc[ƒ‹‚È‚Ì‚ÅŒëŒŸo‚ð‚È‚­‚·ŠÈ’P‚È•û–@‚ª‚ ‚è‚Ü‚¹‚ñB 
 </p>
 ]]>
     </Details>
@@ -6615,8 +6653,8 @@ FindBugs ‚ÍAƒoƒCƒgƒR[ƒhƒx[ƒX‚Ìƒc[ƒ‹‚È‚Ì‚ÅŒëŒŸo‚ð‚È‚­‚·ŠÈ’P‚È•û–@‚ª‚ ‚è‚Ü‚¹‚
     <Details>
       <![CDATA[
 <p>
-‚±‚ÌƒXƒe[ƒgƒƒ“ƒg‚ÍAreturn •¶‚Åƒ[ƒJƒ‹•Ï”‚Ì‘ã“ü‚ð‚µ‚Ä‚¢‚Ü‚·B‚±‚Ì‘ã“ü‚ÍŒø‰Ê‚ª‚ ‚è‚Ü‚¹‚ñB
-‚±‚ÌƒXƒe[ƒgƒƒ“ƒg‚ª³‚µ‚¢‚±‚Æ‚ðŠm‚©‚ß‚Ä‚­‚¾‚³‚¢B
+‚±‚Ì•¶‚ÍAreturn •¶‚Åƒ[ƒJƒ‹•Ï”‚É‘ã“ü‚ð‚µ‚Ä‚¢‚Ü‚·B‚±‚Ì‘ã“ü‚ÍŒø‰Ê‚ª‚ ‚è‚Ü‚¹‚ñB
+‚±‚Ì•¶‚ª³‚µ‚¢‚±‚Æ‚ðŠm‚©‚ß‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -6628,10 +6666,10 @@ FindBugs ‚ÍAƒoƒCƒgƒR[ƒhƒx[ƒX‚Ìƒc[ƒ‹‚È‚Ì‚ÅŒëŒŸo‚ð‚È‚­‚·ŠÈ’P‚È•û–@‚ª‚ ‚è‚Ü‚¹‚
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì–½—ß‚Í•Ï”‚ÉƒNƒ‰ƒXƒŠƒeƒ‰ƒ‹‚ð‘ã“ü‚µ‚Ä‚¢‚Ü‚·‚ªŽg‚í‚ê‚Ä‚¢‚Ü‚¹‚ñB<br>
+‚±‚Ì–½—ß‚Í•Ï”‚ÉƒNƒ‰ƒXƒŠƒeƒ‰ƒ‹‚ð‘ã“ü‚µ‚Ä‚¢‚é‚ªAŒˆ‚µ‚ÄŽg‚í‚ê‚Ü‚¹‚ñB<br>
 <a href="//java.sun.com/j2se/1.5.0/compatibility.html#literal">The behavior of this differs in Java 1.4 and in Java 5</a><br>
 J2SE 1.4 ‚¨‚æ‚Ñ‚»‚êˆÈ‘O‚Ìƒo[ƒWƒ‡ƒ“‚Å‚ÍA<code>Foo.class</code> ‚Ö‚ÌŽQÆ‚Í <code>Foo</code> ‚Ì‚½‚ß‚ÌƒXƒ^ƒeƒBƒbƒNƒCƒjƒVƒƒƒ‰ƒCƒU‚ª‚·‚Å‚ÉŽÀs‚³‚ê‚Ä‚¢‚È‚¢‚È‚çŽÀs‚·‚é‚±‚Æ‚ð‹­§‚µ‚Ü‚·B
-J2SE 5.0‚Å‚ÍŽÀs‚³‚ê‚Ü‚¹‚ñB
+J2SE 5.0‚Å‚ÍA‚»‚¤‚µ‚Ü‚¹‚ñB
 </p>
 <p>
 ‚æ‚è‘½‚­‚ÌÚ×‚Æ—á‚Æ J2SE 5.0‚ÌƒNƒ‰ƒX‚Ì‹­§“I‚È‰Šú‰»‚Ì•û–@‚Ì’ñˆÄ‚Í Sun ‚Ì<a href="//java.sun.com/j2se/1.5.0/compatibility.html#literal">article on Java SE compatibility</a> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
@@ -6646,8 +6684,8 @@ J2SE 5.0‚Å‚ÍŽÀs‚³‚ê‚Ü‚¹‚ñB
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚Íƒ[ƒJƒ‹•Ï”‚É null ‚ð‘ã“ü‚µ‚Ä‚¢‚Ü‚·‚ª‘ã“ü‚³‚ê‚½’l‚Í“Ç‚Ýo‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB
-‚±‚Ì‘ã“ü‚ÍƒKƒx[ƒWƒRƒŒƒNƒ^‚ðŽè“`‚¤‚½‚ß‚É“±“ü‚³‚ê‚½‚Ì‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ª Java SE 6‚Å‚Í‚à‚Í‚â•K—v‚Æ‚³‚ê‚È‚¢‚©—L—p‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+‚±‚ÌƒR[ƒh‚Íƒ[ƒJƒ‹•Ï”‚É null ‚ð‘ã“ü‚µ‚Ä‚¢‚é‚ªA‘ã“ü‚³‚ê‚½’l‚Í“Ç‚Ýo‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB
+‚±‚Ì‘ã“ü‚ÍƒKƒx[ƒWƒRƒŒƒNƒ^‚ðŽè“`‚¤‚½‚ß‚É“±“ü‚³‚ê‚½‚Ì‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ªAJava SE 6‚Å‚Í‚à‚Í‚â•K—v‚Æ‚³‚ê‚È‚¢‚©—L—p‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -6667,13 +6705,13 @@ J2SE 5.0‚Å‚ÍŽÀs‚³‚ê‚Ü‚¹‚ñB
   </BugPattern>
 
   <BugPattern type="MF_CLASS_MASKS_FIELD">
-    <ShortDescription>ƒX[ƒp[ƒNƒ‰ƒX‚ÌƒtƒB[ƒ‹ƒh‚ð‰B‚·ƒtƒB[ƒ‹ƒh‚ð’è‹`‚µ‚Ä‚¢‚é</ShortDescription>
+    <ShortDescription>ƒX[ƒp[ƒNƒ‰ƒX‚ÌƒtƒB[ƒ‹ƒh‚ð‰B‚·ƒtƒB[ƒ‹ƒh‚ð’è‹`‚µ‚Ä‚¢‚éƒNƒ‰ƒX</ShortDescription>
     <LongDescription>ƒtƒB[ƒ‹ƒh {1.givenClass} ‚ÍAƒX[ƒp[ƒNƒ‰ƒX {2.class} ‚ÌƒtƒB[ƒ‹ƒh‚ð‰B‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍAƒX[ƒp[ƒNƒ‰ƒX‚Ì‰ÂŽ‹ƒCƒ“ƒXƒ^ƒ“ƒXƒtƒB[ƒ‹ƒh‚Æ“¯‚¶–¼‘O‚ÌƒtƒB[ƒ‹ƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ê‚Í•´‚ç‚í‚µ‚­‚ÄAƒƒ\ƒbƒh‚ªƒtƒB[ƒ‹ƒh‚ðXV‚·‚é‚©ƒAƒNƒZƒX‚·‚é‚È‚çŒë‚è‚ðŽ¦‚·‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚±‚ÌƒNƒ‰ƒX‚ÍAƒX[ƒp[ƒNƒ‰ƒX‚Ì‰ÂŽ‹ƒCƒ“ƒXƒ^ƒ“ƒXƒtƒB[ƒ‹ƒh‚Æ“¯‚¶–¼‘O‚ÅƒtƒB[ƒ‹ƒh‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ê‚Í•´‚ç‚í‚µ‚­‚ÄAƒƒ\ƒbƒh‚ªƒtƒB[ƒ‹ƒh‚ðXV‚·‚é‚©ƒAƒNƒZƒX‚·‚é‚È‚çAŠÔˆá‚¢‚ðŽw“E‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -6685,7 +6723,7 @@ J2SE 5.0‚Å‚ÍŽÀs‚³‚ê‚Ü‚¹‚ñB
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍAkeySet ƒCƒeƒŒ[ƒ^‚©‚çŽæ‚èo‚³‚ê‚½ƒL[‚ðŽg—p‚µ‚Äƒ}ƒbƒvƒGƒ“ƒgƒŠ‚Ì’l‚ÉƒAƒNƒZƒX‚µ‚Ä‚¢‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍAkeySet ƒCƒeƒŒ[ƒ^‚©‚çŽæ‚èo‚³‚ê‚½ƒL[‚ðŽg—p‚µ‚ÄAƒ}ƒbƒvƒGƒ“ƒgƒŠ‚Ì’l‚ÉƒAƒNƒZƒX‚µ‚Ä‚¢‚Ü‚·B
 Map ‚Ì entrySet ƒCƒeƒŒ[ƒ^‚ðŽg—p‚µ‚½•û‚ª <code>Map.get(key)</code> ƒ‹ƒbƒNƒAƒbƒv‚ð‰ñ”ð‚·‚é‚Ì‚Å‚æ‚èŒø—¦“I‚Å‚·B
 </p>
 ]]>
@@ -6711,9 +6749,9 @@ Map ‚Ì entrySet ƒCƒeƒŒ[ƒ^‚ðŽg—p‚µ‚½•û‚ª <code>Map.get(key)</code> ƒ‹ƒbƒNƒAƒbƒv‚
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍA—áŠOƒIƒuƒWƒFƒNƒg‚ðƒLƒƒƒbƒ`‚·‚é try-catch ƒuƒƒbƒN‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·‚ªA
+‚±‚Ìƒƒ\ƒbƒh‚ÍA—áŠOƒIƒuƒWƒFƒNƒg‚ðƒLƒƒƒbƒ`‚·‚é try-catch ƒuƒƒbƒN‚ðŽg—p‚µ‚Ä‚¢‚é‚ªA
 —áŠO‚Í try ƒuƒƒbƒN‚Ì’†‚ÅƒXƒ[‚³‚ê‚Ü‚¹‚ñB‚Ü‚½AŽÀsŽž—áŠO‚Í–¾Ž¦“I‚ÉƒLƒƒƒbƒ`‚³‚ê‚Ü‚¹‚ñB
-‚»‚ê‚¼‚ê‚Ì catch ƒuƒƒbƒN‚ª“¯‚¶‚Å‚ ‚é‘½‚­‚Ì—áŠOŒ^‚ðƒLƒƒƒbƒ`‚·‚é‚±‚Æ‚Ì’ZkŒ`‚Æ‚µ‚Ä <code>try { ... } catch (Exception e) { something }</code> ‚ðŽg‚¤‹¤’Ê‚ÌƒoƒOƒpƒ^[ƒ“‚Å‚·B
+‚»‚ê‚¼‚ê‚Ì catch ƒuƒƒbƒN‚ª“¯ˆê‚Å‚ ‚é‘½‚­‚Ì—áŠOŒ^‚ðƒLƒƒƒbƒ`‚·‚é‚±‚Æ‚Ì’ZkŒ`‚Æ‚µ‚Ä <code>try { ... } catch (Exception e) { something }</code> ‚ðŽg—p‚·‚é‚±‚Æ‚ª‹¤’Ê‚ÌƒoƒOƒpƒ^[ƒ“‚Å‚·B
 ‚µ‚©‚µA‚±‚Ì\•¶‚ÍŒë‚Á‚ÄŽÀsŽž—áŠO‚à“¯—l‚ÉƒLƒƒƒbƒ`‚·‚é‚Ì‚ÅAöÝ“I‚ÈƒoƒO‚ð‰B‚µ‚Ü‚·B
 </p>
 ]]>
@@ -6721,14 +6759,15 @@ Map ‚Ì entrySet ƒCƒeƒŒ[ƒ^‚ðŽg—p‚µ‚½•û‚ª <code>Map.get(key)</code> ƒ‹ƒbƒNƒAƒbƒv‚
   </BugPattern>
 
   <BugPattern type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER">
-    <ShortDescription>NaN ‚Ö‚Ì“™‰¿«‚Ì‚½‚ß‚ÌƒeƒXƒg‚ÍŽ¸”s‚ÉI‚í‚é</ShortDescription>
-    <LongDescription>NaN ‚Ö‚Ì“™‰¿«‚Ì‚½‚ß‚ÌƒeƒXƒg‚ÍŽ¸”s‚ÉI‚í‚è‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>NaN ‚Ö‚Ì“™‰¿«‚Ì‚½‚ß‚Ìâ–]“I‚ÈƒeƒXƒg</ShortDescription>
+    <LongDescription>NaN ‚Ö‚Ì“™‰¿«‚Ì‚½‚ß‚Ìâ–]“I‚ÈƒeƒXƒg‚Å‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍA•‚“®¬”“_‚ª“Á•Ê‚È”ñ”’l (NaN) ‚Æ“™‰¿‚Å‚ ‚é‚©Šm‚©‚ß‚Ä‚¢‚Ü‚· (‚½‚Æ‚¦‚ÎA<code>if (x == Double.NaN)</code>)B
-‚µ‚½‚ª‚Á‚ÄA<code>x == Double.NaN</code> ‚Íí‚É false ‚Å‚ ‚é‚Æ•]‰¿‚µ‚Ü‚·B
-<code>x</code> ‚Æ‚¢‚¤’l‚ª“Á•Ê‚È”ñ”’l‚Å‚ ‚é‚©‚Ç‚¤‚©Šm‚©‚ß‚é‚½‚ß‚É‚ÍA<code>Double.isNaN(x)</code> ‚ðŽg—p‚µ‚Ü‚· (‚Ü‚½‚ÍA<code>x</code> ‚ª•‚“®¬”“_¸“x‚Å‚ ‚é‚È‚ç <code>Float.isNaN(x)</code>)B
+‚±‚ÌƒR[ƒh‚ÍA•‚“®¬”“_‚ª“Á•Ê‚È”ñ”’l‚Æ“™‰¿‚Å‚ ‚é‚©Šm‚©‚ß‚Ä‚¢‚Ü‚· (‚½‚Æ‚¦‚ÎA<code>if (x == Double.NaN)</code>)B
+‚µ‚©‚µ‚È‚ª‚çA<code>NaN</code> ‚Ì“Á•Ê‚ÈˆÓ–¡‚Ì‚½‚ßA’l‚Í <code>NaN</code> ‚Æ“™‰¿‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+‚µ‚½‚ª‚Á‚ÄA<code>x == Double.NaN</code> ‚Íí‚É false ‚Æ•]‰¿‚µ‚Ü‚·B
+<code>x</code> ‚Æ‚¢‚¤’l‚ª“Á•Ê‚È”ñ”’l‚Å‚ ‚é‚©‚Ç‚¤‚©Šm‚©‚ß‚é‚½‚ß‚É‚ÍA<code>Double.isNaN(x)</code> ‚ðŽg—p‚µ‚Ü‚· (‚ ‚é‚¢‚ÍA<code>x</code> ‚ª•‚“®¬”“_¸“x‚Å‚ ‚é‚È‚ç <code>Float.isNaN(x)</code>)B
 </p>
 ]]>
     </Details>
@@ -6742,7 +6781,7 @@ Map ‚Ì entrySet ƒCƒeƒŒ[ƒ^‚ðŽg—p‚µ‚½•û‚ª <code>Map.get(key)</code> ƒ‹ƒbƒNƒAƒbƒv‚
 <p>
 ‚±‚Ì‰‰ŽZ‚ÍA“™‰¿«‚Ì‚½‚ß‚É2‚Â‚Ì•‚“®¬”“_’l‚ð”äŠr‚µ‚Ä‚¢‚Ü‚·B
 •‚“®¬”“_‚ÌŒvŽZ‚ÍŠÛ‚ß‚ð”º‚¤‚©‚à‚µ‚ê‚È‚¢‚Ì‚ÅAŒvŽZ‚³‚ê‚½ float ‚Æ double ‚Ì’l‚Í³Šm‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-‰Ý•¼‰¿’l‚Ì‚æ‚¤‚È³Šm‚Å‚È‚¯‚ê‚Î‚È‚ç‚È‚¢’l‚Ì‚½‚ß‚ÉA<code>BigDecimal</code> ‚Ì‚æ‚¤‚ÈŒÅ’è¸“xŒ^‚ðŽg‚¤‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
+’Ê‰Ý‚Ì‚æ‚¤‚È³Šm‚Å‚È‚¯‚ê‚Î‚È‚ç‚È‚¢’l‚Ì‚½‚ß‚ÉA<code>BigDecimal</code> ‚Ì‚æ‚¤‚ÈŒÅ’è¸“xŒ^‚ðŽg‚¤‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 ³Šm‚Å‚ ‚é•K—v‚ª‚È‚¢’l‚Ì‚½‚ß‚ÉA‚¢‚­‚Â‚©‚Ì”ÍˆÍ‚Ì’†‚Å“™‰¿«‚Ì‚½‚ß‚É”äŠr‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 ‚½‚Æ‚¦‚ÎA<code>if (Math.abs(x - y) &lt; .0000001)</code>B<br>
 Ú×‚Í Java Œ¾ŒêŽd—l4.2.4‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
@@ -6752,14 +6791,14 @@ Map ‚Ì entrySet ƒCƒeƒŒ[ƒ^‚ðŽg—p‚µ‚½•û‚ª <code>Map.get(key)</code> ƒ‹ƒbƒNƒAƒbƒv‚
   </BugPattern>
 
   <BugPattern type="UM_UNNECESSARY_MATH">
-    <ShortDescription>’è”’l‚É‘Î‚µ‚Ä Math ƒNƒ‰ƒX‚Ì static ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>ƒƒ\ƒbƒh‚ÍA’è”’l‚É‘Î‚µ‚Ä Math ƒNƒ‰ƒX‚Ì static ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>’è”’l‚Å Math ƒNƒ‰ƒX‚Ì static ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
+    <LongDescription>ƒƒ\ƒbƒh‚ÍA’è”’l‚Å Math ƒNƒ‰ƒX‚Ì static ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍA’è”’l‚É‘Î‚µ‚Ä java.lang.Math ‚Ì static ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-‚±‚Ìƒƒ\ƒbƒh‚ÌŒ‹‰Ê‚ÍÃ“I‚ÉŠm’è‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚èA‚Æ‚«‚É‚Í’è”‚ðŽg—p‚·‚é•û‚ª‚æ‚è³Šm‚Å‚·B<br>
-ŒŸo‚³‚ê‚éƒƒ\ƒbƒh‚ÍAˆÈ‰º‚Ì’Ê‚è‚Å‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍA’è”’l‚Å java.lang.Math ‚Ì static ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÌŒ‹‰Ê‚ÍAÃ“I‚ÉŠm’è‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚èA‚æ‚è‚‘¬‚ÅA‚Æ‚«‚É‚Í’è”‚ðŽg—p‚·‚é•û‚ª‚æ‚è³Šm‚Å‚·B<br>
+ŒŸo‚³‚ê‚éƒƒ\ƒbƒh‚ÍAˆÈ‰º‚Ì’Ê‚è‚Å‚·B 
 </p>
 <table>
 <tr>
@@ -6847,7 +6886,7 @@ Map ‚Ì entrySet ƒCƒeƒŒ[ƒ^‚ðŽg—p‚µ‚½•û‚ª <code>Map.get(key)</code> ƒ‹ƒbƒNƒAƒbƒv‚
 <p>
 ‚±‚ÌƒNƒ‰ƒX‚ÍA‘¼‚ÌƒNƒ‰ƒX‚ÆzŠÂˆË‘¶ŠÖŒW‚ª‚ ‚è‚Ü‚·B
 ‚»‚ê‚¼‚ê‚ª‘¼‚ÌƒNƒ‰ƒX‚Ì³Šm‚È\’z‚ÉˆË‘¶‚µ‚Ä‚¢‚ÄAƒNƒ‰ƒX‚Ì\’z‚ð“ï‚µ‚­‚µ‚Ä‚¢‚Ü‚·B
-¢“ï‚ÈˆË‘¶ŠÖŒW‚ð’f‚Â‚½‚ß‚ÉAƒCƒ“ƒ^ƒtƒF[ƒX‚ÌŽg—p‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
+“ï‚µ‚¢ˆË‘¶ŠÖŒW‚ð’f‚Â‚½‚ß‚ÉAƒCƒ“ƒ^ƒtƒF[ƒX‚ÌŽg—p‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -6859,23 +6898,23 @@ Map ‚Ì entrySet ƒCƒeƒŒ[ƒ^‚ðŽg—p‚µ‚½•û‚ª <code>Map.get(key)</code> ƒ‹ƒbƒNƒAƒbƒv‚
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍAƒX[ƒp[ƒNƒ‰ƒX‚Å‚àŽÀ‘•‚³‚ê‚éƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚·‚é‚±‚Æ‚ðéŒ¾‚µ‚Ä‚¢‚Ü‚·B
-ˆê“xƒX[ƒp[ƒNƒ‰ƒX‚ªƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚·‚é‚Ì‚ÅA‚±‚ê‚Íç’·‚Å‚·BƒfƒtƒHƒ‹ƒg‚Å‚·‚×‚Ä‚ÌƒTƒuƒNƒ‰ƒX‚à‚±‚ÌƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ü‚·B
-‚±‚ÌƒNƒ‰ƒX‚ªì¬‚³‚ê‚Ä‚©‚çŒp³ŠK‘w‚ª•Ï‚í‚Á‚½‚±‚Æ‚ðŽw“E‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñBƒCƒ“ƒ^ƒtƒF[ƒX‚ÌŽÀ‘•‚ÌŠ—LŒ ‚ðl—¶‚·‚×‚«‚Å‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍAƒX[ƒp[ƒNƒ‰ƒX‚É‚æ‚Á‚Ä‚àŽÀ‘•‚³‚ê‚éƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚·‚é‚±‚Æ‚ðéŒ¾‚µ‚Ä‚¢‚Ü‚·B
+ƒX[ƒp[ƒNƒ‰ƒX‚ªƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚·‚é‚Ì‚ÅA‚±‚ê‚Íç’·‚Å‚·BƒfƒtƒHƒ‹ƒg‚Å‚·‚×‚Ä‚ÌƒTƒuƒNƒ‰ƒX‚à‚±‚ÌƒCƒ“ƒ^ƒtƒF[ƒX‚ðŽÀ‘•‚µ‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚ªì¬‚³‚ê‚Ä‚©‚çŒp³ŠK‘w‚ª•Ï‚í‚Á‚½‚±‚Æ‚ðŽw“E‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñBƒCƒ“ƒ^ƒtƒF[ƒX‚ÌŽÀ‘•‚ÌŠ—LŒ ‚ðl—¶‚·‚é‚×‚«‚Å‚·B
 </p>
     ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD">
-    <ShortDescription>Struts Action‚ðŠg’£‚µ‚½ƒNƒ‰ƒX‚Å‚ÌƒCƒ“ƒXƒ^ƒ“ƒX•Ï”‚ÌŽg—p</ShortDescription>
-    <LongDescription>Struts Action ƒNƒ‰ƒX‚ðŠg’£‚µ‚½ƒNƒ‰ƒX {0} ‚ÅƒCƒ“ƒXƒ^ƒ“ƒX•Ï”‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>Struts Action ‚ðŠg’£‚µ‚½ƒNƒ‰ƒX‚Å‚ÌƒCƒ“ƒXƒ^ƒ“ƒX•Ï”‚ÌŽg—p</ShortDescription>
+    <LongDescription>Struts Action ƒNƒ‰ƒX‚ðŠg’£‚µ‚½ƒNƒ‰ƒX {0} ‚ÅAƒCƒ“ƒXƒ^ƒ“ƒX•Ï”‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-Struts Action ƒNƒ‰ƒX‚ðŠg’£‚µ‚½ƒNƒ‰ƒX‚ÅƒCƒ“ƒXƒ^ƒ“ƒX•Ï”‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B
+Struts Action ƒNƒ‰ƒX‚ðŠg’£‚µ‚½ƒNƒ‰ƒX‚ÅAƒCƒ“ƒXƒ^ƒ“ƒX•Ï”‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B
 Struts Action ƒNƒ‰ƒX‚Ì1‚Â‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚¾‚¯‚ª Struts ƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚Äì¬‚³‚êAƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚É‚æ‚Á‚ÄŽg‚í‚ê‚é‚Ì‚ÅA‚±‚Ìƒpƒ‰ƒ_ƒCƒ€‚Í‹É‚ß‚Ä–â‘è‚ª‚ ‚è„§‚Å‚«‚Ü‚¹‚ñB
-ƒƒ\ƒbƒhƒ[ƒJƒ‹•Ï”‚¾‚¯‚ðŽg‚¤‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
+ƒ[ƒJƒ‹•Ï”‚ðŽg‚¤‚±‚Æ‚¾‚¯‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 ƒ‚ƒjƒ^‚ðœ‚¢‚Ä‘‚«ž‚Ü‚ê‚éƒCƒ“ƒXƒ^ƒ“ƒXƒtƒB[ƒ‹ƒh‚¾‚¯‚ª•ñ‚³‚ê‚Ü‚·B
 </p>
 ]]>
@@ -6884,13 +6923,13 @@ Struts Action ƒNƒ‰ƒX‚Ì1‚Â‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚¾‚¯‚ª Struts ƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚Äì¬‚
 
   <BugPattern type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD">
     <ShortDescription>Servlet ƒNƒ‰ƒX‚ðŠg’£‚µ‚½ƒNƒ‰ƒX‚Å‚ÌƒCƒ“ƒXƒ^ƒ“ƒX•Ï”‚ÌŽg—p</ShortDescription>
-    <LongDescription>ServletƒNƒ‰ƒX‚ðŠg’£‚µ‚½ƒNƒ‰ƒX {0} ‚ÅƒCƒ“ƒXƒ^ƒ“ƒX•Ï”‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <LongDescription>Servlet ƒNƒ‰ƒX‚ðŠg’£‚µ‚½ƒNƒ‰ƒX {0} ‚ÅAƒCƒ“ƒXƒ^ƒ“ƒX•Ï”‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-ServletƒNƒ‰ƒX‚ðŠg’£‚µ‚½ƒNƒ‰ƒX‚ÅƒCƒ“ƒXƒ^ƒ“ƒX•Ï”‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B
+ServletƒNƒ‰ƒX‚ðŠg’£‚µ‚½ƒNƒ‰ƒX‚ÅAƒCƒ“ƒXƒ^ƒ“ƒX•Ï”‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B
 Servlet ƒNƒ‰ƒX‚Ì1‚Â‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚¾‚¯‚ª Java EE ƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚Äì¬‚³‚êAƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚É‚æ‚Á‚ÄŽg‚í‚ê‚é‚Ì‚ÅA‚±‚Ìƒpƒ‰ƒ_ƒCƒ€‚Í‹É‚ß‚Ä–â‘è‚ª‚ ‚è„§‚Å‚«‚Ü‚¹‚ñB
-ƒƒ\ƒbƒhƒ[ƒJƒ‹•Ï”‚¾‚¯‚ðŽg‚¤‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
+ƒ[ƒJƒ‹•Ï”‚ðŽg‚¤‚±‚Æ‚¾‚¯‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -6904,9 +6943,9 @@ Servlet ƒNƒ‰ƒX‚Ì1‚Â‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚¾‚¯‚ª Java EE ƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚Äì¬‚³‚êA
 <p>
 ‚±‚ÌƒNƒ‰ƒX‚ÍA‚»‚êŽ©g (this ŽQÆ) ‚ÅA <code>wait</code> ƒƒ\ƒbƒhA<code>notify</code> ƒƒ\ƒbƒhA<code>notifyAll</code> ƒƒ\ƒbƒh ‚Æ‚Æ‚à‚É“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B
 ‚±‚ÌƒNƒ‰ƒX‚ðŽg—p‚·‚éƒNƒ‰ƒCƒAƒ“ƒgƒNƒ‰ƒX‚ÍA“¯Šú‰»‚Ì‚½‚ß‚ÌƒIƒuƒWƒFƒNƒg‚Æ‚µ‚Ä‚±‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð‚³‚ç‚ÉŽg—p‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-2‚Â‚ÌƒNƒ‰ƒX‚ª“¯Šú‰»‚Ì‚½‚ß‚É“¯‚¶ƒIƒuƒWƒFƒNƒg‚ðŽg—p‚·‚é‚Ì‚Åƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚Ì³Šm«‚Í‹^‚í‚µ‚¢‚Å‚·B
-“¯Šú‰»‚·‚×‚«‚Å‚à‚È‚¢‚µAŒöŠJŽQÆ‚ÅƒZƒ}ƒtƒHƒƒ\ƒbƒh‚àŒÄ‚Ño‚·‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
-“¯Šú‰»‚Ì§Œä‚É‚Í“à•”‚Ì private ƒtƒB[ƒ‹ƒh‚ðŽg‚¤‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
+2‚Â‚ÌƒNƒ‰ƒX‚ª“¯Šú‰»‚Ì‚½‚ß‚É“¯‚¶ƒIƒuƒWƒFƒNƒg‚ðŽg—p‚·‚é‚Ì‚ÅAƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚Ì³Šm«‚Í‹^‚í‚µ‚¢‚Å‚·B
+“¯Šú‰»‚·‚é‚×‚«‚Å‚à‚È‚¢‚µAŒöŠJŽQÆ‚ÅƒZƒ}ƒtƒHƒƒ\ƒbƒh‚àŒÄ‚Ño‚·‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+“¯Šú‰»‚Ì§Œä‚É‚Í“à•”‚ÌŒöŠJ‚³‚ê‚È‚¢ƒƒ“ƒo•Ï”‚ðŽg‚¤‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -6918,24 +6957,24 @@ Servlet ƒNƒ‰ƒX‚Ì1‚Â‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚¾‚¯‚ª Java EE ƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚Äì¬‚³‚êA
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍAˆÈ‰º‚Ì‚æ‚¤‚É®”æŽZ‚ðŽÀs‚µ‚Ä‚©‚çŒ‹‰Ê‚ð long ‚É•ÏŠ·‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍAˆÈ‰º‚Ì‚æ‚¤‚É®”‚ÌæŽZ‚ðŽÀs‚µ‚Ä‚©‚çŒ‹‰Ê‚ð long ‚É•ÏŠ·‚µ‚Ä‚¢‚Ü‚·B
 </p>
 <blockquote><pre>
-long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; }
+long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; } 
 </pre></blockquote>
 <p>
 long ‚ðŽg—p‚µ‚ÄæŽZ‚ð‚·‚ê‚ÎAŒ‹‰Ê‚ªƒI[ƒo[ƒtƒ[‚·‚é‚Æ‚¢‚¤‰Â”\«‚ð‰ñ”ð‚Å‚«‚Ü‚·B<br>
 ‚½‚Æ‚¦‚ÎAˆÈ‰º‚Ì‚æ‚¤‚ÉC³‚Å‚«‚Ü‚·B
 </p>
 <blockquote><pre>
-long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; }
+long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; } 
 </pre></blockquote>
 <p>
 ‚Ü‚½‚ÍA
 </p>
 <blockquote><pre>
 static final long MILLISECONDS_PER_DAY = 24L*3600*1000;
-long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; }
+long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; } 
 </pre></blockquote>
 ]]>
     </Details>
@@ -6948,15 +6987,15 @@ long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; }
 <![CDATA[
 <p>
 ‚±‚ÌƒR[ƒh‚ÍA32ƒrƒbƒg int ’l‚ð64ƒrƒbƒg long ’l‚É•ÏŠ·‚µ‚ÄAâ‘ÎŽžŠÔ’l‚ð•K—v‚Æ‚·‚éƒƒ\ƒbƒhƒpƒ‰ƒ[ƒ^‚É“n‚µ‚Ä‚¢‚Ü‚·B
-â‘ÎŽžŠÔ’l‚ÍAu‹IŒ³vi‚·‚È‚í‚¿A1970”N1ŒŽ1“úA00:00:00 GMTj‚Æ‚µ‚Ä‚í‚©‚Á‚Ä‚¢‚é•W€“I‚ÈŠî€ŽžŠÔ‚©‚çƒ~ƒŠ•b‚Ì”‚Å‚·B
-—á‚¦‚ÎAŽŸ‚Ìƒƒ\ƒbƒhiDate ‚É‹IŒ³‚©‚ç•b‚ð•ÏŠ·‚·‚é‚±‚Æ‚ðˆÓ}‚µ‚½j‚ÍA‚Ð‚Ç‚­‰ó‚ê‚Ä‚¢‚Ü‚·B
+â‘ÎŽžŠÔ’l‚ÍAuƒGƒ|ƒbƒNvi‚·‚È‚í‚¿A1970”N1ŒŽ1“úA00:00:00 GMTj‚Æ‚µ‚Ä‚í‚©‚Á‚Ä‚¢‚é•W€“I‚ÈŠî€ŽžŠÔ‚©‚çƒ~ƒŠ•b‚Ì”‚Å‚·B<br>
+‚½‚Æ‚¦‚ÎAŽŸ‚Ìƒƒ\ƒbƒhiDate ‚ÉƒGƒ|ƒbƒN‚©‚ç•b‚ð•ÏŠ·‚·‚é‚±‚Æ‚ðˆÓ}‚µ‚½j‚ÍA‚Ð‚Ç‚­‰ó‚ê‚Ä‚¢‚Ü‚·B
 </p>
 <blockquote><pre>
 Date getDate(int seconds) { return new Date(seconds * 1000); }
 </pre></blockquote>
 <p>
-Š|‚¯ŽZ‚Í32ƒrƒbƒg‰‰ŽZ‚ðŽg—p‚µ‚ÄA64ƒrƒbƒg’l‚É•ÏŠ·‚³‚ê‚Ü‚·B
-32ƒrƒbƒg’l‚ÍA64ƒrƒbƒg‚É•ÏŠ·‚³‚ê‚ÄAâ‘ÎŽžŠÔ’l‚ð•\‚·‚½‚ß‚ÉŽg—p‚³‚ê‚é‚Æ‚«A1969”N12ŒŽ‚Æ1970”N1ŒŽ‚Ì“ú•t‚µ‚©•\‚·‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñB
+æŽZ‚Í32ƒrƒbƒg‰‰ŽZ‚ðŽg—p‚µ‚ÄA64ƒrƒbƒg’l‚É•ÏŠ·‚³‚ê‚Ü‚·B
+32ƒrƒbƒg’l‚ÍA64ƒrƒbƒg‚É•ÏŠ·‚³‚ê‚ÄAâ‘ÎŽžŠÔ’l‚ð•\‚·‚½‚ß‚ÉŽg—p‚³‚ê‚é‚Æ‚«A1969”N12ŒŽ‚Æ1970”N1ŒŽ‚Ì“ú•t‚µ‚©•\‚¹‚Ü‚¹‚ñB
 </p>
 <p>
 ã‹L‚Ìƒƒ\ƒbƒh‚Ì‚½‚ß‚Ì³‚µ‚¢ŽÀ‘•‚ÍAˆÈ‰º‚Ì’Ê‚è‚Å‚·B
@@ -6973,8 +7012,8 @@ Date getDate(long seconds) { return new Date(seconds * 1000); }
   </BugPattern>
 
   <BugPattern type="ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND">
-    <ShortDescription>®”’l‚ð float ‚ÉƒLƒƒƒXƒg‚µ‚Ä‚©‚ç Math.round() ‚É“n‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>®”’l‚ð float ‚ÉƒLƒƒƒXƒg‚µ‚Ä‚©‚ç Math.round() ‚É“n‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>®”’l‚ð float ‚ÉƒLƒƒƒXƒg‚µ‚Ä Math.round() ‚É“n‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>®”’l‚ð float ‚ÉƒLƒƒƒXƒg‚µ‚ÄAMath.round() ‚É“n‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6988,8 +7027,8 @@ Date getDate(long seconds) { return new Date(seconds * 1000); }
   </BugPattern>
 
   <BugPattern type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL">
-    <ShortDescription>®”’l‚ð double ‚ÖƒLƒƒƒXƒg‚µ‚Ä‚©‚ç Math.ceil() ‚É“n‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>®”’l‚ð double ‚ÖƒLƒƒƒXƒg‚µ‚Ä‚©‚ç Math.ceil() ‚É“n‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>®”’l‚ð double ‚ÉƒLƒƒƒXƒg‚µ‚Ä Math.ceil() ‚É“n‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>®”’l‚ð double ‚ÉƒLƒƒƒXƒg‚µ‚ÄAMath.ceil() ‚É“n‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7001,16 +7040,16 @@ Date getDate(long seconds) { return new Date(seconds * 1000); }
   </BugPattern>
 
   <BugPattern type="ICAST_IDIV_CAST_TO_DOUBLE">
-    <ShortDescription>®”‚ÌœŽZ‚ÌŒ‹‰Ê‚ð double ‚Ü‚½‚Í float ‚ÖƒLƒƒƒXƒg‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>®”‚ÌœŽZ‚ÌŒ‹‰Ê‚ð double ‚Ü‚½‚Í float ‚ÖƒLƒƒƒXƒg‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>®”‚ÌœŽZ‚ÌŒ‹‰Ê‚ð double ‚Ü‚½‚Í float ‚ÉƒLƒƒƒXƒg‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>®”‚ÌœŽZ‚ÌŒ‹‰Ê‚ð double ‚Ü‚½‚Í float ‚ÉƒLƒƒƒXƒg‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚ÌƒR[ƒh‚Í ®”‚ÌœŽZ‚ÌŒ‹‰Ê‚ð double ‚Ü‚½‚Í float ‚ÉƒLƒƒƒXƒg‚µ‚Ä‚¢‚Ü‚·B
 ®”‚ÅœŽZ‚ð‚·‚é‚±‚Æ‚ÍAƒ[ƒ‚ÉÅ‚à‹ß‚¢®”’l‚Ü‚ÅŒ‹‰Ê‚ðØ‚èŽÌ‚Ä‚Ü‚·B
-Œ‹‰Ê‚ª double ‚ÉƒLƒƒƒXƒg‚³‚ê‚½‚Æ‚¢‚¤Ž–ŽÀ‚ÍA‚±‚Ì¸“x‚ðˆÛŽ‚·‚×‚«‚¾‚Á‚½‚±‚Æ‚ðŽ¦´‚µ‚Ä‚¢‚Ü‚·B
+Œ‹‰Ê‚ª double ‚ÉƒLƒƒƒXƒg‚³‚ê‚½‚Æ‚¢‚¤Ž–ŽÀ‚ÍA‚±‚Ì¸“x‚ªˆÛŽ‚³‚ê‚é‚×‚«‚¾‚Á‚½‚±‚Æ‚ðŽ¦´‚µ‚Ä‚¢‚Ü‚·B
 ‚¨‚»‚ç‚­ˆÓ–¡‚³‚ê‚½‚±‚Æ‚ÍAœŽZ‚ðŽÀs‚·‚é‘O‚ÉƒIƒyƒ‰ƒ“ƒh‚Ì1‚Â‚Ü‚½‚Í—¼•û‚ð double ‚ÉƒLƒƒƒXƒg‚·‚é‚±‚Æ‚Å‚µ‚½B<br>
-ˆÈ‰º‚É—á‚ðŽ¦‚µ‚Ü‚·B
+ˆÈ‰º‚É—á‚ðŽ¦‚µ‚Ü‚·B 
 </p>
 <blockquote><pre>
 int x = 2;
@@ -7032,11 +7071,12 @@ double value2 =  x / (double) y;
 <![CDATA[
 <p>
 ‚±‚ÌƒR[ƒh‚ÍAHttpSession ‚É”ñ’¼—ñ‰»‰Â”\ƒIƒuƒWƒFƒNƒg‚ðŠi”[‚µ‚Ä‚¢‚é‚ÆŽv‚í‚ê‚Ü‚·B
-‚±‚ÌƒZƒbƒVƒ‡ƒ“‚ª•sŠˆ«‰»‚³‚ê‚é‚©ˆÚ“®‚µ‚½‚È‚çƒGƒ‰[‚ðµ‚«‚Ü‚·B
+‚±‚ÌƒZƒbƒVƒ‡ƒ“‚ª•sŠˆ«‰»‚³‚ê‚é‚©ˆÚs‚µ‚½‚È‚çAƒGƒ‰[‚ðµ‚«‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN">
     <ShortDescription>ObjectOutput ‚É‘‚«ž‚Ü‚ê‚é”ñ’¼—ñ‰»‰Â”\ƒIƒuƒWƒFƒNƒg</ShortDescription>
     <LongDescription>”ñ’¼—ñ‰»‰Â”\ƒIƒuƒWƒFƒNƒg {2} ‚ª ObjectOutput ‚É‘‚«ž‚Ü‚ê‚Ä‚¢‚Ü‚·B{1}</LongDescription>
@@ -7044,20 +7084,20 @@ double value2 =  x / (double) y;
 <![CDATA[
 <p>
 ‚±‚ÌƒR[ƒh‚ÍA<code>ObjectOutput.writeObject</code> ‚É”ñ’¼—ñ‰»‰Â”\ƒIƒuƒWƒFƒNƒg‚ð“n‚µ‚Ä‚¢‚é‚ÆŽv‚í‚ê‚Ü‚·B
-‚±‚ÌƒIƒuƒWƒFƒNƒg‚ª–{“–‚É”ñ’¼—ñ‰»‰Â”\‚È‚çƒGƒ‰[‚ðµ‚«‚Ü‚·B
+‚±‚ÌƒIƒuƒWƒFƒNƒg‚ª–{“–‚É”ñ’¼—ñ‰»‰Â”\‚È‚çAƒGƒ‰[‚ðµ‚«‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT">
-    <ShortDescription>‘Ž®•¶Žš—ñ‚½‚ß‚ÌˆÈ‘O‚Ìˆø”‚ª‘¶Ý‚µ‚È‚¢</ShortDescription>
-    <LongDescription>‘Ž®•¶Žš—ñ‚Ìˆø” {2} ‚ÌˆÈ‘O‚Ìˆø”‚ª‘¶Ý‚µ‚Ü‚¹‚ñB{1}</LongDescription>
+    <ShortDescription>‘Ž®•¶Žš—ñ‚½‚ß‚Ì‘O‚Ìˆø”‚ª‚È‚¢</ShortDescription>
+    <LongDescription>‘Ž®•¶Žš—ñ‚Ìˆø” {2} ‚Ì‘O‚Ìˆø”‚ª‚ ‚è‚Ü‚¹‚ñB{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì‘Ž®•¶Žš—ñ‚ÍAˆÈ‘O‚Ì‘Ž®ŽwŽ¦Žq‚Ìˆø”‚ªÄ—˜—p‚³‚ê‚é‚æ‚¤‚É‚·‚é‚½‚ß‚Éu‘Š‘Î“I‚ÈƒCƒ“ƒfƒbƒNƒX ("&lt;")v‚ðŽw’è‚µ‚Ä‚¢‚Ü‚·B
-‚µ‚©‚µ‚È‚ª‚çAˆÈ‘O‚Ìˆø”‚ª‘¶Ý‚µ‚Ü‚¹‚ñB
+‚±‚Ì‘Ž®•¶Žš—ñ‚ÍA‘O‚Ì‘Ž®ŽwŽ¦Žq‚Ìˆø”‚ªÄ—˜—p‚³‚ê‚é‚æ‚¤‚É‚·‚é‚½‚ß‚Éu‘Š‘ÎƒCƒ“ƒfƒbƒNƒX ("&lt;")v‚ðŽw’è‚µ‚Ä‚¢‚Ü‚·B
+‚µ‚©‚µ‚È‚ª‚çA‘O‚Ìˆø”‚ª‚ ‚è‚Ü‚¹‚ñB
 ‚½‚Æ‚¦‚ÎA<code>formatter.format("%&lt;s %s", "a", "b")</code> ‚ªŽÀs‚³‚ê‚é‚Æ MissingFormatArgumentException ‚ðƒXƒ[‚µ‚Ü‚·B
 </p>
 ]]>
@@ -7065,13 +7105,13 @@ double value2 =  x / (double) y;
   </BugPattern>
 
   <BugPattern type="VA_FORMAT_STRING_USES_NEWLINE">
-    <ShortDescription>‘Ž®•¶Žš—ñ‚Í \n ‚æ‚è‚à %n ‚ðŽg—p‚·‚×‚«</ShortDescription>
-    <LongDescription>‘Ž®•¶Žš—ñ‚ÍA\n ‚æ‚è‚à %n ‚ðŽg—p‚·‚×‚«‚Å‚·B{1}</LongDescription>
+    <ShortDescription>‘Ž®•¶Žš—ñ‚Í \n ‚æ‚è‚à %n ‚ðŽg—p‚·‚é‚×‚«</ShortDescription>
+    <LongDescription>‘Ž®•¶Žš—ñ‚ÍA\n ‚æ‚è‚à %n ‚ðŽg—p‚·‚é‚×‚«‚Å‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì‘Ž®•¶Žš—ñ‚É‚ÍA‰üs•¶Žš(\n)‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·B
-ˆê”Ê‚É‘Ž®•¶Žš—ñ‚É‚Í %n ‚ðŽg—p‚·‚é‚±‚Æ‚ª‚æ‚è–]‚Ü‚µ‚¢‚Å‚·B%n ‚ÍAƒvƒ‰ƒbƒgƒz[ƒ€“Á—L‚ÌsƒZƒpƒŒ[ƒ^‚ðì¬‚µ‚Ü‚·B
+‚±‚Ì‘Ž®•¶Žš—ñ‚É‚ÍA‰üs•¶Žš (\n) ‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·B
+ˆê”Ê‚É‘Ž®•¶Žš—ñ‚É‚Í %n ‚ðŽg—p‚·‚é‚±‚Æ‚ª‚æ‚è–]‚Ü‚µ‚¢‚Å‚·B%n ‚ÍAƒvƒ‰ƒbƒgƒz[ƒ€“Á—L‚ÌsƒZƒpƒŒ[ƒ^‚ðì‚èo‚µ‚Ü‚·B
 </p>
 ]]>
   </Details>
@@ -7091,13 +7131,13 @@ double value2 =  x / (double) y;
   </BugPattern>
 
   <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN">
-    <ShortDescription>Boolean ‚Å‚Í‚È‚¢ˆø”‚ð “b ‘Ž®ŽwŽ¦Žq‚ðŽg—p‚µ‚ÄƒtƒH[ƒ}ƒbƒg‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>Boolean ‚Å‚Í‚È‚¢ˆø”‚ð “b ‘Ž®ŽwŽ¦Žq‚ðŽg—p‚µ‚ÄƒtƒH[ƒ}ƒbƒg‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>Boolean ‚Å‚È‚¢ˆø”‚ð “b ‘Ž®ŽwŽ¦Žq‚ðŽg—p‚µ‚ÄƒtƒH[ƒ}ƒbƒg‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>Boolean ‚Å‚È‚¢ˆø”‚ð “b ‘Ž®ŽwŽ¦Žq‚ðŽg—p‚µ‚ÄƒtƒH[ƒ}ƒbƒg‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-BooleanŒ^‚Å‚Í‚È‚¢ˆø”‚ð %b ‘Ž®ŽwŽ¦Žq‚ÅƒtƒH[ƒ}ƒbƒg‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚Í—áŠO‚ðƒXƒ[‚µ‚Ü‚¹‚ñB
-‚»‚Ì‘ã‚í‚è‚ÉAnull ˆÈŠO‚Ì’l‚Å‚Í true Anull ‚Å‚Í false ‚ðo—Í‚µ‚Ü‚·B
+BooleanŒ^‚Å‚È‚¢ˆø”‚ð %b ‘Ž®ŽwŽ¦Žq‚ÅƒtƒH[ƒ}ƒbƒg‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚Í—áŠO‚ðƒXƒ[‚µ‚Ü‚¹‚ñB
+‚»‚Ì‘ã‚í‚è‚ÉAnull ‚Å‚È‚¢’l‚Å‚Í true Anull ‚Å‚Í false ‚ðo—Í‚µ‚Ü‚·B
 ‘Ž®•¶Žš—ñ‚Ì‚±‚Ì‹@”\‚ÍŠï–­‚ÅˆÓ}‚µ‚½‚±‚Æ‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
@@ -7105,14 +7145,14 @@ BooleanŒ^‚Å‚Í‚È‚¢ˆø”‚ð %b ‘Ž®ŽwŽ¦Žq‚ÅƒtƒH[ƒ}ƒbƒg‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚Í—áŠO‚ðƒXƒ
   </BugPattern>
 
   <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY">
-    <ShortDescription>‘Ž®•¶Žš—ñ‚ðŽg—p‚µ‚Ä–ð‚É—§‚½‚È‚¢•û–@‚Å”z—ñ‚ªƒtƒH[ƒ}ƒbƒg‚³‚ê‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>–ð‚É—§‚½‚È‚¢•û–@‚Åˆø”‚ÌŒ^ {3} ‚ªƒtƒH[ƒ}ƒbƒg‚³‚ê‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>‘Ž®•¶Žš—ñ‚ðŽg—p‚µ‚Ä–ð‚É—§‚½‚È‚¢•û–@‚Å”z—ñ‚ðƒtƒH[ƒ}ƒbƒg‚µ‚Ä‚¢‚é</ShortDescription>
+    <LongDescription>–ð‚É—§‚½‚È‚¢•û–@‚Åˆø”‚ÌŒ^ {3} ‚ðƒtƒH[ƒ}ƒbƒg‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‘Ž®•¶Žš—ñ‚ÅƒtƒH[ƒ}ƒbƒg‚³‚ê‚Ä‚¢‚éˆø”‚Ì1‚Â‚Í”z—ñ‚Å‚·B
-‚±‚ê‚Í‚©‚È‚è–ð‚É—§‚½‚È‚¢‘Ž®‚ðŽg—p‚µ‚ÄƒtƒH[ƒ}ƒbƒg‚³‚ê‚Ä‚¢‚ÄA”z—ñ‚ÌƒRƒ“ƒeƒ“ƒc‚ð•\Ž¦‚µ‚Ü‚¹‚ñ (‚½‚Æ‚¦‚ÎA[I@304282)B
-ƒtƒH[ƒ}ƒbƒg‚Åˆ—‚·‚é‘O‚É <code>Arrays.asList(...)</code> ‚ðŽg—p‚µ‚Ä”z—ñ‚ðƒ‰ƒbƒv‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
+‚±‚ê‚Í [I@304282 ‚Ì‚æ‚¤‚È‚©‚È‚è–ð‚É—§‚½‚È‚¢‘Ž®‚ðŽg—p‚µ‚ÄƒtƒH[ƒ}ƒbƒg‚³‚ê‚Ü‚·B‚»‚ê‚Í”z—ñ‚ÌƒRƒ“ƒeƒ“ƒc‚ð•\Ž¦‚µ‚Ü‚¹‚ñB
+ƒtƒH[ƒ}ƒbƒg‚Åˆµ‚¤‘O‚É <code>Arrays.asList(...)</code> ‚ðŽg—p‚µ‚Ä”z—ñ‚ðƒ‰ƒbƒv‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -7133,13 +7173,13 @@ BooleanŒ^‚Å‚Í‚È‚¢ˆø”‚ð %b ‘Ž®ŽwŽ¦Žq‚ÅƒtƒH[ƒ}ƒbƒg‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚Í—áŠO‚ðƒXƒ
 
   <BugPattern type="VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED">
     <ShortDescription>printf ƒXƒ^ƒCƒ‹‚Ì‘Ž®‚ªŠú‘Ò‚³‚ê‚Ä‚¢‚é‚Æ‚±‚ë‚Å MessageFormat ‚ª—^‚¦‚ç‚ê‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>{2} ‚ÍAprntf ƒXƒ^ƒCƒ‹‚Ì‘Ž®‚ð•K—v‚Æ‚µ‚Ü‚·‚ª MessageFormat ‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
+    <LongDescription>{2} ‚ÍAprntf ƒXƒ^ƒCƒ‹‚Ì‘Ž®‚ð•K—v‚Æ‚µ‚Ä‚¢‚Ü‚·‚ª MessageFormat ‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
 Java ‚Ì printf ‘Ž®•¶Žš—ñ‚Æˆø”‚ÌƒŠƒXƒg‚ðŠú‘Ò‚·‚éƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚Ä‚¢‚Ü‚·B
 ‚µ‚©‚µ‚È‚ª‚çA‘Ž®•¶Žš—ñ‚É‚Í‚Ç‚ñ‚È‘Ž®ŽwŽ¦Žq (‚½‚Æ‚¦‚ÎA%s) ‚à‚È‚­‚ÄAƒƒbƒZ[ƒWƒtƒH[ƒ}ƒbƒg‚Ì—v‘f (‚½‚Æ‚¦‚ÎA{0}) ‚ª‚ ‚è‚Ü‚·B
-printf ƒXƒ^ƒCƒ‹‚Ì‘Ž®•¶Žš—ñ‚ª•K—v‚È‚Æ‚«‚ÉAƒR[ƒh‚Í MessageFormat ‚Ì•¶Žš—ñ‚ð—^‚¦‚Ä‚¢‚é‰Â”\«‚ª‚‚¢‚Å‚·B
+printf ƒXƒ^ƒCƒ‹‚Ì‘Ž®•¶Žš—ñ‚ª•K—v‚È‚Æ‚«‚ÉAMessageFormat ‚Ì•¶Žš—ñ‚ð—^‚¦‚Ä‚¢‚é‰Â”\«‚ª‚‚¢‚Å‚·B
 ŽÀsŽž‚ÉA‚·‚×‚Ä‚Ìˆø”‚Í–³Ž‹‚³‚êA‘Ž®•¶Žš—ñ‚Í³Šm‚ÉƒtƒH[ƒ}ƒbƒg‚³‚ê‚¸‚É•Ô‚³‚ê‚Ü‚·B
 </p>
 ]]>
@@ -7153,7 +7193,7 @@ printf ƒXƒ^ƒCƒ‹‚Ì‘Ž®•¶Žš—ñ‚ª•K—v‚È‚Æ‚«‚ÉAƒR[ƒh‚Í MessageFormat ‚Ì•¶Žš—ñ‚ð—^‚¦
 <![CDATA[
 <p>
 ‰Â•Ï’·ˆø”‚É‚æ‚é‘Ž®•¶Žš—ñƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚Ä‚¢‚Ü‚·‚ª‘Ž®•¶Žš—ñ‚ÅŽÀÛ‚ÉŽg‚í‚ê‚é‚æ‚è‘½‚­‚Ìˆø”‚ª“n‚³‚ê‚Ä‚¢‚Ü‚·B
-‚±‚ê‚ÍŽÀsŽž—áŠO‚ÌŒ´ˆö‚Æ‚Í‚È‚è‚Ü‚¹‚ñ‚ªƒR[ƒh‚ÍƒtƒH[ƒ}ƒbƒg‚³‚ê‚½•¶Žš—ñ‚ÉŠÜ‚Ü‚ê‚é‚±‚Æ‚ðˆÓ}‚µ‚½î•ñ‚ð–Ù‚Á‚ÄÈ—ª‚µ‚Ä‚¢‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚±‚ê‚ÍŽÀsŽž—áŠO‚ÌŒ´ˆö‚Æ‚Í‚È‚è‚Ü‚¹‚ñ‚ªAƒR[ƒh‚ÍƒtƒH[ƒ}ƒbƒg‚³‚ê‚½•¶Žš—ñ‚ÉŠÜ‚Ü‚ê‚é‚±‚Æ‚ðˆÓ}‚µ‚½î•ñ‚ð–Ù‚Á‚ÄÈ—ª‚µ‚Ä‚¢‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -7165,7 +7205,7 @@ printf ƒXƒ^ƒCƒ‹‚Ì‘Ž®•¶Žš—ñ‚ª•K—v‚È‚Æ‚«‚ÉAƒR[ƒh‚Í MessageFormat ‚Ì•¶Žš—ñ‚ð—^‚¦
     <Details>
 <![CDATA[
 <p>
-‘Ž®•¶Žš—ñ‚Í\•¶“I‚É–³Œø‚Å‚·B‚±‚Ì•¶‚ªŽÀs‚³‚ê‚é‚Æ‚«ŽÀsŽž—áŠO‚ª”­¶‚µ‚Ü‚·B
+‘Ž®•¶Žš—ñ‚Í\•¶“I‚É–³Œø‚Å‚·B‚±‚Ì•¶‚ªŽÀs‚³‚ê‚é‚ÆŽÀsŽž—áŠO‚ª”­¶‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -7177,7 +7217,7 @@ printf ƒXƒ^ƒCƒ‹‚Ì‘Ž®•¶Žš—ñ‚ª•K—v‚È‚Æ‚«‚ÉAƒR[ƒh‚Í MessageFormat ‚Ì•¶Žš—ñ‚ð—^‚¦
     <Details>
 <![CDATA[
 <p>
-‘Ž®•¶Žš—ñ‚Å‘Ž®ŽwŽ¦Žq‚ð–ž‚½‚·‚½‚ß‚É\•ª‚Èˆø”‚ª“n‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB‚±‚Ì•¶‚ªŽÀs‚³‚ê‚é‚Æ‚«ŽÀsŽž—áŠO‚ª”­¶‚µ‚Ü‚·B
+‘Ž®•¶Žš—ñ‚Å‘Ž®ŽwŽ¦Žq‚ð–ž‚½‚·‚½‚ß‚É\•ª‚Èˆø”‚ª“n‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB‚±‚Ì•¶‚ªŽÀs‚³‚ê‚é‚ÆŽÀsŽž—áŠO‚ª”­¶‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -7204,18 +7244,18 @@ printf ƒXƒ^ƒCƒ‹‚Ì‘Ž®•¶Žš—ñ‚ª•K—v‚È‚Æ‚«‚ÉAƒR[ƒh‚Í MessageFormat ‚Ì•¶Žš—ñ‚ð—^‚¦
 <![CDATA[
 <p>
 ‚±‚ÌƒR[ƒh‚Í‰Â•Ï’·ˆø”‚ð‚Æ‚éƒƒ\ƒbƒh‚ÉƒvƒŠƒ~ƒeƒBƒuŒ^‚Ì”z—ñ‚ð“n‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ê‚ÍƒvƒŠƒ~ƒeƒBƒuŒ^‚Ì”z—ñ‚ð•ÛŽ‚·‚é‚½‚ß‚É’·‚³‚ª1‚Ì”z—ñ‚ðì¬‚µ‚Äƒƒ\ƒbƒh‚É“n‚µ‚Ü‚·B
+‚±‚ê‚ÍAƒvƒŠƒ~ƒeƒBƒuŒ^‚Ì”z—ñ‚ð•ÛŽ‚·‚é‚½‚ß‚É’·‚³‚ª1‚Ì”z—ñ‚ðì¬‚µ‚Äƒƒ\ƒbƒh‚É“n‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS">
-    <ShortDescription>equals ƒƒ\ƒbƒh‚Íˆø”‚ÌŒ^‚ð‰¼’è‚·‚×‚«‚Å‚Í‚È‚¢</ShortDescription>
+    <ShortDescription>equals ƒƒ\ƒbƒh‚Íˆø”‚ÌŒ^‚ð‰¼’è‚·‚é‚×‚«‚Å‚Í‚È‚¢</ShortDescription>
     <LongDescription>{0} ‚Ì‚½‚ß‚Ì equals ƒƒ\ƒbƒh‚ÍAˆø”‚ÌŒ^‚ª {0.givenClass} ‚Å‚ ‚é‚Æ‰¼’è‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-<code>equals(Object o)</code> ƒƒ\ƒbƒh‚ÍA<code>o</code> ‚ÌŒ^‚É‚Â‚¢‚Ä‚Ç‚ñ‚È‰¼’è‚à‚·‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+<code>equals(Object o)</code> ƒƒ\ƒbƒh‚ÍA<code>o</code> ‚ÌŒ^‚É‚Â‚¢‚Ä‚Ç‚ñ‚È‰¼’è‚à‚·‚é‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
 <code>o</code> ‚ª <code>this</code> ‚Æ“¯‚¶Œ^‚Å‚È‚¢‚È‚ç’P‚É false ‚ð•Ô‚·‚×‚«‚Å‚·B
 </p>
 ]]>
@@ -7224,7 +7264,7 @@ printf ƒXƒ^ƒCƒ‹‚Ì‘Ž®•¶Žš—ñ‚ª•K—v‚È‚Æ‚«‚ÉAƒR[ƒh‚Í MessageFormat ‚Ì•¶Žš—ñ‚ð—^‚¦
 
   <BugPattern type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION">
     <ShortDescription>’ŠÛƒRƒŒƒNƒVƒ‡ƒ“‚Ö‚Ì‹^‚í‚µ‚¢ƒLƒƒƒXƒg</ShortDescription>
-    <LongDescription>Collection ‚©‚ç’ŠÛƒRƒŒƒNƒVƒ‡ƒ“ {3} ‚Ö‚Ì‹^‚í‚µ‚¢ƒLƒƒƒXƒg‚Å‚·B{1}</LongDescription>
+    <LongDescription>Collection ‚©‚ç’ŠÛƒNƒ‰ƒX {3} ‚Ö‚Ì‹^‚í‚µ‚¢ƒLƒƒƒXƒg‚Å‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7242,7 +7282,7 @@ printf ƒXƒ^ƒCƒ‹‚Ì‘Ž®•¶Žš—ñ‚ª•K—v‚È‚Æ‚«‚ÉAƒR[ƒh‚Í MessageFormat ‚Ì•¶Žš—ñ‚ð—^‚¦
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒLƒƒƒXƒg‚ÍAí‚ÉClassCastException ‚ðƒXƒ[‚µ‚Ü‚·B
+‚±‚ÌƒLƒƒƒXƒg‚ÍAí‚ÉClassCastException ‚ðƒXƒ[‚µ‚Ü‚·B 
 </p>
 ]]>
     </Details>
@@ -7255,7 +7295,7 @@ printf ƒXƒ^ƒCƒ‹‚Ì‘Ž®•¶Žš—ñ‚ª•K—v‚È‚Æ‚«‚ÉAƒR[ƒh‚Í MessageFormat ‚Ì•¶Žš—ñ‚ð—^‚¦
 <![CDATA[
 <p>
 ‚±‚ÌƒLƒƒƒXƒg‚ÍAí‚É ClassCastException ‚ðƒXƒ[‚µ‚Ü‚·B
-FindBugs ‚ÍAinstanceof ƒ`ƒFƒbƒN‚©‚çŒ^î•ñ‚ð’²¸‚µ‚ÄA‚³‚ç‚Éƒƒ\ƒbƒh‚ÆƒtƒB[ƒ‹ƒh‚©‚çƒ[ƒh‚³‚ê‚½–ß‚è’l‚ÌŒ^‚É‚Â‚¢‚ÄA‚æ‚è‘½‚­‚Ì³Šm‚Èî•ñ‚ðŽg—p‚µ‚Ü‚·B
+FindBugs ‚ÍAinstanceof ƒ`ƒFƒbƒN‚©‚çŒ^î•ñ‚ð’²¸‚µ‚ÄAƒƒ\ƒbƒh‚©‚ç‚Ì–ß‚è’l‚ÆƒtƒB[ƒ‹ƒh‚©‚çƒ[ƒh‚³‚ê‚½’l‚ÌŒ^‚É‚Â‚¢‚ÄA‚æ‚è‘½‚­‚Ì³Šm‚Èî•ñ‚ðŽg—p‚µ‚Ü‚·B
 ‚µ‚½‚ª‚Á‚ÄAéŒ¾‚³‚ê‚½•Ï”‚ÌŒ^‚É‚Í‚æ‚è‘½‚­‚Ì³Šm‚Èî•ñ‚ª‚ ‚é‚©‚à‚µ‚ê‚È‚¢‚µ‚ê‚Ü‚¹‚ñB
 ‚»‚µ‚ÄAƒLƒƒƒXƒg‚ªí‚ÉŽÀsŽž—áŠO‚ðƒXƒ[‚·‚é‚Ì‚©”»’è‚·‚é‚½‚ß‚ÉŽg—p‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
 </p>
@@ -7271,7 +7311,7 @@ FindBugs ‚ÍAinstanceof ƒ`ƒFƒbƒN‚©‚çŒ^î•ñ‚ð’²¸‚µ‚ÄA‚³‚ç‚Éƒƒ\ƒbƒh‚ÆƒtƒB[ƒ‹ƒh
 <p>
 ‚±‚ÌƒLƒƒƒXƒg‚ÍAí‚É ClassCastException ‚ðƒXƒ[‚µ‚Ü‚·B
 ‰ðÍ‚ÍAƒLƒƒƒXƒg‚µ‚Ä‚¢‚é’l‚Ì³Šm‚ÈŒ^‚ª‚í‚©‚Á‚Ä‚¢‚é‚ÆM‚¶‚Ä‚¢‚Ü‚·B
-‚»‚µ‚ÄAƒTƒuƒ^ƒCƒv‚Öƒ_ƒEƒ“ƒLƒƒƒXƒg‚µ‚æ‚¤‚Æ‚·‚éŽŽ‚Ý‚ÍAClassCastException ‚ÌƒXƒ[‚É‚æ‚Á‚Äí‚ÉŽ¸”s‚µ‚Ü‚·B
+‚»‚µ‚ÄAƒTƒuƒ^ƒCƒv‚Öƒ_ƒEƒ“ƒLƒƒƒXƒg‚µ‚æ‚¤‚Æ‚·‚éŽŽ‚Ý‚ÍAClassCastException ‚ÌƒXƒ[‚É‚æ‚Á‚Äí‚ÉŽ¸”s‚µ‚Ü‚·B 
 </p>
 ]]>
     </Details>
@@ -7293,12 +7333,12 @@ String[] getAsArray(Collection&lt;String&gt; c) {
 <p>
 ‚±‚ê‚Í’ÊíAClassCastException ‚ðƒXƒ[‚µ‚ÄŽ¸”s‚µ‚Ü‚·B
 ‚Ù‚Æ‚ñ‚Ç‚·‚×‚Ä‚ÌƒRƒŒƒNƒVƒ‡ƒ“‚Ì <code>toArray</code> ƒƒ\ƒbƒh‚ÍA<code>Object[]</code> ‚ð•Ô‚µ‚Ü‚·B
-Collection ƒIƒuƒWƒFƒNƒg‚ÍéŒ¾‚³‚ê‚½‘ÌŒ^ƒRƒŒƒNƒVƒ‡ƒ“‚ÌŽQÆ‚ª‚È‚¢‚Ì‚ÅAŽÀÛ‚É‘¼‚Ì‚±‚Æ‚ð‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚¹‚ñB
+Collection ƒIƒuƒWƒFƒNƒg‚ÍéŒ¾‚³‚ê‚½‘ÌŒ^ƒRƒŒƒNƒVƒ‡ƒ“‚ÌŽQÆ‚ª‚È‚¢‚Ì‚ÅA–{“–‚É‰½‚à‚Å‚«‚Ü‚¹‚ñB
 ƒRƒŒƒNƒVƒ‡ƒ“‚©‚ç“Á’è‚ÌŒ^‚Ì”z—ñ‚ð“¾‚é³‚µ‚¢•û–@‚ÍA<code>c.toArray(new String[]);</code> ‚Ü‚½‚Í <code>c.toArray(new String[c.size()]);</code> (ŒãŽÒ‚Í‚í‚¸‚©‚É‚æ‚èŒø—¦“I‚Å‚·) ‚ðŽg‚¤‚±‚Æ‚Å‚·B
 ‚±‚ê‚É‘Î‚·‚é1‚Â‚Ì‹¤’Ê‚Ì’m‚ç‚ê‚Ä‚¢‚é—áŠO‚ª‚ ‚è‚Ü‚·B
 <code>Arrays.asList(...)</code>‚É‚æ‚Á‚Ä•Ô‚³‚ê‚éƒŠƒXƒg‚Ì <code>toArray()</code> ƒƒ\ƒbƒh‚ÍA‹¤•Ï‚È”z—ñ‚ð•Ô‚µ‚Ü‚·B
 ‚½‚Æ‚¦‚ÎA<code>Arrays.asArray(new String[] { "a" }).toArray()</code> ‚Í <code>String []</code> ‚ð•Ô‚µ‚Ü‚·B
-FindBugs ‚Í‚»‚Ì‚æ‚¤‚ÈƒP[ƒX‚ðŒŸo‚µ‚Ä—}Ž~‚µ‚æ‚¤‚Æ‚µ‚Ü‚·‚ª‚¢‚­‚Â‚©Œ©—Ž‚Æ‚·‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+FindBugs ‚Í‚»‚Ì‚æ‚¤‚ÈƒP[ƒX‚ðŒŸo‚µ‚Ä—}Ž~‚µ‚æ‚¤‚Æ‚µ‚Ü‚·‚ªA‚¢‚­‚Â‚©Œ©—Ž‚Æ‚·‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
@@ -7311,7 +7351,7 @@ FindBugs ‚Í‚»‚Ì‚æ‚¤‚ÈƒP[ƒX‚ðŒŸo‚µ‚Ä—}Ž~‚µ‚æ‚¤‚Æ‚µ‚Ü‚·‚ª‚¢‚­‚Â‚©Œ©—Ž‚Æ‚·‚©‚à‚µ‚
 <![CDATA[
 <p>
 ƒ`ƒFƒbƒN‚³‚ê‚Ä‚¢‚é’l‚ª null ‚Å‚ ‚é‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚é‚Ì‚ÅAinstanceof ‚Íí‚É faluse ‚ð•Ô‚µ‚Ü‚·B
-‚±‚ê‚ÍˆÀ‘S‚Å‚Í‚ ‚é‚ªŒë‰ð‚Ì’›Œó‚Ü‚½‚Í‘¼‚Ì˜_—ƒGƒ‰[‚Å‚Í‚È‚¢‚±‚Æ‚ðŠm”F‚µ‚Ä‚­‚¾‚³‚¢B
+‚±‚ê‚ÍˆÀ‘S‚ÅAŒë‰ð‚â˜_—ƒGƒ‰[‚ðŽw“E‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚ðŠm”F‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -7337,7 +7377,7 @@ an indication of some misunderstanding or some other logic error.
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì instanceof ‚Íí‚É false ‚ð•Ô‚µ‚Ü‚·B‚±‚ê‚ÍˆÀ‘S‚Å‚Í‚ ‚é‚ªŒë‰ð‚Ì’›Œó‚Ü‚½‚Í‘¼‚Ì˜_—ƒGƒ‰[‚Å‚Í‚È‚¢‚±‚Æ‚ðŠm”F‚µ‚Ä‚­‚¾‚³‚¢B
+‚±‚Ì instanceof ‚Íí‚É false ‚ð•Ô‚µ‚Ü‚·B‚±‚ê‚ÍˆÀ‘S‚ÅAŒë‰ð‚â˜_—ƒGƒ‰[‚ðŽw“E‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚ðŠm”F‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -7345,13 +7385,13 @@ an indication of some misunderstanding or some other logic error.
 
   <BugPattern type="BC_VACUOUS_INSTANCEOF">
     <ShortDescription>í‚É true ‚ð•Ô‚· instanceof</ShortDescription>
-    <LongDescription>{2} ‚Í {3} ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚È‚Ì‚Å nstanceof ‚Íí‚É true ‚ð•Ô‚µ‚Ü‚·B</LongDescription>
+    <LongDescription>{2} ‚Í {3} ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚È‚Ì‚Å instanceof ‚Íí‚É true ‚ð•Ô‚µ‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì instanceof ‚Íí‚É true (ƒeƒXƒg‚µ‚Ä‚¢‚é’l‚ª null ‚Å‚Í‚È‚¢ŒÀ‚è) ‚ð•Ô‚µ‚Ü‚·B
-‚±‚ê‚ÍˆÀ‘S‚Å‚Í‚ ‚é‚ªŒë‰ð‚Ì’›Œó‚Ü‚½‚Í‘¼‚Ì˜_—ƒGƒ‰[‚Å‚Í‚È‚¢‚±‚Æ‚ðŠm”F‚µ‚Ä‚­‚¾‚³‚¢B
-–{“–‚É null ‚È‚Ì‚©’l‚ðƒeƒXƒg‚µ‚½‚¢‚È‚ç‚½‚Ô‚ñAinstanceof ‚Å‚Í‚È‚­ null ƒeƒXƒg‚ð‚µ‚½•û‚ª—Ç‚­A‚æ‚è–¾Šm‚É‚È‚è‚Ü‚·B
+‚±‚Ì instanceof ‚Íí‚É true ‚ð•Ô‚µ‚Ü‚· (ƒeƒXƒg‚µ‚Ä‚¢‚é’l‚ª null ‚Å‚È‚¢ŒÀ‚è)B
+‚±‚ê‚ÍˆÀ‘S‚ÅAŒë‰ð‚â˜_—ƒGƒ‰[‚ðŽw“E‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚ðŠm”F‚µ‚Ä‚­‚¾‚³‚¢B
+–{“–‚É null ‚È‚Ì‚©’l‚ðƒeƒXƒg‚µ‚½‚¢‚È‚çA‚½‚Ô‚ñAinstanceof ‚Å‚Í‚È‚­ null ƒeƒXƒg‚ð‚µ‚½•û‚ª—Ç‚­A‚æ‚è–¾Šm‚É‚È‚è‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -7364,8 +7404,8 @@ an indication of some misunderstanding or some other logic error.
 <![CDATA[
 <p>
 ‚±‚ÌƒLƒƒƒXƒg‚Íƒ`ƒFƒbƒN‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB
-Œ^‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ªƒLƒƒƒXƒg‚µ‚Ä‚¢‚éŒ^‚É‚·‚×‚ÄƒLƒƒƒXƒg‚Å‚«‚é‚Æ‚¢‚¤‚í‚¯‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
-ƒvƒƒOƒ‰ƒ€‚ÌƒƒWƒbƒN‚ªŠmŽÀ‚É‚±‚ÌƒLƒƒƒXƒg‚ªŽ¸”s‚µ‚È‚¢‚±‚Æ‚ðŠm”F‚µ‚Ä‚­‚¾‚³‚¢B
+‚·‚×‚Ä‚ÌŒ^‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ªƒLƒƒƒXƒg‚µ‚½Œ^‚ÉƒLƒƒƒXƒg‚Å‚«‚é‚Æ‚¢‚¤‚í‚¯‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+ƒvƒƒOƒ‰ƒ€‚ÌƒƒWƒbƒN‚ªŠmŽÀ‚É‚±‚ÌƒLƒƒƒXƒg‚ªŽ¸”s‚µ‚È‚¢‚±‚Æ‚ðŠm”F‚µ‚Ä‚­‚¾‚³‚¢B 
 </p>
 ]]>
     </Details>
@@ -7377,8 +7417,8 @@ an indication of some misunderstanding or some other logic error.
 <![CDATA[
 <p>
 ‚±‚ÌƒR[ƒh‚Í’ŠÛƒRƒŒƒNƒVƒ‡ƒ“ (‚½‚Æ‚¦‚ÎACollectionAListASet) ‚ð“Á’è‚Ì‹ïÛŽÀ‘• (‚½‚Æ‚¦‚ÎAArrayListAHashSet) ‚ÉƒLƒƒƒXƒg‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ê‚ÍŠÔˆá‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-«—ˆ‚ÌŽž“_‚Å‘¼‚Ì‹ïÛŽÀ‘•‚Ö‚ÌØ‚è‘Ö‚¦‚ð‚Æ‚Ä‚à¢“ï‚É‚·‚é‚Ì‚ÅAƒR[ƒh‚ð‰ó‚ê‚â‚·‚­‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚±‚ê‚Í³‚µ‚­‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+‚»‚µ‚ÄA«—ˆ‚ÌŽž“_‚Å‘¼‚Ì‹ïÛŽÀ‘•‚Ö‚ÌØ‚è‘Ö‚¦‚ð‚Æ‚Ä‚à¢“ï‚É‚·‚é‚Ì‚ÅAÆŽã‚ÈƒR[ƒh‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 ‚»‚¤‚·‚é‚½‚ß‚É“Á•Ê‚È——R‚ª‚È‚¢ŒÀ‚è’ŠÛƒRƒŒƒNƒVƒ‡ƒ“ƒNƒ‰ƒX‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
@@ -7392,13 +7432,14 @@ an indication of some misunderstanding or some other logic error.
 <![CDATA[
 <p>
 String ƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚Ä‚¢‚Ü‚·B‚»‚µ‚ÄA"." ‚ªˆø”‚Æ‚µ‚Ä³‹K•\Œ»‚Æ‚éƒpƒ‰ƒ[ƒ^‚É“n‚³‚ê‚Ä‚¢‚Ü‚·B
-‚±‚ê‚Í‚ ‚È‚½‚ªˆÓ}‚µ‚½‚±‚Æ‚Å‚·‚©?
+‚±‚ê‚ÍAˆÓ}‚µ‚½‚±‚Æ‚Å‚·‚©?
 ‚½‚Æ‚¦‚ÎA<code>s.replaceAll(".", "/")</code> ‚Í‚ ‚ç‚ä‚é•¶Žš‚ª "/" •¶Žš‚É’u‚«Š·‚¦‚ç‚ê‚½•¶Žš—ñ‚ð•Ô‚µ‚Ü‚·B
 ‚Ü‚½A<code>s.split(".")</code> ‚Íí‚É’·‚³‚ª0‚Ì String ‚Ì”z—ñ‚ð•Ô‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION">
     <ShortDescription>³‹K•\Œ»‚Ì‚½‚ß‚Ì–³Œø‚È\•¶</ShortDescription>
     <LongDescription>³‹K•\Œ»‚Ì‚½‚ß‚Ì–³Œø‚È\•¶‚Å‚·B{1}</LongDescription>
@@ -7406,7 +7447,7 @@ String ƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚Ä‚¢‚Ü‚·B‚»‚µ‚ÄA"." ‚ªˆø”‚Æ‚µ‚Ä³‹K•\Œ»‚Æ‚éƒpƒ‰ƒ
 <![CDATA[
 <p>
 ‚±‚ÌƒR[ƒh‚ÍA³‹K•\Œ»‚Ì\•¶‚É‚æ‚é‚Æ–³Œø‚Å‚ ‚é³‹K•\Œ»‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B
-‚±‚Ì•¶‚ªŽÀs‚³‚ê‚é‚Æ‚« PatternSyntaxException ‚ðƒXƒ[‚µ‚Ü‚·B
+‚±‚Ì•¶‚ªŽÀs‚³‚ê‚é‚Æ‚« PatternSyntaxException ‚ðƒXƒ[‚µ‚Ü‚·B 
 </p>
 ]]>
     </Details>
@@ -7421,7 +7462,7 @@ String ƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚Ä‚¢‚Ü‚·B‚»‚µ‚ÄA"." ‚ªˆø”‚Æ‚µ‚Ä³‹K•\Œ»‚Æ‚éƒpƒ‰ƒ
 ‚±‚ÌƒR[ƒh‚ÍA³‹K•\Œ»‚ª•K—v‚Å‚ ‚é <code>File.separator</code> ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B
 ‚±‚ê‚Í <code>File.separator</code> ‚ªƒoƒbƒNƒXƒ‰ƒbƒVƒ…‚Å‚ ‚é Windows ƒvƒ‰ƒbƒgƒz[ƒ€‚Å‚ÍŽ¸”s‚µ‚Ü‚·B
 ƒoƒbƒNƒXƒ‰ƒbƒVƒ…‚Í³‹K•\Œ»‚Å‚ÍƒGƒXƒP[ƒv•¶Žš‚Æ‚µ‚Ä‰ðŽß‚³‚ê‚Ü‚·B
-‚»‚Ì‘¼‚Ì‘I‘ðŽˆ‚Æ‚µ‚Ä‚ÍA<code>File.separator</code> ‚Ì‘ã‚í‚è‚É <code>File.separatorChar=='\\' ? "\\\\" : File.separator</code> ‚ðŽg—p‚Å‚«‚Ü‚·B
+‚»‚Ì‘¼‚Ì‘I‘ðŽˆ‚Æ‚µ‚Ä‚ÍA<code>File.separator</code> ‚Ì‘ã‚í‚è‚É <code>File.separatorChar=='\\' ? "\\\\" : File.separator</code> ‚ðŽg—p‚Å‚«‚Ü‚·B 
 </p>
 ]]>
     </Details>
@@ -7434,7 +7475,7 @@ String ƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚Ä‚¢‚Ü‚·B‚»‚µ‚ÄA"." ‚ªˆø”‚Æ‚µ‚Ä³‹K•\Œ»‚Æ‚éƒpƒ‰ƒ
 <![CDATA[
 <p>
 ‚±‚ÌƒR[ƒh‚ÍAƒCƒ“ƒNƒŠƒƒ“ƒg‰‰ŽZ (‚½‚Æ‚¦‚ÎA<code>i++</code>) ‚ðŽÀs‚µ‚Ä‚·‚®‚Éã‘‚«‚µ‚Ä‚¢‚Ü‚·B
-‚½‚Æ‚¦‚ÎA<code>i = i++</code> ‚ÍŒ³‚Ì’l‚ðƒCƒ“ƒNƒŠƒƒ“ƒg‚µ‚½’l‚Åã‘‚«‚µ‚Ü‚·B
+‚½‚Æ‚¦‚ÎA<code>i = i++</code> ‚ÍŒ³‚Ì’l‚ðƒCƒ“ƒNƒŠƒƒ“ƒg‚µ‚½’l‚Åã‘‚«‚µ‚Ü‚·B 
 </p>
 ]]>
     </Details>
@@ -7474,12 +7515,11 @@ String ƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚Ä‚¢‚Ü‚·B‚»‚µ‚ÄA"." ‚ªˆø”‚Æ‚µ‚Ä³‹K•\Œ»‚Æ‚éƒpƒ‰ƒ
 <p>
 ‚±‚ÌƒR[ƒh‚ÍA®”è—]‚ÌŒ‹‰Ê‚É®”’è”‚ðæŽZ‚µ‚Ä‚¢‚Ü‚·B
 •´‚ç‚í‚µ‚¢‰‰ŽZŽq‚Ì—Dæ‡ˆÊ‚ª‚È‚¢‚±‚Æ‚ðŠmŽÀ‚É‚µ‚Ä‚­‚¾‚³‚¢B
-‚½‚Æ‚¦‚ÎAi % 60 * 1000 ‚ÍAi % (60 * 1000) ‚Å‚Í‚È‚­ (i % 60) * 1000 ‚Æ‚È‚è‚Ü‚·B
+‚½‚Æ‚¦‚ÎAi % 60 * 1000 ‚ÍAi % (60 * 1000) ‚Å‚Í‚È‚­ (i % 60) * 1000 ‚Æ‚È‚è‚Ü‚·B 
 </p>
 ]]>
     </Details>
   </BugPattern>
-
 
   <BugPattern type="DMI_INVOKING_HASHCODE_ON_ARRAY">
     <ShortDescription>”z—ñ‚Å hashCode ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚é</ShortDescription>
@@ -7489,7 +7529,7 @@ String ƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚Ä‚¢‚Ü‚·B‚»‚µ‚ÄA"." ‚ªˆø”‚Æ‚µ‚Ä³‹K•\Œ»‚Æ‚éƒpƒ‰ƒ
 <p>
 ‚±‚ÌƒR[ƒh‚ÍA”z—ñ‚Å <code>hashCode</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
 ”z—ñ‚Å <code>hashCode</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚±‚Æ‚ÍASystem.identityHashCode ‚Æ“¯‚¶’l‚ð•Ô‚·‚Ì‚ÅAƒRƒ“ƒeƒ“ƒc‚Æ”z—ñ‚Ì’·‚³‚ð–³Ž‹‚µ‚Ü‚·B
-”z—ñ <code>a</code> ‚ÌƒRƒ“ƒeƒ“ƒc‚É‚æ‚éƒnƒbƒVƒ…ƒR[ƒh‚ð•K—v‚Æ‚·‚é‚È‚ç <code>java.util.Arrays.hashCode(a)</code> ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
+”z—ñ <code>a</code> ‚ÌƒRƒ“ƒeƒ“ƒc‚É‚æ‚éƒnƒbƒVƒ…ƒR[ƒh‚ð•K—v‚Æ‚·‚é‚È‚çA<code>java.util.Arrays.hashCode(a)</code> ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
@@ -7501,8 +7541,8 @@ String ƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚Ä‚¢‚Ü‚·B‚»‚µ‚ÄA"." ‚ªˆø”‚Æ‚µ‚Ä³‹K•\Œ»‚Æ‚éƒpƒ‰ƒ
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍA”z—ñ‚Å <code>toString</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·‚ªu[C@16f0472v‚Ì‚æ‚¤‚È‚©‚È‚è–ð‚É—§‚½‚È‚¢Œ‹‰Ê‚ð¶¬‚µ‚Ü‚·B
-”z—ñ‚ÌƒRƒ“ƒeƒ“ƒc‚ª“¾‚ç‚ê‚é“Ç‚Ýo‚µ‰Â”\‚È String ”z—ñ‚Ö•ÏŠ·‚·‚é‚½‚ß‚ÉA<code>Arrays.toString()</code> ‚ÌŽg—p‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B<br>
+‚±‚ÌƒR[ƒh‚ÍA”z—ñ‚Å <code>toString</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚é‚ªAu[C@16f0472v‚Ì‚æ‚¤‚È‚©‚È‚è–ð‚É—§‚½‚È‚¢Œ‹‰Ê‚ð¶¬‚µ‚Ü‚·B
+”z—ñ‚ÌƒRƒ“ƒeƒ“ƒc‚ð—^‚¦A“Ç‚ß‚é•¶Žš—ñ‚É•ÏŠ·‚·‚é‚½‚ß‚ÉA<code>Arrays.toString()</code> ‚ðŽg‚¤‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B<br>
 wProgramming Puzzlersx‚Ì‘æ3ÍAƒpƒYƒ‹12‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
@@ -7515,8 +7555,8 @@ String ƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚Ä‚¢‚Ü‚·B‚»‚µ‚ÄA"." ‚ªˆø”‚Æ‚µ‚Ä³‹K•\Œ»‚Æ‚éƒpƒ‰ƒ
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍA–³–¼‚Ì”z—ñ‚Å <code>toString</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·‚ªu[C@16f0472v‚Ì‚æ‚¤‚È‚©‚È‚è–ð‚É—§‚½‚È‚¢Œ‹‰Ê‚ð¶¬‚µ‚Ü‚·B
-”z—ñ‚ÌƒRƒ“ƒeƒ“ƒc‚ª“¾‚ç‚ê‚é“Ç‚Ýo‚µ‰Â”\‚È String ”z—ñ‚Ö•ÏŠ·‚·‚é‚½‚ß‚ÉA<code>Arrays.toString()</code> ‚ÌŽg—p‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B<br>
+‚±‚ÌƒR[ƒh‚ÍA–³–¼‚Ì”z—ñ‚Å <code>toString</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚é‚ªAu[C@16f0472v‚Ì‚æ‚¤‚È‚©‚È‚è–ð‚É—§‚½‚È‚¢Œ‹‰Ê‚ð¶¬‚µ‚Ü‚·B
+”z—ñ‚ÌƒRƒ“ƒeƒ“ƒc‚ð—^‚¦A“Ç‚ß‚é•¶Žš—ñ‚É•ÏŠ·‚·‚é‚½‚ß‚ÉA<code>Arrays.toString()</code> ‚ðŽg‚¤‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B<br>
 wProgramming Puzzlersx‚Ì‘æ3ÍAƒpƒYƒ‹12‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
@@ -7525,14 +7565,14 @@ String ƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚Ä‚¢‚Ü‚·B‚»‚µ‚ÄA"." ‚ªˆø”‚Æ‚µ‚Ä³‹K•\Œ»‚Æ‚éƒpƒ‰ƒ
 
 
   <BugPattern type="IM_AVERAGE_COMPUTATION_COULD_OVERFLOW">
-    <ShortDescription>ƒI[ƒo[ƒtƒ[‚·‚é‰Â”\«‚ª‚ ‚é•½‹ÏŒvŽZ</ShortDescription>
-    <LongDescription>ƒI[ƒo[ƒtƒ[‚·‚é‰Â”\«‚ª‚ ‚é•½‹Ï‚ðŒvŽZ‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>•½‹Ï‚ÌŒvŽZ‚ÍƒI[ƒo[ƒtƒ[‚·‚é‰Â”\«‚ª‚ ‚é</ShortDescription>
+    <LongDescription>•½‹Ï‚ÌŒvŽZ‚ÍAƒI[ƒo[ƒtƒ[‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚ÌƒR[ƒh‚ÍAœŽZ‚©•„†•t‚«‰EƒVƒtƒg‚ðŽg—p‚µ‚Ä2‚Â‚Ì®”‚Ì•½‹Ï‚ðŒvŽZ‚µ‚ÄA‚»‚ÌŒ‹‰Ê‚ð”z—ñ‚Ì“YŽš‚Æ‚µ‚ÄŽg—p‚µ‚Ä‚¢‚Ü‚·B
-•½‹Ï’l‚ª”ñí‚É‘å‚«‚¢‚È‚çƒI[ƒo[ƒtƒ[‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚· (Œ‹‰Ê‚Æ‚µ‚Ä•‰‚Ì•½‹ÏŒvŽZ‚É‚È‚é)B
-Œ‹‰Ê‚ª•‰‚Å‚Í‚È‚¢‚±‚Æ‚ðˆÓ}‚µ‚Ä‚¢‚½‚Æ‰¼’è‚µ‚½ê‡A‚»‚Ì‘ã‚í‚è‚É•„†‚È‚µ‰EƒVƒtƒg‚ðŽg—p‚Å‚«‚Ü‚·B
+•½‹Ï’l‚ª”ñí‚É‘å‚«‚¢‚È‚çƒI[ƒo[ƒtƒ[‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚· (Œ‹‰Ê‚Æ‚µ‚Ä•‰‚Ì•½‹Ï‚ÌŒvŽZ‚É‚È‚é)B
+Œ‹‰Ê‚ª•‰‚Å‚È‚¢‚±‚Æ‚ðˆÓ}‚µ‚Ä‚¢‚½‚È‚çA‚»‚Ì‘ã‚í‚è‚É•„†‚È‚µ‰EƒVƒtƒg‚ðŽg—p‚Å‚«‚Ü‚·B
 ‚Â‚Ü‚èA<code>(low+high)/2</code> ‚Å‚Í‚È‚­ <code>(low+high) &gt;&gt;&gt; 1</code> ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 <p>
@@ -7545,82 +7585,85 @@ Joshua Bloch ‚ª <a href="http://googleresearch.blogspot.com/2006/06/extra-extra-
   </BugPattern>
 
   <BugPattern type="IM_BAD_CHECK_FOR_ODD">
-    <ShortDescription>•‰”‚Å‚Í“®ì‚µ‚È‚¢Šï””»’è</ShortDescription>
-    <LongDescription>Šï””»’è‚ÍA•‰”‚Å‚Í“®ì‚µ‚Ü‚¹‚ñB{1}</LongDescription>
+    <ShortDescription>•‰”‚Å‹@”\‚µ‚È‚¢Šï”ƒ`ƒFƒbƒN</ShortDescription>
+    <LongDescription>•‰”‚Å‹@”\‚µ‚È‚¢Šï”ƒ`ƒFƒbƒN‚Å‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍA<code>x % 2 == 1</code> ‚ðŽg—p‚µ‚Ä’l‚ª•‰”‚È‚Ì‚©ƒ`ƒFƒbƒN‚µ‚Ä‚¢‚Ü‚·‚ª•‰” (‚½‚Æ‚¦‚ÎA<code>(-5) % 2 == -1</code>) ‚È‚Ì‚Å“®ì‚µ‚Ü‚¹‚ñB
-Šï”‚È‚Ì‚©ƒ`ƒFƒbƒN‚·‚é‚Â‚à‚è‚È‚ç <code>x &amp; 1 == 1</code> ‚Ü‚½‚Í <code>x % 2 != 0</code> ‚ðŽg‚¤‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
+‚±‚ÌƒR[ƒh‚ÍA<code>x % 2 == 1</code> ‚ðŽg—p‚µ‚Ä’l‚ª•‰”‚È‚Ì‚©Šm‚©‚ß‚Ä‚¢‚é‚ªA•‰” (‚½‚Æ‚¦‚ÎA<code>(-5) % 2 == -1</code>) ‚È‚Ì‚Å‹@”\‚µ‚Ü‚¹‚ñB
+Šï”ƒ`ƒFƒbƒN‚ðˆÓ}‚µ‚Ä‚¢‚é‚È‚çA<code>x &amp; 1 == 1</code> ‚Ü‚½‚Í <code>x % 2 != 0</code> ‚ðŽg‚¤‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DMI_HARDCODED_ABSOLUTE_FILENAME">
-    <ShortDescription>â‘ÎƒpƒX‚Ìƒn[ƒhƒR[ƒh</ShortDescription>
-    <LongDescription>â‘ÎƒpƒX‚ðƒn[ƒhƒR[ƒh‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>ƒn[ƒhƒR[ƒh‚³‚ê‚½â‘ÎƒpƒX–¼‚Ö‚ÌŽQÆ‚ª‚ ‚é</ShortDescription>
+    <LongDescription>ƒn[ƒhƒR[ƒh‚³‚ê‚½â‘ÎƒpƒX–¼‚Ö‚ÌŽQÆ‚ª‚ ‚è‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍAƒn[ƒhƒR[ƒh‚³‚ê‚½â‘ÎƒpƒX‚ðŽg—p‚µ‚Ä File ƒIƒuƒWƒFƒNƒg‚ð\’z‚µ‚Ä‚¢‚Ü‚· (‚½‚Æ‚¦‚ÎA<code>new File("/home/dannyc/workspace/j2ee/src/share/com/sun/enterprise/deployment");</code>)B
+‚±‚ÌƒR[ƒh‚ÍAƒn[ƒhƒR[ƒh‚³‚ê‚½â‘ÎƒpƒX–¼‚ðŽg—p‚µ‚Ä File ƒIƒuƒWƒFƒNƒg‚ð\’z‚µ‚Ä‚¢‚Ü‚· (‚½‚Æ‚¦‚ÎA<code>new File("/home/dannyc/workspace/j2ee/src/share/com/sun/enterprise/deployment");</code>)B
 </p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="DMI_BAD_MONTH">
     <ShortDescription>ŒŽ‚Ì‚½‚ß‚ÌŠÔˆá‚Á‚½’è”’l</ShortDescription>
     <LongDescription>ŠÔˆá‚Á‚½ŒŽ‚Ì’l {2} ‚ð {3} ‚É“n‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍAƒƒ\ƒbƒh‚ÉŒŽ‚Ì’è”’l‚Æ‚µ‚Ä0‚©‚ç11‚Ì”ÍˆÍ‚ð’´‚¦‚½’l‚ð“n‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍAƒƒ\ƒbƒh‚É 0 ‚©‚ç 11 ‚Ì”ÍˆÍŠO‚ÌŒŽ’è”’l‚ð“n‚µ‚Ä‚¢‚Ü‚·B 
 </p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="DMI_USELESS_SUBSTRING">
     <ShortDescription>substring(0) ‚ÌŒÄ‚Ño‚µ‚ÍŒ³‚Ì’l‚ð•Ô‚·</ShortDescription>
-    <LongDescription>{1} ‚ÍAsubstring(0) ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·‚ªŒ³‚Ì’l‚ð•Ô‚µ‚Ü‚·B</LongDescription>
+    <LongDescription>{1} ‚ÍAŒ³‚Ì’l‚ð•Ô‚· substring(0) ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚ÍAString ‚Ì <code>substring(0)</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·‚ªŒ³‚Ì’l‚ð•Ô‚µ‚Ü‚·B
+‚±‚ÌƒR[ƒh‚ÍA•¶Žš—ñ‚Å <code>substring(0)</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚é‚ªAŒ³‚Ì’l‚ð•Ô‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="DMI_CALLING_NEXT_FROM_HASNEXT">
     <ShortDescription>hasNext ƒƒ\ƒbƒh‚Å next ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚é</ShortDescription>
     <LongDescription>{1} ‚ÍA{2.givenClass} ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-<code>hasNext</code> ƒƒ\ƒbƒh‚ÅA<code>next</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ü‚·B
-<code>hasNext</code> ƒƒ\ƒbƒh‚ÍAƒCƒeƒŒ[ƒ^‚Ìó‘Ô‚ð•ÏX‚·‚é‚±‚Æ‚É‚Í‚È‚Á‚Ä‚¢‚È‚¢‚Ì‚Å‚Ù‚ÚŠÔˆá‚¢‚È‚­ŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
-<code>next</code> ƒƒ\ƒbƒh‚ªƒCƒeƒŒ[ƒ^‚Ìó‘Ô‚ð•ÏX‚·‚é‚±‚Æ‚É‚È‚Á‚Ä‚¢‚Ü‚·B
+<code>hasNext</code> ƒƒ\ƒbƒh‚ÍA<code>next</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ü‚·B
+<code>hasNext</code> ƒƒ\ƒbƒh‚ªƒCƒeƒŒ[ƒ^‚Ìó‘Ô‚ð•ÏX‚·‚é‚ÆŽv‚í‚ê‚È‚¢‚Ì‚ÅA‚Ù‚ÚŠmŽÀ‚ÉŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
+<code>next</code> ƒƒ\ƒbƒh‚ªƒCƒeƒŒ[ƒ^‚Ìó‘Ô‚ð•ÏX‚·‚é‚ÆŽv‚í‚ê‚Ü‚·B 
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SWL_SLEEP_WITH_LOCK_HELD">
-    <ShortDescription>ƒƒbƒN‚ð•ÛŽ‚µ‚½ó‘Ô‚Å Thread.sleep() ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>{1} ‚ÍAƒƒbƒN‚ð•ÛŽ‚µ‚½ó‘Ô‚Å Thread.sleep() ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>ƒƒbƒN‚ð•ÛŽ‚µ‚Ä Thread.sleep() ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
+    <LongDescription>{1} ‚ÍAƒƒbƒN‚ð•ÛŽ‚µ‚Ä Thread.sleep() ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍAƒƒbƒN‚ð•ÛŽ‚µ‚½ó‘Ô‚Å <code>Thread.sleep()</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-‘¼‚ÌƒXƒŒƒbƒh‚ªƒƒbƒN‚ðŠl“¾‚·‚é‚½‚ß‚É‘Ò‹@‚µ‚Ä‚¢‚é‚©‚à‚µ‚ê‚È‚¢‚Ì‚ÅA‚Ð‚Ç‚¢ƒpƒtƒH[ƒ}ƒ“ƒX‚ÆƒXƒP[ƒ‰ƒrƒŠƒeƒB‚Ü‚½‚ÍƒfƒbƒhƒƒbƒN‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-ƒƒbƒN‚Ìã‚Å <code>wait</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚±‚Æ‚Í‚©‚È‚è—Ç‚¢l‚¦‚ÅAƒƒbƒN‚ð‰ðœ‚µ‚Ä‘¼‚ÌƒXƒŒƒbƒh‚ªŽÀs‚·‚é‚Ì‚ð‹–‰Â‚µ‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍAƒƒbƒN‚ð•ÛŽ‚µ‚ÄA<code>Thread.sleep()</code> ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
+‚±‚ê‚ÍAŒ‹‰Ê‚Æ‚µ‚Ä‚Ð‚Ç‚¢«”\‚ÆƒXƒP[ƒ‰ƒrƒŠƒeƒB‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB‚ ‚é‚¢‚ÍA‘¼‚ÌƒXƒŒƒbƒh‚ªƒƒbƒN‚ðŠl“¾‚·‚é‚½‚ß‚É‘Ò‹@‚µ‚Ä‚¢‚é‚©‚à‚µ‚ê‚È‚¢‚Ì‚ÅAƒfƒbƒhƒƒbƒN‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+ƒƒbƒN‚Å <code>wait</code> ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚±‚Æ‚Í‚©‚È‚è—Ç‚¢l‚¦‚ÅAƒƒbƒN‚ð‰ðœ‚µ‚Ä‘¼‚ÌƒXƒŒƒbƒh‚ªŽÀs‚·‚é‚Ì‚ð‹–‰Â‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DB_DUPLICATE_BRANCHES">
-    <ShortDescription>2‚Â‚Ì•ªŠò‚Å“¯‚¶ƒR[ƒh‚ðŽg—p‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍA2‚Â‚Ì•ªŠò‚Å“¯‚¶ƒR[ƒh‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>2‚Â‚Ì•ªŠò‚Ì‚½‚ß‚É“¯‚¶ƒR[ƒh‚ðŽg—p‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
+    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍA2‚Â‚Ì•ªŠò‚Ì‚½‚ß‚É“¯‚¶ƒR[ƒh‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7632,8 +7675,8 @@ Joshua Bloch ‚ª <a href="http://googleresearch.blogspot.com/2006/06/extra-extra-
   </BugPattern>
 
   <BugPattern type="DB_DUPLICATE_SWITCH_CLAUSES">
-    <ShortDescription>switch •¶‚Ì’†‚Å“¯‚¶ƒR[ƒh‚ðŽg—p‚µ‚Ä‚¢‚é</ShortDescription>
-    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍAswitch •¶‚Ì’†‚Å“¯‚¶ƒR[ƒh‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>switch •¶‚Ì2‚Â‚Ì case ‚Ì‚½‚ß‚É“¯‚¶ƒR[ƒh‚ðŽg—p‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
+    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍAswitch •¶‚Ì2‚Â‚Ì case ‚Ì‚½‚ß‚É“¯‚¶ƒR[ƒh‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7645,27 +7688,27 @@ Joshua Bloch ‚ª <a href="http://googleresearch.blogspot.com/2006/06/extra-extra-
   </BugPattern>
 
   <BugPattern type="IMA_INEFFICIENT_MEMBER_ACCESS">
-    <ShortDescription>Š—LƒNƒ‰ƒX‚Ì private ƒtƒB[ƒ‹ƒh‚ÉƒAƒNƒZƒX‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍAŠ—LƒNƒ‰ƒX‚Ì private ƒtƒB[ƒ‹ƒh‚ÉƒAƒNƒZƒX‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>Š—LƒNƒ‰ƒX‚Ì private ƒƒ“ƒo[•Ï”‚ÉƒAƒNƒZƒX‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
+    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍAŠ—LƒNƒ‰ƒX‚Ì private ƒƒ“ƒo[•Ï”‚ÉƒAƒNƒZƒX‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì“à•”ƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚ÍAŠ—LƒNƒ‰ƒX‚Ì private ƒtƒB[ƒ‹ƒh‚Ö‚Ì“Ç‚Ý‘‚«A‚Ü‚½‚ÍAŠ—LƒNƒ‰ƒX‚Ì private ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
-ƒRƒ“ƒpƒCƒ‰‚Í‚±‚Ì private ƒtƒB[ƒ‹ƒh‚ÉƒAƒNƒZƒX‚·‚é‚½‚ß‚É“Á•Ê‚Èƒƒ\ƒbƒh‚ð¶¬‚µ‚È‚¯‚ê‚Î‚È‚è‚È‚¢‚Ì‚ÅAŒø—¦‚ðˆ«‰»‚³‚¹‚éŒ´ˆö‚É‚È‚è‚Ü‚·B
-ƒtƒB[ƒ‹ƒh‚Ü‚½‚Íƒƒ\ƒbƒh‚Ì•ÛŒì‚ðŠÉ˜a‚·‚é‚±‚Æ‚ÍAƒRƒ“ƒpƒCƒ‰‚ª’Êí‚ÌƒAƒNƒZƒX‚Æ‚µ‚Äˆµ‚¤‚Ì‚ð‹–‰Â‚µ‚Ü‚·B
+‚±‚Ì“à•”ƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚ÍAŠ—LƒNƒ‰ƒX‚Ì private ƒƒ“ƒo[•Ï”‚Ö‚Ì“Ç‚Ý‘‚«A‚Ü‚½‚ÍAŠ—LƒNƒ‰ƒX‚Ì private ƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B
+ƒRƒ“ƒpƒCƒ‰‚Í‚±‚Ì private ƒƒ“ƒo[‚ÉƒAƒNƒZƒX‚·‚é‚½‚ß‚É“Á•Ê‚Èƒƒ\ƒbƒh‚ð¶¬‚µ‚È‚¯‚ê‚Î‚È‚è‚È‚¢‚Ì‚ÅAŒø—¦‚ðˆ«‰»‚³‚¹‚éŒ´ˆö‚É‚È‚è‚Ü‚·B
+ƒƒ“ƒo[•Ï”‚Ü‚½‚Íƒƒ\ƒbƒh‚Ì•ÛŒì‚ðŠÉ˜a‚·‚é‚±‚Æ‚ÍAƒRƒ“ƒpƒCƒ‰‚ª’Êí‚ÌƒAƒNƒZƒX‚Æ‚µ‚Äˆµ‚¤‚Ì‚ð‹–‰Â‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="XFB_XML_FACTORY_BYPASS">
-    <ShortDescription>XMLƒCƒ“ƒ^ƒtƒF[ƒX‚Ì“Á’è‚ÌŽÀ‘•‚ð’¼Ú¶¬‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍAXMLƒCƒ“ƒ^ƒtƒF[ƒX‚Ì“Á’è‚ÌŽÀ‘•‚ð’¼Ú¶¬‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>XMLƒCƒ“ƒ^ƒtƒF[ƒX‚Ì“Á’è‚ÌŽÀ‘•‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
+    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍAXMLƒCƒ“ƒ^ƒtƒF[ƒX‚Ì“Á’è‚ÌŽÀ‘•‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍAXMLƒCƒ“ƒ^ƒtƒF[ƒX‚Ì“Á’è‚ÌŽÀ‘•‚ð’¼Ú¶¬‚µ‚Ä‚¢‚Ü‚·B
-ŽÀ‘•‚ðŽÀsŽž‚É•Ï‚¦‚ç‚ê‚é‚æ‚¤‚ÉA‚±‚ê‚ç‚ÌƒIƒuƒWƒFƒNƒg‚ðì¬‚·‚é‚½‚ß‚É’ñ‹Ÿ‚³‚ê‚½ƒtƒ@ƒNƒgƒŠƒNƒ‰ƒX‚ðŽg‚¤‚±‚Æ‚ª–]‚Ü‚µ‚¢‚Å‚·B<br>
+‚±‚Ìƒƒ\ƒbƒh‚ÍAXMLƒCƒ“ƒ^ƒtƒF[ƒX‚Ì“Á’è‚ÌŽÀ‘•‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðì¬‚µ‚Ä‚¢‚Ü‚·B
+ŽÀ‘•‚ªŽÀsŽž‚É•ÏX‚Å‚«‚é‚æ‚¤‚ÉA‚±‚ê‚ç‚ÌƒIƒuƒWƒFƒNƒg‚ðì¬‚·‚é‚½‚ß‚É’ñ‹Ÿ‚³‚ê‚½ƒtƒ@ƒNƒgƒŠƒNƒ‰ƒX‚ðŽg‚¤‚±‚Æ‚ª–]‚Ü‚µ‚¢‚Å‚·B<br>
 Ú×‚ÍAˆÈ‰º‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 <ul>
@@ -7679,13 +7722,13 @@ Joshua Bloch ‚ª <a href="http://googleresearch.blogspot.com/2006/06/extra-extra-
   </BugPattern>
 
   <BugPattern type="USM_USELESS_SUBCLASS_METHOD">
-    <ShortDescription>ƒX[ƒp[ƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚É‰ßè‚ÉˆÏ÷‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
-    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍAƒX[ƒp[ƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚É‰ßè‚ÉˆÏ÷‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <ShortDescription>eƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚É‰ßè‚ÉˆÏ÷‚µ‚Ä‚¢‚éƒƒ\ƒbƒh</ShortDescription>
+    <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍAeƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚É‰ßè‚ÉˆÏ÷‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
 ‚±‚Ì”h¶ƒƒ\ƒbƒh‚ÍA’P‚ÉŽó‚¯Žæ‚ç‚ê‚é³Šm‚Èƒpƒ‰ƒ[ƒ^‚ð“n‚µ‚Ä‚¢‚é“¯‚¶ƒX[ƒp[ƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·‚¾‚¯‚Å‚·B
-‚±‚Ìƒƒ\ƒbƒh‚ÍA•t‰Á‰¿’l‚ª—^‚¦‚ç‚ê‚È‚¢‚Ì‚Åíœ‚Å‚«‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍA•t‰Á‰¿’l‚ª—^‚¦‚ç‚ê‚È‚¢‚Ì‚Åœ‹Ž‚Å‚«‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -7698,21 +7741,21 @@ Joshua Bloch ‚ª <a href="http://googleresearch.blogspot.com/2006/06/extra-extra-
 <![CDATA[
 <p>
 ‚±‚Ì’ŠÛƒƒ\ƒbƒh‚ÍA‚±‚Ì’ŠÛƒNƒ‰ƒX‚É‚æ‚Á‚ÄŽÀ‘•‚³‚ê‚éƒCƒ“ƒ^ƒtƒF[ƒX‚Å‚·‚Å‚É’è‹`‚³‚ê‚Ä‚¢‚Ü‚·B
-‚±‚Ìƒƒ\ƒbƒh‚ÍA•t‰Á‰¿’l‚ª—^‚¦‚ç‚ê‚È‚¢‚Ì‚Åíœ‚Å‚«‚Ü‚·B
+‚±‚Ìƒƒ\ƒbƒh‚ÍA•t‰Á‰¿’l‚ª—^‚¦‚ç‚ê‚È‚¢‚Ì‚Åœ‹Ž‚Å‚«‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="CI_CONFUSED_INHERITANCE">
-    <ShortDescription>final ƒNƒ‰ƒX‚ª protected ƒtƒB[ƒ‹ƒh‚ðéŒ¾‚µ‚Ä‚¢‚é</ShortDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Í final ‚È‚Ì‚É protected ƒtƒB[ƒ‹ƒh‚ðéŒ¾‚µ‚Ä‚¢‚é</ShortDescription>
     <LongDescription>ƒNƒ‰ƒX {0} ‚ÍAfinal ‚È‚Ì‚É protected ƒtƒB[ƒ‹ƒh {1} ‚ðéŒ¾‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒNƒ‰ƒX‚ÍAfinal ‚ÆéŒ¾‚³‚ê‚Ä‚¢‚é‚Ì‚ÉƒtƒB[ƒ‹ƒh‚ª protected ‚ÆéŒ¾‚³‚ê‚Ä‚¢‚Ü‚·B
-final ƒNƒ‰ƒX‚Í”h¶‚Å‚«‚È‚¢‚Ì‚ÅAprotected ‚ÌŽg—p‚Í•´‚ç‚í‚µ‚¢‚Å‚·B
-ƒtƒB[ƒ‹ƒh‚Ì‚½‚ß‚ÌƒAƒNƒZƒXCüŽq‚ÍAƒtƒB[ƒ‹ƒh‚Ì^‚Ì—p“r‚ð•\‚·‚½‚ß‚É private ‚© public ‚É•ÏX‚·‚×‚«‚Å‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍAfinal ‚ÆéŒ¾‚³‚ê‚Ä‚¢‚é‚Ì‚ÉAƒtƒB[ƒ‹ƒh‚Í protected ‚ÆéŒ¾‚³‚ê‚Ä‚¢‚Ü‚·B
+ƒNƒ‰ƒX‚Í fainal ‚È‚Ì‚Å”h¶‚Å‚«‚Ü‚¹‚ñBAprotected ‚ÌŽg—p‚Í•´‚ç‚í‚µ‚¢‚Å‚·B 
+ƒtƒB[ƒ‹ƒh‚Ì‚½‚ß‚ÌƒAƒNƒZƒXCüŽq‚ÍAƒtƒB[ƒ‹ƒh‚Ì^‚Ì—p“r‚ð•\‚·‚½‚ßA private ‚© public ‚É•ÏX‚·‚é‚×‚«‚Å‚·B
 </p>
 ]]>
     </Details>
@@ -7725,7 +7768,7 @@ final ƒNƒ‰ƒX‚Í”h¶‚Å‚«‚È‚¢‚Ì‚ÅAprotected ‚ÌŽg—p‚Í•´‚ç‚í‚µ‚¢‚Å‚·B
 <![CDATA[
 <p>
 ‚±‚Ìƒƒ\ƒbƒh‚ÍAif ‚Ü‚½‚Í while ‚ÌŽ®‚Ì’†‚Ì boolean •Ï”‚É boolean ƒŠƒeƒ‰ƒ‹’l (true ‚Ü‚½‚Í false) ‚ð‘ã“ü‚µ‚Ä‚¢‚Ü‚·B
-‚¨‚»‚ç‚­A‚±‚ê‚Í = ‚É‚æ‚é‘ã“ü‚Å‚Í‚È‚­A== ‚É‚æ‚é˜_—”äŠr‚ð‚·‚é‚±‚Æ‚É‚È‚Á‚Ä‚¢‚Ü‚µ‚½B
+‚¨‚»‚ç‚­A‚±‚ê‚Í = ‚É‚æ‚é‘ã“ü‚Å‚Í‚È‚­A== ‚ðŽg—p‚µ‚Ä˜_—”äŠr‚ð‚·‚é‚±‚Æ‚É‚È‚Á‚Ä‚¢‚Ü‚µ‚½B
 </p>
 ]]>
     </Details>
@@ -7744,12 +7787,12 @@ final ƒNƒ‰ƒX‚Í”h¶‚Å‚«‚È‚¢‚Ì‚ÅAprotected ‚ÌŽg—p‚Í•´‚ç‚í‚µ‚¢‚Å‚·B
   </BugPattern>
 
   <BugPattern type="GC_UNCHECKED_TYPE_IN_GENERIC_CALL">
-    <ShortDescription>–³ŒŸ¸Œ^‚Ö‚Ì‘ÌŒÄ‚Ño‚µ</ShortDescription>
-    <LongDescription>Œ^ {3.givenClass} ‚ªŠú‘Ò‚³‚ê‚Ä‚¢‚é‚Æ‚±‚ë‚É—^‚¦‚ç‚ê‚½Œ^ Object ‚Ì–³ŒŸ¸ˆø”B{1}</LongDescription>
+    <ShortDescription>ŒŸ¸‚³‚ê‚È‚¢Œ^‚Ö‚Ì‘ÌŒÄ‚Ño‚µ</ShortDescription>
+    <LongDescription>Œ^ {3.givenClass} ‚ªŠú‘Ò‚³‚ê‚Ä‚¢‚é‚Æ‚±‚ë‚É—^‚¦‚ç‚ê‚½Œ^ Object ‚ÌŒŸ¸‚³‚ê‚È‚¢ˆø”B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‘ÌŒ^ƒpƒ‰ƒ[ƒ^‚©‚ç‚Ì“Á’è‚ÌŒ^‚ªŠú‘Ò‚³‚ê‚éŒ^ Object ‚ðƒRƒ“ƒpƒCƒ‹‚·‚é‚Æ‚«A‘ÌŒ^ƒRƒŒƒNƒVƒ‡ƒ“‚Ìƒƒ\ƒbƒh‚Ö‚ÌŒÄ‚Ño‚µ‚Íˆø”‚ð“n‚µ‚Ü‚·B
+‘ÌŒ^ƒpƒ‰ƒ[ƒ^‚©‚ç‚Ì“Á’è‚ÌŒ^‚ª—\‘z‚³‚ê‚é Object Œ^‚ðƒRƒ“ƒpƒCƒ‹‚·‚é‚Æ‚«A‘ÌŒ^ƒRƒŒƒNƒVƒ‡ƒ“ƒƒ\ƒbƒh‚Ö‚ÌŒÄ‚Ño‚µ‚Íˆø”‚ð“n‚µ‚Ü‚·B
 ‚µ‚½‚ª‚Á‚ÄA•W€‚Ì Java Œ^ƒVƒXƒeƒ€‚àÃ“I‰ðÍ‚àƒpƒ‰ƒ[ƒ^‚Æ‚µ‚Ä“n‚³‚ê‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚ª“KØ‚ÈŒ^‚©‚Ç‚¤‚©‚ÉŠÖ‚·‚é—L—p‚Èî•ñ‚ð’ñ‹Ÿ‚Å‚«‚Ü‚¹‚ñB
 </p>
 ]]>
@@ -7757,22 +7800,22 @@ final ƒNƒ‰ƒX‚Í”h¶‚Å‚«‚È‚¢‚Ì‚ÅAprotected ‚ÌŽg—p‚Í•´‚ç‚í‚µ‚¢‚Å‚·B
   </BugPattern>
 
   <BugPattern type="GC_UNRELATED_TYPES">
-    <ShortDescription>Œ^ƒpƒ‰ƒ[ƒ^‚Æƒƒ\ƒbƒhˆø”‚Æ‚ÌŠÖŒW‚ª‚È‚¢</ShortDescription>
+    <ShortDescription>Œ^ƒpƒ‰ƒ[ƒ^‚Æƒƒ\ƒbƒhˆø”‚ÉŠÖŒW‚ª‚È‚¢</ShortDescription>
     <LongDescription>{2.givenClass} ‚ÍAŠú‘Ò‚³‚ê‚½ˆø”‚ÌŒ^ {3.givenClass} ‚ÆŒÝŠ·«‚ª‚ ‚è‚Ü‚¹‚ñB{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‘ÌŒ^ƒRƒŒƒNƒVƒ‡ƒ“‚Ìƒƒ\ƒbƒh‚Ö‚ÌŒÄ‚Ño‚µ‚É‚ÍAƒRƒŒƒNƒVƒ‡ƒ“‚Ìƒpƒ‰ƒ[ƒ^‚©‚çŒÝŠ·«‚Ì‚È‚¢ƒNƒ‰ƒX‚Ìˆø”‚ª‚ ‚è‚Ü‚· (‚·‚È‚í‚¿Aˆø”‚ÌŒ^‚Í‘ÌŒ^ˆø”‚É‘Î‰ž‚·‚éƒX[ƒpƒ^ƒCƒv‚Å‚àƒTƒuƒ^ƒCƒv‚Å‚à‚ ‚è‚Ü‚¹‚ñ)B
-‚µ‚½‚ª‚Á‚ÄAƒRƒŒƒNƒVƒ‡ƒ“‚É‚Í‚±‚±‚ÅŽg‚í‚ê‚éƒƒ\ƒbƒh‚Ìˆø”‚É“™‰¿‚Å‚ ‚é‚Ç‚ñ‚ÈƒIƒuƒWƒFƒNƒg‚à‚È‚³‚»‚¤‚Å‚·B
+‘ÌŒ^ƒRƒŒƒNƒVƒ‡ƒ“ƒƒ\ƒbƒh‚Ö‚ÌŒÄ‚Ño‚µ‚É‚ÍAƒRƒŒƒNƒVƒ‡ƒ“‚Ìƒpƒ‰ƒ[ƒ^‚Æ‚ÍŒÝŠ·«‚Ì‚È‚¢ƒNƒ‰ƒX‚Ìˆø”‚ª‚ ‚è‚Ü‚· (‚·‚È‚í‚¿Aˆø”‚ÌŒ^‚Í‘ÌŒ^ˆø”‚É‘Î‰ž‚·‚éƒX[ƒpƒ^ƒCƒv‚Å‚àƒTƒuƒ^ƒCƒv‚Å‚à‚ ‚è‚Ü‚¹‚ñ)B
+‚µ‚½‚ª‚Á‚ÄAƒRƒŒƒNƒVƒ‡ƒ“‚É‚Í‚±‚±‚ÅŽg‚í‚ê‚éƒƒ\ƒbƒhˆø”‚É“™‰¿‚Å‚ ‚é‚Ç‚ñ‚ÈƒIƒuƒWƒFƒNƒg‚à‚È‚³‚»‚¤‚Å‚·B
 ‚½‚Ô‚ñAŠÔˆá‚Á‚½’l‚ªƒƒ\ƒbƒh‚É“n‚³‚ê‚Ä‚¢‚Ü‚·B
-ˆê”Ê“I‚ÉA2‚Â‚Ì–³ŠÖŒW‚ÈƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Í“™‰¿‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
-‚½‚Æ‚¦‚ÎA<code>Foo</code> ‚Æ <code>Bar</code> ƒNƒ‰ƒX‚ªƒTƒuƒ^ƒCƒv‚É‚æ‚Á‚ÄŠÖŒW‚ª‚È‚¢‚È‚ç <code>Foo</code> ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Í <code>Bar</code> ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Æ“™‰¿‚Ì‚Í‚¸‚ª‚ ‚è‚Ü‚¹‚ñB
-‚»‚Ì‘¼‚Ì–â‘è‚ÅA‘ÎÌ“I‚Å‚Í‚È‚¢ <code>equals</code> ƒƒ\ƒbƒh‚É‚È‚é‰Â”\«‚ª‚‚¢‚Å‚·B
-‚½‚Æ‚¦‚ÎA<code>Foo</code> ‚ª <code>String</code> ‚Æ“™‰¿‚Å‚ ‚é‚æ‚¤‚É <code>Foo</code> ƒNƒ‰ƒX‚ð’è‹`‚·‚é‚È‚ç <code>String</code> ‚Í <code>String</code> ‚¾‚¯‚Æ“™‰¿‚Å‚ ‚é‚Ì‚ÅA<code>equals</code> ƒƒ\ƒbƒh‚Í‘ÎÌ“I‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+’ÊíA2‚Â‚Ì–³ŠÖŒW‚ÈƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Í“™‰¿‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+‚½‚Æ‚¦‚ÎA<code>Foo</code> ‚Æ <code>Bar</code> ƒNƒ‰ƒX‚ªƒTƒuƒ^ƒCƒv‚É‚æ‚Á‚ÄŠÖŒW‚ª‚È‚¢‚È‚çA<code>Foo</code> ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Í <code>Bar</code> ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Æ“™‰¿‚Ì‚Í‚¸‚ª‚ ‚è‚Ü‚¹‚ñB
+‚»‚Ì‘¼‚Ì–â‘è‚ÅA‘ÎÌ“I‚Å‚È‚¢ <code>equals</code> ƒƒ\ƒbƒh‚É‚È‚é‰Â”\«‚ª‚‚¢‚Å‚·B
+‚½‚Æ‚¦‚ÎA<code>Foo</code> ‚ª <code>String</code> ‚Æ“™‰¿‚Å‚ ‚é‚æ‚¤‚É <code>Foo</code> ƒNƒ‰ƒX‚ð’è‹`‚·‚é‚È‚çA<code>String</code> ‚Í <code>String</code> ‚¾‚¯‚Æ“™‰¿‚Å‚ ‚é‚Ì‚ÅA<code>equals</code> ƒƒ\ƒbƒh‚Í‘ÎÌ“I‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
 </p>
 <p>
-‚Ü‚ê‚ÉA”ñ‘ÎÌ <code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚ÄA‚»‚ê‚ç‚ÌƒR[ƒh‚ð‚Ü‚¾‚È‚ñ‚Æ‚©“­‚©‚¹‚Ä‚¢‚Ü‚·B
-API‚Ì‚Ç‚ê‚à•¶‘‰»‚µ‚Ä‚¢‚È‚¢‚µA•ÛØ‚à‚µ‚Ä‚¢‚È‚¢‚ª’Êí‚Ìê‡‚Í  <code>Collection&lt;String&gt;</code> ‚É <code>Foo</code> ‚ª‚ ‚é‚©‚Ç‚¤‚©’²‚×‚½‚¢‚È‚ç
+‚Ü‚ê‚ÉA”ñ‘ÎÌ <code>equals</code> ƒƒ\ƒbƒh‚ð’è‹`‚µ‚ÄA‚Ü‚¾‰½‚Æ‚©‚»‚ê‚ç‚ÌƒR[ƒh‚ð‹@”\‚³‚¹‚Ä‚¢‚Ü‚·B
+API‚Ì‚Ç‚ê‚à•¶‘‰»‚µ‚Ä‚¢‚È‚¢‚µA•ÛØ‚à‚µ‚Ä‚¢‚È‚¢‚ª’Êí‚Ìê‡‚Í  <code>Collection&lt;String&gt;</code> ‚É <code>Foo</code> ‚ª‚ ‚é‚©‚Ç‚¤‚©’²‚×‚½‚¢‚È‚çA
 ˆø”‚Ì <code>equals</code> ƒƒ\ƒbƒh (‚½‚Æ‚¦‚ÎA<code>Foo</code>ƒNƒ‰ƒX‚Ì <code>equals</code> ƒƒ\ƒbƒh) ‚ðŽg—p‚µ‚Ä“™‰¿«‚ðƒ`ƒFƒbƒN‚µ‚Ü‚·B
 </p>
 ]]>
@@ -7780,12 +7823,12 @@ API‚Ì‚Ç‚ê‚à•¶‘‰»‚µ‚Ä‚¢‚È‚¢‚µA•ÛØ‚à‚µ‚Ä‚¢‚È‚¢‚ª’Êí‚Ìê‡‚Í  <code>Collection&
   </BugPattern>
 
   <BugPattern type="DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES">
-    <ShortDescription>ƒRƒŒƒNƒVƒ‡ƒ“Ž©g‚ªŠÜ‚Ü‚ê‚Ä‚Í‚È‚ç‚È‚¢</ShortDescription>
-    <LongDescription>{2.givenClass} ‚Ö‚ÌŒÄ‚Ño‚µ‚ÅƒRƒŒƒNƒVƒ‡ƒ“Ž©g‚ªŠÜ‚Ü‚ê‚Ä‚Í‚È‚è‚Ü‚¹‚ñB</LongDescription>
+    <ShortDescription>ƒRƒŒƒNƒVƒ‡ƒ“‚ÍŽ©•ªŽ©g‚ðŠÜ‚ß‚é‚×‚«‚Å‚Í‚È‚¢</ShortDescription>
+    <LongDescription>ƒRƒŒƒNƒVƒ‡ƒ“‚ÍA{2.givenClass} ‚Ö‚ÌŒÄ‚Ño‚µ‚ÅŽ©•ªŽ©g‚ðŠÜ‚ß‚é‚×‚«‚Í‚È‚¢B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚Ì‘ÌŒ^ƒRƒŒƒNƒVƒ‡ƒ“ƒƒ\ƒbƒh‚Ö‚ÌŒÄ‚Ño‚µ‚ÍA‚»‚êŽ©g‚ÉƒRƒŒƒNƒVƒ‡ƒ“‚ªŠÜ‚Ü‚ê‚Ä‚¢‚é (‚½‚Æ‚¦‚ÎA<code>s.contains(s)</code> ‚ª true ‚¾‚Æ‚µ‚Ä) ê‡‚É‚¾‚¯ˆÓ–¡‚ª‚ ‚è‚Ü‚·B
+‚±‚Ì‘ÌŒ^ƒRƒŒƒNƒVƒ‡ƒ“ƒƒ\ƒbƒh‚Ö‚ÌŒÄ‚Ño‚µ‚ÍAƒRƒŒƒNƒVƒ‡ƒ“‚ÉŽ©•ªŽ©g‚ªŠÜ‚Ü‚ê‚Ä‚¢‚é (‚½‚Æ‚¦‚ÎA<code>s.contains(s)</code> ‚ª true ‚¾‚Æ‚µ‚Ä) ê‡‚É‚¾‚¯ˆÓ–¡‚ª‚ ‚è‚Ü‚·B
 ‚±‚ê‚Í true ‚Å‚ ‚é‰Â”\«‚ª’á‚­‚ÄA‚à‚µ true ‚È‚ç–â‘è‚ÌŒ´ˆö‚É‚È‚è‚Ü‚· (‚½‚Æ‚¦‚ÎA–³ŒÀÄ‹A‚É‚È‚Á‚Ä‚¢‚éƒnƒbƒVƒ…ƒR[ƒh‚ÌŒvŽZ)B
 ŠÔˆá‚Á‚½ƒpƒ‰ƒ[ƒ^‚ª“n‚³‚ê‚Ä‚¢‚é‰Â”\«‚ª‚‚¢‚Å‚·B
 </p>
@@ -7799,33 +7842,34 @@ API‚Ì‚Ç‚ê‚à•¶‘‰»‚µ‚Ä‚¢‚È‚¢‚µA•ÛØ‚à‚µ‚Ä‚¢‚È‚¢‚ª’Êí‚Ìê‡‚Í  <code>Collection&
     <Details>
 <![CDATA[
 <p>
-ƒRƒŒƒNƒVƒ‡ƒ“ <code>c</code> ‚É‘Î‚µ‚Ä <code>c.containsAll(c)</code> ‚ðŒÄ‚Ño‚·‚±‚Æ‚Íí‚É true ‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
-‚»‚µ‚ÄA<code>c.retainAll(c)</code> ‚ÍŒø‰Ê‚ª‚ ‚Á‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+‚±‚ÌŒÄ‚Ño‚µ‚ÍAˆÓ–¡‚ª‚ ‚è‚Ü‚¹‚ñB
+‚Ç‚ñ‚ÈƒRƒŒƒNƒVƒ‡ƒ“ <code>c</code> ‚à <code>c.containsAll(c)</code> ‚ðŒÄ‚Ño‚·‚±‚Æ‚Íí‚É true ‚Å‚ ‚é‚×‚«‚Å‚·B
+‚»‚µ‚ÄA<code>c.retainAll(c)</code> ‚ÍŒø‰Ê‚ª‚ ‚é‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
 </p>
      ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION">
-    <ShortDescription>ƒRƒŒƒNƒVƒ‡ƒ“‚Ì—v‘f‚ðíœ‚·‚é‚½‚ß‚É removeAll ƒƒ\ƒbƒh‚ðŽg—p‚µ‚È‚¢</ShortDescription>
-    <LongDescription>ƒRƒŒƒNƒVƒ‡ƒ“‚Ì—v‘f‚ðíœ‚·‚é‚½‚ß‚É removeAll ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
+    <ShortDescription>ƒRƒŒƒNƒVƒ‡ƒ“‚ðÁ‹Ž‚·‚é‚½‚ß‚É removeAll ƒƒ\ƒbƒh‚ðŽg—p‚µ‚È‚¢</ShortDescription>
+    <LongDescription>ƒRƒŒƒNƒVƒ‡ƒ“‚ðÁ‹Ž‚·‚é‚½‚ß‚É removeAll ƒƒ\ƒbƒh‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-ƒRƒŒƒNƒVƒ‡ƒ“ <code>c</code> ‚©‚ç‚·‚×‚Ä‚Ì—v‘f‚ðíœ‚µ‚½‚¢‚È‚ç <code>c.removeAll(c)</code> ‚Å‚Í‚È‚­ <code>c.clear</code> ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
-ƒRƒŒƒNƒVƒ‡ƒ“‚ðíœ‚·‚é <code>c.removeAll(c)</code> ‚ÌŒÄ‚Ño‚µ‚ÍA‚»‚ê‚Ù‚Ç–¾Šm‚Å‚Í‚È‚­Aƒ^ƒCƒvƒ~ƒX‚©‚ç‚ÌŒë‚è‚É‰e‹¿‚³‚ê‚â‚·‚­AŒø—¦“I‚Å‚Í‚È‚­A‚¢‚­‚Â‚©‚ÌƒRƒŒƒNƒVƒ‡ƒ“‚Å‚Í <code>ConcurrentModificationException</code> ‚ðƒXƒ[‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+ƒRƒŒƒNƒVƒ‡ƒ“ <code>c</code> ‚©‚ç‚·‚×‚Ä‚Ì—v‘f‚ðœ‹Ž‚µ‚½‚¢‚È‚çA<code>c.removeAll(c)</code> ‚Å‚Í‚È‚­ <code>c.clear</code> ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
+ƒRƒŒƒNƒVƒ‡ƒ“‚ðÁ‹Ž‚·‚é‚½‚ß‚É <code>c.removeAll(c)</code> ‚ðŒÄ‚Ño‚·‚±‚Æ‚ÍA‚»‚ê‚Ù‚Ç–¾Šm‚Å‚Í‚È‚­Aƒ^ƒCƒvƒ~ƒX‚©‚ç‚ÌŒë‚è‚É‰e‹¿‚³‚ê‚â‚·‚­AŒø—¦“I‚Å‚Í‚È‚­A‚¢‚­‚Â‚©‚ÌƒRƒŒƒNƒVƒ‡ƒ“‚Å‚Í <code>ConcurrentModificationException</code> ‚ðƒXƒ[‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="STCAL_STATIC_CALENDAR_INSTANCE">
-    <ShortDescription>static ‚È Calendar</ShortDescription>
-    <LongDescription>java.util.Calendar Œ^‚Ì static ƒtƒB[ƒ‹ƒh‚ð”­Œ©‚µ‚Ü‚µ‚½B{1}</LongDescription>
+    <ShortDescription>static Calendar ƒtƒB[ƒ‹ƒh</ShortDescription>
+    <LongDescription>{1} ‚ÍAjava.util.Calendar Œ^‚Ì static ƒtƒB[ƒ‹ƒh‚Å‚·B‚»‚ê‚ÍƒXƒŒƒbƒhƒZ[ƒt‚Å‚Í‚ ‚è‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚½‚Æ‚¦ JavaDoc ‚É‚»‚ê‚ÉŠÖ‚·‚éŽè‚ª‚©‚è‚ª‚È‚©‚Á‚½‚Æ‚µ‚Ä‚àACalendar ‚Íƒ}ƒ‹ƒ`ƒXƒŒƒbƒhŠÂ‹«‚Å‚ÌŽg—p‚Å‚Í–{Ž¿“I‚ÉˆÀ‘S‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+‚½‚Æ‚¦ JavaDoc ‚É‚»‚ê‚ÉŠÖ‚·‚éŽè‚ª‚©‚è‚ª‚È‚¢‚Æ‚µ‚Ä‚àACalendar ‚Íƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚Å‚ÌŽg—p‚Í–{Ž¿“I‚ÉˆÀ‘S‚Å‚ ‚è‚Ü‚¹‚ñB
 ³‚µ‚¢“¯Šú‰»‚ð‚µ‚È‚¢‚ÅƒXƒŒƒbƒh‹«ŠE‚ÌŒü‚±‚¤‚Å1‚Â‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð‹¤—L‚·‚é‚±‚Æ‚ÍAƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌŒë“®ì‚É‚È‚è‚Ü‚·B
 JDK 5.0‚É”ä‚×‚Ä JDK 1.4 ‚Ì•û‚ª–â‘è‚ª•\–Ê‰»‚·‚é‚æ‚¤‚ÉŽv‚í‚êA‚¨‚»‚ç‚­ sun.util.calendar.BaseCalendar.getCalendarDateFromFixedDate() ‚Ì ArrayIndexOutOfBoundsExceptions ‚â IndexOutOfBoundsExceptions ‚ªƒ‰ƒ“ƒ_ƒ€‚É”­¶‚µ‚Ü‚·B
 ’¼—ñ‰»–â‘è‚àŒoŒ±‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñBƒCƒ“ƒXƒ^ƒ“ƒXƒtƒB[ƒ‹ƒh‚ðŽg‚¤‚±‚Æ‚ð„§‚µ‚Ü‚·B<br>
@@ -7836,13 +7880,13 @@ JDK 5.0‚É”ä‚×‚Ä JDK 1.4 ‚Ì•û‚ª–â‘è‚ª•\–Ê‰»‚·‚é‚æ‚¤‚ÉŽv‚í‚êA‚¨‚»‚ç‚­ sun.util.ca
   </BugPattern>
 
   <BugPattern type="STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE">
-    <ShortDescription>static ‚È Calendar ‚ÌŒÄ‚Ño‚µ</ShortDescription>
+    <ShortDescription>static Calendar ‚ÌŒÄ‚Ño‚µ</ShortDescription>
     <LongDescription>static ‚È java.util.Calendar ‚Ìƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚½‚Æ‚¦ JavaDoc ‚É‚»‚ê‚ÉŠÖ‚·‚éŽè‚ª‚©‚è‚ª‚È‚©‚Á‚½‚Æ‚µ‚Ä‚àACalendar ‚Íƒ}ƒ‹ƒ`ƒXƒŒƒbƒhŠÂ‹«‚Å‚ÌŽg—p‚Å‚Í–{Ž¿“I‚ÉˆÀ‘S‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
-ƒfƒBƒeƒNƒ^‚ÍAstatic ƒtƒB[ƒ‹ƒh‚ð’Ê‚µ‚Ä“¾‚ç‚ê‚½ Calendar ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Ö‚ÌŒÄ‚Ño‚µ‚ð”­Œ©‚µ‚Ü‚µ‚½B
+‚½‚Æ‚¦ JavaDoc ‚É‚»‚ê‚ÉŠÖ‚·‚éŽè‚ª‚©‚è‚ª‚È‚¢‚Æ‚µ‚Ä‚àACalendar ‚Íƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚Å‚ÌŽg—p‚Í–{Ž¿“I‚ÉˆÀ‘S‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+ƒfƒBƒeƒNƒ^‚ÍAstatic ƒtƒB[ƒ‹ƒh‚©‚ç“¾‚ç‚ê‚½ Calendar ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ÌŒÄ‚Ño‚µ‚ð”­Œ©‚µ‚Ü‚µ‚½B
 ‚±‚ê‚Í‹^‚í‚µ‚­Œ©‚¦‚Ü‚·B
 Ú×‚É‚Â‚¢‚Ä‚ÍA<a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6231579">Sun Bug #6231579</a> ‚â <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug #6178997</a> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
@@ -7851,27 +7895,28 @@ JDK 5.0‚É”ä‚×‚Ä JDK 1.4 ‚Ì•û‚ª–â‘è‚ª•\–Ê‰»‚·‚é‚æ‚¤‚ÉŽv‚í‚êA‚¨‚»‚ç‚­ sun.util.ca
   </BugPattern>
 
   <BugPattern type="STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE">
-    <ShortDescription>static ‚È DateFormat</ShortDescription>
-    <LongDescription>java.text.DateFormat Œ^‚Ì static ƒtƒB[ƒ‹ƒh‚ð”­Œ©‚µ‚Ü‚µ‚½B{1}</LongDescription>
+    <ShortDescription>static DateFormat</ShortDescription>
+    <LongDescription>{1} ‚ÍAjava.text.DateFormat Œ^‚Ì static ƒtƒB[ƒ‹ƒh‚Å‚·B‚»‚ê‚ÍƒXƒŒƒbƒhƒZ[ƒt‚Å‚Í‚ ‚è‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
-JavaDoc ‚É‘‚©‚ê‚Ä‚¢‚é‚æ‚¤‚ÉADateFormat ‚Íƒ}ƒ‹ƒ`ƒXƒŒƒbƒhŠÂ‹«‚Å‚ÌŽg—p‚Å‚Í–{Ž¿“I‚ÉˆÀ‘S‚Å‚Í‚ ‚è‚Ü‚¹‚ñB³‚µ‚¢“¯Šú‰»‚ð‚µ‚È‚¢‚ÅƒXƒŒƒbƒh‹«ŠE‚ÌŒü‚±‚¤‚Å1‚Â‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð‹¤—L‚·‚é‚±‚Æ‚ÍAƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌŒë“®ì‚É‚È‚è‚Ü‚·B
+JavaDoc ‚É‘‚©‚ê‚Ä‚¢‚é‚æ‚¤‚ÉADateFormat ‚Íƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚Å‚ÌŽg—p‚Í–{Ž¿“I‚ÉˆÀ‘S‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+³‚µ‚¢“¯Šú‰»‚ð‚µ‚È‚¢‚ÅƒXƒŒƒbƒh‹«ŠE‚ÌŒü‚±‚¤‚Å1‚Â‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð‹¤—L‚·‚é‚±‚Æ‚ÍAƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌŒë“®ì‚É‚È‚è‚Ü‚·B
 JDK 5.0‚É”ä‚×‚Ä JDK 1.4 ‚Ì•û‚ª–â‘è‚ª•\–Ê‰»‚·‚é‚æ‚¤‚ÉŽv‚í‚êA‚¨‚»‚ç‚­ sun.util.calendar.BaseCalendar.getCalendarDateFromFixedDate() ‚Ì ArrayIndexOutOfBoundsExceptions ‚â IndexOutOfBoundsExceptions ‚ªƒ‰ƒ“ƒ_ƒ€‚É”­¶‚µ‚Ü‚·B
-’¼—ñ‰»–â‘è‚àŒoŒ±‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñBƒCƒ“ƒXƒ^ƒ“ƒXƒtƒB[ƒ‹ƒh‚ðŽg—p‚·‚é‚±‚Æ‚ð„§‚µ‚Ü‚·B<br>
+’¼—ñ‰»–â‘è‚àŒoŒ±‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñBƒCƒ“ƒXƒ^ƒ“ƒXƒtƒB[ƒ‹ƒh‚ðŽg‚¤‚±‚Æ‚ð„§‚µ‚Ü‚·B<br>
 Ú×‚É‚Â‚¢‚Ä‚ÍA<a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6231579">Sun Bug #6231579</a> ‚â <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug #6178997</a> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE">
-    <ShortDescription>static ‚È DateFormat ‚ÌŒÄ‚Ño‚µ</ShortDescription>
+    <ShortDescription>static DateFormat ‚ÌŒÄ‚Ño‚µ</ShortDescription>
     <LongDescription>static ‚È java.text.DateFormat ‚Ìƒƒ\ƒbƒh‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-JavaDoc ‚É‘‚©‚ê‚Ä‚¢‚é‚æ‚¤‚ÉADateFormat ‚Íƒ}ƒ‹ƒ`ƒXƒŒƒbƒhŠÂ‹«‚Å‚ÌŽg—p‚Å‚Í–{Ž¿“I‚ÉˆÀ‘S‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
-ƒfƒBƒeƒNƒ^‚ÍAstatic ƒtƒB[ƒ‹ƒh‚ð’Ê‚µ‚Ä“¾‚ç‚ê‚½ DateFormat ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Ö‚ÌŒÄ‚Ño‚µ‚ð”­Œ©‚µ‚Ü‚µ‚½B
+JavaDoc ‚É‘‚©‚ê‚Ä‚¢‚é‚æ‚¤‚ÉADateFormat ‚Íƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚Å‚ÌŽg—p‚Í–{Ž¿“I‚ÉˆÀ‘S‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+ƒfƒBƒeƒNƒ^‚ÍAstatic ƒtƒB[ƒ‹ƒh‚©‚ç“¾‚ç‚ê‚½ DateFormat ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ÌŒÄ‚Ño‚µ‚ð”­Œ©‚µ‚Ü‚µ‚½B
 ‚±‚ê‚Í‹^‚í‚µ‚­Œ©‚¦‚Ü‚·B
 Ú×‚É‚Â‚¢‚Ä‚ÍA<a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6231579">Sun Bug #6231579</a> ‚â <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug #6178997</a> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
@@ -7913,7 +7958,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 </p>
 <p>
 ‚æ‚è³Šm‚ÉAwhen=NEVER ‚ðŽw’è‚µ‚Ä‚¢‚éŒ^CüŽqƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚½’l‚ª“¯‚¶Œ^CüŽq‚ª when=ALWAYS ‚ðŽw’è‚·‚éêŠ‚ÅŽg—p‚µ‚Ä‚¢‚Ü‚·B
-</p>
+</p>        
 ]]>
     </Details>
   </BugPattern>
@@ -7924,7 +7969,7 @@ public @NonNegative Integer example(@Negative Integer value) {
     <Details>
 <![CDATA[
 <p>
-Œ^CüŽq‚É‚æ‚Á‚ÄŽ¦‚³‚ê‚é’l‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚Í‚È‚¢‰Â”\«‚Æ‚µ‚ÄƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚½’l‚Å‚·B
+Œ^CüŽq‚É‚æ‚Á‚ÄŽ¦‚³‚ê‚é’l‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚Í‚Í‚È‚¢‰Â”\«‚Æ‚µ‚ÄƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚½’l‚Å‚·B
 ’l‚Í‚»‚ÌŒ^CüŽq‚É‚æ‚Á‚ÄŽ¦‚³‚ê‚½—v‹•û–@‚ÅŽg‚¤‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚Ü‚·B
 </p>
 ]]>
@@ -7949,21 +7994,22 @@ public @NonNegative Integer example(@Negative Integer value) {
     <Details>
 <![CDATA[
 <p>
-’l‚ªŒ^CüŽq‚É‚æ‚Á‚ÄŽ¦‚³‚ê‚È‚¢’l‚ð•K—v‚Æ‚·‚é•û–@‚ÅŽg‚í‚ê‚Ä‚¢‚Ü‚·‚ªA
-’l‚ª‚Ç‚±‚Å‚»‚ÌŒ^CüŽq‚ðŽ‚Â‚±‚Æ‚ª‹ÖŽ~‚³‚ê‚é‚Ì‚©‚í‚©‚ç‚È‚¢‚Æq‚×‚Ä‚¢‚é–¾Ž¦“I‚ÈƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚Ä‚¢‚Ü‚·B
+’l‚ÍAŒ^CüŽq‚É‚æ‚Á‚ÄŽ¦‚³‚ê‚½’l‚Å‚È‚¢‚±‚Æ‚ð•K—v‚Æ‚·‚é•û–@‚ÅŽg‚í‚ê‚Ä‚¢‚Ü‚·B
+‚µ‚©‚µA’l‚Í‚Ç‚±‚Å‚»‚ÌŒ^CüŽq‚ª‚¢‚é‚Ì‚©‹ÖŽ~‚³‚ê‚Ä‚¢‚é‚©‚í‚©‚ç‚È‚¢‚Æq‚×‚Ä‚¢‚é–¾Ž¦“I‚ÈƒAƒmƒe[ƒVƒ‡ƒ“‚ª‚ ‚è‚Ü‚·B
 Žg‚¢•û‚©ƒAƒmƒe[ƒVƒ‡ƒ“‚Ì‚Ç‚¿‚ç‚©‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
 </p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK">
     <ShortDescription>–¾Ž¦“I‚ÈƒAƒmƒe[ƒVƒ‡ƒ“‚ÌŽg—p‚ÉˆêŠÑ«‚ª‚È‚¢</ShortDescription>
-    <LongDescription>’l‚ÍAí‚É {2} ‚ð•K—v‚Æ‚µ‚Ä‚¢‚Ü‚·‚ªA–¾Ž¦“I‚É {2} ‚ÉŠÖ‚·‚é•s–¾‚ÈƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
+    <LongDescription>’l‚ÍAí‚É {2} ‚ð•K—v‚Æ‚µ‚Ä‚¢‚é‚ªA–¾Ž¦“I‚É {2} ‚ÉŠÖ‚·‚é•s–¾‚ÈƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
-’l‚ªí‚ÉŒ^CüŽq‚É‚æ‚Á‚ÄŽ¦‚³‚ê‚½’l‚ð•K—v‚Æ‚·‚é•û–@‚ÅŽg‚í‚ê‚Ä‚¢‚Ü‚·‚ªA
-’l‚ª‚Ç‚±‚Å‚»‚ÌŒ^CüŽq‚ðŽ‚Â‚±‚Æ‚ª•K—v‚È‚Ì‚©‚í‚©‚ç‚È‚¢‚Æq‚×‚Ä‚¢‚é–¾Ž¦“I‚ÈƒAƒmƒe[ƒVƒ‡ƒ“‚ª•t‚¯‚ç‚ê‚Ä‚¢‚Ü‚·B
+’l‚ÍAí‚ÉŒ^CüŽq‚É‚æ‚Á‚ÄŽ¦‚³‚ê‚½’l‚Å‚ ‚é‚±‚Æ‚ð•K—v‚Æ‚·‚é•û–@‚ÅŽg‚í‚ê‚Ä‚¢‚Ü‚·B
+‚µ‚©‚µA’l‚Í‚Ç‚±‚Å‚»‚ÌŒ^CüŽq‚ª‚¢‚é‚Ì‚©—v‹‚³‚ê‚Ä‚¢‚é‚©‚í‚©‚ç‚È‚¢‚Æq‚×‚Ä‚¢‚é–¾Ž¦“I‚ÈƒAƒmƒe[ƒVƒ‡ƒ“‚ª‚ ‚è‚Ü‚·B
 Žg‚¢•û‚©ƒAƒmƒe[ƒVƒ‡ƒ“‚Ì‚Ç‚¿‚ç‚©‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
       </p>
       ]]>
@@ -7977,13 +8023,13 @@ public @NonNegative Integer example(@Negative Integer value) {
 <![CDATA[
 <p>
 ‚±‚ÌƒR[ƒh‚ÍAƒtƒ@ƒCƒ‹‚ð’Ç‰Áƒ‚[ƒh‚ÅŠJ‚¢‚ÄAƒIƒuƒWƒFƒNƒgo—ÍƒXƒgƒŠ[ƒ€‚Ì’†‚ÅŒ‹‰Ê‚ðƒ‰ƒbƒv‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ê‚ÍŠù‘¶‚Ì ObjectOutputStream ‚ÅŠi”[‚³‚ê‚½ƒtƒ@ƒCƒ‹‚É’Ç‰Á‚Å‚«‚Ü‚¹‚ñB
-ƒIƒuƒWƒFƒNƒgo—ÍƒXƒgƒŠ[ƒ€‚É’Ç‰Á‚µ‚½‚¢‚È‚çƒIƒuƒWƒFƒNƒgo—ÍƒXƒgƒŠ[ƒ€‚ðŠJ‚¢‚Ä‚¨‚­•K—v‚ª‚ ‚è‚Ü‚·B
+‚±‚ê‚ÍAƒtƒ@ƒCƒ‹‚ÉŠi”[‚³‚ê‚½Šù‘¶‚ÌƒIƒuƒWƒFƒNƒgo—ÍƒXƒgƒŠ[ƒ€‚É’Ç‰Á‚Å‚«‚È‚¢‚Å‚µ‚å‚¤B
+ƒIƒuƒWƒFƒNƒgo—ÍƒXƒgƒŠ[ƒ€‚É’Ç‰Á‚µ‚½‚¢‚È‚çAƒIƒuƒWƒFƒNƒgo—ÍƒXƒgƒŠ[ƒ€‚ðŠJ‚¢‚Ä‚¨‚­•K—v‚ª‚ ‚è‚Ü‚·B
 </p>
 <p>
 ’Ç‰Áƒ‚[ƒh‚Åƒtƒ@ƒCƒ‹‚ðŠJ‚«AƒIƒuƒWƒFƒNƒgo—ÍƒXƒgƒŠ[ƒ€‚Å‘‚«ž‚Þ‚±‚Æ‚ª‚Å‚«‚é—Bˆê‚Ìó‹µ‚ÍA
 ƒtƒ@ƒCƒ‹‚ð“Ç‚Ýo‚·‚Æ‚«‚Éƒ‰ƒ“ƒ_ƒ€ƒAƒNƒZƒXƒ‚[ƒh‚ÅŠJ‚«A’Ç‰Á‚ðŠJŽn‚·‚é‚Æ‚±‚ë‚Ü‚ÅƒoƒCƒgƒIƒtƒZƒbƒg‚ðƒV[ƒN‚·‚é‚ÆŒv‰æ‚µ‚½ê‡‚Å‚·B
-</p>
+</p> 
 ]]>
     </Details>
   </BugPattern>
@@ -7995,7 +8041,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 <![CDATA[
 <p>
 ‚±‚ÌƒCƒ“ƒXƒ^ƒ“ƒXƒƒ\ƒbƒh‚ÍA<code>this.getClass()</code> ‚Å“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B
-‚±‚ÌƒNƒ‰ƒX‚ªƒTƒuƒNƒ‰ƒX‰»‚³‚ê‚é‚È‚çƒTƒuƒNƒ‰ƒX‚Í‚¨‚»‚ç‚­ˆÓ}‚µ‚½‚±‚Æ‚Å‚Í‚È‚¢ƒTƒuƒNƒ‰ƒX‚Ì‚½‚ß‚ÌƒNƒ‰ƒXƒIƒuƒWƒFƒNƒg‚Å“¯Šú‰»‚µ‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚ªƒTƒuƒNƒ‰ƒX‰»‚³‚ê‚é‚È‚çAƒTƒuƒNƒ‰ƒX‚Í‚¨‚»‚ç‚­ˆÓ}‚µ‚½‚±‚Æ‚Å‚Í‚È‚¢ƒTƒuƒNƒ‰ƒX‚Ì‚½‚ß‚ÉƒNƒ‰ƒXƒIƒuƒWƒFƒNƒg‚Å“¯Šú‰»‚µ‚Ü‚·B
 ‚½‚Æ‚¦‚ÎAjava.awt.Label ‚ÌˆÈ‰º‚ÌƒR[ƒh‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 <blockquote><pre>
@@ -8010,7 +8056,7 @@ String constructComponentName() {
 </pre></blockquote>
 <p>
 <code>Label</code> ‚ÌƒTƒuƒNƒ‰ƒX‚Í“¯‚¶ƒTƒuƒNƒ‰ƒX‚Å“¯Šú‰»‚µ‚Ü‚¹‚ñBƒf[ƒ^ƒŒ[ƒX‚ð¶‚¶‚³‚¹‚Ü‚·B
-‚»‚Ì‘ã‚í‚è‚ÉA‚±‚ÌƒR[ƒh‚Å‚Í <code>Label.class</code> ‚Å“¯Šú‰»‚µ‚Ä‚¢‚Ü‚·B
+‚»‚Ì‘ã‚í‚è‚ÉA‚±‚ÌƒR[ƒh‚ÍA<code>Label.class</code> ‚Å“¯Šú‰»‚·‚é‚×‚«‚Å‚·B
 </p>
 <blockquote><pre>
 private static final String base = "label";
@@ -8035,10 +8081,10 @@ Jason Mehrens ‚É‚æ‚Á‚ÄŠñ‘¡‚³‚ê‚½ƒoƒOƒpƒ^[ƒ“
     <Details>
 <![CDATA[
 <p>
-‚±‚Ìƒƒ\ƒbƒh‚ÍAƒXƒgƒŠ[ƒ€‚âƒf[ƒ^ƒx[ƒXƒIƒuƒWƒFƒNƒgA–¾Ž¦“I‚ÈƒNƒŠ[ƒ“ƒAƒbƒv‘€ì‚ð•K—v‚Æ‚·‚é‘¼‚ÌƒŠƒ\[ƒX‚ÌƒNƒŠ[ƒ“ƒAƒbƒv (ƒNƒ[ƒY‚·‚éAˆ•ª‚·‚é) ‚ÉŽ¸”s‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
-</p>
+‚±‚Ìƒƒ\ƒbƒh‚ÍAƒXƒgƒŠ[ƒ€Aƒf[ƒ^ƒx[ƒXƒIƒuƒWƒFƒNƒgA‚ ‚é‚¢‚ÍA–¾Ž¦“I‚ÉƒNƒŠ[ƒ“ƒAƒbƒv‘€ì‚ð•K—v‚Æ‚µ‚Ä‚¢‚é‘¼‚ÌƒŠƒ\[ƒX‚ÌƒNƒŠ[ƒ“ƒAƒbƒv (ƒNƒ[ƒY‚·‚éAˆ•ª‚·‚é) ‚ÉŽ¸”s‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñB
+</p>   
 <p>
-ˆê”Ê“I‚ÉAƒƒ\ƒbƒh‚ªƒXƒgƒŠ[ƒv‚â‘¼‚ÌƒŠƒ\[ƒX‚ðŠJ‚¢‚½‚È‚çƒƒ\ƒbƒh‚ÍƒXƒgƒŠ[ƒ€‚âƒŠƒ\[ƒX‚ªƒƒ\ƒbƒh‚ª–ß‚é‘O‚ÉƒNƒŠ[ƒ“ƒAƒbƒv‚³‚ê‚é‚±‚Æ‚ðŠm”F‚·‚é‚½‚ß‚ÉAtry/finally ƒuƒƒbƒN‚ðŽg—p‚·‚×‚«‚Å‚·B
+’ÊíAƒƒ\ƒbƒh‚ªƒXƒgƒŠ[ƒv‚â‘¼‚ÌƒŠƒ\[ƒX‚ðŠJ‚¢‚½‚È‚çAƒƒ\ƒbƒh‚ÍƒXƒgƒŠ[ƒ€‚âƒŠƒ\[ƒX‚ªƒƒ\ƒbƒh‚ª–ß‚é‘O‚ÉƒNƒŠ[ƒ“ƒAƒbƒv‚³‚ê‚é‚±‚Æ‚ðŠm”F‚·‚é‚½‚ß‚ÉAtry/finally ƒuƒƒbƒN‚ðŽg—p‚·‚é‚×‚«‚Å‚·B
 </p>
 <p>
 ‚±‚ÌƒoƒOƒpƒ^[ƒ“‚ÍAOS_OPEN_STREAM ‚Æ ODR_OPEN_DATABASE_RESOURCE ‚ÆŠî–{“I‚É“¯‚¶‚Å‚·‚ªˆÙ‚È‚é (‚»‚µ‚ÄA‚¤‚Ü‚­‚¢‚¯‚Î‚æ‚è—Ç‚¢) Ã“I‰ðÍ‹Zp‚ÉŠî‚Ã‚¢‚Ä‚¢‚Ü‚·B
@@ -8050,10 +8096,10 @@ Jason Mehrens ‚É‚æ‚Á‚ÄŠñ‘¡‚³‚ê‚½ƒoƒOƒpƒ^[ƒ“
 <li>file a bug report: <a href="http://findbugs.sourceforge.net/reportingBugs.html">http://findbugs.sourceforge.net/reportingBugs.html</a></li>
 </ul>
 <p>
-“Á‚ÉA‚±‚ÌƒoƒOƒpƒ^[ƒ“‚ÌŒëŒŸo—}§’Tõ–@‚ÍÚ×‚É‚í‚½‚Á‚Ä’²®‚³‚ê‚Ä‚¢‚È‚¢‚Ì‚ÅAŒëŒŸo‚É‚Â‚¢‚Ä‚ÌƒŒƒ|[ƒg‚Í‰äX‚Ì•‚¯‚É‚È‚è‚Ü‚·B
+“Á‚ÉA‚±‚ÌƒoƒOƒpƒ^[ƒ“‚ÌŒëŒŸo—}§’Tõ–@‚ÍÚ×‚É‚í‚½‚Á‚Ä’²®‚³‚ê‚Ä‚¢‚È‚¢‚Ì‚ÅAŒëŒŸo‚É‚Â‚¢‚Ä‚ÌƒŒƒ|[ƒg‚Í‰äX‚Ì•‚¯‚É‚È‚è‚Ü‚·B 
 </p>
 <p>
-‰ðÍ‹Zp‚Ìà–¾‚ÍAWeimer ‚Æ Necula ‚É‚æ‚é <i>Finding and Preventing Run-Time Error Handling Mistakes</i> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
+‰ðÍ‹Zp‚Ìà–¾‚ÍAWeimer ‚Æ Necula ‚É‚æ‚é <i>Finding and Preventing Run-Time Error Handling Mistakes</i> ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B 
 </p>
 ]]>
     </Details>
@@ -8084,13 +8130,13 @@ FindBugs ‚ÍA@ExpectedWarning ‚É‚æ‚Á‚ÄA—\Šú‚µ‚½/–]‚Ü‚µ‚¢Œx‚ª¶¬‚³‚ê‚Ü‚¹‚ñ‚Å‚
   </BugPattern>
 
   <BugPattern type="RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED">
-    <ShortDescription>putIfAbsent ‚Ì–ß‚è’l‚Í–³Ž‹‚³‚ê‚½‚ª putIfAbsent ‚É“n‚µ‚½’l‚ÍÄ—˜—p‚³‚ê‚½</ShortDescription>
-    <LongDescription>putIfAbsent ‚Ì–ß‚è’l‚Í–³Ž‹‚³‚ê‚½‚Ì‚É {4} ‚ÍÄ—˜—p‚³‚ê‚Ü‚µ‚½B{1}</LongDescription>
+    <ShortDescription>putIfAbsent ‚Ì–ß‚è’l‚Í–³Ž‹‚³‚ê‚Ä putIfAbsent ‚É“n‚µ‚½’l‚ÍÄ—˜—p‚³‚ê‚½</ShortDescription>
+    <LongDescription>putIfAbsent ‚Ì–ß‚è’l‚Í–³Ž‹‚³‚ê‚½‚ªA{4} ‚ÍÄ—˜—p‚³‚ê‚Ü‚µ‚½B{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-<code>putIfAbsent</code> ƒƒ\ƒbƒh‚ÍAˆê”Ê“I‚É1‚Â‚Ì’l‚ª—^‚¦‚ç‚ê‚½ƒL[ (”ñ‘¶Ý‚ª¬Œ÷‚·‚é‚©‚Ç‚¤‚©‚Ì‘æˆê‚Ì’l) ‚ÆŠÖ˜A‚·‚é‚±‚Æ‚ðŠm”F‚·‚é‚½‚ß‚ÉŽg‚í‚ê‚Ü‚·B
-–ß‚è’l‚ð–³Ž‹‚µ‚Ä’†‚Å“n‚³‚ê‚é’l‚Ö‚ÌŽQÆ‚ð•ÛŽ‚·‚é‚È‚çƒ}ƒbƒv‚ÌƒL[‚ÆŠÖ˜A‚·‚é1‚Â‚Å‚Í‚È‚¢’l‚ð•ÛŽ‚·‚éŠëŒ¯«‚ð–`‚µ‚Ü‚·B
+<code>putIfAbsent</code> ƒƒ\ƒbƒh‚ÍA’Êí1‚Â‚Ì’l‚ª—^‚¦‚ç‚ê‚½ƒL[ (”ñ‘¶Ý‚ª¬Œ÷‚·‚é‚©‚Ç‚¤‚©‚Ì‘æˆê‚Ì’l) ‚ÆŠÖ˜A‚·‚é‚±‚Æ‚ðŠm”F‚·‚é‚½‚ß‚ÉŽg‚í‚ê‚Ü‚·B
+–ß‚è’l‚ð–³Ž‹‚µ‚Ä’†‚Å“n‚³‚ê‚é’l‚Ö‚ÌŽQÆ‚ð•ÛŽ‚·‚é‚È‚çAƒ}ƒbƒv‚ÌƒL[‚ÆŠÖ˜A‚·‚é1‚Â‚Å‚Í‚È‚¢’l‚ð•ÛŽ‚·‚éŠëŒ¯«‚ð–`‚µ‚Ü‚·B
 ‚Ç‚ê‚ðŽg—p‚·‚é‚©‚ªd—v‚Å‚ ‚èAƒ}ƒbƒv‚ÉŠi”[‚Å‚«‚È‚¢‚à‚Ì‚ðŽg—p‚·‚é‚ÆAƒvƒƒOƒ‰ƒ€‚ÍŒë‚Á‚½U‚é•‘‚¢‚ð‚µ‚Ü‚·B
 </p>
 ]]>
@@ -8103,11 +8149,11 @@ FindBugs ‚ÍA@ExpectedWarning ‚É‚æ‚Á‚ÄA—\Šú‚µ‚½/–]‚Ü‚µ‚¢Œx‚ª¶¬‚³‚ê‚Ü‚¹‚ñ‚Å‚
     <Details>
 <![CDATA[
 <p>
-OpenJDK ‚ÍAöÝ“I”ñŒÝŠ·«‚ð“±“ü‚µ‚Ü‚·B“Á‚ÉAjava.util.logging.Logger ‚ÍU‚é•‘‚¢‚ª•ÏX‚³‚ê‚Ä‚¢‚Ü‚·B
+OpenJDK ‚É‚ÍAöÝ“I”ñŒÝŠ·«‚ª‚ ‚è‚Ü‚·B“Á‚ÉAjava.util.logging.Logger ‚ÍU‚é•‘‚¢‚ª•ÏX‚³‚ê‚Ä‚¢‚Ü‚·B
 ‹­ŽQÆ‚ðŽg—p‚·‚é‘ã‚í‚è‚ÉAŒ»ÝA“à•”“I‚ÉŽãŽQÆ‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B
-‚»‚ê‚Í—‚É‚©‚È‚Á‚½•ÏX‚Å‚·‚ªŽc”O‚È‚ª‚ç‚¢‚­‚Â‚©‚ÌƒR[ƒh‚ÍŒÃ‚¢U‚é•‘‚¢‚ÉˆË‘¶‚µ‚Ä‚¢‚Ü‚·B
-ƒƒK[‚Ì\¬‚ð•ÏX‚·‚é‚Æ‚«AƒƒK[‚Ö‚ÌŽQÆ‚ªŽÌ‚Ä‚ç‚ê‚Ü‚·B
-‚Â‚Ü‚èAƒKƒx[ƒWƒRƒŒƒNƒ^‚Íƒƒ‚ƒŠ‚ð‰ñŽû‚Å‚«‚Ü‚·B‚»‚ê‚ÍAƒƒK[‚Ì\¬‚ªŽ¸‚í‚ê‚é‚±‚Æ‚ðˆÓ–¡‚µ‚Ü‚·B
+‚»‚ê‚Í—‚É‚©‚È‚Á‚½•ÏX‚Å‚·‚ªAŽc”O‚È‚ª‚ç‚¢‚­‚Â‚©‚ÌƒR[ƒh‚ÍŒÃ‚¢U‚é•‘‚¢‚ÉˆË‘¶‚µ‚Ä‚¢‚Ü‚·B
+ƒƒK[‚Ì\¬‚ð•ÏX‚·‚é‚Æ‚«AƒƒK[‚Ö‚ÌŽQÆ‚ðŽÌ‚Ä‚Ü‚·B
+‚Â‚Ü‚èAƒKƒx[ƒWƒRƒŒƒNƒ^‚Í‚»‚Ìƒƒ‚ƒŠ‚ð‰ñŽû‚Å‚«‚Ü‚·B‚»‚ê‚ÍAƒƒK[‚Ì\¬‚ªŽ¸‚í‚ê‚é‚±‚Æ‚ðˆÓ–¡‚µ‚Ü‚·B
 ‚½‚Æ‚¦‚ÎAˆÈ‰º‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
 </p>
 <blockquote><pre>
@@ -8119,8 +8165,7 @@ public static void initLogging() throws Exception {
 </pre></blockquote>
 <p>
 ƒƒK[‚ÌŽQÆ‚ÍAƒƒ\ƒbƒh‚ÌI‚í‚è (ƒƒ\ƒbƒh‚Í’Eo‚µ‚Ü‚¹‚ñ) ‚ÅŽ¸‚í‚ê‚é‚Ì‚ÅA
-<code>initLogging</code> ‚Ö‚ÌŒÄ‚Ño‚µ‚ÌŒã‚ÅƒKƒx[ƒWƒRƒŒƒNƒVƒ‡ƒ“‚ÌzŠÂ‚ª‚ ‚é‚È‚ç
-ƒƒK[\¬‚ÍŽ¸‚í‚ê‚Ä‚¢‚Ü‚· (‚È‚º‚È‚ç Logger ‚ªŽãŽQÆ‚ð•ÛŽ‚·‚é‚Ì‚Å)B
+<code>initLogging</code> ‚ÌŒÄ‚Ño‚µ‚ÌŒã‚ÅƒKƒx[ƒWƒRƒŒƒNƒVƒ‡ƒ“‚ÌzŠÂ‚ª‚ ‚é‚È‚çAƒƒK[\¬‚ÍŽ¸‚í‚ê‚Ü‚· (‚È‚º‚È‚ç Logger ‚ÍŽãŽQÆ‚ð•ÛŽ‚·‚é‚¾‚¯‚È‚Ì‚Å)B
 .</p>
 <blockquote><pre>
 public static void main(String[] args) throws Exception {
@@ -8137,37 +8182,49 @@ Ulf Ochsenfahrt ‚Æ Eric Fellheimer
   </BugPattern>
 
   <BugPattern type="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION">
-    <ShortDescription>•Às’ŠÛ‰»‚Ö‚ÌŒÄ‚Ño‚µƒV[ƒPƒ“ƒX‚ÍAƒAƒgƒ~ƒbƒN‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚È‚¢</ShortDescription>
-    <LongDescription>{2} ‚Ö‚ÌŒÄ‚Ño‚µƒV[ƒPƒ“ƒX‚ÍAƒAƒgƒ~ƒbƒN‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB{1}</LongDescription>
+    <ShortDescription>•Às’ŠÛ‰»‚ÌŒÄ‚Ño‚µƒV[ƒPƒ“ƒX‚ÍƒAƒgƒ~ƒbƒN‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚È‚¢</ShortDescription>
+    <LongDescription>{2} ‚ÌŒÄ‚Ño‚µƒV[ƒPƒ“ƒX‚ÍAƒAƒgƒ~ƒbƒN‚Å‚Í‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-‚±‚ÌƒR[ƒh‚É‚ÍA•Às’ŠÛ‰»i‚½‚Æ‚¦‚ÎA•ÀsƒnƒbƒVƒ…ƒ}ƒbƒvj‚Ö‚ÌŒÄ‚Ño‚µƒV[ƒPƒ“ƒX‚ª‚ ‚è‚Ü‚·B
+‚±‚ÌƒR[ƒh‚É‚ÍA•Às’ŠÛ‰» i‚½‚Æ‚¦‚ÎA•ÀsƒnƒbƒVƒ…ƒ}ƒbƒvj ‚ÌŒÄ‚Ño‚µƒV[ƒPƒ“ƒX‚ª‚ ‚è‚Ü‚·B
 ‚±‚ê‚ç‚ÌŒÄ‚Ño‚µ‚ÍAŒ´Žq“I‚ÉŽÀs‚³‚ê‚Ü‚¹‚ñB
 </p>
 ]]>
     </Details>
   </BugPattern>
 
+  <BugPattern type="DM_DEFAULT_ENCODING">
+    <ShortDescription>ƒfƒtƒHƒ‹ƒgƒGƒ“ƒR[ƒfƒBƒ“ƒO‚Ö‚ÌˆË‘¶</ShortDescription>
+    <LongDescription>ƒfƒtƒHƒ‹ƒgƒGƒ“ƒR[ƒfƒBƒ“ƒO‚Ö‚ÌˆË‘¶‚ð”­Œ©‚µ‚Ü‚µ‚½B{1}: {2}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+ƒfƒtƒHƒ‹ƒgƒvƒ‰ƒbƒgƒz[ƒ€ƒGƒ“ƒR[ƒfƒBƒ“ƒO‚ª“KØ‚Å‚ ‚é‚Æ‰¼’è‚·‚éAƒoƒCƒg‚©‚ç String (‚Ü‚½‚ÍAString ‚©‚çƒoƒCƒg) ‚É•ÏŠ·‚·‚éƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚ð”­Œ©‚µ‚Ü‚µ‚½B
+‚±‚ê‚ÍAƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌU‚é•‘‚¢‚ªƒvƒ‰ƒbƒgƒz[ƒ€ŠÔ‚ÅˆÙ‚È‚éŒ´ˆö‚Æ‚È‚è‚Ü‚·B
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
   <!--
   **********************************************************************
   BugCodes
   **********************************************************************
   -->
-
   <BugCode abbrev="FS">‘Ž®•¶Žš—ñ‚Ì–â‘è</BugCode>
   <BugCode abbrev="SKIPPED">ƒXƒLƒbƒv‚µ‚½‰ðÍ</BugCode>
   <BugCode abbrev="IL">–³ŒÀƒ‹[ƒv</BugCode>
   <BugCode abbrev="VO">volatile ‚ÌŽg—p</BugCode>
   <BugCode abbrev="UI">ˆÀ‘S‚Å‚Í‚È‚¢Œp³</BugCode>
   <BugCode abbrev="FL">•‚“®¬”“_¸“x‚ÌŽg—p</BugCode>
-  <BugCode abbrev="TEST">ƒvƒƒgƒ^ƒCƒv‚Æ–¢Š®¬ƒoƒOƒpƒ^[ƒ“‚ÌƒeƒXƒg</BugCode>
+  <BugCode abbrev="TEST">ƒvƒƒgƒ^ƒCƒv‚Æ–¢Š®¬‚ÌƒoƒOƒpƒ^[ƒ“‚ÌƒeƒXƒg</BugCode>
   <BugCode abbrev="IMSE">‹^‚í‚µ‚¢ IllegalMonitorStateException ‚ÌƒLƒƒƒbƒ`</BugCode>
   <BugCode abbrev="CN">ƒNƒ[ƒ“‰Â”\ƒCƒfƒBƒIƒ€‚ÌŠÔˆá‚Á‚½ŽÀ‘•</BugCode>
   <BugCode abbrev="AT">Œ´Žq«ˆá”½‚Ì‰Â”\«</BugCode>
-  <BugCode abbrev="FI">ƒtƒ@ƒCƒiƒ‰ƒCƒU‚ÌŠÔˆá‚Á‚½Žg‚¢•û</BugCode>
+  <BugCode abbrev="FI">ƒtƒ@ƒCƒiƒ‰ƒCƒU‚ÌŠÔˆá‚Á‚½Žg—p</BugCode>
   <BugCode abbrev="ES">== ‚â != ‚ðŽg—p‚µ‚Ä‚¢‚é•¶Žš—ñ‚Ì“™‰¿«ƒ`ƒFƒbƒN</BugCode>
-  <BugCode abbrev="ML">XV‚³‚ê‚éƒtƒB[ƒ‹ƒh‚Ì“¯Šú‰» (‰Â•ÏƒƒbƒN)</BugCode>
+  <BugCode abbrev="ML">XV‚³‚ê‚éƒtƒB[ƒ‹ƒh‚Å“¯Šú‰» (‰Â•ÏƒƒbƒN)</BugCode>
   <BugCode abbrev="UG">“¯Šú‰»‚µ‚Ä‚¢‚È‚¢ get ƒƒ\ƒbƒhA“¯Šú‰»‚µ‚Ä‚¢‚é set ƒƒ\ƒbƒh</BugCode>
   <BugCode abbrev="IO">“üo—Í‚Ì–â‘è</BugCode>
   <BugCode abbrev="IC">‰Šú‰»‚ÌzŠÂ</BugCode>
@@ -8199,7 +8256,7 @@ Ulf Ochsenfahrt ‚Æ Eric Fellheimer
   <BugCode abbrev="MS">‰Â•Ï static ƒtƒB[ƒ‹ƒh</BugCode>
   <BugCode abbrev="EI">“à•”•\Œ»‚ð–\˜I‚·‚é‚©‚à‚µ‚ê‚È‚¢”z—ñ‚ð•Ô‚·ƒƒ\ƒbƒh</BugCode>
   <BugCode abbrev="Nm">•´‚ç‚í‚µ‚¢ƒƒ\ƒbƒh–¼</BugCode>
-  <BugCode abbrev="SS">“Ç‚Ýo‚³‚ê‚È‚¢ƒtƒB[ƒ‹ƒh‚Í static ‚Å‚ ‚é‚×‚«</BugCode>
+  <BugCode abbrev="SS">“Ç‚Ýo‚³‚ê‚È‚¢ƒtƒB[ƒ‹ƒh‚Í static ‚É‚·‚×‚«</BugCode>
   <BugCode abbrev="UuF">–¢Žg—pƒtƒB[ƒ‹ƒh</BugCode>
   <BugCode abbrev="UrF">“Ç‚Ýo‚³‚ê‚È‚¢ƒtƒB[ƒ‹ƒh</BugCode>
   <BugCode abbrev="UwF">‘‚«ž‚Ü‚ê‚È‚¢ƒtƒB[ƒ‹ƒh</BugCode>
@@ -8222,11 +8279,11 @@ Ulf Ochsenfahrt ‚Æ Eric Fellheimer
   <BugCode abbrev="RC">‹^‚í‚µ‚¢ŽQÆ“™‰¿«‚ÌŽg—p</BugCode>
   <BugCode abbrev="EC">ŒÝŠ·«‚Ì‚È‚¢Œ^‚É‚æ‚é“™‰¿«”äŠr</BugCode>
   <BugCode abbrev="MWN">ƒ~ƒXƒ}ƒbƒ`‚Ì wait() ‚© notify()</BugCode>
-  <BugCode abbrev="SA">–³‘Ê‚ÈŽ©ŒÈ‰‰ŽZ</BugCode>
+  <BugCode abbrev="SA">–ð‚É—§‚½‚È‚¢Ž©ŒÈ‰‰ŽZ</BugCode>
   <BugCode abbrev="INT">‹^‚í‚µ‚¢®”Ž®</BugCode>
   <BugCode abbrev="BIT">‹^‚í‚µ‚¢ƒrƒbƒg‰‰ŽZŽ®</BugCode>
-  <BugCode abbrev="LI">“¯Šú‰»‚³‚ê‚Ä‚¢‚È‚¢’x‰„‰Šú‰»</BugCode>
-  <BugCode abbrev="JLM">java.util.concurrent ƒIƒuƒWƒFƒNƒg‚É‚æ‚é“¯Šú‰»</BugCode>
+  <BugCode abbrev="LI">”ñ“¯Šú‰»‚È’x‰„‰Šú‰»</BugCode>
+  <BugCode abbrev="JLM">java.util.concurrent ƒIƒuƒWƒFƒNƒg‚Ì“¯Šú‰»</BugCode>
   <BugCode abbrev="UPM">Œˆ‚µ‚ÄŒÄ‚Ño‚³‚ê‚È‚¢ private ƒƒ\ƒbƒh</BugCode>
   <BugCode abbrev="UMAC">–³–¼ƒNƒ‰ƒX‚ÌŒÄ‚Ño‚µ‚Å‚«‚È‚¢ƒƒ\ƒbƒh</BugCode>
   <BugCode abbrev="EI2">‰Â•ÏƒIƒuƒWƒFƒNƒg‚Ö‚ÌŽQÆ‚ÌŠi”[</BugCode>
@@ -8252,13 +8309,13 @@ Ulf Ochsenfahrt ‚Æ Eric Fellheimer
   <BugCode abbrev="UM">’è”‚ÉŠÖ‚·‚é•s•K—v‚È Math</BugCode>
   <BugCode abbrev="CD">zŠÂˆË‘¶ŠÖŒW</BugCode>
   <BugCode abbrev="RI">ç’·‚ÈƒCƒ“ƒ^ƒtƒF[ƒX</BugCode>
-  <BugCode abbrev="MTIA">ƒCƒ“ƒXƒ^ƒ“ƒX‚Ö‚Ìƒ}ƒ‹ƒ`ƒXƒŒƒbƒhƒAƒNƒZƒX</BugCode>
+  <BugCode abbrev="MTIA">ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚Å‚ÌƒCƒ“ƒXƒ^ƒ“ƒXƒAƒNƒZƒX</BugCode>
   <BugCode abbrev="PS">ŒöŠJƒZƒ}ƒtƒH</BugCode>
   <BugCode abbrev="BSHIFT">ŠÔˆá‚Á‚½ƒVƒtƒg</BugCode>
   <BugCode abbrev="ICAST">®”’l‚©‚ç‚ÌƒLƒƒƒXƒg</BugCode>
   <BugCode abbrev="RE">³‹K•\Œ»</BugCode>
   <BugCode abbrev="SQL">öÝ“I SQL –â‘è</BugCode>
-  <BugCode abbrev="WL">ŠÔˆá‚Á‚½ƒIƒuƒWƒFƒNƒg‚Å‚ÌƒƒbƒN‚Ì‰Â”\«</BugCode>
+  <BugCode abbrev="WL">ŠÔˆá‚Á‚½ƒIƒuƒWƒFƒNƒg‚ÅƒƒbƒN‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚é</BugCode>
   <BugCode abbrev="ESync">‹ó‚Ì synchronized ƒuƒƒbƒN</BugCode>
   <BugCode abbrev="QF">‹^‚í‚µ‚¢ for ƒ‹[ƒv</BugCode>
   <BugCode abbrev="VA">‰Â•Ï’·ˆø”‚Ì–â‘è</BugCode>
@@ -8269,20 +8326,20 @@ Ulf Ochsenfahrt ‚Æ Eric Fellheimer
   <BugCode abbrev="USELESS_STRING">–ð‚É—§‚½‚È‚¢/–³‰v‚È•¶Žš—ñ¶¬</BugCode>
   <BugCode abbrev="DMI">‹^‚í‚µ‚¢ƒƒ\ƒbƒhŒÄ‚Ño‚µ</BugCode>
   <BugCode abbrev="PZ">Joshua Bloch ‚Æ Neal Gafter ‚É‚æ‚éwJava Puzzlersx‚É‰e‹¿‚ðŽó‚¯‚½Œx</BugCode>
-  <BugCode abbrev="SWL">ƒƒbƒN‚ð•ÛŽ‚µ‚½ó‘Ô‚Å‚Ì sleep</BugCode>
-  <BugCode abbrev="J2EE">Java EE ‚ÉŠÖ‚·‚éƒGƒ‰[</BugCode>
-  <BugCode abbrev="DB">•ªŠò‚Ì•¡»</BugCode>
-  <BugCode abbrev="IMA">Œø—¦‚ªˆ«‚¢ƒtƒB[ƒ‹ƒh‚Ö‚ÌƒAƒNƒZƒX</BugCode>
-  <BugCode abbrev="XFB">XML ƒtƒ@ƒNƒgƒŠ‚Ì–³Ž‹</BugCode>
-  <BugCode abbrev="USM">–ð‚É—§‚½‚È‚¢ƒTƒuƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh</BugCode>
+  <BugCode abbrev="SWL">ƒƒbƒN‚ð•ÛŽ‚·‚é sleep</BugCode>
+  <BugCode abbrev="J2EE">Java EE ‚ÌƒGƒ‰[</BugCode>
+  <BugCode abbrev="DB">•¡»‚³‚ê‚½•ªŠò</BugCode>
+  <BugCode abbrev="IMA">Œø—¦‚ªˆ«‚¢ƒƒ“ƒo[ƒAƒNƒZƒX</BugCode>
+  <BugCode abbrev="XFB">XML ƒtƒ@ƒNƒgƒŠ‚Ì‰I‰ñ</BugCode>
+  <BugCode abbrev="USM">–ð‚É—§‚½‚È‚¢ƒTƒuƒNƒ‰ƒXƒƒ\ƒbƒh</BugCode>
   <BugCode abbrev="CI">•´‚ç‚í‚µ‚¢Œp³</BugCode>
   <BugCode abbrev="QBA">‹^‚í‚µ‚¢ Boolean ‘ã“ü</BugCode>
   <BugCode abbrev="VR">ƒo[ƒWƒ‡ƒ“ŒÝŠ·«‚Ì–â‘è</BugCode>
-  <BugCode abbrev="DP">doPrivileged ‚ðŽg—p</BugCode>
+  <BugCode abbrev="DP">doPrivileged ‚ÌŽg—p</BugCode>
   <BugCode abbrev="GC">‹^‚í‚µ‚¢‘ÌŒ^ƒRƒŒƒNƒVƒ‡ƒ“ƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ</BugCode>
   <BugCode abbrev="STCAL">CalendarADateFormat ‚Ì static Žg—p</BugCode>
-  <BugCode abbrev="TQ">Œ^CüŽqƒAƒmƒe[ƒVƒ‡ƒ“‚ÌˆêŠÑ«‚Ì‚È‚¢Žg‚¢•û</BugCode>
+  <BugCode abbrev="TQ">Œ^CüŽqƒAƒmƒe[ƒVƒ‡ƒ“‚ÌˆêŠÑ«‚Ì‚È‚¢Žg—p</BugCode>
   <BugCode abbrev="OBL">ƒXƒgƒŠ[ƒ€‚Ü‚½‚ÍƒŠƒ\[ƒX‚ðƒNƒŠ[ƒ“ƒAƒbƒv‚·‚éÓ–±‚ª–ž‚½‚³‚ê‚Ä‚¢‚È‚¢</BugCode>
   <BugCode abbrev="FB">FindBugs ‚Íƒƒ\ƒbƒh‚ÅŠú‘Ò‚³‚ê‚½Œx‚ðo‚µ‚Ü‚¹‚ñ‚Å‚µ‚½</BugCode>
-  <BugCode abbrev="DL">‹¤—LƒIƒuƒWƒFƒNƒg‚Å‚ÌˆÓ}“I‚Å‚Í‚È‚¢ƒƒbƒN‚É‚æ‚éöÝ“IƒfƒbƒhƒƒbƒN</BugCode>
+  <BugCode abbrev="DL">‹¤—LƒIƒuƒWƒFƒNƒg‚ðˆÓ}“I‚Å‚È‚­ƒƒbƒN‚·‚é‚±‚Æ‚É‚æ‚éöÝ“IƒfƒbƒhƒƒbƒN</BugCode>
 </MessageCollection>
