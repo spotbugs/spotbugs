@@ -492,7 +492,7 @@ public class OpcodeStack implements Constants2 {
                 else if (signature.equals("S"))
                     this.constValue = constantNumericValue.shortValue();
                 else if (signature.equals("C"))
-                    this.constValue = constantNumericValue.intValue() & 0xffff;
+                    this.constValue = (char) constantNumericValue.intValue();
                 else if (signature.equals("I"))
                     this.constValue = constantNumericValue.intValue();
 
