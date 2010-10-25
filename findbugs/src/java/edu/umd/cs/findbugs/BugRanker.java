@@ -39,46 +39,46 @@ import edu.umd.cs.findbugs.util.Util;
  * 1-20 are for bugs that are visible to users. Bug rank 1 is more the most
  * relevant/scary bugs. A bug rank greater than 20 is for issues that should not
  * be shown to users.
- * 
- * 
+ *
+ *
  * The following bug rankers may exist:
  * <ul>
  * <li>core bug ranker (loaded from etc/bugrank.txt)
  * <li>a bug ranker for each plugin (loaded from <plugin>/etc/bugrank.txt)
  * <li>A global adjustment ranker (loaded from plugins/adjustBugrank.txt)
  * </ul>
- * 
+ *
  * A bug ranker is comprised of a list of bug patterns, bug kinds and bug
  * categories. For each, either an absolute or relative bug rank is provided. A
  * relative rank is one preceeded by a + or -.
- * 
+ *
  * For core bug detectors, the bug ranker search order is:
  * <ul>
  * <li>global bug ranker
  * <li>core bug ranker
  * </ul>
- * 
+ *
  * For third party plugins, the bug ranker search order is:
  * <ul>
  * <li>global adjustment bug ranker
  * <li>plugin adjustment bug ranker
  * <li>core bug ranker
  * </ul>
- * 
+ *
  * The overall search order is
  * <ul>
  * <li>Bug patterns, in search order across bug rankers
  * <li>Bug kinds, in search order across bug rankers
  * <li>Bug categories, in search order across bug rankers
  * </ul>
- * 
+ *
  * Search stops at the first absolute bug rank found, and the result is the sum
  * of all of relative bug ranks plus the final absolute bug rank. Since all bug
  * categories are defined by the core bug ranker, we should always find an
  * absolute bug rank.
- * 
- * 
- * 
+ *
+ *
+ *
  * @author Bill Pugh
  */
 public class BugRanker {
@@ -207,10 +207,7 @@ public class BugRanker {
         return 20;
     }
 
-    private static BugRanker getAdjustmentBugRanker() {
-        DetectorFactoryCollection factory = DetectorFactoryCollection.instance();
-        return factory.getAdjustmentBugRanker();
-    }
+
 
     private static BugRanker getCoreRanker() {
         DetectorFactoryCollection factory = DetectorFactoryCollection.instance();
@@ -239,14 +236,13 @@ public class BugRanker {
             rank = findRankUnknownPlugin(pattern);
         else {
             Plugin plugin = detectorFactory.getPlugin();
-            BugRanker adjustmentRanker = getAdjustmentBugRanker();
-            BugRanker pluginRanker = plugin.getBugRanker();
+           BugRanker pluginRanker = plugin.getBugRanker();
             BugRanker coreRanker = getCoreRanker();
 
             if (pluginRanker == coreRanker)
-                rank = rankBugPattern(pattern, adjustmentRanker, coreRanker);
+                rank = rankBugPattern(pattern, coreRanker);
             else
-                rank = rankBugPattern(pattern, adjustmentRanker, pluginRanker, coreRanker);
+                rank = rankBugPattern(pattern, pluginRanker, coreRanker);
         }
         rankForBugPattern.put(pattern, rank);
         return rank;
@@ -257,7 +253,6 @@ public class BugRanker {
         Plugin corePlugin = factory.getCorePlugin();
 
         List<BugRanker> rankers = new ArrayList<BugRanker>();
-        rankers.add(getAdjustmentBugRanker());
         pluginLoop: for (Plugin plugin : factory.plugins()) {
             if (plugin == corePlugin)
                 continue;

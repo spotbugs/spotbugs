@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
@@ -54,10 +55,13 @@ public class Plugin {
 
     private final LinkedHashSet<BugCode> bugCodeList;
 
+    private final LinkedHashSet<BugCategory> bugCategoryList;
+    private final LinkedHashSet<CloudPlugin> cloudList = new LinkedHashSet<CloudPlugin>();
+
     private final DualKeyHashMap<Class, String, ComponentPlugin> componentPlugins
         = new DualKeyHashMap<Class, String, ComponentPlugin> ();
 
-    private boolean enabled;
+    private final boolean enabled;
 
     private BugRanker bugRanker;
 
@@ -77,15 +81,18 @@ public class Plugin {
      *
      * @param pluginId
      *            the plugin's unique identifier
+     * @param enabled TODO
      */
-    public Plugin(String pluginId, PluginLoader pluginLoader) {
+    public Plugin(String pluginId, PluginLoader pluginLoader, boolean enabled) {
         this.pluginId = pluginId;
         this.detectorFactoryList = new ArrayList<DetectorFactory>();
         this.bugPatterns = new LinkedHashSet<BugPattern>();
         this.bugCodeList = new LinkedHashSet<BugCode>();
+        this.bugCategoryList = new LinkedHashSet<BugCategory>();
         this.interPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
         this.intraPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
         this.pluginLoader = pluginLoader;
+        this.enabled = enabled;
     }
 
     @Override
@@ -99,8 +106,9 @@ public class Plugin {
      * @param enabled
      *            true if the Plugin is enabled, false if not
      */
+    @Deprecated
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -108,7 +116,7 @@ public class Plugin {
      *
      * @return true if the Plugin is enabled, false if not
      */
-    public boolean isEnabled() {
+    public boolean isEnabledByDefault() {
         return enabled;
     }
 
@@ -180,6 +188,10 @@ public class Plugin {
         detectorFactoryList.add(factory);
     }
 
+    public void addCloudPlugin(CloudPlugin cloudPlugin) {
+        cloudList.add(cloudPlugin);
+    }
+
     /**
      * Add a BugPattern reported by the Plugin.
      *
@@ -198,6 +210,14 @@ public class Plugin {
         bugCodeList.add(bugCode);
     }
 
+    /**
+     * Add a BugCategory reported by the Plugin.
+     *
+     * @param bugCode
+     */
+    public void addBugCategory(BugCategory bugCategory) {
+        bugCategoryList.add(bugCategory);
+    }
     /**
      * Add an inter-pass Detector ordering constraint.
      *
@@ -273,7 +293,18 @@ public class Plugin {
     public Set<BugCode> getBugCodes() {
         return bugCodeList;
     }
+    /**
+     * Get Iterator over BugCategories objects in the Plugin.
+     *
+     * @return Iterator over BugCategory objects
+     */
+    public Set<BugCategory> getBugCategories() {
+        return bugCategoryList;
+    }
 
+    public Set<CloudPlugin> getCloudPlugins() {
+        return cloudList;
+    }
     /**
      * Return an Iterator over the inter-pass Detector ordering constraints.
      */

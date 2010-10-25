@@ -19,30 +19,21 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,9 +41,8 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.swing.JOptionPane;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.util.ClassPathUtil;
-import edu.umd.cs.findbugs.util.JavaWebStart;
 
 /**
  * The DetectorFactoryCollection stores all of the DetectorFactory objects used
@@ -63,11 +53,14 @@ import edu.umd.cs.findbugs.util.JavaWebStart;
  * @see DetectorFactory
  */
 public class DetectorFactoryCollection {
+
+    private static final Logger LOGGER = Logger.getLogger(DetectorFactoryCollection.class.getName());
+
+    private final LinkedHashSet<PluginLoader> enabledPluginLoaders = new LinkedHashSet<PluginLoader>();
+
     private final HashMap<String, Plugin> pluginByIdMap = new LinkedHashMap<String, Plugin>();
 
-    private Plugin corePlugin;
-
-    private BugRanker adjustmentBugRanker;
+    private static Plugin corePlugin;
 
     private final ArrayList<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();
 
@@ -79,45 +72,39 @@ public class DetectorFactoryCollection {
 
     private static final Object lock = new Object();
 
-    private boolean loaded = false;
+    private final boolean loaded = false;
 
     static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
 
     private URL[] pluginList;
+
+    private final LinkedHashSet<Plugin> enabledPlugins = new LinkedHashSet<Plugin>();
+
+     Map<String, CloudPlugin> registeredClouds = new LinkedHashMap<String, CloudPlugin>();
+
+    protected final HashMap<String, BugCategory> categoryDescriptionMap = new HashMap<String, BugCategory>();
+
+    protected final HashMap<String, BugPattern> bugPatternMap = new HashMap<String, BugPattern>();
+
+    protected final HashMap<String, BugCode> bugCodeMap = new HashMap<String, BugCode>();
+
+
 
     /**
      * Constructor. loadPlugins() method must be called before any detector
      * factories can be accessed.
      */
     DetectorFactoryCollection() {
-    }
-
-    /**
-     * Set the list of plugins to load explicitly. This must be done before the
-     * instance of DetectorFactoryCollection is created.
-     *
-     * @param pluginList
-     *            list of plugin Jar files to load
-     */
-    public void setPluginList(URL[] pluginList) {
-        if (loaded)
-            throw new IllegalStateException();
-        this.pluginList = new URL[pluginList.length];
-        System.arraycopy(pluginList, 0, this.pluginList, 0, pluginList.length);
-    }
-
-    /**
-     * @return Returns the copy of currently loaded pluginList, never null. Core
-     *         plugin might be not in the list. If there are no additional
-     *         plugins or plugins are not loaded yet, returns an empty array.
-     */
-    public URL[] getPluginList() {
-        if (pluginList == null) {
-            return new URL[0];
+        for(PluginLoader loader : PluginLoader.getAllPlugins()) {
+            if (loader.enabledByDefault() && !loader.isCorePlugin())
+                enabledPluginLoaders.add(loader);
         }
-        URL[] myPlugins = new URL[pluginList.length];
-        System.arraycopy(pluginList, 0, myPlugins, 0, pluginList.length);
-        return myPlugins;
+        loadPlugins();
+    }
+
+    DetectorFactoryCollection(Collection<PluginLoader> enabled) {
+        enabledPluginLoaders.addAll(enabled);
+        loadPlugins();
     }
 
     /**
@@ -131,6 +118,9 @@ public class DetectorFactoryCollection {
             if (theInstance != null) {
                 throw new IllegalStateException();
             }
+            if (!(instance instanceof I18N))
+                throw new IllegalArgumentException();
+
             theInstance = instance;
         }
     }
@@ -147,13 +137,15 @@ public class DetectorFactoryCollection {
      */
     public static void resetInstance(DetectorFactoryCollection instance) {
         synchronized (lock) {
+            if (!(instance instanceof I18N))
+                throw new IllegalArgumentException();
             theInstance = instance;
         }
     }
 
     public static boolean isLoaded() {
         synchronized (lock) {
-            return theInstance != null && theInstance.loaded;
+            return theInstance != null && (theInstance).loaded;
         }
     }
 
@@ -163,9 +155,8 @@ public class DetectorFactoryCollection {
     public static DetectorFactoryCollection instance() {
         synchronized (lock) {
             if (theInstance == null) {
-                theInstance = new DetectorFactoryCollection();
+                theInstance = I18N.instance();
             }
-            theInstance.ensureLoaded();
             return theInstance;
         }
     }
@@ -176,7 +167,7 @@ public class DetectorFactoryCollection {
     public static DetectorFactoryCollection rawInstance() {
         synchronized (lock) {
             if (theInstance == null) {
-                theInstance = new DetectorFactoryCollection();
+                theInstance = I18N.instance();
             }
             return theInstance;
         }
@@ -186,7 +177,6 @@ public class DetectorFactoryCollection {
      * Return an Iterator over all available Plugin objects.
      */
     public Iterator<Plugin> pluginIterator() {
-        ensureLoaded();
         return pluginByIdMap.values().iterator();
     }
 
@@ -194,22 +184,16 @@ public class DetectorFactoryCollection {
      * Return an Iterable of all available Plugin objects.
      */
     public Iterable<Plugin> plugins() {
-        ensureLoaded();
         return pluginByIdMap.values();
     }
 
     @Nonnull
     Plugin getCorePlugin() {
-        ensureLoaded();
         if (corePlugin == null)
             throw new IllegalStateException("No core plugin");
         return corePlugin;
     }
 
-    BugRanker getAdjustmentBugRanker() {
-        ensureLoaded();
-        return adjustmentBugRanker;
-    }
 
     /**
      * Get a Plugin by its unique id.
@@ -219,7 +203,6 @@ public class DetectorFactoryCollection {
      * @return the Plugin with that id, or null if no such Plugin is found
      */
     public Plugin getPluginById(String pluginId) {
-        ensureLoaded();
         return pluginByIdMap.get(pluginId);
     }
 
@@ -228,7 +211,6 @@ public class DetectorFactoryCollection {
      * Detectors.
      */
     public Iterator<DetectorFactory> factoryIterator() {
-        ensureLoaded();
         return factoryList.iterator();
     }
 
@@ -237,7 +219,6 @@ public class DetectorFactoryCollection {
      * Detectors.
      */
     public Iterable<DetectorFactory> getFactories() {
-        ensureLoaded();
         return factoryList;
     }
 
@@ -250,7 +231,6 @@ public class DetectorFactoryCollection {
      *         short name
      */
     public DetectorFactory getFactory(String name) {
-        ensureLoaded();
         return factoriesByName.get(name);
     }
 
@@ -263,7 +243,6 @@ public class DetectorFactoryCollection {
      *         class name
      */
     public DetectorFactory getFactoryByClassName(String className) {
-        ensureLoaded();
         return factoriesByDetectorClassName.get(className);
     }
 
@@ -292,48 +271,6 @@ public class DetectorFactoryCollection {
                 if (u.getPath().endsWith(name))
                     return u;
         return null;
-
-    }
-
-    private List<URL> determineInstalledPlugins() {
-        ArrayList<URL> plugins = new ArrayList<URL>();
-
-        if (this.pluginList != null) {
-            for (URL u : this.pluginList)
-                if (u.getPath().endsWith(".jar"))
-                    plugins.add(u);
-            return plugins;
-        }
-
-        String homeDir = getFindBugsHome();
-        if (homeDir == null)
-            return Collections.emptyList();
-
-        //
-        // See what plugins are available in the ${findbugs.home}/plugin
-        // directory
-        //
-
-        File pluginDir = new File(new File(homeDir), "plugin");
-        File[] contentList = pluginDir.listFiles();
-        if (contentList == null) {
-            return plugins;
-        }
-
-        for (File file : contentList) {
-            if (file.getName().endsWith(".jar")) {
-
-                try {
-                    plugins.add(file.toURI().toURL());
-                    if (FindBugs.DEBUG)
-                        System.out.println("Found plugin: " + file.toString());
-                } catch (MalformedURLException e) {
-
-                }
-
-            }
-        }
-        return plugins;
 
     }
 
@@ -392,35 +329,6 @@ public class DetectorFactoryCollection {
 
     }
 
-    public void ensureLoaded() {
-        if (loaded) {
-            if (corePlugin == null)
-                throw new NullPointerException("Loaded but null core plugin");
-            return;
-        }
-        if (DEBUG)
-            new RuntimeException("DetectorFactoryCollection loaded").printStackTrace();
-        loadPlugins();
-    }
-
-    /**
-     * Directly set the collection of Plugins from which to load
-     * DetectorFactories. May be called instead of loadPlugins().
-     *
-     * @param plugins
-     *            array of Plugins to register
-     */
-    void setPlugins(Plugin[] plugins) {
-        if (loaded) {
-            throw new IllegalStateException();
-        }
-        loadCorePlugin();
-        for (Plugin plugin : plugins) {
-            pluginByIdMap.put(plugin.getPluginId(), plugin);
-        }
-        loaded = true;
-    }
-
     @CheckForNull
     public static URL getCoreResource(String name) {
 
@@ -433,179 +341,37 @@ public class DetectorFactoryCollection {
         return u;
     }
 
+
+
     /**
      * Load all plugins. If a setPluginList() has been called, then those
      * plugins are loaded. Otherwise, the "findbugs.home" property is checked to
      * determine where FindBugs is installed, and the plugin files are
      * dynamically loaded from the plugin directory.
+     * @throws PluginException
      */
 
-    void loadPlugins() {
-        if (loaded)
-            throw new IllegalStateException("plugins already loaded");
+    private void loadPlugins() {
         loadCorePlugin();
-        List<URL> plugins;
-
-        if (JavaWebStart.isRunningViaJavaWebstart()) {
-            plugins = new ArrayList<URL>(determineWebStartPlugins());
-        } else {
-            plugins = new ArrayList<URL>(determineInstalledPlugins());
-        }
-        Set<Entry<Object, Object>> entrySet = SystemProperties.getAllProperties().entrySet();
-        for (Map.Entry<?, ?> e : entrySet) {
-            if (e.getKey() instanceof String && e.getValue() instanceof String
-                    && ((String) e.getKey()).startsWith("findbugs.plugin.")) {
-                try {
-                    String value = (String) e.getValue();
-                    if (value.startsWith("file:") && !value.endsWith(".jar") && !value.endsWith("/"))
-                        value += "/";
-                    URL url = JavaWebStart.resolveRelativeToJnlpCodebase(value);
-                    plugins.add(url);
-                } catch (MalformedURLException e1) {
-                    AnalysisContext.logError(String.format("Bad URL for plugin: %s=%s", e.getKey(), e.getValue()), e1);
-                }
-
-            }
-        }
-
-        if (!plugins.isEmpty() && JavaWebStart.isRunningViaJavaWebstart()) {
-            // disable security manager; plugins cause problems
-            // http://lopica.sourceforge.net/faq.html
-            // URL policyUrl =
-            // Thread.currentThread().getContextClassLoader().getResource("my.java.policy");
-            // Policy.getPolicy().refresh();
-            try {
-                System.setSecurityManager(null);
-            } catch (Throwable e) {
-                assert true; // keep going
-            }
-
-        }
-
-        //
-        // Load any discovered third-party plugins.
-        //
-        for (final URL url : plugins) {
-            try {
-                jawsDebugMessage("Loading plugin: " + url.toString());
-                PluginLoader pluginLoader = AccessController.doPrivileged(new PrivilegedExceptionAction<PluginLoader>() {
-
-                    public PluginLoader run() throws PluginException {
-                        return new PluginLoader(url, this.getClass().getClassLoader());
-                    }
-
-                });
-                loadPlugin(pluginLoader);
-            } catch (PluginDoesntContainMetadataException e) {
-                if (FindBugs.DEBUG)
-                    e.printStackTrace();
-
-            } catch (PluginException e) {
-                jawsErrorMessage("Warning: could not load plugin " + url + ": " + e.toString());
-                if (FindBugs.DEBUG)
-                    e.printStackTrace();
-            } catch (PrivilegedActionException e) {
-                Throwable e2 = e;
-                while (true) {
-                    Throwable e3 = e2.getCause();
-                    if (e3 == null)
-                        break;
-                    e2 = e3;
-                }
-                e2.printStackTrace();
-                jawsErrorMessage("Warning: could not load plugin " + url + ": " + e2.toString());
-                if (FindBugs.DEBUG)
-                    e.printStackTrace();
-            }
-        }
-        setPluginList(plugins.toArray(new URL[plugins.size()]));
-        loaded = true;
-
+        LinkedHashSet<PluginLoader> allPlugins = enabledPluginLoaders;
+        for (PluginLoader loader : allPlugins)
+            loadPlugin(loader);
     }
 
     /**
+     * @throws PluginException
      *
      */
     private void loadCorePlugin() {
         //
         // Load the core plugin.
         //
-        PluginLoader corePluginLoader = new PluginLoader();
-        try {
-            loadPlugin(corePluginLoader);
-            corePlugin = corePluginLoader.getPlugin();
-            if (corePlugin == null)
-                throw new NullPointerException("Null corePlugin");
-        } catch (PluginException e) {
-            throw new IllegalStateException("Warning: could not load FindBugs core plugin: " + e.toString(), e);
-        }
-
-        URL u = getCoreResource(BugRanker.ADJUST_FILENAME);
-
-        try {
-            adjustmentBugRanker = new BugRanker(u);
-        } catch (IOException e1) {
-            AnalysisContext.logError("Unable to parse " + u, e1);
-        }
+        PluginLoader corePluginLoader = PluginLoader.getCorePluginLoader();
+        loadPlugin(corePluginLoader);
+        corePlugin = corePluginLoader.getPlugin();
     }
 
-    /**
-     * @param plugins
-     */
-    private List<URL> determineWebStartPlugins() {
-        List<URL> plugins = new LinkedList<URL>();
-        URL pluginListProperties = getCoreResource("pluginlist.properties");
-        if (pluginListProperties != null) {
-            try {
 
-                jawsDebugMessage(pluginListProperties.toString());
-                URL base = getUrlBase(pluginListProperties);
-
-                BufferedReader in = new BufferedReader(new InputStreamReader(pluginListProperties.openStream()));
-                while (true) {
-                    String plugin = in.readLine();
-
-                    if (plugin == null)
-                        break;
-                    URL url = new URL(base, plugin);
-                    try {
-                        URLConnection connection = url.openConnection();
-                        String contentType = connection.getContentType();
-                        jawsDebugMessage("contentType : " + contentType);
-                        if (connection instanceof HttpURLConnection)
-                            ((HttpURLConnection) connection).disconnect();
-                        plugins.add(url);
-                    } catch (Exception e) {
-                        jawsDebugMessage("error loading " + url + " : " + e.getMessage());
-
-                    }
-
-                }
-                in.close();
-            } catch (Exception e) {
-                jawsDebugMessage("error : " + e.getMessage());
-
-            }
-
-        }
-        return plugins;
-    }
-
-    /**
-     * @param pluginListProperties
-     * @return
-     * @throws MalformedURLException
-     */
-    private URL getUrlBase(URL pluginListProperties) throws MalformedURLException {
-        String urlname = pluginListProperties.toString();
-        URL base = pluginListProperties;
-        int pos = urlname.indexOf("!/");
-        if (pos >= 0 && urlname.startsWith("jar:")) {
-            urlname = urlname.substring(4, pos);
-            base = new URL(urlname);
-        }
-        return base;
-    }
 
     final static boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
 
@@ -627,7 +393,7 @@ public class DetectorFactoryCollection {
             System.err.println(message);
     }
 
-    private void loadPlugin(PluginLoader pluginLoader) throws PluginException {
+     void loadPlugin(PluginLoader pluginLoader)  {
 
         Plugin plugin = pluginLoader.getPlugin();
         pluginByIdMap.put(plugin.getPluginId(), plugin);
@@ -642,17 +408,172 @@ public class DetectorFactoryCollection {
             registerDetector(factory);
         }
 
-        I18N i18n = I18N.instance();
+
+        for (BugCategory bugCategory : plugin.getBugCategories()) {
+            registerBugCategory(bugCategory);
+        }
 
         // Register the BugPatterns
         for (BugPattern bugPattern : plugin.getBugPatterns()) {
-            i18n.registerBugPattern(bugPattern);
+            registerBugPattern(bugPattern);
         }
 
         // Register the BugCodes
         for (BugCode bugCode : plugin.getBugCodes()) {
-            i18n.registerBugCode(bugCode);
+            registerBugCode(bugCode);
         }
+        for (CloudPlugin cloud : plugin.getCloudPlugins()) {
+            registerCloud(cloud);
+        }
+    }
+
+    public  Map<String, CloudPlugin> getRegisteredClouds() {
+        return Collections.unmodifiableMap(registeredClouds);
+    }
+
+    /**
+     * @param cloudPlugin
+     */
+      void registerCloud(CloudPlugin cloudPlugin) {
+       LOGGER.log(Level.FINE, "Registering " + cloudPlugin.getId());
+       // System.out.println("Registering " + cloudPlugin.getId());
+       registeredClouds.put(cloudPlugin.getId(), cloudPlugin);
+    }
+
+    /**
+     * @param array
+     */
+    public void setPluginList(URL[] array) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @param plugins
+     */
+    public void setPlugins(Plugin[] plugins) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Set the metadata for a bug category. If the category's metadata has
+     * already been set, this does nothing.
+     * @param bc
+     *            the BugCategory object holding the metadata for the category
+     *
+     * @return false if the category's metadata has already been set, true
+     *         otherwise
+     */
+    public boolean registerBugCategory(BugCategory bc) {
+        String category = bc.getCategory();
+        if (categoryDescriptionMap.get(category) != null)
+            return false;
+        categoryDescriptionMap.put(category, bc);
+        return true;
+    }
+
+    /**
+     * Register a BugPattern.
+     *
+     * @param bugPattern
+     *            the BugPattern
+     */
+    public void registerBugPattern(BugPattern bugPattern) {
+        bugPatternMap.put(bugPattern.getType(), bugPattern);
+    }
+
+    /**
+     * Get an Iterator over all registered bug patterns.
+     */
+    public Iterator<BugPattern> bugPatternIterator() {
+        DetectorFactoryCollection.instance(); // ensure detectors loaded
+
+        return bugPatternMap.values().iterator();
+    }
+
+    /**
+     * Get an Iterator over all registered bug patterns.
+     */
+    public Collection<BugPattern> getBugPatterns() {
+       return bugPatternMap.values();
+    }
+
+    /**
+     * Look up bug pattern.
+     *
+     * @param bugType
+     *            the bug type for the bug pattern
+     * @return the BugPattern, or null if it can't be found
+     */
+    public @CheckForNull BugPattern lookupBugPattern(String bugType) {
+        return bugPatternMap.get(bugType);
+    }
+
+    /**
+     * Get an Iterator over all registered bug codes.
+     */
+    public Iterator<BugCode> bugCodeIterator() {
+       return bugCodeMap.values().iterator();
+    }
+
+    /**
+     * Register a BugCode.
+     *
+     * @param bugCode
+     *            the BugCode
+     */
+    public void registerBugCode(BugCode bugCode) {
+        bugCodeMap.put(bugCode.getAbbrev(), bugCode);
+    }
+
+    /**
+     * Get a description for given "bug type". FIXME: this is referred to
+     * elsewhere as the "bug code" or "bug abbrev". Should make the terminology
+     * consistent everywhere. In this case, the bug type refers to the short
+     * prefix code prepended to the long and short bug messages.
+     *
+     * @param shortBugType
+     *            the short bug type code
+     * @return the description of that short bug type code means
+     */
+    public BugCode getBugCode(String shortBugType) {
+        BugCode bugCode = bugCodeMap.get(shortBugType);
+        if (bugCode == null)
+            throw new IllegalArgumentException("Error: missing bug code for key" + shortBugType);
+        return bugCode;
+    }
+
+    /**
+     * Get the BugCategory object for a category key. Returns null if no
+     * BugCategory object can be found.
+     *
+     * @param category
+     *            the category key
+     * @return the BugCategory object (may be null)
+     */
+    public BugCategory getBugCategory(String category) {
+        return categoryDescriptionMap.get(category);
+    }
+
+    /**
+     * Get a Collection containing all known bug category keys. E.g.,
+     * "CORRECTNESS", "MT_CORRECTNESS", "PERFORMANCE", etc.
+     *
+     * @return Collection of bug category keys.
+     */
+    public Collection<String> getBugCategories() {
+        return categoryDescriptionMap.keySet(); // backed by the Map
+    }
+
+    public Collection<BugCategory> getBugCategoryObjects() {
+        return categoryDescriptionMap.values(); // backed by the Map
+    }
+
+    /**
+     * @return
+     */
+    @Deprecated
+    public URL[] getPluginList() {
+        return new URL[0];
     }
 }
 

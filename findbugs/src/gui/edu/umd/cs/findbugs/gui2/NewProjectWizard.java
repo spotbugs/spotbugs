@@ -52,20 +52,20 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
  * The User Interface for creating a Project and editing it after the fact.
- * 
+ *
  * @author Reuven
- * 
+ *
  */
 @SuppressWarnings("serial")
 public class NewProjectWizard extends FBDialog {
-    private EmptyBorder border = new EmptyBorder(5, 5, 5, 5);
+    private final EmptyBorder border = new EmptyBorder(5, 5, 5, 5);
 
     private Project project;
 
@@ -73,9 +73,9 @@ public class NewProjectWizard extends FBDialog {
 
     private boolean projectNameChanged = false;
 
-    private FBFileChooser chooser = new FBFileChooser();
+    private final FBFileChooser chooser = new FBFileChooser();
 
-    private FileFilter directoryOrArchive = new FileFilter() {
+    private final FileFilter directoryOrArchive = new FileFilter() {
 
         @Override
         public boolean accept(File f) {
@@ -91,27 +91,27 @@ public class NewProjectWizard extends FBDialog {
         }
     };
 
-    private JList analyzeList = new JList();
+    private final JList analyzeList = new JList();
 
-    private DefaultListModel analyzeModel = new DefaultListModel();
+    private final DefaultListModel analyzeModel = new DefaultListModel();
 
-    private JTextField projectName = new JTextField();
+    private final JTextField projectName = new JTextField();
 
-    private JList auxList = new JList();
+    private final JList auxList = new JList();
 
-    private DefaultListModel auxModel = new DefaultListModel();
+    private final DefaultListModel auxModel = new DefaultListModel();
 
-    private JList sourceList = new JList();
+    private final JList sourceList = new JList();
 
-    private DefaultListModel sourceModel = new DefaultListModel();
+    private final DefaultListModel sourceModel = new DefaultListModel();
 
-    private JButton finishButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.finish_btn", "Finish"));
+    private final JButton finishButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.finish_btn", "Finish"));
 
-    private JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
+    private final JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
 
-    private JComboBox cloudSelector = new JComboBox();
+    private final JComboBox cloudSelector = new JComboBox();
 
-    private JComponent[] wizardComponents = new JComponent[4];
+    private final JComponent[] wizardComponents = new JComponent[4];
 
     private int currentPanel;
 
@@ -188,13 +188,13 @@ public class NewProjectWizard extends FBDialog {
         if (project != null)
             cloudId = project.getCloudId();
 
-        for (CloudPlugin c : CloudFactory.getRegisteredClouds().values()) {
+        for (CloudPlugin c : DetectorFactoryCollection.instance().getRegisteredClouds().values()) {
             if (!c.isHidden() || c.getId().equals(cloudId))
                 cloudSelector.addItem(c);
         }
 
         if (cloudId != null) {
-            CloudPlugin c = CloudFactory.getRegisteredClouds().get(project.getCloudId());
+            CloudPlugin c = DetectorFactoryCollection.instance().getRegisteredClouds().get(project.getCloudId());
             cloudSelector.setSelectedItem(c);
         }
         JPanel buttons = new JPanel();
@@ -383,7 +383,7 @@ public class NewProjectWizard extends FBDialog {
     /**
      * @param label
      *            TODO
-     * 
+     *
      */
     private JPanel createFilePanel(final String label, final JList list, final DefaultListModel listModel,
             final int fileSelectionMode, final FileFilter filter, final String dialogTitle, boolean wizard) {

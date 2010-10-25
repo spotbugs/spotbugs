@@ -31,10 +31,10 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * Abstract base class for TestCase classes that need to run in the context of a
  * FindBugs2 object doing a full execution. Ensures that things like
  * AnalysisCache, AnalysisContext, etc. are fully initialized.
- * 
+ *
  * <p>
  * Is this mock objects? Or is this just a hack? Probably the latter :-)
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class FindBugsTestCase extends TestCase {
@@ -64,7 +64,7 @@ public abstract class FindBugsTestCase extends TestCase {
             (byte) 0x08, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x02, (byte) 0x00, (byte) 0x09, };
 
     private static final class TestRunnerThread extends Thread {
-        private RunnableWithExceptions runnable;
+        private final RunnableWithExceptions runnable;
 
         private JUnitDetectorAdapter detectorAdapter;
 
@@ -81,7 +81,7 @@ public abstract class FindBugsTestCase extends TestCase {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Thread#run()
          */
         @Override
@@ -124,8 +124,8 @@ public abstract class FindBugsTestCase extends TestCase {
                 DetectorFactoryCollection dfc = new DetectorFactoryCollection();
                 DetectorFactoryCollection.resetInstance(dfc);
 
-                Plugin fakePlugin = new Plugin("edu.umd.cs.findbugs.fakeplugin", null);
-                fakePlugin.setEnabled(true);
+                Plugin fakePlugin = new Plugin("edu.umd.cs.findbugs.fakeplugin", null, true);
+
 
                 dfc.setPlugins(new Plugin[] { fakePlugin });
 
@@ -185,7 +185,7 @@ public abstract class FindBugsTestCase extends TestCase {
      * Execute some JUnit test code inside a Detector2 class running inside a
      * FindBugs2 analysis run. In theory, any code legal in a FindBugs detector
      * should work.
-     * 
+     *
      * @param runnable
      *            a RunnableWithExceptions object whose run() method has some
      *            JUnit test code

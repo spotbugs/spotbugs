@@ -55,7 +55,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
     private interface Chooser {
         /**
          * Choose a detector, plugin, etc.
-         * 
+         *
          * @param enable
          *            whether or not the item should be enabled
          * @param what
@@ -96,17 +96,17 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     private boolean quiet = false;
 
-    private ClassScreener classScreener = new ClassScreener();
+    private final ClassScreener classScreener = new ClassScreener();
 
-    private List<String> includeFilterFile = new LinkedList<String>();
+    private final List<String> includeFilterFile = new LinkedList<String>();
 
-    private List<String> excludeFilterFile = new LinkedList<String>();
+    private final List<String> excludeFilterFile = new LinkedList<String>();
 
-    private List<String> excludeBugFile = new LinkedList<String>();
+    private final List<String> excludeBugFile = new LinkedList<String>();
 
-    private Set<String> enabledBugReporterDecorators = new LinkedHashSet<String>();
+    private final Set<String> enabledBugReporterDecorators = new LinkedHashSet<String>();
 
-    private Set<String> disabledBugReporterDecorators = new LinkedHashSet<String>();
+    private final Set<String> disabledBugReporterDecorators = new LinkedHashSet<String>();
 
     private boolean setExitCode = false;
 
@@ -245,7 +245,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
             int count = 0;
             for (Iterator<Plugin> i = DetectorFactoryCollection.instance().pluginIterator(); i.hasNext();) {
                 Plugin plugin = i.next();
-                System.out.println("  " + plugin.getPluginId() + " (default: " + (plugin.isEnabled() ? "enabled" : "disabled")
+                System.out.println("  " + plugin.getPluginId() + " (default: " + (plugin.isEnabledByDefault() ? "enabled" : "disabled")
                         + ")");
                 if (plugin.getShortDescription() != null)
                     System.out.println("    Description: " + plugin.getShortDescription());
@@ -460,7 +460,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
                     factory.setPriorityAdjustment(adjustmentAmount);
                 else {
                     //
-                    I18N i18n = I18N.instance();
+                    DetectorFactoryCollection i18n = I18N.instance();
                     BugPattern pattern = i18n.lookupBugPattern(adjustmentTarget);
                     if (pattern == null)
                         throw new IllegalArgumentException("Unknown detector: " + adjustmentTarget);
@@ -503,7 +503,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     /**
      * Parse the argument as auxclasspath entries and add them
-     * 
+     *
      * @param argument
      */
     private void addAuxClassPathEntries(String argument) {
@@ -514,7 +514,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     /**
      * Common handling code for -chooseVisitors and -choosePlugins options.
-     * 
+     *
      * @param argument
      *            the list of visitors or plugins to be chosen
      * @param desc
@@ -535,7 +535,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     public void configureEngine(IFindBugsEngine findBugs) throws IOException, FilterException {
         // Load plugins
-        DetectorFactoryCollection.instance().ensureLoaded();
 
         // Set the DetectorFactoryCollection (that has been configured
         // by command line parsing)
@@ -640,7 +639,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
     /**
      * Handle -xargs command line option by reading jar file names from standard
      * input and adding them to the project.
-     * 
+     *
      * @throws IOException
      */
     public void handleXArgs() throws IOException {

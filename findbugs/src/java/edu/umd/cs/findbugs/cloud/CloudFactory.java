@@ -21,14 +21,12 @@ package edu.umd.cs.findbugs.cloud;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.SystemProperties;
 
@@ -53,7 +51,7 @@ public class CloudFactory {
         CloudPlugin plugin = null;
         String cloudId = bc.getProject().getCloudId();
         if (cloudId != null) {
-            plugin = registeredClouds.get(cloudId);
+            plugin = DetectorFactoryCollection.instance().getRegisteredClouds().get(cloudId);
             if (plugin == null && FAIL_IF_CLOUD_NOT_FOUND)
                 throw new IllegalArgumentException("Cannot find registered cloud for " + cloudId);
         }
@@ -62,7 +60,7 @@ public class CloudFactory {
             if (DEFAULT_CLOUD != null)
                 LOGGER.log(Level.FINE, "Trying default cloud " + DEFAULT_CLOUD);
             cloudId = DEFAULT_CLOUD;
-            plugin = registeredClouds.get(cloudId);
+            plugin = DetectorFactoryCollection.instance().getRegisteredClouds().get(cloudId);
             usedDefaultCloud = true;
             if (plugin == null) {
                 LOGGER.log(Level.FINE, "default cloud " + DEFAULT_CLOUD + " not registered");
@@ -122,24 +120,6 @@ public class CloudFactory {
         if (cloud.initialize())
             return cloud;
         throw new IllegalStateException("Unable to initialize plain cloud");
-    }
-
-    static Map<String, CloudPlugin> registeredClouds = new LinkedHashMap<String, CloudPlugin>();
-
-    public static Map<String, CloudPlugin> getRegisteredClouds() {
-        return Collections.unmodifiableMap(registeredClouds);
-    }
-
-    /**
-     * @param cloudPlugin
-     * @param enabled
-     *            TODO
-     */
-    public static void registerCloud(CloudPlugin cloudPlugin, boolean enabled) {
-        LOGGER.log(Level.FINE, "Registering " + cloudPlugin.getId());
-
-        if (enabled)
-            registeredClouds.put(cloudPlugin.getId(), cloudPlugin);
     }
 
 }

@@ -204,7 +204,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
     private Collection<SourceLineAnnotation> countWarnings(MethodDescriptor methodDescriptor, String bugCode, Priority minPriority) {
         Collection<BugInstance> warnings = warningsByMethod.get(methodDescriptor);
         Collection<SourceLineAnnotation> matching = new HashSet<SourceLineAnnotation>();
-        I18N i18n = I18N.instance();
+        DetectorFactoryCollection i18n = I18N.instance();
         boolean matchPattern = false;
         try {
             i18n.getBugCode(bugCode);

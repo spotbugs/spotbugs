@@ -46,6 +46,7 @@ import org.eclipse.ui.navigator.CommonNavigator;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerSeverity;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -185,7 +186,7 @@ public class ReportConfigurationTab extends Composite {
         int i = 0;
         boolean cloudSelected = false;
         int defaultIndex = -1;
-        for (CloudPlugin cloud : CloudFactory.getRegisteredClouds().values()) {
+        for (CloudPlugin cloud : DetectorFactoryCollection.instance().getRegisteredClouds().values()) {
             if (cloud.isHidden() && !cloud.getId().equals(cloudid)) {
                 continue;
             }
@@ -287,7 +288,7 @@ public class ReportConfigurationTab extends Composite {
 
     /**
      * Helper method to shorten message access
-     * 
+     *
      * @param key
      *            a message key
      * @return requested message
@@ -299,7 +300,7 @@ public class ReportConfigurationTab extends Composite {
     /**
      * Build list of bug categories to be enabled or disabled. Populates
      * chkEnableBugCategoryList and bugCategoryList fields.
-     * 
+     *
      * @param parent
      *            control checkboxes should be added to
      * @param project
