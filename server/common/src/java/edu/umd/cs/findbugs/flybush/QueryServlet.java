@@ -74,7 +74,7 @@ public class QueryServlet extends AbstractFlybushServlet {
         
         Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName() + " where when > "
                 + startTime + " order by when ascending");
-        SortedSet<DbEvaluation> evaluations = new TreeSet((List<DbEvaluation>) query.execute());
+        SortedSet<DbEvaluation> evaluations = new TreeSet<DbEvaluation>((List<DbEvaluation>) query.execute());
         LOGGER.info("Found " + evaluations.size());
         RecentEvaluations.Builder issueProtos = RecentEvaluations.newBuilder();
         Map<String, SortedSet<DbEvaluation>> issues = groupUniqueEvaluationsByIssue(evaluations);
