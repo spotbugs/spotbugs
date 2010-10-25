@@ -92,7 +92,7 @@ public class WebCloudClient extends AbstractCloud {
     public WebCloudClient(CloudPlugin plugin, BugCollection bugs, Properties properties) {
         super(plugin, bugs, properties);
         setNetworkClient(new WebCloudNetworkClient());
-        backgroundExecutorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
+        backgroundExecutorService = Executors.newFixedThreadPool(4, new ThreadFactory() {
             public Thread newThread(Runnable r) {
                 Thread t = new Thread(r, WebCloudClient.class.getSimpleName() + " bg");
                 t.setDaemon(true);

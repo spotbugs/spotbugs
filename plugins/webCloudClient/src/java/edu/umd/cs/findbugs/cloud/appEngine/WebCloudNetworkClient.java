@@ -63,10 +63,10 @@ public class WebCloudNetworkClient {
     private static final int BUG_UPDATE_PARTITION_SIZE = 10;
 
     /**
-     * Big enough to keep total find-issues time down AND also keep individual
-     * request time down (for Google's sake)
+     * This needs to stay low to prevent overloading the App Engine clusters
+     * with long-running requests.
      */
-    private static final int HASH_CHECK_PARTITION_SIZE = 60;
+    private static final int HASH_CHECK_PARTITION_SIZE = 20;
 
     private WebCloudClient cloudClient;
 
