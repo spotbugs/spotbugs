@@ -1,0 +1,28 @@
+
+We have a list of plugins.
+
+In any particular context, some plugins are enabled.
+
+DetectorFactoryCollection:
+	Core plugin
+	Collection of plugins
+	Collection of DetectorFactories
+	Adjustment ranker
+
+I18N
+	ResourceBundles
+	bugPatternMap
+	bugCodeMap
+	categoryDescriptionMap
+
+Plugin
+	collection of DetectorFactory
+	bug patterns, codes, etc. 
+	component plugins
+	bug ranker
+	enabled
+	plugin loader
+
+CloudFactory
+	registeredClouds
+
