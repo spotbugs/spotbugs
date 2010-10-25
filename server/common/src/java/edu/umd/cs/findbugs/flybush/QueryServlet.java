@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.flybush;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -65,16 +66,20 @@ public class QueryServlet extends AbstractFlybushServlet {
     }
 
     @SuppressWarnings("unchecked")
-    private void getRecentEvaluations(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
+    private void getRecentEvaluations(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm)
+            throws IOException {
         GetRecentEvaluations recentEvalsRequest = GetRecentEvaluations.parseFrom(req.getInputStream());
         long startTime = recentEvalsRequest.getTimestamp();
+        LOGGER.info("Looking for updates since " + new Date(startTime) + " for " + req.getRemoteAddr());
+        
         Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName() + " where when > "
                 + startTime + " order by when ascending");
         SortedSet<DbEvaluation> evaluations = new TreeSet((List<DbEvaluation>) query.execute());
+        LOGGER.info("Found " + evaluations.size());
         RecentEvaluations.Builder issueProtos = RecentEvaluations.newBuilder();
         Map<String, SortedSet<DbEvaluation>> issues = groupUniqueEvaluationsByIssue(evaluations);
         for (SortedSet<DbEvaluation> evaluationsForIssue : issues.values()) {
-            DbIssue issue = evaluations.iterator().next().getIssue();
+            DbIssue issue = evaluationsForIssue.iterator().next().getIssue();
             Issue issueProto = buildFullIssueProto(issue, evaluationsForIssue, pm);
             issueProtos.addIssues(issueProto);
         }
