@@ -39,10 +39,10 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 /**
  * This test runs a FindBugs analysis on the findbugsTestCases project and
  * checks if there are any unexpected bugs.
- * 
+ *
  * The results are checked for the unexpected bugs of type
  * FB_MISSING_EXPECTED_WARNING or FB_UNEXPECTED_WARNING.
- * 
+ *
  * @see ExpectWarning
  * @see NoWarning
  * @author Tom\u00e1s Pollak
@@ -140,7 +140,7 @@ public class DetectorsTest {
         File workingDir = new File(System.getProperty("user.dir"));
         File findbugsJar = new File(workingDir.getParentFile(), "findbugs/build/lib/findbugs.jar");
         URL[] pluginList = new URL[] { findbugsJar.toURI().toURL() };
-        DetectorFactoryCollection dfc = new DetectorFactoryCollection();
+        I18N dfc = new I18N();
         // dfc.setPluginList(pluginList);
         DetectorFactoryCollection.resetInstance(dfc);
     }

@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,8 +55,6 @@ public class DetectorFactoryCollection {
 
     private static final Logger LOGGER = Logger.getLogger(DetectorFactoryCollection.class.getName());
 
-    private final LinkedHashSet<PluginLoader> enabledPluginLoaders = new LinkedHashSet<PluginLoader>();
-
     private final HashMap<String, Plugin> pluginByIdMap = new LinkedHashMap<String, Plugin>();
 
     private static Plugin corePlugin;
@@ -78,8 +75,6 @@ public class DetectorFactoryCollection {
 
     private URL[] pluginList;
 
-    private final LinkedHashSet<Plugin> enabledPlugins = new LinkedHashSet<Plugin>();
-
      Map<String, CloudPlugin> registeredClouds = new LinkedHashMap<String, CloudPlugin>();
 
     protected final HashMap<String, BugCategory> categoryDescriptionMap = new HashMap<String, BugCategory>();
@@ -95,16 +90,18 @@ public class DetectorFactoryCollection {
      * factories can be accessed.
      */
     DetectorFactoryCollection() {
+        loadCorePlugin();
         for(PluginLoader loader : PluginLoader.getAllPlugins()) {
             if (loader.enabledByDefault() && !loader.isCorePlugin())
-                enabledPluginLoaders.add(loader);
+                loadPlugin(loader.getPlugin());
         }
-        loadPlugins();
     }
 
-    DetectorFactoryCollection(Collection<PluginLoader> enabled) {
-        enabledPluginLoaders.addAll(enabled);
-        loadPlugins();
+    DetectorFactoryCollection(Collection<Plugin> enabled) {
+        loadCorePlugin();
+        for(Plugin plugin : enabled) {
+            loadPlugin(plugin);
+        }
     }
 
     /**
@@ -202,6 +199,7 @@ public class DetectorFactoryCollection {
      *            the unique id
      * @return the Plugin with that id, or null if no such Plugin is found
      */
+    @Deprecated
     public Plugin getPluginById(String pluginId) {
         return pluginByIdMap.get(pluginId);
     }
@@ -341,23 +339,6 @@ public class DetectorFactoryCollection {
         return u;
     }
 
-
-
-    /**
-     * Load all plugins. If a setPluginList() has been called, then those
-     * plugins are loaded. Otherwise, the "findbugs.home" property is checked to
-     * determine where FindBugs is installed, and the plugin files are
-     * dynamically loaded from the plugin directory.
-     * @throws PluginException
-     */
-
-    private void loadPlugins() {
-        loadCorePlugin();
-        LinkedHashSet<PluginLoader> allPlugins = enabledPluginLoaders;
-        for (PluginLoader loader : allPlugins)
-            loadPlugin(loader);
-    }
-
     /**
      * @throws PluginException
      *
@@ -393,18 +374,18 @@ public class DetectorFactoryCollection {
             System.err.println(message);
     }
 
-     void loadPlugin(PluginLoader pluginLoader)  {
+    void loadPlugin(PluginLoader pluginLoader)  {
 
         Plugin plugin = pluginLoader.getPlugin();
+        loadPlugin(plugin);
+
+    }
+     void loadPlugin(Plugin plugin)  {
+
         pluginByIdMap.put(plugin.getPluginId(), plugin);
 
         // Register all of the detectors that this plugin contains
-        boolean show = !pluginLoader.isCorePlugin();
         for (DetectorFactory factory : plugin.getDetectorFactories()) {
-            if (show) {
-                jawsDebugMessage("Loading detector for " + factory.getFullName());
-                show = false;
-            }
             registerDetector(factory);
         }
 
