@@ -2995,7 +2995,13 @@ public class OpcodeStack implements Constants2 {
         if (index >= lvValues.size())
             return new Item();
 
-        return lvValues.get(index);
+        Item item = lvValues.get(index);
+        if (item != null)
+            return item;
+        AnalysisContext.logError("Stack getLVValue " + index + " is null",
+                new NullPointerException());
+
+        return new Item();
     }
 
     public int getNumLocalValues() {
