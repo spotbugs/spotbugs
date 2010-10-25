@@ -20,17 +20,21 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -55,6 +59,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.util.LaunchBrowser;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -162,20 +167,24 @@ public class NewProjectWizard extends FBDialog {
         final boolean reconfig = temp;
 
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayout(wizardComponents.length, 1));
+        mainPanel.setBorder(new EmptyBorder(5,5,5,5));
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
         wizardComponents[0] = createFilePanel(
                 edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl", "Class archives and directories to analyze:"),
                 analyzeList, analyzeModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive,
-                "Choose Class Archives and Directories to Analyze", false);
+                "Choose Class Archives and Directories to Analyze", false,
+                "http://findbugs.sourceforge.net/manual/gui.html#d0e1087");
 
         wizardComponents[1] = createFilePanel(
                 edu.umd.cs.findbugs.L10N.getLocalString("dlg.aux_class_lbl", "Auxiliary class locations:"), auxList, auxModel,
-                JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive, "Choose Auxilliary Class Archives and Directories", false);
+                JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive, "Choose Auxilliary Class Archives and Directories", false,
+                "http://findbugs.sourceforge.net/FAQ.html#q4");
 
         wizardComponents[2] = createFilePanel(
                 edu.umd.cs.findbugs.L10N.getLocalString("dlg.source_dirs_lbl", "Source directories:"), sourceList, sourceModel,
-                JFileChooser.FILES_AND_DIRECTORIES, null, "Choose Source Directories", true);
+                JFileChooser.FILES_AND_DIRECTORIES, null, "Choose Source Directories", true,
+                "http://findbugs.sourceforge.net/manual/gui.html#d0e1087");
 
         JPanel cloudPanel = new JPanel(new BorderLayout());
         cloudPanel.add(new JLabel("Store comments in:"), BorderLayout.NORTH);
@@ -332,6 +341,7 @@ public class NewProjectWizard extends FBDialog {
         });
 
         JPanel south = new JPanel(new BorderLayout());
+        south.setBorder(new EmptyBorder(5,5,5,5));
         south.add(new JSeparator(), BorderLayout.NORTH);
         south.add(buttons, BorderLayout.EAST);
 
@@ -360,9 +370,9 @@ public class NewProjectWizard extends FBDialog {
 
         // loadPanel(0);
         loadAllPanels(mainPanel);
+        add(createTextFieldPanel("Project name", projectName), BorderLayout.NORTH);
         add(mainPanel, BorderLayout.CENTER);
         add(south, BorderLayout.SOUTH);
-        add(createTextFieldPanel("Project name", projectName), BorderLayout.NORTH);
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
@@ -376,6 +386,7 @@ public class NewProjectWizard extends FBDialog {
 
         myPanel.add(new JLabel(label), BorderLayout.NORTH);
         myPanel.add(textField, BorderLayout.CENTER);
+        myPanel.setBorder(new EmptyBorder(5,5,5,5));
 
         return myPanel;
     }
@@ -383,20 +394,46 @@ public class NewProjectWizard extends FBDialog {
     /**
      * @param label
      *            TODO
-     *
+     * 
      */
     private JPanel createFilePanel(final String label, final JList list, final DefaultListModel listModel,
-            final int fileSelectionMode, final FileFilter filter, final String dialogTitle, boolean wizard) {
+                                   final int fileSelectionMode, final FileFilter filter, final String dialogTitle,
+                                   boolean wizard, final String helpUrl) {
         JPanel myPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridheight = 1;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 1;
         gbc.weightx = 1;
         gbc.weighty = 0;
         gbc.anchor = GridBagConstraints.WEST;
         myPanel.add(new JLabel(label), gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.gridheight = 1;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        gbc.weighty = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        JButton button = new JButton("<HTML><U>Details...");
+        button.setFont(button.getFont().deriveFont(Font.PLAIN));
+        button.setForeground(Color.BLUE);
+        button.setBorderPainted(false);
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.setContentAreaFilled(false);
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    LaunchBrowser.showDocument(new URL(helpUrl));
+                } catch (MalformedURLException e1) {
+                    throw new IllegalStateException(e1);
+                }
+            }
+        });
+        myPanel.add(button, gbc);
+
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridheight = 3;
@@ -405,6 +442,7 @@ public class NewProjectWizard extends FBDialog {
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
         myPanel.add(new JScrollPane(list), gbc);
+
         list.setModel(listModel);
         gbc.gridx = 1;
         gbc.gridy = 1;

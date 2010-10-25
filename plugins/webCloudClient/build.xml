@@ -42,6 +42,7 @@
     <target name="clean">
         <delete dir="build"/>
         <mkdir dir="${classes.dir}"/>
+        <mkdir dir="build"/>
         <mkdir dir="build/classes"/>
         <mkdir dir="build/testClasses"/>
     </target>

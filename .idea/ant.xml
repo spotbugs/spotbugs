@@ -66,7 +66,7 @@
       <maximumStackSize value="2" />
       <properties />
     </buildFile>
-    <buildFile url="file://$PROJECT_DIR$/continuousBuilds/glassfish.xml">
+    <buildFile url="file://$PROJECT_DIR$/sandbox/continuousBuilds/glassfish.xml">
       <additionalClassPath />
       <antReference projectDefault="true" />
       <customJdkName value="" />
