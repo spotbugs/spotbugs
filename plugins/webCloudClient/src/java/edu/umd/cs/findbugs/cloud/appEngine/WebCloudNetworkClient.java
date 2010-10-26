@@ -80,6 +80,7 @@ public class WebCloudNetworkClient {
 
     private String username;
 
+    private volatile long earliestSeenServerTime = 0;
     private volatile long mostRecentEvaluationMillis = 0;
 
     private CopyOnWriteArrayList<String> timestampsToUpdate = new CopyOnWriteArrayList<String>();
@@ -168,8 +169,9 @@ public class WebCloudNetworkClient {
         }
     }
 
-    public void generateHashCheckRunnables(final MutableCloudTask task, final List<String> hashes, List<Callable<Object>> tasks,
-            final ConcurrentMap<String, BugInstance> bugsByHash) {
+    public void generateHashCheckRunnables(final MutableCloudTask task, final List<String> hashes,
+                                           List<Callable<Object>> tasks, final ConcurrentMap<String,
+                    BugInstance> bugsByHash) {
         final int numBugs = hashes.size();
         final AtomicInteger numberOfBugsCheckedSoFar = new AtomicInteger();
         for (int i = 0; i < numBugs; i += HASH_CHECK_PARTITION_SIZE) {
@@ -190,7 +192,8 @@ public class WebCloudNetworkClient {
         return timestampsToUpdate;
     }
 
-    public MutableCloudTask generateUpdateTimestampRunnables(List<Callable<Object>> callables) throws SignInCancelledException {
+    public MutableCloudTask generateUpdateTimestampRunnables(List<Callable<Object>> callables)
+            throws SignInCancelledException {
         List<String> timestamps = new ArrayList<String>(timestampsToUpdate);
         final int bugCount = timestamps.size();
         if (bugCount == 0)
@@ -340,7 +343,9 @@ public class WebCloudNetworkClient {
             if (sessionId != null) {
                 msgb.setSessionId(sessionId);
             }
-            msgb.setTimestamp(mostRecentEvaluationMillis);
+            // I'm not sure if we really need mostRecentEvaluationMillis
+            // anymore, as earliestSeenServerTime should always be later
+            msgb.setTimestamp(Math.max(earliestSeenServerTime, mostRecentEvaluationMillis));
 
             msgb.build().writeTo(outputStream);
             outputStream.close();
@@ -348,9 +353,12 @@ public class WebCloudNetworkClient {
             if (conn.getResponseCode() != 200) {
                 throw new ServerReturnedErrorCodeException(conn.getResponseCode(), conn.getResponseMessage());
             }
-            RecentEvaluations evaluations = RecentEvaluations.parseFrom(conn.getInputStream());
-            updateMostRecentEvaluationField(evaluations);
-            return evaluations;
+            RecentEvaluations response = RecentEvaluations.parseFrom(conn.getInputStream());
+            updateMostRecentEvaluationField(response);
+            if (!(response.hasAskAgain() && response.getAskAgain()))
+                // only update the server last seen time if we're done checking for evals
+                earliestSeenServerTime = response.getCurrentServerTime();
+            return response;
         } finally {
             conn.disconnect();
         }
@@ -461,6 +469,9 @@ public class WebCloudNetworkClient {
 
     private void checkHashesPartition(List<String> hashes, Map<String, BugInstance> bugsByHash) throws IOException {
         FindIssuesResponse response = submitHashes(hashes);
+        if (response.hasCurrentServerTime()
+                && (earliestSeenServerTime == 0 || response.getCurrentServerTime() < earliestSeenServerTime))
+            earliestSeenServerTime = response.getCurrentServerTime();
 
         for (int j = 0; j < hashes.size(); j++) {
             String hash = hashes.get(j);

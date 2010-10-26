@@ -47,6 +47,7 @@ public class QueryServlet extends AbstractFlybushServlet {
         List<String> hashes = WebCloudProtoUtil.decodeHashes(loginMsg.getMyIssueHashesList());
         Map<String, DbIssue> issues = persistenceHelper.findIssues(pm, hashes);
         FindIssuesResponse.Builder issueProtos = FindIssuesResponse.newBuilder();
+        issueProtos.setCurrentServerTime(System.currentTimeMillis());
         int found = 0;
         for (String hash : hashes) {
             DbIssue dbIssue = issues.get(hash);
@@ -82,9 +83,10 @@ public class QueryServlet extends AbstractFlybushServlet {
         int resultsToSend = Math.min(evaluations.size(), limit);
         LOGGER.info("Found " + evaluations.size() + " (returning " + resultsToSend + ")");
         RecentEvaluations.Builder issueProtos = RecentEvaluations.newBuilder();
+        issueProtos.setCurrentServerTime(System.currentTimeMillis());
         issueProtos.setAskAgain(evaluations.size() > limit);
-        List<DbEvaluation> trimmedEvals = evaluations.subList(0, resultsToSend);
-        Map<String, SortedSet<DbEvaluation>> issues = groupUniqueEvaluationsByIssue(trimmedEvals);
+        List<DbEvaluation> evalsToSend = evaluations.subList(0, resultsToSend);
+        Map<String, SortedSet<DbEvaluation>> issues = groupUniqueEvaluationsByIssue(evalsToSend);
         for (SortedSet<DbEvaluation> evaluationsForIssue : issues.values()) {
             DbIssue issue = evaluationsForIssue.iterator().next().getIssue();
             Issue issueProto = buildFullIssueProto(issue, evaluationsForIssue, pm);

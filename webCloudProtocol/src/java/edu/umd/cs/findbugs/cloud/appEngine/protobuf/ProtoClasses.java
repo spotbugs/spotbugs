@@ -734,6 +734,13 @@ public final class ProtoClasses {
       return foundIssues_.get(index);
     }
     
+    // optional int64 currentServerTime = 2;
+    public static final int CURRENTSERVERTIME_FIELD_NUMBER = 2;
+    private boolean hasCurrentServerTime;
+    private long currentServerTime_ = 0L;
+    public boolean hasCurrentServerTime() { return hasCurrentServerTime; }
+    public long getCurrentServerTime() { return currentServerTime_; }
+    
     private void initFields() {
     }
     public final boolean isInitialized() {
@@ -745,6 +752,9 @@ public final class ProtoClasses {
       getSerializedSize();
       for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue element : getFoundIssuesList()) {
         output.writeMessage(1, element);
+      }
+      if (hasCurrentServerTime()) {
+        output.writeInt64(2, getCurrentServerTime());
       }
       getUnknownFields().writeTo(output);
     }
@@ -758,6 +768,10 @@ public final class ProtoClasses {
       for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue element : getFoundIssuesList()) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, element);
+      }
+      if (hasCurrentServerTime()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, getCurrentServerTime());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -927,6 +941,9 @@ public final class ProtoClasses {
           }
           result.foundIssues_.addAll(other.foundIssues_);
         }
+        if (other.hasCurrentServerTime()) {
+          setCurrentServerTime(other.getCurrentServerTime());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -956,6 +973,10 @@ public final class ProtoClasses {
               edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.Builder subBuilder = edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addFoundIssues(subBuilder.buildPartial());
+              break;
+            }
+            case 16: {
+              setCurrentServerTime(input.readInt64());
               break;
             }
           }
@@ -1011,6 +1032,24 @@ public final class ProtoClasses {
       }
       public Builder clearFoundIssues() {
         result.foundIssues_ = java.util.Collections.emptyList();
+        return this;
+      }
+      
+      // optional int64 currentServerTime = 2;
+      public boolean hasCurrentServerTime() {
+        return result.hasCurrentServerTime();
+      }
+      public long getCurrentServerTime() {
+        return result.getCurrentServerTime();
+      }
+      public Builder setCurrentServerTime(long value) {
+        result.hasCurrentServerTime = true;
+        result.currentServerTime_ = value;
+        return this;
+      }
+      public Builder clearCurrentServerTime() {
+        result.hasCurrentServerTime = false;
+        result.currentServerTime_ = 0L;
         return this;
       }
       
@@ -3350,6 +3389,13 @@ public final class ProtoClasses {
     public boolean hasAskAgain() { return hasAskAgain; }
     public boolean getAskAgain() { return askAgain_; }
     
+    // optional int64 currentServerTime = 3;
+    public static final int CURRENTSERVERTIME_FIELD_NUMBER = 3;
+    private boolean hasCurrentServerTime;
+    private long currentServerTime_ = 0L;
+    public boolean hasCurrentServerTime() { return hasCurrentServerTime; }
+    public long getCurrentServerTime() { return currentServerTime_; }
+    
     private void initFields() {
     }
     public final boolean isInitialized() {
@@ -3364,6 +3410,9 @@ public final class ProtoClasses {
       }
       if (hasAskAgain()) {
         output.writeBool(2, getAskAgain());
+      }
+      if (hasCurrentServerTime()) {
+        output.writeInt64(3, getCurrentServerTime());
       }
       getUnknownFields().writeTo(output);
     }
@@ -3381,6 +3430,10 @@ public final class ProtoClasses {
       if (hasAskAgain()) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(2, getAskAgain());
+      }
+      if (hasCurrentServerTime()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(3, getCurrentServerTime());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3553,6 +3606,9 @@ public final class ProtoClasses {
         if (other.hasAskAgain()) {
           setAskAgain(other.getAskAgain());
         }
+        if (other.hasCurrentServerTime()) {
+          setCurrentServerTime(other.getCurrentServerTime());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -3586,6 +3642,10 @@ public final class ProtoClasses {
             }
             case 16: {
               setAskAgain(input.readBool());
+              break;
+            }
+            case 24: {
+              setCurrentServerTime(input.readInt64());
               break;
             }
           }
@@ -3659,6 +3719,24 @@ public final class ProtoClasses {
       public Builder clearAskAgain() {
         result.hasAskAgain = false;
         result.askAgain_ = false;
+        return this;
+      }
+      
+      // optional int64 currentServerTime = 3;
+      public boolean hasCurrentServerTime() {
+        return result.hasCurrentServerTime();
+      }
+      public long getCurrentServerTime() {
+        return result.getCurrentServerTime();
+      }
+      public Builder setCurrentServerTime(long value) {
+        result.hasCurrentServerTime = true;
+        result.currentServerTime_ = value;
+        return this;
+      }
+      public Builder clearCurrentServerTime() {
+        result.hasCurrentServerTime = false;
+        result.currentServerTime_ = 0L;
         return this;
       }
       
@@ -4815,35 +4893,36 @@ public final class ProtoClasses {
       "s.cloud.appEngine.protobuf\"5\n\005LogIn\022\021\n\ts" +
       "essionId\030\001 \002(\003\022\031\n\021analysisTimestamp\030\003 \002(" +
       "\003\"6\n\nFindIssues\022\021\n\tsessionId\030\001 \001(\003\022\025\n\rmy" +
-      "IssueHashes\030\004 \003(\014\"^\n\022FindIssuesResponse\022" +
+      "IssueHashes\030\004 \003(\014\"y\n\022FindIssuesResponse\022" +
       "H\n\013foundIssues\030\001 \003(\01323.edu.umd.cs.findbu" +
-      "gs.cloud.appEngine.protobuf.Issue\"\305\001\n\025Up" +
-      "dateIssueTimestamps\022\021\n\tsessionId\030\001 \002(\003\022c" +
-      "\n\013issueGroups\030\002 \003(\0132N.edu.umd.cs.findbug" +
-      "s.cloud.appEngine.protobuf.UpdateIssueTi",
-      "mestamps.IssueGroup\0324\n\nIssueGroup\022\023\n\013iss" +
-      "ueHashes\030\001 \003(\014\022\021\n\ttimestamp\030\002 \002(\003\"x\n\014Upl" +
-      "oadIssues\022\021\n\tsessionId\030\001 \001(\003\022\r\n\005token\030\003 " +
-      "\001(\t\022F\n\tnewIssues\030\002 \003(\01323.edu.umd.cs.find" +
-      "bugs.cloud.appEngine.protobuf.Issue\"\201\001\n\020" +
-      "UploadEvaluation\022\021\n\tsessionId\030\001 \002(\003\022\014\n\004h" +
-      "ash\030\002 \002(\014\022L\n\nevaluation\030\003 \002(\01328.edu.umd." +
-      "cs.findbugs.cloud.appEngine.protobuf.Eva" +
-      "luation\"O\n\nSetBugLink\022\021\n\tsessionId\030\001 \002(\003" +
-      "\022\014\n\004hash\030\002 \002(\014\022\013\n\003url\030\003 \001(\t\022\023\n\013bugLinkTy",
-      "pe\030\n \001(\t\"<\n\024GetRecentEvaluations\022\021\n\tsess" +
-      "ionId\030\001 \001(\003\022\021\n\ttimestamp\030\002 \002(\003\"j\n\021Recent" +
-      "Evaluations\022C\n\006issues\030\001 \003(\01323.edu.umd.cs" +
-      ".findbugs.cloud.appEngine.protobuf.Issue" +
-      "\022\020\n\010askAgain\030\002 \001(\010\"\356\001\n\005Issue\022\014\n\004hash\030\001 \001" +
-      "(\014\022\022\n\nbugPattern\030\002 \001(\t\022\020\n\010priority\030\003 \001(\005" +
-      "\022\024\n\014primaryClass\030\004 \001(\t\022\021\n\tfirstSeen\030\005 \001(" +
-      "\003\022\020\n\010lastSeen\030\006 \001(\003\022M\n\013evaluations\030\007 \003(\013" +
-      "28.edu.umd.cs.findbugs.cloud.appEngine.p" +
-      "rotobuf.Evaluation\022\017\n\007bugLink\030\010 \001(\t\022\026\n\016b",
-      "ugLinkTypeStr\030\n \001(\t\"M\n\nEvaluation\022\013\n\003who" +
-      "\030\001 \001(\t\022\023\n\013designation\030\002 \001(\t\022\017\n\007comment\030\003" +
-      " \001(\t\022\014\n\004when\030\004 \001(\003"
+      "gs.cloud.appEngine.protobuf.Issue\022\031\n\021cur" +
+      "rentServerTime\030\002 \001(\003\"\305\001\n\025UpdateIssueTime" +
+      "stamps\022\021\n\tsessionId\030\001 \002(\003\022c\n\013issueGroups" +
+      "\030\002 \003(\0132N.edu.umd.cs.findbugs.cloud.appEn",
+      "gine.protobuf.UpdateIssueTimestamps.Issu" +
+      "eGroup\0324\n\nIssueGroup\022\023\n\013issueHashes\030\001 \003(" +
+      "\014\022\021\n\ttimestamp\030\002 \002(\003\"x\n\014UploadIssues\022\021\n\t" +
+      "sessionId\030\001 \001(\003\022\r\n\005token\030\003 \001(\t\022F\n\tnewIss" +
+      "ues\030\002 \003(\01323.edu.umd.cs.findbugs.cloud.ap" +
+      "pEngine.protobuf.Issue\"\201\001\n\020UploadEvaluat" +
+      "ion\022\021\n\tsessionId\030\001 \002(\003\022\014\n\004hash\030\002 \002(\014\022L\n\n" +
+      "evaluation\030\003 \002(\01328.edu.umd.cs.findbugs.c" +
+      "loud.appEngine.protobuf.Evaluation\"O\n\nSe" +
+      "tBugLink\022\021\n\tsessionId\030\001 \002(\003\022\014\n\004hash\030\002 \002(",
+      "\014\022\013\n\003url\030\003 \001(\t\022\023\n\013bugLinkType\030\n \001(\t\"<\n\024G" +
+      "etRecentEvaluations\022\021\n\tsessionId\030\001 \001(\003\022\021" +
+      "\n\ttimestamp\030\002 \002(\003\"\205\001\n\021RecentEvaluations\022" +
+      "C\n\006issues\030\001 \003(\01323.edu.umd.cs.findbugs.cl" +
+      "oud.appEngine.protobuf.Issue\022\020\n\010askAgain" +
+      "\030\002 \001(\010\022\031\n\021currentServerTime\030\003 \001(\003\"\356\001\n\005Is" +
+      "sue\022\014\n\004hash\030\001 \001(\014\022\022\n\nbugPattern\030\002 \001(\t\022\020\n" +
+      "\010priority\030\003 \001(\005\022\024\n\014primaryClass\030\004 \001(\t\022\021\n" +
+      "\tfirstSeen\030\005 \001(\003\022\020\n\010lastSeen\030\006 \001(\003\022M\n\013ev" +
+      "aluations\030\007 \003(\01328.edu.umd.cs.findbugs.cl",
+      "oud.appEngine.protobuf.Evaluation\022\017\n\007bug" +
+      "Link\030\010 \001(\t\022\026\n\016bugLinkTypeStr\030\n \001(\t\"M\n\nEv" +
+      "aluation\022\013\n\003who\030\001 \001(\t\022\023\n\013designation\030\002 \001" +
+      "(\t\022\017\n\007comment\030\003 \001(\t\022\014\n\004when\030\004 \001(\003"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -4871,7 +4950,7 @@ public final class ProtoClasses {
           internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_FindIssuesResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_FindIssuesResponse_descriptor,
-              new java.lang.String[] { "FoundIssues", },
+              new java.lang.String[] { "FoundIssues", "CurrentServerTime", },
               edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse.class,
               edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse.Builder.class);
           internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_UpdateIssueTimestamps_descriptor =
@@ -4927,7 +5006,7 @@ public final class ProtoClasses {
           internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_RecentEvaluations_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_RecentEvaluations_descriptor,
-              new java.lang.String[] { "Issues", "AskAgain", },
+              new java.lang.String[] { "Issues", "AskAgain", "CurrentServerTime", },
               edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations.class,
               edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations.Builder.class);
           internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Issue_descriptor =

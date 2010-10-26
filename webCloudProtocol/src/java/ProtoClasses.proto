@@ -12,6 +12,7 @@ message FindIssues {
 
 message FindIssuesResponse {
 	repeated Issue foundIssues = 1;
+	optional int64 currentServerTime = 2;
 }
 
 message UpdateIssueTimestamps {
@@ -50,6 +51,7 @@ message GetRecentEvaluations {
 message RecentEvaluations {
 	repeated Issue issues = 1;
 	optional bool askAgain = 2;
+	optional int64 currentServerTime = 3;
 }
 
 message Issue {
