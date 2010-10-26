@@ -8,7 +8,7 @@
     </extension>
     <extension name="snapshooter" />
     <option name="MAIN_CLASS_NAME" value="edu.umd.cs.findbugs.gui2.Driver" />
-    <option name="VM_PARAMETERS" value="-ea -Dwebcloud.local=true  -Dfindbugs.cloud.default=edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud" />
+    <option name="VM_PARAMETERS" value="-ea -Dwebcloud.local=true  -Dfindbugs.cloud.default=edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud  -Dfindbugs.plugin.appengine=file:../plugins/webCloudClient/etc" />
     <option name="PROGRAM_PARAMETERS" value="" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/findbugs" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
