@@ -9,11 +9,11 @@ import java.util.concurrent.TimeUnit;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
@@ -88,7 +88,11 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // verify
         checkStoredEvaluationMatches(lastEval, cloud.getPrimaryDesignation(foundIssue));
-        cloud.checkStatusBarHistory("Checking FindBugs Cloud for updates", "", "FindBugs Cloud: found 1 updated bug evaluations");
+        cloud.checkStatusBarHistory(
+                "Checking FindBugs Cloud for updates", 
+                "Checking FindBugs Cloud for updates... found 1 so far...",
+                "",
+                "FindBugs Cloud: found 1 updated bug evaluations");
     }
 
     @SuppressWarnings("deprecation")
@@ -121,7 +125,12 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
         assertTrue(cloud.getCloudReport(foundIssue).contains("old comment"));
         assertTrue(cloud.getCloudReport(foundIssue).contains("B@example.com"));
         assertTrue(cloud.getCloudReport(foundIssue).contains("new comment"));
-        cloud.checkStatusBarHistory("Checking FindBugs Cloud for updates", "", "FindBugs Cloud: found 1 updated bug evaluations");
+        cloud.checkStatusBarHistory(
+                "Checking FindBugs Cloud for updates",
+                "Checking FindBugs Cloud for updates... found 1 so far...",
+                "Checking FindBugs Cloud for updates... found 2 so far...",
+                "",
+                "FindBugs Cloud: found 2 updated bug evaluations");
     }
 
     @SuppressWarnings("deprecation")
@@ -134,7 +143,10 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
         cloud.updateEvaluationsFromServer();
 
         // verify
-        cloud.checkStatusBarHistory("Checking FindBugs Cloud for updates", "");
+        cloud.checkStatusBarHistory(
+                "Checking FindBugs Cloud for updates",
+                "Checking FindBugs Cloud for updates... found 0 so far...",
+                "");
     }
 
     @SuppressWarnings("deprecation")
@@ -152,7 +164,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // verify
         cloud.checkStatusBarHistory("Checking FindBugs Cloud for updates",
-                "Checking FindBugs Cloud for updates: FAILED - server returned error code 500 null");
+                "Checking FindBugs Cloud for updates... FAILED - server returned error code 500 null");
     }
 
     @SuppressWarnings({ "deprecation", "ThrowableInstanceNeverThrown" })
@@ -194,7 +206,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // verify no dialogs, just status bar changes
         Mockito.verify(cloud.mockGuiCallback, Mockito.never()).showMessageDialog(Mockito.anyString());
-        cloud.checkStatusBarHistory("Checking FindBugs Cloud for updates", "Checking FindBugs Cloud for updates: FAILED - blah");
+        cloud.checkStatusBarHistory("Checking FindBugs Cloud for updates", "Checking FindBugs Cloud for updates... FAILED - blah");
     }
 
     public void testGetRecentEvaluationsOverwritesOldEvaluationsFromSamePerson() throws Exception {
