@@ -43,10 +43,10 @@ import edu.umd.cs.findbugs.cloud.BugFiler;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.MutableCloudTask;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -56,6 +56,7 @@ public class WebCloudClient extends AbstractCloud {
     private static final Logger LOGGER = Logger.getLogger(WebCloudClient.class.getPackage().getName());
 
     private static final int EVALUATION_CHECK_SECS = 5 * 60;
+    private static final int MAX_RECENT_EVALUATION_PAGES = 30;
 
     protected ExecutorService backgroundExecutorService;
 
@@ -649,12 +650,20 @@ public class WebCloudClient extends AbstractCloud {
     void updateEvaluationsFromServer() throws IOException {
         MutableCloudTask task = createTask("Checking " + getCloudName() + " for updates");
 
+        int count = 0;
         RecentEvaluations evals;
         try {
-            evals = networkClient.getRecentEvaluationsFromServer();
+            int i = 0;
+            do {
+                evals = networkClient.getRecentEvaluationsFromServer();
+                count += mergeUpdatedEvaluations(evals);
+                task.update("found " + count + " so far...", 0);
+            } while (evals.hasAskAgain() && evals.getAskAgain() && ++i < MAX_RECENT_EVALUATION_PAGES);
+
         } catch (ServerReturnedErrorCodeException e) {
             task.failed(e.getMessage());
             throw e;
+
         } catch (IOException e) {
             if (getSigninState() == SigninState.SIGNED_IN) {
                 signOut(true);
@@ -672,16 +681,25 @@ public class WebCloudClient extends AbstractCloud {
                 task.failed(e.getMessage());
             }
             throw e;
+
         } catch (RuntimeException e) {
             task.failed(e.getMessage());
             throw e;
+
         } finally {
             task.finished();
         }
-        if (evals.getIssuesCount() > 0)
-            setStatusMsg(getCloudName() + ": found " + evals.getIssuesCount() + " updated bug evaluations");
+        if (count > 0)
+            setStatusMsg(getCloudName() + ": found " + count + " updated bug evaluations");
+    }
+
+    private int mergeUpdatedEvaluations(RecentEvaluations evals) {
+        int found = 0;
         for (Issue updatedIssue : evals.getIssuesList()) {
             String protoHash = WebCloudProtoUtil.decodeHash(updatedIssue.getHash());
+            BugInstance bugInstance = getBugByHash(protoHash);
+            if (bugInstance == null)
+                continue;
             Issue existingIssue = networkClient.getIssueByHash(protoHash);
             Issue issueToStore;
             if (existingIssue != null) {
@@ -693,10 +711,10 @@ public class WebCloudClient extends AbstractCloud {
                 issueToStore = updatedIssue;
             }
             networkClient.storeIssueDetails(protoHash, issueToStore);
-            BugInstance bugInstance = getBugByHash(protoHash);
-            if (bugInstance != null)
-                updateBugInstanceAndNotify(bugInstance);
+            updateBugInstanceAndNotify(bugInstance);
+            found++;
         }
+        return found;
     }
 
     private void uploadAndUpdateBugsInBackground(final List<BugInstance> newBugs) {

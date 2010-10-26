@@ -684,7 +684,7 @@ public abstract class AbstractCloud implements Cloud {
         }
         task.setDefaultListener(new CloudTaskListener() {
             public void taskStatusUpdated(String statusLine, double percentCompleted) {
-                setStatusMsg(name + ": " + statusLine);
+                setStatusMsg(name + "... " + statusLine);
             }
 
             public void taskFinished() {
@@ -692,7 +692,7 @@ public abstract class AbstractCloud implements Cloud {
             }
 
             public void taskFailed(String message) {
-                setStatusMsg(name + ": FAILED - " + message);
+                setStatusMsg(name + "... FAILED - " + message);
             }
         });
         if (task.isUsingDefaultListener()) {

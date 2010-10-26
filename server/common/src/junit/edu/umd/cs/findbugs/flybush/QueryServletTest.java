@@ -1,14 +1,14 @@
 package edu.umd.cs.findbugs.flybush;
 
+import java.io.IOException;
+import java.util.Arrays;
+
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-
-import java.io.IOException;
-import java.util.Arrays;
 
 import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil.encodeHashes;
 
@@ -101,6 +101,33 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
         assertEquals(2, foundissueProto.getEvaluationsCount());
         checkEvaluationsEqual(eval2, foundissueProto.getEvaluations(0));
         checkEvaluationsEqual(eval3, foundissueProto.getEvaluations(1));
+
+        assertFalse(result.getAskAgain());
+    }
+
+    public void testGetRecentEvaluationsAskAgain() throws Exception {
+        DbIssue issue1 = createDbIssue("fad");
+        DbIssue issue2 = createDbIssue("fad2");
+        DbEvaluation eval1 = createEvaluation(issue1, "someone1", 100);
+        DbEvaluation eval2 = createEvaluation(issue1, "someone2", 200);
+        DbEvaluation eval3 = createEvaluation(issue2, "someone3", 300);
+
+        getPersistenceManager().makePersistentAll(issue1, issue2);
+
+        executePost("/get-recent-evaluations?_debug_max=1", createRecentEvalsRequest(50).toByteArray());
+        checkResponse(200);
+        RecentEvaluations result = RecentEvaluations.parseFrom(outputCollector.toByteArray());
+        assertEquals(1, result.getIssuesCount());
+
+        // check issues
+        Issue foundissueProto = result.getIssues(0);
+        checkIssuesEqualExceptTimestamps(issue1, foundissueProto);
+
+        // check evaluations
+        assertEquals(1, foundissueProto.getEvaluationsCount());
+        checkEvaluationsEqual(eval1, foundissueProto.getEvaluations(0));
+
+        assertTrue(result.getAskAgain());
     }
 
     public void testGetRecentEvaluationsOnlyShowsLatestFromEachPerson() throws Exception {

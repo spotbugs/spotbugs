@@ -71,13 +71,20 @@ public class QueryServlet extends AbstractFlybushServlet {
         GetRecentEvaluations recentEvalsRequest = GetRecentEvaluations.parseFrom(req.getInputStream());
         long startTime = recentEvalsRequest.getTimestamp();
         LOGGER.info("Looking for updates since " + new Date(startTime) + " for " + req.getRemoteAddr());
-        
+
+        String limitParam = req.getParameter("_debug_max");
+        int limit = limitParam != null ? Integer.parseInt(limitParam) : 10;
+        // we request limit+1 so we can tell the client whether there are more results beyond the limit they provided.
+        int queryLimit = limit + 1;
         Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName() + " where when > "
-                + startTime + " order by when ascending");
-        SortedSet<DbEvaluation> evaluations = new TreeSet<DbEvaluation>((List<DbEvaluation>) query.execute());
-        LOGGER.info("Found " + evaluations.size());
+                + startTime + " order by when ascending limit " + queryLimit);
+        List<DbEvaluation> evaluations = (List<DbEvaluation>) query.execute();
+        int resultsToSend = Math.min(evaluations.size(), limit);
+        LOGGER.info("Found " + evaluations.size() + " (returning " + resultsToSend + ")");
         RecentEvaluations.Builder issueProtos = RecentEvaluations.newBuilder();
-        Map<String, SortedSet<DbEvaluation>> issues = groupUniqueEvaluationsByIssue(evaluations);
+        issueProtos.setAskAgain(evaluations.size() > limit);
+        List<DbEvaluation> trimmedEvals = evaluations.subList(0, resultsToSend);
+        Map<String, SortedSet<DbEvaluation>> issues = groupUniqueEvaluationsByIssue(trimmedEvals);
         for (SortedSet<DbEvaluation> evaluationsForIssue : issues.values()) {
             DbIssue issue = evaluationsForIssue.iterator().next().getIssue();
             Issue issueProto = buildFullIssueProto(issue, evaluationsForIssue, pm);
@@ -107,9 +114,13 @@ public class QueryServlet extends AbstractFlybushServlet {
     }
 
     private Issue buildFullIssueProto(DbIssue dbIssue, Set<? extends DbEvaluation> evaluations, PersistenceManager pm) {
-        Issue.Builder issueBuilder = Issue.newBuilder().setBugPattern(dbIssue.getBugPattern()).setPriority(dbIssue.getPriority())
-                .setHash(WebCloudProtoUtil.encodeHash(dbIssue.getHash())).setFirstSeen(dbIssue.getFirstSeen())
-                .setLastSeen(dbIssue.getLastSeen()).setPrimaryClass(dbIssue.getPrimaryClass());
+        Issue.Builder issueBuilder = Issue.newBuilder()
+                .setBugPattern(dbIssue.getBugPattern())
+                .setPriority(dbIssue.getPriority())
+                .setHash(WebCloudProtoUtil.encodeHash(dbIssue.getHash()))
+                .setFirstSeen(dbIssue.getFirstSeen())
+                .setLastSeen(dbIssue.getLastSeen())
+                .setPrimaryClass(dbIssue.getPrimaryClass());
         if (dbIssue.getBugLink() != null) {
             issueBuilder.setBugLink(dbIssue.getBugLink());
             String linkType = dbIssue.getBugLinkType();
@@ -122,14 +133,16 @@ public class QueryServlet extends AbstractFlybushServlet {
 
     private void addEvaluations(Builder issueBuilder, Set<? extends DbEvaluation> evaluations, PersistenceManager pm) {
         for (DbEvaluation dbEval : sortAndFilterEvaluations(evaluations)) {
-            issueBuilder.addEvaluations(Evaluation.newBuilder().setComment(dbEval.getComment())
-                    .setDesignation(dbEval.getDesignation()).setWhen(dbEval.getWhen())
-                    .setWho(persistenceHelper.getObjectById(pm, persistenceHelper.getDbUserClass(), dbEval.getWho()).getEmail())
+            issueBuilder.addEvaluations(Evaluation.newBuilder()
+                    .setComment(dbEval.getComment())
+                    .setDesignation(dbEval.getDesignation())
+                    .setWhen(dbEval.getWhen())
+                    .setWho(dbEval.getEmail())
                     .build());
         }
     }
 
-    private Map<String, SortedSet<DbEvaluation>> groupUniqueEvaluationsByIssue(SortedSet<DbEvaluation> evaluations) {
+    private Map<String, SortedSet<DbEvaluation>> groupUniqueEvaluationsByIssue(Iterable<DbEvaluation> evaluations) {
         Map<String, SortedSet<DbEvaluation>> issues = new HashMap<String, SortedSet<DbEvaluation>>();
         for (DbEvaluation dbEvaluation : evaluations) {
             String issueHash = dbEvaluation.getIssue().getHash();

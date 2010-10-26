@@ -35,7 +35,6 @@ import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.MutableCloudTask;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
@@ -49,6 +48,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTime
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.Builder;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup;
 
 public class WebCloudNetworkClient {
@@ -348,7 +348,9 @@ public class WebCloudNetworkClient {
             if (conn.getResponseCode() != 200) {
                 throw new ServerReturnedErrorCodeException(conn.getResponseCode(), conn.getResponseMessage());
             }
-            return RecentEvaluations.parseFrom(conn.getInputStream());
+            RecentEvaluations evaluations = RecentEvaluations.parseFrom(conn.getInputStream());
+            updateMostRecentEvaluationField(evaluations);
+            return evaluations;
         } finally {
             conn.disconnect();
         }
@@ -448,6 +450,13 @@ public class WebCloudNetworkClient {
         WebCloudNameLookup nameLookup = new WebCloudNameLookup();
         nameLookup.loadProperties(cloudClient.getPlugin());
         return nameLookup;
+    }
+
+    private void updateMostRecentEvaluationField(RecentEvaluations evaluations) {
+        for (Issue issue : evaluations.getIssuesList())
+            for (Evaluation evaluation : issue.getEvaluationsList())
+                if (evaluation.getWhen() > mostRecentEvaluationMillis)
+                    mostRecentEvaluationMillis = evaluation.getWhen();
     }
 
     private void checkHashesPartition(List<String> hashes, Map<String, BugInstance> bugsByHash) throws IOException {

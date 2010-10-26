@@ -92,6 +92,39 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
     }
 
     @SuppressWarnings("deprecation")
+    public void testGetRecentEvaluationsAsksAgain() throws Exception {
+        // setup
+        Issue prototype = createIssueToReturn(createEvaluation("NOT_A_BUG", SAMPLE_DATE + 200, "first comment",
+                "test@example.com"));
+
+        Evaluation earlierEval = createEvaluation("MOSTLY_HARMLESS", SAMPLE_DATE + 300, "old comment", "A@example.com");
+        Evaluation laterEval = createEvaluation("MUST_FIX", SAMPLE_DATE + 350, "new comment", "B@example.com");
+        RecentEvaluations resp1 = RecentEvaluations.newBuilder()
+                .addIssues(fillMissingFields(prototype, foundIssue, earlierEval))
+                .setAskAgain(true)
+                .build();
+        RecentEvaluations resp2 = RecentEvaluations.newBuilder()
+                .addIssues(fillMissingFields(prototype, foundIssue, laterEval))
+                .setAskAgain(false)
+                .build();
+
+        cloud.expectConnection("get-recent-evaluations").withResponse(resp1);
+        cloud.expectConnection("get-recent-evaluations").withResponse(resp2);
+
+        // execute
+        cloud.initialize();
+        cloud.updateEvaluationsFromServer();
+
+        // verify
+        cloud.verifyConnections();
+        assertTrue(cloud.getCloudReport(foundIssue).contains("A@example.com"));
+        assertTrue(cloud.getCloudReport(foundIssue).contains("old comment"));
+        assertTrue(cloud.getCloudReport(foundIssue).contains("B@example.com"));
+        assertTrue(cloud.getCloudReport(foundIssue).contains("new comment"));
+        cloud.checkStatusBarHistory("Checking FindBugs Cloud for updates", "", "FindBugs Cloud: found 1 updated bug evaluations");
+    }
+
+    @SuppressWarnings("deprecation")
     public void testGetRecentEvaluationsFindsNone() throws Exception {
         // setup
         cloud.expectConnection("get-recent-evaluations").withResponse(RecentEvaluations.newBuilder().build());
