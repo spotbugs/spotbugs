@@ -3,14 +3,14 @@ package awt;
 import java.awt.Menu;
 import java.awt.MenuBar;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.DesireWarning;
 
 public class MyMenuBar extends MenuBar {
     Menu helpMenu;
 
     /** Eclipse optimizes away the RCN */
     @Override
-    @ExpectWarning("RCN")
+    @DesireWarning("RCN")
     public void setHelpMenu(Menu m) {
         synchronized (getTreeLock()) {
             if (helpMenu == m) {

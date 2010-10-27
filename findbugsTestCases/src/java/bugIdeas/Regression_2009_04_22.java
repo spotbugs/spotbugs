@@ -1,6 +1,6 @@
 package bugIdeas;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.DesireWarning;
 
 public class Regression_2009_04_22 {
 
@@ -27,7 +27,7 @@ public class Regression_2009_04_22 {
             System.out.println("huh");
     }
 
-    @ExpectWarning("RCN")
+    @DesireWarning("RCN")
     void check3() {
         Object y = sometimesNull();
         System.out.println(y.hashCode());

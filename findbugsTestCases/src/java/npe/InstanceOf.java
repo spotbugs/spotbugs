@@ -1,11 +1,13 @@
 package npe;
 
+import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class InstanceOf {
 
-    @ExpectWarning("RV,RCN,NP")
+    @ExpectWarning("RV,NP")
+    @DesireWarning("RCN")
     public static void test(Object o) {
         if (o == null)
             new IllegalArgumentException("Forgot to throw this");
@@ -25,7 +27,7 @@ public class InstanceOf {
 
     }
 
-    @ExpectWarning("RCN")
+    @DesireWarning("RCN")
     public static void test2(Object o) {
         if (o instanceof String || o instanceof StringBuffer) {
             if (o == null)
