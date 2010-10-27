@@ -124,23 +124,28 @@ public class WebCloudNetworkClient {
         }
     }
 
-    public void setBugLinkOnCloud(BugInstance b, String type, String bugLink) throws IOException, SignInCancelledException {
-        cloudClient.signInIfNecessary("To store the bug URL on the " + cloudClient.getCloudName() + ", you must sign in.");
+    public void setBugLinkOnCloud(final BugInstance b, final String type, final String bugLink)
+            throws IOException, SignInCancelledException {
+        cloudClient.signInIfNecessary("To store the bug URL on the " + cloudClient.getCloudName()
+                + ", you must sign in.");
 
-        HttpURLConnection conn = openConnection("/set-bug-link");
-        conn.setDoOutput(true);
-        try {
-            OutputStream outputStream = conn.getOutputStream();
-            SetBugLink.newBuilder().setSessionId(sessionId).setHash(WebCloudProtoUtil.encodeHash(b.getInstanceHash())).setBugLinkType(type)
-                    .setUrl(bugLink).build().writeTo(outputStream);
-            outputStream.close();
-            if (conn.getResponseCode() != 200) {
-                throw new IllegalStateException("server returned error code " + conn.getResponseCode() + " "
-                        + conn.getResponseMessage());
+        RetryableConnection<Object> conn = new RetryableConnection<Object>("/set-bug-link", true) {
+            @Override
+            public void write(OutputStream out) throws IOException {
+                SetBugLink.newBuilder().setSessionId(sessionId).setHash(WebCloudProtoUtil.encodeHash(b.getInstanceHash())).setBugLinkType(type)
+                    .setUrl(bugLink).build().writeTo(out);
             }
-        } finally {
-            conn.disconnect();
-        }
+
+            @Override
+            public Object finish(int responseCode, String responseMessage, InputStream response) {
+                if (responseCode != 200) {
+                    throw new IllegalStateException("server returned error code " + responseCode + " "
+                            + responseMessage);
+                }
+                return null;
+            }
+        };
+        conn.go();
     }
 
     public void setBugLinkOnCloudAndStoreIssueDetails(BugInstance b, String viewUrl, String linkType) throws IOException,
@@ -152,26 +157,29 @@ public class WebCloudNetworkClient {
     }
 
     public void logIntoCloudForce() throws IOException {
-        HttpURLConnection conn = openConnection("/log-in");
-        conn.setDoOutput(true);
-        conn.connect();
+        RetryableConnection<Object> conn = new RetryableConnection<Object>("/log-in", true) {
+            @Override
+            public void write(OutputStream out) throws IOException {
+                LogIn logIn = LogIn.newBuilder().setSessionId(sessionId)
+                        .setAnalysisTimestamp(cloudClient.getBugCollection().getAnalysisTimestamp()).build();
+                logIn.writeTo(out);
+            }
 
-        OutputStream stream = conn.getOutputStream();
-        LogIn logIn = LogIn.newBuilder().setSessionId(sessionId)
-                .setAnalysisTimestamp(cloudClient.getBugCollection().getAnalysisTimestamp()).build();
-        logIn.writeTo(stream);
-        stream.close();
-
-        int responseCode = conn.getResponseCode();
-        if (responseCode != 200) {
-            throw new IllegalStateException("Could not log into cloud with ID " + sessionId + " - error " + responseCode + " "
-                    + conn.getResponseMessage());
-        }
+            @Override
+            public Object finish(int responseCode, String responseMessage, InputStream response) {
+                if (responseCode != 200) {
+                    throw new IllegalStateException("Could not log into cloud with ID " + sessionId
+                            + " - error " + responseCode + " " + responseMessage);
+                }
+                return null;
+            }
+        };
+        conn.go();
     }
 
     public void generateHashCheckRunnables(final MutableCloudTask task, final List<String> hashes,
-                                           List<Callable<Object>> tasks, final ConcurrentMap<String,
-                    BugInstance> bugsByHash) {
+                                           List<Callable<Object>> tasks,
+                                           final ConcurrentMap<String, BugInstance> bugsByHash) {
         final int numBugs = hashes.size();
         final AtomicInteger numberOfBugsCheckedSoFar = new AtomicInteger();
         for (int i = 0; i < numBugs; i += HASH_CHECK_PARTITION_SIZE) {
@@ -335,33 +343,34 @@ public class WebCloudNetworkClient {
     }
 
     public RecentEvaluations getRecentEvaluationsFromServer() throws IOException {
-        HttpURLConnection conn = openConnection("/get-recent-evaluations");
-        conn.setDoOutput(true);
-        try {
-            OutputStream outputStream = conn.getOutputStream();
-            GetRecentEvaluations.Builder msgb = GetRecentEvaluations.newBuilder();
-            if (sessionId != null) {
-                msgb.setSessionId(sessionId);
-            }
-            // I'm not sure if we really need mostRecentEvaluationMillis
-            // anymore, as earliestSeenServerTime should always be later
-            msgb.setTimestamp(Math.max(earliestSeenServerTime, mostRecentEvaluationMillis));
+        RetryableConnection<RecentEvaluations> conn = new RetryableConnection<RecentEvaluations>("/get-recent-evaluations", true) {
+            @Override
+            public void write(OutputStream out) throws IOException {
+                GetRecentEvaluations.Builder msgb = GetRecentEvaluations.newBuilder();
+                if (sessionId != null) {
+                    msgb.setSessionId(sessionId);
+                }
+                // I'm not sure if we really need mostRecentEvaluationMillis
+                // anymore, as earliestSeenServerTime should always be later
+                msgb.setTimestamp(Math.max(earliestSeenServerTime, mostRecentEvaluationMillis));
 
-            msgb.build().writeTo(outputStream);
-            outputStream.close();
-
-            if (conn.getResponseCode() != 200) {
-                throw new ServerReturnedErrorCodeException(conn.getResponseCode(), conn.getResponseMessage());
+                msgb.build().writeTo(out);
             }
-            RecentEvaluations response = RecentEvaluations.parseFrom(conn.getInputStream());
-            updateMostRecentEvaluationField(response);
-            if (!(response.hasAskAgain() && response.getAskAgain()))
-                // only update the server last seen time if we're done checking for evals
-                earliestSeenServerTime = response.getCurrentServerTime();
-            return response;
-        } finally {
-            conn.disconnect();
-        }
+
+            @Override
+            public RecentEvaluations finish(int responseCode, String responseMessage, InputStream response) throws IOException {
+                if (responseCode != 200) {
+                    throw new ServerReturnedErrorCodeException(responseCode, responseMessage);
+                }
+                RecentEvaluations evals = RecentEvaluations.parseFrom(response);
+                updateMostRecentEvaluationField(evals);
+                if (!(evals.hasAskAgain() && evals.getAskAgain()))
+                    // only update the server last seen time if we're done checking for evals
+                    earliestSeenServerTime = evals.getCurrentServerTime();
+                return evals;
+            }
+        };
+        return conn.go();
     }
 
     public Evaluation getMostRecentEvaluationBySelf(BugInstance b) {
@@ -386,7 +395,7 @@ public class WebCloudNetworkClient {
     }
 
     @SuppressWarnings({ "deprecation" })
-    public void storeUserAnnotation(BugInstance bugInstance) throws SignInCancelledException {
+    public void storeUserAnnotation(BugInstance bugInstance) throws SignInCancelledException, IOException {
         // store this stuff first because signIn might clobber it. this is
         // kludgy but works.
         BugDesignation designation = bugInstance.getNonnullUserDesignation();
@@ -526,29 +535,31 @@ public class WebCloudNetworkClient {
         return value + " " + (value == 1 ? noun : noun + "s");
     }
 
-    private void updateTimestampsNow(Collection<BugInstance> bugs) throws IOException {
-        HttpURLConnection conn = openConnection("/update-issue-timestamps");
-        conn.setDoOutput(true);
-        try {
-            OutputStream outputStream = conn.getOutputStream();
-            UpdateIssueTimestamps.Builder builder = UpdateIssueTimestamps.newBuilder().setSessionId(sessionId);
-            for (Map.Entry<Long, Set<BugInstance>> entry : groupBugsByTimestamp(bugs).entrySet()) {
-                UpdateIssueTimestamps.IssueGroup.Builder groupBuilder = IssueGroup.newBuilder().setTimestamp(entry.getKey());
-                for (BugInstance bugInstance : entry.getValue()) {
-                    groupBuilder.addIssueHashes(WebCloudProtoUtil.encodeHash(bugInstance.getInstanceHash()));
-                }
-                builder.addIssueGroups(groupBuilder.build());
+    private void updateTimestampsNow(final Collection<BugInstance> bugs) throws IOException {
+        final UpdateIssueTimestamps.Builder builder = UpdateIssueTimestamps.newBuilder().setSessionId(sessionId);
+        for (Map.Entry<Long, Set<BugInstance>> entry : groupBugsByTimestamp(bugs).entrySet()) {
+            UpdateIssueTimestamps.IssueGroup.Builder groupBuilder = IssueGroup.newBuilder().setTimestamp(entry.getKey());
+            for (BugInstance bugInstance : entry.getValue()) {
+                groupBuilder.addIssueHashes(WebCloudProtoUtil.encodeHash(bugInstance.getInstanceHash()));
             }
-            LOGGER.finer("Updating timestamps for " + bugs.size() + " bugs in " + builder.getIssueGroupsCount() + " groups");
-            builder.build().writeTo(outputStream);
-            outputStream.close();
-            if (conn.getResponseCode() != 200) {
-                throw new IllegalStateException("server returned error code " + conn.getResponseCode() + " "
-                        + conn.getResponseMessage());
-            }
-        } finally {
-            conn.disconnect();
+            builder.addIssueGroups(groupBuilder.build());
         }
+        LOGGER.finer("Updating timestamps for " + bugs.size() + " bugs in " + builder.getIssueGroupsCount() + " groups");
+        RetryableConnection conn = new RetryableConnection("/update-issue-timestamps", true) {
+            @Override
+            public void write(OutputStream out) throws IOException {
+                builder.build().writeTo(out);
+            }
+
+            @Override
+            public Object finish(int responseCode, String responseMessage, InputStream response) throws IOException {
+                if (responseCode != 200)
+                    throw new IllegalStateException("server returned error code " + responseCode + " "
+                            + responseMessage);
+                return null;
+            }
+        };
+        conn.go();
     }
 
     private Map<Long, Set<BugInstance>> groupBugsByTimestamp(Collection<BugInstance> bugs) {
@@ -569,43 +580,42 @@ public class WebCloudNetworkClient {
         return cloudClient.getGuiCallback();
     }
 
-    private FindIssuesResponse submitHashes(List<String> bugsByHash) throws IOException {
+    private FindIssuesResponse submitHashes(final List<String> bugsByHash) throws IOException {
         LOGGER.finer("Checking " + bugsByHash.size() + " bugs against App Engine Cloud");
         FindIssues.Builder msgb = FindIssues.newBuilder();
         if (sessionId != null) {
             msgb.setSessionId(sessionId);
         }
-        FindIssues hashList = msgb.addAllMyIssueHashes(WebCloudProtoUtil.encodeHashes(bugsByHash)).build();
+        final FindIssues hashList = msgb.addAllMyIssueHashes(WebCloudProtoUtil.encodeHashes(bugsByHash)).build();
 
-        long start = System.currentTimeMillis();
-        HttpURLConnection conn = openConnection("/find-issues");
-        conn.setDoOutput(true);
-        conn.connect();
-        LOGGER.finer("Connected in " + (System.currentTimeMillis() - start) + "ms");
+        RetryableConnection<FindIssuesResponse> conn = new RetryableConnection<FindIssuesResponse>("/find-issues", true) {
+            @Override
+            public void write(OutputStream out) throws IOException {
+                long start = System.currentTimeMillis();
+                hashList.writeTo(out);
+                long elapsed = System.currentTimeMillis() - start;
+                LOGGER.finer("Submitted hashes (" + hashList.getSerializedSize() / 1024 + " KB) in " + elapsed + "ms ("
+                        + (elapsed / bugsByHash.size()) + "ms per hash)");
+            }
 
-        start = System.currentTimeMillis();
-        OutputStream stream = conn.getOutputStream();
-        hashList.writeTo(stream);
-        stream.close();
-        long elapsed = System.currentTimeMillis() - start;
-        LOGGER.finer("Submitted hashes (" + hashList.getSerializedSize() / 1024 + " KB) in " + elapsed + "ms ("
-                + (elapsed / bugsByHash.size()) + "ms per hash)");
+            @Override
+            public FindIssuesResponse finish(int responseCode, String responseMessage, InputStream response)
+                    throws IOException {
+                long start = System.currentTimeMillis();
+                if (responseCode != 200) {
+                    LOGGER.info("Error " + responseCode + " : " + responseMessage);
+                    throw new IOException("Response code " + responseCode + " : " + responseMessage);
+                }
 
-        start = System.currentTimeMillis();
-        int responseCode = conn.getResponseCode();
-        if (responseCode != 200) {
-            LOGGER.info("Error " + responseCode + ", took " + (System.currentTimeMillis() - start) + "ms");
-            throw new IOException("Response code " + responseCode + " : " + conn.getResponseMessage());
-        }
-
-        InputStream instream = conn.getInputStream();
-        FindIssuesResponse response = FindIssuesResponse.parseFrom(instream);
-        conn.disconnect();
-        int foundIssues = response.getFoundIssuesCount();
-        elapsed = System.currentTimeMillis() - start;
-        LOGGER.fine("Received " + foundIssues + " bugs from server in " + elapsed + "ms ("
-                + (elapsed / (foundIssues + 1)) + "ms per bug)");
-        return response;
+                FindIssuesResponse firesponse = FindIssuesResponse.parseFrom(response);
+                int foundIssues = firesponse.getFoundIssuesCount();
+                long elapsed = System.currentTimeMillis() - start;
+                LOGGER.fine("Received " + foundIssues + " bugs from server in " + elapsed + "ms ("
+                        + (elapsed / (foundIssues + 1)) + "ms per bug)");
+                return firesponse;
+            }
+        };
+        return conn.go();
     }
 
     private void uploadNewBugsPartition(final Collection<BugInstance> bugsToSend) throws IOException {
@@ -680,31 +690,56 @@ public class WebCloudNetworkClient {
         return (HttpURLConnection) u.openConnection();
     }
 
-    private void openPostUrl(String url, GeneratedMessage uploadMsg) {
-        try {
-            HttpURLConnection conn = openConnection(url);
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
-            conn.connect();
-            try {
-                OutputStream stream = conn.getOutputStream();
+    private void openPostUrl(String url, final GeneratedMessage uploadMsg) throws IOException {
+        RetryableConnection rc = new RetryableConnection(url, true) {
+            @Override
+            public void write(OutputStream out) throws IOException {
                 if (uploadMsg != null) {
-                    uploadMsg.writeTo(stream);
+                    uploadMsg.writeTo(out);
                 } else {
-                    stream.write(0);
+                    out.write(0); // why write a null byte??
                 }
-                stream.close();
-                int responseCode = conn.getResponseCode();
-                if (responseCode != 200) {
-                    throw new IllegalStateException("server returned error code when opening " + url + ": "
-                            + conn.getResponseCode() + " " + conn.getResponseMessage());
-                }
-            } finally {
-                conn.disconnect();
             }
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+
+            @Override
+            public Object finish(int responseCode, String responseMessage, InputStream response) throws IOException {
+                if (responseCode != 200)
+                    throw new IllegalStateException("server returned error code when opening " + url + ": "
+                            + responseCode + " " + responseMessage);
+                return null;
+            }
+        };
+        rc.go();
     }
 
+    protected abstract class RetryableConnection<RV> {
+        protected final String url;
+        private final boolean post;
+
+        public RetryableConnection(String url, boolean post) {
+            this.post = post;
+            this.url = url;
+        }
+
+        public abstract void write(OutputStream out) throws IOException;
+
+        public abstract RV finish(int responseCode, String responseMessage, InputStream response) throws IOException;
+
+        public RV go() throws IOException {
+            HttpURLConnection conn = null;
+            try {
+                conn = openConnection(url);
+                if (post)
+                    conn.setDoOutput(true);
+                conn.connect();
+                OutputStream out = conn.getOutputStream();
+                write(out);
+                out.close();
+                return finish(conn.getResponseCode(), conn.getResponseMessage(), conn.getInputStream());
+            } finally {
+                if (conn != null)
+                    conn.disconnect();
+            }
+        }
+    }
 }

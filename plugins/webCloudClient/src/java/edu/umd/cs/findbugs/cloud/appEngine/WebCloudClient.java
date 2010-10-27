@@ -458,7 +458,11 @@ public class WebCloudClient extends AbstractCloud {
             // get picked up during the
             // upload-evals-from-XML step
             try {
-                networkClient.storeUserAnnotation(bugInstance);
+                try {
+                    networkClient.storeUserAnnotation(bugInstance);
+                } catch (IOException e) {
+                    throw new IllegalStateException(e);
+                }
             } catch (SignInCancelledException e) {
             }
         }
