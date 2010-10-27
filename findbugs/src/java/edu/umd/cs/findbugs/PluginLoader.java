@@ -115,6 +115,13 @@ public class PluginLoader {
 
     private final String jarName;
 
+    static {
+        if (DEBUG) {
+            System.out.println("Debugging plugin loading. FindBugs version "
+                    + Version.RELEASE +", compiled " + Version.DATE);
+        }
+    }
+
     /**
      * Constructor.
      *
@@ -164,31 +171,31 @@ public class PluginLoader {
         this.classLoaderForResources = classLoader;
         corePlugin = true;
         URL from = null;
-        if (classLoader instanceof URLClassLoader) {
-            String findBugsClassName = ClassName.toSlashedClassName(FindBugs.class) + ".class";
-            URL me = FindBugs.class.getClassLoader().getResource(findBugsClassName);
-            if (DEBUG)
-                System.out.println("FindBugs.class loaded from " + me);
-            if (me != null) {
-                try {
-                    String u = me.toString();
-                    if (u.startsWith("jar:") && u.endsWith("!/" + findBugsClassName)) {
-                        u = u.substring(4, u.indexOf("!/"));
 
-                        from = new URL(u);
+        String findBugsClassFile = ClassName.toSlashedClassName(FindBugs.class) + ".class";
+        URL me = FindBugs.class.getClassLoader().getResource(findBugsClassFile);
+        if (DEBUG)
+            System.out.println("FindBugs.class loaded from " + me);
+        if (me != null) {
+            try {
+                String u = me.toString();
+                if (u.startsWith("jar:") && u.endsWith("!/" + findBugsClassFile)) {
+                    u = u.substring(4, u.indexOf("!/"));
 
-                    } else if (u.endsWith(findBugsClassName)) {
-                        u = u.substring(0, u.indexOf(findBugsClassName));
-                        from = new URL(u);
-                    }
+                    from = new URL(u);
 
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
+                } else if (u.endsWith(findBugsClassFile)) {
+                    u = u.substring(0, u.indexOf(findBugsClassFile));
+                    from = new URL(u);
                 }
 
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
             }
-            }
+            if (DEBUG)
+                System.out.println("Core class files loaded from " + from);
 
+        }
 
         loadedFrom = from;
         if (from != null) {
