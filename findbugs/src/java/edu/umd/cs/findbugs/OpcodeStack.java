@@ -755,7 +755,7 @@ public class OpcodeStack implements Constants2 {
 
         }
 
-        public int getSpecialKindForAbs() {
+        public @SpecialKind int getSpecialKindForAbs() {
             switch (getSpecialKind()) {
             case Item.HASHCODE_INT:
                 return Item.MATH_ABS_OF_HASHCODE;
@@ -766,7 +766,7 @@ public class OpcodeStack implements Constants2 {
             }
         }
 
-        public int getSpecialKindForRemainder() {
+        public @SpecialKind int getSpecialKindForRemainder() {
             switch (getSpecialKind()) {
             case Item.HASHCODE_INT:
                 return Item.HASHCODE_INT_REMAINDER;
