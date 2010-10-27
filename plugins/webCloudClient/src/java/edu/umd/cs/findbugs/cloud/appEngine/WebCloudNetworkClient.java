@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -57,7 +58,9 @@ public class WebCloudNetworkClient {
     /** For debugging */
     private static final boolean FORCE_UPLOAD_ALL_ISSUES = false;
 
-    private static final int BUG_UPLOAD_PARTITION_SIZE = 10;
+    private static final int GLOBAL_HTTP_SOCKET_TIMEOUT = 5000;
+
+    private static final int BUG_UPLOAD_PARTITION_SIZE = 5;
 
     /** For updating firstSeen timestamps */
     private static final int BUG_UPDATE_PARTITION_SIZE = 10;
@@ -153,7 +156,10 @@ public class WebCloudNetworkClient {
         setBugLinkOnCloud(b, linkType, viewUrl);
 
         String hash = b.getInstanceHash();
-        storeIssueDetails(hash, Issue.newBuilder(getIssueByHash(hash)).setBugLink(viewUrl).setBugLinkTypeStr(linkType).build());
+        storeIssueDetails(hash, Issue.newBuilder(getIssueByHash(hash))
+                .setBugLink(viewUrl)
+                .setBugLinkTypeStr(linkType)
+                .build());
     }
 
     public void logIntoCloudForce() throws IOException {
@@ -721,25 +727,65 @@ public class WebCloudNetworkClient {
             this.url = url;
         }
 
+        /** NOTE: this may be called more than once if the connection fails the first time! */
         public abstract void write(OutputStream out) throws IOException;
 
         public abstract RV finish(int responseCode, String responseMessage, InputStream response) throws IOException;
 
         public RV go() throws IOException {
+            RV result = null;
             HttpURLConnection conn = null;
-            try {
-                conn = openConnection(url);
-                if (post)
-                    conn.setDoOutput(true);
-                conn.connect();
-                OutputStream out = conn.getOutputStream();
-                write(out);
-                out.close();
-                return finish(conn.getResponseCode(), conn.getResponseMessage(), conn.getInputStream());
-            } finally {
-                if (conn != null)
-                    conn.disconnect();
+            boolean finished = false;
+            IOException firstException = null;
+            IOException lastException = null;
+            for (int i = 0; i < 3 && !finished; i++) {
+                if (i > 0 && lastException != null)
+                    LOGGER.warning("Retrying connection to " + url + " due to "
+                            + lastException.getClass().getSimpleName() + ": " + lastException.getMessage());
+                try {
+                    conn = openConnection(url);
+                    // increase the timeout by 5 seconds each iteration
+                    int timeout = GLOBAL_HTTP_SOCKET_TIMEOUT;
+                    if (lastException instanceof SocketTimeoutException)
+                        // increase timeout by 5 seconds each iteration
+                        timeout *= i;
+                    conn.setConnectTimeout(timeout);
+                    if (post)
+                        conn.setDoOutput(true);
+                    conn.connect();
+                    OutputStream out = conn.getOutputStream();
+                    write(out);
+                    out.close();
+                    result = finish(conn.getResponseCode(), conn.getResponseMessage(), conn.getInputStream());
+                    finished = true;
+                } catch (IOException ex) {
+                    if (firstException == null)
+                        firstException = ex;
+                    lastException = ex;
+                } finally {
+                    if (conn != null) {
+                        int responseCode;
+                        try {
+                            responseCode = conn.getResponseCode();
+                            if (responseCode != 500 && responseCode != -1)
+                                // only retry on 500 or no-response
+                                finished = true;
+                        } catch (IOException e) {
+                            // skip this check
+                        }
+                        try {
+                            conn.disconnect();
+                        } catch (Exception e) {
+                            // ignore
+                        }
+                    }
+                }
             }
+            if (result != null)
+                return result;
+            if (firstException != null)
+                throw firstException;
+            return null;
         }
     }
 }

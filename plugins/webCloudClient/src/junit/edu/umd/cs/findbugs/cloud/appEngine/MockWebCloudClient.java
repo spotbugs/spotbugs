@@ -226,12 +226,18 @@ class MockWebCloudClient extends WebCloudClient {
     private class MockWebCloudNetworkClient extends WebCloudNetworkClient {
         @Override
         HttpURLConnection openConnection(String url) {
+            ExpectedConnection connection = null;
             if (nextConnection >= expectedConnections.size()) {
-                Assert.fail("Cannot open " + url + " - already requested all " + expectedConnections.size() + " url's: "
-                        + expectedConnections);
+                ExpectedConnection lastConnection = expectedConnections.get(expectedConnections.size() - 1);
+                if (lastConnection.isRepeatIndefinitely())
+                    connection = lastConnection;
+                else
+                    Assert.fail("Cannot open " + url + " - already requested all " + expectedConnections.size() + " url's: "
+                            + expectedConnections);
             }
             urlsRequested.add(url);
-            ExpectedConnection connection = expectedConnections.get(nextConnection);
+            if (connection == null)
+                connection = expectedConnections.get(nextConnection);
             nextConnection++;
             String expectedUrl = connection.url();
             if (expectedUrl != null) {
@@ -264,6 +270,7 @@ class MockWebCloudClient extends WebCloudClient {
         private ByteArrayOutputStream postDataStream;
 
         private CountDownLatch latch = new CountDownLatch(1);
+        private boolean repeatIndefinitely = false;
 
         public ExpectedConnection() {
             mockConnection = Mockito.mock(HttpURLConnection.class);
@@ -319,8 +326,9 @@ class MockWebCloudClient extends WebCloudClient {
             return getOutputStream().toByteArray();
         }
 
-        public void withErrorCode(int code) {
+        public ExpectedConnection withErrorCode(int code) {
             this.responseCode = code;
+            return this;
         }
 
         public void throwsNetworkError(IOException e) {
@@ -329,6 +337,14 @@ class MockWebCloudClient extends WebCloudClient {
 
         public CountDownLatch getLatch() {
             return latch;
+        }
+
+        public void repeatIndefinitely() {
+            this.repeatIndefinitely = true;
+        }
+
+        public boolean isRepeatIndefinitely() {
+            return repeatIndefinitely;
         }
 
         @Override

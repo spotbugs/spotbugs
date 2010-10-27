@@ -89,6 +89,26 @@ public class WebCloudIssueSyncTests extends AbstractWebCloudTest {
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
     }
 
+    public void testFindIssuesNetworkFailureRetries() throws IOException, InterruptedException {
+        // execution
+        final MockWebCloudClient cloud = createWebCloudClient();
+        cloud.expectConnection("find-issues").withErrorCode(500);
+        cloud.expectConnection("find-issues").withErrorCode(200);
+        assertEquals(UNAUTHENTICATED, cloud.getSigninState());
+        cloud.initialize();
+        assertEquals(UNAUTHENTICATED, cloud.getSigninState());
+        cloud.bugsPopulated();
+        cloud.initiateCommunication();
+        cloud.waitUntilIssueDataDownloaded();
+        assertEquals(UNAUTHENTICATED, cloud.getSigninState());
+
+        cloud.verifyConnections();
+
+        assertEquals(2, cloud.urlsRequested.size());
+        assertEquals("/find-issues", cloud.urlsRequested.get(0));
+        assertEquals("/find-issues", cloud.urlsRequested.get(1));
+    }
+
     public void testLogInAndUploadIssues() throws IOException, InterruptedException {
         addMissingIssue = true;
 

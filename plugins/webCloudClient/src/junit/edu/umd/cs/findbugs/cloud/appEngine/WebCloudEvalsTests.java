@@ -152,7 +152,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
     @SuppressWarnings("deprecation")
     public void testGetRecentEvaluationsFailsWithHttpErrorCode() throws Exception {
         // setup
-        cloud.expectConnection("get-recent-evaluations").withErrorCode(500);
+        cloud.expectConnection("get-recent-evaluations").withErrorCode(500).repeatIndefinitely();
 
         // execute
         cloud.initialize();
