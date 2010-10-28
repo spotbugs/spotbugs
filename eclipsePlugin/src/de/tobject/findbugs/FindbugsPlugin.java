@@ -92,6 +92,8 @@ import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.PluginException;
+import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -142,7 +144,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * The identifier for the FindBugs nature (value
      * <code>"edu.umd.cs.findbugs.plugin.eclipse.findbugsnature"</code>).
-     * 
+     *
      * @see org.eclipse.core.resources.IProject#hasNature(java.lang.String)
      */
     public static final String NATURE_ID = PLUGIN_ID + ".findbugsNature"; //$NON-NLS-1$
@@ -253,47 +255,37 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         DetectorValidator validator = new DetectorValidator();
         final SortedSet<String> detectorPaths = PrefsUtil.readDetectorPaths(getDefault().getPreferenceStore());
         detectorPaths.addAll(DetectorsExtensionHelper.getContributedDetectors());
+        HashSet<URL> enabled = new HashSet<URL>();
         for (String path : detectorPaths) {
             URL url;
             try {
                 url = new File(path).toURI().toURL();
             } catch (MalformedURLException e) {
-                getDefault().logException(e, "Failed to create URL list for custom detector: " + path);
+                getDefault().logException(e, "Failed to create URL for custom detector: " + path);
                 continue;
             }
             IStatus status = validator.validate(path);
             if (status.isOK()) {
-                pluginList.add(url);
+                try {
+                    PluginLoader.addAvailablePlugin(url);
+                    enabled.add(url);
+                } catch (PluginException e) {
+                    getDefault().logException(e, "Failed to load plugin for custom detector: " + path);
+                    continue;
+                }
             } else {
                 getDefault().getLog().log(status);
             }
         }
-        if (pluginList.isEmpty() && !force) {
-            return;
-        }
-        if (DetectorFactoryCollection.isLoaded()) {
-            DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
-            URL[] pluginArr = dfc.getPluginList();
-            boolean shouldReplace = pluginArr.length != detectorPaths.size();
-            if (!shouldReplace) {
-                // check if both lists are really identical
-                for (URL url : pluginArr) {
-                    String file = url.getFile();
-                    IPath filterPath = FindBugsWorker.getFilterPath(file, null);
-                    if (!detectorPaths.contains(filterPath.toPortableString())) {
-                        shouldReplace = true;
-                        break;
-                    }
-                }
+
+        for(PluginLoader pluginLoader : PluginLoader.getAllPlugins()) {
+            System.out.println(pluginLoader.getURL());
+            if (!pluginLoader.isInitialPlugin()) {
+                pluginLoader.setGloballedEnabled(enabled.contains(pluginLoader.getURL()));
             }
-            if (!shouldReplace && !force) {
-                return;
-            }
-            DetectorFactoryCollection.resetInstance(null);
+
         }
-        DetectorFactoryCollection dfc = DetectorFactoryCollection.rawInstance();
-        dfc.setPluginList(pluginList.toArray(new URL[pluginList.size()]));
-        DetectorFactoryCollection.resetInstance(dfc);
+       DetectorFactoryCollection.resetInstance();
     }
 
     @Override
@@ -333,7 +325,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * Returns the SWT Shell of the active workbench window or <code>null</code>
      * if no workbench window is active.
-     * 
+     *
      * @return the SWT Shell of the active workbench window, or
      *         <code>null</code> if no workbench window is active
      */
@@ -397,7 +389,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     /**
      * Find the filesystem path of the FindBugs plugin directory.
-     * 
+     *
      * @return the filesystem path of the FindBugs plugin directory, or null if
      *         the FindBugs plugin directory cannot be found
      */
@@ -427,7 +419,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     /**
      * Log an exception.
-     * 
+     *
      * @param e
      *            the exception
      * @param message
@@ -439,7 +431,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     /**
      * Log an error.
-     * 
+     *
      * @param message
      *            error message
      */
@@ -449,7 +441,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     /**
      * Log a warning.
-     * 
+     *
      * @param message
      *            warning message
      */
@@ -459,7 +451,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     /**
      * Log an informational message.
-     * 
+     *
      * @param message
      *            the informational message
      */
@@ -489,7 +481,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     /**
      * Get the file resource used to store findbugs warnings for a project.
-     * 
+     *
      * @param project
      *            the project
      * @return the IPath to the file (which may not actually exist in the
@@ -533,7 +525,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      * Get the stored BugCollection for project. If there is no stored bug
      * collection for the project, or if an error occurs reading the stored bug
      * collection, a default empty collection is created and returned.
-     * 
+     *
      * @param project
      *            the eclipse project
      * @param monitor
@@ -606,7 +598,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      * the bug collection and findbugs project session properties if successful.
      * If there is no saved bug collection and project for the eclipse project,
      * then FileNotFoundException will be thrown.
-     * 
+     *
      * @param project
      *            the eclipse project
      * @param monitor
@@ -648,7 +640,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * Store a new bug collection for a project. The collection is stored in the
      * session, and also in a file in the project.
-     * 
+     *
      * @param project
      *            the project
      * @param bugCollection
@@ -671,7 +663,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     /**
      * If necessary, save current bug collection for project to disk.
-     * 
+     *
      * @param project
      *            the project
      * @param monitor
@@ -711,7 +703,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     /**
      * Get the FindBugs preferences file for a project (which may not exist yet)
-     * 
+     *
      * @param project
      *            the project
      * @return the IFile for the FindBugs preferences file, if any. Can be
@@ -771,12 +763,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      * Get the FindBugs core preferences for given project. This method can
      * return workspace preferences if project preferences are not created yet
      * or they are disabled.
-     * 
+     *
      * @param project
      *            the project (if null, workspace settings are used)
      * @param forceRead
      *            true to enforce reading properties from disk
-     * 
+     *
      * @return the preferences for the project or prefs from workspace
      */
     public static UserPreferences getCorePreferences(IProject project, boolean forceRead) {
@@ -793,10 +785,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      * Get the Eclipse plugin preferences for given project. This method can
      * return workspace preferences if project preferences are not created yet
      * or they are disabled.
-     * 
+     *
      * @param project
      *            the project (if null, workspace settings are used)
-     * 
+     *
      * @return the preferences for the project or prefs from workspace
      */
     public static IPreferenceStore getPluginPreferences(IProject project) {
@@ -811,7 +803,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     /**
      * Get project own preferences set.
-     * 
+     *
      * @param project
      *            must be non null, exist and be opened
      * @param forceRead
@@ -856,7 +848,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     /**
      * Get the UserPreferences for given project.
-     * 
+     *
      * @param project
      *            the project
      * @return the UserPreferences for the project
@@ -867,7 +859,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     /**
      * Save current UserPreferences for given project or workspace.
-     * 
+     *
      * @param project
      *            the project or null for workspace
      * @throws CoreException
@@ -907,7 +899,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * Ensure that a file is writable. If not currently writable, check it as so
      * that we can edit it.
-     * 
+     *
      * @param file
      *            - file that should be made writable
      * @throws CoreException
@@ -928,7 +920,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      * Read UserPreferences for project from the file in the project directory.
      * Returns null if the preferences have not been saved to a file, or if
      * there is an error reading the preferences file.
-     * 
+     *
      * @param project
      *            the project to get the UserPreferences for
      * @return the UserPreferences, or null if the UserPreferences file could
@@ -993,7 +985,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * Call this method to retrieve the (cache) ImageDescriptor for the given
      * id.
-     * 
+     *
      * @param id
      *            the id of the image descriptor or relative icon path if icon
      *            is inside of default icons folder

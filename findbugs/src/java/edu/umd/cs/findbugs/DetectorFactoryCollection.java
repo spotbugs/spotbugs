@@ -88,7 +88,7 @@ public class DetectorFactoryCollection {
     DetectorFactoryCollection() {
         loadCorePlugin();
         for(PluginLoader loader : PluginLoader.getAllPlugins()) {
-            if (loader.enabledByDefault() && !loader.isCorePlugin())
+            if (loader.globalledEnabled() && !loader.isCorePlugin())
                 loadPlugin(loader.getPlugin());
         }
     }
@@ -135,7 +135,11 @@ public class DetectorFactoryCollection {
             theInstance = instance;
         }
     }
-
+    public static void resetInstance() {
+        synchronized (lock) {
+            theInstance = new I18N();
+        }
+    }
     public static boolean isLoaded() {
         synchronized (lock) {
             return theInstance != null && (theInstance).loaded;

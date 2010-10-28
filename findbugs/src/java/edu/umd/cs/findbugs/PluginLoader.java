@@ -91,7 +91,7 @@ public class PluginLoader {
 
     static Map<URI, PluginLoader> allPlugins = new HashMap<URI, PluginLoader>();
 
-    static Collection<PluginLoader> getAllPlugins() {
+    public static Collection<PluginLoader> getAllPlugins() {
         return allPlugins.values();
     }
 
@@ -111,9 +111,25 @@ public class PluginLoader {
 
     private final boolean corePlugin;
 
+    private boolean initialPlugin;
+
+    public boolean isInitialPlugin() {
+        return initialPlugin;
+    }
+
     private final URL loadedFrom;
 
+    public URL getURL() {
+        return loadedFrom;
+    }
+
     private final String jarName;
+
+    enum GlobalEnabledState { PLUGIN_DEFAULT, ENABLED, DISABLED};
+
+    GlobalEnabledState enabled = GlobalEnabledState.PLUGIN_DEFAULT;
+
+
 
     static {
         if (DEBUG) {
@@ -170,6 +186,7 @@ public class PluginLoader {
         this.classLoader = this.getClass().getClassLoader();
         this.classLoaderForResources = classLoader;
         corePlugin = true;
+        initialPlugin = true;
         URL from = null;
 
         String findBugsClassFile = ClassName.toSlashedClassName(FindBugs.class) + ".class";
@@ -977,13 +994,16 @@ public class PluginLoader {
 
     static void loadInitialPlugins() {
         try {
-            getCorePluginLoader().loadPlugin();
+            PluginLoader corePluginLoader = getCorePluginLoader();
+
+            corePluginLoader.loadPlugin();
         } catch (PluginException e1) {
             throw new IllegalStateException("Unable to load core plugin", e1);
         }
         for (URL u : determineAvailablePlugins()) {
             try {
                 PluginLoader pluginLoader = getPluginLoader(u, PluginLoader.class.getClassLoader());
+                pluginLoader.initialPlugin = true;
                 pluginLoader.loadPlugin();
                 } catch (PluginException e) {
                 AnalysisContext.logError("Unable to load plugin from " + u, e);
@@ -991,6 +1011,12 @@ public class PluginLoader {
         }
     }
 
+    public static void addAvailablePlugin(URL u) throws PluginException {
+
+        PluginLoader pluginLoader = getPluginLoader(u, PluginLoader.class.getClassLoader());
+        pluginLoader.loadPlugin();
+
+    }
 
     /**
      * @return
@@ -1097,12 +1123,45 @@ public class PluginLoader {
     }
 
 
+    /**
+     * @return
+     */
+    public void setGloballedEnabled(boolean enabled) {
+        if (corePlugin)
+            return;
+
+        if (enabled) {
+            if (plugin.isEnabledByDefault())
+                this.enabled = GlobalEnabledState.PLUGIN_DEFAULT;
+            else
+                this.enabled = GlobalEnabledState.ENABLED;
+        } else {
+            if (plugin.isEnabledByDefault())
+                this.enabled = GlobalEnabledState.DISABLED;
+            else
+                this.enabled = GlobalEnabledState.PLUGIN_DEFAULT;
+        }
+
+    }
+
 
     /**
      * @return
      */
-    public boolean enabledByDefault() {
-        return corePlugin || plugin.isEnabledByDefault();
+    public boolean globalledEnabled() {
+        if (corePlugin)
+            return true;
+        switch (enabled) {
+        case ENABLED:
+            return true;
+        case DISABLED:
+            return false;
+        case PLUGIN_DEFAULT:
+            return plugin.isEnabledByDefault();
+           default :
+                throw new IllegalStateException("Unknown state : " + enabled);
+        }
+
     }
 
     public String toString() {
