@@ -2998,8 +2998,6 @@ public class OpcodeStack implements Constants2 {
         Item item = lvValues.get(index);
         if (item != null)
             return item;
-        AnalysisContext.logError("Stack getLVValue " + index + " is null",
-                new NullPointerException());
 
         return new Item();
     }
