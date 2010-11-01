@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -59,15 +58,15 @@ public class I18N extends DetectorFactoryCollection {
     private final ResourceBundle userDesignationBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.UserDesignations", defaultLocale);
 
 
+    I18N(Plugin onlyPlugin) {
+        super(onlyPlugin);
+    }
+
 
     I18N(Collection<Plugin> enabled) {
         super(enabled);
     }
 
-
-    I18N(Plugin... enabled) {
-        super(Arrays.asList(enabled));
-    }
     I18N() {
         super();
 

@@ -84,7 +84,7 @@ import edu.umd.cs.findbugs.xml.XMLOutputUtil;
  * An implementation of {@link BugCollection} that keeps the BugInstances sorted
  * by class (using the native comparison ordering of BugInstance's compareTo()
  * method as a tie-breaker).
- * 
+ *
  * @see BugInstance
  * @author David Hovemeyer
  */
@@ -175,7 +175,7 @@ public class SortedBugCollection implements BugCollection {
     /**
      * Add a Collection of BugInstances to this BugCollection object. This just
      * calls add(BugInstance) for each instance in the input collection.
-     * 
+     *
      * @param collection
      *            the Collection of BugInstances to add
      */
@@ -187,7 +187,7 @@ public class SortedBugCollection implements BugCollection {
 
     /**
      * Add a Collection of BugInstances to this BugCollection object.
-     * 
+     *
      * @param collection
      *            the Collection of BugInstances to add
      * @param updateActiveTime
@@ -203,7 +203,7 @@ public class SortedBugCollection implements BugCollection {
     /**
      * Add a BugInstance to this BugCollection. This just calls add(bugInstance,
      * true).
-     * 
+     *
      * @param bugInstance
      *            the BugInstance
      * @return true if the BugInstance was added, or false if a matching
@@ -215,7 +215,7 @@ public class SortedBugCollection implements BugCollection {
 
     /**
      * Add an analysis error.
-     * 
+     *
      * @param message
      *            the error message
      */
@@ -234,7 +234,7 @@ public class SortedBugCollection implements BugCollection {
     /**
      * Read XML data from given file into this object, populating given Project
      * as a side effect.
-     * 
+     *
      * @param fileName
      *            name of the file to read
      */
@@ -245,7 +245,7 @@ public class SortedBugCollection implements BugCollection {
     /**
      * Read XML data from given file into this object, populating given Project
      * as a side effect.
-     * 
+     *
      * @param file
      *            the file
      */
@@ -289,7 +289,7 @@ public class SortedBugCollection implements BugCollection {
      * Read XML data from given input stream into this object, populating the
      * Project as a side effect. An attempt will be made to close the input
      * stream (even if an exception is thrown).
-     * 
+     *
      * @param in
      *            the InputStream
      */
@@ -364,7 +364,7 @@ public class SortedBugCollection implements BugCollection {
 
     /**
      * Write this BugCollection to a file as XML.
-     * 
+     *
      * @param fileName
      *            the file to write to
      */
@@ -375,7 +375,7 @@ public class SortedBugCollection implements BugCollection {
 
     /**
      * Write this BugCollection to a file as XML.
-     * 
+     *
      * @param file
      *            the file to write to
      */
@@ -386,7 +386,7 @@ public class SortedBugCollection implements BugCollection {
 
     /**
      * Convert the BugCollection into a dom4j Document object.
-     * 
+     *
      * @return the Document representing the BugCollection as a dom4j tree
      */
     public Document toDocument() {
@@ -409,7 +409,7 @@ public class SortedBugCollection implements BugCollection {
     /**
      * Write the BugCollection to given output stream as XML. The output stream
      * will be closed, even if an exception is thrown.
-     * 
+     *
      * @param out
      *            the OutputStream to write to
      */
@@ -507,12 +507,12 @@ public class SortedBugCollection implements BugCollection {
     /**
      * Write the BugCollection to an XMLOutput object. The finish() method of
      * the XMLOutput object is guaranteed to be called.
-     * 
+     *
      * <p>
      * To write the SummaryHTML element, set property
      * findbugs.report.SummaryHTML to "true".
      * </p>
-     * 
+     *
      * @param xmlOutput
      *            the XMLOutput object
      */
@@ -808,7 +808,7 @@ public class SortedBugCollection implements BugCollection {
     /**
      * Clone all of the BugInstance objects in the source Collection and add
      * them to the destination Collection.
-     * 
+     *
      * @param dest
      *            the destination Collection
      * @param source
@@ -869,23 +869,23 @@ public class SortedBugCollection implements BugCollection {
         public static final MultiversionBugInstanceComparator instance = new MultiversionBugInstanceComparator();
     }
 
-    private Comparator<BugInstance> comparator;
+    private final Comparator<BugInstance> comparator;
 
-    private TreeSet<BugInstance> bugSet;
+    private final TreeSet<BugInstance> bugSet;
 
-    private LinkedHashSet<AnalysisError> errorList;
+    private final LinkedHashSet<AnalysisError> errorList;
 
-    private TreeSet<String> missingClassSet;
+    private final TreeSet<String> missingClassSet;
 
     @CheckForNull
     private String summaryHTML;
 
-    private ProjectStats projectStats;
+    private final ProjectStats projectStats;
 
     // private Map<String, ClassHash> classHashMap;
-    private Map<String, ClassFeatureSet> classFeatureSetMap;
+    private final Map<String, ClassFeatureSet> classFeatureSetMap;
 
-    private List<AppVersion> appVersionList;
+    private final List<AppVersion> appVersionList;
 
     private boolean preciseHashOccurrenceNumbersAvailable = false;
 
@@ -929,7 +929,7 @@ public class SortedBugCollection implements BugCollection {
 
     /**
      * Constructor. Creates an empty object given an existing ProjectStats.
-     * 
+     *
      * @param projectStats
      *            the ProjectStats
      */
@@ -943,7 +943,7 @@ public class SortedBugCollection implements BugCollection {
 
     /**
      * Constructor. Creates an empty object given an existing ProjectStats.
-     * 
+     *
      * @param projectStats
      *            the ProjectStats
      * @param comparator
@@ -966,6 +966,7 @@ public class SortedBugCollection implements BugCollection {
         appVersionList = new LinkedList<AppVersion>();
         releaseName = "";
         timestamp = -1L;
+        I18N.resetInstance(getProject().getConfiguration());
     }
 
     public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
@@ -987,10 +988,12 @@ public class SortedBugCollection implements BugCollection {
     }
 
     public Iterator<BugInstance> iterator() {
+        I18N.resetInstance(getProject().getConfiguration());
         return bugSet.iterator();
     }
 
     public Collection<BugInstance> getCollection() {
+        I18N.resetInstance(getProject().getConfiguration());
         return bugSet;
     }
 
@@ -1077,7 +1080,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.BugCollection#lookupFromUniqueId(java.lang.String)
      */
@@ -1118,7 +1121,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugCollection#clearBugInstances()
      */
 
@@ -1134,7 +1137,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugCollection#getReleaseName()
      */
 
@@ -1146,7 +1149,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugCollection#setReleaseName(java.lang.String)
      */
 
@@ -1156,7 +1159,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugCollection#appVersionIterator()
      */
 
@@ -1166,7 +1169,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugCollection#addAppVersion(edu.umd.cs.findbugs.
      * AppVersion)
      */
@@ -1177,7 +1180,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugCollection#clearAppVersions()
      */
 
@@ -1194,7 +1197,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.BugCollection#createEmptyCollectionWithMetadata()
      */
@@ -1219,7 +1222,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugCollection#setTimestamp(long)
      */
 
@@ -1229,7 +1232,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugCollection#getTimestamp()
      */
 
@@ -1239,7 +1242,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.BugCollection#getClassFeatureSet(java.lang.String)
      */
@@ -1250,7 +1253,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.BugCollection#setClassFeatureSet(edu.umd.cs.findbugs
      * .model.ClassFeatureSet)
@@ -1262,7 +1265,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugCollection#classFeatureSetIterator()
      */
 
@@ -1272,7 +1275,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugCollection#clearClassFeatures()
      */
     public void clearClassFeatures() {
@@ -1296,7 +1299,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.BugCollection#getAppVersionFromSequenceNumber(int)
      */
@@ -1311,7 +1314,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugCollection#findBug(java.lang.String,
      * java.lang.String, int)
      */
@@ -1379,7 +1382,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugCollection#reinitializeCloud()
      */
     public Cloud reinitializeCloud() {
@@ -1401,7 +1404,7 @@ public class SortedBugCollection implements BugCollection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugCollection#setMinimalXML(boolean)
      */
     public void setMinimalXML(boolean minimalXML) {

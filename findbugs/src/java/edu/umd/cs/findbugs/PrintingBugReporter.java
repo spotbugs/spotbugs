@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.util.Bag;
  * stream.
  */
 public class PrintingBugReporter extends TextUIBugReporter {
-    private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
+    private final HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
     public void observeClass(ClassDescriptor classDescriptor) {
         // Don't need to do anything special, since we won't be
@@ -85,7 +85,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String,
          * java.lang.String)
@@ -116,7 +116,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java
          * .lang.String, java.lang.String)
@@ -151,8 +151,6 @@ public class PrintingBugReporter extends TextUIBugReporter {
         int argCount = commandLine.parse(args, 0, 2, "Usage: " + PrintingCommandLine.class.getName()
                 + " [options] [<xml results> [<test results]] ");
 
-        // Load plugins, in order to get message files
-        DetectorFactoryCollection.instance();
 
         if (commandLine.stylesheet != null) {
             // actually do xsl via HTMLBugReporter instead of

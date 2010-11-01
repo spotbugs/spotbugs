@@ -35,8 +35,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -89,7 +89,7 @@ import edu.umd.cs.findbugs.util.JavaWebStart;
  */
 public class PluginLoader {
 
-    static Map<URI, PluginLoader> allPlugins = new HashMap<URI, PluginLoader>();
+    static Map<URI, PluginLoader> allPlugins = new LinkedHashMap<URI, PluginLoader>();
 
     public static Collection<PluginLoader> getAllPlugins() {
         return allPlugins.values();
@@ -155,7 +155,6 @@ public class PluginLoader {
         corePlugin = false;
         init();
     }
-
 
 
     /**
@@ -289,6 +288,11 @@ public class PluginLoader {
      * @return URL for the resource, or null if it could not be found
      */
     public URL getResource(String name) {
+        if (isCorePlugin()) {
+            URL url = getCoreResource(name);
+            if (url != null &&  IO.verifyURL(url))
+                return url;
+        }
         if (loadedFrom != null) {
             try {
                 URL url = resourceFromPlugin(loadedFrom, name);
@@ -332,12 +336,6 @@ public class PluginLoader {
     static @CheckForNull
     URL getCoreResource(String name) {
         URL u = loadFromFindBugsPluginDir(name);
-        if (u != null)
-            return u;
-        u = PluginLoader.class.getResource("/" + name);
-        if (u != null)
-            return u;
-        u = PluginLoader.class.getResource(name);
         if (u != null)
             return u;
         return loadFromFindBugsEtcDir(name);
@@ -483,6 +481,17 @@ public class PluginLoader {
         if (pluginShortDesc != null) {
             plugin.setShortDescription(pluginShortDesc.getText().trim());
         }
+        Node detailedDescription = null;
+        try {
+            detailedDescription = findMessageNode(messageCollectionList, "/MessageCollection/Plugin/Details",
+                    "no plugin description");
+        } catch (PluginException e) {
+            // Missing description is not fatal, so ignore
+        }
+        if (detailedDescription != null) {
+            plugin.setDetailedDescription(detailedDescription.getText().trim());
+        }
+
 
         List<Node> cloudNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Cloud");
         for (Node cloudNode : cloudNodeList) {
@@ -954,18 +963,38 @@ public class PluginLoader {
 
 
     static List<URL> determineInstalledPlugins() {
-        ArrayList<URL> plugins = new ArrayList<URL>();
 
         String homeDir = DetectorFactoryCollection.getFindBugsHome();
         if (homeDir == null)
             return Collections.emptyList();
+        File pluginDir = new File(new File(homeDir), "plugin");
 
+        return findPluginsInDir(pluginDir);
+
+    }
+
+ static List<URL> determineUserInstalledPlugins() {
+
+     try {
+        String homeDir = System.getProperty("user.home");
+        if (homeDir == null)
+            return Collections.emptyList();
+        File pluginDir = new File(new File(homeDir), ".findbugs/plugin");
+
+        return findPluginsInDir(pluginDir);
+     } catch (Exception e) {
+         return Collections.emptyList();
+     }
+
+    }
+
+    private static List<URL> findPluginsInDir(File pluginDir) {
         //
-        // See what plugins are available in the ${findbugs.home}/plugin
+        // See what plugins are available in the pluginDir
         // directory
         //
+        ArrayList<URL> plugins = new ArrayList<URL>();
 
-        File pluginDir = new File(new File(homeDir), "plugin");
         File[] contentList = pluginDir.listFiles();
         if (contentList == null) {
             return plugins;
@@ -975,9 +1004,12 @@ public class PluginLoader {
             if (file.getName().endsWith(".jar")) {
 
                 try {
-                    plugins.add(file.toURI().toURL());
-                    if (FindBugs.DEBUG)
-                        System.out.println("Found plugin: " + file.toString());
+                    URL url = file.toURI().toURL();
+                    if (IO.verifyURL(url)) {
+                        plugins.add(url);
+                        if (FindBugs.DEBUG)
+                            System.out.println("Found plugin: " + file.toString());
+                    }
                 } catch (MalformedURLException e) {
 
                 }
@@ -985,7 +1017,6 @@ public class PluginLoader {
             }
         }
         return plugins;
-
     }
 
     static {
@@ -1011,10 +1042,11 @@ public class PluginLoader {
         }
     }
 
-    public static void addAvailablePlugin(URL u) throws PluginException {
+    public static PluginLoader addAvailablePlugin(URL u) throws PluginException {
 
         PluginLoader pluginLoader = getPluginLoader(u, PluginLoader.class.getClassLoader());
         pluginLoader.loadPlugin();
+        return pluginLoader;
 
     }
 
@@ -1028,6 +1060,7 @@ public class PluginLoader {
             plugins = new ArrayList<URL>(determineWebStartPlugins());
         } else {
             plugins = new ArrayList<URL>(determineInstalledPlugins());
+            plugins.addAll(determineUserInstalledPlugins());
         }
         Set<Entry<Object, Object>> entrySet = SystemProperties.getAllProperties().entrySet();
         for (Map.Entry<?, ?> e : entrySet) {

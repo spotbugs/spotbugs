@@ -67,8 +67,7 @@ public class TypeQualifierValue {
 
     public final ClassDescriptor typeQualifier;
 
-    public final @CheckForNull
-    Object value;
+    public final @CheckForNull Object value;
 
     private final boolean isStrict;
 

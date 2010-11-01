@@ -63,9 +63,9 @@ import edu.umd.cs.findbugs.util.LaunchBrowser;
 public class CommentsArea {
     private static final Logger LOGGER = Logger.getLogger(CommentsArea.class.getName());
 
-    private JTextArea userCommentsText = new JTextArea();
+    private final JTextArea userCommentsText = new JTextArea();
 
-    private JTextArea reportText = new JTextArea();
+    private final JTextArea reportText = new JTextArea();
 
     private Color userCommentsTextUnenabledColor;
 
@@ -87,7 +87,7 @@ public class CommentsArea {
 
     final MainFrame frame;
 
-    private Executor backgroundExecutor = Executors.newSingleThreadExecutor();
+    private final Executor backgroundExecutor = Executors.newSingleThreadExecutor();
 
     private BugFilingStatus currentBugStatus;
     private TitledBorder evaluationsTitle;
@@ -135,12 +135,14 @@ public class CommentsArea {
         userCommentsText.setWrapStyleWord(true);
         userCommentsText.setEnabled(false);
         userCommentsText.setBackground(userCommentsTextUnenabledColor);
+        userCommentsText.setFont( userCommentsText.getFont().deriveFont(Driver.getFontSize()));
         JScrollPane commentsScrollP = new JScrollPane(userCommentsText);
 
         reportText.setLineWrap(true);
         reportText.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.report", "Information about the bug here"));
         reportText.setWrapStyleWord(true);
         reportText.setEditable(false);
+        reportText.setFont( reportText.getFont().deriveFont(Driver.getFontSize()));
 
         JScrollPane reportScrollP = new JScrollPane(reportText);
         fileBug = new JButton(BugFilingStatus.FILE_BUG.toString());
@@ -279,7 +281,7 @@ public class CommentsArea {
     /**
      * Sets the user comment panel to whether or not it is enabled. If isEnabled
      * is false will clear the user comments text pane.
-     * 
+     *
      * @param isEnabled
      */
     void setUserCommentInputEnable(final boolean isEnabled) {
@@ -293,7 +295,7 @@ public class CommentsArea {
     /**
      * Sets the user comment panel to whether or not it is enabled. If isEnabled
      * is false will clear the user comments text pane.
-     * 
+     *
      * @param isEnabled
      */
     void setUserCommentInputEnableFromSwingThread(final boolean isEnabled) {
@@ -317,7 +319,7 @@ public class CommentsArea {
     /**
      * Updates comments tab. Takes node passed and sets the designation and
      * comments.
-     * 
+     *
      * @param node
      */
     void updateCommentsFromLeafInformation(final BugLeafNode node) {
@@ -376,7 +378,7 @@ public class CommentsArea {
      * node's annotation is already equal to the current user comment then will
      * not do anything so setProjectedChanged is not made true. Will also add
      * the comment if it is new to the previous comments list.
-     * 
+     *
      * @param node
      */
     private void saveCommentsToBug(BugLeafNode node) {
@@ -448,7 +450,7 @@ public class CommentsArea {
 
     /**
      * Saves comments to the current selected bug.
-     * 
+     *
      */
 
     public void saveComments() {
@@ -465,7 +467,7 @@ public class CommentsArea {
     /**
      * Deletes the list have already. Then loads from list. Will load from the
      * list until run out of room in the prevCommentsList.
-     * 
+     *
      * @param list
      */
     void loadPrevCommentsList(String[] list) {
@@ -504,7 +506,7 @@ public class CommentsArea {
      * Adds the comment into the list. If the comment is already in the list
      * then simply moves to the front. If the list is too big when adding the
      * comment then deletes the last comment on the list.
-     * 
+     *
      * @param comment
      */
     private void addToPrevComments(String comment) {
@@ -529,7 +531,7 @@ public class CommentsArea {
     /**
      * Removes all items in the comboBox for previous comments. Then refills it
      * using prevCommentsList.
-     * 
+     *
      */
     private void resetPrevCommentsComboBox() {
         prevCommentsComboBox.removeAllItems();
@@ -546,7 +548,7 @@ public class CommentsArea {
 
     /**
      * Returns the text in the current user comments textArea.
-     * 
+     *
      * @return
      */
     private String getCurrentUserCommentsText() {
@@ -555,7 +557,7 @@ public class CommentsArea {
 
     /**
      * Sets the current user comments text area to comment.
-     * 
+     *
      * @param comment
      */
     private void setCurrentUserCommentsText(String comment) {
@@ -773,7 +775,7 @@ public class CommentsArea {
 
     /**
      * Returns the SorterTableColumnModel of the MainFrame.
-     * 
+     *
      * @return
      */
     SorterTableColumnModel getSorter() {

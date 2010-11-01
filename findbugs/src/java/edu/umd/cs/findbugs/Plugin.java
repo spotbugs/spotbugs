@@ -48,6 +48,7 @@ public class Plugin {
     private String website;
 
     private String shortDescription;
+    private String detailedDescription;
 
     private final ArrayList<DetectorFactory> detectorFactoryList;
 
@@ -176,6 +177,14 @@ public class Plugin {
      */
     public String getShortDescription() {
         return shortDescription;
+    }
+
+    public String getDetailedDescription() {
+        return detailedDescription;
+    }
+
+    public void setDetailedDescription(String detailedDescription) {
+        this.detailedDescription = detailedDescription;
     }
 
     /**

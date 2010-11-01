@@ -59,6 +59,7 @@ public class FilterActivity {
                 i.unsuppressBug(optionalPath);
             break;
         }
+        MainFrame.getInstance().updateStatusBar();
     }
 
 }

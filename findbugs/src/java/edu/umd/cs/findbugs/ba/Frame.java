@@ -57,7 +57,7 @@ import edu.umd.cs.findbugs.SystemProperties;
  * <p>
  * A Frame may have the special "BOTTOM" value. The result of merging any frame
  * with BOTTOM is BOTTOM.
- * 
+ *
  * @author David Hovemeyer
  * @see FrameDataflowAnalysis
  */
@@ -72,12 +72,12 @@ public abstract class Frame<ValueType> {
     /**
      * Number of local variables in the method.
      */
-    private int numLocals;
+    private final int numLocals;
 
     /**
      * Array storing the values of local variables and operand stack slots.
      */
-    private ArrayList<ValueType> slotList;
+    private final ArrayList<ValueType> slotList;
 
     /**
      * Flag marking this frame as a special "TOP" value. Such Frames serve as
@@ -104,7 +104,7 @@ public abstract class Frame<ValueType> {
      * Constructor. This version of the constructor is for subclasses for which
      * it is always safe to call getDefaultValue(), even when the object is not
      * fully initialized.
-     * 
+     *
      * @param numLocals
      *            number of local variable slots in the method
      */
@@ -166,7 +166,7 @@ public abstract class Frame<ValueType> {
 
     /**
      * Push a value onto the Java operand stack.
-     * 
+     *
      * @param value
      *            the ValueType to push
      */
@@ -180,7 +180,7 @@ public abstract class Frame<ValueType> {
 
     /**
      * Pop a value off of the Java operand stack.
-     * 
+     *
      * @return the value that was popped
      * @throws DataflowAnalysisException
      *             if the Java operand stack is empty
@@ -195,7 +195,7 @@ public abstract class Frame<ValueType> {
 
     /**
      * Get the value on the top of the Java operand stack.
-     * 
+     *
      * @throws DataflowAnalysisException
      *             if the Java operand stack is empty
      */
@@ -225,7 +225,7 @@ public abstract class Frame<ValueType> {
 
     /**
      * Get a value on the operand stack.
-     * 
+     *
      * @param loc
      *            the stack location, counting downwards from the top (location
      *            0)
@@ -241,7 +241,7 @@ public abstract class Frame<ValueType> {
 
     /**
      * Get a the location in the frame of a value on the operand stack.
-     * 
+     *
      * @param loc
      *            the stack location, counting downwards from the top (location
      *            0)
@@ -258,7 +258,7 @@ public abstract class Frame<ValueType> {
      * instruction. This relies on the observation that in instructions which
      * use an object instance (such as getfield, invokevirtual, etc.), the
      * object instance is the first operand used by the instruction.
-     * 
+     *
      * @param ins
      *            the instruction
      * @param cpg
@@ -274,11 +274,11 @@ public abstract class Frame<ValueType> {
      * relies on the observation that in instructions which use an object
      * instance (such as getfield, invokevirtual, etc.), the object instance is
      * the first operand used by the instruction.
-     * 
+     *
      * <p>
      * The value returned may be passed to getStackValue(int).
      * </p>
-     * 
+     *
      * @param ins
      *            the Instruction
      * @param cpg
@@ -297,7 +297,7 @@ public abstract class Frame<ValueType> {
     /**
      * Get the slot the object instance referred to by given instruction is
      * located in.
-     * 
+     *
      * @param ins
      *            the Instruction
      * @param cpg
@@ -319,7 +319,7 @@ public abstract class Frame<ValueType> {
 
     /**
      * Get the number of arguments passed to given method invocation.
-     * 
+     *
      * @param ins
      *            the method invocation instruction
      * @param cpg
@@ -336,7 +336,7 @@ public abstract class Frame<ValueType> {
     /**
      * Get the number of arguments passed to given method invocation, including
      * the object instance if the call is to an instance method.
-     * 
+     *
      * @param ins
      *            the method invocation instruction
      * @param cpg
@@ -354,7 +354,7 @@ public abstract class Frame<ValueType> {
 
     /**
      * Get the <i>i</i>th argument passed to given method invocation.
-     * 
+     *
      * @param ins
      *            the method invocation instruction
      * @param cpg
@@ -375,7 +375,7 @@ public abstract class Frame<ValueType> {
 
     /**
      * Get the <i>i</i>th argument passed to given method invocation.
-     * 
+     *
      * @param ins
      *            the method invocation instruction
      * @param cpg
@@ -396,7 +396,7 @@ public abstract class Frame<ValueType> {
      * Get the stack slot that will contain given method argument. Assumes that
      * this frame is at the location (just before) a method invocation
      * instruction.
-     * 
+     *
      * @param i
      *            the argument index: 0 for first arg, etc.
      * @param numArguments
@@ -412,7 +412,7 @@ public abstract class Frame<ValueType> {
 
     /**
      * Get the <i>i</i>th operand used by given instruction.
-     * 
+     *
      * @param ins
      *            the instruction, which must be a StackConsumer
      * @param cpg
@@ -432,7 +432,7 @@ public abstract class Frame<ValueType> {
     /**
      * Get set of arguments passed to a method invocation which match given
      * predicate.
-     * 
+     *
      * @param invokeInstruction
      *            the InvokeInstruction
      * @param cpg
@@ -502,7 +502,7 @@ public abstract class Frame<ValueType> {
 
     /**
      * Get the value at the <i>n</i>th slot.
-     * 
+     *
      * @param n
      *            the slot to get the value of
      * @return the value in the slot
@@ -515,7 +515,7 @@ public abstract class Frame<ValueType> {
 
     /**
      * Set the value at the <i>n</i>th slot.
-     * 
+     *
      * @param n
      *            the slot in which to set a new value
      * @param value
@@ -532,7 +532,7 @@ public abstract class Frame<ValueType> {
     /**
      * Return true if this stack frame is the same as the one given as a
      * parameter.
-     * 
+     *
      * @param other
      *            the other Frame
      * @return true if the frames are the same, false otherwise
@@ -562,14 +562,27 @@ public abstract class Frame<ValueType> {
 
     /**
      * Make this Frame exactly the same as the one given as a parameter.
-     * 
+     *
      * @param other
      *            the Frame to make this object the same as
      */
     public void copyFrom(Frame<ValueType> other) {
         lastUpdateTimestamp = other.lastUpdateTimestamp;
-        slotList.clear();
-        slotList.addAll(other.slotList);
+        if (true) {
+            int size = slotList.size();
+            if (size == other.slotList.size()) {
+                for (int i = 0; i < size; i++)
+                    slotList.set(i, other.slotList.get(i));
+            } else {
+                slotList.clear();
+                for (ValueType v : other.slotList)
+                    slotList.add(v);
+            }
+        } else {
+            slotList.clear();
+            slotList.addAll(other.slotList);
+
+        }
         /*
          * Andrei, 27.02.2008: "optimized" code below takes ~18% overall FB
          * execution time, code above only 5% int size = slotList.size(); if

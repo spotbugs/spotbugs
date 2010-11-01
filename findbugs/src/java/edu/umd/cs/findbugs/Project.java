@@ -80,13 +80,13 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * referenced by the program which the user doesn't want to analyze
  * <li>some number of boolean options
  * </ul>
- * 
+ *
  * @author David Hovemeyer
  */
 public class Project implements XMLWriteable {
     private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.project.debug");
 
-    private List<File> currentWorkingDirectoryList;
+    private final List<File> currentWorkingDirectoryList;
 
     private String projectName;
 
@@ -111,6 +111,17 @@ public class Project implements XMLWriteable {
     private boolean isModified;
 
     private String cloudId;
+
+    private I18N configuration = I18N.instance();
+
+
+    public I18N getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(I18N configuration) {
+        this.configuration = configuration;
+    }
 
     /**
      * @return Returns the cloudId.
@@ -235,7 +246,7 @@ public class Project implements XMLWriteable {
 
     /**
      * Add a file to the project.
-     * 
+     *
      * @param fileName
      *            the file to add
      * @return true if the file was added, or false if the file was already
@@ -247,7 +258,7 @@ public class Project implements XMLWriteable {
 
     /**
      * Add a source directory to the project.
-     * 
+     *
      * @param dirName
      *            the directory to add
      * @return true if the source directory was added, or false if the source
@@ -264,7 +275,7 @@ public class Project implements XMLWriteable {
 
     /**
      * Add a working directory to the project.
-     * 
+     *
      * @param dirName
      *            the directory to add
      * @return true if the working directory was added, or false if the working
@@ -278,7 +289,7 @@ public class Project implements XMLWriteable {
 
     /**
      * Get the number of files in the project.
-     * 
+     *
      * @return the number of files in the project
      */
     public int getFileCount() {
@@ -287,7 +298,7 @@ public class Project implements XMLWriteable {
 
     /**
      * Get the given file in the list of project files.
-     * 
+     *
      * @param num
      *            the number of the file in the list of project files
      * @return the name of the file
@@ -298,7 +309,7 @@ public class Project implements XMLWriteable {
 
     /**
      * Remove file at the given index in the list of project files
-     * 
+     *
      * @param num
      *            index of the file to remove in the list of project files
      */
@@ -316,7 +327,7 @@ public class Project implements XMLWriteable {
 
     /**
      * Get the number of source directories in the project.
-     * 
+     *
      * @return the number of source directories in the project
      */
     public int getNumSourceDirs() {
@@ -325,7 +336,7 @@ public class Project implements XMLWriteable {
 
     /**
      * Get the given source directory.
-     * 
+     *
      * @param num
      *            the number of the source directory
      * @return the source directory
@@ -336,7 +347,7 @@ public class Project implements XMLWriteable {
 
     /**
      * Remove source directory at given index.
-     * 
+     *
      * @param num
      *            index of the source directory to remove
      */
@@ -369,7 +380,7 @@ public class Project implements XMLWriteable {
 
     /**
      * Add an auxiliary classpath entry
-     * 
+     *
      * @param auxClasspathEntry
      *            the entry
      * @return true if the entry was added successfully, or false if the given
@@ -412,11 +423,11 @@ public class Project implements XMLWriteable {
      * Worklist item for finding implicit classpath entries.
      */
     private static class WorkListItem {
-        private URL url;
+        private final URL url;
 
         /**
          * Constructor.
-         * 
+         *
          * @param url
          *            the URL of the Jar or Zip file
          */
@@ -436,9 +447,9 @@ public class Project implements XMLWriteable {
      * Worklist for finding implicit classpath entries.
      */
     private static class WorkList {
-        private LinkedList<WorkListItem> itemList;
+        private final LinkedList<WorkListItem> itemList;
 
-        private HashSet<String> addedSet;
+        private final HashSet<String> addedSet;
 
         /**
          * Constructor. Creates an empty worklist.
@@ -468,7 +479,7 @@ public class Project implements XMLWriteable {
 
         /**
          * Add a worklist item.
-         * 
+         *
          * @param item
          *            the WorkListItem representing a zip/jar file to be
          *            examined
@@ -512,7 +523,7 @@ public class Project implements XMLWriteable {
      * file that is part of this project or by the <code>"Class-Path"</code>
      * attribute of any directly or indirectly referenced jar. The referenced
      * jar files that exist are the list of implicit classpath entries.
-     * 
+     *
      * @deprecated FindBugs2 and ClassPathBuilder take care of this
      *             automatically
      */
@@ -545,7 +556,7 @@ public class Project implements XMLWriteable {
     /**
      * Examine the manifest of a single zip/jar file for implicit classapth
      * entries.
-     * 
+     *
      * @param jarFileURL
      *            URL of the zip/jar file
      * @param workList
@@ -609,7 +620,7 @@ public class Project implements XMLWriteable {
 
     /**
      * Save the project to an output file.
-     * 
+     *
      * @param outputFile
      *            name of output file
      * @param useRelativePaths
@@ -706,7 +717,7 @@ public class Project implements XMLWriteable {
 
     /**
      * Read Project from named file.
-     * 
+     *
      * @param argument
      *            command line argument containing project file name
      * @return the Project
@@ -858,7 +869,7 @@ public class Project implements XMLWriteable {
 
     /**
      * Converts a full path to a relative path if possible
-     * 
+     *
      * @param srcFile
      *            path to convert
      * @return the converted filename
@@ -928,7 +939,7 @@ public class Project implements XMLWriteable {
 
     /**
      * Converts a relative path to an absolute path if possible.
-     * 
+     *
      * @param fileName
      *            path to convert
      * @return the converted filename
@@ -964,13 +975,13 @@ public class Project implements XMLWriteable {
     /**
      * Make the given filename absolute relative to the current working
      * directory candidates.
-     * 
+     *
      * If the given filename exists in more than one of the working directories,
      * a list of these existing absolute paths is returned.
-     * 
+     *
      * The returned list is guaranteed to be non-empty. The returned paths might
      * exist or not exist and might be relative or absolute.
-     * 
+     *
      * @return A list of at least one candidate path for the given filename.
      */
     private List<String> makeAbsoluteCwdCandidates(String fileName) {
@@ -1004,7 +1015,7 @@ public class Project implements XMLWriteable {
     /**
      * Add a value to given list, making the Project modified if the value is
      * not already present in the list.
-     * 
+     *
      * @param list
      *            the list
      * @param value

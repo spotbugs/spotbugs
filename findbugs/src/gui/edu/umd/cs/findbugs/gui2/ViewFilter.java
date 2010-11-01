@@ -68,6 +68,20 @@ public class ViewFilter {
     }
 
     enum OverallClassificationFilter implements ViewFilterEnum {
+        NOT_HARMLESS("Not classified as harmless") {
+            @Override
+            boolean show(Cloud cloud, BugInstance b) {
+                double score = cloud.getClassificationScore(b);
+                if (score <= UserDesignation.MOSTLY_HARMLESS.score())
+                    return false;
+
+                score = cloud.getPortionObsoleteClassifications(b);
+                if (score >= 0.5)
+                    return false;
+
+                 return true;
+            }
+        },
         SHOULD_FIX("Overall classification is should fix") {
             @Override
             boolean show(Cloud cloud, BugInstance b) {
@@ -99,7 +113,7 @@ public class ViewFilter {
                 return false;
             }
         },
-        HIGH_VARIANCE("Controversial") {
+      HIGH_VARIANCE("Controversial") {
             @Override
             boolean show(Cloud cloud, BugInstance b) {
                 double variance = cloud.getClassificationDisagreement(b);

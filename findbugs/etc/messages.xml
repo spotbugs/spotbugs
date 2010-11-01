@@ -9,7 +9,7 @@
   **********************************************************************
   -->
   <Plugin>
-    <ShortDescription>Default FindBugs plugin</ShortDescription>
+    <ShortDescription>Core FindBugs plugin</ShortDescription>
     <Details>
 <![CDATA[
 <p>

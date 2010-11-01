@@ -605,6 +605,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
         for (String s : excludeFilterFile)
             findBugs.addFilter(s, false);
 
+        I18N.resetInstance(project.getConfiguration());
+
         findBugs.setClassScreener(classScreener);
 
         findBugs.setRelaxedReportingMode(relaxedReportingMode);

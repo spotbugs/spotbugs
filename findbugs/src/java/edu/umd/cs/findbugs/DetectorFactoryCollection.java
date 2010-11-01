@@ -81,11 +81,7 @@ public class DetectorFactoryCollection {
 
     protected final HashMap<String, BugCode> bugCodeMap = new HashMap<String, BugCode>();
 
-    /**
-     * Constructor. loadPlugins() method must be called before any detector
-     * factories can be accessed.
-     */
-    DetectorFactoryCollection() {
+    protected DetectorFactoryCollection() {
         loadCorePlugin();
         for(PluginLoader loader : PluginLoader.getAllPlugins()) {
             if (loader.globalledEnabled() && !loader.isCorePlugin())
@@ -93,7 +89,11 @@ public class DetectorFactoryCollection {
         }
     }
 
-    DetectorFactoryCollection(Collection<Plugin> enabled) {
+    protected DetectorFactoryCollection(Plugin onlyPlugin) {
+        loadPlugin(onlyPlugin);
+    }
+
+    protected DetectorFactoryCollection(Collection<Plugin> enabled) {
         loadCorePlugin();
         for(Plugin plugin : enabled) {
             loadPlugin(plugin);

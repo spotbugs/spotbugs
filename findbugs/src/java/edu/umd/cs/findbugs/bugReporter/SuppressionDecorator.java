@@ -27,12 +27,13 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.HashSet;
 
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.ComponentPlugin;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
@@ -49,8 +50,13 @@ public class SuppressionDecorator extends BugReporterDecorator {
     public SuppressionDecorator(ComponentPlugin<BugReporterDecorator> plugin, BugReporter delegate) {
         super(plugin, delegate);
         category = plugin.getProperties().getProperty("category");
-        if (I18N.instance().getBugCategory(category) == null)
-            throw new IllegalArgumentException("Unable to find category " + category);
+        BugCollection bugCollection = delegate.getBugCollection();
+        if (bugCollection != null) {
+            Project project = bugCollection.getProject();
+            if (project.getConfiguration().getBugCategory(category) == null)
+                throw new IllegalArgumentException("Unable to find category " + category);
+        }
+
         final String adjustmentSource = plugin.getProperties().getProperty("packageSource");
         String packageList = plugin.getProperties().getProperty("packageList");
 
