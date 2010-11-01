@@ -30,23 +30,32 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.TreeModel;
 
+import edu.umd.cs.findbugs.PluginException;
+import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 
@@ -55,24 +64,18 @@ import edu.umd.cs.findbugs.filter.Matcher;
  */
 
 /*
- * 
+ *
  * Preferences, which should really be renamed Filters And Suppressions (fas,
  * like fas file!) since thats all that's actually here now
  */
 @SuppressWarnings("serial")
 public class PreferencesFrame extends FBDialog {
 
-    private static int PROPERTIES_TAB = 0;
-
-    private static int FILTERS_TAB = 1;
-
-    private static int SUPPRESSIONS_TAB = 2;
-
     JTabbedPane mainTabPane;
 
     private static PreferencesFrame instance;
 
-    private CheckBoxList filterCheckBoxList = new CheckBoxList();
+    private final CheckBoxList filterCheckBoxList = new CheckBoxList();
 
     private JButton addButton;
 
@@ -106,7 +109,7 @@ public class PreferencesFrame extends FBDialog {
     }
 
     private PreferencesFrame() {
-        setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.fil_sup_ttl", "Filters/Suppressions"));
+        setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.fil_sup_ttl", "Preferences"));
         setModal(true);
 
         mainTabPane = new JTabbedPane();
@@ -114,6 +117,7 @@ public class PreferencesFrame extends FBDialog {
         mainTabPane.add("Properties", createPropertiesPane());
 
         mainTabPane.add(edu.umd.cs.findbugs.L10N.getLocalString("pref.filters", "Filters"), createFilterPane());
+        mainTabPane.add("Plugins", createPluginPane());
 
         MainFrame.getInstance().updateStatusBar();
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
@@ -151,26 +155,122 @@ public class PreferencesFrame extends FBDialog {
         pack();
     }
 
-    // /**
-    // * Creates the general tab. This lets the user change the font
-    // * size and the total number of possible previous comments.
-    // * @return
-    // */
-    // private JPanel createGeneralPane() {
-    // JPanel generalPanel = new JPanel();
-    //
-    // generalPanel.add(new JLabel("Clear Recent Projects List"));
-    // JButton clearButton=new JButton("Clear");
-    // clearButton.addActionListener(new ActionListener()
-    // {
-    // public void actionPerformed(ActionEvent e)
-    // {
-    // GUISaveState.getInstance().clear();
-    // }
-    // });
-    // return generalPanel;
-    // }
-    //
+
+
+    Map<PluginLoader, Boolean> selectedStatus = new HashMap<PluginLoader, Boolean>();
+
+    private JPanel createPluginPane() {
+        final JPanel pluginPanel = new JPanel();
+        final JPanel center = new JPanel();
+        pluginPanel.setLayout(new BorderLayout());
+
+        pluginPanel.add(center, BorderLayout.CENTER);
+
+        BoxLayout centerLayout = new BoxLayout(center, BoxLayout.Y_AXIS);
+        center.setLayout(centerLayout);
+        Collection<PluginLoader> plugins = PluginLoader.getAllPlugins();
+        for (final PluginLoader loader : plugins) {
+            if (loader.isCorePlugin())
+                continue;
+            String text = loader.getPlugin().getShortDescription();
+            String id = loader.getPlugin().getPluginId();
+            if (text == null)
+                text = id;
+            final JCheckBox checkBox = new JCheckBox(text, loader.globalledEnabled());
+            String longText = loader.getPlugin().getDetailedDescription();
+            if (longText != null)
+                checkBox.setToolTipText("<html>" + longText +"</html>");
+            selectedStatus.put(loader, loader.globalledEnabled());
+            checkBox.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    boolean selected = checkBox.isSelected();
+                    selectedStatus.put(loader, selected);
+                }
+            });
+            center.add(checkBox);
+
+        }
+
+        JButton okButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "Apply"));
+        JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
+        JButton addButton = new JButton("Add");
+
+        JPanel south = new JPanel();
+
+        south.add(addButton);
+        south.add(cancelButton);
+        addButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            JFileChooser chooser = new JFileChooser();
+            chooser.addChoosableFileFilter(new FileFilter() {
+
+                @Override
+                public String getDescription() {
+                    return "Select jar file containing plugin for FindBugs";
+                }
+
+                @Override
+                public boolean accept(File f) {
+                    if (f.isDirectory())
+                        return true;
+                    if (!f.canRead())
+                        return false;
+                    if (f.getName().endsWith(".jar"))
+                        return true;
+                    return false;
+                }
+            });
+            int retvalue = chooser.showDialog(PreferencesFrame.this, "Select");
+
+            if (retvalue == JFileChooser.APPROVE_OPTION) {
+                File f = chooser.getSelectedFile();
+                try {
+                    PluginLoader loader;
+                    loader = PluginLoader.addAvailablePlugin(f.toURI().toURL());
+                    String shortText = loader.getPlugin().getShortDescription();
+
+                    JCheckBox checkBox = new JCheckBox(shortText, loader.globalledEnabled());
+                    center.add(checkBox);
+                    center.validate();
+                    PreferencesFrame.this.pack();
+                } catch (MalformedURLException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (PluginException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+
+
+            }
+
+            }});
+
+        okButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                for(Map.Entry<PluginLoader,Boolean> entry : selectedStatus.entrySet()) {
+                    PluginLoader loader = entry.getKey();
+                loader.setGloballedEnabled(entry.getValue());
+                }
+                PreferencesFrame.this.dispose();
+
+            }
+        });
+        cancelButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                PreferencesFrame.this.dispose();
+
+            }
+        });
+
+        south.add(okButton);
+        pluginPanel.add(south, BorderLayout.SOUTH);
+
+        return pluginPanel;
+    }
 
     private JPanel createPropertiesPane() {
         JPanel contentPanel = new JPanel(new BorderLayout());
@@ -181,7 +281,7 @@ public class PreferencesFrame extends FBDialog {
         JPanel temp = new JPanel();
         temp.add(new JLabel("Tab size"));
         tabTextField = new JTextField(Integer.toString(GUISaveState.getInstance().getTabSize()));
-        tabTextField.setPreferredSize(new Dimension((int) (currFS * 2), (int) (currFS * 1.3)));
+        tabTextField.setPreferredSize(new Dimension((int) (currFS * 4), (int) (currFS * 2)));
         temp.add(tabTextField);
         mainPanel.add(temp);
         mainPanel.add(Box.createVerticalStrut(5));
@@ -189,7 +289,7 @@ public class PreferencesFrame extends FBDialog {
         temp = new JPanel();
         temp.add(new JLabel("Font size"));
         fontTextField = new JTextField(Float.toString(GUISaveState.getInstance().getFontSize()));
-        fontTextField.setPreferredSize(new Dimension((int) (currFS * 3), (int) (currFS * 1.3)));
+        fontTextField.setPreferredSize(new Dimension((int) (currFS * 6), (int) (currFS * 2)));
         temp.add(fontTextField);
         mainPanel.add(temp);
         mainPanel.add(Box.createVerticalGlue());
@@ -197,7 +297,7 @@ public class PreferencesFrame extends FBDialog {
         temp = new JPanel();
         temp.add(new JLabel("Package prefix length"));
         packagePrefixLengthTextField = new JTextField(Integer.toString(GUISaveState.getInstance().getPackagePrefixSegments()));
-        packagePrefixLengthTextField.setPreferredSize(new Dimension((int) (currFS * 2), (int) (currFS * 1.3)));
+        packagePrefixLengthTextField.setPreferredSize(new Dimension((int) (currFS * 4), (int) (currFS * 2)));
         temp.add(packagePrefixLengthTextField);
         mainPanel.add(temp);
         mainPanel.add(Box.createVerticalGlue());
