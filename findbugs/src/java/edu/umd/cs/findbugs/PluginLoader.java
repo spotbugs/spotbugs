@@ -410,7 +410,7 @@ public class PluginLoader {
             System.out.println("PluginLoader found " + name + " at: " + findbugsXML_URL);
 
         if (jarName != null && !findbugsXML_URL.toString().contains(jarName)
-                && !(corePlugin && findbugsXML_URL.toString().endsWith("classesEclipse/findbugs.xml"))) {
+                && !(corePlugin && findbugsXML_URL.toString().endsWith("etc/findbugs.xml"))) {
             String classloaderName = classLoader.getClass().getName();
             if (classLoader instanceof URLClassLoader) {
                 classloaderName += Arrays.asList(((URLClassLoader) classLoader).getURLs());
