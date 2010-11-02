@@ -19,6 +19,11 @@
 								maxOccurs="unbounded"/>
 							<xs:element name="WrkDir" type="xs:string" minOccurs="0"
 								maxOccurs="1"/>
+							<xs:element name="Plugin" minOccurs="0"
+								maxOccurs="unbounded">	<xs:complexType>
+									<xs:attribute name="id" type="xs:string"/>
+									<xs:attribute name="enabled" type="xs:string"/>
+								</xs:complexType></xs:element>
 							<xs:element name="Cloud" minOccurs="0" maxOccurs="1">
 								<xs:complexType>
 									<xs:sequence>

@@ -83,9 +83,9 @@ public class DetectorFactoryCollection {
 
     protected DetectorFactoryCollection() {
         loadCorePlugin();
-        for(PluginLoader loader : PluginLoader.getAllPlugins()) {
-            if (loader.globalledEnabled() && !loader.isCorePlugin())
-                loadPlugin(loader.getPlugin());
+        for(Plugin plugin : Plugin.getAllPlugins()) {
+            if (plugin.isGloballyEnabled() && !plugin.isCorePlugin())
+                loadPlugin(plugin);
         }
     }
 
@@ -326,7 +326,8 @@ public class DetectorFactoryCollection {
         // Load the core plugin.
         //
         PluginLoader corePluginLoader = PluginLoader.getCorePluginLoader();
-        loadPlugin(corePluginLoader);
+        Plugin plugin = corePluginLoader.getPlugin();
+        loadPlugin(plugin);
         corePlugin = corePluginLoader.getPlugin();
     }
 
@@ -352,13 +353,7 @@ public class DetectorFactoryCollection {
             System.err.println(message);
     }
 
-    void loadPlugin(PluginLoader pluginLoader)  {
-
-        Plugin plugin = pluginLoader.getPlugin();
-        loadPlugin(plugin);
-
-    }
-     void loadPlugin(Plugin plugin)  {
+    void loadPlugin(Plugin plugin)  {
 
         pluginByIdMap.put(plugin.getPluginId(), plugin);
 
@@ -395,7 +390,6 @@ public class DetectorFactoryCollection {
      */
       void registerCloud(CloudPlugin cloudPlugin) {
        LOGGER.log(Level.FINE, "Registering " + cloudPlugin.getId());
-       // System.out.println("Registering " + cloudPlugin.getId());
        registeredClouds.put(cloudPlugin.getId(), cloudPlugin);
     }
 

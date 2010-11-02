@@ -19,10 +19,14 @@
 
 package edu.umd.cs.findbugs;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
@@ -62,8 +66,6 @@ public class Plugin {
     private final DualKeyHashMap<Class, String, ComponentPlugin> componentPlugins
         = new DualKeyHashMap<Class, String, ComponentPlugin> ();
 
-    private final boolean enabled;
-
     private BugRanker bugRanker;
 
     // Ordering constraints
@@ -76,6 +78,12 @@ public class Plugin {
 
     // PluginLoader that loaded this plugin
     private final PluginLoader pluginLoader;
+
+    private final boolean enabledByDefault;
+
+    EnabledState enabledState = EnabledState.PLUGIN_DEFAULT;
+
+    static Map<URI, Plugin> allPlugins = new LinkedHashMap<URI, Plugin>();
 
     /**
      * Constructor. Creates an empty plugin object.
@@ -93,7 +101,7 @@ public class Plugin {
         this.interPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
         this.intraPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
         this.pluginLoader = pluginLoader;
-        this.enabled = enabled;
+        this.enabledByDefault = enabled;
     }
 
     @Override
@@ -118,7 +126,7 @@ public class Plugin {
      * @return true if the Plugin is enabled, false if not
      */
     public boolean isEnabledByDefault() {
-        return enabled;
+        return enabledByDefault;
     }
 
     /**
@@ -334,7 +342,13 @@ public class Plugin {
     public String getPluginId() {
         return pluginId;
     }
-
+    /**
+     * @return Returns the short pluginId.
+     */
+    public String getShortPluginId() {
+        int i = pluginId.lastIndexOf('.');
+        return pluginId.substring(i+1);
+    }
     /**
      * Set the analysis engine registrar class that, when instantiated, can be
      * used to register the plugin's analysis engines with the analysis cache.
@@ -401,6 +415,84 @@ public class Plugin {
     public <T>  ComponentPlugin<T> getComponentPlugin(Class<T> componentClass, String name) {
         return componentPlugins.get(componentClass, name);
     }
+
+    public static @CheckForNull Plugin getByName(String name) {
+        for(Plugin plugin : allPlugins.values()) {
+            if (name.equals(plugin.getPluginId()) || name.equals(plugin.getShortPluginId()))
+                return plugin;
+        }
+        return null;
+    }
+
+    public static Collection<Plugin> getAllPlugins() {
+        return Plugin.allPlugins.values();
+    }
+    enum EnabledState { PLUGIN_DEFAULT, ENABLED, DISABLED};
+
+
+
+EnabledState enabled = EnabledState.PLUGIN_DEFAULT;
+public boolean isCorePlugin() {
+    return pluginLoader.isCorePlugin();
+}
+/**
+ * @return
+ */
+    public boolean isGloballyEnabled() {
+        if (isCorePlugin())
+            return true;
+        switch (enabled) {
+        case ENABLED:
+            return true;
+        case DISABLED:
+            return false;
+        case PLUGIN_DEFAULT:
+            return isEnabledByDefault();
+        default:
+            throw new IllegalStateException("Unknown state : " + enabled);
+        }
+    }
+
+    /**
+     * @return
+     */
+    public void setGloballyEnabled(boolean enabled) {
+        if (isCorePlugin())
+            return;
+
+        if (enabled) {
+            if (isEnabledByDefault())
+                this.enabled = EnabledState.PLUGIN_DEFAULT;
+            else
+                this.enabled = EnabledState.ENABLED;
+        } else {
+            if (isEnabledByDefault())
+                this.enabled = EnabledState.DISABLED;
+            else
+                this.enabled = EnabledState.PLUGIN_DEFAULT;
+        }
+
+    }
+
+    public boolean isInitialPlugin() {
+        return getPluginLoader().initialPlugin;
+    }
+
+    public URL getResource(String name) {
+        return getPluginLoader().getResource(name);
+    }
+
+    public ClassLoader getClassLoader() {
+        return getPluginLoader().getClassLoader();
+    }
+
+    public static Plugin addAvailablePlugin(URL u) throws PluginException {
+
+        PluginLoader pluginLoader = PluginLoader.getPluginLoader(u, PluginLoader.class.getClassLoader());
+        pluginLoader.loadPlugin();
+        return pluginLoader.getPlugin();
+    }
+
 }
 
 // vim:ts=4

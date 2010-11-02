@@ -66,7 +66,6 @@ import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
@@ -263,7 +262,7 @@ public class DetectorConfigurationTab extends Composite {
         /**
          * Return whether or not given DetectorFactory reports bug patterns in
          * one of the currently-enabled set of bug categories.
-         * 
+         *
          * @param factory
          *            the DetectorFactory
          * @return true if the factory reports bug patterns in one of the
@@ -601,7 +600,7 @@ public class DetectorConfigurationTab extends Composite {
 
     /**
      * Helper method to shorten message access
-     * 
+     *
      * @param key
      *            a message key
      * @return requested message

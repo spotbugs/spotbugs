@@ -11,10 +11,6 @@ import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class BugInstanceTest extends TestCase {
-    static {
-        // Load detector plugins
-        DetectorFactoryCollection.instance();
-    }
 
     BugInstance b;
 

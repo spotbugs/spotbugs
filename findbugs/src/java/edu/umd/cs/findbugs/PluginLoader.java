@@ -33,10 +33,8 @@ import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -87,13 +85,7 @@ import edu.umd.cs.findbugs.util.JavaWebStart;
  * @see Plugin
  * @see PluginException
  */
-public class PluginLoader {
-
-    static Map<URI, PluginLoader> allPlugins = new LinkedHashMap<URI, PluginLoader>();
-
-    public static Collection<PluginLoader> getAllPlugins() {
-        return allPlugins.values();
-    }
+class PluginLoader {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.debug.PluginLoader");
 
@@ -111,11 +103,9 @@ public class PluginLoader {
 
     private final boolean corePlugin;
 
-    private boolean initialPlugin;
+    boolean initialPlugin;
 
-    public boolean isInitialPlugin() {
-        return initialPlugin;
-    }
+
 
     private final URL loadedFrom;
 
@@ -124,12 +114,6 @@ public class PluginLoader {
     }
 
     private final String jarName;
-
-    enum GlobalEnabledState { PLUGIN_DEFAULT, ENABLED, DISABLED};
-
-    GlobalEnabledState enabled = GlobalEnabledState.PLUGIN_DEFAULT;
-
-
 
     static {
         if (DEBUG) {
@@ -932,25 +916,29 @@ public class PluginLoader {
         } catch (URISyntaxException e) {
            throw new PluginException("bad uri:" + url, e);
         }
-        PluginLoader loader = allPlugins.get(uri);
-        if (loader != null) {
+        Plugin plugin = Plugin.allPlugins.get(uri);
+        if (plugin != null) {
+            PluginLoader loader = plugin.getPluginLoader();
+
             assert loader.getClassLoader().getParent().equals(parent);
             return loader;
         }
-        loader = new PluginLoader(url, parent);
-        allPlugins.put(uri, loader);
+        PluginLoader loader = new PluginLoader(url, parent);
+        plugin = loader.getPlugin();
+        Plugin.allPlugins.put(uri, plugin);
         return loader;
     }
 
 
 
     public static PluginLoader getCorePluginLoader() {
-        PluginLoader loader = allPlugins.get(null);
-        if (loader != null) {
-            return loader;
+        Plugin plugin = Plugin.allPlugins.get(null);
+        if (plugin != null) {
+            return plugin.getPluginLoader();
         }
-        loader = new PluginLoader();
-        allPlugins.put(null, loader);
+        PluginLoader loader = new PluginLoader();
+        plugin = loader.getPlugin();
+        Plugin.allPlugins.put(null, plugin);
         return loader;
     }
 
@@ -1025,9 +1013,13 @@ public class PluginLoader {
 
     static void loadInitialPlugins() {
         try {
-            PluginLoader corePluginLoader = getCorePluginLoader();
-
-            corePluginLoader.loadPlugin();
+            Plugin plugin = Plugin.allPlugins.get(null);
+            if (plugin != null) {
+                throw new IllegalStateException("Already loaded");
+            }
+            PluginLoader loader = new PluginLoader();
+            plugin = loader.loadPlugin();
+            Plugin.allPlugins.put(null, plugin);
         } catch (PluginException e1) {
             throw new IllegalStateException("Unable to load core plugin", e1);
         }
@@ -1040,14 +1032,6 @@ public class PluginLoader {
                 AnalysisContext.logError("Unable to load plugin from " + u, e);
             }
         }
-    }
-
-    public static PluginLoader addAvailablePlugin(URL u) throws PluginException {
-
-        PluginLoader pluginLoader = getPluginLoader(u, PluginLoader.class.getClassLoader());
-        pluginLoader.loadPlugin();
-        return pluginLoader;
-
     }
 
     /**
@@ -1156,46 +1140,7 @@ public class PluginLoader {
     }
 
 
-    /**
-     * @return
-     */
-    public void setGloballedEnabled(boolean enabled) {
-        if (corePlugin)
-            return;
 
-        if (enabled) {
-            if (plugin.isEnabledByDefault())
-                this.enabled = GlobalEnabledState.PLUGIN_DEFAULT;
-            else
-                this.enabled = GlobalEnabledState.ENABLED;
-        } else {
-            if (plugin.isEnabledByDefault())
-                this.enabled = GlobalEnabledState.DISABLED;
-            else
-                this.enabled = GlobalEnabledState.PLUGIN_DEFAULT;
-        }
-
-    }
-
-
-    /**
-     * @return
-     */
-    public boolean globalledEnabled() {
-        if (corePlugin)
-            return true;
-        switch (enabled) {
-        case ENABLED:
-            return true;
-        case DISABLED:
-            return false;
-        case PLUGIN_DEFAULT:
-            return plugin.isEnabledByDefault();
-           default :
-                throw new IllegalStateException("Unknown state : " + enabled);
-        }
-
-    }
 
     public String toString() {
         if (plugin == null)

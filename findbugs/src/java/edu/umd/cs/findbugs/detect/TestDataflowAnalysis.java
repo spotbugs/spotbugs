@@ -26,7 +26,6 @@ import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
@@ -42,14 +41,14 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * This detector is just a test harness to test a dataflow analysis class
  * specified by the dataflow.classname property.
- * 
+ *
  * @author David Hovemeyer
  */
 public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
 
-    private String dataflowClassName;
+    private final String dataflowClassName;
 
-    private String methodName;
+    private final String methodName;
 
     private Class<? extends Dataflow> dataflowClass;
 
@@ -62,7 +61,7 @@ public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector2#finishPass()
      */
     public void finishPass() {
@@ -70,7 +69,7 @@ public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
      */
     public String getDetectorClassName() {
@@ -79,7 +78,7 @@ public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile
      * .ClassDescriptor)
@@ -146,10 +145,9 @@ public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
             DetectorFactoryCollection detectorFactoryCollection = analysisCache.getDatabase(DetectorFactoryCollection.class);
             for (Iterator<Plugin> i = detectorFactoryCollection.pluginIterator(); i.hasNext();) {
                 Plugin plugin = i.next();
-                PluginLoader pluginLoader = plugin.getPluginLoader();
 
                 try {
-                    cls = pluginLoader.getClassLoader().loadClass(dataflowClassName);
+                    cls = plugin.getClassLoader().loadClass(dataflowClassName);
                     break;
                 } catch (ClassNotFoundException e) {
                     // Ignore

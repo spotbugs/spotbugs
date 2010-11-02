@@ -43,6 +43,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -114,13 +115,22 @@ public class Project implements XMLWriteable {
 
     private I18N configuration = I18N.instance();
 
+    private final Map<Plugin,Boolean> enabledPlugins = new HashMap<Plugin,Boolean>();
 
+
+
+    public void setPluginStatus(Plugin plugin, boolean enabled) {
+        if (plugin.isGloballyEnabled() == enabled)
+            enabledPlugins.remove(plugin);
+        else enabledPlugins.put(plugin, enabled);
+    }
     public I18N getConfiguration() {
         return configuration;
     }
 
     public void setConfiguration(I18N configuration) {
         this.configuration = configuration;
+        DetectorFactoryCollection.resetInstance(configuration);
     }
 
     /**
@@ -797,6 +807,11 @@ public class Project implements XMLWriteable {
     static final String CLOUD_ID_ATTRIBUTE_NAME = "id";
 
     static final String CLOUD_PROPERTY_ELEMENT_NAME = "Property";
+    static final String PLUGIN_ELEMENT_NAME = "Plugin";
+
+    static final String PLUGIN_ID_ATTRIBUTE_NAME = "id";
+
+    static final String PLUGIN_STATUS_ELEMENT_NAME = "enabled";
 
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         writeXML(xmlOutput, null);
@@ -833,6 +848,14 @@ public class Project implements XMLWriteable {
             xmlOutput.closeTag("SuppressionFilter");
         }
 
+        for(Map.Entry<Plugin, Boolean> e : enabledPlugins.entrySet()) {
+            Plugin plugin = e.getKey();
+            if (e.getValue() == plugin.isGloballyEnabled()) continue;
+            xmlOutput.startTag(PLUGIN_ELEMENT_NAME);
+            xmlOutput.addAttribute(PLUGIN_ID_ATTRIBUTE_NAME, plugin.getPluginId());
+            xmlOutput.addAttribute(PLUGIN_STATUS_ELEMENT_NAME, e.getValue().toString());
+            xmlOutput.closeTag(PLUGIN_ELEMENT_NAME);
+        }
         if (cloudId != null) {
             xmlOutput.startTag(CLOUD_ELEMENT_NAME);
             xmlOutput.addAttribute(CLOUD_ID_ATTRIBUTE_NAME, cloudId);

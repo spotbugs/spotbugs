@@ -27,11 +27,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -92,8 +90,8 @@ import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginException;
-import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -251,11 +249,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      *            true if we MUST set plugins even if the given list is empty
      */
     public static synchronized void applyCustomDetectors(boolean force) {
-        List<URL> pluginList = new ArrayList<URL>();
         DetectorValidator validator = new DetectorValidator();
         final SortedSet<String> detectorPaths = PrefsUtil.readDetectorPaths(getDefault().getPreferenceStore());
         detectorPaths.addAll(DetectorsExtensionHelper.getContributedDetectors());
-        HashSet<URL> enabled = new HashSet<URL>();
+        HashSet<Plugin> enabled = new HashSet<Plugin>();
         for (String path : detectorPaths) {
             URL url;
             try {
@@ -267,8 +264,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             IStatus status = validator.validate(path);
             if (status.isOK()) {
                 try {
-                    PluginLoader.addAvailablePlugin(url);
-                    enabled.add(url);
+                    Plugin plugin = Plugin.addAvailablePlugin(url);
+                    enabled.add(plugin);
                 } catch (PluginException e) {
                     getDefault().logException(e, "Failed to load plugin for custom detector: " + path);
                     continue;
@@ -278,10 +275,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             }
         }
 
-        for(PluginLoader pluginLoader : PluginLoader.getAllPlugins()) {
-            System.out.println(pluginLoader.getURL());
-            if (!pluginLoader.isInitialPlugin()) {
-                pluginLoader.setGloballedEnabled(enabled.contains(pluginLoader.getURL()));
+        for(Plugin plugin : Plugin.getAllPlugins()) {
+            if (!plugin.isInitialPlugin()) {
+                plugin.setGloballyEnabled(enabled.contains(plugin));
             }
 
         }

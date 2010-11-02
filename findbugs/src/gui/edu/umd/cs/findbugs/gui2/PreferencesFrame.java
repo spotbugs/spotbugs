@@ -54,8 +54,10 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.TreeModel;
 
+import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginException;
-import edu.umd.cs.findbugs.PluginLoader;
+import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 
@@ -157,7 +159,7 @@ public class PreferencesFrame extends FBDialog {
 
 
 
-    Map<PluginLoader, Boolean> selectedStatus = new HashMap<PluginLoader, Boolean>();
+    Map<Plugin, Boolean> selectedStatus = new HashMap<Plugin, Boolean>();
 
     private JPanel createPluginPane() {
         final JPanel pluginPanel = new JPanel();
@@ -168,31 +170,31 @@ public class PreferencesFrame extends FBDialog {
 
         BoxLayout centerLayout = new BoxLayout(center, BoxLayout.Y_AXIS);
         center.setLayout(centerLayout);
-        Collection<PluginLoader> plugins = PluginLoader.getAllPlugins();
-        for (final PluginLoader loader : plugins) {
-            if (loader.isCorePlugin())
+        Collection<Plugin> plugins = Plugin.getAllPlugins();
+        for (final Plugin plugin : plugins) {
+            if (plugin.isCorePlugin())
                 continue;
-            String text = loader.getPlugin().getShortDescription();
-            String id = loader.getPlugin().getPluginId();
+            String text = plugin.getShortDescription();
+            String id = plugin.getPluginId();
             if (text == null)
                 text = id;
-            final JCheckBox checkBox = new JCheckBox(text, loader.globalledEnabled());
-            String longText = loader.getPlugin().getDetailedDescription();
+            final JCheckBox checkBox = new JCheckBox(text, plugin.isGloballyEnabled());
+            String longText = plugin.getDetailedDescription();
             if (longText != null)
                 checkBox.setToolTipText("<html>" + longText +"</html>");
-            selectedStatus.put(loader, loader.globalledEnabled());
+            selectedStatus.put(plugin, plugin.isGloballyEnabled());
             checkBox.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
                     boolean selected = checkBox.isSelected();
-                    selectedStatus.put(loader, selected);
+                    selectedStatus.put(plugin, selected);
                 }
             });
             center.add(checkBox);
 
         }
 
-        JButton okButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "Apply"));
+        JButton okButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.apply_btn", "Apply"));
         JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
         JButton addButton = new JButton("Add");
 
@@ -226,11 +228,10 @@ public class PreferencesFrame extends FBDialog {
             if (retvalue == JFileChooser.APPROVE_OPTION) {
                 File f = chooser.getSelectedFile();
                 try {
-                    PluginLoader loader;
-                    loader = PluginLoader.addAvailablePlugin(f.toURI().toURL());
-                    String shortText = loader.getPlugin().getShortDescription();
+                    Plugin plugin = Plugin.addAvailablePlugin(f.toURI().toURL());
+                    String shortText = plugin.getShortDescription();
 
-                    JCheckBox checkBox = new JCheckBox(shortText, loader.globalledEnabled());
+                    JCheckBox checkBox = new JCheckBox(shortText, plugin.isGloballyEnabled());
                     center.add(checkBox);
                     center.validate();
                     PreferencesFrame.this.pack();
@@ -250,10 +251,14 @@ public class PreferencesFrame extends FBDialog {
         okButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                for(Map.Entry<PluginLoader,Boolean> entry : selectedStatus.entrySet()) {
-                    PluginLoader loader = entry.getKey();
-                loader.setGloballedEnabled(entry.getValue());
+                for(Map.Entry<Plugin,Boolean> entry : selectedStatus.entrySet()) {
+                    Plugin plugin = entry.getKey();
+                plugin.setGloballyEnabled(entry.getValue());
                 }
+                Project project = MainFrame.getInstance().getBugCollection().getProject();
+                I18N i18n = I18N.newInstanceWithGloballyEnabledPlugins();
+                project.setConfiguration(i18n);
+
                 PreferencesFrame.this.dispose();
 
             }

@@ -80,7 +80,12 @@ public class I18N extends DetectorFactoryCollection {
     public static I18N instance() {
         return theInstance;
     }
-
+    /**
+     * Get the single object instance.
+     */
+    public static I18N newInstanceWithGloballyEnabledPlugins() {
+        return new I18N();
+    }
     /**
      * Get a message string. This is a format pattern for describing an entire
      * bug instance in a single line.

@@ -53,7 +53,7 @@ import edu.umd.cs.findbugs.util.Strings;
 /**
  * Build a BugCollection based on SAX events. This is intended to replace the
  * old DOM-based parsing of XML bug result files, which was very slow.
- * 
+ *
  * @author David Hovemeyer
  */
 public class SAXBugCollectionHandler extends DefaultHandler {
@@ -74,19 +74,19 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         return memoized(attributes.getValue(qName));
     }
 
-    private BugCollection bugCollection;
+    private final BugCollection bugCollection;
 
-    private Project project;
+    private final Project project;
 
-    private Stack<CompoundMatcher> matcherStack = new Stack<CompoundMatcher>();
+    private final Stack<CompoundMatcher> matcherStack = new Stack<CompoundMatcher>();
 
     private Filter filter;
 
-    private MapCache<String, String> cache = new MapCache<String, String>(2000);
+    private final MapCache<String, String> cache = new MapCache<String, String>(2000);
 
-    private ArrayList<String> elementStack;
+    private final ArrayList<String> elementStack;
 
-    private StringBuilder textBuffer;
+    private final StringBuilder textBuffer;
 
     private BugInstance bugInstance;
 
@@ -97,7 +97,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     // private ClassHash classHash;
     private ClassFeatureSet classFeatureSet;
 
-    private ArrayList<String> stackTrace;
+    private final ArrayList<String> stackTrace;
 
     private int nestingOfIgnoredElements = 0;
 
@@ -369,7 +369,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     if (qName.equals(Project.CLOUD_ELEMENT_NAME)) {
                         String cloudId = getRequiredAttribute(attributes, Project.CLOUD_ID_ATTRIBUTE_NAME, qName);
                         project.setCloudId(cloudId);
-
+                    } else if (qName.equals(Project.PLUGIN_ELEMENT_NAME)) {
+                        String pluginId = getRequiredAttribute(attributes, Project.PLUGIN_ID_ATTRIBUTE_NAME, qName);
+                        Boolean enabled = Boolean.valueOf(getRequiredAttribute(attributes, Project.PLUGIN_STATUS_ELEMENT_NAME, qName));
+                        Plugin plugin = Plugin.getByName(pluginId);
+                        project.setPluginStatus(plugin, enabled);
                     }
 
                 } else if (outerElement.equals(Project.CLOUD_ELEMENT_NAME)) {
@@ -584,7 +588,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
     /**
      * Extract a hash value from an element.
-     * 
+     *
      * @param qName
      *            name of element containing hash value
      * @param attributes
@@ -664,14 +668,15 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                         bugCollection.getProjectStats().addBug(bugInstance);
                 }
             } else if (outerElement.equals(PROJECT)) {
-                // System.out.println("Adding project element " + qName + ": " +
-                // getTextContents());
                 if (qName.equals("Jar"))
                     project.addFile(makeAbsolute(getTextContents()));
                 else if (qName.equals("SrcDir"))
                     project.addSourceDir(makeAbsolute(getTextContents()));
                 else if (qName.equals("AuxClasspathEntry"))
                     project.addAuxClasspathEntry(makeAbsolute(getTextContents()));
+
+
+
             } else if (outerElement.equals(Project.CLOUD_ELEMENT_NAME) && qName.equals(Project.CLOUD_PROPERTY_ELEMENT_NAME)) {
                 assert cloudPropertyKey != null;
                 project.getCloudProperties().setProperty(cloudPropertyKey, getTextContents());

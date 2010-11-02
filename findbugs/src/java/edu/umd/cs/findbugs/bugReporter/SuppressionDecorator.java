@@ -71,7 +71,7 @@ public class SuppressionDecorator extends BugReporterDecorator {
                         || adjustmentSource.startsWith("https:"))
                     u = new URL(adjustmentSource);
                 else {
-                    u = plugin.getPlugin().getPluginLoader().getResource(adjustmentSource);
+                    u = plugin.getPlugin().getResource(adjustmentSource);
                     if (u == null)
                         u = DetectorFactoryCollection.getCoreResource(adjustmentSource);
 
