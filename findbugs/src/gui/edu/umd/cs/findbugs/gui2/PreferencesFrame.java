@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -28,9 +29,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,6 +57,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.TreeModel;
 
@@ -62,6 +67,7 @@ import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 /**
  * User Preferences
@@ -164,13 +170,13 @@ public class PreferencesFrame extends FBDialog {
 
     private JPanel createPluginPane() {
         final JPanel pluginPanel = new JPanel();
-        pluginPanelCenter = new JPanel();
         pluginPanel.setLayout(new BorderLayout());
+        pluginPanelCenter = new JPanel();
 
         pluginPanel.add(pluginPanelCenter, BorderLayout.CENTER);
 
-        BoxLayout centerLayout = new BoxLayout(pluginPanelCenter, BoxLayout.Y_AXIS);
-        pluginPanelCenter.setLayout(centerLayout);
+        BoxLayout layout = new BoxLayout(pluginPanelCenter, BoxLayout.Y_AXIS);
+        pluginPanelCenter.setLayout(layout);
         rebuildPluginCheckboxes();
 
         JButton addButton = new JButton("Install new plugin...");
@@ -230,6 +236,7 @@ public class PreferencesFrame extends FBDialog {
     private void rebuildPluginCheckboxes() {
         pluginPanelCenter.removeAll();
         Collection<Plugin> plugins = Plugin.getAllPlugins();
+        int added = 0;
         for (final Plugin plugin : plugins) {
             if (plugin.isCorePlugin())
                 continue;
@@ -253,6 +260,25 @@ public class PreferencesFrame extends FBDialog {
                 }
             });
             pluginPanelCenter.add(checkBox);
+            added++;
+        }
+        if (added == 0) {
+            JLabel label = new JLabel("<html>No plugins are loaded.<br> " +
+                    "Try installing <u><font color=blue>fb-contrib</font></u> - or write your own<br>" +
+                    "plugin for your project's needs!");
+            label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            label.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    try {
+                        LaunchBrowser.showDocument(new URL("https://sourceforge.net/projects/fb-contrib/"));
+                    } catch (MalformedURLException e1) {
+                        throw new IllegalStateException(e1);
+                    }
+                }
+            });
+            label.setBorder(new EmptyBorder(10,10,10,10));
+            pluginPanelCenter.add(label);
         }
         PreferencesFrame.this.pack();
     }
