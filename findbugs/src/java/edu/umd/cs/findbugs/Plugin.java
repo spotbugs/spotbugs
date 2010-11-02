@@ -489,8 +489,10 @@ public boolean isCorePlugin() {
     public static Plugin addAvailablePlugin(URL u) throws PluginException {
 
         PluginLoader pluginLoader = PluginLoader.getPluginLoader(u, PluginLoader.class.getClassLoader());
-        pluginLoader.loadPlugin();
-        return pluginLoader.getPlugin();
+        Plugin plugin = pluginLoader.loadPlugin();
+        // register new clouds
+        I18N.instance().loadPlugin(plugin);
+        return plugin;
     }
 
 }

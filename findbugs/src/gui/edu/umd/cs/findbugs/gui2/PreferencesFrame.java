@@ -31,12 +31,14 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
@@ -50,13 +52,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.TreeModel;
 
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.PluginException;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -72,35 +74,26 @@ import edu.umd.cs.findbugs.filter.Matcher;
  */
 @SuppressWarnings("serial")
 public class PreferencesFrame extends FBDialog {
+    private static final Logger LOGGER = Logger.getLogger(PreferencesFrame.class.getName());
 
-    JTabbedPane mainTabPane;
+    private static final int TAB_MIN = 1;
+    private static final int TAB_MAX = 20;
+
+    private static final int FONT_MIN = 10;
+    private static final int FONT_MAX = 99;
 
     private static PreferencesFrame instance;
 
     private final CheckBoxList filterCheckBoxList = new CheckBoxList();
 
-    private JButton addButton;
-
-    JButton removeButton;
-
-    JButton removeAllButton;
-
-    boolean frozen = false;
-
     // Variables for Properties tab.
     private JTextField tabTextField;
-
     private JTextField fontTextField;
 
     private JTextField packagePrefixLengthTextField;
 
-    private static int TAB_MIN = 1;
-
-    private static int TAB_MAX = 20;
-
-    private static int FONT_MIN = 10;
-
-    private static int FONT_MAX = 99;
+    private Map<Plugin, Boolean> pluginEnabledStatus = new HashMap<Plugin, Boolean>();
+    private JPanel pluginPanelCenter;
 
     public static PreferencesFrame getInstance() {
         // MainFrame.getInstance().getSorter().freezeOrder();
@@ -114,9 +107,9 @@ public class PreferencesFrame extends FBDialog {
         setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.fil_sup_ttl", "Preferences"));
         setModal(true);
 
-        mainTabPane = new JTabbedPane();
+        JTabbedPane mainTabPane = new JTabbedPane();
 
-        mainTabPane.add("Properties", createPropertiesPane());
+        mainTabPane.add("General", createPropertiesPane());
 
         mainTabPane.add(edu.umd.cs.findbugs.L10N.getLocalString("pref.filters", "Filters"), createFilterPane());
         mainTabPane.add("Plugins", createPluginPane());
@@ -141,6 +134,17 @@ public class PreferencesFrame extends FBDialog {
                 if (bt instanceof BugTreeModel)
                     ((BugTreeModel) bt).checkSorter();
 
+                for (Map.Entry<Plugin, Boolean> entry : pluginEnabledStatus.entrySet()) {
+                    Plugin plugin = entry.getKey();
+                    plugin.setGloballyEnabled(entry.getValue());
+                }
+                BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
+                if (bugCollection != null) {
+                    Project project = bugCollection.getProject();
+                    I18N i18n = I18N.newInstanceWithGloballyEnabledPlugins();
+                    project.setConfiguration(i18n);
+                }
+
                 resetPropertiesPane();
             }
         }));
@@ -158,18 +162,73 @@ public class PreferencesFrame extends FBDialog {
     }
 
 
-
-    Map<Plugin, Boolean> selectedStatus = new HashMap<Plugin, Boolean>();
-
     private JPanel createPluginPane() {
         final JPanel pluginPanel = new JPanel();
-        final JPanel center = new JPanel();
+        pluginPanelCenter = new JPanel();
         pluginPanel.setLayout(new BorderLayout());
 
-        pluginPanel.add(center, BorderLayout.CENTER);
+        pluginPanel.add(pluginPanelCenter, BorderLayout.CENTER);
 
-        BoxLayout centerLayout = new BoxLayout(center, BoxLayout.Y_AXIS);
-        center.setLayout(centerLayout);
+        BoxLayout centerLayout = new BoxLayout(pluginPanelCenter, BoxLayout.Y_AXIS);
+        pluginPanelCenter.setLayout(centerLayout);
+        rebuildPluginCheckboxes();
+
+        JButton addButton = new JButton("Install new plugin...");
+        JPanel south = new JPanel();
+
+        south.add(addButton);
+        addButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser chooser = new JFileChooser();
+                chooser.addChoosableFileFilter(new FileFilter() {
+
+                    @Override
+                    public String getDescription() {
+                        return "FindBugs Plugin (*.jar)";
+                    }
+
+                    @SuppressWarnings({"RedundantIfStatement"})
+                    @Override
+                    public boolean accept(File f) {
+                        if (f.isDirectory())
+                            return true;
+                        if (!f.canRead())
+                            return false;
+                        if (f.getName().endsWith(".jar"))
+                            return true;
+                        return false;
+                    }
+                });
+                chooser.setDialogTitle("Select a FindBugs plugin jar");
+                int retvalue = chooser.showDialog(PreferencesFrame.this, "Install");
+
+                if (retvalue == JFileChooser.APPROVE_OPTION) {
+                    File f = chooser.getSelectedFile();
+                    try {
+                        URL urlString = f.toURI().toURL();
+                        Plugin.addAvailablePlugin(urlString);
+
+                        rebuildPluginCheckboxes();
+                        
+                    } catch (Exception e1) {
+                        LOGGER.log(Level.WARNING, "Could not load " + f.getPath(), e1);
+                        JOptionPane.showMessageDialog(PreferencesFrame.this, "Could not load " + f.getPath()
+                                + "\n\n"
+                                + e1.getClass().getSimpleName() + e1.getMessage(),
+                                "Error Loading Plugin", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
+            }
+        });
+
+        pluginPanel.add(south, BorderLayout.SOUTH);
+
+        return pluginPanel;
+    }
+
+    private void rebuildPluginCheckboxes() {
+        pluginPanelCenter.removeAll();
         Collection<Plugin> plugins = Plugin.getAllPlugins();
         for (final Plugin plugin : plugins) {
             if (plugin.isCorePlugin())
@@ -178,103 +237,24 @@ public class PreferencesFrame extends FBDialog {
             String id = plugin.getPluginId();
             if (text == null)
                 text = id;
+            String pluginUrl = plugin.getPluginLoader().getURL().toExternalForm();
+            text = String.format("<html>%s<br><font style='font-weight:normal;font-style:italic'>%s",
+                    text, pluginUrl);
             final JCheckBox checkBox = new JCheckBox(text, plugin.isGloballyEnabled());
+            checkBox.setVerticalTextPosition(SwingConstants.TOP);
             String longText = plugin.getDetailedDescription();
             if (longText != null)
                 checkBox.setToolTipText("<html>" + longText +"</html>");
-            selectedStatus.put(plugin, plugin.isGloballyEnabled());
+            pluginEnabledStatus.put(plugin, plugin.isGloballyEnabled());
             checkBox.addActionListener(new ActionListener() {
-
                 public void actionPerformed(ActionEvent e) {
                     boolean selected = checkBox.isSelected();
-                    selectedStatus.put(plugin, selected);
+                    pluginEnabledStatus.put(plugin, selected);
                 }
             });
-            center.add(checkBox);
-
+            pluginPanelCenter.add(checkBox);
         }
-
-        JButton okButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.apply_btn", "Apply"));
-        JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
-        JButton addButton = new JButton("Add");
-
-        JPanel south = new JPanel();
-
-        south.add(addButton);
-        south.add(cancelButton);
-        addButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            JFileChooser chooser = new JFileChooser();
-            chooser.addChoosableFileFilter(new FileFilter() {
-
-                @Override
-                public String getDescription() {
-                    return "Select jar file containing plugin for FindBugs";
-                }
-
-                @Override
-                public boolean accept(File f) {
-                    if (f.isDirectory())
-                        return true;
-                    if (!f.canRead())
-                        return false;
-                    if (f.getName().endsWith(".jar"))
-                        return true;
-                    return false;
-                }
-            });
-            int retvalue = chooser.showDialog(PreferencesFrame.this, "Select");
-
-            if (retvalue == JFileChooser.APPROVE_OPTION) {
-                File f = chooser.getSelectedFile();
-                try {
-                    Plugin plugin = Plugin.addAvailablePlugin(f.toURI().toURL());
-                    String shortText = plugin.getShortDescription();
-
-                    JCheckBox checkBox = new JCheckBox(shortText, plugin.isGloballyEnabled());
-                    center.add(checkBox);
-                    center.validate();
-                    PreferencesFrame.this.pack();
-                } catch (MalformedURLException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (PluginException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-
-
-            }
-
-            }});
-
-        okButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                for(Map.Entry<Plugin,Boolean> entry : selectedStatus.entrySet()) {
-                    Plugin plugin = entry.getKey();
-                plugin.setGloballyEnabled(entry.getValue());
-                }
-                Project project = MainFrame.getInstance().getBugCollection().getProject();
-                I18N i18n = I18N.newInstanceWithGloballyEnabledPlugins();
-                project.setConfiguration(i18n);
-
-                PreferencesFrame.this.dispose();
-
-            }
-        });
-        cancelButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                PreferencesFrame.this.dispose();
-
-            }
-        });
-
-        south.add(okButton);
-        pluginPanel.add(south, BorderLayout.SOUTH);
-
-        return pluginPanel;
+        PreferencesFrame.this.pack();
     }
 
     private JPanel createPropertiesPane() {
@@ -337,10 +317,10 @@ public class PreferencesFrame extends FBDialog {
     }
 
     private void changeTabSize() {
-        int tabSize = 0;
+        int tabSize;
 
         try {
-            tabSize = Integer.decode(tabTextField.getText()).intValue();
+            tabSize = Integer.decode(tabTextField.getText());
         } catch (NumberFormatException exc) {
             JOptionPane
                     .showMessageDialog(instance, "Error in tab size field.", "Tab Size Error", JOptionPane.INFORMATION_MESSAGE);
@@ -362,7 +342,7 @@ public class PreferencesFrame extends FBDialog {
     }
 
     private void changeFontSize() {
-        float fontSize = 0;
+        float fontSize;
 
         try {
             fontSize = Float.parseFloat(fontTextField.getText());
@@ -386,7 +366,7 @@ public class PreferencesFrame extends FBDialog {
     }
 
     private void changePackagePrefixLength() {
-        int value = 0;
+        int value;
 
         try {
             value = Integer.parseInt(packagePrefixLengthTextField.getText());
@@ -414,23 +394,34 @@ public class PreferencesFrame extends FBDialog {
     private void resetPropertiesPane() {
         tabTextField.setText(Integer.toString(GUISaveState.getInstance().getTabSize()));
         fontTextField.setText(Float.toString(GUISaveState.getInstance().getFontSize()));
+        rebuildPluginCheckboxes();
     }
 
     /**
      * Create a JPanel to display the filtering controls.
      */
     private JPanel createFilterPane() {
-        addButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.add_dot_btn", "Add..."));
-        removeButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.remove_btn", "Remove"));
-        removeAllButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.remove_all_btn", "Remove All"));
+        JButton addButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.add_dot_btn", "Add..."));
+        JButton removeButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.remove_btn", "Remove"));
+        JButton removeAllButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.remove_all_btn", "Remove All"));
         JPanel filterPanel = new JPanel();
         filterPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        gbc.gridheight = 4;
+        gbc.gridheight = 1;
         gbc.gridwidth = 1;
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        filterPanel.add(new JLabel("<HTML>These rules control which bugs are shown and which are hidden.<BR>" +
+                "To modify these settings, a FindBugs project must be opened first."), gbc);
+
+        gbc.gridheight = 4;
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1;
         gbc.weighty = 1;
@@ -439,7 +430,7 @@ public class PreferencesFrame extends FBDialog {
 
         gbc.gridheight = 1;
         gbc.gridx = 1;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 0;
         gbc.weighty = 0;
@@ -450,19 +441,16 @@ public class PreferencesFrame extends FBDialog {
             }
         });
 
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         gbc.insets = new Insets(5, 0, 0, 0);
         filterPanel.add(removeButton, gbc);
         removeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 Object[] selected = filterCheckBoxList.getSelectedValues();
-                boolean needsRebuild = false;
                 if (selected.length == 0)
                     return;
                 for (Object o : selected) {
                     MatchBox box = (MatchBox) o;
-                    if (MainFrame.getInstance().getProject().getSuppressionFilter().isEnabled(box.getMatcher()))
-                        needsRebuild = true;
                     MainFrame.getInstance().getProject().getSuppressionFilter().removeChild(box.getMatcher());
                 }
                 FilterActivity.notifyListeners(FilterListener.Action.UNFILTERING, null);
@@ -470,7 +458,7 @@ public class PreferencesFrame extends FBDialog {
                 updateFilterPanel();
             }
         });
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.weighty = 0;
         gbc.insets = new Insets(5, 0, 0, 0);
         filterPanel.add(removeAllButton, gbc);
@@ -489,7 +477,7 @@ public class PreferencesFrame extends FBDialog {
                 updateFilterPanel();
             }
         });
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.weighty = 1;
         gbc.insets = new Insets(0, 0, 0, 0);
         filterPanel.add(Box.createGlue(), gbc);
@@ -536,50 +524,5 @@ public class PreferencesFrame extends FBDialog {
         }
 
         filterCheckBoxList.setListData(boxes.toArray(new MatchBox[boxes.size()]));
-    }
-
-    private static class UneditableTableModel extends DefaultTableModel {
-        public UneditableTableModel(Object[][] tableData, String[] strings) {
-            super(tableData, strings);
-        }
-
-        @Override
-        public boolean isCellEditable(int x, int y) {
-            return false;
-        }
-    }
-
-    private static class FilterCheckBoxListener implements ItemListener {
-        FilterMatcher filter;
-
-        FilterCheckBoxListener(FilterMatcher filter) {
-            this.filter = filter;
-        }
-
-        public void itemStateChanged(ItemEvent evt) {
-            // RebuildThreadMonitor.waitForRebuild();
-            filter.setActive(((JCheckBox) evt.getSource()).isSelected());
-            MainFrame.getInstance().updateStatusBar();
-            MainFrame.getInstance().setProjectChanged(true);
-        }
-    }
-
-    void freeze() {
-        frozen = true;
-        filterCheckBoxList.setEnabled(false);
-        addButton.setEnabled(false);
-        removeButton.setEnabled(false);
-    }
-
-    void thaw() {
-        filterCheckBoxList.setEnabled(true);
-        addButton.setEnabled(true);
-        removeButton.setEnabled(true);
-        frozen = false;
-    }
-
-    void setSelectedTab(int index) {
-        if (index > 0 && index <= mainTabPane.getTabCount())
-            mainTabPane.setSelectedIndex(index);
     }
 }

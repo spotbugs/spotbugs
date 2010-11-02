@@ -9,12 +9,11 @@
   **********************************************************************
   -->
   <Plugin>
-    <ShortDescription>Appengine cloud plugin</ShortDescription>
+    <ShortDescription>FindBugs Cloud Plugin</ShortDescription>
     <Details>
 <![CDATA[
 <p>
-This plugin provides the Appengine cloud plugin.
-
+Allows making bug comments and classifying bugs on the FindBugs Cloud at http://findbugs-cloud.appspot.com.
 </p>
 ]]>
     </Details>

@@ -85,7 +85,7 @@ import edu.umd.cs.findbugs.util.JavaWebStart;
  * @see Plugin
  * @see PluginException
  */
-class PluginLoader {
+public class PluginLoader {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.debug.PluginLoader");
 
@@ -231,8 +231,9 @@ class PluginLoader {
      *             if the plugin cannot be fully loaded
      */
     public Plugin loadPlugin() throws PluginException {
-        if (plugin == null)
+        if (plugin == null) {
             init();
+        }
         return plugin;
     }
 

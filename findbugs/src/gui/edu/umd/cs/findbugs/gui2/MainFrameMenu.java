@@ -268,7 +268,7 @@ public class MainFrameMenu implements Serializable {
         JMenuItem cutMenuItem = new JMenuItem(new CutAction());
         JMenuItem copyMenuItem = new JMenuItem(new CopyAction());
         JMenuItem pasteMenuItem = new JMenuItem(new PasteAction());
-        preferencesMenuItem = MainFrameHelper.newJMenuItem("menu.preferences_menu", "Filters/Suppressions...");
+        preferencesMenuItem = MainFrameHelper.newJMenuItem("menu.preferences_menu", "Preferences...");
         JMenuItem sortMenuItem = MainFrameHelper.newJMenuItem("menu.sortConfiguration", "Sort Configuration...");
         JMenuItem goToLineMenuItem = MainFrameHelper.newJMenuItem("menu.gotoLine", "Go to line...");
 
