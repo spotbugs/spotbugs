@@ -588,6 +588,10 @@ public class WebCloudClient extends AbstractCloud {
                 networkClient.generateHashCheckRunnables(task, new ArrayList<String>(bugsByHash.keySet()), tasks, bugsByHash);
                 executeAndWaitForAll(tasks);
                 exceptionThrown = false;
+
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.WARNING, "Find issues interrupted!", e);
+
             } finally {
                 issueDataDownloaded.countDown();
                 fireIssueDataDownloadedEvent();
