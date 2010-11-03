@@ -26,7 +26,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import javax.annotation.Nonnull;
+
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -35,13 +40,13 @@ import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * Input/output helper methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class IO {
     /**
      * Write the contents of a file in the Eclipse workspace.
-     * 
+     *
      * @param file
      *            the file to write to
      * @param output
@@ -57,6 +62,7 @@ public abstract class IO {
             output.writeFile(bos);
             ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
             if (!file.exists()) {
+                mkdirs(file, monitor);
                 file.create(bis, true, monitor);
             } else {
                 file.setContents(bis, true, false, monitor);
@@ -68,8 +74,28 @@ public abstract class IO {
     }
 
     /**
+     * Recursively creates all folders needed, up to the project. Project must
+     * already exist.
+     *
+     * @param resource
+     *            non null
+     * @param monitor
+     *            non null
+     * @throws CoreException
+     */
+    private static void mkdirs(@Nonnull IResource resource, IProgressMonitor monitor) throws CoreException {
+        IContainer container = resource.getParent();
+        if (container.getType() == IResource.FOLDER && !container.exists()) {
+            if(!container.getParent().exists()) {
+                mkdirs(container, monitor);
+            }
+            ((IFolder) container).create(true, true, monitor);
+        }
+    }
+
+    /**
      * Write the contents of a java.io.File
-     * 
+     *
      * @param file
      *            the file to write to
      * @param output
