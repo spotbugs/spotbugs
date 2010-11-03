@@ -178,9 +178,9 @@ public class DetectorFactoryCollection {
     }
 
     /**
-     * Return an Iterable of all available Plugin objects.
+     * Return an Collection of all available Plugin objects.
      */
-    public Iterable<Plugin> plugins() {
+    public Collection<Plugin> plugins() {
         return pluginByIdMap.values();
     }
 

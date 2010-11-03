@@ -118,7 +118,6 @@ public class Project implements XMLWriteable {
     private final Map<Plugin,Boolean> enabledPlugins = new HashMap<Plugin,Boolean>();
 
 
-
     public void setPluginStatus(Plugin plugin, boolean enabled) {
         if (plugin.isGloballyEnabled() == enabled)
             enabledPlugins.remove(plugin);
@@ -126,6 +125,20 @@ public class Project implements XMLWriteable {
     }
     public I18N getConfiguration() {
         return configuration;
+    }
+
+    public void resetConfiguration() {
+        Collection<Plugin> enabled = new HashSet<Plugin>();
+        for(Plugin plugin : Plugin.getAllPlugins()) {
+            Boolean b = enabledPlugins.get(plugin);
+            if (b == null)
+                b = plugin.isGloballyEnabled();
+            if (b)
+                enabled.add(plugin);
+        }
+        if (!enabled.equals(this.configuration.plugins()))
+            this.configuration = new I18N(enabled);
+        DetectorFactoryCollection.resetInstance(configuration);
     }
 
     public void setConfiguration(I18N configuration) {

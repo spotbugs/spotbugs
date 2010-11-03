@@ -62,7 +62,6 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.TreeModel;
 
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
@@ -98,7 +97,7 @@ public class PreferencesFrame extends FBDialog {
 
     private JTextField packagePrefixLengthTextField;
 
-    private Map<Plugin, Boolean> pluginEnabledStatus = new HashMap<Plugin, Boolean>();
+    private final Map<Plugin, Boolean> pluginEnabledStatus = new HashMap<Plugin, Boolean>();
     private JPanel pluginPanelCenter;
 
     public static PreferencesFrame getInstance() {
@@ -139,16 +138,15 @@ public class PreferencesFrame extends FBDialog {
                 TreeModel bt = (MainFrame.getInstance().getTree().getModel());
                 if (bt instanceof BugTreeModel)
                     ((BugTreeModel) bt).checkSorter();
+                BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
+                Project project = bugCollection == null ? null : bugCollection.getProject();
 
                 for (Map.Entry<Plugin, Boolean> entry : pluginEnabledStatus.entrySet()) {
                     Plugin plugin = entry.getKey();
-                    plugin.setGloballyEnabled(entry.getValue());
-                }
-                BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
-                if (bugCollection != null) {
-                    Project project = bugCollection.getProject();
-                    I18N i18n = I18N.newInstanceWithGloballyEnabledPlugins();
-                    project.setConfiguration(i18n);
+                    if (project != null)
+                        project.setPluginStatus(plugin, entry.getValue());
+                    else
+                        plugin.setGloballyEnabled(entry.getValue());
                 }
 
                 resetPropertiesPane();
@@ -215,7 +213,7 @@ public class PreferencesFrame extends FBDialog {
                         Plugin.addAvailablePlugin(urlString);
 
                         rebuildPluginCheckboxes();
-                        
+
                     } catch (Exception e1) {
                         LOGGER.log(Level.WARNING, "Could not load " + f.getPath(), e1);
                         JOptionPane.showMessageDialog(PreferencesFrame.this, "Could not load " + f.getPath()

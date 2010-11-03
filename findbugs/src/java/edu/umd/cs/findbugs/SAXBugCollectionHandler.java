@@ -653,6 +653,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             nestingOfIgnoredElements--;
         } else if (nestingOfIgnoredElements > 0) {
             // ignore it
+        } else if (qName.equals("Project")) {
+            project.resetConfiguration();
         } else if (elementStack.size() > 1) {
             String outerElement = elementStack.get(elementStack.size() - 2);
 
