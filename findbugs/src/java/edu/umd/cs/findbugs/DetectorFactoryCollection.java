@@ -150,12 +150,7 @@ public class DetectorFactoryCollection {
      * Get the single instance of DetectorFactoryCollection.
      */
     public static DetectorFactoryCollection instance() {
-        synchronized (lock) {
-            if (theInstance == null) {
-                theInstance = I18N.instance();
-            }
-            return theInstance;
-        }
+        return I18N.instance();
     }
 
     /**
@@ -199,7 +194,7 @@ public class DetectorFactoryCollection {
      *            the unique id
      * @return the Plugin with that id, or null if no such Plugin is found
      */
-    @Deprecated
+    @Deprecated //TODO: why deprecated?
     public Plugin getPluginById(String pluginId) {
         return pluginByIdMap.get(pluginId);
     }

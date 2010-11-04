@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -133,23 +134,7 @@ public class PreferencesFrame extends FBDialog {
         bottom.add(Box.createHorizontalGlue());
         bottom.add(new JButton(new AbstractAction(edu.umd.cs.findbugs.L10N.getLocalString("pref.close", "Close")) {
             public void actionPerformed(ActionEvent evt) {
-                // MainFrame.getInstance().getSorter().thawOrder();
-                PreferencesFrame.this.setVisible(false);
-                TreeModel bt = (MainFrame.getInstance().getTree().getModel());
-                if (bt instanceof BugTreeModel)
-                    ((BugTreeModel) bt).checkSorter();
-                BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
-                Project project = bugCollection == null ? null : bugCollection.getProject();
-
-                for (Map.Entry<Plugin, Boolean> entry : pluginEnabledStatus.entrySet()) {
-                    Plugin plugin = entry.getKey();
-                    if (project != null)
-                        project.setPluginStatus(plugin, entry.getValue());
-                    else
-                        plugin.setGloballyEnabled(entry.getValue());
-                }
-
-                resetPropertiesPane();
+                handleWindowClose();
             }
         }));
         bottom.add(Box.createHorizontalStrut(5));
@@ -163,6 +148,43 @@ public class PreferencesFrame extends FBDialog {
         setDefaultCloseOperation(HIDE_ON_CLOSE);
 
         pack();
+    }
+
+    private void handleWindowClose() {
+        this.setVisible(false);
+        TreeModel bt = (MainFrame.getInstance().getTree().getModel());
+        if (bt instanceof BugTreeModel)
+            ((BugTreeModel) bt).checkSorter();
+        Project project = getCurrentProject();
+
+        List<String> enabledPlugins = new ArrayList<String>();
+        List<String> disabledPlugins = new ArrayList<String>();
+        for (Map.Entry<Plugin, Boolean> entry : pluginEnabledStatus.entrySet()) {
+            Plugin plugin = entry.getKey();
+            boolean enabled = entry.getValue();
+            if (project != null) {
+                project.setPluginStatus(plugin, enabled);
+            } else {
+                if (enabled)
+                    enabledPlugins.add(plugin.getPluginId());
+                else
+                    disabledPlugins.add(plugin.getPluginId());
+                plugin.setGloballyEnabled(enabled);
+            }
+        }
+
+        if (project == null) {
+            GUISaveState.getInstance().setPluginsEnabled(enabledPlugins, disabledPlugins);
+            GUISaveState.getInstance().save();
+        }
+
+        resetPropertiesPane();
+    }
+
+    private Project getCurrentProject() {
+        BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
+        Project project = bugCollection == null ? null : bugCollection.getProject();
+        return project;
     }
 
 

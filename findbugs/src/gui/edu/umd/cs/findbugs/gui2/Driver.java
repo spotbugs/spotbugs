@@ -22,7 +22,8 @@ package edu.umd.cs.findbugs.gui2;
 import java.io.File;
 import java.util.Locale;
 
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.StartTime;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
@@ -97,7 +98,9 @@ public class Driver {
             GUISaveState.getInstance().setFontSize(commandLine.getFontSize());
 
         // System.setProperty("findbugs.home",".."+File.separator+"findbugs");
-        DetectorFactoryCollection.instance();
+
+        enablePlugins(GUISaveState.getInstance().getEnabledPlugins(), true);
+        enablePlugins(GUISaveState.getInstance().getDisabledPlugins(), false);
 
         // The bug with serializable idiom detection has been fixed on the
         // findbugs end.
@@ -116,6 +119,15 @@ public class Driver {
 
         splash.setVisible(false);
         splash.dispose();
+    }
+
+    private static void enablePlugins(Iterable<String> plugins, boolean enabled) {
+        I18N i = I18N.instance();
+        for (String pid : plugins) {
+            Plugin plugin = i.getPluginById(pid);
+            if (plugin != null)
+                plugin.setGloballyEnabled(enabled);
+        }
     }
 
     public static void removeSplashScreen() {

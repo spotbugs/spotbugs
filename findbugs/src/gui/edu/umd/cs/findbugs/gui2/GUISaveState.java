@@ -26,11 +26,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Saves all the stuff that should be saved for each run, like recent projects,
@@ -50,67 +52,44 @@ public class GUISaveState {
 
     private static GUISaveState instance;
 
-    // private static final String PREVCOMMENTS="Previous Comments";
     private static final String SORTERTABLELENGTH = "Sorter Length";
-
     private static final String PREVCOMMENTSSIZE = "Previous Comments Size";
-
-    private static final String PREFERENCESDIRECTORY = "Preference Directory";
-
     private static final String DOCKINGLAYOUT = "Docking Layout";
-
     private static final String FRAME_BOUNDS = "Frame Bounds";
 
     private static final int MAXNUMRECENTPROJECTS = 5;
 
-    private static final int MAXNUMRECENTANALYSES = MAXNUMRECENTPROJECTS;
-
     private static final Sortables[] DEFAULT_COLUMN_HEADERS = new Sortables[] { Sortables.CATEGORY, Sortables.BUGCODE,
             Sortables.TYPE, Sortables.DIVIDER, Sortables.BUG_RANK, Sortables.FIRST_SEEN, Sortables.DESIGNATION };
 
-    private static final String[] RECENTPROJECTKEYS = new String[MAXNUMRECENTPROJECTS];// {"Project1","Project2","Project3","Project4","Project5"};//Make
-                                                                                       // MAXNUMRECENTPROJECTS
-                                                                                       // of
-                                                                                       // these
-
-    private static final String[] RECENTANALYSISKEYS = new String[MAXNUMRECENTPROJECTS];
-    static {
-        for (int x = 0; x < RECENTPROJECTKEYS.length; x++) {
-            RECENTPROJECTKEYS[x] = "Project" + x;
-            RECENTANALYSISKEYS[x] = "Analysis" + x;
-        }
-    }
+    private static final String[] RECENTPROJECTKEYS = new String[MAXNUMRECENTPROJECTS];
 
     private static final int MAXNUMPREVCOMMENTS = 10;
 
     private static final String[] COMMENTKEYS = new String[MAXNUMPREVCOMMENTS];
 
+    private static final String NUMPROJECTS = "NumberOfProjectsToLoad";
+    private static final String STARTERDIRECTORY = "Starter Directory";
+    private static final String SPLIT_MAIN = "MainSplit";
+    private static final String SPLIT_TREE_COMMENTS = "TreeCommentsSplit";
+    private static final String SPLIT_TOP = "TopSplit";
+    private static final String SPLIT_SUMMARY = "SummarySplit";
+    private static final String TAB_SIZE = "TabSize";
+    private static final String FONT_SIZE = "FontSize";
+    private static final String PACKAGE_PREFIX_SEGEMENTS = "PackagePrefixSegments";
+    private static final String ENABLED_PLUGINS = "EnabledPlugins";
+    private static final String DISABLED_PLUGINS = "DisabledPlugins";
+
     static {
-        for (int x = 0; x < COMMENTKEYS.length; x++) {
+        for (int x = 0; x < RECENTPROJECTKEYS.length; x++)
+            RECENTPROJECTKEYS[x] = "Project" + x;
+        for (int x = 0; x < COMMENTKEYS.length; x++)
             COMMENTKEYS[x] = "Comment" + x;
-        }
     }
 
-    private static final String NUMPROJECTS = "NumberOfProjectsToLoad";
-
-    private static final String NUMANALYSES = "NumberOfAnalysesToLoad";
-
-    private static final String STARTERDIRECTORY = "Starter Directory";
-
-    private static final String SPLIT_MAIN = "MainSplit";
-
-    private static final String SPLIT_TREE_COMMENTS = "TreeCommentsSplit";
-
-    private static final String SPLIT_TOP = "TopSplit";
-
-    private static final String SPLIT_SUMMARY = "SummarySplit";
-
     private int splitMain;
-
     private int splitTreeComments;
-
     private int splitTop;
-
     private int splitSummary;
 
     private File starterDirectoryForLoadBugs;
@@ -133,41 +112,14 @@ public class GUISaveState {
 
     private Rectangle frameBounds;
 
-    private static final String TAB_SIZE = "TabSize";
-
     private int tabSize; // Tab size in the source code display.
-
-    private static final String FONT_SIZE = "FontSize";
 
     private float fontSize; // Font size of entire GUI.
 
     private int packagePrefixSegments;
 
-    private static final String PACKAGE_PREFIX_SEGEMENTS = "PackagePrefixSegments";
-
-    public int getTabSize() {
-        return tabSize;
-    }
-
-    public void setTabSize(int tabSize) {
-        this.tabSize = tabSize;
-    }
-
-    public int getPackagePrefixSegments() {
-        return packagePrefixSegments;
-    }
-
-    public void setPackagePrefixSegments(int packagePrefixSegments) {
-        this.packagePrefixSegments = packagePrefixSegments;
-    }
-
-    public byte[] getDockingLayout() {
-        return dockingLayout;
-    }
-
-    public void setDockingLayout(byte[] dockingLayout) {
-        this.dockingLayout = dockingLayout;
-    }
+    private List<String> enabledPlugins;
+    private List<String> disabledPlugins;
 
     private static String[] generateSorterKeys(int numSorters) {
         String[] result = new String[numSorters];
@@ -177,89 +129,10 @@ public class GUISaveState {
         return result;
     }
 
-    SorterTableColumnModel getStarterTable() {
-        if (starterTable != null)
-            return starterTable;
-
-        if (useDefault || sortColumns == null)
-            starterTable = new SorterTableColumnModel(GUISaveState.DEFAULT_COLUMN_HEADERS);
-        else
-            starterTable = new SorterTableColumnModel(sortColumns);
-
-        return starterTable;
-    }
-
-    private GUISaveState() {
-        recentFiles = new ArrayList<File>();
-        previousComments = new LinkedList<String>();
-    }
-
     public static synchronized GUISaveState getInstance() {
         if (instance == null)
             instance = new GUISaveState();
         return instance;
-    }
-
-    /**
-     * This should be the method called to add a reused file for the recent
-     * menu.
-     */
-    public void fileReused(File f) {
-        if (!recentFiles.contains(f)) {
-            throw new IllegalStateException("Selected a recent project that doesn't exist?");
-        } else {
-            recentFiles.remove(f);
-            recentFiles.add(f);
-        }
-    }
-
-    /**
-     * This should be the method used to add a file for the recent menu.
-     * 
-     * @param f
-     */
-    public void addRecentFile(File f) {
-        if (null != f)
-            recentFiles.add(f);
-    }
-
-    /**
-     * Returns the list of recent files.
-     * 
-     * @return the list of recent files
-     */
-    public ArrayList<File> getRecentFiles() {
-        return recentFiles;
-    }
-
-    /**
-     * Call to remove a file from the list.
-     * 
-     * @param f
-     */
-    public void fileNotFound(File f) {
-        if (!recentFiles.contains(f)) {
-            throw new IllegalStateException("Well no wonder it wasn't found, its not in the list.");
-        } else
-            recentFiles.remove(f);
-
-    }
-
-    /**
-     * The file to start the loading of Bugs from.
-     * 
-     * @return Returns the starterDirectoryForLoadBugs.
-     */
-    public File getStarterDirectoryForLoadBugs() {
-        return starterDirectoryForLoadBugs;
-    }
-
-    /**
-     * @param f
-     *            The starterDirectoryForLoadBugs to set.
-     */
-    public void setStarterDirectoryForLoadBugs(File f) {
-        this.starterDirectoryForLoadBugs = f;
     }
 
     public static void loadInstance() {
@@ -349,7 +222,112 @@ public class GUISaveState {
         newInstance.splitTop = p.getInt(SPLIT_TOP, -1);
         newInstance.splitTreeComments = p.getInt(SPLIT_TREE_COMMENTS, 250);
         newInstance.packagePrefixSegments = p.getInt(PACKAGE_PREFIX_SEGEMENTS, 3);
+
+        newInstance.enabledPlugins = Arrays.asList(p.get(ENABLED_PLUGINS, "").split(","));
+        newInstance.disabledPlugins = Arrays.asList(p.get(DISABLED_PLUGINS, "").split(","));
+
         instance = newInstance;
+    }
+
+    static void clear() {
+        Preferences p = Preferences.userNodeForPackage(GUISaveState.class);
+        try {
+            p.clear();
+        } catch (BackingStoreException e) {
+            Debug.println(e);
+        }
+        instance = new GUISaveState();
+    }
+
+    private GUISaveState() {
+        recentFiles = new ArrayList<File>();
+        previousComments = new LinkedList<String>();
+    }
+
+    public int getTabSize() {
+        return tabSize;
+    }
+
+    public void setTabSize(int tabSize) {
+        this.tabSize = tabSize;
+    }
+
+    public int getPackagePrefixSegments() {
+        return packagePrefixSegments;
+    }
+
+    public void setPackagePrefixSegments(int packagePrefixSegments) {
+        this.packagePrefixSegments = packagePrefixSegments;
+    }
+
+    public byte[] getDockingLayout() {
+        return dockingLayout;
+    }
+
+    public void setDockingLayout(byte[] dockingLayout) {
+        this.dockingLayout = dockingLayout;
+    }
+
+    /**
+     * This should be the method called to add a reused file for the recent
+     * menu.
+     */
+    public void fileReused(File f) {
+        if (!recentFiles.contains(f)) {
+            throw new IllegalStateException("Selected a recent project that doesn't exist?");
+        } else {
+            recentFiles.remove(f);
+            recentFiles.add(f);
+        }
+    }
+
+    /**
+     * This should be the method used to add a file for the recent menu.
+     * 
+     * @param f
+     */
+    public void addRecentFile(File f) {
+        if (null != f)
+            recentFiles.add(f);
+    }
+
+    /**
+     * Returns the list of recent files.
+     * 
+     * @return the list of recent files
+     */
+    public ArrayList<File> getRecentFiles() {
+        return recentFiles;
+    }
+
+    /**
+     * Call to remove a file from the list.
+     * 
+     * @param f
+     */
+    public void fileNotFound(File f) {
+        if (!recentFiles.contains(f)) {
+            throw new IllegalStateException("Well no wonder it wasn't found, its not in the list.");
+        } else
+            recentFiles.remove(f);
+
+    }
+
+    /**
+     * The file to start the loading of Bugs from.
+     * 
+     * @return Returns the starterDirectoryForLoadBugs.
+     */
+    public File getStarterDirectoryForLoadBugs() {
+        return starterDirectoryForLoadBugs;
+    }
+
+    /**
+     * @param f
+     *            The starterDirectoryForLoadBugs to set.
+     */
+    public void setStarterDirectoryForLoadBugs(File f) {
+        this.starterDirectoryForLoadBugs = f;
     }
 
     public void save() {
@@ -400,16 +378,9 @@ public class GUISaveState {
         p.putInt(SPLIT_TOP, splitTop);
         p.putInt(SPLIT_TREE_COMMENTS, splitTreeComments);
         p.putInt(PACKAGE_PREFIX_SEGEMENTS, packagePrefixSegments);
-    }
 
-    static void clear() {
-        Preferences p = Preferences.userNodeForPackage(GUISaveState.class);
-        try {
-            p.clear();
-        } catch (BackingStoreException e) {
-            Debug.println(e);
-        }
-        instance = new GUISaveState();
+        p.put(ENABLED_PLUGINS, StringUtils.join(enabledPlugins, ','));
+        p.put(DISABLED_PLUGINS, StringUtils.join(disabledPlugins, ','));
     }
 
     /**
@@ -515,5 +486,30 @@ public class GUISaveState {
      */
     public void setSplitTreeComments(int splitTreeComments) {
         this.splitTreeComments = splitTreeComments;
+    }
+
+    public void setPluginsEnabled(List<String> enabledPlugins, List<String> disabledPlugins) {
+        this.enabledPlugins = enabledPlugins;
+        this.disabledPlugins = disabledPlugins;
+    }
+
+    public List<String> getEnabledPlugins() {
+        return enabledPlugins;
+    }
+
+    public List<String> getDisabledPlugins() {
+        return disabledPlugins;
+    }
+
+    SorterTableColumnModel getStarterTable() {
+        if (starterTable != null)
+            return starterTable;
+
+        if (useDefault || sortColumns == null)
+            starterTable = new SorterTableColumnModel(GUISaveState.DEFAULT_COLUMN_HEADERS);
+        else
+            starterTable = new SorterTableColumnModel(sortColumns);
+
+        return starterTable;
     }
 }
