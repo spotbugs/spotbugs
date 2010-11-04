@@ -51,9 +51,12 @@ public class WebPageServlet extends AbstractFlybushServlet {
         if (issue == null) {
             printHtmlPreface(resp);
             resp.getWriter().println("<p>This issue has not been submitted to the " + getCloudName() + "</p>");
+            LOGGER.info("Not in cloud");
             return;
         }
+
         List<DbEvaluation> list = Lists.newArrayList(sortAndFilterEvaluations(issue.getEvaluations()));
+        LOGGER.info("Issue " + issue.getPrimaryClass() + " - " + list.size() + " comments");
         if (list.isEmpty()) {
             printHtmlPreface(resp);
             resp.getWriter().println("<p>No comments have been submitted for this issue</p>");
