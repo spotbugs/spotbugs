@@ -28,7 +28,6 @@
                  classname="org.datanucleus.enhancer.tools.EnhancerTask"/>
 
         <datanucleusenhancer failonerror="true" verbose="true">
-            <classpath refid="enhancer.classpath"/>
             <classpath>
                 <path refid="enhancer.classpath"/>
                 <path location="build/classes-ant"/>
