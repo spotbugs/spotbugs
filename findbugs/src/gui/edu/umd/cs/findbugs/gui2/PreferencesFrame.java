@@ -27,6 +27,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
@@ -100,6 +102,7 @@ public class PreferencesFrame extends FBDialog {
 
     private final Map<Plugin, Boolean> pluginEnabledStatus = new HashMap<Plugin, Boolean>();
     private JPanel pluginPanelCenter;
+    private JLabel pluginHelpMsg;
 
     public static PreferencesFrame getInstance() {
         // MainFrame.getInstance().getSorter().freezeOrder();
@@ -134,7 +137,7 @@ public class PreferencesFrame extends FBDialog {
         bottom.add(Box.createHorizontalGlue());
         bottom.add(new JButton(new AbstractAction(edu.umd.cs.findbugs.L10N.getLocalString("pref.close", "Close")) {
             public void actionPerformed(ActionEvent evt) {
-                handleWindowClose();
+                PreferencesFrame.this.setVisible(false);
             }
         }));
         bottom.add(Box.createHorizontalStrut(5));
@@ -145,13 +148,24 @@ public class PreferencesFrame extends FBDialog {
         add(bottom);
         add(Box.createVerticalStrut(5));
 
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                resetPropertiesPane();
+            }
+        });
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                handleWindowClose();
+            }
+        });
         setDefaultCloseOperation(HIDE_ON_CLOSE);
 
         pack();
     }
 
     private void handleWindowClose() {
-        this.setVisible(false);
         TreeModel bt = (MainFrame.getInstance().getTree().getModel());
         if (bt instanceof BugTreeModel)
             ((BugTreeModel) bt).checkSorter();
@@ -177,27 +191,26 @@ public class PreferencesFrame extends FBDialog {
             GUISaveState.getInstance().setPluginsEnabled(enabledPlugins, disabledPlugins);
             GUISaveState.getInstance().save();
         }
-
-        resetPropertiesPane();
     }
 
     private Project getCurrentProject() {
         BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
-        Project project = bugCollection == null ? null : bugCollection.getProject();
-        return project;
+        return bugCollection == null ? null : bugCollection.getProject();
     }
-
 
     private JPanel createPluginPane() {
         final JPanel pluginPanel = new JPanel();
         pluginPanel.setLayout(new BorderLayout());
         pluginPanelCenter = new JPanel();
 
+        pluginHelpMsg = new JLabel();
+        pluginPanel.add(pluginHelpMsg, BorderLayout.NORTH);
         pluginPanel.add(pluginPanelCenter, BorderLayout.CENTER);
 
+        pluginHelpMsg.setBorder(new EmptyBorder(10,10,10,10));
+        pluginPanelCenter.setBorder(new EmptyBorder(10,10,10,10));
         BoxLayout layout = new BoxLayout(pluginPanelCenter, BoxLayout.Y_AXIS);
         pluginPanelCenter.setLayout(layout);
-        rebuildPluginCheckboxes();
 
         JButton addButton = new JButton("Install new plugin...");
         JPanel south = new JPanel();
@@ -254,6 +267,15 @@ public class PreferencesFrame extends FBDialog {
     }
 
     private void rebuildPluginCheckboxes() {
+        String msg;
+        if (getCurrentProject() == null)
+            msg = "<html><i><html>Note: Individual projects may override these settings.<br>" +
+                    "Load a project and re-open this dialog to change project settings.";
+        else
+            msg = "<html><i>Note: These are individual settings for the currently opened project.<br>" +
+                    "To change application-wide settings, close the current project and re-open this dialog.";
+        pluginHelpMsg.setText(msg);
+
         pluginPanelCenter.removeAll();
         Collection<Plugin> plugins = Plugin.getAllPlugins();
         int added = 0;
@@ -351,13 +373,6 @@ public class PreferencesFrame extends FBDialog {
         }));
 
         contentPanel.add(bottomPanel, BorderLayout.SOUTH);
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-                resetPropertiesPane();
-            }
-        });
 
         return contentPanel;
     }
