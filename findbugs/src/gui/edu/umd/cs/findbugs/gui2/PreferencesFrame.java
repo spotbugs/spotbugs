@@ -105,13 +105,13 @@ public class PreferencesFrame extends FBDialog {
     private JLabel pluginHelpMsg;
 
     public static PreferencesFrame getInstance() {
-        // MainFrame.getInstance().getSorter().freezeOrder();
         if (instance == null)
             instance = new PreferencesFrame();
 
         return instance;
     }
 
+    private boolean pluginsAdded = false;
     private PreferencesFrame() {
         setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.fil_sup_ttl", "Preferences"));
         setModal(true);
@@ -137,6 +137,7 @@ public class PreferencesFrame extends FBDialog {
         bottom.add(Box.createHorizontalGlue());
         bottom.add(new JButton(new AbstractAction(edu.umd.cs.findbugs.L10N.getLocalString("pref.close", "Close")) {
             public void actionPerformed(ActionEvent evt) {
+                handleWindowClose();
                 PreferencesFrame.this.setVisible(false);
             }
         }));
@@ -171,22 +172,33 @@ public class PreferencesFrame extends FBDialog {
             ((BugTreeModel) bt).checkSorter();
         Project project = getCurrentProject();
 
+        boolean changed = pluginsAdded;
+        pluginsAdded = false;
         List<String> enabledPlugins = new ArrayList<String>();
         List<String> disabledPlugins = new ArrayList<String>();
         for (Map.Entry<Plugin, Boolean> entry : pluginEnabledStatus.entrySet()) {
             Plugin plugin = entry.getKey();
             boolean enabled = entry.getValue();
             if (project != null) {
-                project.setPluginStatus(plugin, enabled);
+                if (enabled != project.getPluginStatus(plugin)) {
+                    project.setPluginStatus(plugin, enabled);
+                    changed = true;
+                }
             } else {
                 if (enabled)
                     enabledPlugins.add(plugin.getPluginId());
                 else
                     disabledPlugins.add(plugin.getPluginId());
-                plugin.setGloballyEnabled(enabled);
+                if (plugin.isGloballyEnabled() != enabled) {
+                    plugin.setGloballyEnabled(enabled);
+                    changed = true;
+                }
             }
         }
 
+        if (changed) {
+            MainFrame.getInstance().updateBugTree();
+        }
         if (project == null) {
             GUISaveState.getInstance().setPluginsEnabled(enabledPlugins, disabledPlugins);
             GUISaveState.getInstance().save();
@@ -245,8 +257,15 @@ public class PreferencesFrame extends FBDialog {
                     File f = chooser.getSelectedFile();
                     try {
                         URL urlString = f.toURI().toURL();
-                        Plugin.addAvailablePlugin(urlString);
+                        Plugin plugin = Plugin.addAvailablePlugin(urlString);
+                        boolean enabledByDefault = plugin.isEnabledByDefault();
+                        Project project = getCurrentProject();
+                        if (enabledByDefault && project != null) {
+                           plugin.setGloballyEnabled(false);
+                           project.setPluginStatus(plugin, true);
+                        }
 
+                        pluginsAdded = true;
                         rebuildPluginCheckboxes();
 
                     } catch (Exception e1) {
@@ -266,9 +285,15 @@ public class PreferencesFrame extends FBDialog {
         return pluginPanel;
     }
 
+    boolean isEnabled(Project project, Plugin plugin) {
+        if (project == null)
+            return plugin.isGloballyEnabled();
+        return project.getPluginStatus(plugin);
+    }
     private void rebuildPluginCheckboxes() {
         String msg;
-        if (getCurrentProject() == null)
+        Project currentProject = getCurrentProject();
+        if (currentProject == null)
             msg = "<html><i><html>Note: Individual projects may override these settings.<br>" +
                     "Load a project and re-open this dialog to change project settings.";
         else
@@ -289,12 +314,14 @@ public class PreferencesFrame extends FBDialog {
             String pluginUrl = plugin.getPluginLoader().getURL().toExternalForm();
             text = String.format("<html>%s<br><font style='font-weight:normal;font-style:italic'>%s",
                     text, pluginUrl);
-            final JCheckBox checkBox = new JCheckBox(text, plugin.isGloballyEnabled());
+
+            boolean enabled = isEnabled(currentProject, plugin);
+            final JCheckBox checkBox = new JCheckBox(text, enabled);
             checkBox.setVerticalTextPosition(SwingConstants.TOP);
             String longText = plugin.getDetailedDescription();
             if (longText != null)
                 checkBox.setToolTipText("<html>" + longText +"</html>");
-            pluginEnabledStatus.put(plugin, plugin.isGloballyEnabled());
+            pluginEnabledStatus.put(plugin, enabled);
             checkBox.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     boolean selected = checkBox.isSelected();
