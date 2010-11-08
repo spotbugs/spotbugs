@@ -32,11 +32,11 @@ import edu.umd.cs.findbugs.Priorities;
  * WarningPropertySet is useful for collecting heuristics to use in the
  * determination of whether or not a warning is a false positive, or what the
  * warning's priority should be.
- * 
+ *
  * @author David Hovemeyer
  */
 public class WarningPropertySet<T extends WarningProperty> implements Cloneable {
-    private Map<T, Object> map;
+    private final Map<T, Object> map;
 
     @Override
     public String toString() {
@@ -75,7 +75,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
     /**
      * Add a warning property to the set. The warning implicitly has the boolean
      * value "true" as its attribute.
-     * 
+     *
      * @param prop
      *            the WarningProperty
      * @return this object
@@ -87,7 +87,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 
     /**
      * Remove a warning property from the set.
-     * 
+     *
      * @param prop
      *            the WarningProperty
      * @return this object
@@ -99,7 +99,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 
     /**
      * Add a warning property and its attribute value.
-     * 
+     *
      * @param prop
      *            the WarningProperty
      * @param value
@@ -113,7 +113,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 
     /**
      * Add a warning property and its attribute value.
-     * 
+     *
      * @param prop
      *            the WarningProperty
      * @param value
@@ -125,7 +125,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 
     /**
      * Return whether or not the set contains the given WarningProperty.
-     * 
+     *
      * @param prop
      *            the WarningProperty
      * @return true if the set contains the WarningProperty, false if not
@@ -138,7 +138,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
     /**
      * Check whether or not the given WarningProperty has the given attribute
      * value.
-     * 
+     *
      * @param prop
      *            the WarningProperty
      * @param value
@@ -154,7 +154,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
     /**
      * Get the value of the attribute for the given WarningProperty. Returns
      * null if the set does not contain the WarningProperty.
-     * 
+     *
      * @param prop
      *            the WarningProperty
      * @return the WarningProperty's attribute value, or null if the set does
@@ -167,7 +167,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
     /**
      * Use the PriorityAdjustments specified by the set's WarningProperty
      * elements to compute a warning priority from the given base priority.
-     * 
+     *
      * @param basePriority
      *            the base priority
      * @return the computed warning priority
@@ -179,14 +179,16 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
         boolean falsePositive = false;
         boolean atMostLow = false;
         boolean atMostMedium = false;
+        boolean peggedHigh = false;
         int aLittleBitLower = 0;
         int priority = basePriority;
         if (!relaxedReporting) {
             for (T warningProperty : map.keySet()) {
                 PriorityAdjustment adj = warningProperty.getPriorityAdjustment();
-                if (adj == PriorityAdjustment.PEGGED_HIGH)
-                    return Priorities.HIGH_PRIORITY;
-                if (adj == PriorityAdjustment.FALSE_POSITIVE) {
+                if (adj == PriorityAdjustment.PEGGED_HIGH) {
+                	    peggedHigh = true;
+                    priority--;
+                } else if (adj == PriorityAdjustment.FALSE_POSITIVE) {
                     falsePositive = true;
                     atMostLow = true;
                 } else if (adj == PriorityAdjustment.A_LITTLE_BIT_LOWER_PRIORITY)
@@ -218,6 +220,8 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 
             }
 
+            if (peggedHigh && !falsePositive)
+                return Priorities.HIGH_PRIORITY;
             if (aLittleBitLower >= 3 || priority == 1 && aLittleBitLower == 2)
                 priority++;
             else if (aLittleBitLower <= -2)
@@ -244,7 +248,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
     /**
      * Determine whether or not a warning with given priority is expected to be
      * a false positive.
-     * 
+     *
      * @param priority
      *            the priority
      * @return true if the warning is expected to be a false positive, false if
@@ -256,7 +260,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 
     /**
      * Decorate given BugInstance with properties.
-     * 
+     *
      * @param bugInstance
      *            the BugInstance
      */
