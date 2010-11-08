@@ -385,7 +385,7 @@ public class OpcodeStack implements Constants2 {
             }
             if (source instanceof XField) {
                 buf.append(", ");
-                if (fieldLoadedFromRegister != -1)
+                if (fieldLoadedFromRegister != -1 && fieldLoadedFromRegister != Integer.MAX_VALUE)
                     buf.append(fieldLoadedFromRegister).append(':');
                 buf.append(source);
             }
@@ -520,6 +520,15 @@ public class OpcodeStack implements Constants2 {
             this.fieldLoadedFromRegister = fieldLoadedFromRegister;
         }
 
+        /**
+         * If this value was loaded from an instance field,
+         * give the register number containing the object that the field was loaded from.
+         * If Integer.MAX value, the value was loaded from a static field
+         * If -1, we don't know or don't have the register containing the object that
+         * the field was loaded from.
+         * @return
+         *
+         */
         public int getFieldLoadedFromRegister() {
             return fieldLoadedFromRegister;
         }
