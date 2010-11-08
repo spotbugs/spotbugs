@@ -126,7 +126,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
         if (getMethodName().equals("<init>") && sawInitializeSuper) {
             XClass thisClass = getXClass();
             for (XField f : thisClass.getXFields())
-                if (!touched.contains(f)) {
+                if (!f.isStatic() && !f.isFinal() && !touched.contains(f)) {
                     OpcodeStack.Item item;
                     char firstChar = f.getSignature().charAt(0);
                     if (firstChar == 'L' || firstChar == '[')
