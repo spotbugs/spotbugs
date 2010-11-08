@@ -16,8 +16,7 @@ public class Bug3097362 {
         
     }
     
-    @ExpectWarning("NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT")
-    @NoWarning("BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS")
+   @NoWarning("BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS")
     public boolean equals(Object obj) {
         if (!this.getClass().isInstance(obj)) {
             return false;
