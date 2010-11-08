@@ -186,7 +186,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
             for (T warningProperty : map.keySet()) {
                 PriorityAdjustment adj = warningProperty.getPriorityAdjustment();
                 if (adj == PriorityAdjustment.PEGGED_HIGH) {
-                	    peggedHigh = true;
+                    peggedHigh = true;
                     priority--;
                 } else if (adj == PriorityAdjustment.FALSE_POSITIVE) {
                     falsePositive = true;
