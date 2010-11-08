@@ -81,8 +81,6 @@ public class Plugin {
 
     private final boolean enabledByDefault;
 
-    EnabledState enabledState = EnabledState.PLUGIN_DEFAULT;
-
     static Map<URI, Plugin> allPlugins = new LinkedHashMap<URI, Plugin>();
 
     /**
