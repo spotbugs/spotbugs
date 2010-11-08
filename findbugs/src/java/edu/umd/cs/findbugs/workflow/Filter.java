@@ -177,9 +177,9 @@ public class Filter {
 
         public boolean withMessages = false;
 
-        private List<Matcher> includeFilter = new LinkedList<Matcher>();
+        private final List<Matcher> includeFilter = new LinkedList<Matcher>();
 
-        private List<Matcher> excludeFilter = new LinkedList<Matcher>();
+        private final List<Matcher> excludeFilter = new LinkedList<Matcher>();
 
         HashSet<String> excludedInstanceHashes = new HashSet<String>();
 
@@ -241,11 +241,33 @@ public class Filter {
 
         }
 
-        public static long getVersionNum(Map<String, AppVersion> versions, SortedMap<Long, AppVersion> timeStamps, String val,
-                boolean roundToLaterVersion, long currentSeqNum) {
-            long numVersions = currentSeqNum + 1;
+        public static long getVersionNum(BugCollection collection, String val,
+                    boolean roundToLaterVersion) {
             if (val == null)
                 return -1;
+            Map<String, AppVersion> versions = new HashMap<String, AppVersion>();
+            SortedMap<Long, AppVersion> timeStamps = new TreeMap<Long, AppVersion>();
+
+            for (Iterator<AppVersion> i = collection.appVersionIterator(); i.hasNext();) {
+                AppVersion v = i.next();
+                versions.put(v.getReleaseName(), v);
+                timeStamps.put(v.getTimestamp(), v);
+            }
+            // add current version to the maps
+            AppVersion v = collection.getCurrentAppVersion();
+            versions.put(v.getReleaseName(), v);
+            timeStamps.put(v.getTimestamp(), v);
+
+            return getVersionNum(versions,  timeStamps,  val,
+                     roundToLaterVersion,  v.getSequenceNumber());
+        }
+
+        public static long getVersionNum(Map<String, AppVersion> versions, SortedMap<Long, AppVersion> timeStamps, String val,
+                boolean roundToLaterVersion, long currentSeqNum) {
+            if (val == null)
+                return -1;
+            long numVersions = currentSeqNum + 1;
+
             if (val.equals("last") || val.equals("lastVersion"))
                 return numVersions - 1;
 
@@ -296,33 +318,22 @@ public class Filter {
 
         edu.umd.cs.findbugs.filter.Filter suppressionFilter;
 
+
         void adjustFilter(Project project, BugCollection collection) {
             suppressionFilter = project.getSuppressionFilter();
-            Map<String, AppVersion> versions = new HashMap<String, AppVersion>();
-            SortedMap<Long, AppVersion> timeStamps = new TreeMap<Long, AppVersion>();
-
-            for (Iterator<AppVersion> i = collection.appVersionIterator(); i.hasNext();) {
-                AppVersion v = i.next();
-                versions.put(v.getReleaseName(), v);
-                timeStamps.put(v.getTimestamp(), v);
-            }
-            // add current version to the maps
-            AppVersion v = collection.getCurrentAppVersion();
-            versions.put(v.getReleaseName(), v);
-            timeStamps.put(v.getTimestamp(), v);
 
             if (maxAgeSpecified) {
                 minFirstSeen = collection.getAnalysisTimestamp() - maxAge * MILLISECONDS_PER_DAY;
             }
-            first = getVersionNum(versions, timeStamps, firstAsString, true, v.getSequenceNumber());
-            maybeMutated = getVersionNum(versions, timeStamps, maybeMutatedAsString, true, v.getSequenceNumber());
-            last = getVersionNum(versions, timeStamps, lastAsString, true, v.getSequenceNumber());
-            before = getVersionNum(versions, timeStamps, beforeAsString, true, v.getSequenceNumber());
-            after = getVersionNum(versions, timeStamps, afterAsString, false, v.getSequenceNumber());
-            present = getVersionNum(versions, timeStamps, presentAsString, true, v.getSequenceNumber());
-            absent = getVersionNum(versions, timeStamps, absentAsString, true, v.getSequenceNumber());
+            first = getVersionNum(collection, firstAsString, true);
+            maybeMutated = getVersionNum(collection, maybeMutatedAsString, true);
+            last = getVersionNum(collection, lastAsString, true);
+            before = getVersionNum(collection, beforeAsString, true);
+            after = getVersionNum(collection, afterAsString, false);
+            present = getVersionNum(collection, presentAsString, true);
+            absent = getVersionNum(collection, absentAsString, true);
 
-            long fixed = getVersionNum(versions, timeStamps, fixedAsString, true, v.getSequenceNumber());
+            long fixed = getVersionNum(collection, fixedAsString, true);
             if (fixed >= 0)
                 last = fixed - 1; // fixed means last on previous sequence (ok
                                   // if -1)

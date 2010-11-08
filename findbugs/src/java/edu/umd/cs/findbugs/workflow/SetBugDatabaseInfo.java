@@ -22,17 +22,13 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.dom4j.DocumentException;
 
-import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
@@ -46,7 +42,7 @@ import edu.umd.cs.findbugs.filter.Filter;
 /**
  * Java main application to compute update a historical bug collection with
  * results from another build/analysis.
- * 
+ *
  * @author William Pugh
  */
 
@@ -156,7 +152,7 @@ public class SetBugDatabaseInfo {
             else if (option.equals("-source"))
                 sourcePaths.add(argument);
             else if (option.equals("-lastVersion")) {
-
+                lastVersion = argument;
             } else if (option.equals("-findSource"))
                 searchSourcePaths.add(argument);
             else
@@ -218,21 +214,8 @@ public class SetBugDatabaseInfo {
         if (commandLine.purgeMissingClasses)
             origCollection.clearMissingClasses();
         if (commandLine.lastVersion != null) {
-            Map<String, AppVersion> versions = new HashMap<String, AppVersion>();
-            SortedMap<Long, AppVersion> timeStamps = new TreeMap<Long, AppVersion>();
-
-            for (Iterator<AppVersion> i = origCollection.appVersionIterator(); i.hasNext();) {
-                AppVersion v = i.next();
-                versions.put(v.getReleaseName(), v);
-                timeStamps.put(v.getTimestamp(), v);
-            }
-            // add current version to the maps
-            AppVersion v = origCollection.getCurrentAppVersion();
-            versions.put(v.getReleaseName(), v);
-            timeStamps.put(v.getTimestamp(), v);
-
-            long last = edu.umd.cs.findbugs.workflow.Filter.FilterCommandLine.getVersionNum(versions, timeStamps,
-                    commandLine.lastVersion, true, v.getSequenceNumber());
+            long last = edu.umd.cs.findbugs.workflow.Filter.FilterCommandLine.getVersionNum(origCollection,
+                    commandLine.lastVersion, true);
             if (last < origCollection.getSequenceNumber()) {
                 String name = origCollection.getAppVersionFromSequenceNumber(last).getReleaseName();
                 long timestamp = origCollection.getAppVersionFromSequenceNumber(last).getTimestamp();
