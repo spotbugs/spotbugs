@@ -118,6 +118,13 @@ public class Project implements XMLWriteable {
     private final Map<Plugin,Boolean> enabledPlugins = new HashMap<Plugin,Boolean>();
 
 
+    public boolean getPluginStatus(Plugin plugin) {
+        Boolean b = enabledPlugins.get(plugin);
+        if (b != null)
+            return b;
+        return plugin.isGloballyEnabled();
+    }
+
     public void setPluginStatus(Plugin plugin, boolean enabled) {
         if (plugin.isGloballyEnabled() == enabled)
             enabledPlugins.remove(plugin);
@@ -863,7 +870,9 @@ public class Project implements XMLWriteable {
 
         for(Map.Entry<Plugin, Boolean> e : enabledPlugins.entrySet()) {
             Plugin plugin = e.getKey();
-            if (e.getValue() == plugin.isGloballyEnabled()) continue;
+            if (e.getValue() == plugin.isGloballyEnabled()
+                    && plugin.isInitialPlugin()
+                    && plugin.isEnabledByDefault() == plugin.isGloballyEnabled()) continue;
             xmlOutput.startTag(PLUGIN_ELEMENT_NAME);
             xmlOutput.addAttribute(PLUGIN_ID_ATTRIBUTE_NAME, plugin.getPluginId());
             xmlOutput.addAttribute(PLUGIN_STATUS_ELEMENT_NAME, e.getValue().toString());
