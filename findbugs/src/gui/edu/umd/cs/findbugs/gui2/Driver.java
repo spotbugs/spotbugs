@@ -27,13 +27,14 @@ import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.StartTime;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
+import edu.umd.cs.findbugs.config.InvocationEnvironment;
 
 /**
  * This is where it all begins run with -f int to set font size run with -clear
  * to clear recent projects menu, or any other issues with program not starting
  * properly due to something being corrupted (or just faulty) in backend store
  * for GUISaveState.
- * 
+ *
  */
 public class Driver {
     /** Force start time to be computed */
@@ -47,6 +48,7 @@ public class Driver {
 
     public static void main(String[] args) throws Exception {
 
+        InvocationEnvironment.set("FindBugs gui");
         if (SystemProperties.getProperty("os.name").startsWith("Mac")) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FindBugs");
