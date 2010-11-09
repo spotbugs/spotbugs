@@ -22,6 +22,8 @@ public class CloudPluginBuilder {
 
     private boolean onlineStorage;
 
+    private String findbugsPluginId;
+
     public CloudPluginBuilder setCloudid(String cloudid) {
         this.cloudid = cloudid;
         return this;
@@ -63,7 +65,7 @@ public class CloudPluginBuilder {
     }
 
     public CloudPlugin createCloudPlugin() {
-        return new CloudPlugin(cloudid, classLoader, cloudClass, usernameClass, hidden, properties, description, details);
+        return new CloudPlugin(findbugsPluginId, cloudid, classLoader, cloudClass, usernameClass, hidden, properties, description, details);
     }
 
     public CloudPluginBuilder setOnlineStorage(boolean onlineStorage) {
@@ -73,5 +75,14 @@ public class CloudPluginBuilder {
 
     public boolean isOnlineStorage() {
         return onlineStorage;
+    }
+
+    public CloudPluginBuilder setFindbugsPluginId(String findbugsPluginId) {
+        this.findbugsPluginId = findbugsPluginId;
+        return this;
+    }
+
+    public String getFindbugsPluginId() {
+        return findbugsPluginId;
     }
 }

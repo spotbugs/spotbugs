@@ -513,7 +513,7 @@ public class PluginLoader {
             }
 
             if (pluginEnabled) {
-                CloudPlugin cloudPlugin = new CloudPluginBuilder().setCloudid(cloudId).setClassLoader(classLoader)
+                CloudPlugin cloudPlugin = new CloudPluginBuilder().setFindbugsPluginId(pluginId).setCloudid(cloudId).setClassLoader(classLoader)
                         .setCloudClass(cloudClass).setUsernameClass(usernameClass).setHidden(hidden).setProperties(properties)
                         .setDescription(description).setDetails(details).setOnlineStorage(onlineStorage).createCloudPlugin();
                 plugin.addCloudPlugin(cloudPlugin);
@@ -1148,6 +1148,6 @@ public class PluginLoader {
             return String.format("PluginLoader(%s)", loadedFrom);
         return String.format("PluginLoader(%s, %s)", plugin.getPluginId(), loadedFrom);
     }
-}
+    }
 
 // vim:ts=4

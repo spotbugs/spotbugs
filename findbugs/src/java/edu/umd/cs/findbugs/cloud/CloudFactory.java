@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SystemProperties;
 
 /**
@@ -55,6 +56,14 @@ public class CloudFactory {
             if (plugin == null && FAIL_IF_CLOUD_NOT_FOUND)
                 throw new IllegalArgumentException("Cannot find registered cloud for " + cloudId);
         }
+        // is the desired plugin disabled for this project (and/or globally)? if so, skip it.
+        if (plugin != null) {
+            Plugin fbplugin = Plugin.getByName(plugin.getFindbugsPluginId());
+            //noinspection PointlessBooleanExpression
+            if (fbplugin != null && bc.getProject().getPluginStatus(fbplugin) == false) {
+                plugin = null; // use default cloud below
+            }
+        }
         boolean usedDefaultCloud = false;
         if (plugin == null) {
             if (DEFAULT_CLOUD != null)
@@ -70,7 +79,6 @@ public class CloudFactory {
 
         }
         LOGGER.log(Level.FINE, "Using cloud plugin " + plugin.getId());
-        ;
 
         try {
             Class<? extends Cloud> cloudClass = plugin.getCloudClass();
@@ -81,7 +89,6 @@ public class CloudFactory {
             if (DEBUG)
                 bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloud.getClass().getName());
             LOGGER.log(Level.FINE, "constructed cloud plugin " + plugin.getId());
-            ;
             if (false && usedDefaultCloud)
                 bc.getProject().setCloudId(plugin.getId());
             return cloud;

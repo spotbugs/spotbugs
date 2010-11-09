@@ -221,8 +221,7 @@ public class PreferencesFrame extends FBDialog {
 
         pluginHelpMsg.setBorder(new EmptyBorder(10,10,10,10));
         pluginPanelCenter.setBorder(new EmptyBorder(10,10,10,10));
-        BoxLayout layout = new BoxLayout(pluginPanelCenter, BoxLayout.Y_AXIS);
-        pluginPanelCenter.setLayout(layout);
+        pluginPanelCenter.setLayout(new BoxLayout(pluginPanelCenter, BoxLayout.Y_AXIS));
 
         JButton addButton = new JButton("Install new plugin...");
         JPanel south = new JPanel();
@@ -256,14 +255,7 @@ public class PreferencesFrame extends FBDialog {
                 if (retvalue == JFileChooser.APPROVE_OPTION) {
                     File f = chooser.getSelectedFile();
                     try {
-                        URL urlString = f.toURI().toURL();
-                        Plugin plugin = Plugin.addAvailablePlugin(urlString);
-                        boolean enabledByDefault = plugin.isEnabledByDefault();
-                        Project project = getCurrentProject();
-                        if (enabledByDefault && project != null) {
-                           plugin.setGloballyEnabled(false);
-                           project.setPluginStatus(plugin, true);
-                        }
+                        Plugin.loadPlugin(f, PreferencesFrame.this.getCurrentProject());
 
                         pluginsAdded = true;
                         rebuildPluginCheckboxes();

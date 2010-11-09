@@ -27,9 +27,28 @@ import edu.umd.cs.findbugs.cloud.username.NameLookup;
  */
 public class CloudPlugin {
 
-    public CloudPlugin(String cloudid, ClassLoader classLoader, Class<? extends Cloud> cloudClass,
-            Class<? extends NameLookup> usernameClass, boolean hidden, PropertyBundle properties, String description,
-            String details) {
+    final String findbugsPluginId;
+
+    final String cloudid;
+
+    final ClassLoader classLoader;
+
+    final Class<? extends Cloud> cloudClass;
+
+    final Class<? extends NameLookup> usernameClass;
+
+    final PropertyBundle properties;
+
+    final String description;
+
+    final String details;
+
+    final boolean hidden;
+
+    public CloudPlugin(String findbugsPluginId, String cloudid, ClassLoader classLoader, Class<? extends Cloud> cloudClass,
+                       Class<? extends NameLookup> usernameClass, boolean hidden, PropertyBundle properties, String description,
+                       String details) {
+        this.findbugsPluginId = findbugsPluginId;
         this.cloudid = cloudid;
         this.classLoader = classLoader;
         this.cloudClass = cloudClass;
@@ -38,6 +57,10 @@ public class CloudPlugin {
         this.description = description;
         this.details = details;
         this.hidden = hidden;
+    }
+
+    public String getFindbugsPluginId() {
+        return findbugsPluginId;
     }
 
     public String getId() {
@@ -77,19 +100,4 @@ public class CloudPlugin {
         return getDescription();
     }
 
-    final String cloudid;
-
-    final ClassLoader classLoader;
-
-    final Class<? extends Cloud> cloudClass;
-
-    final Class<? extends NameLookup> usernameClass;
-
-    final PropertyBundle properties;
-
-    final String description;
-
-    final String details;
-
-    final boolean hidden;
 }

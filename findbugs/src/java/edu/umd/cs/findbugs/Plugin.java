@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -482,6 +484,27 @@ public boolean isCorePlugin() {
 
     public ClassLoader getClassLoader() {
         return getPluginLoader().getClassLoader();
+    }
+
+    public static Plugin loadPlugin(File f, @CheckForNull Project project)
+            throws PluginException {
+        URL urlString;
+        try {
+            urlString = f.toURI().toURL();
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(e);
+        }
+        return loadPlugin(urlString, project);
+    }
+
+    public static Plugin loadPlugin(URL urlString, @CheckForNull Project project) throws PluginException {
+        Plugin plugin = addAvailablePlugin(urlString);
+        boolean enabledByDefault = plugin.isEnabledByDefault();
+        if (enabledByDefault && project != null) {
+           plugin.setGloballyEnabled(false);
+           project.setPluginStatus(plugin, true);
+        }
+        return plugin;
     }
 
     public static Plugin addAvailablePlugin(URL u) throws PluginException {
