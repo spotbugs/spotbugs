@@ -261,6 +261,9 @@ public interface Cloud {
 
     long getFirstSeen(BugInstance b);
 
+    /**
+     * @return {@link UserDesignation#UNCLASSIFIED} if no consensus has been reached
+     */
     UserDesignation getConsensusDesignation(BugInstance b);
 
     boolean overallClassificationIsNotAProblem(BugInstance b);
