@@ -56,7 +56,7 @@ import edu.umd.cs.findbugs.log.Profiler;
  * The <code>Reporter</code> is a class that is called by the FindBugs engine in
  * order to record and report bugs that have been found. This implementation
  * displays the bugs found as tasks in the task view.
- * 
+ *
  * @author Peter Friese
  * @author David Hovemeyer
  * @version 1.0
@@ -82,7 +82,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
 
     /**
      * Constructor.
-     * 
+     *
      * @param project
      *            the project whose classes are being analyzed for bugs
      * @param findBugsProject
@@ -181,11 +181,11 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
         if (!isStreamReportingEnabled()) {
             return;
         }
-        printToStream("finished, found: " + bugCount + " bugs");
+        printToStream("Finished, found: " + bugCount + " bugs");
         ConfigurableXmlOutputStream xmlStream = new ConfigurableXmlOutputStream(stream, true);
         ProjectStats stats = bugCollection.getProjectStats();
 
-        printToStream(new Footprint(stats.getBaseFootprint()).toString());
+        printToStream("\nFootprint: " + new Footprint(stats.getBaseFootprint()).toString());
 
         Profiler profiler = stats.getProfiler();
         PrintStream printStream;
@@ -196,14 +196,14 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
             return;
         }
 
-        printToStream("Total time:");
+        printToStream("\nTotal time:");
         profiler.report(new Profiler.TotalTimeComparator(profiler), new Profiler.FilterByTime(10000000), printStream);
 
-        printToStream("Total calls:");
+        printToStream("\nTotal calls:");
         profiler.report(new Profiler.TotalCallsComparator(profiler), new Profiler.FilterByCalls(stats.getNumClasses()),
                 printStream);
 
-        printToStream("Time per call:");
+        printToStream("\nTime per call:");
         profiler.report(new Profiler.TimePerCallComparator(profiler),
                 new Profiler.FilterByTimePerCall(10000000 / stats.getNumClasses()), printStream);
         try {
@@ -216,7 +216,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
     /**
      * Returns the list of bugs found in this project. If the list has not been
      * initialized yet, this will be done before returning.
-     * 
+     *
      * @return The collection that hold the bugs found in this project.
      */
     public SortedBugCollection getBugCollection() {
@@ -273,12 +273,19 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
     }
 
     public void reportNumberOfArchives(int numArchives) {
-        printToStream("archives to analyze: " + numArchives);
+        printToStream("\nStarting FindBugs analysis on file(s) from: " + project.getElementName());
+        List<String> classpathEntryList = bugCollection.getProject().getAuxClasspathEntryList();
+        printToStream("\nResolved auxiliary classpath (" + classpathEntryList.size() + " entries):");
+        Collections.sort(classpathEntryList);
+        for (String path : classpathEntryList) {
+            printToStream("\t " + path);
+        }
+        printToStream("\nArchives to analyze: " + numArchives);
     }
 
     public void startAnalysis(int numClasses) {
         pass++;
-        printToStream("start pass: " + pass + " on " + numClasses + " classes");
+        printToStream("Start pass: " + pass + " on " + numClasses + " classes");
     }
 
     public void predictPassCount(int[] classesPerPass) {
