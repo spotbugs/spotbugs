@@ -13,6 +13,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
 
+import edu.umd.cs.findbugs.flybush.DbClientVersionStats;
 import edu.umd.cs.findbugs.flybush.DbEvaluation;
 import edu.umd.cs.findbugs.flybush.DbInvocation;
 import edu.umd.cs.findbugs.flybush.DbIssue;
@@ -20,7 +21,7 @@ import edu.umd.cs.findbugs.flybush.DbUser;
 import edu.umd.cs.findbugs.flybush.PersistenceHelper;
 import edu.umd.cs.findbugs.flybush.SqlCloudSession;
 
-public class LocalPersistenceHelper implements PersistenceHelper {
+public class LocalPersistenceHelper extends PersistenceHelper {
     private static PersistenceManagerFactory pmf;
 
     private static PersistenceManagerFactory createPersistenceManagerFactory() throws IOException {
@@ -65,6 +66,11 @@ public class LocalPersistenceHelper implements PersistenceHelper {
         return new LocalDbEvaluation();
     }
 
+    @Override
+    public DbClientVersionStats createDbClientVersionStats(String application, String version, long dayStart) {
+        throw new UnsupportedOperationException();
+    }
+
     public Class<? extends DbUser> getDbUserClass() {
         return LocalDbUser.class;
     }
@@ -85,6 +91,11 @@ public class LocalPersistenceHelper implements PersistenceHelper {
         return LocalDbEvaluation.class;
     }
 
+    @Override
+    public Class<? extends DbClientVersionStats> getDbClientVersionStatsClass() {
+        throw new UnsupportedOperationException();
+    }
+
     public int clearAllData() {
         throw new UnsupportedOperationException();
     }
@@ -99,7 +110,7 @@ public class LocalPersistenceHelper implements PersistenceHelper {
     public Map<String, DbIssue> findIssues(PersistenceManager pm, Iterable<String> hashes) {
         // we can do this here but not in App Engine because App Engine's JDO impl makes it so each DbIssue query result
         // reqiures another query to get DbEvaluations.
-        Query query = pm.newQuery("select from " + getDbIssueClass().getName() + " where :hashes.contains(hash)");
+        Query query = pm.newQuery("select from " + getDbIssueClassname() + " where :hashes.contains(hash)");
         List<DbIssue> results = (List<DbIssue>) query.execute(hashes);
         Map<String,DbIssue> map = new HashMap<String, DbIssue>();
         for (DbIssue issue : results) {
@@ -113,6 +124,11 @@ public class LocalPersistenceHelper implements PersistenceHelper {
 
     public boolean convertToNewCommentStyle(DbEvaluation eval) {
         return false;
+    }
+
+    @Override
+    public boolean shouldRecordClientStats(String ip, String appName, String appVer, long midnightToday) {
+        return true; // currently we don't use memcache for the local cloud server
     }
 
     public String getEmail(PersistenceManager pm, Comparable<?> who) {

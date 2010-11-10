@@ -33,9 +33,11 @@ import com.google.protobuf.GeneratedMessage;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.MutableCloudTask;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
@@ -592,6 +594,12 @@ public class WebCloudNetworkClient {
         if (sessionId != null) {
             msgb.setSessionId(sessionId);
         }
+
+        msgb.setVersionInfo(ProtoClasses.VersionInfo.newBuilder()
+                .setAppName(Version.getApplicationName())
+                .setAppVersion(Version.getApplicationVersion())
+                .setFindbugsVersion(Version.getReleaseWithDateIfDev()));
+
         final FindIssues hashList = msgb.addAllMyIssueHashes(WebCloudProtoUtil.encodeHashes(bugsByHash)).build();
 
         RetryableConnection<FindIssuesResponse> conn = new RetryableConnection<FindIssuesResponse>("/find-issues", true) {
@@ -750,8 +758,10 @@ public class WebCloudNetworkClient {
                         // increase timeout by 5 seconds each iteration
                         timeout *= i;
                     conn.setConnectTimeout(timeout);
-                    if (post)
+                    if (post) {
                         conn.setDoOutput(true);
+                        conn.setRequestMethod("POST");
+                    }
                     conn.connect();
                     OutputStream out = conn.getOutputStream();
                     write(out);

@@ -1,48 +1,61 @@
 package edu.umd.cs.findbugs.flybush;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
-public interface PersistenceHelper {
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
 
-    PersistenceManagerFactory getPersistenceManagerFactory() throws IOException;
+public abstract class PersistenceHelper {
 
-    PersistenceManager getPersistenceManager() throws IOException;
+    public abstract PersistenceManagerFactory getPersistenceManagerFactory() throws IOException;
+    public abstract PersistenceManager getPersistenceManager() throws IOException;
 
-    DbUser createDbUser(String openidUrl, String email);
+    public abstract DbUser createDbUser(String openidUrl, String email);
+    public abstract SqlCloudSession createSqlCloudSession(long id, Date date, Object userKey, String email);
+    public abstract DbInvocation createDbInvocation();
+    public abstract DbIssue createDbIssue();
+    public abstract DbEvaluation createDbEvaluation();
+    public abstract DbClientVersionStats createDbClientVersionStats(String application, String version, long dayStart);
 
-    SqlCloudSession createSqlCloudSession(long id, Date date, Object userKey, String email);
+    public abstract Class<? extends DbUser> getDbUserClass();
+    public abstract Class<? extends SqlCloudSession> getSqlCloudSessionClass();
+    public abstract Class<? extends DbInvocation> getDbInvocationClass();
+    public abstract Class<? extends DbIssue> getDbIssueClass();
+    public abstract Class<? extends DbEvaluation> getDbEvaluationClass();
+    public abstract Class<? extends DbClientVersionStats> getDbClientVersionStatsClass();
 
-    DbInvocation createDbInvocation();
+    public String getDbUserClassname() {
+        return getDbUserClass().getName();
+    }
+    public String getSqlCloudSessionClassname() {
+        return getSqlCloudSessionClass().getName();
+    }
+    public String getDbInvocationClassname() {
+        return getDbInvocationClass().getName();
+    }
+    public String getDbIssueClassname() {
+        return getDbIssueClass().getName();
+    }
+    public String getDbEvaluationClassname() {
+        return getDbEvaluationClass().getName();
+    }
+    public String getDbClientVersionStatsClassname() {
+        return getDbClientVersionStatsClass().getName();
+    }
 
-    DbIssue createDbIssue();
+    public abstract int clearAllData();
 
-    DbEvaluation createDbEvaluation();
+    public abstract <E> E getObjectById(PersistenceManager pm, Class<? extends E> cls, Object key);
 
-    Class<? extends DbUser> getDbUserClass();
+    public abstract Map<String, DbIssue> findIssues(PersistenceManager pm, Iterable<String> hashes);
 
-    Class<? extends SqlCloudSession> getSqlCloudSessionClass();
+    public abstract String getEmail(PersistenceManager pm, Comparable<?> who);
 
-    Class<? extends DbInvocation> getDbInvocationClass();
+    public abstract boolean isOldCommentStyle(DbEvaluation eval);
+    public abstract void convertToOldCommentStyleForTesting(DbEvaluation eval);
+    public abstract boolean convertToNewCommentStyle(DbEvaluation eval);
 
-    Class<? extends DbIssue> getDbIssueClass();
-
-    Class<? extends DbEvaluation> getDbEvaluationClass();
-
-    int clearAllData();
-
-    <E> E getObjectById(PersistenceManager pm, Class<? extends E> cls, Object key);
-
-    Map<String, DbIssue> findIssues(PersistenceManager pm, Iterable<String> hashes);
-
-    String getEmail(PersistenceManager pm, Comparable<?> who);
-
-    boolean isOldCommentStyle(DbEvaluation eval);
-
-    void convertToOldCommentStyleForTesting(DbEvaluation eval);
-
-    boolean convertToNewCommentStyle(DbEvaluation eval);
+    public abstract boolean shouldRecordClientStats(String ip, String appName, String appVer, long midnightToday);
 }

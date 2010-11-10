@@ -118,7 +118,7 @@ public class PluginLoader {
     static {
         if (DEBUG) {
             System.out.println("Debugging plugin loading. FindBugs version "
-                    + Version.RELEASE +", compiled " + Version.DATE);
+                    + Version.getReleaseWithDateIfDev());
         }
     }
 

@@ -151,6 +151,8 @@ public class FindBugs2 implements IFindBugsEngine {
             }
         };
 
+        Version.registerApplication("FindBugs TextUI", Version.getReleaseWithDateIfDev());
+
         // By default, we do not want to scan nested archives
         this.analysisOptions.scanNestedArchives = false;
         // bug 2815983: no bugs are reported anymore

@@ -33,6 +33,9 @@ import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil.dec
 
 public abstract class AbstractFlybushServletTest extends TestCase {
 
+    /** Wed, 31 Mar 2010 18:44:40 GMT */
+    protected static final long SAMPLE_TIMESTAMP = 1270061080000L;
+
     protected HttpServletResponse mockResponse;
 
     protected ByteArrayOutputStream outputCollector;
@@ -46,8 +49,6 @@ public abstract class AbstractFlybushServletTest extends TestCase {
     protected PersistenceHelper persistenceHelper;
 
     protected FlybushServletTestHelper testHelper;
-
-    protected static final long SAMPLE_TIMESTAMP = 1270061080000L;
 
     @Override
     protected void setUp() throws Exception {
@@ -189,7 +190,7 @@ public abstract class AbstractFlybushServletTest extends TestCase {
     protected DbEvaluation createEvaluation(DbIssue issue, String who, long when, String designation, String comment) {
         DbUser user;
         Query query = getPersistenceManager().newQuery(
-                "select from " + persistenceHelper.getDbUserClass().getName() + " where openid == :myopenid");
+                "select from " + persistenceHelper.getDbUserClassname() + " where openid == :myopenid");
         List<DbUser> results = (List<DbUser>) query.execute("http://" + who);
         if (results.isEmpty()) {
             user = persistenceHelper.createDbUser("http://" + who, who);

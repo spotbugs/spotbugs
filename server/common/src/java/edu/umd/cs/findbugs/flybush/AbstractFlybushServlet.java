@@ -77,7 +77,7 @@ public abstract class AbstractFlybushServlet extends HttpServlet {
 
     @SuppressWarnings("unchecked")
     protected SqlCloudSession lookupCloudSessionById(long id, PersistenceManager pm) {
-        Query query = pm.newQuery("select from " + persistenceHelper.getSqlCloudSessionClass().getName()
+        Query query = pm.newQuery("select from " + persistenceHelper.getSqlCloudSessionClassname()
                 + " where randomID == :randomIDquery");
         List<SqlCloudSession> sessions = (List<SqlCloudSession>) query.execute(Long.toString(id));
         return sessions.isEmpty() ? null : sessions.get(0);
@@ -101,5 +101,10 @@ public abstract class AbstractFlybushServlet extends HttpServlet {
             }
         }
         return result;
+    }
+
+    /** for testing */
+    long getCurrentTimeMillis() {
+        return System.currentTimeMillis();
     }
 }

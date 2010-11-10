@@ -8,4 +8,9 @@
         <property name="packages" direction="asc"/>
         <property name="when" direction="asc"/>
     </datastore-index>
+    <datastore-index kind="AppEngineDbClientVersionStats" ancestor="false" source="auto">
+        <property name="dayStart" direction="asc"/>
+        <property name="application" direction="asc"/>
+        <property name="version" direction="asc"/>
+    </datastore-index>
 </datastore-indexes>

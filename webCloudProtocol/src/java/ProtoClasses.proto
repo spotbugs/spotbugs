@@ -5,9 +5,16 @@ message LogIn {
     required int64 analysisTimestamp = 3;
 }
 
+message VersionInfo {
+    required string appName = 1;
+    required string appVersion = 2;
+    required string findbugsVersion = 3;
+}
+
 message FindIssues {
     optional int64 sessionId = 1;
     repeated bytes myIssueHashes = 4;
+    optional VersionInfo versionInfo = 5;
 }
 
 message FindIssuesResponse {

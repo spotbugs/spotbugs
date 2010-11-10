@@ -125,7 +125,7 @@ public class AuthServlet extends AbstractFlybushServlet {
 
     @SuppressWarnings({"unchecked"})
     private DbUser findUser(PersistenceManager pm, String openidUrl, String email) {
-        Query q = pm.newQuery("select from " + persistenceHelper.getDbUserClass().getName()
+        Query q = pm.newQuery("select from " + persistenceHelper.getDbUserClassname()
                 + " where openid == :openid && email == :email");
         List<DbUser> result = (List<DbUser>) q.execute(openidUrl, email);
         DbUser dbUser = result.isEmpty() ? null : result.iterator().next();
@@ -160,6 +160,7 @@ public class AuthServlet extends AbstractFlybushServlet {
         resp.flushBuffer();
     }
 
+    @SuppressWarnings({"unchecked"})
     private void logIn(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
         LogIn loginMsg = LogIn.parseFrom(req.getInputStream());
         SqlCloudSession session = lookupCloudSessionById(loginMsg.getSessionId(), pm);
@@ -168,6 +169,12 @@ public class AuthServlet extends AbstractFlybushServlet {
             return;
         }
 
+        DbInvocation invocation = recordInvocation(pm, loginMsg, session);
+        recordSession(pm, session, invocation);
+        resp.setStatus(200);
+    }
+
+    private DbInvocation recordInvocation(PersistenceManager pm, LogIn loginMsg, SqlCloudSession session) {
         DbInvocation invocation = persistenceHelper.createDbInvocation();
         invocation.setWho(session.getUser());
         invocation.setStartTime(loginMsg.getAnalysisTimestamp());
@@ -182,6 +189,11 @@ public class AuthServlet extends AbstractFlybushServlet {
                 tx.rollback();
             }
         }
+        return invocation;
+    }
+
+    private void recordSession(PersistenceManager pm, SqlCloudSession session, DbInvocation invocation) {
+        Transaction tx;
         session.setInvocation(invocation);
         tx = pm.currentTransaction();
         tx.begin();
@@ -193,9 +205,8 @@ public class AuthServlet extends AbstractFlybushServlet {
                 tx.rollback();
             }
         }
-        resp.setStatus(200);
     }
-    
+
     private void showToken(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm)
             throws IOException {
 

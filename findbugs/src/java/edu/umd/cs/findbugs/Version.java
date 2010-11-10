@@ -25,6 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
+import javax.annotation.CheckForNull;
+
 /**
  * Version number and release date information.
  */
@@ -63,6 +65,10 @@ public class Version {
     public static final String DATE;
 
     private static final String COMPUTED_ECLIPSE_DATE;
+
+    private static String applicationName = "<unknown>";
+
+    private static String applicationVersion = "<unknown>";
 
     static {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, dd MMMM, yyyy");
@@ -146,6 +152,19 @@ public class Version {
      */
     public static final String SUPPORT_EMAIL = "http://findbugs.sourceforge.net/reportingBugs.html";
 
+    public static void registerApplication(String name, String version) {
+        applicationName = name;
+        applicationVersion = version;
+    }
+
+    public static @CheckForNull String getApplicationName() {
+        return applicationName;
+    }
+
+    public static @CheckForNull String getApplicationVersion() {
+        return applicationVersion;
+    }
+
     public static void main(String[] argv) {
         if (argv.length != 1)
             usage();
@@ -173,6 +192,12 @@ public class Version {
 
     private static void usage() {
         System.err.println("Usage: " + Version.class.getName() + "  (-release|-date|-props)");
+    }
+
+    public static String getReleaseWithDateIfDev() {
+        if (IS_DEVELOPMENT)
+            return RELEASE + " (" + DATE + ")";
+        return RELEASE;
     }
 }
 

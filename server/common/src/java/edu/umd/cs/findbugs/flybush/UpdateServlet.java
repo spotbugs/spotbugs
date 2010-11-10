@@ -99,7 +99,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         int count = 0;
         int skipped = 0;
         try {
-            Query eq = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName());
+            Query eq = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClassname());
             List<DbEvaluation> evals = (List<DbEvaluation>) eq.execute();
             for (DbEvaluation eval : evals) {
                 boolean changed = false;
@@ -145,7 +145,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
 
     @SuppressWarnings({ "unchecked" })
     private Map<String, String> buildPrimaryClassMap(PersistenceManager pm) {
-        Query iq = pm.newQuery("select from " + persistenceHelper.getDbIssueClass().getName() + " where hasEvaluations");
+        Query iq = pm.newQuery("select from " + persistenceHelper.getDbIssueClassname() + " where hasEvaluations");
         List<DbIssue> issues = (List<DbIssue>) iq.execute();
         Map<String, String> primaryClasses = Maps.newHashMap();
         for (DbIssue issue : issues) {
@@ -161,7 +161,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         int updated = 0;
         boolean finished = false;
         try {
-            Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName());
+            Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClassname());
             for (DbEvaluation evaluation : (List<DbEvaluation>) query.execute()) {
                 if (evaluation.getEmail() != null) {
                     skipped++;
@@ -188,7 +188,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
 
     @SuppressWarnings({ "unchecked" })
     private void expireSqlSessions(HttpServletResponse resp, PersistenceManager pm) {
-        Query query = pm.newQuery("select from " + persistenceHelper.getSqlCloudSessionClass().getName() + " where date < :when");
+        Query query = pm.newQuery("select from " + persistenceHelper.getSqlCloudSessionClassname() + " where date < :when");
         Date oneWeekAgo = new Date(System.currentTimeMillis() - 7 * ONE_DAY_IN_MILLIS);
         for (SqlCloudSession session : (List<SqlCloudSession>) query.execute(oneWeekAgo)) {
             Transaction tx = pm.currentTransaction();
@@ -225,7 +225,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
                             + "- date too early - " + dateFormat.format(new Date(newFirstSeen)));
                     continue;
                 }
-                Query query = pm.newQuery("select from " + persistenceHelper.getDbIssueClass().getName()
+                Query query = pm.newQuery("select from " + persistenceHelper.getDbIssueClassname()
                         + " where :hashes.contains(hash)");
                 for (DbIssue issue : (List<? extends DbIssue>) query.execute(WebCloudProtoUtil.decodeHashes(issueGroup
                         .getIssueHashesList()))) {
@@ -279,7 +279,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
         }
         if (!authenticated && issues.hasToken()) {
             String token = issues.getToken();
-            Query query = pm.newQuery("select from " + persistenceHelper.getDbUserClass().getName()
+            Query query = pm.newQuery("select from " + persistenceHelper.getDbUserClassname()
                     + " where uploadToken == :token");
             List<DbUser> users = (List<DbUser>) query.execute(issues.getToken());
             if (!users.isEmpty()) {
@@ -459,7 +459,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
 
     @SuppressWarnings("unchecked")
     private Set<String> lookupHashes(Iterable<String> hashes, PersistenceManager pm) {
-        Query query = pm.newQuery("select from " + persistenceHelper.getDbIssueClass().getName()
+        Query query = pm.newQuery("select from " + persistenceHelper.getDbIssueClassname()
                 + " where :hashes.contains(hash)");
         query.setResult("hash");
         Set<String> result = new HashSet<String>((List<String>) query.execute(hashes));

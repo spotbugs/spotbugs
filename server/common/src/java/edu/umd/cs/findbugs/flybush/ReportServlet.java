@@ -89,7 +89,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         if (desiredPackage.equals("*"))
             desiredPackage = "";
 
-        Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName()
+        Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClassname()
                 + " where packages.contains(:pkg)" + " order by when asc");
         List<DbEvaluation> evals = (List<DbEvaluation>) query.execute(desiredPackage);
 
@@ -233,7 +233,7 @@ public class ReportServlet extends AbstractFlybushServlet {
     @SuppressWarnings({ "unchecked" })
     private void showUserStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm, String email)
             throws IOException {
-        Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName()
+        Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClassname()
                 + " where email == :email order by when asc");
         List<DbEvaluation> evals = (List<DbEvaluation>) query.execute(email);
         if (evals.isEmpty()) {
@@ -324,7 +324,7 @@ public class ReportServlet extends AbstractFlybushServlet {
 
     @SuppressWarnings({ "unchecked" })
     private Set<String> getAllUserEmails(PersistenceManager pm) {
-        Query userQuery = pm.newQuery("select from " + persistenceHelper.getDbUserClass().getName());
+        Query userQuery = pm.newQuery("select from " + persistenceHelper.getDbUserClassname());
         List<DbUser> userObjs = (List<DbUser>) userQuery.execute();
         Set<String> users = Sets.newHashSet();
         for (DbUser userObj : userObjs) {
@@ -368,7 +368,7 @@ public class ReportServlet extends AbstractFlybushServlet {
 
     @SuppressWarnings({ "unchecked" })
     private void showSummaryStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
-        Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClass().getName() + " order by when ascending");
+        Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClassname() + " order by when ascending");
         List<DbEvaluation> evals = (List<DbEvaluation>) query.execute();
         Map<String, Integer> totalCountByUser = Maps.newHashMap();
         Map<String, Integer> issueCountByUser = Maps.newHashMap();

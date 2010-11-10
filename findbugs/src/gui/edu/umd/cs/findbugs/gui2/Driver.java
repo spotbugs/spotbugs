@@ -26,6 +26,7 @@ import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.StartTime;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.InvocationEnvironment;
 
@@ -88,6 +89,8 @@ public class Driver {
                 commandLine.setDocking(false);
             }
         }
+
+        Version.registerApplication("FindBugs GUI", Version.getReleaseWithDateIfDev());
 
         try {
             GUISaveState.loadInstance();

@@ -1,19 +1,6 @@
 package edu.umd.cs.findbugs.flybush.appengine;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import edu.umd.cs.findbugs.flybush.DbEvaluation;
-import edu.umd.cs.findbugs.flybush.DbInvocation;
-import edu.umd.cs.findbugs.flybush.DbIssue;
-import edu.umd.cs.findbugs.flybush.DbUser;
-import edu.umd.cs.findbugs.flybush.PersistenceHelper;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +9,26 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AppEnginePersistenceHelper implements PersistenceHelper {
+import javax.cache.Cache;
+import javax.cache.CacheException;
+import javax.cache.CacheManager;
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
+
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import edu.umd.cs.findbugs.flybush.DbClientVersionStats;
+import edu.umd.cs.findbugs.flybush.DbEvaluation;
+import edu.umd.cs.findbugs.flybush.DbInvocation;
+import edu.umd.cs.findbugs.flybush.DbIssue;
+import edu.umd.cs.findbugs.flybush.DbUser;
+import edu.umd.cs.findbugs.flybush.PersistenceHelper;
+
+public class AppEnginePersistenceHelper extends PersistenceHelper {
     private static final Logger LOGGER = Logger.getLogger(AppEnginePersistenceHelper.class.getName());
 
     public PersistenceManagerFactory getPersistenceManagerFactory() {
@@ -76,12 +82,21 @@ public class AppEnginePersistenceHelper implements PersistenceHelper {
         return new AppEngineDbEvaluation();
     }
 
+    @Override
+    public DbClientVersionStats createDbClientVersionStats(String application, String version, long dayStart) {
+        return new AppEngineDbClientVersionStats(application, version, dayStart);
+    }
+
     public Class<AppEngineDbIssue> getDbIssueClass() {
         return AppEngineDbIssue.class;
     }
 
     public Class<AppEngineDbEvaluation> getDbEvaluationClass() {
         return AppEngineDbEvaluation.class;
+    }
+
+    public Class<? extends DbClientVersionStats> getDbClientVersionStatsClass() {
+        return AppEngineDbClientVersionStats.class;
     }
 
     public <E> E getObjectById(PersistenceManager pm, Class<? extends E> cls, Object key) {
@@ -92,7 +107,7 @@ public class AppEnginePersistenceHelper implements PersistenceHelper {
     public Map<String, DbIssue> findIssues(PersistenceManager pm, Iterable<String> hashes) {
         javax.jdo.Query query = pm
                 .newQuery("select hash, firstSeen, lastSeen, bugLink, bugLinkType, hasEvaluations, evaluations from "
-                        + getDbIssueClass().getName() + " where :hashes.contains(hash)");
+                        + getDbIssueClassname() + " where :hashes.contains(hash)");
         List<Object[]> results = (List<Object[]>) query.execute(hashes);
         Map<String, DbIssue> map = new HashMap<String, DbIssue>();
         for (Object[] result : results) {
@@ -125,6 +140,30 @@ public class AppEnginePersistenceHelper implements PersistenceHelper {
     @Override
     public boolean convertToNewCommentStyle(DbEvaluation eval) {
         return ((AppEngineDbEvaluation) eval).convertToNewCommentStyle();
+    }
+
+    /**
+     * Uses App Engine's memcache implementation to determine whether a
+     * given user's client version data has been logged today.
+     */
+    @SuppressWarnings({"unchecked"})
+    @Override
+    public boolean shouldRecordClientStats(String ip, String appName, String appVer, long midnightToday) {
+        Cache cache;
+
+        try {
+            cache = CacheManager.getInstance().getCacheFactory().createCache(Collections.emptyMap());
+        } catch (CacheException e) {
+            LOGGER.log(Level.WARNING, "memcache could not be initialized", e);
+            return true; // to be safe
+        }
+
+        String id = "already-recorded-" + ip + "-" + appName + "-" + appVer + "-" + midnightToday;
+        Boolean val = (Boolean) cache.get(id);
+        if (val != null && val.equals(Boolean.TRUE)) // has already been recorded today
+            return false;
+        cache.put(id, Boolean.TRUE);
+        return true;
     }
 
     public String getEmail(PersistenceManager pm, Comparable<?> who) {

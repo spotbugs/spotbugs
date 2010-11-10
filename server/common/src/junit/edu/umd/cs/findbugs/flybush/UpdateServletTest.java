@@ -317,7 +317,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         // verify
         checkResponse(200, "");
         List<DbIssue> dbIssues = (List<DbIssue>) getPersistenceManager().newQuery(
-                "select from " + persistenceHelper.getDbIssueClass().getName()).execute();
+                "select from " + persistenceHelper.getDbIssueClassname()).execute();
         assertEquals(2, dbIssues.size());
 
         checkIssuesEqualExceptTimestamps(dbIssues.get(0), issue1);
@@ -338,7 +338,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         // verify
         checkResponse(200, "");
         List<DbIssue> dbIssues = (List<DbIssue>) getPersistenceManager().newQuery(
-                "select from " + persistenceHelper.getDbIssueClass().getName() + " order by hash ascending").execute();
+                "select from " + persistenceHelper.getDbIssueClassname() + " order by hash ascending").execute();
         assertEquals(2, dbIssues.size());
 
         assertEquals("fad1", dbIssues.get(0).getHash());
@@ -570,7 +570,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
     @SuppressWarnings({ "unchecked" })
     private List<SqlCloudSession> findSqlSession(long sessionId) {
         return (List<SqlCloudSession>) getPersistenceManager().newQuery(
-                "select from " + persistenceHelper.getSqlCloudSessionClass().getName() + " where randomID == :val").execute(
+                "select from " + persistenceHelper.getSqlCloudSessionClassname() + " where randomID == :val").execute(
                 Long.toString(sessionId));
     }
 
@@ -593,7 +593,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
 
     @SuppressWarnings("unchecked")
     private List<DbIssue> getAllIssuesFromDb() {
-        Query query = getPersistenceManager().newQuery("select from " + persistenceHelper.getDbIssueClass().getName());
+        Query query = getPersistenceManager().newQuery("select from " + persistenceHelper.getDbIssueClassname());
         return (List<DbIssue>) query.execute();
     }
 
