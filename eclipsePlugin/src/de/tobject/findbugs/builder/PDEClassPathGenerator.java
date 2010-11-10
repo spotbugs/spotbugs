@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathContainer;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
@@ -45,7 +46,7 @@ import de.tobject.findbugs.FindbugsPlugin;
  * Helper class to resolve full classpath for Eclipse plugin projects. Plugin
  * projects are very special for Eclipse and they differ from "usual" java
  * projects...
- * 
+ *
  * @author Andrei
  */
 public class PDEClassPathGenerator {
@@ -66,13 +67,6 @@ public class PDEClassPathGenerator {
             FindbugsPlugin.getDefault().logException(e, "Could not compute aux. classpath for project " + javaProject);
             return classPath;
         }
-
-        if (false) {
-            System.out.println("aux classpath: " + classPath.length);
-            for (String string : classPath) {
-                System.out.println(string);
-            }
-        }
         return classPath;
     }
 
@@ -81,7 +75,12 @@ public class PDEClassPathGenerator {
         try {
             // doesn't return jre libraries
             String[] defaultClassPath = JavaRuntime.computeDefaultRuntimeClassPath(javaProject);
-            classPath.addAll(Arrays.asList(defaultClassPath));
+            for (String classpathEntry : defaultClassPath) {
+                IPath path = new Path(classpathEntry);
+                if (path.toFile().exists()) {
+                    classPath.add(path.toOSString());
+                }
+            }
 
             // add CPE_CONTAINER classpathes
             IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
@@ -154,6 +153,13 @@ public class PDEClassPathGenerator {
             }
         }
 
+        if(defaultOutputLocation != null) {
+            String defaultOutput = defaultOutputLocation.toOSString();
+            if(pdeClassPath.indexOf(defaultOutput) > 0) {
+                pdeClassPath.remove(defaultOutput);
+                pdeClassPath.add(0, defaultOutput);
+            }
+        }
         return pdeClassPath.toArray(new String[pdeClassPath.size()]);
     }
 
