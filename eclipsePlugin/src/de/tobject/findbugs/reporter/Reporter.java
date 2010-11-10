@@ -274,7 +274,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
 
     public void reportNumberOfArchives(int numArchives) {
         printToStream("\nStarting FindBugs analysis on file(s) from: " + project.getElementName());
-        List<String> classpathEntryList = bugCollection.getProject().getAuxClasspathEntryList();
+        List<String> classpathEntryList = new ArrayList<String>(bugCollection.getProject().getAuxClasspathEntryList());
         printToStream("\nResolved auxiliary classpath (" + classpathEntryList.size() + " entries):");
         Collections.sort(classpathEntryList);
         for (String path : classpathEntryList) {
