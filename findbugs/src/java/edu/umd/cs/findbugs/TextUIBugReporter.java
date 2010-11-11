@@ -27,12 +27,12 @@ import javax.annotation.WillClose;
 /**
  * Base class for BugReporters which provides convenient formatting and
  * reporting of warnings and analysis errors.
- * 
+ *
  * <p>
  * "TextUIBugReporter" is a bit of a misnomer, since this class is useful in
  * GUIs, too.
  * </p>
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class TextUIBugReporter extends AbstractBugReporter {
@@ -58,7 +58,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
     /**
      * Set the PrintStream to write bug output to.
-     * 
+     *
      * @param outputStream
      *            the PrintStream to write bug output to
      */
@@ -68,7 +68,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
     /**
      * Set whether or not stack traces should be reported in error output.
-     * 
+     *
      * @param reportStackTrace
      *            true if stack traces should be reported, false if not
      */
@@ -78,7 +78,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
     /**
      * Print bug in one-line format.
-     * 
+     *
      * @param bugInstance
      *            the bug to print
      */
@@ -105,7 +105,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
         BugPattern pattern = bugInstance.getBugPattern();
         if (pattern != null) {
             String categoryAbbrev = null;
-            BugCategory bcat = I18N.instance().getBugCategory(pattern.getCategory());
+            BugCategory bcat = DetectorFactoryCollection.instance().getBugCategory(pattern.getCategory());
             if (bcat != null)
                 categoryAbbrev = bcat.getAbbrev();
             if (categoryAbbrev == null)
@@ -180,7 +180,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
     /**
      * Emit one line of the error message report. By default, error messages are
      * printed to System.err. Subclasses may override.
-     * 
+     *
      * @param line
      *            one line of the error report
      */
@@ -215,7 +215,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
      */
     public BugReporter getRealBugReporter() {
@@ -224,7 +224,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
     /**
      * For debugging: check a BugInstance to make sure it is valid.
-     * 
+     *
      * @param bugInstance
      *            the BugInstance to check
      */

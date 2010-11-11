@@ -31,7 +31,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugProperty;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Priorities;
 
 /**
@@ -39,7 +38,7 @@ import edu.umd.cs.findbugs.Priorities;
  * selecting particular bug categories to view, as well as a minimum warning
  * priority. Includes support for encoding these settings as a String, which can
  * easily be stored as a persistent project property in Eclipse.
- * 
+ *
  * @see BugInstance
  * @author David Hovemeyer
  */
@@ -108,7 +107,7 @@ public class ProjectFilterSettings implements Cloneable {
         // initially all known bug categories are active
         // using SortedSet to allow better revision control on saved sorted
         // properties
-        this.activeBugCategorySet = new TreeSet<String>(I18N.instance().getBugCategories());
+        this.activeBugCategorySet = new TreeSet<String>(DetectorFactoryCollection.instance().getBugCategories());
         this.hiddenBugCategorySet = new HashSet<String>();
         activeBugCategorySet.remove("NOISE");
         hiddenBugCategorySet.add("NOISE");
@@ -128,7 +127,7 @@ public class ProjectFilterSettings implements Cloneable {
     /**
      * Factory method to create a default ProjectFilterSettings object. Uses the
      * default warning priority threshold, and enables all bug categories.
-     * 
+     *
      * @return a default ProjectFilterSettings object
      */
     public static ProjectFilterSettings createDefault() {
@@ -142,7 +141,7 @@ public class ProjectFilterSettings implements Cloneable {
 
     /**
      * Create ProjectFilterSettings from an encoded string.
-     * 
+     *
      * @param s
      *            the encoded string
      * @return the ProjectFilterSettings
@@ -224,7 +223,7 @@ public class ProjectFilterSettings implements Cloneable {
     /**
      * set the hidden bug categories on the specifed ProjectFilterSettings from
      * an encoded string
-     * 
+     *
      * @param result
      *            the ProjectFilterSettings from which to remove bug categories
      * @param s
@@ -254,7 +253,7 @@ public class ProjectFilterSettings implements Cloneable {
     /**
      * Return whether or not a warning should be displayed, according to the
      * project filter settings.
-     * 
+     *
      * @param bugInstance
      *            the warning
      * @return true if the warning should be displayed, false if not
@@ -292,7 +291,7 @@ public class ProjectFilterSettings implements Cloneable {
 
     /**
      * Set minimum warning priority threshold.
-     * 
+     *
      * @param minPriority
      *            the priority threshold: one of "High", "Medium", or "Low"
      */
@@ -313,7 +312,7 @@ public class ProjectFilterSettings implements Cloneable {
 
     /**
      * Get the minimum warning priority threshold.
-     * 
+     *
      * @return minimum warning priority threshold: one of "High", "Medium", or
      *         "Low"
      */
@@ -323,7 +322,7 @@ public class ProjectFilterSettings implements Cloneable {
 
     /**
      * Return the minimum warning priority threshold as an integer.
-     * 
+     *
      * @return the minimum warning priority threshold as an integer
      */
     public int getMinPriorityAsInt() {
@@ -332,7 +331,7 @@ public class ProjectFilterSettings implements Cloneable {
 
     /**
      * Add a bug category to the set of categories to be displayed.
-     * 
+     *
      * @param category
      *            the bug category: e.g., "CORRECTNESS"
      */
@@ -343,7 +342,7 @@ public class ProjectFilterSettings implements Cloneable {
 
     /**
      * Remove a bug category from the set of categories to be displayed.
-     * 
+     *
      * @param category
      *            the bug category: e.g., "CORRECTNESS"
      */
@@ -364,7 +363,7 @@ public class ProjectFilterSettings implements Cloneable {
     /**
      * Returns false if the given category is hidden in the project filter
      * settings.
-     * 
+     *
      * @param category
      *            the category
      * @return false if the category is hidden, true if not
@@ -376,10 +375,10 @@ public class ProjectFilterSettings implements Cloneable {
 
     /**
      * Return set of active (enabled) bug categories.
-     * 
+     *
      * Note that bug categories that are not explicity hidden will appear active
      * even if they are not members of this set.
-     * 
+     *
      * @return the set of active categories
      */
     public Set<String> getActiveCategorySet() {
@@ -390,7 +389,7 @@ public class ProjectFilterSettings implements Cloneable {
 
     /**
      * Set whether or not false warnings should be displayed.
-     * 
+     *
      * @param displayFalseWarnings
      *            true if false warnings should be displayed, false if not
      */
@@ -400,7 +399,7 @@ public class ProjectFilterSettings implements Cloneable {
 
     /**
      * Get whether or not false warnings should be displayed.
-     * 
+     *
      * @return true if false warnings should be displayed, false if not
      */
     public boolean displayFalseWarnings() {
@@ -409,7 +408,7 @@ public class ProjectFilterSettings implements Cloneable {
 
     /**
      * Create a string containing the encoded form of the hidden bug categories
-     * 
+     *
      * @return an encoded string
      */
     public String hiddenToEncodedString() {
@@ -428,7 +427,7 @@ public class ProjectFilterSettings implements Cloneable {
 
     /**
      * Create a string containing the encoded form of the ProjectFilterSettings.
-     * 
+     *
      * @return an encoded string
      */
     public String toEncodedString() {
@@ -466,7 +465,7 @@ public class ProjectFilterSettings implements Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -498,7 +497,7 @@ public class ProjectFilterSettings implements Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#clone()
      */
     @Override
@@ -526,7 +525,7 @@ public class ProjectFilterSettings implements Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override

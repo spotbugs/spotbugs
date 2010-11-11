@@ -36,18 +36,18 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
  * Add human-readable messages to a dom4j tree containing FindBugs XML output.
  * This transformation makes it easier to generate reports (such as HTML) from
  * the XML.
- * 
+ *
  * @see BugCollection
  * @author David Hovemeyer
  */
 public class AddMessages {
-    private BugCollection bugCollection;
+    private final BugCollection bugCollection;
 
-    private Document document;
+    private final Document document;
 
     /**
      * Constructor.
-     * 
+     *
      * @param bugCollection
      *            the BugCollection the dom4j was generated from
      * @param document
@@ -106,7 +106,7 @@ public class AddMessages {
 
     /**
      * Add BugCategory elements.
-     * 
+     *
      * @param bugCategorySet
      *            all bug categories referenced in the BugCollection
      */
@@ -118,7 +118,7 @@ public class AddMessages {
             Element description = element.addElement("Description");
             description.setText(I18N.instance().getBugCategoryDescription(category));
 
-            BugCategory bc = I18N.instance().getBugCategory(category);
+            BugCategory bc = DetectorFactoryCollection.instance().getBugCategory(category);
             if (bc != null) { // shouldn't be null
                 String s = bc.getAbbrev();
                 if (s != null) {
@@ -136,7 +136,7 @@ public class AddMessages {
 
     /**
      * Add BugCode elements.
-     * 
+     *
      * @param bugCodeSet
      *            all bug codes (abbrevs) referenced in the BugCollection
      */
@@ -153,7 +153,7 @@ public class AddMessages {
     private void addBugPatterns(Set<String> bugTypeSet) {
         Element root = document.getRootElement();
         for (String bugType : bugTypeSet) {
-            BugPattern bugPattern = I18N.instance().lookupBugPattern(bugType);
+            BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(bugType);
             if (bugPattern == null)
                 continue;
             Element details = root.addElement("BugPattern");

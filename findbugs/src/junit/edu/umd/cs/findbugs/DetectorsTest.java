@@ -140,7 +140,7 @@ public class DetectorsTest {
         File workingDir = new File(System.getProperty("user.dir"));
         File findbugsJar = new File(workingDir.getParentFile(), "findbugs/build/lib/findbugs.jar");
         URL[] pluginList = new URL[] { findbugsJar.toURI().toURL() };
-        I18N dfc = new I18N();
+        DetectorFactoryCollection dfc = new DetectorFactoryCollection();
         // dfc.setPluginList(pluginList);
         DetectorFactoryCollection.resetInstance(dfc);
     }

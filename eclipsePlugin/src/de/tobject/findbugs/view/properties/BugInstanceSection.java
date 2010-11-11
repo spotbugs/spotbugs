@@ -62,7 +62,7 @@ import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 
 /**
@@ -237,7 +237,7 @@ public class BugInstanceSection extends AbstractPropertySection {
 
     private void refreshTitle() {
         String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
-        BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
+        BugPattern pattern = DetectorFactoryCollection.instance().lookupBugPattern(bugType);
         if (pattern == null || bug == null) {
             title = "";
             return;

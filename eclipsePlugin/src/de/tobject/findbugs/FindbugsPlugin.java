@@ -89,7 +89,6 @@ import de.tobject.findbugs.view.explorer.BugContentProvider;
 import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginException;
 import edu.umd.cs.findbugs.Project;
@@ -999,7 +998,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     public static Set<BugPattern> getKnownPatterns() {
         Set<BugPattern> patterns = new TreeSet<BugPattern>();
-        Iterator<BugPattern> patternIterator = I18N.instance().bugPatternIterator();
+        Iterator<BugPattern> patternIterator = DetectorFactoryCollection.instance().bugPatternIterator();
         while (patternIterator.hasNext()) {
             patterns.add(patternIterator.next());
         }
@@ -1008,7 +1007,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     public static Set<BugCode> getKnownPatternTypes() {
         Set<BugCode> patterns = new TreeSet<BugCode>();
-        Iterator<BugCode> patternIterator = I18N.instance().bugCodeIterator();
+        Iterator<BugCode> patternIterator = DetectorFactoryCollection.instance().bugCodeIterator();
         while (patternIterator.hasNext()) {
             patterns.add(patternIterator.next());
         }
@@ -1022,7 +1021,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     public static Set<BugPattern> getFilteredPatterns() {
-        Iterator<BugPattern> patternIterator = I18N.instance().bugPatternIterator();
+        Iterator<BugPattern> patternIterator = DetectorFactoryCollection.instance().bugPatternIterator();
         Set<BugPattern> set = new HashSet<BugPattern>();
         Set<String> patternTypes = getFilteredIds();
         while (patternIterator.hasNext()) {
@@ -1037,7 +1036,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     public static Set<BugCode> getFilteredPatternTypes() {
-        Iterator<BugCode> patternIterator = I18N.instance().bugCodeIterator();
+        Iterator<BugCode> patternIterator = DetectorFactoryCollection.instance().bugCodeIterator();
         Set<BugCode> set = new HashSet<BugCode>();
         Set<String> patternTypes = getFilteredIds();
         while (patternIterator.hasNext()) {

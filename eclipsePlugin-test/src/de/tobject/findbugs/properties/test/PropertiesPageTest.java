@@ -38,12 +38,11 @@ import de.tobject.findbugs.test.TestScenario;
 import de.tobject.findbugs.util.ProjectUtilities;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * This class tests the FindbugsPropertyPage and related classes.
- * 
+ *
  * @author Tom�s Pollak
  */
 public class PropertiesPageTest extends AbstractFindBugsTest {
@@ -420,7 +419,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     private void assertAllBugCategoriesSelected(boolean enabled) {
-        for (String category : I18N.instance().getBugCategories()) {
+        for (String category : DetectorFactoryCollection.instance().getBugCategories()) {
             assertEquals(enabled, getProjectPreferences().getFilterSettings().containsCategory(category));
         }
     }
@@ -445,7 +444,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     private void assertOnlySelectedBugCategory(String categoryName) {
-        for (String currentCategory : I18N.instance().getBugCategories()) {
+        for (String currentCategory : DetectorFactoryCollection.instance().getBugCategories()) {
             boolean expectedEnablement = currentCategory.equals(categoryName);
             assertEquals(expectedEnablement, getProjectPreferences().getFilterSettings().containsCategory(currentCategory));
         }
@@ -510,7 +509,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     private void removeAllBugCategories() {
-        for (String category : I18N.instance().getBugCategories()) {
+        for (String category : DetectorFactoryCollection.instance().getBugCategories()) {
             getProjectPreferences().getFilterSettings().removeCategory(category);
         }
     }

@@ -458,7 +458,7 @@ public class Filter {
         }
 
         private void addCategoryKey(String argument) {
-            DetectorFactoryCollection i18n = I18N.instance();
+            DetectorFactoryCollection i18n = DetectorFactoryCollection.instance();
 
             for (String x : argument.split("[,|]")) {
                 for (BugCategory category : i18n.getBugCategoryObjects()) {

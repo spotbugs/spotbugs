@@ -71,7 +71,6 @@ import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Plugin;
 
 /**
@@ -115,7 +114,7 @@ public class FilterBugsDialog extends SelectionDialog {
         public Object getParent(Object element) {
             if (element instanceof BugPattern) {
                 BugPattern pattern = (BugPattern) element;
-                return I18N.instance().getBugCode(pattern.getAbbrev());
+                return DetectorFactoryCollection.instance().getBugCode(pattern.getAbbrev());
             }
             return null;
         }
@@ -254,7 +253,7 @@ public class FilterBugsDialog extends SelectionDialog {
 
     private void initMaps() {
         for (BugPattern pattern : allowedPatterns) {
-            BugCode bugCode = I18N.instance().getBugCode(pattern.getAbbrev());
+            BugCode bugCode = DetectorFactoryCollection.instance().getBugCode(pattern.getAbbrev());
             getPatterns(bugCode).add(pattern);
         }
         // Filter out patterns if their types in the list
@@ -264,7 +263,7 @@ public class FilterBugsDialog extends SelectionDialog {
         Iterator<BugPattern> patterns = preSelectedPatterns.iterator();
         while (patterns.hasNext()) {
             BugPattern pattern = patterns.next();
-            BugCode bugCode = I18N.instance().getBugCode(pattern.getAbbrev());
+            BugCode bugCode = DetectorFactoryCollection.instance().getBugCode(pattern.getAbbrev());
             if (preSelectedTypes.contains(bugCode)) {
                 patterns.remove();
             }

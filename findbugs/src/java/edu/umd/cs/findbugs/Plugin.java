@@ -512,7 +512,7 @@ public boolean isCorePlugin() {
         PluginLoader pluginLoader = PluginLoader.getPluginLoader(u, PluginLoader.class.getClassLoader());
         Plugin plugin = pluginLoader.loadPlugin();
         // register new clouds
-        I18N.instance().loadPlugin(plugin);
+        DetectorFactoryCollection.instance().loadPlugin(plugin);
         return plugin;
     }
 

@@ -75,7 +75,6 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -564,7 +563,7 @@ public final class MarkerUtil {
         try {
             Object bugCode = marker.getAttribute(FindBugsMarker.PATTERN_TYPE);
             if (bugCode instanceof String) {
-                return I18N.instance().getBugCode((String) bugCode);
+                return DetectorFactoryCollection.instance().getBugCode((String) bugCode);
             }
         } catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Marker does not contain bug code");
@@ -578,7 +577,7 @@ public final class MarkerUtil {
         try {
             Object patternId = marker.getAttribute(FindBugsMarker.BUG_TYPE);
             if (patternId instanceof String) {
-                return I18N.instance().lookupBugPattern((String) patternId);
+                return DetectorFactoryCollection.instance().lookupBugPattern((String) patternId);
             }
         } catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Marker does not contain pattern id");

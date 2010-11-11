@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.BugCategory;
 import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.Priorities;
 
@@ -151,7 +151,7 @@ public enum GroupType {
             if (bug == null) {
                 return null;
             }
-            return I18N.instance().getBugCategory(bug.getBugPattern().getCategory());
+            return DetectorFactoryCollection.instance().getBugCategory(bug.getBugPattern().getCategory());
         }
 
         @Override
@@ -171,7 +171,7 @@ public enum GroupType {
                 if (bug == null) {
                     return null;
                 }
-                return I18N.instance().getBugCode(bug.getAbbrev());
+                return DetectorFactoryCollection.instance().getBugCode(bug.getAbbrev());
             }
             return code;
         }

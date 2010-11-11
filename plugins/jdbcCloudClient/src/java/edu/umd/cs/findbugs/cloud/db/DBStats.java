@@ -216,13 +216,14 @@ public class DBStats {
 
         PreparedStatement ps = c.prepareStatement("SELECT id, hash, bugPattern, priority FROM findbugs_issue");
         ResultSet rs = ps.executeQuery();
+        DetectorFactoryCollection detectorfactory = DetectorFactoryCollection.instance();
         while (rs.next()) {
             int col = 1;
             int id = rs.getInt(col++);
             String hash = rs.getString(col++);
             String bugType = rs.getString(col++);
             int priority = rs.getInt(col++);
-            BugPattern pattern = i18n.lookupBugPattern(bugType);
+            BugPattern pattern = detectorfactory.lookupBugPattern(bugType);
             if (pattern != null) {
                 int rank = BugRanker.findRank(pattern, priority);
                 bugRank.put(id, BugRankCategory.getRank(rank));
@@ -489,7 +490,7 @@ public class DBStats {
 
     private static void printPatterns(String filename, String header, FractionalMultiset<String> average,
             FractionalMultiset<String> variance, Multiset<String> count) throws FileNotFoundException {
-        I18N i18n = I18N.instance();
+    	DetectorFactoryCollection i18n = DetectorFactoryCollection.instance();
         PrintWriter out = new PrintWriter(filename);
         out.println(header);
         for (Map.Entry<String, Double> e : average.entriesInDecreasingOrder()) {

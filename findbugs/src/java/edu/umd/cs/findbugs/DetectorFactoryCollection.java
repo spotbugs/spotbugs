@@ -108,12 +108,9 @@ public class DetectorFactoryCollection {
      */
     static void setInstance(DetectorFactoryCollection instance) {
         synchronized (lock) {
-            if (theInstance != null) {
+            if (theInstance == null) {
                 throw new IllegalStateException();
             }
-            if (!(instance instanceof I18N))
-                throw new IllegalArgumentException();
-
             theInstance = instance;
         }
     }
@@ -130,14 +127,15 @@ public class DetectorFactoryCollection {
      */
     public static void resetInstance(DetectorFactoryCollection instance) {
         synchronized (lock) {
-            if (!(instance instanceof I18N))
+            if (instance == null)
                 throw new IllegalArgumentException();
             theInstance = instance;
         }
     }
+
     public static void resetInstance() {
         synchronized (lock) {
-            theInstance = new I18N();
+            theInstance = new DetectorFactoryCollection();
         }
     }
     public static boolean isLoaded() {
@@ -150,16 +148,9 @@ public class DetectorFactoryCollection {
      * Get the single instance of DetectorFactoryCollection.
      */
     public static DetectorFactoryCollection instance() {
-        return I18N.instance();
-    }
-
-    /**
-     * Get the single instance of DetectorFactoryCollection.
-     */
-    public static DetectorFactoryCollection rawInstance() {
         synchronized (lock) {
             if (theInstance == null) {
-                theInstance = I18N.instance();
+                theInstance = new DetectorFactoryCollection();
             }
             return theInstance;
         }
@@ -484,10 +475,18 @@ public class DetectorFactoryCollection {
      * @return the description of that short bug type code means
      */
     public BugCode getBugCode(String shortBugType) {
-        BugCode bugCode = bugCodeMap.get(shortBugType);
+        BugCode bugCode = lookupBugCode(shortBugType);
         if (bugCode == null)
             throw new IllegalArgumentException("Error: missing bug code for key" + shortBugType);
         return bugCode;
+    }
+
+    /**
+     * @param shortBugType the short bug type code
+     * @return the description of that short bug type code means
+     */
+    public BugCode lookupBugCode(String shortBugType) {
+        return bugCodeMap.get(shortBugType);
     }
 
     /**

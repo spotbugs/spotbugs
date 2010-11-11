@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -38,7 +37,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  *
  * @author David Hovemeyer
  */
-public class I18N extends DetectorFactoryCollection {
+public class I18N {
     private static final boolean DEBUG = SystemProperties.getBoolean("i18n.debug");
 
     /** a Comparator to compare user designation keys */
@@ -58,18 +57,8 @@ public class I18N extends DetectorFactoryCollection {
     private final ResourceBundle userDesignationBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.UserDesignations", defaultLocale);
 
 
-    I18N(Plugin onlyPlugin) {
-        super(onlyPlugin);
-    }
-
-
-    I18N(Collection<Plugin> enabled) {
-        super(enabled);
-    }
-
     I18N() {
         super();
-
     }
 
     private static  I18N theInstance = new I18N();
@@ -80,12 +69,7 @@ public class I18N extends DetectorFactoryCollection {
     public static I18N instance() {
         return theInstance;
     }
-    /**
-     * Get the single object instance.
-     */
-    public static I18N newInstanceWithGloballyEnabledPlugins() {
-        return new I18N();
-    }
+
     /**
      * Get a message string. This is a format pattern for describing an entire
      * bug instance in a single line.
@@ -98,7 +82,7 @@ public class I18N extends DetectorFactoryCollection {
     @Deprecated
     public @NonNull
     String getMessage(String key) {
-        BugPattern bugPattern = bugPatternMap.get(key);
+        BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
         if (bugPattern == null)
             return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
         return bugPattern.getAbbrev() + ": " + bugPattern.getLongDescription();
@@ -114,7 +98,7 @@ public class I18N extends DetectorFactoryCollection {
      */
     public @NonNull
     String getShortMessage(String key) {
-        BugPattern bugPattern = bugPatternMap.get(key);
+        BugPattern bugPattern =  DetectorFactoryCollection.instance().lookupBugPattern(key);
         if (bugPattern == null)
             return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
         return bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription();
@@ -122,7 +106,7 @@ public class I18N extends DetectorFactoryCollection {
 
     public @NonNull
     String getShortMessageWithoutCode(String key) {
-        BugPattern bugPattern = bugPatternMap.get(key);
+        BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
         if (bugPattern == null)
             return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
         return bugPattern.getShortDescription();
@@ -136,7 +120,7 @@ public class I18N extends DetectorFactoryCollection {
      */
     public @NonNull
     String getDetailHTML(String key) {
-        BugPattern bugPattern = bugPatternMap.get(key);
+        BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
         if (bugPattern == null)
             return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
         return bugPattern.getDetailHTML();
@@ -162,7 +146,6 @@ public class I18N extends DetectorFactoryCollection {
                 } catch (MissingResourceException mre2) {
                     return key + " {0}";
                 }
-
         }
     }
 
@@ -178,7 +161,7 @@ public class I18N extends DetectorFactoryCollection {
      */
     public @NonNull
     String getBugTypeDescription(String shortBugType) {
-        BugCode bugCode = bugCodeMap.get(shortBugType);
+        BugCode bugCode = DetectorFactoryCollection.instance().lookupBugCode(shortBugType);
         if (bugCode == null)
             return L10N.getLocalString("err.missing_code", "Error: missing bug code for key") + " " + shortBugType;
         return bugCode.getDescription();
@@ -193,7 +176,7 @@ public class I18N extends DetectorFactoryCollection {
      * @return the description of the category
      */
     public String getBugCategoryDescription(String category) {
-        BugCategory bc = categoryDescriptionMap.get(category);
+        BugCategory bc = DetectorFactoryCollection.instance().getBugCategory(category);
         return (bc != null ? bc.getShortDescription() : category);
     }
 

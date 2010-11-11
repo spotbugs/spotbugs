@@ -104,7 +104,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * methods. (These methods all "return this", so they can be chained). Some of
  * the add methods are specialized to get information automatically from a
  * BetterVisitor or DismantleBytecode object.
- * 
+ *
  * @author David Hovemeyer
  * @see BugAnnotation
  */
@@ -115,7 +115,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     private int priority;
 
-    private ArrayList<BugAnnotation> annotationList;
+    private final ArrayList<BugAnnotation> annotationList;
 
     private int cachedHashCode;
 
@@ -134,7 +134,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     private DetectorFactory detectorFactory;
 
-    private AtomicReference<XmlProps> xmlProps = new AtomicReference<XmlProps>();
+    private final AtomicReference<XmlProps> xmlProps = new AtomicReference<XmlProps>();
 
     /*
      * The following fields are used for tracking Bug instances across multiple
@@ -169,7 +169,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Constructor.
-     * 
+     *
      * @param type
      *            the bug type
      * @param priority
@@ -181,7 +181,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         annotationList = new ArrayList<BugAnnotation>(4);
         cachedHashCode = INVALID_HASH_CODE;
 
-        BugPattern p = I18N.instance().lookupBugPattern(type);
+        BugPattern p = DetectorFactoryCollection.instance().lookupBugPattern(type);
         if (p == null) {
             if (missingBugTypes.add(type)) {
                 String msg = "Can't find definition of bug type " + type;
@@ -223,7 +223,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Create a new BugInstance. This is the constructor that should be used by
      * Detectors.
-     * 
+     *
      * @param detector
      *            the Detector that is reporting the BugInstance
      * @param type
@@ -252,7 +252,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Create a new BugInstance. This is the constructor that should be used by
      * Detectors.
-     * 
+     *
      * @param detector
      *            the Detector2 that is reporting the BugInstance
      * @param type
@@ -299,11 +299,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      */
     public @NonNull
     BugPattern getBugPattern() {
-        BugPattern result = I18N.instance().lookupBugPattern(getType());
+        BugPattern result = DetectorFactoryCollection.instance().lookupBugPattern(getType());
         if (result != null)
             return result;
         AnalysisContext.logError("Unable to find description of bug pattern " + getType());
-        result = I18N.instance().lookupBugPattern("UNKNOWN");
+        result = DetectorFactoryCollection.instance().lookupBugPattern("UNKNOWN");
         if (result != null)
             return result;
         return BugPattern.REALLY_UNKNOWN;
@@ -323,7 +323,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Get a string describing the bug priority and type. e.g.
      * "High Priority Correctness"
-     * 
+     *
      * @return a string describing the bug priority and type
      */
     public String getPriorityTypeString() {
@@ -454,7 +454,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Find the first BugAnnotation in the list of annotations that is the same
      * type or a subtype as the given Class parameter.
-     * 
+     *
      * @param cls
      *            the Class parameter
      * @return the first matching BugAnnotation of the given type, or null if
@@ -479,7 +479,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Get the primary source line annotation. There is guaranteed to be one
      * (unless some Detector constructed an invalid BugInstance).
-     * 
+     *
      * @return the source line annotation
      */
     public SourceLineAnnotation getPrimarySourceLineAnnotation() {
@@ -531,7 +531,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * If given PackageMemberAnnotation is non-null, return its
      * SourceLineAnnotation.
-     * 
+     *
      * @param packageMember
      *            a PackageMemberAnnotation
      * @return the PackageMemberAnnotation's SourceLineAnnotation, or null if
@@ -581,11 +581,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * return the user designation object, which may be null.
-     * 
+     *
      * A previous calls to getSafeUserDesignation(), setAnnotationText(), or
      * setUserDesignation() will ensure it will be non-null [barring an
      * intervening setUserDesignation(null)].
-     * 
+     *
      * @see #getNonnullUserDesignation()
      */
     @Deprecated
@@ -598,7 +598,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * return the user designation object, creating one if necessary. So calling
      * <code>getSafeUserDesignation().setDesignation("HARMLESS")</code> will
      * always work without the possibility of a NullPointerException.
-     * 
+     *
      * @see #getUserDesignation()
      */
     @Deprecated
@@ -612,12 +612,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Get the user designation key. E.g., "MOSTLY_HARMLESS", "CRITICAL",
      * "NOT_A_BUG", etc.
-     * 
+     *
      * If the user designation object is null,returns UNCLASSIFIED.
-     * 
+     *
      * To set the user designation key, call
      * <code>getSafeUserDesignation().setDesignation("HARMLESS")</code>.
-     * 
+     *
      * @see I18N#getUserDesignation(String key)
      * @return the user designation key
      */
@@ -663,7 +663,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * s
-     * 
+     *
      * @param index
      * @param bugCollection
      *            TODO
@@ -674,7 +674,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Set the user annotation text.
-     * 
+     *
      * @param annotationText
      *            the user annotation text
      * @param bugCollection
@@ -693,7 +693,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Get the user annotation text.
-     * 
+     *
      * @return the user annotation text
      */
     @NonNull
@@ -719,7 +719,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Determine whether or not the annotation text contains the given word.
-     * 
+     *
      * @param word
      *            the word
      * @return true if the annotation text contains the word, false otherwise
@@ -765,7 +765,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Iterator#hasNext()
          */
         public boolean hasNext() {
@@ -774,7 +774,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Iterator#next()
          */
         public BugProperty next() {
@@ -789,7 +789,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Iterator#remove()
          */
         public void remove() {
@@ -814,7 +814,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Get value of given property.
-     * 
+     *
      * @param name
      *            name of the property to get
      * @return the value of the named property, or null if the property has not
@@ -828,7 +828,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Get value of given property, returning given default value if the
      * property has not been set.
-     * 
+     *
      * @param name
      *            name of the property to get
      * @param defaultValue
@@ -843,7 +843,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Get an Iterator over the properties defined in this BugInstance.
-     * 
+     *
      * @return Iterator over properties
      */
     public Iterator<BugProperty> propertyIterator() {
@@ -852,7 +852,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Set value of given property.
-     * 
+     *
      * @param name
      *            name of the property to set
      * @param value
@@ -872,7 +872,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Look up a property by name.
-     * 
+     *
      * @param name
      *            name of the property to look for
      * @return the BugProperty with the given name, or null if the property has
@@ -892,7 +892,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Delete property with given name.
-     * 
+     *
      * @param name
      *            name of the property to delete
      * @return true if a property with that name was deleted, or false if there
@@ -948,7 +948,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a Collection of BugAnnotations.
-     * 
+     *
      * @param annotationCollection
      *            Collection of BugAnnotations
      */
@@ -978,7 +978,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Add a class annotation and a method annotation for the class and method
      * which the given visitor is currently visiting.
-     * 
+     *
      * @param visitor
      *            the BetterVisitor
      * @return this object
@@ -991,7 +991,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add class and method annotations for given method.
-     * 
+     *
      * @param methodAnnotation
      *            the method
      * @return this object
@@ -1004,7 +1004,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add class and method annotations for given method.
-     * 
+     *
      * @param methodGen
      *            the method
      * @param sourceFile
@@ -1019,7 +1019,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add class and method annotations for given class and method.
-     * 
+     *
      * @param javaClass
      *            the class
      * @param method
@@ -1041,7 +1041,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Add a class annotation. If this is the first class annotation added, it
      * becomes the primary class annotation.
-     * 
+     *
      * @param className
      *            the name of the class
      * @param sourceFileName
@@ -1057,7 +1057,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Add a class annotation. If this is the first class annotation added, it
      * becomes the primary class annotation.
-     * 
+     *
      * @param className
      *            the name of the class
      * @return this object
@@ -1070,7 +1070,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a class annotation for the classNode.
-     * 
+     *
      * @param classNode
      *            the ASM visitor
      * @return this object
@@ -1084,7 +1084,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Add a class annotation. If this is the first class annotation added, it
      * becomes the primary class annotation.
-     * 
+     *
      * @param classDescriptor
      *            the class to add
      * @return this object
@@ -1097,7 +1097,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Add a class annotation. If this is the first class annotation added, it
      * becomes the primary class annotation.
-     * 
+     *
      * @param jclass
      *            the JavaClass object for the class
      * @return this object
@@ -1110,7 +1110,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Add a class annotation for the class that the visitor is currently
      * visiting.
-     * 
+     *
      * @param visitor
      *            the BetterVisitor
      * @return this object
@@ -1124,7 +1124,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Add a class annotation for the superclass of the class the visitor is
      * currently visiting.
-     * 
+     *
      * @param visitor
      *            the BetterVisitor
      * @return this object
@@ -1143,14 +1143,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a type annotation. Handy for referring to array types.
-     * 
+     *
      * <p>
      * For information on type descriptors, <br>
      * see http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.
      * html#14152 <br>
      * or http://www.murrayc.com/learning/java/java_classfileformat.shtml#
      * TypeDescriptors
-     * 
+     *
      * @param typeDescriptor
      *            a jvm type descriptor, such as "[I"
      * @return this object
@@ -1227,7 +1227,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a field annotation.
-     * 
+     *
      * @param className
      *            name of the class containing the field
      * @param fieldName
@@ -1245,7 +1245,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a field annotation.
-     * 
+     *
      * @param className
      *            name of the class containing the field
      * @param fieldName
@@ -1268,7 +1268,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a field annotation
-     * 
+     *
      * @param fieldAnnotation
      *            the field annotation
      * @return this object
@@ -1280,7 +1280,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a field annotation for a FieldVariable matched in a ByteCodePattern.
-     * 
+     *
      * @param field
      *            the FieldVariable
      * @return this object
@@ -1291,7 +1291,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a field annotation for an XField.
-     * 
+     *
      * @param xfield
      *            the XField
      * @return this object
@@ -1304,7 +1304,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a field annotation for an XField.
-     * 
+     *
      * @param xfield
      *            the XField
      * @return this object
@@ -1315,7 +1315,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a field annotation for a FieldDescriptor.
-     * 
+     *
      * @param fieldDescriptor
      *            the FieldDescriptor
      * @return this object
@@ -1330,7 +1330,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * Add a field annotation for the field which has just been accessed by the
      * method currently being visited by given visitor. Assumes that a
      * getfield/putfield or getstatic/putstatic has just been seen.
-     * 
+     *
      * @param visitor
      *            the DismantleBytecode object
      * @return this object
@@ -1353,7 +1353,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Add a field annotation for the field which is being visited by given
      * visitor.
-     * 
+     *
      * @param visitor
      *            the visitor
      * @return this object
@@ -1384,7 +1384,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Add a method annotation. If this is the first method annotation added, it
      * becomes the primary method annotation.
-     * 
+     *
      * @param className
      *            name of the class containing the method
      * @param methodName
@@ -1403,7 +1403,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Add a method annotation. If this is the first method annotation added, it
      * becomes the primary method annotation.
-     * 
+     *
      * @param className
      *            name of the class containing the method
      * @param methodName
@@ -1423,7 +1423,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * Add a method annotation. If this is the first method annotation added, it
      * becomes the primary method annotation. If the method has source line
      * information, then a SourceLineAnnotation is added to the method.
-     * 
+     *
      * @param methodGen
      *            the MethodGen object for the method
      * @param sourceFile
@@ -1443,7 +1443,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * Add a method annotation. If this is the first method annotation added, it
      * becomes the primary method annotation. If the method has source line
      * information, then a SourceLineAnnotation is added to the method.
-     * 
+     *
      * @param javaClass
      *            the class the method is defined in
      * @param method
@@ -1463,7 +1463,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * Add a method annotation. If this is the first method annotation added, it
      * becomes the primary method annotation. If the method has source line
      * information, then a SourceLineAnnotation is added to the method.
-     * 
+     *
      * @param classAndMethod
      *            JavaClassAndMethod identifying the method to add
      * @return this object
@@ -1476,7 +1476,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * Add a method annotation for the method which the given visitor is
      * currently visiting. If the method has source line information, then a
      * SourceLineAnnotation is added to the method.
-     * 
+     *
      * @param visitor
      *            the BetterVisitor
      * @return this object
@@ -1492,7 +1492,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * Add a method annotation for the method which has been called by the
      * method currently being visited by given visitor. Assumes that the visitor
      * has just looked at an invoke instruction of some kind.
-     * 
+     *
      * @param visitor
      *            the DismantleBytecode object
      * @return this object
@@ -1504,7 +1504,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a method annotation.
-     * 
+     *
      * @param className
      *            name of class containing called method
      * @param methodName
@@ -1523,7 +1523,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Add a method annotation for the method which is called by given
      * instruction.
-     * 
+     *
      * @param cpg
      *            the constant pool for the method containing the call
      * @param inv
@@ -1542,7 +1542,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Add a method annotation for the method which is called by given
      * instruction.
-     * 
+     *
      * @param methodGen
      *            the method containing the call
      * @param inv
@@ -1556,7 +1556,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a MethodAnnotation from an XMethod.
-     * 
+     *
      * @param xmethod
      *            the XMethod
      * @return this object
@@ -1569,7 +1569,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Add a method annotation. If this is the first method annotation added, it
      * becomes the primary method annotation.
-     * 
+     *
      * @param methodAnnotation
      *            the method annotation
      * @return this object
@@ -1587,7 +1587,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add an integer annotation.
-     * 
+     *
      * @param value
      *            the integer value
      * @return this object
@@ -1599,9 +1599,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /*
      * Add an annotation about a parameter
-     * 
+     *
      * @param index parameter index, starting from 0
-     * 
+     *
      * @param role the role used to describe the parameter
      */
     public BugInstance addParameterAnnotation(int index, String role) {
@@ -1610,7 +1610,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a String annotation.
-     * 
+     *
      * @param value
      *            the String value
      * @return this object
@@ -1622,7 +1622,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a String annotation.
-     * 
+     *
      * @param c
      *            the char value
      * @return this object
@@ -1640,7 +1640,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a source line annotation.
-     * 
+     *
      * @param sourceLine
      *            the source line annotation
      * @return this object
@@ -1655,7 +1655,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * method that the given visitor is currently visiting. Note that if the
      * method does not have line number information, then no source line
      * annotation will be added.
-     * 
+     *
      * @param visitor
      *            a BytecodeScanningDetector that is currently visiting the
      *            method
@@ -1676,7 +1676,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * method that the given visitor is currently visiting. Note that if the
      * method does not have line number information, then no source line
      * annotation will be added.
-     * 
+     *
      * @param classContext
      *            the ClassContext
      * @param visitor
@@ -1696,7 +1696,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * Add a source line annotation for the given instruction in the given
      * method. Note that if the method does not have line number information,
      * then no source line annotation will be added.
-     * 
+     *
      * @param classContext
      *            the ClassContext
      * @param methodGen
@@ -1718,7 +1718,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a source line annotation describing a range of instructions.
-     * 
+     *
      * @param classContext
      *            the ClassContext
      * @param methodGen
@@ -1748,7 +1748,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add source line annotation for given Location in a method.
-     * 
+     *
      * @param classContext
      *            the ClassContext
      * @param method
@@ -1763,7 +1763,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add source line annotation for given Location in a method.
-     * 
+     *
      * @param methodDescriptor
      *            the method
      * @param location
@@ -1784,7 +1784,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add source line annotation for given Location in a method.
-     * 
+     *
      * @param classContext
      *            the ClassContext
      * @param method
@@ -1806,7 +1806,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * range of instructions in the method being visited by the given visitor.
      * Note that if the method does not have line number information, then no
      * source line annotation will be added.
-     * 
+     *
      * @param visitor
      *            a BetterVisitor which is visiting the method
      * @param startPC
@@ -1828,7 +1828,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * range of instructions in the method being visited by the given visitor.
      * Note that if the method does not have line number information, then no
      * source line annotation will be added.
-     * 
+     *
      * @param classContext
      *            the ClassContext
      * @param visitor
@@ -1851,7 +1851,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * Add a source line annotation for instruction currently being visited by
      * given visitor. Note that if the method does not have line number
      * information, then no source line annotation will be added.
-     * 
+     *
      * @param visitor
      *            a BytecodeScanningDetector visitor that is currently visiting
      *            the instruction
@@ -1867,7 +1867,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Add a non-specific source line annotation. This will result in the entire
      * source file being displayed.
-     * 
+     *
      * @param className
      *            the class name
      * @param sourceFile
@@ -1889,7 +1889,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Format a string describing this bug instance.
-     * 
+     *
      * @return the description
      */
     public String getMessageWithoutPrefix() {
@@ -1931,7 +1931,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Format a string describing this bug instance.
-     * 
+     *
      * @return the description
      */
     public String getMessage() {
@@ -1961,7 +1961,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /**
      * Add a description to the most recently added bug annotation.
-     * 
+     *
      * @param description
      *            the description to add
      * @return this object

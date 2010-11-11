@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.gui2;
 import java.io.File;
 import java.util.Locale;
 
-import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.StartTime;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -127,7 +127,7 @@ public class Driver {
     }
 
     private static void enablePlugins(Iterable<String> plugins, boolean enabled) {
-        I18N i = I18N.instance();
+        DetectorFactoryCollection i = DetectorFactoryCollection.instance();
         for (String pid : plugins) {
             Plugin plugin = i.getPluginById(pid);
             if (plugin != null)

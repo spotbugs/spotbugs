@@ -312,7 +312,7 @@ public class ReportConfigurationTab extends Composite {
         checkBoxGroup.setLayout(new GridLayout(1, true));
         checkBoxGroup.setLayoutData(new GridData(SWT.BEGINNING, SWT.TOP, true, true));
 
-        List<String> bugCategoryList = new LinkedList<String>(I18N.instance().getBugCategories());
+        List<String> bugCategoryList = new LinkedList<String>(DetectorFactoryCollection.instance().getBugCategories());
         chkEnableBugCategoryList = new LinkedList<Button>();
         ProjectFilterSettings origFilterSettings = propertyPage.getOriginalUserPreferences().getFilterSettings();
         for (String category : bugCategoryList) {

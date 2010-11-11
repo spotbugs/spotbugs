@@ -122,7 +122,7 @@ public abstract class FindBugsTestCase extends TestCase {
                 engine.setProject(project);
                 Plugin fakePlugin = new Plugin("edu.umd.cs.findbugs.fakeplugin", null, true);
 
-                I18N dfc = new I18N(fakePlugin);
+                DetectorFactoryCollection dfc = new DetectorFactoryCollection(fakePlugin);
                 DetectorFactoryCollection.resetInstance(dfc);
 
                 DetectorFactory detectorFactory = new DetectorFactory(fakePlugin, JUnitDetectorAdapter.class.getName(),

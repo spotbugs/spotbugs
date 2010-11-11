@@ -27,7 +27,6 @@ import java.util.Iterator;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.I18N;
 
 public abstract class PrintBugDescriptions {
     public void print() throws IOException {
@@ -44,7 +43,7 @@ public abstract class PrintBugDescriptions {
 
         prologue();
 
-        Iterator<BugPattern> i = I18N.instance().bugPatternIterator();
+        Iterator<BugPattern> i = DetectorFactoryCollection.instance().bugPatternIterator();
         while (i.hasNext()) {
             BugPattern bugPattern = i.next();
             if (!enabledPatternSet.contains(bugPattern))

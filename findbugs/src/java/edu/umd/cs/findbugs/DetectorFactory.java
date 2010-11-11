@@ -336,7 +336,7 @@ public class DetectorFactory {
         StringTokenizer tok = new StringTokenizer(reports, ",");
         while (tok.hasMoreTokens()) {
             String type = tok.nextToken();
-            BugPattern bugPattern = I18N.instance().lookupBugPattern(type);
+            BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(type);
             if (bugPattern != null)
                 result.add(bugPattern);
         }

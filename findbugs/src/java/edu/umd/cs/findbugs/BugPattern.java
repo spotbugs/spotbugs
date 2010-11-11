@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.util.HTML;
  * BugInstance. Specifically, it stores the human-readable text for displaying a
  * bug instance. BugPatterns derive from the BugPattern elements in the
  * "findbugs.xml" and "messages.xml" found in a FindBugs plugin.
- * 
+ *
  * @author David Hovemeyer
  * @see BugInstance
  */
@@ -55,7 +55,7 @@ public class BugPattern implements Comparable<BugPattern> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param type
      *            the type (species) of BugInstance
      * @param abbrev
@@ -79,7 +79,7 @@ public class BugPattern implements Comparable<BugPattern> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param type
      *            the type (species) of BugInstance
      * @param abbrev
@@ -147,7 +147,7 @@ public class BugPattern implements Comparable<BugPattern> {
 
     public String getCategoryAbbrev() {
         String categoryAbbrev = null;
-        BugCategory bcat = I18N.instance().getBugCategory(getCategory());
+        BugCategory bcat = DetectorFactoryCollection.instance().getBugCategory(getCategory());
         if (bcat != null)
             categoryAbbrev = bcat.getAbbrev();
         if (categoryAbbrev == null)
@@ -245,7 +245,7 @@ public class BugPattern implements Comparable<BugPattern> {
 
     /**
      * The method is not public to disallow modification of this attribute
-     * 
+     *
      * @param deprecated
      *            true if this bug pattern is not used anymore and exists for
      *            backward compatibility only

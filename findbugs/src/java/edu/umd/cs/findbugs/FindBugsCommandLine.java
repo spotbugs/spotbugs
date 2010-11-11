@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.config.CommandLine;
 /**
  * Base class for FindBugs command line classes. Handles all shared
  * switches/options.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class FindBugsCommandLine extends CommandLine {
@@ -69,7 +69,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
     /**
      * Additional constuctor just as hack for decoupling the core package from
      * gui2 package
-     * 
+     *
      * @param modernGui
      *            ignored. In any case, gui2 options are added here.
      */
@@ -141,7 +141,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
                 pluginList.add(new File(tok.nextToken()).toURL());
             }
 
-            DetectorFactoryCollection.rawInstance().setPluginList(pluginList.toArray(new URL[pluginList.size()]));
+            DetectorFactoryCollection.instance().setPluginList(pluginList.toArray(new URL[pluginList.size()]));
         } else if (option.equals("-project")) {
             loadProject(argument);
         } else {
@@ -151,7 +151,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
 
     /**
      * Load given project file.
-     * 
+     *
      * @param arg
      *            name of project file
      * @throws java.io.IOException

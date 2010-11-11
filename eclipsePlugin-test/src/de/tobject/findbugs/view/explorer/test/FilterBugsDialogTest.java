@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tomás Pollak
+ * Copyright (C) 2009, Tomï¿½s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,12 +37,12 @@ import de.tobject.findbugs.test.TestScenario;
 import de.tobject.findbugs.view.explorer.FilterBugsDialog;
 import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 
 /**
  * This class tests the FilterBugsDialog and its related classes.
- * 
- * @author Tomás Pollak
+ *
+ * @author Tomï¿½s Pollak
  */
 public class FilterBugsDialogTest extends AbstractFindBugsTest {
     @BeforeClass
@@ -107,7 +107,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
                 Collections.<BugCode> emptySet());
 
         // Add one BugPattern
-        BugPattern pattern = I18N.instance().lookupBugPattern("HE_EQUALS_NO_HASHCODE");
+        BugPattern pattern = DetectorFactoryCollection.instance().lookupBugPattern("HE_EQUALS_NO_HASHCODE");
         dialog.addBugPatternToFilter(pattern);
 
         // Close the dialog
@@ -126,7 +126,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
                 Collections.<BugCode> emptySet());
 
         // Add one BugPattern
-        BugPattern pattern = I18N.instance().lookupBugPattern("EI_EXPOSE_REP");
+        BugPattern pattern = DetectorFactoryCollection.instance().lookupBugPattern("EI_EXPOSE_REP");
         dialog.addBugPatternToFilter(pattern);
 
         // Close the dialog
@@ -135,7 +135,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
         // We expect the 'EI' bug code to be selected, since 'EI_EXPOSE_REP'
         // is the only pattern for that code.
         assertTrue(FindbugsPlugin.getFilteredPatterns().isEmpty());
-        BugCode expectedBugCode = I18N.instance().getBugCode("EI");
+        BugCode expectedBugCode = DetectorFactoryCollection.instance().getBugCode("EI");
         assertEquals(Collections.singleton(expectedBugCode), FindbugsPlugin.getFilteredPatternTypes());
     }
 
@@ -146,7 +146,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
                 Collections.<BugCode> emptySet());
 
         // Add one BugCode
-        BugCode bugCode = I18N.instance().getBugCode("EI");
+        BugCode bugCode = DetectorFactoryCollection.instance().getBugCode("EI");
         dialog.addBugCodeToFilter(bugCode);
 
         // Close the dialog

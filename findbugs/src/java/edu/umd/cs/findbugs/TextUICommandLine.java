@@ -460,7 +460,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
                     factory.setPriorityAdjustment(adjustmentAmount);
                 else {
                     //
-                    DetectorFactoryCollection i18n = I18N.instance();
+                    DetectorFactoryCollection i18n = DetectorFactoryCollection.instance();
                     BugPattern pattern = i18n.lookupBugPattern(adjustmentTarget);
                     if (pattern == null)
                         throw new IllegalArgumentException("Unknown detector: " + adjustmentTarget);
@@ -605,7 +605,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         for (String s : excludeFilterFile)
             findBugs.addFilter(s, false);
 
-        I18N.resetInstance(project.getConfiguration());
+        DetectorFactoryCollection.resetInstance(project.getConfiguration());
 
         findBugs.setClassScreener(classScreener);
 

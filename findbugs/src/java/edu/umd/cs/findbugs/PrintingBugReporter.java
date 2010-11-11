@@ -131,7 +131,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
                     pluginList.add(new File(tok.nextToken()).toURL());
                 }
 
-                DetectorFactoryCollection.rawInstance().setPluginList(pluginList.toArray(new URL[pluginList.size()]));
+                DetectorFactoryCollection.instance().setPluginList(pluginList.toArray(new URL[pluginList.size()]));
             } else if (option.equals("-maxRank")) {
                 maxRank = Integer.parseInt(argument);
             } else if (option.equals("-summarizeMaxRank")) {

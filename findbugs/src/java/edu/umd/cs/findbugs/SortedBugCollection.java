@@ -628,7 +628,7 @@ public class SortedBugCollection implements BugCollection {
         }
         // Emit element describing each reported bug pattern
         for (String bugType : bugTypeSet) {
-            BugPattern bugPattern = I18N.instance().lookupBugPattern(bugType);
+            BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(bugType);
             if (bugPattern == null)
                 continue;
 
@@ -665,7 +665,7 @@ public class SortedBugCollection implements BugCollection {
         }
         // Emit element describing each reported bug code
         for (String bugCodeAbbrev : bugCodeSet) {
-            BugCode bugCode = I18N.instance().getBugCode(bugCodeAbbrev);
+            BugCode bugCode = DetectorFactoryCollection.instance().getBugCode(bugCodeAbbrev);
             String bugCodeDescription = bugCode.getDescription();
             if (bugCodeDescription == null)
                 continue;
@@ -966,7 +966,7 @@ public class SortedBugCollection implements BugCollection {
         appVersionList = new LinkedList<AppVersion>();
         releaseName = "";
         timestamp = -1L;
-        I18N.resetInstance(getProject().getConfiguration());
+        DetectorFactoryCollection.resetInstance(getProject().getConfiguration());
     }
 
     public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
@@ -988,12 +988,12 @@ public class SortedBugCollection implements BugCollection {
     }
 
     public Iterator<BugInstance> iterator() {
-        I18N.resetInstance(getProject().getConfiguration());
+        DetectorFactoryCollection.resetInstance(getProject().getConfiguration());
         return bugSet.iterator();
     }
 
     public Collection<BugInstance> getCollection() {
-        I18N.resetInstance(getProject().getConfiguration());
+        DetectorFactoryCollection.resetInstance(getProject().getConfiguration());
         return bugSet;
     }
 

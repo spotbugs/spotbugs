@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.config;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Priorities;
 
 public class ProjectFilterSettingsTest extends TestCase {
@@ -65,7 +65,7 @@ public class ProjectFilterSettingsTest extends TestCase {
 
     public void testPlainCategories() {
         int count = 0;
-        for (String category : I18N.instance().getBugCategories())
+        for (String category : DetectorFactoryCollection.instance().getBugCategories())
             if (!category.equals("NOISE")) {
                 Assert.assertTrue(plain.containsCategory(category));
                 ++count;

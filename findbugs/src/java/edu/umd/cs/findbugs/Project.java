@@ -113,7 +113,7 @@ public class Project implements XMLWriteable {
 
     private String cloudId;
 
-    private I18N configuration = I18N.instance();
+    private DetectorFactoryCollection configuration = DetectorFactoryCollection.instance();
 
     private final Map<Plugin,Boolean> enabledPlugins = new HashMap<Plugin,Boolean>();
 
@@ -130,7 +130,8 @@ public class Project implements XMLWriteable {
             enabledPlugins.remove(plugin);
         else enabledPlugins.put(plugin, enabled);
     }
-    public I18N getConfiguration() {
+
+    public DetectorFactoryCollection getConfiguration() {
         return configuration;
     }
 
@@ -144,11 +145,11 @@ public class Project implements XMLWriteable {
                 enabled.add(plugin);
         }
         if (!enabled.equals(this.configuration.plugins()))
-            this.configuration = new I18N(enabled);
+            this.configuration = new DetectorFactoryCollection(enabled);
         DetectorFactoryCollection.resetInstance(configuration);
     }
 
-    public void setConfiguration(I18N configuration) {
+    public void setConfiguration(DetectorFactoryCollection configuration) {
         this.configuration = configuration;
         DetectorFactoryCollection.resetInstance(configuration);
     }
