@@ -1,4 +1,4 @@
 public class MakeInnerTypeStaticResolutionExample {
-	static class InnerType {
-	}
+    static class InnerType {
+    }
 }

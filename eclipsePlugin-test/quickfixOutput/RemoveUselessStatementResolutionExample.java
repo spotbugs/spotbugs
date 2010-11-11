@@ -1,5 +1,5 @@
 public class RemoveUselessStatementResolutionExample {
 
-	public void doSomething() {
-	}
+    public void doSomething() {
+    }
 }

@@ -1,3 +1,3 @@
 public class MakeFieldStaticResolutionExample {
-	final static String GREETING = "Hello World";
+    final static String GREETING = "Hello World";
 }
