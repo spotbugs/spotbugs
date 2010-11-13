@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.ba.DefaultNullnessAnnotations;
 import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -58,7 +59,7 @@ import edu.umd.cs.findbugs.log.Profiler;
 /**
  * Implementation of INullnessAnnotationDatabase that is based on JSR-305 type
  * qualifiers.
- * 
+ *
  * @author David Hovemeyer
  */
 public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotationDatabase {
@@ -73,7 +74,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#getResolvedAnnotation
      * (java.lang.Object, boolean)
@@ -111,7 +112,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#parameterMustBeNonNull
      * (edu.umd.cs.findbugs.ba.XMethod, int)
@@ -152,7 +153,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
     /**
      * Convert a NullnessAnnotation into the ClassDescriptor of the equivalent
      * JSR-305 nullness type qualifier.
-     * 
+     *
      * @param n
      *            a NullnessAnnotation
      * @return ClassDescriptor of the equivalent JSR-305 nullness type qualifier
@@ -179,7 +180,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addDefaultAnnotation
      * (java.lang.String, java.lang.String,
@@ -253,7 +254,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addFieldAnnotation
      * (java.lang.String, java.lang.String, java.lang.String, boolean,
@@ -314,7 +315,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addMethodAnnotation
      * (java.lang.String, java.lang.String, java.lang.String, boolean,
@@ -339,7 +340,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#
      * addMethodParameterAnnotation(java.lang.String, java.lang.String,
      * java.lang.String, boolean, int,
@@ -361,11 +362,18 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         AnnotationValue annotationValue = new AnnotationValue(nullnessAnnotationType);
 
         if (!xmethod.getClassName().equals(cName)) {
-            if (false)
+            if (SystemProperties.ASSERTIONS_ENABLED)
                 AnalysisContext.logError("Could not fully resolve method " + cName + "." + mName + sig + " to apply annotation "
                         + annotation);
             return;
         }
+
+        if (SystemProperties.ASSERTIONS_ENABLED) {
+            SignatureParser parser = new SignatureParser(sig);
+            int numParams = parser.getNumParameters();
+            assert param < numParams;
+        }
+
 
         // Destructively add the annotation to the MethodInfo object
         xmethod.addParameterAnnotation(param, annotationValue);
@@ -373,7 +381,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#loadAuxiliaryAnnotations
      * ()
@@ -385,7 +393,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
     /**
      * Convert a Nonnull-based TypeQualifierAnnotation into a
      * NullnessAnnotation.
-     * 
+     *
      * @param tqa
      *            Nonnull-based TypeQualifierAnnotation
      * @return corresponding NullnessAnnotation
