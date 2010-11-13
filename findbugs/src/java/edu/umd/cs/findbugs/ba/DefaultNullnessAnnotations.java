@@ -29,7 +29,7 @@ public class DefaultNullnessAnnotations {
 
     /**
      * Add default NullnessAnnotations to given INullnessAnnotationDatabase.
-     * 
+     *
      * @param database
      *            an INullnessAnnotationDatabase
      */
@@ -171,6 +171,11 @@ public class DefaultNullnessAnnotations {
 
         database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentHashMap$Segment", "remove",
                 "(Ljava/lang/Object;ILjava/lang/Object;)Ljava/lang/Object;", false, 2, NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentHashMap", "remove",
+                "(Ljava/lang/Object;Ljava/lang/Object;)Z", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentMap", "remove",
+                "(Ljava/lang/Object;Ljava/lang/Object;)Z", false, 1, NullnessAnnotation.NULLABLE);
+
         database.addMethodParameterAnnotation("java.util.concurrent.CyclicBarrier", "<init>", "(ILjava/lang/Runnable;)V", false,
                 1, NullnessAnnotation.CHECK_FOR_NULL);
         database.addMethodParameterAnnotation("java.util.concurrent.Executors$RunnableAdapter", "<init>",
