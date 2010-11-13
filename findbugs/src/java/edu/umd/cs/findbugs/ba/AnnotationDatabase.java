@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.util.MapCache;
 /**
  * Database to keep track of annotated fields/methods/classes/etc. for a
  * particular kind of annotation.
- * 
+ *
  * @author William Pugh
  */
 public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<AnnotationEnum>> {
@@ -56,7 +56,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 
     private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 
-    private Map<Object, AnnotationEnum> directAnnotations = new HashMap<Object, AnnotationEnum>();
+    private final Map<Object, AnnotationEnum> directAnnotations = new HashMap<Object, AnnotationEnum>();
 
     private final Map<AnnotationDatabase.Target, Map<String, AnnotationEnum>> defaultAnnotation = new HashMap<AnnotationDatabase.Target, Map<String, AnnotationEnum>>();
 
@@ -356,6 +356,8 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
         if (addClassOnly)
             return;
         XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
+        if (!m.getClassName().equals(cName))
+            return;
         if (false && !m.isResolved()) {
             System.out.println("Unable to add annotation " + annotation + " to " + m);
             ClassDescriptor c = DescriptorFactory.createClassDescriptorFromDottedClassName(cName);
