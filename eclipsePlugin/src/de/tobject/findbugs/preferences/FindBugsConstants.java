@@ -33,6 +33,11 @@ public final class FindBugsConstants {
     }
 
     /**
+     * use short classpath for Eclipse plugins (experimental)
+     */
+    public final static String KEY_SHORT_CLASSPATH = "useShortClasspath4EclipsePlugins";
+
+    /**
      * Prefix for the (enumerated) custom detector package keys
      */
     public final static String KEY_CUSTOM_DETECTORS = "customDetectors";

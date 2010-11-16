@@ -18,7 +18,6 @@
  */
 package de.tobject.findbugs.properties;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -54,19 +53,21 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  */
 public class WorkspaceSettingsTab extends Composite {
 
-    private final Button confirmSwitch;
+    private Button confirmSwitch;
 
-    private final Button switchTo;
+    private Button switchTo;
 
     private final IPreferenceStore store;
 
-    private final Button confirmBuild;
+    private Button confirmBuild;
 
     private final FindbugsPropertyPage page;
 
-    private final DetectorProvider detectorProvider;
+    private DetectorProvider detectorProvider;
 
     private boolean pluginsChanged;
+
+    private Button optimizeClasspath;
 
     public WorkspaceSettingsTab(TabFolder tabFolder, final FindbugsPropertyPage page, int style) {
         super(tabFolder, style);
@@ -78,6 +79,12 @@ public class WorkspaceSettingsTab extends Composite {
         tabDetector.setText("Misc. Settings");
         tabDetector.setControl(this);
 
+        optimizeClasspath = new Button(this, SWT.CHECK);
+        optimizeClasspath.setSelection(store.getBoolean(FindBugsConstants.KEY_SHORT_CLASSPATH));
+        optimizeClasspath.setText("Use short classpath for Eclipse plugins (experimental)");
+        if(page.getProject() != null) {
+            return;
+        }
         ManagePathsWidget pathsWidget = new ManagePathsWidget(this);
         ListViewer viewer = pathsWidget.createViewer("Custom Detectors",
                 "See: <a href=\"http://www.ibm.com/developerworks/library/j-findbug2/\">'Writing custom detectors'</a>"
@@ -129,6 +136,10 @@ public class WorkspaceSettingsTab extends Composite {
     }
 
     public void refreshUI(UserPreferences prefs) {
+            optimizeClasspath.setSelection(store.getBoolean(FindBugsConstants.KEY_SHORT_CLASSPATH));
+        if(page.getProject() != null) {
+            return;
+        }
         confirmSwitch.setSelection(store.getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH));
         switchTo.setSelection(store.getBoolean(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS));
         confirmBuild.setSelection(!store.getBoolean(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD));
@@ -192,31 +203,17 @@ public class WorkspaceSettingsTab extends Composite {
     }
 
     public void performOK() {
-        final SortedSet<String> detectorPaths = PrefsUtil.readDetectorPaths(store);
-
-        if (DetectorFactoryCollection.isLoaded()) {
-            DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
-            URL[] pluginList = dfc.getPluginList();
-            boolean shouldReplace = pluginList.length != detectorPaths.size();
-            if (!shouldReplace) {
-                // check if both lists are really identical
-                for (URL url : pluginList) {
-                    String file = url.getFile();
-                    IPath filterPath = FindBugsWorker.getFilterPath(file, null);
-                    if (!detectorPaths.contains(filterPath.toPortableString())) {
-                        shouldReplace = true;
-                        break;
-                    }
-                }
-            }
-            if (!shouldReplace) {
+        if(optimizeClasspath != null) {
+            boolean shortClassPath = optimizeClasspath.getSelection();
+            store.setValue(FindBugsConstants.KEY_SHORT_CLASSPATH, shortClassPath);
+        } else {
+            final SortedSet<String> detectorPaths = PrefsUtil.readDetectorPaths(store);
+            if (detectorPaths.isEmpty() && !DetectorFactoryCollection.isLoaded()) {
                 return;
             }
-        } else if (detectorPaths.isEmpty()) {
-            return;
+            FindbugsPlugin.applyCustomDetectors(true);
+            pluginsChanged = true;
         }
-        FindbugsPlugin.applyCustomDetectors(true);
-        pluginsChanged = true;
     }
 
     public boolean arePluginsChanged() {

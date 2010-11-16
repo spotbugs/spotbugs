@@ -88,7 +88,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * In both cases project settings are only available in the context of the
  * project properties page if the project settings are enabled, global settings
  * are used otherwise.
- * 
+ *
  * @author Andrei Loskutov
  * @author Peter Friese
  * @author David Hovemeyer
@@ -212,10 +212,10 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         detectorTab = createDetectorConfigurationTab(tabFolder);
         reportConfigurationTab = createReportConfigurationTab(tabFolder);
         filterFilesTab = createFilterFilesTab(tabFolder);
-        if (getProject() == null) {
+//        if (getProject() == null) {
             // workspace settings
             workspaceSettingsTab = createWorkspaceSettings(tabFolder);
-        }
+//        }
     }
 
     private WorkspaceSettingsTab createWorkspaceSettings(TabFolder parentTabFolder) {
@@ -381,7 +381,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 
     /**
      * Enable/disable all UI elements except for project props enabled check
-     * 
+     *
      * @param selection
      */
     protected void setProjectEnabled(boolean selection) {
@@ -432,7 +432,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 
     /**
      * Will be called when the user presses the OK button.
-     * 
+     *
      * @see IPreferencePage#performOk()
      */
     @Override
@@ -616,7 +616,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 
     /**
      * Helper method to shorten message access
-     * 
+     *
      * @param key
      *            a message key
      * @return requested message

@@ -61,7 +61,7 @@ import edu.umd.cs.findbugs.workflow.Update;
 
 /**
  * Execute FindBugs on a collection of Java resources in a project.
- * 
+ *
  * @author Peter Friese
  * @author Andrei Loskutov
  * @version 2.0
@@ -84,7 +84,7 @@ public class FindBugsWorker {
 
     /**
      * Creates a new worker.
-     * 
+     *
      * @param project
      *            The <b>java</b> project to work on.
      * @param monitor
@@ -108,7 +108,7 @@ public class FindBugsWorker {
     /**
      * Run FindBugs on the given collection of resources from same project
      * (note: This is currently not thread-safe)
-     * 
+     *
      * @param resources
      *            files or directories which should be on the project classpath.
      *            All resources must belong to the same project, and no one of
@@ -215,7 +215,7 @@ public class FindBugsWorker {
 
     /**
      * Load existing FindBugs xml report for the given collection of files.
-     * 
+     *
      * @param fileName
      *            xml file name to load bugs from
      * @throws CoreException
@@ -241,7 +241,7 @@ public class FindBugsWorker {
 
     /**
      * Clear assotiated markers
-     * 
+     *
      * @param files
      */
     private void clearMarkers(List<WorkItem> files) throws CoreException {
@@ -259,7 +259,7 @@ public class FindBugsWorker {
     /**
      * Updates given outputFiles map with class name patterns matching given
      * java source names
-     * 
+     *
      * @param resources
      *            java sources
      * @param outLocations
@@ -274,7 +274,7 @@ public class FindBugsWorker {
 
     /**
      * this method will block current thread until the findbugs is running
-     * 
+     *
      * @param findBugs
      *            fb engine, which will be <b>disposed</b> after the analysis is
      *            done
@@ -300,7 +300,7 @@ public class FindBugsWorker {
 
     /**
      * Update the BugCollection for the project.
-     * 
+     *
      * @param findBugsProject
      *            FindBugs project representing analyzed classes
      * @param bugReporter
@@ -376,7 +376,7 @@ public class FindBugsWorker {
     /**
      * Checks the given path and convert it to absolute path if it is specified
      * relative to the given project or workspace
-     * 
+     *
      * @param filePath
      *            project relative OR workspace relative OR absolute OS file
      *            path (1.3.8+ version)
@@ -415,7 +415,7 @@ public class FindBugsWorker {
      * Checks the given absolute path and convert it to relative path if it is
      * relative to the given project or workspace. This representation can be
      * used to store filter paths in user preferences file
-     * 
+     *
      * @param filePath
      *            absolute OS file path
      * @param project
@@ -462,14 +462,13 @@ public class FindBugsWorker {
      * @return array with required class directories / libs on the classpath
      */
     private String[] createAuxClasspath() {
-        String[] classPath = PDEClassPathGenerator.computeClassPath(javaProject);
-        return classPath;
+        return PDEClassPathGenerator.computeClassPath(javaProject);
     }
 
     /**
      * @return map of all source folders to output folders, for current java
      *         project, where both are represented by absolute IPath objects
-     * 
+     *
      * @throws CoreException
      */
     private Map<IPath, IPath> createOutputLocations() throws CoreException {
