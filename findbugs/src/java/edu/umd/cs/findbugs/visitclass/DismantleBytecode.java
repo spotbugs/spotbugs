@@ -326,9 +326,11 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     }
 
     public int getIntConstant() {
+        assert getOpcode() != LDC || getConstantRefOperand() instanceof ConstantInteger;
         return intConstant;
     }
     public long getLongConstant() {
+        assert getOpcode() != LDC2_W || getConstantRefOperand() instanceof ConstantLong;
         return longConstant;
     }
     public int getBranchOffset() {
@@ -495,6 +497,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                 PC = i;
                 opcodeIsWide = false;
                 opcode = byteStream.readUnsignedByte();
+
                 sizePrevOpcodeBuffer++;
                 currentPosInPrevOpcodeBuffer++;
                 if (currentPosInPrevOpcodeBuffer >= prevOpcode.length)

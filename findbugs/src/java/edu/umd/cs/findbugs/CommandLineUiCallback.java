@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
@@ -31,11 +30,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.JOptionPane;
 
+import edu.umd.cs.findbugs.charsets.UserTextFile;
 import edu.umd.cs.findbugs.cloud.Cloud;
 
 /**
  * Implementation of the UI callback for command line sessions.
- * 
+ *
  * @author andy.st
  */
 public class CommandLineUiCallback implements IGuiCallback {
@@ -56,7 +56,7 @@ public class CommandLineUiCallback implements IGuiCallback {
         String confirmStr = "Yes (Y) or No (N)?";
 
         System.out.println(String.format("Confirmation required: %s%n\t%s%n\t%s", title, message, confirmStr));
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader br = UserTextFile.bufferedReader(System.in);
         String answer = null;
         while (true) {
             try {
@@ -106,7 +106,7 @@ public class CommandLineUiCallback implements IGuiCallback {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.IGuiCallback#showQuestionDialog(java.lang.String,
      * java.lang.String, java.lang.String)
@@ -121,7 +121,7 @@ public class CommandLineUiCallback implements IGuiCallback {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IGuiCallback#showDocument(java.net.URL)
      */
     public boolean showDocument(URL u) {
@@ -162,7 +162,7 @@ public class CommandLineUiCallback implements IGuiCallback {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IGuiCallback#isHeadless()
      */
     public boolean isHeadless() {
@@ -171,7 +171,7 @@ public class CommandLineUiCallback implements IGuiCallback {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.IGuiCallback#unregisterCloud(edu.umd.cs.findbugs.
      * Project, edu.umd.cs.findbugs.BugCollection,
@@ -183,7 +183,7 @@ public class CommandLineUiCallback implements IGuiCallback {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.IGuiCallback#invokeInGUIThread(java.lang.Runnable)
      */

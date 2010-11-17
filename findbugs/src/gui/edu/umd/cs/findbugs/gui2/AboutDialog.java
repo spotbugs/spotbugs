@@ -37,12 +37,13 @@ import javax.swing.JFrame;
 import javax.swing.event.HyperlinkEvent;
 
 import edu.umd.cs.findbugs.Version;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.log.Logger;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 /**
  * The Help:About dialog.
- * 
+ *
  * @author David Hovemeyer
  */
 public class AboutDialog extends javax.swing.JDialog {
@@ -90,7 +91,7 @@ public class AboutDialog extends javax.swing.JDialog {
                 throw new IOException(MessageFormat.format(
                         edu.umd.cs.findbugs.L10N.getLocalString("msg.couldntload_txt", "Couldn't load {0}"),
                         new Object[] { fileName }));
-            reader = new BufferedReader(new InputStreamReader(in));
+            reader = UTF8.bufferedReader(in);
 
             // Replace instances of @VERSION@ with actual version number
 

@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.util.Strings;
 
 /**
  * Write XML to an output stream.
- * 
+ *
  * @author David Hovemeyer
  */
 public class OutputStreamXMLOutput implements XMLOutput {
@@ -54,17 +54,25 @@ public class OutputStreamXMLOutput implements XMLOutput {
 
     /**
      * Constructor.
-     * 
+     *
      * @param os
      *            OutputStream to write XML output to
      */
     public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os) {
         this(os, null);
     }
-
     /**
      * Constructor.
-     * 
+     *
+     * @param os
+     *            OutputStream to write XML output to
+     */
+    public OutputStreamXMLOutput(@WillCloseWhenClosed Writer writer) {
+        this(writer, null);
+    }
+    /**
+     * Constructor.
+     *
      * @param os
      *            OutputStream to write XML output to
      * @param stylesheet
@@ -77,6 +85,18 @@ public class OutputStreamXMLOutput implements XMLOutput {
         this.stylesheet = stylesheet;
     }
 
+    /*
+    * @param os
+    *            Writer to write XML output to
+    * @param stylesheet
+    *            name of stylesheet
+    */
+   public OutputStreamXMLOutput(@WillCloseWhenClosed Writer writer, String stylesheet) {
+       this.out = writer;
+       this.nestingLevel = 0;
+       this.newLine = true;
+       this.stylesheet = stylesheet;
+   }
     public void beginDocument() throws IOException {
         out.write(OPENING);
         out.write(getStylesheetCode(stylesheet));

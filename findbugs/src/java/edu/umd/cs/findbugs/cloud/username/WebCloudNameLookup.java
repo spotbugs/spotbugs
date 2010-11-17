@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.cloud.username;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -31,6 +32,7 @@ import java.util.prefs.Preferences;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.PropertyBundle;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 import edu.umd.cs.findbugs.util.Util;
@@ -107,7 +109,7 @@ public class WebCloudNameLookup implements NameLookup {
 
     /**
      * If the user can be authenticated due to an existing session id, do so
-     * 
+     *
      * @return true if we could authenticate the user
      * @throws IOException
      */
@@ -206,14 +208,19 @@ public class WebCloudNameLookup implements NameLookup {
 
         int responseCode = connection.getResponseCode();
         if (responseCode == 200) {
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String status = in.readLine();
-            sessionId = Long.parseLong(in.readLine());
-            username = in.readLine();
-            Util.closeSilently(in);
-            if ("OK".equals(status)) {
-                LOGGER.info("Authorized session " + sessionId);
-                return true;
+            InputStream in = connection.getInputStream();
+            try {
+                BufferedReader reader = UTF8.bufferedReader(in);
+                String status = reader.readLine();
+                sessionId = Long.parseLong(reader.readLine());
+                username = reader.readLine();
+                Util.closeSilently(reader);
+                if ("OK".equals(status)) {
+                    LOGGER.info("Authorized session " + sessionId);
+                    return true;
+                }
+            } finally {
+                in.close();
             }
 
         }

@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.Invoke;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
@@ -127,7 +128,7 @@ public class NoteCheckReturnValue extends AnnotationVisitor implements Detector,
     private void saveTraining() {
         BufferedWriter writer = null;
         try {
-            writer = new BufferedWriter(new FileWriter(SAVE_TRAINING));
+            writer = UTF8.bufferedWriter(SAVE_TRAINING);
             for (XMethod xmethod : checkReturnValueDatabase) {
                 writer.write(xmethod.getClassName());
                 writer.write(",");

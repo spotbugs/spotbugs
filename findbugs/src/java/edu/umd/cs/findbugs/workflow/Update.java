@@ -49,7 +49,7 @@ import edu.umd.cs.findbugs.model.MovedClassMap;
 /**
  * Java main application to compute update a historical bug collection with
  * results from another build/analysis.
- * 
+ *
  * @author William Pugh
  */
 

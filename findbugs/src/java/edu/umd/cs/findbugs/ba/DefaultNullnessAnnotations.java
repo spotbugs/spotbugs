@@ -159,6 +159,10 @@ public class DefaultNullnessAnnotations {
                 "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
         database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentMap", "put",
                 "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 1, NullnessAnnotation.NONNULL);
+        database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentHashMap", "remove",
+                "(Ljava/lang/Object;Ljava/lang/Object;)Z", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentMap", "remove",
+                "(Ljava/lang/Object;Ljava/lang/Object;)Z", false, 1, NullnessAnnotation.NULLABLE);
 
         database.addMethodParameterAnnotation("java.util.concurrent.FutureTask", "<init>",
                 "(Ljava/lang/Runnable;Ljava/lang/Object;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
@@ -171,10 +175,6 @@ public class DefaultNullnessAnnotations {
 
         database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentHashMap$Segment", "remove",
                 "(Ljava/lang/Object;ILjava/lang/Object;)Ljava/lang/Object;", false, 2, NullnessAnnotation.CHECK_FOR_NULL);
-        database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentHashMap", "remove",
-                "(Ljava/lang/Object;Ljava/lang/Object;)Z", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
-        database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentMap", "remove",
-                "(Ljava/lang/Object;Ljava/lang/Object;)Z", false, 1, NullnessAnnotation.NULLABLE);
 
         database.addMethodParameterAnnotation("java.util.concurrent.CyclicBarrier", "<init>", "(ILjava/lang/Runnable;)V", false,
                 1, NullnessAnnotation.CHECK_FOR_NULL);

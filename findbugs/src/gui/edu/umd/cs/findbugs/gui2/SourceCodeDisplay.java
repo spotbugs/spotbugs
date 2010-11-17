@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFile;
+import edu.umd.cs.findbugs.charsets.SourceCharset;
 import edu.umd.cs.findbugs.sourceViewer.JavaSourceDocument;
 
 public final class SourceCodeDisplay implements Runnable {
@@ -98,7 +99,7 @@ public final class SourceCodeDisplay implements Runnable {
                 return result;
             try {
                 InputStream in = sourceFile.getInputStream();
-                result = new JavaSourceDocument(source.getClassName(), new InputStreamReader(in), sourceFile);
+                result = new JavaSourceDocument(source.getClassName(), SourceCharset.bufferedReader(in), sourceFile);
             } catch (Exception e) {
                 result = JavaSourceDocument.UNKNOWNSOURCE;
                 Debug.println(e); // e.printStackTrace();

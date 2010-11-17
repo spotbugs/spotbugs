@@ -21,11 +21,12 @@ package edu.umd.cs.findbugs.bugReporter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.HashSet;
+
+import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
@@ -34,6 +35,7 @@ import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.ComponentPlugin;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.charsets.UserTextFile;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
@@ -77,7 +79,7 @@ public class SuppressionDecorator extends BugReporterDecorator {
 
                 }
                 if (u != null) {
-                    InputStreamReader rawIn = new InputStreamReader(u.openStream(), "UTF-8");
+                    Reader rawIn =  UserTextFile.bufferedReader(u.openStream());
                     processPackageList(rawIn);
                 }
 
@@ -91,7 +93,8 @@ public class SuppressionDecorator extends BugReporterDecorator {
      * @param rawIn
      * @throws IOException
      */
-    private void processPackageList(Reader rawIn) throws IOException {
+    private void processPackageList(@WillClose Reader rawIn) throws IOException {
+        try {
         BufferedReader in = new BufferedReader(rawIn);
         while (true) {
             String s = in.readLine();
@@ -109,6 +112,9 @@ public class SuppressionDecorator extends BugReporterDecorator {
                 check.remove(packageName);
             } else
                 throw new IllegalArgumentException("Can't parse " + category + " filter line: " + s);
+        }
+        } finally {
+            rawIn.close();
         }
     }
 

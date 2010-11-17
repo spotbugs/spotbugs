@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Writer;
 import java.util.Iterator;
 
 import javax.annotation.Nonnull;
@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * BugReporter to output warnings in xdocs format for Maven.
- * 
+ *
  * @author Garvin LeClaire
  */
 public class XDocsBugReporter extends TextUIBugReporter {
@@ -118,7 +118,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
         outputStream.close();
     }
 
-    private void writeXML(OutputStream out, Project project) throws IOException {
+    private void writeXML(Writer out, Project project) throws IOException {
         Document document = endDocument(project);
 
         XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());

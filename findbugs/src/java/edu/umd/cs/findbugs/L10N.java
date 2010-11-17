@@ -33,6 +33,8 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import edu.umd.cs.findbugs.charsets.UserTextFile;
+
 public class L10N {
     private static final boolean DEBUG = SystemProperties.getBoolean("i18n.debug");
 
@@ -47,7 +49,7 @@ public class L10N {
         try {
             if (GENERATE_MISSING_KEYS)
                 try {
-                    extraProperties = new PrintWriter(new FileWriter("/tmp/extra.properties"));
+                    extraProperties = UserTextFile.printWriter("/tmp/extra.properties");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

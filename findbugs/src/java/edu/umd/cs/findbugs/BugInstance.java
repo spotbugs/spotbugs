@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.DateFormat;
@@ -67,6 +68,7 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -2458,7 +2460,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
         MessageDigest digest = Util.getMD5Digest();
         String key = getInstanceKey();
-        byte[] data = digest.digest(key.getBytes());
+        byte[] data = digest.digest(key.getBytes(UTF8.charset));
         hash = new BigInteger(1, data).toString(16);
         instanceHash = hash;
         return hash;

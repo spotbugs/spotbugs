@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
@@ -69,6 +70,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.MissingClassException;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.log.Profiler;
@@ -314,9 +316,18 @@ public class SortedBugCollection implements BugCollection {
     }
 
     private void doReadXML(@WillClose InputStream in, @CheckForNull File base) throws IOException, DocumentException {
-        checkInputStream(in);
-        Reader reader = Util.getReader(in);
-        doReadXML(reader, base);
+        try {
+            checkInputStream(in);
+            Reader reader = Util.getReader(in);
+            doReadXML(reader, base);
+        } catch (RuntimeException e) {
+            in.close();
+            throw e;
+        }catch (IOException e) {
+            in.close();
+            throw e;
+        }
+
     }
 
     private void doReadXML(@WillClose Reader reader, @CheckForNull File base) throws IOException, DocumentException {
@@ -362,6 +373,10 @@ public class SortedBugCollection implements BugCollection {
         project.setModified(false);
     }
 
+
+    public void writeXML(OutputStream out) throws IOException {
+        writeXML(UTF8.writer(out));
+    }
     /**
      * Write this BugCollection to a file as XML.
      *
@@ -413,7 +428,7 @@ public class SortedBugCollection implements BugCollection {
      * @param out
      *            the OutputStream to write to
      */
-    public void writeXML(@WillClose OutputStream out) throws IOException {
+    public void writeXML(@WillClose Writer out) throws IOException {
         assert project != null;
 
         XMLOutput xmlOutput;
@@ -482,7 +497,7 @@ public class SortedBugCollection implements BugCollection {
                 hash = bugInstance.getInstanceKey();
 
                 if (digest != null) {
-                    byte[] data = digest.digest(hash.getBytes());
+                    byte[] data = digest.digest(hash.getBytes(UTF8.charset));
                     String tmp = new BigInteger(1, data).toString(16);
                     if (false)
                         System.out.println(hash + " -> " + tmp);

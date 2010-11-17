@@ -39,12 +39,13 @@ import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Property database for interprocedural analysis.
- * 
+ *
  * @param <KeyType>
  *            key type: either MethodDescriptor or FieldDescriptor
  * @param <ValueType>
@@ -64,7 +65,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
 
     /**
      * Set a property.
-     * 
+     *
      * @param key
      *            the key
      * @param property
@@ -76,7 +77,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
 
     /**
      * Get a property.
-     * 
+     *
      * @param key
      *            the key
      * @return the property, or null if no property is set for this key
@@ -96,7 +97,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
 
     /**
      * Return whether or not the database is empty.
-     * 
+     *
      * @return true if the database is empty, false it it has at least one entry
      */
     public boolean isEmpty() {
@@ -105,7 +106,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
 
     /**
      * Remove a property.
-     * 
+     *
      * @param key
      *            the key
      * @return the old property, or null if there was no property defined for
@@ -117,7 +118,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
 
     /**
      * Read property database from given file.
-     * 
+     *
      * @param fileName
      *            name of the database file
      * @throws IOException
@@ -130,7 +131,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
     /**
      * Read property database from an input stream. The InputStream is
      * guaranteed to be closed, even if an exception is thrown.
-     * 
+     *
      * @param in
      *            the InputStream
      * @throws IOException
@@ -167,7 +168,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
 
     /**
      * Write property database to given file.
-     * 
+     *
      * @param fileName
      *            name of the database file
      * @throws IOException
@@ -193,7 +194,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
     /**
      * Write property database to an OutputStream. The OutputStream is
      * guaranteed to be closed, even if an exception is thrown.
-     * 
+     *
      * @param out
      *            the OutputStream
      * @throws IOException
@@ -203,7 +204,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
         boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
 
         try {
-            writer = new BufferedWriter(new OutputStreamWriter(out, Charset.forName("UTF-8")));
+            writer = new BufferedWriter(new OutputStreamWriter(out, UTF8.charset));
 
             TreeSet<KeyType> sortedMethodSet = new TreeSet<KeyType>();
             sortedMethodSet.addAll(propertyMap.keySet());
@@ -232,7 +233,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
 
     /**
      * Parse a key from a String.
-     * 
+     *
      * @param s
      *            a String
      * @return the decoded key
@@ -242,7 +243,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
 
     /**
      * Write an encoded key to given Writer.
-     * 
+     *
      * @param writer
      *            the Writer
      * @param key
@@ -253,7 +254,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
     /**
      * Subclasses must define this to instantiate the actual property value from
      * its string encoding.
-     * 
+     *
      * @param propStr
      *            String containing the encoded property
      * @return the property
@@ -264,7 +265,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
     /**
      * Subclasses must define this to encode a property as a string for output
      * to a file.
-     * 
+     *
      * @param property
      *            the property
      * @return a String which encodes the property

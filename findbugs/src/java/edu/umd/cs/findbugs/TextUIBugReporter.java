@@ -20,9 +20,9 @@
 package edu.umd.cs.findbugs;
 
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Iterator;
-
-import javax.annotation.WillClose;
 
 /**
  * Base class for BugReporters which provides convenient formatting and
@@ -50,7 +50,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
     static final String OTHER_CATEGORY_ABBREV = "X";
 
-    protected PrintStream outputStream = System.out;
+   protected PrintWriter outputStream = new PrintWriter(System.out);
 
     public TextUIBugReporter() {
         reportStackTrace = true;
@@ -62,8 +62,12 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
      * @param outputStream
      *            the PrintStream to write bug output to
      */
-    public void setOutputStream(@WillClose PrintStream outputStream) {
-        this.outputStream = outputStream;
+    public void setOutputStream(PrintStream outputStream) {
+        this.outputStream = new PrintWriter(outputStream);
+    }
+
+    public void setWriter(PrintWriter writer) {
+        this.outputStream = writer;
     }
 
     /**

@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.ba.Location;
 /**
  * Accumulate warnings that may occur at multiple source locations,
  * consolidating them into a single warning.
- * 
+ *
  * @author Bill Pugh
  * @author David Hovemeyer
  */
@@ -64,7 +64,7 @@ public class BugAccumulator {
 
     /**
      * Constructor.
-     * 
+     *
      * @param reporter
      *            the BugReporter to which warnings should eventually be
      *            reported
@@ -76,7 +76,7 @@ public class BugAccumulator {
 
     /**
      * Accumulate a warning at given source location.
-     * 
+     *
      * @param bug
      *            the warning
      * @param sourceLine
@@ -89,6 +89,7 @@ public class BugAccumulator {
             reporter.reportBug(bug.addSourceLine(sourceLine));
             return;
         }
+
         int priority = bug.getPriority();
         bug.setPriority(Priorities.NORMAL_PRIORITY);
         String hash = bug.getInstanceHash();
@@ -116,7 +117,7 @@ public class BugAccumulator {
     /**
      * Accumulate a warning at source location currently being visited by given
      * BytecodeScanningDetector.
-     * 
+     *
      * @param bug
      *            the warning
      * @param visitor

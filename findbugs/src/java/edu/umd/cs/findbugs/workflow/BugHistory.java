@@ -25,8 +25,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -46,6 +45,8 @@ import edu.umd.cs.findbugs.SloppyBugComparator;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.VersionInsensitiveBugComparator;
 import edu.umd.cs.findbugs.WarningComparator;
+import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.charsets.UserTextFile;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.model.MovedClassMap;
 import edu.umd.cs.findbugs.util.Util;
@@ -57,7 +58,7 @@ import edu.umd.cs.findbugs.util.Util;
  * new BugCollection returned is a deep copy of one of the input collections
  * (depending on the operation performed), with only a subset of the original
  * BugInstances retained. Because it is a deep copy, it may be freely modified.
- * 
+ *
  * @author David Hovemeyer
  */
 @Deprecated
@@ -99,7 +100,7 @@ public class BugHistory {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)
          */
 
@@ -110,7 +111,7 @@ public class BugHistory {
 
         /**
          * Fetch an entry, reading it if necessary.
-         * 
+         *
          * @param fileName
          *            file to get
          * @return the BugCollectionAndProject for the file
@@ -134,7 +135,7 @@ public class BugHistory {
     public interface SetOperation {
         /**
          * Perform the set operation.
-         * 
+         *
          * @param result
          *            Set to put the resulting BugInstances in
          * @param origCollection
@@ -221,7 +222,7 @@ public class BugHistory {
 
     /**
      * Contructor.
-     * 
+     *
      * @param origCollection
      *            the original BugCollection
      * @param newCollection
@@ -250,7 +251,7 @@ public class BugHistory {
 
     /**
      * Perform a SetOperation.
-     * 
+     *
      * @param operation
      *            the SetOperation
      * @return the BugCollection resulting from performing the SetOperation
@@ -313,7 +314,7 @@ public class BugHistory {
         return resultCollection;
     }
 
-    public void writeResultCollection(Project origProject, Project newProject, OutputStream outputStream) throws IOException {
+    public void writeResultCollection(Project origProject, Project newProject, Writer outputStream) throws IOException {
         getResultCollection().writeXML(outputStream);
     }
 
@@ -321,7 +322,7 @@ public class BugHistory {
      * Get instances shared between given Set and BugCollection. The Set is
      * queried for membership, because it has a special Comparator which can
      * match BugInstances from different versions.
-     * 
+     *
      * @param result
      *            the Set
      * @param collection
@@ -341,7 +342,7 @@ public class BugHistory {
 
     /**
      * Replace all of the BugInstances in given Set with the given Collection.
-     * 
+     *
      * @param dest
      *            the Set to replace the instances of
      * @param source
@@ -354,7 +355,7 @@ public class BugHistory {
 
     /**
      * Remove bug instances from Set.
-     * 
+     *
      * @param result
      *            the Set
      * @param toRemove
@@ -403,7 +404,7 @@ public class BugHistory {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String,
          * java.lang.String)
@@ -435,7 +436,7 @@ public class BugHistory {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java
          * .lang.String, java.lang.String)
@@ -605,7 +606,7 @@ public class BugHistory {
     private static void runBulk(BugHistoryCommandLine commandLine) throws FileNotFoundException, IOException, DocumentException {
         BufferedReader reader;
         if (commandLine.getListFile().equals("-")) {
-            reader = new BufferedReader(new InputStreamReader(System.in));
+            reader = UserTextFile.bufferedReader(System.in);
         } else {
             reader = new BufferedReader(Util.getFileReader(commandLine.getListFile()));
         }
@@ -651,8 +652,7 @@ public class BugHistory {
                     System.out.flush();
                 }
 
-                bugHistory.writeResultCollection(orig.getProject(), next.getProject(), new BufferedOutputStream(
-                        new FileOutputStream(outputFile)));
+                bugHistory.writeResultCollection(orig.getProject(), next.getProject(), UTF8.bufferedWriter(outputFile));
                 if (commandLine.isVerbose()) {
                     System.out.println("done");
                 }
@@ -674,7 +674,7 @@ public class BugHistory {
         if (commandLine.isCount()) {
             System.out.println(bugHistory.getResultCollection().getCollection().size());
         } else {
-            OutputStream outputStream = System.out;
+            Writer outputStream = UTF8.writer(System.out);
             bugHistory.writeResultCollection(origProject, newProject, outputStream);
         }
     }

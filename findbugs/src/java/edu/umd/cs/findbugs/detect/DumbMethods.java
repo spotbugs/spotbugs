@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
+import org.apache.bcel.classfile.ConstantInteger;
 import org.apache.bcel.classfile.ConstantLong;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantValue;
@@ -198,18 +199,21 @@ public class DumbMethods extends OpcodeStackDetector {
 
     boolean freshRandomOneBelowTos = false;
 
+
     @Override
     public void sawOpcode(int seen) {
-        // System.out.printf("%3d %12s %s%n", getPC(), OPCODE_NAMES[seen], stack);
+        // System.out.printf("%3d %12s %s%n", getPC(), OPCODE_NAMES[seen],
+        // stack);
 
-
-        if ((seen == LDC || seen == LDC_W) && getIntConstant() == MICROS_PER_DAY_OVERFLOWED_AS_INT
-                || seen == LDC2_W && getLongConstant() == MICROS_PER_DAY_OVERFLOWED_AS_INT) {
-            accumulator.accumulateBug( new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(this)
-            .addString("Did you mean MICROS_PER_DAY")
-            .addInt(MICROS_PER_DAY_OVERFLOWED_AS_INT)
-            .describe(IntAnnotation.INT_VALUE),
-            this);
+        if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
+            Constant c = getConstantRefOperand();
+            if (c instanceof ConstantInteger && ((ConstantInteger) c).getBytes() == MICROS_PER_DAY_OVERFLOWED_AS_INT
+                    || c instanceof ConstantLong && ((ConstantLong) c).getBytes() == MICROS_PER_DAY_OVERFLOWED_AS_INT) {
+                BugInstance bug = new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(this)
+                        .addString("Did you mean MICROS_PER_DAY").addInt(MICROS_PER_DAY_OVERFLOWED_AS_INT)
+                        .describe(IntAnnotation.INT_VALUE);
+                accumulator.accumulateBug(bug, this);
+            }
         }
 
 

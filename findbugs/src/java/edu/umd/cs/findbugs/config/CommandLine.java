@@ -38,6 +38,7 @@ import java.util.Set;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -72,7 +73,7 @@ public abstract class CommandLine {
 
     /**
      * Start a new group of related command-line options.
-     * 
+     *
      * @param description
      *            description of the group
      */
@@ -83,7 +84,7 @@ public abstract class CommandLine {
     /**
      * Add a command line switch. This method is for adding options that do not
      * require an argument.
-     * 
+     *
      * @param option
      *            the option, must start with "-"
      * @param description
@@ -100,7 +101,7 @@ public abstract class CommandLine {
     /**
      * Add a command line switch that allows optional extra information to be
      * specified as part of it.
-     * 
+     *
      * @param option
      *            the option, must start with "-"
      * @param optionExtraPartSynopsis
@@ -121,7 +122,7 @@ public abstract class CommandLine {
 
     /**
      * Add an option requiring an argument.
-     * 
+     *
      * @param option
      *            the option, must start with "-"
      * @param argumentDesc
@@ -142,7 +143,7 @@ public abstract class CommandLine {
 
     /**
      * Don't list this option when printing Usage information
-     * 
+     *
      * @param option
      */
     public void makeOptionUnlisted(String option) {
@@ -153,7 +154,7 @@ public abstract class CommandLine {
      * Expand option files in given command line. Any token beginning with "@"
      * is assumed to be an option file. Option files contain one command line
      * option per line.
-     * 
+     *
      * @param argv
      *            the original command line
      * @param ignoreComments
@@ -184,7 +185,7 @@ public abstract class CommandLine {
             BufferedReader reader = null;
             try {
                 reader = new BufferedReader(
-                        new InputStreamReader(new FileInputStream(arg.substring(1)), Charset.forName("UTF-8")));
+                        new InputStreamReader(new FileInputStream(arg.substring(1))));
                 addCommandLineOptions(expandedOptionsList, reader, ignoreComments, ignoreBlankLines);
             } finally {
                 Util.closeSilently(reader);
@@ -204,7 +205,7 @@ public abstract class CommandLine {
         if (u != null) {
             BufferedReader reader = null;
             try {
-                reader = new BufferedReader(new InputStreamReader(u.openStream(), "UTF-8"));
+                reader = UTF8.bufferedReader(u.openStream());
                 addCommandLineOptions(resultList, reader, ignoreComments, ignoreBlankLines);
             } catch (IOException e) {
                 AnalysisContext.logError("unable to load analysisOptions.properties", e);
@@ -242,7 +243,7 @@ public abstract class CommandLine {
      * Parse switches/options, showing usage information if they can't be
      * parsed, or if we have the wrong number of remaining arguments after
      * parsing. Calls parse(String[]).
-     * 
+     *
      * @param argv
      *            command line arguments
      * @param minArgs
@@ -287,7 +288,7 @@ public abstract class CommandLine {
      * handleOptionWithArgument() methods. Stops parsing when it reaches the end
      * of the command line, or when a command line argument not starting with
      * "-" is seen.
-     * 
+     *
      * @param argv
      *            the arguments
      * @return the number of arguments parsed; if equal to argv.length, then the
@@ -338,7 +339,7 @@ public abstract class CommandLine {
 
     /**
      * Callback method for handling an option.
-     * 
+     *
      * @param option
      *            the option
      * @param optionExtraPart
@@ -350,7 +351,7 @@ public abstract class CommandLine {
 
     /**
      * Callback method for handling an option with an argument.
-     * 
+     *
      * @param option
      *            the option
      * @param argument
@@ -360,7 +361,7 @@ public abstract class CommandLine {
 
     /**
      * Print command line usage information to given stream.
-     * 
+     *
      * @param os
      *            the output stream
      */

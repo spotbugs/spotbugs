@@ -22,25 +22,26 @@ package edu.umd.cs.findbugs.gui2;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Writer;
 
 import javax.annotation.WillClose;
 import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.charsets.UTF8;
 
 /**
  * Save bugs here, uses SortedBugCollection.writeXML()
- * 
+ *
  * @author Dan
- * 
+ *
  */
 public class BugSaver {
 
     private static String lastPlaceSaved;
 
-    public static void saveBugs(@WillClose OutputStream out, BugCollection data, Project p) {
+    public static void saveBugs(@WillClose Writer out, BugCollection data, Project p) {
 
         try {
             data.writeXML(out);
@@ -51,7 +52,7 @@ public class BugSaver {
 
     public static void saveBugs(File out, BugCollection data, Project p) {
         try {
-            saveBugs(new FileOutputStream(out), data, p);
+            saveBugs(UTF8.fileWriter(out), data, p);
             lastPlaceSaved = out.getAbsolutePath();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "An error has occured in saving your file");

@@ -60,6 +60,7 @@ import javax.annotation.WillNotClose;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.charsets.UTF8;
 
 /**
  * @author William Pugh
@@ -68,7 +69,7 @@ public class Util {
 
     /**
      * return sign of x - y
-     * 
+     *
      * @param x
      * @param y
      * @return
@@ -83,7 +84,7 @@ public class Util {
 
     /**
      * return sign of x - y
-     * 
+     *
      * @param x
      * @param y
      * @return
@@ -196,7 +197,7 @@ public class Util {
     }
 
     public static Reader getReader(@WillCloseWhenClosed InputStream in) throws UnsupportedEncodingException {
-        return new InputStreamReader(in, "UTF-8");
+        return UTF8.reader(in);
     }
 
     public static Reader getFileReader(String filename) throws UnsupportedEncodingException, FileNotFoundException {

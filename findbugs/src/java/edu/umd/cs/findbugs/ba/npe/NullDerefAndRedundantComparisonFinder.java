@@ -72,7 +72,7 @@ import edu.umd.cs.findbugs.log.Profiler;
 /**
  * A user-friendly front end for finding null pointer dereferences and redundant
  * null comparisions.
- * 
+ *
  * @see IsNullValueAnalysis
  * @author David Hovemeyer
  */
@@ -83,23 +83,23 @@ public class NullDerefAndRedundantComparisonFinder {
 
     private static final boolean DEBUG_DEREFS = SystemProperties.getBoolean("fnd.derefs.debug");
 
-    private ClassContext classContext;
+    private final ClassContext classContext;
 
-    private Method method;
+    private final Method method;
 
-    private NullDerefAndRedundantComparisonCollector collector;
+    private final NullDerefAndRedundantComparisonCollector collector;
 
     private final boolean findGuaranteedDerefs;
 
-    private List<RedundantBranch> redundantBranchList;
+    private final List<RedundantBranch> redundantBranchList;
 
-    private BitSet definitelySameBranchSet;
+    private final BitSet definitelySameBranchSet;
 
-    private BitSet definitelyDifferentBranchSet;
+    private final BitSet definitelyDifferentBranchSet;
 
-    private BitSet undeterminedBranchSet;
+    private final BitSet undeterminedBranchSet;
 
-    private BitSet lineMentionedMultipleTimes;
+    private final BitSet lineMentionedMultipleTimes;
 
     private IsNullValueDataflow invDataflow;
 
@@ -107,7 +107,7 @@ public class NullDerefAndRedundantComparisonFinder {
 
     private UnconditionalValueDerefDataflow uvdDataflow;
 
-    private AssertionMethods assertionMethods;
+    private final AssertionMethods assertionMethods;
 
     static {
         if (DEBUG)
@@ -116,7 +116,7 @@ public class NullDerefAndRedundantComparisonFinder {
 
     /**
      * Constructor.
-     * 
+     *
      * @param classContext
      *            the ClassContext
      * @param method
@@ -179,7 +179,7 @@ public class NullDerefAndRedundantComparisonFinder {
     /**
      * Examine basic blocks for null checks and potentially-redundant null
      * comparisons.
-     * 
+     *
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
@@ -219,7 +219,7 @@ public class NullDerefAndRedundantComparisonFinder {
     /**
      * Examine null values. Report any that are guaranteed to be dereferenced on
      * non-implicit-exception paths.
-     * 
+     *
      * @throws CFGBuilderException
      * @throws DataflowAnalysisException
      */
@@ -351,6 +351,7 @@ public class NullDerefAndRedundantComparisonFinder {
                     String where = classContext.getJavaClass().getClassName() + "." + method.getName() + ":"
                             + method.getSignature();
                     System.out.println("Problem at " + where);
+                    System.out.println("Value number " + valueNumber);
                     for (Location loc : derefLocationSet) {
                         System.out.println("Dereference at " + loc);
                     }
@@ -463,7 +464,7 @@ public class NullDerefAndRedundantComparisonFinder {
     /**
      * Check for unconditionally dereferenced null values at a particular
      * location in the CFG.
-     * 
+     *
      * @param thisLocation
      *            TODO
      * @param knownNullAndDoomedAt
@@ -547,7 +548,7 @@ public class NullDerefAndRedundantComparisonFinder {
     /**
      * Note the locations where a known-null value is unconditionally
      * dereferenced.
-     * 
+     *
      * @param thisLocation
      *            TODO
      * @param bugLocations

@@ -35,6 +35,8 @@ import edu.umd.cs.findbugs.BugRankCategory;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.charsets.UserTextFile;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.config.CommandLine;
 
@@ -67,7 +69,7 @@ public class CloudSyncAndReport {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String,
          * java.lang.String)
@@ -80,7 +82,7 @@ public class CloudSyncAndReport {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java
          * .lang.String, java.lang.String)
@@ -134,7 +136,7 @@ public class CloudSyncAndReport {
 
     public void load() throws IOException, DocumentException {
         if (options.analysisFile == null)
-            bugCollection.readXML(new InputStreamReader(System.in));
+            bugCollection.readXML(UTF8.bufferedReader(System.in));
         else
             bugCollection.readXML(options.analysisFile);
         if (options.cloudId != null && !options.cloudId.equals(bugCollection.getProject().getCloudId())) {
@@ -189,7 +191,7 @@ public class CloudSyncAndReport {
 
         if (options.cloudSummary != null && cloud.supportsCloudSummaries()) {
             try {
-                PrintWriter cs = new PrintWriter(new FileWriter(options.cloudSummary));
+                PrintWriter cs = UserTextFile.printWriter(options.cloudSummary);
                 cs.printf("%6s %6s %s%n", "recent", "total", "Rank category");
                 for (Entry<BugRankCategory, Stats> e : stats.entrySet()) {
                     Stats s = e.getValue();

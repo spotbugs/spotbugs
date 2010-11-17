@@ -82,6 +82,11 @@ import edu.umd.cs.findbugs.visitclass.Util;
  */
 public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<UnconditionalValueDerefSet> {
 
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + " of " + method;
+    }
+
     public static final boolean DEBUG = SystemProperties.getBoolean("fnd.derefs.debug");
 
     public static final boolean ASSUME_NONZERO_TRIP_LOOPS = SystemProperties.getBoolean("fnd.derefs.nonzerotrip");
@@ -94,15 +99,15 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     public static final boolean DEBUG_CHECK_CALLS = SystemProperties.getBoolean("fnd.derefs.checkcalls.debug");
 
-    private CFG cfg;
+    private final CFG cfg;
 
     private final Method method;
 
-    private MethodGen methodGen;
+    private final MethodGen methodGen;
 
-    private ValueNumberDataflow vnaDataflow;
+    private final ValueNumberDataflow vnaDataflow;
 
-    private AssertionMethods assertionMethods;
+    private final AssertionMethods assertionMethods;
 
     private IsNullValueDataflow invDataflow;
 
@@ -510,8 +515,9 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     private void checkNonNullParams(Location location, ValueNumberFrame vnaFrame, UnconditionalValueDerefSet fact)
             throws DataflowAnalysisException {
         ConstantPoolGen constantPool = methodGen.getConstantPool();
-        for (ValueNumber vn : checkNonNullParams(location, vnaFrame, constantPool, method,
-                invDataflow.getFactAtLocation(location)))
+        Set<ValueNumber> nonNullParams = checkNonNullParams(location, vnaFrame, constantPool, method,
+                invDataflow.getFactAtLocation(location));
+        for (ValueNumber vn : nonNullParams)
             fact.addDeref(vn, location);
     }
 

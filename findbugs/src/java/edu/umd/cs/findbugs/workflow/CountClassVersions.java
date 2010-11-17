@@ -38,6 +38,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.charsets.UserTextFile;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 import edu.umd.cs.findbugs.util.Util;
@@ -48,7 +50,7 @@ import edu.umd.cs.findbugs.util.Util;
 public class CountClassVersions {
 
     public static List<String> readFromStandardInput() throws IOException {
-        return readFrom(new InputStreamReader(System.in));
+        return readFrom(UserTextFile.reader(System.in));
     }
 
     public static List<String> readFrom(Reader r) throws IOException {
@@ -78,7 +80,7 @@ public class CountClassVersions {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String,
          * java.lang.String)
@@ -90,7 +92,7 @@ public class CountClassVersions {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java
          * .lang.String, java.lang.String)

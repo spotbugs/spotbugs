@@ -50,6 +50,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.charsets.UserTextFile;
 import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
@@ -138,7 +139,7 @@ public class RejarClassesForAnalysis {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String,
          * java.lang.String)
@@ -150,7 +151,7 @@ public class RejarClassesForAnalysis {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java
          * .lang.String, java.lang.String)
@@ -195,7 +196,7 @@ public class RejarClassesForAnalysis {
     }
 
     public static List<String> readFromStandardInput() throws IOException {
-        return readFrom(new InputStreamReader(System.in));
+        return readFrom(UserTextFile.bufferedReader(System.in));
     }
 
     SortedMap<String, ZipOutputStream> analysisOutputFiles = new TreeMap<String, ZipOutputStream>();

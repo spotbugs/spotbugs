@@ -63,6 +63,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.URLClassPath;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
@@ -665,7 +666,7 @@ public class Project implements XMLWriteable {
      */
     @Deprecated
     public void write(String outputFile, boolean useRelativePaths, String relativeBase) throws IOException {
-        PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
+        PrintWriter writer = UTF8.printWriter(outputFile);
         try {
             writer.println(JAR_FILES_KEY);
             for (String jarFile : analysisTargets) {

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -75,7 +76,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     /**
      * Set the current release name.
-     * 
+     *
      * @param releaseName
      *            the current release name
      */
@@ -83,7 +84,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     /**
      * Get the current release name.
-     * 
+     *
      * @return current release name
      */
     public String getReleaseName();
@@ -95,7 +96,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     /**
      * Get the timestamp for the analyzed code (when it was compiled)
-     * 
+     *
      * @param timestamp
      *            the timestamp.
      */
@@ -108,7 +109,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     /**
      * Set the timestamp for when the analysis was performed.
-     * 
+     *
      * @param timestamp
      *            the analysis timestamp.
      */
@@ -116,7 +117,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     /**
      * Set the version of FindBugs used to perform the analysis
-     * 
+     *
      * @param analysisVersion
      *            the analysis version.
      */
@@ -135,7 +136,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     /**
      * Set the sequence number of the BugCollection.
-     * 
+     *
      * @param sequence
      *            the sequence number
      * @see BugCollection#getSequenceNumber()
@@ -147,7 +148,7 @@ public interface BugCollection extends Iterable<BugInstance> {
      * number of times the user has analyzed a different version of the
      * application and updated the historical bug collection using the
      * UpdateBugCollection class.
-     * 
+     *
      * @return the sequence number
      */
     public long getSequenceNumber();
@@ -160,7 +161,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     /**
      * Add an AppVersion representing a version of the analyzed application.
-     * 
+     *
      * @param appVersion
      *            the AppVersion
      */
@@ -179,7 +180,7 @@ public interface BugCollection extends Iterable<BugInstance> {
     /**
      * Add a BugInstance to this BugCollection. This just calls add(bugInstance,
      * true).
-     * 
+     *
      * @param bugInstance
      *            the BugInstance
      * @return true if the BugInstance was added, or false if a matching
@@ -189,7 +190,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     /**
      * Add a BugInstance to this BugCollection.
-     * 
+     *
      * @param bugInstance
      *            the BugInstance
      * @param updateActiveTime
@@ -202,12 +203,12 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     /**
      * Look up a BugInstance by its unique id.
-     * 
+     *
      * @param uniqueId
      *            the BugInstance's unique id.
      * @return the BugInstance with the given unique id, or null if there is no
      *         such BugInstance
-     * 
+     *
      *         This is deprecated; uniqueIDs are not persistent.
      */
     @Deprecated
@@ -215,7 +216,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     /**
      * Add an analysis error.
-     * 
+     *
      * @param message
      *            the error message
      */
@@ -223,7 +224,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     /**
      * Add an analysis error.
-     * 
+     *
      * @param error
      *            the AnalysisError object to add
      */
@@ -231,7 +232,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     /**
      * Add a missing class message.
-     * 
+     *
      * @param message
      *            the missing class message
      */
@@ -250,7 +251,7 @@ public interface BugCollection extends Iterable<BugInstance> {
     /**
      * Read XML data from given file into this object, populating given Project
      * as a side effect.
-     * 
+     *
      * @param fileName
      *            name of the file to read
      */
@@ -260,7 +261,7 @@ public interface BugCollection extends Iterable<BugInstance> {
      * Read XML data from given input stream into this object, populating the
      * Project as a side effect. An attempt will be made to close the input
      * stream (even if an exception is thrown).
-     * 
+     *
      * @param in
      *            the InputStream
      */
@@ -270,7 +271,7 @@ public interface BugCollection extends Iterable<BugInstance> {
      * Read XML data from given reader into this object, populating the Project
      * as a side effect. An attempt will be made to close the reader (even if an
      * exception is thrown).
-     * 
+     *
      * @param reader
      *            the Reader
      */
@@ -278,7 +279,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     /**
      * Write this BugCollection to a file as XML.
-     * 
+     *
      * @param fileName
      *            the file to write to
      */
@@ -287,21 +288,32 @@ public interface BugCollection extends Iterable<BugInstance> {
     /**
      * Write the BugCollection to given output stream as XML. The output stream
      * will be closed, even if an exception is thrown.
-     * 
+     *
+     * @param out
+     *            the OutputStream to write to
+     */
+    public void writeXML(@WillClose Writer out) throws IOException;
+
+    /**
+     * Write the BugCollection to given output stream as XML using a UTF8 encoding.
+     * The output stream
+     * will be closed, even if an exception is thrown.
+     *
      * @param out
      *            the OutputStream to write to
      */
     public void writeXML(@WillClose OutputStream out) throws IOException;
 
+
     /**
      * Write the BugCollection to an XMLOutput object. The finish() method of
      * the XMLOutput object is guaranteed to be called.
-     * 
+     *
      * <p>
      * To write the SummaryHTML element, set property
      * findbugs.report.SummaryHTML to "true".
      * </p>
-     * 
+     *
      * @param xmlOutput
      *            the XMLOutput object
      */
@@ -319,14 +331,14 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     /**
      * Convert the BugCollection into a dom4j Document object.
-     * 
+     *
      * @return the Document representing the BugCollection as a dom4j tree
      */
     public Document toDocument();
 
     /**
      * Create a new empty BugCollection with the same metadata as this one.
-     * 
+     *
      * @return a new empty BugCollection with the same metadata as this one
      */
     public BugCollection createEmptyCollectionWithMetadata();
@@ -354,7 +366,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     /**
      * Get the instance of user annotation plugin
-     * 
+     *
      * @return user annotation plugin OR null, if there is no annotation plugin
      *         installed
      */

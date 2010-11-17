@@ -51,6 +51,7 @@ import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
@@ -406,7 +407,7 @@ public class PluginLoader {
         SAXReader reader = new SAXReader();
 
         try {
-            Reader r = new InputStreamReader(findbugsXML_URL.openStream());
+            Reader r = UTF8.bufferedReader(findbugsXML_URL.openStream());
             pluginDescriptor = reader.read(r);
         } catch (DocumentException e) {
             throw new PluginException("Couldn't parse \"" + findbugsXML_URL + "\" using " + reader.getClass().getName(), e);
@@ -863,7 +864,7 @@ public class PluginLoader {
         if (messageURL != null) {
             SAXReader reader = new SAXReader();
             try {
-                InputStreamReader stream = new InputStreamReader(messageURL.openStream());
+                Reader stream = UTF8.bufferedReader(messageURL.openStream());
                 Document messageCollection = reader.read(stream);
                 messageCollectionList.add(messageCollection);
             } catch (Exception e) {
@@ -1094,7 +1095,7 @@ public class PluginLoader {
                 DetectorFactoryCollection.jawsDebugMessage(pluginListProperties.toString());
                 URL base = getUrlBase(pluginListProperties);
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(pluginListProperties.openStream()));
+                BufferedReader in = UTF8.bufferedReader(pluginListProperties.openStream());
                 while (true) {
                     String plugin = in.readLine();
 
