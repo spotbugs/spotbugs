@@ -215,6 +215,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
                 }
 
+            reporter.finish();
             for (Map.Entry<String, Integer> e : lowRank.entrySet()) {
                 System.out.printf("%4d low ranked %s issues%n", e.getValue(),
                         I18N.instance().getBugCategoryDescription(e.getKey()));
