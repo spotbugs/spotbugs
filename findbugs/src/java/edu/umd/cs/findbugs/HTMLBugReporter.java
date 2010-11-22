@@ -77,6 +77,7 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
             if (FindBugs.DEBUG)
                 e.printStackTrace();
         }
+        outputStream.flush();
     }
 
     public Exception getFatalException() {

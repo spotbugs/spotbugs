@@ -50,7 +50,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
     static final String OTHER_CATEGORY_ABBREV = "X";
 
-   protected PrintWriter outputStream = new PrintWriter(System.out,true);
+   protected PrintWriter outputStream = new PrintWriter(System.out, true);
 
     public TextUIBugReporter() {
         reportStackTrace = true;
@@ -63,7 +63,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
      *            the PrintStream to write bug output to
      */
     public void setOutputStream(PrintStream outputStream) {
-        this.outputStream = new PrintWriter(outputStream);
+        this.outputStream = new PrintWriter(outputStream, true);
     }
 
     public void setWriter(PrintWriter writer) {

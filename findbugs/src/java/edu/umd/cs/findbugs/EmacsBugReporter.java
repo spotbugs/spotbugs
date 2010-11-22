@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * BugReporter to output warnings in Emacs format.
- * 
+ *
  * @author David Li
  */
 public class EmacsBugReporter extends TextUIBugReporter {
@@ -119,7 +119,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
     }
 
     public void finish() {
-        outputStream.close();
+        outputStream.flush();
     }
 
     public @CheckForNull

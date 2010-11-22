@@ -115,7 +115,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
         } catch (Exception e) {
             logError("Couldn't write XML output", e);
         }
-        outputStream.close();
+        outputStream.flush();
     }
 
     private void writeXML(Writer out, Project project) throws IOException {

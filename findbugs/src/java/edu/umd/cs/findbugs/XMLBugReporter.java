@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.cloud.Cloud;
 
 /**
  * Report warnings as an XML document.
- * 
+ *
  * @author David Hovemeyer
  */
 public class XMLBugReporter extends BugCollectionBugReporter {
@@ -48,6 +48,7 @@ public class XMLBugReporter extends BugCollectionBugReporter {
             if (cloud != null)
                 cloud.bugsPopulated();
             getBugCollection().writeXML(outputStream);
+            outputStream.flush();
         } catch (IOException e) {
             throw new FatalException("Error writing XML output", e);
         }

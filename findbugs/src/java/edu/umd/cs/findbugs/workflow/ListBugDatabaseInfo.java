@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.config.CommandLine;
 /**
  * Java main application to compute update a historical bug collection with
  * results from another build/analysis.
- * 
+ *
  * @author William Pugh
  */
 
@@ -74,7 +74,7 @@ public class ListBugDatabaseInfo {
         ListBugDatabaseInfoCommandLine commandLine = new ListBugDatabaseInfoCommandLine();
         int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, USAGE);
 
-        PrintWriter out = new PrintWriter(System.out);
+        PrintWriter out = new PrintWriter(System.out, true);
         if (argCount == args.length)
             listVersion(out, null, commandLine.formatDates);
         else {
