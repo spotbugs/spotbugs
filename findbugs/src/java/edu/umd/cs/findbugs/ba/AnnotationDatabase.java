@@ -361,7 +361,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
         if (false && !m.isResolved()) {
             System.out.println("Unable to add annotation " + annotation + " to " + m);
             ClassDescriptor c = DescriptorFactory.createClassDescriptorFromDottedClassName(cName);
-            if (false)
+            if (true)
                 try {
                     XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
                     if (xClass != null) {

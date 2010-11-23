@@ -247,8 +247,8 @@ public abstract class AnalysisContext {
 
     public abstract DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase();
 
-    private static boolean skipReportingMissingClass(String missing) {
-        return missing.length() == 0 || missing.charAt(0) == '[' || missing.endsWith("package-info");
+    private static boolean skipReportingMissingClass(@CheckForNull @DottedClassName String missing) {
+        return missing == null || missing.length() == 0 || missing.charAt(0) == '[' || missing.endsWith("package-info");
     }
 
     private static @CheckForNull

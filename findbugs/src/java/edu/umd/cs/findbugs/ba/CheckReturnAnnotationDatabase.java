@@ -19,6 +19,11 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.concurrent.AbstractExecutorService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -108,6 +113,23 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         addMethodAnnotation("java.util.concurrent.PriorityBlockingQueue", "offer", "(Ljava/lang/Object;)Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 
+        for(Class<ExecutorService> c : new Class[] {ExecutorService.class, ThreadPoolExecutor.class, 
+                ScheduledThreadPoolExecutor.class, AbstractExecutorService.class}) {
+            addMethodAnnotation(c.getName(), "submit",
+                    "(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;", false, 
+                    CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
+            addMethodAnnotation(c.getName(), "submit",
+                    "(Ljava/lang/Runnable;)Ljava/util/concurrent/Future;", false, 
+                    CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
+            addMethodAnnotation(c.getName(), "submit",
+                    "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;", false, 
+                    CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
+        }
+        
+        
+        
+        
+        
         addMethodAnnotation("java.util.concurrent.BlockingQueue", "poll", "(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;",
                 false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         addMethodAnnotation("java.util.Queue", "poll", "()Ljava/lang/Object;", false,
