@@ -27,13 +27,14 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Parse the detail message in a ClassNotFoundException to extract the name of
  * the missing class. Unfortunately, this information is not directly available
  * from the exception object. So, this class parses the detail message in
  * several common formats (such as the format used by BCEL).
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassNotFoundExceptionParser {
@@ -56,7 +57,7 @@ public class ClassNotFoundExceptionParser {
 
     /**
      * Get the name of the missing class from a ClassNotFoundException.
-     * 
+     *
      * @param ex
      *            the ClassNotFoundException
      * @return the name of the missing class, or null if we couldn't figure out
@@ -83,8 +84,11 @@ public class ClassNotFoundExceptionParser {
         // from the exception message.
         for (Pattern pattern : patternList) {
             Matcher matcher = pattern.matcher(ex.getMessage());
-            if (matcher.matches())
-                return matcher.group(1);
+            if (matcher.matches()) {
+                String className = matcher.group(1);
+                ClassName.assertIsDotted(className);
+                return className;
+            }
         }
         return null;
     }

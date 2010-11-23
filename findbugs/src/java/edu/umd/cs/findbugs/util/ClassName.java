@@ -37,6 +37,14 @@ public abstract class ClassName {
         return className.equals("java/lang/Math") || className.equals("java/lang/StrictMath");
     }
 
+    public static @DottedClassName String assertIsDotted(@DottedClassName String className) {
+        assert className.indexOf('/') == -1 : "Not dotted: " + className;
+        return className;
+    }
+    public static @SlashedClassName String assertIsSlashed(@SlashedClassName String className) {
+        assert className.indexOf('.') == -1 : "Not slashed: " + className;
+        return className;
+    }
     public static String toSignature(@SlashedClassName String className) {
         if (className.length() == 0)
             throw new IllegalArgumentException("classname can't be empty");

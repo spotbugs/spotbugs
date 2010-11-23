@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
 
 import org.dom4j.DocumentException;
@@ -39,6 +40,7 @@ import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * An abstract class which provides much of the functionality required of all
@@ -50,11 +52,11 @@ public abstract class AbstractBugReporter implements BugReporter {
     private static final boolean DEBUG_MISSING_CLASSES = SystemProperties.getBoolean("findbugs.debug.missingclasses");
 
     protected static class Error {
-        private int sequence;
+        private final int sequence;
 
-        private String message;
+        private final String message;
 
-        private Throwable cause;
+        private final Throwable cause;
 
         public Error(int sequence, String message) {
             this(sequence, message, null);
@@ -191,25 +193,17 @@ public abstract class AbstractBugReporter implements BugReporter {
         }
     }
 
-    public static @DottedClassName
+    public static @CheckForNull @DottedClassName
     String getMissingClassName(ClassNotFoundException ex) {
-        String message = ex.getMessage();
-        if (message == null) {
-            message = "";
-        }
 
         // Try to decode the error message by extracting the class name.
         String className = ClassNotFoundExceptionParser.getMissingClassName(ex);
         if (className != null) {
-            if (className.indexOf('/') >= 0) {
-                className = className.replace('/', '.');
-            }
+            ClassName.assertIsDotted(className);
             return className;
         }
 
-        // Just return the entire message.
-        // It hopefully will still make sense to the user.
-        return message;
+        return null;
     }
 
     public void reportMissingClass(ClassNotFoundException ex) {
@@ -260,7 +254,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd
      * .cs.findbugs.classfile.ClassDescriptor)
@@ -290,7 +284,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     /**
      * Report that we skipped some analysis of a method
-     * 
+     *
      * @param method
      */
     public void reportSkippedAnalysis(MethodDescriptor method) {
@@ -381,7 +375,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     /**
      * This should be called when a bug is reported by a subclass.
-     * 
+     *
      * @param bugInstance
      *            the bug to inform observers of
      */
@@ -394,7 +388,7 @@ public abstract class AbstractBugReporter implements BugReporter {
     /**
      * Subclasses must override this. It will be called only for bugs which meet
      * the priority threshold.
-     * 
+     *
      * @param bugInstance
      *            the bug to report
      */
@@ -402,7 +396,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     /**
      * Report a queued error.
-     * 
+     *
      * @param error
      *            the queued error
      */
@@ -410,7 +404,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     /**
      * Report a missing class.
-     * 
+     *
      * @param string
      *            the name of the class
      */
