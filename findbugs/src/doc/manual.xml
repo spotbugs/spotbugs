@@ -1713,6 +1713,10 @@ for more information). There are two ways to contribute custom plugins to the Ec
     anything anymore. The (really small) precondition
     is that you have to convert your existing detectors package to the valid
     Eclipse plugin. You can do this even for third-party detector packages.
+    Another major differentiator is the ability to extend the default FindBugs
+    classpath at runtime with required third party libraries (see
+    <ulink url="http://code.google.com/p/findbugs/source/browse/trunk/findbugs/src/doc/AddingDetectors.txt">AddingDetectors.txt</ulink>
+    for more information).
     </para>
   </listitem>
 

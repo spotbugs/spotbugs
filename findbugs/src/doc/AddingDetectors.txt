@@ -218,3 +218,12 @@ update your build scripts to not to override the MANIFEST.MF during the build.
 7.2 It is possible to configure custom detectors via Eclipse workspace preferences.
 Go to "Window->Preferences->Java->FindBugs->Misc. Settings->Custom Detectors"
 and specify there locations of any additional plugin libraries.
+
+7.3 Plugins contributed via standard Eclipse extensions mechanism (see 7.1)
+may extend the default FindBugs classpath and use custom libraries during the analysis.
+This libraries must be part of standard Eclipse plugin dependencies specified via
+either "Require-Bundle" or "Bundle-ClassPath" attributes in the MANIFEST.MF file.
+In case custom detectors need access to this custom libraries at runtime, an
+extra line must be added to the MANIFEST.MF (without quotation marks):
+"Eclipse-RegisterBuddy: edu.umd.cs.findbugs.plugin.eclipse".
+

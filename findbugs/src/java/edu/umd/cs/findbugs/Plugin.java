@@ -508,8 +508,11 @@ public boolean isCorePlugin() {
     }
 
     public static Plugin addAvailablePlugin(URL u) throws PluginException {
+        return addAvailablePlugin(u, PluginLoader.class.getClassLoader());
+    }
 
-        PluginLoader pluginLoader = PluginLoader.getPluginLoader(u, PluginLoader.class.getClassLoader());
+    public static Plugin addAvailablePlugin(URL u, ClassLoader parent) throws PluginException {
+        PluginLoader pluginLoader = PluginLoader.getPluginLoader(u, parent);
         Plugin plugin = pluginLoader.loadPlugin();
         // register new clouds
         DetectorFactoryCollection.instance().loadPlugin(plugin);

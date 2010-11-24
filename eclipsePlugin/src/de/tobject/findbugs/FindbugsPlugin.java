@@ -263,7 +263,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             IStatus status = validator.validate(path);
             if (status.isOK()) {
                 try {
-                    Plugin plugin = Plugin.addAvailablePlugin(url);
+                    // bug 3117769 - we must provide our own classloader
+                    // to allow third-party plugins extend the classpath via "Buddy" classloading
+                    // see also: Eclipse-BuddyPolicy attribute in MANIFEST.MF
+                    Plugin plugin = Plugin.addAvailablePlugin(url, FindbugsPlugin.class.getClassLoader());
                     enabled.add(plugin);
                 } catch (PluginException e) {
                     getDefault().logException(e, "Failed to load plugin for custom detector: " + path);
