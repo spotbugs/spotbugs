@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.math.BigInteger;
 import java.net.URL;
@@ -497,7 +498,12 @@ public class SortedBugCollection implements BugCollection {
                 hash = bugInstance.getInstanceKey();
 
                 if (digest != null) {
-                    byte[] data = digest.digest(hash.getBytes(UTF8.charset));
+                    byte[] data = new byte[0];
+                    try {
+                        data = digest.digest(hash.getBytes("UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        throw new IllegalStateException(e);
+                    }
                     String tmp = new BigInteger(1, data).toString(16);
                     if (false)
                         System.out.println(hash + " -> " + tmp);
