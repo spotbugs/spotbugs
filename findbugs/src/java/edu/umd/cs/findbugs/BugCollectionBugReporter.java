@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.PrintWriter;
+
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.ba.Debug;
@@ -32,12 +35,18 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 
     private final Project project;
 
+    @CheckForNull private final PrintWriter writer;
+
     public BugCollectionBugReporter(Project project) {
+        this(project, null);
+    }
+
+    public BugCollectionBugReporter(Project project, @CheckForNull PrintWriter writer) {
         this.project = project;
         this.bugCollection = new SortedBugCollection(getProjectStats(), project);
         bugCollection.setTimestamp(System.currentTimeMillis());
+        this.writer = writer;
     }
-
     public Project getProject() {
         return project;
     }
@@ -91,7 +100,7 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
      */
     @Override
@@ -101,14 +110,34 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.BugReporter#finish()
      */
     public void finish() {
         Cloud userAnnotationPlugin = bugCollection.getCloud();
         if (userAnnotationPlugin != null)
             userAnnotationPlugin.bugsPopulated();
+        if (writer != null)
+            writer.flush();
     }
+
+    /**
+     * Emit one line of the error message report. By default, error messages are
+     * printed to System.err. Subclasses may override.
+     *
+     * @param line
+     *            one line of the error report
+     */
+    protected void emitLine(String line) {
+        if (writer == null) {
+            super.emitLine(line);
+            return;
+        }
+        line = line.replaceAll("\t", "  ");
+        writer.println(line);
+    }
+
+
 }
 
 // vim:ts=4

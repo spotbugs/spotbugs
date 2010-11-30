@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 
 import javax.swing.JFileChooser;
@@ -51,15 +53,15 @@ import edu.umd.cs.findbugs.workflow.Update;
 
 /**
  * Everything having to do with loading bugs should end up here.
- * 
+ *
  * @author Dan
- * 
+ *
  */
 public class BugLoader {
 
     /**
      * Performs an analysis and returns the BugSet created
-     * 
+     *
      * @param p
      *            The Project to run the analysis on
      * @param progressCallback
@@ -72,7 +74,8 @@ public class BugLoader {
      */
     public static BugCollection doAnalysis(@NonNull Project p, FindBugsProgress progressCallback) throws IOException,
             InterruptedException {
-        BugCollectionBugReporter pcb = new BugCollectionBugReporter(p);
+        StringWriter stringWriter = new StringWriter();
+        BugCollectionBugReporter pcb = new BugCollectionBugReporter(p, new PrintWriter(stringWriter, true));
         pcb.setPriorityThreshold(Priorities.NORMAL_PRIORITY);
         IFindBugsEngine fb = createEngine(p, pcb);
         fb.setUserPreferences(UserPreferences.getUserPreferences());
@@ -80,13 +83,19 @@ public class BugLoader {
         fb.setProjectName(p.getProjectName());
 
         fb.execute();
+        String warnings = stringWriter.toString();
+        if (warnings.length() > 0) {
+            JOptionPane.showMessageDialog(MainFrame.getInstance(),
+                    warnings, "Analysis errors",
+                    JOptionPane.WARNING_MESSAGE);
+        }
 
         return pcb.getBugCollection();
     }
 
     /**
      * Create the IFindBugsEngine that will be used to analyze the application.
-     * 
+     *
      * @param p
      *            the Project
      * @param pcb
@@ -204,12 +213,12 @@ public class BugLoader {
      * TODO: This really needs to be rewritten such that they don't have to
      * choose ALL xmls in one fel swoop. I'm thinking something more like new
      * project wizard's functionality. -Dan
-     * 
+     *
      * Merges bug collection histories from xmls selected by the user. Right now
      * all xmls must be in the same folder and he must select all of them at
      * once Makes use of FindBugs's mergeCollection method in the Update class
      * of the workflow package
-     * 
+     *
      * @return the merged collecction of bugs
      */
     public static BugCollection combineBugHistories() {
@@ -252,7 +261,7 @@ public class BugLoader {
     /**
      * Does what it says it does, hit apple r (control r on pc) and the analysis
      * is redone using the current project
-     * 
+     *
      * @param p
      * @return the bugs from the reanalysis, or null if cancelled
      */
@@ -275,7 +284,7 @@ public class BugLoader {
     /**
      * Does what it says it does, hit apple r (control r on pc) and the analysis
      * is redone using the current project
-     * 
+     *
      * @param p
      * @return the bugs from the reanalysis, or null if canceled
      */
