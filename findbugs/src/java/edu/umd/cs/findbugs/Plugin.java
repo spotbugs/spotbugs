@@ -47,7 +47,11 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
  * @author David Hovemeyer
  */
 public class Plugin {
+
+    private final String USE_FINDBUGS_VERSION = "USE_FINDBUGS_VERSION";
     private final String pluginId;
+
+    private final String version;
 
     private String provider;
 
@@ -90,10 +94,16 @@ public class Plugin {
      *
      * @param pluginId
      *            the plugin's unique identifier
+     * @param version TODO
      * @param enabled TODO
      */
-    public Plugin(String pluginId, PluginLoader pluginLoader, boolean enabled) {
+    public Plugin(String pluginId, String version, PluginLoader pluginLoader, boolean enabled) {
         this.pluginId = pluginId;
+        if (version == null)
+            version = "";
+        else if (version.equals(USE_FINDBUGS_VERSION))
+            version = Version.COMPUTED_RELEASE;
+        this.version = version;
         this.detectorFactoryList = new ArrayList<DetectorFactory>();
         this.bugPatterns = new LinkedHashSet<BugPattern>();
         this.bugCodeList = new LinkedHashSet<BugCode>();
@@ -165,6 +175,11 @@ public class Plugin {
      */
     public String getWebsite() {
         return website;
+    }
+
+    /** Get the version of the plugin */
+    public String getVersion() {
+        return version;
     }
 
     /**

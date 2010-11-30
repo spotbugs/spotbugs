@@ -430,6 +430,7 @@ public class PluginLoader {
         String defaultEnabled = pluginDescriptor.valueOf("/FindbugsPlugin/@defaultenabled");
         boolean pluginEnabled = defaultEnabled.equals("") || Boolean.valueOf(defaultEnabled).booleanValue();
 
+        String version = pluginDescriptor.valueOf("/FindbugsPlugin/@version");
         // Load the message collections
         Locale locale = Locale.getDefault();
         String language = locale.getLanguage();
@@ -446,7 +447,7 @@ public class PluginLoader {
 
         // Create the Plugin object (but don't assign to the plugin field yet,
         // since we're still not sure if everything will load correctly)
-        Plugin plugin = new Plugin(pluginId, this, pluginEnabled);
+        Plugin plugin = new Plugin(pluginId, version, this, pluginEnabled);
 
         // Set provider and website, if specified
         String provider = pluginDescriptor.valueOf("/FindbugsPlugin/@provider").trim();
@@ -927,6 +928,8 @@ public class PluginLoader {
         }
         PluginLoader loader = new PluginLoader(url, parent);
         plugin = loader.getPlugin();
+        if (DEBUG)
+            System.out.println("Loaded " + plugin.getPluginId() + " from " + url);
         Plugin.allPlugins.put(uri, plugin);
         return loader;
     }
