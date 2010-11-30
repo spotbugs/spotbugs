@@ -562,6 +562,7 @@ public class MainFrame extends FBFrame implements LogSync {
             model.getOffListenerList();
             model.changeSet(bs);
             // curProject=BugLoader.getLoadedProject();
+            comments.configureForCurrentCloud();
             setProjectChanged(true);
         }
         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));

@@ -74,9 +74,11 @@ public class SplitLayout implements FindBugsLayoutManager {
     }
 
     public void resetCommentsInputPane() {
-        int position = topLeftSPane.getDividerLocation();
-        topLeftSPane.setRightComponent(frame.createCommentsInputPanel());
-        topLeftSPane.setDividerLocation(position);
+        if (topLeftSPane != null) {
+            int position = topLeftSPane.getDividerLocation();
+            topLeftSPane.setRightComponent(frame.createCommentsInputPanel());
+            topLeftSPane.setDividerLocation(position);
+        }
     }
 
     /*

@@ -253,9 +253,11 @@ public class WebCloudClient extends AbstractCloud {
                 public void run() {
                     try {
                         actuallyCheckBugsAgainstCloud();
+                    } catch (RejectedExecutionException e) {
+                        // I think this only happens on purpose -Keith
                     } catch (Exception e) {
                         getGuiCallback().showMessageDialog("Error while checking bugs against " + getCloudName()
-                                + "\n\n" + e.getMessage());
+                                + "\n\n" + e.getClass().getSimpleName() + ": " + e.getMessage());
                         LOGGER.log(Level.SEVERE, "Error while checking bugs against cloud in background " , e);
                     }
                 }
@@ -555,8 +557,14 @@ public class WebCloudClient extends AbstractCloud {
             public void run() {
                 try {
                     updateEvaluationsFromServer();
+                    
+                } catch (ServerReturnedErrorCodeException e) {
+                    LOGGER.log(Level.WARNING, "Error during periodic evaluation check");
+                    LOGGER.log(Level.FINEST, "", e);
+
                 } catch (IOException e) {
-                    LOGGER.log(Level.SEVERE, "Error during periodic evaluation check", e);
+                    LOGGER.log(Level.WARNING, "Error during periodic evaluation check", e);
+                    LOGGER.log(Level.FINEST, "", e);
                 }
             }
         }, periodMillis, periodMillis);

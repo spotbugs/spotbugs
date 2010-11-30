@@ -235,35 +235,8 @@ public class NewProjectWizard extends FBDialog {
 
             public void actionPerformed(ActionEvent evt) {
 
-                for (int i = 0; i < analyzeModel.getSize(); i++) {
-                    File temp = new File((String) analyzeModel.get(i));
-                    if (!temp.exists() && directoryOrArchive.accept(temp)) {
-                        if (!displayWarningAndAskIfWeShouldContinue(
-                                temp.getName() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."),
-                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file")))
-                            return;
-
-                    }
-                }
-
-                for (int i = 0; i < sourceModel.getSize(); i++) {
-                    File temp = new File((String) sourceModel.get(i));
-                    if (!temp.exists() && directoryOrArchive.accept(temp)) {
-                        if (!displayWarningAndAskIfWeShouldContinue(
-                                temp.getName() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."),
-                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file")))
-                            return;
-                    }
-                }
-                for (int i = 0; i < auxModel.getSize(); i++) {
-                    File temp = new File((String) auxModel.get(i));
-                    if (!temp.exists() && directoryOrArchive.accept(temp)) {
-                        if (!displayWarningAndAskIfWeShouldContinue(
-                                temp.getName() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."),
-                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file")))
-                            return;
-                    }
-                }
+                if (displayWarnings())
+                    return;
                 Project p;
                 String oldCloudId = null;
                 boolean resetSettings;
@@ -275,19 +248,8 @@ public class NewProjectWizard extends FBDialog {
                     oldCloudId = project.getCloudId();
                     resetSettings = false;
                 }
-                // First clear p's old files, otherwise we can't remove a file
-                // once an analysis has been performed on it
-                int numOldFiles = p.getFileCount();
-                for (int x = 0; x < numOldFiles; x++)
-                    p.removeFile(0);
+                clearProjectSettings(p);
 
-                int numOldAuxFiles = p.getNumAuxClasspathEntries();
-                for (int x = 0; x < numOldAuxFiles; x++)
-                    p.removeAuxClasspathEntry(0);
-
-                int numOldSrc = p.getNumSourceDirs();
-                for (int x = 0; x < numOldSrc; x++)
-                    p.removeSourceDir(0);
 
                 // Now that p is cleared, we can add in all the correct files.
                 for (int i = 0; i < analyzeModel.getSize(); i++)
@@ -305,8 +267,9 @@ public class NewProjectWizard extends FBDialog {
                     newCloudId = null;
                 p.setCloudId(newCloudId);
 
+                MainFrame mainFrame = MainFrame.getInstance();
                 if (keepGoing) {
-                    MainFrame.getInstance().setProject(p);
+                    mainFrame.setProject(p);
                 } else if (project == null
                         || (projectChanged && JOptionPane.showConfirmDialog(NewProjectWizard.this, edu.umd.cs.findbugs.L10N
                                 .getLocalString("dlg.project_settings_changed_lbl",
@@ -315,12 +278,21 @@ public class NewProjectWizard extends FBDialog {
                                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION))
                     new AnalyzingDialog(p, resetSettings);
                 else if (!Util.nullSafeEquals(newCloudId, oldCloudId)) {
-                    BugCollection bugs = MainFrame.getInstance().getBugCollection();
-                    bugs.reinitializeCloud();
+                    BugCollection bugs = mainFrame.getBugCollection();
+                    try {
+                        bugs.reinitializeCloud();
+                    } catch (Exception e) {
+                        JOptionPane.showMessageDialog(NewProjectWizard.this, "Error loading " + newCloudId + "\n\n"
+                                + e.getClass().getSimpleName() + ": " + e.getMessage(),
+                                "FindBugs Cloud Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    mainFrame.getComments().configureForCurrentCloud();
+                    mainFrame.getComments().updateCommentsFromLeafInformation(mainFrame.getCurrentSelectedBugLeaf());
 
                 }
-                if (reconfig == true)
-                    MainFrame.getInstance().setProjectChanged(true);
+                if (reconfig)
+                    mainFrame.setProjectChanged(true);
 
                 String name = p.getProjectName();
                 if (name == null) {
@@ -328,10 +300,43 @@ public class NewProjectWizard extends FBDialog {
                     Debug.println("PROJECT NAME IS NULL!!");
                 }
                 if (projectNameChanged) {
-                    MainFrame.getInstance().setTitle(MainFrame.TITLE_START_TXT + name);
+                    mainFrame.setTitle(MainFrame.TITLE_START_TXT + name);
                 }
 
                 dispose();
+            }
+
+            private boolean displayWarnings() {
+                for (int i = 0; i < analyzeModel.getSize(); i++) {
+                    File temp = new File((String) analyzeModel.get(i));
+                    if (!temp.exists() && directoryOrArchive.accept(temp)) {
+                        if (!displayWarningAndAskIfWeShouldContinue(
+                                temp.getName() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."),
+                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file")))
+                            return true;
+
+                    }
+                }
+
+                for (int i = 0; i < sourceModel.getSize(); i++) {
+                    File temp = new File((String) sourceModel.get(i));
+                    if (!temp.exists() && directoryOrArchive.accept(temp)) {
+                        if (!displayWarningAndAskIfWeShouldContinue(
+                                temp.getName() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."),
+                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file")))
+                            return true;
+                    }
+                }
+                for (int i = 0; i < auxModel.getSize(); i++) {
+                    File temp = new File((String) auxModel.get(i));
+                    if (!temp.exists() && directoryOrArchive.accept(temp)) {
+                        if (!displayWarningAndAskIfWeShouldContinue(
+                                temp.getName() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."),
+                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file")))
+                            return true;
+                    }
+                }
+                return false;
             }
         });
         cancelButton.addActionListener(new ActionListener() {
@@ -379,6 +384,22 @@ public class NewProjectWizard extends FBDialog {
         // pack();
         setModal(true);
         setVisible(true);
+    }
+
+    private void clearProjectSettings(Project p) {
+        // First clear p's old files, otherwise we can't remove a file
+        // once an analysis has been performed on it
+        int numOldFiles = p.getFileCount();
+        for (int x = 0; x < numOldFiles; x++)
+            p.removeFile(0);
+
+        int numOldAuxFiles = p.getNumAuxClasspathEntries();
+        for (int x = 0; x < numOldAuxFiles; x++)
+            p.removeAuxClasspathEntry(0);
+
+        int numOldSrc = p.getNumSourceDirs();
+        for (int x = 0; x < numOldSrc; x++)
+            p.removeSourceDir(0);
     }
 
     private JComponent createTextFieldPanel(String label, JTextField textField) {

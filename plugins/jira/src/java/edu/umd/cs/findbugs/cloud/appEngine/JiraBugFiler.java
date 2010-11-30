@@ -76,6 +76,8 @@ public class JiraBugFiler implements BugFiler {
         String baseUrl = m.group(1);
         String issueKey = m.group(2);
         JiraBugFiler.JiraSession session = getJiraSession(baseUrl);
+        if (session == null) // maybe user cancelled signin
+            return null;
         JiraSoapService service = session.service;
         RemoteIssue issue = service.getIssue(session.token, issueKey);
         RemoteStatus[] statuses = service.getStatuses(session.token);

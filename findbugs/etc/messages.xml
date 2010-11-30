@@ -20,9 +20,9 @@ This plugin contains all of the standard FindBugs detectors.
   </Plugin>
 
 
-  <Cloud id="edu.umd.cs.findbugs.cloud.Local">
-	<Description>Analysis XML File</Description>
-	<Details>Comments are stored in the analysis XML file itself</Details>
+  <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud">
+	<Description>(cloud disabled)</Description>
+	<Details>Comments are disabled when using this plugin.</Details>
     </Cloud>
 
   <PluginComponent

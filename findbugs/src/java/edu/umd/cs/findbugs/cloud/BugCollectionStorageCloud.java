@@ -28,8 +28,6 @@ import java.util.Properties;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.PropertyBundle;
-import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 
 /**
  * A basic "cloud" that doesn't support any actual cloud features. This
@@ -40,14 +38,6 @@ import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
  */
 public class BugCollectionStorageCloud extends AbstractCloud {
 
-    private static CloudPlugin getFallbackPlugin() {
-        return new CloudPluginBuilder().setCloudid("fallback local cloud").setDescription("Analysis XML file")
-                .setDetails("Comments will be stored in the analysis XML file.")
-                .setClassLoader(BugCollectionStorageCloud.class.getClassLoader()).setCloudClass(BugCollectionStorageCloud.class)
-                .setUsernameClass(NoNameLookup.class).setProperties(new PropertyBundle()).setOnlineStorage(false)
-                .createCloudPlugin();
-    }
-
     /**
      * Constructor is not protected to allow
      * CloudFactory.createCloudWithoutInitializing() create a new instance of
@@ -56,10 +46,6 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     public BugCollectionStorageCloud(CloudPlugin plugin, BugCollection bc, Properties properties) {
         super(plugin, bc, properties);
         setSigninState(SigninState.NO_SIGNIN_REQUIRED);
-    }
-
-    BugCollectionStorageCloud(BugCollection bc) {
-        this(getFallbackPlugin(), bc, new Properties());
     }
 
     @Override
@@ -84,7 +70,6 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     }
 
     public String getUser() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -167,7 +152,7 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     }
 
     public String getCloudName() {
-        return "local storage cloud";
+        return "Analysis XML File Pseudo-Cloud";
     }
 
     @Override

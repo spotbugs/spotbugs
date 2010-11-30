@@ -26,6 +26,7 @@
     </target>
 
     <target name="plugin-jar">
+        <mkdir  dir="build"/>
         <jar destfile="build/bugCollectionCloud.jar">
             <fileset dir="etc">
                 <include name="findbugs.xml"/>

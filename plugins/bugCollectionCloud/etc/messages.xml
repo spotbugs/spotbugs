@@ -9,11 +9,11 @@
   **********************************************************************
   -->
   <Plugin>
-    <ShortDescription>FindBugs Cloud Plugin</ShortDescription>
+    <ShortDescription>Bug Collection XML Pseudo-Cloud</ShortDescription>
     <Details>
 <![CDATA[
 <p>
-Allows making bug comments and classifying bugs on the FindBugs Cloud at http://findbugs-cloud.appspot.com.
+Allows storing "Cloud" bug comments alongside the bugs in the FindBugs analysis XML file.
 </p>
 ]]>
     </Details>
@@ -21,8 +21,8 @@ Allows making bug comments and classifying bugs on the FindBugs Cloud at http://
 
 
   <Cloud id="edu.umd.cs.findbugs.cloud.bugCollectionCloud">
-	<Description>Analysis XML file</Description>
-	<Details>Comments are stored right alongside the bugs in the bug collection XML file itself</Details>
+	<Description>Analysis XML File Pseudo-Cloud</Description>
+	<Details>Comments are stored alongside bugs in the bug collection XML file itself</Details>
 	</Cloud>
 
 

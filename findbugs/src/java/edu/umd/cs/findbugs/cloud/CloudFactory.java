@@ -123,10 +123,10 @@ public class CloudFactory {
     }
 
     public static Cloud getPlainCloud(BugCollection bc) {
-        BugCollectionStorageCloud cloud = new BugCollectionStorageCloud(bc);
+        DoNothingCloud cloud = new DoNothingCloud(bc);
         if (cloud.initialize())
             return cloud;
-        throw new IllegalStateException("Unable to initialize plain cloud");
+        throw new IllegalStateException("Unable to initialize DoNothingCloud");
     }
 
 }

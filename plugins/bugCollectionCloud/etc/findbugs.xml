@@ -14,7 +14,7 @@
 
   <Cloud id="edu.umd.cs.findbugs.cloud.bugCollectionCloud"				
 	 cloudClass="edu.umd.cs.findbugs.cloud.BugCollectionStorageCloud"
-	 usernameClass="edu.umd.cs.findbugs.cloud.username.LocalNameLookup" 
+	 usernameClass="edu.umd.cs.findbugs.cloud.username.NoNameLookup"
 	 onlineStorage="false"/>
 
 </FindbugsPlugin>

@@ -20,12 +20,15 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +58,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.BugCollectionStorageCloud;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
+import edu.umd.cs.findbugs.cloud.DoNothingCloud;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 /**
@@ -91,6 +95,15 @@ public class CommentsArea {
 
     private BugFilingStatus currentBugStatus;
     private TitledBorder evaluationsTitle;
+    private JPanel mainPanel;
+    private MouseAdapter cloudDisabledMouseListener = new MouseAdapter() {
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (getCloud() instanceof DoNothingCloud)
+                JOptionPane.showMessageDialog(mainPanel,
+                        "To enable the FindBugs Cloud, click the File->Reconfigure menu.");
+        }
+    };
 
     CommentsArea(MainFrame frame) {
         this.frame = frame;
@@ -104,10 +117,10 @@ public class CommentsArea {
 
         Cloud cloud = bc == null ? null : bc.getCloud();
 
-        JPanel centerPanel = new JPanel();
+        mainPanel = new JPanel();
         GridBagLayout layout = new GridBagLayout();
 
-        centerPanel.setLayout(layout);
+        mainPanel.setLayout(layout);
 
         userCommentsText.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -127,7 +140,7 @@ public class CommentsArea {
 
         });
 
-        userCommentsTextUnenabledColor = centerPanel.getBackground();
+        userCommentsTextUnenabledColor = mainPanel.getBackground();
 
         userCommentsText.setLineWrap(true);
         userCommentsText.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.enter_comments",
@@ -230,7 +243,7 @@ public class CommentsArea {
         // comments.add(whoWhen);
 
         JPanel myStuffPanel = new JPanel(new GridBagLayout());
-        evaluationsTitle = new TitledBorder("Evaluations");
+        evaluationsTitle = new TitledBorder("");
         myStuffPanel.setBorder(evaluationsTitle);
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0;
@@ -249,7 +262,7 @@ public class CommentsArea {
         c.fill = GridBagConstraints.BOTH;
         myStuffPanel.add(commentsScrollP, c);
 
-        centerPanel.add(myStuffPanel, c);
+        mainPanel.add(myStuffPanel, c);
 
         if (cloud != null && cloud.supportsCloudReports()) {
             c.gridy++;
@@ -257,19 +270,23 @@ public class CommentsArea {
             c.weighty = 1;
             c.fill = GridBagConstraints.BOTH;
 
-            centerPanel.add(reportScrollP, c);
+            mainPanel.add(reportScrollP, c);
         }
 
-//        if (cloud != null && cloud.supportsBugLinks()) {
-            c.gridy++;
-            c.weightx = 0;
-            c.weighty = 0;
-            c.fill = GridBagConstraints.NONE;
-            c.anchor = GridBagConstraints.EAST;
-            centerPanel.add(fileBug, c);
-//        }
+        c.gridy++;
+        c.weightx = 0;
+        c.weighty = 0;
+        c.fill = GridBagConstraints.NONE;
+        c.anchor = GridBagConstraints.EAST;
+        mainPanel.add(fileBug, c);
 
-        return centerPanel;
+        mainPanel.addMouseListener(cloudDisabledMouseListener);
+        userCommentsText.addMouseListener(cloudDisabledMouseListener);
+        designationComboBox.addMouseListener(cloudDisabledMouseListener);
+        reportText.addMouseListener(cloudDisabledMouseListener);
+        fileBug.addMouseListener(cloudDisabledMouseListener);
+        configureForCurrentCloud();
+        return mainPanel;
     }
 
     void setUnknownDesignation() {
@@ -323,6 +340,8 @@ public class CommentsArea {
      * @param node
      */
     void updateCommentsFromLeafInformation(final BugLeafNode node) {
+        if (node == null)
+            return;
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
@@ -812,12 +831,25 @@ public class CommentsArea {
     }
 
     public void configureForCurrentCloud() {
+
         Cloud cloud = getCloud();
         if (fileBug != null)
-            fileBug.setEnabled(cloud.supportsBugLinks());
-        if (cloud != null)
-            this.evaluationsTitle.setTitle(cloud.getCloudName() + " Evaluations");
+            fileBug.setEnabled(cloud != null && cloud.supportsBugLinks());
+        mainPanel.setCursor(Cursor.getDefaultCursor());
+        if (cloud != null) {
+            if (cloud instanceof DoNothingCloud)
+                this.evaluationsTitle.setTitle("Comments - disabled (click to select comment storage method)");
+            else
+                this.evaluationsTitle.setTitle("Comments - " + cloud.getCloudName());
+            if (cloud instanceof DoNothingCloud) {
+                mainPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+        } else {
+            this.evaluationsTitle.setTitle("Comments");
+        }
+        this.mainPanel.invalidate();
+        this.mainPanel.repaint();
 
-        MainFrame.getInstance().getGuiLayout().resetCommentsInputPane();
+//        MainFrame.getInstance().getGuiLayout().resetCommentsInputPane();
     }
 }
