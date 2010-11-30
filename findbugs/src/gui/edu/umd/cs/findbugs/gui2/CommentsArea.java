@@ -101,7 +101,8 @@ public class CommentsArea {
         public void mousePressed(MouseEvent e) {
             if (getCloud() instanceof DoNothingCloud)
                 JOptionPane.showMessageDialog(mainPanel,
-                        "To enable the FindBugs Cloud, click the File->Reconfigure menu.");
+                        "To enable the FindBugs Cloud or another comment storage method, " +
+                                "click the File->Reconfigure menu.");
         }
     };
 

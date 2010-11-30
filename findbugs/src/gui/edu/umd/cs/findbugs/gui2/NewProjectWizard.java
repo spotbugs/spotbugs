@@ -139,7 +139,7 @@ public class NewProjectWizard extends FBDialog {
                 setForeground(list.getForeground());
             }
             setFont(list.getFont());
-            setText((value == null) ? "" : plugin.getDescription());
+            setText((value == null) ? "<default>" : plugin.getDescription());
             return this;
         }
     }
@@ -261,10 +261,11 @@ public class NewProjectWizard extends FBDialog {
                 p.setProjectName(projectName.getText());
                 CloudPlugin cloudPlugin = (CloudPlugin) cloudSelector.getSelectedItem();
                 String newCloudId;
-                if (cloudPlugin != null) {
-                    newCloudId = cloudPlugin.getId();
-                } else
+                if (cloudPlugin == null || cloudSelector.getSelectedIndex() == 0) {
                     newCloudId = null;
+                } else {
+                    newCloudId = cloudPlugin.getId();
+                }
                 p.setCloudId(newCloudId);
 
                 MainFrame mainFrame = MainFrame.getInstance();
