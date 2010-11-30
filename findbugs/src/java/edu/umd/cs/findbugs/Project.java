@@ -840,11 +840,14 @@ public class Project implements XMLWriteable {
     }
 
     public void writeXML(XMLOutput xmlOutput, @CheckForNull File destination) throws IOException {
-        XMLAttributeList attributeList = new XMLAttributeList();
-        if (getProjectName() != null) {
-            attributeList = attributeList.addAttribute(PROJECTNAME_ATTRIBUTE_NAME, getProjectName());
+        {
+            XMLAttributeList attributeList = new XMLAttributeList();
+
+            if (getProjectName() != null) {
+                attributeList = attributeList.addAttribute(PROJECTNAME_ATTRIBUTE_NAME, getProjectName());
+            }
+            xmlOutput.openTag(BugCollection.PROJECT_ELEMENT_NAME, attributeList);
         }
-        xmlOutput.openTag(BugCollection.PROJECT_ELEMENT_NAME, attributeList);
 
         if (destination != null) {
             String base = destination.getParent();
@@ -875,10 +878,10 @@ public class Project implements XMLWriteable {
             if (e.getValue() == plugin.isGloballyEnabled()
                     && plugin.isInitialPlugin()
                     && plugin.isEnabledByDefault() == plugin.isGloballyEnabled()) continue;
-            xmlOutput.startTag(PLUGIN_ELEMENT_NAME);
-            xmlOutput.addAttribute(PLUGIN_ID_ATTRIBUTE_NAME, plugin.getPluginId());
-            xmlOutput.addAttribute(PLUGIN_STATUS_ELEMENT_NAME, e.getValue().toString());
-            xmlOutput.closeTag(PLUGIN_ELEMENT_NAME);
+            XMLAttributeList pluginAttributeList = new XMLAttributeList();
+            pluginAttributeList.addAttribute(PLUGIN_ID_ATTRIBUTE_NAME, plugin.getPluginId());
+            pluginAttributeList.addAttribute(PLUGIN_STATUS_ELEMENT_NAME, e.getValue().toString());
+            xmlOutput.openCloseTag(PLUGIN_ELEMENT_NAME, pluginAttributeList);
         }
         if (cloudId != null) {
             xmlOutput.startTag(CLOUD_ELEMENT_NAME);
