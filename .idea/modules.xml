@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/plugins/bugCollectionCloud/bugCollectionCloud.iml" filepath="$PROJECT_DIR$/plugins/bugCollectionCloud/bugCollectionCloud.iml" group="plugins" />
       <module fileurl="file://$PROJECT_DIR$/sandbox/continuousBuilds/continuousBuilds.iml" filepath="$PROJECT_DIR$/sandbox/continuousBuilds/continuousBuilds.iml" />
       <module fileurl="file://$PROJECT_DIR$/findbugs/findbugs.iml" filepath="$PROJECT_DIR$/findbugs/findbugs.iml" />
       <module fileurl="file://$PROJECT_DIR$/findbugsTestCases/findbugsTestCases.iml" filepath="$PROJECT_DIR$/findbugsTestCases/findbugsTestCases.iml" />
