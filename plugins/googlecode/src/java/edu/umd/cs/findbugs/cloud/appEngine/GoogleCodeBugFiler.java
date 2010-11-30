@@ -28,6 +28,7 @@ import com.google.gdata.util.ServiceException;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ComponentPlugin;
 import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.BugFiler;
 import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
@@ -61,7 +62,7 @@ public class GoogleCodeBugFiler implements BugFiler {
 
     public GoogleCodeBugFiler(ComponentPlugin<BugFiler> plugin, Cloud cloud) {
         this.cloud = cloud;
-        this.url = plugin.getProperties().getProperty("trackerURL");
+        this.url = SystemProperties.getProperty("findbugs.trackerURL");
         this.bugFilingCommentHelper = new BugFilingCommentHelper(cloud);
     }
 
@@ -78,8 +79,11 @@ public class GoogleCodeBugFiler implements BugFiler {
     }
 
     public URL file(BugInstance b) throws IOException, SignInCancelledException {
-        if (url == null)
-            return null;
+        if (url == null) {
+            url = askUserForGoogleCodeProjectName();
+            if (url == null)
+                return null;
+        }
         Matcher m = PATTERN_GOOGLE_CODE_URL.matcher(url);
         String projectName = m.matches() ? m.group(1) : url;
         if (projectName.contains("/"))
@@ -300,8 +304,11 @@ public class GoogleCodeBugFiler implements BugFiler {
         Preferences prefs = Preferences.userNodeForPackage(GoogleCodeBugFiler.class);
 
         String lastProject = prefs.get("last_google_code_project", "");
-        String projectName = guiCallback.showQuestionDialog("Issue will be filed at Google Code.\n" + "\n"
-                + "Type your Google Code project name:", "Google Code Issue Tracker", lastProject);
+        String projectName = guiCallback.showQuestionDialog("Issue will be filed at Google Code.\n\n"
+                + "Google Code project name:"
+//              + "(pass -Dfindbugs.trackerURL=myProjectName to avoid this dialog in the future)\n"
+                ,
+                "Google Code Issue Tracker", lastProject);
         if (projectName == null || projectName.trim().length() == 0) {
             return null;
         }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:noNamespaceSchemaLocation="messagecollection.xsd">
+
+  <!--
+  **********************************************************************
+  Plugin information
+  **********************************************************************
+  -->
+  <Plugin>
+    <ShortDescription>Google Code Issue Tracker Plugin</ShortDescription>
+    <Details>
+<![CDATA[
+<p>
+Allows filing bugs for issues on the FindBugs Cloud via Google Code project hosting.
+</p>
+]]>
+    </Details>
+  </Plugin>
+
+
+  <PluginComponent
+    id="edu.umd.cs.findbugs.plugins.googlecode">
+    <Description>Google Code Issue Tracker</Description>
+    <Details>Allows filing bugs for issues on the FindBugs Cloud via Google Code project hosting</Details>
+    </PluginComponent>
+
+  </MessageCollection>
+
+
+

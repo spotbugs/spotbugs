@@ -14,8 +14,8 @@
     <property name="classes.dir" value="build/classes-ant"/>
     <property name="lib.dir" value="lib"/>
     <property name="findbugs.home" value="${findbugsBase.dir}/findbugs"/>
-    <property name="webCloud.home" value="${findbugsBase.dir}/plugins/webCloudClient"/>
-    <property name="protocol.home" value="${findbugsBase.dir}/webCloudProtocol"/>
+    <!--<property name="webCloud.home" value="${findbugsBase.dir}/plugins/webCloudClient"/>-->
+    <!--<property name="protocol.home" value="${findbugsBase.dir}/webCloudProtocol"/>-->
 
     <path id="client.classpath">
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -24,8 +24,8 @@
 
         <fileset dir="${findbugs.home}/lib" includes="*.jar" excludes="findbugs-full*.jar"/>
 
-        <pathelement location="${protocol.home}/build/classes-ant"/>
-        <fileset dir="${protocol.home}/lib" includes="**/*.jar"/>
+        <!--<pathelement location="${protocol.home}/build/classes-ant"/>-->
+        <!--<fileset dir="${protocol.home}/lib" includes="**/*.jar"/>-->
     </path>
 
     <path id="test.classpath">
@@ -46,8 +46,8 @@
 
     <target name="compile">
         <echo>Base ${findbugsBase.dir}</echo>
-        <echo>protocol ${protocol.home}</echo>
-        <ant dir="${webCloud.home}" target="compile" inheritAll="false"/>
+        <!--<echo>protocol ${protocol.home}</echo>-->
+        <!--<ant dir="${webCloud.home}" target="compile" inheritAll="false"/>-->
         <mkdir dir="${classes.dir}"/>
         <javac destdir="${classes.dir}"
                source="1.5"
@@ -60,7 +60,7 @@
     </target>
 
     <target name="plugin-jar" depends="compile">
-        <jar destfile="build/webCloudClient.jar">
+        <jar destfile="build/googlecode.jar">
             <fileset dir="etc">
                 <include name="findbugs.xml"/>
                 <include name="messages.xml"/>
@@ -69,7 +69,7 @@
                 <include name="**/*.class"/>
             </fileset>
 
-            <zipfileset src="${webCloud.home}/lib/protobuf-java-2.3.0.jar"/>
+            <!--<zipfileset src="${webCloud.home}/lib/protobuf-java-2.3.0.jar"/>-->
 
             <zipfileset src="lib/gdata-client-1.0.jar"/>
             <zipfileset src="lib/gdata-core-1.0.jar"/>

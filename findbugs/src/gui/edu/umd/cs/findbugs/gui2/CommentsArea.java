@@ -170,7 +170,7 @@ public class CommentsArea {
                 } catch (Exception e1) {
                     LOGGER.log(Level.SEVERE, "Could not view/file bug", e1);
                     JOptionPane.showMessageDialog(getMainFrame(), "Could not view/file bug:\n" + e1.getClass().getSimpleName()
-                            + "\n" + e1.getMessage());
+                            + ": " + e1.getMessage());
                 }
             }
         });
@@ -260,14 +260,14 @@ public class CommentsArea {
             centerPanel.add(reportScrollP, c);
         }
 
-        if (cloud != null && cloud.supportsBugLinks()) {
+//        if (cloud != null && cloud.supportsBugLinks()) {
             c.gridy++;
             c.weightx = 0;
             c.weighty = 0;
             c.fill = GridBagConstraints.NONE;
             c.anchor = GridBagConstraints.EAST;
             centerPanel.add(fileBug, c);
-        }
+//        }
 
         return centerPanel;
     }

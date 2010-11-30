@@ -9,7 +9,7 @@
     <extension name="snapshooter" />
     <option name="MAIN_CLASS_NAME" value="edu.umd.cs.findbugs.FindBugs2" />
     <option name="VM_PARAMETERS" value="-Xmx512m" />
-    <option name="PROGRAM_PARAMETERS" value="-experimental -output msgs.xml -xml:withMessages $PROJECT_DIR$/../../../keith\Code\findbugs\findbugsTestCases\build\classes\sfBugs\Bug3092411.class" />
+    <option name="PROGRAM_PARAMETERS" value="-experimental -output msgs.xml -xml:withMessages $PROJECT_DIR$/../../../keith\Code\findbugs\findbugsTestCases\build\classes\sfBugs\Bug3118278.class" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/findbugs" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="ALTERNATIVE_JRE_PATH" value="C:/Program Files (x86)/Java/jdk1.6.0_16_x32" />

@@ -264,7 +264,7 @@ public class PreferencesFrame extends FBDialog {
                         LOGGER.log(Level.WARNING, "Could not load " + f.getPath(), e1);
                         JOptionPane.showMessageDialog(PreferencesFrame.this, "Could not load " + f.getPath()
                                 + "\n\n"
-                                + e1.getClass().getSimpleName() + e1.getMessage(),
+                                + e1.getClass().getSimpleName() + ": " + e1.getMessage(),
                                 "Error Loading Plugin", JOptionPane.ERROR_MESSAGE);
                     }
                 }

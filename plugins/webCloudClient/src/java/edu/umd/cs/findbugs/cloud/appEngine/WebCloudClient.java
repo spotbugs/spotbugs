@@ -76,17 +76,13 @@ public class WebCloudClient extends AbstractCloud {
 
     private final EvaluationsFromXmlUploader evaluationsFromXmlUploader = new EvaluationsFromXmlUploader(this);
 
-    static ComponentPlugin<BugFiler> foo(String name) {
-        if (name == null)
-            return null;
-        Set<String> names = Collections.singleton(name);
+    static @CheckForNull ComponentPlugin<BugFiler> findFirstLoadedBugFilerPlugin() {
         for (Plugin p : DetectorFactoryCollection.instance().plugins()) {
-            for(ComponentPlugin<BugFiler> bf : p.getComponentPlugins(BugFiler.class)) {
-                if (bf.isNamed(names))
-                    return bf;
+            for (ComponentPlugin<BugFiler> bf : p.getComponentPlugins(BugFiler.class)) {
+                return bf;
             }
         }
-        throw new IllegalArgumentException("Unable to construct bug filer " + name);
+        return null;
     }
     /** invoked via reflection */
     @SuppressWarnings({ "UnusedDeclaration" })
@@ -103,11 +99,11 @@ public class WebCloudClient extends AbstractCloud {
         if (backgroundExecutorService.isShutdown())
             LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown at creation");
 
-        String bugFiler = properties.getProperty("bugFiler");
-        if (bugFiler == null) {
+        ComponentPlugin<BugFiler> bugFilerPlugin = findFirstLoadedBugFilerPlugin();
+        if (bugFilerPlugin == null) {
             this.bugFilingHelper = null;
         } else {
-            this.bugFilingHelper = new BugFilingHelper(this, foo(bugFiler));
+            this.bugFilingHelper = new BugFilingHelper(this, bugFilerPlugin);
         }
     }
 
@@ -392,6 +388,9 @@ public class WebCloudClient extends AbstractCloud {
             try {
                 return fileBug(b);
 
+            } catch (RuntimeException e) {
+                throw e;
+
             } catch (Exception e) {
                 throw new IllegalStateException(e);
             }
@@ -422,6 +421,8 @@ public class WebCloudClient extends AbstractCloud {
             return bugFilingHelper.fileBug(bug);
         } catch (SignInCancelledException e) {
             return null;
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
