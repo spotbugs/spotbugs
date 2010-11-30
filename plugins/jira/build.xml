@@ -15,8 +15,6 @@
     <property name="classes.dir" value="build/classes-ant"/>
     <property name="lib.dir" value="lib"/>
     <property name="findbugs.home" value="${findbugsBase.dir}/findbugs"/>
-    <property name="webCloud.home" value="${findbugsBase.dir}/plugins/webCloudClient"/>
-    <property name="protocol.home" value="${findbugsBase.dir}/webCloudProtocol"/>
 
     <path id="client.classpath">
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -25,10 +23,6 @@
 
         <fileset dir="${findbugs.home}/lib" includes="*.jar"/>
 
-        <fileset dir="${webCloud.home}/lib" includes="*.jar"/>
-        <pathelement location="${webCloud.home}/${classes.dir}"/>
-        <pathelement location="${protocol.home}/build/classes-ant"/>
-        <fileset dir="${protocol.home}/lib" includes="**/*.jar"/>
     </path>
 
     <path id="test.classpath">
@@ -51,8 +45,6 @@
     </target>
     <target name="compile">
         <echo>Base ${findbugsBase.dir}</echo>
-        <echo>protocol ${protocol.home}</echo>
-        <ant dir="${webCloud.home}" target="compile" inheritAll="false"/>
         <mkdir dir="${classes.dir}"/>
         <javac destdir="${classes.dir}"
                source="1.5"
@@ -60,12 +52,13 @@
                deprecation="off"
                debug="on">
             <src path="${src.dir}"/>
+            <src path="${gensrc.dir}"/>
             <classpath refid="client.classpath"/>
         </javac>
     </target>
 
     <target name="plugin-jar" depends="compile">
-        <jar destfile="build/webCloudClient.jar">
+        <jar destfile="build/jira.jar">
             <fileset dir="etc">
                 <include name="findbugs.xml"/>
                 <include name="messages.xml"/>
@@ -74,19 +67,18 @@
                 <include name="**/*.class"/>
             </fileset>
 
-            <zipfileset src="${webCloud.home}/lib/protobuf-java-2.3.0.jar"/>
-
-            <zipfileset src="lib/gdata-client-1.0.jar"/>
-            <zipfileset src="lib/gdata-core-1.0.jar"/>
-            <zipfileset src="lib/gdata-projecthosting-2.1.jar"/>
-            <zipfileset src="lib/gdata-projecthosting-meta-2.1.jar"/>
-            <zipfileset src="lib/google-collect-1.0-rc1.jar"/>
+            <zipfileset src="lib/axis.jar"/>
+            <zipfileset src="lib/commons-discovery-0.2.jar"/>
+            <zipfileset src="lib/commons-logging-1.0.4.jar"/>
+            <zipfileset src="lib/jaxrpc.jar"/>
+            <zipfileset src="lib/saaj.jar"/>
+            <zipfileset src="lib/wsdl4j-1.5.1.jar"/>
         </jar>
     </target>
 
     <target name="install" depends="plugin-jar">
         <copy todir="${findbugs.home}/plugin" flatten="true">
-            <fileset dir="build" includes="googlecode.jar"/>
+            <fileset dir="build" includes="jira.jar"/>
         </copy>
     </target>
 

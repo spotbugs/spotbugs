@@ -24,10 +24,10 @@ import com.atlassian.jira.rpc.soap.beans.RemoteProject;
 import com.atlassian.jira.rpc.soap.beans.RemoteStatus;
 import com.atlassian.jira.rpc.soap.jirasoapservice_v2.JiraSoapService;
 import com.atlassian.jira.rpc.soap.jirasoapservice_v2.JiraSoapServiceServiceLocator;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ComponentPlugin;
 import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.BugFiler;
 import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
@@ -47,12 +47,16 @@ public class JiraBugFiler implements BugFiler {
 
     public JiraBugFiler(ComponentPlugin<BugFiler> plugin, Cloud cloud) {
         this.cloud = cloud;
-        this.url = plugin.getProperties().getProperty("trackerURL");
+        this.url = SystemProperties.getProperty("findbugs.jiraURL");
     }
 
     public URL file(BugInstance b) throws IOException, SignInCancelledException {
-        if (url == null)
-            return null;
+        if (url == null) {
+            url = askUserForJiraUrl();
+            if (url == null)
+                return null;
+        }
+
         String trackerUrl = processJiraDashboardUrl(url);
 
         try {
@@ -289,6 +293,7 @@ public class JiraBugFiler implements BugFiler {
     }
 
     public boolean ready() {
-        return url != null;
+//        return url != null;
+        return true;
     }
 }

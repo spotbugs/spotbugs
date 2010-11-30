@@ -62,11 +62,9 @@ public class GoogleCodeBugFiler implements BugFiler {
 
     public GoogleCodeBugFiler(ComponentPlugin<BugFiler> plugin, Cloud cloud) {
         this.cloud = cloud;
-        this.url = SystemProperties.getProperty("findbugs.trackerURL");
+        this.url = SystemProperties.getProperty("findbugs.googlecodeURL");
         this.bugFilingCommentHelper = new BugFilingCommentHelper(cloud);
     }
-
-
 
     /** for testing */
     void setCommentHelper(BugFilingCommentHelper helper) {
