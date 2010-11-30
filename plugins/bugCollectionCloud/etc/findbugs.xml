@@ -1,0 +1,20 @@
+
+
+<!--
+  Plugin descriptor for FindBugs "core" plugin.
+  This plugin is enabled by default.
+-->
+<FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   				xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
+				pluginid="edu.umd.cs.findbugs.plugins.bugCollectionCloud"
+                defaultenabled="true"
+                provider="FindBugs project" 
+                website="http://findbugs.sourceforge.net"
+                >
+
+  <Cloud id="edu.umd.cs.findbugs.cloud.bugCollectionCloud"				
+	 cloudClass="edu.umd.cs.findbugs.cloud.BugCollectionStorageCloud"
+	 usernameClass="edu.umd.cs.findbugs.cloud.username.LocalNameLookup" 
+	 onlineStorage="false"/>
+
+</FindbugsPlugin>

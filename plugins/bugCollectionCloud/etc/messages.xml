@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:noNamespaceSchemaLocation="messagecollection.xsd">
+
+  <!--
+  **********************************************************************
+  Plugin information
+  **********************************************************************
+  -->
+  <Plugin>
+    <ShortDescription>FindBugs Cloud Plugin</ShortDescription>
+    <Details>
+<![CDATA[
+<p>
+Allows making bug comments and classifying bugs on the FindBugs Cloud at http://findbugs-cloud.appspot.com.
+</p>
+]]>
+    </Details>
+  </Plugin>
+
+
+  <Cloud id="edu.umd.cs.findbugs.cloud.bugCollectionCloud">
+	<Description>Analysis XML file</Description>
+	<Details>Comments are stored right alongside the bugs in the bug collection XML file itself</Details>
+	</Cloud>
+
+
+  </MessageCollection>
+
+
+
