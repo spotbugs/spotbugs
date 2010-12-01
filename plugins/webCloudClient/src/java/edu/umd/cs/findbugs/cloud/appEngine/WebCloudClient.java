@@ -245,6 +245,9 @@ public class WebCloudClient extends AbstractCloud {
 
         if (communicationInitiated)
             return;
+
+        if (!networkClient.ready())
+            return;
         synchronized (initiationLock) {
             if (communicationInitiated)
                 return;

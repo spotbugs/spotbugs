@@ -465,6 +465,10 @@ public class WebCloudNetworkClient {
         }
     }
 
+    public boolean ready() {
+        return host != null;
+    }
+    
     public Long getSessionId() {
         return sessionId;
     }

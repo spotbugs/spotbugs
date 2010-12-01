@@ -144,7 +144,8 @@ public class MainFrameComponentFactory implements Serializable {
                             try {
                                 mainFrame.getBugCollection().getCloud().signIn();
                             } catch (IOException e1) {
-                                mainFrame.getGuiCallback().showMessageDialog("Sign-in error: " + e1.getMessage());
+                                mainFrame.getGuiCallback().showMessageDialog(
+                                        "Sign-in error: " + e1.getClass().getSimpleName() + ": " + e1.getMessage());
                                 LOGGER.log(Level.SEVERE, "Could not sign in", e1);
                             }
                         }
