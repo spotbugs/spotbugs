@@ -94,10 +94,14 @@ public class DetectorFactoryCollection {
     }
 
     protected DetectorFactoryCollection(Collection<Plugin> enabled) {
+        if (FindBugs.DEBUG)
+            System.out.println("\nCreating custom DFC {");
         loadCorePlugin();
         for(Plugin plugin : enabled) {
             loadPlugin(plugin);
         }
+        if (FindBugs.DEBUG)
+            System.out.println("}\n");
     }
 
     /**
@@ -340,6 +344,9 @@ public class DetectorFactoryCollection {
 
     void loadPlugin(Plugin plugin)  {
 
+        if (FindBugs.DEBUG) {
+            System.out.println("Loading " + plugin.getPluginId());
+        }
         pluginByIdMap.put(plugin.getPluginId(), plugin);
 
         // Register all of the detectors that this plugin contains

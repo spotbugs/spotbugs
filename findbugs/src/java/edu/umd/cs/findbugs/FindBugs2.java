@@ -187,6 +187,8 @@ public class FindBugs2 implements IFindBugsEngine {
 
         Profiler profiler = bugReporter.getProjectStats().getProfiler();
 
+        Project project = getProject();
+        project.resetConfiguration();
         try {
             // Get the class factory for creating classpath/codebase/etc.
             classFactory = ClassFactory.instance();
@@ -938,7 +940,10 @@ public class FindBugs2 implements IFindBugsEngine {
              * findbugs.DetectorFactory)
              */
             public boolean choose(DetectorFactory factory) {
-                return FindBugs.isDetectorEnabled(FindBugs2.this, factory, rankThreshold) || forcedEnabled.contains(factory);
+                boolean result = FindBugs.isDetectorEnabled(FindBugs2.this, factory, rankThreshold) || forcedEnabled.contains(factory);
+                if (ExecutionPlan.DEBUG)
+                    System.out.printf("  %6s %s %n", result, factory.getShortName());
+                return result;
             }
 
             public void enable(DetectorFactory factory) {
@@ -949,6 +954,8 @@ public class FindBugs2 implements IFindBugsEngine {
         };
         executionPlan.setDetectorFactoryChooser(detectorFactoryChooser);
 
+        if (ExecutionPlan.DEBUG)
+            System.out.println("rank threshold is " + rankThreshold);
         // Add plugins
         for (Iterator<Plugin> i = detectorFactoryCollection.pluginIterator(); i.hasNext();) {
             Plugin plugin = i.next();
