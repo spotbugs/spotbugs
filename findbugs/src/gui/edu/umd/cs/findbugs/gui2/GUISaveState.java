@@ -22,26 +22,33 @@ package edu.umd.cs.findbugs.gui2;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import edu.umd.cs.findbugs.SystemProperties;
 import org.apache.commons.lang.StringUtils;
+
+import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.PluginException;
+import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * Saves all the stuff that should be saved for each run, like recent projects,
  * previous comments, the current docking layout and the sort order
- * 
+ *
  * For project related things, look in ProjectSettings
- * 
+ *
  * @author Dan
- * 
+ *
  */
 /*
  * GUISaveState uses the Preferences API, dont look for a file anywhere, there
@@ -79,6 +86,8 @@ public class GUISaveState {
     private static final String PACKAGE_PREFIX_SEGEMENTS = "PackagePrefixSegments";
     private static final String ENABLED_PLUGINS = "EnabledPlugins";
     private static final String DISABLED_PLUGINS = "DisabledPlugins";
+    private static final String CUSTOM_PLUGINS = "CustomPlugins";
+
 
     static {
         for (int x = 0; x < RECENTPROJECTKEYS.length; x++)
@@ -120,6 +129,7 @@ public class GUISaveState {
 
     private List<String> enabledPlugins;
     private List<String> disabledPlugins;
+    private LinkedHashSet<URL> customPlugins = new LinkedHashSet<URL>();
 
     private static String[] generateSorterKeys(int numSorters) {
         String[] result = new String[numSorters];
@@ -223,6 +233,18 @@ public class GUISaveState {
         newInstance.splitTreeComments = p.getInt(SPLIT_TREE_COMMENTS, 250);
         newInstance.packagePrefixSegments = p.getInt(PACKAGE_PREFIX_SEGEMENTS, 3);
 
+        for (String s : p.get(CUSTOM_PLUGINS, "").split(" ")) {
+            try {
+                URL u = new URL(s);
+                Plugin.addCustomPlugin(u);
+                newInstance.customPlugins.add(u);
+            } catch (MalformedURLException e) {
+                assert true;
+            } catch (PluginException e) {
+                assert true;
+            }
+        }
+
         newInstance.enabledPlugins = Arrays.asList(p.get(ENABLED_PLUGINS, "").split(","));
         newInstance.disabledPlugins = Arrays.asList(p.get(DISABLED_PLUGINS, "").split(","));
 
@@ -283,7 +305,7 @@ public class GUISaveState {
 
     /**
      * This should be the method used to add a file for the recent menu.
-     * 
+     *
      * @param f
      */
     public void addRecentFile(File f) {
@@ -293,7 +315,7 @@ public class GUISaveState {
 
     /**
      * Returns the list of recent files.
-     * 
+     *
      * @return the list of recent files
      */
     public ArrayList<File> getRecentFiles() {
@@ -302,7 +324,7 @@ public class GUISaveState {
 
     /**
      * Call to remove a file from the list.
-     * 
+     *
      * @param f
      */
     public void fileNotFound(File f) {
@@ -315,7 +337,7 @@ public class GUISaveState {
 
     /**
      * The file to start the loading of Bugs from.
-     * 
+     *
      * @return Returns the starterDirectoryForLoadBugs.
      */
     public File getStarterDirectoryForLoadBugs() {
@@ -381,6 +403,7 @@ public class GUISaveState {
 
         p.put(ENABLED_PLUGINS, StringUtils.join(enabledPlugins, ','));
         p.put(DISABLED_PLUGINS, StringUtils.join(disabledPlugins, ','));
+        p.put(CUSTOM_PLUGINS, StringUtils.join(customPlugins, ' '));
     }
 
     /**
@@ -496,7 +519,12 @@ public class GUISaveState {
     public List<String> getEnabledPlugins() {
         return enabledPlugins;
     }
-
+    public Collection<URL> getCustomPlugins() {
+        return customPlugins;
+    }
+    public boolean addCustomPlugin(URL u) {
+        return customPlugins.add(u);
+    }
     public List<String> getDisabledPlugins() {
         return disabledPlugins;
     }

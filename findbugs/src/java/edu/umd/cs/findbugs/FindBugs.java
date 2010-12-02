@@ -324,6 +324,8 @@ public abstract class FindBugs {
         commandLine.handleXArgs();
 
         if (project.getFileCount() == 0) {
+            System.out.println("No files to be analyzed");
+
             showHelp(commandLine);
         }
 

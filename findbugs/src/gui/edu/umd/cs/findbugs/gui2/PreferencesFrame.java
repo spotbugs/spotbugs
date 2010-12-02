@@ -255,8 +255,9 @@ public class PreferencesFrame extends FBDialog {
                 if (retvalue == JFileChooser.APPROVE_OPTION) {
                     File f = chooser.getSelectedFile();
                     try {
-                        Plugin.loadPlugin(f, PreferencesFrame.this.getCurrentProject());
-
+                        Plugin.loadCustomPlugin(f, PreferencesFrame.this.getCurrentProject());
+                        GUISaveState.getInstance().addCustomPlugin(f.toURI().toURL());
+                        GUISaveState.getInstance().save();
                         pluginsAdded = true;
                         rebuildPluginCheckboxes();
 

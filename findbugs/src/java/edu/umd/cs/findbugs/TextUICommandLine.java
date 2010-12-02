@@ -138,11 +138,12 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     private boolean applySuppression;
 
+    private boolean printConfiguration;
+
     /**
      * Constructor.
      */
     public TextUICommandLine() {
-
         addSwitch("-showPlugins", "show list of available detector plugins");
 
         startOptionGroup("Output options:");
@@ -201,6 +202,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addOption("-cloud", "id", "set cloud id");
         addOption("-cloudProperty", "key=value", "set cloud property");
         addOption("-bugReporters", "name,name2,-name3", "bug reporter decorators to explicitly enable/disable");
+
+        addSwitch("-printConfiguration", "print configuration and exit, without running analysis");
     }
 
     @Override
@@ -226,6 +229,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     public boolean applySuppression() {
         return applySuppression;
+    }
+    public boolean justPrintConfiguration() {
+        return printConfiguration;
     }
 
     Map<String, String> parsedOptions = new LinkedHashMap<String, String>();
@@ -332,7 +338,10 @@ public class TextUICommandLine extends FindBugsCommandLine {
             xargs = true;
         } else if (option.equals("-justListOptions")) {
             throw new RuntimeException("textui options are: " + parsedOptions);
+        } else if (option.equals("-printConfiguration")) {
+            printConfiguration = true;
         } else {
+            System.out.println("XXX: " + option);
             super.handleOption(option, optionExtraPart);
         }
     }

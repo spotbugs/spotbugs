@@ -47,7 +47,7 @@ import de.tobject.findbugs.io.IO;
 
 /**
  * Helper class to read contributions for the "detectorPlugins" extension point
- * 
+ *
  * @author andrei
  */
 public class DetectorsExtensionHelper {
@@ -103,7 +103,7 @@ public class DetectorsExtensionHelper {
     }
 
     /**
-     * 
+     *
      * @param contributor
      *            non null
      * @param libPathAsString
@@ -152,8 +152,8 @@ public class DetectorsExtensionHelper {
      * directories. The code below makes a temporary jar file from the plugin's
      * "bin" directory. It doesn't work if the plugin build.properties are not
      * existing or contain invalid content.
-     * 
-     * 
+     *
+     *
      * @param bundleName
      * @param sourceDir
      * @return
@@ -166,6 +166,11 @@ public class DetectorsExtensionHelper {
             jarFile.deleteOnExit();
         } catch (IOException e) {
             FindbugsPlugin.getDefault().logException(e, "Failed to create temporary detector package for bundle " + bundleName);
+            return null;
+        }
+        if (sourceDir.listFiles() == null) {
+            FindbugsPlugin.getDefault().logException(new IllegalStateException("No files in the bundle!"),
+                    "Failed to create temporary detector package for bundle " + sourceDir);
             return null;
         }
 

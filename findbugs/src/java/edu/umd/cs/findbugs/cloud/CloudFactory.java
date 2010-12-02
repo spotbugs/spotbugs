@@ -58,7 +58,7 @@ public class CloudFactory {
         }
         // is the desired plugin disabled for this project (and/or globally)? if so, skip it.
         if (plugin != null) {
-            Plugin fbplugin = Plugin.getByName(plugin.getFindbugsPluginId());
+            Plugin fbplugin = Plugin.getByPluginId(plugin.getFindbugsPluginId());
             //noinspection PointlessBooleanExpression
             if (fbplugin != null && bc.getProject().getPluginStatus(fbplugin) == false) {
                 plugin = null; // use default cloud below

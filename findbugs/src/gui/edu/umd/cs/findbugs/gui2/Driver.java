@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Locale;
 
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -99,13 +100,14 @@ public class Driver {
             e.printStackTrace();
         }
 
+        GUISaveState guiSavedPreferences = GUISaveState.getInstance();
         if (commandLine.isFontSizeSpecified())
-            GUISaveState.getInstance().setFontSize(commandLine.getFontSize());
+            guiSavedPreferences.setFontSize(commandLine.getFontSize());
 
         // System.setProperty("findbugs.home",".."+File.separator+"findbugs");
 
-        enablePlugins(GUISaveState.getInstance().getEnabledPlugins(), true);
-        enablePlugins(GUISaveState.getInstance().getDisabledPlugins(), false);
+        enablePlugins(guiSavedPreferences.getEnabledPlugins(), true);
+        enablePlugins(guiSavedPreferences.getDisabledPlugins(), false);
 
         // The bug with serializable idiom detection has been fixed on the
         // findbugs end.
@@ -127,11 +129,11 @@ public class Driver {
     }
 
     private static void enablePlugins(Iterable<String> plugins, boolean enabled) {
-        DetectorFactoryCollection i = DetectorFactoryCollection.instance();
         for (String pid : plugins) {
-            Plugin plugin = i.getPluginById(pid);
-            if (plugin != null)
+            Plugin plugin = Plugin.getByPluginId(pid);
+            if (plugin != null) {
                 plugin.setGloballyEnabled(enabled);
+            }
         }
     }
 

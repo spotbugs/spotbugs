@@ -431,7 +431,7 @@ public class Plugin {
         return componentPlugins.get(componentClass, name);
     }
 
-    public static @CheckForNull Plugin getByName(String name) {
+    public static @CheckForNull Plugin getByPluginId(String name) {
         for(Plugin plugin : allPlugins.values()) {
             if (name.equals(plugin.getPluginId()) || name.equals(plugin.getShortPluginId()))
                 return plugin;
@@ -472,8 +472,11 @@ public boolean isCorePlugin() {
      * @return
      */
     public void setGloballyEnabled(boolean enabled) {
-        if (isCorePlugin())
+        if (isCorePlugin()) {
+            if (!enabled)
+                throw new IllegalArgumentException("Can't disable core plugin");
             return;
+        }
 
         if (enabled) {
             if (isEnabledByDefault())
@@ -501,7 +504,7 @@ public boolean isCorePlugin() {
         return getPluginLoader().getClassLoader();
     }
 
-    public static Plugin loadPlugin(File f, @CheckForNull Project project)
+    public static Plugin loadCustomPlugin(File f, @CheckForNull Project project)
             throws PluginException {
         URL urlString;
         try {
@@ -509,25 +512,23 @@ public boolean isCorePlugin() {
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException(e);
         }
-        return loadPlugin(urlString, project);
+        return loadCustomPlugin(urlString, project);
     }
 
-    public static Plugin loadPlugin(URL urlString, @CheckForNull Project project) throws PluginException {
-        Plugin plugin = addAvailablePlugin(urlString);
-        boolean enabledByDefault = plugin.isEnabledByDefault();
-        if (enabledByDefault && project != null) {
-           plugin.setGloballyEnabled(false);
+    public static Plugin loadCustomPlugin(URL urlString, @CheckForNull Project project) throws PluginException {
+        Plugin plugin = addCustomPlugin(urlString);
+        if (project != null) {
            project.setPluginStatus(plugin, true);
         }
         return plugin;
     }
 
-    public static Plugin addAvailablePlugin(URL u) throws PluginException {
-        return addAvailablePlugin(u, PluginLoader.class.getClassLoader());
+    public static Plugin addCustomPlugin(URL u) throws PluginException {
+        return addCustomPlugin(u, PluginLoader.class.getClassLoader());
     }
 
-    public static Plugin addAvailablePlugin(URL u, ClassLoader parent) throws PluginException {
-        PluginLoader pluginLoader = PluginLoader.getPluginLoader(u, parent);
+    public static Plugin addCustomPlugin(URL u, ClassLoader parent) throws PluginException {
+        PluginLoader pluginLoader = PluginLoader.getPluginLoader(u, parent, false, true);
         Plugin plugin = pluginLoader.loadPlugin();
         // register new clouds
         DetectorFactoryCollection.instance().loadPlugin(plugin);

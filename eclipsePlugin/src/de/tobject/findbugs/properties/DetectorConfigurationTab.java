@@ -393,6 +393,10 @@ public class DetectorConfigurationTab extends Composite {
     private static String getPluginDescription(Plugin plugin) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n\nPlugin: ").append(plugin.getPluginId());
+        String version = plugin.getVersion();
+        if (version.length() > 0)
+            sb.append("\nVersion: ").append(version);
+
         sb.append("\nProvider: ").append(plugin.getProvider());
         if (plugin.getWebsite() != null && plugin.getWebsite().length() > 0) {
             sb.append(" (").append(plugin.getWebsite()).append(")");

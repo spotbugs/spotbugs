@@ -63,6 +63,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.InvocationEnvironment;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -1191,6 +1192,35 @@ public class FindBugs2 implements IFindBugsEngine {
         TextUICommandLine commandLine = new TextUICommandLine();
         FindBugs.processCommandLine(commandLine, args, findBugs);
 
+
+        if (commandLine.justPrintConfiguration()) {
+            System.out.println("FindBugs " + Version.COMPUTED_RELEASE);
+            for(Plugin plugin : Plugin.getAllPlugins()) {
+                System.out.printf("Plugin %s, version %s, loaded from %s%n", plugin.getPluginId(),
+                        plugin.getVersion(),
+                        plugin.getPluginLoader().getURL());
+                if (plugin.isCorePlugin())
+                    System.out.println("  is core plugin");
+                if (plugin.isInitialPlugin())
+                    System.out.println("  is initial plugin");
+                if (plugin.isEnabledByDefault())
+                    System.out.println("  is enabled by default");
+                if (plugin.isGloballyEnabled())
+                    System.out.println("  is globally enabled");
+                for(CloudPlugin cloudPlugin : plugin.getCloudPlugins()) {
+                    System.out.printf("  cloud %s%n", cloudPlugin.getId());
+                    System.out.printf("     %s%n", cloudPlugin.getDescription());
+                }
+                for(DetectorFactory factory : plugin.getDetectorFactories()) {
+                    System.out.printf("  detector %s%n", factory.getShortName());
+                }
+
+                System.out.println();
+
+
+            }
+            return;
+        }
         // Away we go!
         FindBugs.runMain(findBugs, commandLine);
     }

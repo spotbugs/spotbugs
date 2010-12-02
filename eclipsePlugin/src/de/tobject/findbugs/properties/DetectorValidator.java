@@ -32,7 +32,7 @@ import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * Quickly validates additional detector packages available for Findbugs.
- * 
+ *
  * @author Andrei Loskutov
  */
 public class DetectorValidator {
@@ -42,7 +42,7 @@ public class DetectorValidator {
     }
 
     /**
-     * 
+     *
      * @param path
      *            non null, full abstract path in the local file system
      * @return {@link Status#OK_STATUS} in case that given path might be a valid
@@ -61,6 +61,11 @@ public class DetectorValidator {
             String message = "File " + path + " is not a file or is not readable";
             return FindbugsPlugin.createErrorStatus(message, new IllegalArgumentException(message));
         }
+        if (file.length() == 0) {
+            String message = "File " + path + " is empty";
+            return FindbugsPlugin.createErrorStatus(message, new IllegalArgumentException(message));
+        }
+
         boolean seenBugRank = false;
         boolean seenFBxml = false;
         boolean seenFBmessages = false;
@@ -87,7 +92,7 @@ public class DetectorValidator {
                 if (!seenFBmessages) {
                     seenFBmessages |= name.equals("messages.xml");
                 }
-                if (seenBugRank && seenFBxml && seenFBmessages && seenClassFile) {
+                if ( seenFBxml && seenFBmessages) {
                     return Status.OK_STATUS;
                 }
                 zip.closeEntry();
@@ -107,6 +112,7 @@ public class DetectorValidator {
                 }
             }
         }
+        System.out.printf("%s\n  %s %s %s %s%n", path, seenClassFile, seenBugRank, seenFBxml, seenFBmessages);
         String message = "Invalid detector archive!";
         return FindbugsPlugin.createStatus(IStatus.ERROR, message, new IllegalArgumentException(message));
     }

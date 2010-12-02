@@ -185,7 +185,6 @@ public class DetectorFactoryCollection {
      *            the unique id
      * @return the Plugin with that id, or null if no such Plugin is found
      */
-    @Deprecated //TODO: why deprecated?
     public Plugin getPluginById(String pluginId) {
         return pluginByIdMap.get(pluginId);
     }
