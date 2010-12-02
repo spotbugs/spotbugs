@@ -217,8 +217,6 @@ public abstract class FindBugs {
      * @return true if the DetectorFactory should be enabled, false otherwise
      */
     public static boolean isDetectorEnabled(IFindBugsEngine findBugs, DetectorFactory factory, int rankThreshold) {
-        if (!factory.getPlugin().isEnabledByDefault())
-            return false;
 
         if (!findBugs.getUserPreferences().isDetectorEnabled(factory))
             return false;
