@@ -160,6 +160,32 @@ public class DetectorsExtensionHelper {
      */
     @CheckForNull
     private static String createTemporaryJar(String bundleName, File sourceDir) {
+         if (sourceDir.listFiles() == null) {
+            FindbugsPlugin.getDefault().logException(new IllegalStateException("No files in the bundle!"),
+                    "Failed to create temporary detector package for bundle " + sourceDir);
+            return null;
+        }
+
+        String outputDir = getBuildDirectory(bundleName, sourceDir);
+        if (outputDir.length() == 0) {
+            FindbugsPlugin.getDefault().logException(new IllegalStateException("No output directory in build.properties"),
+                    "No output directory in build.properties " + sourceDir);
+            return null;
+        }
+
+        File classDir = new File(sourceDir, outputDir);
+
+        if (classDir.listFiles() == null) {
+            FindbugsPlugin.getDefault().logException(new IllegalStateException("No files in the bundle output dir!"),
+                    "Failed to create temporary detector package for bundle " + sourceDir);
+            return null;
+        }
+        File etcDir = new File(sourceDir, "etc");
+        if (etcDir.listFiles() == null) {
+            FindbugsPlugin.getDefault().logException(new IllegalStateException("No files in the bundle etc dir!"),
+                    "Failed to create temporary detector package for bundle " + sourceDir);
+            return null;
+        }
         File jarFile;
         try {
             jarFile = File.createTempFile(bundleName + "_", ".jar");
@@ -168,21 +194,12 @@ public class DetectorsExtensionHelper {
             FindbugsPlugin.getDefault().logException(e, "Failed to create temporary detector package for bundle " + bundleName);
             return null;
         }
-        if (sourceDir.listFiles() == null) {
-            FindbugsPlugin.getDefault().logException(new IllegalStateException("No files in the bundle!"),
-                    "Failed to create temporary detector package for bundle " + sourceDir);
-            return null;
-        }
-
-        String outputDir = getBuildDirectory(bundleName, sourceDir);
-        if (outputDir.length() != 0) {
-            sourceDir = new File(sourceDir, outputDir);
-        }
 
         ZipOutputStream jar = null;
         try {
             jar = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(jarFile)));
-            addFiles(bundleName, sourceDir, sourceDir, jar);
+            addFiles(bundleName, classDir, classDir, jar);
+            addFiles(bundleName, etcDir, etcDir, jar);
         } catch (IOException e) {
             FindbugsPlugin.getDefault().logException(e, "Failed to create temporary detector package for bundle " + bundleName);
             return null;
@@ -219,7 +236,7 @@ public class DetectorsExtensionHelper {
     private static void addFiles(String name, File sourceDir, File root, ZipOutputStream zip) throws IOException {
         File[] files = sourceDir.listFiles();
         if (files == null) {
-            FindbugsPlugin.getDefault().logException(new IllegalStateException("No files in the bundle!"),
+            FindbugsPlugin.getDefault().logException(new IllegalStateException("No files for bundle in " + sourceDir),
                     "Failed to create temporary detector package for bundle " + name);
             return;
         }
