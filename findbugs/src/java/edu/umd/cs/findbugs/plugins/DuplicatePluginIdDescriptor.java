@@ -26,15 +26,30 @@ import java.net.URL;
  */
 public class DuplicatePluginIdDescriptor extends RuntimeException {
 
-    String pluginId;
-    URL loadedFrom;
+
+    final String pluginId;
+    final URL loadedFrom;
+    final URL previouslyLoadedFrom;
+
+    public String getPluginId() {
+        return pluginId;
+    }
+    public URL getLoadedFrom() {
+        return loadedFrom;
+    }
+    public URL getPreviouslyLoadedFrom() {
+        return previouslyLoadedFrom;
+    }
+
     /**
      * @param pluginId
      * @param loadedFrom
      */
-    public DuplicatePluginIdDescriptor(String pluginId, URL loadedFrom) {
+    public DuplicatePluginIdDescriptor(String pluginId, URL loadedFrom, URL previouslyLoadedFrom) {
+        super(pluginId + " from " + loadedFrom + " already loaded from " + previouslyLoadedFrom);
         this.pluginId = pluginId;
         this.loadedFrom = loadedFrom;
+        this.previouslyLoadedFrom = previouslyLoadedFrom;
     }
 
 }

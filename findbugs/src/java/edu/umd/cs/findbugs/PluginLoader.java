@@ -444,8 +444,12 @@ public class PluginLoader {
                 pluginId = "plugin" + nextUnknownId++;
             }
         }
-        if (!loadedPluginIds.add(pluginId))
-            throw new DuplicatePluginIdDescriptor(pluginId, loadedFrom);
+        if (!loadedPluginIds.add(pluginId)) {
+            Plugin existingPlugin = Plugin.getByPluginId(pluginId);
+            if (existingPlugin == null)
+                throw new DuplicatePluginIdDescriptor(pluginId, loadedFrom, null);
+            throw new DuplicatePluginIdDescriptor(pluginId, loadedFrom, existingPlugin.getPluginLoader().getURL());
+        }
 
         String version = pluginDescriptor.valueOf("/FindbugsPlugin/@version");
         // Load the message collections
