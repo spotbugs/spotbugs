@@ -28,6 +28,7 @@ import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
 import javax.annotation.CheckForNull;
@@ -199,7 +200,11 @@ public class DetectorsExtensionHelper {
         try {
             jar = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(jarFile)));
             addFiles(bundleName, classDir, classDir, jar);
-            addFiles(bundleName, etcDir, etcDir, jar);
+            try {
+                addFiles(bundleName, etcDir, etcDir, jar);
+            } catch (ZipException e) {
+                // duplicated entries as files from /etc are on classpath already
+            }
         } catch (IOException e) {
             FindbugsPlugin.getDefault().logException(e, "Failed to create temporary detector package for bundle " + bundleName);
             return null;
