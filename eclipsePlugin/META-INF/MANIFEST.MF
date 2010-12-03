@@ -61,4 +61,5 @@ Export-Package: de.tobject.findbugs,
  edu.umd.cs.findbugs,
  edu.umd.cs.findbugs.config,
  edu.umd.cs.findbugs.plugin.eclipse.quickfix,
- edu.umd.cs.findbugs.plugin.eclipse.util
+ edu.umd.cs.findbugs.plugin.eclipse.util,
+ edu.umd.cs.findbugs.plugins
