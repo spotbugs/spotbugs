@@ -92,7 +92,7 @@ public class DetectorValidator {
                 if (!seenFBmessages) {
                     seenFBmessages |= name.equals("messages.xml");
                 }
-                if (seenFBxml && seenFBmessages) {
+                if (seenBugRank && seenFBxml && seenFBmessages && seenClassFile) {
                     return Status.OK_STATUS;
                 }
                 zip.closeEntry();
