@@ -97,6 +97,7 @@ import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionAssociations;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionLoader;
+import edu.umd.cs.findbugs.plugins.DuplicatePluginIdDescriptor;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -244,6 +245,15 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         job.schedule();
     }
 
+    public static void dumpClassLoader(Class<?> c) {
+        System.out.printf("Class loaders for %s:%n", c.getName());
+        ClassLoader loader = c.getClassLoader();
+        while (loader != null) {
+            System.out.printf("  %s %s%n", loader.toString(),  loader.getClass().getSimpleName());
+            loader = loader.getParent();
+        }
+
+    }
     /**
      * @param detectorPaths
      *            list of possible detector plugins
@@ -252,8 +262,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      */
     public static synchronized void applyCustomDetectors(boolean force) {
         DetectorValidator validator = new DetectorValidator();
-        final SortedSet<String> detectorPaths = PrefsUtil.readDetectorPaths(getDefault().getPreferenceStore());
+        final SortedSet<String> detectorPaths = new TreeSet<String>();
         detectorPaths.addAll(DetectorsExtensionHelper.getContributedDetectors());
+        detectorPaths.addAll(PrefsUtil.readDetectorPaths(getDefault().getPreferenceStore()));
         HashSet<Plugin> enabled = new HashSet<Plugin>();
         for (String path : detectorPaths) {
             URL url;
@@ -267,12 +278,28 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             if (status.isOK()) {
                 try {
                     // bug 3117769 - we must provide our own classloader
-                    // to allow third-party plugins extend the classpath via "Buddy" classloading
+                    // to allow third-party plugins extend the classpath via
+                    // "Buddy" classloading
                     // see also: Eclipse-BuddyPolicy attribute in MANIFEST.MF
-                    Plugin plugin = Plugin.addCustomPlugin(url, FindbugsPlugin.class.getClassLoader());
+                    // dumpClassLoader(FindbugsPlugin.class);
+                    // dumpClassLoader(Plugin.class);
+
+                    boolean usesBuddy = false; // TODO: determine whether plugin
+                                               // uses Eclipse-BuddyPolicy
+                                               // attribute
+
+                    Plugin plugin;
+                    if (usesBuddy)
+                        plugin = Plugin.addCustomPlugin(url, FindbugsPlugin.class.getClassLoader());
+                    else
+                        plugin = Plugin.addCustomPlugin(url);
+
                     enabled.add(plugin);
                 } catch (PluginException e) {
                     getDefault().logException(e, "Failed to load plugin for custom detector: " + path);
+                    continue;
+                } catch (DuplicatePluginIdDescriptor e) {
+                    getDefault().logInfo(e.getPluginId() + " already loaded from " + e.getPreviouslyLoadedFrom());
                     continue;
                 }
             } else {
