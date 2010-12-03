@@ -92,7 +92,7 @@ public class DetectorValidator {
                 if (!seenFBmessages) {
                     seenFBmessages |= name.equals("messages.xml");
                 }
-                if ( seenFBxml && seenFBmessages) {
+                if (seenFBxml && seenFBmessages) {
                     return Status.OK_STATUS;
                 }
                 zip.closeEntry();
@@ -112,9 +112,11 @@ public class DetectorValidator {
                 }
             }
         }
-       String msg = String.format("%s: %s %s %s %s%n", path, seenClassFile, seenBugRank, seenFBxml, seenFBmessages);
+        String msg = String.format("%s: %s %s %s %s%n", path, seenClassFile, seenBugRank, seenFBxml, seenFBmessages);
         String message = "Invalid detector archive! " + msg;
-        System.out.println(msg);
+        if(FindbugsPlugin.getDefault().isDebugging()) {
+            System.out.println(message);
+        }
         return FindbugsPlugin.createStatus(IStatus.ERROR, message, new IllegalArgumentException(message));
     }
 }

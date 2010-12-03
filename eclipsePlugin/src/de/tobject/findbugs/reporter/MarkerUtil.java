@@ -226,16 +226,13 @@ public final class MarkerUtil {
             packageName = primaryClass.getPackageName();
         }
         if (Reporter.DEBUG) {
-            System.out.println("BUG in class: " //$NON-NLS-1$
+            System.out.println("NOT found resource for a BUG in BUG in class: " //$NON-NLS-1$
                     + packageName + "." //$NON-NLS-1$
                     + className + ": \n\t" //$NON-NLS-1$
                     + bug.getMessage() + " / Annotation: " //$NON-NLS-1$
                     + bug.getAnnotationText() + " / Source Line: " //$NON-NLS-1$
                     + bug.getPrimarySourceLineAnnotation());
         }
-        System.out.println("NOT found resource for a BUG in class: " + packageName + "." + className + ": \n\t"
-                + bug.getMessage() + " / Annotation: " + bug.getAnnotationText() + " / Source Line: "
-                + bug.getPrimarySourceLineAnnotation());
     }
 
     /**
