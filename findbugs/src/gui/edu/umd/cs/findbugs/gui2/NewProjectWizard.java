@@ -110,7 +110,7 @@ public class NewProjectWizard extends FBDialog {
 
     private final DefaultListModel sourceModel = new DefaultListModel();
 
-    private final JButton finishButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.finish_btn", "Finish"));
+    private final JButton finishButton = new JButton();
 
     private final JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
 
@@ -340,6 +340,10 @@ public class NewProjectWizard extends FBDialog {
                 return false;
             }
         });
+        if (curProject == null)
+            finishButton.setText(edu.umd.cs.findbugs.L10N.getLocalString("dlg.analyze_btn", "Analyze"));
+        else
+            finishButton.setText(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 dispose();

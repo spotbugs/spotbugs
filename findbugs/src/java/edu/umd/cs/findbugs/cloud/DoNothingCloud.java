@@ -48,7 +48,7 @@ public class DoNothingCloud implements Cloud {
     }
 
     public String getCloudName() {
-        return "(cloud disabled)";
+        return "(comments disabled)";
     }
 
     public BugCollection getBugCollection() {

@@ -981,7 +981,7 @@ menu item.  You will see a dialog which looks like this:
 </para>
 
 <para>
-Use the "Add" button next to the "Class archives and directories to analyze" text field to select a Java archive
+Use the "Add" button next to "Classpath to analyze" to select a Java archive
 file (zip, jar, ear, or war file) or directory containing java classes to analyze for bugs.  You may add multiple
 archives/directories.
 </para>
@@ -1013,7 +1013,7 @@ available which &FindBugs; performs its analysis.
 <title>Running the Analysis</title>
 <para>
 Once you have added all of the archives, directories, and source directories,
-click the "Finish" button to analyze the classes contained in the
+click the "Analyze" button to analyze the classes contained in the
 Jar files.  Note that for a very large program on an older computer,
 this may take quite a while (tens of minutes).  A recent computer with
 ample memory will typically be able to analyze a large program in only a
