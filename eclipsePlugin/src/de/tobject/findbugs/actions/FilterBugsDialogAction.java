@@ -75,6 +75,8 @@ public class FilterBugsDialogAction implements IViewActionDelegate {
             return;
         }
         BugContentProvider provider = BugContentProvider.getProvider(navigator.getNavigatorContentService());
+        if (provider == null)
+            throw new NullPointerException("Null provider");
         action.setEnabled(provider.getGrouping() != null);
     }
 

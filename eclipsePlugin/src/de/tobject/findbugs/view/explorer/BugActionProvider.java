@@ -177,7 +177,10 @@ public class BugActionProvider extends CommonActionProvider {
             }
         };
 
+
         workingSetActionGroup = new WorkingSetFilterActionGroup(aSite.getViewSite().getShell(), filterChangeListener);
+        if (provider == null)
+            throw new NullPointerException("no provider");
         workingSetActionGroup.setWorkingSet(provider.getCurrentWorkingSet());
         doubleClickAction = new MyAction();
         // only if doubleClickAction must know tree selection:

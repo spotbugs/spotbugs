@@ -112,8 +112,9 @@ public class DetectorValidator {
                 }
             }
         }
-        System.out.printf("%s\n  %s %s %s %s%n", path, seenClassFile, seenBugRank, seenFBxml, seenFBmessages);
-        String message = "Invalid detector archive!";
+       String msg = String.format("%s: %s %s %s %s%n", path, seenClassFile, seenBugRank, seenFBxml, seenFBmessages);
+        String message = "Invalid detector archive! " + msg;
+        System.out.println(msg);
         return FindbugsPlugin.createStatus(IStatus.ERROR, message, new IllegalArgumentException(message));
     }
 }
