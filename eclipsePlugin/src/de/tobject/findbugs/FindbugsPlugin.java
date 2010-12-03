@@ -103,6 +103,8 @@ import edu.umd.cs.findbugs.plugins.DuplicatePluginIdDescriptor;
  * The main plugin class to be used in the desktop.
  */
 public class FindbugsPlugin extends AbstractUIPlugin {
+    private static final String DEFAULT_CLOUD_ID = "edu.umd.cs.findbugs.cloud.doNothingCloud";
+
     public static final String ICON_PATH = "icons/";
 
     public static final String PREFS_NAME = ".fbprefs";
@@ -149,7 +151,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     public static final String NATURE_ID = PLUGIN_ID + ".findbugsNature"; //$NON-NLS-1$
 
     // Debugging options
-    private static final String PLUGIN_DEBUG = PLUGIN_ID + "/debug/plugin"; //$NON-NLS-1$
+    private static final String PLUGIN_DEBUG = PLUGIN_ID + "/debug"; //$NON-NLS-1$
 
     private static final String BUILDER_DEBUG = PLUGIN_ID + "/debug/builder"; //$NON-NLS-1$
 
@@ -220,8 +222,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         }
         if (System.getProperty("findbugs.cloud.default") == null) {
             // TODO hardcore workaround for findbugs default cloud property
-            // - see edu.umd.cs.findbugs.cloud.CloudFactory
-            String defCloud = "edu.umd.cs.findbugs.cloud.Local";
+            // - see edu.umd.cs.findbugs.cloud.CloudFactory and messages.xml
+            String defCloud = DEFAULT_CLOUD_ID;
             if (DEBUG) {
                 logInfo("Using default local cloud: " + defCloud);
             }
@@ -254,6 +256,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         }
 
     }
+
     /**
      * @param detectorPaths
      *            list of possible detector plugins
@@ -281,20 +284,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
                     // to allow third-party plugins extend the classpath via
                     // "Buddy" classloading
                     // see also: Eclipse-BuddyPolicy attribute in MANIFEST.MF
-                    // dumpClassLoader(FindbugsPlugin.class);
-                    // dumpClassLoader(Plugin.class);
-
-                    boolean usesBuddy = false; // TODO: determine whether plugin
-                                               // uses Eclipse-BuddyPolicy
-                                               // attribute
-
-                    Plugin plugin;
-                    if (usesBuddy)
-                        plugin = Plugin.addCustomPlugin(url, FindbugsPlugin.class.getClassLoader());
-                    else
-                        plugin = Plugin.addCustomPlugin(url);
-
-                    enabled.add(plugin);
+                    if(DEBUG) {
+                        dumpClassLoader(FindbugsPlugin.class);
+                        dumpClassLoader(Plugin.class);
+                    }
+                    Plugin fbPlugin = Plugin.addCustomPlugin(url, FindbugsPlugin.class.getClassLoader());
+                    enabled.add(fbPlugin);
                 } catch (PluginException e) {
                     getDefault().logException(e, "Failed to load plugin for custom detector: " + path);
                     continue;
@@ -307,12 +302,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             }
         }
 
-        for(Plugin plugin : Plugin.getAllPlugins()) {
-            if (!plugin.isInitialPlugin()) {
-                plugin.setGloballyEnabled(enabled.contains(plugin));
+        for(Plugin fbPlugin : Plugin.getAllPlugins()) {
+            if (!fbPlugin.isInitialPlugin()) {
+                fbPlugin.setGloballyEnabled(enabled.contains(fbPlugin));
             }
         }
-       DetectorFactoryCollection.resetInstance();
+        DetectorFactoryCollection.resetInstance();
     }
 
     @Override
