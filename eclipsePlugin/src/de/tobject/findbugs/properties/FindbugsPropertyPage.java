@@ -20,8 +20,10 @@
 
 package de.tobject.findbugs.properties;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
@@ -47,15 +49,19 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.dialogs.PropertyPage;
+import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import de.tobject.findbugs.FindBugsJob;
@@ -67,6 +73,10 @@ import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.util.ProjectUtilities;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.cloud.CloudFactory;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
@@ -137,6 +147,12 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
     private ScopedPreferenceStore workspaceStore;
 
     private WorkspaceSettingsTab workspaceSettingsTab;
+
+    private List<CloudPlugin> clouds;
+
+    private Combo cloudCombo;
+
+    private Label cloudLabel;
 
     /**
      * Constructor for FindbugsPropertyPage.
@@ -240,12 +256,12 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         }
 
         Composite globalGroup = new Composite(parent, SWT.TOP);
-        GridLayout layout = new GridLayout(4, false);
-        layout.marginHeight = 0;
-        layout.marginWidth = 0;
+        GridLayout layout = new GridLayout(3, false);
+        //layout.marginHeight = 0;
+        //layout.marginWidth = 0;
         globalGroup.setLayout(layout);
         GridData layoutData = new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL);
-        layoutData.verticalIndent = -2;
+        //layoutData.verticalIndent = -2;
 
         globalGroup.setLayoutData(layoutData);
 
@@ -285,7 +301,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         prioGroup.setLayout(prioLayout);
         layoutData = new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL);
         layoutData.horizontalIndent = -5;
-        layoutData.verticalIndent = -5;
+        //layoutData.verticalIndent = -5;
         prioGroup.setLayoutData(layoutData);
 
         // effort
@@ -304,6 +320,74 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         });
         effortLabel.setToolTipText("Set FindBugs analysis effort (minimal is faster but less precise)");
         effortViewer.getCombo().setToolTipText("Set FindBugs analysis effort (minimal is faster but less precise)");
+
+
+        cloudLabel = new Label(globalGroup, SWT.NONE);
+        cloudCombo = new Combo(globalGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+        cloudCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+
+        enableOrDisableCloudControls();
+        String cloudid = getCloudIdFromCollection();
+
+        clouds = new ArrayList<CloudPlugin>();
+        populateCloudsCombo(cloudid);
+    }
+
+    private int populateCloudsCombo(String cloudid) {
+        int i = 0;
+        boolean cloudSelected = false;
+        int defaultIndex = -1;
+        for (CloudPlugin cloud : DetectorFactoryCollection.instance().getRegisteredClouds().values()) {
+            if (cloud.isHidden() && !cloud.getId().equals(cloudid)) {
+                continue;
+            }
+            cloudCombo.add(cloud.getDescription());
+            clouds.add(cloud);
+            if (cloud.getId().equals(cloudid)) {
+                cloudCombo.select(i);
+                cloudSelected = true;
+            }
+            if (cloud.getId().equals(CloudFactory.DEFAULT_CLOUD)) {
+                defaultIndex = i;
+            }
+            i++;
+        }
+        if (!cloudSelected && cloudid != null && cloudid.trim().length() > 0) {
+            if (defaultIndex != -1) {
+                cloudCombo.select(defaultIndex);
+            } else {
+                // should not happen: default local cloud should be available
+                FindbugsPlugin.getDefault().logWarning("Failed to find default local cloud (edu.umd.cs.findbugs.cloud.Local)");
+            }
+        }
+        return defaultIndex;
+    }
+
+    private String getCloudIdFromCollection() {
+        final IProject eclipseProj = getProject();
+        String cloudid = CloudFactory.DEFAULT_CLOUD;
+        if (eclipseProj != null) {
+            SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
+            if (collection != null) {
+                cloudid = collection.getCloud().getPlugin().getId();
+            }
+        }
+        return cloudid;
+    }
+
+    private IProject enableOrDisableCloudControls() {
+        IProject eclipseProj = getProject();
+        String txt = "Store comments in:";
+        if (eclipseProj == null) {
+            cloudLabel.setEnabled(false);
+            cloudCombo.setEnabled(false);
+            cloudLabel.setText(txt + "\n(only configurable at the project level)");
+        } else {
+            cloudLabel.setEnabled(true);
+            cloudCombo.setEnabled(true);
+            cloudLabel.setText(txt);
+        }
+        return eclipseProj;
     }
 
     private void createWorkspaceButtons(Composite parent) {
@@ -355,6 +439,10 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         if (workspaceSettingsTab != null) {
             workspaceSettingsTab.refreshUI(prefs);
         }
+        String cloudid = getCloudIdFromCollection();
+        cloudCombo.removeAll();
+        clouds.clear();
+        populateCloudsCombo(cloudid);
     }
 
     private Link createLink(Composite composite, String text) {
@@ -389,13 +477,19 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         // chkRunAtFullBuild.setEnabled(selection &&
         // chkEnableFindBugs.getSelection());
         if (enableProjectCheck != null) {
-            workspaceSettingsLink.setEnabled(!selection);
+            // this link should always be enabled
+            //workspaceSettingsLink.setEnabled(!selection);
         }
         detectorTab.setEnabled(selection);
         filterFilesTab.setEnabled(selection);
         reportConfigurationTab.setEnabled(selection);
         restoreDefaultsButton.setEnabled(selection);
         effortViewer.getCombo().setEnabled(selection);
+        if (selection) {
+            enableOrDisableCloudControls();
+        } else {
+            cloudCombo.setEnabled(false);
+        }
     }
 
     protected static Button createLabeledCheck(String title, String tooltip, boolean value, Composite defPanel) {
@@ -508,6 +602,27 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 
         if (needRedisplayMarkers) {
             redisplayMarkers();
+        }
+
+        IProject eclipseProj = getProject();
+        if (eclipseProj != null) {
+            SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
+            if (collection != null) {
+                Project fbProject = collection.getProject();
+                CloudPlugin item = clouds.get(cloudCombo.getSelectionIndex());
+                if (item != null && fbProject != null && !item.getId().equals(fbProject.getCloudId())) {
+                    fbProject.setCloudId(item.getId());
+                    collection.reinitializeCloud();
+                    IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
+                    if (page != null) {
+                        IViewPart view = page.findView(FindbugsPlugin.TREE_VIEW_ID);
+                        if (view instanceof CommonNavigator) {
+                            CommonNavigator nav = ((CommonNavigator) view);
+                            nav.getCommonViewer().refresh(true);
+                        }
+                    }
+                }
+            }
         }
         return true;
     }

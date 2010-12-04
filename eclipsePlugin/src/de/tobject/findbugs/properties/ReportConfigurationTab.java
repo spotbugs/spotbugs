@@ -18,7 +18,6 @@
  */
 package de.tobject.findbugs.properties;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,19 +38,12 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.navigator.CommonNavigator;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerSeverity;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.cloud.CloudFactory;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
@@ -69,12 +61,6 @@ public class ReportConfigurationTab extends Composite {
     private Label rankValueLabel;
 
     private Combo minPriorityCombo;
-
-    private Combo cloudCombo;
-
-    private Label cloudLabel;
-
-    private List<CloudPlugin> clouds;
 
     private Combo normalPrioCombo;
 
@@ -171,73 +157,9 @@ public class ReportConfigurationTab extends Composite {
             }
         });
 
-        cloudLabel = new Label(prioGroup, SWT.NONE);
-        cloudCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
-        cloudCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 
-        enableOrDisableCloudControls();
-        String cloudid = getCloudIdFromCollection();
-
-        clouds = new ArrayList<CloudPlugin>();
-        populateCloudsCombo(cloudid);
     }
 
-    private int populateCloudsCombo(String cloudid) {
-        int i = 0;
-        boolean cloudSelected = false;
-        int defaultIndex = -1;
-        for (CloudPlugin cloud : DetectorFactoryCollection.instance().getRegisteredClouds().values()) {
-            if (cloud.isHidden() && !cloud.getId().equals(cloudid)) {
-                continue;
-            }
-            cloudCombo.add(cloud.getDescription());
-            clouds.add(cloud);
-            if (cloud.getId().equals(cloudid)) {
-                cloudCombo.select(i);
-                cloudSelected = true;
-            }
-            if (cloud.getId().equals(CloudFactory.DEFAULT_CLOUD)) {
-                defaultIndex = i;
-            }
-            i++;
-        }
-        if (!cloudSelected && cloudid != null && cloudid.trim().length() > 0) {
-            if (defaultIndex != -1) {
-                cloudCombo.select(defaultIndex);
-            } else {
-                // should not happen: default local cloud should be available
-                FindbugsPlugin.getDefault().logWarning("Failed to find default local cloud (edu.umd.cs.findbugs.cloud.Local)");
-            }
-        }
-        return defaultIndex;
-    }
-
-    private String getCloudIdFromCollection() {
-        final IProject eclipseProj = propertyPage.getProject();
-        String cloudid = CloudFactory.DEFAULT_CLOUD;
-        if (eclipseProj != null) {
-            SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
-            if (collection != null) {
-                cloudid = collection.getCloud().getPlugin().getId();
-            }
-        }
-        return cloudid;
-    }
-
-    private IProject enableOrDisableCloudControls() {
-        IProject eclipseProj = propertyPage.getProject();
-        String txt = "Comment storage:";
-        if (eclipseProj == null) {
-            cloudLabel.setEnabled(false);
-            cloudCombo.setEnabled(false);
-            cloudLabel.setText(txt + "\n(only configurable at the project level)");
-        } else {
-            cloudLabel.setEnabled(true);
-            cloudCombo.setEnabled(true);
-            cloudLabel.setText(txt);
-        }
-        return eclipseProj;
-    }
 
     private void createRankGroup(Composite parent) {
         Composite prioGroup = new Composite(parent, SWT.NONE);
@@ -364,11 +286,6 @@ public class ReportConfigurationTab extends Composite {
         normalPrioCombo.setEnabled(enabled);
         highPrioCombo.setEnabled(enabled);
         minRankSlider.setEnabled(enabled);
-        if (enabled) {
-            enableOrDisableCloudControls();
-        } else {
-            cloudCombo.setEnabled(false);
-        }
         for (Button checkBox : chkEnableBugCategoryList) {
             checkBox.setEnabled(enabled);
         }
@@ -406,10 +323,6 @@ public class ReportConfigurationTab extends Composite {
             checkBox.setSelection(filterSettings.containsCategory((String) checkBox.getData()));
         }
         syncSelectedCategories();
-        String cloudid = getCloudIdFromCollection();
-        cloudCombo.removeAll();
-        clouds.clear();
-        populateCloudsCombo(cloudid);
     }
 
     protected List<Button> getChkEnableBugCategoryList() {
@@ -427,28 +340,6 @@ public class ReportConfigurationTab extends Composite {
         String lowPrio = lowPrioCombo.getText();
         store.setValue(FindBugsConstants.PRIO_LOW_MARKER_SEVERITY, lowPrio);
 
-        IProject eclipseProj = propertyPage.getProject();
-        if (eclipseProj == null) {
-            return;
-        }
-        SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
-        if (collection == null) {
-            return;
-        }
-        Project project = collection.getProject();
-        CloudPlugin item = clouds.get(cloudCombo.getSelectionIndex());
-        if (item != null && project != null && !item.getId().equals(project.getCloudId())) {
-            project.setCloudId(item.getId());
-            collection.reinitializeCloud();
-            IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
-            if (page != null) {
-                IViewPart view = page.findView(FindbugsPlugin.TREE_VIEW_ID);
-                if (view instanceof CommonNavigator) {
-                    CommonNavigator nav = ((CommonNavigator) view);
-                    nav.getCommonViewer().refresh(true);
-                }
-            }
-        }
     }
 
 }
