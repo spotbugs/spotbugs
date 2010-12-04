@@ -53,7 +53,7 @@ import edu.umd.cs.findbugs.cloud.Cloud.CloudTask;
 
 /**
  * View which shows bug annotations.
- * 
+ *
  * @author Phil Crosby
  * @author Andrei Loskutov
  * @version 2.0
@@ -245,19 +245,30 @@ public class UserAnnotationsView extends AbstractFindbugsView {
             String firstVersion = "Bug present since: " + convertTimestamp(timestamp);
 
             Cloud cloud = theBug2.getBugCollection().getCloud();
-            String userDesignation = cloud.getUserEvaluation(bug);
-            this.userAnnotation = (userDesignation == null) ? "" : userDesignation.trim();
-            this.firstVersionText = firstVersion.trim();
-            this.cloudText = cloud.getCloudReport(bug);
-            this.userAnnotationTextField.setEnabled(true);
-            this.designationComboBox.setEnabled(true);
-            setCloud(cloud);
 
-            int comboIndex = bug.getUserDesignationKeyIndex();
-            if (comboIndex == -1) {
-                FindbugsPlugin.getDefault().logError("Cannot find user designation");
+            setCloud(cloud);
+            if (cloud.canStoreUserAnnotation(bug)) {
+
+                String userDesignation = cloud.getUserEvaluation(bug);
+                this.userAnnotation = (userDesignation == null) ? "" : userDesignation.trim();
+                this.firstVersionText = firstVersion.trim();
+                this.cloudText = cloud.getCloudReport(bug);
+                this.userAnnotationTextField.setEnabled(true);
+                this.designationComboBox.setEnabled(true);
+
+                int comboIndex = bug.getUserDesignationKeyIndex();
+                if (comboIndex == -1) {
+                    FindbugsPlugin.getDefault().logError("Cannot find user designation");
+                } else {
+                    designationComboBox.select(comboIndex);
+                }
+
             } else {
-                designationComboBox.select(comboIndex);
+                this.userAnnotationTextField.setEnabled(false);
+                this.designationComboBox.setEnabled(false);
+                this.userAnnotation = "";
+                this.firstVersionText = "";
+                this.cloudText = "";
             }
         }
         userAnnotationTextField.setText(userAnnotation);
@@ -282,9 +293,9 @@ public class UserAnnotationsView extends AbstractFindbugsView {
     /**
      * Show the details of a FindBugs marker in the view. Brings the view to the
      * foreground.
-     * 
+     *
      * @param thePart
-     * 
+     *
      * @param marker
      *            may be null, or marker containing the bug pattern to show
      *            details for

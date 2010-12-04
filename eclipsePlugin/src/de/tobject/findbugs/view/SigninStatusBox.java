@@ -150,7 +150,7 @@ public class SigninStatusBox extends Composite {
             public void run() {
                 if (statusLine != null && !statusLine.isDisposed()) {
                     if (cloud != null) {
-                        String text = cloud.getPlugin().getDescription() + "\n" + cloud.getSigninState();
+                        String text = cloud.getCloudName() + "\n" + cloud.getSigninState();
                         if (cloud.getUser() != null) {
                             text += ": " + cloud.getUser();
                         }
