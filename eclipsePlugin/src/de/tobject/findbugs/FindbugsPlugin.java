@@ -216,7 +216,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             // - see de.tobject.findbugs.builder.FindBugsWorker.work() too
             String findBugsHome = getFindBugsEnginePluginLocation();
             if (DEBUG) {
-                logInfo("Looking for FindBugs detectors in: " + findBugsHome);
+                logInfo("FindBugs home is: " + findBugsHome);
             }
             System.setProperty("findbugs.home", findBugsHome);
         }
@@ -225,7 +225,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             // - see edu.umd.cs.findbugs.cloud.CloudFactory and messages.xml
             String defCloud = DEFAULT_CLOUD_ID;
             if (DEBUG) {
-                logInfo("Using default local cloud: " + defCloud);
+                logInfo("Using default cloud: " + defCloud);
             }
             System.setProperty("findbugs.cloud.default", defCloud);
         }
@@ -269,6 +269,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         detectorPaths.addAll(DetectorsExtensionHelper.getContributedDetectors());
         detectorPaths.addAll(PrefsUtil.readDetectorPaths(getDefault().getPreferenceStore()));
         HashSet<Plugin> enabled = new HashSet<Plugin>();
+        if(DEBUG) {
+            dumpClassLoader(FindbugsPlugin.class);
+            dumpClassLoader(Plugin.class);
+        }
         for (String path : detectorPaths) {
             URL url;
             try {
@@ -284,17 +288,14 @@ public class FindbugsPlugin extends AbstractUIPlugin {
                     // to allow third-party plugins extend the classpath via
                     // "Buddy" classloading
                     // see also: Eclipse-BuddyPolicy attribute in MANIFEST.MF
-                    if(DEBUG) {
-                        dumpClassLoader(FindbugsPlugin.class);
-                        dumpClassLoader(Plugin.class);
-                    }
                     Plugin fbPlugin = Plugin.addCustomPlugin(url, FindbugsPlugin.class.getClassLoader());
                     enabled.add(fbPlugin);
                 } catch (PluginException e) {
                     getDefault().logException(e, "Failed to load plugin for custom detector: " + path);
                     continue;
                 } catch (DuplicatePluginIdDescriptor e) {
-                    getDefault().logInfo(e.getPluginId() + " already loaded from " + e.getPreviouslyLoadedFrom());
+                    getDefault().logInfo(e.getPluginId() + " already loaded from " + e.getPreviouslyLoadedFrom()
+                            + ", ignoring: " + path);
                     continue;
                 }
             } else {
