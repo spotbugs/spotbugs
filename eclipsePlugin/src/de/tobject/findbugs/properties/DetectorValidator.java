@@ -51,6 +51,7 @@ public class DetectorValidator {
      *         error status in case anything goes wrong or file at given path is
      *         not considered as a valid plugin.
      */
+    @SuppressWarnings("boxing")
     public IStatus validate(String path) {
         File file = new File(path);
         if (!file.getName().endsWith(".jar")) {
@@ -92,7 +93,7 @@ public class DetectorValidator {
                 if (!seenFBmessages) {
                     seenFBmessages |= name.equals("messages.xml");
                 }
-                if (seenBugRank && seenFBxml && seenFBmessages && seenClassFile) {
+                if (seenFBxml && seenFBmessages) {
                     return Status.OK_STATUS;
                 }
                 zip.closeEntry();
@@ -112,7 +113,7 @@ public class DetectorValidator {
                 }
             }
         }
-        String msg = String.format("%s: %s %s %s %s%n", path, seenClassFile, seenBugRank, seenFBxml, seenFBmessages);
+        String msg = String.format("path: %s, classFiles? %s bugrunk? %s findbugs.xml? %s messages.xml? %s%n", path, seenClassFile, seenBugRank, seenFBxml, seenFBmessages);
         String message = "Invalid detector archive! " + msg;
         if(FindbugsPlugin.getDefault().isDebugging()) {
             System.out.println(message);
