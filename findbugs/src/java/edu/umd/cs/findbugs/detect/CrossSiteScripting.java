@@ -87,12 +87,26 @@ public class CrossSiteScripting extends OpcodeStackDetector {
             stack.replaceTop(replaceTop);
             replaceTop = null;
         }
+        
         OpcodeStack.Item oldTop = top;
         top = null;
         if (seen == INVOKESPECIAL) {
             String calledClassName = getClassConstantOperand();
             String calledMethodName = getNameConstantOperand();
             String calledMethodSig = getSigConstantOperand();
+            
+            if (calledClassName.startsWith("java/io/File") 
+                    && calledMethodSig.equals("(Ljava/lang/String;)V")) {
+                OpcodeStack.Item path = stack.getStackItem(0);
+                if (isTainted(path)) {
+                    annotateAndReport(new BugInstance(this, "TESTING", taintPriority(path)).addClassAndMethod(this),
+                            path);
+                }
+                
+            }
+           
+            
+            
             if (calledClassName.equals("javax/servlet/http/Cookie") && calledMethodName.equals("<init>")
                     && calledMethodSig.equals("(Ljava/lang/String;Ljava/lang/String;)V")) {
                 OpcodeStack.Item value = stack.getStackItem(0);
