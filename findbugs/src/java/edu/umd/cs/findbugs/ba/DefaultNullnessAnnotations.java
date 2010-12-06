@@ -178,8 +178,13 @@ public class DefaultNullnessAnnotations {
 
         database.addMethodParameterAnnotation("java.util.concurrent.CyclicBarrier", "<init>", "(ILjava/lang/Runnable;)V", false,
                 1, NullnessAnnotation.CHECK_FOR_NULL);
+        
         database.addMethodParameterAnnotation("java.util.concurrent.Executors$RunnableAdapter", "<init>",
                 "(Ljava/lang/Runnable;Ljava/lang/Object;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+        
+        
+        database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentSkipListMap", "<init>",
+                "(Ljava/util/Comparator;)V", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
         database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentSkipListMap", "doRemove",
                 "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 
