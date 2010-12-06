@@ -7,7 +7,12 @@ public class Bug3073124 {
 
     void methodA() {
     }
+
     void methodB() {
+    }
+
+    void testLoop(String b) {
+
     }
 
     static class Derived extends Bug3073124 {
@@ -29,5 +34,20 @@ public class Bug3073124 {
                 super.methodB();
             }
         }
+
+        void testLoop(String b) {
+            boolean test = evaluate();
+            if (test) {
+                testLoop("dfdsfsd");
+            } else {
+                super.testLoop("dsdsd");
+            }
+
+        }
+
+        boolean evaluate() {
+            return true;
+        }
+
     }
 }
