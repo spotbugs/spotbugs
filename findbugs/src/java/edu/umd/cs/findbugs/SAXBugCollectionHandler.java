@@ -447,7 +447,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             addMatcher(new LocalMatcher(getOptionalAttribute(attributes, "name")));
         } else if (qName.equals("BugPattern")) {
             addMatcher(new BugMatcher("", getOptionalAttribute(attributes, "name"), ""));
-        } else if (qName.equals("Priority")) {
+        } else if (qName.equals("Priority") || qName.equals("Confidence")) {
             addMatcher(new PriorityMatcher(getOptionalAttribute(attributes, "value")));
         } else if (qName.equals("Rank")) {
             addMatcher(new RankMatcher(getOptionalAttribute(attributes, "value")));

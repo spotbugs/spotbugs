@@ -155,10 +155,10 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addSwitch("-longBugCodes", "report long bug codes");
         addSwitch("-progress", "display progress in terminal window");
         addOption("-release", "release name", "set the release name of the analyzed application");
-        addSwitch("-experimental", "report all warnings including experimental bug patterns");
-        addSwitch("-low", "report all warnings");
-        addSwitch("-medium", "report only medium and high priority warnings [default]");
-        addSwitch("-high", "report only high priority warnings");
+        addSwitch("-experimental", "report of any confidence level including experimental bug patterns");
+        addSwitch("-low", "report warnings of any confidence level");
+        addSwitch("-medium", "report only medium and high confidence warnings [default]");
+        addSwitch("-high", "report only high confidence warnings");
         addOption("-maxRank", "rank", "only report issues with a bug rank at least as scary as that provided");
         addSwitch("-sortByClass", "sort warnings by class");
         addSwitchWithOptionalExtraPart("-xml", "withMessages", "XML output (optionally with messages)");

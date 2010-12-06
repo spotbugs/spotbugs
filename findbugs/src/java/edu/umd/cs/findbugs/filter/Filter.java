@@ -279,7 +279,7 @@ public class Filter extends OrMatcher {
             return new BugMatcher("", element.valueOf("@name"), "");
         } else if (name.equals("Bug")) {
             return new BugMatcher(element.valueOf("@code"), element.valueOf("@pattern"), element.valueOf("@category"));
-        } else if (name.equals("Priority")) {
+        } else if (name.equals("Priority") || name.equals("Confidence")) {
             return new PriorityMatcher(element.valueOf("@value"));
         } else if (name.equals("Class")) {
             Attribute nameAttr = element.attribute("name");

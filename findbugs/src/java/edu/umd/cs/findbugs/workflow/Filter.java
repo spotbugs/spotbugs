@@ -224,6 +224,8 @@ public class Filter {
             addSwitchWithOptionalExtraPart("-newCode", "truth", "allow only warnings introduced by the addition of a new class");
             addSwitchWithOptionalExtraPart("-removedCode", "truth", "allow only warnings removed by removal of a class");
             addOption("-priority", "level", "allow only warnings with this priority or higher");
+            makeOptionUnlisted("-priority");
+            addOption("-confidence", "level", "allow only warnings with this confidence or higher");
             addOption("-maxRank", "rank", "allow only warnings with this rank or lower");
             addOption("-maxAge", "days", "Only issues that weren't first seen more than this many days ago");
             addSwitchWithOptionalExtraPart("-notAProblem", "truth",
@@ -503,7 +505,7 @@ public class Filter {
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
 
-            if (option.equals("-priority")) {
+            if (option.equals("-priority") || option.equals("-confidence")) {
                 priority = parsePriority(argument);
             }
 

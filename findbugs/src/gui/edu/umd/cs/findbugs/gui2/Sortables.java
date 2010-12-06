@@ -183,7 +183,7 @@ public enum Sortables implements Comparator<String> {
 
     },
 
-    PRIORITY(edu.umd.cs.findbugs.L10N.getLocalString("sort.priority", "Priority")) {
+    PRIORITY(edu.umd.cs.findbugs.L10N.getLocalString("sort.priority", "Confidence")) {
         @Override
         public String getFrom(BugInstance bug) {
             return String.valueOf(bug.getPriority());

@@ -335,8 +335,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             categoryString = "Unknown category for " + getType();
         else
             categoryString = I18N.instance().getBugCategoryDescription(bugPattern.getCategory());
-        return priorityString + " Priority " + categoryString;
-        // TODO: internationalize the word "Priority"
+        return priorityString + " Confidence " + categoryString;
+        // TODO: internationalize the word "Confidence"
     }
 
     public String getPriorityTypeAbbreviation() {
