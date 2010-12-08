@@ -61,7 +61,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 
 /**
  * Find potential SQL injection vulnerabilities.
- * 
+ *
  * @author David Hovemeyer
  * @author Bill Pugh
  * @author Matt Hargett
@@ -416,6 +416,7 @@ public class FindSqlInjection implements Detector {
         Instruction instruction = handle.getInstruction();
         ConstantPoolGen cpg = methodGen.getConstantPool();
         int priority = LOW_PRIORITY;
+        boolean sawSeriousTaint = false;
         if (stringAppendState.getSawAppend(handle)) {
             if (stringAppendState.getSawOpenQuote(handle) && stringAppendState.getSawCloseQuote(handle)) {
                 priority = HIGH_PRIORITY;
@@ -427,6 +428,7 @@ public class FindSqlInjection implements Detector {
                 priority += 2;
             } else if (stringAppendState.getSawSeriousTaint(handle)) {
                 priority--;
+                sawSeriousTaint = true;
             } else if (!stringAppendState.getSawTaint(handle)) {
                 priority++;
             }
@@ -443,6 +445,8 @@ public class FindSqlInjection implements Detector {
         bug.addClassAndMethod(methodGen, javaClass.getSourceFileName());
         if (description.equals("TESTING"))
             bug.addString("Incomplete report invoking non-constant SQL string");
+        if (sawSeriousTaint)
+            bug.addString("non-constant SQL string involving HTTP taint");
 
         return bug;
     }
