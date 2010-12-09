@@ -54,6 +54,7 @@
         <javac destdir="${classes.dir}"
                source="1.5"
                target="1.5"
+               includeantruntime="false"
                deprecation="off"
                debug="on">
             <src path="${src.dir}"/>
@@ -87,7 +88,9 @@
     <target name="compile-tests" depends="compile">
         <mkdir dir="build/classes-tests-ant"/>
 
-        <javac srcdir="src/junit" destdir="build/classes-tests-ant" source="1.5" target="1.5" debug="on">
+        <javac srcdir="src/junit" destdir="build/classes-tests-ant" source="1.5" target="1.5" debug="on"
+               includeantruntime="false"
+               >
             <classpath>
                 <path refid="client.classpath"/>
                 <path location="${classes.dir}"/>
