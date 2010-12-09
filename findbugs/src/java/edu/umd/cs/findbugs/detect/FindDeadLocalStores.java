@@ -299,7 +299,7 @@ public class FindDeadLocalStores implements Detector {
                 Field shadowedField = null;
 
                 for (Field f : javaClass.getFields()) {
-                    if (f.getName().equals(lvName)) {
+                    if (f.getName().equals(lvName) && f.isStatic() == method.isStatic()) {
                         shadowedField = f;
                         propertySet.addProperty(DeadLocalStoreProperty.SHADOWS_FIELD);
                         break;
