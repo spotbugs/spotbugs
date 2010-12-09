@@ -100,7 +100,8 @@ public class CrossSiteScripting extends OpcodeStackDetector {
                 OpcodeStack.Item path = stack.getStackItem(0);
                 if (isTainted(path)) {
                     annotateAndReport(new BugInstance(this, "TESTING", taintPriority(path))
-                          .addClassAndMethod(this).addCalledMethod(this),
+                          .addClassAndMethod(this).addCalledMethod(this)
+                          .addString("Path manipulation"),
                             path);
                 }
                 
