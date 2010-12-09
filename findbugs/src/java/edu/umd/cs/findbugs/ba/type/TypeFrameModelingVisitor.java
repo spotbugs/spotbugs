@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
@@ -51,6 +52,9 @@ import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -527,21 +531,38 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             return;
         }
 
-        if (methodName.equals("get") && signature.equals("(Ljava/lang/Object;)Ljava/lang/Object;") && className.endsWith("Map")) {
+        mapGetCheck: if (methodName.equals("get") && signature.equals("(Ljava/lang/Object;)Ljava/lang/Object;")
+                && className.endsWith("Map")) {
             try {
                 Type mapType = frame.getStackValue(1);
                 if (mapType instanceof GenericObjectType) {
                     GenericObjectType genericMapType = (GenericObjectType) mapType;
                     List<? extends ReferenceType> parameters = genericMapType.getParameters();
-                    if (parameters != null && parameters.size() == 2) {
-                        ReferenceType valueType = parameters.get(1);
-                        consumeStack(obj);
-                        frame.pushValue(valueType);
-                        return;
+                    if (parameters == null || parameters.size() != 2)
+                        break mapGetCheck;
+
+                    ClassDescriptor c = DescriptorFactory.getClassDescriptor(genericMapType);
+                    if (!Subtypes2.instanceOf(c, "java.util.Map"))
+                        break mapGetCheck;
+                    if (!c.getClassName().equals("java/lang/Map")) {
+                        XClass xc = c.getXClass();
+                        String sourceSignature = xc.getSourceSignature();
+                        if (!sourceSignature.contains("Map<TK;TV>")) {
+                            AnalysisContext.logError("QQQ:" + c + " has signature " + sourceSignature);
+                            break mapGetCheck;
+                        }
                     }
+
+                    ReferenceType valueType = parameters.get(1);
+                    consumeStack(obj);
+                    frame.pushValue(valueType);
+                    return;
+
                 }
 
             } catch (DataflowAnalysisException e) {
+                AnalysisContext.logError("oops", e);
+            } catch (CheckedAnalysisException e) {
                 AnalysisContext.logError("oops", e);
             }
 
