@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -107,6 +108,9 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
         return ClassName.toDottedClassName(className);
     }
 
+     public XClass getXClass() throws CheckedAnalysisException {
+        return Global.getAnalysisCache().getClassAnalysis(XClass.class, this);
+    }
     /**
      * Get the name of the package in dotted format.
      * 
