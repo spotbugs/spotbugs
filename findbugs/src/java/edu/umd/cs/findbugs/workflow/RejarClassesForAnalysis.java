@@ -316,7 +316,6 @@ public class RejarClassesForAnalysis {
 
         List<File> inputZipFiles = new ArrayList<File>(fileList.size());
         List<File> auxZipFiles = new ArrayList<File>(auxFileList.size());
-        List<File> badZipFIles = new ArrayList<File>();
         for (String fInName : fileList) {
             File f = new File(fInName);
             if (f.lastModified() < commandLine.maxAge) {
