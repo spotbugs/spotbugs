@@ -48,7 +48,7 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
  */
 public class Plugin {
 
-    private final String USE_FINDBUGS_VERSION = "USE_FINDBUGS_VERSION";
+    private static final String USE_FINDBUGS_VERSION = "USE_FINDBUGS_VERSION";
     private final String pluginId;
 
     private final String version;

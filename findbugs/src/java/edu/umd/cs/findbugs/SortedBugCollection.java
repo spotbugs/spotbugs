@@ -497,18 +497,13 @@ public class SortedBugCollection implements BugCollection {
             if (hash == null) {
                 hash = bugInstance.getInstanceKey();
 
-                if (digest != null) {
-                    byte[] data = new byte[0];
-                    try {
-                        data = digest.digest(hash.getBytes("UTF-8"));
-                    } catch (UnsupportedEncodingException e) {
-                        throw new IllegalStateException(e);
-                    }
-                    String tmp = new BigInteger(1, data).toString(16);
-                    if (false)
-                        System.out.println(hash + " -> " + tmp);
-                    hash = tmp;
+                try {
+                    byte[] data = digest.digest(hash.getBytes("UTF-8"));
+                    hash = new BigInteger(1, data).toString(16);
+                } catch (UnsupportedEncodingException e) {
+                    throw new IllegalStateException(e);
                 }
+
                 bugInstance.setInstanceHash(hash);
             }
             Integer count = seen.get(hash);
@@ -1046,7 +1041,7 @@ public class SortedBugCollection implements BugCollection {
     }
 
     public void addMissingClass(String className) {
-        if (className.length() == 0)
+        if (className == null || className.length() == 0)
             return;
         if (className.startsWith("[")) {
             assert false : "Bad class name " + className;

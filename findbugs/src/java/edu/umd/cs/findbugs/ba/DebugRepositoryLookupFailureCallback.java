@@ -42,7 +42,7 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
     @SuppressWarnings("DM_EXIT")
     public void reportMissingClass(ClassNotFoundException ex) {
         String missing = AbstractBugReporter.getMissingClassName(ex);
-        if (missing.charAt(0) == '[')
+        if (missing == null || missing.charAt(0) == '[')
             return;
 
         System.out.println("Missing class");

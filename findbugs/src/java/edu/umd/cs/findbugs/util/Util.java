@@ -27,7 +27,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
@@ -54,6 +53,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 import javax.annotation.WillCloseWhenClosed;
 import javax.annotation.WillNotClose;
@@ -499,7 +499,7 @@ public class Util {
      * @return
      * @throws NoSuchAlgorithmException
      */
-    static public MessageDigest getMD5Digest() {
+    static public @Nonnull MessageDigest getMD5Digest() {
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
             return digest;

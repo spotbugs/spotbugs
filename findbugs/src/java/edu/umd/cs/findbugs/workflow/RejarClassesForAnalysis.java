@@ -593,7 +593,7 @@ public class RejarClassesForAnalysis {
     }
 
     
-    class ClassFileNameMismatch extends IOException {
+    static class ClassFileNameMismatch extends IOException {
         
     }
     interface ZipElementHandler {
