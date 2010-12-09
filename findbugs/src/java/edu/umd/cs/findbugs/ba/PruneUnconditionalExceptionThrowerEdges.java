@@ -151,7 +151,8 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
                     if (className.startsWith("["))
                         continue;
                     String methodSig = inv.getSignature(cpg);
-                    if (!methodSig.endsWith("V") && !methodSig.endsWith("Exception;") && !methodSig.endsWith("Error;"))
+                    if (!methodSig.endsWith("V") && !methodSig.endsWith("Exception;") 
+                            && !methodSig.endsWith("Error;") && !methodSig.endsWith(")Ljava/lang/Object;"))
                         continue;
 
                     targetSet = Hierarchy2.resolveMethodCallTargets(inv, typeFrame, cpg);
