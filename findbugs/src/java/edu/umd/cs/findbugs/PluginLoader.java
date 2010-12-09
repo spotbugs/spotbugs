@@ -1098,7 +1098,7 @@ public class PluginLoader {
     private static void loadInitialPlugin(URL u, boolean initial, boolean optional) {
         try {
             PluginLoader pluginLoader = getPluginLoader(u, PluginLoader.class.getClassLoader(), initial, optional);
-            Plugin plugin = pluginLoader.loadPlugin();
+            pluginLoader.loadPlugin();
         } catch (PluginException e) {
             AnalysisContext.logError("Unable to load plugin from " + u, e);
         }
