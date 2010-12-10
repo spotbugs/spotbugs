@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Descriptor identifying a class.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializable {
@@ -47,7 +47,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 
     /**
      * Constructor.
-     * 
+     *
      * @param className
      *            class name in VM format, e.g. "java/lang/String"
      */
@@ -71,17 +71,21 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     public int compareTo(ClassDescriptor o) {
         return className.compareTo(o.className);
     }
 
+
+    public boolean matches(Class<?> c) {
+        return getDottedClassName().equals(c.getName());
+    }
     /**
      * Get the resource name of this class as it would appear in the classpath.
      * E.g., "java/lang/String.class"
-     * 
+     *
      * @return the resource name
      */
     public String toResourceName() {
@@ -90,7 +94,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 
     /**
      * Get the name of the class in dotted format.
-     * 
+     *
      * @return the name of the class in dotted format
      */
     public @DottedClassName
@@ -100,7 +104,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 
     /**
      * Get the name of the class in dotted format.
-     * 
+     *
      * @return the name of the class in dotted format
      */
     public @DottedClassName
@@ -113,7 +117,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     }
     /**
      * Get the name of the package in dotted format.
-     * 
+     *
      * @return the name of the package in dotted format
      */
     public @DottedClassName
@@ -123,7 +127,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 
     /**
      * Get the simple name of the class
-     * 
+     *
      * @return the simple name of the class
      */
     public String getSimpleName() {
@@ -142,7 +146,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 
     /**
      * Create a class descriptor from a resource name.
-     * 
+     *
      * @param resourceName
      *            the resource name
      * @return the class descriptor
@@ -157,11 +161,11 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 
     /**
      * Create a class descriptor from a field signature
-     * 
+     *
      * @deprecated Use
      *             {@link DescriptorFactory#createClassDescriptorFromFieldSignature(String)}
      *             instead
-     * 
+     *
      */
     @Deprecated
     public static @CheckForNull
@@ -171,7 +175,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 
     /**
      * Determine whether or not the given resource name refers to a class.
-     * 
+     *
      * @param resourceName
      *            the resource name
      * @return true if the resource is a class, false otherwise
@@ -232,7 +236,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -242,7 +246,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -259,7 +263,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -271,7 +275,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      * Throw a ClassNotFoundException to indicate that class named by given
      * ClassDescriptor cannot be found. The exception message is formatted in a
      * way that can be decoded by ClassNotFoundExceptionParser.
-     * 
+     *
      * @param classDescriptor
      *            ClassDescriptor naming a class that cannot be found
      * @throws ClassNotFoundException

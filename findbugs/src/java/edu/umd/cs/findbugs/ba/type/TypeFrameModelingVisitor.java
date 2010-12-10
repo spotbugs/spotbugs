@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.type;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -63,7 +64,7 @@ import edu.umd.cs.findbugs.util.Util;
  * verify that the types are sensible for the bytecodes executed. In other
  * words, this isn't a bytecode verifier, although it wouldn't be too hard to
  * turn it into something vaguely verifier-like.
- * 
+ *
  * @author David Hovemeyer
  * @see TypeFrame
  * @see TypeAnalysis
@@ -91,7 +92,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
     /**
      * Constructor.
-     * 
+     *
      * @param cpg
      *            the ConstantPoolGen of the method whose instructions we are
      *            examining
@@ -111,7 +112,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
      * Set ValueNumberDataflow for the method being analyzed. This is optional;
      * if set, we will use the information to more accurately model the effects
      * of instanceof instructions.
-     * 
+     *
      * @param valueNumberDataflow
      *            the ValueNumberDataflow
      */
@@ -123,7 +124,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
      * Return whether an instanceof instruction was followed by a branch. The
      * TypeAnalysis may use this to get more precise types in the resulting
      * frame.
-     * 
+     *
      * @return true if an instanceof instruction was followed by a branch, false
      *         if not
      */
@@ -135,7 +136,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
      * Get the type of the most recent instanceof instruction modeled. The
      * TypeAnalysis may use this to get more precise types in the resulting
      * frame.
-     * 
+     *
      * @return the Type checked by the most recent instanceof instruction
      */
     public Type getInstanceOfType() {
@@ -146,7 +147,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
      * Get the value number of the most recent instanceof instruction modeled.
      * The TypeAnalysis may use this to get more precise types in the resulting
      * frame.
-     * 
+     *
      * @return the ValueNumber checked by the most recent instanceof instruction
      */
     public ValueNumber getInstanceOfValueNumber() {
@@ -156,7 +157,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
     /**
      * Set the field store type database. We can use this to get more accurate
      * types for values loaded from fields.
-     * 
+     *
      * @param database
      *            the FieldStoreTypeDatabase
      */
@@ -542,13 +543,13 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                         break mapGetCheck;
 
                     ClassDescriptor c = DescriptorFactory.getClassDescriptor(genericMapType);
-                    if (!Subtypes2.instanceOf(c, "java.util.Map"))
+                    if (!Subtypes2.instanceOf(c, Map.class))
                         break mapGetCheck;
-                    if (!c.getClassName().equals("java/lang/Map")) {
+                    if (!c.matches(Map.class)) {
                         XClass xc = c.getXClass();
                         String sourceSignature = xc.getSourceSignature();
                         if (!sourceSignature.contains("Map<TK;TV>")) {
-                            AnalysisContext.logError("QQQ:" + c + " has signature " + sourceSignature);
+                            AnalysisContext.logError("QQQ: " + c + " has signature " + sourceSignature);
                             break mapGetCheck;
                         }
                     }

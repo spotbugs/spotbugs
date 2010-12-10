@@ -51,7 +51,7 @@ import edu.umd.cs.findbugs.util.MapCache;
 /**
  * Class for performing class hierarchy queries. Does <em>not</em> require
  * JavaClass objects to be in memory. Instead, uses XClass objects.
- * 
+ *
  * @author David Hovemeyer
  */
 @javax.annotation.ParametersAreNonnullByDefault
@@ -142,6 +142,10 @@ public class Subtypes2 {
         }
     }
 
+    public static boolean instanceOf(ClassDescriptor subDescriptor, Class<?> c) {
+        return instanceOf(subDescriptor, c.getName());
+    }
+
     public static boolean instanceOf(ClassDescriptor subDescriptor, @DottedClassName String dottedSupertype) {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         ClassDescriptor superDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(dottedSupertype);
@@ -172,7 +176,7 @@ public class Subtypes2 {
     /**
      * Add an application class, and its transitive supertypes, to the
      * inheritance graph.
-     * 
+     *
      * @param appXClass
      *            application XClass to add to the inheritance graph
      */
@@ -199,7 +203,7 @@ public class Subtypes2 {
     /**
      * Add a class or interface, and its transitive supertypes, to the
      * inheritance graph.
-     * 
+     *
      * @param xclass
      *            XClass to add to the inheritance graph
      */
@@ -209,7 +213,7 @@ public class Subtypes2 {
 
     /**
      * Add an XClass and all of its supertypes to the InheritanceGraph.
-     * 
+     *
      * @param xclass
      *            an XClass
      * @return the ClassVertex representing the class in the InheritanceGraph
@@ -268,7 +272,7 @@ public class Subtypes2 {
      * Determine whether or not a given ReferenceType is a subtype of another.
      * Throws ClassNotFoundException if the question cannot be answered
      * definitively due to a missing class.
-     * 
+     *
      * @param type
      *            a ReferenceType
      * @param possibleSupertype
@@ -372,7 +376,7 @@ public class Subtypes2 {
      * Determine whether or not a given ObjectType is a subtype of another.
      * Throws ClassNotFoundException if the question cannot be answered
      * definitively due to a missing class.
-     * 
+     *
      * @param type
      *            a ReferenceType
      * @param possibleSupertype
@@ -440,12 +444,12 @@ public class Subtypes2 {
      * a type as possible. This method is used as the meet operator in
      * TypeDataflowAnalysis, and is intended to follow (more or less) the JVM
      * bytecode verifier semantics.
-     * 
+     *
      * <p>
      * This method should be used in preference to the
      * getFirstCommonSuperclass() method in {@link ReferenceType}.
      * </p>
-     * 
+     *
      * @param a
      *            a ReferenceType
      * @param b
@@ -498,7 +502,7 @@ public class Subtypes2 {
 
     /**
      * Get first common supertype of arrays with the same number of dimensions.
-     * 
+     *
      * @param aArrType
      *            an ArrayType
      * @param bArrType
@@ -544,7 +548,7 @@ public class Subtypes2 {
     /**
      * Get the first common superclass of arrays with different numbers of
      * dimensions.
-     * 
+     *
      * @param aArrType
      *            an ArrayType
      * @param bArrType
@@ -597,12 +601,12 @@ public class Subtypes2 {
      * possible. This method is used as the meet operator in
      * TypeDataflowAnalysis, and is intended to follow (more or less) the JVM
      * bytecode verifier semantics.
-     * 
+     *
      * <p>
      * This method should be used in preference to the
      * getFirstCommonSuperclass() method in {@link ReferenceType}.
      * </p>
-     * 
+     *
      * @param a
      *            an ObjectType
      * @param b
@@ -700,7 +704,7 @@ public class Subtypes2 {
      * Get list of all superclasses of class represented by given class vertex,
      * in order, including the class itself (which is trivially its own
      * superclass as far as "first common superclass" queries are concerned.)
-     * 
+     *
      * @param vertex
      *            a ClassVertex
      * @return list of all superclass vertices in order
@@ -721,7 +725,7 @@ public class Subtypes2 {
     /**
      * Get known subtypes of given class. The set returned <em>DOES</em> include
      * the class itself.
-     * 
+     *
      * @param classDescriptor
      *            ClassDescriptor naming a class
      * @return Set of ClassDescriptors which are the known subtypes of the class
@@ -738,7 +742,7 @@ public class Subtypes2 {
 
     /**
      * Determine whether or not the given class has any known subtypes.
-     * 
+     *
      * @param classDescriptor
      *            ClassDescriptor naming a class
      * @return true if the class has subtypes, false if it has no subtypes
@@ -754,7 +758,7 @@ public class Subtypes2 {
 
     /**
      * Get known subtypes of given class.
-     * 
+     *
      * @param classDescriptor
      *            ClassDescriptor naming a class
      * @return Set of ClassDescriptors which are the known subtypes of the class
@@ -776,7 +780,7 @@ public class Subtypes2 {
 
     /**
      * Get the set of common subtypes of the two given classes.
-     * 
+     *
      * @param classDescriptor1
      *            a ClassDescriptor naming a class
      * @param classDescriptor2
@@ -795,7 +799,7 @@ public class Subtypes2 {
 
     /**
      * Get Collection of all XClass objects (resolved classes) seen so far.
-     * 
+     *
      * @return Collection of all XClass objects
      */
     public Collection<XClass> getXClassCollection() {
@@ -851,7 +855,7 @@ public class Subtypes2 {
      * Starting at the class or interface named by the given ClassDescriptor,
      * traverse the inheritance graph, exploring all paths from the class or
      * interface to java.lang.Object.
-     * 
+     *
      * @param start
      *            ClassDescriptor naming the class where the traversal should
      *            start
@@ -937,7 +941,7 @@ public class Subtypes2 {
 
     /**
      * Compute set of known subtypes of class named by given ClassDescriptor.
-     * 
+     *
      * @param classDescriptor
      *            a ClassDescriptor
      * @throws ClassNotFoundException
@@ -1005,7 +1009,7 @@ public class Subtypes2 {
     /**
      * Look up or compute the SupertypeQueryResults for class named by given
      * ClassDescriptor.
-     * 
+     *
      * @param classDescriptor
      *            a ClassDescriptor
      * @return SupertypeQueryResults for the class named by the ClassDescriptor
@@ -1022,7 +1026,7 @@ public class Subtypes2 {
 
     /**
      * Compute supertypes for class named by given ClassDescriptor.
-     * 
+     *
      * @param classDescriptor
      *            a ClassDescriptor
      * @return SupertypeQueryResults containing known supertypes of the class
@@ -1075,7 +1079,7 @@ public class Subtypes2 {
     /**
      * Resolve a class named by given ClassDescriptor and return its resolved
      * ClassVertex.
-     * 
+     *
      * @param classDescriptor
      *            a ClassDescriptor
      * @return resolved ClassVertex representing the class in the
@@ -1122,7 +1126,7 @@ public class Subtypes2 {
     /**
      * Add supertype edges to the InheritanceGraph for given ClassVertex. If any
      * direct supertypes have not been processed, add them to the worklist.
-     * 
+     *
      * @param vertex
      *            a ClassVertex whose supertype edges need to be added
      * @param workList
@@ -1145,7 +1149,7 @@ public class Subtypes2 {
 
     /**
      * Add supertype edge to the InheritanceGraph.
-     * 
+     *
      * @param vertex
      *            source ClassVertex (subtype)
      * @param superclassDescriptor
@@ -1196,7 +1200,7 @@ public class Subtypes2 {
 
     /**
      * Add a ClassVertex representing a missing class.
-     * 
+     *
      * @param missingClassDescriptor
      *            ClassDescriptor naming a missing class
      * @param isInterfaceEdge
