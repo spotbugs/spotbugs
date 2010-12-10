@@ -187,16 +187,17 @@ public class CrossSiteScripting extends OpcodeStackDetector {
                             new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER", Priorities.NORMAL_PRIORITY)
                                     .addClassAndMethod(this),
                             oldTop);
-            } else if (calledMethodName.startsWith("print") && calledClassName.equals("java/io/PrintWriter")
+            } else if (calledClassName.startsWith("java/io/") && calledClassName.endsWith("Writer") 
+                    && (calledMethodName.startsWith("print") || calledMethodName.startsWith("write")) 
                     && (calledMethodSig.equals("(Ljava/lang/Object;)V") || calledMethodSig.equals("(Ljava/lang/String;)V"))) {
                 OpcodeStack.Item writing = stack.getStackItem(0);
                 OpcodeStack.Item writingTo = stack.getStackItem(1);
-                if (isTainted(writing) && isServletWriter(writingTo))
+                if (isTainted(writing) && writingTo.isServletWriter())
                     annotateAndReport(
                             new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER", taintPriority(writing))
                                     .addClassAndMethod(this),
                             writing);
-                else if (isTainted(oldTop) && isServletWriter(writingTo))
+                else if (isTainted(oldTop) && writingTo.isServletWriter())
                     annotateAndReport(
                             new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER", Priorities.NORMAL_PRIORITY)
                                     .addClassAndMethod(this),
@@ -223,11 +224,6 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 
     }
 
-    private boolean isServletWriter(OpcodeStack.Item writingTo) {
-        XMethod writingToSource = writingTo.getReturnValueOf();
-
-        return writingToSource != null && writingToSource.getClassName().equals("javax.servlet.http.HttpServletResponse")
-                && writingToSource.getName().equals("getWriter");
-    }
+   
 
 }

@@ -201,10 +201,13 @@ public class OpcodeStack implements Constants2 {
 
         public static final @SpecialKind
         int RESULT_OF_L2I = 22;
+        
+        public static final @SpecialKind
+        int SERVLET_OUTPUT = 23;
 
         public static HashMap<Integer, String> specialKindNames = new HashMap<Integer, String>();
 
-        private static int nextSpecialKind = RESULT_OF_L2I + 1;
+        private static int nextSpecialKind = SERVLET_OUTPUT + 1;
 
         public static @SpecialKind
         int defineNewSpecialKind(String name) {
@@ -363,6 +366,9 @@ public class OpcodeStack implements Constants2 {
                 break;
             case NONZERO_MEANS_NULL:
                 buf.append(", nonzero means null");
+                break;
+            case SERVLET_OUTPUT:
+                buf.append(", servlet_output");
                 break;
 
             case NOT_SPECIAL:
@@ -755,7 +761,23 @@ public class OpcodeStack implements Constants2 {
         public void setServletParameterTainted() {
             setSpecialKind(Item.SERVLET_REQUEST_TAINTED);
         }
+        public void setIsServletWriter() {
+            setSpecialKind(Item.SERVLET_OUTPUT);
+        }
 
+        
+        public  boolean isServletWriter() {
+            if (getSpecialKind() == Item.SERVLET_OUTPUT)
+                return true;
+            if (getSignature().equals("Ljavax/servlet/ServletOutputStream;"))
+                return true;
+            XMethod writingToSource = getReturnValueOf();
+            
+
+            return writingToSource != null && writingToSource.getClassName().equals("javax.servlet.http.HttpServletResponse")
+                    && (writingToSource.getName().equals("getWriter") || writingToSource.getName().equals("getOutputStream"));
+        }
+        
         public boolean valueCouldBeNegative() {
             return !isNonNegative()
                     && (getSpecialKind() == Item.RANDOM_INT || getSpecialKind() == Item.SIGNED_BYTE
@@ -2111,7 +2133,7 @@ public class OpcodeStack implements Constants2 {
     }
 
     private void processMethodCall(DismantleBytecode dbc, int seen) {
-        String clsName = dbc.getClassConstantOperand();
+        @SlashedClassName String clsName = dbc.getClassConstantOperand();
         String methodName = dbc.getNameConstantOperand();
         String signature = dbc.getSigConstantOperand();
         String appenderValue = null;
@@ -2153,7 +2175,12 @@ public class OpcodeStack implements Constants2 {
             if (itemSignature.equals("Ljava/lang/StringBuilder;") || itemSignature.equals("Ljava/lang/StringBuffer;"))
                 item.constValue = null;
         }
-
+        boolean initializingServletWriter = false;
+        if (seen == INVOKESPECIAL && methodName.equals("<init>") && clsName.startsWith("java/io") && clsName.endsWith("Writer")) {
+            Item firstArg = getStackItem(numberArguments-1);
+            if (firstArg.isServletWriter())
+                initializingServletWriter = true;
+        }
         boolean topIsTainted = topItem != null && topItem.isServletParameterTainted();
         HttpParameterInjection injection = null;
         if (topIsTainted)
@@ -2281,6 +2308,9 @@ public class OpcodeStack implements Constants2 {
         }
 
         pushByInvoke(dbc, seen != INVOKESTATIC);
+        
+        if (initializingServletWriter)
+            this.getStackItem(0).setIsServletWriter();
 
         if ((sawUnknownAppend || appenderValue != null || servletRequestParameterTainted) && getStackDepth() > 0) {
             Item i = this.getStackItem(0);
