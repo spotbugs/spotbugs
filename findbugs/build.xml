@@ -145,7 +145,7 @@
                         destdir="${classes.dir}"
                         source="1.5"
                         target="1.5"
-                                                includeantruntime="false"
+                        includeantruntime="false"
                         encoding="ISO-8859-1"
                         deprecation="off"
                         debug="on">
@@ -559,7 +559,7 @@
               jvmargs="-ea -Xmx900m -Dfindbugs.failIfCloudNotFound=true -Dfindbugs.cloud.token=238b6fc80cec17ec"
               excludeFilter="findbugsExclude.xml"
               projectName="FindBugs"
-              maxRank="18"
+              maxRank="20"
               timeout="1800000"
               outputFile="${build.dir}/findbugscheck.xml" >
       <class location="${classes.dir}" />
