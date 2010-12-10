@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Object recording a recoverable error that occurred during analysis.
@@ -19,6 +20,50 @@ public class AnalysisError {
     private String[] nestedStackTrace;
 
     private final Throwable exception;
+
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((exceptionMessage == null) ? 0 : exceptionMessage.hashCode());
+        result = prime * result + ((message == null) ? 0 : message.hashCode());
+        result = prime * result + ((nestedExceptionMessage == null) ? 0 : nestedExceptionMessage.hashCode());
+        result = prime * result + Arrays.hashCode(nestedStackTrace);
+        result = prime * result + Arrays.hashCode(stackTrace);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof AnalysisError))
+            return false;
+        AnalysisError other = (AnalysisError) obj;
+        if (exceptionMessage == null) {
+            if (other.exceptionMessage != null)
+                return false;
+        } else if (!exceptionMessage.equals(other.exceptionMessage))
+            return false;
+        if (message == null) {
+            if (other.message != null)
+                return false;
+        } else if (!message.equals(other.message))
+            return false;
+        if (nestedExceptionMessage == null) {
+            if (other.nestedExceptionMessage != null)
+                return false;
+        } else if (!nestedExceptionMessage.equals(other.nestedExceptionMessage))
+            return false;
+        if (!Arrays.equals(nestedStackTrace, other.nestedStackTrace))
+            return false;
+        if (!Arrays.equals(stackTrace, other.stackTrace))
+            return false;
+        return true;
+    }
 
     /**
      * Constructor.
