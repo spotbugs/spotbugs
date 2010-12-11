@@ -84,19 +84,18 @@ public class QueryServlet extends AbstractFlybushServlet {
         Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClassname() + " where when > "
                 + startTime + " order by when ascending limit " + queryLimit);
         List<DbEvaluation> evaluations = (List<DbEvaluation>) query.execute();
-        int resultsToSend = Math.min(evaluations.size(), limit);
-        LOGGER.info("Found " + evaluations.size() + " (returning " + resultsToSend + ")");
         RecentEvaluations.Builder issueProtos = RecentEvaluations.newBuilder();
         issueProtos.setCurrentServerTime(System.currentTimeMillis());
-        issueProtos.setAskAgain(evaluations.size() > limit);
-        List<DbEvaluation> evalsToSend = evaluations.subList(0, resultsToSend);
-        Map<String, SortedSet<DbEvaluation>> issues = groupUniqueEvaluationsByIssue(evalsToSend);
+        Iterator<DbEvaluation> iterator = evaluations.iterator();
+        Map<String, SortedSet<DbEvaluation>> issues = groupUniqueEvaluationsByIssue(iterator, limit);
         for (SortedSet<DbEvaluation> evaluationsForIssue : issues.values()) {
             DbIssue issue = evaluationsForIssue.iterator().next().getIssue();
             Issue issueProto = buildFullIssueProto(issue, evaluationsForIssue);
             issueProtos.addIssues(issueProto);
         }
         query.closeAll();
+        LOGGER.info("Returning " + issueProtos.getIssuesCount() + (iterator.hasNext() ? " (more to come)" : ""));
+        issueProtos.setAskAgain(iterator.hasNext());
 
         resp.setStatus(200);
         issueProtos.build().writeTo(resp.getOutputStream());
@@ -205,8 +204,14 @@ public class QueryServlet extends AbstractFlybushServlet {
     }
 
     private Map<String, SortedSet<DbEvaluation>> groupUniqueEvaluationsByIssue(Iterable<DbEvaluation> evaluations) {
+        Iterator<DbEvaluation> iterator = evaluations.iterator();
+        return groupUniqueEvaluationsByIssue(iterator, Integer.MAX_VALUE);
+    }
+
+    private Map<String, SortedSet<DbEvaluation>> groupUniqueEvaluationsByIssue(Iterator<DbEvaluation> iterator, int limit) {
         Map<String, SortedSet<DbEvaluation>> issues = new HashMap<String, SortedSet<DbEvaluation>>();
-        for (DbEvaluation dbEvaluation : evaluations) {
+        for (int i = 0; iterator.hasNext() && i < limit; i++) {
+            DbEvaluation dbEvaluation = iterator.next();
             String issueHash = dbEvaluation.getIssue().getHash();
             SortedSet<DbEvaluation> evaluationsForIssue = issues.get(issueHash);
             if (evaluationsForIssue == null) {
