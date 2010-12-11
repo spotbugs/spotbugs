@@ -18,17 +18,10 @@
  */
 package de.tobject.findbugs.properties;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.SortedSet;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -36,13 +29,11 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.builder.FindBugsWorker;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.preferences.PrefsUtil;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -86,9 +77,10 @@ public class WorkspaceSettingsTab extends Composite {
             return;
         }
         ManagePathsWidget pathsWidget = new ManagePathsWidget(this);
-        ListViewer viewer = pathsWidget.createViewer("Custom Detectors",
+        CheckboxTableViewer viewer = pathsWidget.createViewer("Custom Detectors",
                 "See: <a href=\"http://www.ibm.com/developerworks/library/j-findbug2/\">'Writing custom detectors'</a>"
-                        + " and <a href=\"http://fb-contrib.sourceforge.net/\">fb-contrib</a>: additional bug detectors package");
+                        + " and <a href=\"http://fb-contrib.sourceforge.net/\">fb-contrib</a>: additional bug detectors package",
+                        true);
         detectorProvider = createDetectorProvider(viewer);
         pathsWidget.createButtonsArea(detectorProvider);
         detectorProvider.refresh();
@@ -124,7 +116,7 @@ public class WorkspaceSettingsTab extends Composite {
         });
     }
 
-    protected DetectorProvider createDetectorProvider(ListViewer viewer) {
+    protected DetectorProvider createDetectorProvider(CheckboxTableViewer viewer) {
         final DetectorProvider filterProvider = new DetectorProvider(viewer, page);
         filterProvider.addListener(new Listener() {
             public void handleEvent(Event event) {
@@ -143,63 +135,8 @@ public class WorkspaceSettingsTab extends Composite {
         confirmSwitch.setSelection(store.getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH));
         switchTo.setSelection(store.getBoolean(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS));
         confirmBuild.setSelection(!store.getBoolean(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD));
-        detectorProvider.setFilters(store);
+        detectorProvider.setDetectorPlugins(store);
         detectorProvider.refresh();
-    }
-
-    static class DetectorProvider extends PathsProvider {
-
-        protected DetectorProvider(ListViewer viewer, FindbugsPropertyPage propertyPage) {
-            super(viewer, propertyPage);
-            setFilters(propertyPage.getPreferenceStore());
-        }
-
-        List<PathElement> getFilterFiles(IPreferenceStore prefs) {
-            // TODO project is currently not supported (always null).
-            IProject project = propertyPage.getProject();
-            final List<PathElement> newPaths = new ArrayList<PathElement>();
-            Collection<String> filterPaths = PrefsUtil.readDetectorPaths(prefs);
-            if (filterPaths != null) {
-                for (String path : filterPaths) {
-                    IPath filterPath = FindBugsWorker.getFilterPath(path, project);
-                    // if(filterPath.toFile().exists()) {
-                    newPaths.add(new PathElement(filterPath, Status.OK_STATUS));
-                    // }
-                }
-            }
-            return newPaths;
-        }
-
-        @Override
-        protected void applyToPreferences() {
-            super.applyToPreferences();
-            PrefsUtil.writeDetectorPaths(propertyPage.getPreferenceStore(), pathsToStrings());
-        }
-
-        void setFilters(IPreferenceStore prefs) {
-            setFilters(getFilterFiles(prefs));
-        }
-
-        @Override
-        protected IStatus validate() {
-            DetectorValidator validator = new DetectorValidator();
-            IStatus bad = null;
-            for (PathElement path : paths) {
-                IStatus status = validator.validate(path.getPath());
-                path.setStatus(status);
-                if (!status.isOK()) {
-                    bad = status;
-                    break;
-                }
-            }
-            return bad;
-        }
-
-        @Override
-        protected void configureDialog(FileDialog dialog) {
-            dialog.setFilterExtensions(new String[] { "*.jar" });
-            dialog.setText("Select jar file(s) containing custom detectors");
-        }
     }
 
     public void performOK() {

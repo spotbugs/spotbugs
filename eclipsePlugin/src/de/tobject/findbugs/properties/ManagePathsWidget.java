@@ -18,9 +18,10 @@
  */
 package de.tobject.findbugs.properties;
 
+import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -31,24 +32,25 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Table;
 
 import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * List box with two buttons on the left side: "add" and "remove". First the
  * viewer must be created, then the buttons.
- * 
+ *
  * @author andrei
  */
 public class ManagePathsWidget extends Composite {
 
-    private ListViewer viewer;
+    private TableViewer viewer;
 
     public ManagePathsWidget(Composite parent) {
         super(parent, SWT.NONE);
     }
 
-    public ListViewer createViewer(String title, String linkText) {
+    public CheckboxTableViewer createViewer(String title, String linkText, boolean withCheckBox) {
         GridLayout layout = new GridLayout(2, false);
         layout.marginHeight = 0;
         layout.marginWidth = 0;
@@ -74,9 +76,19 @@ public class ManagePathsWidget extends Composite {
             });
         }
 
-        viewer = new ListViewer(this, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-        viewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
-        return viewer;
+        int style = SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL;
+        if(withCheckBox) {
+            style |= SWT.CHECK;
+        }
+        Table table = new Table(this, style);
+        CheckboxTableViewer viewer1 = new CheckboxTableViewer(table);
+        viewer1.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
+        this.viewer = viewer1;
+        return viewer1;
+    }
+
+    public TableViewer createViewer(String title, String linkText) {
+        return createViewer(title, linkText, false);
     }
 
     public void createButtonsArea(PathsProvider contentProvider) {

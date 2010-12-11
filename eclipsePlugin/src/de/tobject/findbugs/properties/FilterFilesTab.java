@@ -28,7 +28,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -82,7 +82,7 @@ public class FilterFilesTab extends Composite {
 
         private final FilterKind kind;
 
-        protected FilterProvider(ListViewer viewer, FilterKind kind, FindbugsPropertyPage propertyPage) {
+        protected FilterProvider(TableViewer viewer, FilterKind kind, FindbugsPropertyPage propertyPage) {
             super(viewer, propertyPage);
             this.kind = kind;
             setFilters(propertyPage.getCurrentUserPreferences());
@@ -162,7 +162,7 @@ public class FilterFilesTab extends Composite {
         tabDetector.setToolTipText("Configure external bug reporting filters");
 
         ManagePathsWidget incl = new ManagePathsWidget(this);
-        ListViewer viewer = incl.createViewer(getMessage(FilterKind.INCLUDE.propertyName), null);
+        TableViewer viewer = incl.createViewer(getMessage(FilterKind.INCLUDE.propertyName), null);
         filterIncl = createFilterProvider(viewer, FilterKind.INCLUDE, page);
         incl.createButtonsArea(filterIncl);
 
@@ -190,7 +190,7 @@ public class FilterFilesTab extends Composite {
 
     /**
      * Helper method to shorten message access
-     * 
+     *
      * @param key
      *            a message key
      * @return requested message
@@ -199,7 +199,7 @@ public class FilterFilesTab extends Composite {
         return FindbugsPlugin.getDefault().getMessage(key);
     }
 
-    protected FilterProvider createFilterProvider(ListViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
+    protected FilterProvider createFilterProvider(TableViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
         FilterProvider filterProvider = new FilterProvider(viewer, kind, propertyPage);
         filterProvider.addListener(new Listener() {
             public void handleEvent(Event event) {

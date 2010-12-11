@@ -32,7 +32,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -52,17 +52,17 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
 
     private final Control control;
 
-    private final ListViewer viewer;
+    private final TableViewer viewer;
 
     protected final FindbugsPropertyPage propertyPage;
 
     private final ListenerList listeners;
 
-    protected PathsProvider(ListViewer viewer, FindbugsPropertyPage propertyPage) {
+    protected PathsProvider(TableViewer viewer, FindbugsPropertyPage propertyPage) {
         this.propertyPage = propertyPage;
         this.paths = new ArrayList<PathElement>();
         this.viewer = viewer;
-        this.control = viewer.getList();
+        this.control = viewer.getTable();
         listeners = new ListenerList();
         viewer.setContentProvider(this);
     }
@@ -141,13 +141,13 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         return dialog.getFileNames();
     }
 
-    protected String getFilterPath(FileDialog dialog) {
+    protected String getFilePath(FileDialog dialog) {
         return dialog.getFilterPath();
     }
 
     private void addSelectedPaths(FileDialog dialog) {
         String[] names = getFileNames(dialog);
-        String filterPath = getFilterPath(dialog);
+        String filterPath = getFilePath(dialog);
         Path baseDir = new Path(filterPath);
         setLastUsedPath(baseDir);
         for (String fileName : names) {

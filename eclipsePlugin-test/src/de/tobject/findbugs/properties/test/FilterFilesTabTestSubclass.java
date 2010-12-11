@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tomás Pollak
+ * Copyright (C) 2009, Tomï¿½s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@ package de.tobject.findbugs.properties.test;
 import java.io.File;
 import java.util.ArrayList;
 
-import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.TabFolder;
 
@@ -31,8 +31,8 @@ import de.tobject.findbugs.properties.PathElement;
 
 /**
  * Test subclass of FilterFilesTab that provides methods for testing purposes.
- * 
- * @author Tomás Pollak
+ *
+ * @author Tomï¿½s Pollak
  */
 public class FilterFilesTabTestSubclass extends FilterFilesTab {
 
@@ -65,7 +65,7 @@ public class FilterFilesTabTestSubclass extends FilterFilesTab {
     }
 
     @Override
-    protected FilterProvider createFilterProvider(ListViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
+    protected FilterProvider createFilterProvider(TableViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
         return new FilterProviderTestSubclass(viewer, kind, page);
     }
 
@@ -77,7 +77,7 @@ public class FilterFilesTabTestSubclass extends FilterFilesTab {
 
         private String fileName;
 
-        protected FilterProviderTestSubclass(ListViewer viewer, FilterKind kind, FindbugsPropertyPage propertyPage) {
+        protected FilterProviderTestSubclass(TableViewer viewer, FilterKind kind, FindbugsPropertyPage propertyPage) {
             super(viewer, kind, propertyPage);
         }
 
@@ -101,7 +101,7 @@ public class FilterFilesTabTestSubclass extends FilterFilesTab {
         }
 
         @Override
-        protected String getFilterPath(FileDialog dialog) {
+        protected String getFilePath(FileDialog dialog) {
             return parentPath;
         }
 
