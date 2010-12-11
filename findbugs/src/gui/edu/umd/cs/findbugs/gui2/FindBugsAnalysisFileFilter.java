@@ -27,13 +27,12 @@ public final class FindBugsAnalysisFileFilter extends FindBugsFileFilter {
 
     @Override
     public boolean accept(File arg0) {
-        boolean accept = arg0.getName().endsWith(".xml") || arg0.getName().endsWith(".xml.gz");
-        return accept;
+        return arg0.getName().endsWith(".xml") || arg0.getName().endsWith(".xml.gz") || arg0.isDirectory();
     }
 
     @Override
     public String getDescription() {
-        return "FindBugs analysis results (.xml)";
+        return "FindBugs analysis results (.xml, *.xml.gz)";
     }
 
     @Override
