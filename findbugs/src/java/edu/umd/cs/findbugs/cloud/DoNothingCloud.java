@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
+import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
@@ -18,6 +19,10 @@ import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
 
+/**
+ * Doesn't do much. Relies on the {@link edu.umd.cs.findbugs.BugInstance.XmlProps}
+ * read from the analysis XML file, if present.
+ */
 public class DoNothingCloud implements Cloud {
     private CloudPlugin plugin;
     private BugCollection bugCollection;
@@ -34,6 +39,7 @@ public class DoNothingCloud implements Cloud {
     }
 
     /** Invoked via reflection */
+    @SuppressWarnings({"UnusedDeclaration"})
     public DoNothingCloud(CloudPlugin plugin, BugCollection bc, Properties props) {
         this.plugin = plugin;
         this.bugCollection = bc;
@@ -154,7 +160,15 @@ public class DoNothingCloud implements Cloud {
     }
 
     public boolean isInCloud(BugInstance b) {
-        return false;
+        return b.getXmlProps().isInCloud();
+    }
+
+    public boolean isOnlineCloud() {
+        return "true".equals(bugCollection.getXmlCloudDetails().get("online"));
+    }
+
+    public String getBugDetailsUrlTemplate() {
+        return bugCollection.getXmlCloudDetails().get("detailsUrl");
     }
 
     public boolean getIWillFix(BugInstance b) {
@@ -258,7 +272,7 @@ public class DoNothingCloud implements Cloud {
     }
 
     public int getNumberReviewers(BugInstance b) {
-        return 0;
+        return b.getXmlProps().getReviewCount();
     }
 
     public Set<String> getReviewers(BugInstance b) {
@@ -266,11 +280,37 @@ public class DoNothingCloud implements Cloud {
     }
 
     public long getFirstSeen(BugInstance b) {
-        return 0;
+        long computed = getFirstSeenFromVersion(b);
+        Date fromXml = b.getXmlProps().getFirstSeen();
+        if (fromXml == null)
+            return computed;
+
+        long fromXmlTime = fromXml.getTime();
+        if (computed == 0 && fromXmlTime > 0)
+            return fromXmlTime;
+        else if (fromXmlTime == 0 && computed > 0)
+            return computed;
+
+        return Math.min(fromXmlTime, computed);
+    }
+
+    public long getFirstSeenFromVersion(BugInstance b) {
+        long firstVersion = b.getFirstVersion();
+        AppVersion v = getBugCollection().getAppVersionFromSequenceNumber(firstVersion);
+        if (v == null)
+            return getBugCollection().getTimestamp();
+        return v.getTimestamp();
     }
 
     public UserDesignation getConsensusDesignation(BugInstance b) {
-        return null;
+        String consensus = b.getXmlProps().getConsensus();
+        if (consensus == null)
+            return UserDesignation.UNCLASSIFIED;
+        try {
+            return UserDesignation.valueOf(consensus);
+        } catch (IllegalArgumentException e) {
+            return UserDesignation.UNCLASSIFIED;
+        }
     }
 
     public boolean overallClassificationIsNotAProblem(BugInstance b) {

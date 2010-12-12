@@ -22,13 +22,12 @@ package edu.umd.cs.findbugs;
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import edu.umd.cs.findbugs.ba.ClassHash;
 import edu.umd.cs.findbugs.filter.AndMatcher;
@@ -49,6 +48,9 @@ import edu.umd.cs.findbugs.filter.RankMatcher;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.Strings;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Build a BugCollection based on SAX events. This is intended to replace the
@@ -210,6 +212,12 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 String projectName = getOptionalAttribute(attributes, Project.PROJECTNAME_ATTRIBUTE_NAME);
                 if (projectName != null)
                     project.setProjectName(projectName);
+            } else if (qName.equals("CloudDetails")) {
+                Map<String,String> map = new HashMap<String, String>();
+                for (int i = 0; i < attributes.getLength(); i++) {
+                    map.put(attributes.getLocalName(i), attributes.getValue(i));
+                }
+                bugCollection.setXmlCloudDetails(Collections.unmodifiableMap(map));
             } else {
                 String outerElement = elementStack.get(elementStack.size() - 1);
                 if (outerElement.equals(BUG_COLLECTION)) {

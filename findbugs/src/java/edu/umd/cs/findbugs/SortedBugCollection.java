@@ -38,6 +38,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,15 +61,6 @@ import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
 import javax.xml.transform.TransformerException;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.charsets.UTF8;
@@ -82,6 +74,14 @@ import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutputUtil;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * An implementation of {@link BugCollection} that keeps the BugInstances sorted
@@ -111,6 +111,8 @@ public class SortedBugCollection implements BugCollection {
     long timeStartedLoading, timeFinishedLoading;
 
     String dataSource = "";
+
+    private Map<String, String> xmlCloudDetails = Collections.emptyMap();
 
     /**
      * @return Returns the timeStartedLoading.
@@ -462,6 +464,14 @@ public class SortedBugCollection implements BugCollection {
 
                         .addAttribute("release", getReleaseName()));
         project.writeXML(xmlOutput);
+        if (cloud != null) {
+            xmlOutput.startTag("CloudDetails");
+            xmlOutput.addAttribute("online", Boolean.toString(cloud.isOnlineCloud()));
+            String url = cloud.getBugDetailsUrlTemplate();
+            if (url != null)
+                xmlOutput.addAttribute("detailsUrl", url);
+            xmlOutput.stopTag(true);
+        }
     }
 
     // private String getQuickInstanceHash(BugInstance bugInstance) {
@@ -1416,6 +1426,14 @@ public class SortedBugCollection implements BugCollection {
             cloud.initiateCommunication();
         }
         return cloud;
+    }
+
+    public void setXmlCloudDetails(Map<String, String> map) {
+        this.xmlCloudDetails = map;
+    }
+
+    public Map<String, String> getXmlCloudDetails() {
+        return xmlCloudDetails;
     }
 
     /*

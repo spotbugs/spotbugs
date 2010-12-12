@@ -397,6 +397,10 @@ public class AbstractCloudTest extends TestCase {
             return true;
         }
 
+        public boolean isOnlineCloud() {
+            return false;
+        }
+
         public String getCloudName() {
             return "test";
         }

@@ -501,6 +501,15 @@ public class WebCloudClient extends AbstractCloud {
         return networkClient.getIssueByHash(b.getInstanceHash()) != null;
     }
 
+    public boolean isOnlineCloud() {
+        return true;
+    }
+
+    public String getBugDetailsUrlTemplate() {
+        String host = networkClient.getHost();
+        return host == null ? null : host + "/issues/%s?embed";
+    }
+
     // ============================== misc =====================================
 
     public ExecutorService getBackgroundExecutor() {

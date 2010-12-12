@@ -402,6 +402,10 @@ public class WebCloudNetworkClient {
         return username;
     }
 
+    public String getHost() {
+        return host;
+    }
+
     @SuppressWarnings({ "deprecation" })
     public void storeUserAnnotation(BugInstance bugInstance) throws SignInCancelledException, IOException {
         // store this stuff first because signIn might clobber it. this is

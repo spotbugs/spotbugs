@@ -1797,6 +1797,10 @@ public class DBCloud extends AbstractCloud {
         return instanceMap.get(b.getInstanceHash()).inDatabase;
     }
 
+    public boolean isOnlineCloud() {
+        return true;
+    }
+
     public String getCloudName() {
         return "FindBugs SQL Cloud";
     }

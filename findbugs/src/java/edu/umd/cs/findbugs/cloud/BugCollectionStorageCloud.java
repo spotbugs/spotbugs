@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.cloud;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Properties;
 
 import edu.umd.cs.findbugs.BugCollection;
@@ -30,9 +29,7 @@ import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 
 /**
- * A basic "cloud" that doesn't support any actual cloud features. This
- * implementation does use the {@link edu.umd.cs.findbugs.BugInstance.XmlProps}
- * read from the analysis XML file, if present.
+ * A basic "cloud" that stores information to the bug collection analysis XML file.
  * 
  * @author pwilliam
  */
@@ -148,44 +145,15 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     }
 
     public boolean isInCloud(BugInstance b) {
-        return b.getXmlProps().isInCloud();
+        return true;
+    }
+
+    public boolean isOnlineCloud() {
+        return false;
     }
 
     public String getCloudName() {
         return "Analysis XML File Pseudo-Cloud";
-    }
-
-    @Override
-    public int getNumberReviewers(BugInstance b) {
-        return b.getXmlProps().getReviewCount();
-    }
-
-    @Override
-    public UserDesignation getConsensusDesignation(BugInstance b) {
-        String consensus = b.getXmlProps().getConsensus();
-        if (consensus == null)
-            return UserDesignation.UNCLASSIFIED;
-        try {
-            return UserDesignation.valueOf(consensus);
-        } catch (IllegalArgumentException e) {
-            return UserDesignation.UNCLASSIFIED;
-        }
-    }
-
-    @Override
-    public long getFirstSeen(BugInstance b) {
-        long computed = super.getFirstSeen(b);
-        Date fromXml = b.getXmlProps().getFirstSeen();
-        if (fromXml == null)
-            return computed;
-
-        long fromXmlTime = fromXml.getTime();
-        if (computed == 0 && fromXmlTime > 0)
-            return fromXmlTime;
-        else if (fromXmlTime == 0 && computed > 0)
-            return computed;
-
-        return Math.min(fromXmlTime, computed);
     }
 
     /*

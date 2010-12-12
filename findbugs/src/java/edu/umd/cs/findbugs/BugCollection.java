@@ -25,6 +25,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.annotation.WillClose;
 
@@ -373,4 +374,8 @@ public interface BugCollection extends Iterable<BugInstance> {
     public Cloud getCloud();
 
     public Cloud reinitializeCloud();
+
+    void setXmlCloudDetails(Map<String, String> map);
+
+    Map<String, String> getXmlCloudDetails();
 }
