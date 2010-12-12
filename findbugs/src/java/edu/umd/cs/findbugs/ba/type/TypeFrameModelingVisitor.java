@@ -548,8 +548,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                     if (!c.matches(Map.class)) {
                         XClass xc = c.getXClass();
                         String sourceSignature = xc.getSourceSignature();
-                        if (!sourceSignature.contains("Map<TK;TV>")) {
-                            AnalysisContext.logError("QQQ: " + c + " has signature " + sourceSignature);
+                        if (!sourceSignature.contains("Map<TK;TV;>")) {
+                            // AnalysisContext.logError("QQQ: " + c + " has signature " + sourceSignature +" -- type parameters" + parameters);
                             break mapGetCheck;
                         }
                     }
