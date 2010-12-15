@@ -50,7 +50,7 @@ public class XMLBugReporter extends BugCollectionBugReporter {
             getBugCollection().writeXML(outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw new FatalException("Error writing XML output", e);
+            throw new FatalException("Error writing XML output: " + e.getMessage(), e);
         }
     }
 

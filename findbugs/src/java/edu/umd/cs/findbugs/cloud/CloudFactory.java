@@ -40,7 +40,8 @@ public class CloudFactory {
 
     private static final String FINDBUGS_NAMELOOKUP_REQUIRED = "findbugs.namelookup.required";
 
-    private static final boolean FAIL_IF_CLOUD_NOT_FOUND = SystemProperties.getBoolean("findbugs.failIfCloudNotFound", false);
+    public static final String FAIL_ON_CLOUD_ERROR_PROP = "findbugs.failOnCloudError";
+    public static final boolean FAIL_ON_CLOUD_ERROR = SystemProperties.getBoolean(FAIL_ON_CLOUD_ERROR_PROP, false);
 
     public static boolean DEBUG = SystemProperties.getBoolean("findbugs.cloud.debug", false);
 
@@ -53,7 +54,7 @@ public class CloudFactory {
         String cloudId = bc.getProject().getCloudId();
         if (cloudId != null) {
             plugin = DetectorFactoryCollection.instance().getRegisteredClouds().get(cloudId);
-            if (plugin == null && FAIL_IF_CLOUD_NOT_FOUND)
+            if (plugin == null && FAIL_ON_CLOUD_ERROR)
                 throw new IllegalArgumentException("Cannot find registered cloud for " + cloudId);
         }
         // is the desired plugin disabled for this project (and/or globally)? if so, skip it.
@@ -107,19 +108,17 @@ public class CloudFactory {
     public static void initializeCloud(BugCollection bc, Cloud cloud) throws IOException {
         IGuiCallback callback = bc.getProject().getGuiCallback();
 
-        if (cloud.availableForInitialization()) {
-            if (DEBUG)
-                callback.showMessageDialog("attempting to initialize " + cloud.getClass().getName());
+        if (!cloud.availableForInitialization())
+            return;
 
-            if (cloud.initialize()) {
-                if (DEBUG)
-                    callback.showMessageDialog("initialized " + cloud.getClass().getName());
+        if (DEBUG)
+            callback.showMessageDialog("attempting to initialize " + cloud.getClass().getName());
 
-                return;
-            }
-            callback.showMessageDialog("Unable to connect to " + cloud.getCloudName());
-
-        }
+        if (!cloud.initialize())
+            throw new IOException("Unable to connect to " + cloud.getCloudName());
+        
+        if (DEBUG)
+            callback.showMessageDialog("initialized " + cloud.getClass().getName());
     }
 
     public static Cloud getPlainCloud(BugCollection bc) {

@@ -94,6 +94,9 @@ public class FindBugs2 implements IFindBugsEngine {
 
     private static final boolean SCREEN_FIRST_PASS_CLASSES = SystemProperties.getBoolean("findbugs.screenFirstPass");
 
+    public static final String PROP_FINDBUGS_HOST_APP = "findbugs.hostApp";
+    public static final String PROP_FINDBUGS_HOST_APP_VERSION = "findbugs.hostAppVersion";
+
     private int rankThreshold;
 
     private List<IClassObserver> classObserverList;
@@ -152,7 +155,15 @@ public class FindBugs2 implements IFindBugsEngine {
             }
         };
 
-        Version.registerApplication("FindBugs TextUI", Version.getReleaseWithDateIfDev());
+        String hostApp = System.getProperty(PROP_FINDBUGS_HOST_APP);
+        String hostAppVersion = null;
+        if (hostApp == null || hostApp.trim().length() <= 0) {
+            hostApp = "FindBugs TextUI";
+            hostAppVersion = System.getProperty(PROP_FINDBUGS_HOST_APP_VERSION);
+        }
+        if (hostAppVersion == null)
+            hostAppVersion = "";
+        Version.registerApplication(hostApp, hostAppVersion);
 
         // By default, we do not want to scan nested archives
         this.analysisOptions.scanNestedArchives = false;

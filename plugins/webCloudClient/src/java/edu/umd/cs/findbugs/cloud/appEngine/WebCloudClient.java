@@ -175,7 +175,7 @@ public class WebCloudClient extends AbstractCloud {
             }
         } catch (IOException e) {
             setSigninState(SigninState.SIGNIN_FAILED);
-            return false;
+            throw e;
         }
 
         if (!getGuiCallback().isHeadless()) {

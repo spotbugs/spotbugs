@@ -556,7 +556,26 @@
     <findbugs home="."
               output="xml:withMessages"
               cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
-              jvmargs="-ea -Xmx900m -Dfindbugs.failIfCloudNotFound=true -Dfindbugs.cloud.token=238b6fc80cec17ec"
+              jvmargs="-ea -Xmx900m -Dfindbugs.failOnCloudError=true -Dfindbugs.cloud.token=238b6fc80cec17ec"
+              excludeFilter="findbugsExclude.xml"
+              projectName="FindBugs"
+              maxRank="20"
+              timeout="1800000"
+              outputFile="${build.dir}/findbugscheck.xml" >
+      <class location="${classes.dir}" />
+      <sourcePath path="src/java:src/gui:src/junit:src/tools"/>
+      <auxClasspath refid="tools.classpath"/>
+    </findbugs>
+  </target>
+    
+  <target name="findbugscheck-cloud-fails" depends="anttask,junittests,jars">
+    <property name="findbugs.home" value="." />
+    <ant dir="${pluginsSrc.dir}/webCloudClient" target="install" inheritAll="false" />
+    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
+    <findbugs home="."
+              output="xml:withMessages"
+              cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
+              jvmargs="-ea -Xmx900m -Dfindbugs.failOnCloudError=true -Dwebcloud.host=example.com"
               excludeFilter="findbugsExclude.xml"
               projectName="FindBugs"
               maxRank="20"

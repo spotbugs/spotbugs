@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.cloud.username;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,31 +41,20 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class WebCloudNameLookup implements NameLookup {
 
-    public static final String LOCAL_APPENGINE = "webcloud.local";
-
-    public static final String APPENGINE_LOCALHOST_PROPERTY_NAME = "webcloud.host.local";
-
-    public static final String APPENGINE_LOCALHOST_DEFAULT = "http://localhost:8080";
-
-    public static final String APPENGINE_HOST_PROPERTY_NAME = "webcloud.host";
-
-    private static final Logger LOGGER = Logger.getLogger(WebCloudNameLookup.class.getName());
-
+    private static final String APPENGINE_HOST_PROPERTY_NAME = "webcloud.host";
+    private static final String KEY_SAVE_SESSION_INFO = "save_session_info";
+    private static final String KEY_APPENGINECLOUD_SESSION_ID = "webcloud_session_id";
     /** if "true", prevents session info from being saved between launches. */
     private static final String SYSPROP_NEVER_SAVE_SESSION = "webcloud.never_save_session";
 
-    private static final String SYSPROP_APPENGINE_LOCAL = "webcloud.local";
+    private static final Logger LOGGER = Logger.getLogger(WebCloudNameLookup.class.getName());
+
 
     private static final int USER_SIGNIN_TIMEOUT_SECS = 60;
 
-    private static final String KEY_SAVE_SESSION_INFO = "save_session_info";
-
-    private static final String KEY_APPENGINECLOUD_SESSION_ID = "webcloud_session_id";
 
     private Long sessionId;
-
     private String username;
-
     private String host;
 
     public boolean signIn(CloudPlugin plugin, BugCollection bugCollection) throws IOException {
@@ -99,10 +87,7 @@ public class WebCloudNameLookup implements NameLookup {
 
     public void loadProperties(CloudPlugin plugin) {
         PropertyBundle pluginProps = plugin.getProperties();
-        if (pluginProps.getBoolean(LOCAL_APPENGINE))
-            host = pluginProps.getProperty(APPENGINE_LOCALHOST_PROPERTY_NAME, APPENGINE_LOCALHOST_DEFAULT);
-        else
-            host = pluginProps.getProperty(APPENGINE_HOST_PROPERTY_NAME);
+        host = pluginProps.getProperty(APPENGINE_HOST_PROPERTY_NAME);
         if (host == null)
             throw new IllegalStateException("Host not specified for " + plugin.getId());
     }
@@ -185,9 +170,9 @@ public class WebCloudNameLookup implements NameLookup {
         SecureRandom r = new SecureRandom();
         while (id == 0)
             id = r.nextLong();
-        if (id == 0) { // 0 is reserved for no session id
-            id = 42;
-        }
+//        if (id == 0) { // 0 is reserved for no session id
+//            id = 42;
+//        }
         if (isSavingSessionInfoEnabled())
             saveSessionInformation(id);
 
@@ -199,8 +184,7 @@ public class WebCloudNameLookup implements NameLookup {
      */
     private long loadSessionId() {
         Preferences prefs = Preferences.userNodeForPackage(WebCloudNameLookup.class);
-        long id = prefs.getLong(KEY_APPENGINECLOUD_SESSION_ID, 0);
-        return id;
+        return prefs.getLong(KEY_APPENGINECLOUD_SESSION_ID, 0);
     }
 
     private boolean checkAuthorized(URL response) throws IOException {

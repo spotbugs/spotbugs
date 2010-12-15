@@ -138,8 +138,7 @@ public class SortedBugCollection implements BugCollection {
         return project;
     }
 
-    public @Nonnull
-    Cloud getCloud() {
+    public @Nonnull Cloud getCloud() {
         if (shouldNotUsePlugin) {
             return CloudFactory.getPlainCloud(this);
         }
@@ -152,6 +151,9 @@ public class SortedBugCollection implements BugCollection {
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Could not load cloud plugin", e);
                 callback.showMessageDialog("Unable to connect to cloud: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+                if (CloudFactory.FAIL_ON_CLOUD_ERROR)
+                    throw new IllegalStateException("Could not load FindBugs Cloud plugin - to avoid this message, " +
+                            "set -D" + CloudFactory.FAIL_ON_CLOUD_ERROR_PROP + "=false", e);
                 cloud = CloudFactory.getPlainCloud(this);
             }
 

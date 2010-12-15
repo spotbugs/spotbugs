@@ -289,6 +289,7 @@ public abstract class AbstractFindBugsTask extends Task {
         if (debug) {
             jvmargs = jvmargs + " -Dfindbugs.debug=true";
         }
+        jvmargs = jvmargs + " -Dfindbugs.hostApp=FBAntTask";
         findbugsEngine.createJvmarg().setLine(jvmargs);
 
         // Add JVM arguments for system properties
