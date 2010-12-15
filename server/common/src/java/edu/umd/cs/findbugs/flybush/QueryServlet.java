@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -17,6 +18,7 @@ import javax.jdo.Transaction;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.apphosting.api.DeadlineExceededException;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
@@ -88,14 +90,29 @@ public class QueryServlet extends AbstractFlybushServlet {
         issueProtos.setCurrentServerTime(System.currentTimeMillis());
         Iterator<DbEvaluation> iterator = evaluations.iterator();
         Map<String, SortedSet<DbEvaluation>> issues = groupUniqueEvaluationsByIssue(iterator, limit);
-        for (SortedSet<DbEvaluation> evaluationsForIssue : issues.values()) {
-            DbIssue issue = evaluationsForIssue.iterator().next().getIssue();
-            Issue issueProto = buildFullIssueProto(issue, evaluationsForIssue);
-            issueProtos.addIssues(issueProto);
+        boolean askAgain = false;
+        try {
+            for (SortedSet<DbEvaluation> evaluationsForIssue : issues.values()) {
+                DbIssue issue = evaluationsForIssue.iterator().next().getIssue();
+                Issue issueProto = buildFullIssueProto(issue, evaluationsForIssue);
+                issueProtos.addIssues(issueProto);
+            }
+        } catch (DeadlineExceededException e) {
+            if (issueProtos.getIssuesCount() > 0) {
+                LOGGER.log(Level.WARNING, "Deadline exceeded, returning only "
+                        + issueProtos.getIssuesCount() + " results", e);
+                askAgain = true;
+            } else {
+                // just return 500 so the client tries again
+                throw e;
+            }
         }
         query.closeAll();
-        LOGGER.info("Returning " + issueProtos.getIssuesCount() + (iterator.hasNext() ? " (more to come)" : ""));
-        issueProtos.setAskAgain(iterator.hasNext());
+        if (!askAgain) {
+            askAgain = iterator.hasNext();
+            LOGGER.info("Returning " + issueProtos.getIssuesCount() + (askAgain ? " (more to come)" : ""));
+        }
+        issueProtos.setAskAgain(askAgain);
 
         resp.setStatus(200);
         issueProtos.build().writeTo(resp.getOutputStream());
