@@ -314,7 +314,8 @@ public class DoNothingCloud implements Cloud {
     }
 
     public boolean overallClassificationIsNotAProblem(BugInstance b) {
-        return false;
+        UserDesignation consensusDesignation = getConsensusDesignation(b);
+        return consensusDesignation != UserDesignation.UNCLASSIFIED && consensusDesignation.score() < 0;
     }
 
     public boolean canStoreUserAnnotation(BugInstance bugInstance) {
