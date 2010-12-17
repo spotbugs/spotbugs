@@ -201,7 +201,7 @@ public class OpcodeStack implements Constants2 {
 
         public static final @SpecialKind
         int RESULT_OF_L2I = 22;
-        
+
         public static final @SpecialKind
         int SERVLET_OUTPUT = 23;
 
@@ -765,19 +765,19 @@ public class OpcodeStack implements Constants2 {
             setSpecialKind(Item.SERVLET_OUTPUT);
         }
 
-        
+
         public  boolean isServletWriter() {
             if (getSpecialKind() == Item.SERVLET_OUTPUT)
                 return true;
             if (getSignature().equals("Ljavax/servlet/ServletOutputStream;"))
                 return true;
             XMethod writingToSource = getReturnValueOf();
-            
+
 
             return writingToSource != null && writingToSource.getClassName().equals("javax.servlet.http.HttpServletResponse")
                     && (writingToSource.getName().equals("getWriter") || writingToSource.getName().equals("getOutputStream"));
         }
-        
+
         public boolean valueCouldBeNegative() {
             return !isNonNegative()
                     && (getSpecialKind() == Item.RANDOM_INT || getSpecialKind() == Item.SIGNED_BYTE
@@ -2176,7 +2176,8 @@ public class OpcodeStack implements Constants2 {
                 item.constValue = null;
         }
         boolean initializingServletWriter = false;
-        if (seen == INVOKESPECIAL && methodName.equals("<init>") && clsName.startsWith("java/io") && clsName.endsWith("Writer")) {
+        if (seen == INVOKESPECIAL && methodName.equals("<init>") && clsName.startsWith("java/io") && clsName.endsWith("Writer")
+                && numberArguments > 0) {
             Item firstArg = getStackItem(numberArguments-1);
             if (firstArg.isServletWriter())
                 initializingServletWriter = true;
@@ -2308,7 +2309,7 @@ public class OpcodeStack implements Constants2 {
         }
 
         pushByInvoke(dbc, seen != INVOKESTATIC);
-        
+
         if (initializingServletWriter)
             this.getStackItem(0).setIsServletWriter();
 
