@@ -14,8 +14,6 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -506,9 +504,6 @@ public class MainFrameComponentFactory implements Serializable {
             }
             mainFrame.mainFrameTree.setBugPopupMenu(mainFrame.mainFrameTree.createBugPopupMenu());
             mainFrame.mainFrameTree.setBranchPopupMenu(mainFrame.mainFrameTree.createBranchPopUpMenu());
-            mainFrame.getComments().loadPrevCommentsList(
-                    GUISaveState.getInstance().getPreviousComments()
-                            .toArray(new String[GUISaveState.getInstance().getPreviousComments().size()]));
             mainFrame.updateStatusBar();
             mainFrame.setBounds(GUISaveState.getInstance().getFrameBounds());
             Toolkit.getDefaultToolkit().setDynamicLayout(true);
@@ -537,18 +532,9 @@ public class MainFrameComponentFactory implements Serializable {
                 }
             }
 
-            mainFrame.addComponentListener(new ComponentAdapter() {
-                @Override
-                public void componentResized(ComponentEvent e) {
-                    mainFrame.getComments().resized();
-                }
-            });
-
             mainFrame.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
-                    if (mainFrame.getComments().hasFocus())
-                        mainFrame.setProjectChanged(true);
                     mainFrame.callOnClose();
                 }
             });

@@ -70,6 +70,7 @@ public class BugCollectionStorageCloud extends AbstractCloud {
         return null;
     }
 
+    @SuppressWarnings({"deprecation"})
     @Override
     public UserDesignation getUserDesignation(BugInstance b) {
         BugDesignation bd = b.getUserDesignation();
@@ -78,6 +79,7 @@ public class BugCollectionStorageCloud extends AbstractCloud {
         return UserDesignation.valueOf(bd.getDesignationKey());
     }
 
+    @SuppressWarnings({"deprecation"})
     @Override
     public String getUserEvaluation(BugInstance b) {
         BugDesignation bd = b.getUserDesignation();
@@ -86,6 +88,7 @@ public class BugCollectionStorageCloud extends AbstractCloud {
         return bd.getAnnotationText();
     }
 
+    @SuppressWarnings({"deprecation"})
     @Override
     public long getUserTimestamp(BugInstance b) {
         BugDesignation bd = b.getUserDesignation();
@@ -96,7 +99,6 @@ public class BugCollectionStorageCloud extends AbstractCloud {
 
     @Override
     public void setMode(Mode m) {
-        // TODO Auto-generated method stub
     }
 
     public void bugsPopulated() {
@@ -122,22 +124,24 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     }
 
     public void storeUserAnnotation(BugInstance bugInstance) {
-        // TODO Auto-generated method stub
 
     }
 
     public void bugFiled(BugInstance b, Object bugLink) {
         throw new UnsupportedOperationException();
-
     }
 
+    @SuppressWarnings({"deprecation"})
     public BugDesignation getPrimaryDesignation(BugInstance b) {
         return b.getUserDesignation();
     }
 
     @Override
     protected Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd) {
-        return Collections.emptyList();
+        BugDesignation designation = getPrimaryDesignation(bd);
+        if (designation == null)
+            return Collections.emptySet();
+        return Collections.singleton(designation);
     }
 
     public Collection<String> getProjects(String className) {
@@ -156,13 +160,6 @@ public class BugCollectionStorageCloud extends AbstractCloud {
         return "Analysis XML File Pseudo-Cloud";
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.umd.cs.findbugs.cloud.Cloud#waitUntilNewIssuesUploaded()
-     */
     public void waitUntilNewIssuesUploaded() {
-        // TODO Auto-generated method stub
-
     }
 }

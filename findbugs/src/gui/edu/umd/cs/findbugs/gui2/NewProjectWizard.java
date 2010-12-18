@@ -288,7 +288,6 @@ public class NewProjectWizard extends FBDialog {
                                 "FindBugs Cloud Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    mainFrame.getComments().configureForCurrentCloud();
                     mainFrame.getComments().updateCommentsFromLeafInformation(mainFrame.getCurrentSelectedBugLeaf());
 
                 }
@@ -301,7 +300,7 @@ public class NewProjectWizard extends FBDialog {
                     Debug.println("PROJECT NAME IS NULL!!");
                 }
                 if (projectNameChanged) {
-                    mainFrame.setTitle(MainFrame.TITLE_START_TXT + name);
+                    mainFrame.updateTitle();
                 }
 
                 dispose();
@@ -417,11 +416,6 @@ public class NewProjectWizard extends FBDialog {
         return myPanel;
     }
 
-    /**
-     * @param label
-     *            TODO
-     * 
-     */
     private JPanel createFilePanel(final String label, final JList list, final DefaultListModel listModel,
                                    final int fileSelectionMode, final FileFilter filter, final String dialogTitle,
                                    boolean wizard, final String helpUrl) {

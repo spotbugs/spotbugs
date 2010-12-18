@@ -180,7 +180,8 @@ public class MainFrameMenu implements Serializable {
         MainFrameHelper.attachAcceleratorKey(reconfigMenuItem, KeyEvent.VK_F);
         reconfigMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                mainFrame.saveComments(mainFrame.getCurrentSelectedBugLeaf(), mainFrame.getCurrentSelectedBugAspects());
+                if (!mainFrame.canNavigateAway())
+                    return;
                 new NewProjectWizard(mainFrame.getCurProject());
             }
         });
@@ -284,8 +285,8 @@ public class MainFrameMenu implements Serializable {
 
         sortMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                mainFrame.saveComments(mainFrame.getMainFrameTree().getCurrentSelectedBugLeaf(),
-                        mainFrame.getCurrentSelectedBugAspects());
+                if (!mainFrame.canNavigateAway())
+                    return;
                 SorterDialog.getInstance().setLocationRelativeTo(mainFrame);
                 SorterDialog.getInstance().setVisible(true);
             }
@@ -344,7 +345,7 @@ public class MainFrameMenu implements Serializable {
                 KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9 };
         for (String key : I18N.instance().getUserDesignationKeys(true)) {
             String name = I18N.instance().getUserDesignation(key);
-            mainFrame.addDesignationItem(designationMenu, name, keyEvents[i++]);
+            mainFrame.addDesignationItem(designationMenu, key, name, keyEvents[i++]);
         }
         menuBar.add(designationMenu);
 

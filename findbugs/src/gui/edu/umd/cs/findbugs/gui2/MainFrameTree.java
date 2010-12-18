@@ -187,7 +187,8 @@ public class MainFrameTree implements Serializable {
 
         filterMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                mainFrame.saveComments(currentSelectedBugLeaf, mainFrame.getCurrentSelectedBugAspects());
+                if (!mainFrame.canNavigateAway())
+                    return;
                 new NewFilterFromBug(currentSelectedBugLeaf.getBug());
 
                 mainFrame.setProjectChanged(true);
@@ -211,7 +212,7 @@ public class MainFrameTree implements Serializable {
                 KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9 };
         for (String key : I18N.instance().getUserDesignationKeys(true)) {
             String name = I18N.instance().getUserDesignation(key);
-            mainFrame.getComments().addDesignationItem(changeDesignationMenu, name, keyEvents[i++]);
+            mainFrame.addDesignationItem(changeDesignationMenu, key, name, keyEvents[i++]);
         }
 
         popupMenu.add(changeDesignationMenu);
@@ -241,7 +242,8 @@ public class MainFrameTree implements Serializable {
                 // benefit of using the smarter deletion method.
 
                 try {
-                    mainFrame.saveComments(currentSelectedBugLeaf, mainFrame.getCurrentSelectedBugAspects());
+                    if (!mainFrame.canNavigateAway())
+                        return;
                     int startCount;
                     TreePath path = MainFrame.getInstance().getTree().getSelectionPath();
                     TreePath deletePath = path;
@@ -313,7 +315,7 @@ public class MainFrameTree implements Serializable {
                 KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9 };
         for (String key : I18N.instance().getUserDesignationKeys(true)) {
             String name = I18N.instance().getUserDesignation(key);
-            mainFrame.addDesignationItem(changeDesignationMenu, name, keyEvents[i++]);
+            mainFrame.addDesignationItem(changeDesignationMenu, key, name, keyEvents[i++]);
         }
 
         popupMenu.add(changeDesignationMenu);
@@ -623,11 +625,23 @@ public class MainFrameTree implements Serializable {
     }
 
     private class MyTreeSelectionListener implements TreeSelectionListener {
+        private volatile boolean ignoreSelection = false;
         public void valueChanged(TreeSelectionEvent selectionEvent) {
+            if (ignoreSelection)
+                return;
 
             TreePath path = selectionEvent.getNewLeadSelectionPath();
             if (path != null) {
-                mainFrame.saveComments(currentSelectedBugLeaf, mainFrame.getCurrentSelectedBugAspects());
+                if (!mainFrame.canNavigateAway()) {
+                    try {
+                        ignoreSelection = true;
+                        tree.clearSelection();
+                        tree.setSelectionPath(selectionEvent.getOldLeadSelectionPath());
+                    } finally {
+                        ignoreSelection = false;
+                    }
+                    return;
+                }
 
                 Object lastPathComponent = path.getLastPathComponent();
                 if (lastPathComponent instanceof BugLeafNode) {
@@ -644,14 +658,6 @@ public class MainFrameTree implements Serializable {
                     mainFrame.syncBugInformation();
                     mainFrame.setProjectChanged(beforeProjectChanged);
                 }
-            }
-
-            // Debug.println("Tree selection count:" +
-            // tree.getSelectionCount());
-            if (tree.getSelectionCount() != 1) {
-                Debug.println("Tree selection count not equal to 1, disabling comments tab" + selectionEvent);
-
-                mainFrame.setUserCommentInputEnable(false);
             }
         }
     }

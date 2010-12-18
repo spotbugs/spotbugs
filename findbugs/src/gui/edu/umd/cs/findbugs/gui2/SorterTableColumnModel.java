@@ -220,8 +220,9 @@ public class SorterTableColumnModel implements TableColumnModel {
 
     public void moveColumn(int fromIndex, int toIndex) {
 
+        if (!MainFrame.getInstance().canNavigateAway())
+            return;
         MainFrame.getInstance().updateDesignationDisplay();
-        MainFrame.getInstance().saveComments();
         TableColumn from = columnList.get(fromIndex);
         TableColumn to = columnList.get(toIndex);
 

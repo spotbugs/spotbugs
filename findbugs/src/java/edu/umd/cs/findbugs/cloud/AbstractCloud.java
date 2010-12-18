@@ -257,7 +257,8 @@ public abstract class AbstractCloud implements Cloud {
         String me = getUser();
         for (BugDesignation d : getLatestDesignationFromEachUser(b)) {
             if ((me != null && me.equals(d.getUser())) || canSeeCommentsByOthers) {
-                builder.append(String.format("%s @ %s: %s%n", d.getUser(), format.format(new Date(d.getTimestamp())),
+                builder.append(String.format("%s@ %s: %s%n", d.getUser() == null ? "" : d.getUser() + " ",
+                        format.format(new Date(d.getTimestamp())),
                         i18n.getUserDesignation(d.getDesignationKey())));
                 String annotationText = d.getAnnotationText();
                 if (annotationText != null && annotationText.length() > 0) {

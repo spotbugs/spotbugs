@@ -19,146 +19,52 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.BugCollectionStorageCloud;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
-import edu.umd.cs.findbugs.cloud.DoNothingCloud;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 /**
  * @author pugh
+ * @author Keith Lea
  */
 public class CommentsArea {
     private static final Logger LOGGER = Logger.getLogger(CommentsArea.class.getName());
 
-    private final JTextArea userCommentsText = new JTextArea();
-
-    private final JTextArea reportText = new JTextArea();
-
-    private Color userCommentsTextUnenabledColor;
-
-    private JComboBox designationComboBox;
-
-    private ArrayList<String> designationKeys;
-
     private JButton fileBug;
 
-    LinkedList<String> prevCommentsList = new LinkedList<String>();
-
-    final static private int prevCommentsMaxSize = 10;
-
-    private JComboBox prevCommentsComboBox;
-
-    private boolean dontShowAnnotationConfirmation = false;
-
-    private boolean changed;
-
-    final MainFrame frame;
-
-    private final Executor backgroundExecutor = Executors.newSingleThreadExecutor();
+    private final MainFrame frame;
 
     private BugFilingStatus currentBugStatus;
-    private TitledBorder evaluationsTitle;
-    private JPanel mainPanel;
-    private MouseAdapter cloudDisabledMouseListener = new MouseAdapter() {
-        @Override
-        public void mousePressed(MouseEvent e) {
-            if (getCloud() instanceof DoNothingCloud)
-                JOptionPane.showMessageDialog(mainPanel,
-                        "To enable the FindBugs Cloud or another comment storage method, " +
-                                "click the File->Reconfigure menu.");
-        }
-    };
+    private CloudCommentsPaneSwing commentsPane;
 
     CommentsArea(MainFrame frame) {
         this.frame = frame;
     }
 
-    /**
-     * Create center panel that holds the user input combo boxes and TextArea.
-     */
     JPanel createCommentsInputPanel() {
-        BugCollection bc = getMainFrame().getBugCollection();
-
-        Cloud cloud = bc == null ? null : bc.getCloud();
-
-        mainPanel = new JPanel();
+        JPanel mainPanel = new JPanel();
         GridBagLayout layout = new GridBagLayout();
 
         mainPanel.setLayout(layout);
 
-        userCommentsText.getDocument().addDocumentListener(new DocumentListener() {
-
-            public void insertUpdate(DocumentEvent e) {
-                setCommentsChanged(true);
-                changed = true;
-            }
-
-            public void removeUpdate(DocumentEvent e) {
-                setCommentsChanged(true);
-                changed = true;
-            }
-
-            public void changedUpdate(DocumentEvent e) {
-                changed = true;
-            }
-
-        });
-
-        userCommentsTextUnenabledColor = mainPanel.getBackground();
-
-        userCommentsText.setLineWrap(true);
-        userCommentsText.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.enter_comments",
-                "Enter your comments about this bug here"));
-        userCommentsText.setWrapStyleWord(true);
-        userCommentsText.setEnabled(false);
-        userCommentsText.setBackground(userCommentsTextUnenabledColor);
-        userCommentsText.setFont( userCommentsText.getFont().deriveFont(Driver.getFontSize()));
-        JScrollPane commentsScrollP = new JScrollPane(userCommentsText);
-
-        reportText.setLineWrap(true);
-        reportText.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.report", "Information about the bug here"));
-        reportText.setWrapStyleWord(true);
-        reportText.setEditable(false);
-        reportText.setFont( reportText.getFont().deriveFont(Driver.getFontSize()));
-
-        JScrollPane reportScrollP = new JScrollPane(reportText);
         fileBug = new JButton(BugFilingStatus.FILE_BUG.toString());
         fileBug.setEnabled(false);
         fileBug.setToolTipText("Click to file bug for this issue");
@@ -168,9 +74,10 @@ public class CommentsArea {
                 if (frame.getCurrentSelectedBugLeaf() == null) {
                     return;
                 }
-                saveComments();
+                if (!canNavigateAway())
+                    return;
                 BugInstance bug = frame.getCurrentSelectedBugLeaf().getBug();
-                Cloud cloud1 = getMainFrame().getBugCollection().getCloud();
+                Cloud cloud1 = MainFrame.getInstance().getBugCollection().getCloud();
                 if (!cloud1.supportsBugLinks())
                     return;
                 try {
@@ -178,101 +85,27 @@ public class CommentsArea {
                     if (u != null) {
                         if (LaunchBrowser.showDocument(u)) {
                             cloud1.bugFiled(bug, null);
-                            getMainFrame().syncBugInformation();
+                            MainFrame.getInstance().syncBugInformation();
                         }
                     }
                 } catch (Exception e1) {
                     LOGGER.log(Level.SEVERE, "Could not view/file bug", e1);
-                    JOptionPane.showMessageDialog(getMainFrame(), "Could not view/file bug:\n" + e1.getClass().getSimpleName()
+                    JOptionPane.showMessageDialog(MainFrame.getInstance(),
+                            "Could not view/file bug:\n" + e1.getClass().getSimpleName()
                             + ": " + e1.getMessage());
                 }
             }
         });
 
-        prevCommentsComboBox = new JComboBox();
-        prevCommentsComboBox.setEnabled(false);
-        prevCommentsComboBox.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.reuse_comments",
-                "Use this to reuse a previous textual comment for this bug"));
-        prevCommentsComboBox.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED && prevCommentsComboBox.getSelectedIndex() != 0) {
-                    setCurrentUserCommentsText(getCurrentPrevCommentsSelection());
-
-                    prevCommentsComboBox.setSelectedIndex(0);
-                }
-            }
-        });
-
-        designationComboBox = new JComboBox();
-        designationKeys = new ArrayList<String>();
-
-        designationComboBox.setEnabled(false);
-        designationComboBox.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.select_designation",
-                "Select a user designation for this bug"));
-        designationComboBox.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (frame.isUserInputEnabled() && e.getStateChange() == ItemEvent.SELECTED) {
-                    if (frame.getCurrentSelectedBugLeaf() == null)
-                        setDesignationNonLeaf(designationComboBox.getSelectedItem().toString());
-                    else if (!alreadySelected())
-                        setDesignation(designationComboBox.getSelectedItem().toString());
-                }
-            }
-
-            /*
-             * Checks to see if the designation is already selected as that.
-             * This was created because it was found the itemStateChanged method
-             * is called when the combo box is set when a bug is clicked.
-             */
-            private boolean alreadySelected() {
-                return designationKeys.get(designationComboBox.getSelectedIndex()).equals(
-                        frame.getCurrentSelectedBugLeaf().getBug().getUserDesignationKey());
-            }
-        });
-
-        designationKeys.add("");
-        designationComboBox.addItem("");
-        for (String s : I18N.instance().getUserDesignationKeys(true)) {
-            designationKeys.add(s);
-            designationComboBox.addItem(Sortables.DESIGNATION.formatValue(s));
-        }
-        setUnknownDesignation();
-
-        // JPanel comments = new JPanel();
-        // comments.setLayout(new FlowLayout(FlowLayout.LEFT));
-        // comments.add(designationComboBox);
-        // comments.add(whoWhen);
-
-        JPanel myStuffPanel = new JPanel(new GridBagLayout());
-        evaluationsTitle = new TitledBorder("");
-        myStuffPanel.setBorder(evaluationsTitle);
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 0;
-
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 1;
-
-        myStuffPanel.add(designationComboBox, c);
-
-        c.gridx = 0;
-        c.gridy++;
-        c.weightx = 1;
-        c.weighty = 2;
-        c.gridwidth = 2;
         c.fill = GridBagConstraints.BOTH;
-        myStuffPanel.add(commentsScrollP, c);
+        c.weightx = 1;
+        c.weighty = 1;
 
-        mainPanel.add(myStuffPanel, c);
-
-        if (cloud != null && cloud.supportsCloudReports()) {
-            c.gridy++;
-            c.weightx = 1;
-            c.weighty = 1;
-            c.fill = GridBagConstraints.BOTH;
-
-            mainPanel.add(reportScrollP, c);
-        }
+        commentsPane = new CloudCommentsPaneSwing();
+        mainPanel.add(new JScrollPane(commentsPane), c);
 
         c.gridy++;
         c.weightx = 0;
@@ -281,73 +114,14 @@ public class CommentsArea {
         c.anchor = GridBagConstraints.EAST;
         mainPanel.add(fileBug, c);
 
-        mainPanel.addMouseListener(cloudDisabledMouseListener);
-        userCommentsText.addMouseListener(cloudDisabledMouseListener);
-        designationComboBox.addMouseListener(cloudDisabledMouseListener);
-        reportText.addMouseListener(cloudDisabledMouseListener);
-        fileBug.addMouseListener(cloudDisabledMouseListener);
-        configureForCurrentCloud();
         return mainPanel;
     }
 
-    void setUnknownDesignation() {
-        assert designationComboBox.getItemCount() == designationKeys.size();
-        designationComboBox.setSelectedIndex(0); // WARNING: this is hard
-                                                 // coded in here.
-    }
-
-    /**
-     * Sets the user comment panel to whether or not it is enabled. If isEnabled
-     * is false will clear the user comments text pane.
-     *
-     * @param isEnabled
-     */
-    void setUserCommentInputEnable(final boolean isEnabled) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                setUserCommentInputEnableFromSwingThread(isEnabled);
-            }
-        });
-    }
-
-    /**
-     * Sets the user comment panel to whether or not it is enabled. If isEnabled
-     * is false will clear the user comments text pane.
-     *
-     * @param isEnabled
-     */
-    void setUserCommentInputEnableFromSwingThread(final boolean isEnabled) {
-        frame.setUserInputEnabled(isEnabled);
-        if (!isEnabled) {
-            // This so if already saved doesn't make it seem project changed
-            boolean b = frame.getProjectChanged();
-            userCommentsText.setText("");
-            // WARNING: this is hard coded in here, but needed
-            // so when not enabled shows default setting of designation
-            setUnknownDesignation();
-            userCommentsText.setBackground(userCommentsTextUnenabledColor);
-            setCommentsChanged(b);
-        } else
-            userCommentsText.setBackground(Color.WHITE);
-        userCommentsText.setEnabled(isEnabled);
-        prevCommentsComboBox.setEnabled(isEnabled);
-        designationComboBox.setEnabled(isEnabled);
-    }
-
-    /**
-     * Updates comments tab. Takes node passed and sets the designation and
-     * comments.
-     *
-     * @param node
-     */
     void updateCommentsFromLeafInformation(final BugLeafNode node) {
         if (node == null)
             return;
         SwingUtilities.invokeLater(new Runnable() {
-
             public void run() {
-                // This so if already saved doesn't make it seem project changed
-                boolean b = frame.getProjectChanged();
                 BugInstance bug = node.getBug();
                 Cloud plugin = getCloud();
 
@@ -360,466 +134,38 @@ public class CommentsArea {
                 } else {
                     fileBug.setVisible(false);
                 }
-                if (!plugin.canStoreUserAnnotation(bug)) {
-                    designationComboBox.setSelectedIndex(0);
-                    setCurrentUserCommentsText("");
-                    reportText.setText("Issue not persisted to database");
-                    setUserCommentInputEnableFromSwingThread(false);
-                } else {
-                    setCurrentUserCommentsText(bug.getAnnotationText());
-                    if (plugin.supportsCloudReports()) {
-                        String report = plugin.getCloudReport(bug);
-                        reportText.setText(report);
-                    }
-                    designationComboBox.setSelectedIndex(designationKeys.indexOf(bug.getUserDesignationKey()));
-                    setUserCommentInputEnableFromSwingThread(plugin.canStoreUserAnnotation(bug));
-                }
-                changed = false;
-                setCommentsChanged(b);
+                commentsPane.setBugInstance(getBugCollection(), node.getBug());
             }
         });
+    }
+
+    private SortedBugCollection getBugCollection() {
+        return (SortedBugCollection) MainFrame.getInstance().getBugCollection();
     }
 
     void updateCommentsFromNonLeafInformation(final BugAspects theAspects) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                // This so if already saved doesn't make it seem project changed
-                boolean b = frame.getProjectChanged();
                 updateCommentsFromNonLeafInformationFromSwingThread(theAspects);
-                setUserCommentInputEnableFromSwingThread(true);
-                changed = false;
-                setCommentsChanged(b);
             }
         });
     }
 
-    /**
-     * Saves the current comments to the BugLeafNode passed in. If the passed in
-     * node's annotation is already equal to the current user comment then will
-     * not do anything so setProjectedChanged is not made true. Will also add
-     * the comment if it is new to the previous comments list.
-     *
-     * @param node
-     */
-    private void saveCommentsToBug(BugLeafNode node) {
-        if (node == null)
-            return;
 
-        final String comments = getCurrentUserCommentsText();
-        final BugInstance bug = node.getBug();
-        if (bug.getAnnotationText().equals(comments))
-            return;
-
-        // may talk to server - should run in background
-        backgroundExecutor.execute(new Runnable() {
-            public void run() {
-                bug.setAnnotationText(comments, MainFrame.getInstance().getBugCollection());
-                setCommentsChanged(true);
-                changed = false;
-                addToPrevComments(comments);
-            }
-        });
+    public boolean canNavigateAway() {
+        return commentsPane.canNavigateAway();
     }
-
-    private boolean confirmAnnotation() {
-
-        String[] options = { edu.umd.cs.findbugs.L10N.getLocalString("dlg.yes_btn", "Yes"),
-                edu.umd.cs.findbugs.L10N.getLocalString("dlg.no_btn", "No"),
-                edu.umd.cs.findbugs.L10N.getLocalString("dlg.yes_dont_ask_btn", "Yes, and don't ask me this again") };
-        if (dontShowAnnotationConfirmation)
-            return true;
-        int choice = JOptionPane
-                .showOptionDialog(
-                        frame,
-                        edu.umd.cs.findbugs.L10N
-                                .getLocalString("dlg.changing_text_lbl",
-                                        "Changing this text box will overwrite the annotations associated with all bugs in this folder and subfolders. Are you sure?"),
-                        edu.umd.cs.findbugs.L10N.getLocalString("dlg.annotation_change_ttl", "Annotation Change"),
-                        JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-        switch (choice) {
-        case 0:
-            return true;
-        case 1:
-            return false;
-        case 2:
-            dontShowAnnotationConfirmation = true;
-            return true;
-        default:
-            return true;
-        }
-
-    }
-
-    private void saveCommentsToNonLeaf(BugAspects aspects) {
-        if (aspects == null)
-            return;
-        if (!changed)
-            return;
-        String newComment = getCurrentUserCommentsText();
-        if (newComment.equals(getNonLeafCommentsText(aspects)))
-            return;
-        else if (confirmAnnotation()) {
-            BugSet filteredSet = aspects.getMatchingBugs(BugSet.getMainBugSet());
-            for (BugLeafNode nextNode : filteredSet) {
-                saveCommentsToBug(nextNode);
-            }
-        }
-        changed = false;
-
-    }
-
-    /**
-     * Saves comments to the current selected bug.
-     *
-     */
-
-    public void saveComments() {
-        saveComments(frame.getCurrentSelectedBugLeaf(), frame.getCurrentSelectedBugAspects());
-    }
-
-    public void saveComments(BugLeafNode theNode, BugAspects theAspects) {
-        if (theNode != null)
-            saveCommentsToBug(theNode);
-        else
-            saveCommentsToNonLeaf(theAspects);
-    }
-
-    /**
-     * Deletes the list have already. Then loads from list. Will load from the
-     * list until run out of room in the prevCommentsList.
-     *
-     * @param list
-     */
-    void loadPrevCommentsList(String[] list) {
-        int count = 0;
-        for (String str : list) {
-            if (str.equals(""))
-                count++;
-        }
-
-        String[] ary = new String[list.length - count];
-        int j = 0;
-        for (String str : list) {
-            if (!str.equals("")) {
-                ary[j] = str;
-                j++;
-            }
-        }
-
-        String[] temp;
-        prevCommentsList = new LinkedList<String>();
-        if ((ary.length) > prevCommentsMaxSize) {
-            temp = new String[prevCommentsMaxSize];
-            for (int i = 0; i < temp.length && i < ary.length; i++)
-                temp[i] = ary[i];
-        } else {
-            temp = new String[ary.length];
-            System.arraycopy(ary, 0, temp, 0, ary.length);
-        }
-
-        prevCommentsList.addAll(Arrays.asList(temp));
-
-        resetPrevCommentsComboBox();
-    }
-
-    /**
-     * Adds the comment into the list. If the comment is already in the list
-     * then simply moves to the front. If the list is too big when adding the
-     * comment then deletes the last comment on the list.
-     *
-     * @param comment
-     */
-    private void addToPrevComments(String comment) {
-        if (comment.equals(""))
-            return;
-
-        if (prevCommentsList.contains(comment)) {
-            int index = prevCommentsList.indexOf(comment);
-            if (index == 0)
-                return;
-            prevCommentsList.remove(index);
-        }
-
-        prevCommentsList.addFirst(comment);
-
-        while (prevCommentsList.size() > prevCommentsMaxSize)
-            prevCommentsList.removeLast();
-
-        resetPrevCommentsComboBox();
-    }
-
-    /**
-     * Removes all items in the comboBox for previous comments. Then refills it
-     * using prevCommentsList.
-     *
-     */
-    private void resetPrevCommentsComboBox() {
-        prevCommentsComboBox.removeAllItems();
-
-        prevCommentsComboBox.addItem("");
-
-        for (String str : prevCommentsList) {
-            if (str.length() < 20)
-                prevCommentsComboBox.addItem(str);
-            else
-                prevCommentsComboBox.addItem(str.substring(0, 17) + "...");
-        }
-    }
-
-    /**
-     * Returns the text in the current user comments textArea.
-     *
-     * @return
-     */
-    private String getCurrentUserCommentsText() {
-        return userCommentsText.getText();
-    }
-
-    /**
-     * Sets the current user comments text area to comment.
-     *
-     * @param comment
-     */
-    private void setCurrentUserCommentsText(String comment) {
-        changed = true;
-        userCommentsText.setText(comment);
-    }
-
-    /**
-     * Returns the current selected previous comments. Returns as an object.
-     */
-    private String getCurrentPrevCommentsSelection() {
-        return prevCommentsList.get(prevCommentsComboBox.getSelectedIndex() - 1);
-    }
-
-    void addDesignationItem(JMenu menu, final String menuName, int keyEvent) {
-        JMenuItem toggleItem = new JMenuItem(menuName);
-
-        toggleItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                if (frame.getCurrentSelectedBugLeaf() == null)
-                    setDesignationNonLeaf(menuName);
-                else
-                    setDesignation(menuName);
-            }
-        });
-        MainFrameHelper.attachAcceleratorKey(toggleItem, keyEvent);
-        menu.add(toggleItem);
-    }
-
-    void setDesignation(String designationName) {
-        if (frame.getCurrentSelectedBugLeaf() == null)
-            return;
-        String designationKey = convertDesignationNameToDesignationKey(designationName);
-        if (designationKey == null)
-            return;
-        BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
-        BugInstance bug = frame.getCurrentSelectedBugLeaf().getBug();
-        String oldValue = bug.getUserDesignationKey();
-        if (designationKey.equals(oldValue))
-            return;
-        Cloud plugin = bugCollection != null ? bugCollection.getCloud() : null;
-        if (plugin != null && designationKey.equals("I_WILL_FIX") && plugin.supportsClaims()) {
-            String claimedBy = plugin.claimedBy(bug);
-            if (claimedBy != null && !plugin.getUser().equals(claimedBy)) {
-                int result = JOptionPane.showConfirmDialog(null, claimedBy + " has already said they will fix this issue\n"
-                        + "Do you want to also be listed as fixing this issue?\n" + "If so, please coordinate with " + claimedBy,
-                        "Issue already claimed", JOptionPane.YES_NO_CANCEL_OPTION);
-                if (result == JOptionPane.CANCEL_OPTION)
-                    return;
-                if (result != JOptionPane.YES_OPTION)
-                    designationKey = "MUST_FIX";
-            }
-        }
-        if (changeDesignationOfBug(frame.getCurrentSelectedBugLeaf(), designationKey)) {
-            if (plugin != null && plugin.supportsCloudReports()) {
-                String report = plugin.getCloudReport(bug);
-                reportText.setText(report);
-            }
-            changed = true;
-            setCommentsChanged(true);
-        }
-        setDesignationComboBox(designationKey);
-    }
-
-    protected void setDesignationNonLeaf(String designationName) {
-        if (nonleafUpdateDepth > 0)
-            return;
-        String designationKey = convertDesignationNameToDesignationKey(designationName);
-        if (designationKey == null || frame.getCurrentSelectedBugAspects() == null)
-            return;
-        Cloud cloud = getMainFrame().getBugCollection().getCloud();
-        if (cloud.getMode() == Cloud.Mode.VOTING) {
-            JOptionPane.showMessageDialog(frame, "FindBugs is configured in voting mode; no mass updates allowed");
-            return;
-        }
-
-        BugSet filteredSet = frame.getCurrentSelectedBugAspects().getMatchingBugs(BugSet.getMainBugSet());
-        for (BugLeafNode nextNode : filteredSet)
-            if (changeDesignationOfBug(nextNode, designationKey)) {
-                changed = true;
-                setCommentsChanged(true);
-            }
-        setDesignationComboBox(designationKey);
-    }
-
-    protected boolean changeDesignationOfBug(BugLeafNode theNode, final String selection) {
-        saveComments();
-        final BugInstance bug = theNode.getBug();
-        String oldValue = bug.getUserDesignationKey();
-        if (selection.equals(oldValue))
-            return false;
-        backgroundExecutor.execute(new Runnable() {
-            public void run() {
-                bug.setUserDesignationKey(selection, MainFrame.getInstance().getBugCollection());
-            }
-        });
-        return true;
-    }
-
-    protected void updateDesignationComboBox() {
-        if (frame.getCurrentSelectedBugLeaf() == null)
-            updateCommentsFromNonLeafInformationFromSwingThread(frame.getCurrentSelectedBugAspects());
-        else {
-            Cloud cloud = getMainFrame().getBugCollection().getCloud();
-            BugInstance bug = frame.getCurrentSelectedBugLeaf().getBug();
-            if (!cloud.canStoreUserAnnotation(bug)) {
-                designationComboBox.setEnabled(false);
-                designationComboBox.setSelectedIndex(0);
-                return;
-            }
-
-            designationComboBox.setEnabled(true);
-            int selectedIndex = designationComboBox.getSelectedIndex();
-            if (selectedIndex >= 0)
-                setDesignationComboBox(designationKeys.get(selectedIndex));
-            else
-                Debug.println("Couldn't find selected index in designationComboBox: " + designationComboBox.getSelectedItem());
-        }
-    }
-
-    int nonleafUpdateDepth = 0;
 
     protected void updateCommentsFromNonLeafInformationFromSwingThread(BugAspects theAspects) {
-        if (theAspects == null)
-            return;
-        BugSet filteredSet = theAspects.getMatchingBugs(BugSet.getMainBugSet());
-        boolean allSame = true;
-        int first = -1;
-        for (BugLeafNode nextNode : filteredSet) {
-
-            int designationIndex = designationKeys.indexOf(nextNode.getBug().getUserDesignationKey());
-            if (first == -1) {
-                first = designationIndex;
-            } else {
-                if (designationIndex != first)
-                    allSame = false;
-            }
-        }
-        nonleafUpdateDepth++;
-        try {
-            if (allSame) {
-                designationComboBox.setSelectedIndex(first);
-            } else {
-                designationComboBox.setSelectedIndex(0);
-            }
-            userCommentsText.setText(getNonLeafCommentsText(theAspects));
-            Cloud cloud = getCloud();
-            if (cloud != null && cloud.getMode() == Cloud.Mode.VOTING) {
-                userCommentsText.setEnabled(false);
-            }
-            fileBug.setEnabled(false);
-            changed = false;
-        } finally {
-            nonleafUpdateDepth--;
-        }
-    }
-
-    protected String getNonLeafCommentsText(BugAspects theAspects) {
-        if (theAspects == null)
-            return "";
-        BugSet filteredSet = theAspects.getMatchingBugs(BugSet.getMainBugSet());
-        boolean allSame = true;
-        String comments = null;
-        for (BugLeafNode nextNode : filteredSet) {
-            String commentsOnThisBug = nextNode.getBug().getAnnotationText();
-            if (comments == null) {
-                comments = commentsOnThisBug;
-            } else {
-                if (!commentsOnThisBug.equals(comments))
-                    allSame = false;
-            }
-        }
-        if (comments == null || !allSame)
-            return "";
-        else
-            return comments;
-    }
-
-    protected void setDesignationComboBox(String designationKey) {
-        assert designationComboBox.getItemCount() == designationKeys.size();
-
-        int numItems = designationComboBox.getItemCount();
-        for (int i = 0; i < numItems; i++) {
-            String value = designationKeys.get(i);
-            if (designationKey.equals(value)) {
-                designationComboBox.setSelectedIndex(i);
-                return;
-            }
-        }
-        if (MainFrame.GUI2_DEBUG)
-            System.out.println("Couldn't find combo box for " + designationKey);
-    }
-
-    protected @CheckForNull
-    String convertDesignationNameToDesignationKey(String name) {
-        /*
-         * This converts a designation name from human-readable format ("mostly
-         * harmless", "critical") to the program's internal format
-         * ("MOSTLY_HARMLESS", "CRITICAL") etc. This uses the
-         * DesignationComboBox (this should probably be changed)
-         */
-        assert designationComboBox.getItemCount() == designationKeys.size();
-        int itemCount = designationComboBox.getItemCount();
-        for (int i = 1; i < itemCount; i++)
-            if (name.equals(designationComboBox.getItemAt(i)))
-                return designationKeys.get(i);
-        return null;
-    }
-
-    private void setCommentsChanged(boolean b) {
-        Cloud cloud = getCloud();
-        if (cloud == null || cloud instanceof BugCollectionStorageCloud)
-            frame.setProjectChanged(b);
-    }
-
-    /**
-     * Returns the SorterTableColumnModel of the MainFrame.
-     *
-     * @return
-     */
-    SorterTableColumnModel getSorter() {
-        return frame.getSorter();
-    }
-
-    public void resized() {
-        resetPrevCommentsComboBox();
-        userCommentsText.validate();
-    }
-
-    BugTreeModel getModel() {
-        return (BugTreeModel) frame.getTree().getModel();
+        commentsPane.setBugAspects(getBugCollection(), theAspects);
+        fileBug.setEnabled(false);
     }
 
     public boolean hasFocus() {
-        return userCommentsText.hasFocus();
+        return commentsPane.hasFocus();
     }
 
-    /**
-     * @return
-     */
-    private @CheckForNull
-    Cloud getCloud() {
+    private @CheckForNull Cloud getCloud() {
         MainFrame instance = MainFrame.getInstance();
         BugCollection bugCollection = instance.getBugCollection();
         if (bugCollection == null)
@@ -827,30 +173,11 @@ public class CommentsArea {
         return bugCollection.getCloud();
     }
 
-    private MainFrame getMainFrame() {
-        return MainFrame.getInstance();
+    public void refresh() {
+        commentsPane.refresh();
     }
 
-    public void configureForCurrentCloud() {
-
-        Cloud cloud = getCloud();
-        if (fileBug != null)
-            fileBug.setEnabled(cloud != null && cloud.supportsBugLinks());
-        mainPanel.setCursor(Cursor.getDefaultCursor());
-        if (cloud != null) {
-            if (cloud instanceof DoNothingCloud)
-                this.evaluationsTitle.setTitle("Comments - disabled (click to select comment storage method)");
-            else
-                this.evaluationsTitle.setTitle("Comments - " + cloud.getCloudName());
-            if (cloud instanceof DoNothingCloud) {
-                mainPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            }
-        } else {
-            this.evaluationsTitle.setTitle("Comments");
-        }
-        this.mainPanel.invalidate();
-        this.mainPanel.repaint();
-
-//        MainFrame.getInstance().getGuiLayout().resetCommentsInputPane();
+    public void setDesignation(String designationKey) {
+        commentsPane.setDesignation(designationKey);
     }
 }

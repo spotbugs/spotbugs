@@ -92,7 +92,8 @@ public class MainFrameLoadSaveHelper implements Serializable {
      * This method is for when the user wants to open a file.
      */
     void open() {
-        mainFrame.saveComments2();
+        if (!mainFrame.canNavigateAway())
+            return;
 
         if (mainFrame.isProjectChanged()) {
             int response = JOptionPane.showConfirmDialog(mainFrame, L10N.getLocalString("dlg.save_current_changes",
@@ -230,7 +231,8 @@ public class MainFrameLoadSaveHelper implements Serializable {
     }
 
     boolean saveAs() {
-        mainFrame.saveComments2();
+        if (!mainFrame.canNavigateAway())
+            return false;
 
         saveOpenFileChooser.setDialogTitle(L10N.getLocalString("dlg.saveas_ttl", "Save as..."));
 
@@ -362,9 +364,10 @@ public class MainFrameLoadSaveHelper implements Serializable {
     }
 
     void save() {
+        if (!mainFrame.canNavigateAway())
+            return;
         File sFile = mainFrame.getSaveFile();
         assert sFile != null;
-        mainFrame.saveComments2();
 
         SaveReturn result = SaveReturn.SAVE_ERROR;
 
@@ -391,7 +394,8 @@ public class MainFrameLoadSaveHelper implements Serializable {
     }
 
     SaveReturn saveFBPFile(File saveFile2) {
-        mainFrame.saveComments2();
+        if (!mainFrame.canNavigateAway())
+            return SaveReturn.SAVE_ERROR;
         try {
             mainFrame.getProject().writeXML(saveFile2);
         } catch (IOException e) {
@@ -439,7 +443,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
         mainFrame.clearSourcePane();
         mainFrame.clearSummaryTab();
-        mainFrame.getComments().setUserCommentInputEnable(false);
+        mainFrame.getComments().refresh();
         mainFrame.getReconfigMenuItem().setEnabled(true);
         mainFrame.setProjectChanged(false);
         mainFrame.setSaveType(saveType);
@@ -512,7 +516,8 @@ public class MainFrameLoadSaveHelper implements Serializable {
     }
 
     void mergeAnalysis() {
-        mainFrame.saveComments2();
+        if (!mainFrame.canNavigateAway())
+            return;
 
         mainFrame.acquireDisplayWait();
         try {

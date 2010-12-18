@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -90,7 +92,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
     private static final int SEARCH_TEXT_FIELD_SIZE = 32;
 
-    public static final String TITLE_START_TXT = "FindBugs: ";
+    public static final String TITLE_START_TXT = "FindBugs";
 
     private final static String WINDOW_MODIFIED = "windowModified";
 
@@ -403,7 +405,8 @@ public class MainFrame extends FBFrame implements LogSync {
      * the exit menuItem or by clicking on the window's system menu.
      */
     void callOnClose() {
-        comments.saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
+        if (!canNavigateAway())
+            return;
 
         if (projectChanged && !SystemProperties.getBoolean("findbugs.skipSaveChangesWarning")) {
             int value = JOptionPane.showConfirmDialog(this, getActionWithoutSavingMsg("closing"),
@@ -423,7 +426,6 @@ public class MainFrame extends FBFrame implements LogSync {
         }
 
         GUISaveState guiSaveState = GUISaveState.getInstance();
-        guiSaveState.setPreviousComments(comments.prevCommentsList);
         guiLayout.saveState();
         guiSaveState.setFrameBounds(getBounds());
         guiSaveState.save();
@@ -528,7 +530,7 @@ public class MainFrame extends FBFrame implements LogSync {
                 public void run() {
                     PreferencesFrame.getInstance().updateFilterPanel();
                     mainFrameMenu.getReconfigMenuItem().setEnabled(true);
-                    comments.configureForCurrentCloud();
+                    comments.refresh();
                     mainFrameMenu.setViewMenu();
                     newProject();
                     clearSourcePane();
@@ -562,7 +564,7 @@ public class MainFrame extends FBFrame implements LogSync {
             model.getOffListenerList();
             model.changeSet(bs);
             // curProject=BugLoader.getLoadedProject();
-            comments.configureForCurrentCloud();
+            comments.refresh();
             setProjectChanged(true);
         }
         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -581,7 +583,8 @@ public class MainFrame extends FBFrame implements LogSync {
     // ===============================
 
     public void createNewProjectFromMenuItem() {
-        comments.saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
+        if (!canNavigateAway())
+            return;
         new NewProjectWizard();
 
         newProject = true;
@@ -616,7 +619,8 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     void preferences() {
-        saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
+        if (!canNavigateAway())
+            return;
         PreferencesFrame.getInstance().setLocationRelativeTo(this);
         PreferencesFrame.getInstance().setVisible(true);
     }
@@ -638,7 +642,8 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     void redoAnalysis() {
-        saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), currentSelectedBugAspects);
+        if (!canNavigateAway())
+            return;
 
         acquireDisplayWait();
         new Thread() {
@@ -727,7 +732,7 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     void updateDesignationDisplay() {
-        comments.updateDesignationComboBox();
+        comments.refresh();
     }
 
     private String getActionWithoutSavingMsg(String action) {
@@ -757,7 +762,7 @@ public class MainFrame extends FBFrame implements LogSync {
         if (name == null)
             name = Project.UNNAMED_PROJECT;
         String oldTitle = this.getTitle();
-        String newTitle = TITLE_START_TXT + name;
+        String newTitle = TITLE_START_TXT + (name.trim().equals("") ? "" : " " + name);
         if (oldTitle.equals(newTitle))
             return;
         this.setTitle(newTitle);
@@ -804,10 +809,6 @@ public class MainFrame extends FBFrame implements LogSync {
         viewFilter.setPackagesToDisplay(choice.filter);
         resetViewCache();
 
-    }
-
-    public void setUserCommentInputEnable(boolean b) {
-        comments.setUserCommentInputEnable(b);
     }
 
     private static String join(String s1, String s2) {
@@ -869,16 +870,8 @@ public class MainFrame extends FBFrame implements LogSync {
             displayer.foundItem(targetLineNum);
     }
 
-    void saveComments() {
-        comments.saveComments();
-    }
-
-    public void saveComments2() {
-        saveComments(mainFrameTree.getCurrentSelectedBugLeaf(), getCurrentSelectedBugAspects());
-    }
-
-    public void saveComments(BugLeafNode theNode, BugAspects theAspects) {
-        comments.saveComments(theNode, theAspects);
+    public boolean canNavigateAway() {
+        return comments.canNavigateAway();
     }
 
     @SuppressWarnings({ "deprecation" })
@@ -894,10 +887,6 @@ public class MainFrame extends FBFrame implements LogSync {
      */
     public void addFileToRecent(File xmlFile) {
         mainFrameMenu.addFileToRecent(xmlFile);
-    }
-
-    public void addDesignationItem(JMenu menu, final String menuName, int keyEvent) {
-        comments.addDesignationItem(menu, menuName, keyEvent);
     }
 
     public void setSaveType(SaveType saveType) {
@@ -1075,6 +1064,18 @@ public class MainFrame extends FBFrame implements LogSync {
 
     void waitForMainFrameInitialized() {
         mainFrameInitialized.countDown();
+    }
+
+    public void addDesignationItem(JMenu menu, final String key, final String text, int keyEvent) {
+        JMenuItem toggleItem = new JMenuItem(text);
+
+        toggleItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                comments.setDesignation(key);
+            }
+        });
+        MainFrameHelper.attachAcceleratorKey(toggleItem, keyEvent);
+        menu.add(toggleItem);
     }
 
     enum BugCard {
