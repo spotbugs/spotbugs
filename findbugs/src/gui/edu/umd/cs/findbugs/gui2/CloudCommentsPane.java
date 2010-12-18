@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -139,10 +140,25 @@ public abstract class CloudCommentsPane extends JPanel {
     private void applyToBugs(boolean background, final BugAction bugAction) {
         Executor executor = background ? backgroundExecutor : new NowExecutor();
 
+        final AtomicInteger shownErrorMessages = new AtomicInteger(0);
         for (final BugInstance bug : getSelectedBugs())
             executor.execute(new Runnable() {
                 public void run() {
-                    bugAction.execute(bug);
+                    if (shownErrorMessages.get() > 5) {
+                        // 5 errors? let's just stop trying.
+                        return;
+                    }
+                    try {
+                        bugAction.execute(bug);
+                    } catch (Throwable e) {
+                        if (shownErrorMessages.addAndGet(1) > 5) {
+                            return;
+                        }
+                        JOptionPane.showMessageDialog(CloudCommentsPane.this,
+                                "Error while submitting cloud comments:\n"
+                                + e.getClass().getSimpleName() + ": " + e.getMessage(),
+                                "Comment Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             });
     }
