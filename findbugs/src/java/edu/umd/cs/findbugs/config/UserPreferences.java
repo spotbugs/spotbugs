@@ -56,7 +56,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 /**
  * User Preferences outside of any one Project. This consists of a class to
  * manage the findbugs.prop file found in the user.home.
- * 
+ *
  * @author Dave Brosius
  */
 public class UserPreferences implements Cloneable {
@@ -79,8 +79,6 @@ public class UserPreferences implements Cloneable {
     private ProjectFilterSettings filterSettings;
 
     private boolean runAtFullBuild = true;
-
-    private static UserPreferences preferencesSingleton = new UserPreferences();
 
     public static final String EFFORT_MIN = "min";
 
@@ -110,21 +108,11 @@ public class UserPreferences implements Cloneable {
 
     /**
      * Create default UserPreferences.
-     * 
+     *
      * @return default UserPreferences
      */
     public static UserPreferences createDefaultUserPreferences() {
         return new UserPreferences();
-    }
-
-    /**
-     * Get UserPreferences singleton. This should only be used if there is a
-     * single set of user preferences to be used for all projects.
-     * 
-     * @return the UserPreferences
-     */
-    public static UserPreferences getUserPreferences() {
-        return preferencesSingleton;
     }
 
     /**
@@ -146,7 +134,7 @@ public class UserPreferences implements Cloneable {
     /**
      * Read user preferences from given input stream. The InputStream is
      * guaranteed to be closed by this method.
-     * 
+     *
      * @param in
      *            the InputStream
      * @throws IOException
@@ -242,7 +230,7 @@ public class UserPreferences implements Cloneable {
     /**
      * Write UserPreferences to given OutputStream. The OutputStream is
      * guaranteed to be closed by this method.
-     * 
+     *
      * @param out
      *            the OutputStream
      * @throws IOException
@@ -294,7 +282,7 @@ public class UserPreferences implements Cloneable {
 
     /**
      * Get List of recent project filenames.
-     * 
+     *
      * @return List of recent project filenames
      */
     public List<String> getRecentProjects() {
@@ -304,7 +292,7 @@ public class UserPreferences implements Cloneable {
     /**
      * Add given project filename to the front of the recently-used project
      * list.
-     * 
+     *
      * @param projectName
      *            project filename
      */
@@ -318,7 +306,7 @@ public class UserPreferences implements Cloneable {
 
     /**
      * Remove project filename from the recently-used project list.
-     * 
+     *
      * @param projectName
      *            project filename
      */
@@ -337,7 +325,7 @@ public class UserPreferences implements Cloneable {
 
     /**
      * Set the enabled/disabled status of given Detector.
-     * 
+     *
      * @param factory
      *            the DetectorFactory for the Detector to be enabled/disabled
      * @param enable
@@ -350,7 +338,7 @@ public class UserPreferences implements Cloneable {
 
     /**
      * Get the enabled/disabled status of given Detector.
-     * 
+     *
      * @param factory
      *            the DetectorFactory of the Detector
      * @return true if the Detector is enabled, false if not
@@ -370,7 +358,7 @@ public class UserPreferences implements Cloneable {
 
     /**
      * Enable or disable all known Detectors.
-     * 
+     *
      * @param enable
      *            true if all detectors should be enabled, false if they should
      *            all be disabled
@@ -387,7 +375,7 @@ public class UserPreferences implements Cloneable {
 
     /**
      * Set the ProjectFilterSettings.
-     * 
+     *
      * @param filterSettings
      *            the ProjectFilterSettings
      */
@@ -397,7 +385,7 @@ public class UserPreferences implements Cloneable {
 
     /**
      * Get ProjectFilterSettings.
-     * 
+     *
      * @return the ProjectFilterSettings
      */
     public ProjectFilterSettings getFilterSettings() {
@@ -406,7 +394,7 @@ public class UserPreferences implements Cloneable {
 
     /**
      * Get the detector threshold (min severity to report a warning).
-     * 
+     *
      * @return the detector threshold
      */
     public int getUserDetectorThreshold() {
@@ -415,7 +403,7 @@ public class UserPreferences implements Cloneable {
 
     /**
      * Set the detector threshold (min severity to report a warning).
-     * 
+     *
      * @param threshold
      *            the detector threshold
      */
@@ -427,7 +415,7 @@ public class UserPreferences implements Cloneable {
     /**
      * Set the enabled/disabled status of running findbugs automatically for
      * full builds.
-     * 
+     *
      * @param enable
      *            true if running FindBugs at full builds should be enabled,
      *            false if it should be Disabled
@@ -438,7 +426,7 @@ public class UserPreferences implements Cloneable {
 
     /**
      * Get the enabled/disabled status of runAtFullBuild
-     * 
+     *
      * @return true if the running for full builds is enabled, false if not
      */
     public boolean isRunAtFullBuild() {
@@ -447,7 +435,7 @@ public class UserPreferences implements Cloneable {
 
     /**
      * Set the detector threshold (min severity to report a warning).
-     * 
+     *
      * @param threshold
      *            the detector threshold
      */
@@ -542,7 +530,7 @@ public class UserPreferences implements Cloneable {
     /**
      * Helper method to read array of strings out of the properties file, using
      * a Findbugs style format.
-     * 
+     *
      * @param props
      *            The properties file to read the array from.
      * @param keyPrefix
@@ -569,7 +557,7 @@ public class UserPreferences implements Cloneable {
     /**
      * Helper method to write array of strings out of the properties file, using
      * a Findbugs style format.
-     * 
+     *
      * @param props
      *            The properties file to write the array to.
      * @param keyPrefix
@@ -599,7 +587,7 @@ public class UserPreferences implements Cloneable {
     /**
      * Returns the effort level as an array of feature settings as expected by
      * FindBugs.
-     * 
+     *
      * @return The array of feature settings corresponding to the current effort
      *         setting.
      */

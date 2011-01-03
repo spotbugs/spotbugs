@@ -59,6 +59,18 @@ import edu.umd.cs.findbugs.workflow.Update;
  */
 public class BugLoader {
 
+    private static UserPreferences preferencesSingleton = UserPreferences.createDefaultUserPreferences();
+
+    /**
+     * Get UserPreferences singleton. This should only be used if there is a
+     * single set of user preferences to be used for all projects.
+     *
+     * @return the UserPreferences
+     */
+    static UserPreferences getUserPreferences() {
+        return preferencesSingleton;
+    }
+
     /**
      * Performs an analysis and returns the BugSet created
      *
@@ -78,7 +90,7 @@ public class BugLoader {
         BugCollectionBugReporter pcb = new BugCollectionBugReporter(p, new PrintWriter(stringWriter, true));
         pcb.setPriorityThreshold(Priorities.NORMAL_PRIORITY);
         IFindBugsEngine fb = createEngine(p, pcb);
-        fb.setUserPreferences(UserPreferences.getUserPreferences());
+        fb.setUserPreferences(getUserPreferences());
         fb.setProgressCallback(progressCallback);
         fb.setProjectName(p.getProjectName());
 
