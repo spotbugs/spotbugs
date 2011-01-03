@@ -60,6 +60,17 @@ import edu.umd.cs.findbugs.SystemProperties;
  * @author Dave Brosius
  */
 public class UserPreferences implements Cloneable {
+
+    // Public constants
+
+    public static final String EFFORT_MIN = "min";
+
+    public static final String EFFORT_DEFAULT = "default";
+
+    public static final String EFFORT_MAX = "max";
+
+    // Private constants
+
     private static final String PREF_FILE_NAME = ".Findbugs_prefs";
 
     private static final int MAX_RECENT_FILES = 9;
@@ -72,20 +83,6 @@ public class UserPreferences implements Cloneable {
 
     private static final String RUN_AT_FULL_BUILD = "run_at_full_build";
 
-    private LinkedList<String> recentProjectsList = new LinkedList<String>();
-
-    private Map<String, Boolean> detectorEnablementMap = new HashMap<String, Boolean>();
-
-    private ProjectFilterSettings filterSettings;
-
-    private boolean runAtFullBuild = true;
-
-    public static final String EFFORT_MIN = "min";
-
-    public static final String EFFORT_DEFAULT = "default";
-
-    public static final String EFFORT_MAX = "max";
-
     private static final String EFFORT_KEY = "effort";
 
     private static final String INCLUDE_FILTER_KEY = "includefilter";
@@ -94,16 +91,33 @@ public class UserPreferences implements Cloneable {
 
     private static final String EXCLUDE_BUGS_KEY = "excludebugs";
 
-    private String effort = EFFORT_DEFAULT;
+    // Fields
 
-    private Collection<String> includeFilterFiles = Collections.<String> emptySet();
+    private LinkedList<String> recentProjectsList;
 
-    private Collection<String> excludeFilterFiles = Collections.<String> emptySet();
+    private Map<String, Boolean> detectorEnablementMap;
 
-    private Collection<String> excludeBugsFiles = Collections.<String> emptySet();
+    private ProjectFilterSettings filterSettings;
+
+    private boolean runAtFullBuild;
+
+    private String effort;
+
+    private Collection<String> includeFilterFiles;
+
+    private Collection<String> excludeFilterFiles;
+
+    private Collection<String> excludeBugsFiles;
 
     private UserPreferences() {
-        this.filterSettings = ProjectFilterSettings.createDefault();
+        filterSettings = ProjectFilterSettings.createDefault();
+        recentProjectsList = new LinkedList<String>();
+        detectorEnablementMap = new HashMap<String, Boolean>();
+        runAtFullBuild = true;
+        effort = EFFORT_DEFAULT;
+        includeFilterFiles = Collections.<String> emptySet();
+        excludeFilterFiles = Collections.<String> emptySet();
+        excludeBugsFiles = Collections.<String> emptySet();
     }
 
     /**
@@ -600,5 +614,3 @@ public class UserPreferences implements Cloneable {
         return FindBugs.MAX_EFFORT;
     }
 }
-
-// vim:ts=4
