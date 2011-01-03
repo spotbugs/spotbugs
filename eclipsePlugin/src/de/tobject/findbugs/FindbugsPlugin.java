@@ -53,7 +53,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -181,6 +180,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /** The shared instance. */
     private static FindbugsPlugin plugin;
 
+    private static boolean customDetectorsInitialized;
+
     /** Resource bundle. */
     private ResourceBundle resourceBundle;
 
@@ -233,18 +234,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         // Register our save participant
         FindbugsSaveParticipant saveParticipant = new FindbugsSaveParticipant();
         ResourcesPlugin.getWorkspace().addSaveParticipant(this, saveParticipant);
-
-        // we shouldn't do long operations on startup, but reading custom
-        // detectors
-        // might take some time => always start this in a job
-        Job job = new Job("Applying custom detectors") {
-            @Override
-            protected IStatus run(IProgressMonitor monitor) {
-                applyCustomDetectors(false);
-                return Status.OK_STATUS;
-            }
-        };
-        job.schedule();
     }
 
     public static void dumpClassLoader(Class<?> c) {
@@ -264,6 +253,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      *            true if we MUST set plugins even if the given list is empty
      */
     public static synchronized void applyCustomDetectors(boolean force) {
+        if(customDetectorsInitialized && !force) {
+            return;
+        }
+        customDetectorsInitialized = true;
         DetectorValidator validator = new DetectorValidator();
         final SortedSet<String> detectorPaths = new TreeSet<String>();
         detectorPaths.addAll(DetectorsExtensionHelper.getContributedDetectors());
