@@ -29,6 +29,12 @@ import java.util.Stack;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 import edu.umd.cs.findbugs.ba.ClassHash;
 import edu.umd.cs.findbugs.filter.AndMatcher;
 import edu.umd.cs.findbugs.filter.BugMatcher;
@@ -48,9 +54,6 @@ import edu.umd.cs.findbugs.filter.RankMatcher;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.Strings;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Build a BugCollection based on SAX events. This is intended to replace the
@@ -103,13 +106,14 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
     private int nestingOfIgnoredElements = 0;
 
-    private final File base;
+    private final @CheckForNull File base;
 
     private final String topLevelName;
 
     private String cloudPropertyKey;
 
-    private SAXBugCollectionHandler(String topLevelName, BugCollection bugCollection, Project project, File base) {
+    private SAXBugCollectionHandler(String topLevelName, BugCollection bugCollection, Project project,
+            @CheckForNull File base) {
         this.topLevelName = topLevelName;
         this.bugCollection = bugCollection;
         this.project = project;
@@ -121,8 +125,12 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
     }
 
-    public SAXBugCollectionHandler(BugCollection bugCollection, File base) {
+    public SAXBugCollectionHandler(BugCollection bugCollection, @CheckForNull File base) {
         this(BUG_COLLECTION, bugCollection, bugCollection.getProject(), base);
+    }
+
+    public SAXBugCollectionHandler(BugCollection bugCollection) {
+        this(BUG_COLLECTION, bugCollection, bugCollection.getProject(), null);
     }
 
     public SAXBugCollectionHandler(Project project, File base) {
