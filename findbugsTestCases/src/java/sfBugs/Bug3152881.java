@@ -5,7 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+
 public class Bug3152881 {
+    @DesireNoWarning("OBL_UNSATISFIED_OBLIGATION")
     void falsePositive(Connection connection)
             throws SQLException {
         Statement createStmt = null;
