@@ -49,6 +49,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
@@ -491,14 +492,18 @@ public abstract class CloudCommentsPane extends JPanel {
         }
     }
 
-    private void setCloudReportText(String report) {
-        final HTMLDocument doc = (HTMLDocument) _cloudReportPane.getDocument();
-        try {
-            doc.remove(0, doc.getLength());
-            doc.insertString(0, report, null);
-        } catch (BadLocationException e) {
-            // probably won't happen
-        }
+    private void setCloudReportText(final String report) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                final HTMLDocument doc = (HTMLDocument) _cloudReportPane.getDocument();
+                try {
+                    doc.remove(0, doc.getLength());
+                    doc.insertString(0, report, null);
+                } catch (BadLocationException e) {
+                    // probably won't happen
+                }
+            }
+        });
     }
 
     protected abstract void setSignInOutText(String buttonText);
