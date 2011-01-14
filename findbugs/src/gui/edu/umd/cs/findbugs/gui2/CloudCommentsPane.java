@@ -127,6 +127,7 @@ public abstract class CloudCommentsPane extends JPanel {
         });
         _submitCommentButton.setToolTipText("Submit comment [Shift+Enter]");
         _cancelLink.setToolTipText("Cancel [Esc]");
+        _addCommentLink.setEnabled(false);
 
         updateBugCommentsView();
     }
@@ -321,6 +322,7 @@ public abstract class CloudCommentsPane extends JPanel {
             return;
         if (!canNavigateAway())
             return;
+
         updateCloudListeners(bugCollection);
         _bugCollection = bugCollection;
         _bugInstance = bugInstance;
@@ -427,7 +429,7 @@ public abstract class CloudCommentsPane extends JPanel {
 
     private void updateCloudListeners(final SortedBugCollection newBugCollection) {
         boolean isNewCloud = false;
-        final Cloud newCloud = newBugCollection.getCloud();
+        final Cloud newCloud = newBugCollection == null ? null : newBugCollection.getCloud();
         if (_bugCollection != null) {
             final Cloud oldCloud = _bugCollection.getCloud();
             //noinspection ObjectEquality
@@ -456,6 +458,8 @@ public abstract class CloudCommentsPane extends JPanel {
             _titleLabel.setText("<html>Comments");
             return;
         }
+
+        _addCommentLink.setEnabled(_bugCollection != null && !bugs.isEmpty());
         _changeLink.setVisible(true);
         final Cloud cloud = _bugCollection.getCloud();
         String report;

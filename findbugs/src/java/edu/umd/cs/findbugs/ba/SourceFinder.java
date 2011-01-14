@@ -220,7 +220,7 @@ public class SourceFinder {
                     in = connection.getInputStream();
                     if (getProject().isGuiAvaliable())
                         in = getProject().getGuiCallback().getProgressMonitorInputStream(in, connection.getContentLength(),
-                                "Loading remote source archive into memory");
+                                "Downloading project source code...");
 
                     if (url.endsWith(".z0p.gz"))
                         in = new GZIPInputStream(in);

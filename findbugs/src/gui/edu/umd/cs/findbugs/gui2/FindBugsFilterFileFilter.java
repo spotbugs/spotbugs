@@ -29,12 +29,12 @@ public final class FindBugsFilterFileFilter extends FileFilter {
 
     @Override
     public boolean accept(File arg0) {
-        return arg0.getName().endsWith(".xml");
+        return arg0.getName().endsWith(".xml") || arg0.isDirectory();
     }
 
     @Override
     public String getDescription() {
-        return "FindBugs filter file results (.xml)";
+        return "FindBugs Filter Files (*.xml)";
     }
 
 }

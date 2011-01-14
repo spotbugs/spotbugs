@@ -15,7 +15,7 @@ public class CloudCommentsPaneSwing extends CloudCommentsPane {
 
     @Override
     protected void setupLinksOrButtons() {
-        _addCommentLink = new JButton("Add Comment...");
+        _addCommentLink = new JButton("Add comment...");
         ((JButton)_addCommentLink).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 addCommentClicked();

@@ -28,7 +28,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
@@ -478,6 +477,11 @@ public class MainFrame extends FBFrame implements LogSync {
 
     }
 
+    void clearBugCollection() {
+        setSaveFile(null);
+        setProjectAndBugCollection(null, null);
+    }
+    
     @SwingThread
     void setBugCollection(BugCollection bugCollection) {
         setProjectAndBugCollection(bugCollection.getProject(), bugCollection);
@@ -505,27 +509,25 @@ public class MainFrame extends FBFrame implements LogSync {
                 }
             }
             if (this.bugCollection != bugCollection && this.bugCollection != null) {
-
                 Cloud plugin = this.bugCollection.getCloud();
                 if (plugin != null) {
                     plugin.removeListener(userAnnotationListener);
                     plugin.removeStatusListener(cloudStatusListener);
                     plugin.shutdown();
                 }
-
             }
             // setRebuilding(false);
+            setProject(project);
+            this.bugCollection = bugCollection;
+            displayer.clearCache();
             if (bugCollection != null) {
-                setProject(project);
-                this.bugCollection = bugCollection;
-                displayer.clearCache();
                 Cloud plugin = bugCollection.getCloud();
                 if (plugin != null) {
                     plugin.addListener(userAnnotationListener);
                     plugin.addStatusListener(cloudStatusListener);
                 }
-                mainFrameTree.updateBugTree();
             }
+            mainFrameTree.updateBugTree();
             setProjectChanged(false);
             Runnable runnable = new Runnable() {
                 public void run() {
@@ -594,12 +596,7 @@ public class MainFrame extends FBFrame implements LogSync {
     void newProject() {
         clearSourcePane();
         if (!FindBugs.noAnalysis) {
-            if (curProject == null)
-                mainFrameMenu.getRedoAnalysisItem().setEnabled(false);
-            else {
-                List<String> fileList = curProject.getFileList();
-                mainFrameMenu.getRedoAnalysisItem().setEnabled(!fileList.isEmpty());
-            }
+            mainFrameMenu.enableOrDisableItems(curProject, bugCollection);
         }
 
         if (newProject) {
@@ -758,12 +755,12 @@ public class MainFrame extends FBFrame implements LogSync {
     public void updateTitle() {
         Project project = getProject();
         String name = project == null ? null : project.getProjectName();
-        if (name == null && saveFile != null)
+        if ((name == null || name.trim().equals("")) && saveFile != null)
             name = saveFile.getAbsolutePath();
         if (name == null)
-            name = Project.UNNAMED_PROJECT;
+            name = "";//Project.UNNAMED_PROJECT;
         String oldTitle = this.getTitle();
-        String newTitle = TITLE_START_TXT + (name.trim().equals("") ? "" : " " + name);
+        String newTitle = TITLE_START_TXT + (name.trim().equals("") ? "" : " - " + name);
         if (oldTitle.equals(newTitle))
             return;
         this.setTitle(newTitle);

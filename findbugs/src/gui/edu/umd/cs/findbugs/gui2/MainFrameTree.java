@@ -17,6 +17,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.Action;
@@ -149,13 +150,16 @@ public class MainFrameTree implements Serializable {
         mainFrame.acquireDisplayWait();
         try {
             BugTreeModel model = (BugTreeModel) getTree().getModel();
+            BugSet bs;
             if (mainFrame.getBugCollection() != null) {
-                BugSet bs = new BugSet(mainFrame.getBugCollection());
-                model.getOffListenerList();
-                model.changeSet(bs);
-                if (bs.size() == 0 && bs.sizeUnfiltered() > 0) {
-                    warnUserOfFilters();
-                }
+                bs = new BugSet(mainFrame.getBugCollection());
+            } else {
+                bs = new BugSet(Collections.<BugLeafNode>emptySet());
+            }
+            model.getOffListenerList();
+            model.changeSet(bs);
+            if (bs.size() == 0 && bs.sizeUnfiltered() > 0) {
+                warnUserOfFilters();
             }
 
             mainFrame.updateStatusBar();

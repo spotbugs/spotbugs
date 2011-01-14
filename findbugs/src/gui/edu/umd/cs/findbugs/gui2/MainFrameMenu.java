@@ -20,9 +20,11 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.TextAction;
 
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.L10N;
+import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.cloud.Cloud;
 
 public class MainFrameMenu implements Serializable {
@@ -31,6 +33,7 @@ public class MainFrameMenu implements Serializable {
     JMenuItem reconfigMenuItem = MainFrameHelper.newJMenuItem("menu.reconfig", "Reconfigure...", KeyEvent.VK_F);
 
     JMenuItem redoAnalysis;
+    JMenuItem closeProjectItem;
 
     RecentMenu recentMenuCache;
 
@@ -45,6 +48,7 @@ public class MainFrameMenu implements Serializable {
     private Class<?> osxAdapter;
 
     private Method osxPrefsEnableMethod;
+    private JMenuItem saveAsMenuItem;
 
     public MainFrameMenu(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -148,9 +152,9 @@ public class MainFrameMenu implements Serializable {
         JMenuItem openMenuItem = MainFrameHelper.newJMenuItem("menu.open_item", "Open...", KeyEvent.VK_O);
         recentMenu = MainFrameHelper.newJMenu("menu.recent", "Recent");
         recentMenuCache = new RecentMenu(recentMenu);
-        JMenuItem saveAsMenuItem = MainFrameHelper.newJMenuItem("menu.saveas_item", "Save As...", KeyEvent.VK_A);
-        JMenuItem importFilter = MainFrameHelper.newJMenuItem("menu.importFilter_item", "Import filter...");
-        JMenuItem exportFilter = MainFrameHelper.newJMenuItem("menu.exportFilter_item", "Export filter...");
+        saveAsMenuItem = MainFrameHelper.newJMenuItem("menu.saveas_item", "Save As...", KeyEvent.VK_A);
+        JMenuItem importFilter = MainFrameHelper.newJMenuItem("menu.importFilter_item", "Import bug filters...");
+        JMenuItem exportFilter = MainFrameHelper.newJMenuItem("menu.exportFilter_item", "Export bug filters...");
 
         JMenuItem exitMenuItem = null;
         if (!MainFrame.MAC_OS_X) {
@@ -206,6 +210,21 @@ public class MainFrameMenu implements Serializable {
                 }
             });
         }
+        closeProjectItem = MainFrameHelper.newJMenuItem("menu.closeProject", "Close Project");
+        closeProjectItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.getMainFrameLoadSaveHelper().closeProject();
+                mainFrame.clearBugCollection();
+            }
+        });
+        closeProjectItem.setEnabled(false);
+
+        MainFrameHelper.attachAcceleratorKey(redoAnalysis, KeyEvent.VK_R);
+        redoAnalysis.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                mainFrame.redoAnalysis();
+            }
+        });
 
         openMenuItem.setEnabled(true);
         MainFrameHelper.attachAcceleratorKey(openMenuItem, KeyEvent.VK_O);
@@ -240,23 +259,24 @@ public class MainFrameMenu implements Serializable {
 
         if (!FindBugs.noAnalysis)
             fileMenu.add(newProjectMenuItem);
-        fileMenu.add(reconfigMenuItem);
-        fileMenu.addSeparator();
 
         fileMenu.add(openMenuItem);
         fileMenu.add(recentMenu);
         fileMenu.addSeparator();
-        fileMenu.add(importFilter);
-        fileMenu.add(exportFilter);
-        fileMenu.addSeparator();
         fileMenu.add(saveAsMenuItem);
         fileMenu.add(saveMenuItem);
-
+        fileMenu.addSeparator();
+        fileMenu.add(reconfigMenuItem);
         if (!FindBugs.noAnalysis) {
-            fileMenu.addSeparator();
             fileMenu.add(redoAnalysis);
         }
+
+        fileMenu.addSeparator();
+        fileMenu.add(closeProjectItem);
         // fileMenu.add(mergeMenuItem);
+        fileMenu.addSeparator();
+        fileMenu.add(importFilter);
+        fileMenu.add(exportFilter);
 
         if (exitMenuItem != null) {
             fileMenu.addSeparator();
@@ -502,10 +522,6 @@ public class MainFrameMenu implements Serializable {
         recentMenu.setEnabled(enable);
     }
 
-    public JMenuItem getRedoAnalysisItem() {
-        return redoAnalysis;
-    }
-
     public JMenuItem getPreferencesMenuItem() {
         return preferencesMenuItem;
     }
@@ -542,6 +558,18 @@ public class MainFrameMenu implements Serializable {
         }
         defArgs[0] = boolean.class;
         osxPrefsEnableMethod = osxAdapter.getDeclaredMethod("enablePrefs", defArgs);
+    }
+
+    public JMenuItem getCloseProjectItem() {
+        return closeProjectItem;
+    }
+
+    public void enableOrDisableItems(Project curProject, BugCollection bugCollection) {
+        redoAnalysis.setEnabled(bugCollection != null && curProject != null && !curProject.getFileList().isEmpty());
+        closeProjectItem.setEnabled(bugCollection != null);
+        saveMenuItem.setEnabled(bugCollection != null);
+        saveAsMenuItem.setEnabled(bugCollection != null);
+        reconfigMenuItem.setEnabled(bugCollection != null);
     }
 
     static class CutAction extends TextAction {

@@ -95,20 +95,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
         if (!mainFrame.canNavigateAway())
             return;
 
-        if (mainFrame.isProjectChanged()) {
-            int response = JOptionPane.showConfirmDialog(mainFrame, L10N.getLocalString("dlg.save_current_changes",
-                    "The current project has been changed, Save current changes?"), L10N.getLocalString("dlg.save_changes",
-                    "Save Changes?"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-
-            if (response == JOptionPane.YES_OPTION) {
-                if (mainFrame.getSaveFile() != null)
-                    save();
-                else
-                    saveAs();
-            } else if (response == JOptionPane.CANCEL_OPTION)
-                return;
-            // IF no, do nothing.
-        }
+        if (askToSave()) return;
 
         boolean loading = true;
         SaveType fileType;
@@ -162,6 +149,25 @@ public class MainFrameLoadSaveHelper implements Serializable {
                 break;
             }
         }
+    }
+
+    /** Returns true if cancelled */
+    private boolean askToSave() {
+        if (mainFrame.isProjectChanged()) {
+            int response = JOptionPane.showConfirmDialog(mainFrame, L10N.getLocalString("dlg.save_current_changes",
+                    "The current project has been changed, Save current changes?"), L10N.getLocalString("dlg.save_changes",
+                    "Save Changes?"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+
+            if (response == JOptionPane.YES_OPTION) {
+                if (mainFrame.getSaveFile() != null)
+                    save();
+                else
+                    saveAs();
+            } else if (response == JOptionPane.CANCEL_OPTION)
+                return true;
+            // IF no, do nothing.
+        }
+        return false;
     }
 
     boolean openFBAFile(File f) {
@@ -436,7 +442,23 @@ public class MainFrameLoadSaveHelper implements Serializable {
     }
 
     void prepareForFileLoad(File f, SaveType saveType) {
+        closeProjectInternal();
 
+        mainFrame.getReconfigMenuItem().setEnabled(true);
+        mainFrame.setSaveType(saveType);
+        mainFrame.setSaveFile(f);
+
+        mainFrame.addFileToRecent(f);
+    }
+
+    void closeProject() {
+        if (askToSave())
+            return;
+
+        closeProjectInternal();
+    }
+    
+    private void closeProjectInternal() {
         // This creates a new filters and suppressions so don't use the
         // previoues one.
         mainFrame.createProjectSettings();
@@ -444,12 +466,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
         mainFrame.clearSourcePane();
         mainFrame.clearSummaryTab();
         mainFrame.getComments().refresh();
-        mainFrame.getReconfigMenuItem().setEnabled(true);
         mainFrame.setProjectChanged(false);
-        mainFrame.setSaveType(saveType);
-        mainFrame.setSaveFile(f);
-
-        mainFrame.addFileToRecent(f);
     }
 
     void loadAnalysis(final File file) {
