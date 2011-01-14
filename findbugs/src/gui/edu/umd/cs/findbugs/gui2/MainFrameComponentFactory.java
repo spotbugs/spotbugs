@@ -182,7 +182,7 @@ public class MainFrameComponentFactory implements Serializable {
         mainFrame.setSummaryTopPanel(new JPanel());
         mainFrame.getSummaryTopPanel().setLayout(new GridLayout(0, 1));
         mainFrame.getSummaryTopPanel().setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
-        mainFrame.getSummaryTopPanel().setMinimumSize(new Dimension(fontSize * 50, fontSize * 5));
+//        mainFrame.getSummaryTopPanel().setMinimumSize(new Dimension(fontSize * 50, fontSize * 5));
 
         JPanel summaryTopOuter = new JPanel(new BorderLayout());
         summaryTopOuter.add(mainFrame.getSummaryTopPanel(), BorderLayout.NORTH);
@@ -202,8 +202,9 @@ public class MainFrameComponentFactory implements Serializable {
         JScrollPane summaryScrollPane = new JScrollPane(summaryTopOuter);
         summaryScrollPane.getVerticalScrollBar().setUnitIncrement((int) Driver.getFontSize());
 
-        JSplitPane splitP = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, summaryScrollPane,
+        JSplitPane splitP = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, summaryScrollPane,
                 mainFrame.getSummaryHtmlScrollPane());
+        splitP.setContinuousLayout(true);
         splitP.setDividerLocation(GUISaveState.getInstance().getSplitSummary());
         splitP.setOneTouchExpandable(true);
         splitP.setUI(new BasicSplitPaneUI() {

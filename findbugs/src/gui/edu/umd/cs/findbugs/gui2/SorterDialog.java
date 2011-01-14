@@ -20,13 +20,18 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -69,7 +74,7 @@ public class SorterDialog extends FBDialog {
     }
 
     private SorterDialog() {
-        setTitle("Sort By...");
+        setTitle("Group Bugs By...");
         add(createSorterPane());
         pack();
         setLocationByPlatform(true);
@@ -99,10 +104,8 @@ public class SorterDialog extends FBDialog {
      * @return
      */
     private JPanel createSorterPane() {
-        JPanel sorter = new JPanel();
         JPanel insidePanel = new JPanel();
-        insidePanel.setLayout(new BorderLayout());
-        sorter.setLayout(new BorderLayout());
+        insidePanel.setLayout(new GridBagLayout());
         preview = new JTableHeader();
         Sortables[] sortables = MainFrame.getInstance().getAvailableSortables();
         preview.setColumnModel(new SorterTableColumnModel(sortables));
@@ -114,28 +117,18 @@ public class SorterDialog extends FBDialog {
 
         setSorterCheckBoxes();
 
-        insidePanel.add(new CheckBoxList(checkBoxSortList.toArray(new JCheckBox[checkBoxSortList.size()])), BorderLayout.NORTH);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridx = 1;
+        gbc.insets = new Insets(2,5,2,5);
+        insidePanel.add(new JLabel("<html><h2>1. Choose bug properties"), gbc);
+        insidePanel.add(new CheckBoxList(checkBoxSortList.toArray(new JCheckBox[checkBoxSortList.size()])), gbc);
 
-        // insidePanel.add(sorterInfoLabel(), BorderLayout.CENTER);
-
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new BorderLayout());
-        // bottomPanel.add(previewLabel,BorderLayout.NORTH);
-        // New code to fix problem in Windows
         JTable t = new JTable(new DefaultTableModel(0, sortables.length));
         t.setTableHeader(preview);
-        JScrollPane sp = new JScrollPane(t);
-        // This sets the height of the scrollpane so it is dependent on the
-        // fontsize.
-        int num = (int) (Driver.getFontSize() * 1.2);
-        sp.setPreferredSize(new Dimension(670, 10 + num));
-        // End of new code.
-        // Changed code.
-        bottomPanel.add(sp, BorderLayout.CENTER);
-        // bottomPanel.add(preview, BorderLayout.CENTER);
-        // End of changed code.
-
-        insidePanel.add(bottomPanel, BorderLayout.SOUTH);
+        preview.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
+        insidePanel.add(new JLabel("<html><h2>2. Drag and drop to change grouping priority"), gbc);
+        insidePanel.add(createAppropriatelySizedScrollPane(t), gbc);
 
         sortApply = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.apply_btn", "Apply"));
         sortApply.addActionListener(new ActionListener() {
@@ -145,10 +138,23 @@ public class SorterDialog extends FBDialog {
                 SorterDialog.this.dispose();
             }
         });
-        bottomPanel.add(sortApply, BorderLayout.SOUTH);
+        gbc.fill = GridBagConstraints.NONE;
+        insidePanel.add(sortApply, gbc);
+
+        JPanel sorter = new JPanel();
+        sorter.setLayout(new BorderLayout());
         sorter.add(new JScrollPane(insidePanel), BorderLayout.CENTER);
 
         return sorter;
+    }
+
+    private JScrollPane createAppropriatelySizedScrollPane(JTable t) {
+        JScrollPane sp = new JScrollPane(t);
+        // This sets the height of the scrollpane so it is dependent on the
+        // fontsize.
+        int num = (int) (Driver.getFontSize() * 1.2);
+        sp.setPreferredSize(new Dimension(670, 10 + num));
+        return sp;
     }
 
     /**

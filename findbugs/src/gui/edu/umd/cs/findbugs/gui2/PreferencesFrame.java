@@ -71,15 +71,6 @@ import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
-/**
- * User Preferences
- */
-
-/*
- *
- * Preferences, which should really be renamed Filters And Suppressions (fas,
- * like fas file!) since thats all that's actually here now
- */
 @SuppressWarnings("serial")
 public class PreferencesFrame extends FBDialog {
     private static final Logger LOGGER = Logger.getLogger(PreferencesFrame.class.getName());
@@ -287,11 +278,13 @@ public class PreferencesFrame extends FBDialog {
         String msg;
         Project currentProject = getCurrentProject();
         if (currentProject == null)
-            msg = "<html><i><html>Note: Individual projects may override these settings.<br>" +
-                    "Load a project and re-open this dialog to change project settings.";
+            msg = "<html><h2>Application Settings</h2>" +
+                    "<i>Project settings may override this dialog.<br>" +
+                    "To change project settings, load the project and re-open this dialog.";
         else
-            msg = "<html><i>Note: These are individual settings for the currently opened project.<br>" +
-                    "To change application-wide settings, close the current project and re-open this dialog.";
+            msg = "<html><h2>Project Settings</h2>" +
+                    "<i>These settings only apply to the currently opened project.<br>" +
+                    "To change application plugin settings, close the current project and re-open this dialog.";
         pluginHelpMsg.setText(msg);
 
         pluginPanelCenter.removeAll();

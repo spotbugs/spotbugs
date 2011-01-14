@@ -49,6 +49,7 @@ public class MainFrameMenu implements Serializable {
 
     private Method osxPrefsEnableMethod;
     private JMenuItem saveAsMenuItem;
+    private JMenuItem groupByMenuItem;
 
     public MainFrameMenu(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -290,7 +291,7 @@ public class MainFrameMenu implements Serializable {
         JMenuItem copyMenuItem = new JMenuItem(new CopyAction());
         JMenuItem pasteMenuItem = new JMenuItem(new PasteAction());
         preferencesMenuItem = MainFrameHelper.newJMenuItem("menu.preferences_menu", "Preferences...");
-        JMenuItem sortMenuItem = MainFrameHelper.newJMenuItem("menu.sortConfiguration", "Sort Configuration...");
+        groupByMenuItem = MainFrameHelper.newJMenuItem("menu.sortConfiguration", "Sort Configuration...");
         JMenuItem goToLineMenuItem = MainFrameHelper.newJMenuItem("menu.gotoLine", "Go to line...");
 
         MainFrameHelper.attachAcceleratorKey(cutMenuItem, KeyEvent.VK_X);
@@ -303,7 +304,7 @@ public class MainFrameMenu implements Serializable {
             }
         });
 
-        sortMenuItem.addActionListener(new ActionListener() {
+        groupByMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 if (!mainFrame.canNavigateAway())
                     return;
@@ -337,7 +338,6 @@ public class MainFrameMenu implements Serializable {
             // Preferences goes in Findbugs menu and is handled by OSXAdapter
             editMenu.add(preferencesMenuItem);
         }
-        editMenu.add(sortMenuItem);
 
         menuBar.add(editMenu);
 
@@ -391,6 +391,7 @@ public class MainFrameMenu implements Serializable {
         Cloud cloud = mainFrame.getBugCollection() == null ? null : mainFrame.getBugCollection().getCloud();
 
         viewMenu.removeAll();
+        viewMenu.add(groupByMenuItem);
         if (cloud != null && cloud.supportsCloudSummaries()) {
             JMenuItem cloudReport = new JMenuItem("Cloud summary");
             cloudReport.addActionListener(new ActionListener() {
@@ -570,6 +571,7 @@ public class MainFrameMenu implements Serializable {
         saveMenuItem.setEnabled(bugCollection != null);
         saveAsMenuItem.setEnabled(bugCollection != null);
         reconfigMenuItem.setEnabled(bugCollection != null);
+        groupByMenuItem.setEnabled(bugCollection != null);
     }
 
     static class CutAction extends TextAction {
@@ -596,7 +598,7 @@ public class MainFrameMenu implements Serializable {
             int keyEvent) {
         JMenuItem toggleItem = MainFrameHelper.newJMenuItem(menuNameKey, menuNameDefault);
         toggleItem.addActionListener(mainFrame.getMainFrameTree().treeActionAdapter(map, actionName));
-        MainFrameHelper.attachAcceleratorKey(toggleItem, keyEvent);
+        MainFrameHelper.attachAcceleratorKeyNoCtrl(toggleItem, keyEvent);
         navMenu.add(toggleItem);
     }
 
