@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import java.awt.Frame;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
@@ -35,11 +36,10 @@ import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import org.apache.commons.lang.StringUtils;
-
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginException;
 import edu.umd.cs.findbugs.SystemProperties;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Saves all the stuff that should be saved for each run, like recent projects,
@@ -63,6 +63,7 @@ public class GUISaveState {
     private static final String PREVCOMMENTSSIZE = "Previous Comments Size";
     private static final String DOCKINGLAYOUT = "Docking Layout";
     private static final String FRAME_BOUNDS = "Frame Bounds";
+    private static final String EXTENDED_WINDOW_STATE = "ExtendedWindowState";
 
     private static final int MAXNUMRECENTPROJECTS = 5;
 
@@ -120,6 +121,9 @@ public class GUISaveState {
     private byte[] dockingLayout;
 
     private Rectangle frameBounds;
+
+    /** For Windows mainly - whether the window was maximized or not */
+    private int extendedWindowState;
 
     private int tabSize; // Tab size in the source code display.
 
@@ -226,6 +230,7 @@ public class GUISaveState {
                 }
         }
         newInstance.frameBounds = r;
+        newInstance.extendedWindowState = p.getInt(EXTENDED_WINDOW_STATE, Frame.NORMAL);
 
         newInstance.splitMain = p.getInt(SPLIT_MAIN, 400);
         newInstance.splitSummary = p.getInt(SPLIT_SUMMARY, 85);
@@ -394,6 +399,7 @@ public class GUISaveState {
         p.putByteArray(DOCKINGLAYOUT, dockingLayout);
 
         p.put(FRAME_BOUNDS, frameBounds.x + "," + frameBounds.y + "," + frameBounds.width + "," + frameBounds.height);
+        p.putInt(EXTENDED_WINDOW_STATE, extendedWindowState);
 
         p.putInt(SPLIT_MAIN, splitMain);
         p.putInt(SPLIT_SUMMARY, splitSummary);
@@ -434,6 +440,14 @@ public class GUISaveState {
      */
     public void setFrameBounds(Rectangle frameBounds) {
         this.frameBounds = frameBounds;
+    }
+
+    public int getExtendedWindowState() {
+        return extendedWindowState;
+    }
+
+    public void setExtendedWindowState(int extendedWindowState) {
+        this.extendedWindowState = extendedWindowState & ~Frame.ICONIFIED; // never save iconified state
     }
 
     /**

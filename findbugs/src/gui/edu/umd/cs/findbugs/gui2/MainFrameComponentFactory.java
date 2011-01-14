@@ -506,6 +506,7 @@ public class MainFrameComponentFactory implements Serializable {
             mainFrame.mainFrameTree.setBranchPopupMenu(mainFrame.mainFrameTree.createBranchPopUpMenu());
             mainFrame.updateStatusBar();
             mainFrame.setBounds(GUISaveState.getInstance().getFrameBounds());
+            mainFrame.setExtendedState(GUISaveState.getInstance().getExtendedWindowState());
             Toolkit.getDefaultToolkit().setDynamicLayout(true);
             mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
             mainFrame.setJMenuBar(mainFrame.mainFrameMenu.createMainMenuBar());

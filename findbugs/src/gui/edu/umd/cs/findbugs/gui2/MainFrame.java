@@ -428,6 +428,7 @@ public class MainFrame extends FBFrame implements LogSync {
         GUISaveState guiSaveState = GUISaveState.getInstance();
         guiLayout.saveState();
         guiSaveState.setFrameBounds(getBounds());
+        guiSaveState.setExtendedWindowState(getExtendedState());
         guiSaveState.save();
         if (this.bugCollection != null) {
             Cloud cloud = this.bugCollection.getCloud();
