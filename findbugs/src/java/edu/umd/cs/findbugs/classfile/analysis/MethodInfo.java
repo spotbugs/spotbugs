@@ -185,6 +185,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
     static IdentityHashMap<MethodInfo, MethodDescriptor> accessMethodFor = new IdentityHashMap<MethodInfo, MethodDescriptor>();
 
+    public static void clearCaches() {
+        unsupportedMethods.clear();
+        unconditionalThrowers.clear();
+        accessMethodFor.clear();
+    }
+
     /**
      * @param className
      * @param methodName
@@ -263,7 +269,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#isReturnTypeReferenceType()
      */
     public boolean isReturnTypeReferenceType() {
@@ -288,7 +294,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
@@ -306,7 +312,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getAccessFlags()
      */
     public int getAccessFlags() {
@@ -315,7 +321,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isFinal()
      */
     public boolean isFinal() {
@@ -324,7 +330,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPrivate()
      */
     public boolean isPrivate() {
@@ -337,7 +343,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isProtected()
      */
     public boolean isProtected() {
@@ -346,7 +352,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPublic()
      */
     public boolean isPublic() {
@@ -359,7 +365,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isResolved()
      */
     public boolean isResolved() {
@@ -405,7 +411,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
      * that might not be directly evident in the code. It's not a great idea in
      * general, but we can get away with it as long as it's done early enough
      * (i.e., before anyone asks what annotations this method has.)
-     * 
+     *
      * @param annotationValue
      *            an AnnotationValue representing a method annotation
      */
@@ -418,7 +424,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
     /**
      * Destructively add a parameter annotation.
-     * 
+     *
      * @param param
      *            parameter (0 == first parameter)
      * @param annotationValue
@@ -439,7 +445,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#getMethodDescriptor()
      */
     public MethodDescriptor getMethodDescriptor() {
@@ -463,7 +469,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#isVarArgs()
      */
     public boolean isVarArgs() {
@@ -472,7 +478,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#usesConcurrency()
      */
     public boolean usesConcurrency() {
@@ -490,7 +496,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#bridgeFrom()
      */
     public XMethod bridgeFrom() {
@@ -499,7 +505,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#bridgeTo()
      */
     public XMethod bridgeTo() {
