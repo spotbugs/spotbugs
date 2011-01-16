@@ -62,6 +62,11 @@ public enum GroupType {
         String getShortDescription(Object id) {
             return ((Plugin) id).getProvider();
         }
+
+        @Override
+        String getDebugDescription(IMarker marker) throws CoreException {
+            return "plugin id: " + marker.getAttribute(FindBugsMarker.DETECTOR_PLUGIN_ID);
+        }
     }),
 
     Project(true, new MarkerMapper<IProject>() {
@@ -73,6 +78,11 @@ public enum GroupType {
         @Override
         String getShortDescription(Object id) {
             return ((IProject) id).getName();
+        }
+
+        @Override
+        String getDebugDescription(IMarker marker) {
+            return "project of resource: " + marker.getResource();
         }
     }),
 
@@ -97,6 +107,11 @@ public enum GroupType {
             }
             return name;
         }
+
+        @Override
+        String getDebugDescription(IMarker marker) throws CoreException {
+            return "package of element with unique Java id: " + marker.getAttribute(FindBugsMarker.UNIQUE_JAVA_ID);
+        }
     }),
 
     Class(true, new MarkerMapper<IJavaElement>() {
@@ -112,6 +127,11 @@ public enum GroupType {
         @Override
         String getShortDescription(Object id) {
             return ((IJavaElement) id).getElementName();
+        }
+
+        @Override
+        String getDebugDescription(IMarker marker) throws CoreException {
+            return "class of element with unique Java id: " + marker.getAttribute(FindBugsMarker.UNIQUE_JAVA_ID);
         }
     }),
 
@@ -142,6 +162,11 @@ public enum GroupType {
         String getShortDescription(Object id) {
             return FindBugsMarker.Priority.label(((Integer) id).intValue()).name() + " priority";
         }
+
+        @Override
+        String getDebugDescription(IMarker marker) throws CoreException {
+            return "priority: " + marker.getAttribute(IMarker.PRIORITY);
+        }
     }),
 
     Category(true, new MarkerMapper<BugCategory>() {
@@ -157,6 +182,11 @@ public enum GroupType {
         @Override
         String getShortDescription(Object id) {
             return ((BugCategory) id).getShortDescription();
+        }
+
+        @Override
+        String getDebugDescription(IMarker marker) throws CoreException {
+            return "category of: " + marker.getAttribute(FindBugsMarker.UNIQUE_ID);
         }
     }),
 
@@ -180,18 +210,27 @@ public enum GroupType {
         String getShortDescription(Object id) {
             return ((BugCode) id).getDescription();
         }
+
+        @Override
+        String getDebugDescription(IMarker marker) throws CoreException {
+            return "pattern type: " + marker.getAttribute(FindBugsMarker.PATTERN_TYPE);
+        }
     }),
 
     Pattern(true, new MarkerMapper<BugPattern>() {
         @Override
         BugPattern getIdentifier(IMarker marker) {
-            BugPattern bug = MarkerUtil.findBugPatternForMarker(marker);
-            return bug;
+            return MarkerUtil.findBugPatternForMarker(marker);
         }
 
         @Override
         String getShortDescription(Object id) {
             return ((BugPattern) id).getShortDescription();
+        }
+
+        @Override
+        String getDebugDescription(IMarker marker) throws CoreException {
+            return "pattern: " + marker.getAttribute(FindBugsMarker.BUG_TYPE);
         }
     }),
 

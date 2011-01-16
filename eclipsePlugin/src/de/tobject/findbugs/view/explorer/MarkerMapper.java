@@ -19,11 +19,12 @@
 package de.tobject.findbugs.view.explorer;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.CoreException;
 
 import de.tobject.findbugs.marker.FindBugsMarker;
 
 /**
- * 
+ *
  * @param <Identifier>
  *            the specific identifier of given marker inside the given group
  *            type
@@ -55,6 +56,11 @@ abstract class MarkerMapper<Identifier> {
             return "Undefined";
         }
 
+        @Override
+        String getDebugDescription(IMarker marker) {
+            return getShortDescription(null);
+        }
+
     };
 
     private GroupType type;
@@ -82,6 +88,12 @@ abstract class MarkerMapper<Identifier> {
     abstract Identifier getIdentifier(IMarker marker);
 
     abstract String getShortDescription(Object id);
+
+    /**
+     * @param marker non null
+     * @return the raw data from current marker for debug porpose
+     */
+    abstract String getDebugDescription(IMarker marker) throws CoreException;
 
     FindBugsMarker.Priority getPrio(Identifier data) {
         if (getType() == GroupType.Priority) {

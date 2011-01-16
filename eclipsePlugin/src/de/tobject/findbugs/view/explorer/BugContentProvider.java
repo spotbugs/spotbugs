@@ -35,6 +35,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.IJavaElement;
@@ -349,12 +350,22 @@ public class BugContentProvider implements ICommonContentProvider {
         Map<Identifier, Set<IMarker>> groupIds = new HashMap<Identifier, Set<IMarker>>();
 
         // first, sort all bugs to the sets with same identifier type
+        Set<String> errorMessages = new HashSet<String>();
         for (IMarker marker : allMarkers) {
             Identifier id = mapper.getIdentifier(marker);
             if (id == null) {
-                FindbugsPlugin.getDefault().logWarning(
-                        "BugContentProvider.createPatternGroups: " + "Failed to find bug id of type " + mapper.getType()
-                                + " for marker on file " + marker.getResource());
+                try {
+                    String debugDescription = mapper.getDebugDescription(marker);
+                    if(errorMessages.contains(debugDescription)) {
+                        continue;
+                    }
+                    errorMessages.add(debugDescription);
+                    FindbugsPlugin.getDefault().logWarning(
+                            "BugContentProvider.createGroups: failed to find " + debugDescription + " for marker on file "
+                                    + marker.getResource());
+                } catch (CoreException e) {
+                    FindbugsPlugin.getDefault().logException(e, "Exception on retrieving debug data for: " + mapper.getType());
+                }
                 continue;
             }
             if (!groupIds.containsKey(id)) {
